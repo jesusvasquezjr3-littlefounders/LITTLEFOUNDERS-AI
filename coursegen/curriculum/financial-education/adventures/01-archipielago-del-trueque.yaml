@@ -13,7 +13,7 @@ adventure:
     en-US: "Sail between tiny islands to discover what wants are, why trading things is tricky, and how coins were born."
     es-MX: "Navega entre islitas para descubrir qué son los deseos, por qué cambiar cosas es difícil y cómo nacieron las monedas."
     pt-BR: "Navegue entre ilhotas para descobrir o que são desejos, por que trocar coisas é difícil e como nasceram as moedas."
-  narrative_arc: "Dina, Dino, Rho y Zara llegan a un archipiélago donde cada isla tiene solo una cosa especial. Al principio intentan cambiar sus tesoros directamente y descubren que no siempre encuentran a alguien que quiera justo lo que ellos ofrecen. Juntos inventan — y luego adoptan — las monedas como una forma más fácil de cambiar cosas con todos los isleños."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan a un archipiélago donde cada isla tiene solo una cosa especial. Al principio intentan cambiar sus tesoros directamente y descubren que no siempre encuentran a alguien que quiera justo lo que ellos ofrecen. Juntos inventan — y luego adoptan — las monedas como una forma más fácil de cambiar cosas con todos los isleños."
 
 sagas:
   - position: 1
@@ -47,7 +47,7 @@ sagas:
           - position: 2
             slug: quiero-o-ya-tengo
             micro_objective: "Distingue, entre 4 tarjetas, cuáles muestran algo que 'quiero' y cuáles algo que ya tiene."
-            narrative_beat: "Dino salta entre rocas señalando cosas que quiere y cosas que ya carga en su mochila."
+            narrative_beat: "Liruf salta entre rocas señalando cosas que quiere y cosas que ya carga en su mochila."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -75,7 +75,7 @@ sagas:
           - position: 1
             slug: dos-islenos-dos-deseos
             micro_objective: "Identifica el deseo de un personaje distinto al propio en una escena corta."
-            narrative_beat: "Dino cuenta que quiere una fruta, pero su vecino isleño quiere una concha brillante."
+            narrative_beat: "Liruf cuenta que quiere una fruta, pero su vecino isleño quiere una concha brillante."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -127,7 +127,7 @@ sagas:
           - position: 4
             slug: elegir-sin-tristeza
             micro_objective: "Elige la reacción de calma cuando no puede tener las dos cosas que quiere."
-            narrative_beat: "Dino se pone un poquito triste por no llevarse las dos frutas, y Dina le recuerda que puede volver mañana."
+            narrative_beat: "Liruf se pone un poquito triste por no llevarse las dos frutas, y Dina le recuerda que puede volver mañana."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 4
@@ -143,7 +143,7 @@ sagas:
           - position: 1
             slug: te-doy-esto-por-eso
             micro_objective: "Describe con una frase un trueque simple entre dos personajes."
-            narrative_beat: "Zara le ofrece su pluma a Dino a cambio de su fruta dulce."
+            narrative_beat: "Zara le ofrece su pluma a Liruf a cambio de su fruta dulce."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -161,7 +161,7 @@ sagas:
           - position: 4
             slug: mi-primer-cambio-feliz
             micro_objective: "Completa un trueque en la historia y explica si quedó contento con el resultado."
-            narrative_beat: "Dino cambia su concha por la fruta que tanto quería y celebra con un salto."
+            narrative_beat: "Liruf cambia su concha por la fruta que tanto quería y celebra con un salto."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 5
@@ -183,7 +183,7 @@ sagas:
           - position: 2
             slug: uno-quedo-triste
             micro_objective: "Identifica en una escena cuál de los dos personajes no quedó contento con el trueque."
-            narrative_beat: "Dino nota que su amigo isleño se quedó triste después de cambiar su tesoro favorito."
+            narrative_beat: "Liruf nota que su amigo isleño se quedó triste después de cambiar su tesoro favorito."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -217,7 +217,7 @@ sagas:
           - position: 2
             slug: busco-a-alguien-mas
             micro_objective: "Elige, entre 3 isleños, cuál sí podría querer el objeto ofrecido."
-            narrative_beat: "Dino recorre la isla buscando a alguien que sí quiera cambiar su concha por algo."
+            narrative_beat: "Liruf recorre la isla buscando a alguien que sí quiera cambiar su concha por algo."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -264,7 +264,7 @@ sagas:
           - position: 3
             slug: elijo-el-trueque-mas-justo-del-cofre
             micro_objective: "Elige, entre 2 trueques recordados del cofre, cuál fue el más justo para ambas partes."
-            narrative_beat: "Dino compara dos recuerdos guardados en el cofre y decide cuál trueque dejó más contentos a los dos isleños."
+            narrative_beat: "Liruf compara dos recuerdos guardados en el cofre y decide cuál trueque dejó más contentos a los dos isleños."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -291,7 +291,7 @@ sagas:
           - position: 1
             slug: deseo-y-trueque-en-la-misma-escena
             micro_objective: "Combina, en una sola escena, el deseo de un personaje y el trueque que hizo para conseguirlo."
-            narrative_beat: "Rho arma una escena mezclando el deseo inicial de Dino con el trueque que finalmente hizo para lograrlo."
+            narrative_beat: "Rho arma una escena mezclando el deseo inicial de Liruf con el trueque que finalmente hizo para lograrlo."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 2
@@ -303,7 +303,7 @@ sagas:
           - position: 3
             slug: cuando-un-trueque-no-cumple-el-deseo
             micro_objective: "Reconoce, combinando deseo y trueque trabado, por qué un cambio fallido deja un deseo sin cumplir."
-            narrative_beat: "Dino recuerda cuando nadie quería su concha y su deseo de comer fruta tuvo que esperar."
+            narrative_beat: "Liruf recuerda cuando nadie quería su concha y su deseo de comer fruta tuvo que esperar."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -356,7 +356,7 @@ sagas:
           - position: 4
             slug: mi-idea-para-la-isla
             micro_objective: "Propone en una frase un objeto que la isla entera podría aceptar."
-            narrative_beat: "Dino junta a la tripulación para votar su primera idea de 'algo para todos'."
+            narrative_beat: "Liruf junta a la tripulación para votar su primera idea de 'algo para todos'."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 2
@@ -390,7 +390,7 @@ sagas:
           - position: 4
             slug: cuento-mi-descubrimiento
             micro_objective: "Explica con una frase por qué las conchas fueron el primer 'dinero' de la isla."
-            narrative_beat: "Dino cuenta emocionado a todo el barco lo que Rho descubrió en el cofre viejo."
+            narrative_beat: "Liruf cuenta emocionado a todo el barco lo que Rho descubrió en el cofre viejo."
             difficulty: 2
             suggested_families: [story, choice]
       - position: 3
@@ -418,7 +418,7 @@ sagas:
           - position: 3
             slug: cargo-monedas-facil
             micro_objective: "Elige, entre una bolsa de conchas grandes y una bolsa de monedas, cuál es más fácil de cargar."
-            narrative_beat: "Dino carga una bolsa pesada de conchas y luego prueba una bolsita ligera de monedas."
+            narrative_beat: "Liruf carga una bolsa pesada de conchas y luego prueba una bolsita ligera de monedas."
             difficulty: 2
             suggested_families: [choice, story]
           - position: 4
@@ -456,13 +456,13 @@ sagas:
           - position: 3
             slug: comparo-el-antes-y-el-ahora
             micro_objective: "Ordena en dos columnas las ventajas de trueque y de monedas."
-            narrative_beat: "Dina compara con Dino cómo cambiaban las cosas antes y cómo las cambian ahora con monedas."
+            narrative_beat: "Dina compara con Liruf cómo cambiaban las cosas antes y cómo las cambian ahora con monedas."
             difficulty: 2
             suggested_families: [arrange, choice]
           - position: 4
             slug: el-viaje-mas-rapido
             micro_objective: "Completa una historia corta en la que usar monedas resuelve un trueque trabado."
-            narrative_beat: "Dino necesita un pez para su abuela y esta vez lo consigue enseguida pagando con una moneda."
+            narrative_beat: "Liruf necesita un pez para su abuela y esta vez lo consigue enseguida pagando con una moneda."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 5
@@ -477,8 +477,8 @@ sagas:
         lessons:
           - position: 1
             slug: no-puedo-morder-una-moneda
-            micro_objective: "Reconoce en la historia por qué Dino no puede comerse una moneda cuando tiene hambre."
-            narrative_beat: "Dino intenta morder una moneda pensando que es dulce, y Dina se ríe explicándole que no se come."
+            micro_objective: "Reconoce en la historia por qué Liruf no puede comerse una moneda cuando tiene hambre."
+            narrative_beat: "Liruf intenta morder una moneda pensando que es dulce, y Dina se ríe explicándole que no se come."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -490,13 +490,13 @@ sagas:
           - position: 3
             slug: la-moneda-se-transforma
             micro_objective: "Explica en una frase que una moneda se puede cambiar por algo que sí se usa o se come."
-            narrative_beat: "Zara cambia su moneda por una fruta dulce y le explica a Dino que ese era el plan desde el inicio."
+            narrative_beat: "Zara cambia su moneda por una fruta dulce y le explica a Liruf que ese era el plan desde el inicio."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
             slug: elijo-cambiar-mi-moneda
             micro_objective: "Elige, en una historia, el momento correcto para cambiar una moneda por algo útil."
-            narrative_beat: "Dino guarda su moneda todo el día y al final la cambia justo por el pez que tanto quería."
+            narrative_beat: "Liruf guarda su moneda todo el día y al final la cambia justo por el pez que tanto quería."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 6
@@ -565,7 +565,7 @@ sagas:
           - position: 3
             slug: elijo-la-mejor-razon-para-usar-monedas
             micro_objective: "Elige, entre 3 razones recordadas, la que mejor explica por qué las monedas son mejores que las conchas."
-            narrative_beat: "Dino compara en el cofre las conchas rotas con las monedas resistentes y recuerda por qué ganaron las monedas."
+            narrative_beat: "Liruf compara en el cofre las conchas rotas con las monedas resistentes y recuerda por qué ganaron las monedas."
             difficulty: 2
             suggested_families: [choice]
           - position: 4
@@ -604,7 +604,7 @@ sagas:
           - position: 3
             slug: de-la-concha-al-trueque-perfecto
             micro_objective: "Ordena, mezclando ambas sagas, los pasos desde tener un deseo hasta pagarlo con una moneda de todos."
-            narrative_beat: "Dino ordena en su mente todo el camino: desde su primer deseo hasta pagar con una moneda que todos aceptan."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde su primer deseo hasta pagar con una moneda que todos aceptan."
             difficulty: 2
             suggested_families: [arrange, story]
           - position: 4
@@ -645,7 +645,7 @@ sagas:
           - position: 2
             slug: la-moneda-de-dos-pesos
             micro_objective: "Reconoce visualmente la moneda de $2 y la distingue de la de $1."
-            narrative_beat: "Dino encuentra una moneda un poco más grande y pregunta si vale lo mismo que la de Dina."
+            narrative_beat: "Liruf encuentra una moneda un poco más grande y pregunta si vale lo mismo que la de Dina."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -673,7 +673,7 @@ sagas:
           - position: 1
             slug: la-moneda-de-diez-pesos
             micro_objective: "Reconoce visualmente la moneda de $10 entre otras monedas."
-            narrative_beat: "Dino desentierra en la arena una moneda dorada más grande que todas las demás."
+            narrative_beat: "Liruf desentierra en la arena una moneda dorada más grande que todas las demás."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -685,7 +685,7 @@ sagas:
           - position: 3
             slug: encuentro-la-moneda-de-diez
             micro_objective: "Encuentra la moneda de $10 escondida entre 6 monedas de distinto valor."
-            narrative_beat: "Zara esconde monedas por toda la cubierta del barco y reta a Dino a encontrar la de $10."
+            narrative_beat: "Zara esconde monedas por toda la cubierta del barco y reta a Liruf a encontrar la de $10."
             difficulty: 2
             suggested_families: [choice, arrange]
           - position: 4
@@ -719,7 +719,7 @@ sagas:
           - position: 3
             slug: el-billete-de-cincuenta
             micro_objective: "Reconoce visualmente el billete de $50 y lo distingue del de $20."
-            narrative_beat: "Dino encuentra un segundo billete, más grande en valor, escondido bajo una roca."
+            narrative_beat: "Liruf encuentra un segundo billete, más grande en valor, escondido bajo una roca."
             difficulty: 2
             suggested_families: [choice]
           - position: 4
@@ -753,7 +753,7 @@ sagas:
           - position: 3
             slug: comparo-todos-los-billetes
             micro_objective: "Ordena de menor a mayor los billetes de $20, $50, $100 y $200."
-            narrative_beat: "Dino acomoda los cuatro billetes del tesoro sobre la cubierta, del menor al mayor."
+            narrative_beat: "Liruf acomoda los cuatro billetes del tesoro sobre la cubierta, del menor al mayor."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -781,13 +781,13 @@ sagas:
           - position: 2
             slug: el-tamano-no-decide
             micro_objective: "Reconoce que una moneda pequeña puede valer más que un billete de papel grande y viejo, si su número es mayor."
-            narrative_beat: "Zara le explica a Dino que no es el tamaño lo que importa, sino el número escrito."
+            narrative_beat: "Zara le explica a Liruf que no es el tamaño lo que importa, sino el número escrito."
             difficulty: 2
             suggested_families: [choice]
           - position: 3
             slug: ordeno-por-valor
             micro_objective: "Ordena 4 monedas y billetes mezclados solo por su valor, de menor a mayor."
-            narrative_beat: "Dino mezcla todas las monedas y billetes del cofre y los reordena solo por su valor."
+            narrative_beat: "Liruf mezcla todas las monedas y billetes del cofre y los reordena solo por su valor."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -821,7 +821,7 @@ sagas:
           - position: 3
             slug: mas-de-una-forma-de-juntar
             micro_objective: "Encuentra dos combinaciones distintas de monedas que sumen el mismo monto de hasta $20."
-            narrative_beat: "Dino descubre que puede pagar el mismo tesoro juntando monedas de formas diferentes."
+            narrative_beat: "Liruf descubre que puede pagar el mismo tesoro juntando monedas de formas diferentes."
             difficulty: 2
             suggested_families: [money, arrange]
           - position: 4
@@ -862,7 +862,7 @@ sagas:
           - position: 3
             slug: ordeno-todo-el-tesoro-del-cofre
             micro_objective: "Ordena, sin ayuda, un grupo mixto de monedas y billetes recordados de menor a mayor valor."
-            narrative_beat: "Dino ordena todo el tesoro del cofre, de la monedita más chica al billete más grande."
+            narrative_beat: "Liruf ordena todo el tesoro del cofre, de la monedita más chica al billete más grande."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -901,7 +901,7 @@ sagas:
           - position: 3
             slug: ordeno-y-confio-a-la-vez
             micro_objective: "Ordena monedas y billetes de menor a mayor mientras explica por qué todos confían en ellos."
-            narrative_beat: "Dino ordena su tesoro y, mientras tanto, recuerda por qué el archipiélago entero confía en esas piezas."
+            narrative_beat: "Liruf ordena su tesoro y, mientras tanto, recuerda por qué el archipiélago entero confía en esas piezas."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -948,7 +948,7 @@ sagas:
           - position: 3
             slug: reviso-el-precio-no-el-tamano
             micro_objective: "Ordena 3 objetos de distinto tamaño según su precio, no según su tamaño físico."
-            narrative_beat: "Dino se sorprende al ordenar los tesoros por precio y ver que el más chico queda primero."
+            narrative_beat: "Liruf se sorprende al ordenar los tesoros por precio y ver que el más chico queda primero."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -988,7 +988,7 @@ sagas:
           - position: 4
             slug: compro-algo-barato
             micro_objective: "Elige y paga con monedas exactas un objeto barato dentro de la historia."
-            narrative_beat: "Dino junta justo las monedas necesarias para comprarse su primer dulce de la isla."
+            narrative_beat: "Liruf junta justo las monedas necesarias para comprarse su primer dulce de la isla."
             difficulty: 2
             suggested_families: [money, storyplay]
       - position: 3
@@ -1016,7 +1016,7 @@ sagas:
           - position: 3
             slug: me-alcanza-o-no
             micro_objective: "Determina si un monto dado de monedas alcanza para pagar un objeto caro."
-            narrative_beat: "Dino cuenta sus monedas una y otra vez para ver si le alcanza para el juguete especial."
+            narrative_beat: "Liruf cuenta sus monedas una y otra vez para ver si le alcanza para el juguete especial."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -1050,7 +1050,7 @@ sagas:
           - position: 3
             slug: ordeno-tres-precios
             micro_objective: "Ordena tres precios distintos de menor a mayor."
-            narrative_beat: "Dino visita tres puestos de la isla y ordena sus precios del más barato al más caro."
+            narrative_beat: "Liruf visita tres puestos de la isla y ordena sus precios del más barato al más caro."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -1082,13 +1082,13 @@ sagas:
           - position: 2
             slug: detecto-un-cambio-injusto
             micro_objective: "Identifica en una escena un trueque donde un objeto caro se cambia por uno muy barato."
-            narrative_beat: "Zara nota que un comerciante quiere cambiar una fruta suelta por el juguete especial de Dino."
+            narrative_beat: "Zara nota que un comerciante quiere cambiar una fruta suelta por el juguete especial de Liruf."
             difficulty: 2
             suggested_families: [choice, story]
           - position: 3
             slug: propongo-algo-mas-justo
             micro_objective: "Propone un ajuste (agregar una moneda más) para volver justo un trueque desigual."
-            narrative_beat: "Dino ofrece una moneda extra para que el cambio por su juguete sea justo para el comerciante."
+            narrative_beat: "Liruf ofrece una moneda extra para que el cambio por su juguete sea justo para el comerciante."
             difficulty: 2
             suggested_families: [money, storyplay]
           - position: 4
@@ -1122,7 +1122,7 @@ sagas:
           - position: 3
             slug: armo-un-trueque-justo-final
             micro_objective: "Arma, sin ayuda, un trueque o compra justa usando lo aprendido sobre precios."
-            narrative_beat: "Dino organiza su propio puesto de intercambio y pone en práctica todo lo que aprendió."
+            narrative_beat: "Liruf organiza su propio puesto de intercambio y pone en práctica todo lo que aprendió."
             difficulty: 3
             suggested_families: [money, storyplay]
           - position: 4
@@ -1163,7 +1163,7 @@ sagas:
           - position: 3
             slug: comparo-precios-recordados
             micro_objective: "Compara dos precios recordados del cofre y elige cuál es mayor."
-            narrative_beat: "Dino compara dos etiquetas de precio que guardó como recuerdo de sus compras en las islas."
+            narrative_beat: "Liruf compara dos etiquetas de precio que guardó como recuerdo de sus compras en las islas."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -1202,7 +1202,7 @@ sagas:
           - position: 3
             slug: comparo-precios-y-cuento-mi-tesoro
             micro_objective: "Compara dos precios y cuenta si sus monedas y billetes reunidos le alcanzan para el más caro."
-            narrative_beat: "Dino compara dos precios del mercado isleño y cuenta si su tesoro junto le alcanza."
+            narrative_beat: "Liruf compara dos precios del mercado isleño y cuenta si su tesoro junto le alcanza."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -1290,7 +1290,7 @@ sagas:
           - position: 3
             slug: ordenamos-el-tesoro-encontrado
             micro_objective: "Ordena, sin ayuda, todo el tesoro encontrado de menor a mayor valor."
-            narrative_beat: "Dino ordena sobre la arena todo el tesoro recuperado, del más chico al más grande."
+            narrative_beat: "Liruf ordena sobre la arena todo el tesoro recuperado, del más chico al más grande."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -1333,7 +1333,7 @@ sagas:
           - position: 4
             slug: superamos-la-prueba-de-precios
             micro_objective: "Completa, sin ayuda, un cambio justo final para superar la prueba de precios de la isla."
-            narrative_beat: "Dino y Dina completan el último cambio justo y la isla les revela la siguiente pista del mapa."
+            narrative_beat: "Liruf y Dina completan el último cambio justo y la isla les revela la siguiente pista del mapa."
             difficulty: 3
             suggested_families: [storyplay, money]
       - position: 4
@@ -1365,7 +1365,7 @@ sagas:
           - position: 3
             slug: ponemos-precios-justos-en-la-casa
             micro_objective: "Propone, sin ayuda, precios justos para los primeros cambios que se harán en la Casa de Cambios."
-            narrative_beat: "Dino ayuda a poner las primeras etiquetas de precio justo en la nueva Casa de Cambios."
+            narrative_beat: "Liruf ayuda a poner las primeras etiquetas de precio justo en la nueva Casa de Cambios."
             difficulty: 3
             suggested_families: [money, choice]
           - position: 4
@@ -1409,7 +1409,7 @@ sagas:
           - position: 4
             slug: abrimos-el-tesoro-final
             micro_objective: "Completa, sin ayuda, la apertura del tesoro final combinando deseo, monedas y precio justo."
-            narrative_beat: "Dino y Dina abren juntos el tesoro final: dentro hay un regalo para todo el archipiélago."
+            narrative_beat: "Liruf y Dina abren juntos el tesoro final: dentro hay un regalo para todo el archipiélago."
             difficulty: 3
             suggested_families: [storyplay, money]
       - position: 6
@@ -1442,7 +1442,7 @@ sagas:
           - position: 3
             slug: bailamos-en-la-casa-de-cambios
             micro_objective: "Completa, sin ayuda, un último cambio justo dentro de la fiesta de la Casa de Cambios."
-            narrative_beat: "Zara y Dino bailan frente a la Casa de Cambios mientras isleños de todas las edades celebran juntos."
+            narrative_beat: "Zara y Liruf bailan frente a la Casa de Cambios mientras isleños de todas las edades celebran juntos."
             difficulty: 3
             suggested_families: [storyplay, money]
           - position: 4

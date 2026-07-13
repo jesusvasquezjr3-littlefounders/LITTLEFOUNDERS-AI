@@ -13,7 +13,7 @@ adventure:
     en-US: "The crew discovers that effort and small jobs turn into coins — and that earning feels good."
     es-MX: "La tripulación descubre que el esfuerzo y las pequeñas chambitas se convierten en monedas, y que ganarlas se siente bien."
     pt-BR: "A tripulação descobre que o esforço e pequenas tarefinhas se transformam em moedas, e que ganhá-las é gratificante."
-  narrative_arc: "El barco llega a un bosque frondoso donde nada aparece solo: los árboles dan frutos si alguien los cuida, y los caminos se abren si alguien los despeja. Dina, Dino, Rho y Zara aprenden que ayudar con esfuerzo — una chambita a la vez — les gana monedas propias, y empiezan a llevar la cuenta de lo que ganan."
+  narrative_arc: "El barco llega a un bosque frondoso donde nada aparece solo: los árboles dan frutos si alguien los cuida, y los caminos se abren si alguien los despeja. Dina, Liruf, Rho y Zara aprenden que ayudar con esfuerzo — una chambita a la vez — les gana monedas propias, y empiezan a llevar la cuenta de lo que ganan."
 
 sagas:
   - position: 1
@@ -47,7 +47,7 @@ sagas:
           - position: 2
             slug: cual-accion-cuesta-esfuerzo
             micro_objective: "Elige, entre 4 escenas, cuáles muestran una acción que requiere esfuerzo."
-            narrative_beat: "Dino compara descansar bajo un árbol con cargar leña, y nota que se sienten distinto."
+            narrative_beat: "Liruf compara descansar bajo un árbol con cargar leña, y nota que se sienten distinto."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -75,7 +75,7 @@ sagas:
           - position: 1
             slug: tender-la-cama-del-nido
             micro_objective: "Reconoce en la historia una tarea de casa que muestra esfuerzo."
-            narrative_beat: "Dino ordena su nido de ramitas antes de salir a explorar el bosque."
+            narrative_beat: "Liruf ordena su nido de ramitas antes de salir a explorar el bosque."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -109,7 +109,7 @@ sagas:
           - position: 1
             slug: cargar-lena-o-regar-una-flor
             micro_objective: "Compara dos tareas y reconoce cuál pide más esfuerzo."
-            narrative_beat: "Dino compara cargar un tronco pesado con regar una florecita chiquita."
+            narrative_beat: "Liruf compara cargar un tronco pesado con regar una florecita chiquita."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -121,7 +121,7 @@ sagas:
           - position: 3
             slug: ningun-trabajo-es-menos
             micro_objective: "Reconoce que un trabajo pequeño también merece respeto, aunque pida poco esfuerzo."
-            narrative_beat: "Zara agradece a Dino por su tarea chiquita tanto como a Rho por la tarea pesada."
+            narrative_beat: "Zara agradece a Liruf por su tarea chiquita tanto como a Rho por la tarea pesada."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -143,7 +143,7 @@ sagas:
           - position: 1
             slug: entre-dos-es-mas-facil
             micro_objective: "Reconoce en la historia que un tronco pesado se carga más fácil entre dos."
-            narrative_beat: "Dino y Rho cargan juntos un tronco que ninguno podía mover solo."
+            narrative_beat: "Liruf y Rho cargan juntos un tronco que ninguno podía mover solo."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -177,7 +177,7 @@ sagas:
           - position: 1
             slug: el-camino-a-medias
             micro_objective: "Reconoce en la historia por qué un camino a medio despejar todavía no sirve."
-            narrative_beat: "Dino deja el camino a medio despejar y se distrae persiguiendo una mariposa."
+            narrative_beat: "Liruf deja el camino a medio despejar y se distrae persiguiendo una mariposa."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -189,13 +189,13 @@ sagas:
           - position: 3
             slug: regreso-a-terminar
             micro_objective: "Ordena los pasos de una historia donde el personaje regresa a terminar su tarea."
-            narrative_beat: "Zara le recuerda a Dino que puede volver y terminar el camino que dejó a medias."
+            narrative_beat: "Zara le recuerda a Liruf que puede volver y terminar el camino que dejó a medias."
             difficulty: 2
             suggested_families: [arrange, story]
           - position: 4
             slug: mi-tarea-completa
             micro_objective: "Completa en la historia una tarea de inicio a fin sin dejarla a medias."
-            narrative_beat: "Dino regresa, termina de despejar el camino y lo cruza orgulloso junto a sus amigos."
+            narrative_beat: "Liruf regresa, termina de despejar el camino y lo cruza orgulloso junto a sus amigos."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 6
@@ -223,7 +223,7 @@ sagas:
           - position: 3
             slug: celebro-mi-esfuerzo
             micro_objective: "Elige la forma más sana de celebrar un logro propio, entre 3 opciones."
-            narrative_beat: "Dino salta de alegría al terminar su tarea, y sus amigos celebran con él."
+            narrative_beat: "Liruf salta de alegría al terminar su tarea, y sus amigos celebran con él."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -258,13 +258,13 @@ sagas:
           - position: 2
             slug: recuerdo-una-tarea-de-equipo
             micro_objective: "Recuerda y describe, sin ayuda, una tarea que hizo en equipo durante esta saga."
-            narrative_beat: "Zara recuerda el tronco pesado que cargó junto a Dino entre los dos."
+            narrative_beat: "Zara recuerda el tronco pesado que cargó junto a Liruf entre los dos."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 3
             slug: elijo-el-recuerdo-de-mas-orgullo
             micro_objective: "Elige, entre 3 recuerdos del cofre, cuál le dio más orgullo terminar."
-            narrative_beat: "Dino compara tres recuerdos guardados y elige cuál tarea terminada lo hizo sentir más orgulloso."
+            narrative_beat: "Liruf compara tres recuerdos guardados y elige cuál tarea terminada lo hizo sentir más orgulloso."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -296,13 +296,13 @@ sagas:
           - position: 2
             slug: ambos-quedan-contentos
             micro_objective: "Reconoce, mezclando ambos temas, que un trueque justo y una tarea en equipo se sienten parecido: los dos quedan contentos."
-            narrative_beat: "Zara compara cómo se sintieron los isleños tras un buen trueque con cómo se sienten Dino y Rho tras cargar el tronco juntos."
+            narrative_beat: "Zara compara cómo se sintieron los isleños tras un buen trueque con cómo se sienten Liruf y Rho tras cargar el tronco juntos."
             difficulty: 2
             suggested_families: [choice]
           - position: 3
             slug: termino-mi-parte-del-trato
             micro_objective: "Ordena, combinando ambas ideas, los pasos de cumplir su parte en un trueque y en un trabajo en equipo."
-            narrative_beat: "Dino ordena en su mente cómo cumplir su palabra, ya sea en un trueque o en una tarea compartida."
+            narrative_beat: "Liruf ordena en su mente cómo cumplir su palabra, ya sea en un trueque o en una tarea compartida."
             difficulty: 2
             suggested_families: [arrange, story]
           - position: 4
@@ -343,7 +343,7 @@ sagas:
           - position: 2
             slug: eso-es-una-chambita
             micro_objective: "Distingue, entre 4 escenas, cuáles muestran una chambita y cuáles solo un juego."
-            narrative_beat: "Dino compara jugar a perseguir mariposas con ayudar a cargar frutos: solo una es una chambita."
+            narrative_beat: "Liruf compara jugar a perseguir mariposas con ayudar a cargar frutos: solo una es una chambita."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -389,7 +389,7 @@ sagas:
           - position: 4
             slug: cumplo-una-chambita-de-casa
             micro_objective: "Completa una chambita de casa dentro de la historia siguiendo los pasos correctos."
-            narrative_beat: "Dino tiende su nido de hojas siguiendo cada paso que le enseñó Dina."
+            narrative_beat: "Liruf tiende su nido de hojas siguiendo cada paso que le enseñó Dina."
             difficulty: 2
             suggested_families: [storyplay, choice]
       - position: 3
@@ -417,7 +417,7 @@ sagas:
           - position: 3
             slug: chambitas-seguras-para-vecinos
             micro_objective: "Elige, entre 4 opciones, cuáles chambitas para vecinos son seguras y apropiadas para su edad."
-            narrative_beat: "Dino revisa distintas peticiones del bosque y elige solo las que le parecen seguras."
+            narrative_beat: "Liruf revisa distintas peticiones del bosque y elige solo las que le parecen seguras."
             difficulty: 2
             suggested_families: [choice]
           - position: 4
@@ -443,7 +443,7 @@ sagas:
           - position: 1
             slug: chambita-chica-recompensa-chica
             micro_objective: "Reconoce en la historia que una chambita rápida da una recompensa pequeña."
-            narrative_beat: "Dino recoge tres ramitas y recibe una monedita como agradecimiento."
+            narrative_beat: "Liruf recoge tres ramitas y recibe una monedita como agradecimiento."
             difficulty: 1
             suggested_families: [story, money]
           - position: 2
@@ -489,7 +489,7 @@ sagas:
           - position: 3
             slug: elijo-segun-mis-ganas
             micro_objective: "Elige, entre 3 chambitas de esfuerzo similar, la que más le gustaría hacer."
-            narrative_beat: "Dino compara dos chambitas parecidas y elige la que más le divierte hacer."
+            narrative_beat: "Liruf compara dos chambitas parecidas y elige la que más le divierte hacer."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -523,7 +523,7 @@ sagas:
           - position: 3
             slug: ordeno-el-ciclo-de-la-chambita
             micro_objective: "Ordena los 3 pasos del ciclo: elegir, hacer y recibir recompensa por una chambita."
-            narrative_beat: "Dino explica a un amigo nuevo del bosque cómo funciona el ciclo completo de una chambita."
+            narrative_beat: "Liruf explica a un amigo nuevo del bosque cómo funciona el ciclo completo de una chambita."
             difficulty: 2
             suggested_families: [arrange, story]
           - position: 4
@@ -564,7 +564,7 @@ sagas:
           - position: 3
             slug: elijo-la-chambita-mas-justa
             micro_objective: "Elige, entre 2 chambitas recordadas, cuál tuvo una recompensa más justa para el esfuerzo dado."
-            narrative_beat: "Dino compara dos chambitas del cofre y decide cuál recompensa le pareció más justa."
+            narrative_beat: "Liruf compara dos chambitas del cofre y decide cuál recompensa le pareció más justa."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -602,7 +602,7 @@ sagas:
           - position: 3
             slug: ordeno-esfuerzo-y-recompensa-juntos
             micro_objective: "Ordena 3 chambitas combinando su nivel de esfuerzo con su recompensa en monedas."
-            narrative_beat: "Dino ordena tres chambitas del bosque pensando a la vez en el esfuerzo y en las monedas que dan."
+            narrative_beat: "Liruf ordena tres chambitas del bosque pensando a la vez en el esfuerzo y en las monedas que dan."
             difficulty: 2
             suggested_families: [arrange, money]
           - position: 4
@@ -649,7 +649,7 @@ sagas:
           - position: 3
             slug: cuento-mis-monedas-ganadas
             micro_objective: "Cuenta un grupo pequeño de monedas ganadas, hasta un total de $10."
-            narrative_beat: "Dino cuenta orgulloso las monedas que ganó ayudando a los vecinos del bosque."
+            narrative_beat: "Liruf cuenta orgulloso las monedas que ganó ayudando a los vecinos del bosque."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -687,7 +687,7 @@ sagas:
           - position: 3
             slug: cual-dia-gane-mas
             micro_objective: "Compara el total ganado en dos días distintos y elige cuál fue mayor."
-            narrative_beat: "Dino compara sus ganancias de ayer y de hoy para ver en cuál día ganó más."
+            narrative_beat: "Liruf compara sus ganancias de ayer y de hoy para ver en cuál día ganó más."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -721,7 +721,7 @@ sagas:
           - position: 3
             slug: mi-cofre-va-creciendo
             micro_objective: "Reconoce en la historia que el cofre de monedas crece cada día que se trabaja."
-            narrative_beat: "Dino nota que su cofrecito pesa un poco más cada tarde después de sus chambitas."
+            narrative_beat: "Liruf nota que su cofrecito pesa un poco más cada tarde después de sus chambitas."
             difficulty: 2
             suggested_families: [story, money]
           - position: 4
@@ -759,7 +759,7 @@ sagas:
           - position: 3
             slug: no-pasa-nada-si-gano-menos
             micro_objective: "Elige la reacción calmada correcta cuando un día se gana menos de lo esperado."
-            narrative_beat: "Dino se siente un poco triste por ganar menos hoy, y Dina le recuerda que mañana puede ser distinto."
+            narrative_beat: "Liruf se siente un poco triste por ganar menos hoy, y Dina le recuerda que mañana puede ser distinto."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -787,7 +787,7 @@ sagas:
           - position: 2
             slug: cuento-las-marcas
             micro_objective: "Cuenta un grupo de marcas simples y las relaciona con el número de monedas ganadas."
-            narrative_beat: "Dino cuenta las hojitas dibujadas por Zara para saber cuánto ganó en total esta semana."
+            narrative_beat: "Liruf cuenta las hojitas dibujadas por Zara para saber cuánto ganó en total esta semana."
             difficulty: 1
             suggested_families: [money, input]
           - position: 3
@@ -827,7 +827,7 @@ sagas:
           - position: 3
             slug: comparo-mi-semana-con-la-de-un-amigo
             micro_objective: "Compara el total semanal de dos personajes y explica una posible razón de la diferencia."
-            narrative_beat: "Dino compara su total semanal con el de Rho y descubre que hicieron chambitas distintas."
+            narrative_beat: "Liruf compara su total semanal con el de Rho y descubre que hicieron chambitas distintas."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -868,7 +868,7 @@ sagas:
           - position: 3
             slug: comparo-dos-semanas-recordadas
             micro_objective: "Compara el total de dos semanas de ganancias recordadas y elige cuál fue mayor."
-            narrative_beat: "Dino compara dos páginas de su viejo registro de ganancias del bosque."
+            narrative_beat: "Liruf compara dos páginas de su viejo registro de ganancias del bosque."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -906,7 +906,7 @@ sagas:
           - position: 3
             slug: dos-chambitas-un-solo-total
             micro_objective: "Suma las ganancias de dos chambitas distintas combinando el ciclo de chambita y el conteo de monedas."
-            narrative_beat: "Dino cumple dos chambitas en un día y suma con cuidado cuánto ganó entre las dos."
+            narrative_beat: "Liruf cumple dos chambitas en un día y suma con cuidado cuánto ganó entre las dos."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -953,7 +953,7 @@ sagas:
           - position: 3
             slug: en-que-soy-bueno-yo
             micro_objective: "Elige, entre 3 opciones, algo en lo que él mismo se considera bueno."
-            narrative_beat: "Dino piensa en voz alta sobre qué cosa hace mejor que las demás en el bosque."
+            narrative_beat: "Liruf piensa en voz alta sobre qué cosa hace mejor que las demás en el bosque."
             difficulty: 2
             suggested_families: [choice, story]
           - position: 4
@@ -991,7 +991,7 @@ sagas:
           - position: 3
             slug: mi-trabajo-tiene-un-efecto
             micro_objective: "Explica en una frase cómo su propia chambita ayudó a otra persona en la historia."
-            narrative_beat: "Dino cuenta orgulloso cómo su ayuda hizo que la familia ardilla tuviera comida para el invierno."
+            narrative_beat: "Liruf cuenta orgulloso cómo su ayuda hizo que la familia ardilla tuviera comida para el invierno."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -1025,7 +1025,7 @@ sagas:
           - position: 3
             slug: sin-ayuda-no-hay-recompensa
             micro_objective: "Reconoce en la historia que sin ayuda real no llega ninguna recompensa."
-            narrative_beat: "Dino se da cuenta de que si no hubiera ayudado, nadie le habría dado monedas."
+            narrative_beat: "Liruf se da cuenta de que si no hubiera ayudado, nadie le habría dado monedas."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -1063,7 +1063,7 @@ sagas:
           - position: 3
             slug: el-bosque-necesita-de-todos
             micro_objective: "Explica en una frase por qué el bosque necesita oficios distintos, no solo uno."
-            narrative_beat: "Dino imagina un bosque donde todos hicieran el mismo oficio, y nota que algo faltaría."
+            narrative_beat: "Liruf imagina un bosque donde todos hicieran el mismo oficio, y nota que algo faltaría."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -1097,7 +1097,7 @@ sagas:
           - position: 3
             slug: imagino-mi-dia-de-trabajo
             micro_objective: "Ordena 3 pasos de un día imaginario haciendo la chambita u oficio elegido."
-            narrative_beat: "Dino imagina cómo sería su día si de verdad fuera constructor de puentes del bosque."
+            narrative_beat: "Liruf imagina cómo sería su día si de verdad fuera constructor de puentes del bosque."
             difficulty: 2
             suggested_families: [arrange, storyplay]
           - position: 4
@@ -1131,7 +1131,7 @@ sagas:
           - position: 3
             slug: elijo-mi-oficio-final
             micro_objective: "Elige, sin ayuda, el oficio del bosque que mejor representa lo aprendido sobre esfuerzo y ayuda."
-            narrative_beat: "Dino decide, por fin, cuál sería su oficio ideal después de conocer todo el bosque."
+            narrative_beat: "Liruf decide, por fin, cuál sería su oficio ideal después de conocer todo el bosque."
             difficulty: 3
             suggested_families: [choice, storyplay]
           - position: 4
@@ -1172,7 +1172,7 @@ sagas:
           - position: 3
             slug: elijo-el-oficio-mas-util
             micro_objective: "Elige, entre 3 oficios del bosque recordados, cuál le parece más útil para su comunidad."
-            narrative_beat: "Dino compara distintos oficios del bosque que conoció y elige cuál le pareció más útil."
+            narrative_beat: "Liruf compara distintos oficios del bosque que conoció y elige cuál le pareció más útil."
             difficulty: 2
             suggested_families: [choice]
           - position: 4
@@ -1211,7 +1211,7 @@ sagas:
           - position: 3
             slug: el-dinero-tambien-agradece
             micro_objective: "Explica, mezclando ambos temas, cómo el dinero ayuda a agradecer el trabajo de alguien, igual que en el archipiélago."
-            narrative_beat: "Dino recuerda que las monedas del archipiélago servían para cambiar, y aquí sirven para agradecer ayuda."
+            narrative_beat: "Liruf recuerda que las monedas del archipiélago servían para cambiar, y aquí sirven para agradecer ayuda."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -1256,7 +1256,7 @@ sagas:
           - position: 2
             slug: recordamos-nuestro-primer-esfuerzo
             micro_objective: "Recuerda y describe, combinando lo aprendido, su primer esfuerzo y una tarea hecha en equipo."
-            narrative_beat: "Rho y Dino recuerdan juntos el primer tronco que cargaron para cruzar el río del bosque."
+            narrative_beat: "Rho y Liruf recuerdan juntos el primer tronco que cargaron para cruzar el río del bosque."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 3
@@ -1299,7 +1299,7 @@ sagas:
           - position: 3
             slug: elijo-mi-chambita-del-festival
             micro_objective: "Elige, entre 3 chambitas del festival, la que mejor se ajusta a su tiempo y esfuerzo."
-            narrative_beat: "Dino compara tres chambitas del tablón y elige la que más le entusiasma para el festival."
+            narrative_beat: "Liruf compara tres chambitas del tablón y elige la que más le entusiasma para el festival."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -1336,7 +1336,7 @@ sagas:
           - position: 3
             slug: junto-varios-dias-de-festival
             micro_objective: "Suma las ganancias de tres días del festival hasta un total acumulado."
-            narrative_beat: "Dino junta, día por día, todas las monedas ganadas durante la semana del festival."
+            narrative_beat: "Liruf junta, día por día, todas las monedas ganadas durante la semana del festival."
             difficulty: 3
             suggested_families: [money, input]
           - position: 4
@@ -1373,7 +1373,7 @@ sagas:
           - position: 3
             slug: elijo-que-oficio-probar-en-el-festival
             micro_objective: "Elige, entre 3 oficios del festival, cuál le gustaría probar hoy."
-            narrative_beat: "Dino prueba por un rato ser guardabosques ayudante en el mercado del festival."
+            narrative_beat: "Liruf prueba por un rato ser guardabosques ayudante en el mercado del festival."
             difficulty: 3
             suggested_families: [choice, storyplay]
           - position: 4
@@ -1399,7 +1399,7 @@ sagas:
           - position: 1
             slug: el-equipo-arma-el-escenario
             micro_objective: "Reconoce, combinando esfuerzo y equipo, cómo toda la tripulación arma junta el escenario del festival."
-            narrative_beat: "Rho, Dino, Zara y Dina cargan juntos las maderas para armar el escenario del festival."
+            narrative_beat: "Rho, Liruf, Zara y Dina cargan juntos las maderas para armar el escenario del festival."
             difficulty: 2
             suggested_families: [story, storyplay]
           - position: 2
@@ -1411,7 +1411,7 @@ sagas:
           - position: 3
             slug: sumamos-nuestras-ganancias-para-el-escenario
             micro_objective: "Suma las ganancias de varios días para pagar los últimos materiales del escenario."
-            narrative_beat: "Dino suma las monedas de toda la semana para comprar las últimas cintas de colores del escenario."
+            narrative_beat: "Liruf suma las monedas de toda la semana para comprar las últimas cintas de colores del escenario."
             difficulty: 3
             suggested_families: [money, input]
           - position: 4

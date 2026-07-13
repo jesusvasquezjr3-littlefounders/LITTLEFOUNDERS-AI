@@ -53,3 +53,7 @@ database/supabase/
 # ── Forge (coursegen) generation run artifacts — checkpoints/ledgers,
 #    never tracked (COURSE_ENGINE.md §4, coursegen/README.md) ──
 coursegen/runs/
+
+# ── Echo (audiogen) character voice reference samples — large binary audio,
+#    never tracked. Trimmed/registration output also stays local-only. ──
+audiogen/src/samples/

@@ -65,7 +65,7 @@ describe('registry completeness', () => {
         subject: 'mixed',
         estimated_minutes: 30,
         objectives: ['Probar todos los tipos'],
-        cast: ['dina', 'dino', 'rho', 'zara'],
+        cast: ['dina', 'liruf', 'rho', 'zara'],
       },
       scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
       segments: ALL_FIXTURES,

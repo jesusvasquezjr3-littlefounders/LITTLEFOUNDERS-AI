@@ -12,7 +12,7 @@ adventure:
     en-US: Bring your products to a bustling city and learn who really wants them, what they need, and how to earn their trust.
     es-MX: Lleva tus productos a una ciudad bulliciosa y aprende quién los quiere de verdad, qué necesita y cómo ganarte su confianza.
     pt-BR: Leve seus produtos a uma cidade movimentada e aprenda quem realmente os quer, o que precisa e como conquistar sua confiança.
-  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Dino, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Dino aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
+  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Liruf, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Liruf aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
 sagas:
   - position: 1
     slug: quien-es-mi-cliente
@@ -66,7 +66,7 @@ sagas:
           - position: 4
             slug: identifico-quien-no-es-mi-cliente
             micro_objective: Identifica, sin ayuda, a alguien de una escena que probablemente NO sería cliente de un producto dado.
-            narrative_beat: Dino identifica en la plaza a alguien que seguro no querría su carrito de juguete, y explica por qué.
+            narrative_beat: Liruf identifica en la plaza a alguien que seguro no querría su carrito de juguete, y explica por qué.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -103,7 +103,7 @@ sagas:
           - position: 3
             slug: comparo-quien-quiere-cada-producto
             micro_objective: Compara 2 productos distintos y reconoce qué tipo de persona querría cada uno.
-            narrative_beat: Dino compara quién querría su carrito de juguete con quién querría la limonada fría de Zara.
+            narrative_beat: Liruf compara quién querría su carrito de juguete con quién querría la limonada fría de Zara.
             difficulty: 2
             suggested_families:
               - choice
@@ -132,7 +132,7 @@ sagas:
           - position: 1
             slug: tiene-sed-y-hay-limonada
             micro_objective: Reconoce en la historia la necesidad que hace que alguien se interese en un producto.
-            narrative_beat: Un isleño de la ciudad tiene mucha sed justo cuando pasa frente al puesto de limonada de Dino.
+            narrative_beat: Un isleño de la ciudad tiene mucha sed justo cuando pasa frente al puesto de limonada de Liruf.
             difficulty: 1
             suggested_families:
               - story
@@ -205,7 +205,7 @@ sagas:
           - position: 4
             slug: pienso-si-mi-producto-es-para-ambos
             micro_objective: Reconoce, sin ayuda, si su propio producto interesa más a adultos, a niños, o a ambos.
-            narrative_beat: Dino piensa con calma si su carrito de juguete interesa solo a niños o también a algunos adultos.
+            narrative_beat: Liruf piensa con calma si su carrito de juguete interesa solo a niños o también a algunos adultos.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -242,7 +242,7 @@ sagas:
           - position: 3
             slug: ordeno-productos-por-edad-del-cliente
             micro_objective: Ordena 3 productos según la edad aproximada de cliente para la que están pensados.
-            narrative_beat: Dino ordena los puestos de la plaza según si son para bebés, niños o adultos.
+            narrative_beat: Liruf ordena los puestos de la plaza según si son para bebés, niños o adultos.
             difficulty: 2
             suggested_families:
               - arrange
@@ -286,7 +286,7 @@ sagas:
           - position: 3
             slug: sumo-detalles-a-mi-retrato
             micro_objective: Ordena 3 detalles (edad, gusto, motivo) para armar la descripción de un cliente ideal.
-            narrative_beat: "Dino ordena los datos de su cliente ideal: edad, qué le gusta y por qué querría el carrito."
+            narrative_beat: "Liruf ordena los datos de su cliente ideal: edad, qué le gusta y por qué querría el carrito."
             difficulty: 2
             suggested_families:
               - arrange
@@ -330,7 +330,7 @@ sagas:
           - position: 3
             slug: ordeno-lugares-por-cuantos-clientes-tienen
             micro_objective: Ordena 3 lugares de la ciudad según qué tantos clientes ideales podrían encontrarse ahí.
-            narrative_beat: Dino ordena tres lugares de la ciudad según cuántos niños como sus clientes pasan por ahí.
+            narrative_beat: Liruf ordena tres lugares de la ciudad según cuántos niños como sus clientes pasan por ahí.
             difficulty: 2
             suggested_families:
               - arrange
@@ -375,7 +375,7 @@ sagas:
           - position: 3
             slug: ordeno-todo-el-retrato-de-mi-cliente
             micro_objective: Ordena los 4 datos clave (quién, necesidad, edad, lugar) para completar el retrato de un cliente.
-            narrative_beat: Dino ordena en su libreta los cuatro datos que arman el retrato completo de su cliente.
+            narrative_beat: Liruf ordena en su libreta los cuatro datos que arman el retrato completo de su cliente.
             difficulty: 2
             suggested_families:
               - arrange
@@ -429,7 +429,7 @@ sagas:
           - position: 3
             slug: elijo-el-lugar-correcto-del-cofre
             micro_objective: Elige, entre 2 lugares recordados, cuál era mejor para encontrar a cierto cliente.
-            narrative_beat: Dino compara dos lugares guardados en el cofre y recuerda cuál tenía más clientes ideales.
+            narrative_beat: Liruf compara dos lugares guardados en el cofre y recuerda cuál tenía más clientes ideales.
             difficulty: 2
             suggested_families:
               - choice
@@ -478,7 +478,7 @@ sagas:
           - position: 3
             slug: ordeno-del-producto-al-cliente
             micro_objective: Ordena, mezclando ambas aventuras, los pasos desde tener un producto terminado hasta describir a su cliente.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde el producto del bosque hasta el cliente de la ciudad."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el producto del bosque hasta el cliente de la ciudad."
             difficulty: 2
             suggested_families:
               - arrange
@@ -547,7 +547,7 @@ sagas:
           - position: 4
             slug: distingo-necesidad-y-preferencia-de-mi-cliente
             micro_objective: Distingue, sin ayuda, la necesidad y la preferencia de un cliente en una escena nueva.
-            narrative_beat: Dino distingue con calma lo que su cliente necesita de lo que solamente prefiere.
+            narrative_beat: Liruf distingue con calma lo que su cliente necesita de lo que solamente prefiere.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -584,7 +584,7 @@ sagas:
           - position: 3
             slug: elijo-la-pregunta-que-descubre-mas
             micro_objective: Elige, entre 3 preguntas, la que mejor descubre qué le hace falta a un cliente.
-            narrative_beat: Dino elige entre '¿te gusta esto?' y '¿qué te hace falta hoy?' la que descubre más información.
+            narrative_beat: Liruf elige entre '¿te gusta esto?' y '¿qué te hace falta hoy?' la que descubre más información.
             difficulty: 2
             suggested_families:
               - choice
@@ -628,7 +628,7 @@ sagas:
           - position: 3
             slug: conecto-la-queja-con-la-necesidad
             micro_objective: Empareja 3 quejas con la necesidad que esconde cada una.
-            narrative_beat: Dino conecta cada queja que escuchó con la necesidad real que hay detrás.
+            narrative_beat: Liruf conecta cada queja que escuchó con la necesidad real que hay detrás.
             difficulty: 2
             suggested_families:
               - arrange
@@ -656,9 +656,9 @@ sagas:
         parent_check: Observa si {{name}} logra escuchar a alguien hasta el final antes de responder, sin interrumpir.
         lessons:
           - position: 1
-            slug: dino-interrumpe-al-cliente
+            slug: liruf-interrumpe-al-cliente
             micro_objective: Reconoce en la historia lo que pasa cuando un personaje interrumpe a un cliente antes de tiempo.
-            narrative_beat: Dino interrumpe a un cliente a la mitad de su explicación, seguro de que ya entendió todo.
+            narrative_beat: Liruf interrumpe a un cliente a la mitad de su explicación, seguro de que ya entendió todo.
             difficulty: 1
             suggested_families:
               - story
@@ -666,14 +666,14 @@ sagas:
           - position: 2
             slug: escucho-completo-o-interrumpo
             micro_objective: Distingue, entre 2 escenas, cuál muestra escuchar completo a un cliente y cuál interrumpir.
-            narrative_beat: Rho compara su propia escucha completa con la interrupción de Dino frente al mismo cliente.
+            narrative_beat: Rho compara su propia escucha completa con la interrupción de Liruf frente al mismo cliente.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: identifico-lo-que-se-perdio-por-interrumpir
             micro_objective: Identifica qué información importante se perdió un personaje por interrumpir a un cliente.
-            narrative_beat: Zara nota que Dino se perdió el dato más importante del cliente por no dejarlo terminar.
+            narrative_beat: Zara nota que Liruf se perdió el dato más importante del cliente por no dejarlo terminar.
             difficulty: 2
             suggested_families:
               - choice
@@ -718,7 +718,7 @@ sagas:
           - position: 3
             slug: completo-la-repeticion-con-mis-palabras
             micro_objective: Completa una frase que repite, con palabras propias, lo que un cliente explicó.
-            narrative_beat: Dino arma con tarjetas de palabras la frase que repite lo que el cliente le pidió.
+            narrative_beat: Liruf arma con tarjetas de palabras la frase que repite lo que el cliente le pidió.
             difficulty: 2
             suggested_families:
               - input
@@ -770,7 +770,7 @@ sagas:
           - position: 4
             slug: reconozco-necesidades-distintas-en-mi-plaza
             micro_objective: Reconoce, sin ayuda, dos necesidades distintas entre clientes de una escena nueva.
-            narrative_beat: Dino reconoce que dos clientes frente a él necesitan cosas muy distintas, aunque estén juntos.
+            narrative_beat: Liruf reconoce que dos clientes frente a él necesitan cosas muy distintas, aunque estén juntos.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -807,7 +807,7 @@ sagas:
           - position: 3
             slug: encuentro-un-patron-en-mis-notas
             micro_objective: Identifica, entre varias notas, cuál necesidad se repite más entre distintos clientes.
-            narrative_beat: "Dino revisa sus notas y encuentra que muchos clientes mencionan lo mismo: quieren algo fresco."
+            narrative_beat: "Liruf revisa sus notas y encuentra que muchos clientes mencionan lo mismo: quieren algo fresco."
             difficulty: 2
             suggested_families:
               - analyze
@@ -852,7 +852,7 @@ sagas:
           - position: 3
             slug: conecto-necesidades-con-ajustes
             micro_objective: Empareja 3 necesidades escuchadas con el ajuste de producto que les correspondería.
-            narrative_beat: Dino conecta cada necesidad anotada con el ajuste que podría hacer a su carrito de juguete.
+            narrative_beat: Liruf conecta cada necesidad anotada con el ajuste que podría hacer a su carrito de juguete.
             difficulty: 2
             suggested_families:
               - arrange
@@ -907,7 +907,7 @@ sagas:
           - position: 3
             slug: elijo-la-escucha-mas-completa-del-cofre
             micro_objective: Elige, entre 2 recuerdos, cuál muestra una escucha más completa de un cliente.
-            narrative_beat: Dino compara dos recuerdos del cofre y decide cuál escucha fue más completa.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál escucha fue más completa.
             difficulty: 2
             suggested_families:
               - choice
@@ -956,7 +956,7 @@ sagas:
           - position: 3
             slug: ordeno-del-retrato-a-la-necesidad-escuchada
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde describir a un cliente hasta ajustar el producto por su necesidad.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde el retrato de su cliente hasta el ajuste de su producto."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el retrato de su cliente hasta el ajuste de su producto."
             difficulty: 2
             suggested_families:
               - arrange
@@ -996,9 +996,9 @@ sagas:
         parent_check: Habla con {{name}} sobre por qué es importante prometer solo lo que de verdad se puede cumplir.
         lessons:
           - position: 1
-            slug: dino-promete-de-mas
+            slug: liruf-promete-de-mas
             micro_objective: Reconoce en la historia una promesa que un personaje no puede cumplir de verdad.
-            narrative_beat: Dino le promete a un cliente que tendrá su pulsera lista en cinco minutos, aunque tarda una hora en hacerlas.
+            narrative_beat: Liruf le promete a un cliente que tendrá su pulsera lista en cinco minutos, aunque tarda una hora en hacerlas.
             difficulty: 1
             suggested_families:
               - story
@@ -1057,7 +1057,7 @@ sagas:
           - position: 3
             slug: cuento-cuanto-tiempo-tomo
             micro_objective: Compara el tiempo prometido con el tiempo real que tomó entregar un producto en 2 escenas.
-            narrative_beat: Dino compara el tiempo que prometió con el tiempo que de verdad le tomó terminar el carrito.
+            narrative_beat: Liruf compara el tiempo que prometió con el tiempo que de verdad le tomó terminar el carrito.
             difficulty: 2
             suggested_families:
               - choice
@@ -1095,14 +1095,14 @@ sagas:
           - position: 2
             slug: avisar-o-quedarse-callado
             micro_objective: Distingue, entre 2 escenas, cuál muestra avisar con honestidad y cuál quedarse callado.
-            narrative_beat: Rho compara el aviso honesto de Zara con el silencio de Dino cuando algo no sale bien.
+            narrative_beat: Rho compara el aviso honesto de Zara con el silencio de Liruf cuando algo no sale bien.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: reconozco-cuando-algo-salio-mal
             micro_objective: Identifica, en una escena, el momento exacto en que algo no salió como se prometió.
-            narrative_beat: Dino revisa su pedido y nota el momento exacto en que algo no salió como había prometido.
+            narrative_beat: Liruf revisa su pedido y nota el momento exacto en que algo no salió como había prometido.
             difficulty: 2
             suggested_families:
               - analyze
@@ -1147,7 +1147,7 @@ sagas:
           - position: 3
             slug: ordeno-como-crece-la-confianza
             micro_objective: Ordena 3 escenas que muestran cómo la confianza de un cliente crece con el tiempo.
-            narrative_beat: Dino ordena tres visitas de un mismo cliente, mostrando cómo su confianza fue creciendo.
+            narrative_beat: Liruf ordena tres visitas de un mismo cliente, mostrando cómo su confianza fue creciendo.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1199,7 +1199,7 @@ sagas:
           - position: 4
             slug: reconozco-a-un-cliente-que-regresara
             micro_objective: Reconoce, sin ayuda, señales de que un cliente probablemente regresará en una escena nueva.
-            narrative_beat: Dino reconoce, por su sonrisa y sus palabras, que ese cliente probablemente va a regresar.
+            narrative_beat: Liruf reconoce, por su sonrisa y sus palabras, que ese cliente probablemente va a regresar.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -1219,9 +1219,9 @@ sagas:
         parent_check: "Pregúntale a {{name}} qué pasaría si le prometieran algo y no se lo cumplieran: ¿regresaría a comprar ahí?"
         lessons:
           - position: 1
-            slug: el-cliente-decepcionado-de-dino
+            slug: el-cliente-decepcionado-de-liruf
             micro_objective: Reconoce en la historia cómo un cliente se aleja después de una promesa no cumplida.
-            narrative_beat: Un cliente de Dino se va decepcionado porque el carrito prometido nunca estuvo listo.
+            narrative_beat: Un cliente de Liruf se va decepcionado porque el carrito prometido nunca estuvo listo.
             difficulty: 1
             suggested_families:
               - story
@@ -1281,7 +1281,7 @@ sagas:
           - position: 3
             slug: ordeno-por-que-la-palabra-importa
             micro_objective: Ordena 3 razones que explican por qué cuidar la palabra es tan importante como el producto.
-            narrative_beat: Dino ordena las razones por las que su palabra debería valer tanto como su carrito bien hecho.
+            narrative_beat: Liruf ordena las razones por las que su palabra debería valer tanto como su carrito bien hecho.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1325,7 +1325,7 @@ sagas:
           - position: 3
             slug: conecto-promesas-cumplidas-con-reputacion
             micro_objective: Ordena 3 promesas cumplidas y su efecto en la reputación de un pequeño negocio.
-            narrative_beat: Dino ordena cómo cada promesa cumplida fue construyendo la buena fama de su carrito.
+            narrative_beat: Liruf ordena cómo cada promesa cumplida fue construyendo la buena fama de su carrito.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1379,7 +1379,7 @@ sagas:
           - position: 3
             slug: elijo-la-promesa-mejor-cumplida-del-cofre
             micro_objective: Elige, entre 2 promesas recordadas, cuál se cumplió mejor.
-            narrative_beat: Dino compara dos promesas guardadas en el cofre y decide cuál se cumplió mejor.
+            narrative_beat: Liruf compara dos promesas guardadas en el cofre y decide cuál se cumplió mejor.
             difficulty: 2
             suggested_families:
               - choice
@@ -1428,7 +1428,7 @@ sagas:
           - position: 3
             slug: ordeno-de-la-necesidad-a-la-confianza
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde escuchar una necesidad hasta ganar la confianza del cliente.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde la necesidad escuchada hasta la confianza ganada."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde la necesidad escuchada hasta la confianza ganada."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1489,7 +1489,7 @@ sagas:
           - position: 3
             slug: cuento-cuantas-personas-respondieron
             micro_objective: Cuenta cuántas personas distintas respondieron la misma pregunta en una escena.
-            narrative_beat: Dino cuenta cuántos clientes distintos respondieron su pregunta sobre el color favorito de pulsera.
+            narrative_beat: Liruf cuenta cuántos clientes distintos respondieron su pregunta sobre el color favorito de pulsera.
             difficulty: 2
             suggested_families:
               - choice
@@ -1517,9 +1517,9 @@ sagas:
         parent_check: Ayuda a {{name}} a revisar si la pregunta de su encuesta es clara y fácil de entender.
         lessons:
           - position: 1
-            slug: la-pregunta-confusa-de-dino
+            slug: la-pregunta-confusa-de-liruf
             micro_objective: Reconoce en la historia por qué una pregunta confusa dificulta una encuesta.
-            narrative_beat: Dino pregunta '¿te gusta o no te gusta o tal vez?' y nadie entiende bien qué responder.
+            narrative_beat: Liruf pregunta '¿te gusta o no te gusta o tal vez?' y nadie entiende bien qué responder.
             difficulty: 1
             suggested_families:
               - story
@@ -1563,7 +1563,7 @@ sagas:
           - position: 1
             slug: dos-preguntas-en-una
             micro_objective: Reconoce en la historia el problema de mezclar dos preguntas en una sola encuesta.
-            narrative_beat: Dino pregunta '¿qué sabor prefieres y cuánto pagarías?' todo junto, y las respuestas se confunden.
+            narrative_beat: Liruf pregunta '¿qué sabor prefieres y cuánto pagarías?' todo junto, y las respuestas se confunden.
             difficulty: 1
             suggested_families:
               - story
@@ -1623,7 +1623,7 @@ sagas:
           - position: 3
             slug: cuento-las-respuestas-de-mi-encuesta
             micro_objective: Cuenta, sin ayuda, cuántas personas respondieron cada opción en una encuesta de hasta 10 respuestas.
-            narrative_beat: Dino cuenta con cuidado cuántos clientes prefieren cada sabor de su limonada.
+            narrative_beat: Liruf cuenta con cuidado cuántos clientes prefieren cada sabor de su limonada.
             difficulty: 2
             suggested_families:
               - input
@@ -1668,7 +1668,7 @@ sagas:
           - position: 3
             slug: interpreto-los-resultados-de-una-encuesta
             micro_objective: Interpreta, entre 3 conclusiones posibles, cuál se ajusta mejor a un resultado de encuesta mostrado.
-            narrative_beat: Dino interpreta los resultados de su encuesta y elige la conclusión que mejor los explica.
+            narrative_beat: Liruf interpreta los resultados de su encuesta y elige la conclusión que mejor los explica.
             difficulty: 2
             suggested_families:
               - choice
@@ -1713,7 +1713,7 @@ sagas:
           - position: 3
             slug: ordeno-resultados-de-mas-a-menos
             micro_objective: Ordena 3 o 4 opciones de una encuesta de la más repetida a la menos repetida.
-            narrative_beat: Dino ordena los sabores de su encuesta, del más pedido al menos pedido.
+            narrative_beat: Liruf ordena los sabores de su encuesta, del más pedido al menos pedido.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1758,7 +1758,7 @@ sagas:
           - position: 3
             slug: conecto-resultados-con-cambios
             micro_objective: Empareja 3 resultados de encuesta con el cambio de producto que les correspondería.
-            narrative_beat: Dino conecta cada resultado de su encuesta con el cambio que podría hacer en su carrito.
+            narrative_beat: Liruf conecta cada resultado de su encuesta con el cambio que podría hacer en su carrito.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1803,7 +1803,7 @@ sagas:
           - position: 3
             slug: armo-mi-encuesta-final
             micro_objective: Arma, sin ayuda, una encuesta final usando lo aprendido en toda la aventura.
-            narrative_beat: Dino organiza su encuesta final poniendo en práctica todo lo que aprendió en la ciudad.
+            narrative_beat: Liruf organiza su encuesta final poniendo en práctica todo lo que aprendió en la ciudad.
             difficulty: 3
             suggested_families:
               - input
@@ -1858,7 +1858,7 @@ sagas:
           - position: 3
             slug: elijo-el-cambio-mejor-basado-en-datos
             micro_objective: Elige, entre 2 cambios recordados, cuál se basó mejor en los resultados de una encuesta.
-            narrative_beat: Dino compara dos cambios guardados en el cofre y decide cuál se apoyó mejor en los datos.
+            narrative_beat: Liruf compara dos cambios guardados en el cofre y decide cuál se apoyó mejor en los datos.
             difficulty: 2
             suggested_families:
               - choice
@@ -1907,7 +1907,7 @@ sagas:
           - position: 3
             slug: ordeno-del-cliente-a-la-encuesta-y-el-cambio
             micro_objective: Ordena, mezclando varias sagas, los pasos desde describir a un cliente hasta cambiar la idea con una encuesta.
-            narrative_beat: "Dino ordena en su mente todo el camino: desde el cliente imaginado hasta el cambio hecho con la encuesta."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde el cliente imaginado hasta el cambio hecho con la encuesta."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1976,7 +1976,7 @@ sagas:
           - position: 4
             slug: aceptamos-el-reto-del-directorio
             micro_objective: Completa, sin ayuda, la aceptación del reto explicando por qué conocer al cliente y su necesidad importa.
-            narrative_beat: "Dino y Dina aceptan el reto del directorio: la ciudad tiene más secretos que descubrir."
+            narrative_beat: "Liruf y Dina aceptan el reto del directorio: la ciudad tiene más secretos que descubrir."
             difficulty: 2
             suggested_families:
               - storyplay
@@ -2023,7 +2023,7 @@ sagas:
           - position: 4
             slug: superamos-la-prueba-de-confianza
             micro_objective: Completa, sin ayuda, la prueba explicando cómo se construye la confianza poquito a poquito.
-            narrative_beat: Dino y Dina superan la prueba de la plaza, explicando cómo la confianza se construye con cada promesa.
+            narrative_beat: Liruf y Dina superan la prueba de la plaza, explicando cómo la confianza se construye con cada promesa.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -2070,7 +2070,7 @@ sagas:
           - position: 4
             slug: superamos-el-gran-sondeo
             micro_objective: Completa, sin ayuda, el reto proponiendo un cambio basado en los resultados del gran sondeo.
-            narrative_beat: Dino y Dina superan el gran sondeo proponiendo un cambio que refleja lo que la ciudad entera respondió.
+            narrative_beat: Liruf y Dina superan el gran sondeo proponiendo un cambio que refleja lo que la ciudad entera respondió.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -2112,7 +2112,7 @@ sagas:
           - position: 3
             slug: prometemos-solo-lo-que-podemos-cumplir-en-el-puesto
             micro_objective: Elige, sin ayuda, la promesa que el puesto de escucha sí puede cumplir a la ciudad.
-            narrative_beat: Dino elige con cuidado qué promesas puede cumplir el puesto de escucha a toda la ciudad.
+            narrative_beat: Liruf elige con cuidado qué promesas puede cumplir el puesto de escucha a toda la ciudad.
             difficulty: 2
             suggested_families:
               - choice
@@ -2161,7 +2161,7 @@ sagas:
           - position: 3
             slug: prometemos-y-cumplimos-al-cliente-perfecto
             micro_objective: Cumple, sin ayuda, una promesa hecha al cliente perfecto de la ciudad.
-            narrative_beat: Dino cumple, justo a tiempo, la promesa que le hizo al cliente perfecto de la ciudad.
+            narrative_beat: Liruf cumple, justo a tiempo, la promesa que le hizo al cliente perfecto de la ciudad.
             difficulty: 3
             suggested_families:
               - storyplay

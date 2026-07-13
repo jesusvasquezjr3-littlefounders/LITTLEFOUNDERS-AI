@@ -25,13 +25,13 @@ export const inputFixtures: SegmentBase[] = [
   {
     id: 'fx-fill-blank',
     type: 'fill_blank',
-    prompt_md: 'Ayuda a Dino a completar su **plan de ahorro**.',
+    prompt_md: 'Ayuda a Liruf a completar su **plan de ahorro**.',
     difficulty: 2,
     xp: 15,
     explanation_md: 'Si guardas **$30** cada semana, en **10** semanas juntas los $300 de la patineta.',
-    narrator: { character: 'dino', emotion: 'thinking' },
+    narrator: { character: 'liruf', emotion: 'thinking' },
     payload: {
-      text_md: 'Para comprar la patineta de **$300**, Dino guarda {{1}} cada semana durante {{2}} semanas.',
+      text_md: 'Para comprar la patineta de **$300**, Liruf guarda {{1}} cada semana durante {{2}} semanas.',
       mode: 'bank',
       bank: [
         { id: 'b1', text_md: '$30' },
@@ -100,12 +100,12 @@ export const inputFixtures: SegmentBase[] = [
   {
     id: 'fx-equation-builder',
     type: 'equation_builder',
-    prompt_md: 'Dino compró **4 paletas** de **$5** cada una. Arma la ecuación que dé el total.',
+    prompt_md: 'Liruf compró **4 paletas** de **$5** cada una. Arma la ecuación que dé el total.',
     difficulty: 3,
     xp: 20,
     hints: ['Comprar 4 veces lo mismo es una multiplicación.'],
     explanation_md: '4 × 5 = **20**. ¡Y 5 × 4 también funciona: el orden no cambia el total!',
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       tokens: [
         { id: 't1', text: '4' },

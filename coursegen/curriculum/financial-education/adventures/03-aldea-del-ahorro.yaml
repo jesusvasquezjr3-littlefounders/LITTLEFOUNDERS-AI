@@ -13,7 +13,7 @@ adventure:
     en-US: "In a peaceful valley, the crew learns to set goals, wait with patience, and keep their coins safe."
     es-MX: "En un valle tranquilo, la tripulación aprende a ponerse metas, esperar con paciencia y cuidar sus monedas."
     pt-BR: "Em um vale tranquilo, a tripulação aprende a criar metas, esperar com paciência e cuidar de suas moedas."
-  narrative_arc: "El barco llega a un valle sereno donde cada familia guarda un frasco especial para sus sueños. Dina, Dino, Rho y Zara aprenden que guardar un poquito de sus monedas cada semana, en un lugar seguro, los acerca a metas que no podrían comprar de un solo golpe. La paciencia se vuelve su nueva herramienta."
+  narrative_arc: "El barco llega a un valle sereno donde cada familia guarda un frasco especial para sus sueños. Dina, Liruf, Rho y Zara aprenden que guardar un poquito de sus monedas cada semana, en un lugar seguro, los acerca a metas que no podrían comprar de un solo golpe. La paciencia se vuelve su nueva herramienta."
 
 sagas:
   - position: 1
@@ -51,7 +51,7 @@ sagas:
           - position: 2
             slug: gastar-hoy-o-guardar
             micro_objective: "Distingue, entre 4 escenas, cuáles muestran a alguien guardando monedas y cuáles gastándolas."
-            narrative_beat: "Dino compara dos aldeanos: uno gasta todo de inmediato, otro guarda un poco cada vez."
+            narrative_beat: "Liruf compara dos aldeanos: uno gasta todo de inmediato, otro guarda un poco cada vez."
             difficulty: 1
             suggested_families: [choice]
           - position: 3
@@ -95,7 +95,7 @@ sagas:
           - position: 3
             slug: elijo-mi-propia-meta
             micro_objective: "Elige, entre 3 opciones, una meta propia que le gustaría lograr con ahorros."
-            narrative_beat: "Dino piensa en voz alta qué le gustaría comprar si juntara suficientes monedas."
+            narrative_beat: "Liruf piensa en voz alta qué le gustaría comprar si juntara suficientes monedas."
             difficulty: 2
             suggested_families: [choice, story]
           - position: 4
@@ -129,7 +129,7 @@ sagas:
           - position: 3
             slug: le-pongo-nombre-a-mi-frasco
             micro_objective: "Nombra su propio frasco de ahorro con el nombre de su meta."
-            narrative_beat: "Dino escribe 'Mi Barquito Nuevo' en una etiqueta y la pega en su frasco de ahorro."
+            narrative_beat: "Liruf escribe 'Mi Barquito Nuevo' en una etiqueta y la pega en su frasco de ahorro."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -163,7 +163,7 @@ sagas:
           - position: 3
             slug: cuento-mi-frasco
             micro_objective: "Cuenta el total actual de monedas guardadas en su frasco, hasta $20."
-            narrative_beat: "Dino cuenta con cuidado todas las monedas que lleva guardadas hasta ahora en su frasco."
+            narrative_beat: "Liruf cuenta con cuidado todas las monedas que lleva guardadas hasta ahora en su frasco."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -197,7 +197,7 @@ sagas:
           - position: 3
             slug: lo-pienso-un-momento
             micro_objective: "Elige, entre 2 respuestas posibles, la que muestra pensar un momento antes de decidir gastar los ahorros."
-            narrative_beat: "Dino respira hondo y piensa un momento antes de decidir si gasta o guarda su moneda."
+            narrative_beat: "Liruf respira hondo y piensa un momento antes de decidir si gasta o guarda su moneda."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -225,13 +225,13 @@ sagas:
           - position: 2
             slug: comparo-esperar-y-no-esperar
             micro_objective: "Compara dos finales de historia: uno donde el personaje espera y otro donde gasta de inmediato."
-            narrative_beat: "Zara compara dos caminos posibles para Dino: gastar hoy o esperar y lograr su meta grande."
+            narrative_beat: "Zara compara dos caminos posibles para Liruf: gastar hoy o esperar y lograr su meta grande."
             difficulty: 2
             suggested_families: [choice, story]
           - position: 3
             slug: elijo-esperar-hoy
             micro_objective: "Elige esperar en una situación de tentación simple dentro de la historia."
-            narrative_beat: "Dino ve otro dulce brillante, pero esta vez decide esperar y seguir ahorrando para su barquito."
+            narrative_beat: "Liruf ve otro dulce brillante, pero esta vez decide esperar y seguir ahorrando para su barquito."
             difficulty: 2
             suggested_families: [storyplay, choice]
           - position: 4
@@ -272,7 +272,7 @@ sagas:
           - position: 3
             slug: elijo-el-mejor-momento-para-esperar
             micro_objective: "Elige, entre 2 situaciones recordadas, cuál mostró mejor la decisión de esperar en vez de gastar ya."
-            narrative_beat: "Dino compara dos recuerdos: una vez que esperó y una vez que estuvo a punto de gastar de inmediato."
+            narrative_beat: "Liruf compara dos recuerdos: una vez que esperó y una vez que estuvo a punto de gastar de inmediato."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -310,7 +310,7 @@ sagas:
           - position: 3
             slug: cada-moneda-ganada-tambien-cuenta
             micro_objective: "Reconoce que cada moneda ganada con esfuerzo, grande o chica, también cuenta hacia su meta."
-            narrative_beat: "Dino guarda una moneda chica que ganó ayudando y recuerda que también acerca a su meta."
+            narrative_beat: "Liruf guarda una moneda chica que ganó ayudando y recuerda que también acerca a su meta."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -361,7 +361,7 @@ sagas:
           - position: 3
             slug: cuanto-vale-esperar
             micro_objective: "Explica en una frase por qué a veces vale la pena esperar por algo más grande."
-            narrative_beat: "Dino le pregunta a la tortuga sabia por qué esperar puede valer la pena."
+            narrative_beat: "Liruf le pregunta a la tortuga sabia por qué esperar puede valer la pena."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -395,7 +395,7 @@ sagas:
           - position: 3
             slug: cuento-hacia-atras
             micro_objective: "Cuenta hacia atrás desde un número pequeño de días hasta llegar a cero."
-            narrative_beat: "Dino cuenta hacia atrás los días que faltan para su cumpleaños en el valle."
+            narrative_beat: "Liruf cuenta hacia atrás los días que faltan para su cumpleaños en el valle."
             difficulty: 2
             suggested_families: [input]
           - position: 4
@@ -429,7 +429,7 @@ sagas:
           - position: 3
             slug: dos-semanas-de-ahorro
             micro_objective: "Suma el total guardado tras dos semanas de ahorro constante."
-            narrative_beat: "Dino suma sus dos primeras semanas de ahorro y ve cómo va creciendo su frasco."
+            narrative_beat: "Liruf suma sus dos primeras semanas de ahorro y ve cómo va creciendo su frasco."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -467,7 +467,7 @@ sagas:
           - position: 3
             slug: si-guardo-mas-semanas-son-menos
             micro_objective: "Reconoce que guardar más monedas por semana reduce el número de semanas que faltan."
-            narrative_beat: "Dino descubre que si guarda un poco más cada semana, su meta llega más rápido."
+            narrative_beat: "Liruf descubre que si guarda un poco más cada semana, su meta llega más rápido."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -501,7 +501,7 @@ sagas:
           - position: 3
             slug: comparto-mi-progreso
             micro_objective: "Comparte, dentro de la historia, su progreso de ahorro con un personaje de confianza."
-            narrative_beat: "Dino le cuenta emocionado a Dina cuánto ha logrado guardar hasta ahora."
+            narrative_beat: "Liruf le cuenta emocionado a Dina cuánto ha logrado guardar hasta ahora."
             difficulty: 2
             suggested_families: [story, storyplay]
           - position: 4
@@ -535,7 +535,7 @@ sagas:
           - position: 3
             slug: elijo-mi-nueva-meta
             micro_objective: "Elige una nueva meta de ahorro dentro de la historia y explica por qué la prefiere."
-            narrative_beat: "Dino elige una nueva meta después de pensarlo con calma junto a sus amigos."
+            narrative_beat: "Liruf elige una nueva meta después de pensarlo con calma junto a sus amigos."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -576,7 +576,7 @@ sagas:
           - position: 3
             slug: calculo-semanas-recordadas
             micro_objective: "Calcula, sin ayuda, cuántas semanas le faltan para una meta recordada del cofre."
-            narrative_beat: "Dino calcula de nuevo cuántas semanas le faltaban para su meta, usando su plan recordado."
+            narrative_beat: "Liruf calcula de nuevo cuántas semanas le faltaban para su meta, usando su plan recordado."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -614,7 +614,7 @@ sagas:
           - position: 3
             slug: cuento-semanas-y-recompensas
             micro_objective: "Calcula cuántas semanas faltan para una meta, considerando también una recompensa extra por esperar."
-            narrative_beat: "Dino calcula sus semanas restantes, recordando que esperar también se siente como una recompensa."
+            narrative_beat: "Liruf calcula sus semanas restantes, recordando que esperar también se siente como una recompensa."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -649,7 +649,7 @@ sagas:
           - position: 1
             slug: el-frasco-o-el-suelo
             micro_objective: "Compara dos lugares para guardar monedas y elige el más adecuado."
-            narrative_beat: "Dino ve dos opciones: dejar sus monedas tiradas en el pasto o guardarlas en su frasco cerrado."
+            narrative_beat: "Liruf ve dos opciones: dejar sus monedas tiradas en el pasto o guardarlas en su frasco cerrado."
             difficulty: 1
             suggested_families: [story, choice]
           - position: 2
@@ -661,7 +661,7 @@ sagas:
           - position: 3
             slug: por-que-ese-lugar-es-mejor
             micro_objective: "Explica en una frase por qué un lugar cerrado es mejor que uno abierto para guardar monedas."
-            narrative_beat: "Rho le explica a Dino por qué un cajón cerrado protege mejor las monedas que el pasto."
+            narrative_beat: "Rho le explica a Liruf por qué un cajón cerrado protege mejor las monedas que el pasto."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -695,7 +695,7 @@ sagas:
           - position: 3
             slug: que-pasa-si-no-lo-cuido
             micro_objective: "Reconoce en una escena una consecuencia de no cuidar bien el frasco de ahorros."
-            narrative_beat: "Dino deja su frasco destapado y una moneda casi se cae al pasto."
+            narrative_beat: "Liruf deja su frasco destapado y una moneda casi se cae al pasto."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -729,7 +729,7 @@ sagas:
           - position: 3
             slug: pido-ayuda-para-recordar
             micro_objective: "Elige, entre 2 opciones, una forma en que la familia puede ayudar a recordar la meta de ahorro."
-            narrative_beat: "Dino le pide a su familia que le recuerde guardar su moneda cada semana."
+            narrative_beat: "Liruf le pide a su familia que le recuerde guardar su moneda cada semana."
             difficulty: 2
             suggested_families: [choice, storyplay]
           - position: 4
@@ -763,7 +763,7 @@ sagas:
           - position: 3
             slug: sigo-ahorrando-igual
             micro_objective: "Reconoce en la historia que el personaje sigue ahorrando después de perder una moneda."
-            narrative_beat: "Dino anima a Rho a seguir guardando monedas la próxima semana, sin desanimarse."
+            narrative_beat: "Liruf anima a Rho a seguir guardando monedas la próxima semana, sin desanimarse."
             difficulty: 2
             suggested_families: [story, choice]
           - position: 4
@@ -797,7 +797,7 @@ sagas:
           - position: 3
             slug: mi-lugar-secreto-y-seguro
             micro_objective: "Describe en una frase el lugar que eligió para guardar sus propios ahorros."
-            narrative_beat: "Dino elige un rincón especial de su cuarto, junto a su cama, para guardar su frasco."
+            narrative_beat: "Liruf elige un rincón especial de su cuarto, junto a su cama, para guardar su frasco."
             difficulty: 2
             suggested_families: [story, storyplay]
           - position: 4
@@ -831,7 +831,7 @@ sagas:
           - position: 3
             slug: comparo-semana-con-semana
             micro_objective: "Compara el total de dos semanas distintas de revisión y reconoce el progreso logrado."
-            narrative_beat: "Dino compara su frasco de esta semana con el de la semana pasada y ve que ha crecido."
+            narrative_beat: "Liruf compara su frasco de esta semana con el de la semana pasada y ve que ha crecido."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -872,7 +872,7 @@ sagas:
           - position: 3
             slug: elijo-la-mejor-reaccion-si-pierdo-una-moneda
             micro_objective: "Elige, entre 2 reacciones recordadas, la más sana ante perder una moneda por accidente."
-            narrative_beat: "Dino recuerda cuando se le cayó una moneda y compara cómo reaccionó con cómo pudo reaccionar."
+            narrative_beat: "Liruf recuerda cuando se le cayó una moneda y compara cómo reaccionó con cómo pudo reaccionar."
             difficulty: 2
             suggested_families: [choice]
           - position: 4
@@ -911,7 +911,7 @@ sagas:
           - position: 3
             slug: reconozco-mis-monedas-guardadas
             micro_objective: "Reconoce, entre monedas guardadas, las mismas denominaciones aprendidas en el archipiélago."
-            narrative_beat: "Dino reconoce en su frasco las mismas moneditas que aprendió a identificar en el archipiélago."
+            narrative_beat: "Liruf reconoce en su frasco las mismas moneditas que aprendió a identificar en el archipiélago."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -956,13 +956,13 @@ sagas:
           - position: 2
             slug: para-que-sirve-cada-frasco
             micro_objective: "Empareja cada uno de los 3 frascos con el propósito que cumple."
-            narrative_beat: "Zara explica a Dino para qué sirve cada uno de sus tres frascos de monedas."
+            narrative_beat: "Zara explica a Liruf para qué sirve cada uno de sus tres frascos de monedas."
             difficulty: 1
             suggested_families: [arrange]
           - position: 3
             slug: reparto-mis-primeras-monedas
             micro_objective: "Divide un monto pequeño de monedas entre 2 frascos con un propósito cada uno."
-            narrative_beat: "Dino reparte por primera vez sus monedas ganadas entre su frasco de ahorro y el de compartir."
+            narrative_beat: "Liruf reparte por primera vez sus monedas ganadas entre su frasco de ahorro y el de compartir."
             difficulty: 2
             suggested_families: [money]
           - position: 4
@@ -996,7 +996,7 @@ sagas:
           - position: 3
             slug: elijo-mi-division
             micro_objective: "Elige, entre 2 divisiones posibles de un mismo monto, la que mejor refleja sus propias prioridades."
-            narrative_beat: "Dino compara dos formas de repartir sus monedas y elige la que más le hace sentido."
+            narrative_beat: "Liruf compara dos formas de repartir sus monedas y elige la que más le hace sentido."
             difficulty: 2
             suggested_families: [choice, money]
           - position: 4
@@ -1030,7 +1030,7 @@ sagas:
           - position: 3
             slug: cumplo-un-paso-a-la-vez
             micro_objective: "Reconoce en la historia el cumplimiento de un paso pequeño dentro de una meta más grande."
-            narrative_beat: "Dino celebra haber completado el primer paso pequeño de su meta más ambiciosa."
+            narrative_beat: "Liruf celebra haber completado el primer paso pequeño de su meta más ambiciosa."
             difficulty: 2
             suggested_families: [story, money]
           - position: 4
@@ -1064,7 +1064,7 @@ sagas:
           - position: 3
             slug: sumamos-en-familia
             micro_objective: "Suma los aportes de 2-3 miembros de una familia para ver el total hacia una meta compartida."
-            narrative_beat: "Dino suma lo que aportó cada miembro de su familia para el paseo especial."
+            narrative_beat: "Liruf suma lo que aportó cada miembro de su familia para el paseo especial."
             difficulty: 2
             suggested_families: [money, input]
           - position: 4
@@ -1098,7 +1098,7 @@ sagas:
           - position: 3
             slug: cual-cuesta-menos-esperar
             micro_objective: "Compara dos metas de ahorro y elige cuál tomaría menos semanas de espera."
-            narrative_beat: "Dino compara cuántas semanas le tomaría cada una de sus dos metas posibles."
+            narrative_beat: "Liruf compara cuántas semanas le tomaría cada una de sus dos metas posibles."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -1132,7 +1132,7 @@ sagas:
           - position: 3
             slug: divido-mi-ultimo-cofre
             micro_objective: "Divide sin ayuda un monto de monedas entre ahorro, gasto y compartir, como cierre de la aventura."
-            narrative_beat: "Dino reparte su cofre final del valle entre sus tres frascos, sin necesitar ayuda esta vez."
+            narrative_beat: "Liruf reparte su cofre final del valle entre sus tres frascos, sin necesitar ayuda esta vez."
             difficulty: 3
             suggested_families: [money, arrange]
           - position: 4
@@ -1173,7 +1173,7 @@ sagas:
           - position: 3
             slug: divido-monedas-recordadas
             micro_objective: "Divide, sin ayuda, un monto de monedas recordado entre 2-3 frascos con propósito."
-            narrative_beat: "Dino reparte de nuevo sus monedas del cofre entre sus tres frascos, como aprendió en esta saga."
+            narrative_beat: "Liruf reparte de nuevo sus monedas del cofre entre sus tres frascos, como aprendió en esta saga."
             difficulty: 2
             suggested_families: [money, arrange]
           - position: 4
@@ -1212,7 +1212,7 @@ sagas:
           - position: 3
             slug: mis-ganancias-del-bosque-ayudan-a-mi-meta
             micro_objective: "Conecta las ganancias acumuladas de varios días del bosque con el avance de una meta grande del valle."
-            narrative_beat: "Dino recuerda que sus ganancias juntadas en el bosque hoy avanzan su meta grande de la aldea."
+            narrative_beat: "Liruf recuerda que sus ganancias juntadas en el bosque hoy avanzan su meta grande de la aldea."
             difficulty: 2
             suggested_families: [money, choice]
           - position: 4
@@ -1300,7 +1300,7 @@ sagas:
           - position: 3
             slug: cada-semana-nos-acercamos-mas
             micro_objective: "Reconoce que cada semana que pasa acerca a toda la aldea a su meta compartida."
-            narrative_beat: "Dino tacha una semana más en el calendario de la aldea y siente que ya casi llegan."
+            narrative_beat: "Liruf tacha una semana más en el calendario de la aldea y siente que ya casi llegan."
             difficulty: 2
             suggested_families: [choice, input]
           - position: 4
@@ -1337,7 +1337,7 @@ sagas:
           - position: 3
             slug: si-se-pierde-una-moneda-de-todos
             micro_objective: "Reconoce que, si se pierde una moneda del frasco compartido, la aldea sigue ahorrando sin desanimarse."
-            narrative_beat: "Dino nota que faltó una moneda y la aldea decide seguir adelante sin preocuparse demasiado."
+            narrative_beat: "Liruf nota que faltó una moneda y la aldea decide seguir adelante sin preocuparse demasiado."
             difficulty: 3
             suggested_families: [story, choice]
           - position: 4
@@ -1374,7 +1374,7 @@ sagas:
           - position: 3
             slug: divido-mis-monedas-para-el-proyecto
             micro_objective: "Divide, sin ayuda, un monto de monedas entre el proyecto compartido y su meta personal."
-            narrative_beat: "Dino divide sus monedas ganadas: una parte para el puente de la aldea, otra para su propio sueño."
+            narrative_beat: "Liruf divide sus monedas ganadas: una parte para el puente de la aldea, otra para su propio sueño."
             difficulty: 3
             suggested_families: [money, arrange]
           - position: 4
@@ -1412,7 +1412,7 @@ sagas:
           - position: 3
             slug: nuestras-ganancias-del-bosque-tambien-ayudan
             micro_objective: "Conecta ganancias juntadas en aventuras anteriores con el avance del proyecto actual de la aldea."
-            narrative_beat: "Dino recuerda que parte de sus ganancias del bosque también ayudaron a construir el puente."
+            narrative_beat: "Liruf recuerda que parte de sus ganancias del bosque también ayudaron a construir el puente."
             difficulty: 3
             suggested_families: [story, money]
           - position: 4

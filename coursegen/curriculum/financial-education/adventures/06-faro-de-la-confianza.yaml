@@ -9,13 +9,13 @@ adventure:
     es-MX: El Faro de la Confianza
     pt-BR: O Farol da Confiança
   description:
-    en-US: Across a chain of islands, Dina and Dino learn to spot tricks, fake messages, and keep their
+    en-US: Across a chain of islands, Dina and Liruf learn to spot tricks, fake messages, and keep their
       information safe with help from Dr. Rho's lighthouse.
-    es-MX: En un archipiélago de islas, Dina y Dino aprenden a reconocer trampas, mensajes falsos y a
+    es-MX: En un archipiélago de islas, Dina y Liruf aprenden a reconocer trampas, mensajes falsos y a
       cuidar su información con la ayuda del faro de Dr. Rho.
-    pt-BR: Em um arquipélago de ilhas, Dina e Dino aprendem a reconhecer armadilhas, mensagens falsas
+    pt-BR: Em um arquipélago de ilhas, Dina e Liruf aprendem a reconhecer armadilhas, mensagens falsas
       e a cuidar de suas informações com a ajuda do farol do Dr. Rho.
-  narrative_arc: 'Dina y Dino navegan más allá del valle del mercado hasta un archipiélago coronado por
+  narrative_arc: 'Dina y Liruf navegan más allá del valle del mercado hasta un archipiélago coronado por
     un viejo faro donde Dr. Rho vigila a los barcos por la noche. Zara Vex llega con trucos y acertijos
     para poner a prueba qué tan bien pueden reconocer una mala oferta, un mensaje falso o un dato compartido
     sin cuidado, enseñándoles el verdadero trabajo del faro: cuidar la confianza, no solo guiar barcos.'
@@ -50,7 +50,7 @@ sagas:
     - position: 1
       slug: las-islas-del-faro
       micro_objective: Reconocer que un anuncio es un mensaje diseñado para convencer a alguien de comprar.
-      narrative_beat: Dina y Dino llegan en barco a un archipiélago donde un faro brillante guía a los
+      narrative_beat: Dina y Liruf llegan en barco a un archipiélago donde un faro brillante guía a los
         navegantes; Dr. Rho los recibe y les muestra carteles coloridos pegados en el muelle.
       difficulty: 1
       suggested_families:
@@ -59,7 +59,7 @@ sagas:
     - position: 2
       slug: anuncio-o-no
       micro_objective: Distinguir un anuncio de un mensaje informativo neutral.
-      narrative_beat: Zara Vex reparte volantes del muelle y reta a Dino a separar cuáles son anuncios
+      narrative_beat: Zara Vex reparte volantes del muelle y reta a Liruf a separar cuáles son anuncios
         y cuáles son simples avisos del pueblo.
       difficulty: 2
       suggested_families:
@@ -101,7 +101,7 @@ sagas:
     - position: 1
       slug: el-pescado-mas-grande-del-mundo
       micro_objective: Reconocer una exageración evidente en un anuncio.
-      narrative_beat: Un cartel en el muelle promete 'el pescado más grande del mundo' y Dino se ríe al
+      narrative_beat: Un cartel en el muelle promete 'el pescado más grande del mundo' y Liruf se ríe al
         ver que es un pez normal.
       difficulty: 1
       suggested_families:
@@ -154,7 +154,7 @@ sagas:
     - position: 1
       slug: el-regalo-con-truco
       micro_objective: Reconocer que una oferta 'gratis' puede tener una condición escondida.
-      narrative_beat: Un cartel ofrece 'una vela gratis' y Dino descubre, leyendo con cuidado, que solo
+      narrative_beat: Un cartel ofrece 'una vela gratis' y Liruf descubre, leyendo con cuidado, que solo
         aplica si compras tres primero.
       difficulty: 1
       suggested_families:
@@ -172,7 +172,7 @@ sagas:
     - position: 3
       slug: gratis-de-verdad
       micro_objective: Distinguir una oferta realmente gratis de una que solo lo parece.
-      narrative_beat: Zara Vex presenta tres ofertas del muelle y reta a Dino a decidir cuál es gratis
+      narrative_beat: Zara Vex presenta tres ofertas del muelle y reta a Liruf a decidir cuál es gratis
         de verdad.
       difficulty: 3
       suggested_families:
@@ -207,7 +207,7 @@ sagas:
     - position: 1
       slug: solo-hoy
       micro_objective: Reconocer la frase 'solo hoy' como una señal de apuro en un anuncio.
-      narrative_beat: Un vendedor grita '¡solo hoy, no lo pienses más!' y Dino siente el impulso de comprar
+      narrative_beat: Un vendedor grita '¡solo hoy, no lo pienses más!' y Liruf siente el impulso de comprar
         sin mirar bien.
       difficulty: 1
       suggested_families:
@@ -225,7 +225,7 @@ sagas:
     - position: 3
       slug: pausar-antes-de-decidir
       micro_objective: Aplicar la estrategia de pausar y pensar frente a un anuncio con apuro.
-      narrative_beat: 'Zara Vex le muestra a Dino un truco simple: contar hasta cinco antes de decidir
+      narrative_beat: 'Zara Vex le muestra a Liruf un truco simple: contar hasta cinco antes de decidir
         cuando un anuncio mete prisa.'
       difficulty: 2
       suggested_families:
@@ -287,7 +287,7 @@ sagas:
       slug: mi-revision-final
       micro_objective: Aplicar el proceso de comparación completo a un anuncio nuevo antes de decidir.
       narrative_beat: Dina practica sola, comparando un nuevo anuncio del muelle con el producto real
-        antes de recomendarlo a Dino.
+        antes de recomendarlo a Liruf.
       difficulty: 3
       suggested_families:
       - analyze
@@ -310,7 +310,7 @@ sagas:
     - position: 1
       slug: las-ganas-de-pedirlo-ya
       micro_objective: Reconocer el momento en que un anuncio genera ganas inmediatas de pedir algo.
-      narrative_beat: Dino ve un anuncio brillante y corre a pedirle a Dr. Rho que se lo compre de inmediato.
+      narrative_beat: Liruf ve un anuncio brillante y corre a pedirle a Dr. Rho que se lo compre de inmediato.
       difficulty: 1
       suggested_families:
       - story
@@ -328,7 +328,7 @@ sagas:
     - position: 3
       slug: practicar-la-pausa
       micro_objective: Aplicar la pausa de 'espera y piensa' frente a un anuncio nuevo dentro de una historia.
-      narrative_beat: Zara Vex pone a prueba a Dino con un anuncio muy tentador para ver si recuerda detenerse
+      narrative_beat: Zara Vex pone a prueba a Liruf con un anuncio muy tentador para ver si recuerda detenerse
         antes de pedir.
       difficulty: 3
       suggested_families:
@@ -364,7 +364,7 @@ sagas:
     - position: 1
       slug: todos-lo-tienen-menos-yo
       micro_objective: Reconocer la frase 'todos lo tienen' como una forma de presión, no como un hecho comprobado.
-      narrative_beat: Un anuncio en el muelle asegura que 'todos los niños del archipiélago ya tienen este juguete', y Dino se pregunta si eso es cierto.
+      narrative_beat: Un anuncio en el muelle asegura que 'todos los niños del archipiélago ya tienen este juguete', y Liruf se pregunta si eso es cierto.
       difficulty: 1
       suggested_families:
       - story
@@ -380,7 +380,7 @@ sagas:
     - position: 3
       slug: pensar-por-mi-cuenta
       micro_objective: Practicar decidir con calma frente a un anuncio que usa presión de grupo.
-      narrative_beat: Zara Vex reta a Dino a decidir, sin dejarse llevar por lo que 'todos dicen', si de verdad le conviene el producto.
+      narrative_beat: Zara Vex reta a Liruf a decidir, sin dejarse llevar por lo que 'todos dicen', si de verdad le conviene el producto.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -410,7 +410,7 @@ sagas:
     - position: 1
       slug: el-pescador-que-recomienda-una-red
       micro_objective: Observar la diferencia entre una recomendación sincera y una pagada por quien vende.
-      narrative_beat: Un pescador del muelle recomienda una red de pesca a todos, y Dino descubre que el vendedor le paga por decirlo.
+      narrative_beat: Un pescador del muelle recomienda una red de pesca a todos, y Liruf descubre que el vendedor le paga por decirlo.
       difficulty: 1
       suggested_families:
       - story
@@ -426,7 +426,7 @@ sagas:
     - position: 3
       slug: por-que-importa-saberlo
       micro_objective: Explicar por qué conviene saber si una recomendación fue pagada antes de confiar en ella.
-      narrative_beat: Zara Vex pregunta a Dino por qué cambia su confianza en un consejo si descubre que alguien le pagó por darlo.
+      narrative_beat: Zara Vex pregunta a Liruf por qué cambia su confianza en un consejo si descubre que alguien le pagó por darlo.
       difficulty: 2
       suggested_families:
       - choice
@@ -473,7 +473,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo reconocer una condición oculta en una oferta gratis y cómo reconocer frases de apuro en un anuncio.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -514,7 +514,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el faro.
       difficulty: 2
       suggested_families:
       - choice
@@ -530,7 +530,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -573,7 +573,7 @@ sagas:
     - position: 1
       slug: una-botella-en-el-mar
       micro_objective: Reconocer la diferencia entre un mensaje de alguien conocido y uno de un desconocido.
-      narrative_beat: En la playa del faro, Dino encuentra una botella con un mensaje de alguien que nadie
+      narrative_beat: En la playa del faro, Liruf encuentra una botella con un mensaje de alguien que nadie
         en el pueblo conoce.
       difficulty: 1
       suggested_families:
@@ -591,7 +591,7 @@ sagas:
     - position: 3
       slug: mas-cuidado-con-lo-desconocido
       micro_objective: Explicar por qué un mensaje desconocido merece más cuidado antes de responder.
-      narrative_beat: Zara Vex explica a Dino que no todo lo que llega en una botella dice la verdad sobre
+      narrative_beat: Zara Vex explica a Liruf que no todo lo que llega en una botella dice la verdad sobre
         quién lo envió.
       difficulty: 2
       suggested_families:
@@ -697,7 +697,7 @@ sagas:
     - position: 3
       slug: como-pedir-ayuda
       micro_objective: Practicar cómo contarle a un adulto de confianza sobre un mensaje sospechoso.
-      narrative_beat: Dino practica con Dr. Rho cómo explicar con calma el mensaje raro que encontró en
+      narrative_beat: Liruf practica con Dr. Rho cómo explicar con calma el mensaje raro que encontró en
         la botella.
       difficulty: 2
       suggested_families:
@@ -752,7 +752,7 @@ sagas:
     - position: 3
       slug: practicar-con-varios-mensajes
       micro_objective: Aplicar las señales aprendidas para auditar varios mensajes distintos.
-      narrative_beat: Zara Vex reta a Dino a revisar cinco mensajes del faro y marcar cuáles tienen señales
+      narrative_beat: Zara Vex reta a Liruf a revisar cinco mensajes del faro y marcar cuáles tienen señales
         de alerta.
       difficulty: 3
       suggested_families:
@@ -786,7 +786,7 @@ sagas:
     - position: 1
       slug: la-sensacion-rara
       micro_objective: Reconocer la sensación de que algo 'se siente raro' como una señal válida de alerta.
-      narrative_beat: Dino no sabe explicar por qué, pero un mensaje nuevo le da mala espina apenas lo
+      narrative_beat: Liruf no sabe explicar por qué, pero un mensaje nuevo le da mala espina apenas lo
         lee.
       difficulty: 1
       suggested_families:
@@ -805,7 +805,7 @@ sagas:
     - position: 3
       slug: practicar-los-pasos
       micro_objective: Aplicar los tres pasos en un escenario dado dentro de una historia.
-      narrative_beat: Zara Vex pone a prueba a Dino con una situación nueva para ver si sigue los tres
+      narrative_beat: Zara Vex pone a prueba a Liruf con una situación nueva para ver si sigue los tres
         pasos del faro.
       difficulty: 3
       suggested_families:
@@ -841,7 +841,7 @@ sagas:
       slug: el-desafio-del-faro
       micro_objective: Recordar, en conjunto, las señales principales de un mensaje falso aprendidas en
         la saga.
-      narrative_beat: Dr. Rho reúne a Dina y Dino en la cima del faro para el gran desafío final de detección
+      narrative_beat: Dr. Rho reúne a Dina y Liruf en la cima del faro para el gran desafío final de detección
         de mensajes.
       difficulty: 1
       suggested_families:
@@ -851,7 +851,7 @@ sagas:
       slug: revisar-varios-mensajes-mezclados
       micro_objective: Clasificar un grupo de mensajes mezclados entre reales y falsos, usando las señales
         aprendidas.
-      narrative_beat: Zara Vex mezcla diez mensajes, reales y falsos, y reta a Dino a separarlos con cuidado.
+      narrative_beat: Zara Vex mezcla diez mensajes, reales y falsos, y reta a Liruf a separarlos con cuidado.
       difficulty: 2
       suggested_families:
       - analyze
@@ -892,7 +892,7 @@ sagas:
     - position: 1
       slug: te-lo-devuelvo-doble
       micro_objective: Reconocer la promesa de devolver el doble como una señal de alerta.
-      narrative_beat: Un mensaje en el faro promete devolver el doble de conchas a quien entregue las suyas primero, y Dino siente la tentación de probar.
+      narrative_beat: Un mensaje en el faro promete devolver el doble de conchas a quien entregue las suyas primero, y Liruf siente la tentación de probar.
       difficulty: 1
       suggested_families:
       - story
@@ -942,7 +942,7 @@ sagas:
     - position: 1
       slug: el-mensaje-que-no-suena-igual
       micro_objective: Reconocer cuando un mensaje que dice ser de un amigo se siente distinto a como esa persona habla normalmente.
-      narrative_beat: Dino recibe un mensaje que dice ser de su amigo del muelle, pero algo en la forma de escribir se siente distinto.
+      narrative_beat: Liruf recibe un mensaje que dice ser de su amigo del muelle, pero algo en la forma de escribir se siente distinto.
       difficulty: 1
       suggested_families:
       - story
@@ -1005,7 +1005,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo saber cuándo pedir ayuda a un adulto de confianza y cómo listar señales de un mensaje falso.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1046,7 +1046,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el faro.
       difficulty: 2
       suggested_families:
       - choice
@@ -1062,7 +1062,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1130,7 +1130,7 @@ sagas:
     - position: 3
       slug: por-que-se-guarda
       micro_objective: Explicar por qué cierta información se guarda en privado y no se comparte con cualquiera.
-      narrative_beat: Zara Vex pregunta a Dino por qué su dirección no debería aparecer en un mensaje
+      narrative_beat: Zara Vex pregunta a Liruf por qué su dirección no debería aparecer en un mensaje
         a un desconocido.
       difficulty: 2
       suggested_families:
@@ -1175,7 +1175,7 @@ sagas:
       slug: dentro-o-fuera-del-circulo
       micro_objective: Clasificar distintas personas (mamá, un desconocido en línea, la maestra) como
         dentro o fuera del círculo de confianza.
-      narrative_beat: Dino ordena tarjetas de personas y decide cuáles van dentro del círculo de confianza
+      narrative_beat: Liruf ordena tarjetas de personas y decide cuáles van dentro del círculo de confianza
         y cuáles no.
       difficulty: 2
       suggested_families:
@@ -1185,7 +1185,7 @@ sagas:
       slug: cuando-alguien-nuevo-pregunta
       micro_objective: Decidir la respuesta correcta cuando alguien fuera del círculo de confianza pide
         información privada.
-      narrative_beat: Un desconocido en el muelle le pregunta a Dino dónde vive, y él debe decidir cómo
+      narrative_beat: Un desconocido en el muelle le pregunta a Liruf dónde vive, y él debe decidir cómo
         responder.
       difficulty: 3
       suggested_families:
@@ -1227,7 +1227,7 @@ sagas:
     - position: 2
       slug: a-quien-le-doy-mi-llave
       micro_objective: Decidir con quién, si acaso, es seguro compartir una contraseña.
-      narrative_beat: Zara Vex pregunta a Dino si le prestaría la llave del faro a un desconocido, y lo
+      narrative_beat: Zara Vex pregunta a Liruf si le prestaría la llave del faro a un desconocido, y lo
         compara con compartir una contraseña.
       difficulty: 2
       suggested_families:
@@ -1272,7 +1272,7 @@ sagas:
       slug: el-album-del-faro
       micro_objective: Reconocer que las fotos personales también son información que merece cuidado al
         compartirse.
-      narrative_beat: Dino encuentra un álbum de fotos del pueblo y se pregunta quién puede verlas y quién
+      narrative_beat: Liruf encuentra un álbum de fotos del pueblo y se pregunta quién puede verlas y quién
         no.
       difficulty: 1
       suggested_families:
@@ -1282,7 +1282,7 @@ sagas:
       slug: antes-de-compartir-una-foto
       micro_objective: Identificar el paso correcto (pedir permiso) antes de compartir una foto de otra
         persona.
-      narrative_beat: Dr. Rho recuerda a Dina que antes de mostrar una foto de Dino a alguien más, debe
+      narrative_beat: Dr. Rho recuerda a Dina que antes de mostrar una foto de Liruf a alguien más, debe
         preguntarle a él primero.
       difficulty: 2
       suggested_families:
@@ -1292,7 +1292,7 @@ sagas:
       slug: cuando-decir-que-no
       micro_objective: Decidir cuándo es correcto decir que no a compartir una foto o dato, aunque alguien
         insista.
-      narrative_beat: Zara Vex pone a prueba a Dino con un personaje que insiste en pedir una foto suya
+      narrative_beat: Zara Vex pone a prueba a Liruf con un personaje que insiste en pedir una foto suya
         sin motivo claro.
       difficulty: 3
       suggested_families:
@@ -1327,7 +1327,7 @@ sagas:
     - position: 1
       slug: antes-de-decir-que-si
       micro_objective: Reconocer el momento correcto para pedir permiso antes de compartir algo.
-      narrative_beat: A Dino le piden compartir el mapa secreto del faro, y antes de responder, recuerda
+      narrative_beat: A Liruf le piden compartir el mapa secreto del faro, y antes de responder, recuerda
         que debe preguntar primero.
       difficulty: 1
       suggested_families:
@@ -1345,7 +1345,7 @@ sagas:
     - position: 3
       slug: practicar-pedir-permiso
       micro_objective: Practicar, dentro de una historia, cómo pedir permiso antes de compartir información.
-      narrative_beat: Zara Vex representa una situación donde Dino debe practicar pedir permiso antes
+      narrative_beat: Zara Vex representa una situación donde Liruf debe practicar pedir permiso antes
         de compartir algo importante.
       difficulty: 2
       suggested_families:
@@ -1380,7 +1380,7 @@ sagas:
       slug: el-secreto-de-un-amigo
       micro_objective: Reconocer que la información privada de un amigo también merece cuidado, no solo
         la propia.
-      narrative_beat: Dino sabe algo privado sobre un amigo del pueblo y decide, sin que nadie se lo pida,
+      narrative_beat: Liruf sabe algo privado sobre un amigo del pueblo y decide, sin que nadie se lo pida,
         mantenerlo en secreto.
       difficulty: 1
       suggested_families:
@@ -1391,7 +1391,7 @@ sagas:
       micro_objective: Identificar una acción correcta para cuidar la información privada de otra persona
         en una situación dada.
       narrative_beat: Dr. Rho presenta una situación donde Dina debe decidir si compartir o guardar un
-        dato privado de Dino.
+        dato privado de Liruf.
       difficulty: 2
       suggested_families:
       - choice
@@ -1437,7 +1437,7 @@ sagas:
     - position: 1
       slug: una-tienda-que-nadie-conoce
       micro_objective: Reconocer que una tienda en línea desconocida merece más cuidado que una conocida.
-      narrative_beat: Dino encuentra un puesto flotante en línea que nadie del archipiélago conoce, ofreciendo velas muy baratas.
+      narrative_beat: Liruf encuentra un puesto flotante en línea que nadie del archipiélago conoce, ofreciendo velas muy baratas.
       difficulty: 1
       suggested_families:
       - story
@@ -1491,7 +1491,7 @@ sagas:
     - position: 2
       slug: se-borro-pero-alguien-lo-guardo
       micro_objective: Reconocer que borrar algo compartido no siempre significa que desapareció por completo.
-      narrative_beat: Dino borra un mensaje que envió por error, pero Zara Vex le explica que alguien ya pudo haberlo guardado antes.
+      narrative_beat: Liruf borra un mensaje que envió por error, pero Zara Vex le explica que alguien ya pudo haberlo guardado antes.
       difficulty: 2
       suggested_families:
       - story
@@ -1546,7 +1546,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo explicar por qué una contraseña se mantiene en secreto y cómo reconocer el cuidado al compartir una foto.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1587,7 +1587,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el faro.
       difficulty: 2
       suggested_families:
       - choice
@@ -1603,7 +1603,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1657,7 +1657,7 @@ sagas:
     - position: 2
       slug: banco-o-alcancia
       micro_objective: Comparar guardar dinero en un banco con guardarlo en una alcancía en casa.
-      narrative_beat: Dr. Rho compara la alcancía de Dino con la bóveda del banco y pregunta qué diferencias
+      narrative_beat: Dr. Rho compara la alcancía de Liruf con la bóveda del banco y pregunta qué diferencias
         nota.
       difficulty: 2
       suggested_families:
@@ -1676,7 +1676,7 @@ sagas:
       slug: para-que-sirve-el-banco
       micro_objective: Explicar con una frase propia para qué sirve un banco, usando lo aprendido en la
         saga.
-      narrative_beat: Al salir del banco, Dina le explica a Dino, con sus propias palabras, para qué sirve
+      narrative_beat: Al salir del banco, Dina le explica a Liruf, con sus propias palabras, para qué sirve
         ese edificio junto al faro.
       difficulty: 3
       suggested_families:
@@ -1715,7 +1715,7 @@ sagas:
       slug: depositar-poquito-a-poquito
       micro_objective: Reconocer que se puede depositar dinero en una cuenta de ahorro varias veces, poco
         a poco.
-      narrative_beat: Dino deposita unas monedas en su cuenta cada semana, y ve cómo la cantidad crece
+      narrative_beat: Liruf deposita unas monedas en su cuenta cada semana, y ve cómo la cantidad crece
         poco a poco en la libreta.
       difficulty: 2
       suggested_families:
@@ -1780,7 +1780,7 @@ sagas:
       slug: calcular-el-poquito-extra
       micro_objective: Calcular, con un ejemplo simple dado, cuánto extra recibe una cantidad de ahorro
         guardada un tiempo.
-      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto extra recibirá si guarda sus ahorros en
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto extra recibirá si guarda sus ahorros en
         el banco durante varias semanas.
       difficulty: 3
       suggested_families:
@@ -1814,7 +1814,7 @@ sagas:
     - position: 1
       slug: dos-formas-de-guardar
       micro_objective: 'Reconocer que existen dos formas distintas de guardar dinero: el banco y la alcancía.'
-      narrative_beat: Dr. Rho pone la alcancía de Dino junto a la libreta del banco de Dina y pregunta
+      narrative_beat: Dr. Rho pone la alcancía de Liruf junto a la libreta del banco de Dina y pregunta
         qué diferencias ven entre las dos.
       difficulty: 1
       suggested_families:
@@ -1825,7 +1825,7 @@ sagas:
       micro_objective: Identificar una ventaja específica del banco (seguridad, interés) y una de la alcancía
         (acceso inmediato).
       narrative_beat: Zara Vex hace una lista de ventajas de cada forma de guardar dinero, mientras Dina
-        y Dino la completan juntos.
+        y Liruf la completan juntos.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1869,7 +1869,7 @@ sagas:
       slug: necesito-mi-dinero
       micro_objective: Reconocer que el dinero guardado en el banco pertenece a quien lo guardó y se puede
         retirar.
-      narrative_beat: Dino necesita dinero para reparar su bote y recuerda que puede ir al banco a retirar
+      narrative_beat: Liruf necesita dinero para reparar su bote y recuerda que puede ir al banco a retirar
         parte de sus ahorros.
       difficulty: 1
       suggested_families:
@@ -1879,7 +1879,7 @@ sagas:
       slug: pedir-el-retiro
       micro_objective: Reconocer los pasos simples para retirar dinero de una cuenta de ahorro (avisar,
         pedir, recibir).
-      narrative_beat: La encargada del banco muestra a Dino cómo pedir que le entreguen parte de su dinero
+      narrative_beat: La encargada del banco muestra a Liruf cómo pedir que le entreguen parte de su dinero
         guardado.
       difficulty: 2
       suggested_families:
@@ -1945,7 +1945,7 @@ sagas:
       slug: preguntar-antes-de-confiar
       micro_objective: Decidir que la acción correcta ante la duda sobre un banco es preguntar a un adulto
         de confianza.
-      narrative_beat: Dino se pregunta si debería confiarle sus ahorros a alguien nuevo, y Dr. Rho le
+      narrative_beat: Liruf se pregunta si debería confiarle sus ahorros a alguien nuevo, y Dr. Rho le
         recuerda preguntar siempre primero a un adulto de confianza.
       difficulty: 3
       suggested_families:
@@ -1985,7 +1985,7 @@ sagas:
     - position: 2
       slug: ni-para-ayudar-se-comparte
       micro_objective: Reconocer que la clave del banco no se comparte ni siquiera con alguien que pide ayudar.
-      narrative_beat: Un mensaje le pide a Dino su clave del banco para 'ayudarlo a revisar su cuenta', y él reconoce la trampa.
+      narrative_beat: Un mensaje le pide a Liruf su clave del banco para 'ayudarlo a revisar su cuenta', y él reconoce la trampa.
       difficulty: 2
       suggested_families:
       - analyze
@@ -2043,7 +2043,7 @@ sagas:
     - position: 3
       slug: que-pasa-si-no-hay-suficiente
       micro_objective: Explicar qué pasaría si alguien intenta pagar con tarjeta más de lo que tiene guardado en su cuenta.
-      narrative_beat: Zara Vex pregunta a Dino qué cree que pasaría si alguien intenta pagar con tarjeta más de lo que tiene ahorrado.
+      narrative_beat: Zara Vex pregunta a Liruf qué cree que pasaría si alguien intenta pagar con tarjeta más de lo que tiene ahorrado.
       difficulty: 3
       suggested_families:
       - choice
@@ -2051,7 +2051,7 @@ sagas:
     - position: 4
       slug: mi-idea-sobre-las-tarjetas
       micro_objective: Resumir con sus propias palabras la relación entre una tarjeta de pago y el dinero guardado en una cuenta.
-      narrative_beat: Antes de salir del banco, Dina le explica a Dino, con sus propias palabras, cómo funciona pagar con tarjeta.
+      narrative_beat: Antes de salir del banco, Dina le explica a Liruf, con sus propias palabras, cómo funciona pagar con tarjeta.
       difficulty: 3
       suggested_families:
       - choice
@@ -2090,7 +2090,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo explicar que el banco agrega un poco extra por guardar y cómo comparar una ventaja del banco y una de la alcancía.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2131,7 +2131,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el faro.
       difficulty: 2
       suggested_families:
       - choice
@@ -2147,7 +2147,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2194,7 +2194,7 @@ sagas:
     - position: 1
       slug: el-faro-vuelve-a-brillar
       micro_objective: Recordar que un anuncio busca convencer, y que algunos exageran lo que ofrecen.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en la cima del faro y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre confianza.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en la cima del faro y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre confianza.'
       difficulty: 1
       suggested_families:
       - story
@@ -2210,7 +2210,7 @@ sagas:
     - position: 3
       slug: reconocer-el-apuro-otra-vez
       micro_objective: Recordar cómo identificar una frase de apuro que empuja a comprar sin pensar.
-      narrative_beat: Dino recuerda, sin ayuda, las frases de apuro que aprendió a reconocer en el muelle del archipiélago.
+      narrative_beat: Liruf recuerda, sin ayuda, las frases de apuro que aprendió a reconocer en el muelle del archipiélago.
       difficulty: 2
       suggested_families:
       - choice
@@ -2228,7 +2228,7 @@ sagas:
     slug: mensajes-de-la-gran-mision
     kind: review_quest
     title_es: Mensajes de la Gran Misión
-    concept: Dina y Dino recuerdan cómo reconocer señales de un mensaje falso y cuándo pedir ayuda a un adulto de confianza.
+    concept: Dina y Liruf recuerdan cómo reconocer señales de un mensaje falso y cuándo pedir ayuda a un adulto de confianza.
     learning_objective: Al final, el niño puede recordar y aplicar las señales de un mensaje falso y los pasos de detenerse, no responder y avisar.
     key_vocabulary:
     - señal
@@ -2245,7 +2245,7 @@ sagas:
     - position: 1
       slug: un-mensaje-en-una-botella-otra-vez
       micro_objective: Recordar por qué un premio enorme sin esfuerzo es una señal de alerta.
-      narrative_beat: Zara Vex encuentra una botella con un mensaje nuevo en la playa y reta a Dino a reconocer, sin ayuda, la señal de alerta.
+      narrative_beat: Zara Vex encuentra una botella con un mensaje nuevo en la playa y reta a Liruf a reconocer, sin ayuda, la señal de alerta.
       difficulty: 1
       suggested_families:
       - story
@@ -2269,7 +2269,7 @@ sagas:
     - position: 4
       slug: pedir-ayuda-para-la-mision
       micro_objective: Aplicar con seguridad el paso de pedir ayuda a un adulto de confianza ante un mensaje sospechoso.
-      narrative_beat: Dino decide, sin que nadie se lo recuerde, llevarle un mensaje sospechoso a Dr. Rho antes de responder nada.
+      narrative_beat: Liruf decide, sin que nadie se lo recuerde, llevarle un mensaje sospechoso a Dr. Rho antes de responder nada.
       difficulty: 2
       suggested_families:
       - storyplay
@@ -2304,7 +2304,7 @@ sagas:
     - position: 2
       slug: el-circulo-de-confianza-otra-vez
       micro_objective: Recordar quiénes forman parte del círculo de confianza y quiénes quedan fuera.
-      narrative_beat: Dino ordena de nuevo, sin ayuda, las tarjetas de personas dentro y fuera de su círculo de confianza.
+      narrative_beat: Liruf ordena de nuevo, sin ayuda, las tarjetas de personas dentro y fuera de su círculo de confianza.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2355,7 +2355,7 @@ sagas:
     - position: 2
       slug: banco-o-alcancia-otra-vez
       micro_objective: Recordar una ventaja del banco y una ventaja de la alcancía.
-      narrative_beat: Dino compara de nuevo, de memoria, las ventajas del banco y las de su alcancía.
+      narrative_beat: Liruf compara de nuevo, de memoria, las ventajas del banco y las de su alcancía.
       difficulty: 1
       suggested_families:
       - choice
@@ -2406,7 +2406,7 @@ sagas:
     - position: 2
       slug: un-guardian-nuevo-necesita-ayuda
       micro_objective: Aplicar las cuatro áreas de alerta para ayudar a un personaje nuevo a reconocer una trampa.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo del faro y reta a Dino a guiarlo por las cuatro áreas de alerta.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del faro y reta a Liruf a guiarlo por las cuatro áreas de alerta.
       difficulty: 2
       suggested_families:
       - choice
@@ -2458,7 +2458,7 @@ sagas:
     - position: 2
       slug: el-faro-y-la-aldea
       micro_objective: Recordar por qué guardar monedas en un lugar seguro protege el ahorro, tal como se aprendió en la aldea del ahorro.
-      narrative_beat: Zara Vex recuerda a Dino por qué guardaba sus monedas en un lugar seguro en la aldea, tal como ahora las guarda en el banco del faro.
+      narrative_beat: Zara Vex recuerda a Liruf por qué guardaba sus monedas en un lugar seguro en la aldea, tal como ahora las guarda en el banco del faro.
       difficulty: 1
       suggested_families:
       - story
@@ -2474,7 +2474,7 @@ sagas:
     - position: 4
       slug: el-faro-sigue-encendido-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del faro.
-      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión del faro.
+      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión del faro.
       difficulty: 2
       suggested_families:
       - storyplay

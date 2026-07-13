@@ -28,7 +28,7 @@ const fixture: LessonDocument = {
       payload: {
         lines: [
           { character: 'dina', text_md: 'Hi *kid*!' },
-          { character: 'dino', text_md: '`Save` first.' },
+          { character: 'liruf', text_md: '`Save` first.' },
         ],
       },
     },
@@ -111,7 +111,7 @@ describe('extractNarratables', () => {
   it('tags each story_dialogue line with its OWN speaker (not one narrator per segment)', () => {
     const units = extractNarratables(fixture);
     expect(units.find((u) => u.unit_id === 's1.line.0')?.character).toBe('dina');
-    expect(units.find((u) => u.unit_id === 's1.line.1')?.character).toBe('dino');
+    expect(units.find((u) => u.unit_id === 's1.line.1')?.character).toBe('liruf');
   });
 
   it('leaves character undefined when a segment has no narrator and the field has no per-line speaker', () => {

@@ -9,17 +9,17 @@ adventure:
     es-MX: El Faro del Buen Negocio
     pt-BR: O Farol do Bom Negócio
   description:
-    en-US: Across an archipelago of small businesses, Dina and Dino learn what makes a business good all
+    en-US: Across an archipelago of small businesses, Dina and Liruf learn what makes a business good all
       the way through -- ethics, fair competition, kept promises, and caring for resources.
-    es-MX: En un archipiélago de pequeños negocios, Dina y Dino aprenden qué hace bueno a un negocio de
+    es-MX: En un archipiélago de pequeños negocios, Dina y Liruf aprenden qué hace bueno a un negocio de
       principio a fin -- ética, competencia justa, promesas cumplidas y cuidado de los recursos.
-    pt-BR: Em um arquipélago de pequenos negócios, Dina e Dino aprendem o que torna um negócio bom do início
+    pt-BR: Em um arquipélago de pequenos negócios, Dina e Liruf aprendem o que torna um negócio bom do início
       ao fim -- ética, concorrência justa, promessas cumpridas e cuidado com os recursos.
-  narrative_arc: 'Dina y Dino navegan desde el taller del valle hasta un archipiélago de pequeños negocios
+  narrative_arc: 'Dina y Liruf navegan desde el taller del valle hasta un archipiélago de pequeños negocios
     coronado por un faro donde Dr. Rho vigila, como siempre, que cada trato sea justo. Zara Vex organiza
     una feria de negocios del archipiélago donde varios puestos compiten por los mismos clientes, y ahí
-    Dina y Dino descubren que un buen negocio no se mide solo por cuánto vende, sino por cómo trata a las
-    personas, cómo compite, si cumple lo que promete y si cuida los recursos que usa. Dino aprende haciendo,
+    Dina y Liruf descubren que un buen negocio no se mide solo por cuánto vende, sino por cómo trata a las
+    personas, cómo compite, si cumple lo que promete y si cuida los recursos que usa. Liruf aprende haciendo,
     metiendo las manos en cada decisión difícil del faro, mientras Dina reflexiona junto a Dr. Rho sobre
     lo que de verdad hace bueno a un negocio, más allá de la ganancia.'
 sagas:
@@ -55,7 +55,7 @@ sagas:
       slug: las-puertas-del-faro-del-negocio
       micro_objective: Reconocer que un buen negocio se mide también por hacer lo correcto, no solo por
         vender mucho.
-      narrative_beat: Dina y Dino llegan a un archipiélago de pequeños negocios coronado por un faro donde
+      narrative_beat: Dina y Liruf llegan a un archipiélago de pequeños negocios coronado por un faro donde
         Dr. Rho vigila que cada trato sea justo.
       difficulty: 1
       suggested_families:
@@ -66,7 +66,7 @@ sagas:
       micro_objective: Distinguir una decisión correcta de una decisión que solo es conveniente para el
         negocio.
       narrative_beat: Dr. Rho compara una decisión correcta con una que solo conviene al negocio, para
-        que Dino note la diferencia.
+        que Liruf note la diferencia.
       difficulty: 2
       suggested_families:
       - analyze
@@ -109,7 +109,7 @@ sagas:
     - position: 1
       slug: nadie-esta-viendo
       micro_objective: Reconocer una situación de negocio donde nadie notaría si se hace algo incorrecto.
-      narrative_beat: Dino se da cuenta de que podría cobrar de más a un cliente distraído sin que nadie
+      narrative_beat: Liruf se da cuenta de que podría cobrar de más a un cliente distraído sin que nadie
         más lo notara.
       difficulty: 1
       suggested_families:
@@ -128,7 +128,7 @@ sagas:
       slug: como-me-siento-despues
       micro_objective: Explicar cómo se siente una persona después de haber hecho lo correcto, aunque nadie
         lo supiera.
-      narrative_beat: Zara Vex pregunta a Dino cómo se sintió después de haber devuelto el cambio de más
+      narrative_beat: Zara Vex pregunta a Liruf cómo se sintió después de haber devuelto el cambio de más
         que nadie hubiera notado.
       difficulty: 2
       suggested_families:
@@ -163,7 +163,7 @@ sagas:
       slug: mas-alla-del-cliente
       micro_objective: Reconocer que una decisión de negocio puede afectar a más personas que solo el
         cliente directo.
-      narrative_beat: Dino descubre que una decisión de su puesto también afecta al vecino del muelle,
+      narrative_beat: Liruf descubre que una decisión de su puesto también afecta al vecino del muelle,
         no solo a su cliente.
       difficulty: 1
       suggested_families:
@@ -214,7 +214,7 @@ sagas:
     - position: 1
       slug: una-oferta-tentadora
       micro_objective: Reconocer una oferta tentadora de negocio que en realidad implica hacer algo incorrecto.
-      narrative_beat: A Dino le ofrecen ganar mucho dinero fácil si vende algo que sabe que no funciona
+      narrative_beat: A Liruf le ofrecen ganar mucho dinero fácil si vende algo que sabe que no funciona
         bien.
       difficulty: 1
       suggested_families:
@@ -233,7 +233,7 @@ sagas:
     - position: 3
       slug: por-que-decir-que-no
       micro_objective: Explicar por qué conviene decir que no a una ganancia fácil que viene de algo incorrecto.
-      narrative_beat: Zara Vex explica a Dino por qué decir que no a una ganancia fácil incorrecta cuida
+      narrative_beat: Zara Vex explica a Liruf por qué decir que no a una ganancia fácil incorrecta cuida
         el negocio a largo plazo.
       difficulty: 2
       suggested_families:
@@ -269,7 +269,7 @@ sagas:
       slug: el-camino-facil-y-el-correcto
       micro_objective: Reconocer dos caminos posibles para un negocio, uno fácil y uno correcto pero más
         lento.
-      narrative_beat: Dino ve dos caminos posibles para terminar un pedido, uno rápido y descuidado, otro
+      narrative_beat: Liruf ve dos caminos posibles para terminar un pedido, uno rápido y descuidado, otro
         correcto pero más lento.
       difficulty: 1
       suggested_families:
@@ -288,7 +288,7 @@ sagas:
     - position: 3
       slug: practicar-elegir-lo-correcto
       micro_objective: Practicar elegir la opción correcta dentro de una historia, aunque tome más tiempo.
-      narrative_beat: Zara Vex pone a prueba a Dino con una decisión donde lo correcto toma más tiempo
+      narrative_beat: Zara Vex pone a prueba a Liruf con una decisión donde lo correcto toma más tiempo
         que lo fácil.
       difficulty: 3
       suggested_families:
@@ -343,7 +343,7 @@ sagas:
     - position: 3
       slug: ser-honesto-siempre
       micro_objective: Reconocer la regla de ser honesto siempre como otra regla básica de todo negocio.
-      narrative_beat: Dino recuerda que ser honesto siempre, tal como aprendió en el reino, también es
+      narrative_beat: Liruf recuerda que ser honesto siempre, tal como aprendió en el reino, también es
         una regla básica del faro.
       difficulty: 2
       suggested_families:
@@ -387,7 +387,7 @@ sagas:
       slug: decision-tras-decision
       micro_objective: Explicar que el respeto de un negocio se construye con muchas decisiones correctas,
         no una sola.
-      narrative_beat: Zara Vex explica a Dino que el respeto de un negocio no llega de un solo golpe, sino
+      narrative_beat: Zara Vex explica a Liruf que el respeto de un negocio no llega de un solo golpe, sino
         de muchas decisiones correctas.
       difficulty: 2
       suggested_families:
@@ -441,7 +441,7 @@ sagas:
     - position: 2
       slug: primera-decision-con-mi-brujula
       micro_objective: Aplicar la brújula ética propia frente a una primera decisión de negocio nueva.
-      narrative_beat: Dino usa su nueva brújula ética para decidir frente a una situación nueva de su puesto.
+      narrative_beat: Liruf usa su nueva brújula ética para decidir frente a una situación nueva de su puesto.
       difficulty: 2
       suggested_families:
       - choice
@@ -449,7 +449,7 @@ sagas:
     - position: 3
       slug: una-decision-dificil-con-mi-brujula
       micro_objective: Aplicar la brújula ética propia frente a una decisión de negocio más difícil.
-      narrative_beat: Zara Vex pone a prueba la brújula ética de Dino con una decisión de negocio más difícil
+      narrative_beat: Zara Vex pone a prueba la brújula ética de Liruf con una decisión de negocio más difícil
         que las anteriores.
       difficulty: 3
       suggested_families:
@@ -503,7 +503,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo un negocio cuida a las personas y cuándo una ganancia
         fácil no es correcta.
-      narrative_beat: Dino saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -553,7 +553,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Vender con Honestidad.
-      narrative_beat: Zara Vex trae un recuerdo del reino de las ventas y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo del reino de las ventas y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con la ética del faro.
       difficulty: 2
       suggested_families:
@@ -572,7 +572,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -618,7 +618,7 @@ sagas:
     - position: 1
       slug: dos-puestos-parecidos
       micro_objective: Reconocer una situación donde dos puestos del archipiélago ofrecen algo parecido.
-      narrative_beat: Dino descubre dos puestos del archipiélago que venden limonada muy parecida, uno
+      narrative_beat: Liruf descubre dos puestos del archipiélago que venden limonada muy parecida, uno
         frente al otro.
       difficulty: 1
       suggested_families:
@@ -637,7 +637,7 @@ sagas:
     - position: 3
       slug: la-competencia-no-es-mala
       micro_objective: Explicar por qué la competencia entre negocios no es algo malo en sí misma.
-      narrative_beat: Zara Vex explica a Dino que competir por los mismos clientes no es malo, si se hace
+      narrative_beat: Zara Vex explica a Liruf que competir por los mismos clientes no es malo, si se hace
         de forma justa.
       difficulty: 2
       suggested_families:
@@ -671,7 +671,7 @@ sagas:
     - position: 1
       slug: mejorar-en-vez-de-quejarse
       micro_objective: Reconocer que mejorar el propio producto es más útil que quejarse de un competidor.
-      narrative_beat: En vez de quejarse del puesto vecino, Dino decide pensar en cómo mejorar su propia
+      narrative_beat: En vez de quejarse del puesto vecino, Liruf decide pensar en cómo mejorar su propia
         limonada.
       difficulty: 1
       suggested_families:
@@ -689,7 +689,7 @@ sagas:
     - position: 3
       slug: aplicar-la-mejora-para-competir
       micro_objective: Aplicar una mejora concreta al producto propio pensando en competir de forma justa.
-      narrative_beat: Zara Vex acompaña a Dino mientras aplica una mejora concreta a su producto para competir
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica una mejora concreta a su producto para competir
         mejor.
       difficulty: 3
       suggested_families:
@@ -721,7 +721,7 @@ sagas:
     - position: 1
       slug: un-comentario-que-no-es-cierto
       micro_objective: Reconocer un comentario falso o exagerado sobre un negocio competidor.
-      narrative_beat: Dino escucha a otro mercader decir algo falso sobre el puesto vecino, solo para verse
+      narrative_beat: Liruf escucha a otro mercader decir algo falso sobre el puesto vecino, solo para verse
         mejor.
       difficulty: 1
       suggested_families:
@@ -740,7 +740,7 @@ sagas:
     - position: 3
       slug: que-decir-en-vez-de-hablar-mal
       micro_objective: Practicar qué decir sobre el propio negocio en vez de hablar mal de un competidor.
-      narrative_beat: Zara Vex enseña a Dino a hablar de las cualidades de su propio puesto, en vez de
+      narrative_beat: Zara Vex enseña a Liruf a hablar de las cualidades de su propio puesto, en vez de
         criticar al vecino.
       difficulty: 2
       suggested_families:
@@ -774,7 +774,7 @@ sagas:
     - position: 1
       slug: el-puesto-identico
       micro_objective: Reconocer una situación donde un negocio copió exactamente la idea de otro.
-      narrative_beat: Dino descubre un nuevo puesto que copió exactamente el diseño y las recetas del
+      narrative_beat: Liruf descubre un nuevo puesto que copió exactamente el diseño y las recetas del
         suyo, sin cambiar nada.
       difficulty: 1
       suggested_families:
@@ -793,7 +793,7 @@ sagas:
     - position: 3
       slug: reconocer-una-copia-exacta
       micro_objective: Distinguir, en varios ejemplos, cuáles son copias exactas y cuáles no lo son.
-      narrative_beat: Zara Vex muestra varios ejemplos de negocios del archipiélago y pide a Dino identificar
+      narrative_beat: Zara Vex muestra varios ejemplos de negocios del archipiélago y pide a Liruf identificar
         cuáles copiaron exactamente a otro.
       difficulty: 2
       suggested_families:
@@ -830,7 +830,7 @@ sagas:
     - position: 1
       slug: una-idea-parecida-pero-distinta
       micro_objective: Reconocer un ejemplo de negocio que se inspiró en otro, pero le agregó algo propio.
-      narrative_beat: Dino ve un puesto que se inspiró en el diseño de otro, pero le agregó su propio toque
+      narrative_beat: Liruf ve un puesto que se inspiró en el diseño de otro, pero le agregó su propio toque
         especial.
       difficulty: 1
       suggested_families:
@@ -849,7 +849,7 @@ sagas:
     - position: 3
       slug: agregar-mi-propio-toque
       micro_objective: Practicar agregar un toque propio a una idea que sirvió de inspiración.
-      narrative_beat: Zara Vex reta a Dino a inspirarse en una buena idea del archipiélago, agregando siempre
+      narrative_beat: Zara Vex reta a Liruf a inspirarse en una buena idea del archipiélago, agregando siempre
         su propio toque.
       difficulty: 3
       suggested_families:
@@ -884,7 +884,7 @@ sagas:
       slug: saludar-al-competidor
       micro_objective: Reconocer que se puede saludar con respeto a un competidor, incluso compitiendo
         por los mismos clientes.
-      narrative_beat: Dino se sorprende cuando Dina saluda con respeto al dueño del puesto competidor de
+      narrative_beat: Liruf se sorprende cuando Dina saluda con respeto al dueño del puesto competidor de
         al lado.
       difficulty: 1
       suggested_families:
@@ -893,7 +893,7 @@ sagas:
     - position: 2
       slug: por-que-el-respeto-no-depende-de-competir
       micro_objective: Explicar por qué el respeto hacia una persona no depende de si es o no un competidor.
-      narrative_beat: Dr. Rho explica a Dino que el respeto hacia una persona no depende de si compite
+      narrative_beat: Dr. Rho explica a Liruf que el respeto hacia una persona no depende de si compite
         con ella o no.
       difficulty: 2
       suggested_families:
@@ -936,7 +936,7 @@ sagas:
     - position: 1
       slug: algo-que-hace-bien-mi-competidor
       micro_objective: Observar algo que un competidor hace especialmente bien.
-      narrative_beat: Dino observa que el puesto competidor decora sus vasos de una forma que él nunca
+      narrative_beat: Liruf observa que el puesto competidor decora sus vasos de una forma que él nunca
         había pensado.
       difficulty: 1
       suggested_families:
@@ -954,7 +954,7 @@ sagas:
     - position: 3
       slug: mejorar-gracias-a-lo-aprendido
       micro_objective: Aplicar una mejora propia inspirada en algo bueno observado en un competidor.
-      narrative_beat: Zara Vex acompaña a Dino mientras mejora su propio puesto, inspirado en algo bueno
+      narrative_beat: Zara Vex acompaña a Liruf mientras mejora su propio puesto, inspirado en algo bueno
         que vio en su competidor.
       difficulty: 3
       suggested_families:
@@ -989,7 +989,7 @@ sagas:
     - position: 1
       slug: llega-un-nuevo-competidor
       micro_objective: Reconocer la llegada de un nuevo competidor cercano al propio puesto.
-      narrative_beat: Un nuevo competidor abre su puesto justo al lado del de Dino, ofreciendo algo muy
+      narrative_beat: Un nuevo competidor abre su puesto justo al lado del de Liruf, ofreciendo algo muy
         parecido.
       difficulty: 1
       suggested_families:
@@ -1006,7 +1006,7 @@ sagas:
     - position: 3
       slug: trato-con-respeto-al-nuevo-competidor
       micro_objective: Aplicar el respeto y evitar hablar mal frente al nuevo competidor cercano.
-      narrative_beat: Dino saluda con respeto al nuevo competidor, sin hablar mal de él frente a los clientes.
+      narrative_beat: Liruf saluda con respeto al nuevo competidor, sin hablar mal de él frente a los clientes.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1058,7 +1058,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué no hablar mal de otros y por qué copiar una
         idea no es justo.
-      narrative_beat: Dino saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1108,7 +1108,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Ética del Negocio.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del faro y pide a Dino recordarlo sin
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del faro y pide a Liruf recordarlo sin
         ayuda, antes de mezclarlo con la competencia justa.
       difficulty: 2
       suggested_families:
@@ -1127,7 +1127,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1176,7 +1176,7 @@ sagas:
     - position: 1
       slug: una-promesa-en-el-muelle
       micro_objective: Reconocer una promesa hecha durante una conversación de negocio en el muelle.
-      narrative_beat: Dino escucha a un mercader del muelle prometerle a un cliente que su pedido estará
+      narrative_beat: Liruf escucha a un mercader del muelle prometerle a un cliente que su pedido estará
         listo el viernes.
       difficulty: 1
       suggested_families:
@@ -1195,7 +1195,7 @@ sagas:
     - position: 3
       slug: reconocer-una-promesa-oculta
       micro_objective: Reconocer una promesa que se hace de forma indirecta, sin decir la palabra 'prometo'.
-      narrative_beat: Zara Vex explica a Dino que decir 'seguro lo tienes mañana' también es una promesa,
+      narrative_beat: Zara Vex explica a Liruf que decir 'seguro lo tienes mañana' también es una promesa,
         aunque no use la palabra exacta.
       difficulty: 2
       suggested_families:
@@ -1244,7 +1244,7 @@ sagas:
     - position: 3
       slug: revisar-mis-promesas-anotadas
       micro_objective: Practicar revisar un registro de promesas anotadas para saber cuáles ya se cumplieron.
-      narrative_beat: Zara Vex enseña a Dino a revisar su cuaderno de promesas para saber cuáles ya cumplió
+      narrative_beat: Zara Vex enseña a Liruf a revisar su cuaderno de promesas para saber cuáles ya cumplió
         y cuáles faltan.
       difficulty: 2
       suggested_families:
@@ -1278,7 +1278,7 @@ sagas:
       slug: mas-dificil-de-lo-esperado
       micro_objective: Reconocer un caso donde cumplir una promesa resultó más difícil de lo esperado al
         hacerla.
-      narrative_beat: A Dino le cuesta mucho más de lo esperado terminar el pedido que prometió para el
+      narrative_beat: A Liruf le cuesta mucho más de lo esperado terminar el pedido que prometió para el
         viernes.
       difficulty: 1
       suggested_families:
@@ -1287,7 +1287,7 @@ sagas:
     - position: 2
       slug: buscar-una-forma-de-cumplir
       micro_objective: Practicar buscar una forma de cumplir una promesa difícil, en vez de abandonarla.
-      narrative_beat: Dr. Rho ayuda a Dino a buscar una forma de cumplir su promesa difícil, en vez de
+      narrative_beat: Dr. Rho ayuda a Liruf a buscar una forma de cumplir su promesa difícil, en vez de
         abandonarla.
       difficulty: 2
       suggested_families:
@@ -1297,7 +1297,7 @@ sagas:
       slug: pedir-ayuda-para-cumplir
       micro_objective: Reconocer que pedir ayuda para cumplir una promesa difícil también es una opción
         válida.
-      narrative_beat: Zara Vex recuerda a Dino que puede pedir ayuda a su equipo para cumplir una promesa
+      narrative_beat: Zara Vex recuerda a Liruf que puede pedir ayuda a su equipo para cumplir una promesa
         que resultó difícil.
       difficulty: 2
       suggested_families:
@@ -1332,7 +1332,7 @@ sagas:
       slug: no-va-a-poder-cumplirse
       micro_objective: Reconocer un momento en que se hace evidente que una promesa no se podrá cumplir
         tal como se dijo.
-      narrative_beat: Dino se da cuenta, a mitad de semana, de que no podrá terminar el pedido exactamente
+      narrative_beat: Liruf se da cuenta, a mitad de semana, de que no podrá terminar el pedido exactamente
         como prometió.
       difficulty: 1
       suggested_families:
@@ -1350,7 +1350,7 @@ sagas:
     - position: 3
       slug: como-avisar-con-calma
       micro_objective: Practicar cómo avisar con calma y claridad que una promesa cambiará.
-      narrative_beat: Zara Vex enseña a Dino a avisar con calma y claridad cuando una promesa de su negocio
+      narrative_beat: Zara Vex enseña a Liruf a avisar con calma y claridad cuando una promesa de su negocio
         va a cambiar.
       difficulty: 2
       suggested_families:
@@ -1493,7 +1493,7 @@ sagas:
       slug: el-cliente-decepcionado-regresa
       micro_objective: Reconocer la oportunidad de reparar la confianza cuando un cliente decepcionado
         regresa.
-      narrative_beat: El cliente decepcionado regresa al puesto, y Dino tiene la oportunidad de reparar
+      narrative_beat: El cliente decepcionado regresa al puesto, y Liruf tiene la oportunidad de reparar
         la confianza perdida.
       difficulty: 1
       suggested_families:
@@ -1512,7 +1512,7 @@ sagas:
       slug: cumplir-la-nueva-promesa-de-solucion
       micro_objective: Reconocer la importancia de cumplir esta vez la nueva promesa de solución hecha
         al cliente.
-      narrative_beat: Zara Vex recuerda a Dino que esta segunda promesa, la de la solución, debe cumplirse
+      narrative_beat: Zara Vex recuerda a Liruf que esta segunda promesa, la de la solución, debe cumplirse
         sin falta.
       difficulty: 2
       suggested_families:
@@ -1556,7 +1556,7 @@ sagas:
     - position: 2
       slug: anoto-una-promesa-nueva
       micro_objective: Anotar una promesa nueva de negocio en el registro propio, con su detalle exacto.
-      narrative_beat: Dino anota, con cuidado, una nueva promesa de negocio en su registro, con todos sus
+      narrative_beat: Liruf anota, con cuidado, una nueva promesa de negocio en su registro, con todos sus
         detalles.
       difficulty: 2
       suggested_families:
@@ -1620,7 +1620,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo cumplir una promesa difícil y cómo avisar a tiempo
         si algo cambia.
-      narrative_beat: Dino saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1670,7 +1670,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Competencia Justa.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de competencia justa y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de competencia justa y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con las promesas.
       difficulty: 2
       suggested_families:
@@ -1689,7 +1689,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1747,7 +1747,7 @@ sagas:
     - position: 2
       slug: cual-recurso-es-cual
       micro_objective: Clasificar distintos elementos de un negocio entre material, tiempo o dinero.
-      narrative_beat: Zara Vex muestra varios elementos del puesto de Dino y pide clasificarlos entre material,
+      narrative_beat: Zara Vex muestra varios elementos del puesto de Liruf y pide clasificarlos entre material,
         tiempo o dinero.
       difficulty: 2
       suggested_families:
@@ -1756,7 +1756,7 @@ sagas:
     - position: 3
       slug: los-recursos-son-limitados
       micro_objective: Explicar por qué los recursos de un negocio, aunque distintos, son siempre limitados.
-      narrative_beat: Dr. Rho explica a Dino que los materiales, el tiempo y el dinero de un negocio siempre
+      narrative_beat: Dr. Rho explica a Liruf que los materiales, el tiempo y el dinero de un negocio siempre
         tienen un límite.
       difficulty: 2
       suggested_families:
@@ -1793,7 +1793,7 @@ sagas:
     - position: 1
       slug: materiales-tirados-sin-usar
       micro_objective: Reconocer una situación donde se desperdiciaron materiales de un negocio sin necesidad.
-      narrative_beat: Dino nota que su puesto tiró varios materiales sin usar, sin que nadie se diera cuenta
+      narrative_beat: Liruf nota que su puesto tiró varios materiales sin usar, sin que nadie se diera cuenta
         del desperdicio.
       difficulty: 1
       suggested_families:
@@ -1812,7 +1812,7 @@ sagas:
     - position: 3
       slug: guardar-lo-que-sobra
       micro_objective: Practicar guardar con cuidado el material que sobra de un proyecto para usarlo después.
-      narrative_beat: Zara Vex enseña a Dino a guardar con cuidado el material que sobra, en vez de tirarlo.
+      narrative_beat: Zara Vex enseña a Liruf a guardar con cuidado el material que sobra, en vez de tirarlo.
       difficulty: 2
       suggested_families:
       - arrange
@@ -1844,7 +1844,7 @@ sagas:
     - position: 1
       slug: un-frasco-que-todavia-sirve
       micro_objective: Reconocer un ejemplo de material usado que todavía sirve para volver a usarse.
-      narrative_beat: Dino encuentra un frasco de vidrio ya usado que todavía sirve perfectamente para
+      narrative_beat: Liruf encuentra un frasco de vidrio ya usado que todavía sirve perfectamente para
         su puesto de limonada.
       difficulty: 1
       suggested_families:
@@ -1862,7 +1862,7 @@ sagas:
     - position: 3
       slug: darle-un-segundo-uso
       micro_objective: Proponer un segundo uso creativo para un material que todavía sirve.
-      narrative_beat: Zara Vex reta a Dino a proponer un segundo uso creativo para un material que su puesto
+      narrative_beat: Zara Vex reta a Liruf a proponer un segundo uso creativo para un material que su puesto
         ya no ocupaba.
       difficulty: 3
       suggested_families:
@@ -1896,7 +1896,7 @@ sagas:
     - position: 1
       slug: algo-salio-mal-en-el-puesto
       micro_objective: Reconocer un error real que ocurrió en un negocio, sin dramatizarlo de más.
-      narrative_beat: Un lote entero de limonada de Dino se echó a perder por dejarlo demasiado tiempo
+      narrative_beat: Un lote entero de limonada de Liruf se echó a perder por dejarlo demasiado tiempo
         al sol.
       difficulty: 1
       suggested_families:
@@ -1905,7 +1905,7 @@ sagas:
     - position: 2
       slug: el-error-no-borra-lo-bueno
       micro_objective: Reconocer que un error no borra todo lo bueno que un negocio ha logrado antes.
-      narrative_beat: Dr. Rho recuerda a Dino que un solo error no borra todo lo bueno que su puesto ha
+      narrative_beat: Dr. Rho recuerda a Liruf que un solo error no borra todo lo bueno que su puesto ha
         logrado antes.
       difficulty: 2
       suggested_families:
@@ -1914,7 +1914,7 @@ sagas:
     - position: 3
       slug: que-hago-despues-del-error
       micro_objective: Practicar decidir un siguiente paso concreto después de un error de negocio.
-      narrative_beat: Zara Vex ayuda a Dino a decidir un siguiente paso concreto después de perder el lote
+      narrative_beat: Zara Vex ayuda a Liruf a decidir un siguiente paso concreto después de perder el lote
         de limonada.
       difficulty: 2
       suggested_families:
@@ -1960,7 +1960,7 @@ sagas:
     - position: 2
       slug: encontrar-la-leccion
       micro_objective: Identificar una lección concreta que se puede aprender de un error de negocio revisado.
-      narrative_beat: Zara Vex ayuda a Dino a encontrar la lección concreta escondida detrás del error
+      narrative_beat: Zara Vex ayuda a Liruf a encontrar la lección concreta escondida detrás del error
         de su puesto.
       difficulty: 2
       suggested_families:
@@ -2004,7 +2004,7 @@ sagas:
     - position: 1
       slug: una-idea-para-que-no-se-repita
       micro_objective: Proponer una idea de cambio concreto para que un error de negocio no vuelva a pasar.
-      narrative_beat: A Dino se le ocurre una idea concreta para que su limonada nunca más se eche a perder
+      narrative_beat: A Liruf se le ocurre una idea concreta para que su limonada nunca más se eche a perder
         por el sol.
       difficulty: 1
       suggested_families:
@@ -2022,7 +2022,7 @@ sagas:
     - position: 3
       slug: aplicar-el-cambio-en-el-negocio
       micro_objective: Aplicar un cambio concreto en el negocio propio a partir de lo aprendido del error.
-      narrative_beat: Zara Vex acompaña a Dino mientras aplica, paso a paso, el cambio para que su producto
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica, paso a paso, el cambio para que su producto
         no vuelva a echarse a perder.
       difficulty: 3
       suggested_families:
@@ -2122,7 +2122,7 @@ sagas:
     - position: 2
       slug: cuido-los-materiales-durante-el-proyecto
       micro_objective: Aplicar el cuidado de materiales, evitando desperdicio, durante todo un nuevo proyecto.
-      narrative_beat: Dino cuida con atención los materiales durante todo el nuevo proyecto, sin desperdiciar
+      narrative_beat: Liruf cuida con atención los materiales durante todo el nuevo proyecto, sin desperdiciar
         nada.
       difficulty: 2
       suggested_families:
@@ -2141,7 +2141,7 @@ sagas:
       slug: mi-negocio-fuerte-y-sabio
       micro_objective: Cerrar el desafío celebrando un negocio que cuida sus recursos y aprende de sus
         errores.
-      narrative_beat: Dina celebra junto a Zara Vex, Dino y Dr. Rho un negocio que ahora cuida sus recursos
+      narrative_beat: Dina celebra junto a Zara Vex, Liruf y Dr. Rho un negocio que ahora cuida sus recursos
         y aprende de sus errores.
       difficulty: 3
       suggested_families:
@@ -2187,7 +2187,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo reusar lo que todavía sirve y por qué un error
         no es el final.
-      narrative_beat: Dino saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2238,7 +2238,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Cumplir Promesas.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de las promesas y pide a Dino recordarlo sin
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las promesas y pide a Liruf recordarlo sin
         ayuda, antes de mezclarlo con los recursos y errores.
       difficulty: 2
       suggested_families:
@@ -2257,7 +2257,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -2312,7 +2312,7 @@ sagas:
     - position: 1
       slug: el-faro-del-buen-negocio-vuelve-a-brillar
       micro_objective: Recordar que la ética significa hacer lo correcto aunque nadie esté mirando.
-      narrative_beat: 'Zara Vex reúne a Dina y Dino en la cima del faro y anuncia la Gran Misión: recorrer
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf en la cima del faro y anuncia la Gran Misión: recorrer
         una vez más todo lo aprendido en el archipiélago.'
       difficulty: 1
       suggested_families:
@@ -2330,7 +2330,7 @@ sagas:
     - position: 3
       slug: lo-correcto-sobre-lo-facil-otra-vez
       micro_objective: Recordar cómo elegir la opción correcta de un negocio, aunque sea más difícil.
-      narrative_beat: Dino recuerda, sin ayuda, aquella vez que eligió lo correcto sobre lo fácil en su
+      narrative_beat: Liruf recuerda, sin ayuda, aquella vez que eligió lo correcto sobre lo fácil en su
         puesto.
       difficulty: 2
       suggested_families:
@@ -2350,7 +2350,7 @@ sagas:
     slug: competencia-de-la-gran-mision
     kind: review_quest
     title_es: Competencia de la Gran Misión
-    concept: Dina y Dino recuerdan cómo competir con un buen producto, sin hablar mal de otros, sin copiar,
+    concept: Dina y Liruf recuerdan cómo competir con un buen producto, sin hablar mal de otros, sin copiar,
       y tratando con respeto a un competidor.
     learning_objective: Al final, el niño puede recordar y aplicar las reglas de competencia justa.
     key_vocabulary:
@@ -2368,7 +2368,7 @@ sagas:
     - position: 1
       slug: competir-con-un-buen-producto-otra-vez
       micro_objective: Recordar cómo competir mejorando el producto propio, en vez de otra cosa.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo mejoró su producto para competir
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo mejoró su producto para competir
         de forma justa.
       difficulty: 1
       suggested_families:
@@ -2386,7 +2386,7 @@ sagas:
     - position: 3
       slug: respeto-al-competidor-otra-vez
       micro_objective: Recordar y aplicar el respeto hacia un competidor dentro de una situación nueva.
-      narrative_beat: Dr. Rho presenta un nuevo competidor y pregunta a Dino si recuerda cómo tratarlo
+      narrative_beat: Dr. Rho presenta un nuevo competidor y pregunta a Liruf si recuerda cómo tratarlo
         con respeto.
       difficulty: 2
       suggested_families:
@@ -2406,7 +2406,7 @@ sagas:
     slug: promesas-de-la-gran-mision
     kind: review_quest
     title_es: Promesas de la Gran Misión
-    concept: Dina y Dino recuerdan cómo cumplir una promesa difícil, avisar a tiempo si algo cambia y reparar
+    concept: Dina y Liruf recuerdan cómo cumplir una promesa difícil, avisar a tiempo si algo cambia y reparar
       la confianza después de un error.
     learning_objective: Al final, el niño puede recordar y aplicar cómo mantener promesas de negocio confiables.
     key_vocabulary:
@@ -2424,7 +2424,7 @@ sagas:
     - position: 1
       slug: cumplir-lo-dificil-otra-vez
       micro_objective: Recordar cómo cumplir una promesa difícil de negocio, sin abandonarla.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo cumplió una promesa difícil de su
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo cumplió una promesa difícil de su
         puesto.
       difficulty: 1
       suggested_families:
@@ -2443,7 +2443,7 @@ sagas:
     - position: 3
       slug: reparar-la-confianza-otra-vez
       micro_objective: Recordar y aplicar cómo reparar la confianza después de no cumplir una promesa.
-      narrative_beat: Dr. Rho presenta una situación nueva y pregunta a Dino si recuerda cómo reparar la
+      narrative_beat: Dr. Rho presenta una situación nueva y pregunta a Liruf si recuerda cómo reparar la
         confianza de un cliente decepcionado.
       difficulty: 2
       suggested_families:
@@ -2463,7 +2463,7 @@ sagas:
     slug: recursos-de-la-gran-mision
     kind: review_quest
     title_es: Recursos de la Gran Misión
-    concept: Dina y Dino recuerdan cómo no desperdiciar materiales, reusar lo que todavía sirve y aprender
+    concept: Dina y Liruf recuerdan cómo no desperdiciar materiales, reusar lo que todavía sirve y aprender
       de un error concreto.
     learning_objective: Al final, el niño puede recordar y aplicar cómo cuidar recursos y aprender de errores.
     key_vocabulary:
@@ -2490,7 +2490,7 @@ sagas:
     - position: 2
       slug: reusar-otra-vez-en-la-mision
       micro_objective: Recordar cómo reconocer un material usado que todavía sirve para reusarse.
-      narrative_beat: Dino recuerda, de memoria, cómo le dio un segundo uso a un material que su puesto
+      narrative_beat: Liruf recuerda, de memoria, cómo le dio un segundo uso a un material que su puesto
         ya no ocupaba.
       difficulty: 1
       suggested_families:
@@ -2558,7 +2558,7 @@ sagas:
       slug: el-reto-de-las-cuatro-luces-de-negocios
       micro_objective: Aplicar con seguridad las cuatro áreas del faro en un desafío único que las combina
         todas.
-      narrative_beat: Dino resuelve un desafío del faro que combina, de una sola vez, ética, competencia,
+      narrative_beat: Liruf resuelve un desafío del faro que combina, de una sola vez, ética, competencia,
         promesas y recursos.
       difficulty: 2
       suggested_families:
@@ -2579,7 +2579,7 @@ sagas:
     kind: review_quest
     title_es: La Gran Misión del Faro del Buen Negocio
     concept: El gran cierre de la aventura combina las cuatro áreas del faro con lecciones del reino de
-      las ventas y el taller del equipo, celebrando el crecimiento de Dina y Dino como founders.
+      las ventas y el taller del equipo, celebrando el crecimiento de Dina y Liruf como founders.
     learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido en El
       Faro del Buen Negocio conectándolo con aventuras anteriores.
     key_vocabulary:
@@ -2598,7 +2598,7 @@ sagas:
       slug: el-faro-recuerda-el-reino
       micro_objective: Recordar cómo la honestidad al vender en el reino se conecta con la ética del negocio
         del faro.
-      narrative_beat: Zara Vex recuerda junto a Dina y Dino cómo la honestidad que practicaron en el reino
+      narrative_beat: Zara Vex recuerda junto a Dina y Liruf cómo la honestidad que practicaron en el reino
         se convirtió en la ética del faro.
       difficulty: 1
       suggested_families:
@@ -2628,7 +2628,7 @@ sagas:
       slug: el-faro-sigue-guiando-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
         faro.
-      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Zara Vex, Dino
+      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Zara Vex, Liruf
         y Dr. Rho el cierre de la Gran Misión del faro.
       difficulty: 2
       suggested_families:

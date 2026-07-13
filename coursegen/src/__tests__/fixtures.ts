@@ -179,12 +179,12 @@ export function buildFacts(overrides: Partial<FactsFile> = {}): FactsFile {
         enforce: false,
       },
       'characters.canon_ids': {
-        value: ['dina', 'dino', 'rho', 'zara'],
+        value: ['dina', 'liruf', 'rho', 'zara'],
         unit: 'n/a',
         verified: true,
       },
       'characters.roles': {
-        value: { dina: 'mentora', dino: 'juguetón' },
+        value: { dina: 'mentora', liruf: 'juguetón' },
         unit: 'n/a',
         verified: true,
       },

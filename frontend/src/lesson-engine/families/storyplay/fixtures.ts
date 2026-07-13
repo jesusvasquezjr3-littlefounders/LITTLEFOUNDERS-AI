@@ -29,7 +29,7 @@ export const storyplayFixtures: SegmentBase[] = [
         {
           id: 'n2',
           text_md: '¡Tu limonada sabe deliciosa! Te quedan **$20**. ¿Ahora qué?',
-          character: 'dino',
+          character: 'liruf',
           emotion: 'excited',
           choices: [
             { id: 'a', text_md: 'Hacer un letrero llamativo ($10)', next: 'n4' },
@@ -39,7 +39,7 @@ export const storyplayFixtures: SegmentBase[] = [
         {
           id: 'n3',
           text_md: 'Mmm… la limonada quedó **aguada**. Un cliente hace cara rara.',
-          character: 'dino',
+          character: 'liruf',
           emotion: 'thinking',
           choices: [
             { id: 'a', text_md: 'Bajar el precio y ser honesto', next: 'n4' },
@@ -155,7 +155,7 @@ export const storyplayFixtures: SegmentBase[] = [
     prompt_md: '¡Rápido! Une cada palabra del dinero con lo que significa.',
     difficulty: 2,
     xp: 15,
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       left: [
         { id: 'l1', text_md: 'Ahorro' },

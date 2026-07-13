@@ -16,8 +16,8 @@
     "pt-BR": "Portugués"
   },
   "characters": {
-    "dino": {
-      "default_greeting": "¡Hola! ¡Soy Dino!"
+    "liruf": {
+      "default_greeting": "¡Hola! ¡Soy Liruf!"
     }
   }
 }

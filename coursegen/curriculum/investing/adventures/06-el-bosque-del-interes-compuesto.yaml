@@ -9,10 +9,10 @@ adventure:
     es-MX: El Bosque del Interés Compuesto
     pt-BR: A Floresta dos Juros Compostos
   description:
-    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Dino discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
-    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Dino descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
-    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Dino descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
-  narrative_arc: Dina y Dino entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
+    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Liruf discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
+    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Liruf descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
+    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Liruf descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
+  narrative_arc: Dina y Liruf entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
 sagas:
 - position: 1
   slug: la-bola-de-nieve-del-dinero
@@ -43,7 +43,7 @@ sagas:
     - position: 1
       slug: la-primera-bola-de-nieve
       micro_objective: Observar cómo una bola de nieve pequeña empieza a crecer al rodar por el bosque.
-      narrative_beat: Dr. Rho recibe a Dina y Dino en el bosque nevado y hace rodar una bolita de nieve pequeña frente a ellos.
+      narrative_beat: Dr. Rho recibe a Dina y Liruf en el bosque nevado y hace rodar una bolita de nieve pequeña frente a ellos.
       difficulty: 1
       suggested_families:
       - story
@@ -51,7 +51,7 @@ sagas:
     - position: 2
       slug: guardar-dinero-tambien-crece
       micro_objective: Comparar la bola de nieve que crece con el dinero guardado que también puede crecer un poco con el tiempo.
-      narrative_beat: Zara Vex compara la bola de nieve con una bolsa de monedas guardada, preguntando a Dino qué tienen en común.
+      narrative_beat: Zara Vex compara la bola de nieve con una bolsa de monedas guardada, preguntando a Liruf qué tienen en común.
       difficulty: 2
       suggested_families:
       - choice
@@ -151,7 +151,7 @@ sagas:
     - position: 3
       slug: cada-vuelta-parte-de-un-tamano-mas-grande
       micro_objective: Explicar que cada vuelta nueva parte de un tamaño más grande que la vuelta anterior.
-      narrative_beat: Dr. Rho pregunta a Dino por qué la tercera vuelta gana todavía más nieve que la segunda.
+      narrative_beat: Dr. Rho pregunta a Liruf por qué la tercera vuelta gana todavía más nieve que la segunda.
       difficulty: 2
       suggested_families:
       - choice
@@ -201,7 +201,7 @@ sagas:
     - position: 3
       slug: sumar-cien-mas-diez
       micro_objective: Calcular que cien monedas más diez monedas de premio dan ciento diez monedas en total.
-      narrative_beat: Dr. Rho pide a Dino sumar las cien monedas iniciales con las diez de premio para saber el total nuevo.
+      narrative_beat: Dr. Rho pide a Liruf sumar las cien monedas iniciales con las diez de premio para saber el total nuevo.
       difficulty: 2
       suggested_families:
       - money
@@ -247,7 +247,7 @@ sagas:
     - position: 3
       slug: por-que-no-son-ciento-veinte
       micro_objective: Explicar por qué el resultado es ciento veintiuno y no exactamente ciento veinte.
-      narrative_beat: Dr. Rho pregunta a Dino por qué el premio de este año es un poquito más que el del año pasado.
+      narrative_beat: Dr. Rho pregunta a Liruf por qué el premio de este año es un poquito más que el del año pasado.
       difficulty: 3
       suggested_families:
       - analyze
@@ -255,7 +255,7 @@ sagas:
     - position: 4
       slug: mi-calculo-de-ciento-diez-a-ciento-veintiuno
       micro_objective: Aplicar el cálculo completo para explicar cómo ciento diez monedas se convirtieron en ciento veintiuno.
-      narrative_beat: Dina explica a Dino, paso a paso, cómo sus ciento diez monedas se convirtieron en ciento veintiuno.
+      narrative_beat: Dina explica a Liruf, paso a paso, cómo sus ciento diez monedas se convirtieron en ciento veintiuno.
       difficulty: 3
       suggested_families:
       - money
@@ -293,7 +293,7 @@ sagas:
     - position: 3
       slug: comparar-las-tres-vueltas
       micro_objective: Comparar el premio ganado en cada una de las tres vueltas y notar que crece cada vez.
-      narrative_beat: Dr. Rho pone las tres vueltas en fila y pide a Dino comparar cuánto premio ganó cada una.
+      narrative_beat: Dr. Rho pone las tres vueltas en fila y pide a Liruf comparar cuánto premio ganó cada una.
       difficulty: 3
       suggested_families:
       - analyze
@@ -331,7 +331,7 @@ sagas:
     - position: 2
       slug: el-secreto-de-la-velocidad
       micro_objective: 'Explicar el secreto de por qué la bola gana velocidad: cada premio se suma a un tamaño mayor que antes.'
-      narrative_beat: Zara Vex reta a Dino a explicar el secreto de por qué la bola de nieve del bosque gana velocidad con cada vuelta.
+      narrative_beat: Zara Vex reta a Liruf a explicar el secreto de por qué la bola de nieve del bosque gana velocidad con cada vuelta.
       difficulty: 3
       suggested_families:
       - choice
@@ -369,7 +369,7 @@ sagas:
     - position: 1
       slug: una-bola-de-nieve-nueva
       micro_objective: Observar una bola de nieve nueva del bosque, empezando con una cantidad distinta de monedas.
-      narrative_beat: Dr. Rho presenta una bola de nieve nueva a Dino, empezando con una cantidad distinta de monedas de oro.
+      narrative_beat: Dr. Rho presenta una bola de nieve nueva a Liruf, empezando con una cantidad distinta de monedas de oro.
       difficulty: 2
       suggested_families:
       - story
@@ -377,7 +377,7 @@ sagas:
     - position: 2
       slug: predecir-el-siguiente-paso
       micro_objective: Predecir cuántas monedas tendrá la bola de nieve nueva después de la primera vuelta.
-      narrative_beat: Zara Vex reta a Dino a predecir cuántas monedas tendrá la nueva bola de nieve después de su primera vuelta.
+      narrative_beat: Zara Vex reta a Liruf a predecir cuántas monedas tendrá la nueva bola de nieve después de su primera vuelta.
       difficulty: 3
       suggested_families:
       - money
@@ -385,7 +385,7 @@ sagas:
     - position: 3
       slug: comprobar-mi-prediccion
       micro_objective: Comprobar la predicción hecha comparándola con el resultado real de la vuelta de la bola de nieve.
-      narrative_beat: Dr. Rho revela el resultado real de la vuelta, y Dino compara su predicción con lo que en verdad pasó.
+      narrative_beat: Dr. Rho revela el resultado real de la vuelta, y Liruf compara su predicción con lo que en verdad pasó.
       difficulty: 3
       suggested_families:
       - money
@@ -430,7 +430,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-bola
       micro_objective: Recordar y ordenar de nuevo las tres vueltas de la bola de nieve del dinero, de cien a ciento treinta y tres.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -471,7 +471,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-reino-de-las-canastas
       micro_objective: Recordar, tal como se aprendió antes, que el precio de una acción puede subir con el tiempo.
-      narrative_beat: Zara Vex trae un recuerdo del Reino de las Canastas y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el bosque.
+      narrative_beat: Zara Vex trae un recuerdo del Reino de las Canastas y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el bosque.
       difficulty: 1
       suggested_families:
       - choice
@@ -487,7 +487,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-bosque
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de precio que sube y dinero que crece con interés.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -537,7 +537,7 @@ sagas:
     - position: 2
       slug: dentro-de-la-fruta-hay-semillas
       micro_objective: Reconocer que dentro de cada fruta del árbol hay semillas que podrían convertirse en árboles nuevos.
-      narrative_beat: Zara Vex abre una fruta del árbol mágico y muestra a Dino las semillas brillantes que tiene adentro.
+      narrative_beat: Zara Vex abre una fruta del árbol mágico y muestra a Liruf las semillas brillantes que tiene adentro.
       difficulty: 2
       suggested_families:
       - story
@@ -583,7 +583,7 @@ sagas:
     - position: 2
       slug: plantar-de-nuevo-la-cosecha
       micro_objective: Reconocer que plantar de nuevo esas semillas, en vez de guardarlas sin usar, es lo que se llama reinvertir.
-      narrative_beat: Zara Vex enseña a Dino la palabra 'reinvertir' mientras plantan de nuevo las semillas cosechadas del árbol mágico.
+      narrative_beat: Zara Vex enseña a Liruf la palabra 'reinvertir' mientras plantan de nuevo las semillas cosechadas del árbol mágico.
       difficulty: 2
       suggested_families:
       - story
@@ -619,9 +619,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-quiere-comerse-toda-la-fruta
-      micro_objective: Observar el deseo inmediato de Dino de comerse toda la fruta del árbol mágico de una vez.
-      narrative_beat: Dino mira la fruta jugosa del árbol mágico y quiere comérsela toda de inmediato, sin guardar ninguna semilla.
+      slug: liruf-quiere-comerse-toda-la-fruta
+      micro_objective: Observar el deseo inmediato de Liruf de comerse toda la fruta del árbol mágico de una vez.
+      narrative_beat: Liruf mira la fruta jugosa del árbol mágico y quiere comérsela toda de inmediato, sin guardar ninguna semilla.
       difficulty: 1
       suggested_families:
       - story
@@ -629,7 +629,7 @@ sagas:
     - position: 2
       slug: que-pasa-si-me-como-todo
       micro_objective: Reconocer que, si se come toda la fruta, no queda ninguna semilla para plantar árboles nuevos.
-      narrative_beat: Zara Vex pregunta a Dino qué pasaría con el bosque si todos se comieran toda la fruta sin guardar ninguna semilla.
+      narrative_beat: Zara Vex pregunta a Liruf qué pasaría con el bosque si todos se comieran toda la fruta sin guardar ninguna semilla.
       difficulty: 2
       suggested_families:
       - choice
@@ -675,7 +675,7 @@ sagas:
     - position: 2
       slug: tres-arboles-se-convierten-en-mas
       micro_objective: Reconocer que esos tres árboles, si siguen dando semillas plantadas, darán origen a todavía más árboles.
-      narrative_beat: Zara Vex pregunta a Dino cuántos árboles nuevos podrían salir si los tres árboles actuales también dan sus semillas.
+      narrative_beat: Zara Vex pregunta a Liruf cuántos árboles nuevos podrían salir si los tres árboles actuales también dan sus semillas.
       difficulty: 3
       suggested_families:
       - analyze
@@ -711,17 +711,17 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-deja-de-plantar-una-temporada
-      micro_objective: Observar qué pasa cuando Dino decide comerse toda la cosecha de una temporada, sin plantar ninguna semilla.
-      narrative_beat: Dino decide comerse toda la cosecha de esa temporada, sin guardar ninguna semilla para plantar.
+      slug: liruf-deja-de-plantar-una-temporada
+      micro_objective: Observar qué pasa cuando Liruf decide comerse toda la cosecha de una temporada, sin plantar ninguna semilla.
+      narrative_beat: Liruf decide comerse toda la cosecha de esa temporada, sin guardar ninguna semilla para plantar.
       difficulty: 2
       suggested_families:
       - story
       - choice
     - position: 2
-      slug: el-bosque-de-dino-crece-mas-despacio
-      micro_objective: Comparar el bosque de Dino, que dejó de plantar, con el bosque de Dina, que siguió reinvirtiendo.
-      narrative_beat: Zara Vex compara el bosque de Dino, que creció más despacio, con el bosque de Dina, que siguió reinvirtiendo sus semillas.
+      slug: el-bosque-de-liruf-crece-mas-despacio
+      micro_objective: Comparar el bosque de Liruf, que dejó de plantar, con el bosque de Dina, que siguió reinvirtiendo.
+      narrative_beat: Zara Vex compara el bosque de Liruf, que creció más despacio, con el bosque de Dina, que siguió reinvirtiendo sus semillas.
       difficulty: 3
       suggested_families:
       - analyze
@@ -729,7 +729,7 @@ sagas:
     - position: 3
       slug: los-arboles-que-ya-existen-no-desaparecen
       micro_objective: Reconocer que los árboles que ya existían no desaparecen, aunque el bosque deje de crecer tan rápido.
-      narrative_beat: Dr. Rho tranquiliza a Dino explicando que los árboles que ya tiene no desaparecen, solo crecen más despacio los nuevos.
+      narrative_beat: Dr. Rho tranquiliza a Liruf explicando que los árboles que ya tiene no desaparecen, solo crecen más despacio los nuevos.
       difficulty: 3
       suggested_families:
       - story
@@ -737,7 +737,7 @@ sagas:
     - position: 4
       slug: mi-decision-de-seguir-plantando
       micro_objective: Decidir, con razones propias, seguir reinvirtiendo semillas frente a la tentación de comérselas todas.
-      narrative_beat: Frente a una nueva cosecha, Dino decide, con las razones aprendidas, seguir plantando en vez de comerse todo.
+      narrative_beat: Frente a una nueva cosecha, Liruf decide, con las razones aprendidas, seguir plantando en vez de comerse todo.
       difficulty: 3
       suggested_families:
       - choice
@@ -767,7 +767,7 @@ sagas:
     - position: 2
       slug: mi-prediccion-de-la-cuarta-temporada
       micro_objective: Predecir cuántos árboles nuevos podría dar el bosque en una cuarta temporada, antes de verlo.
-      narrative_beat: Zara Vex reta a Dino a predecir cuántos árboles nuevos dará el bosque en la cuarta temporada, antes de mostrárselo.
+      narrative_beat: Zara Vex reta a Liruf a predecir cuántos árboles nuevos dará el bosque en la cuarta temporada, antes de mostrárselo.
       difficulty: 3
       suggested_families:
       - money
@@ -775,7 +775,7 @@ sagas:
     - position: 3
       slug: comprobar-la-prediccion-del-bosque
       micro_objective: Comprobar la predicción hecha comparándola con el resultado real de la cuarta temporada del bosque.
-      narrative_beat: Dr. Rho revela el resultado real de la cuarta temporada, y Dino compara su predicción con lo que en verdad pasó.
+      narrative_beat: Dr. Rho revela el resultado real de la cuarta temporada, y Liruf compara su predicción con lo que en verdad pasó.
       difficulty: 3
       suggested_families:
       - money
@@ -914,7 +914,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-el-arbol
       micro_objective: Recordar y ordenar de nuevo la diferencia entre comerse la fruta y plantar la semilla.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -955,7 +955,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-las-cien-monedas
       micro_objective: Recordar, tal como se aprendió antes, cómo cien monedas se convierten en ciento diez con interés.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del bosque y pide a Dino recordarlo sin ayuda, antes de mezclarlo con las semillas.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del bosque y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con las semillas.
       difficulty: 1
       suggested_families:
       - choice
@@ -971,7 +971,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-las-semillas
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de interés compuesto y reinvertir combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1021,7 +1021,7 @@ sagas:
     - position: 2
       slug: sin-tiempo-no-hay-vueltas
       micro_objective: Reconocer que sin el paso del tiempo, la bola de nieve no podría dar ninguna vuelta ni el árbol dar ninguna cosecha.
-      narrative_beat: Zara Vex detiene el tiempo por un momento mágico, y Dino nota que la bola de nieve y el árbol dejan de crecer.
+      narrative_beat: Zara Vex detiene el tiempo por un momento mágico, y Liruf nota que la bola de nieve y el árbol dejan de crecer.
       difficulty: 2
       suggested_families:
       - story
@@ -1058,24 +1058,24 @@ sagas:
     lessons:
     - position: 1
       slug: dos-semillas-un-mismo-dia
-      micro_objective: Observar dos semillas plantadas el mismo día, una por Dina y otra guardada sin plantar por Dino.
-      narrative_beat: Dina y Dino reciben cada uno una semilla el mismo día, pero Dina la planta de inmediato y Dino decide guardarla.
+      micro_objective: Observar dos semillas plantadas el mismo día, una por Dina y otra guardada sin plantar por Liruf.
+      narrative_beat: Dina y Liruf reciben cada uno una semilla el mismo día, pero Dina la planta de inmediato y Liruf decide guardarla.
       difficulty: 2
       suggested_families:
       - story
       - choice
     - position: 2
       slug: la-semilla-guardada-no-crece
-      micro_objective: Reconocer que la semilla guardada de Dino no creció nada mientras esperaba a ser plantada.
-      narrative_beat: Zara Vex muestra que la semilla de Dino, guardada sin plantar, no dio ni un solo árbol mientras esperaba.
+      micro_objective: Reconocer que la semilla guardada de Liruf no creció nada mientras esperaba a ser plantada.
+      narrative_beat: Zara Vex muestra que la semilla de Liruf, guardada sin plantar, no dio ni un solo árbol mientras esperaba.
       difficulty: 2
       suggested_families:
       - analyze
       - choice
     - position: 3
-      slug: dino-planta-tarde-con-mas-semillas
-      micro_objective: Observar que, cuando Dino por fin planta, decide usar muchas más semillas de golpe para intentar alcanzar a Dina.
-      narrative_beat: Semanas después, Dino por fin planta, usando muchas más semillas de golpe para intentar alcanzar a Dina.
+      slug: liruf-planta-tarde-con-mas-semillas
+      micro_objective: Observar que, cuando Liruf por fin planta, decide usar muchas más semillas de golpe para intentar alcanzar a Dina.
+      narrative_beat: Semanas después, Liruf por fin planta, usando muchas más semillas de golpe para intentar alcanzar a Dina.
       difficulty: 3
       suggested_families:
       - story
@@ -1083,7 +1083,7 @@ sagas:
     - position: 4
       slug: mi-prediccion-de-quien-tendra-mas-arboles
       micro_objective: Predecir quién tendrá más árboles al final, considerando que Dina empezó antes con menos semillas.
-      narrative_beat: 'Dr. Rho pregunta a Dina quién cree que tendrá más árboles al final: ella, que empezó antes, o Dino, que empezó tarde con más.'
+      narrative_beat: 'Dr. Rho pregunta a Dina quién cree que tendrá más árboles al final: ella, que empezó antes, o Liruf, que empezó tarde con más.'
       difficulty: 3
       suggested_families:
       - choice
@@ -1155,7 +1155,7 @@ sagas:
     - position: 1
       slug: contar-las-semillas-totales
       micro_objective: Contar cuántas semillas plantó en total cada uno de los dos sembradores de la carrera.
-      narrative_beat: Dr. Rho ayuda a Dino a contar cuántas semillas plantó en total cada sembrador a lo largo de toda la carrera.
+      narrative_beat: Dr. Rho ayuda a Liruf a contar cuántas semillas plantó en total cada sembrador a lo largo de toda la carrera.
       difficulty: 2
       suggested_families:
       - money
@@ -1201,7 +1201,7 @@ sagas:
     - position: 1
       slug: el-tiempo-que-no-vuelve
       micro_objective: Reconocer que el tiempo que pasó sin plantar no se puede recuperar después, aunque se planten más semillas.
-      narrative_beat: Dr. Rho explica a Dino que el tiempo que pasó sin plantar su semilla no puede recuperarse, por más semillas que plante ahora.
+      narrative_beat: Dr. Rho explica a Liruf que el tiempo que pasó sin plantar su semilla no puede recuperarse, por más semillas que plante ahora.
       difficulty: 2
       suggested_families:
       - story
@@ -1217,7 +1217,7 @@ sagas:
     - position: 3
       slug: comparar-el-costo-de-esperar-una-temporada
       micro_objective: Comparar cuántas vueltas de crecimiento se pierden al esperar solo una temporada más para empezar.
-      narrative_beat: Dr. Rho compara el resultado final si Dino hubiera plantado una temporada antes de cuando en verdad plantó.
+      narrative_beat: Dr. Rho compara el resultado final si Liruf hubiera plantado una temporada antes de cuando en verdad plantó.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1301,7 +1301,7 @@ sagas:
     - position: 2
       slug: comparar-el-tamano-de-los-dos-bosques
       micro_objective: Comparar el tamaño actual de los dos bosques nuevos presentados.
-      narrative_beat: Zara Vex reta a Dino a comparar el tamaño actual de los dos bosques nuevos que empezaron en momentos distintos.
+      narrative_beat: Zara Vex reta a Liruf a comparar el tamaño actual de los dos bosques nuevos que empezaron en momentos distintos.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1339,7 +1339,7 @@ sagas:
     - position: 1
       slug: la-tentacion-de-esperar
       micro_objective: Reconocer la tentación de esperar a tener más semillas antes de empezar a plantar.
-      narrative_beat: Dino siente la tentación de esperar a juntar más semillas antes de plantar su primer árbol del bosque.
+      narrative_beat: Liruf siente la tentación de esperar a juntar más semillas antes de plantar su primer árbol del bosque.
       difficulty: 2
       suggested_families:
       - story
@@ -1347,7 +1347,7 @@ sagas:
     - position: 2
       slug: recordar-el-costo-escondido-antes-de-esperar
       micro_objective: Recordar el costo escondido de esperar antes de decidir posponer el inicio.
-      narrative_beat: Zara Vex recuerda a Dino el costo escondido de esperar, justo antes de que decida posponer su siembra.
+      narrative_beat: Zara Vex recuerda a Liruf el costo escondido de esperar, justo antes de que decida posponer su siembra.
       difficulty: 3
       suggested_families:
       - choice
@@ -1355,7 +1355,7 @@ sagas:
     - position: 3
       slug: decidir-plantar-hoy-con-poco
       micro_objective: Decidir, con razones propias, plantar hoy con las pocas semillas que ya tiene en vez de esperar.
-      narrative_beat: Dino decide, con las razones aprendidas, plantar hoy mismo con las pocas semillas que ya tiene.
+      narrative_beat: Liruf decide, con las razones aprendidas, plantar hoy mismo con las pocas semillas que ya tiene.
       difficulty: 3
       suggested_families:
       - choice
@@ -1402,7 +1402,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-el-tiempo
       micro_objective: Recordar y ordenar de nuevo por qué quien planta primero suele terminar con más árboles.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1443,7 +1443,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-bosque-que-crece-solo
       micro_objective: Recordar, tal como se aprendió antes, por qué un bosque que reinvierte crece solo con el tiempo.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del árbol de semillas y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el tiempo.
+      narrative_beat: Zara Vex trae un recuerdo de la saga del árbol de semillas y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el tiempo.
       difficulty: 1
       suggested_families:
       - choice
@@ -1459,7 +1459,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-tiempo
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de reinvertir y empezar antes combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1499,9 +1499,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: la-canasta-de-semillas-de-dino
-      micro_objective: Observar que Dino junta una canasta de semillas y espera a tenerla llena antes de plantar cualquiera.
-      narrative_beat: Dino junta semillas en una canasta y decide esperar hasta llenarla por completo antes de plantar ninguna.
+      slug: la-canasta-de-semillas-de-liruf
+      micro_objective: Observar que Liruf junta una canasta de semillas y espera a tenerla llena antes de plantar cualquiera.
+      narrative_beat: Liruf junta semillas en una canasta y decide esperar hasta llenarla por completo antes de plantar ninguna.
       difficulty: 2
       suggested_families:
       - story
@@ -1516,8 +1516,8 @@ sagas:
       - choice
     - position: 3
       slug: comparar-las-dos-siembras
-      micro_objective: Comparar cuántas vueltas de crecimiento ya tiene el bosque de Dina frente al de Dino, que sigue esperando.
-      narrative_beat: Zara Vex compara el bosque de Dina, que ya tiene varias vueltas de crecimiento, con el de Dino, que apenas empezó.
+      micro_objective: Comparar cuántas vueltas de crecimiento ya tiene el bosque de Dina frente al de Liruf, que sigue esperando.
+      narrative_beat: Zara Vex compara el bosque de Dina, que ya tiene varias vueltas de crecimiento, con el de Liruf, que apenas empezó.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1525,7 +1525,7 @@ sagas:
     - position: 4
       slug: mi-explicacion-de-plantar-poco-a-poco
       micro_objective: Explicar, con sus propias palabras, la ventaja de plantar un poco cada vez.
-      narrative_beat: Dina le explica a Dino por qué plantar un poco cada semana le dio ventaja frente a esperar a juntar mucho.
+      narrative_beat: Dina le explica a Liruf por qué plantar un poco cada semana le dio ventaja frente a esperar a juntar mucho.
       difficulty: 3
       suggested_families:
       - choice
@@ -1595,9 +1595,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-se-olvida-de-sembrar
-      micro_objective: Observar que Dino, algunas semanas, se olvida por completo de plantar su pequeña siembra.
-      narrative_beat: Algunas semanas, Dino se olvida por completo de plantar su pequeña siembra, aunque tenía la intención de hacerlo.
+      slug: liruf-se-olvida-de-sembrar
+      micro_objective: Observar que Liruf, algunas semanas, se olvida por completo de plantar su pequeña siembra.
+      narrative_beat: Algunas semanas, Liruf se olvida por completo de plantar su pequeña siembra, aunque tenía la intención de hacerlo.
       difficulty: 2
       suggested_families:
       - story
@@ -1613,7 +1613,7 @@ sagas:
     - position: 3
       slug: programar-la-siembra-automatica
       micro_objective: Explicar cómo programar la máquina sembradora para que plante una pequeña cantidad cada semana automáticamente.
-      narrative_beat: Zara Vex enseña a Dino cómo programar la máquina sembradora para que plante sola cada semana, sin depender de su memoria.
+      narrative_beat: Zara Vex enseña a Liruf cómo programar la máquina sembradora para que plante sola cada semana, sin depender de su memoria.
       difficulty: 3
       suggested_families:
       - choice
@@ -1697,7 +1697,7 @@ sagas:
     - position: 2
       slug: sumar-todas-las-semanas
       micro_objective: Sumar todas las semillas plantadas semana a semana para ver el total acumulado.
-      narrative_beat: Zara Vex reta a Dino a sumar, semana por semana, todas las semillas plantadas por ese sembrador constante.
+      narrative_beat: Zara Vex reta a Liruf a sumar, semana por semana, todas las semillas plantadas por ese sembrador constante.
       difficulty: 3
       suggested_families:
       - money
@@ -1789,7 +1789,7 @@ sagas:
     - position: 2
       slug: elegir-cuanto-y-cuando
       micro_objective: Elegir, para un plan propio, cuánto plantar cada vez y cada cuánto tiempo hacerlo.
-      narrative_beat: Zara Vex reta a Dino a elegir cuánto plantar cada vez y cada cuánto tiempo, para armar su propio plan.
+      narrative_beat: Zara Vex reta a Liruf a elegir cuánto plantar cada vez y cada cuánto tiempo, para armar su propio plan.
       difficulty: 3
       suggested_families:
       - choice
@@ -1797,7 +1797,7 @@ sagas:
     - position: 3
       slug: programar-mi-plan-automatico
       micro_objective: Programar el plan elegido en la máquina sembradora automática para que ocurra sin tener que acordarse.
-      narrative_beat: Dino programa su propio plan en la máquina sembradora automática, aplicando lo aprendido sobre automatizar.
+      narrative_beat: Liruf programa su propio plan en la máquina sembradora automática, aplicando lo aprendido sobre automatizar.
       difficulty: 3
       suggested_families:
       - choice
@@ -1843,7 +1843,7 @@ sagas:
     - position: 3
       slug: explicar-por-que-funciona-mi-plan
       micro_objective: Explicar, con todo lo aprendido en la saga, por qué su plan de constancia funciona con el tiempo.
-      narrative_beat: Dina explica a Dino, con todo lo aprendido en la saga, por qué su plan de constancia va a funcionar con el tiempo.
+      narrative_beat: Dina explica a Liruf, con todo lo aprendido en la saga, por qué su plan de constancia va a funcionar con el tiempo.
       difficulty: 3
       suggested_families:
       - choice
@@ -1851,7 +1851,7 @@ sagas:
     - position: 4
       slug: mi-bosque-de-constancia-completo
       micro_objective: Aplicar con seguridad, sin ayuda, todo lo aprendido sobre la constancia automática a su propio bosque final.
-      narrative_beat: Dina presenta su propio bosque final a Dr. Rho, Dino y Zara Vex, aplicando con seguridad todo lo aprendido en esta saga.
+      narrative_beat: Dina presenta su propio bosque final a Dr. Rho, Liruf y Zara Vex, aplicando con seguridad todo lo aprendido en esta saga.
       difficulty: 4
       suggested_families:
       - choice
@@ -1890,7 +1890,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-constancia
       micro_objective: Recordar y ordenar de nuevo qué significa automatizar y por qué la constancia vence al monto.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1931,7 +1931,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-empezar-hoy
       micro_objective: Recordar, tal como se aprendió antes, por qué conviene empezar hoy aunque sea con poco.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del tiempo y pide a Dino recordarlo sin ayuda, antes de mezclarlo con la constancia.
+      narrative_beat: Zara Vex trae un recuerdo de la saga del tiempo y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la constancia.
       difficulty: 1
       suggested_families:
       - choice
@@ -1947,7 +1947,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-la-constancia
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de empezar hoy y automatizar combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1994,7 +1994,7 @@ sagas:
     - position: 1
       slug: el-bosque-vuelve-a-nevar
       micro_objective: Recordar que el interés es un pequeño premio por guardar dinero con el tiempo.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el corazón del bosque nevado y anuncia la Gran Misión: recorrer una vez más todo lo aprendido.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el corazón del bosque nevado y anuncia la Gran Misión: recorrer una vez más todo lo aprendido.'
       difficulty: 1
       suggested_families:
       - story
@@ -2010,7 +2010,7 @@ sagas:
     - position: 3
       slug: cien-a-ciento-diez-otra-vez
       micro_objective: Recordar cómo cien monedas se convierten en ciento diez después de un año de interés.
-      narrative_beat: Dino recuerda, sin ayuda, cómo cien monedas de oro del bosque se convirtieron en ciento diez.
+      narrative_beat: Liruf recuerda, sin ayuda, cómo cien monedas de oro del bosque se convirtieron en ciento diez.
       difficulty: 2
       suggested_families:
       - money
@@ -2027,7 +2027,7 @@ sagas:
     slug: las-semillas-de-la-gran-mision
     kind: review_quest
     title_es: Las Semillas de la Gran Misión
-    concept: Dina y Dino recuerdan cómo reinvertir las semillas y por qué comerse toda la fruta detiene el crecimiento del bosque.
+    concept: Dina y Liruf recuerdan cómo reinvertir las semillas y por qué comerse toda la fruta detiene el crecimiento del bosque.
     learning_objective: Al final, el niño puede recordar y aplicar por qué reinvertir hace crecer el bosque más que gastarlo todo.
     key_vocabulary:
     - reinvertir
@@ -2044,7 +2044,7 @@ sagas:
     - position: 1
       slug: reinvertir-otra-vez
       micro_objective: Recordar qué significa reinvertir, plantando de nuevo lo que ya se ganó.
-      narrative_beat: Zara Vex muestra una cosecha nueva y reta a Dino a recordar, sin ayuda, qué significa reinvertir.
+      narrative_beat: Zara Vex muestra una cosecha nueva y reta a Liruf a recordar, sin ayuda, qué significa reinvertir.
       difficulty: 1
       suggested_families:
       - story
@@ -2060,7 +2060,7 @@ sagas:
     - position: 3
       slug: dejar-de-plantar-otra-vez
       micro_objective: Recordar qué pasa con el crecimiento del bosque si alguien deja de reinvertir sus semillas.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿qué pasa con el bosque si alguien deja de plantar?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿qué pasa con el bosque si alguien deja de plantar?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2077,7 +2077,7 @@ sagas:
     slug: el-tiempo-de-la-gran-mision
     kind: review_quest
     title_es: El Tiempo de la Gran Misión
-    concept: Dina y Dino recuerdan por qué el tiempo es un superpoder y por qué empezar antes gana a empezar tarde con más.
+    concept: Dina y Liruf recuerdan por qué el tiempo es un superpoder y por qué empezar antes gana a empezar tarde con más.
     learning_objective: Al final, el niño puede recordar y aplicar por qué empezar antes, aunque sea con poco, suele dar ventaja con el tiempo.
     key_vocabulary:
     - tiempo
@@ -2102,7 +2102,7 @@ sagas:
     - position: 2
       slug: quien-planto-primero-otra-vez
       micro_objective: Recordar por qué quien planta primero suele terminar con más árboles, aunque haya plantado menos en total.
-      narrative_beat: Dino ordena, de memoria, los resultados de la carrera de los dos sembradores de esta saga.
+      narrative_beat: Liruf ordena, de memoria, los resultados de la carrera de los dos sembradores de esta saga.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2127,7 +2127,7 @@ sagas:
     slug: la-constancia-de-la-gran-mision
     kind: review_quest
     title_es: La Constancia de la Gran Misión
-    concept: Dina y Dino recuerdan por qué la constancia vence al monto, qué significa automatizar y por qué pequeños aportes suman más de lo esperado.
+    concept: Dina y Liruf recuerdan por qué la constancia vence al monto, qué significa automatizar y por qué pequeños aportes suman más de lo esperado.
     learning_objective: Al final, el niño puede recordar y aplicar por qué la constancia automática hace crecer más el bosque con el tiempo.
     key_vocabulary:
     - constancia
@@ -2144,7 +2144,7 @@ sagas:
     - position: 1
       slug: plantar-poco-a-poco-otra-vez
       micro_objective: Recordar la ventaja de plantar un poco cada vez en vez de esperar a tener mucho.
-      narrative_beat: Zara Vex muestra de nuevo la canasta de Dino y la siembra semanal de Dina, y pide a Dino recordar cuál ganó.
+      narrative_beat: Zara Vex muestra de nuevo la canasta de Liruf y la siembra semanal de Dina, y pide a Liruf recordar cuál ganó.
       difficulty: 1
       suggested_families:
       - story
@@ -2160,7 +2160,7 @@ sagas:
     - position: 3
       slug: automatizar-otra-vez
       micro_objective: Recordar qué significa automatizar una siembra para no depender de acordarse cada vez.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿qué hace la máquina sembradora mágica del bosque?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿qué hace la máquina sembradora mágica del bosque?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2202,7 +2202,7 @@ sagas:
     - position: 2
       slug: un-sembrador-nuevo-necesita-ayuda
       micro_objective: Aplicar las cuatro áreas para ayudar a un sembrador nuevo del bosque a empezar su propio plan.
-      narrative_beat: Zara Vex presenta a un sembrador nuevo del bosque y reta a Dino a guiarlo por las cuatro áreas aprendidas.
+      narrative_beat: Zara Vex presenta a un sembrador nuevo del bosque y reta a Liruf a guiarlo por las cuatro áreas aprendidas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2252,7 +2252,7 @@ sagas:
     - position: 2
       slug: el-bosque-y-diversificar
       micro_objective: Recordar por qué diversificar en el reino y ser constante en el bosque comparten la misma idea de repartir esfuerzo con el tiempo.
-      narrative_beat: Zara Vex recuerda a Dino la canasta variada del reino y la compara con las pequeñas siembras constantes del bosque.
+      narrative_beat: Zara Vex recuerda a Liruf la canasta variada del reino y la compara con las pequeñas siembras constantes del bosque.
       difficulty: 1
       suggested_families:
       - story
@@ -2268,7 +2268,7 @@ sagas:
     - position: 4
       slug: el-bosque-sigue-creciendo-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del bosque.
-      narrative_beat: Con la bola de nieve y los árboles del bosque brillando de nieve fresca, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión.
+      narrative_beat: Con la bola de nieve y los árboles del bosque brillando de nieve fresca, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión.
       difficulty: 2
       suggested_families:
       - storyplay

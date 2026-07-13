@@ -14,7 +14,7 @@
 .lf-rig-tail                 { transform-box: fill-box; transform-origin: 100% 100%; }
 
 /* Per-character pivot corrections (where the limb attaches off-center). */
-.lf-actor-dino .lf-rig-arm-f { transform-origin: 0% 20%; }
+.lf-actor-liruf .lf-rig-arm-f { transform-origin: 0% 20%; }
 .lf-actor-rho  .lf-rig-arm-f { transform-origin: 10% 0%; }
 .lf-actor-rho  .lf-rig-arm-b { transform-origin: 90% 0%; }
 .lf-actor-zara .lf-rig-arm-f { transform-origin: 10% 0%; }

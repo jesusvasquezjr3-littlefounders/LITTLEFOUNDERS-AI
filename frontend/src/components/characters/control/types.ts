@@ -2,7 +2,7 @@
 // characters (LESSON_ENGINE.md §9). Appearance is NON-NEGOTIABLE: this layer only
 // maps to each character's existing prop surface and adds wrapper/rig animation.
 
-export const CHARACTER_IDS = ['dina', 'dino', 'rho', 'zara'] as const
+export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
 export type CharacterId = (typeof CHARACTER_IDS)[number]
 
 export const CHARACTER_EMOTIONS = [
@@ -43,7 +43,7 @@ export const EMOTION_TO_NATIVE = {
     encouraging: 'wink',
     proud: 'happy',
   },
-  dino: {
+  liruf: {
     neutral: 'happy',
     happy: 'happy',
     excited: 'excited',

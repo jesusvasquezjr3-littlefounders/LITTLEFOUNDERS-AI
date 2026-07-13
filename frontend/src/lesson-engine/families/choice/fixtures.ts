@@ -33,11 +33,11 @@ export const choiceFixtures: SegmentBase[] = [
   {
     id: 'fx-true-false',
     type: 'true_false',
-    prompt_md: 'Dino dice una frase. ¿Es cierta?',
+    prompt_md: 'Liruf dice una frase. ¿Es cierta?',
     difficulty: 2,
     xp: 10,
     explanation_md: 'El dinero que ahorras **sigue siendo tuyo** — solo espera a que lo necesites.',
-    narrator: { character: 'dino', emotion: 'thinking' },
+    narrator: { character: 'liruf', emotion: 'thinking' },
     payload: {
       statement_md: 'Si ahorro mi dinero, **lo pierdo** para siempre.',
       justifications: [
@@ -152,7 +152,7 @@ export const choiceFixtures: SegmentBase[] = [
     prompt_md: '¡Rápido! Toca solo las **monedas**.',
     difficulty: 2,
     xp: 15,
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       instruction_md: 'Toca todas las cosas que son **dinero en monedas**. ¡Tienes 20 segundos!',
       items: [

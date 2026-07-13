@@ -15,7 +15,7 @@ export const storyFixtures: SegmentBase[] = [
     payload: {
       lines: [
         {
-          character: 'dino',
+          character: 'liruf',
           emotion: 'excited',
           action: 'jump',
           text_md: '¡Dina, Dina! Encontré **$20** limpiando mi cuarto. ¡Voy a comprar dulces AHORA!',
@@ -25,10 +25,10 @@ export const storyFixtures: SegmentBase[] = [
           emotion: 'encouraging',
           action: 'wave',
           text_md:
-            'Espera, Dino… ¿y si esos $20 trabajaran **para ti**? Con ellos podrías empezar un negocito.',
+            'Espera, Liruf… ¿y si esos $20 trabajaran **para ti**? Con ellos podrías empezar un negocito.',
         },
         {
-          character: 'dino',
+          character: 'liruf',
           emotion: 'thinking',
           action: 'think',
           text_md: '¿Un negocio con $20? Mmm… ¿como cuál?',
@@ -58,11 +58,11 @@ export const storyFixtures: SegmentBase[] = [
     xp: 0,
     payload: {
       backdrop: 'band',
-      character: 'dino',
+      character: 'liruf',
       emotion: 'proud',
       action: 'bow',
       body_md:
-        'Sábado por la mañana. Dino cuelga su cartel: **Limonada Dino — $5 el vaso**.\nSu primera clienta ya viene caminando con una moneda brillante…',
+        'Sábado por la mañana. Liruf cuelga su cartel: **Limonada Liruf — $5 el vaso**.\nSu primera clienta ya viene caminando con una moneda brillante…',
       art: { icon: 'storefront', tint: 'accent' },
     },
   },

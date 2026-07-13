@@ -203,12 +203,12 @@ describe('narrateLesson', () => {
 
   it('resolves voice PER UNIT by narrator character — a two-speaker dialogue uses two voices', async () => {
     process.env.TTS_VOICE_DINA_EN_US = 'VoiceDina';
-    process.env.TTS_VOICE_DINO_EN_US = 'VoiceDino';
+    process.env.TTS_VOICE_LIRUF_EN_US = 'VoiceLiruf';
     resetConfigCache();
     try {
       const document: LessonDocument = {
         schema_version: 1,
-        meta: { slug: 'demo', title: 'Demo', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina', 'dino'] },
+        meta: { slug: 'demo', title: 'Demo', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina', 'liruf'] },
         scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
         segments: [
           {
@@ -220,7 +220,7 @@ describe('narrateLesson', () => {
             payload: {
               lines: [
                 { character: 'dina', text_md: 'Hola!' },
-                { character: 'dino', text_md: 'Hey!' },
+                { character: 'liruf', text_md: 'Hey!' },
               ],
             },
           },
@@ -233,10 +233,10 @@ describe('narrateLesson', () => {
 
       const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { units: Record<string, AudioUnitEntry> };
       expect(manifest.units['s1.line.0']?.voice).toBe('VoiceDina');
-      expect(manifest.units['s1.line.1']?.voice).toBe('VoiceDino');
+      expect(manifest.units['s1.line.1']?.voice).toBe('VoiceLiruf');
     } finally {
       delete process.env.TTS_VOICE_DINA_EN_US;
-      delete process.env.TTS_VOICE_DINO_EN_US;
+      delete process.env.TTS_VOICE_LIRUF_EN_US;
       resetConfigCache();
     }
   });

@@ -24,12 +24,12 @@ export const moneyFixtures: SegmentBase[] = [
   {
     id: 'fx-make-change',
     type: 'make_change',
-    prompt_md: 'Dino pagó su torta con un billete. Dale su **cambio** exacto de la caja.',
+    prompt_md: 'Liruf pagó su torta con un billete. Dale su **cambio** exacto de la caja.',
     difficulty: 2,
     xp: 15,
     hints: ['El cambio es lo que pagó **menos** el precio.'],
     explanation_md: '$100 − $68 = **$32** de cambio: por ejemplo $20 + $10 + $2.',
-    narrator: { character: 'dino', emotion: 'thinking' },
+    narrator: { character: 'liruf', emotion: 'thinking' },
     payload: {
       currency: 'MXN',
       denominations: [1, 2, 5, 10, 20, 50],
@@ -148,14 +148,14 @@ export const moneyFixtures: SegmentBase[] = [
   {
     id: 'fx-fair-trade',
     type: 'fair_trade',
-    prompt_md: 'Dino ofrece sus stickers por las canicas de Zara. Con la tabla de cambio, ¿el trato es **justo**?',
+    prompt_md: 'Liruf ofrece sus stickers por las canicas de Zara. Con la tabla de cambio, ¿el trato es **justo**?',
     difficulty: 4,
     xp: 20,
     hints: ['Convierte los stickers a canicas con la tasa y compara.'],
     explanation_md: '5 stickers × 2 = **10 canicas**. Zara ofrece 10 canicas: el trato es **justo**.',
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
-      offer_a: { label: 'Stickers de Dino', icon: 'sell', qty: 5 },
+      offer_a: { label: 'Stickers de Liruf', icon: 'sell', qty: 5 },
       offer_b: { label: 'Canicas de Zara', icon: 'toys', qty: 10 },
       rate_md: 'Tasa del patio: **1 sticker vale 2 canicas**.',
     },

@@ -9,10 +9,10 @@ adventure:
     es-MX: El Cosmos del Inversionista
     pt-BR: O Cosmos do Investidor
   description:
-    en-US: 'The final voyage: Dina and Dino build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
-    es-MX: 'El viaje final: Dina y Dino arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
-    pt-BR: 'A viagem final: Dina e Dino montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
-  narrative_arc: Dina y Dino llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
+    en-US: 'The final voyage: Dina and Liruf build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
+    es-MX: 'El viaje final: Dina y Liruf arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
+    pt-BR: 'A viagem final: Dina e Liruf montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
+  narrative_arc: Dina y Liruf llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
 sagas:
 - position: 1
   slug: mi-meta-de-inversion
@@ -43,7 +43,7 @@ sagas:
     - position: 1
       slug: el-observatorio-del-cosmos
       micro_objective: Conocer el observatorio del cosmos, donde Dr. Rho ayuda a los viajeros a imaginar metas grandes y lejanas.
-      narrative_beat: Dr. Rho recibe a Dina y Dino en un observatorio brillante del cosmos, donde ayuda a los viajeros a imaginar sus metas más grandes.
+      narrative_beat: Dr. Rho recibe a Dina y Liruf en un observatorio brillante del cosmos, donde ayuda a los viajeros a imaginar sus metas más grandes.
       difficulty: 1
       suggested_families:
       - story
@@ -89,7 +89,7 @@ sagas:
     - position: 1
       slug: una-estrella-sin-fecha
       micro_objective: Observar una estrella del cosmos sin ningún plazo definido, y notar que es difícil planear sin uno.
-      narrative_beat: Dr. Rho muestra una estrella del cosmos sin ningún plazo escrito, y pregunta a Dino qué se le hace difícil de planear así.
+      narrative_beat: Dr. Rho muestra una estrella del cosmos sin ningún plazo escrito, y pregunta a Liruf qué se le hace difícil de planear así.
       difficulty: 2
       suggested_families:
       - story
@@ -113,7 +113,7 @@ sagas:
     - position: 4
       slug: mi-explicacion-del-plazo
       micro_objective: Explicar, con sus propias palabras, por qué el plazo elegido ayuda a planear mejor su meta.
-      narrative_beat: Dina le explica a Dino por qué el plazo que eligió para su estrella le ayuda a planear con más claridad.
+      narrative_beat: Dina le explica a Liruf por qué el plazo que eligió para su estrella le ayuda a planear con más claridad.
       difficulty: 3
       suggested_families:
       - choice
@@ -143,7 +143,7 @@ sagas:
     - position: 2
       slug: ahorrar-para-la-estrella-cercana
       micro_objective: Recordar que ahorrar, como se aprendió en Educación Financiera, funciona bien para una meta cercana.
-      narrative_beat: Zara Vex recuerda a Dino que ahorrar en un frasco, como aprendió hace tiempo, funciona bien para alcanzar la estrella más cercana.
+      narrative_beat: Zara Vex recuerda a Liruf que ahorrar en un frasco, como aprendió hace tiempo, funciona bien para alcanzar la estrella más cercana.
       difficulty: 2
       suggested_families:
       - choice
@@ -197,7 +197,7 @@ sagas:
     - position: 3
       slug: practicar-escribir-una-meta-de-ejemplo
       micro_objective: 'Practicar escribir una meta de ejemplo con las dos partes claras: qué se quiere lograr y el plazo.'
-      narrative_beat: Dino practica escribir una meta de ejemplo en el pergamino, con las dos partes claras que le enseñó Zara Vex.
+      narrative_beat: Liruf practica escribir una meta de ejemplo en el pergamino, con las dos partes claras que le enseñó Zara Vex.
       difficulty: 3
       suggested_families:
       - input
@@ -239,7 +239,7 @@ sagas:
     - position: 2
       slug: cuanto-tengo-guardado-hoy
       micro_objective: Contar cuántas monedas simuladas tiene guardadas hoy, como punto de partida hacia la meta.
-      narrative_beat: Zara Vex ayuda a Dino a contar cuántas monedas simuladas tiene guardadas hoy, como punto de partida hacia su estrella.
+      narrative_beat: Zara Vex ayuda a Liruf a contar cuántas monedas simuladas tiene guardadas hoy, como punto de partida hacia su estrella.
       difficulty: 2
       suggested_families:
       - money
@@ -331,7 +331,7 @@ sagas:
     - position: 2
       slug: comparar-las-tres-estrellas
       micro_objective: Comparar las tres estrellas según su plazo, su tamaño y qué tan realista es cada una.
-      narrative_beat: Zara Vex reta a Dino a comparar las tres estrellas según su plazo, su tamaño y qué tan realista es cada una.
+      narrative_beat: Zara Vex reta a Liruf a comparar las tres estrellas según su plazo, su tamaño y qué tan realista es cada una.
       difficulty: 3
       suggested_families:
       - analyze
@@ -432,7 +432,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-meta
       micro_objective: Recordar y ordenar de nuevo la diferencia entre una meta cercana y una lejana.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -473,7 +473,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-reino-de-las-canastas-otra-vez
       micro_objective: Recordar, tal como se aprendió antes, por qué diversificar reparte el riesgo entre cosas distintas.
-      narrative_beat: Zara Vex trae un recuerdo del Reino de las Canastas y pide a Dino recordarlo sin ayuda, antes de mezclarlo con las metas del cosmos.
+      narrative_beat: Zara Vex trae un recuerdo del Reino de las Canastas y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con las metas del cosmos.
       difficulty: 1
       suggested_families:
       - choice
@@ -489,7 +489,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-cosmos
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de diversificar y elegir una meta realista combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -547,7 +547,7 @@ sagas:
     - position: 3
       slug: por-que-la-meta-va-primero
       micro_objective: Explicar por qué la meta siempre va primero, antes de cualquier otro paso del plan.
-      narrative_beat: Dr. Rho pregunta a Dino por qué cree que la meta siempre va primero, antes de cualquier otro paso del plan.
+      narrative_beat: Dr. Rho pregunta a Liruf por qué cree que la meta siempre va primero, antes de cualquier otro paso del plan.
       difficulty: 2
       suggested_families:
       - choice
@@ -585,7 +585,7 @@ sagas:
     - position: 2
       slug: ahorrar-como-base-segura
       micro_objective: Reconocer que ahorrar una parte funciona como una base segura antes de arriesgar dinero en invertir.
-      narrative_beat: Zara Vex explica a Dino que ahorrar una parte funciona como una base segura, un lugar al que volver si algo sale distinto.
+      narrative_beat: Zara Vex explica a Liruf que ahorrar una parte funciona como una base segura, un lugar al que volver si algo sale distinto.
       difficulty: 2
       suggested_families:
       - choice
@@ -635,7 +635,7 @@ sagas:
     - position: 2
       slug: recordar-por-que-diversificar
       micro_objective: Recordar, sin ayuda nueva, por qué diversificar reparte mejor el riesgo que apostar todo a una sola cosa.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, por qué diversificar reparte mejor el riesgo que apostar todo a una sola cosa.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, por qué diversificar reparte mejor el riesgo que apostar todo a una sola cosa.
       difficulty: 3
       suggested_families:
       - choice
@@ -685,7 +685,7 @@ sagas:
     - position: 2
       slug: recordar-el-superpoder-del-tiempo
       micro_objective: Recordar, sin ayuda nueva, por qué el tiempo es el ingrediente más poderoso del interés compuesto.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, la capa mágica del Tiempo que conoció en el bosque nevado.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, la capa mágica del Tiempo que conoció en el bosque nevado.
       difficulty: 3
       suggested_families:
       - choice
@@ -731,7 +731,7 @@ sagas:
     - position: 2
       slug: revisar-no-es-cambiar-por-miedo
       micro_objective: Reconocer que revisar el plan con calma es distinto a cambiarlo de golpe por miedo o prisa.
-      narrative_beat: Zara Vex explica a Dino la diferencia entre revisar el plan con calma y cambiarlo de golpe por miedo o prisa.
+      narrative_beat: Zara Vex explica a Liruf la diferencia entre revisar el plan con calma y cambiarlo de golpe por miedo o prisa.
       difficulty: 3
       suggested_families:
       - choice
@@ -769,7 +769,7 @@ sagas:
     - position: 1
       slug: las-cinco-tarjetas-mezcladas
       micro_objective: Observar las cinco tarjetas del plan mezcladas, cada una representando un paso distinto.
-      narrative_beat: Zara Vex mezcla cinco tarjetas del observatorio, cada una representando un paso distinto del plan, y las entrega a Dino.
+      narrative_beat: Zara Vex mezcla cinco tarjetas del observatorio, cada una representando un paso distinto del plan, y las entrega a Liruf.
       difficulty: 2
       suggested_families:
       - story
@@ -777,7 +777,7 @@ sagas:
     - position: 2
       slug: ordenar-las-cinco-tarjetas
       micro_objective: Ordenar las cinco tarjetas mezcladas en el orden correcto del plan de inversión.
-      narrative_beat: Dino ordena, con cuidado, las cinco tarjetas mezcladas en el orden correcto del plan de inversión.
+      narrative_beat: Liruf ordena, con cuidado, las cinco tarjetas mezcladas en el orden correcto del plan de inversión.
       difficulty: 3
       suggested_families:
       - arrange
@@ -823,7 +823,7 @@ sagas:
     - position: 2
       slug: aplicar-cada-paso-en-la-historia
       micro_objective: Aplicar, uno por uno, cada uno de los cinco pasos del plan dentro de la historia del viajero.
-      narrative_beat: Dino ayuda al viajero de la historia a aplicar, uno por uno, cada uno de los cinco pasos del plan.
+      narrative_beat: Liruf ayuda al viajero de la historia a aplicar, uno por uno, cada uno de los cinco pasos del plan.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -867,9 +867,9 @@ sagas:
       - story
       - arrange
     - position: 2
-      slug: explicar-mi-plan-completo-a-dino
-      micro_objective: Explicar a Dino, paso por paso, el plan completo aplicado a su propia meta de inversión.
-      narrative_beat: Dina le explica a Dino, paso por paso, cómo aplicó los cinco pasos del plan a su propia meta de inversión.
+      slug: explicar-mi-plan-completo-a-liruf
+      micro_objective: Explicar a Liruf, paso por paso, el plan completo aplicado a su propia meta de inversión.
+      narrative_beat: Dina le explica a Liruf, paso por paso, cómo aplicó los cinco pasos del plan a su propia meta de inversión.
       difficulty: 3
       suggested_families:
       - choice
@@ -924,7 +924,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-el-plan
       micro_objective: Recordar y ordenar de nuevo los cinco pasos completos del plan de inversión.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -965,7 +965,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-automatizar
       micro_objective: Recordar, tal como se aprendió antes, qué significa automatizar una siembra sin depender de la memoria.
-      narrative_beat: Zara Vex trae un recuerdo del bosque nevado y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el plan del cosmos.
+      narrative_beat: Zara Vex trae un recuerdo del bosque nevado y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el plan del cosmos.
       difficulty: 1
       suggested_families:
       - choice
@@ -981,7 +981,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-plan
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de automatizar y el cuarto paso del plan combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1031,7 +1031,7 @@ sagas:
     - position: 2
       slug: recordar-que-el-fondo-tambien-baja
       micro_objective: Recordar, sin ayuda nueva, que hasta un fondo diversificado puede bajar de valor algún año.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, la lección del Reino de las Canastas sobre por qué hasta un fondo puede bajar.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, la lección del Reino de las Canastas sobre por qué hasta un fondo puede bajar.
       difficulty: 2
       suggested_families:
       - choice
@@ -1067,17 +1067,17 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-quiere-vender-todo-de-golpe
-      micro_objective: Observar que, al ver la nube oscura, Dino siente ganas de vender toda su canasta de golpe.
-      narrative_beat: Al ver la nube oscura sobre su canasta, Dino siente el impulso de vender todo de golpe, sin pensarlo dos veces.
+      slug: liruf-quiere-vender-todo-de-golpe
+      micro_objective: Observar que, al ver la nube oscura, Liruf siente ganas de vender toda su canasta de golpe.
+      narrative_beat: Al ver la nube oscura sobre su canasta, Liruf siente el impulso de vender todo de golpe, sin pensarlo dos veces.
       difficulty: 2
       suggested_families:
       - story
       - choice
     - position: 2
-      slug: que-pasaria-si-dino-vende-con-panico
-      micro_objective: Observar qué pasaría con la canasta de Dino si vendiera todo justo en el momento más bajo, con pánico.
-      narrative_beat: Zara Vex muestra a Dino qué le pasaría a su canasta si la vendiera justo en el momento más bajo, con pánico.
+      slug: que-pasaria-si-liruf-vende-con-panico
+      micro_objective: Observar qué pasaría con la canasta de Liruf si vendiera todo justo en el momento más bajo, con pánico.
+      narrative_beat: Zara Vex muestra a Liruf qué le pasaría a su canasta si la vendiera justo en el momento más bajo, con pánico.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1085,15 +1085,15 @@ sagas:
     - position: 3
       slug: comparar-decidir-con-panico-y-con-calma
       micro_objective: Comparar el resultado de decidir con pánico frente al resultado de decidir con calma, en la misma situación.
-      narrative_beat: Dr. Rho compara el resultado de Dino, que vendió con pánico, con el de Dina, que decidió esperar con calma.
+      narrative_beat: Dr. Rho compara el resultado de Liruf, que vendió con pánico, con el de Dina, que decidió esperar con calma.
       difficulty: 3
       suggested_families:
       - analyze
       - choice
     - position: 4
       slug: mi-explicacion-de-por-que-el-panico-no-ayuda
-      micro_objective: Explicar, con el ejemplo de Dino, por qué decidir con pánico casi nunca ayuda a tomar una buena decisión.
-      narrative_beat: Dina le explica a Dino, con calma, por qué decidir con pánico casi nunca lleva a una buena decisión.
+      micro_objective: Explicar, con el ejemplo de Liruf, por qué decidir con pánico casi nunca ayuda a tomar una buena decisión.
+      narrative_beat: Dina le explica a Liruf, con calma, por qué decidir con pánico casi nunca lleva a una buena decisión.
       difficulty: 3
       suggested_families:
       - choice
@@ -1123,7 +1123,7 @@ sagas:
     - position: 2
       slug: volver-a-leer-mi-meta
       micro_objective: Practicar volver a leer la meta escrita en el pergamino como parte de revisar el plan con calma.
-      narrative_beat: Zara Vex reta a Dino a volver a leer su meta escrita en el pergamino, recordando por qué armó su plan en primer lugar.
+      narrative_beat: Zara Vex reta a Liruf a volver a leer su meta escrita en el pergamino, recordando por qué armó su plan en primer lugar.
       difficulty: 2
       suggested_families:
       - choice
@@ -1256,8 +1256,8 @@ sagas:
     lessons:
     - position: 1
       slug: la-tormenta-mas-grande-del-cosmos
-      micro_objective: Observar la tormenta más grande simulada hasta ahora en el cosmos, afectando la canasta de Dino.
-      narrative_beat: Zara Vex presenta la tormenta simulada más grande hasta ahora, afectando de lleno la canasta de Dino en el observatorio.
+      micro_objective: Observar la tormenta más grande simulada hasta ahora en el cosmos, afectando la canasta de Liruf.
+      narrative_beat: Zara Vex presenta la tormenta simulada más grande hasta ahora, afectando de lleno la canasta de Liruf en el observatorio.
       difficulty: 2
       suggested_families:
       - story
@@ -1265,15 +1265,15 @@ sagas:
     - position: 2
       slug: aplicar-la-respiracion-primero
       micro_objective: Aplicar primero el hábito de respirar antes de tomar cualquier decisión frente a la tormenta simulada.
-      narrative_beat: Dino aplica primero su hábito de respirar, mirando las estrellas, antes de decidir qué hacer con la tormenta simulada.
+      narrative_beat: Liruf aplica primero su hábito de respirar, mirando las estrellas, antes de decidir qué hacer con la tormenta simulada.
       difficulty: 3
       suggested_families:
       - storyplay
       - choice
     - position: 3
       slug: revisar-si-mi-meta-sigue-igual
-      micro_objective: Revisar si la meta original de Dino sigue siendo la misma, a pesar de la tormenta simulada.
-      narrative_beat: Dino revisa su meta escrita en el pergamino, confirmando que sigue siendo la misma a pesar de la tormenta simulada.
+      micro_objective: Revisar si la meta original de Liruf sigue siendo la misma, a pesar de la tormenta simulada.
+      narrative_beat: Liruf revisa su meta escrita en el pergamino, confirmando que sigue siendo la misma a pesar de la tormenta simulada.
       difficulty: 3
       suggested_families:
       - choice
@@ -1281,7 +1281,7 @@ sagas:
     - position: 4
       slug: mi-decision-con-calma-frente-a-la-tormenta
       micro_objective: Aplicar con seguridad, sin ayuda, una decisión con calma frente a la tormenta simulada más grande.
-      narrative_beat: Dino decide, sin ayuda de Dr. Rho, esperar con calma su plan original frente a la tormenta simulada más grande.
+      narrative_beat: Liruf decide, sin ayuda de Dr. Rho, esperar con calma su plan original frente a la tormenta simulada más grande.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1311,7 +1311,7 @@ sagas:
     - position: 2
       slug: distinguir-un-motivo-real-de-un-susto
       micro_objective: Distinguir un motivo real para revisar el plan de un simple susto pasajero causado por una bajada.
-      narrative_beat: Zara Vex ayuda a Dino a distinguir un motivo real para revisar el plan de un simple susto pasajero causado por una bajada.
+      narrative_beat: Zara Vex ayuda a Liruf a distinguir un motivo real para revisar el plan de un simple susto pasajero causado por una bajada.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1412,7 +1412,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-calma
       micro_objective: Recordar y ordenar de nuevo el hábito de respirar y revisar el plan frente a una bajada.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1453,7 +1453,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-urgencia
       micro_objective: Recordar, tal como se aprendió antes, por qué la urgencia es una herramienta común del fraude.
-      narrative_beat: Zara Vex trae un recuerdo del faro y pide a Dino recordarlo sin ayuda, antes de mezclarlo con la calma del cosmos.
+      narrative_beat: Zara Vex trae un recuerdo del faro y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la calma del cosmos.
       difficulty: 1
       suggested_families:
       - choice
@@ -1469,7 +1469,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-la-calma
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de resistir la urgencia y mantener la calma combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1517,17 +1517,17 @@ sagas:
       - story
       - choice
     - position: 2
-      slug: practicar-explicar-la-accion-a-dino
-      micro_objective: Practicar explicarle a Dino qué es una acción, usando el ejemplo de la limonadería.
-      narrative_beat: Dina practica, con Dino como público, explicar qué es una acción usando otra vez el ejemplo de la limonadería.
+      slug: practicar-explicar-la-accion-a-liruf
+      micro_objective: Practicar explicarle a Liruf qué es una acción, usando el ejemplo de la limonadería.
+      narrative_beat: Dina practica, con Liruf como público, explicar qué es una acción usando otra vez el ejemplo de la limonadería.
       difficulty: 2
       suggested_families:
       - storyplay
       - choice
     - position: 3
-      slug: dino-hace-preguntas-dificiles
-      micro_objective: Responder a una pregunta difícil de Dino sobre qué es una acción, sin perder la calma.
-      narrative_beat: Dino hace una pregunta difícil sobre las acciones, y Dina responde con calma, usando lo que aprendió en el reino.
+      slug: liruf-hace-preguntas-dificiles
+      micro_objective: Responder a una pregunta difícil de Liruf sobre qué es una acción, sin perder la calma.
+      narrative_beat: Liruf hace una pregunta difícil sobre las acciones, y Dina responde con calma, usando lo que aprendió en el reino.
       difficulty: 3
       suggested_families:
       - choice
@@ -1571,9 +1571,9 @@ sagas:
       - choice
       - analyze
     - position: 3
-      slug: practicar-explicarselo-a-dino-con-mi-ejemplo
-      micro_objective: Practicar explicarle a Dino la idea de diversificar usando el ejemplo propio inventado.
-      narrative_beat: Dina practica con Dino, usando su propio ejemplo nuevo, explicar por qué diversificar reparte el riesgo.
+      slug: practicar-explicarselo-a-liruf-con-mi-ejemplo
+      micro_objective: Practicar explicarle a Liruf la idea de diversificar usando el ejemplo propio inventado.
+      narrative_beat: Dina practica con Liruf, usando su propio ejemplo nuevo, explicar por qué diversificar reparte el riesgo.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1619,7 +1619,7 @@ sagas:
     - position: 3
       slug: explicar-por-que-el-tiempo-importa-tanto
       micro_objective: Explicar, dentro de la misma práctica, por qué el tiempo es el ingrediente más importante del interés compuesto.
-      narrative_beat: Dina explica a Dino, dentro de su práctica, por qué el tiempo es el ingrediente más importante de toda esta idea.
+      narrative_beat: Dina explica a Liruf, dentro de su práctica, por qué el tiempo es el ingrediente más importante de toda esta idea.
       difficulty: 3
       suggested_families:
       - choice
@@ -1653,7 +1653,7 @@ sagas:
     - position: 1
       slug: practicar-con-la-senal-de-demasiado-bueno
       micro_objective: Practicar explicar el dicho 'si suena demasiado bueno para ser verdad' a alguien de la familia.
-      narrative_beat: Dina practica, con Dino como público, explicar el dicho del faro sobre lo que suena demasiado bueno para ser verdad.
+      narrative_beat: Dina practica, con Liruf como público, explicar el dicho del faro sobre lo que suena demasiado bueno para ser verdad.
       difficulty: 2
       suggested_families:
       - storyplay
@@ -1669,7 +1669,7 @@ sagas:
     - position: 3
       slug: practicar-con-la-senal-de-la-prisa
       micro_objective: Practicar explicar por qué la prisa de una oferta es una señal de alerta importante.
-      narrative_beat: Dina practica explicar a Dino por qué la prisa de una oferta de inversión es una señal de alerta importante.
+      narrative_beat: Dina practica explicar a Liruf por qué la prisa de una oferta de inversión es una señal de alerta importante.
       difficulty: 3
       suggested_families:
       - choice
@@ -1707,7 +1707,7 @@ sagas:
     - position: 2
       slug: un-buen-dia-no-es-lo-mismo-que-un-buen-plan
       micro_objective: Reconocer que un buen resultado de un solo día no es lo mismo que haber seguido bien el plan completo.
-      narrative_beat: Zara Vex explica a Dino que un buen resultado de un solo día no es lo mismo que haber seguido bien el plan completo con constancia.
+      narrative_beat: Zara Vex explica a Liruf que un buen resultado de un solo día no es lo mismo que haber seguido bien el plan completo con constancia.
       difficulty: 3
       suggested_families:
       - choice
@@ -1761,7 +1761,7 @@ sagas:
     - position: 3
       slug: practicar-explicar-algo-nuevo
       micro_objective: Practicar explicar un concepto nuevo del curso a alguien más, notando qué tan claro queda al explicarlo.
-      narrative_beat: Dina practica explicarle a Dino un concepto nuevo del curso, notando qué tan claro le queda a ella misma al explicarlo.
+      narrative_beat: Dina practica explicarle a Liruf un concepto nuevo del curso, notando qué tan claro le queda a ella misma al explicarlo.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1805,9 +1805,9 @@ sagas:
       - arrange
       - choice
     - position: 3
-      slug: practicar-mi-presentacion-con-dino
-      micro_objective: Practicar la presentación corta completa frente a Dino, ajustando lo que no quede claro.
-      narrative_beat: Dina practica su presentación corta completa frente a Dino, ajustando las partes que no le quedaron claras a él.
+      slug: practicar-mi-presentacion-con-liruf
+      micro_objective: Practicar la presentación corta completa frente a Liruf, ajustando lo que no quede claro.
+      narrative_beat: Dina practica su presentación corta completa frente a Liruf, ajustando las partes que no le quedaron claras a él.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1837,7 +1837,7 @@ sagas:
     - position: 1
       slug: el-observatorio-se-llena-de-estrellas
       micro_objective: Observar el observatorio del cosmos lleno de estrellas para la ceremonia de graduación simulada.
-      narrative_beat: El observatorio del cosmos se llena de estrellas brillantes para la ceremonia de graduación simulada de Dina y Dino.
+      narrative_beat: El observatorio del cosmos se llena de estrellas brillantes para la ceremonia de graduación simulada de Dina y Liruf.
       difficulty: 2
       suggested_families:
       - story
@@ -1861,7 +1861,7 @@ sagas:
     - position: 4
       slug: mi-graduacion-completa-del-cosmos
       micro_objective: Celebrar, con sus propias palabras, la graduación completa aplicando todo lo aprendido en el curso.
-      narrative_beat: Bajo las estrellas del observatorio, Dina celebra su graduación completa junto a Dr. Rho, Dino y Zara Vex.
+      narrative_beat: Bajo las estrellas del observatorio, Dina celebra su graduación completa junto a Dr. Rho, Liruf y Zara Vex.
       difficulty: 4
       suggested_families:
       - storyplay
@@ -1900,7 +1900,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-ensenar
       micro_objective: Recordar y ordenar de nuevo cómo explicar el interés compuesto y cómo reconocer un fraude a la familia.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1941,7 +1941,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-respuesta-tranquila
       micro_objective: Recordar, tal como se aprendió antes, cómo responder con calma frente a una bajada de la canasta.
-      narrative_beat: Zara Vex trae un recuerdo de la saga anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con enseñar a la familia.
+      narrative_beat: Zara Vex trae un recuerdo de la saga anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con enseñar a la familia.
       difficulty: 1
       suggested_families:
       - choice
@@ -1957,7 +1957,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-ensenar
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de calma y enseñar a la familia combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2004,7 +2004,7 @@ sagas:
     - position: 1
       slug: el-cosmos-vuelve-a-brillar
       micro_objective: Recordar qué es una meta de inversión y por qué necesita un plazo claro.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el observatorio y anuncia la Gran Misión: recorrer una vez más todo el viaje de inversión.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el observatorio y anuncia la Gran Misión: recorrer una vez más todo el viaje de inversión.'
       difficulty: 1
       suggested_families:
       - story
@@ -2020,7 +2020,7 @@ sagas:
     - position: 3
       slug: cercana-o-lejana-otra-vez
       micro_objective: Recordar la diferencia entre una meta cercana, para ahorrar, y una lejana, para invertir.
-      narrative_beat: Dino recuerda, sin ayuda, la diferencia entre la estrella cercana y la estrella lejana de esta saga.
+      narrative_beat: Liruf recuerda, sin ayuda, la diferencia entre la estrella cercana y la estrella lejana de esta saga.
       difficulty: 2
       suggested_families:
       - choice
@@ -2037,7 +2037,7 @@ sagas:
     slug: el-plan-de-la-gran-mision
     kind: review_quest
     title_es: El Plan de la Gran Misión
-    concept: Dina y Dino recuerdan los cinco pasos del plan de inversión, de la meta a revisar con calma.
+    concept: Dina y Liruf recuerdan los cinco pasos del plan de inversión, de la meta a revisar con calma.
     learning_objective: Al final, el niño puede recordar y aplicar los cinco pasos completos del plan de inversión en orden.
     key_vocabulary:
     - plan
@@ -2062,7 +2062,7 @@ sagas:
     - position: 2
       slug: la-canasta-del-plan-otra-vez
       micro_objective: Recordar por qué el tercer paso del plan es elegir una canasta variada.
-      narrative_beat: Dino ordena, de memoria, por qué el tercer escalón de la escalera representaba una canasta variada.
+      narrative_beat: Liruf ordena, de memoria, por qué el tercer escalón de la escalera representaba una canasta variada.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2087,7 +2087,7 @@ sagas:
     slug: la-calma-de-la-gran-mision
     kind: review_quest
     title_es: La Calma de la Gran Misión
-    concept: Dina y Dino recuerdan por qué una bajada es normal y cómo responder con calma en vez de pánico.
+    concept: Dina y Liruf recuerdan por qué una bajada es normal y cómo responder con calma en vez de pánico.
     learning_objective: Al final, el niño puede recordar y aplicar una respuesta con calma frente a una bajada simulada de su canasta.
     key_vocabulary:
     - calma
@@ -2104,7 +2104,7 @@ sagas:
     - position: 1
       slug: la-nube-oscura-otra-vez
       micro_objective: Recordar por qué una bajada del valor de la canasta es normal al invertir.
-      narrative_beat: Zara Vex muestra de nuevo la nube oscura del cosmos y reta a Dino a recordar, sin ayuda, por qué eso es normal.
+      narrative_beat: Zara Vex muestra de nuevo la nube oscura del cosmos y reta a Liruf a recordar, sin ayuda, por qué eso es normal.
       difficulty: 1
       suggested_families:
       - story
@@ -2112,7 +2112,7 @@ sagas:
     - position: 2
       slug: el-panico-otra-vez
       micro_objective: Recordar por qué decidir con pánico no ayuda a tomar una buena decisión.
-      narrative_beat: Dina recuerda, de memoria, qué le pasó a Dino cuando quiso vender toda su canasta de golpe.
+      narrative_beat: Dina recuerda, de memoria, qué le pasó a Liruf cuando quiso vender toda su canasta de golpe.
       difficulty: 1
       suggested_families:
       - choice
@@ -2120,7 +2120,7 @@ sagas:
     - position: 3
       slug: respirar-otra-vez
       micro_objective: Recordar el hábito de respirar y revisar el plan antes de reaccionar a una bajada.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿qué hace antes de reaccionar a una bajada de su canasta?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿qué hace antes de reaccionar a una bajada de su canasta?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2137,7 +2137,7 @@ sagas:
     slug: ensenar-en-la-gran-mision
     kind: review_quest
     title_es: Enseñar en la Gran Misión
-    concept: Dina y Dino recuerdan cómo explicar lo aprendido a la familia y por qué celebrar la constancia importa tanto.
+    concept: Dina y Liruf recuerdan cómo explicar lo aprendido a la familia y por qué celebrar la constancia importa tanto.
     learning_objective: Al final, el niño puede recordar y aplicar cómo explicar al menos dos ideas del curso a su familia.
     key_vocabulary:
     - explicar
@@ -2154,7 +2154,7 @@ sagas:
     - position: 1
       slug: explicar-la-accion-otra-vez
       micro_objective: Recordar cómo explicarle a la familia qué es una acción, con palabras propias.
-      narrative_beat: Dina recuerda, de memoria, cómo le explicó a Dino qué es una acción usando el ejemplo de la limonadería.
+      narrative_beat: Dina recuerda, de memoria, cómo le explicó a Liruf qué es una acción usando el ejemplo de la limonadería.
       difficulty: 1
       suggested_families:
       - story
@@ -2162,7 +2162,7 @@ sagas:
     - position: 2
       slug: explicar-el-fraude-otra-vez
       micro_objective: Recordar al menos una señal de fraude para explicarle a la familia.
-      narrative_beat: Dino ordena, de memoria, las señales de fraude que practicó explicar en esta saga.
+      narrative_beat: Liruf ordena, de memoria, las señales de fraude que practicó explicar en esta saga.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2212,7 +2212,7 @@ sagas:
     - position: 2
       slug: un-viajero-nuevo-necesita-guia
       micro_objective: Aplicar las cuatro áreas para ayudar a un viajero nuevo del cosmos a armar su propio camino.
-      narrative_beat: Zara Vex presenta a un viajero nuevo del cosmos y reta a Dino a guiarlo por las cuatro áreas aprendidas.
+      narrative_beat: Zara Vex presenta a un viajero nuevo del cosmos y reta a Liruf a guiarlo por las cuatro áreas aprendidas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2257,7 +2257,7 @@ sagas:
     - position: 1
       slug: el-viaje-completo-del-inversionista
       micro_objective: 'Recordar, en conjunto, el viaje completo del curso: desde el jardín del tiempo hasta el cosmos del inversionista.'
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino bajo las estrellas y recuerda con ellos el viaje completo: el Jardín del Tiempo, la Aldea del Interés, el Archipiélago de los Riesgos, la Ciudad de las Metas, el Reino de las Canastas, el Bosque del Interés Compuesto, el Faro de los Fraudes, y ahora el Cosmos del Inversionista.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf bajo las estrellas y recuerda con ellos el viaje completo: el Jardín del Tiempo, la Aldea del Interés, el Archipiélago de los Riesgos, la Ciudad de las Metas, el Reino de las Canastas, el Bosque del Interés Compuesto, el Faro de los Fraudes, y ahora el Cosmos del Inversionista.'
       difficulty: 1
       suggested_families:
       - story
@@ -2265,7 +2265,7 @@ sagas:
     - position: 2
       slug: el-cosmos-y-los-mundos-anteriores
       micro_objective: 'Recordar tres ideas de aventuras anteriores: repartir gana a adivinar, el tiempo es un superpoder, y una promesa demasiado buena merece sospecha.'
-      narrative_beat: Zara Vex recuerda con Dino la canasta variada del reino, la bola de nieve del bosque nevado y las alertas del faro, mostrando cómo las tres ideas viven dentro de su plan del cosmos.
+      narrative_beat: Zara Vex recuerda con Liruf la canasta variada del reino, la bola de nieve del bosque nevado y las alertas del faro, mostrando cómo las tres ideas viven dentro de su plan del cosmos.
       difficulty: 1
       suggested_families:
       - choice
@@ -2281,7 +2281,7 @@ sagas:
     - position: 4
       slug: el-cosmos-sigue-brillando-para-siempre
       micro_objective: Celebrar la graduación final del curso completo, resumiendo con una frase propia todo lo logrado desde el primer jardín hasta el cosmos.
-      narrative_beat: Bajo las estrellas del observatorio, Dr. Rho declara a Dina y Dino graduados de todo el viaje de Inversiones, y ambos celebran junto a Dino y Zara Vex, listos para enseñarle a su familia lo aprendido.
+      narrative_beat: Bajo las estrellas del observatorio, Dr. Rho declara a Dina y Liruf graduados de todo el viaje de Inversiones, y ambos celebran junto a Liruf y Zara Vex, listos para enseñarle a su familia lo aprendido.
       difficulty: 2
       suggested_families:
       - storyplay

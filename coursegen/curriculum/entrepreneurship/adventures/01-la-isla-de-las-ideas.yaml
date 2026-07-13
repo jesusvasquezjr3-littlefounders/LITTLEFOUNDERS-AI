@@ -12,7 +12,7 @@ adventure:
     en-US: Sail to a new island where everyday problems hide in plain sight, and every problem noticed is the seed of a helpful idea.
     es-MX: Navega a una isla nueva donde los problemas cotidianos se esconden a la vista de todos, y cada problema notado es la semilla de una idea que ayuda.
     pt-BR: Navegue até uma nova ilha onde os problemas do dia a dia se escondem à vista de todos, e cada problema percebido é a semente de uma ideia que ajuda.
-  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Dino, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Dino aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
+  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Liruf, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Liruf aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
 sagas:
   - position: 1
     slug: ojos-que-notan
@@ -51,7 +51,7 @@ sagas:
           - position: 2
             slug: funciona-o-no-funciona
             micro_objective: Distingue, entre 4 escenas, cuáles muestran algo que no funciona bien.
-            narrative_beat: "Dino recorre el muelle señalando objetos: una carretilla atorada, una banca firme, una cubeta rota."
+            narrative_beat: "Liruf recorre el muelle señalando objetos: una carretilla atorada, una banca firme, una cubeta rota."
             difficulty: 1
             suggested_families:
               - choice
@@ -88,7 +88,7 @@ sagas:
           - position: 1
             slug: mis-sandalias-se-atoran
             micro_objective: Reconoce en la historia un problema que le pasa directamente al personaje.
-            narrative_beat: A Dino se le atoran las sandalias en la arena cada vez que corre por la playa de la isla.
+            narrative_beat: A Liruf se le atoran las sandalias en la arena cada vez que corre por la playa de la isla.
             difficulty: 1
             suggested_families:
               - story
@@ -156,7 +156,7 @@ sagas:
           - position: 4
             slug: noto-un-problema-que-no-es-mio
             micro_objective: Describe, sin ayuda, un problema ajeno notado en una escena nueva de la isla.
-            narrative_beat: Dino cuenta a la tripulación el problema de un isleño que conoció esa tarde, aunque a él no le afecte.
+            narrative_beat: Liruf cuenta a la tripulación el problema de un isleño que conoció esa tarde, aunque a él no le afecte.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -193,7 +193,7 @@ sagas:
           - position: 3
             slug: ordeno-problemas-por-tamano
             micro_objective: Ordena 4 problemas de menor a mayor según qué tanto afectan a alguien.
-            narrative_beat: Dino ordena en su libreta los problemas de la isla, del más chico al más grande.
+            narrative_beat: Liruf ordena en su libreta los problemas de la isla, del más chico al más grande.
             difficulty: 2
             suggested_families:
               - arrange
@@ -237,7 +237,7 @@ sagas:
           - position: 3
             slug: completo-la-frase-del-problema
             micro_objective: Completa una frase corta que nombra un problema usando las palabras clave correctas.
-            narrative_beat: Dino arma con tarjetas de palabras una frase que describe el problema del carrito atorado.
+            narrative_beat: Liruf arma con tarjetas de palabras una frase que describe el problema del carrito atorado.
             difficulty: 2
             suggested_families:
               - input
@@ -282,7 +282,7 @@ sagas:
           - position: 3
             slug: cuento-cuantas-veces-pasa
             micro_objective: Ordena 3 problemas según qué tan seguido se repiten.
-            narrative_beat: Dino lleva la cuenta de cuántas veces en la semana ha visto el mismo problema del puente.
+            narrative_beat: Liruf lleva la cuenta de cuántas veces en la semana ha visto el mismo problema del puente.
             difficulty: 2
             suggested_families:
               - arrange
@@ -334,7 +334,7 @@ sagas:
           - position: 3
             slug: elijo-el-problema-mas-grande-del-cofre
             micro_objective: Elige, entre 2 problemas recordados, cuál parecía más grande.
-            narrative_beat: Dino compara dos recuerdos del cofre y decide cuál problema afectaba más a los isleños.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál problema afectaba más a los isleños.
             difficulty: 2
             suggested_families:
               - choice
@@ -384,7 +384,7 @@ sagas:
           - position: 3
             slug: cuento-y-nombro-un-problema-repetido
             micro_objective: Ordena y nombra, combinando ambos temas, un problema que se repite muchas veces.
-            narrative_beat: Dino ordena sus notas del problema del puente y lo nombra en una frase clara.
+            narrative_beat: Liruf ordena sus notas del problema del puente y lo nombra en una frase clara.
             difficulty: 2
             suggested_families:
               - arrange
@@ -441,7 +441,7 @@ sagas:
           - position: 3
             slug: uno-un-problema-con-su-idea
             micro_objective: Empareja 3 problemas con la idea que podría resolver cada uno.
-            narrative_beat: Dino conecta con cordeles cada problema del pizarrón con su posible idea.
+            narrative_beat: Liruf conecta con cordeles cada problema del pizarrón con su posible idea.
             difficulty: 2
             suggested_families:
               - arrange
@@ -486,7 +486,7 @@ sagas:
           - position: 3
             slug: quien-recibe-la-ayuda
             micro_objective: Identifica, entre 3 personajes, quién recibiría la ayuda de una idea mostrada.
-            narrative_beat: Dino pregunta uno por uno a los isleños quién se beneficiaría de la nueva idea del carrito.
+            narrative_beat: Liruf pregunta uno por uno a los isleños quién se beneficiaría de la nueva idea del carrito.
             difficulty: 2
             suggested_families:
               - choice
@@ -531,7 +531,7 @@ sagas:
           - position: 3
             slug: ordeno-varias-ideas
             micro_objective: Ordena 3 ideas distintas propuestas para el mismo problema.
-            narrative_beat: Dino acomoda en su libreta todas las ideas que se le ocurrieron para la fuente sin sombra.
+            narrative_beat: Liruf acomoda en su libreta todas las ideas que se le ocurrieron para la fuente sin sombra.
             difficulty: 2
             suggested_families:
               - arrange
@@ -575,7 +575,7 @@ sagas:
           - position: 3
             slug: ordeno-ideas-de-facil-a-dificil
             micro_objective: Ordena 3 ideas de la más sencilla a la más complicada.
-            narrative_beat: Dino ordena sus ideas para la fuente, de la más fácil a la más difícil de construir.
+            narrative_beat: Liruf ordena sus ideas para la fuente, de la más fácil a la más difícil de construir.
             difficulty: 2
             suggested_families:
               - arrange
@@ -619,7 +619,7 @@ sagas:
           - position: 3
             slug: confirmo-mi-idea
             micro_objective: Confirma, con una pista de la historia, que su idea sí ayuda a la persona pensada.
-            narrative_beat: Dino le pregunta directamente al vendedor si la sombrilla de tela sí le ayudaría.
+            narrative_beat: Liruf le pregunta directamente al vendedor si la sombrilla de tela sí le ayudaría.
             difficulty: 2
             suggested_families:
               - choice
@@ -664,7 +664,7 @@ sagas:
           - position: 3
             slug: completo-la-frase-de-mi-idea
             micro_objective: Completa una frase corta que resume una idea usando las palabras clave correctas.
-            narrative_beat: Dino arma con tarjetas de palabras la frase que resume su idea del carrito.
+            narrative_beat: Liruf arma con tarjetas de palabras la frase que resume su idea del carrito.
             difficulty: 2
             suggested_families:
               - input
@@ -717,7 +717,7 @@ sagas:
           - position: 3
             slug: elijo-la-idea-mas-sencilla-del-cofre
             micro_objective: Elige, entre 2 ideas recordadas, cuál era más sencilla de empezar.
-            narrative_beat: Dino compara dos ideas guardadas en el cofre y recuerda cuál era más fácil de hacer.
+            narrative_beat: Liruf compara dos ideas guardadas en el cofre y recuerda cuál era más fácil de hacer.
             difficulty: 2
             suggested_families:
               - choice
@@ -766,7 +766,7 @@ sagas:
           - position: 3
             slug: ordeno-problema-e-idea-juntos
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde notar un problema hasta tener una idea sencilla.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde el problema del puente hasta su idea más sencilla."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el problema del puente hasta su idea más sencilla."
             difficulty: 2
             suggested_families:
               - arrange
@@ -820,7 +820,7 @@ sagas:
           - position: 2
             slug: mirar-rapido-o-con-calma
             micro_objective: Distingue, entre 2 escenas, cuál muestra una observación calmada y cuál una conclusión apurada.
-            narrative_beat: Dino compara su propia prisa por opinar con la calma de Rho al observar la misma escena.
+            narrative_beat: Liruf compara su propia prisa por opinar con la calma de Rho al observar la misma escena.
             difficulty: 1
             suggested_families:
               - choice
@@ -855,9 +855,9 @@ sagas:
         parent_check: Cuando {{name}} no esté seguro de lo que alguien quiere, anímalo a preguntar directamente en vez de adivinar.
         lessons:
           - position: 1
-            slug: dino-adivina-mal
+            slug: liruf-adivina-mal
             micro_objective: Reconoce en la historia lo que pasa cuando un personaje adivina en vez de preguntar.
-            narrative_beat: Dino le regala al vendedor de fruta una sombrilla azul, adivinando que le gustaría, sin preguntarle.
+            narrative_beat: Liruf le regala al vendedor de fruta una sombrilla azul, adivinando que le gustaría, sin preguntarle.
             difficulty: 1
             suggested_families:
               - story
@@ -879,7 +879,7 @@ sagas:
           - position: 4
             slug: pregunto-en-vez-de-suponer
             micro_objective: Elige preguntar directamente, sin ayuda, en una situación nueva de la historia.
-            narrative_beat: Dina anima a Dino a regresar y preguntarle al vendedor qué es lo que de verdad necesita.
+            narrative_beat: Dina anima a Liruf a regresar y preguntarle al vendedor qué es lo que de verdad necesita.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -916,7 +916,7 @@ sagas:
           - position: 3
             slug: mejoro-mi-pregunta
             micro_objective: Ordena los pasos para convertir una pregunta general en una pregunta específica.
-            narrative_beat: Dino reescribe su pregunta paso a paso hasta que queda clara y específica.
+            narrative_beat: Liruf reescribe su pregunta paso a paso hasta que queda clara y específica.
             difficulty: 2
             suggested_families:
               - arrange
@@ -943,9 +943,9 @@ sagas:
         parent_check: Observa si {{name}} logra escuchar toda una respuesta sin interrumpir la próxima vez que le pregunte algo a alguien.
         lessons:
           - position: 1
-            slug: dino-interrumpe
+            slug: liruf-interrumpe
             micro_objective: Reconoce en la historia el momento en que un personaje interrumpe antes de escuchar toda la respuesta.
-            narrative_beat: Dino interrumpe al vendedor de fruta a mitad de su respuesta, seguro de que ya sabe lo que va a decir.
+            narrative_beat: Liruf interrumpe al vendedor de fruta a mitad de su respuesta, seguro de que ya sabe lo que va a decir.
             difficulty: 1
             suggested_families:
               - story
@@ -960,7 +960,7 @@ sagas:
           - position: 3
             slug: que-me-perdi-por-interrumpir
             micro_objective: Identifica qué información importante se perdió un personaje por interrumpir demasiado pronto.
-            narrative_beat: Zara se da cuenta de que Dino se perdió el dato más importante por no esperar la respuesta completa.
+            narrative_beat: Zara se da cuenta de que Liruf se perdió el dato más importante por no esperar la respuesta completa.
             difficulty: 2
             suggested_families:
               - choice
@@ -1005,7 +1005,7 @@ sagas:
           - position: 3
             slug: ordeno-mis-notas
             micro_objective: Ordena 3 notas de observación según el orden en que ocurrieron.
-            narrative_beat: Dino ordena las páginas de su libreta según el orden de sus visitas al mercado.
+            narrative_beat: Liruf ordena las páginas de su libreta según el orden de sus visitas al mercado.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1050,7 +1050,7 @@ sagas:
           - position: 3
             slug: elijo-el-ajuste-correcto
             micro_objective: Elige, entre 2 ajustes posibles, cuál usa mejor lo que se observó o escuchó.
-            narrative_beat: Dino decide entre dos formas de ajustar su carrito, según lo que el isleño realmente necesitaba.
+            narrative_beat: Liruf decide entre dos formas de ajustar su carrito, según lo que el isleño realmente necesitaba.
             difficulty: 2
             suggested_families:
               - choice
@@ -1102,7 +1102,7 @@ sagas:
           - position: 3
             slug: elijo-la-escucha-mas-completa
             micro_objective: Elige, entre 2 recuerdos, cuál muestra una escucha más completa y sin interrupciones.
-            narrative_beat: Dino compara dos recuerdos del cofre y decide cuál conversación se escuchó mejor.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál conversación se escuchó mejor.
             difficulty: 2
             suggested_families:
               - choice
@@ -1151,7 +1151,7 @@ sagas:
           - position: 3
             slug: ordeno-idea-pregunta-y-mejora
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde tener una idea hasta mejorarla con una pregunta.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde su idea sencilla hasta la pregunta que la mejoró."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde su idea sencilla hasta la pregunta que la mejoró."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1212,7 +1212,7 @@ sagas:
           - position: 3
             slug: uno-ideas-con-cordeles
             micro_objective: Empareja ideas que podrían combinarse bien entre sí.
-            narrative_beat: Dino conecta con cordeles las ideas del pizarrón que combinan bien.
+            narrative_beat: Liruf conecta con cordeles las ideas del pizarrón que combinan bien.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1241,7 +1241,7 @@ sagas:
           - position: 1
             slug: y-si-cambiamos-el-material
             micro_objective: Reconoce en la historia una forma alternativa de resolver el mismo problema.
-            narrative_beat: Dino pregunta '¿y si en vez de madera usamos tela?' cuando su primera idea no convence del todo.
+            narrative_beat: Liruf pregunta '¿y si en vez de madera usamos tela?' cuando su primera idea no convence del todo.
             difficulty: 1
             suggested_families:
               - story
@@ -1300,7 +1300,7 @@ sagas:
           - position: 3
             slug: junto-materiales-sencillos
             micro_objective: Ordena 3 pasos simples para armar una primera prueba con materiales sencillos.
-            narrative_beat: Dino junta palos, cordel y tela vieja para su primera prueba del carrito mejorado.
+            narrative_beat: Liruf junta palos, cordel y tela vieja para su primera prueba del carrito mejorado.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1348,7 +1348,7 @@ sagas:
           - position: 3
             slug: que-aprendi-de-esto
             micro_objective: Identifica, entre 3 opciones, la lección correcta que deja una prueba fallida.
-            narrative_beat: Dino revisa por qué su carrito volvió a atorarse y elige la lección correcta para la próxima vez.
+            narrative_beat: Liruf revisa por qué su carrito volvió a atorarse y elige la lección correcta para la próxima vez.
             difficulty: 2
             suggested_families:
               - choice
@@ -1392,7 +1392,7 @@ sagas:
           - position: 3
             slug: repaso-todo-el-camino-de-mi-idea
             micro_objective: Ordena los pasos que llevaron desde el problema hasta la idea final elegida.
-            narrative_beat: Dino ordena en su libreta todo el camino de su idea, desde el problema hasta hoy.
+            narrative_beat: Liruf ordena en su libreta todo el camino de su idea, desde el problema hasta hoy.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1436,7 +1436,7 @@ sagas:
           - position: 3
             slug: armo-mi-idea-final
             micro_objective: Arma, sin ayuda, el resumen completo de su idea final usando lo aprendido en la aventura.
-            narrative_beat: Dino organiza su presentación final poniendo en práctica todo lo que aprendió.
+            narrative_beat: Liruf organiza su presentación final poniendo en práctica todo lo que aprendió.
             difficulty: 3
             suggested_families:
               - choice
@@ -1489,7 +1489,7 @@ sagas:
           - position: 3
             slug: elijo-la-mejor-idea-del-cofre
             micro_objective: Elige, entre 2 ideas recordadas, cuál estaba mejor lista para la feria.
-            narrative_beat: Dino compara dos ideas guardadas en el cofre y decide cuál estaba más lista.
+            narrative_beat: Liruf compara dos ideas guardadas en el cofre y decide cuál estaba más lista.
             difficulty: 2
             suggested_families:
               - choice
@@ -1538,7 +1538,7 @@ sagas:
           - position: 3
             slug: ordeno-todo-el-camino-de-la-isla
             micro_objective: Ordena, mezclando varias sagas, los pasos desde notar un problema hasta elegir la mejor idea.
-            narrative_beat: "Dino ordena en su mente todo el camino: desde el primer problema hasta la idea que eligió."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde el primer problema hasta la idea que eligió."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1655,7 +1655,7 @@ sagas:
           - position: 4
             slug: superamos-la-prueba-de-preguntas
             micro_objective: Completa, sin ayuda, la prueba usando una pregunta clara y específica.
-            narrative_beat: Dino y Dina completan la prueba haciendo la pregunta más clara de todo el reto.
+            narrative_beat: Liruf y Dina completan la prueba haciendo la pregunta más clara de todo el reto.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -1704,7 +1704,7 @@ sagas:
           - position: 4
             slug: superamos-el-desafio-de-la-chispa
             micro_objective: Completa, sin ayuda, el desafío eligiendo la idea combinada y probada que mejor resuelve el problema.
-            narrative_beat: Dino y Dina abren la puerta del faro con la idea combinada y ya probada por toda la tripulación.
+            narrative_beat: Liruf y Dina abren la puerta del faro con la idea combinada y ya probada por toda la tripulación.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -1746,7 +1746,7 @@ sagas:
           - position: 3
             slug: unimos-cada-problema-con-su-idea
             micro_objective: Empareja, sin ayuda, cada problema del muro con una idea sencilla que podría ayudarlo.
-            narrative_beat: Dino conecta con cordeles cada problema del muro con la idea que mejor lo resolvería.
+            narrative_beat: Liruf conecta con cordeles cada problema del muro con la idea que mejor lo resolvería.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1804,7 +1804,7 @@ sagas:
           - position: 4
             slug: abrimos-el-tesoro-de-la-gran-idea
             micro_objective: Completa, sin ayuda, la apertura del tesoro combinando problema, idea, pregunta y prueba.
-            narrative_beat: "Dino y Dina abren juntos el tesoro final: dentro hay una invitación a la Gran Feria de Inventos."
+            narrative_beat: "Liruf y Dina abren juntos el tesoro final: dentro hay una invitación a la Gran Feria de Inventos."
             difficulty: 3
             suggested_families:
               - storyplay

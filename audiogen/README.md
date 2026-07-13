@@ -45,10 +45,12 @@ All routes below `/internal` require `x-internal-api-key: <INTERNAL_API_KEY>`
 | `TTS_API_URL` | DashScope multimodal-generation endpoint | Qwen3-TTS REST |
 | `TTS_API_KEY` | — | Required |
 | `TTS_MODEL` | `qwen3-tts-flash` | Provider decision RESOLVED — see AGENTS.md |
+| `TTS_ENROLLMENT_API_URL` | DashScope `audio/tts/customization` endpoint | Voice-clone enrollment (`qwen-voice-enrollment`) — a different endpoint from synthesis |
+| `TTS_CLONE_MODEL` | `qwen3-tts-vc-2026-01-22` | Model every cloned voice is bound to at enrollment AND synthesis — never mix with `TTS_MODEL` |
 | `TTS_VOICE_EN_US` | `Jennifer` | Per-locale default voice (see "Voice map" below) |
 | `TTS_VOICE_ES_MX` | `Li` | |
 | `TTS_VOICE_PT_BR` | `Ryan` | |
-| `TTS_VOICE_{DINA,DINO,RHO,ZARA}_{EN_US,ES_MX,PT_BR}` | unset | Per-character voice overrides (12 vars, all optional — see "Voice map" below) |
+| `TTS_VOICE_{DINA,LIRUF,RHO,ZARA}_{EN_US,ES_MX,PT_BR}` | unset | Per-character voice overrides (12 vars, all optional — see "Voice map" below) |
 | `SUPABASE_URL` | — | Required; Vault (Supabase self-hosted) |
 | `SUPABASE_SERVICE_ROLE_KEY` | — | Required; service-role writes only |
 | `FILEBASE_URL` | — | Required |
@@ -70,26 +72,50 @@ Echo resolves the voice from the narrating character (COURSE_ENGINE.md §7:
    §3), if set.
 3. Otherwise, the locale default (`TTS_VOICE_{EN_US,ES_MX,PT_BR}`).
 
-Steps 1–2 only resolve to a real voice for `dina`/`dino`/`rho`/`zara` (the 4
+Steps 1–2 only resolve to a real voice for `dina`/`liruf`/`rho`/`zara` (the 4
 canon characters) AND only when that character's `TTS_VOICE_<CHARACTER>_<LOCALE>`
 env var is set — any other character string, or an unset var, falls straight
 to step 3. This means the map is safe to fill in incrementally (one
 character/locale at a time) with zero code changes and zero risk of an
 unrecognized value reaching the TTS provider.
 
-Each var is just a `voice` string handed to `synthesizeSpeech()` — it works
-identically whether that string is a DashScope **built-in preset name** (e.g.
-`Cherry`) or a **cloned voice id** registered from a reference audio sample
-via DashScope's voice-clone flow (`qwen3-tts-vc`). The clone *registration*
-step itself (upload a reference sample → get back a voice id) is NOT yet
-implemented here — its exact request/response contract wasn't verified
-against a real character sample at the time this map was built. Once
-reference audio lands for a character, either (a) it turns out to be preset
-names to type directly into these vars, or (b) it needs a one-time clone
-registration whose output (a voice id) then goes into these same vars — no
-call-site changes either way. `AudioUnitEntry.voice` on every generated unit
+`voiceFor()` returns `{ voice, model }`, not a bare string — a locale
+default pairs with `TTS_MODEL`; a character override ALWAYS pairs with
+`TTS_CLONE_MODEL`, because DashScope binds every cloned voice to the exact
+model it was enrolled under. `AudioUnitEntry.voice` on every generated unit
 records exactly which voice was used, so a wrong mapping is always visible
 in the manifest.
+
+### Registering a cloned voice from a reference sample
+
+Implemented: `src/tts/trimSample.ts` (RMS-based clean-window selector),
+`src/tts/voiceClone.ts` (the `qwen-voice-enrollment` client), and two
+scripts:
+
+1. Drop raw reference recordings under `src/samples/{EN,ES,PT}/` (gitignored
+   — never committed; see root `.gitignore`). One long-form native-locale
+   recording per character/locale is enough; DashScope's enrollment API
+   caps input at 60s / 10MB / no single silent gap over 2s, so raw
+   voice-actor takes almost always need trimming first.
+2. `npm run trim:samples` — **free, local-only, no network calls.** Picks
+   the cleanest ~18s window per file (energy-based silence detection, no
+   external DSP dependency) and writes the trimmed WAVs to
+   `src/samples/trimmed/{locale}/{character}.wav`, printing a pass/fail
+   table against the enrollment API's hard limits. Review this table before
+   proceeding.
+3. `npm run voices:register -- --confirm` — **PAID**, one DashScope
+   enrollment call per trimmed sample (12 calls for the full character ×
+   locale grid). Does nothing — zero network calls — without the
+   `--confirm` flag (BOUNDARIES-tier operator opt-in, same pattern as
+   `AUDIOGEN_RUN_ON_START`). On success it prints
+   `TTS_VOICE_<CHARACTER>_<LOCALE>=<voice-id>` lines for a human to paste
+   into `.env` — it never auto-edits a secrets file.
+
+The exact enrollment response schema wasn't independently verified against
+a live call at the time this was built (confirmed only against Alibaba
+Cloud's published docs), so `registerVoice()` parses the response
+defensively across a few plausible field-name shapes and surfaces the raw
+provider error on failure.
 
 ## Cost warning
 

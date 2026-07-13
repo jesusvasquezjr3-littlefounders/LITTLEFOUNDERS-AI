@@ -215,7 +215,7 @@ gate      DETERMINISTIC, free, in order:
              (coin sums, change, ceil(goal/weekly), balance totals, compound
              values are RE-EXECUTED programmatically against the answer key)
           4. Rationale gate — every wrong option carries rationale_md (P7)
-          5. Character canon gate — cast ⊆ {dina,dino,rho,zara}, emotions/
+          5. Character canon gate — cast ⊆ {dina,liruf,rho,zara}, emotions/
              actions in the closed sets
           6. Anti-genericity gate — deterministic detectors for content that
              restates instead of teaching: prompt_md ≈ topic/lesson title,
@@ -316,7 +316,7 @@ CLIENT-SAFE document (never answer keys), narrates the narratable fields
 `voiceFor()`): per UNIT — `story_dialogue` line / `story_scene` character →
 segment envelope `narrator.character` → per-locale default, in that order;
 per-character overrides are 12 optional env vars
-(`TTS_VOICE_<DINA|DINO|RHO|ZARA>_<LOCALE>`), unset = falls through to the
+(`TTS_VOICE_<DINA|LIRUF|RHO|ZARA>_<LOCALE>`), unset = falls through to the
 locale default, so the map fills in incrementally with zero code changes.
 Encodes mono MP3 (small, quality-preserving), stores in filebase
 `lesson-audio`, and patches `audio_segment_id`s + an `audio` manifest into

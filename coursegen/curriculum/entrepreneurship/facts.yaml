@@ -232,7 +232,7 @@ facts:
   # ---- Character canon anchors (copied verbatim — used by narrative_beat
   # authoring, not money math; identical across every course in the catalog) ----
   characters.canon_ids:
-    value: [dina, dino, rho, zara]
+    value: [dina, liruf, rho, zara]
     unit: n/a
     label_es: "IDs canónicos de personajes (LESSON_ENGINE.md §9) — únicos narradores permitidos"
     verified: true
@@ -240,7 +240,7 @@ facts:
   characters.roles:
     value:
       dina: mentora
-      dino: juguetón
+      liruf: juguetón
       rho: sabio detective
       zara: estratega
     unit: n/a

@@ -21,7 +21,7 @@ Duolingo are references, not ceilings. Every design decision below traces to one
 these principles — cite them in PRs when adding types:
 
 - **P1 Narrative first.** Concepts arrive inside a story told by the canonical
-  characters (Dina, Dino, Dr. Rho, Zara Vex). A lesson opens with story segments, not a
+  characters (Dina, Liruf, Dr. Rho, Zara Vex). A lesson opens with story segments, not a
   wall of theory. (Narrative transportation → retention.)
 - **P2 Visual before verbal.** Manipulatives (coins, jars, scales, number lines, grids)
   before abstract notation. Concrete → pictorial → abstract, in that order.
@@ -397,11 +397,11 @@ renders inert), no external lib. Anything else renders as literal text.
 
 Lives in `frontend/src/components/characters/control/` — reusable platform-wide (games,
 tutor, empty states), not lesson-only. **Appearance is NON-NEGOTIABLE:** colors, shapes
-and composition of Dina, Dino, Dr. Rho and Zara Vex are never altered; the rig only
+and composition of Dina, Liruf, Dr. Rho and Zara Vex are never altered; the rig only
 ADDS stable class hooks and wrapper-level animation.
 
 ```ts
-type CharacterId = 'dina' | 'dino' | 'rho' | 'zara'
+type CharacterId = 'dina' | 'liruf' | 'rho' | 'zara'
 type CharacterEmotion = 'neutral' | 'happy' | 'excited' | 'thinking'
                       | 'surprised' | 'encouraging' | 'proud'
 type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
@@ -412,7 +412,7 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
 ```
 
 - `CharacterActor` maps the unified `CharacterEmotion` to each character's native prop
-  (`expression` for Dina; `mood` unions for Dino/Rho/Zara) via a per-character table —
+  (`expression` for Dina; `mood` unions for Liruf/Rho/Zara) via a per-character table —
   native prop surfaces stay untouched and keep working.
 - Actions are CSS keyframe classes (`lf-act-*`) applied to the actor WRAPPER and to
   standardized rig hooks added inside each SVG (`lf-rig-arm-f`, `lf-rig-arm-b`,

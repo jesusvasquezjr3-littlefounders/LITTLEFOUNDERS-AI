@@ -35,7 +35,7 @@ export const arrangeFixtures: SegmentBase[] = [
     difficulty: 2,
     xp: 15,
     explanation_md: 'Repetir las parejas te ayuda a **recordar** qué significa cada palabra.',
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       pairs: [
         { a_md: 'Ahorrar', b_md: 'Guardar dinero para después' },
@@ -151,7 +151,7 @@ export const arrangeFixtures: SegmentBase[] = [
     difficulty: 2,
     xp: 15,
     hints: ['Mira cómo se repiten: moneda, moneda, billete…'],
-    narrator: { character: 'dino', emotion: 'thinking' },
+    narrator: { character: 'liruf', emotion: 'thinking' },
     payload: {
       sequence: [
         { icon: 'paid', tint: 'warning' },
@@ -196,7 +196,7 @@ export const arrangeFixtures: SegmentBase[] = [
     difficulty: 1,
     xp: 10,
     hints: ['El 7 está entre el 5 y el 10, más cerca del 5.'],
-    narrator: { character: 'dino', emotion: 'encouraging' },
+    narrator: { character: 'liruf', emotion: 'encouraging' },
     payload: { min: 0, max: 10, ticks: 10, labels: true },
     answer: { value: 7, full_credit_delta: 0, zero_credit_delta: 3 },
   },

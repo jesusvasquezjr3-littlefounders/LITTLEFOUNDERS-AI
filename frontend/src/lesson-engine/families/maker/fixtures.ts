@@ -7,13 +7,13 @@ export const makerFixtures: SegmentBase[] = [
   {
     id: 'fx-code-order',
     type: 'code_order',
-    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Dino.',
+    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Liruf.',
     difficulty: 2,
     xp: 15,
     hints: ['Todo programa empieza con `inicio` y termina mostrando el resultado.'],
     explanation_md:
       'Primero **empiezas**, luego **repites** el paso de guardar, y al final **miras** cuánto juntaste.',
-    narrator: { character: 'dino', emotion: 'excited' },
+    narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       blocks: [
         { id: 'b3', text_md: 'guardar(10)' },
@@ -28,7 +28,7 @@ export const makerFixtures: SegmentBase[] = [
   {
     id: 'fx-robot-path',
     type: 'robot_path',
-    prompt_md: 'Guía a Dino hasta la **moneda**. Arma tu programa y presiona **Ejecutar**.',
+    prompt_md: 'Guía a Liruf hasta la **moneda**. Arma tu programa y presiona **Ejecutar**.',
     difficulty: 3,
     xp: 20,
     hints: ['Primero avanza hacia arriba y luego gira hacia la moneda.'],

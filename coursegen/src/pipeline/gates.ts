@@ -393,7 +393,7 @@ function rationaleGate(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
-const CANON_CHARACTERS = new Set(['dina', 'dino', 'rho', 'zara']);
+const CANON_CHARACTERS = new Set(['dina', 'liruf', 'rho', 'zara']);
 
 function collectCharacterRefs(node: unknown, out: Set<string>): void {
   if (node === null || node === undefined) return;
@@ -418,7 +418,7 @@ function canonGate(document: LessonDocumentParsed): GateProblem[] {
     collectCharacterRefs(segment, refs);
     for (const character of refs) {
       if (!CANON_CHARACTERS.has(character)) {
-        problems.push({ gate: 5, segmentId: segment.id, message: `character "${character}" is outside the closed canon {dina,dino,rho,zara}` });
+        problems.push({ gate: 5, segmentId: segment.id, message: `character "${character}" is outside the closed canon {dina,liruf,rho,zara}` });
       } else if (!cast.has(character as (typeof document.meta.cast)[number])) {
         problems.push({ gate: 5, segmentId: segment.id, message: `character "${character}" is used but not declared in meta.cast` });
       }

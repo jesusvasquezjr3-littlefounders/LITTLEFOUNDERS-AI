@@ -9,21 +9,21 @@ adventure:
     es-MX: La Ciudad de las Metas
     pt-BR: A Cidade das Metas
   description:
-    en-US: Dina and Dino reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
+    en-US: Dina and Liruf reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
       goals and discover why prices rise with time.
-    es-MX: Dina y Dino llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
+    es-MX: Dina y Liruf llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
       planear metas reales de largo plazo y a descubrir por qué los precios suben con el tiempo.
-    pt-BR: Dina e Dino chegam a uma cidade agitada onde Dina, agora mentora de metas, os ajuda a planejar
+    pt-BR: Dina e Liruf chegam a uma cidade agitada onde Dina, agora mentora de metas, os ajuda a planejar
       metas reais de longo prazo e a descobrir por que os preços sobem com o tempo.
-  narrative_arc: 'Dina y Dino llegan a una gran ciudad -su primera aventura de tier3- donde Dina asume
+  narrative_arc: 'Dina y Liruf llegan a una gran ciudad -su primera aventura de tier3- donde Dina asume
     su papel de mentora de metas: ayuda a plantear objetivos grandes que toman meses, no semanas, dividiéndolos
     en avances semanales manejables. Ahí conocen a la abuela de Dr. Rho, quien recuerda que su paleta
     favorita costaba mucho menos hace algunos años -la puerta concreta a entender que los precios suben
-    con el tiempo (inflación) y que el mismo dinero compra un poco menos mañana. Dina y Dino descubren
+    con el tiempo (inflación) y que el mismo dinero compra un poco menos mañana. Dina y Liruf descubren
     por qué guardar dinero ''bajo el colchón'', sin dejarlo crecer, pierde valor real frente a guardarlo
     donde el tiempo y el premio lo hacen crecer -combinando todo lo aprendido en el jardín y la aldea-
     y aprenden el concepto de poder de compra: por qué una meta también necesita crecer para no quedarse
-    corta. Al despedirse de la ciudad, Dina y Dino cierran el arco introductorio de la aventura y entran
+    corta. Al despedirse de la ciudad, Dina y Liruf cierran el arco introductorio de la aventura y entran
     de lleno al mundo de las inversiones que los espera en los siguientes destinos del mapa.'
 sagas:
 - position: 1
@@ -65,7 +65,7 @@ sagas:
       slug: dina-llega-a-la-ciudad
       micro_objective: Reconocer que la ciudad presenta metas más grandes, que toman más de un mes de
         ahorro.
-      narrative_beat: Dina y Dino llegan a una gran ciudad donde Dina ve una bicicleta que cuesta mucho
+      narrative_beat: Dina y Liruf llegan a una gran ciudad donde Dina ve una bicicleta que cuesta mucho
         más que cualquier meta que haya ahorrado antes.
       difficulty: 1
       suggested_families:
@@ -84,7 +84,7 @@ sagas:
     - position: 3
       slug: por-que-esta-meta-toma-mas-tiempo
       micro_objective: Explicar por qué una meta más costosa toma naturalmente más tiempo de ahorro.
-      narrative_beat: Zara Vex pregunta a Dino por qué cree que esta meta, al costar tanto más, toma tanto
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que esta meta, al costar tanto más, toma tanto
         más tiempo de ahorro.
       difficulty: 2
       suggested_families:
@@ -136,7 +136,7 @@ sagas:
     - position: 3
       slug: un-numero-manejable
       micro_objective: Explicar por qué dividir la meta en semanas la hace sentir más manejable.
-      narrative_beat: Zara Vex pregunta a Dino por qué ver el número de semanas, en vez del costo total,
+      narrative_beat: Zara Vex pregunta a Liruf por qué ver el número de semanas, en vez del costo total,
         hace que la meta se sienta más manejable.
       difficulty: 2
       suggested_families:
@@ -181,7 +181,7 @@ sagas:
     - position: 2
       slug: calcular-lo-que-falta
       micro_objective: Calcular cuánto falta para una meta, restando lo guardado del costo total.
-      narrative_beat: Zara Vex reta a Dino a calcular cuánto le falta para su meta, restando lo que ya
+      narrative_beat: Zara Vex reta a Liruf a calcular cuánto le falta para su meta, restando lo que ya
         guardó del costo total.
       difficulty: 2
       suggested_families:
@@ -245,7 +245,7 @@ sagas:
     - position: 3
       slug: ajustar-no-es-rendirse
       micro_objective: Explicar la diferencia entre ajustar un plan y abandonarlo por completo.
-      narrative_beat: Zara Vex explica a Dino que ajustar el plan, sumando algunas semanas más, es muy
+      narrative_beat: Zara Vex explica a Liruf que ajustar el plan, sumando algunas semanas más, es muy
         distinto a rendirse.
       difficulty: 2
       suggested_families:
@@ -289,7 +289,7 @@ sagas:
     - position: 2
       slug: comparar-las-semanas-de-cada-una
       micro_objective: Comparar el número de semanas necesarias entre una meta de un mes y una de un año.
-      narrative_beat: Zara Vex pide a Dino comparar cuántas semanas toma cada meta y qué tan distinto
+      narrative_beat: Zara Vex pide a Liruf comparar cuántas semanas toma cada meta y qué tan distinto
         se siente cada número.
       difficulty: 2
       suggested_families:
@@ -347,7 +347,7 @@ sagas:
       slug: calcular-la-diferencia-de-empezar-antes
       micro_objective: Calcular cuánto premio adicional se gana por empezar a ahorrar antes para una meta
         de largo plazo.
-      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto premio extra ganaría el amigo que empezó
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto premio extra ganaría el amigo que empezó
         antes, comparado con el que esperó.
       difficulty: 2
       suggested_families:
@@ -405,7 +405,7 @@ sagas:
       slug: las-tres-partes-de-una-meta-escrita
       micro_objective: 'Ordenar las tres partes necesarias de una meta bien escrita: qué es, cuánto cuesta,
         para cuándo.'
-      narrative_beat: Zara Vex ayuda a Dino a ordenar las tres partes de una meta bien escrita antes de
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las tres partes de una meta bien escrita antes de
         anotarla en su cuaderno.
       difficulty: 2
       suggested_families:
@@ -425,7 +425,7 @@ sagas:
       slug: mi-meta-grande-terminada
       micro_objective: Aplicar con seguridad la escritura completa de una meta grande propia, lista para
         comenzar a perseguirla.
-      narrative_beat: Con su meta grande ya escrita con claridad, Dina la comparte con Dr. Rho y Dino,
+      narrative_beat: Con su meta grande ya escrita con claridad, Dina la comparte con Dr. Rho y Liruf,
         lista para comenzar su plan.
       difficulty: 3
       suggested_families:
@@ -461,7 +461,7 @@ sagas:
       slug: calcular-mi-plan-completo
       micro_objective: Calcular el plan completo de una meta, incluyendo semanas totales y avance semanal
         esperado.
-      narrative_beat: 'Zara Vex reta a Dino a calcular su plan completo: cuántas semanas, cuánto guardar
+      narrative_beat: 'Zara Vex reta a Liruf a calcular su plan completo: cuántas semanas, cuánto guardar
         cada una, y cuándo terminará.'
       difficulty: 2
       suggested_families:
@@ -524,7 +524,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo calcular el avance de una meta y cómo ajustar
         el plan si algo cambia.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -575,7 +575,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-cofre
       micro_objective: Recordar, tal como se aprendió antes, cómo dividir una meta grande en semanas.
-      narrative_beat: Zara Vex trae dos recuerdos del cofre y pide a Dino unirlos en una sola idea, sin
+      narrative_beat: Zara Vex trae dos recuerdos del cofre y pide a Liruf unirlos en una sola idea, sin
         ayuda nueva.
       difficulty: 2
       suggested_families:
@@ -595,7 +595,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la división en semanas y la ventaja de empezar
         antes.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la ciudad usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la ciudad usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -656,7 +656,7 @@ sagas:
       slug: comparar-los-dos-precios
       micro_objective: Comparar numéricamente el precio de antes contra el precio de ahora de la misma
         paleta.
-      narrative_beat: Zara Vex pide a Dino comparar cuánto costaba la paleta antes y cuánto cuesta ahora,
+      narrative_beat: Zara Vex pide a Liruf comparar cuánto costaba la paleta antes y cuánto cuesta ahora,
         y calcular la diferencia.
       difficulty: 2
       suggested_families:
@@ -715,7 +715,7 @@ sagas:
       slug: un-patron-general
       micro_objective: Reconocer que la subida de precios es un patrón general, no un error de una sola
         tienda.
-      narrative_beat: Zara Vex explica a Dino que esto no es un error de una tienda en particular, sino
+      narrative_beat: Zara Vex explica a Liruf que esto no es un error de una tienda en particular, sino
         algo que pasa en general con el tiempo.
       difficulty: 2
       suggested_families:
@@ -770,7 +770,7 @@ sagas:
     - position: 2
       slug: calcular-cuantas-paletas-compra-cada-vez
       micro_objective: Calcular cuántas paletas compra la misma cantidad de dinero en dos momentos distintos.
-      narrative_beat: Zara Vex pide a Dino calcular cuántas paletas compran cien monedas al precio de
+      narrative_beat: Zara Vex pide a Liruf calcular cuántas paletas compran cien monedas al precio de
         antes, y cuántas al precio de ahora.
       difficulty: 2
       suggested_families:
@@ -824,7 +824,7 @@ sagas:
     - position: 2
       slug: calcular-cuanto-subio-cada-cosa
       micro_objective: Calcular cuánto subió el precio de cada cosa en la lista comparada.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto subió el precio de cada cosa en la lista de
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto subió el precio de cada cosa en la lista de
         la abuela.
       difficulty: 2
       suggested_families:
@@ -879,7 +879,7 @@ sagas:
       slug: calcular-el-nuevo-costo-posible
       micro_objective: Calcular un posible nuevo costo de una meta, considerando que los precios pueden
         subir un poco.
-      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto más podría costar su meta si el precio sube
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto más podría costar su meta si el precio sube
         un poco durante el tiempo de ahorro.
       difficulty: 2
       suggested_families:
@@ -935,7 +935,7 @@ sagas:
       slug: comparar-lo-que-alcanzaba-antes-y-ahora
       micro_objective: Comparar lo que alcanzaba a comprar ese monto fijo hace años contra lo que alcanza
         a comprar ahora.
-      narrative_beat: Zara Vex pide a Dino comparar cuánto alcanzaba a comprar ese monto fijo hace años,
+      narrative_beat: Zara Vex pide a Liruf comparar cuánto alcanzaba a comprar ese monto fijo hace años,
         y cuánto alcanza a comprar ahora.
       difficulty: 2
       suggested_families:
@@ -991,7 +991,7 @@ sagas:
       slug: calcular-un-pequeno-ajuste
       micro_objective: Calcular un pequeño ajuste al monto semanal de ahorro, considerando una posible
         subida de precios.
-      narrative_beat: Zara Vex ayuda a Dino a calcular un pequeño ajuste a su ahorro semanal, pensando
+      narrative_beat: Zara Vex ayuda a Liruf a calcular un pequeño ajuste a su ahorro semanal, pensando
         en que su meta podría costar un poco más.
       difficulty: 2
       suggested_families:
@@ -1046,7 +1046,7 @@ sagas:
     - position: 2
       slug: calcular-el-efecto-en-mi-meta
       micro_objective: Calcular el efecto de la subida de precios en el costo final de una meta propia.
-      narrative_beat: Zara Vex pide a Dino calcular cómo afecta la subida de precios al costo final de
+      narrative_beat: Zara Vex pide a Liruf calcular cómo afecta la subida de precios al costo final de
         su propia meta.
       difficulty: 2
       suggested_families:
@@ -1109,7 +1109,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué el mismo dinero compra menos mañana y cómo
         comparar precios de dos momentos.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1161,7 +1161,7 @@ sagas:
       slug: un-recuerdo-de-la-primera-saga
       micro_objective: Recordar, tal como se aprendió antes, cómo comparar una meta de un mes contra una
         de un año.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de las metas grandes y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las metas grandes y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con los precios.
       difficulty: 2
       suggested_families:
@@ -1181,7 +1181,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la planeación de una meta grande y el ajuste
         por posible subida de precios.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la ciudad usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la ciudad usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1251,7 +1251,7 @@ sagas:
       slug: por-que-eligio-guardarlo-asi
       micro_objective: Reflexionar sobre las razones por las que alguien podría elegir guardar su dinero
         sin llevarlo a ningún lugar.
-      narrative_beat: Zara Vex pregunta a Dino por qué cree que ese vecino elige guardar su dinero así,
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que ese vecino elige guardar su dinero así,
         sin llevarlo a la casa de ahorros.
       difficulty: 2
       suggested_families:
@@ -1297,7 +1297,7 @@ sagas:
       slug: calcular-cuanto-alcanza-ahora
       micro_objective: Calcular cuánto alcanza a comprar ahora el mismo dinero que antes alcanzaba para
         más.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto alcanza a comprar ahora ese dinero guardado,
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto alcanza a comprar ahora ese dinero guardado,
         comparado con hace un año.
       difficulty: 2
       suggested_families:
@@ -1354,7 +1354,7 @@ sagas:
     - position: 2
       slug: calcular-el-resultado-de-cada-uno
       micro_objective: Calcular y comparar el resultado de ambos vecinos después de varios años.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto tendrá cada vecino después de varios años,
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto tendrá cada vecino después de varios años,
         y comparar los resultados.
       difficulty: 2
       suggested_families:
@@ -1416,7 +1416,7 @@ sagas:
       slug: recordar-como-aparece-el-premio
       micro_objective: Recordar cómo aparece el premio al guardar dinero en la casa de ahorros por un
         tiempo.
-      narrative_beat: Zara Vex pide a Dino recordar, sin ayuda, cómo aparece el premio al guardar monedas
+      narrative_beat: Zara Vex pide a Liruf recordar, sin ayuda, cómo aparece el premio al guardar monedas
         en la casa de ahorros.
       difficulty: 2
       suggested_families:
@@ -1474,7 +1474,7 @@ sagas:
       slug: calcular-los-tres-resultados
       micro_objective: Calcular el resultado final de cada uno de los tres caminos para la misma cantidad
         inicial.
-      narrative_beat: Zara Vex reta a Dino a calcular cuánto queda al final en cada uno de los tres caminos.
+      narrative_beat: Zara Vex reta a Liruf a calcular cuánto queda al final en cada uno de los tres caminos.
       difficulty: 2
       suggested_families:
       - money
@@ -1525,7 +1525,7 @@ sagas:
       slug: unir-todo-lo-aprendido
       micro_objective: Unir lo aprendido sobre precios que suben y dinero que no crece para explicar la
         pérdida de valor.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino para unir dos ideas de esta aventura: los precios suben,
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf para unir dos ideas de esta aventura: los precios suben,
         y el dinero bajo el colchón no crece.'
       difficulty: 1
       suggested_families:
@@ -1535,7 +1535,7 @@ sagas:
       slug: calcular-la-perdida-de-valor
       micro_objective: Calcular cuánto valor real perdió un dinero guardado bajo el colchón después de
         varios años de precios subiendo.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto poder de compra perdió el dinero del vecino
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto poder de compra perdió el dinero del vecino
         que guardó bajo el colchón durante varios años.
       difficulty: 2
       suggested_families:
@@ -1591,7 +1591,7 @@ sagas:
       slug: repasar-las-razones-antes-de-decidir
       micro_objective: Repasar las razones aprendidas antes de tomar una decisión final sobre dónde guardar
         el dinero.
-      narrative_beat: Zara Vex ayuda a Dino a repasar todas las razones aprendidas antes de decidir dónde
+      narrative_beat: Zara Vex ayuda a Liruf a repasar todas las razones aprendidas antes de decidir dónde
         guardará su propio dinero.
       difficulty: 2
       suggested_families:
@@ -1646,7 +1646,7 @@ sagas:
       slug: ordenar-las-partes-de-mi-explicacion
       micro_objective: 'Ordenar las partes de una explicación completa: qué es el colchón, qué pasa con
         los precios, y por qué el crecimiento protege.'
-      narrative_beat: Zara Vex ayuda a Dino a ordenar las partes de su explicación en el orden más claro
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las partes de su explicación en el orden más claro
         posible.
       difficulty: 2
       suggested_families:
@@ -1709,7 +1709,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo la comparación entre el colchón y el crecimiento, y
         lo aprendido sobre el premio.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1760,7 +1760,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-segunda-saga
       micro_objective: Recordar, tal como se aprendió antes, por qué suben los precios con el tiempo.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de la paleta de la abuela y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la paleta de la abuela y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con el colchón.
       difficulty: 2
       suggested_families:
@@ -1780,7 +1780,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la subida de precios y la combinación de tiempo
         y premio.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la ciudad usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la ciudad usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1849,7 +1849,7 @@ sagas:
     - position: 3
       slug: mas-o-menos-poder-de-compra
       micro_objective: Comparar el poder de compra de un monto en dos escenarios distintos del mercado.
-      narrative_beat: Zara Vex compara dos mercados distintos y pide a Dino identificar en cuál las cien
+      narrative_beat: Zara Vex compara dos mercados distintos y pide a Liruf identificar en cuál las cien
         monedas tienen más poder de compra.
       difficulty: 2
       suggested_families:
@@ -1893,7 +1893,7 @@ sagas:
     - position: 2
       slug: calcular-el-poder-de-compra-de-cada-momento
       micro_objective: Calcular el poder de compra de la misma cantidad en dos momentos distintos.
-      narrative_beat: Zara Vex pide a Dino calcular cuántas cosas compraban cien monedas antes, y cuántas
+      narrative_beat: Zara Vex pide a Liruf calcular cuántas cosas compraban cien monedas antes, y cuántas
         compran ahora.
       difficulty: 2
       suggested_families:
@@ -1957,7 +1957,7 @@ sagas:
       slug: comparar-cantidad-y-poder
       micro_objective: Comparar dos ahorros con la misma cantidad de monedas pero distinto poder de compra.
       narrative_beat: Zara Vex compara dos ahorros con la misma cantidad de monedas, pero guardados en
-        momentos distintos, y pide a Dino notar la diferencia.
+        momentos distintos, y pide a Liruf notar la diferencia.
       difficulty: 2
       suggested_families:
       - analyze
@@ -2007,7 +2007,7 @@ sagas:
       slug: calcular-la-relacion-directa
       micro_objective: Calcular cómo un precio más alto reduce directamente el poder de compra de la misma
         cantidad de dinero.
-      narrative_beat: Zara Vex reta a Dino a calcular cuánto baja el poder de compra de cien monedas si
+      narrative_beat: Zara Vex reta a Liruf a calcular cuánto baja el poder de compra de cien monedas si
         el precio de las cosas sube un poco más.
       difficulty: 2
       suggested_families:
@@ -2069,7 +2069,7 @@ sagas:
       slug: calcular-cuanto-necesita-crecer
       micro_objective: Calcular cuánto necesitaría crecer un ahorro para no quedarse corto frente a la
         subida de precios.
-      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto premio adicional necesitaría su ahorro para
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto premio adicional necesitaría su ahorro para
         no quedarse corto.
       difficulty: 2
       suggested_families:
@@ -2125,7 +2125,7 @@ sagas:
     - position: 2
       slug: calcular-el-resultado-final-de-cada-una
       micro_objective: Calcular y comparar el resultado final de ambas metas al momento de la compra.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto tenía cada meta al final, y comparar si alcanzó
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto tenía cada meta al final, y comparar si alcanzó
         o no para lo que se quería comprar.
       difficulty: 2
       suggested_families:
@@ -2182,7 +2182,7 @@ sagas:
       slug: calcular-mi-plan-protegido
       micro_objective: Calcular el resultado esperado de un plan que combina ahorro, premio y revisiones
         periódicas.
-      narrative_beat: Zara Vex ayuda a Dino a calcular el resultado esperado de su plan protegido, combinando
+      narrative_beat: Zara Vex ayuda a Liruf a calcular el resultado esperado de su plan protegido, combinando
         todas sus piezas.
       difficulty: 2
       suggested_families:
@@ -2237,7 +2237,7 @@ sagas:
     - position: 2
       slug: elegir-mi-propio-ejemplo
       micro_objective: Elegir un ejemplo propio y concreto para ilustrar el concepto de poder de compra.
-      narrative_beat: Zara Vex ayuda a Dino a elegir su propio ejemplo concreto -distinto al de la paleta-
+      narrative_beat: Zara Vex ayuda a Liruf a elegir su propio ejemplo concreto -distinto al de la paleta-
         para explicar el poder de compra.
       difficulty: 2
       suggested_families:
@@ -2300,7 +2300,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué cuidar el poder de compra del ahorro y cómo
         se relaciona con el precio.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2352,7 +2352,7 @@ sagas:
       slug: un-recuerdo-de-la-tercera-saga
       micro_objective: Recordar, tal como se aprendió antes, por qué guardar bajo el colchón pierde valor
         con el tiempo.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del colchón y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la saga del colchón y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con el poder de compra.
       difficulty: 2
       suggested_families:
@@ -2371,7 +2371,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la decisión de dónde guardar el dinero y la
         necesidad de que una meta crezca.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la ciudad usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la ciudad usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -2427,7 +2427,7 @@ sagas:
     - position: 1
       slug: recordar-una-meta-grande
       micro_objective: Recordar, sin ayuda nueva, qué hace grande a una meta y por qué toma varios meses.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el centro de la ciudad y anuncia la Gran Misión:
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el centro de la ciudad y anuncia la Gran Misión:
         recorrer una vez más todo lo aprendido.'
       difficulty: 1
       suggested_families:
@@ -2436,7 +2436,7 @@ sagas:
     - position: 2
       slug: recordar-dividir-en-semanas
       micro_objective: Recordar cómo dividir una meta grande en avances semanales manejables.
-      narrative_beat: Zara Vex presenta una nueva meta grande y reta a Dino a recordar, sin ayuda, cómo
+      narrative_beat: Zara Vex presenta una nueva meta grande y reta a Liruf a recordar, sin ayuda, cómo
         dividirla en semanas.
       difficulty: 1
       suggested_families:
@@ -2464,7 +2464,7 @@ sagas:
     slug: la-gran-mision-de-la-paleta-de-la-abuela
     kind: review_quest
     title_es: La Gran Misión de la Paleta de la Abuela
-    concept: Dina y Dino recuerdan por qué suben los precios con el tiempo y qué significa eso para una
+    concept: Dina y Liruf recuerdan por qué suben los precios con el tiempo y qué significa eso para una
       meta de largo plazo.
     learning_objective: Al final, el niño puede recordar y aplicar por qué suben los precios y cómo afecta
       eso a una meta.
@@ -2493,7 +2493,7 @@ sagas:
     - position: 2
       slug: recordar-por-que-suben-los-precios
       micro_objective: Recordar por qué los precios suben con el tiempo de forma general.
-      narrative_beat: Dr. Rho reta a Dino a recordar, de memoria, por qué los precios de casi todo suben
+      narrative_beat: Dr. Rho reta a Liruf a recordar, de memoria, por qué los precios de casi todo suben
         con el paso del tiempo.
       difficulty: 1
       suggested_families:
@@ -2551,7 +2551,7 @@ sagas:
     - position: 2
       slug: recordar-combinar-tiempo-y-premio
       micro_objective: Recordar cómo combinar mucho tiempo con el premio hace crecer más el dinero.
-      narrative_beat: Zara Vex reta a Dino a recordar, de memoria, cómo combinar tiempo y premio hace
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, cómo combinar tiempo y premio hace
         crecer más el dinero.
       difficulty: 1
       suggested_families:
@@ -2607,7 +2607,7 @@ sagas:
     - position: 2
       slug: recordar-la-relacion-precio-poder
       micro_objective: Recordar la relación entre un precio más alto y un poder de compra más bajo.
-      narrative_beat: Zara Vex reta a Dino a recordar, de memoria, por qué un precio más alto significa
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, por qué un precio más alto significa
         menos poder de compra.
       difficulty: 1
       suggested_families:
@@ -2657,7 +2657,7 @@ sagas:
       slug: las-cuatro-areas-de-la-ciudad
       micro_objective: 'Recordar, en conjunto, las cuatro áreas de la ciudad: metas, precios, crecimiento
         y poder de compra.'
-      narrative_beat: Dr. Rho reúne a Dina y Dino en el mirador más alto de la ciudad y repasa las cuatro
+      narrative_beat: Dr. Rho reúne a Dina y Liruf en el mirador más alto de la ciudad y repasa las cuatro
         áreas, una por una.
       difficulty: 1
       suggested_families:
@@ -2667,7 +2667,7 @@ sagas:
       slug: ayudar-a-un-vecino-nuevo-de-la-ciudad
       micro_objective: Aplicar las cuatro áreas de la ciudad para ayudar a un vecino nuevo a planear su
         propia meta.
-      narrative_beat: Zara Vex presenta a un vecino nuevo de la ciudad y reta a Dino a guiarlo por las
+      narrative_beat: Zara Vex presenta a un vecino nuevo de la ciudad y reta a Liruf a guiarlo por las
         cuatro áreas aprendidas.
       difficulty: 2
       suggested_families:
@@ -2729,7 +2729,7 @@ sagas:
       slug: el-archipielago-y-la-ciudad
       micro_objective: Recordar cómo decidir con información, aprendido en el archipiélago, ayuda también
         a planear una meta en la ciudad.
-      narrative_beat: Zara Vex recuerda a Dino su primera decisión con riesgo en el archipiélago, y cómo
+      narrative_beat: Zara Vex recuerda a Liruf su primera decisión con riesgo en el archipiélago, y cómo
         esa misma calma ayuda a planear metas en la ciudad.
       difficulty: 1
       suggested_families:
@@ -2749,7 +2749,7 @@ sagas:
       slug: la-ciudad-celebra-y-mira-al-futuro
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión de
         la ciudad de las metas.
-      narrative_beat: Con la ciudad brillando a su alrededor, Dina celebra junto a Dr. Rho, Dino y Zara
+      narrative_beat: Con la ciudad brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf y Zara
         Vex el cierre de esta aventura, lista para descubrir el mundo de las inversiones que le espera
         más adelante.
       difficulty: 2

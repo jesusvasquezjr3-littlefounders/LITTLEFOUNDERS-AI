@@ -68,7 +68,7 @@ const BASE_HARD_RULES = [
   'XP bands by difficulty: 1→5-10, 2→10-20, 3→15-30, 4→25-40, 5→35-50 (story-family segments always use xp:0).',
   'Segments with difficulty >= 3 MUST include at least one `hints` entry (max 2, progressive).',
   'Every WRONG option in choice/analyze-style segments MUST carry `rationale_md` explaining why it is tempting but incorrect (P7). Correct options may omit it.',
-  'narrator.character and meta.cast use ONLY: dina, dino, rho, zara. Never any other name.',
+  'narrator.character and meta.cast use ONLY: dina, liruf, rho, zara. Never any other name.',
   'meta.locale = "es-MX", meta.subject as given, meta.slug as given, scoring.hearts = null, scoring.pass_threshold = 70, scoring.hint_penalty_pct = 10, scoring.max_attempts = 2.',
   'Every number you use MUST come from the FACTS block below or be exact arithmetic the blueprint implies — never invent a fact. All arithmetic in `answer` fields must be EXACTLY correct (it is re-executed programmatically and will be rejected if wrong).',
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',

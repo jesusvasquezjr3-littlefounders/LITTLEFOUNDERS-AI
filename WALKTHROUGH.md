@@ -35,7 +35,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 | 2026-07-11 | Email engine deferred (candidates: Postal/Maddy/Haraka/Stalwart) | Contract stubbed in Courier; decision when implementation starts |
 | 2026-07-11 | i18n locales locked: en-US, es-MX, pt-BR | Product decision |
 | 2026-07-11 | DiceBear `avataaars` for avatars | Product decision |
-| 2026-07-11 | v1 characters (Dina, Dino, Dr. Rho, Zara Vex) carried into v2 | Brand continuity; archived + restored into frontend |
+| 2026-07-11 | v1 characters (Dina, Liruf, Dr. Rho, Zara Vex) carried into v2 | Brand continuity; archived + restored into frontend |
 | 2026-07-11 | `.github/skills/` stays untracked (via `.github/.gitignore`) | 13MB third-party content; local + `.claude/skills` mirror suffice (v1 precedent) |
 
 | 2026-07-11 | DESIGN.md v1 authored from `template/` mockup — "LittleFounders Tactile" (claymorphism, Quicksand+Nunito Sans, indigo primary, closed lf-* type scale, 4 clay shadow tokens) | Mockup approved by Jesús; standardization mandate: nothing outside tokens |

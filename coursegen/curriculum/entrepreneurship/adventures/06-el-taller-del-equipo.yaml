@@ -9,15 +9,15 @@ adventure:
     es-MX: El Taller del Equipo
     pt-BR: A Oficina da Equipe
   description:
-    en-US: In a valley workshop, Dina and Dino join a team of young founders and learn to work together,
+    en-US: In a valley workshop, Dina and Liruf join a team of young founders and learn to work together,
       discover each other's talents, split tasks and earnings fairly, and resolve disagreements.
-    es-MX: En un taller del valle, Dina y Dino se unen a un equipo de jóvenes founders y aprenden a trabajar
+    es-MX: En un taller del valle, Dina y Liruf se unen a un equipo de jóvenes founders y aprenden a trabajar
       juntos, descubrir sus talentos, repartir tareas y ganancias con justicia, y resolver desacuerdos.
-    pt-BR: Em uma oficina do vale, Dina e Dino se juntam a uma equipe de jovens founders e aprendem a trabalhar
+    pt-BR: Em uma oficina do vale, Dina e Liruf se juntam a uma equipe de jovens founders e aprendem a trabalhar
       juntos, descobrir seus talentos, dividir tarefas e ganhos com justiça, e resolver desacordos.
-  narrative_arc: 'Dina y Dino bajan del Reino de las Ventas hasta un valle donde un gran taller de madera
+  narrative_arc: 'Dina y Liruf bajan del Reino de las Ventas hasta un valle donde un gran taller de madera
     reúne a jóvenes founders que construyen cosas juntos. Zara Vex organiza el tablero de proyectos del
-    taller como una verdadera estratega de equipo, mientras Dino aprende haciendo, probando herramientas
+    taller como una verdadera estratega de equipo, mientras Liruf aprende haciendo, probando herramientas
     y tareas nuevas cada día. Dr. Rho investiga que cada reparto de tareas y ganancias sea justo, y Dina
     aprende a escuchar, mentorear y resolver los desacuerdos que surgen cuando varias personas trabajan
     juntas. Al final del valle, el equipo descubre que un buen taller no se mide por lo que logra una persona
@@ -53,7 +53,7 @@ sagas:
     - position: 1
       slug: las-puertas-del-taller
       micro_objective: Reconocer que un taller reúne a varias personas que trabajan juntas en proyectos.
-      narrative_beat: Dina y Dino llegan a un gran taller de madera en el valle, donde varios jóvenes founders
+      narrative_beat: Dina y Liruf llegan a un gran taller de madera en el valle, donde varios jóvenes founders
         construyen cosas juntos.
       difficulty: 1
       suggested_families:
@@ -62,7 +62,7 @@ sagas:
     - position: 2
       slug: solo-o-en-equipo
       micro_objective: Comparar una tarea hecha por una sola persona con la misma tarea hecha en equipo.
-      narrative_beat: Dr. Rho muestra a Dino la misma tarea hecha por una sola persona y luego por un pequeño
+      narrative_beat: Dr. Rho muestra a Liruf la misma tarea hecha por una sola persona y luego por un pequeño
         equipo, para comparar los resultados.
       difficulty: 2
       suggested_families:
@@ -106,7 +106,7 @@ sagas:
       slug: piezas-distintas-del-mismo-proyecto
       micro_objective: Reconocer que distintos integrantes de un equipo hacen partes distintas de un mismo
         proyecto.
-      narrative_beat: Dino observa que, en el taller, unos cortan madera, otros pintan y otros arman las
+      narrative_beat: Liruf observa que, en el taller, unos cortan madera, otros pintan y otros arman las
         piezas de un mismo proyecto.
       difficulty: 1
       suggested_families:
@@ -124,7 +124,7 @@ sagas:
     - position: 3
       slug: aportes-distintos-igual-de-valiosos
       micro_objective: Explicar por qué un aporte distinto no significa que valga menos que otro.
-      narrative_beat: Zara Vex explica a Dino que cortar madera y decorar el resultado son aportes distintos,
+      narrative_beat: Zara Vex explica a Liruf que cortar madera y decorar el resultado son aportes distintos,
         pero igual de valiosos.
       difficulty: 2
       suggested_families:
@@ -158,7 +158,7 @@ sagas:
     - position: 1
       slug: interrumpir-una-idea
       micro_objective: Reconocer que interrumpir la idea de alguien impide entenderla completa.
-      narrative_beat: Dino interrumpe a un compañero que está explicando su idea, y se da cuenta de que
+      narrative_beat: Liruf interrumpe a un compañero que está explicando su idea, y se da cuenta de que
         no la entendió completa.
       difficulty: 1
       suggested_families:
@@ -211,7 +211,7 @@ sagas:
     - position: 1
       slug: cada-quien-quiere-algo-distinto
       micro_objective: Reconocer que un equipo puede empezar con ideas distintas sobre qué meta lograr.
-      narrative_beat: En el taller, cada integrante del equipo de Dino propone una meta distinta para el
+      narrative_beat: En el taller, cada integrante del equipo de Liruf propone una meta distinta para el
         proyecto nuevo.
       difficulty: 1
       suggested_families:
@@ -264,7 +264,7 @@ sagas:
       slug: un-companero-se-atora
       micro_objective: Reconocer una señal de que un compañero del equipo está teniendo dificultad con
         su parte.
-      narrative_beat: Dino nota que un compañero del taller lleva rato intentando lo mismo sin lograrlo,
+      narrative_beat: Liruf nota que un compañero del taller lleva rato intentando lo mismo sin lograrlo,
         y algo no le está saliendo bien.
       difficulty: 1
       suggested_families:
@@ -283,7 +283,7 @@ sagas:
       slug: pedir-ayuda-tambien-cuenta
       micro_objective: Reconocer que pedir ayuda cuando uno mismo se atora también es parte de trabajar
         bien en equipo.
-      narrative_beat: Zara Vex anima a Dino a pedir ayuda cuando él mismo se atora con una parte difícil
+      narrative_beat: Zara Vex anima a Liruf a pedir ayuda cuando él mismo se atora con una parte difícil
         del proyecto.
       difficulty: 2
       suggested_families:
@@ -317,7 +317,7 @@ sagas:
     - position: 1
       slug: el-proyecto-esta-terminado
       micro_objective: Reconocer el momento en que un proyecto de equipo queda terminado.
-      narrative_beat: El equipo de Dino termina su primer proyecto completo en el taller, y todos se quedan
+      narrative_beat: El equipo de Liruf termina su primer proyecto completo en el taller, y todos se quedan
         mirándolo con orgullo.
       difficulty: 1
       suggested_families:
@@ -374,7 +374,7 @@ sagas:
       slug: el-mismo-proyecto-dos-formas
       micro_objective: Observar el mismo tipo de proyecto hecho una vez por una sola persona y otra vez
         por un equipo coordinado.
-      narrative_beat: Dino observa el mismo tipo de proyecto hecho una vez por una sola persona y otra
+      narrative_beat: Liruf observa el mismo tipo de proyecto hecho una vez por una sola persona y otra
         vez por un equipo coordinado del taller.
       difficulty: 1
       suggested_families:
@@ -437,7 +437,7 @@ sagas:
     - position: 2
       slug: cada-quien-hace-su-parte
       micro_objective: Aportar la parte propia del proyecto mientras se escucha a los demás integrantes.
-      narrative_beat: Dino aporta su parte del proyecto mientras escucha con atención lo que sus compañeros
+      narrative_beat: Liruf aporta su parte del proyecto mientras escucha con atención lo que sus compañeros
         van construyendo.
       difficulty: 2
       suggested_families:
@@ -501,7 +501,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo escuchar las ideas de los demás y cómo ponerse
         de acuerdo en una meta.
-      narrative_beat: Dino saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -552,7 +552,7 @@ sagas:
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto sobre ponerse de acuerdo en una
         meta.
-      narrative_beat: Zara Vex trae un recuerdo de la meta acordada por el primer equipo de Dino y le pide
+      narrative_beat: Zara Vex trae un recuerdo de la meta acordada por el primer equipo de Liruf y le pide
         recordarlo sin ayuda.
       difficulty: 2
       suggested_families:
@@ -571,7 +571,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, dos ideas combinadas de la saga.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del taller usando a la vez dos lecciones
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del taller usando a la vez dos lecciones
         combinadas de la saga.
       difficulty: 2
       suggested_families:
@@ -629,7 +629,7 @@ sagas:
       slug: talento-o-solo-suerte
       micro_objective: Distinguir un talento (habilidad que se practica y mejora) de un golpe de suerte
         aislado.
-      narrative_beat: Dr. Rho ayuda a Dino a distinguir entre un talento que se practica y un simple golpe
+      narrative_beat: Dr. Rho ayuda a Liruf a distinguir entre un talento que se practica y un simple golpe
         de suerte.
       difficulty: 2
       suggested_families:
@@ -638,7 +638,7 @@ sagas:
     - position: 3
       slug: los-talentos-son-distintos
       micro_objective: Reconocer que distintas personas tienen distintos talentos, y eso es normal y valioso.
-      narrative_beat: Zara Vex muestra a Dino una lista de talentos distintos entre los integrantes del
+      narrative_beat: Zara Vex muestra a Liruf una lista de talentos distintos entre los integrantes del
         taller.
       difficulty: 2
       suggested_families:
@@ -672,7 +672,7 @@ sagas:
       slug: que-se-me-facilita
       micro_objective: Reconocer una pista para descubrir un talento propio, algo que se le facilita a
         uno más que a otros.
-      narrative_beat: Dino nota que armar piezas pequeñas se le facilita mucho más que a sus compañeros
+      narrative_beat: Liruf nota que armar piezas pequeñas se le facilita mucho más que a sus compañeros
         del taller.
       difficulty: 1
       suggested_families:
@@ -690,7 +690,7 @@ sagas:
     - position: 3
       slug: donde-mejoro-rapido
       micro_objective: Reconocer una tercera pista, en qué se mejora rápido al practicar un poco.
-      narrative_beat: Zara Vex muestra a Dino cómo, con solo un poco de práctica, mejoró muy rápido en
+      narrative_beat: Zara Vex muestra a Liruf cómo, con solo un poco de práctica, mejoró muy rápido en
         una tarea específica.
       difficulty: 2
       suggested_families:
@@ -723,7 +723,7 @@ sagas:
     - position: 1
       slug: observar-a-mi-equipo
       micro_objective: Practicar observar con atención lo que hace bien cada integrante del equipo.
-      narrative_beat: Dino observa con atención, durante todo un día del taller, lo que cada compañero
+      narrative_beat: Liruf observa con atención, durante todo un día del taller, lo que cada compañero
         hace especialmente bien.
       difficulty: 1
       suggested_families:
@@ -775,7 +775,7 @@ sagas:
     - position: 1
       slug: un-tablero-de-roles
       micro_objective: Reconocer que un tablero del taller muestra distintos roles dentro de un proyecto.
-      narrative_beat: Zara Vex muestra a Dino un tablero del taller con distintos roles escritos, cada
+      narrative_beat: Zara Vex muestra a Liruf un tablero del taller con distintos roles escritos, cada
         uno con su propia tarea.
       difficulty: 1
       suggested_families:
@@ -851,7 +851,7 @@ sagas:
       slug: practicar-asignar-un-rol
       micro_objective: Practicar asignar un rol a un integrante de equipo dado, usando su talento como
         guía.
-      narrative_beat: Zara Vex reta a Dino a asignar un rol a cada integrante de un equipo nuevo, usando
+      narrative_beat: Zara Vex reta a Liruf a asignar un rol a cada integrante de un equipo nuevo, usando
         el talento de cada uno.
       difficulty: 3
       suggested_families:
@@ -886,7 +886,7 @@ sagas:
     - position: 1
       slug: el-proyecto-cambia-de-forma
       micro_objective: Reconocer que un proyecto de equipo puede cambiar de forma y necesitar roles distintos.
-      narrative_beat: El proyecto del equipo de Dino cambia de forma a la mitad del taller, y necesitan
+      narrative_beat: El proyecto del equipo de Liruf cambia de forma a la mitad del taller, y necesitan
         roles distintos a los que tenían.
       difficulty: 1
       suggested_families:
@@ -905,7 +905,7 @@ sagas:
     - position: 3
       slug: proponer-un-cambio-de-rol
       micro_objective: Practicar proponer, con calma, un cambio de rol dentro del equipo cuando hace falta.
-      narrative_beat: Zara Vex enseña a Dino a proponer con calma un cambio de rol cuando el proyecto del
+      narrative_beat: Zara Vex enseña a Liruf a proponer con calma un cambio de rol cuando el proyecto del
         taller lo necesita.
       difficulty: 2
       suggested_families:
@@ -937,7 +937,7 @@ sagas:
     - position: 1
       slug: un-rol-que-parece-menos-importante
       micro_objective: Reconocer un caso donde un rol parece menos importante que otro, aunque no lo sea.
-      narrative_beat: A Dino le parece que limpiar las herramientas del taller es menos importante que
+      narrative_beat: A Liruf le parece que limpiar las herramientas del taller es menos importante que
         construir el proyecto.
       difficulty: 1
       suggested_families:
@@ -946,7 +946,7 @@ sagas:
     - position: 2
       slug: que-pasaria-sin-ese-rol
       micro_objective: Explicar qué pasaría con el proyecto completo si un rol específico no se hiciera.
-      narrative_beat: Dr. Rho pregunta a Dino qué pasaría con el proyecto del taller si nadie limpiara
+      narrative_beat: Dr. Rho pregunta a Liruf qué pasaría con el proyecto del taller si nadie limpiara
         nunca las herramientas.
       difficulty: 2
       suggested_families:
@@ -998,7 +998,7 @@ sagas:
     - position: 2
       slug: elijo-mi-rol
       micro_objective: Elegir, junto al equipo, un rol propio basado en el talento identificado.
-      narrative_beat: Dino elige, junto a su equipo, un rol que combina bien con el talento que descubrió
+      narrative_beat: Liruf elige, junto a su equipo, un rol que combina bien con el talento que descubrió
         en el taller.
       difficulty: 2
       suggested_families:
@@ -1061,7 +1061,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo descubrir el talento de un compañero y qué es un
         rol en el equipo.
-      narrative_beat: Dino saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1111,7 +1111,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Trabajar en Equipo.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del taller y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del taller y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con los roles.
       difficulty: 2
       suggested_families:
@@ -1130,7 +1130,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del taller usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del taller usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1285,7 +1285,7 @@ sagas:
     - position: 1
       slug: un-registro-del-taller
       micro_objective: Reconocer que el taller lleva un registro simple de cuánto trabajó cada integrante.
-      narrative_beat: Dino descubre un tablero del taller donde se anota cuántas horas trabajó cada integrante
+      narrative_beat: Liruf descubre un tablero del taller donde se anota cuántas horas trabajó cada integrante
         en el proyecto.
       difficulty: 1
       suggested_families:
@@ -1303,7 +1303,7 @@ sagas:
     - position: 3
       slug: comparar-los-aportes
       micro_objective: Comparar los aportes contados de distintos integrantes de un mismo equipo.
-      narrative_beat: Zara Vex compara, con Dino, cuánto aportó cada integrante del equipo según el registro
+      narrative_beat: Zara Vex compara, con Liruf, cuánto aportó cada integrante del equipo según el registro
         del taller.
       difficulty: 2
       suggested_families:
@@ -1352,7 +1352,7 @@ sagas:
     - position: 2
       slug: cuanto-vendio-el-equipo
       micro_objective: Reconocer el total de dinero recibido por las ventas de un proyecto de equipo.
-      narrative_beat: Dino cuenta cuánto dinero recibió el equipo por vender todas las pulseras del lote.
+      narrative_beat: Liruf cuenta cuánto dinero recibió el equipo por vender todas las pulseras del lote.
       difficulty: 2
       suggested_families:
       - money
@@ -1413,7 +1413,7 @@ sagas:
     - position: 3
       slug: practicar-un-reparto-justo
       micro_objective: Practicar repartir una ganancia dada entre varios integrantes según su aporte.
-      narrative_beat: Zara Vex reta a Dino a repartir una ganancia del taller entre tres integrantes, según
+      narrative_beat: Zara Vex reta a Liruf a repartir una ganancia del taller entre tres integrantes, según
         lo que cada uno aportó.
       difficulty: 3
       suggested_families:
@@ -1521,7 +1521,7 @@ sagas:
     - position: 3
       slug: decir-lo-que-siento-sin-culpar
       micro_objective: Practicar expresar lo que uno siente sobre un reparto sin culpar a nadie.
-      narrative_beat: Zara Vex enseña a Dino a decir lo que siente sobre un reparto sin culpar a ningún
+      narrative_beat: Zara Vex enseña a Liruf a decir lo que siente sobre un reparto sin culpar a ningún
         compañero.
       difficulty: 2
       suggested_families:
@@ -1564,7 +1564,7 @@ sagas:
     - position: 2
       slug: contamos-los-aportes-y-la-ganancia
       micro_objective: Contar los aportes de cada integrante y calcular la ganancia total del proyecto.
-      narrative_beat: Dino cuenta los aportes de cada integrante y ayuda a calcular la ganancia total del
+      narrative_beat: Liruf cuenta los aportes de cada integrante y ayuda a calcular la ganancia total del
         proyecto terminado.
       difficulty: 2
       suggested_families:
@@ -1628,7 +1628,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo contar el aporte de cada quien y cómo calcular
         la ganancia del equipo.
-      narrative_beat: Dino saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1679,7 +1679,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Roles y Talentos.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de roles y talentos y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de roles y talentos y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con el reparto.
       difficulty: 2
       suggested_families:
@@ -1698,7 +1698,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del taller usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del taller usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1748,7 +1748,7 @@ sagas:
       slug: dos-ideas-distintas
       micro_objective: Reconocer una situación donde dos integrantes del equipo piensan distinto sobre
         algo.
-      narrative_beat: En el taller, Dino y un compañero piensan distinto sobre cómo terminar el proyecto,
+      narrative_beat: En el taller, Liruf y un compañero piensan distinto sobre cómo terminar el proyecto,
         y ninguno quiere ceder.
       difficulty: 1
       suggested_families:
@@ -1768,7 +1768,7 @@ sagas:
       slug: reconocer-un-desacuerdo
       micro_objective: Identificar, en distintas escenas, cuándo está ocurriendo un desacuerdo dentro de
         un equipo.
-      narrative_beat: Zara Vex muestra varias escenas del taller y pide a Dino identificar cuáles son desacuerdos.
+      narrative_beat: Zara Vex muestra varias escenas del taller y pide a Liruf identificar cuáles son desacuerdos.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1799,7 +1799,7 @@ sagas:
     - position: 1
       slug: se-sube-el-volumen
       micro_objective: Reconocer el momento en que un desacuerdo empieza a convertirse en una pelea.
-      narrative_beat: La voz de Dino empieza a subir de volumen durante un desacuerdo, y Dr. Rho nota que
+      narrative_beat: La voz de Liruf empieza a subir de volumen durante un desacuerdo, y Dr. Rho nota que
         podría convertirse en una pelea.
       difficulty: 1
       suggested_families:
@@ -1818,7 +1818,7 @@ sagas:
       slug: mantener-el-respeto-en-el-desacuerdo
       micro_objective: Practicar mantener el respeto mientras se sostiene una opinión distinta dentro de
         un desacuerdo.
-      narrative_beat: Dr. Rho ayuda a Dino a mantener el respeto mientras sostiene su opinión distinta
+      narrative_beat: Dr. Rho ayuda a Liruf a mantener el respeto mientras sostiene su opinión distinta
         dentro de un desacuerdo.
       difficulty: 2
       suggested_families:
@@ -1854,7 +1854,7 @@ sagas:
       slug: responder-antes-de-escuchar
       micro_objective: Reconocer el error de responder antes de haber escuchado completo el punto de vista
         del otro.
-      narrative_beat: Dino responde a un desacuerdo antes de haber escuchado completo lo que su compañero
+      narrative_beat: Liruf responde a un desacuerdo antes de haber escuchado completo lo que su compañero
         quería decir.
       difficulty: 1
       suggested_families:
@@ -1873,7 +1873,7 @@ sagas:
       slug: repetir-para-confirmar-que-entendi
       micro_objective: Practicar repetir con las propias palabras lo que el otro dijo, para confirmar que
         se entendió bien.
-      narrative_beat: Zara Vex enseña a Dino a repetir con sus palabras lo que su compañero dijo, para
+      narrative_beat: Zara Vex enseña a Liruf a repetir con sus palabras lo que su compañero dijo, para
         confirmar que entendió bien.
       difficulty: 2
       suggested_families:
@@ -1916,7 +1916,7 @@ sagas:
       slug: que-tienen-en-comun
       micro_objective: Identificar qué tienen en común las dos posturas de un desacuerdo, como punto de
         partida.
-      narrative_beat: Zara Vex ayuda a Dino a encontrar lo que las dos posturas de un desacuerdo del taller
+      narrative_beat: Zara Vex ayuda a Liruf a encontrar lo que las dos posturas de un desacuerdo del taller
         tienen en común.
       difficulty: 2
       suggested_families:
@@ -1925,7 +1925,7 @@ sagas:
     - position: 3
       slug: proponer-una-solucion-de-los-dos
       micro_objective: Practicar proponer una solución que combine algo de las dos posturas de un desacuerdo.
-      narrative_beat: Dino propone una solución que combina algo de lo que él quería con algo de lo que
+      narrative_beat: Liruf propone una solución que combina algo de lo que él quería con algo de lo que
         quería su compañero.
       difficulty: 3
       suggested_families:
@@ -1960,7 +1960,7 @@ sagas:
     - position: 1
       slug: un-desacuerdo-que-no-se-resuelve
       micro_objective: Reconocer un caso donde un desacuerdo del equipo no se resuelve después de intentarlo.
-      narrative_beat: A pesar de intentarlo, Dino y su compañero no logran resolver su desacuerdo sobre
+      narrative_beat: A pesar de intentarlo, Liruf y su compañero no logran resolver su desacuerdo sobre
         el proyecto.
       difficulty: 1
       suggested_families:
@@ -1979,7 +1979,7 @@ sagas:
     - position: 3
       slug: pedir-ayuda-no-es-perder
       micro_objective: Explicar por qué pedir ayuda para resolver un desacuerdo no significa haber perdido.
-      narrative_beat: Zara Vex explica a Dino que pedir ayuda para resolver un desacuerdo no significa
+      narrative_beat: Zara Vex explica a Liruf que pedir ayuda para resolver un desacuerdo no significa
         que perdió la discusión.
       difficulty: 2
       suggested_families:
@@ -2013,7 +2013,7 @@ sagas:
     - position: 1
       slug: me-di-cuenta-de-mi-error
       micro_objective: Reconocer, dentro de un desacuerdo, un momento en que uno mismo se equivocó.
-      narrative_beat: Dino se da cuenta, a mitad de un desacuerdo, de que en realidad su compañero tenía
+      narrative_beat: Liruf se da cuenta, a mitad de un desacuerdo, de que en realidad su compañero tenía
         razón.
       difficulty: 1
       suggested_families:
@@ -2070,7 +2070,7 @@ sagas:
     - position: 1
       slug: el-equipo-despues-del-desacuerdo
       micro_objective: Observar cómo se siente un equipo después de resolver bien un desacuerdo difícil.
-      narrative_beat: Después de resolver un desacuerdo difícil, Dino nota que su equipo se siente más
+      narrative_beat: Después de resolver un desacuerdo difícil, Liruf nota que su equipo se siente más
         unido que antes.
       difficulty: 1
       suggested_families:
@@ -2089,7 +2089,7 @@ sagas:
       slug: que-hizo-la-diferencia
       micro_objective: Identificar qué pasos concretos ayudaron a que el desacuerdo terminara fortaleciendo
         al equipo.
-      narrative_beat: Zara Vex pregunta a Dino qué pasos concretos ayudaron a que el desacuerdo terminara
+      narrative_beat: Zara Vex pregunta a Liruf qué pasos concretos ayudaron a que el desacuerdo terminara
         fortaleciendo al equipo.
       difficulty: 2
       suggested_families:
@@ -2197,7 +2197,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo escuchar antes de responder y cómo buscar una solución
         que sirva a los dos.
-      narrative_beat: Dino saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las herramientas mezcladas de la saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2249,7 +2249,7 @@ sagas:
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Repartir Tareas y Ganancias
         con Justicia.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del reparto justo y pide a Dino recordarlo sin
+      narrative_beat: Zara Vex trae un recuerdo de la saga del reparto justo y pide a Liruf recordarlo sin
         ayuda, antes de mezclarlo con los desacuerdos.
       difficulty: 2
       suggested_families:
@@ -2268,7 +2268,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del taller usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del taller usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -2323,7 +2323,7 @@ sagas:
     - position: 1
       slug: el-taller-vuelve-a-encender-sus-luces
       micro_objective: Recordar que cada quien aporta algo distinto y valioso a un equipo.
-      narrative_beat: 'Zara Vex reúne a Dina y Dino en el centro del taller y anuncia la Gran Misión: recorrer
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf en el centro del taller y anuncia la Gran Misión: recorrer
         una vez más todo lo aprendido en el valle.'
       difficulty: 1
       suggested_families:
@@ -2341,7 +2341,7 @@ sagas:
     - position: 3
       slug: la-meta-comun-otra-vez
       micro_objective: Recordar cómo ponerse de acuerdo con un equipo en una meta común.
-      narrative_beat: Dino recuerda, sin ayuda, cómo ayudó a su equipo a ponerse de acuerdo en una meta
+      narrative_beat: Liruf recuerda, sin ayuda, cómo ayudó a su equipo a ponerse de acuerdo en una meta
         común.
       difficulty: 2
       suggested_families:
@@ -2361,7 +2361,7 @@ sagas:
     slug: talentos-de-la-gran-mision
     kind: review_quest
     title_es: Talentos de la Gran Misión
-    concept: Dina y Dino recuerdan cómo descubrir un talento propio, reconocer el de un compañero y asignar
+    concept: Dina y Liruf recuerdan cómo descubrir un talento propio, reconocer el de un compañero y asignar
       roles según el talento de cada quien.
     learning_objective: Al final, el niño puede recordar y aplicar cómo descubrir talentos y asignar roles
       dentro de un equipo.
@@ -2380,7 +2380,7 @@ sagas:
     - position: 1
       slug: mi-talento-en-la-gran-mision
       micro_objective: Recordar cómo descubrir un talento propio usando las pistas aprendidas.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo descubrió su propio talento en el
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo descubrió su propio talento en el
         taller.
       difficulty: 1
       suggested_families:
@@ -2397,7 +2397,7 @@ sagas:
     - position: 3
       slug: asignar-roles-otra-vez-en-la-mision
       micro_objective: Recordar y aplicar cómo asignar un rol a un integrante de equipo usando su talento.
-      narrative_beat: Dr. Rho presenta un equipo nuevo y pregunta a Dino si recuerda cómo asignar roles
+      narrative_beat: Dr. Rho presenta un equipo nuevo y pregunta a Liruf si recuerda cómo asignar roles
         según el talento de cada quien.
       difficulty: 2
       suggested_families:
@@ -2416,7 +2416,7 @@ sagas:
     slug: reparto-de-la-gran-mision
     kind: review_quest
     title_es: Reparto de la Gran Misión
-    concept: Dina y Dino recuerdan cómo contar el aporte de cada quien, calcular la ganancia del equipo
+    concept: Dina y Liruf recuerdan cómo contar el aporte de cada quien, calcular la ganancia del equipo
       y repartirla con justicia.
     learning_objective: Al final, el niño puede recordar y aplicar cómo calcular y repartir con justicia
       la ganancia de un equipo.
@@ -2445,7 +2445,7 @@ sagas:
     - position: 2
       slug: calcular-la-ganancia-otra-vez
       micro_objective: Recordar cómo calcular la ganancia total de un proyecto restando el costo del precio.
-      narrative_beat: Dino recuerda, sin ayuda, cómo calcular la ganancia total de un nuevo proyecto del
+      narrative_beat: Liruf recuerda, sin ayuda, cómo calcular la ganancia total de un nuevo proyecto del
         equipo.
       difficulty: 1
       suggested_families:
@@ -2472,7 +2472,7 @@ sagas:
     slug: desacuerdos-de-la-gran-mision
     kind: review_quest
     title_es: Desacuerdos de la Gran Misión
-    concept: Dina y Dino recuerdan cómo escuchar antes de responder, buscar una solución para los dos y
+    concept: Dina y Liruf recuerdan cómo escuchar antes de responder, buscar una solución para los dos y
       disculparse con sinceridad.
     learning_objective: Al final, el niño puede recordar y aplicar los pasos para resolver bien un desacuerdo.
     key_vocabulary:
@@ -2490,7 +2490,7 @@ sagas:
     - position: 1
       slug: escuchar-otra-vez-el-desacuerdo
       micro_objective: Recordar cómo escuchar completamente antes de responder dentro de un desacuerdo.
-      narrative_beat: Zara Vex reta a Dino a escuchar por completo a un compañero antes de responder, tal
+      narrative_beat: Zara Vex reta a Liruf a escuchar por completo a un compañero antes de responder, tal
         como aprendió en su saga.
       difficulty: 1
       suggested_families:
@@ -2508,7 +2508,7 @@ sagas:
     - position: 3
       slug: disculparse-otra-vez-en-la-mision
       micro_objective: Recordar y aplicar cómo disculparse con sinceridad al reconocer un error.
-      narrative_beat: Dr. Rho presenta una situación nueva y pregunta a Dino si recuerda cómo disculparse
+      narrative_beat: Dr. Rho presenta una situación nueva y pregunta a Liruf si recuerda cómo disculparse
         con sinceridad.
       difficulty: 2
       suggested_families:
@@ -2566,7 +2566,7 @@ sagas:
       slug: el-reto-de-las-cuatro-mesas
       micro_objective: Aplicar con seguridad las cuatro áreas del taller en un desafío único que las combina
         todas.
-      narrative_beat: Dino resuelve un desafío del taller que combina, de una sola vez, equipo, roles,
+      narrative_beat: Liruf resuelve un desafío del taller que combina, de una sola vez, equipo, roles,
         reparto y desacuerdos.
       difficulty: 2
       suggested_families:
@@ -2587,7 +2587,7 @@ sagas:
     kind: review_quest
     title_es: La Gran Misión del Taller del Equipo
     concept: El gran cierre de la aventura combina las cuatro áreas del taller con lecciones del reino
-      de las ventas, celebrando el primer equipo completo de Dina y Dino.
+      de las ventas, celebrando el primer equipo completo de Dina y Liruf.
     learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido en El
       Taller del Equipo conectándolo con El Reino de las Ventas.
     key_vocabulary:
@@ -2604,8 +2604,8 @@ sagas:
     lessons:
     - position: 1
       slug: el-taller-recuerda-el-primer-equipo
-      micro_objective: Recordar el primer proyecto en equipo de Dina y Dino en el taller del valle.
-      narrative_beat: Zara Vex recuerda junto a Dina y Dino aquel primer proyecto que construyeron en equipo
+      micro_objective: Recordar el primer proyecto en equipo de Dina y Liruf en el taller del valle.
+      narrative_beat: Zara Vex recuerda junto a Dina y Liruf aquel primer proyecto que construyeron en equipo
         en el taller.
       difficulty: 1
       suggested_families:
@@ -2635,7 +2635,7 @@ sagas:
       slug: el-taller-sigue-abierto-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
         taller.
-      narrative_beat: Con el taller lleno de proyectos terminados, Dina celebra junto a Zara Vex, Dino
+      narrative_beat: Con el taller lleno de proyectos terminados, Dina celebra junto a Zara Vex, Liruf
         y Dr. Rho el cierre de la Gran Misión del taller.
       difficulty: 2
       suggested_families:

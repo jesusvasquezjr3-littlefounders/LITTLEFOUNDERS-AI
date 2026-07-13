@@ -9,15 +9,15 @@ adventure:
     es-MX: El Reino de las Ventas
     pt-BR: O Reino das Vendas
   description:
-    en-US: In a kingdom of traveling merchants, Dina and Dino open their first lemonade stall in the Grand
+    en-US: In a kingdom of traveling merchants, Dina and Liruf open their first lemonade stall in the Grand
       Plaza and learn to sell with honesty, pitch their idea, and treat every customer with care.
-    es-MX: En un reino de mercaderes, Dina y Dino abren su primer puesto de limonada en la Gran Plaza y
+    es-MX: En un reino de mercaderes, Dina y Liruf abren su primer puesto de limonada en la Gran Plaza y
       aprenden a vender con honestidad, a contar su idea en un minuto y a cuidar a cada cliente.
-    pt-BR: Em um reino de mercadores, Dina e Dino abrem sua primeira barraca de limonada na Grande Praça
+    pt-BR: Em um reino de mercadores, Dina e Liruf abrem sua primeira barraca de limonada na Grande Praça
       e aprendem a vender com honestidade, a contar sua ideia em um minuto e a cuidar de cada cliente.
-  narrative_arc: 'Dina y Dino cruzan las puertas del Reino de las Ventas, una tierra de mercaderes gobernada
+  narrative_arc: 'Dina y Liruf cruzan las puertas del Reino de las Ventas, una tierra de mercaderes gobernada
     desde la Gran Plaza, donde Zara Vex es la estratega más admirada del reino por su forma honesta y brillante
-    de vender. Dino instala su primer puesto de limonada y aprende haciendo, probando ideas una por una,
+    de vender. Liruf instala su primer puesto de limonada y aprende haciendo, probando ideas una por una,
     mientras Dina observa, pregunta y reflexiona junto a Dr. Rho, quien revisa que cada trato del reino
     sea justo. Juntos descubren que vender de verdad no es convencer a cualquier costo, sino ofrecer algo
     valioso, contarlo bien en un minuto, atender con cuidado a cada cliente y escuchar sus opiniones para
@@ -54,7 +54,7 @@ sagas:
     - position: 1
       slug: las-puertas-del-reino
       micro_objective: Reconocer que vender es ofrecer algo de valor a otra persona a cambio de dinero.
-      narrative_beat: Dina y Dino cruzan las puertas del Reino de las Ventas y ven la Gran Plaza llena
+      narrative_beat: Dina y Liruf cruzan las puertas del Reino de las Ventas y ven la Gran Plaza llena
         de puestos donde la gente ofrece cosas a cambio de monedas.
       difficulty: 1
       suggested_families:
@@ -63,7 +63,7 @@ sagas:
     - position: 2
       slug: vender-o-solo-mostrar
       micro_objective: Distinguir la acción de vender (a cambio de dinero) de solo mostrar o regalar algo.
-      narrative_beat: Dino confunde a un mercader que muestra su mercancía con uno que la regala, y Dr.
+      narrative_beat: Liruf confunde a un mercader que muestra su mercancía con uno que la regala, y Dr.
         Rho le ayuda a notar la diferencia.
       difficulty: 2
       suggested_families:
@@ -81,7 +81,7 @@ sagas:
     - position: 4
       slug: mi-primera-idea-para-vender
       micro_objective: Proponer, en una escena nueva, una idea simple de algo que podría vender.
-      narrative_beat: Frente a su primer puesto vacío, Dino piensa en voz alta que le gustaría vender limonada
+      narrative_beat: Frente a su primer puesto vacío, Liruf piensa en voz alta que le gustaría vender limonada
         fresca en la Gran Plaza.
       difficulty: 3
       suggested_families:
@@ -107,7 +107,7 @@ sagas:
       slug: el-mercader-que-exagera
       micro_objective: Reconocer cuando un mercader describe su producto con cualidades que no tiene de
         verdad.
-      narrative_beat: Un mercader del reino grita que su fruta es 'la más dulce de todo el mundo', y Dino
+      narrative_beat: Un mercader del reino grita que su fruta es 'la más dulce de todo el mundo', y Liruf
         se pregunta si eso puede ser cierto.
       difficulty: 1
       suggested_families:
@@ -125,7 +125,7 @@ sagas:
     - position: 3
       slug: comparar-dos-descripciones
       micro_objective: Comparar dos descripciones del mismo producto y elegir la más honesta.
-      narrative_beat: Zara Vex muestra dos formas distintas de describir la misma limonada y reta a Dino
+      narrative_beat: Zara Vex muestra dos formas distintas de describir la misma limonada y reta a Liruf
         a elegir cuál es más honesta.
       difficulty: 2
       suggested_families:
@@ -158,7 +158,7 @@ sagas:
     - position: 1
       slug: el-puesto-del-cambio-desigual
       micro_objective: Reconocer una situación donde alguien intenta engañar para lograr una venta.
-      narrative_beat: Un vendedor del reino intenta cambiarle a Dino un vaso pequeño de limonada por el
+      narrative_beat: Un vendedor del reino intenta cambiarle a Liruf un vaso pequeño de limonada por el
         precio de uno grande, diciendo que son iguales.
       difficulty: 1
       suggested_families:
@@ -176,7 +176,7 @@ sagas:
     - position: 3
       slug: elegir-vender-con-confianza
       micro_objective: Decidir la forma honesta de resolver una venta en la que se podría engañar fácilmente.
-      narrative_beat: Zara Vex pone a prueba a Dino con un cliente que no notaría un engaño, para ver si
+      narrative_beat: Zara Vex pone a prueba a Liruf con un cliente que no notaría un engaño, para ver si
         igual decide ser honesto.
       difficulty: 3
       suggested_families:
@@ -212,7 +212,7 @@ sagas:
     - position: 1
       slug: cuanto-cuesta-hacerla
       micro_objective: Reconocer que hacer un producto tiene un costo que debe cubrirse con el precio.
-      narrative_beat: Dino cuenta cuántas monedas gastó en vasos, limones y azúcar antes de decidir cuánto
+      narrative_beat: Liruf cuenta cuántas monedas gastó en vasos, limones y azúcar antes de decidir cuánto
         cobrar por cada limonada.
       difficulty: 1
       suggested_families:
@@ -232,7 +232,7 @@ sagas:
       slug: calcular-mi-ganancia
       micro_objective: Calcular la ganancia de una venta restando el costo del precio de venta ($15 - $10
         = $5).
-      narrative_beat: Dr. Rho ayuda a Dino a calcular cuánto ganó de verdad después de vender algo en $15
+      narrative_beat: Dr. Rho ayuda a Liruf a calcular cuánto ganó de verdad después de vender algo en $15
         que le costó $10 hacer.
       difficulty: 3
       suggested_families:
@@ -266,7 +266,7 @@ sagas:
     - position: 1
       slug: la-promesa-del-mercader
       micro_objective: Reconocer una promesa hecha durante una venta, como el tiempo de entrega.
-      narrative_beat: Un mercader promete entregar un pedido 'mañana mismo', y Dino se pregunta si de verdad
+      narrative_beat: Un mercader promete entregar un pedido 'mañana mismo', y Liruf se pregunta si de verdad
         lo cumplirá.
       difficulty: 1
       suggested_families:
@@ -319,7 +319,7 @@ sagas:
     - position: 1
       slug: no-es-lo-que-el-cliente-busca
       micro_objective: Reconocer una situación donde el producto propio no es lo que el cliente necesita.
-      narrative_beat: Un cliente busca una limonada bien fría, y Dino sabe que la suya, aunque buena, ya
+      narrative_beat: Un cliente busca una limonada bien fría, y Liruf sabe que la suya, aunque buena, ya
         no está tan fría.
       difficulty: 1
       suggested_families:
@@ -328,7 +328,7 @@ sagas:
     - position: 2
       slug: decir-la-verdad-o-vender-igual
       micro_objective: Decidir entre decir la verdad y perder la venta, o quedarse callado y vender igual.
-      narrative_beat: Zara Vex reta a Dino a decidir qué hacer frente al cliente que busca algo que su
+      narrative_beat: Zara Vex reta a Liruf a decidir qué hacer frente al cliente que busca algo que su
         producto no ofrece en ese momento.
       difficulty: 2
       suggested_families:
@@ -377,7 +377,7 @@ sagas:
     - position: 1
       slug: el-puesto-vecino
       micro_objective: Observar que un puesto vecino esconde información importante sobre su producto.
-      narrative_beat: Dino nota que el puesto de al lado no dice que su mercancía está algo dañada, y se
+      narrative_beat: Liruf nota que el puesto de al lado no dice que su mercancía está algo dañada, y se
         pregunta si eso es honesto.
       difficulty: 1
       suggested_families:
@@ -440,7 +440,7 @@ sagas:
     - position: 2
       slug: mi-primer-cliente-del-dia
       micro_objective: Atender a un primer cliente aplicando honestidad en la descripción y el precio.
-      narrative_beat: El primer cliente del día llega al puesto de Dino, y él aplica todo lo aprendido
+      narrative_beat: El primer cliente del día llega al puesto de Liruf, y él aplica todo lo aprendido
         sobre describir y cobrar con honestidad.
       difficulty: 2
       suggested_families:
@@ -459,7 +459,7 @@ sagas:
     - position: 4
       slug: cierro-mi-primer-dia
       micro_objective: Reflexionar sobre el día completo de ventas honestas y resumir lo aprendido.
-      narrative_beat: Al cerrar su puesto por primera vez, Dina y Dino celebran junto a Zara Vex un primer
+      narrative_beat: Al cerrar su puesto por primera vez, Dina y Liruf celebran junto a Zara Vex un primer
         día de ventas hecho con honestidad.
       difficulty: 3
       suggested_families:
@@ -504,7 +504,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo la diferencia entre vender y engañar, y cómo fijar un
         precio justo.
-      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -555,7 +555,7 @@ sagas:
       slug: vender-y-cobrar-en-la-misma-escena
       micro_objective: Combinar, en una sola escena, la idea de vender algo con la de fijar un precio justo
         por ello.
-      narrative_beat: Zara Vex arma una escena mezclando la primera venta de Dino con el precio justo que
+      narrative_beat: Zara Vex arma una escena mezclando la primera venta de Liruf con el precio justo que
         decidió cobrar.
       difficulty: 2
       suggested_families:
@@ -573,7 +573,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, dos ideas combinadas de la saga.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la Gran Plaza usando a la vez
         dos lecciones combinadas de la saga.
       difficulty: 2
       suggested_families:
@@ -620,7 +620,7 @@ sagas:
       slug: una-idea-nueva-en-la-plaza
       micro_objective: Reconocer que antes de vender algo nuevo conviene poder contarlo de forma clara
         y breve.
-      narrative_beat: Dino tiene una idea nueva para el puesto, pero cuando trata de explicarla se enreda
+      narrative_beat: Liruf tiene una idea nueva para el puesto, pero cuando trata de explicarla se enreda
         y nadie lo entiende.
       difficulty: 1
       suggested_families:
@@ -629,7 +629,7 @@ sagas:
     - position: 2
       slug: pitch-o-explicacion-larga
       micro_objective: Distinguir un pitch breve y claro de una explicación larga y confusa.
-      narrative_beat: Zara Vex compara la explicación enredada de Dino con un pitch corto y claro sobre
+      narrative_beat: Zara Vex compara la explicación enredada de Liruf con un pitch corto y claro sobre
         la misma idea.
       difficulty: 2
       suggested_families:
@@ -670,7 +670,7 @@ sagas:
     - position: 1
       slug: demasiados-detalles
       micro_objective: Reconocer cuando una idea tiene demasiados detalles y pierde su punto principal.
-      narrative_beat: Dino cuenta su idea con tantos detalles que Zara Vex ya no recuerda de qué se trataba
+      narrative_beat: Liruf cuenta su idea con tantos detalles que Zara Vex ya no recuerda de qué se trataba
         al final.
       difficulty: 1
       suggested_families:
@@ -688,7 +688,7 @@ sagas:
     - position: 3
       slug: quitar-lo-que-sobra
       micro_objective: Practicar quitar detalles que no son esenciales al contar una idea.
-      narrative_beat: Zara Vex reta a Dino a contar su idea otra vez, esta vez quitando todo lo que no
+      narrative_beat: Zara Vex reta a Liruf a contar su idea otra vez, esta vez quitando todo lo que no
         es esencial.
       difficulty: 2
       suggested_families:
@@ -720,7 +720,7 @@ sagas:
     - position: 1
       slug: un-problema-en-el-reino
       micro_objective: Reconocer un problema real que las personas del reino tienen.
-      narrative_beat: Dino nota que muchos niños del reino llegan sedientos a la Gran Plaza sin tener dónde
+      narrative_beat: Liruf nota que muchos niños del reino llegan sedientos a la Gran Plaza sin tener dónde
         comprar algo fresco para beber.
       difficulty: 1
       suggested_families:
@@ -738,7 +738,7 @@ sagas:
     - position: 3
       slug: empezar-por-el-problema
       micro_objective: Practicar empezar el pitch nombrando el problema antes de describir la idea.
-      narrative_beat: Zara Vex enseña a Dino a comenzar siempre su pitch nombrando el problema, antes de
+      narrative_beat: Zara Vex enseña a Liruf a comenzar siempre su pitch nombrando el problema, antes de
         hablar de su producto.
       difficulty: 2
       suggested_families:
@@ -788,7 +788,7 @@ sagas:
     - position: 3
       slug: decirlo-en-pocas-frases
       micro_objective: Practicar decir las tres piezas del pitch usando solo unas pocas frases.
-      narrative_beat: Zara Vex cronometra a Dino mientras intenta decir su pitch completo en solo unas
+      narrative_beat: Zara Vex cronometra a Liruf mientras intenta decir su pitch completo en solo unas
         frases.
       difficulty: 3
       suggested_families:
@@ -830,7 +830,7 @@ sagas:
     - position: 2
       slug: muy-rapido-o-muy-lento
       micro_objective: Reconocer cuando un pitch se dice demasiado rápido o se alarga demasiado.
-      narrative_beat: Dino practica su pitch tan rápido que nadie le entiende, y luego tan lento que pierde
+      narrative_beat: Liruf practica su pitch tan rápido que nadie le entiende, y luego tan lento que pierde
         a su público.
       difficulty: 2
       suggested_families:
@@ -872,7 +872,7 @@ sagas:
     - position: 1
       slug: la-voz-que-tiembla
       micro_objective: Reconocer que hablar muy bajo o con voz temblorosa dificulta que un pitch convenza.
-      narrative_beat: Dino presenta su pitch con voz tan bajita que casi nadie en la plaza lo escucha.
+      narrative_beat: Liruf presenta su pitch con voz tan bajita que casi nadie en la plaza lo escucha.
       difficulty: 1
       suggested_families:
       - story
@@ -880,7 +880,7 @@ sagas:
     - position: 2
       slug: practicar-la-voz-clara
       micro_objective: Practicar decir un pitch con voz clara y volumen adecuado.
-      narrative_beat: Zara Vex ayuda a Dino a practicar su pitch con una voz clara que llega hasta el fondo
+      narrative_beat: Zara Vex ayuda a Liruf a practicar su pitch con una voz clara que llega hasta el fondo
         de la plaza.
       difficulty: 2
       suggested_families:
@@ -922,7 +922,7 @@ sagas:
     - position: 1
       slug: alguien-pregunta
       micro_objective: Reconocer que después de un pitch alguien puede hacer una pregunta sobre la idea.
-      narrative_beat: Después del pitch de Dino, un mercader del reino levanta la mano y le hace una pregunta
+      narrative_beat: Después del pitch de Liruf, un mercader del reino levanta la mano y le hace una pregunta
         que no esperaba.
       difficulty: 1
       suggested_families:
@@ -942,7 +942,7 @@ sagas:
       slug: practicar-responder-con-calma
       micro_objective: Practicar responder con calma una pregunta sencilla sobre una idea, dentro de una
         historia.
-      narrative_beat: Zara Vex hace preguntas sorpresa a Dino sobre su idea para que practique responder
+      narrative_beat: Zara Vex hace preguntas sorpresa a Liruf sobre su idea para que practique responder
         sin ponerse nervioso.
       difficulty: 2
       suggested_families:
@@ -986,7 +986,7 @@ sagas:
     - position: 2
       slug: ensayar-una-ultima-vez
       micro_objective: Practicar el pitch completo una última vez, cuidando el tiempo y la voz.
-      narrative_beat: Dino ensaya su pitch una última vez frente a Dr. Rho, cuidando el tiempo y hablando
+      narrative_beat: Liruf ensaya su pitch una última vez frente a Dr. Rho, cuidando el tiempo y hablando
         con voz clara.
       difficulty: 2
       suggested_families:
@@ -1004,7 +1004,7 @@ sagas:
     - position: 4
       slug: responder-y-celebrar
       micro_objective: Responder con calma una pregunta final y celebrar la presentación completa.
-      narrative_beat: Tras responder con calma una última pregunta, Dina celebra junto a Zara Vex y Dino
+      narrative_beat: Tras responder con calma una última pregunta, Dina celebra junto a Zara Vex y Liruf
         su primer pitch completo.
       difficulty: 3
       suggested_families:
@@ -1050,7 +1050,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo contar el problema que resuelve una idea y cómo
         explicarla en pocas palabras.
-      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1100,7 +1100,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Vender con Honestidad.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Dino recordarlo sin ayuda, antes
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda, antes
         de mezclarlo con el pitch.
       difficulty: 2
       suggested_families:
@@ -1118,7 +1118,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la Gran Plaza usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1167,7 +1167,7 @@ sagas:
     - position: 1
       slug: un-cliente-llega-al-puesto
       micro_objective: Reconocer que atender bien a un cliente empieza desde que llega al puesto.
-      narrative_beat: Un cliente se acerca al puesto de Dino, y Zara Vex observa con atención cómo lo recibe.
+      narrative_beat: Un cliente se acerca al puesto de Liruf, y Zara Vex observa con atención cómo lo recibe.
       difficulty: 1
       suggested_families:
       - story
@@ -1218,7 +1218,7 @@ sagas:
     - position: 1
       slug: hablar-antes-de-escuchar
       micro_objective: Reconocer el error de hablar del producto antes de escuchar lo que el cliente busca.
-      narrative_beat: Dino empieza a hablar de su limonada sin dejar que el cliente le diga primero qué
+      narrative_beat: Liruf empieza a hablar de su limonada sin dejar que el cliente le diga primero qué
         necesita.
       difficulty: 1
       suggested_families:
@@ -1236,7 +1236,7 @@ sagas:
     - position: 3
       slug: escuchar-lo-que-de-verdad-busca
       micro_objective: Practicar escuchar con atención lo que un cliente busca antes de responder.
-      narrative_beat: Dr. Rho ayuda a Dino a escuchar con calma lo que un cliente busca, sin interrumpirlo.
+      narrative_beat: Dr. Rho ayuda a Liruf a escuchar con calma lo que un cliente busca, sin interrumpirlo.
       difficulty: 2
       suggested_families:
       - storyplay
@@ -1268,7 +1268,7 @@ sagas:
     - position: 1
       slug: no-es-lo-que-yo-vendo
       micro_objective: Reconocer una situación donde lo que el cliente busca no es exactamente lo que ofrezco.
-      narrative_beat: Un cliente busca algo que el puesto de Dino no tiene, y él no sabe bien qué hacer.
+      narrative_beat: Un cliente busca algo que el puesto de Liruf no tiene, y él no sabe bien qué hacer.
       difficulty: 1
       suggested_families:
       - story
@@ -1329,7 +1329,7 @@ sagas:
     - position: 2
       slug: respirar-antes-de-responder
       micro_objective: Practicar la estrategia de respirar y pensar antes de responder a un cliente molesto.
-      narrative_beat: Zara Vex enseña a Dino a respirar hondo antes de responder a un cliente que está
+      narrative_beat: Zara Vex enseña a Liruf a respirar hondo antes de responder a un cliente que está
         molesto.
       difficulty: 2
       suggested_families:
@@ -1371,7 +1371,7 @@ sagas:
     - position: 1
       slug: algo-salio-mal
       micro_objective: Reconocer una situación donde un producto vendido tuvo un problema para el cliente.
-      narrative_beat: Un cliente regresa al puesto de Dino porque su limonada de ayer ya no estaba tan
+      narrative_beat: Un cliente regresa al puesto de Liruf porque su limonada de ayer ya no estaba tan
         fría como esperaba.
       difficulty: 1
       suggested_families:
@@ -1390,7 +1390,7 @@ sagas:
     - position: 3
       slug: practicar-los-tres-pasos
       micro_objective: Aplicar los tres pasos para resolver un problema dentro de una historia.
-      narrative_beat: Zara Vex pone a prueba a Dino con un cliente insatisfecho para ver si aplica los
+      narrative_beat: Zara Vex pone a prueba a Liruf con un cliente insatisfecho para ver si aplica los
         tres pasos del reino.
       difficulty: 3
       suggested_families:
@@ -1423,7 +1423,7 @@ sagas:
     - position: 1
       slug: la-venta-que-termina-sin-gracias
       micro_objective: Reconocer que una venta sin un agradecimiento final se siente incompleta.
-      narrative_beat: Dino termina una venta rápido y se olvida de agradecerle al cliente antes de que
+      narrative_beat: Liruf termina una venta rápido y se olvida de agradecerle al cliente antes de que
         se vaya.
       difficulty: 1
       suggested_families:
@@ -1533,7 +1533,7 @@ sagas:
     - position: 1
       slug: se-forma-una-fila
       micro_objective: Reconocer que varios clientes llegan seguidos y cada uno merece la misma buena atención.
-      narrative_beat: Una fila de clientes se forma frente al puesto de Dino, uno detrás de otro, esperando
+      narrative_beat: Una fila de clientes se forma frente al puesto de Liruf, uno detrás de otro, esperando
         su turno.
       difficulty: 1
       suggested_families:
@@ -1552,7 +1552,7 @@ sagas:
       slug: un-cliente-dificil-en-la-fila
       micro_objective: Aplicar la paciencia y la resolución de problemas con un cliente difícil dentro
         de la fila.
-      narrative_beat: Un cliente molesto llega en medio de la fila, y Dino aplica la calma que practicó
+      narrative_beat: Un cliente molesto llega en medio de la fila, y Liruf aplica la calma que practicó
         para resolverlo.
       difficulty: 3
       suggested_families:
@@ -1608,7 +1608,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo ayudar a un cliente a encontrar lo que busca y
         cómo ser paciente con uno difícil.
-      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1658,7 +1658,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga El Pitch.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del pitch y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la saga del pitch y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con la atención al cliente.
       difficulty: 2
       suggested_families:
@@ -1677,7 +1677,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la Gran Plaza usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1727,7 +1727,7 @@ sagas:
       slug: un-cliente-comenta-algo
       micro_objective: Reconocer que después de comprar, un cliente puede compartir lo que piensa sobre
         el producto.
-      narrative_beat: Un cliente que compró limonada en el puesto de Dino regresa al día siguiente y le
+      narrative_beat: Un cliente que compró limonada en el puesto de Liruf regresa al día siguiente y le
         comenta qué le pareció.
       difficulty: 1
       suggested_families:
@@ -1745,7 +1745,7 @@ sagas:
     - position: 3
       slug: para-que-sirve-escuchar-esto
       micro_objective: Explicar para qué sirve escuchar la opinión de un cliente sobre un producto.
-      narrative_beat: Zara Vex explica a Dino que escuchar la opinión de un cliente es como recibir un
+      narrative_beat: Zara Vex explica a Liruf que escuchar la opinión de un cliente es como recibir un
         mapa para mejorar.
       difficulty: 2
       suggested_families:
@@ -1778,7 +1778,7 @@ sagas:
     - position: 1
       slug: miedo-a-preguntar
       micro_objective: Reconocer el miedo a pedir la opinión de un cliente por temor a una respuesta negativa.
-      narrative_beat: Dino tiene miedo de preguntarle a un cliente qué le pareció su limonada, por si la
+      narrative_beat: Liruf tiene miedo de preguntarle a un cliente qué le pareció su limonada, por si la
         respuesta no es buena.
       difficulty: 1
       suggested_families:
@@ -1787,7 +1787,7 @@ sagas:
     - position: 2
       slug: preguntar-de-todas-formas
       micro_objective: Practicar pedir la opinión de un cliente a pesar del miedo a una respuesta negativa.
-      narrative_beat: Zara Vex anima a Dino a preguntar de todas formas, aunque tenga miedo de lo que el
+      narrative_beat: Zara Vex anima a Liruf a preguntar de todas formas, aunque tenga miedo de lo que el
         cliente pueda decir.
       difficulty: 2
       suggested_families:
@@ -1828,7 +1828,7 @@ sagas:
     - position: 1
       slug: un-comentario-que-duele-un-poco
       micro_objective: Reconocer que un comentario negativo puede sentirse incómodo al principio.
-      narrative_beat: Un cliente le dice a Dino que su limonada podría estar un poco más fría, y a él le
+      narrative_beat: Un cliente le dice a Liruf que su limonada podría estar un poco más fría, y a él le
         duele un poco escucharlo.
       difficulty: 1
       suggested_families:
@@ -1897,7 +1897,7 @@ sagas:
     - position: 3
       slug: pedir-que-sea-mas-concreto
       micro_objective: Practicar pedir a un cliente que explique mejor un comentario poco claro.
-      narrative_beat: Zara Vex enseña a Dino a preguntar '¿qué parte exactamente?' cuando un comentario
+      narrative_beat: Zara Vex enseña a Liruf a preguntar '¿qué parte exactamente?' cuando un comentario
         es poco claro.
       difficulty: 3
       suggested_families:
@@ -1930,7 +1930,7 @@ sagas:
     - position: 1
       slug: una-idea-para-mejorar
       micro_objective: Reconocer una idea de cambio concreto que surge de una opinión recibida.
-      narrative_beat: A partir de un comentario sobre lo fría que debería estar la limonada, a Dino se
+      narrative_beat: A partir de un comentario sobre lo fría que debería estar la limonada, a Liruf se
         le ocurre una idea concreta para mejorarla.
       difficulty: 1
       suggested_families:
@@ -1948,7 +1948,7 @@ sagas:
     - position: 3
       slug: aplicar-el-cambio
       micro_objective: Aplicar un cambio concreto en un producto propio a partir de una opinión recibida.
-      narrative_beat: Zara Vex acompaña a Dino mientras aplica, paso a paso, el cambio que decidió hacer
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica, paso a paso, el cambio que decidió hacer
         en su limonada.
       difficulty: 3
       suggested_families:
@@ -1981,7 +1981,7 @@ sagas:
     - position: 1
       slug: olvidar-decir-gracias
       micro_objective: Reconocer que a veces se olvida agradecer a quien dio su opinión sobre algo.
-      narrative_beat: Dino recibe una opinión útil de un cliente, pero se va tan rápido que olvida agradecerle.
+      narrative_beat: Liruf recibe una opinión útil de un cliente, pero se va tan rápido que olvida agradecerle.
       difficulty: 1
       suggested_families:
       - story
@@ -2033,7 +2033,7 @@ sagas:
     - position: 1
       slug: el-producto-mejorado-a-prueba
       micro_objective: Reconocer que después de un cambio conviene observar si de verdad mejoró algo.
-      narrative_beat: Dino vende su limonada mejorada por primera vez y observa con atención cómo reacciona
+      narrative_beat: Liruf vende su limonada mejorada por primera vez y observa con atención cómo reacciona
         el cliente.
       difficulty: 1
       suggested_families:
@@ -2051,7 +2051,7 @@ sagas:
     - position: 3
       slug: que-hacer-si-no-mejoro
       micro_objective: Decidir qué hacer si un cambio hecho no mejoró la situación como se esperaba.
-      narrative_beat: Zara Vex pregunta a Dino qué haría si su cambio no hubiera mejorado nada, y le muestra
+      narrative_beat: Zara Vex pregunta a Liruf qué haría si su cambio no hubiera mejorado nada, y le muestra
         que se puede intentar de nuevo.
       difficulty: 3
       suggested_families:
@@ -2094,7 +2094,7 @@ sagas:
     - position: 2
       slug: recibo-varias-opiniones
       micro_objective: Recibir y escuchar con calma varias opiniones distintas durante el desafío.
-      narrative_beat: Durante el día, Dino recibe varias opiniones distintas de sus clientes y las escucha
+      narrative_beat: Durante el día, Liruf recibe varias opiniones distintas de sus clientes y las escucha
         una por una con calma.
       difficulty: 2
       suggested_families:
@@ -2112,7 +2112,7 @@ sagas:
     - position: 4
       slug: mi-ciclo-completo-del-reino
       micro_objective: Cerrar el ciclo probando el cambio y celebrando el aprendizaje de mejorar siempre.
-      narrative_beat: Dina prueba su cambio con un nuevo cliente y celebra junto a Zara Vex, Dino y Dr.
+      narrative_beat: Dina prueba su cambio con un nuevo cliente y celebra junto a Zara Vex, Liruf y Dr.
         Rho su primer ciclo completo de mejora.
       difficulty: 3
       suggested_families:
@@ -2156,7 +2156,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo escuchar una crítica sin enojarse y cómo separar
         lo útil de lo que no ayuda.
-      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2208,7 +2208,7 @@ sagas:
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Atención y Servicio
         al Cliente.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de atención al cliente y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de atención al cliente y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con escuchar y mejorar.
       difficulty: 2
       suggested_families:
@@ -2227,7 +2227,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la Gran Plaza usando a la vez
         las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -2283,7 +2283,7 @@ sagas:
       slug: la-plaza-vuelve-a-brillar
       micro_objective: Recordar que vender es ofrecer algo real de valor, y que engañar es distinto a
         vender.
-      narrative_beat: 'Zara Vex reúne a Dina y Dino en el centro de la Gran Plaza y anuncia la Gran Misión:
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf en el centro de la Gran Plaza y anuncia la Gran Misión:
         recorrer una vez más todo lo aprendido en el reino.'
       difficulty: 1
       suggested_families:
@@ -2302,7 +2302,7 @@ sagas:
     - position: 3
       slug: la-verdad-que-cuesta-otra-vez
       micro_objective: Recordar cómo decidir decir la verdad aunque eso signifique perder una venta.
-      narrative_beat: Dino recuerda, sin ayuda, aquella vez que dijo la verdad sobre su limonada aunque
+      narrative_beat: Liruf recuerda, sin ayuda, aquella vez que dijo la verdad sobre su limonada aunque
         eso le costó una venta.
       difficulty: 2
       suggested_families:
@@ -2322,7 +2322,7 @@ sagas:
     slug: el-pitch-de-la-gran-mision
     kind: review_quest
     title_es: El Pitch de la Gran Misión
-    concept: Dina y Dino recuerdan cómo contar el problema que resuelve una idea, ajustar el pitch a un
+    concept: Dina y Liruf recuerdan cómo contar el problema que resuelve una idea, ajustar el pitch a un
       minuto y responder una pregunta con calma.
     learning_objective: Al final, el niño puede recordar y aplicar las partes de un pitch completo, corto
       y con seguridad.
@@ -2341,7 +2341,7 @@ sagas:
     - position: 1
       slug: una-idea-en-la-gran-mision
       micro_objective: Recordar que un buen pitch empieza por contar el problema que resuelve la idea.
-      narrative_beat: Zara Vex presenta una idea nueva del reino y reta a Dino a recordar, sin ayuda, cómo
+      narrative_beat: Zara Vex presenta una idea nueva del reino y reta a Liruf a recordar, sin ayuda, cómo
         empezar a contarla.
       difficulty: 1
       suggested_families:
@@ -2368,7 +2368,7 @@ sagas:
     - position: 4
       slug: mi-pitch-para-la-mision
       micro_objective: Aplicar con seguridad un pitch completo de un minuto frente a una situación nueva.
-      narrative_beat: Dino presenta, sin ayuda, un pitch completo de un minuto frente a un grupo nuevo
+      narrative_beat: Liruf presenta, sin ayuda, un pitch completo de un minuto frente a un grupo nuevo
         del reino.
       difficulty: 2
       suggested_families:
@@ -2406,7 +2406,7 @@ sagas:
     - position: 2
       slug: ayudar-de-nuevo-en-la-mision
       micro_objective: Recordar cómo ayudar a un cliente a encontrar lo que de verdad necesita.
-      narrative_beat: Dino recuerda, de memoria, cómo guiar a un cliente hacia lo que de verdad busca,
+      narrative_beat: Liruf recuerda, de memoria, cómo guiar a un cliente hacia lo que de verdad busca,
         aunque no sea en su puesto.
       difficulty: 1
       suggested_families:
@@ -2434,7 +2434,7 @@ sagas:
     slug: mejorar-en-la-gran-mision
     kind: review_quest
     title_es: Mejorar en la Gran Misión
-    concept: Dina y Dino recuerdan cómo pedir una opinión sin miedo, escuchar una crítica con calma y aplicar
+    concept: Dina y Liruf recuerdan cómo pedir una opinión sin miedo, escuchar una crítica con calma y aplicar
       un cambio a partir de ella.
     learning_objective: Al final, el niño puede recordar y aplicar el ciclo de pedir, escuchar y aplicar
       una mejora.
@@ -2453,7 +2453,7 @@ sagas:
     - position: 1
       slug: pedir-otra-vez-en-la-mision
       micro_objective: Recordar cómo pedir la opinión de un cliente sin miedo a una respuesta negativa.
-      narrative_beat: Zara Vex reta a Dino a pedirle su opinión a un cliente nuevo, sin miedo, tal como
+      narrative_beat: Zara Vex reta a Liruf a pedirle su opinión a un cliente nuevo, sin miedo, tal como
         aprendió en su saga.
       difficulty: 1
       suggested_families:
@@ -2471,7 +2471,7 @@ sagas:
     - position: 3
       slug: cambiar-otra-vez-en-la-mision
       micro_objective: Recordar y aplicar cómo elegir y aplicar un cambio útil a partir de una opinión.
-      narrative_beat: Dr. Rho presenta una opinión nueva y pregunta a Dino si recuerda cómo convertirla
+      narrative_beat: Dr. Rho presenta una opinión nueva y pregunta a Liruf si recuerda cómo convertirla
         en un cambio concreto.
       difficulty: 2
       suggested_families:
@@ -2529,7 +2529,7 @@ sagas:
       slug: el-reto-de-las-cuatro-torres
       micro_objective: Aplicar con seguridad las cuatro áreas del reino en un desafío único que las combina
         todas.
-      narrative_beat: Dino resuelve un desafío del reino que combina, de una sola vez, vender, presentar,
+      narrative_beat: Liruf resuelve un desafío del reino que combina, de una sola vez, vender, presentar,
         atender y mejorar.
       difficulty: 2
       suggested_families:
@@ -2550,7 +2550,7 @@ sagas:
     kind: review_quest
     title_es: La Gran Misión del Reino de las Ventas
     concept: El gran cierre de la aventura combina las cuatro áreas del reino en una última celebración
-      del primer puesto de Dina y Dino.
+      del primer puesto de Dina y Liruf.
     learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido en El
       Reino de las Ventas.
     key_vocabulary:
@@ -2567,8 +2567,8 @@ sagas:
     lessons:
     - position: 1
       slug: el-reino-recuerda-el-primer-dia
-      micro_objective: Recordar el primer día de ventas honestas de Dina y Dino en la Gran Plaza.
-      narrative_beat: Zara Vex recuerda junto a Dina y Dino aquel primer día en que abrieron su puesto
+      micro_objective: Recordar el primer día de ventas honestas de Dina y Liruf en la Gran Plaza.
+      narrative_beat: Zara Vex recuerda junto a Dina y Liruf aquel primer día en que abrieron su puesto
         de limonada en el reino.
       difficulty: 1
       suggested_families:
@@ -2577,7 +2577,7 @@ sagas:
     - position: 2
       slug: el-reino-recuerda-el-pitch
       micro_objective: Recordar el primer pitch completo presentado frente al reino.
-      narrative_beat: Dino recuerda, con orgullo, la primera vez que presentó su pitch completo frente
+      narrative_beat: Liruf recuerda, con orgullo, la primera vez que presentó su pitch completo frente
         a los mercaderes del reino.
       difficulty: 1
       suggested_families:
@@ -2597,7 +2597,7 @@ sagas:
       slug: el-reino-sigue-abierto-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
         reino.
-      narrative_beat: Con la Gran Plaza llena de clientes contentos, Dina celebra junto a Zara Vex, Dino
+      narrative_beat: Con la Gran Plaza llena de clientes contentos, Dina celebra junto a Zara Vex, Liruf
         y Dr. Rho el cierre de la Gran Misión del reino.
       difficulty: 2
       suggested_families:

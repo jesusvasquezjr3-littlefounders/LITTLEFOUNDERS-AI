@@ -9,13 +9,13 @@ adventure:
     es-MX: El Cosmos del Mañana
     pt-BR: O Cosmos do Amanhã
   description:
-    en-US: Aboard Dr. Rho's ship, Dina, Dino, and Zara Vex revisit everything they've learned and build
+    en-US: Aboard Dr. Rho's ship, Dina, Liruf, and Zara Vex revisit everything they've learned and build
       their own founder plan for the future.
-    es-MX: A bordo de la nave de Dr. Rho, Dina, Dino y Zara Vex repasan todo lo aprendido y construyen
+    es-MX: A bordo de la nave de Dr. Rho, Dina, Liruf y Zara Vex repasan todo lo aprendido y construyen
       su propio plan de founder hacia el futuro.
-    pt-BR: A bordo da nave do Dr. Rho, Dina, Dino e Zara Vex revisitam tudo o que aprenderam e constroem
+    pt-BR: A bordo da nave do Dr. Rho, Dina, Liruf e Zara Vex revisitam tudo o que aprenderam e constroem
       seu próprio plano de founder para o futuro.
-  narrative_arc: 'Dr. Rho revela una nave con forma de cosmos que lleva a Dina, Dino y Zara Vex de vuelta
+  narrative_arc: 'Dr. Rho revela una nave con forma de cosmos que lleva a Dina, Liruf y Zara Vex de vuelta
     por cada mundo que visitaron: el archipiélago, el bosque, la aldea, el mercado, el taller, el faro
     y el jardín. Juntos convierten todo lo aprendido en un plan de founder propio, y cierran el viaje
     con un gran lanzamiento que celebra el camino recorrido.'
@@ -51,7 +51,7 @@ sagas:
       slug: la-nave-de-dr-rho
       micro_objective: Reconocer la diferencia entre un deseo pasajero y un sueño que alguien quiere perseguir
         de verdad.
-      narrative_beat: Dr. Rho revela una nave con forma de cosmos y invita a Dina, Dino y Zara Vex a un
+      narrative_beat: Dr. Rho revela una nave con forma de cosmos y invita a Dina, Liruf y Zara Vex a un
         viaje para repasar todo lo aprendido y soñar en grande.
       difficulty: 1
       suggested_families:
@@ -69,7 +69,7 @@ sagas:
     - position: 3
       slug: mi-sueno-en-una-frase
       micro_objective: Formular un sueño personal en una frase clara y concreta.
-      narrative_beat: Zara Vex reta a Dino a decir su sueño en una sola frase, sin vueltas ni dudas.
+      narrative_beat: Zara Vex reta a Liruf a decir su sueño en una sola frase, sin vueltas ni dudas.
       difficulty: 2
       suggested_families:
       - choice
@@ -110,7 +110,7 @@ sagas:
     - position: 2
       slug: estimar-el-costo
       micro_objective: Estimar, con una guía dada, el costo aproximado de un sueño concreto.
-      narrative_beat: Zara Vex ayuda a Dino a calcular más o menos cuánto costaría su sueño de tener un
+      narrative_beat: Zara Vex ayuda a Liruf a calcular más o menos cuánto costaría su sueño de tener un
         telescopio propio.
       difficulty: 2
       suggested_families:
@@ -152,7 +152,7 @@ sagas:
       slug: un-sueno-enorme
       micro_objective: Reconocer que un sueño grande puede sentirse difícil si se piensa como un solo
         paso.
-      narrative_beat: Dino mira su sueño enorme y se siente un poco abrumado, hasta que Dr. Rho le muestra
+      narrative_beat: Liruf mira su sueño enorme y se siente un poco abrumado, hasta que Dr. Rho le muestra
         un mapa estelar dividido en tramos pequeños.
       difficulty: 1
       suggested_families:
@@ -204,7 +204,7 @@ sagas:
       slug: por-donde-empezar
       micro_objective: Reconocer que no todos los pasos de un plan se hacen al mismo tiempo; hay que elegir
         uno primero.
-      narrative_beat: Dino mira todos los pasos de su sueño a la vez y no sabe por cuál empezar.
+      narrative_beat: Liruf mira todos los pasos de su sueño a la vez y no sabe por cuál empezar.
       difficulty: 1
       suggested_families:
       - story
@@ -222,7 +222,7 @@ sagas:
     - position: 3
       slug: practicar-elegir-el-primer-paso
       micro_objective: Elegir el primer paso correcto para el sueño de otro personaje dentro de una historia.
-      narrative_beat: Zara Vex presenta el sueño de otro founder y reta a Dino a decidir cuál sería su
+      narrative_beat: Zara Vex presenta el sueño de otro founder y reta a Liruf a decidir cuál sería su
         primer paso.
       difficulty: 2
       suggested_families:
@@ -267,7 +267,7 @@ sagas:
       slug: posibles-obstaculos
       micro_objective: Identificar obstáculos posibles (gastar sin querer, olvidar el plan, un imprevisto)
         para un sueño dado.
-      narrative_beat: Zara Vex ayuda a Dino a imaginar qué podría salir mal en su plan de ahorro para
+      narrative_beat: Zara Vex ayuda a Liruf a imaginar qué podría salir mal en su plan de ahorro para
         el telescopio.
       difficulty: 2
       suggested_families:
@@ -277,7 +277,7 @@ sagas:
       slug: elegir-como-obstaculo-o-no
       micro_objective: Decidir, entre dos caminos posibles dentro de una historia, cuál ayuda mejor a
         superar un obstáculo del plan.
-      narrative_beat: Frente a una tentación de gastar sus ahorros, Dino elige, dentro de la historia,
+      narrative_beat: Frente a una tentación de gastar sus ahorros, Liruf elige, dentro de la historia,
         si seguir su plan o desviarse.
       difficulty: 3
       suggested_families:
@@ -341,7 +341,7 @@ sagas:
       slug: presentar-mi-plan
       micro_objective: Presentar el plan corto completo del sueño propio frente a los demás personajes.
       narrative_beat: Antes de que la nave aterrice en el siguiente destino, Dina presenta su plan corto
-        completo a Dr. Rho, Dino y Zara Vex.
+        completo a Dr. Rho, Liruf y Zara Vex.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -413,7 +413,7 @@ sagas:
     - position: 1
       slug: un-sueno-demasiado-grande-para-uno
       micro_objective: Reconocer un sueño que sería muy difícil de lograr completamente solo.
-      narrative_beat: Dino imagina un sueño enorme, como construir un puente entre dos islas, y se da cuenta de que solo no podría.
+      narrative_beat: Liruf imagina un sueño enorme, como construir un puente entre dos islas, y se da cuenta de que solo no podría.
       difficulty: 1
       suggested_families:
       - story
@@ -421,7 +421,7 @@ sagas:
     - position: 2
       slug: quien-podria-ayudarme
       micro_objective: Identificar personas que podrían acompañar o ayudar a lograr un sueño grande.
-      narrative_beat: Zara Vex ayuda a Dino a pensar en quién del cosmos podría acompañarlo a construir su puente entre islas.
+      narrative_beat: Zara Vex ayuda a Liruf a pensar en quién del cosmos podría acompañarlo a construir su puente entre islas.
       difficulty: 2
       suggested_families:
       - choice
@@ -476,7 +476,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo dividir un sueño en pasos concretos y cómo elegir el primer paso correcto para comenzar.
-      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -517,7 +517,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
       difficulty: 2
       suggested_families:
       - choice
@@ -533,7 +533,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -587,7 +587,7 @@ sagas:
       slug: trueque-o-dinero
       micro_objective: Distinguir, en un ejemplo de repaso, una situación de trueque de una situación
         con dinero.
-      narrative_beat: Zara Vex presenta dos escenas del archipiélago y reta a Dino a identificar cuál
+      narrative_beat: Zara Vex presenta dos escenas del archipiélago y reta a Liruf a identificar cuál
         usa trueque y cuál usa dinero.
       difficulty: 2
       suggested_families:
@@ -632,7 +632,7 @@ sagas:
       slug: el-segundo-mapa-estelar
       micro_objective: Recordar la idea central de ganar dinero a través del trabajo, vista en la segunda
         aventura.
-      narrative_beat: El siguiente mapa estelar muestra el bosque de la abundancia, y Dino recuerda sus
+      narrative_beat: El siguiente mapa estelar muestra el bosque de la abundancia, y Liruf recuerda sus
         primeras chambitas.
       difficulty: 1
       suggested_families:
@@ -694,7 +694,7 @@ sagas:
       slug: esperar-o-gastar-ya
       micro_objective: Comparar, en un ejemplo de repaso, la opción de esperar y ahorrar frente a gastar
         de inmediato.
-      narrative_beat: Zara Vex recuerda a Dino la vez que decidió esperar en vez de gastar todo de inmediato
+      narrative_beat: Zara Vex recuerda a Liruf la vez que decidió esperar en vez de gastar todo de inmediato
         en un capricho.
       difficulty: 2
       suggested_families:
@@ -738,7 +738,7 @@ sagas:
       slug: el-cuarto-mapa-estelar
       micro_objective: Recordar la idea central de distinguir necesidades de deseos, vista en la cuarta
         aventura.
-      narrative_beat: El mapa estelar muestra el mercado de los colores, y Dino recuerda cuando aprendió
+      narrative_beat: El mapa estelar muestra el mercado de los colores, y Liruf recuerda cuando aprendió
         a diferenciar lo que necesitaba de lo que solo quería.
       difficulty: 1
       suggested_families:
@@ -803,7 +803,7 @@ sagas:
       slug: ordenar-el-ciclo-repaso
       micro_objective: Ordenar, como repaso, los pasos principales del ciclo de inventar, poner precio
         y vender.
-      narrative_beat: Zara Vex mezcla las tarjetas del ciclo del taller y reta a Dino a ordenarlas de
+      narrative_beat: Zara Vex mezcla las tarjetas del ciclo del taller y reta a Liruf a ordenarlas de
         nuevo.
       difficulty: 2
       suggested_families:
@@ -849,7 +849,7 @@ sagas:
       slug: el-sexto-y-septimo-mapa-estelar
       micro_objective: Recordar las ideas centrales de seguridad y comunidad vistas en las aventuras del
         faro y el jardín.
-      narrative_beat: El mapa estelar muestra el faro y el jardín juntos, y Dino recuerda las lecciones
+      narrative_beat: El mapa estelar muestra el faro y el jardín juntos, y Liruf recuerda las lecciones
         de confianza y cooperación de ambos mundos.
       difficulty: 1
       suggested_families:
@@ -918,7 +918,7 @@ sagas:
     - position: 3
       slug: proponer-un-ajuste
       micro_objective: Proponer un ajuste concreto para mejorar un plan que no está funcionando.
-      narrative_beat: Zara Vex reta a Dino a proponer un cambio simple que ayudaría al plan del founder a volver a avanzar.
+      narrative_beat: Zara Vex reta a Liruf a proponer un cambio simple que ayudaría al plan del founder a volver a avanzar.
       difficulty: 2
       suggested_families:
       - choice
@@ -952,7 +952,7 @@ sagas:
     - position: 1
       slug: un-error-en-el-mercado
       micro_objective: Recordar un ejemplo de error cometido en una aventura anterior, como gastar sin pensar.
-      narrative_beat: El mapa estelar muestra el mercado de los colores, y Dino recuerda la vez que gastó todas sus monedas sin comparar precios.
+      narrative_beat: El mapa estelar muestra el mercado de los colores, y Liruf recuerda la vez que gastó todas sus monedas sin comparar precios.
       difficulty: 1
       suggested_families:
       - story
@@ -960,7 +960,7 @@ sagas:
     - position: 2
       slug: que-paso-despues-del-error
       micro_objective: Recordar cómo se corrigió un error cometido en una aventura anterior.
-      narrative_beat: Dr. Rho recuerda con Dino cómo, después de ese gasto apresurado, aprendió a comparar precios antes de comprar.
+      narrative_beat: Dr. Rho recuerda con Liruf cómo, después de ese gasto apresurado, aprendió a comparar precios antes de comprar.
       difficulty: 2
       suggested_families:
       - story
@@ -1015,7 +1015,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo explicar por qué ahorrar requiere paciencia y cómo explicar qué significa comprar de forma inteligente.
-      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1056,7 +1056,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
       difficulty: 2
       suggested_families:
       - choice
@@ -1072,7 +1072,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1117,7 +1117,7 @@ sagas:
       slug: una-meta-mas-grande
       micro_objective: Reconocer que una meta de founder puede combinar varias ideas aprendidas, no solo
         una.
-      narrative_beat: Dr. Rho invita a Dina, Dino y Zara Vex a pensar en una meta de founder que use todo
+      narrative_beat: Dr. Rho invita a Dina, Liruf y Zara Vex a pensar en una meta de founder que use todo
         lo que aprendieron en el viaje.
       difficulty: 1
       suggested_families:
@@ -1136,7 +1136,7 @@ sagas:
       slug: que-combina-mi-meta
       micro_objective: Identificar qué aprendizajes del viaje (ahorrar, ganar, cuidar, compartir) combina
         una meta de founder dada.
-      narrative_beat: Dino revisa la meta de Zara Vex e identifica qué partes usan ahorro, cuáles usan
+      narrative_beat: Liruf revisa la meta de Zara Vex e identifica qué partes usan ahorro, cuáles usan
         cuidado y cuáles usan cooperación.
       difficulty: 2
       suggested_families:
@@ -1183,7 +1183,7 @@ sagas:
     - position: 2
       slug: repartir-el-presupuesto
       micro_objective: Repartir un total dado entre varias partes necesarias para una meta, sin excederse.
-      narrative_beat: Zara Vex ayuda a Dino a repartir su presupuesto entre materiales, herramientas y
+      narrative_beat: Zara Vex ayuda a Liruf a repartir su presupuesto entre materiales, herramientas y
         una pequeña reserva.
       difficulty: 2
       suggested_families:
@@ -1238,7 +1238,7 @@ sagas:
       slug: repartir-para-mi-meta
       micro_objective: Repartir un monto dado entre los tres frascos considerando las necesidades de una
         meta de founder.
-      narrative_beat: Zara Vex ayuda a Dino a repartir sus monedas entre los tres frascos pensando en
+      narrative_beat: Zara Vex ayuda a Liruf a repartir sus monedas entre los tres frascos pensando en
         su meta de founder.
       difficulty: 2
       suggested_families:
@@ -1285,7 +1285,7 @@ sagas:
       micro_objective: Reconocer una posible trampa (oferta exagerada) que podría desviar los recursos
         de una meta de founder.
       narrative_beat: Un anuncio brillante en el puerto promete 'todo lo que necesitas para tu taller,
-        gratis', y Dino siente la tentación de creerlo.
+        gratis', y Liruf siente la tentación de creerlo.
       difficulty: 1
       suggested_families:
       - story
@@ -1304,7 +1304,7 @@ sagas:
       slug: decidir-con-cuidado
       micro_objective: Decidir, con base en las señales de alerta, si aceptar o rechazar una oferta relacionada
         con la meta de founder.
-      narrative_beat: Con toda la información revisada, Dino decide si conviene o no aceptar la oferta
+      narrative_beat: Con toda la información revisada, Liruf decide si conviene o no aceptar la oferta
         tentadora del puerto.
       difficulty: 3
       suggested_families:
@@ -1340,7 +1340,7 @@ sagas:
       slug: atascado-con-mi-meta
       micro_objective: Reconocer un momento en que perseguir una meta de founder se vuelve difícil sin
         ayuda.
-      narrative_beat: Dino se siente atascado con su meta de founder y no sabe cómo seguir avanzando solo.
+      narrative_beat: Liruf se siente atascado con su meta de founder y no sabe cómo seguir avanzando solo.
       difficulty: 1
       suggested_families:
       - story
@@ -1349,7 +1349,7 @@ sagas:
       slug: a-quien-le-pido-ayuda-en-mi-meta
       micro_objective: Identificar a quién podría pedir ayuda (comunidad, adulto de confianza) para avanzar
         en su meta.
-      narrative_beat: Dr. Rho recuerda a Dino que, igual que en el jardín compartido, puede pedir ayuda
+      narrative_beat: Dr. Rho recuerda a Liruf que, igual que en el jardín compartido, puede pedir ayuda
         a la comunidad o a un adulto de confianza.
       difficulty: 2
       suggested_families:
@@ -1359,7 +1359,7 @@ sagas:
       slug: practicar-pedir-ayuda-para-mi-meta
       micro_objective: Practicar, dentro de una historia, cómo pedir ayuda concreta relacionada con la
         meta de founder.
-      narrative_beat: Zara Vex ayuda a Dino a practicar cómo pedirle apoyo a Dr. Rho para resolver un
+      narrative_beat: Zara Vex ayuda a Liruf a practicar cómo pedirle apoyo a Dr. Rho para resolver un
         obstáculo de su meta.
       difficulty: 2
       suggested_families:
@@ -1465,7 +1465,7 @@ sagas:
     - position: 3
       slug: elegir-mi-propia-rutina
       micro_objective: Proponer una proporción simple y repetible para su propio reparto semanal.
-      narrative_beat: Dino decide qué parte de cada semana irá a su ahorro, cuál a sus gastos y cuál a donar, para repetirlo siempre igual.
+      narrative_beat: Liruf decide qué parte de cada semana irá a su ahorro, cuál a sus gastos y cuál a donar, para repetirlo siempre igual.
       difficulty: 2
       suggested_families:
       - money
@@ -1515,7 +1515,7 @@ sagas:
     - position: 3
       slug: ajustar-con-calma
       micro_objective: Aplicar un ajuste simple al presupuesto tras notar un cambio en los precios o en el plan.
-      narrative_beat: Zara Vex ayuda a Dino a ajustar su presupuesto después de notar que un material cuesta un poco más de lo esperado.
+      narrative_beat: Zara Vex ayuda a Liruf a ajustar su presupuesto después de notar que un material cuesta un poco más de lo esperado.
       difficulty: 3
       suggested_families:
       - money
@@ -1562,7 +1562,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo repartir los recursos entre ahorrar, gastar y compartir y cómo identificar una posible trampa que afecte la meta.
-      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1603,7 +1603,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
       difficulty: 2
       suggested_families:
       - choice
@@ -1619,7 +1619,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1640,11 +1640,11 @@ sagas:
     es-MX: El Gran Lanzamiento
     pt-BR: O Grande Lançamento
   description:
-    en-US: Tell your founder story and celebrate everything you achieved with Dina, Dino, Dr. Rho, and
+    en-US: Tell your founder story and celebrate everything you achieved with Dina, Liruf, Dr. Rho, and
       Zara Vex.
-    es-MX: Cuenta tu historia de founder y celebra todo lo que lograste con Dina, Dino, Dr. Rho y Zara
+    es-MX: Cuenta tu historia de founder y celebra todo lo que lograste con Dina, Liruf, Dr. Rho y Zara
       Vex.
-    pt-BR: Conte sua história de founder e celebre tudo o que conquistou com Dina, Dino, Dr. Rho e Zara
+    pt-BR: Conte sua história de founder e celebre tudo o que conquistou com Dina, Liruf, Dr. Rho e Zara
       Vex.
   topics:
   - position: 1
@@ -1687,7 +1687,7 @@ sagas:
       slug: practicar-mi-historia
       micro_objective: Practicar la narración breve del propio viaje frente a un personaje antes de presentarla
         en el escenario.
-      narrative_beat: Dino practica contar su historia de founder frente a Zara Vex, quien le da ideas
+      narrative_beat: Liruf practica contar su historia de founder frente a Zara Vex, quien le da ideas
         para mejorarla.
       difficulty: 2
       suggested_families:
@@ -1732,7 +1732,7 @@ sagas:
       slug: decidir-rapido-y-bien
       micro_objective: Tomar decisiones financieras correctas dentro de un tiempo límite en un reto de
         práctica.
-      narrative_beat: Zara Vex reta a Dino a responder rápido varias preguntas sobre precios, ahorro y
+      narrative_beat: Zara Vex reta a Liruf a responder rápido varias preguntas sobre precios, ahorro y
         trampas antes de que se acabe el tiempo.
       difficulty: 2
       suggested_families:
@@ -1761,7 +1761,7 @@ sagas:
   - position: 3
     slug: celebrar-los-logros-del-equipo
     title_es: Celebrar los logros del equipo
-    concept: Celebrar los logros propios junto con los de Dina, Dino, Dr. Rho y Zara Vex reconoce que
+    concept: Celebrar los logros propios junto con los de Dina, Liruf, Dr. Rho y Zara Vex reconoce que
       el viaje se hizo en equipo.
     learning_objective: Al final, el niño puede nombrar un logro propio y un logro de algún personaje
       del equipo durante el viaje.
@@ -1776,7 +1776,7 @@ sagas:
     lessons:
     - position: 1
       slug: el-equipo-completo
-      micro_objective: Recordar que el viaje se hizo en equipo, junto a Dina, Dino, Dr. Rho y Zara Vex.
+      micro_objective: Recordar que el viaje se hizo en equipo, junto a Dina, Liruf, Dr. Rho y Zara Vex.
       narrative_beat: En el escenario flotante, los cuatro personajes se reúnen para repasar juntos todo
         lo que lograron en el viaje.
       difficulty: 1
@@ -1787,7 +1787,7 @@ sagas:
       slug: logros-de-cada-quien
       micro_objective: Identificar un logro específico de cada personaje del equipo durante las aventuras
         del curso.
-      narrative_beat: Zara Vex recuerda cómo Dino aprendió a detectar mensajes falsos, y Dino recuerda
+      narrative_beat: Zara Vex recuerda cómo Liruf aprendió a detectar mensajes falsos, y Liruf recuerda
         cómo Dina armó su primer invento.
       difficulty: 2
       suggested_families:
@@ -1850,7 +1850,7 @@ sagas:
       slug: segunda-ronda-del-reto
       micro_objective: Resolver una segunda ronda del reto final combinando habilidades de ahorro, cooperación
         y planeación.
-      narrative_beat: En la segunda ronda, Dino combina ahorro, cooperación comunitaria y su plan de founder
+      narrative_beat: En la segunda ronda, Liruf combina ahorro, cooperación comunitaria y su plan de founder
         para resolver el desafío.
       difficulty: 3
       suggested_families:
@@ -1906,7 +1906,7 @@ sagas:
       slug: elegir-mi-proximo-paso
       micro_objective: Elegir, entre varias opciones, un próximo paso concreto para seguir aplicando lo
         aprendido.
-      narrative_beat: Dino elige seguir ahorrando cada semana para su siguiente sueño, ahora que sabe
+      narrative_beat: Liruf elige seguir ahorrando cada semana para su siguiente sueño, ahora que sabe
         cómo hacerlo.
       difficulty: 2
       suggested_families:
@@ -1962,7 +1962,7 @@ sagas:
       slug: repasar-todo-mi-camino
       micro_objective: Resumir, en un flujo final de reflexión, los momentos más importantes de todo el
         curso.
-      narrative_beat: Dino repasa, junto a Dr. Rho, los momentos que más le costaron y los que más disfrutó
+      narrative_beat: Liruf repasa, junto a Dr. Rho, los momentos que más le costaron y los que más disfrutó
         de todo el viaje.
       difficulty: 3
       suggested_families:
@@ -1970,9 +1970,9 @@ sagas:
       - story
     - position: 4
       slug: el-gran-lanzamiento
-      micro_objective: Cerrar el curso participando en la celebración final junto a Dina, Dino, Dr. Rho
+      micro_objective: Cerrar el curso participando en la celebración final junto a Dina, Liruf, Dr. Rho
         y Zara Vex.
-      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Dino, Dr. Rho
+      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Liruf, Dr. Rho
         y Zara Vex celebran juntos el gran lanzamiento: LittleFounders, para siempre.'
       difficulty: 3
       suggested_families:
@@ -2007,7 +2007,7 @@ sagas:
     - position: 2
       slug: elegir-que-ensenar
       micro_objective: Elegir una lección propia del curso que le gustaría explicarle a un founder nuevo.
-      narrative_beat: Dino piensa en qué lección de todo su viaje le gustaría enseñarle primero al founder nuevo.
+      narrative_beat: Liruf piensa en qué lección de todo su viaje le gustaría enseñarle primero al founder nuevo.
       difficulty: 2
       suggested_families:
       - choice
@@ -2053,7 +2053,7 @@ sagas:
     - position: 2
       slug: elegir-las-reglas-mas-importantes
       micro_objective: Elegir, entre varias lecciones del cuaderno, las que le parecen más importantes para recordar siempre.
-      narrative_beat: Zara Vex ayuda a Dino a elegir sus tres reglas favoritas de todo el viaje para no olvidarlas nunca.
+      narrative_beat: Zara Vex ayuda a Liruf a elegir sus tres reglas favoritas de todo el viaje para no olvidarlas nunca.
       difficulty: 2
       suggested_families:
       - choice
@@ -2108,7 +2108,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo nombrar un logro propio y uno del equipo y cómo resolver un desafío que combina habilidades de varias aventuras.
-      narrative_beat: Dino saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2149,7 +2149,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
       difficulty: 2
       suggested_families:
       - choice
@@ -2165,7 +2165,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2220,7 +2220,7 @@ sagas:
     - position: 2
       slug: de-conchas-a-suenos
       micro_objective: Recordar cómo comparar el valor de dos cosas antes de decidir cuál conviene más.
-      narrative_beat: Zara Vex compara dos objetos del archipiélago y reta a Dino a recordar cuál valía más y por qué.
+      narrative_beat: Zara Vex compara dos objetos del archipiélago y reta a Liruf a recordar cuál valía más y por qué.
       difficulty: 1
       suggested_families:
       - choice
@@ -2271,7 +2271,7 @@ sagas:
     - position: 2
       slug: el-cuarto-mapa-estelar
       micro_objective: Recordar cómo pensar antes de comprar ayuda a decidir mejor.
-      narrative_beat: Zara Vex recuerda a Dino una compra del mercado de los colores y le pregunta si pensó bien antes de decidir.
+      narrative_beat: Zara Vex recuerda a Liruf una compra del mercado de los colores y le pregunta si pensó bien antes de decidir.
       difficulty: 1
       suggested_families:
       - choice
@@ -2314,7 +2314,7 @@ sagas:
     - position: 1
       slug: el-quinto-mapa-estelar
       micro_objective: Recordar cómo reconocer si un precio propuesto es demasiado alto o demasiado bajo.
-      narrative_beat: Dr. Rho enciende el mapa estelar del taller y pide a Dino recordar cómo se ponía un precio justo a un invento.
+      narrative_beat: Dr. Rho enciende el mapa estelar del taller y pide a Liruf recordar cómo se ponía un precio justo a un invento.
       difficulty: 1
       suggested_families:
       - story
@@ -2375,7 +2375,7 @@ sagas:
     - position: 2
       slug: un-founder-nuevo-en-la-nave
       micro_objective: Aplicar ideas de varios mundos para ayudar a un personaje nuevo a entender el viaje completo.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo de founder y reta a Dino a explicarle, con ejemplos de varios mundos, cómo funciona el dinero.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo de founder y reta a Liruf a explicarle, con ejemplos de varios mundos, cómo funciona el dinero.
       difficulty: 2
       suggested_families:
       - choice
@@ -2428,7 +2428,7 @@ sagas:
     - position: 2
       slug: cuidar-y-elegir-de-nuevo
       micro_objective: Recordar cómo cuidar un frasco de ahorros y cómo elegir el mejor precio entre dos opciones.
-      narrative_beat: Zara Vex reta a Dino a recordar cómo cuidaba su frasco de ahorros y cómo elegía el mejor precio en el mercado.
+      narrative_beat: Zara Vex reta a Liruf a recordar cómo cuidaba su frasco de ahorros y cómo elegía el mejor precio en el mercado.
       difficulty: 2
       suggested_families:
       - choice
@@ -2499,7 +2499,7 @@ sagas:
     - position: 4
       slug: littlefounders-para-siempre
       micro_objective: Celebrar, resumiendo con orgullo, todo el camino recorrido desde el archipiélago hasta el cosmos.
-      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Dino, Dr. Rho y Zara Vex celebran juntos la graduación de founder: LittleFounders, para siempre.'
+      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Liruf, Dr. Rho y Zara Vex celebran juntos la graduación de founder: LittleFounders, para siempre.'
       difficulty: 2
       suggested_families:
       - storyplay

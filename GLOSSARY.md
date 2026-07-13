@@ -73,7 +73,7 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **shared-type hub** | `database/types/` — generated TS types every service consumes; never hand-edited. |
 | **internal service** | Any service other than backend/frontend; reachable only service-to-service via `INTERNAL_API_KEY`. |
 | **team-mode skill** | An opt-in agent skill that must be proposed to the human before use (TEAM_PROTOCOL.md). |
-| **characters** | The four canonical mascots: **Dina, Dino, Dr. Rho, Zara Vex**. |
+| **characters** | The four canonical mascots: **Dina, Liruf, Dr. Rho, Zara Vex**. |
 
 ## Lesson Engine terms (spec: /LESSON_ENGINE.md)
 

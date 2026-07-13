@@ -9,13 +9,13 @@ adventure:
     es-MX: El Archipiélago de los Riesgos
     pt-BR: O Arquipélago dos Riscos
   description:
-    en-US: Dina and Dino sail with Zara Vex among islands where different paths offer different possible
+    en-US: Dina and Liruf sail with Zara Vex among islands where different paths offer different possible
       rewards -- and different risks.
-    es-MX: Dina y Dino navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
+    es-MX: Dina y Liruf navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
       posibles -y distintos riesgos.
-    pt-BR: Dina e Dino navegam com Zara Vex entre ilhas onde caminhos diferentes oferecem prêmios possíveis
+    pt-BR: Dina e Liruf navegam com Zara Vex entre ilhas onde caminhos diferentes oferecem prêmios possíveis
       -e riscos- diferentes.
-  narrative_arc: 'Dina y Dino zarpan del valle hacia un archipiélago donde Zara Vex, estratega experta
+  narrative_arc: 'Dina y Liruf zarpan del valle hacia un archipiélago donde Zara Vex, estratega experta
     en decisiones difíciles, los reta a comparar una laguna tranquila y previsible con un estrecho agitado
     e incierto. Ahí descubren qué es un riesgo, por qué un premio posible más grande casi siempre trae
     más riesgo, y por qué repartir las monedas entre varias canoas protege mejor que cargarlas todas en
@@ -59,7 +59,7 @@ sagas:
       slug: la-laguna-y-el-estrecho
       micro_objective: Observar la diferencia entre una laguna tranquila y previsible y un estrecho agitado
         e incierto.
-      narrative_beat: Zara Vex lleva a Dina y Dino en canoa hasta el archipiélago, donde señala una laguna
+      narrative_beat: Zara Vex lleva a Dina y Liruf en canoa hasta el archipiélago, donde señala una laguna
         tranquila y, más allá, un estrecho de aguas agitadas.
       difficulty: 1
       suggested_families:
@@ -77,7 +77,7 @@ sagas:
     - position: 3
       slug: por-que-hay-dos-caminos
       micro_objective: Explicar por qué el archipiélago ofrece dos caminos tan distintos entre sí.
-      narrative_beat: Zara Vex pregunta a Dino por qué cree que el archipiélago tiene un camino tan tranquilo
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que el archipiélago tiene un camino tan tranquilo
         y otro tan agitado.
       difficulty: 2
       suggested_families:
@@ -129,7 +129,7 @@ sagas:
     - position: 3
       slug: riesgo-no-es-siempre-malo
       micro_objective: Explicar que un riesgo puede terminar mejor o peor de lo esperado, no siempre mal.
-      narrative_beat: Zara Vex explica a Dino que un riesgo puede terminar mejor de lo esperado, no solo
+      narrative_beat: Zara Vex explica a Liruf que un riesgo puede terminar mejor de lo esperado, no solo
         peor.
       difficulty: 2
       suggested_families:
@@ -180,7 +180,7 @@ sagas:
     - position: 2
       slug: comparar-premio-posible-y-riesgo
       micro_objective: Comparar el premio posible y el riesgo posible de la laguna contra el estrecho.
-      narrative_beat: Zara Vex pide a Dino comparar, lado a lado, el premio posible y el riesgo posible
+      narrative_beat: Zara Vex pide a Liruf comparar, lado a lado, el premio posible y el riesgo posible
         de cada camino del archipiélago.
       difficulty: 2
       suggested_families:
@@ -232,7 +232,7 @@ sagas:
     - position: 2
       slug: clasificar-los-riesgos-de-las-islas
       micro_objective: Clasificar distintos riesgos según si son pequeños, medianos o grandes.
-      narrative_beat: Dr. Rho pide a Dino clasificar el riesgo de cada isla en pequeño, mediano o grande.
+      narrative_beat: Dr. Rho pide a Liruf clasificar el riesgo de cada isla en pequeño, mediano o grande.
       difficulty: 2
       suggested_families:
       - arrange
@@ -273,9 +273,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: el-corazon-acelerado-de-dino
+      slug: el-corazon-acelerado-de-liruf
       micro_objective: Reconocer la mezcla de emoción y nervios que aparece al estar por tomar un riesgo.
-      narrative_beat: A Dino se le acelera el corazón antes de lanzar la red al estrecho agitado, mezcla
+      narrative_beat: A Liruf se le acelera el corazón antes de lanzar la red al estrecho agitado, mezcla
         de emoción y nervios.
       difficulty: 1
       suggested_families:
@@ -304,7 +304,7 @@ sagas:
       slug: decidir-con-calma-a-pesar-de-los-nervios
       micro_objective: Aplicar el reconocimiento de la mezcla de emociones para decidir con más calma
         frente a un riesgo nuevo.
-      narrative_beat: Frente a un nuevo riesgo del archipiélago, Dino nombra lo que siente y decide con
+      narrative_beat: Frente a un nuevo riesgo del archipiélago, Liruf nombra lo que siente y decide con
         más calma qué hacer.
       difficulty: 3
       suggested_families:
@@ -339,7 +339,7 @@ sagas:
       slug: observar-antes-de-elegir
       micro_objective: Aplicar la observación cuidadosa como una forma de reunir información antes de
         decidir.
-      narrative_beat: Zara Vex enseña a Dino a observar el color del agua y el viento antes de elegir
+      narrative_beat: Zara Vex enseña a Liruf a observar el color del agua y el viento antes de elegir
         qué camino tomar.
       difficulty: 2
       suggested_families:
@@ -392,7 +392,7 @@ sagas:
     - position: 2
       slug: lo-que-si-se-y-lo-que-no-se
       micro_objective: Distinguir, en una decisión, qué información sí se tiene y qué queda incierto.
-      narrative_beat: Dr. Rho ayuda a Dino a separar, en su decisión, lo que sí sabe de lo que sigue siendo
+      narrative_beat: Dr. Rho ayuda a Liruf a separar, en su decisión, lo que sí sabe de lo que sigue siendo
         incierto.
       difficulty: 2
       suggested_families:
@@ -402,7 +402,7 @@ sagas:
       slug: eso-tambien-es-parte-del-riesgo
       micro_objective: Explicar por qué lo que no se puede saber también forma parte de lo que hace riesgosa
         una decisión.
-      narrative_beat: Zara Vex explica a Dino que esa parte incierta, la que nadie puede saber de antemano,
+      narrative_beat: Zara Vex explica a Liruf que esa parte incierta, la que nadie puede saber de antemano,
         es justamente parte de lo que hace riesgosa una decisión.
       difficulty: 2
       suggested_families:
@@ -449,7 +449,7 @@ sagas:
       slug: los-pasos-de-mi-decision
       micro_objective: 'Ordenar los pasos de un buen proceso de decisión frente a un riesgo: informarse,
         sentir con calma, decidir.'
-      narrative_beat: 'Zara Vex ayuda a Dino a ordenar los pasos que seguirá para tomar su propia decisión:
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos que seguirá para tomar su propia decisión:
         informarse, sentir con calma, decidir.'
       difficulty: 2
       suggested_families:
@@ -513,7 +513,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo la relación entre premio y riesgo, y cómo clasificar
         riesgos de distinto tamaño.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -564,7 +564,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-cofre
       micro_objective: Recordar, tal como se aprendió antes, qué significa la palabra 'riesgo'.
-      narrative_beat: Zara Vex trae dos conchas de recuerdo del cofre y pide a Dino unirlas en una sola
+      narrative_beat: Zara Vex trae dos conchas de recuerdo del cofre y pide a Liruf unirlas en una sola
         idea, sin ayuda nueva.
       difficulty: 2
       suggested_families:
@@ -584,7 +584,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la relación premio-riesgo y la búsqueda de
         información.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         ambas ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -638,19 +638,19 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-carga-todo-en-una-canoa
+      slug: liruf-carga-todo-en-una-canoa
       micro_objective: Observar qué pasa cuando todas las monedas se cargan en una sola canoa que se voltea.
-      narrative_beat: Dino carga todas sus monedas en una sola canoa para cruzar el estrecho, y una ola
+      narrative_beat: Liruf carga todas sus monedas en una sola canoa para cruzar el estrecho, y una ola
         inesperada la voltea, perdiéndolo todo.
       difficulty: 1
       suggested_families:
       - story
       - choice
     - position: 2
-      slug: que-sintio-dino
+      slug: que-sintio-liruf
       micro_objective: Reconocer la sensación de perder todo de una sola vez por haberlo puesto en un
         solo lugar.
-      narrative_beat: Dr. Rho pregunta a Dino qué sintió al ver que perdió absolutamente todo en un solo
+      narrative_beat: Dr. Rho pregunta a Liruf qué sintió al ver que perdió absolutamente todo en un solo
         momento.
       difficulty: 2
       suggested_families:
@@ -658,9 +658,9 @@ sagas:
       - story
     - position: 3
       slug: pudo-haber-sido-distinto
-      micro_objective: Reflexionar sobre qué habría pasado si Dino hubiera repartido sus monedas en más
+      micro_objective: Reflexionar sobre qué habría pasado si Liruf hubiera repartido sus monedas en más
         de una canoa.
-      narrative_beat: Zara Vex pregunta a Dina qué habría pasado si Dino hubiera repartido sus monedas
+      narrative_beat: Zara Vex pregunta a Dina qué habría pasado si Liruf hubiera repartido sus monedas
         en dos canoas en vez de una.
       difficulty: 2
       suggested_families:
@@ -671,7 +671,7 @@ sagas:
       micro_objective: Aplicar el reconocimiento del riesgo de poner todo en un solo lugar frente a una
         escena nueva.
       narrative_beat: Frente a una escena nueva del archipiélago, Dina reconoce cuándo alguien está por
-        cometer el mismo error de Dino.
+        cometer el mismo error de Liruf.
       difficulty: 3
       suggested_families:
       - choice
@@ -696,7 +696,7 @@ sagas:
       slug: la-diferencia-entre-perder-un-poco-y-perderlo-todo
       micro_objective: Reconocer la diferencia entre perder una parte y perder el cien por ciento de lo
         guardado.
-      narrative_beat: Dr. Rho compara el caso de Dino, que lo perdió todo, con el de un pescador que solo
+      narrative_beat: Dr. Rho compara el caso de Liruf, que lo perdió todo, con el de un pescador que solo
         llevaba la mitad en cada canoa.
       difficulty: 1
       suggested_families:
@@ -705,7 +705,7 @@ sagas:
     - position: 2
       slug: calcular-cuanto-se-pierde-en-cada-caso
       micro_objective: Calcular cuánto se pierde si todo va en un lugar contra si se reparte en dos.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto habría perdido si hubiera repartido sus monedas
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto habría perdido si hubiera repartido sus monedas
         en dos canoas en vez de una.
       difficulty: 2
       suggested_families:
@@ -760,7 +760,7 @@ sagas:
     - position: 2
       slug: practicar-repartir-una-cantidad
       micro_objective: Practicar repartir una cantidad de monedas entre varias canoas de forma equilibrada.
-      narrative_beat: Dr. Rho ayuda a Dino a repartir sus propias monedas entre tres canoas antes de cruzar
+      narrative_beat: Dr. Rho ayuda a Liruf a repartir sus propias monedas entre tres canoas antes de cruzar
         el estrecho por primera vez.
       difficulty: 2
       suggested_families:
@@ -771,7 +771,7 @@ sagas:
       micro_objective: Comparar el resultado de perder una sola canoa cuando las monedas están repartidas
         contra cuando están todas juntas.
       narrative_beat: Una ola voltea una de las tres canoas de Zara, y Dr. Rho pregunta a Dina cuánto
-        se perdió esta vez comparado con lo de Dino.
+        se perdió esta vez comparado con lo de Liruf.
       difficulty: 2
       suggested_families:
       - choice
@@ -806,7 +806,7 @@ sagas:
       slug: dos-travesias-del-mismo-dia
       micro_objective: 'Observar dos travesías del mismo día: una con una sola canoa y otra con varias
         repartidas.'
-      narrative_beat: 'Dr. Rho muestra dos travesías del mismo día: la de Dino, con una sola canoa, y
+      narrative_beat: 'Dr. Rho muestra dos travesías del mismo día: la de Liruf, con una sola canoa, y
         la de Zara, con varias repartidas.'
       difficulty: 1
       suggested_families:
@@ -815,7 +815,7 @@ sagas:
     - position: 2
       slug: comparar-lo-que-quedo-al-final
       micro_objective: Comparar lo que quedó al final del día entre la travesía de una canoa y la de varias.
-      narrative_beat: Zara Vex pide a Dino comparar cuánto le quedó a cada quien al final del día, después
+      narrative_beat: Zara Vex pide a Liruf comparar cuánto le quedó a cada quien al final del día, después
         de la ola que volteó una canoa.
       difficulty: 2
       suggested_families:
@@ -872,7 +872,7 @@ sagas:
       slug: comparar-dos-formas-de-repartir
       micro_objective: Comparar una forma de repartir en partes iguales contra una forma que pone más
         en lo seguro.
-      narrative_beat: 'Zara Vex compara con Dino dos formas de repartir: una en partes iguales, y otra
+      narrative_beat: 'Zara Vex compara con Liruf dos formas de repartir: una en partes iguales, y otra
         con más peso en la laguna segura.'
       difficulty: 2
       suggested_families:
@@ -917,7 +917,7 @@ sagas:
     - position: 1
       slug: diez-canoas-diminutas
       micro_objective: Observar que repartir en demasiadas canoas pequeñas puede volverse difícil de manejar.
-      narrative_beat: Dino intenta repartir sus monedas en diez canoas diminutas y termina confundido,
+      narrative_beat: Liruf intenta repartir sus monedas en diez canoas diminutas y termina confundido,
         sin poder llevar el control de ninguna.
       difficulty: 1
       suggested_families:
@@ -937,7 +937,7 @@ sagas:
       slug: un-numero-razonable
       micro_objective: Explicar por qué un número razonable de canoas protege sin volverse difícil de
         manejar.
-      narrative_beat: Zara Vex explica a Dino por qué un número razonable de canoas -ni una, ni demasiadas-
+      narrative_beat: Zara Vex explica a Liruf por qué un número razonable de canoas -ni una, ni demasiadas-
         suele ser la mejor estrategia.
       difficulty: 2
       suggested_families:
@@ -981,7 +981,7 @@ sagas:
     - position: 2
       slug: elegir-numero-y-proporcion
       micro_objective: Elegir el número de canoas y la proporción de reparto para una travesía propia.
-      narrative_beat: Zara Vex ayuda a Dino a elegir cuántas canoas usar y qué proporción poner en cada
+      narrative_beat: Zara Vex ayuda a Liruf a elegir cuántas canoas usar y qué proporción poner en cada
         una.
       difficulty: 2
       suggested_families:
@@ -1037,7 +1037,7 @@ sagas:
       slug: las-partes-de-una-buena-explicacion
       micro_objective: 'Ordenar las partes de una buena explicación: qué se repartió, en cuántas partes,
         y por qué esa proporción.'
-      narrative_beat: Zara Vex ayuda a Dino a ordenar las partes de una buena explicación sobre su forma
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las partes de una buena explicación sobre su forma
         de repartir.
       difficulty: 2
       suggested_families:
@@ -1101,7 +1101,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué repartir reduce el riesgo y cómo repartir en
         varias canoas.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1153,7 +1153,7 @@ sagas:
       slug: un-recuerdo-de-la-primera-saga
       micro_objective: Recordar, tal como se aprendió antes, la relación entre premio posible y riesgo
         posible.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con las canoas repartidas.
       difficulty: 2
       suggested_families:
@@ -1173,7 +1173,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la relación premio-riesgo y la estrategia
         de repartir.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         ambas ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1227,7 +1227,7 @@ sagas:
     - position: 1
       slug: tres-preguntas-antes-de-elegir
       micro_objective: Reconocer el valor de hacer preguntas concretas antes de elegir.
-      narrative_beat: Zara Vex reta a Dino a hacer tres preguntas antes de elegir cuál isla nueva explorar.
+      narrative_beat: Zara Vex reta a Liruf a hacer tres preguntas antes de elegir cuál isla nueva explorar.
       difficulty: 1
       suggested_families:
       - story
@@ -1244,7 +1244,7 @@ sagas:
     - position: 3
       slug: preguntar-no-es-debilidad
       micro_objective: Reconocer que preguntar antes de decidir es una fortaleza, no una debilidad.
-      narrative_beat: Dino aprende que preguntar no muestra debilidad, sino que ayuda a decidir mejor.
+      narrative_beat: Liruf aprende que preguntar no muestra debilidad, sino que ayuda a decidir mejor.
       difficulty: 2
       suggested_families:
       - story
@@ -1285,7 +1285,7 @@ sagas:
     - position: 2
       slug: cuanta-informacion-ofrece-cada-isla
       micro_objective: Comparar la cantidad de pistas disponibles entre dos islas distintas.
-      narrative_beat: Zara Vex pide a Dino comparar cuánta información ofrece cada isla antes de decidir.
+      narrative_beat: Zara Vex pide a Liruf comparar cuánta información ofrece cada isla antes de decidir.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1340,7 +1340,7 @@ sagas:
       slug: que-partes-son-mas-utiles
       micro_objective: Identificar qué partes de una experiencia contada son más útiles para una decisión
         propia.
-      narrative_beat: Zara Vex pregunta a Dino qué partes del relato del navegante le parecen más útiles
+      narrative_beat: Zara Vex pregunta a Liruf qué partes del relato del navegante le parecen más útiles
         para su propia decisión.
       difficulty: 2
       suggested_families:
@@ -1384,7 +1384,7 @@ sagas:
       slug: la-misma-marca-en-el-mapa
       micro_objective: Reconocer que una sola pista puede no ser suficiente para diferenciar dos opciones
         parecidas.
-      narrative_beat: Dos islas del archipiélago tienen la misma marca en el mapa antiguo, y Dino no sabe
+      narrative_beat: Dos islas del archipiélago tienen la misma marca en el mapa antiguo, y Liruf no sabe
         cuál elegir solo con esa pista.
       difficulty: 1
       suggested_families:
@@ -1403,7 +1403,7 @@ sagas:
       slug: y-si-siguen-pareciendo-iguales
       micro_objective: Reflexionar sobre qué hacer cuando ni siquiera varias pistas logran diferenciar
         dos opciones.
-      narrative_beat: Zara Vex pregunta a Dino qué haría si, aun con dos pistas, las islas siguen pareciendo
+      narrative_beat: Zara Vex pregunta a Liruf qué haría si, aun con dos pistas, las islas siguen pareciendo
         iguales.
       difficulty: 2
       suggested_families:
@@ -1449,7 +1449,7 @@ sagas:
     - position: 2
       slug: que-hacer-cuando-ya-no-hay-mas-informacion
       micro_objective: Reflexionar sobre qué hacer cuando ya se agotaron las fuentes de información disponibles.
-      narrative_beat: Dr. Rho pregunta a Dino qué se puede hacer cuando la información disponible ya no
+      narrative_beat: Dr. Rho pregunta a Liruf qué se puede hacer cuando la información disponible ya no
         alcanza para saber más.
       difficulty: 2
       suggested_families:
@@ -1492,9 +1492,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-se-queda-paralizado
+      slug: liruf-se-queda-paralizado
       micro_objective: Reconocer que esperar saberlo todo antes de decidir también tiene un costo.
-      narrative_beat: Dino se queda paralizado esperando saberlo todo antes de decidir, y Dr. Rho le explica
+      narrative_beat: Liruf se queda paralizado esperando saberlo todo antes de decidir, y Dr. Rho le explica
         que eso también tiene un costo.
       difficulty: 1
       suggested_families:
@@ -1524,7 +1524,7 @@ sagas:
       slug: decidir-sin-quedarme-paralizado
       micro_objective: Aplicar la decisión de actuar con la mejor información disponible frente a una
         situación nueva.
-      narrative_beat: Frente a una nueva decisión con información parcial, Dino decide actuar con lo que
+      narrative_beat: Frente a una nueva decisión con información parcial, Liruf decide actuar con lo que
         sabe, sin quedarse paralizado.
       difficulty: 3
       suggested_families:
@@ -1560,7 +1560,7 @@ sagas:
     - position: 2
       slug: ordenar-mi-lista-por-importancia
       micro_objective: Ordenar una lista de preguntas según su importancia para una decisión con riesgo.
-      narrative_beat: Zara Vex ayuda a Dino a ordenar su lista de preguntas de la más importante a la
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar su lista de preguntas de la más importante a la
         menos importante.
       difficulty: 2
       suggested_families:
@@ -1615,7 +1615,7 @@ sagas:
       slug: aplicar-pregunta-por-pregunta
       micro_objective: Aplicar, pregunta por pregunta, una lista propia antes de tomar una decisión con
         riesgo.
-      narrative_beat: Zara Vex observa a Dino aplicar su lista, pregunta por pregunta, antes de decidir
+      narrative_beat: Zara Vex observa a Liruf aplicar su lista, pregunta por pregunta, antes de decidir
         explorar la isla.
       difficulty: 2
       suggested_families:
@@ -1680,7 +1680,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo el valor de escuchar experiencia ajena y de buscar
         información adicional.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1732,7 +1732,7 @@ sagas:
       slug: un-recuerdo-de-la-segunda-saga
       micro_objective: Recordar, tal como se aprendió antes, que repartir no siempre significa partes
         iguales.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de las canoas repartidas y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las canoas repartidas y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con las preguntas.
       difficulty: 2
       suggested_families:
@@ -1752,7 +1752,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la repartición en varias canoas y la lista
         de preguntas antes de decidir.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         ambas ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1813,7 +1813,7 @@ sagas:
       slug: decidio-mal-o-el-riesgo-no-salio-a-favor
       micro_objective: Distinguir entre una mala decisión y un riesgo que, por su naturaleza, no salió
         a favor esta vez.
-      narrative_beat: Dr. Rho pregunta a Dino si eso significa que Dina decidió mal, o que simplemente
+      narrative_beat: Dr. Rho pregunta a Liruf si eso significa que Dina decidió mal, o que simplemente
         el riesgo no salió a su favor esta vez.
       difficulty: 2
       suggested_families:
@@ -1888,7 +1888,7 @@ sagas:
       slug: nombrar-antes-de-decidir-el-siguiente-paso
       micro_objective: Aplicar el reconocer y nombrar la emoción de pérdida antes de decidir el siguiente
         paso.
-      narrative_beat: Frente a una nueva pérdida pequeña, Dino nombra lo que siente antes de decidir qué
+      narrative_beat: Frente a una nueva pérdida pequeña, Liruf nombra lo que siente antes de decidir qué
         hacer después.
       difficulty: 3
       suggested_families:
@@ -1911,10 +1911,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-cree-que-siempre-le-ira-mal
+      slug: liruf-cree-que-siempre-le-ira-mal
       micro_objective: Reconocer la diferencia entre perder en una ocasión y creer que siempre se va a
         perder.
-      narrative_beat: Dino cree que, por haber perdido una vez, siempre le va a ir mal en el estrecho,
+      narrative_beat: Liruf cree que, por haber perdido una vez, siempre le va a ir mal en el estrecho,
         y Dr. Rho lo corrige con cariño.
       difficulty: 1
       suggested_families:
@@ -1941,7 +1941,7 @@ sagas:
     - position: 4
       slug: intentarlo-de-nuevo-sin-etiquetarme
       micro_objective: Aplicar la decisión de seguir intentando, sin dejarse etiquetar por una sola pérdida.
-      narrative_beat: Frente a un nuevo camino arriesgado, Dino decide intentarlo de nuevo, recordando
+      narrative_beat: Frente a un nuevo camino arriesgado, Liruf decide intentarlo de nuevo, recordando
         que perder una vez no es fallar para siempre.
       difficulty: 3
       suggested_families:
@@ -1981,7 +1981,7 @@ sagas:
     - position: 2
       slug: comparar-antes-y-despues
       micro_objective: Comparar una decisión anterior con el conocimiento nuevo obtenido después de perder.
-      narrative_beat: Zara Vex pide a Dino comparar su decisión anterior con lo que ahora sabe, para ver
+      narrative_beat: Zara Vex pide a Liruf comparar su decisión anterior con lo que ahora sabe, para ver
         qué cambiaría.
       difficulty: 2
       suggested_families:
@@ -2037,7 +2037,7 @@ sagas:
       slug: ajustar-mi-reparticion-de-monedas
       micro_objective: Aplicar un ajuste concreto, basado en un aprendizaje anterior, a una nueva decisión
         de riesgo.
-      narrative_beat: Zara Vex ayuda a Dino a ajustar su repartición de monedas según lo que aprendió
+      narrative_beat: Zara Vex ayuda a Liruf a ajustar su repartición de monedas según lo que aprendió
         la vez pasada.
       difficulty: 2
       suggested_families:
@@ -2057,7 +2057,7 @@ sagas:
       slug: aplicar-lo-aprendido-sin-ayuda
       micro_objective: Aplicar con seguridad, sin ayuda, lo aprendido de una pérdida anterior en una nueva
         oportunidad.
-      narrative_beat: Frente a una nueva oportunidad, Dino aplica sin ayuda lo aprendido de su pérdida
+      narrative_beat: Frente a una nueva oportunidad, Liruf aplica sin ayuda lo aprendido de su pérdida
         anterior.
       difficulty: 3
       suggested_families:
@@ -2092,7 +2092,7 @@ sagas:
     - position: 2
       slug: ordenar-el-resultado-de-varios-meses
       micro_objective: Ordenar el resultado de ambos navegantes a lo largo de varios meses.
-      narrative_beat: Zara Vex pide a Dino ordenar, con el paso de los meses, el resultado de cada navegante.
+      narrative_beat: Zara Vex pide a Liruf ordenar, con el paso de los meses, el resultado de cada navegante.
       difficulty: 2
       suggested_families:
       - analyze
@@ -2147,7 +2147,7 @@ sagas:
     - position: 2
       slug: ordenar-los-cuatro-pasos
       micro_objective: Ordenar los cuatro pasos correctos de un plan simple para después de una pérdida.
-      narrative_beat: Zara Vex ayuda a Dino a ordenar los cuatro pasos de este plan en el orden correcto.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar los cuatro pasos de este plan en el orden correcto.
       difficulty: 2
       suggested_families:
       - choice
@@ -2202,7 +2202,7 @@ sagas:
       slug: que-admiro-mas-ganar-o-intentar
       micro_objective: 'Reflexionar sobre qué es lo más admirable de un navegante: solo ganar, o también
         atreverse a intentarlo.'
-      narrative_beat: 'Dr. Rho pregunta a Dino qué es lo que más admira de los navegantes: si solo ganar,
+      narrative_beat: 'Dr. Rho pregunta a Liruf qué es lo que más admira de los navegantes: si solo ganar,
         o también intentarlo con valentía.'
       difficulty: 2
       suggested_families:
@@ -2265,7 +2265,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué perder no es fallar para siempre y qué se aprende
         al perder.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2317,7 +2317,7 @@ sagas:
       slug: un-recuerdo-de-la-tercera-saga
       micro_objective: Recordar, tal como se aprendió antes, cómo decidir con la mejor información disponible,
         sin saberlo todo.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de decidir con información y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de decidir con información y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con perder también pasa.
       difficulty: 2
       suggested_families:
@@ -2336,7 +2336,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la decisión con información parcial y el volver
         a intentar con lo aprendido.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del archipiélago usando a la vez
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
         ambas ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -2392,7 +2392,7 @@ sagas:
     - position: 1
       slug: recordar-que-es-un-riesgo
       micro_objective: Recordar, sin ayuda nueva, qué significa la palabra 'riesgo'.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en la laguna tranquila y anuncia la Gran Misión: recorrer
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en la laguna tranquila y anuncia la Gran Misión: recorrer
         una vez más todo lo aprendido en el archipiélago.'
       difficulty: 1
       suggested_families:
@@ -2401,7 +2401,7 @@ sagas:
     - position: 2
       slug: recordar-la-relacion-premio-riesgo
       micro_objective: Recordar por qué un premio posible más grande casi siempre trae más riesgo.
-      narrative_beat: Zara Vex presenta una escena nueva y reta a Dino a recordar, sin ayuda, la relación
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, la relación
         entre premio y riesgo.
       difficulty: 1
       suggested_families:
@@ -2429,7 +2429,7 @@ sagas:
     slug: la-gran-mision-de-las-canoas
     kind: review_quest
     title_es: La Gran Misión de las Canoas
-    concept: Dina y Dino recuerdan por qué no conviene poner todo en una sola canoa y cómo repartir entre
+    concept: Dina y Liruf recuerdan por qué no conviene poner todo en una sola canoa y cómo repartir entre
       varias.
     learning_objective: Al final, el niño puede recordar y aplicar por qué conviene repartir entre varias
       canoas y en qué proporción.
@@ -2449,7 +2449,7 @@ sagas:
     - position: 1
       slug: recordar-la-canoa-que-se-voltea
       micro_objective: Recordar qué pasa cuando una canoa cargada con todo se voltea.
-      narrative_beat: Zara Vex pide a Dina recordar, sin ayuda, qué le pasó a Dino cuando cargó todas
+      narrative_beat: Zara Vex pide a Dina recordar, sin ayuda, qué le pasó a Liruf cuando cargó todas
         sus monedas en una sola canoa.
       difficulty: 1
       suggested_families:
@@ -2458,7 +2458,7 @@ sagas:
     - position: 2
       slug: recordar-repartir-entre-varias
       micro_objective: Recordar la estrategia de repartir monedas entre varias canoas distintas.
-      narrative_beat: Dr. Rho pide a Dino recordar, sin ayuda, cómo repartir monedas entre varias canoas
+      narrative_beat: Dr. Rho pide a Liruf recordar, sin ayuda, cómo repartir monedas entre varias canoas
         antes de cruzar el estrecho.
       difficulty: 1
       suggested_families:
@@ -2515,7 +2515,7 @@ sagas:
     - position: 2
       slug: recordar-comparar-pistas
       micro_objective: Recordar cómo comparar la cantidad de pistas disponibles entre dos islas.
-      narrative_beat: Zara Vex reta a Dino a recordar, de memoria, cómo comparar cuánta información ofrece
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, cómo comparar cuánta información ofrece
         cada isla.
       difficulty: 1
       suggested_families:
@@ -2574,7 +2574,7 @@ sagas:
     - position: 2
       slug: recordar-que-no-es-fallar-para-siempre
       micro_objective: Recordar por qué perder una vez no significa fallar para siempre.
-      narrative_beat: Zara Vex reta a Dino a explicar de memoria por qué perder una vez no significa que
+      narrative_beat: Zara Vex reta a Liruf a explicar de memoria por qué perder una vez no significa que
         siempre va a perder.
       difficulty: 1
       suggested_families:
@@ -2623,7 +2623,7 @@ sagas:
       slug: las-cuatro-areas-del-archipielago
       micro_objective: 'Recordar, en conjunto, las cuatro áreas del archipiélago: riesgo, repartir, informarse
         y seguir adelante.'
-      narrative_beat: Dr. Rho reúne a Dina y Dino frente al mapa completo del archipiélago y repasa las
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente al mapa completo del archipiélago y repasa las
         cuatro áreas, una por una.
       difficulty: 1
       suggested_families:
@@ -2632,7 +2632,7 @@ sagas:
     - position: 2
       slug: ayudar-a-un-navegante-nuevo
       micro_objective: Aplicar las cuatro áreas del archipiélago para ayudar a un navegante nuevo.
-      narrative_beat: Zara Vex presenta a un navegante nuevo del archipiélago y reta a Dino a guiarlo
+      narrative_beat: Zara Vex presenta a un navegante nuevo del archipiélago y reta a Liruf a guiarlo
         por las cuatro áreas del riesgo.
       difficulty: 2
       suggested_families:
@@ -2663,7 +2663,7 @@ sagas:
     kind: review_quest
     title_es: El Archipiélago de los Riesgos se Despide
     concept: El gran cierre de la aventura celebra todo lo aprendido en el archipiélago y prepara a Dina
-      y Dino para la ciudad, donde las metas se vuelven más grandes y los precios cambian con el tiempo.
+      y Liruf para la ciudad, donde las metas se vuelven más grandes y los precios cambian con el tiempo.
     learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
       en la Gran Misión del archipiélago.
     key_vocabulary:
@@ -2691,7 +2691,7 @@ sagas:
     - position: 2
       slug: los-cuatro-pasos-del-archipielago-unidos
       micro_objective: Recordar en conjunto los cuatro pasos del archipiélago unidos en un solo aprendizaje.
-      narrative_beat: 'Zara Vex recuerda a Dino cada paso del camino: reconocer el riesgo, repartir, informarse
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: reconocer el riesgo, repartir, informarse
         y seguir adelante, ahora todos unidos.'
       difficulty: 1
       suggested_families:
@@ -2711,7 +2711,7 @@ sagas:
       slug: el-archipielago-celebra-y-se-despide
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
         archipiélago.
-      narrative_beat: Con el mar brillando a su alrededor, Dina celebra junto a Dr. Rho, Dino y Zara Vex
+      narrative_beat: Con el mar brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf y Zara Vex
         el cierre del archipiélago, lista para descubrir la ciudad donde las metas grandes y los precios
         cambiantes la esperan.
       difficulty: 2

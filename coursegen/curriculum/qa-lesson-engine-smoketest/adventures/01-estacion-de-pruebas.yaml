@@ -17,7 +17,7 @@ adventure:
     en-US: "A diagnostics station where every exercise type gets checked before a real course launches."
     es-MX: "Una estación de diagnóstico donde se revisa cada tipo de ejercicio antes de lanzar un curso real."
     pt-BR: "Uma estação de diagnóstico onde cada tipo de exercício é verificado antes de lançar um curso real."
-  narrative_arc: "Antes de lanzar un curso real, dina, dino, rho y zara recorren la Estación de Pruebas y encienden, uno por uno, los paneles de diagnóstico del Motor de Lecciones — para asegurarse de que todo funcione a la perfección."
+  narrative_arc: "Antes de lanzar un curso real, dina, liruf, rho y zara recorren la Estación de Pruebas y encienden, uno por uno, los paneles de diagnóstico del Motor de Lecciones — para asegurarse de que todo funcione a la perfección."
 sagas:
   - position: 1
     slug: camara-de-tipos
@@ -51,7 +51,7 @@ sagas:
           - position: 2
             slug: story-scene
             micro_objective: 'Verificar el ejercicio "story_scene" de forma aislada.'
-            narrative_beat: "Dino revisa una escena ilustrada de fondo completo."
+            narrative_beat: "Liruf revisa una escena ilustrada de fondo completo."
             difficulty: 1
             suggested_families: [story]
             forced_types: [story_scene]
@@ -89,7 +89,7 @@ sagas:
           - position: 1
             slug: quiz-mcq
             micro_objective: 'Verificar el ejercicio "quiz_mcq" de forma aislada.'
-            narrative_beat: "Dino prueba una pregunta de opción múltiple."
+            narrative_beat: "Liruf prueba una pregunta de opción múltiple."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [quiz_mcq]
@@ -117,7 +117,7 @@ sagas:
           - position: 5
             slug: best-decision
             micro_objective: 'Verificar el ejercicio "best_decision" de forma aislada.'
-            narrative_beat: "Dino evalúa varias decisiones posibles ante un dilema."
+            narrative_beat: "Liruf evalúa varias decisiones posibles ante un dilema."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [best_decision]
@@ -155,7 +155,7 @@ sagas:
           - position: 1
             slug: type-answer
             micro_objective: 'Verificar el ejercicio "type_answer" de forma aislada.'
-            narrative_beat: "Dino escribe una respuesta corta en el panel."
+            narrative_beat: "Liruf escribe una respuesta corta en el panel."
             difficulty: 1
             suggested_families: [input]
             forced_types: [type_answer]
@@ -183,7 +183,7 @@ sagas:
           - position: 5
             slug: count-objects
             micro_objective: 'Verificar el ejercicio "count_objects" de forma aislada.'
-            narrative_beat: "Dino cuenta los objetos que aparecen en la escena."
+            narrative_beat: "Liruf cuenta los objetos que aparecen en la escena."
             difficulty: 1
             suggested_families: [input]
             forced_types: [count_objects]
@@ -221,7 +221,7 @@ sagas:
           - position: 3
             slug: sort-buckets
             micro_objective: 'Verificar el ejercicio "sort_buckets" de forma aislada.'
-            narrative_beat: "Dino clasifica objetos en distintas canastas."
+            narrative_beat: "Liruf clasifica objetos en distintas canastas."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [sort_buckets]
@@ -249,7 +249,7 @@ sagas:
           - position: 7
             slug: timeline-order
             micro_objective: 'Verificar el ejercicio "timeline_order" de forma aislada.'
-            narrative_beat: "Dino coloca eventos en una línea del tiempo."
+            narrative_beat: "Liruf coloca eventos en una línea del tiempo."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [timeline_order]
@@ -287,7 +287,7 @@ sagas:
           - position: 1
             slug: coin-count
             micro_objective: 'Verificar el ejercicio "coin_count" de forma aislada.'
-            narrative_beat: "Dino paga una cantidad exacta con monedas y billetes."
+            narrative_beat: "Liruf paga una cantidad exacta con monedas y billetes."
             difficulty: 1
             suggested_families: [money]
             forced_types: [coin_count]
@@ -315,7 +315,7 @@ sagas:
           - position: 5
             slug: price-compare
             micro_objective: 'Verificar el ejercicio "price_compare" de forma aislada.'
-            narrative_beat: "Dino compara dos ofertas para ver cuál conviene más."
+            narrative_beat: "Liruf compara dos ofertas para ver cuál conviene más."
             difficulty: 1
             suggested_families: [money]
             forced_types: [price_compare]
@@ -343,7 +343,7 @@ sagas:
           - position: 9
             slug: interest-peek
             micro_objective: 'Verificar el ejercicio "interest_peek" de forma aislada (flujo de predicción).'
-            narrative_beat: "Dino predice cómo crecerá su ahorro con el tiempo."
+            narrative_beat: "Liruf predice cómo crecerá su ahorro con el tiempo."
             difficulty: 1
             suggested_families: [money]
             forced_types: [interest_peek]
@@ -381,7 +381,7 @@ sagas:
           - position: 4
             slug: read-chart
             micro_objective: 'Verificar el ejercicio "read_chart" de forma aislada.'
-            narrative_beat: "Dino lee una gráfica y responde preguntas sobre ella."
+            narrative_beat: "Liruf lee una gráfica y responde preguntas sobre ella."
             difficulty: 1
             suggested_families: [analyze]
             forced_types: [read_chart]
@@ -419,7 +419,7 @@ sagas:
           - position: 1
             slug: story-branch
             micro_objective: 'Verificar el ejercicio "story_branch" de forma aislada (flujo ramificado).'
-            narrative_beat: "Dino toma decisiones en una historia ramificada."
+            narrative_beat: "Liruf toma decisiones en una historia ramificada."
             difficulty: 1
             suggested_families: [storyplay]
             forced_types: [story_branch]
@@ -447,7 +447,7 @@ sagas:
           - position: 5
             slug: would-you-rather
             micro_objective: 'Verificar el ejercicio "would_you_rather" de forma aislada.'
-            narrative_beat: "Dino elige entre dos opciones y descubre qué gana cada una."
+            narrative_beat: "Liruf elige entre dos opciones y descubre qué gana cada una."
             difficulty: 1
             suggested_families: [storyplay]
             forced_types: [would_you_rather]
@@ -485,7 +485,7 @@ sagas:
           - position: 4
             slug: balance-scale
             micro_objective: 'Verificar el ejercicio "balance_scale" de forma aislada.'
-            narrative_beat: "Dino equilibra una balanza colocando pesas."
+            narrative_beat: "Liruf equilibra una balanza colocando pesas."
             difficulty: 1
             suggested_families: [maker]
             forced_types: [balance_scale]
@@ -535,7 +535,7 @@ sagas:
           - position: 2
             slug: combo-dialogo-doble-choice
             micro_objective: "Verificar una secuencia de diálogo seguida de dos tipos de selección distintos."
-            narrative_beat: "Dino conversa con un amigo y luego resuelve dos preguntas sobre lo que dijeron."
+            narrative_beat: "Liruf conversa con un amigo y luego resuelve dos preguntas sobre lo que dijeron."
             difficulty: 2
             suggested_families: [story, choice]
             forced_types: [story_dialogue, true_false, picture_choice]
@@ -574,7 +574,7 @@ sagas:
           - position: 2
             slug: repaso-true-false
             micro_objective: "Verificar la generación de un repaso de tipo true_false."
-            narrative_beat: "Dino recuerda una afirmación verdadero o falso del panel anterior."
+            narrative_beat: "Liruf recuerda una afirmación verdadero o falso del panel anterior."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [true_false]

@@ -9,19 +9,19 @@ adventure:
     es-MX: El Cosmos del Founder
     pt-BR: O Cosmos do Founder
   description:
-    en-US: The capstone journey where Dina and Dino gather everything learned across every world into
+    en-US: The capstone journey where Dina and Liruf gather everything learned across every world into
       one complete mini-business plan, iterate it, present it, and graduate as founders.
-    es-MX: El viaje final donde Dina y Dino reúnen todo lo aprendido en cada mundo en un plan completo
+    es-MX: El viaje final donde Dina y Liruf reúnen todo lo aprendido en cada mundo en un plan completo
       de mini-empresa, lo iteran, lo presentan y se gradúan como founders.
-    pt-BR: A jornada final onde Dina e Dino reúnem tudo o que aprenderam em cada mundo em um plano completo
+    pt-BR: A jornada final onde Dina e Liruf reúnem tudo o que aprenderam em cada mundo em um plano completo
       de mini-empresa, o iteram, o apresentam e se formam como founders.
-  narrative_arc: 'Dina y Dino dejan atrás el archipiélago del faro y suben hasta un observatorio flotante
+  narrative_arc: 'Dina y Liruf dejan atrás el archipiélago del faro y suben hasta un observatorio flotante
     en el cosmos, donde Dr. Rho reúne estrellas que representan cada mundo que visitaron: la isla de las
     ideas, el bosque de los makers, la ciudad del cliente, el reino de las ventas, el taller del equipo
-    y el faro del buen negocio. Zara Vex, como estratega estrella de todo el viaje, ayuda a Dina y Dino
-    a reunir todo lo aprendido en un solo plan completo de mini-empresa, mientras Dino aprende haciendo,
+    y el faro del buen negocio. Zara Vex, como estratega estrella de todo el viaje, ayuda a Dina y Liruf
+    a reunir todo lo aprendido en un solo plan completo de mini-empresa, mientras Liruf aprende haciendo,
     probando y ajustando su plan una y otra vez hasta que funciona de verdad. Al final, frente a todo el
-    cosmos reunido, Dina y Dino presentan su proyecto completo y se gradúan como los primeros founders del
+    cosmos reunido, Dina y Liruf presentan su proyecto completo y se gradúan como los primeros founders del
     cosmos, listos para seguir creando con honestidad, equipo, ética y cuidado.'
 sagas:
 - position: 1
@@ -57,7 +57,7 @@ sagas:
       slug: el-observatorio-del-cosmos
       micro_objective: Reconocer que un plan de mini-empresa reúne, en un solo lugar, todo lo aprendido
         en el viaje.
-      narrative_beat: Dina y Dino llegan a un observatorio flotante en el cosmos, donde Dr. Rho reúne estrellas
+      narrative_beat: Dina y Liruf llegan a un observatorio flotante en el cosmos, donde Dr. Rho reúne estrellas
         que representan cada mundo que visitaron.
       difficulty: 1
       suggested_families:
@@ -77,7 +77,7 @@ sagas:
       slug: por-que-conviene-tener-un-plan
       micro_objective: Explicar para qué sirve tener todas las partes de un proyecto reunidas en un solo
         plan.
-      narrative_beat: Dr. Rho explica a Dino por qué conviene tener todas las partes de su proyecto reunidas
+      narrative_beat: Dr. Rho explica a Liruf por qué conviene tener todas las partes de su proyecto reunidas
         en un solo lugar.
       difficulty: 2
       suggested_families:
@@ -111,7 +111,7 @@ sagas:
     - position: 1
       slug: recordar-mi-idea-original
       micro_objective: Recordar la idea original que empezó todo el viaje de negocio.
-      narrative_beat: Dino recuerda, mirando las estrellas del cosmos, la idea original que lo hizo empezar
+      narrative_beat: Liruf recuerda, mirando las estrellas del cosmos, la idea original que lo hizo empezar
         su primer puesto.
       difficulty: 1
       suggested_families:
@@ -129,7 +129,7 @@ sagas:
     - position: 3
       slug: escribir-mi-idea-en-la-primera-estrella
       micro_objective: Escribir la idea principal, completa y clara, en la primera estrella del plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir su idea principal, completa y clara, en la primera
+      narrative_beat: Zara Vex ayuda a Liruf a escribir su idea principal, completa y clara, en la primera
         estrella de su plan.
       difficulty: 2
       suggested_families:
@@ -163,7 +163,7 @@ sagas:
     - position: 1
       slug: de-la-idea-al-producto
       micro_objective: Reconocer el paso de tener una idea a decidir un producto concreto que la representa.
-      narrative_beat: Dino piensa qué producto concreto podría hacer para llevar su idea del observatorio
+      narrative_beat: Liruf piensa qué producto concreto podría hacer para llevar su idea del observatorio
         a la realidad.
       difficulty: 1
       suggested_families:
@@ -181,7 +181,7 @@ sagas:
     - position: 3
       slug: escribir-mi-producto-en-la-segunda-estrella
       micro_objective: Escribir la descripción del producto en la segunda estrella del plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir la descripción de su producto en la segunda estrella
+      narrative_beat: Zara Vex ayuda a Liruf a escribir la descripción de su producto en la segunda estrella
         de su plan.
       difficulty: 2
       suggested_families:
@@ -213,7 +213,7 @@ sagas:
     - position: 1
       slug: quien-querria-mi-producto
       micro_objective: Pensar en quién querría de verdad el producto propio.
-      narrative_beat: Dino piensa en quién, del cosmos entero, querría de verdad el producto que está
+      narrative_beat: Liruf piensa en quién, del cosmos entero, querría de verdad el producto que está
         planeando.
       difficulty: 1
       suggested_families:
@@ -230,7 +230,7 @@ sagas:
     - position: 3
       slug: escribir-mi-cliente-en-la-tercera-estrella
       micro_objective: Escribir la descripción del cliente ideal en la tercera estrella del plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir la descripción de su cliente ideal en la tercera
+      narrative_beat: Zara Vex ayuda a Liruf a escribir la descripción de su cliente ideal en la tercera
         estrella de su plan.
       difficulty: 2
       suggested_families:
@@ -270,7 +270,7 @@ sagas:
     - position: 1
       slug: cuanto-cuesta-mi-producto
       micro_objective: Calcular el costo total de hacer el producto propio.
-      narrative_beat: Dino calcula, con ayuda de Zara Vex, cuánto le cuesta en total hacer su producto
+      narrative_beat: Liruf calcula, con ayuda de Zara Vex, cuánto le cuesta en total hacer su producto
         para el cosmos.
       difficulty: 1
       suggested_families:
@@ -290,7 +290,7 @@ sagas:
       slug: escribir-mi-precio-en-la-cuarta-estrella
       micro_objective: Escribir el precio, el costo y la ganancia calculados en la cuarta estrella del
         plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir su precio, su costo y su ganancia en la cuarta estrella
+      narrative_beat: Zara Vex ayuda a Liruf a escribir su precio, su costo y su ganancia en la cuarta estrella
         de su plan.
       difficulty: 2
       suggested_families:
@@ -323,7 +323,7 @@ sagas:
     - position: 1
       slug: donde-podria-vender
       micro_objective: Pensar en lugares posibles donde se podría vender el producto propio.
-      narrative_beat: Dino piensa en distintos lugares del cosmos donde podría instalar su puesto para
+      narrative_beat: Liruf piensa en distintos lugares del cosmos donde podría instalar su puesto para
         vender.
       difficulty: 1
       suggested_families:
@@ -341,7 +341,7 @@ sagas:
     - position: 3
       slug: escribir-mi-venta-en-la-quinta-estrella
       micro_objective: Escribir cómo y dónde se venderá el producto en la quinta estrella del plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir cómo y dónde venderá su producto en la quinta estrella
+      narrative_beat: Zara Vex ayuda a Liruf a escribir cómo y dónde venderá su producto en la quinta estrella
         de su plan.
       difficulty: 2
       suggested_families:
@@ -376,7 +376,7 @@ sagas:
     - position: 1
       slug: quien-me-podria-ayudar
       micro_objective: Pensar en quién podría formar parte del equipo del proyecto propio.
-      narrative_beat: Dino piensa en quién del cosmos podría ayudarlo a formar un equipo para su proyecto.
+      narrative_beat: Liruf piensa en quién del cosmos podría ayudarlo a formar un equipo para su proyecto.
       difficulty: 1
       suggested_families:
       - story
@@ -393,7 +393,7 @@ sagas:
     - position: 3
       slug: escribir-mi-equipo-en-la-sexta-estrella
       micro_objective: Escribir el equipo y los roles de cada quien en la sexta estrella del plan.
-      narrative_beat: Zara Vex ayuda a Dino a escribir su equipo y los roles de cada quien en la sexta
+      narrative_beat: Zara Vex ayuda a Liruf a escribir su equipo y los roles de cada quien en la sexta
         estrella de su plan.
       difficulty: 2
       suggested_families:
@@ -437,7 +437,7 @@ sagas:
     - position: 2
       slug: conecto-las-estrellas-entre-si
       micro_objective: Verificar que las seis estrellas del plan se conectan bien entre sí, sin contradicciones.
-      narrative_beat: Dino verifica que sus seis estrellas del plan, de la idea al equipo, se conectan
+      narrative_beat: Liruf verifica que sus seis estrellas del plan, de la idea al equipo, se conectan
         bien entre sí.
       difficulty: 2
       suggested_families:
@@ -501,7 +501,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo describir el producto y cómo describir al cliente
         ideal.
-      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -553,7 +553,7 @@ sagas:
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Cuidar Recursos y Aprender
         de Errores.
-      narrative_beat: Zara Vex trae un recuerdo del faro del buen negocio y pide a Dino recordarlo sin
+      narrative_beat: Zara Vex trae un recuerdo del faro del buen negocio y pide a Liruf recordarlo sin
         ayuda, antes de mezclarlo con el plan completo.
       difficulty: 2
       suggested_families:
@@ -571,7 +571,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -617,7 +617,7 @@ sagas:
     - position: 1
       slug: un-plan-que-todavia-puede-cambiar
       micro_objective: Reconocer que un plan terminado todavía puede cambiar y mejorar.
-      narrative_beat: Dino cree que su plan ya está terminado para siempre, hasta que Dr. Rho le muestra
+      narrative_beat: Liruf cree que su plan ya está terminado para siempre, hasta que Dr. Rho le muestra
         que todavía puede cambiar.
       difficulty: 1
       suggested_families:
@@ -667,7 +667,7 @@ sagas:
     - position: 1
       slug: nervios-antes-de-mostrar
       micro_objective: Reconocer los nervios normales que aparecen antes de mostrar un plan a alguien más.
-      narrative_beat: A Dino le dan un poco de nervios mostrar su plan completo a alguien del observatorio
+      narrative_beat: A Liruf le dan un poco de nervios mostrar su plan completo a alguien del observatorio
         por primera vez.
       difficulty: 1
       suggested_families:
@@ -685,7 +685,7 @@ sagas:
     - position: 3
       slug: observar-la-reaccion-completa
       micro_objective: Practicar observar con atención toda la reacción de alguien al mostrarle el plan.
-      narrative_beat: Zara Vex enseña a Dino a observar con atención toda la reacción de la persona mientras
+      narrative_beat: Zara Vex enseña a Liruf a observar con atención toda la reacción de la persona mientras
         le muestra su plan.
       difficulty: 2
       suggested_families:
@@ -719,7 +719,7 @@ sagas:
     - position: 1
       slug: una-cara-de-confusion
       micro_objective: Reconocer una señal de que algo del plan no quedó claro, como una cara de confusión.
-      narrative_beat: Dino nota una cara de confusión mientras explica la parte del precio de su plan.
+      narrative_beat: Liruf nota una cara de confusión mientras explica la parte del precio de su plan.
       difficulty: 1
       suggested_families:
       - story
@@ -737,7 +737,7 @@ sagas:
       slug: anotar-lo-que-no-quedo-claro
       micro_objective: Practicar anotar, con precisión, qué parte del plan no quedó clara para la otra
         persona.
-      narrative_beat: Zara Vex ayuda a Dino a anotar, con precisión, qué parte de su plan no quedó clara
+      narrative_beat: Zara Vex ayuda a Liruf a anotar, con precisión, qué parte de su plan no quedó clara
         para quien lo escuchó.
       difficulty: 2
       suggested_families:
@@ -769,7 +769,7 @@ sagas:
     - position: 1
       slug: varias-partes-que-podrian-mejorar
       micro_objective: Reconocer que un plan puede tener varias partes que podrían mejorar, no solo una.
-      narrative_beat: Dino revisa su lista de partes confusas y nota que hay varias partes de su plan que
+      narrative_beat: Liruf revisa su lista de partes confusas y nota que hay varias partes de su plan que
         podrían mejorar.
       difficulty: 1
       suggested_families:
@@ -787,7 +787,7 @@ sagas:
     - position: 3
       slug: por-que-empezar-por-lo-mas-debil
       micro_objective: Explicar por qué conviene empezar a mejorar por la parte más débil del plan.
-      narrative_beat: Zara Vex explica a Dino por qué conviene empezar a mejorar justo por la parte más
+      narrative_beat: Zara Vex explica a Liruf por qué conviene empezar a mejorar justo por la parte más
         débil de su plan.
       difficulty: 2
       suggested_families:
@@ -818,7 +818,7 @@ sagas:
     - position: 1
       slug: una-idea-para-mejorar-esa-parte
       micro_objective: Proponer una idea concreta de cómo mejorar la parte más débil identificada del plan.
-      narrative_beat: A Dino se le ocurre una idea concreta para mejorar la parte más débil que encontró
+      narrative_beat: A Liruf se le ocurre una idea concreta para mejorar la parte más débil que encontró
         en su plan.
       difficulty: 1
       suggested_families:
@@ -836,7 +836,7 @@ sagas:
     - position: 3
       slug: aplicar-el-cambio-en-mi-plan
       micro_objective: Aplicar el cambio elegido directamente en la parte débil del plan propio.
-      narrative_beat: Zara Vex acompaña a Dino mientras aplica el cambio elegido directamente en la parte
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica el cambio elegido directamente en la parte
         débil de su plan.
       difficulty: 3
       suggested_families:
@@ -869,7 +869,7 @@ sagas:
     - position: 1
       slug: mostrar-mi-plan-otra-vez
       micro_objective: Mostrar el plan mejorado a la misma persona o a alguien nuevo del cosmos.
-      narrative_beat: Dino muestra su plan mejorado a la misma persona que lo ayudó a encontrar la parte
+      narrative_beat: Liruf muestra su plan mejorado a la misma persona que lo ayudó a encontrar la parte
         débil.
       difficulty: 1
       suggested_families:
@@ -887,7 +887,7 @@ sagas:
     - position: 3
       slug: el-plan-mejoro-de-verdad
       micro_objective: Confirmar, con evidencia concreta, si el plan mejoró de verdad después del cambio.
-      narrative_beat: Zara Vex ayuda a Dino a confirmar, con evidencia concreta, si su plan mejoró de verdad
+      narrative_beat: Zara Vex ayuda a Liruf a confirmar, con evidencia concreta, si su plan mejoró de verdad
         después del cambio.
       difficulty: 3
       suggested_families:
@@ -921,7 +921,7 @@ sagas:
     - position: 1
       slug: me-siento-mal-por-cambiar-tanto
       micro_objective: Reconocer un sentimiento de desánimo al tener que cambiar el plan varias veces.
-      narrative_beat: Dino se siente un poco desanimado porque ya cambió su plan varias veces desde que
+      narrative_beat: Liruf se siente un poco desanimado porque ya cambió su plan varias veces desde que
         llegó al cosmos.
       difficulty: 1
       suggested_families:
@@ -930,7 +930,7 @@ sagas:
     - position: 2
       slug: cada-cambio-es-un-paso-adelante
       micro_objective: Explicar por qué cada cambio del plan es en realidad un paso adelante, no un retroceso.
-      narrative_beat: Dr. Rho anima a Dino explicando que cada cambio de su plan fue en realidad un paso
+      narrative_beat: Dr. Rho anima a Liruf explicando que cada cambio de su plan fue en realidad un paso
         adelante, no un retroceso.
       difficulty: 2
       suggested_families:
@@ -983,7 +983,7 @@ sagas:
     - position: 2
       slug: explico-por-que-cambio-cada-parte
       micro_objective: Explicar, parte por parte, por qué cambió cada sección del plan durante el proceso.
-      narrative_beat: Dino explica, parte por parte, por qué cambió cada sección de su plan durante todo
+      narrative_beat: Liruf explica, parte por parte, por qué cambió cada sección de su plan durante todo
         el proceso.
       difficulty: 2
       suggested_families:
@@ -1002,7 +1002,7 @@ sagas:
       slug: celebro-mi-proceso-de-iterar
       micro_objective: Celebrar el proceso completo de iterar, reconociendo que mejoró gracias a probar
         y escuchar.
-      narrative_beat: Dina celebra junto a Zara Vex y Dino todo el proceso de iterar que mejoró tanto su
+      narrative_beat: Dina celebra junto a Zara Vex y Liruf todo el proceso de iterar que mejoró tanto su
         plan de mini-empresa.
       difficulty: 3
       suggested_families:
@@ -1046,7 +1046,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo escuchar lo que no quedó claro y cómo encontrar
         el punto más débil del plan.
-      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1096,7 +1096,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga El Plan Completo.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del cosmos y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del cosmos y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con iterar.
       difficulty: 2
       suggested_families:
@@ -1115,7 +1115,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1162,7 +1162,7 @@ sagas:
     - position: 1
       slug: contar-solo-una-parte
       micro_objective: Reconocer que contar solo una parte del proyecto deja fuera información importante.
-      narrative_beat: Dino cuenta solo la parte del producto de su plan, y Zara Vex nota que falta contar
+      narrative_beat: Liruf cuenta solo la parte del producto de su plan, y Zara Vex nota que falta contar
         mucho más.
       difficulty: 1
       suggested_families:
@@ -1179,7 +1179,7 @@ sagas:
     - position: 3
       slug: para-que-sirve-presentar-completo
       micro_objective: Explicar para qué sirve presentar un proyecto completo frente a otras personas.
-      narrative_beat: Zara Vex explica a Dino para qué sirve presentar su proyecto completo frente a otras
+      narrative_beat: Zara Vex explica a Liruf para qué sirve presentar su proyecto completo frente a otras
         personas del cosmos.
       difficulty: 2
       suggested_families:
@@ -1212,7 +1212,7 @@ sagas:
     - position: 1
       slug: las-seis-estrellas-desordenadas
       micro_objective: Reconocer que presentar las seis partes del plan sin orden confunde a quien escucha.
-      narrative_beat: Dino presenta las seis partes de su plan sin ningún orden, y su público se confunde
+      narrative_beat: Liruf presenta las seis partes de su plan sin ningún orden, y su público se confunde
         rápido.
       difficulty: 1
       suggested_families:
@@ -1230,7 +1230,7 @@ sagas:
     - position: 3
       slug: practicar-el-orden-completo
       micro_objective: Practicar decir el plan completo siguiendo el orden decidido, de principio a fin.
-      narrative_beat: Zara Vex ayuda a Dino a practicar decir su plan completo siguiendo el orden que decidió.
+      narrative_beat: Zara Vex ayuda a Liruf a practicar decir su plan completo siguiendo el orden que decidió.
       difficulty: 3
       suggested_families:
       - arrange
@@ -1263,7 +1263,7 @@ sagas:
     - position: 1
       slug: mostrar-mi-producto-de-verdad
       micro_objective: Reconocer que mostrar el producto real ayuda más que solo describirlo con palabras.
-      narrative_beat: Dino descubre que mostrar su producto de verdad ayuda mucho más que solo describirlo
+      narrative_beat: Liruf descubre que mostrar su producto de verdad ayuda mucho más que solo describirlo
         con palabras.
       difficulty: 1
       suggested_families:
@@ -1282,7 +1282,7 @@ sagas:
     - position: 3
       slug: preparar-lo-que-voy-a-mostrar
       micro_objective: Preparar los objetos o dibujos que se mostrarán durante la presentación.
-      narrative_beat: Zara Vex ayuda a Dino a preparar los objetos y dibujos que mostrará durante su presentación.
+      narrative_beat: Zara Vex ayuda a Liruf a preparar los objetos y dibujos que mostrará durante su presentación.
       difficulty: 2
       suggested_families:
       - maker
@@ -1314,7 +1314,7 @@ sagas:
     - position: 1
       slug: mi-primer-ensayo-completo
       micro_objective: Realizar un primer ensayo completo de la presentación, de principio a fin.
-      narrative_beat: Dino realiza su primer ensayo completo frente a Dr. Rho, de principio a fin, sin
+      narrative_beat: Liruf realiza su primer ensayo completo frente a Dr. Rho, de principio a fin, sin
         detenerse.
       difficulty: 1
       suggested_families:
@@ -1333,7 +1333,7 @@ sagas:
       slug: practicar-esa-parte-otra-vez
       micro_objective: Practicar, varias veces, la parte específica de la presentación donde hubo menos
         seguridad.
-      narrative_beat: Zara Vex ayuda a Dino a practicar, varias veces, justo la parte donde se sintió menos
+      narrative_beat: Zara Vex ayuda a Liruf a practicar, varias veces, justo la parte donde se sintió menos
         seguro.
       difficulty: 2
       suggested_families:
@@ -1369,7 +1369,7 @@ sagas:
       slug: una-pregunta-inesperada
       micro_objective: Reconocer que el público puede hacer preguntas inesperadas sobre cualquier parte
         del proyecto.
-      narrative_beat: Alguien del observatorio le hace a Dino una pregunta inesperada sobre la parte del
+      narrative_beat: Alguien del observatorio le hace a Liruf una pregunta inesperada sobre la parte del
         equipo de su plan.
       difficulty: 1
       suggested_families:
@@ -1387,7 +1387,7 @@ sagas:
     - position: 3
       slug: practicar-preguntas-dificiles
       micro_objective: Practicar responder preguntas más difíciles sobre distintas partes del plan.
-      narrative_beat: Zara Vex hace preguntas cada vez más difíciles a Dino sobre distintas partes de su
+      narrative_beat: Zara Vex hace preguntas cada vez más difíciles a Liruf sobre distintas partes de su
         plan.
       difficulty: 2
       suggested_families:
@@ -1426,7 +1426,7 @@ sagas:
     - position: 1
       slug: recordar-mi-pitch-del-reino
       micro_objective: Recordar el pitch de un minuto que practicó en el reino de las ventas.
-      narrative_beat: Dino recuerda el pitch de un minuto que practicó tanto en el reino de las ventas.
+      narrative_beat: Liruf recuerda el pitch de un minuto que practicó tanto en el reino de las ventas.
       difficulty: 1
       suggested_families:
       - story
@@ -1445,7 +1445,7 @@ sagas:
       slug: conectar-el-pitch-con-el-resto
       micro_objective: Practicar conectar el final del pitch con el resto de la presentación, sin cortes
         bruscos.
-      narrative_beat: Zara Vex ayuda a Dino a conectar el final de su pitch con el resto de la presentación,
+      narrative_beat: Zara Vex ayuda a Liruf a conectar el final de su pitch con el resto de la presentación,
         sin cortes bruscos.
       difficulty: 2
       suggested_families:
@@ -1478,7 +1478,7 @@ sagas:
     - position: 1
       slug: la-tentacion-de-exagerar
       micro_objective: Reconocer la tentación de exagerar un logro al presentarlo frente a otros.
-      narrative_beat: Dino siente la tentación de exagerar cuánto vendió su puesto, para impresionar más
+      narrative_beat: Liruf siente la tentación de exagerar cuánto vendió su puesto, para impresionar más
         al público.
       difficulty: 1
       suggested_families:
@@ -1497,7 +1497,7 @@ sagas:
     - position: 3
       slug: practicar-contar-lo-real
       micro_objective: Practicar contar los logros del proyecto exactamente como sucedieron, sin exagerar.
-      narrative_beat: Zara Vex ayuda a Dino a practicar contar los logros de su proyecto exactamente como
+      narrative_beat: Zara Vex ayuda a Liruf a practicar contar los logros de su proyecto exactamente como
         sucedieron.
       difficulty: 2
       suggested_families:
@@ -1541,7 +1541,7 @@ sagas:
       slug: empiezo-con-mi-pitch
       micro_objective: Iniciar la presentación completa con el pitch de un minuto, captando la atención
         del público.
-      narrative_beat: Dino inicia su presentación con su pitch de un minuto, captando la atención de todo
+      narrative_beat: Liruf inicia su presentación con su pitch de un minuto, captando la atención de todo
         el público.
       difficulty: 2
       suggested_families:
@@ -1604,7 +1604,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo qué mostrar y qué contar, y cómo practicar la presentación
         completa.
-      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1654,7 +1654,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Iterar el Plan.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de iterar y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la saga de iterar y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con presentar.
       difficulty: 2
       suggested_families:
@@ -1673,7 +1673,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -1723,7 +1723,7 @@ sagas:
       slug: el-titulo-de-founder
       micro_objective: Reconocer que un founder es alguien que convirtió una idea propia en un proyecto
         real.
-      narrative_beat: Dr. Rho explica a Dino que un founder es alguien que convirtió una idea propia en
+      narrative_beat: Dr. Rho explica a Liruf que un founder es alguien que convirtió una idea propia en
         un proyecto real, como él acaba de hacer.
       difficulty: 1
       suggested_families:
@@ -1777,7 +1777,7 @@ sagas:
       slug: el-mapa-de-mi-viaje
       micro_objective: Reconocer que el camino recorrido tiene varias etapas que se pueden ordenar en un
         mapa.
-      narrative_beat: Dr. Rho dibuja junto a Dino un mapa con todas las etapas de su viaje, desde la primera
+      narrative_beat: Dr. Rho dibuja junto a Liruf un mapa con todas las etapas de su viaje, desde la primera
         idea hasta hoy.
       difficulty: 1
       suggested_families:
@@ -1795,7 +1795,7 @@ sagas:
     - position: 3
       slug: recordar-un-momento-dificil
       micro_objective: Recordar un momento difícil del camino y cómo se superó.
-      narrative_beat: Dino recuerda un momento difícil de su camino, cuando su primer lote de limonada
+      narrative_beat: Liruf recuerda un momento difícil de su camino, cuando su primer lote de limonada
         se echó a perder, y cómo lo superó.
       difficulty: 2
       suggested_families:
@@ -1829,7 +1829,7 @@ sagas:
     - position: 1
       slug: mi-primera-idea-muy-simple
       micro_objective: Recordar la primera idea del proyecto, mucho más simple que la versión de hoy.
-      narrative_beat: Dino recuerda su primera idea, tan simple, comparada con el plan completo que tiene
+      narrative_beat: Liruf recuerda su primera idea, tan simple, comparada con el plan completo que tiene
         hoy.
       difficulty: 1
       suggested_families:
@@ -1847,7 +1847,7 @@ sagas:
     - position: 3
       slug: nombrar-lo-que-mas-crecio
       micro_objective: Identificar cuál parte del proyecto creció o mejoró más de todas.
-      narrative_beat: Zara Vex pregunta a Dino cuál parte de su proyecto cree que creció o mejoró más de
+      narrative_beat: Zara Vex pregunta a Liruf cuál parte de su proyecto cree que creció o mejoró más de
         todas.
       difficulty: 2
       suggested_families:
@@ -1881,7 +1881,7 @@ sagas:
     - position: 1
       slug: quien-me-ayudo-en-el-camino
       micro_objective: Identificar a las personas que ayudaron en distintos momentos del camino del proyecto.
-      narrative_beat: Dino piensa en todas las personas, como Dr. Rho y Zara Vex, que lo ayudaron en distintos
+      narrative_beat: Liruf piensa en todas las personas, como Dr. Rho y Zara Vex, que lo ayudaron en distintos
         momentos de su camino.
       difficulty: 1
       suggested_families:
@@ -1899,7 +1899,7 @@ sagas:
     - position: 3
       slug: preparar-un-agradecimiento
       micro_objective: Preparar un agradecimiento propio para las personas que ayudaron en el camino.
-      narrative_beat: Zara Vex ayuda a Dino a preparar un agradecimiento propio para las personas que lo
+      narrative_beat: Zara Vex ayuda a Liruf a preparar un agradecimiento propio para las personas que lo
         ayudaron en su camino.
       difficulty: 2
       suggested_families:
@@ -1933,7 +1933,7 @@ sagas:
     - position: 1
       slug: el-camino-no-termina-aqui
       micro_objective: Reconocer que el camino de un founder no termina con la graduación, sino que sigue.
-      narrative_beat: Dr. Rho explica a Dino que el camino de un founder no termina aquí, sino que apenas
+      narrative_beat: Dr. Rho explica a Liruf que el camino de un founder no termina aquí, sino que apenas
         empieza de verdad.
       difficulty: 1
       suggested_families:
@@ -1951,7 +1951,7 @@ sagas:
     - position: 3
       slug: elegir-mi-proximo-paso
       micro_objective: Elegir, entre varias ideas, un próximo paso concreto para el proyecto propio.
-      narrative_beat: Dino elige, entre varias ideas, un próximo paso concreto para seguir creciendo su
+      narrative_beat: Liruf elige, entre varias ideas, un próximo paso concreto para seguir creciendo su
         proyecto.
       difficulty: 2
       suggested_families:
@@ -1985,7 +1985,7 @@ sagas:
     - position: 1
       slug: muchas-lecciones-en-un-solo-viaje
       micro_objective: Reconocer que el viaje completo dejó muchas lecciones distintas, no solo una.
-      narrative_beat: Dino se da cuenta de que su viaje completo le dejó muchas lecciones distintas, desde
+      narrative_beat: Liruf se da cuenta de que su viaje completo le dejó muchas lecciones distintas, desde
         ideas hasta equipos.
       difficulty: 1
       suggested_families:
@@ -2003,7 +2003,7 @@ sagas:
     - position: 3
       slug: explicar-por-que-esa-lo-es
       micro_objective: Explicar por qué esa lección elegida es, para uno mismo, la más importante del viaje.
-      narrative_beat: Zara Vex pregunta a Dino por qué esa lección que eligió es, para él, la más importante
+      narrative_beat: Zara Vex pregunta a Liruf por qué esa lección que eligió es, para él, la más importante
         de todo el viaje.
       difficulty: 2
       suggested_families:
@@ -2100,7 +2100,7 @@ sagas:
     - position: 2
       slug: repaso-mi-camino-en-la-ceremonia
       micro_objective: Repasar, frente a todos, el camino completo recorrido desde la primera idea.
-      narrative_beat: Dino repasa, frente a todo el cosmos reunido, el camino completo que recorrió desde
+      narrative_beat: Liruf repasa, frente a todo el cosmos reunido, el camino completo que recorrió desde
         su primera idea.
       difficulty: 2
       suggested_families:
@@ -2118,7 +2118,7 @@ sagas:
     - position: 4
       slug: me-gradue-como-founder
       micro_objective: Celebrar, con todo el equipo y los mentores, la graduación completa como founder.
-      narrative_beat: Con el cosmos entero brillando, Dina se gradúa como founder junto a Dino, celebrando
+      narrative_beat: Con el cosmos entero brillando, Dina se gradúa como founder junto a Liruf, celebrando
         con Zara Vex y Dr. Rho.
       difficulty: 3
       suggested_families:
@@ -2163,7 +2163,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo reconocer el crecimiento del proyecto y cómo agradecer
         a quienes ayudaron.
-      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2213,7 +2213,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-antes
       micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Presentar el Proyecto.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de presentar y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la saga de presentar y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con la graduación.
       difficulty: 2
       suggested_families:
@@ -2232,7 +2232,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez las dos
         lecciones combinadas.
       difficulty: 2
       suggested_families:
@@ -2269,7 +2269,7 @@ sagas:
     kind: review_quest
     title_es: El Cosmos Recuerda las Ideas y lo Hecho a Mano
     concept: 'Zara Vex enciende las primeras dos estrellas del cosmos: la Isla de las Ideas y el Bosque
-      de los Makers, donde Dina y Dino aprendieron a notar problemas, tener ideas y hacer las cosas con
+      de los Makers, donde Dina y Liruf aprendieron a notar problemas, tener ideas y hacer las cosas con
       cuidado.'
     learning_objective: Al final, el niño puede recordar y aplicar cómo notar un problema, tener una idea
       que ayude, y hacer un producto con cuidado.
@@ -2289,7 +2289,7 @@ sagas:
     - position: 1
       slug: el-cosmos-enciende-la-isla-de-las-ideas
       micro_objective: Recordar cómo notar que algo no funciona bien fue el primer paso de todo el viaje.
-      narrative_beat: 'Zara Vex reúne a Dina y Dino frente al observatorio y anuncia la Gran Misión final:
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf frente al observatorio y anuncia la Gran Misión final:
         recorrer una vez más cada mundo del viaje completo.'
       difficulty: 1
       suggested_families:
@@ -2308,7 +2308,7 @@ sagas:
     - position: 3
       slug: el-bosque-de-los-makers-otra-vez
       micro_objective: Recordar cómo hacer un producto con cuidado, usando las manos con atención.
-      narrative_beat: Dino recuerda, sin ayuda, cómo usaba sus manos con cuidado en el bosque de los makers
+      narrative_beat: Liruf recuerda, sin ayuda, cómo usaba sus manos con cuidado en el bosque de los makers
         para hacer un buen producto.
       difficulty: 2
       suggested_families:
@@ -2327,7 +2327,7 @@ sagas:
     slug: el-cosmos-recuerda-a-los-clientes
     kind: review_quest
     title_es: El Cosmos Recuerda a los Clientes
-    concept: 'Zara Vex enciende la tercera estrella del cosmos: la Ciudad del Cliente, donde Dina y Dino
+    concept: 'Zara Vex enciende la tercera estrella del cosmos: la Ciudad del Cliente, donde Dina y Liruf
       aprendieron a escuchar lo que sus clientes de verdad necesitan y a cumplir lo que les prometen.'
     learning_objective: Al final, el niño puede recordar y aplicar cómo identificar a un cliente, escuchar
       su necesidad y cumplir una promesa hecha.
@@ -2345,7 +2345,7 @@ sagas:
     - position: 1
       slug: el-cliente-ideal-otra-vez
       micro_objective: Recordar, sin ayuda nueva, cómo describir a un cliente ideal para un producto.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo dibujó a su cliente ideal en la
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo dibujó a su cliente ideal en la
         ciudad.
       difficulty: 1
       suggested_families:
@@ -2364,7 +2364,7 @@ sagas:
       slug: cumplir-a-tiempo-otra-vez
       micro_objective: Recordar y aplicar por qué cumplir a tiempo una promesa hecha a un cliente importa
         tanto.
-      narrative_beat: Dr. Rho presenta una promesa nueva y pregunta a Dino si recuerda por qué cumplirla
+      narrative_beat: Dr. Rho presenta una promesa nueva y pregunta a Liruf si recuerda por qué cumplirla
         a tiempo importa tanto.
       difficulty: 2
       suggested_families:
@@ -2385,7 +2385,7 @@ sagas:
     kind: review_quest
     title_es: El Cosmos Recuerda el Reino y el Taller
     concept: 'Zara Vex enciende las estrellas del Reino de las Ventas y el Taller del Equipo, donde Dina
-      y Dino aprendieron a vender con honestidad, a presentar su pitch, y a trabajar en equipo repartiendo
+      y Liruf aprendieron a vender con honestidad, a presentar su pitch, y a trabajar en equipo repartiendo
       con justicia.'
     learning_objective: Al final, el niño puede recordar y aplicar cómo vender con honestidad, presentar
       un pitch y trabajar en equipo con justicia.
@@ -2413,7 +2413,7 @@ sagas:
     - position: 2
       slug: el-pitch-del-reino-otra-vez
       micro_objective: Recordar cómo presentar un pitch completo de un minuto frente a un público nuevo.
-      narrative_beat: Dino recuerda, de memoria, cómo presentó su primer pitch completo frente al reino.
+      narrative_beat: Liruf recuerda, de memoria, cómo presentó su primer pitch completo frente al reino.
       difficulty: 1
       suggested_families:
       - choice
@@ -2442,7 +2442,7 @@ sagas:
     slug: el-cosmos-recuerda-el-faro-del-buen-negocio
     kind: review_quest
     title_es: El Cosmos Recuerda el Faro del Buen Negocio
-    concept: 'Zara Vex enciende la estrella del Faro del Buen Negocio, donde Dina y Dino aprendieron ética,
+    concept: 'Zara Vex enciende la estrella del Faro del Buen Negocio, donde Dina y Liruf aprendieron ética,
       competencia justa, promesas cumplidas y cuidado de recursos.'
     learning_objective: Al final, el niño puede recordar y aplicar cómo actuar con ética, competir de forma
       justa y cuidar los recursos de un negocio.
@@ -2460,7 +2460,7 @@ sagas:
     - position: 1
       slug: la-etica-del-faro-otra-vez
       micro_objective: Recordar, sin ayuda nueva, cómo elegir lo correcto sobre lo fácil en un negocio.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo eligió lo correcto sobre lo fácil
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo eligió lo correcto sobre lo fácil
         en el faro.
       difficulty: 1
       suggested_families:
@@ -2478,7 +2478,7 @@ sagas:
     - position: 3
       slug: cuidar-recursos-otra-vez
       micro_objective: Recordar y aplicar cómo cuidar los recursos y aprender de un error de negocio.
-      narrative_beat: Dr. Rho presenta un error nuevo y pregunta a Dino si recuerda cómo cuidar los recursos
+      narrative_beat: Dr. Rho presenta un error nuevo y pregunta a Liruf si recuerda cómo cuidar los recursos
         y aprender de él.
       difficulty: 2
       suggested_families:
@@ -2541,7 +2541,7 @@ sagas:
       slug: el-reto-de-todos-los-mundos
       micro_objective: Aplicar con seguridad lecciones de todos los mundos en un desafío único que las
         combina todas.
-      narrative_beat: Dino resuelve un desafío del cosmos que combina, de una sola vez, ideas, hacer, clientes,
+      narrative_beat: Liruf resuelve un desafío del cosmos que combina, de una sola vez, ideas, hacer, clientes,
         vender, equipo y ética.
       difficulty: 2
       suggested_families:
@@ -2562,7 +2562,7 @@ sagas:
     kind: review_quest
     title_es: La Gran Misión del Cosmos del Founder
     concept: El gran cierre de todo el curso de emprendimiento combina las lecciones de cada mundo visitado
-      con la graduación final de Dina y Dino como founders.
+      con la graduación final de Dina y Liruf como founders.
     learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido durante
       el curso completo de emprendimiento.
     key_vocabulary:
@@ -2581,7 +2581,7 @@ sagas:
       slug: el-cosmos-recuerda-el-tesoro-de-la-idea
       micro_objective: Recordar cómo se sintió encontrar, al principio del viaje, la gran idea que lo empezó
         todo.
-      narrative_beat: Zara Vex recuerda junto a Dina y Dino aquel primer tesoro de una gran idea que encontraron
+      narrative_beat: Zara Vex recuerda junto a Dina y Liruf aquel primer tesoro de una gran idea que encontraron
         en la isla.
       difficulty: 1
       suggested_families:
@@ -2591,7 +2591,7 @@ sagas:
       slug: el-cosmos-recuerda-el-producto-perfecto
       micro_objective: Recordar cómo se sintió terminar, con cuidado, el primer producto bien hecho del
         viaje.
-      narrative_beat: Dr. Rho recuerda junto a Dino el primer producto que hicieron con tanto cuidado en
+      narrative_beat: Dr. Rho recuerda junto a Liruf el primer producto que hicieron con tanto cuidado en
         el bosque de los makers.
       difficulty: 1
       suggested_families:
@@ -2610,7 +2610,7 @@ sagas:
     - position: 4
       slug: el-cosmos-sigue-brillando-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo el viaje de emprendimiento completo.
-      narrative_beat: Con el cosmos entero brillando, Dina y Dino celebran junto a Zara Vex y Dr. Rho el
+      narrative_beat: Con el cosmos entero brillando, Dina y Liruf celebran junto a Zara Vex y Dr. Rho el
         cierre de todo su viaje como founders.
       difficulty: 2
       suggested_families:

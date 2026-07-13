@@ -246,7 +246,7 @@ facts:
   # ---- Character canon anchors (narrative_beat authoring, not money math;
   # copied from financial-education/facts.yaml for parity). ----
   characters.canon_ids:
-    value: [dina, dino, rho, zara]
+    value: [dina, liruf, rho, zara]
     unit: n/a
     label_es: "IDs canónicos de personajes (LESSON_ENGINE.md §9) — únicos narradores permitidos"
     verified: true
@@ -254,10 +254,10 @@ facts:
   characters.roles:
     value:
       dina: mentora
-      dino: juguetón
+      liruf: juguetón
       rho: sabio detective
       zara: estratega
     unit: n/a
-    label_es: "Rol narrativo de cada personaje. Aquí: Rho es el sabio del tiempo, Dina la mentora de metas, Zara la estratega de riesgo, Dino el impaciente."
+    label_es: "Rol narrativo de cada personaje. Aquí: Rho es el sabio del tiempo, Dina la mentora de metas, Zara la estratega de riesgo, Liruf el impaciente."
     verified: true
-    notes: "Rho brilla como el sabio del tiempo (aventuras 1-2), Dina como mentora de metas (aventura 4), Zara como estratega de riesgo (aventura 3), Dino como el impaciente que aprende paciencia a lo largo de todo el curso."
+    notes: "Rho brilla como el sabio del tiempo (aventuras 1-2), Dina como mentora de metas (aventura 4), Zara como estratega de riesgo (aventura 3), Liruf como el impaciente que aprende paciencia a lo largo de todo el curso."

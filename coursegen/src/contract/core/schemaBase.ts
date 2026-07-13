@@ -20,7 +20,7 @@ export const optionWithRationale = z.object({
   rationale_md: markdownLite.optional(),
 });
 
-export const characterIdSchema = z.enum(['dina', 'dino', 'rho', 'zara']);
+export const characterIdSchema = z.enum(['dina', 'liruf', 'rho', 'zara']);
 export const characterEmotionSchema = z.enum([
   'neutral',
   'happy',

@@ -22,6 +22,16 @@ const Env = z.object({
   TTS_API_KEY: z.string().min(1, 'TTS_API_KEY is required'),
   TTS_MODEL: z.string().min(1).default('qwen3-tts-flash'),
 
+  // Voice-clone ENROLLMENT (a different endpoint from synthesis above) +
+  // the model a cloned voice is bound to — DashScope requires target_model
+  // at enrollment to exactly match the model used at synthesis time, so a
+  // character-override voice (see below) ALWAYS pairs with this model, never
+  // TTS_MODEL. See src/tts/voiceClone.ts + scripts/register-character-voices.ts.
+  TTS_ENROLLMENT_API_URL: z
+    .url()
+    .default('https://dashscope-intl.aliyuncs.com/api/v1/services/audio/tts/customization'),
+  TTS_CLONE_MODEL: z.string().min(1).default('qwen3-tts-vc-2026-01-22'),
+
   // Per-locale default voices — used whenever a segment has no narrator, or
   // the narrator's character has no override below for that locale.
   TTS_VOICE_EN_US: z.string().min(1).default('Jennifer'),
@@ -30,18 +40,15 @@ const Env = z.object({
 
   // Per-character × per-locale voice overrides (the "voice map" — README.md
   // "Voice map" section). All optional: an unset var falls back to the
-  // locale default above. Each value is just a `voice` string handed to
-  // synthesizeSpeech() — it works identically whether that string is a
-  // DashScope BUILT-IN preset name (e.g. "Cherry") or a CLONED voice id
-  // registered from a reference sample (the exact registration flow is a
-  // separate, not-yet-implemented step — once a clone id exists for a
-  // character/locale, set it here and no code changes are needed).
+  // locale default above. Populated by `npm run voices:register` (writes
+  // the cloned voice id per character/locale here) — always paired with
+  // TTS_CLONE_MODEL at synthesis time, never TTS_MODEL.
   TTS_VOICE_DINA_EN_US: z.string().min(1).optional(),
   TTS_VOICE_DINA_ES_MX: z.string().min(1).optional(),
   TTS_VOICE_DINA_PT_BR: z.string().min(1).optional(),
-  TTS_VOICE_DINO_EN_US: z.string().min(1).optional(),
-  TTS_VOICE_DINO_ES_MX: z.string().min(1).optional(),
-  TTS_VOICE_DINO_PT_BR: z.string().min(1).optional(),
+  TTS_VOICE_LIRUF_EN_US: z.string().min(1).optional(),
+  TTS_VOICE_LIRUF_ES_MX: z.string().min(1).optional(),
+  TTS_VOICE_LIRUF_PT_BR: z.string().min(1).optional(),
   TTS_VOICE_RHO_EN_US: z.string().min(1).optional(),
   TTS_VOICE_RHO_ES_MX: z.string().min(1).optional(),
   TTS_VOICE_RHO_PT_BR: z.string().min(1).optional(),
@@ -104,12 +111,12 @@ export function defaultVoiceFor(locale: LessonLocale, config: Config): string {
 }
 
 /** The four canonical mascots (frontend/src/components/characters/) — the only valid voice-map keys. */
-export const CANON_CHARACTERS = ['dina', 'dino', 'rho', 'zara'] as const;
+export const CANON_CHARACTERS = ['dina', 'liruf', 'rho', 'zara'] as const;
 export type CanonCharacter = (typeof CANON_CHARACTERS)[number];
 
 const CHARACTER_VOICE_ENV: Record<CanonCharacter, Record<LessonLocale, keyof Config>> = {
   dina: { 'en-US': 'TTS_VOICE_DINA_EN_US', 'es-MX': 'TTS_VOICE_DINA_ES_MX', 'pt-BR': 'TTS_VOICE_DINA_PT_BR' },
-  dino: { 'en-US': 'TTS_VOICE_DINO_EN_US', 'es-MX': 'TTS_VOICE_DINO_ES_MX', 'pt-BR': 'TTS_VOICE_DINO_PT_BR' },
+  liruf: { 'en-US': 'TTS_VOICE_LIRUF_EN_US', 'es-MX': 'TTS_VOICE_LIRUF_ES_MX', 'pt-BR': 'TTS_VOICE_LIRUF_PT_BR' },
   rho: { 'en-US': 'TTS_VOICE_RHO_EN_US', 'es-MX': 'TTS_VOICE_RHO_ES_MX', 'pt-BR': 'TTS_VOICE_RHO_PT_BR' },
   zara: { 'en-US': 'TTS_VOICE_ZARA_EN_US', 'es-MX': 'TTS_VOICE_ZARA_ES_MX', 'pt-BR': 'TTS_VOICE_ZARA_PT_BR' },
 };
@@ -118,17 +125,26 @@ function isCanonCharacter(value: string): value is CanonCharacter {
   return (CANON_CHARACTERS as readonly string[]).includes(value);
 }
 
+export interface ResolvedVoice {
+  voice: string;
+  /** The synthesis model this voice must be paired with (a cloned voice is bound to exactly one model). */
+  model: string;
+}
+
 /**
- * Resolves the voice for one narration unit (COURSE_ENGINE.md §7 — "voice =
- * the segment's narrator character"). Falls back to `defaultVoiceFor` when
- * the unit has no narrator, the narrator isn't one of the 4 canon
- * characters, or that character has no override set for this locale yet.
+ * Resolves the voice (AND its required model) for one narration unit
+ * (COURSE_ENGINE.md §7 — "voice = the segment's narrator character"). Falls
+ * back to the locale default + TTS_MODEL when the unit has no narrator, the
+ * narrator isn't one of the 4 canon characters, or that character has no
+ * override set for this locale yet. A character override ALWAYS pairs with
+ * TTS_CLONE_MODEL — it can only ever be a cloned voice id (DashScope binds
+ * every voice to the exact model it was enrolled under).
  */
-export function voiceFor(character: string | undefined, locale: LessonLocale, config: Config): string {
+export function voiceFor(character: string | undefined, locale: LessonLocale, config: Config): ResolvedVoice {
   if (character && isCanonCharacter(character)) {
     const envKey = CHARACTER_VOICE_ENV[character][locale];
     const override = config[envKey] as string | undefined;
-    if (override) return override;
+    if (override) return { voice: override, model: config.TTS_CLONE_MODEL };
   }
-  return defaultVoiceFor(locale, config);
+  return { voice: defaultVoiceFor(locale, config), model: config.TTS_MODEL };
 }

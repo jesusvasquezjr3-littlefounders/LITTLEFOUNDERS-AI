@@ -47,5 +47,5 @@ Data flow rules: the browser only ever calls `backend` (plus Supabase Auth direc
 
 - i18n: `en-US` (key source of truth), `es-MX`, `pt-BR` — everywhere, always.
 - Theming: light + dark, Tailwind `darkMode: 'class'`.
-- Characters (canonical mascots): **Dina, Dino, Dr. Rho, Zara Vex** — `frontend/src/components/characters/`.
+- Characters (canonical mascots): **Dina, Liruf, Dr. Rho, Zara Vex** — `frontend/src/components/characters/`.
 - Child safety: no minor PII to third-party AI APIs; moderation on all AI output shown to kids; parent visibility is an invariant. (Details: `/AGENTS.md` §1.9.)

@@ -9,18 +9,18 @@ adventure:
     es-MX: La Aldea del Interés
     pt-BR: A Aldeia do Juro
   description:
-    en-US: Dina and Dino reach a valley village where the local savings house gives a small prize for
+    en-US: Dina and Liruf reach a valley village where the local savings house gives a small prize for
       coins left saved for a while.
-    es-MX: Dina y Dino llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
+    es-MX: Dina y Liruf llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
       las monedas que se dejan guardadas un tiempo.
-    pt-BR: Dina e Dino chegam a uma aldeia do vale onde a casa de poupança dá um pequeno prêmio pelas
+    pt-BR: Dina e Liruf chegam a uma aldeia do vale onde a casa de poupança dá um pequeno prêmio pelas
       moedas guardadas por um tempo.
-  narrative_arc: 'Dina y Dino bajan del bosque a una aldea de valle donde Dr. Rho administra la casa de
+  narrative_arc: 'Dina y Liruf bajan del bosque a una aldea de valle donde Dr. Rho administra la casa de
     ahorros del pueblo: guardar monedas ahí y dejarlas un tiempo hace aparecer un pequeño premio extra,
     la misma idea del jardín del tiempo aplicada ahora a las monedas. Aprenden a leer libretas, a plantear
     metas con costo y plazo, a abrir su propia cuenta de ahorro infantil junto a un adulto de confianza,
     y a comparar con calma sus opciones -incluyendo reconocer, con las herramientas del Faro de la Confianza,
-    una promesa de premio demasiado buena para ser verdad. Al despedirse de la aldea, Dina y Dino están
+    una promesa de premio demasiado buena para ser verdad. Al despedirse de la aldea, Dina y Liruf están
     listos para zarpar hacia un archipiélago donde no todo premio viene sin riesgo.'
 sagas:
 - position: 1
@@ -57,7 +57,7 @@ sagas:
     - position: 1
       slug: la-casa-de-piedra-del-valle
       micro_objective: Conocer la casa de ahorros de la aldea como un lugar seguro para guardar monedas.
-      narrative_beat: 'Dina y Dino bajan del bosque a un valle donde Dr. Rho los recibe en una pequeña
+      narrative_beat: 'Dina y Liruf bajan del bosque a un valle donde Dr. Rho los recibe en una pequeña
         casa de piedra llena de libretas y cofres: la casa de ahorros de la aldea.'
       difficulty: 1
       suggested_families:
@@ -67,7 +67,7 @@ sagas:
       slug: colchon-o-casa-de-ahorros
       micro_objective: Comparar guardar monedas en casa con guardarlas en la casa de ahorros de la aldea.
       narrative_beat: Zara Vex compara guardar monedas debajo del colchón con guardarlas en la casa de
-        ahorros, y pide a Dino notar las diferencias.
+        ahorros, y pide a Liruf notar las diferencias.
       difficulty: 2
       suggested_families:
       - analyze
@@ -128,7 +128,7 @@ sagas:
       slug: de-donde-salio-el-premio
       micro_objective: Explicar que el premio aparece por guardar el dinero con el tiempo, no por trabajo
         adicional.
-      narrative_beat: Zara Vex pregunta a Dino de dónde salió el premio, ya que nadie trabajó por esas
+      narrative_beat: Zara Vex pregunta a Liruf de dónde salió el premio, ya que nadie trabajó por esas
         monedas extra.
       difficulty: 2
       suggested_families:
@@ -186,7 +186,7 @@ sagas:
       slug: calcular-el-premio-de-veinte-monedas
       micro_objective: Calcular el premio correspondiente a una cantidad guardada menor, usando la misma
         proporción.
-      narrative_beat: Zara Vex reta a Dino a calcular el premio de una cantidad más pequeña guardada,
+      narrative_beat: Zara Vex reta a Liruf a calcular el premio de una cantidad más pequeña guardada,
         usando la misma proporción.
       difficulty: 2
       suggested_families:
@@ -230,7 +230,7 @@ sagas:
     - position: 1
       slug: la-caja-bajo-la-cama-y-la-libreta
       micro_objective: 'Observar dos formas distintas de guardar monedas: en casa y en la casa de ahorros.'
-      narrative_beat: Dino guarda sus monedas en una caja bajo su cama, mientras Dina las lleva a la casa
+      narrative_beat: Liruf guarda sus monedas en una caja bajo su cama, mientras Dina las lleva a la casa
         de ahorros de la aldea.
       difficulty: 1
       suggested_families:
@@ -240,7 +240,7 @@ sagas:
       slug: un-ano-despues
       micro_objective: Comparar el resultado de un año guardando en casa contra guardando en la casa de
         ahorros.
-      narrative_beat: Un año después, Dr. Rho muestra que las monedas de Dino siguen siendo las mismas,
+      narrative_beat: Un año después, Dr. Rho muestra que las monedas de Liruf siguen siendo las mismas,
         mientras que las de Dina crecieron con el premio.
       difficulty: 2
       suggested_families:
@@ -250,17 +250,17 @@ sagas:
       slug: por-que-no-cambiaron-mis-monedas
       micro_objective: Explicar por qué guardar en casa no genera premio, mientras que la casa de ahorros
         sí.
-      narrative_beat: Zara Vex pregunta a Dino por qué cree que sus monedas no cambiaron, mientras que
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que sus monedas no cambiaron, mientras que
         las de Dina sí.
       difficulty: 2
       suggested_families:
       - choice
       - story
     - position: 4
-      slug: dino-decide-cambiar
+      slug: liruf-decide-cambiar
       micro_objective: Aplicar la decisión de guardar en la casa de ahorros en vez de en casa, explicando
         la razón.
-      narrative_beat: Frente a una nueva decisión, Dino elige guardar sus próximas monedas en la casa
+      narrative_beat: Frente a una nueva decisión, Liruf elige guardar sus próximas monedas en la casa
         de ahorros, explicando su razón.
       difficulty: 3
       suggested_families:
@@ -302,7 +302,7 @@ sagas:
     - position: 2
       slug: calcular-el-tercer-ano
       micro_objective: Calcular el total de un tercer año siguiendo el mismo patrón de crecimiento mostrado.
-      narrative_beat: Zara Vex pide a Dino calcular el total después de un tercer año, siguiendo el mismo
+      narrative_beat: Zara Vex pide a Liruf calcular el total después de un tercer año, siguiendo el mismo
         patrón que Dr. Rho mostró.
       difficulty: 2
       suggested_families:
@@ -357,7 +357,7 @@ sagas:
     - position: 2
       slug: leer-una-libreta-llena
       micro_objective: Leer una libreta de ahorros llena e identificar sus partes correctamente.
-      narrative_beat: Zara Vex muestra una libreta ya llena y pide a Dino identificar cuánto se guardó
+      narrative_beat: Zara Vex muestra una libreta ya llena y pide a Liruf identificar cuánto se guardó
         y cuánto fue premio.
       difficulty: 2
       suggested_families:
@@ -410,7 +410,7 @@ sagas:
     - position: 2
       slug: calcular-y-comparar-el-premio
       micro_objective: Calcular y comparar el premio de dos libretas distintas.
-      narrative_beat: Zara Vex pide a Dino calcular el premio de cada libreta y comparar cuál ganó más.
+      narrative_beat: Zara Vex pide a Liruf calcular el premio de cada libreta y comparar cuál ganó más.
       difficulty: 2
       suggested_families:
       - money
@@ -465,7 +465,7 @@ sagas:
     - position: 2
       slug: calcular-mi-premio-futuro
       micro_objective: Calcular el premio esperado de un plan propio después de uno y de dos años.
-      narrative_beat: Zara Vex ayuda a Dino a calcular cuánto premio ganaría su plan después de uno y
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto premio ganaría su plan después de uno y
         de dos años.
       difficulty: 2
       suggested_families:
@@ -529,7 +529,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo calcular el premio de una cantidad guardada y
         por qué guardar en casa no genera premio.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -581,7 +581,7 @@ sagas:
       slug: un-recuerdo-del-bosque
       micro_objective: Recordar, tal como se aprendió antes, que las cosas crecen porque pasa el tiempo,
         no por más esfuerzo.
-      narrative_beat: Zara Vex trae un recuerdo del bosque y pide a Dino recordarlo sin ayuda, antes de
+      narrative_beat: Zara Vex trae un recuerdo del bosque y pide a Liruf recordarlo sin ayuda, antes de
         mezclarlo con el premio de la aldea.
       difficulty: 2
       suggested_families:
@@ -601,7 +601,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la idea del crecimiento con el tiempo del
         bosque y el premio de la aldea.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la aldea usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -672,7 +672,7 @@ sagas:
     - position: 3
       slug: por-que-esa-meta-y-no-otra
       micro_objective: Explicar la razón detrás de la elección de una meta propia de ahorro.
-      narrative_beat: Zara Vex pregunta a Dino qué meta elegiría él, y por qué esa y no otra.
+      narrative_beat: Zara Vex pregunta a Liruf qué meta elegiría él, y por qué esa y no otra.
       difficulty: 2
       suggested_families:
       - story
@@ -718,7 +718,7 @@ sagas:
     - position: 2
       slug: otra-meta-otro-monto
       micro_objective: Aplicar el mismo cálculo de semanas a una meta y un monto semanal distintos.
-      narrative_beat: Zara Vex reta a Dino a calcular las semanas que le faltan para una meta distinta,
+      narrative_beat: Zara Vex reta a Liruf a calcular las semanas que le faltan para una meta distinta,
         con otro monto semanal.
       difficulty: 2
       suggested_families:
@@ -772,7 +772,7 @@ sagas:
     - position: 2
       slug: con-premio-y-sin-premio
       micro_objective: Comparar el tiempo necesario para una meta con y sin contar el premio acumulado.
-      narrative_beat: 'Zara Vex compara dos cálculos de Dino: uno sin contar el premio, y otro contándolo,
+      narrative_beat: 'Zara Vex compara dos cálculos de Liruf: uno sin contar el premio, y otro contándolo,
         para ver la diferencia.'
       difficulty: 2
       suggested_families:
@@ -815,7 +815,7 @@ sagas:
     - position: 1
       slug: cuanto-de-mi-domingo
       micro_objective: Reconocer que el monto semanal de ahorro debe elegirse sin descuidar otras necesidades.
-      narrative_beat: Dr. Rho le pregunta a Dino cuánto de su domingo semanal podría guardar sin dejar
+      narrative_beat: Dr. Rho le pregunta a Liruf cuánto de su domingo semanal podría guardar sin dejar
         de comprar lo que necesita.
       difficulty: 1
       suggested_families:
@@ -834,7 +834,7 @@ sagas:
       slug: un-monto-demasiado-alto
       micro_objective: Explicar el riesgo de elegir un monto semanal de ahorro demasiado alto para la
         propia situación.
-      narrative_beat: Dr. Rho pregunta a Dino qué pasaría si eligiera un monto semanal demasiado alto
+      narrative_beat: Dr. Rho pregunta a Liruf qué pasaría si eligiera un monto semanal demasiado alto
         para lo que puede aportar.
       difficulty: 2
       suggested_families:
@@ -886,7 +886,7 @@ sagas:
     - position: 3
       slug: el-proceso-no-cambia
       micro_objective: Explicar que el proceso de ahorro es el mismo, sin importar el tamaño de la meta.
-      narrative_beat: Zara Vex pregunta a Dino si el proceso para ahorrar cambia según el tamaño de la
+      narrative_beat: Zara Vex pregunta a Liruf si el proceso para ahorrar cambia según el tamaño de la
         meta.
       difficulty: 2
       suggested_families:
@@ -921,7 +921,7 @@ sagas:
       slug: el-doble-cada-semana
       micro_objective: Observar que guardar más cada semana reduce el número de semanas necesarias para
         una meta.
-      narrative_beat: Dr. Rho muestra a Dino que, si duplica lo que guarda cada semana, le tomará la mitad
+      narrative_beat: Dr. Rho muestra a Liruf que, si duplica lo que guarda cada semana, le tomará la mitad
         de semanas llegar a su meta.
       difficulty: 1
       suggested_families:
@@ -940,7 +940,7 @@ sagas:
     - position: 3
       slug: que-tendria-que-ajustar
       micro_objective: Reconocer qué ajustes serían necesarios para poder guardar más cada semana.
-      narrative_beat: Dr. Rho pregunta a Dino qué tendría que ajustar en su vida para poder guardar más
+      narrative_beat: Dr. Rho pregunta a Liruf qué tendría que ajustar en su vida para poder guardar más
         cada semana.
       difficulty: 2
       suggested_families:
@@ -986,7 +986,7 @@ sagas:
     - position: 2
       slug: calcular-el-avance-combinado
       micro_objective: Calcular el avance de una meta combinando el ahorro semanal y el premio acumulado.
-      narrative_beat: 'Zara Vex reta a Dino a calcular su meta combinando ambos elementos: lo que guarda
+      narrative_beat: 'Zara Vex reta a Liruf a calcular su meta combinando ambos elementos: lo que guarda
         y lo que gana de premio.'
       difficulty: 2
       suggested_families:
@@ -1100,7 +1100,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo el premio ayuda a llegar antes y cómo elegir un
         monto semanal razonable.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1151,7 +1151,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-primera-saga
       micro_objective: Recordar, tal como se aprendió antes, cómo leer una libreta de ahorros.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con las metas.
       difficulty: 2
       suggested_families:
@@ -1171,7 +1171,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la lectura de una libreta y el cálculo de
         una meta.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la aldea usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1231,7 +1231,7 @@ sagas:
       micro_objective: Comparar una libreta personal con una cuenta de ahorro infantil manejada junto
         a un adulto.
       narrative_beat: Zara Vex compara una libreta personal con una cuenta de ahorro infantil, y pide
-        a Dino notar la diferencia principal.
+        a Liruf notar la diferencia principal.
       difficulty: 2
       suggested_families:
       - choice
@@ -1285,7 +1285,7 @@ sagas:
     - position: 2
       slug: quienes-podrian-acompanarme
       micro_objective: Identificar qué adultos de confianza podrían acompañar a abrir una cuenta infantil.
-      narrative_beat: Zara Vex pregunta a Dino quiénes podrían ser esos adultos que lo acompañarían a
+      narrative_beat: Zara Vex pregunta a Liruf quiénes podrían ser esos adultos que lo acompañarían a
         abrir su cuenta.
       difficulty: 2
       suggested_families:
@@ -1341,7 +1341,7 @@ sagas:
       micro_objective: Relacionar el crecimiento gradual de una cuenta con el crecimiento gradual de un
         árbol (aventura 1).
       narrative_beat: Zara Vex compara el crecimiento de la cuenta con el crecimiento del árbol del bosque,
-        y pide a Dino notar el parecido.
+        y pide a Liruf notar el parecido.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1397,7 +1397,7 @@ sagas:
       slug: como-la-semilla-que-no-se-toca
       micro_objective: Relacionar revisar la cuenta con demasiada frecuencia con la lección de no desenterrar
         una semilla antes de tiempo.
-      narrative_beat: Zara Vex recuerda a Dino la lección de la semilla que no se toca (aventura 1) y
+      narrative_beat: Zara Vex recuerda a Liruf la lección de la semilla que no se toca (aventura 1) y
         pregunta cómo se relaciona con revisar la cuenta todo el tiempo.
       difficulty: 2
       suggested_families:
@@ -1444,7 +1444,7 @@ sagas:
       slug: la-alcancia-de-barro-y-la-cuenta
       micro_objective: Observar la diferencia principal entre una alcancía común y una cuenta de ahorro
         infantil.
-      narrative_beat: Dino compara su alcancía de barro con la cuenta de ahorro de Dina, y nota que la
+      narrative_beat: Liruf compara su alcancía de barro con la cuenta de ahorro de Dina, y nota que la
         de Dina también recibe un premio.
       difficulty: 1
       suggested_families:
@@ -1464,7 +1464,7 @@ sagas:
       slug: la-alcancia-tambien-es-util
       micro_objective: Reconocer que una alcancía también es útil, aunque no dé premio como una cuenta
         de ahorro.
-      narrative_beat: Zara Vex pregunta a Dino si una alcancía también es útil, aunque no dé premio.
+      narrative_beat: Zara Vex pregunta a Liruf si una alcancía también es útil, aunque no dé premio.
       difficulty: 2
       suggested_families:
       - choice
@@ -1472,7 +1472,7 @@ sagas:
     - position: 4
       slug: usar-ambas-para-cosas-distintas
       micro_objective: Aplicar la decisión de usar alcancía y cuenta de ahorro para propósitos distintos.
-      narrative_beat: 'Frente a una nueva decisión, Dino elige usar ambas: alcancía para lo cercano y
+      narrative_beat: 'Frente a una nueva decisión, Liruf elige usar ambas: alcancía para lo cercano y
         cuenta de ahorro para metas más grandes.'
       difficulty: 3
       suggested_families:
@@ -1509,7 +1509,7 @@ sagas:
       slug: que-si-y-que-no
       micro_objective: Clasificar comportamientos correctos e incorrectos respecto al manejo de una cuenta
         de ahorro.
-      narrative_beat: Zara Vex ordena, junto con Dino, una lista de qué sí y qué no se debe hacer con
+      narrative_beat: Zara Vex ordena, junto con Liruf, una lista de qué sí y qué no se debe hacer con
         una cuenta de ahorro infantil.
       difficulty: 2
       suggested_families:
@@ -1564,7 +1564,7 @@ sagas:
     - position: 2
       slug: mi-lista-de-preguntas
       micro_objective: Ordenar una lista de preguntas concretas útiles antes de abrir una cuenta de ahorro.
-      narrative_beat: Zara Vex ayuda a Dino a ordenar una lista de preguntas útiles para hacer antes de
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar una lista de preguntas útiles para hacer antes de
         abrir cualquier cuenta.
       difficulty: 2
       suggested_families:
@@ -1619,7 +1619,7 @@ sagas:
     - position: 2
       slug: los-pasos-de-la-visita
       micro_objective: Ordenar los pasos correctos de una visita a la casa de ahorros para abrir una cuenta.
-      narrative_beat: 'Zara Vex ayuda a Dino a ordenar los pasos de la visita: llevar a un adulto, hacer
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos de la visita: llevar a un adulto, hacer
         sus preguntas, y escuchar las respuestas.'
       difficulty: 2
       suggested_families:
@@ -1635,10 +1635,10 @@ sagas:
       - storyplay
       - choice
     - position: 4
-      slug: contarle-a-dino-lo-aprendido
+      slug: contarle-a-liruf-lo-aprendido
       micro_objective: Aplicar con seguridad todo lo aprendido explicando el proceso completo de abrir
         una cuenta.
-      narrative_beat: Al salir de su primera visita con su cuenta ya abierta, Dina explica a Dino todo
+      narrative_beat: Al salir de su primera visita con su cuenta ya abierta, Dina explica a Liruf todo
         lo que aprendió del proceso.
       difficulty: 3
       suggested_families:
@@ -1683,7 +1683,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué la cuenta crece poco a poco y por qué revisarla
         solo una vez al mes.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1734,7 +1734,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-segunda-saga
       micro_objective: Recordar, tal como se aprendió antes, cómo elegir una meta concreta de ahorro.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de las metas y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las metas y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con la cuenta infantil.
       difficulty: 2
       suggested_families:
@@ -1754,7 +1754,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la elección de una meta y el cuidado de una
         cuenta infantil.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la aldea usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1805,7 +1805,7 @@ sagas:
     - position: 1
       slug: frente-al-mercado-del-valle
       micro_objective: Reconocer, en conjunto, las dos formas de guardar dinero conocidas hasta ahora.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino frente al mercado del valle para repasar las dos formas
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente al mercado del valle para repasar las dos formas
         de guardar que han conocido: alcancía y casa de ahorros.'
       difficulty: 1
       suggested_families:
@@ -1814,7 +1814,7 @@ sagas:
     - position: 2
       slug: ventajas-en-dos-columnas
       micro_objective: Clasificar las ventajas de la alcancía y de la casa de ahorros en columnas separadas.
-      narrative_beat: Zara Vex pide a Dino ordenar las ventajas de cada forma de guardar en dos columnas
+      narrative_beat: Zara Vex pide a Liruf ordenar las ventajas de cada forma de guardar en dos columnas
         distintas.
       difficulty: 2
       suggested_families:
@@ -1860,7 +1860,7 @@ sagas:
       slug: la-alcancia-igual-y-la-cuenta-crecida
       micro_objective: Observar la diferencia de crecimiento entre una alcancía y una cuenta con premio
         después de un año.
-      narrative_beat: Dr. Rho pone lado a lado la alcancía de Dino, con la misma cantidad desde hace un
+      narrative_beat: Dr. Rho pone lado a lado la alcancía de Liruf, con la misma cantidad desde hace un
         año, y la cuenta de Dina, que creció con el premio.
       difficulty: 1
       suggested_families:
@@ -1870,7 +1870,7 @@ sagas:
       slug: calcular-cuanto-crecio
       micro_objective: Calcular y comparar el crecimiento de una cuenta con premio contra una alcancía
         sin premio.
-      narrative_beat: Zara Vex pide a Dino calcular cuánto creció la cuenta de Dina, comparado con la
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto creció la cuenta de Dina, comparado con la
         alcancía que se quedó igual.
       difficulty: 2
       suggested_families:
@@ -1880,7 +1880,7 @@ sagas:
       slug: la-alcancia-no-es-mala
       micro_objective: Reconocer que la alcancía no es mala, solo cumple un propósito distinto al de una
         cuenta con premio.
-      narrative_beat: Dr. Rho pregunta a Dino si eso significa que la alcancía es mala, o simplemente
+      narrative_beat: Dr. Rho pregunta a Liruf si eso significa que la alcancía es mala, o simplemente
         que sirve para otra cosa.
       difficulty: 2
       suggested_families:
@@ -1916,7 +1916,7 @@ sagas:
       slug: mis-cien-monedas-nunca-desaparecen
       micro_objective: Reconocer que la cantidad guardada al inicio se mantiene segura y solo se le suma
         el premio.
-      narrative_beat: 'Dr. Rho tranquiliza a Dino explicándole que sus 100 monedas guardadas nunca desaparecen:
+      narrative_beat: 'Dr. Rho tranquiliza a Liruf explicándole que sus 100 monedas guardadas nunca desaparecen:
         siempre siguen ahí, y el premio solo se suma encima.'
       difficulty: 1
       suggested_families:
@@ -1926,7 +1926,7 @@ sagas:
       slug: cual-parte-es-cual
       micro_objective: Distinguir, en una libreta, la cantidad guardada original de la cantidad sumada
         por premio.
-      narrative_beat: Zara Vex muestra la libreta de Dina y pide a Dino identificar cuál parte es la que
+      narrative_beat: Zara Vex muestra la libreta de Dina y pide a Liruf identificar cuál parte es la que
         guardó y cuál es el premio sumado.
       difficulty: 2
       suggested_families:
@@ -1976,8 +1976,8 @@ sagas:
       slug: el-doble-de-tus-monedas-manana
       micro_objective: Reconocer una promesa de premio exageradamente alta y rápida como una señal de
         alerta.
-      narrative_beat: Un vendedor del mercado del valle le promete a Dino 'el doble de tus monedas mañana
-        mismo' si se las entrega hoy, y Dino siente la tentación de aceptar.
+      narrative_beat: Un vendedor del mercado del valle le promete a Liruf 'el doble de tus monedas mañana
+        mismo' si se las entrega hoy, y Liruf siente la tentación de aceptar.
       difficulty: 1
       suggested_families:
       - story
@@ -1996,7 +1996,7 @@ sagas:
       slug: recordar-la-pausa-del-faro
       micro_objective: Relacionar la pausa antes de decidir con lo ya aprendido sobre promesas demasiado
         buenas para ser verdad.
-      narrative_beat: Zara Vex recuerda a Dino la lección del faro sobre pausar y pensar antes de aceptar
+      narrative_beat: Zara Vex recuerda a Liruf la lección del faro sobre pausar y pensar antes de aceptar
         algo que suena demasiado bueno.
       difficulty: 2
       suggested_families:
@@ -2006,7 +2006,7 @@ sagas:
       slug: pausar-comparar-y-avisar
       micro_objective: Aplicar la decisión de pausar, comparar y avisar a un adulto frente a una promesa
         de premio exagerada.
-      narrative_beat: Frente a una nueva promesa exagerada, Dino decide pausar, comparar y avisar a un
+      narrative_beat: Frente a una nueva promesa exagerada, Liruf decide pausar, comparar y avisar a un
         adulto antes de aceptar.
       difficulty: 3
       suggested_families:
@@ -2040,7 +2040,7 @@ sagas:
     - position: 2
       slug: ordenar-segun-cual-conviene-mas
       micro_objective: Ordenar varias opciones de ahorro según cuál conviene más para una meta concreta.
-      narrative_beat: Zara Vex ayuda a Dino a ordenar las tres opciones según cuál le conviene más para
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las tres opciones según cuál le conviene más para
         su meta actual.
       difficulty: 2
       suggested_families:
@@ -2095,7 +2095,7 @@ sagas:
     - position: 2
       slug: identificar-la-senal-en-el-valle
       micro_objective: Identificar, en una situación nueva de ahorro, una señal de alerta ya conocida.
-      narrative_beat: Zara Vex presenta una situación nueva del valle y pide a Dino identificar qué señal
+      narrative_beat: Zara Vex presenta una situación nueva del valle y pide a Liruf identificar qué señal
         de alerta del faro aparece.
       difficulty: 2
       suggested_families:
@@ -2152,7 +2152,7 @@ sagas:
       slug: ordenar-de-mejor-a-peor
       micro_objective: Ordenar tres opciones de guardar dinero de mejor a peor, con una razón para cada
         una.
-      narrative_beat: Zara Vex ayuda a Dino a ordenar las tres opciones de mejor a peor, explicando el
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las tres opciones de mejor a peor, explicando el
         porqué de cada lugar.
       difficulty: 2
       suggested_families:
@@ -2205,7 +2205,7 @@ sagas:
     - position: 2
       slug: cuanto-donde-y-por-cuanto-tiempo
       micro_objective: Aplicar una decisión final de ahorro incluyendo cuánto, dónde y por cuánto tiempo.
-      narrative_beat: Zara Vex pide a Dino explicar cuánto guardaría, dónde, y por cuánto tiempo, según
+      narrative_beat: Zara Vex pide a Liruf explicar cuánto guardaría, dónde, y por cuánto tiempo, según
         su decisión final.
       difficulty: 2
       suggested_families:
@@ -2268,7 +2268,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué el principal nunca desaparece y cómo reconocer
         una promesa exagerada.
-      narrative_beat: Dino saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2320,7 +2320,7 @@ sagas:
       slug: un-recuerdo-de-la-tercera-saga
       micro_objective: Recordar, tal como se aprendió antes, la diferencia entre una alcancía y una cuenta
         de ahorro infantil.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de la cuenta infantil y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la cuenta infantil y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con el valle que compara.
       difficulty: 2
       suggested_families:
@@ -2340,7 +2340,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, las preguntas antes de decidir y la comparación
         calmada de opciones.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la aldea usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -2396,7 +2396,7 @@ sagas:
     - position: 1
       slug: recordar-la-casa-de-ahorros
       micro_objective: Recordar, sin ayuda nueva, qué es la casa de ahorros de la aldea y para qué sirve.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino frente a la casa de ahorros y anuncia la Gran Misión:
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente a la casa de ahorros y anuncia la Gran Misión:
         recorrer una vez más todo lo aprendido en la aldea.'
       difficulty: 1
       suggested_families:
@@ -2405,7 +2405,7 @@ sagas:
     - position: 2
       slug: recordar-el-premio-que-aparece
       micro_objective: Recordar por qué guardar monedas por un tiempo hace aparecer un premio extra.
-      narrative_beat: Zara Vex presenta una escena nueva y reta a Dino a recordar, sin ayuda, por qué
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, por qué
         aparece un premio al guardar monedas.
       difficulty: 1
       suggested_families:
@@ -2433,7 +2433,7 @@ sagas:
     slug: la-gran-mision-de-las-metas
     kind: review_quest
     title_es: La Gran Misión de las Metas
-    concept: Dina y Dino recuerdan cómo elegir una meta, calcular las semanas necesarias, y cómo el premio
+    concept: Dina y Liruf recuerdan cómo elegir una meta, calcular las semanas necesarias, y cómo el premio
       ayuda a llegar antes.
     learning_objective: Al final, el niño puede recordar y aplicar cómo elegir una meta, calcular semanas,
       y reconocer la ayuda del premio.
@@ -2461,7 +2461,7 @@ sagas:
     - position: 2
       slug: calcular-semanas-de-memoria
       micro_objective: Recordar cómo calcular cuántas semanas faltan para lograr una meta.
-      narrative_beat: Dr. Rho pide a Dino calcular, sin ayuda, cuántas semanas le faltarían a una nueva
+      narrative_beat: Dr. Rho pide a Liruf calcular, sin ayuda, cuántas semanas le faltarían a una nueva
         meta de la Gran Misión.
       difficulty: 1
       suggested_families:
@@ -2516,7 +2516,7 @@ sagas:
     - position: 2
       slug: recordar-quien-ayuda
       micro_objective: Recordar quién puede ayudar a abrir una cuenta de ahorro infantil.
-      narrative_beat: Zara Vex reta a Dino a recordar, de memoria, quién puede ayudarlo a abrir su propia
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, quién puede ayudarlo a abrir su propia
         cuenta.
       difficulty: 1
       suggested_families:
@@ -2574,7 +2574,7 @@ sagas:
     - position: 2
       slug: recordar-cual-crece-mas
       micro_objective: Recordar por qué una cuenta con premio crece más rápido que una alcancía.
-      narrative_beat: Zara Vex reta a Dino a recordar, de memoria, por qué una cuenta con premio crece
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, por qué una cuenta con premio crece
         más rápido que una alcancía.
       difficulty: 1
       suggested_families:
@@ -2623,7 +2623,7 @@ sagas:
       slug: las-cuatro-areas-de-la-aldea
       micro_objective: 'Recordar, en conjunto, las cuatro áreas de la aldea del interés: premio, metas,
         cuenta y comparación.'
-      narrative_beat: Dr. Rho reúne a Dina y Dino frente a la casa de ahorros y repasa las cuatro áreas
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente a la casa de ahorros y repasa las cuatro áreas
         de la aldea, una por una.
       difficulty: 1
       suggested_families:
@@ -2633,7 +2633,7 @@ sagas:
       slug: ayudar-a-un-vecino-nuevo
       micro_objective: Aplicar las cuatro áreas de la aldea para ayudar a un vecino nuevo a entender la
         casa de ahorros.
-      narrative_beat: Zara Vex presenta a un vecino nuevo de la aldea y reta a Dino a guiarlo por las
+      narrative_beat: Zara Vex presenta a un vecino nuevo de la aldea y reta a Liruf a guiarlo por las
         cuatro áreas del ahorro.
       difficulty: 2
       suggested_families:
@@ -2664,7 +2664,7 @@ sagas:
     kind: review_quest
     title_es: La Aldea del Interés se Despide
     concept: El gran cierre de la aventura celebra todo lo aprendido en la aldea del interés y prepara
-      a Dina y Dino para el archipiélago, donde descubrirán que no todo premio viene sin riesgo.
+      a Dina y Liruf para el archipiélago, donde descubrirán que no todo premio viene sin riesgo.
     learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
       en la Gran Misión de la aldea del interés.
     key_vocabulary:
@@ -2692,7 +2692,7 @@ sagas:
     - position: 2
       slug: los-pasos-de-la-aldea-unidos
       micro_objective: Recordar en conjunto los pasos de la aldea del interés unidos en un solo aprendizaje.
-      narrative_beat: 'Zara Vex recuerda a Dino cada paso del camino: el premio, las metas, la cuenta
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: el premio, las metas, la cuenta
         y comparar con calma, ahora todos unidos.'
       difficulty: 1
       suggested_families:
@@ -2711,7 +2711,7 @@ sagas:
       slug: la-aldea-celebra-y-se-despide
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión de
         la aldea del interés.
-      narrative_beat: Con la casa de ahorros brillando a su alrededor, Dina celebra junto a Dr. Rho, Dino
+      narrative_beat: Con la casa de ahorros brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf
         y Zara Vex el cierre de la aldea, lista para descubrir qué riesgos y qué premios guarda el archipiélago.
       difficulty: 2
       suggested_families:

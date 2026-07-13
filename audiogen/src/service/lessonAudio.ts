@@ -66,7 +66,6 @@ export async function narrateLesson(
 
   const units = extractNarratables(row.document);
   const languageType = languageTypeFor(locale);
-  const model = config.TTS_MODEL;
   const existing = row.audio?.units ?? {};
 
   const failed: NarrateLessonFailure[] = [];
@@ -75,10 +74,12 @@ export async function narrateLesson(
   const finalUnits: Record<string, AudioUnitEntry> = {};
 
   await runPool(units, config.AUDIOGEN_CONCURRENCY, async (unit) => {
-    // Voice = the segment's narrator character (COURSE_ENGINE.md §7),
-    // resolved per unit so a lesson can mix narrators; falls back to the
-    // locale default when unnarrated or the character has no override yet.
-    const voice = voiceFor(unit.character, locale, config);
+    // Voice AND model = the segment's narrator character (COURSE_ENGINE.md
+    // §7), resolved per unit so a lesson can mix narrators; falls back to
+    // the locale default + TTS_MODEL when unnarrated or the character has
+    // no override yet. A character override always pairs with the clone
+    // model — DashScope binds a voice to the exact model it was enrolled under.
+    const { voice, model } = voiceFor(unit.character, locale, config);
     const hash = contentHash(unit.text, voice, model);
     const prior = existing[unit.unit_id];
 

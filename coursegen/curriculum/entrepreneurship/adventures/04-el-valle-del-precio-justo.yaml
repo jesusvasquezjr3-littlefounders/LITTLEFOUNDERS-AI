@@ -12,7 +12,7 @@ adventure:
     en-US: Descend into a market valley and learn to turn cost into a fair price — one that covers your work and still respects your customer.
     es-MX: "Baja a un valle de mercado y aprende a convertir el costo en un precio justo: uno que cubra tu trabajo y aún así respete a tu cliente."
     pt-BR: "Desça a um vale de mercado e aprenda a transformar o custo em um preço justo: um que cubra seu trabalho e ainda assim respeite seu cliente."
-  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Dino, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Dino aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
+  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Liruf, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Liruf aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
 sagas:
   - position: 1
     slug: costo-precio-y-ganancia
@@ -59,7 +59,7 @@ sagas:
           - position: 3
             slug: sumo-el-costo-de-dos-materiales
             micro_objective: Suma el costo de 2 a 3 materiales sencillos para obtener el costo total de un producto.
-            narrative_beat: Dino suma el costo del hilo y las cuentas para saber cuánto le costó hacer su pulsera.
+            narrative_beat: Liruf suma el costo del hilo y las cuentas para saber cuánto le costó hacer su pulsera.
             difficulty: 2
             suggested_families:
               - money
@@ -104,7 +104,7 @@ sagas:
           - position: 3
             slug: comparo-costo-y-precio-de-un-producto
             micro_objective: Compara el costo y el precio de un mismo producto y reconoce que son cantidades distintas.
-            narrative_beat: Dino compara lo que le costó su pulsera con lo que decidió pedir por ella.
+            narrative_beat: Liruf compara lo que le costó su pulsera con lo que decidió pedir por ella.
             difficulty: 2
             suggested_families:
               - choice
@@ -132,9 +132,9 @@ sagas:
         parent_check: Pregúntale a {{name}} qué pasaría si vendiera su producto por menos de lo que le costó hacerlo.
         lessons:
           - position: 1
-            slug: dino-casi-vende-barato
+            slug: liruf-casi-vende-barato
             micro_objective: Reconoce en la historia por qué vender por menos del costo sería un error.
-            narrative_beat: Dino está a punto de vender su carrito en $5, aunque los materiales le costaron $8.
+            narrative_beat: Liruf está a punto de vender su carrito en $5, aunque los materiales le costaron $8.
             difficulty: 1
             suggested_families:
               - story
@@ -199,7 +199,7 @@ sagas:
           - position: 3
             slug: identifico-cuanto-quedo
             micro_objective: Identifica, en 2 a 3 ejemplos, cuánto dinero le quedó a alguien después de vender su producto.
-            narrative_beat: Dino identifica cuánto dinero le quedó después de vender su carrito y pagar sus materiales.
+            narrative_beat: Liruf identifica cuánto dinero le quedó después de vender su carrito y pagar sus materiales.
             difficulty: 2
             suggested_families:
               - choice
@@ -246,7 +246,7 @@ sagas:
           - position: 3
             slug: calculo-la-ganancia-con-la-resta
             micro_objective: Calcula, sin ayuda, la ganancia de 2 a 3 productos restando el costo del precio.
-            narrative_beat: Dino calcula la ganancia de su carrito restando el costo del precio que decidió pedir.
+            narrative_beat: Liruf calcula la ganancia de su carrito restando el costo del precio que decidió pedir.
             difficulty: 2
             suggested_families:
               - money
@@ -275,9 +275,9 @@ sagas:
         parent_check: "Ayuda a {{name}} a calcular, paso a paso, la ganancia real de su propio producto: costo, precio y resta."
         lessons:
           - position: 1
-            slug: dino-calcula-su-primera-ganancia
+            slug: liruf-calcula-su-primera-ganancia
             micro_objective: Reconoce en la historia los pasos que sigue un personaje para calcular su primera ganancia real.
-            narrative_beat: Dino anota su costo, anota su precio, y hace la resta para calcular su primera ganancia real.
+            narrative_beat: Liruf anota su costo, anota su precio, y hace la resta para calcular su primera ganancia real.
             difficulty: 1
             suggested_families:
               - story
@@ -337,7 +337,7 @@ sagas:
           - position: 3
             slug: comparo-dos-formas-de-ganar-mas
             micro_objective: Compara bajar el costo con subir el precio, y reconoce que ambas pueden aumentar la ganancia.
-            narrative_beat: Dino compara reusar un material con subir un poquito el precio, y ve que ambas formas le dan más ganancia.
+            narrative_beat: Liruf compara reusar un material con subir un poquito el precio, y ve que ambas formas le dan más ganancia.
             difficulty: 2
             suggested_families:
               - choice
@@ -382,7 +382,7 @@ sagas:
           - position: 3
             slug: armo-el-reporte-de-un-producto-nuevo
             micro_objective: Arma, sin ayuda, el reporte de costo, precio y ganancia de un producto nuevo en la historia.
-            narrative_beat: Dino arma con calma el reporte completo de costo, precio y ganancia de su carrito mejorado.
+            narrative_beat: Liruf arma con calma el reporte completo de costo, precio y ganancia de su carrito mejorado.
             difficulty: 2
             suggested_families:
               - money
@@ -437,7 +437,7 @@ sagas:
           - position: 3
             slug: elijo-el-precio-mejor-calculado-del-cofre
             micro_objective: Elige, entre 2 precios recordados, cuál cubría mejor el costo y dejaba más ganancia.
-            narrative_beat: Dino compara dos precios guardados en el cofre y decide cuál dejaba más ganancia.
+            narrative_beat: Liruf compara dos precios guardados en el cofre y decide cuál dejaba más ganancia.
             difficulty: 2
             suggested_families:
               - choice
@@ -488,7 +488,7 @@ sagas:
           - position: 3
             slug: ordeno-de-la-confianza-a-la-ganancia
             micro_objective: Ordena, mezclando ambas aventuras, los pasos desde ganar la confianza de un cliente hasta calcular la ganancia justa.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde ganar la confianza hasta calcular su ganancia justa."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde ganar la confianza hasta calcular su ganancia justa."
             difficulty: 2
             suggested_families:
               - arrange
@@ -549,7 +549,7 @@ sagas:
           - position: 3
             slug: sumo-materiales-pequenos
             micro_objective: Suma el costo de 3 a 4 materiales pequeños para ver cuánto suman juntos.
-            narrative_beat: Dino suma el costo de cada material pequeño de su carrito, uno por uno.
+            narrative_beat: Liruf suma el costo de cada material pequeño de su carrito, uno por uno.
             difficulty: 2
             suggested_families:
               - money
@@ -594,7 +594,7 @@ sagas:
           - position: 3
             slug: reconozco-cuanto-tiempo-tome
             micro_objective: Ordena 3 productos según el tiempo que tomó hacer cada uno, del más rápido al más lento.
-            narrative_beat: Dino ordena sus productos según cuánto tiempo le tomó terminar cada uno.
+            narrative_beat: Liruf ordena sus productos según cuánto tiempo le tomó terminar cada uno.
             difficulty: 2
             suggested_families:
               - arrange
@@ -621,9 +621,9 @@ sagas:
         parent_check: Revisa junto con {{name}} si su lista de costos olvidó algún material pequeño, como el hilo o el empaque.
         lessons:
           - position: 1
-            slug: dino-olvida-el-hilo
+            slug: liruf-olvida-el-hilo
             micro_objective: Reconoce en la historia un material olvidado que hace que el costo total salga mal.
-            narrative_beat: Dino calcula el costo de su pulsera pero olvida contar el hilo, y su cálculo sale incompleto.
+            narrative_beat: Liruf calcula el costo de su pulsera pero olvida contar el hilo, y su cálculo sale incompleto.
             difficulty: 1
             suggested_families:
               - story
@@ -638,7 +638,7 @@ sagas:
           - position: 3
             slug: encuentro-el-material-olvidado
             micro_objective: Encuentra, en una lista de costos, cuál material específico se olvidó contar.
-            narrative_beat: Zara revisa la lista de costos de Dino y encuentra exactamente qué material faltó.
+            narrative_beat: Zara revisa la lista de costos de Liruf y encuentra exactamente qué material faltó.
             difficulty: 2
             suggested_families:
               - analyze
@@ -683,7 +683,7 @@ sagas:
           - position: 3
             slug: ordeno-mi-lista-de-materiales
             micro_objective: Ordena 4 materiales en una lista completa para un producto sencillo.
-            narrative_beat: Dino ordena su lista completa de materiales antes de calcular el costo total.
+            narrative_beat: Liruf ordena su lista completa de materiales antes de calcular el costo total.
             difficulty: 2
             suggested_families:
               - arrange
@@ -730,7 +730,7 @@ sagas:
           - position: 3
             slug: sumo-una-lista-de-tres-materiales
             micro_objective: Suma, sin ayuda, el costo total de una lista de 3 a 4 materiales de un producto nuevo.
-            narrative_beat: Dino suma con cuidado su lista completa de materiales para obtener el costo total de su carrito.
+            narrative_beat: Liruf suma con cuidado su lista completa de materiales para obtener el costo total de su carrito.
             difficulty: 2
             suggested_families:
               - money
@@ -759,9 +759,9 @@ sagas:
         parent_check: Pregúntale a {{name}} si un cartel para su puesto o una bolsita para entregar su producto también deberían contar como costo.
         lessons:
           - position: 1
-            slug: el-cartel-de-dino-tambien-costo
+            slug: el-cartel-de-liruf-tambien-costo
             micro_objective: Reconoce en la historia cómo un cartel para el puesto también forma parte del costo total.
-            narrative_beat: Dino olvida sumar el cartel que pintó para su puesto, y Rho le recuerda que ese cartel también costó.
+            narrative_beat: Liruf olvida sumar el cartel que pintó para su puesto, y Rho le recuerda que ese cartel también costó.
             difficulty: 1
             suggested_families:
               - story
@@ -822,7 +822,7 @@ sagas:
           - position: 3
             slug: encuentro-el-olvido-en-la-segunda-revision
             micro_objective: Encuentra, en una lista revisada por segunda vez, el material que faltaba contar.
-            narrative_beat: Dino revisa su lista una segunda vez y encuentra el material de apoyo que se le había escapado.
+            narrative_beat: Liruf revisa su lista una segunda vez y encuentra el material de apoyo que se le había escapado.
             difficulty: 2
             suggested_families:
               - analyze
@@ -867,7 +867,7 @@ sagas:
           - position: 3
             slug: sumo-el-costo-total-final-de-un-producto
             micro_objective: Suma, sin ayuda, el costo total final de un producto nuevo, incluyendo materiales de apoyo.
-            narrative_beat: Dino suma el costo total final de su carrito, incluyendo hasta el cartel de su puesto.
+            narrative_beat: Liruf suma el costo total final de su carrito, incluyendo hasta el cartel de su puesto.
             difficulty: 2
             suggested_families:
               - money
@@ -922,7 +922,7 @@ sagas:
           - position: 3
             slug: elijo-la-lista-mas-completa-del-cofre
             micro_objective: Elige, entre 2 listas recordadas, cuál estaba más completa.
-            narrative_beat: Dino compara dos listas guardadas en el cofre y decide cuál estaba más completa.
+            narrative_beat: Liruf compara dos listas guardadas en el cofre y decide cuál estaba más completa.
             difficulty: 2
             suggested_families:
               - choice
@@ -972,7 +972,7 @@ sagas:
           - position: 3
             slug: ordeno-de-la-lista-completa-a-la-ganancia-real
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde hacer una lista completa hasta calcular la ganancia real.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde la lista completa hasta la ganancia real de su producto."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde la lista completa hasta la ganancia real de su producto."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1030,7 +1030,7 @@ sagas:
           - position: 3
             slug: reviso-si-un-precio-es-justo
             micro_objective: Revisa, en 2 a 3 ejemplos, si el precio propuesto cubre el costo y deja una ganancia razonable.
-            narrative_beat: Dino revisa el precio de su carrito para confirmar que cubre el costo y le deja algo justo.
+            narrative_beat: Liruf revisa el precio de su carrito para confirmar que cubre el costo y le deja algo justo.
             difficulty: 2
             suggested_families:
               - money
@@ -1076,7 +1076,7 @@ sagas:
           - position: 3
             slug: cuento-cuantos-clientes-se-alejan
             micro_objective: Compara 2 escenas y reconoce en cuál se alejan más clientes por el precio alto.
-            narrative_beat: "Dino compara dos días de venta: uno con precio razonable y otro con precio demasiado alto."
+            narrative_beat: "Liruf compara dos días de venta: uno con precio razonable y otro con precio demasiado alto."
             difficulty: 2
             suggested_families:
               - choice
@@ -1104,9 +1104,9 @@ sagas:
         parent_check: Pregúntale a {{name}} qué pasaría si pusiera un precio demasiado bajo a su producto.
         lessons:
           - position: 1
-            slug: dino-casi-pierde-dinero-otra-vez
+            slug: liruf-casi-pierde-dinero-otra-vez
             micro_objective: Reconoce en la historia por qué un precio demasiado bajo no alcanza para cubrir el costo.
-            narrative_beat: "Dino pone su carrito en $5, pero sus materiales costaron $8: el precio ni siquiera cubre el costo."
+            narrative_beat: "Liruf pone su carrito en $5, pero sus materiales costaron $8: el precio ni siquiera cubre el costo."
             difficulty: 1
             suggested_families:
               - story
@@ -1209,7 +1209,7 @@ sagas:
           - position: 2
             slug: comparo-y-mi-precio-es-razonable-o-no
             micro_objective: Compara 2 precios del mismo tipo de producto y decide si el propio es razonable.
-            narrative_beat: Rho compara el precio de la limonada de Dino con la de otro puesto cercano.
+            narrative_beat: Rho compara el precio de la limonada de Liruf con la de otro puesto cercano.
             difficulty: 1
             suggested_families:
               - choice
@@ -1217,7 +1217,7 @@ sagas:
           - position: 3
             slug: ordeno-precios-de-varios-negocios
             micro_objective: Ordena 3 a 4 precios de un producto parecido, ofrecidos por distintos negocios del valle.
-            narrative_beat: Dino ordena los precios de limonada de varios puestos, del más barato al más caro.
+            narrative_beat: Liruf ordena los precios de limonada de varios puestos, del más barato al más caro.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1262,7 +1262,7 @@ sagas:
           - position: 3
             slug: ordeno-por-que-un-precio-justo-comunica-confianza
             micro_objective: Ordena 3 razones que explican por qué un precio justo comunica confianza a los clientes.
-            narrative_beat: Dino ordena las razones por las que un precio justo hace que la gente confíe más en su carrito.
+            narrative_beat: Liruf ordena las razones por las que un precio justo hace que la gente confíe más en su carrito.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1306,7 +1306,7 @@ sagas:
           - position: 3
             slug: reviso-los-tres-factores-de-mi-precio
             micro_objective: Revisa, en un producto nuevo, los tres factores (costo, comparación, confianza) antes de fijar el precio final.
-            narrative_beat: Dino revisa su costo, compara con otros puestos y piensa en la confianza antes de fijar su precio final.
+            narrative_beat: Liruf revisa su costo, compara con otros puestos y piensa en la confianza antes de fijar su precio final.
             difficulty: 2
             suggested_families:
               - choice
@@ -1351,7 +1351,7 @@ sagas:
           - position: 3
             slug: armo-mi-precio-final-de-la-saga
             micro_objective: Arma, sin ayuda, el precio final de un producto usando todo lo aprendido en la saga.
-            narrative_beat: Dino arma su precio final combinando costo, comparación y confianza, como aprendió en la saga.
+            narrative_beat: Liruf arma su precio final combinando costo, comparación y confianza, como aprendió en la saga.
             difficulty: 3
             suggested_families:
               - choice
@@ -1406,7 +1406,7 @@ sagas:
           - position: 3
             slug: elijo-el-precio-mas-justo-del-cofre
             micro_objective: Elige, entre 2 precios recordados, cuál era más justo para el cliente y el vendedor.
-            narrative_beat: Dino compara dos precios guardados en el cofre y decide cuál era más justo para ambos.
+            narrative_beat: Liruf compara dos precios guardados en el cofre y decide cuál era más justo para ambos.
             difficulty: 2
             suggested_families:
               - choice
@@ -1457,7 +1457,7 @@ sagas:
           - position: 3
             slug: ordeno-del-costo-completo-al-precio-justo
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde contar todos los costos hasta fijar un precio justo.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde contar todos sus costos hasta fijar su precio justo."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde contar todos sus costos hasta fijar su precio justo."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1501,9 +1501,9 @@ sagas:
             reason: Para reconocer que vender por menos del costo pierde dinero, primero hay que saber que un precio demasiado bajo no alcanza a cubrir el costo.
         lessons:
           - position: 1
-            slug: dino-vende-con-perdida
+            slug: liruf-vende-con-perdida
             micro_objective: Reconoce en la historia una venta que hace que un personaje termine con menos dinero del que empezó.
-            narrative_beat: "Dino vende su carrito en $6, aunque le costó $9 hacerlo: termina con menos dinero que antes."
+            narrative_beat: "Liruf vende su carrito en $6, aunque le costó $9 hacerlo: termina con menos dinero que antes."
             difficulty: 1
             suggested_families:
               - story
@@ -1519,7 +1519,7 @@ sagas:
           - position: 3
             slug: calculo-cuanto-se-perdio
             micro_objective: Calcula, en 2 a 3 ejemplos, cuánto dinero se perdió al vender por menos del costo.
-            narrative_beat: Zara calcula cuánto dinero perdió Dino al vender su carrito por menos de lo que costó.
+            narrative_beat: Zara calcula cuánto dinero perdió Liruf al vender su carrito por menos de lo que costó.
             difficulty: 2
             suggested_families:
               - money
@@ -1564,7 +1564,7 @@ sagas:
           - position: 3
             slug: encuentro-donde-se-regala-sin-querer
             micro_objective: Encuentra, en una escena, el momento exacto en que se regala sin querer parte de un producto.
-            narrative_beat: Dino revisa su puesto y encuentra el momento en que da vueltas extra de limonada sin cobrar de más.
+            narrative_beat: Liruf revisa su puesto y encuentra el momento en que da vueltas extra de limonada sin cobrar de más.
             difficulty: 2
             suggested_families:
               - analyze
@@ -1617,7 +1617,7 @@ sagas:
           - position: 4
             slug: cuido-mi-producto-para-evitar-danos
             micro_objective: Elige, sin ayuda, una forma de cuidar su producto para evitar que se dañe antes de venderse.
-            narrative_beat: Dino elige con cuidado cómo guardar su carrito para evitar que se dañe antes de poder venderlo.
+            narrative_beat: Liruf elige con cuidado cómo guardar su carrito para evitar que se dañe antes de poder venderlo.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -1639,7 +1639,7 @@ sagas:
           - position: 1
             slug: sobran-cuatro-limonadas
             micro_objective: Reconoce en la historia cómo preparar de más y no vender todo también genera una pérdida.
-            narrative_beat: "Dino prepara diez limonadas pero solo vende seis: las cuatro que sobran también costaron dinero."
+            narrative_beat: "Liruf prepara diez limonadas pero solo vende seis: las cuatro que sobran también costaron dinero."
             difficulty: 1
             suggested_families:
               - story
@@ -1699,7 +1699,7 @@ sagas:
           - position: 3
             slug: ordeno-los-pasos-para-revisar-una-perdida
             micro_objective: Ordena 3 pasos para revisar con calma la causa de una pérdida de dinero.
-            narrative_beat: "Dino ordena los pasos para revisar su pérdida: revisar el costo, el precio y lo que se vendió."
+            narrative_beat: "Liruf ordena los pasos para revisar su pérdida: revisar el costo, el precio y lo que se vendió."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1743,7 +1743,7 @@ sagas:
           - position: 3
             slug: conecto-la-causa-con-su-ajuste
             micro_objective: Empareja 3 causas de pérdida con el ajuste concreto que las resolvería.
-            narrative_beat: Dino conecta cada causa de pérdida con el ajuste concreto que podría evitarla la próxima vez.
+            narrative_beat: Liruf conecta cada causa de pérdida con el ajuste concreto que podría evitarla la próxima vez.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1788,7 +1788,7 @@ sagas:
           - position: 3
             slug: ordeno-el-camino-de-un-tropiezo-a-un-aprendizaje
             micro_objective: Ordena 3 pasos que muestran cómo un tropiezo se convierte en un aprendizaje valioso.
-            narrative_beat: "Dino ordena los pasos: perder algo de dinero, revisar la causa, ajustar y seguir adelante."
+            narrative_beat: "Liruf ordena los pasos: perder algo de dinero, revisar la causa, ajustar y seguir adelante."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1833,7 +1833,7 @@ sagas:
           - position: 3
             slug: armo-el-reporte-final-de-mi-negocio
             micro_objective: Arma, sin ayuda, el reporte final de costo, precio y ganancia de su negocio usando lo aprendido en la aventura.
-            narrative_beat: Dino organiza el reporte final de su negocio poniendo en práctica todo lo que aprendió en el valle.
+            narrative_beat: Liruf organiza el reporte final de su negocio poniendo en práctica todo lo que aprendió en el valle.
             difficulty: 3
             suggested_families:
               - money
@@ -1888,7 +1888,7 @@ sagas:
           - position: 3
             slug: elijo-la-mejor-leccion-del-cofre
             micro_objective: Elige, entre 2 tropiezos recordados, cuál dejó una lección más clara para el negocio.
-            narrative_beat: Dino compara dos tropiezos guardados en el cofre y decide cuál dejó una lección más clara.
+            narrative_beat: Liruf compara dos tropiezos guardados en el cofre y decide cuál dejó una lección más clara.
             difficulty: 2
             suggested_families:
               - choice
@@ -1938,7 +1938,7 @@ sagas:
           - position: 3
             slug: ordeno-de-la-ganancia-a-la-perdida-y-el-ajuste
             micro_objective: Ordena, mezclando varias sagas, los pasos desde calcular la ganancia hasta ajustar un negocio con pérdida.
-            narrative_beat: "Dino ordena en su mente todo el camino: desde calcular su ganancia hasta ajustar su negocio tras una pérdida."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde calcular su ganancia hasta ajustar su negocio tras una pérdida."
             difficulty: 2
             suggested_families:
               - arrange
@@ -2008,7 +2008,7 @@ sagas:
           - position: 4
             slug: aceptamos-el-reto-del-mercado
             micro_objective: Completa, sin ayuda, la aceptación del reto explicando por qué el costo, el precio y el cliente van juntos.
-            narrative_beat: "Dino y Dina aceptan el reto del mercado: el valle tiene más pruebas por delante."
+            narrative_beat: "Liruf y Dina aceptan el reto del mercado: el valle tiene más pruebas por delante."
             difficulty: 2
             suggested_families:
               - storyplay
@@ -2056,7 +2056,7 @@ sagas:
           - position: 4
             slug: superamos-la-prueba-de-los-costos-olvidados
             micro_objective: Completa, sin ayuda, la prueba revisando dos veces una lista de costos antes de darla por terminada.
-            narrative_beat: Dino y Dina superan la prueba revisando dos veces cada lista antes de darla por buena.
+            narrative_beat: Liruf y Dina superan la prueba revisando dos veces cada lista antes de darla por buena.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -2103,7 +2103,7 @@ sagas:
           - position: 4
             slug: superamos-el-consejo-de-los-precios-justos
             micro_objective: Completa, sin ayuda, el reto proponiendo un precio justo que convence a todo el consejo.
-            narrative_beat: Dino y Dina convencen al consejo entero proponiendo un precio verdaderamente justo.
+            narrative_beat: Liruf y Dina convencen al consejo entero proponiendo un precio verdaderamente justo.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -2145,7 +2145,7 @@ sagas:
           - position: 3
             slug: fijamos-precios-justos-para-todo-el-mercado
             micro_objective: Fija, sin ayuda, precios justos para varios puestos del mercado, evitando precios abusivos o con pérdida.
-            narrative_beat: Dino ayuda a fijar precios justos en cada puesto, cuidando que ninguno sea abusivo ni pierda dinero.
+            narrative_beat: Liruf ayuda a fijar precios justos en cada puesto, cuidando que ninguno sea abusivo ni pierda dinero.
             difficulty: 2
             suggested_families:
               - money
@@ -2195,7 +2195,7 @@ sagas:
           - position: 3
             slug: ajustamos-el-negocio-justo-a-tiempo
             micro_objective: Ajusta, sin ayuda, el precio o el costo del negocio justo a tiempo para evitar la pérdida.
-            narrative_beat: Dino ajusta el precio justo a tiempo, evitando que el día termine en pérdida.
+            narrative_beat: Liruf ajusta el precio justo a tiempo, evitando que el día termine en pérdida.
             difficulty: 3
             suggested_families:
               - money

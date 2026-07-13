@@ -9,13 +9,13 @@ adventure:
     es-MX: El Taller de los Inventores
     pt-BR: A Oficina dos Inventores
   description:
-    en-US: Dina and Dino discover a magical workshop where ideas become inventions, fair prices, and happy
+    en-US: Dina and Liruf discover a magical workshop where ideas become inventions, fair prices, and happy
       sales.
-    es-MX: Dina y Dino descubren un taller mágico donde las ideas se convierten en inventos, precios justos
+    es-MX: Dina y Liruf descubren un taller mágico donde las ideas se convierten en inventos, precios justos
       y ventas felices.
-    pt-BR: Dina e Dino descobrem uma oficina mágica onde as ideias viram invenções, preços justos e vendas
+    pt-BR: Dina e Liruf descobrem uma oficina mágica onde as ideias viram invenções, preços justos e vendas
       felizes.
-  narrative_arc: Dina y Dino encuentran un taller abandonado en el valle donde Dr. Rho guarda inventos
+  narrative_arc: Dina y Liruf encuentran un taller abandonado en el valle donde Dr. Rho guarda inventos
     a medio hacer. Juntos aprenden a convertir una idea en algo real, ponerle un precio justo y venderlo
     en el mercado del valle, mientras Zara Vex los reta a mejorar cada semana.
 sagas:
@@ -49,7 +49,7 @@ sagas:
     - position: 1
       slug: un-taller-en-el-valle
       micro_objective: Identificar qué es un problema cotidiano al ver ejemplos concretos.
-      narrative_beat: Dina y Dino encuentran un taller polvoriento en el valle; Dr. Rho les explica que
+      narrative_beat: Dina y Liruf encuentran un taller polvoriento en el valle; Dr. Rho les explica que
         ahí nacen los inventos que resuelven problemas.
       difficulty: 1
       suggested_families:
@@ -67,7 +67,7 @@ sagas:
     - position: 3
       slug: problemas-de-mi-dia
       micro_objective: Elegir, entre varias escenas, cuál muestra un problema que un invento podría resolver.
-      narrative_beat: 'Dino recorre el valle anotando problemas: una carreta que se atasca, una alacena
+      narrative_beat: 'Liruf recorre el valle anotando problemas: una carreta que se atasca, una alacena
         desordenada, plantas que se secan.'
       difficulty: 2
       suggested_families:
@@ -108,7 +108,7 @@ sagas:
     - position: 2
       slug: una-idea-por-problema
       micro_objective: Emparejar cada problema mostrado con una idea de invento que lo resuelva.
-      narrative_beat: Dino junta tarjetas de problemas del valle y busca, una por una, la idea que mejor
+      narrative_beat: Liruf junta tarjetas de problemas del valle y busca, una por una, la idea que mejor
         encaja.
       difficulty: 2
       suggested_families:
@@ -153,7 +153,7 @@ sagas:
     - position: 1
       slug: quien-lo-necesita
       micro_objective: Identificar quién se beneficiaría de un invento mostrado en una escena.
-      narrative_beat: Dino observa a distintos vecinos del valle y se pregunta quién usaría cada invento
+      narrative_beat: Liruf observa a distintos vecinos del valle y se pregunta quién usaría cada invento
         del taller.
       difficulty: 1
       suggested_families:
@@ -221,7 +221,7 @@ sagas:
     - position: 3
       slug: comparar-con-calma
       micro_objective: Justificar con una razón simple por qué una idea es mejor que otra.
-      narrative_beat: Dino aprende a decir no solo cuál idea prefiere, sino por qué la prefiere, antes
+      narrative_beat: Liruf aprende a decir no solo cuál idea prefiere, sino por qué la prefiere, antes
         de decidir.
       difficulty: 3
       suggested_families:
@@ -262,7 +262,7 @@ sagas:
     - position: 2
       slug: pasos-en-orden
       micro_objective: Ordenar los pasos básicos para construir un invento sencillo.
-      narrative_beat: Dino mezcla sin querer las tarjetas de pasos de un plan y debe ordenarlas de nuevo
+      narrative_beat: Liruf mezcla sin querer las tarjetas de pasos de un plan y debe ordenarlas de nuevo
         antes de empezar.
       difficulty: 2
       suggested_families:
@@ -302,7 +302,7 @@ sagas:
     - position: 1
       slug: contar-en-pocas-palabras
       micro_objective: Reconocer la diferencia entre una explicación clara y una confusa.
-      narrative_beat: Zara Vex escucha a Dino explicar su idea con tantos detalles que nadie entiende
+      narrative_beat: Zara Vex escucha a Liruf explicar su idea con tantos detalles que nadie entiende
         para qué sirve.
       difficulty: 1
       suggested_families:
@@ -321,7 +321,7 @@ sagas:
       slug: practicar-la-explicacion
       micro_objective: Presentar la idea propia frente a un personaje y responder una pregunta simple
         sobre ella.
-      narrative_beat: Dina practica su explicación frente a Dino, que le hace una pregunta antes de que
+      narrative_beat: Dina practica su explicación frente a Liruf, que le hace una pregunta antes de que
         ella siga al mercado.
       difficulty: 2
       suggested_families:
@@ -368,7 +368,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo pensar en quién usaría el invento y cómo comparar ideas y elegir la mejor.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -409,7 +409,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el taller.
       difficulty: 2
       suggested_families:
       - choice
@@ -425,7 +425,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -469,7 +469,7 @@ sagas:
     - position: 1
       slug: el-estante-de-materiales
       micro_objective: Reconocer distintos materiales disponibles en el taller.
-      narrative_beat: Dino descubre un estante lleno de madera, tela, cuerdas y ruedas, cada uno etiquetado
+      narrative_beat: Liruf descubre un estante lleno de madera, tela, cuerdas y ruedas, cada uno etiquetado
         con su nombre.
       difficulty: 1
       suggested_families:
@@ -533,7 +533,7 @@ sagas:
     - position: 2
       slug: pagar-el-material
       micro_objective: Formar con monedas y billetes el pago exacto de un material.
-      narrative_beat: Dino junta monedas de su bolsillo para pagar exactamente el precio de un rollo de
+      narrative_beat: Liruf junta monedas de su bolsillo para pagar exactamente el precio de un rollo de
         cuerda.
       difficulty: 2
       suggested_families:
@@ -580,7 +580,7 @@ sagas:
     - position: 1
       slug: todos-los-recibos
       micro_objective: Reconocer que el costo total junta el precio de cada material comprado.
-      narrative_beat: Dr. Rho guarda los recibos de todo lo comprado en el taller y le muestra a Dino
+      narrative_beat: Dr. Rho guarda los recibos de todo lo comprado en el taller y le muestra a Liruf
         cómo se acumulan.
       difficulty: 1
       suggested_families:
@@ -597,7 +597,7 @@ sagas:
     - position: 3
       slug: el-costo-completo
       micro_objective: Calcular el costo total de un invento con cuatro o más materiales.
-      narrative_beat: Dino organiza todos los recibos del taller y calcula cuánto costó en total el invento
+      narrative_beat: Liruf organiza todos los recibos del taller y calcula cuánto costó en total el invento
         comunitario.
       difficulty: 3
       suggested_families:
@@ -629,7 +629,7 @@ sagas:
     - position: 1
       slug: dos-carritos
       micro_objective: Comparar un invento bien hecho con uno hecho de prisa.
-      narrative_beat: 'En el taller, Dino ve dos carritos: uno con ruedas firmes y otro que se tambalea
+      narrative_beat: 'En el taller, Liruf ve dos carritos: uno con ruedas firmes y otro que se tambalea
         apenas se mueve.'
       difficulty: 1
       suggested_families:
@@ -647,7 +647,7 @@ sagas:
     - position: 3
       slug: revisar-antes-de-seguir
       micro_objective: Detectar un error de construcción en un invento antes de continuar el proceso.
-      narrative_beat: Zara Vex encuentra un tornillo flojo en el carrito de Dino y lo reta a encontrarlo
+      narrative_beat: Zara Vex encuentra un tornillo flojo en el carrito de Liruf y lo reta a encontrarlo
         él mismo.
       difficulty: 2
       suggested_families:
@@ -681,7 +681,7 @@ sagas:
     - position: 1
       slug: la-primera-prueba
       micro_objective: Reconocer qué significa poner a prueba un invento.
-      narrative_beat: Dino empuja su carrito por primera vez frente a todo el taller para ver si de verdad
+      narrative_beat: Liruf empuja su carrito por primera vez frente a todo el taller para ver si de verdad
         funciona.
       difficulty: 1
       suggested_families:
@@ -690,7 +690,7 @@ sagas:
     - position: 2
       slug: funciona-o-no
       micro_objective: Determinar si el resultado de una prueba muestra éxito o necesita mejoras.
-      narrative_beat: El carrito de Dino avanza pero se tuerce hacia un lado; Dr. Rho pregunta qué indica
+      narrative_beat: El carrito de Liruf avanza pero se tuerce hacia un lado; Dr. Rho pregunta qué indica
         esa señal.
       difficulty: 2
       suggested_families:
@@ -732,7 +732,7 @@ sagas:
       slug: lo-que-la-prueba-enseno
       micro_objective: Reconocer que un resultado inesperado en una prueba es información útil, no un
         fracaso.
-      narrative_beat: Dino se desanima porque su carrito se torció, pero Dr. Rho le muestra que eso le
+      narrative_beat: Liruf se desanima porque su carrito se torció, pero Dr. Rho le muestra que eso le
         dice exactamente qué arreglar.
       difficulty: 1
       suggested_families:
@@ -742,7 +742,7 @@ sagas:
       slug: elegir-el-ajuste
       micro_objective: Elegir el ajuste correcto entre varias opciones para resolver un problema detectado
         en la prueba.
-      narrative_beat: Zara Vex ofrece tres arreglos posibles para la rueda torcida y reta a Dino a elegir
+      narrative_beat: Zara Vex ofrece tres arreglos posibles para la rueda torcida y reta a Liruf a elegir
         el correcto.
       difficulty: 2
       suggested_families:
@@ -751,7 +751,7 @@ sagas:
     - position: 3
       slug: probar-de-nuevo
       micro_objective: Comparar el resultado de una segunda prueba con la primera para confirmar una mejora.
-      narrative_beat: Con la rueda arreglada, Dino prueba su carrito otra vez y lo compara con la primera
+      narrative_beat: Con la rueda arreglada, Liruf prueba su carrito otra vez y lo compara con la primera
         prueba.
       difficulty: 2
       suggested_families:
@@ -798,7 +798,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo sumar los precios para el costo total y cómo trabajar con cuidado y calidad.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -839,7 +839,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el taller.
       difficulty: 2
       suggested_families:
       - choice
@@ -855,7 +855,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -917,7 +917,7 @@ sagas:
     - position: 3
       slug: identificar-costo-y-precio
       micro_objective: Separar, en un ejemplo dado, cuál número es el costo y cuál es el precio.
-      narrative_beat: Dino revisa las notas de otro inventor del valle y separa qué número es costo y
+      narrative_beat: Liruf revisa las notas de otro inventor del valle y separa qué número es costo y
         cuál es precio.
       difficulty: 2
       suggested_families:
@@ -960,7 +960,7 @@ sagas:
     - position: 2
       slug: sumar-una-ganancia
       micro_objective: Sumar una cantidad extra al costo para formar un precio con ganancia.
-      narrative_beat: Dino aprende a sumar unas monedas extra al costo de su invento antes de anunciar
+      narrative_beat: Liruf aprende a sumar unas monedas extra al costo de su invento antes de anunciar
         el precio.
       difficulty: 2
       suggested_families:
@@ -1004,7 +1004,7 @@ sagas:
       slug: nadie-compra
       micro_objective: Reconocer qué pasa cuando un precio es demasiado alto para los compradores del
         valle.
-      narrative_beat: Dino pone su invento a un precio muy alto y ve que nadie se detiene en su puesto
+      narrative_beat: Liruf pone su invento a un precio muy alto y ve que nadie se detiene en su puesto
         durante toda la mañana.
       difficulty: 1
       suggested_families:
@@ -1060,7 +1060,7 @@ sagas:
     - position: 1
       slug: el-recorrido-del-mercado
       micro_objective: Observar los precios de varios inventos parecidos en el mercado del valle.
-      narrative_beat: Antes de fijar su precio, Dino recorre el mercado anotando cuánto cuestan inventos
+      narrative_beat: Antes de fijar su precio, Liruf recorre el mercado anotando cuánto cuestan inventos
         parecidos al suyo.
       difficulty: 1
       suggested_families:
@@ -1124,7 +1124,7 @@ sagas:
     - position: 2
       slug: precios-con-centavos
       micro_objective: Formar con monedas y billetes un precio que incluye una combinación menos obvia.
-      narrative_beat: Dino ayuda a un comprador a juntar exactamente el precio de un invento con monedas
+      narrative_beat: Liruf ayuda a un comprador a juntar exactamente el precio de un invento con monedas
         de distintos tamaños.
       difficulty: 2
       suggested_families:
@@ -1168,7 +1168,7 @@ sagas:
       slug: nadie-se-detiene
       micro_objective: Observar una señal (nadie compra) que sugiere revisar el precio.
       narrative_beat: Durante la primera hora del mercado de práctica, nadie se detiene en el puesto de
-        Dino, y Dr. Rho lo invita a pensar por qué.
+        Liruf, y Dr. Rho lo invita a pensar por qué.
       difficulty: 1
       suggested_families:
       - story
@@ -1235,7 +1235,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo buscar el equilibrio de precio y cómo comparar el precio con el mercado.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1276,7 +1276,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el taller.
       difficulty: 2
       suggested_families:
       - choice
@@ -1292,7 +1292,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1336,7 +1336,7 @@ sagas:
     - position: 1
       slug: montar-el-puesto
       micro_objective: Reconocer los elementos básicos que debe tener un puesto de venta.
-      narrative_beat: En la plaza del valle, Dino observa cómo los demás inventores arman sus puestos
+      narrative_beat: En la plaza del valle, Liruf observa cómo los demás inventores arman sus puestos
         antes de abrir.
       difficulty: 1
       suggested_families:
@@ -1355,7 +1355,7 @@ sagas:
     - position: 3
       slug: un-cartel-claro
       micro_objective: Elegir el cartel más claro para presentar un invento entre varias opciones.
-      narrative_beat: Zara Vex muestra tres carteles distintos para el mismo invento y reta a Dino a elegir
+      narrative_beat: Zara Vex muestra tres carteles distintos para el mismo invento y reta a Liruf a elegir
         el que se entiende más rápido.
       difficulty: 2
       suggested_families:
@@ -1389,7 +1389,7 @@ sagas:
     - position: 1
       slug: el-primer-cliente
       micro_objective: Observar cómo un vendedor explica de forma clara para qué sirve su invento.
-      narrative_beat: 'El primer cliente del día se acerca al puesto de Dino y pregunta: ''¿y esto para
+      narrative_beat: 'El primer cliente del día se acerca al puesto de Liruf y pregunta: ''¿y esto para
         qué sirve?'''
       difficulty: 1
       suggested_families:
@@ -1442,7 +1442,7 @@ sagas:
     - position: 1
       slug: el-cliente-paga-de-mas
       micro_objective: Reconocer cuándo un cliente pagó más del precio y se le debe dar cambio.
-      narrative_beat: Un cliente entrega más monedas de las que cuesta el invento de Dino, y él debe notar
+      narrative_beat: Un cliente entrega más monedas de las que cuesta el invento de Liruf, y él debe notar
         que le debe cambio.
       difficulty: 1
       suggested_families:
@@ -1460,7 +1460,7 @@ sagas:
     - position: 3
       slug: entregar-el-cambio-exacto
       micro_objective: Formar el cambio exacto usando la menor cantidad de monedas y billetes posible.
-      narrative_beat: Zara Vex reta a Dino a entregar el cambio de una venta usando solo las monedas necesarias,
+      narrative_beat: Zara Vex reta a Liruf a entregar el cambio de una venta usando solo las monedas necesarias,
         sin sobrar ninguna.
       difficulty: 3
       suggested_families:
@@ -1504,7 +1504,7 @@ sagas:
     - position: 2
       slug: comentario-util-o-no
       micro_objective: Distinguir un comentario útil para mejorar de uno que no aporta información concreta.
-      narrative_beat: Dr. Rho compara dos comentarios de clientes distintos y pregunta a Dino cuál le
+      narrative_beat: Dr. Rho compara dos comentarios de clientes distintos y pregunta a Liruf cuál le
         ayudaría más a mejorar.
       difficulty: 2
       suggested_families:
@@ -1552,7 +1552,7 @@ sagas:
     - position: 1
       slug: contar-las-monedas-del-dia
       micro_objective: Contar el total de monedas y billetes ganados al final del día de mercado.
-      narrative_beat: Al cerrar su puesto, Dino vacía su caja de cobro sobre la mesa del taller para contar
+      narrative_beat: Al cerrar su puesto, Liruf vacía su caja de cobro sobre la mesa del taller para contar
         cuánto ganó.
       difficulty: 1
       suggested_families:
@@ -1607,7 +1607,7 @@ sagas:
     - position: 1
       slug: revisar-todo-el-camino
       micro_objective: Recordar, en orden, las etapas recorridas desde la idea hasta la venta del invento.
-      narrative_beat: Sentados en el taller al anochecer, Dr. Rho pide a Dina y Dino recordar todo el
+      narrative_beat: Sentados en el taller al anochecer, Dr. Rho pide a Dina y Liruf recordar todo el
         camino que siguieron con su invento.
       difficulty: 1
       suggested_families:
@@ -1616,7 +1616,7 @@ sagas:
     - position: 2
       slug: lo-que-mejor-funciono
       micro_objective: Identificar qué parte del proceso funcionó mejor durante el ciclo recién terminado.
-      narrative_beat: Dino repasa su cuaderno y señala que calcular el costo antes de vender fue lo que
+      narrative_beat: Liruf repasa su cuaderno y señala que calcular el costo antes de vender fue lo que
         más le ayudó.
       difficulty: 2
       suggested_families:
@@ -1674,7 +1674,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo cobrar y calcular el cambio y cómo usar los comentarios para mejorar.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1715,7 +1715,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-otro-mundo
       micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
-      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el taller.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el taller.
       difficulty: 2
       suggested_families:
       - choice
@@ -1731,7 +1731,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del valle usando a la vez las dos lecciones combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1778,7 +1778,7 @@ sagas:
     - position: 1
       slug: la-nave-de-inventores-abre-sus-puertas
       micro_objective: Recordar que un invento nace de notar un problema real de alguien.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el taller y anuncia la Gran Misión: recorrer todo el camino de un invento, desde la idea hasta la venta, una vez más.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el taller y anuncia la Gran Misión: recorrer todo el camino de un invento, desde la idea hasta la venta, una vez más.'
       difficulty: 1
       suggested_families:
       - story
@@ -1794,7 +1794,7 @@ sagas:
     - position: 3
       slug: pensar-en-quien-la-usaria-otra-vez
       micro_objective: Recordar y aplicar cómo identificar quién usaría la idea propuesta.
-      narrative_beat: Dino recuerda, sin repasar la lección, para quién sería útil su idea antes de seguir adelante con la Gran Misión.
+      narrative_beat: Liruf recuerda, sin repasar la lección, para quién sería útil su idea antes de seguir adelante con la Gran Misión.
       difficulty: 2
       suggested_families:
       - choice
@@ -1829,7 +1829,7 @@ sagas:
     - position: 1
       slug: el-estante-vuelve-a-abrirse
       micro_objective: Recordar qué materiales corresponden a una idea de invento dada.
-      narrative_beat: Dino recorre el estante de materiales del taller y recuerda, sin ayuda, cuáles necesita para el invento de la Gran Misión.
+      narrative_beat: Liruf recorre el estante de materiales del taller y recuerda, sin ayuda, cuáles necesita para el invento de la Gran Misión.
       difficulty: 1
       suggested_families:
       - story
@@ -1845,7 +1845,7 @@ sagas:
     - position: 3
       slug: revisar-con-cuidado-otra-vez
       micro_objective: Recordar las señales de un trabajo cuidadoso frente a uno apresurado.
-      narrative_beat: Zara Vex reta a Dino a recordar, sin repasar la lección, qué señales muestran que un invento está bien hecho.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin repasar la lección, qué señales muestran que un invento está bien hecho.
       difficulty: 2
       suggested_families:
       - story
@@ -1931,7 +1931,7 @@ sagas:
     - position: 1
       slug: montar-el-puesto-de-la-mision
       micro_objective: Recordar los elementos básicos de un puesto de venta bien organizado.
-      narrative_beat: Dino recuerda, sin ayuda, cómo acomodar su invento, su cartel y su caja de cobro para la Gran Misión.
+      narrative_beat: Liruf recuerda, sin ayuda, cómo acomodar su invento, su cartel y su caja de cobro para la Gran Misión.
       difficulty: 1
       suggested_families:
       - story
@@ -1947,7 +1947,7 @@ sagas:
     - position: 3
       slug: escuchar-de-nuevo-a-los-clientes
       micro_objective: Recordar cómo distinguir un comentario útil de uno que no ayuda a mejorar.
-      narrative_beat: Zara Vex recuerda a Dino un par de comentarios de clientes y le pide identificar cuál le ayudaría más a mejorar su invento.
+      narrative_beat: Zara Vex recuerda a Liruf un par de comentarios de clientes y le pide identificar cuál le ayudaría más a mejorar su invento.
       difficulty: 2
       suggested_families:
       - choice
@@ -1982,7 +1982,7 @@ sagas:
     - position: 1
       slug: las-cuatro-etapas-juntas
       micro_objective: 'Recordar, en orden, las cuatro etapas del ciclo del taller: idea, materiales, precio y venta.'
-      narrative_beat: Dr. Rho despliega un mapa del taller con las cuatro etapas del ciclo, y pide a Dina y Dino recordarlas en orden.
+      narrative_beat: Dr. Rho despliega un mapa del taller con las cuatro etapas del ciclo, y pide a Dina y Liruf recordarlas en orden.
       difficulty: 1
       suggested_families:
       - story
@@ -1990,7 +1990,7 @@ sagas:
     - position: 2
       slug: un-founder-nuevo-necesita-ayuda
       micro_objective: Aplicar las cuatro etapas del ciclo para ayudar a un personaje nuevo con su propio invento.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo del taller y reta a Dino a guiarlo por las cuatro etapas del ciclo.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del taller y reta a Liruf a guiarlo por las cuatro etapas del ciclo.
       difficulty: 2
       suggested_families:
       - choice
@@ -2042,7 +2042,7 @@ sagas:
     - position: 2
       slug: el-taller-y-el-archipielago
       micro_objective: Recordar por qué usamos monedas para cobrar el invento, tal como se aprendió en el archipiélago del trueque.
-      narrative_beat: Zara Vex recuerda a Dino por qué el pueblo del archipiélago dejó el trueque y empezó a usar monedas, igual que en el mercado del valle.
+      narrative_beat: Zara Vex recuerda a Liruf por qué el pueblo del archipiélago dejó el trueque y empezó a usar monedas, igual que en el mercado del valle.
       difficulty: 1
       suggested_families:
       - story
@@ -2058,7 +2058,7 @@ sagas:
     - position: 4
       slug: el-taller-sigue-abierto-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del taller.
-      narrative_beat: Con su invento vendido y sus ganancias repartidas, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión del taller.
+      narrative_beat: Con su invento vendido y sus ganancias repartidas, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión del taller.
       difficulty: 2
       suggested_families:
       - storyplay

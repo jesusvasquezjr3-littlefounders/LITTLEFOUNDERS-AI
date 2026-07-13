@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import DinaCharacter from '../DinaCharacter'
-import DinoCharacter, { type DinoMood } from '../DinoCharacter'
+import LirufCharacter, { type LirufMood } from '../LirufCharacter'
 import DrRhoCharacter, { type RhoMood } from '../DrRhoCharacter'
 import ZaraVexCharacter, { type ZaraMood } from '../ZaraVexCharacter'
 import {
@@ -89,8 +89,8 @@ export function CharacterActor({
     case 'dina':
       figure = <DinaCharacter {...common} expression={EMOTION_TO_NATIVE.dina[emotion]} />
       break
-    case 'dino':
-      figure = <DinoCharacter {...common} mood={EMOTION_TO_NATIVE.dino[emotion] as DinoMood} />
+    case 'liruf':
+      figure = <LirufCharacter {...common} mood={EMOTION_TO_NATIVE.liruf[emotion] as LirufMood} />
       break
     case 'rho':
       figure = <DrRhoCharacter {...common} mood={EMOTION_TO_NATIVE.rho[emotion] as RhoMood} />

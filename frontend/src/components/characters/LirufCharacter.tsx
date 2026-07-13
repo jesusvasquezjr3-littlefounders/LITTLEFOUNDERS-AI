@@ -2,24 +2,24 @@ import {useId, useEffect, useRef, useState, useCallback} from 'react';
 import { cn } from "@/lib/utils";
 import { useTranslation } from 'react-i18next';
 
-export type DinoMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
+export type LirufMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
 
-interface DinoCharacterProps {
+interface LirufCharacterProps {
     currentText?: string;
     showBubble?: boolean;
     className?: string;
-    mood?: DinoMood;
+    mood?: LirufMood;
     bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
     isTalking?: boolean;
 }
 
 /**
- * Dino — The cheerful green T-Rex mascot.
+ * Liruf — The cheerful green T-Rex mascot.
  * Original SVG artwork preserved. Enhanced with Lottie-style animations:
  * smooth blink, spring-physics mouse tracking, idle breathing, tail wag,
  * squash-and-stretch bounce on click.
  */
-export function DinoCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false }: DinoCharacterProps) {
+export function LirufCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false }: LirufCharacterProps) {
     const uid = useId().replace(/:/g, "");
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
@@ -124,7 +124,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     "min-w-[180px] max-w-[240px] w-auto text-center"
                 )}>
                     <p className="text-slate-700 font-bold text-xs leading-snug">
-                        {currentText || t('characters.dino.default_greeting')}
+                        {currentText || t('characters.liruf.default_greeting')}
                     </p>
                     <svg className="absolute left-1/2 -translate-x-1/2 -bottom-[7px] w-4 h-2.5" viewBox="0 0 20 12" fill="none">
                         <path d="M0 0C3.5 0 7 8 10 12C13 8 16.5 0 20 0H0Z" fill="white" />
@@ -133,18 +133,18 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
             </div>
 
             <style>{`
-                .dino-breathe { animation: dinoBreatheAnim 3s ease-in-out infinite; transform-origin: bottom center; }
-                @keyframes dinoBreatheAnim { 0%, 100% { transform: scaleY(1) translateY(0); } 50% { transform: scaleY(1.02) translateY(-2px); } }
-                .dino-tail-anim { animation: dinoTailWag 3s ease-in-out infinite alternate; transform-origin: 150px 350px; }
-                @keyframes dinoTailWag { 0% { transform: rotate(0deg); } 100% { transform: rotate(10deg); } }
-                .dino-mouth-anim { animation: dinoTalkAnim 1.5s infinite; transform-origin: 20px 20px; }
-                @keyframes dinoTalkAnim {
+                .liruf-breathe { animation: lirufBreatheAnim 3s ease-in-out infinite; transform-origin: bottom center; }
+                @keyframes lirufBreatheAnim { 0%, 100% { transform: scaleY(1) translateY(0); } 50% { transform: scaleY(1.02) translateY(-2px); } }
+                .liruf-tail-anim { animation: lirufTailWag 3s ease-in-out infinite alternate; transform-origin: 150px 350px; }
+                @keyframes lirufTailWag { 0% { transform: rotate(0deg); } 100% { transform: rotate(10deg); } }
+                .liruf-mouth-anim { animation: lirufTalkAnim 1.5s infinite; transform-origin: 20px 20px; }
+                @keyframes lirufTalkAnim {
                     0%, 10% { transform: scaleY(1); } 20% { transform: scaleY(0.6); } 35% { transform: scaleY(1); }
                     45% { transform: scaleY(1); } 55% { transform: scaleY(0.7); } 70% { transform: scaleY(1); } 100% { transform: scaleY(1); }
                 }
-                .dino-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
-                .dino-spring-bounce { animation: dinoSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
-                @keyframes dinoSpring {
+                .liruf-face-transition { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+                .liruf-spring-bounce { animation: lirufSpring 0.5s cubic-bezier(0.34, 1.5, 0.64, 1); transform-origin: center bottom; }
+                @keyframes lirufSpring {
                     0% { transform: scale(1); }
                     40% { transform: scale(1.08); }
                     100% { transform: scale(1); }
@@ -152,13 +152,13 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
             `}</style>
 
             <svg
-                id={`dino-svg-${uid}`}
+                id={`liruf-svg-${uid}`}
                 viewBox="-50 -50 500 500"
                 xmlns="http://www.w3.org/2000/svg"
                 className={cn(
                     "w-full h-full object-contain cursor-pointer overflow-visible",
-                    "dino-breathe",
-                    isSurprised && "dino-spring-bounce"
+                    "liruf-breathe",
+                    isSurprised && "liruf-spring-bounce"
                 )}
                 style={{ willChange: "transform" }}
                 onClick={handleClick}
@@ -172,7 +172,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <stop offset="0%" style={{ stopColor: "#dcfce7", stopOpacity: 1 }} />
                         <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
                     </linearGradient>
-                    <filter id={`dinoShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
+                    <filter id={`lirufShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
                         <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
                         <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
                         <feFlood floodColor="#0c3d20" floodOpacity="0.22" result="dropColor" />
@@ -223,11 +223,11 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     </filter>
                 </defs>
 
-                <g filter={`url(#dinoShadow-${uid})`}>
+                <g filter={`url(#lirufShadow-${uid})`}>
                     {/* TAIL — lf-rig-tail: Character Control hook (appearance untouched) */}
                     <g className="lf-rig-tail">
-                    <path className="dino-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
-                    <g className="dino-tail-anim">
+                    <path className="liruf-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
+                    <g className="liruf-tail-anim">
                         <path d="M50 200 L60 190 L70 205 Z" fill="#15803d" />
                         <path d="M70 215 L80 205 L90 220 Z" fill="#15803d" />
                         <path d="M90 230 L100 220 L110 235 Z" fill="#15803d" />
@@ -288,7 +288,7 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <ellipse cx="20" cy="-10" rx="60" ry="45" fill="#4ADE80" />
 
                         {/* MOUTH GROUP */}
-                        <g className={cn("dino-face-transition", isTalking ? "dino-mouth-anim" : "")}>
+                        <g className={cn("liruf-face-transition", isTalking ? "liruf-mouth-anim" : "")}>
                             {effectiveMood === 'happy' && (
                                 <>
                                     <path d="M-30 10 Q 20 10 60 0 Q 60 40 0 40 Q -30 40 -30 10 Z" fill="#374151" />
@@ -354,4 +354,4 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
     );
 }
 
-export default DinoCharacter;
+export default LirufCharacter;

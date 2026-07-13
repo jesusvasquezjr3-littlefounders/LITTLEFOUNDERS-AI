@@ -9,10 +9,10 @@ adventure:
     es-MX: El Reino de las Canastas
     pt-BR: O Reino das Cestas
   description:
-    en-US: In a kingdom ruled by baskets, Dina and Dino learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
-    es-MX: En un reino gobernado por canastas, Dina y Dino aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
-    pt-BR: Em um reino governado por cestas, Dina e Dino aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
-  narrative_arc: 'Dina y Dino llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
+    en-US: In a kingdom ruled by baskets, Dina and Liruf learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
+    es-MX: En un reino gobernado por canastas, Dina y Liruf aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
+    pt-BR: Em um reino governado por cestas, Dina e Liruf aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
+  narrative_arc: 'Dina y Liruf llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
 sagas:
 - position: 1
   slug: un-pedacito-de-una-empresa
@@ -43,7 +43,7 @@ sagas:
     - position: 1
       slug: la-limonaderia-que-crecio
       micro_objective: Recordar que un negocio, como la limonadería, es una empresa que vende algo a cambio de dinero.
-      narrative_beat: Dr. Rho recibe a Dina y Dino en el Reino de las Canastas y les muestra que la limonadería que conocieron en Emprendimiento ahora es una empresa mucho más grande.
+      narrative_beat: Dr. Rho recibe a Dina y Liruf en el Reino de las Canastas y les muestra que la limonadería que conocieron en Emprendimiento ahora es una empresa mucho más grande.
       difficulty: 1
       suggested_families:
       - story
@@ -51,7 +51,7 @@ sagas:
     - position: 2
       slug: para-que-necesita-dinero-una-empresa
       micro_objective: Identificar por qué una empresa necesita dinero para crecer, como comprar más limones o contratar ayuda.
-      narrative_beat: Zara Vex pregunta a Dino qué necesitaría la limonadería para vender en todo el reino y no solo en una esquina del mercado.
+      narrative_beat: Zara Vex pregunta a Liruf qué necesitaría la limonadería para vender en todo el reino y no solo en una esquina del mercado.
       difficulty: 2
       suggested_families:
       - choice
@@ -97,7 +97,7 @@ sagas:
     - position: 2
       slug: tener-una-accion-es-tener-un-pedacito
       micro_objective: Distinguir entre 'tener una acción' y simplemente 'querer una empresa', usando el pedacito como evidencia.
-      narrative_beat: Zara Vex pregunta a Dino si admirar la limonadería es lo mismo que tener un pedacito real de ella.
+      narrative_beat: Zara Vex pregunta a Liruf si admirar la limonadería es lo mismo que tener un pedacito real de ella.
       difficulty: 2
       suggested_families:
       - choice
@@ -135,7 +135,7 @@ sagas:
     - position: 1
       slug: la-limonaderia-vende-mucho
       micro_objective: Observar que cuando la limonadería vende mucho, su pedacito empieza a valer más.
-      narrative_beat: Un día caluroso, la limonadería del reino vende más que nunca, y Dino nota que su pedacito ahora vale un poco más.
+      narrative_beat: Un día caluroso, la limonadería del reino vende más que nunca, y Liruf nota que su pedacito ahora vale un poco más.
       difficulty: 1
       suggested_families:
       - story
@@ -151,7 +151,7 @@ sagas:
     - position: 3
       slug: comparar-dos-empresas
       micro_objective: Comparar dos empresas del reino y decidir a cuál le fue mejor esta temporada.
-      narrative_beat: Zara Vex muestra los resultados de dos negocios del mercado y reta a Dino a decidir cuál tuvo mejor temporada.
+      narrative_beat: Zara Vex muestra los resultados de dos negocios del mercado y reta a Liruf a decidir cuál tuvo mejor temporada.
       difficulty: 2
       suggested_families:
       - analyze
@@ -159,7 +159,7 @@ sagas:
     - position: 4
       slug: mi-explicacion-del-cambio-de-valor
       micro_objective: Explicar, con un ejemplo propio, por qué el valor de un pedacito puede subir o bajar.
-      narrative_beat: Dina explica a Dino, con el ejemplo de la limonadería, por qué su pedacito no siempre vale lo mismo.
+      narrative_beat: Dina explica a Liruf, con el ejemplo de la limonadería, por qué su pedacito no siempre vale lo mismo.
       difficulty: 3
       suggested_families:
       - choice
@@ -189,7 +189,7 @@ sagas:
     - position: 2
       slug: cuantos-mini-duenos-puede-tener-una-empresa
       micro_objective: Reconocer que una empresa puede tener muchos mini-dueños distintos al mismo tiempo.
-      narrative_beat: Dino cuenta en el mercado a varias personas que también tienen pedacitos de la misma limonadería.
+      narrative_beat: Liruf cuenta en el mercado a varias personas que también tienen pedacitos de la misma limonadería.
       difficulty: 2
       suggested_families:
       - arrange
@@ -227,7 +227,7 @@ sagas:
     - position: 1
       slug: el-libro-de-los-mini-duenos
       micro_objective: Observar que la limonadería tiene un libro con los nombres de todos sus mini-dueños.
-      narrative_beat: Dr. Rho muestra a Dino un libro grueso con los nombres de todas las personas que tienen un pedacito de la limonadería.
+      narrative_beat: Dr. Rho muestra a Liruf un libro grueso con los nombres de todas las personas que tienen un pedacito de la limonadería.
       difficulty: 1
       suggested_families:
       - story
@@ -243,7 +243,7 @@ sagas:
     - position: 3
       slug: un-pedacito-pequeno-tambien-cuenta
       micro_objective: Reconocer que un pedacito pequeño de una empresa vale y cuenta igual que uno más grande, en su proporción.
-      narrative_beat: Dino se preocupa porque su pedacito es más pequeño que el de Dina, pero Dr. Rho le explica que igual cuenta.
+      narrative_beat: Liruf se preocupa porque su pedacito es más pequeño que el de Dina, pero Dr. Rho le explica que igual cuenta.
       difficulty: 3
       suggested_families:
       - story
@@ -281,7 +281,7 @@ sagas:
     - position: 2
       slug: leer-un-punto-del-grafico
       micro_objective: Leer un punto específico del gráfico y decir si ese día el precio era mayor o menor que el día anterior.
-      narrative_beat: Zara Vex señala dos puntos del gráfico y reta a Dino a decir cuál de los dos días valía más el pedacito.
+      narrative_beat: Zara Vex señala dos puntos del gráfico y reta a Liruf a decir cuál de los dos días valía más el pedacito.
       difficulty: 2
       suggested_families:
       - analyze
@@ -319,7 +319,7 @@ sagas:
     - position: 1
       slug: nadie-le-promete-nada-a-la-limonaderia
       micro_objective: Reconocer que ni siquiera Dr. Rho puede prometer que el precio de una acción solo va a subir.
-      narrative_beat: Dino le pregunta a Dr. Rho si su pedacito siempre va a valer más, y Dr. Rho responde con honestidad que nadie puede prometer eso.
+      narrative_beat: Liruf le pregunta a Dr. Rho si su pedacito siempre va a valer más, y Dr. Rho responde con honestidad que nadie puede prometer eso.
       difficulty: 2
       suggested_families:
       - story
@@ -373,7 +373,7 @@ sagas:
     - position: 2
       slug: decidir-si-quiero-un-pedacito
       micro_objective: Aplicar lo aprendido para decidir, con razones propias, si le gustaría tener un pedacito de la nueva empresa.
-      narrative_beat: Zara Vex reta a Dino a explicar por qué le gustaría, o no, tener un pedacito del nuevo puesto de pan.
+      narrative_beat: Zara Vex reta a Liruf a explicar por qué le gustaría, o no, tener un pedacito del nuevo puesto de pan.
       difficulty: 3
       suggested_families:
       - choice
@@ -428,7 +428,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué cambia el valor de una acción y qué significa ser mini-dueño.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -469,7 +469,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-la-limonaderia
       micro_objective: Recordar, tal como se aprendió antes, qué hace que un negocio sea una empresa de verdad.
-      narrative_beat: Zara Vex trae un recuerdo de la limonadería de Emprendimiento y pide a Dino recordarlo sin ayuda antes de mezclarlo con el reino.
+      narrative_beat: Zara Vex trae un recuerdo de la limonadería de Emprendimiento y pide a Liruf recordarlo sin ayuda antes de mezclarlo con el reino.
       difficulty: 1
       suggested_families:
       - choice
@@ -485,7 +485,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-reino
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de empresa y acción combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -543,7 +543,7 @@ sagas:
     - position: 3
       slug: para-que-sirve-mezclar-la-canasta
       micro_objective: Explicar, con un ejemplo, para qué sirve tener cosas distintas dentro de la misma canasta.
-      narrative_beat: Dr. Rho pregunta a Dino qué pasaría si se le cayera la canasta de una sola cosa comparado con la canasta mezclada.
+      narrative_beat: Dr. Rho pregunta a Liruf qué pasaría si se le cayera la canasta de una sola cosa comparado con la canasta mezclada.
       difficulty: 2
       suggested_families:
       - choice
@@ -589,7 +589,7 @@ sagas:
     - position: 3
       slug: el-dicho-del-reino
       micro_objective: Explicar el dicho 'no pongas todos los huevos en una sola canasta' con un ejemplo propio del mercado.
-      narrative_beat: Dr. Rho enseña a Dino el dicho del reino sobre los huevos y le pide inventar otro ejemplo parecido con velas.
+      narrative_beat: Dr. Rho enseña a Liruf el dicho del reino sobre los huevos y le pide inventar otro ejemplo parecido con velas.
       difficulty: 2
       suggested_families:
       - story
@@ -673,7 +673,7 @@ sagas:
     - position: 2
       slug: que-pasa-si-baja-el-calor
       micro_objective: Reconocer que una canasta de solo limonaderías baja completa si baja el calor en todo el reino.
-      narrative_beat: Zara Vex pregunta a Dino qué pasaría con la canasta de solo limonaderías si llegara un invierno frío al reino entero.
+      narrative_beat: Zara Vex pregunta a Liruf qué pasaría con la canasta de solo limonaderías si llegara un invierno frío al reino entero.
       difficulty: 2
       suggested_families:
       - analyze
@@ -723,7 +723,7 @@ sagas:
     - position: 2
       slug: diversificar-no-elimina-todo-el-riesgo
       micro_objective: Reconocer que diversificar reparte el riesgo, pero no lo elimina por completo.
-      narrative_beat: Zara Vex aclara a Dino que diversificar no vuelve mágica la canasta, solo reparte mejor lo que puede pasar.
+      narrative_beat: Zara Vex aclara a Liruf que diversificar no vuelve mágica la canasta, solo reparte mejor lo que puede pasar.
       difficulty: 2
       suggested_families:
       - choice
@@ -769,7 +769,7 @@ sagas:
     - position: 2
       slug: por-que-tan-distintos-es-mejor
       micro_objective: Explicar por qué negocios muy distintos entre sí ayudan más a repartir el riesgo que negocios parecidos.
-      narrative_beat: Zara Vex pregunta a Dino por qué una canasta con negocios tan distintos protege mejor que una con negocios parecidos.
+      narrative_beat: Zara Vex pregunta a Liruf por qué una canasta con negocios tan distintos protege mejor que una con negocios parecidos.
       difficulty: 3
       suggested_families:
       - analyze
@@ -807,7 +807,7 @@ sagas:
     - position: 1
       slug: el-reto-de-la-canasta-vacia
       micro_objective: Reconocer que una canasta vacía necesita elegir con cuidado qué negocios incluir.
-      narrative_beat: Zara Vex entrega a Dino una canasta vacía y una lista de diez negocios distintos del mercado para elegir.
+      narrative_beat: Zara Vex entrega a Liruf una canasta vacía y una lista de diez negocios distintos del mercado para elegir.
       difficulty: 2
       suggested_families:
       - story
@@ -815,7 +815,7 @@ sagas:
     - position: 2
       slug: elegir-sin-repetir-tipo
       micro_objective: Elegir negocios para la canasta evitando repetir siempre el mismo tipo de negocio.
-      narrative_beat: Dino revisa la lista y elige negocios distintos, cuidando de no llenar la canasta solo con limonaderías.
+      narrative_beat: Liruf revisa la lista y elige negocios distintos, cuidando de no llenar la canasta solo con limonaderías.
       difficulty: 3
       suggested_families:
       - arrange
@@ -823,7 +823,7 @@ sagas:
     - position: 3
       slug: revisar-mi-canasta-antes-de-cerrarla
       micro_objective: Revisar la canasta armada y explicar por qué está bien repartida entre cosas distintas.
-      narrative_beat: Antes de cerrar la canasta, Dr. Rho pide a Dino explicar por qué cada negocio elegido ayuda a repartir el riesgo.
+      narrative_beat: Antes de cerrar la canasta, Dr. Rho pide a Liruf explicar por qué cada negocio elegido ayuda a repartir el riesgo.
       difficulty: 3
       suggested_families:
       - choice
@@ -916,7 +916,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-canasta
       micro_objective: Recordar y ordenar de nuevo cómo una canasta variada se equilibra y por qué diversificar reparte el riesgo.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -957,7 +957,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-primer-pedacito
       micro_objective: Recordar, tal como se aprendió antes, que una acción es un pedacito real de una empresa.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del reino y pide a Dino recordarlo sin ayuda, antes de mezclarlo con la canasta.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del reino y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la canasta.
       difficulty: 1
       suggested_families:
       - choice
@@ -973,7 +973,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-la-canasta
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de pedacito y diversificar combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1023,7 +1023,7 @@ sagas:
     - position: 2
       slug: cada-quien-pone-un-poco
       micro_objective: Reconocer que cada persona del fondo pone solo una pequeña parte, y juntas forman algo grande.
-      narrative_beat: Zara Vex explica a Dino que nadie puso todo el dinero de la canasta gigante; cada familia solo puso un poco.
+      narrative_beat: Zara Vex explica a Liruf que nadie puso todo el dinero de la canasta gigante; cada familia solo puso un poco.
       difficulty: 2
       suggested_families:
       - story
@@ -1039,7 +1039,7 @@ sagas:
     - position: 4
       slug: mi-primer-fondo-imaginado
       micro_objective: Explicar, con un ejemplo propio, cómo funcionaría un fondo pequeño entre varios amigos del reino.
-      narrative_beat: Dina imagina un fondo pequeño entre ella, Dino y dos amigos del mercado, juntando un poco cada uno.
+      narrative_beat: Dina imagina un fondo pequeño entre ella, Liruf y dos amigos del mercado, juntando un poco cada uno.
       difficulty: 3
       suggested_families:
       - choice
@@ -1061,7 +1061,7 @@ sagas:
     - position: 1
       slug: la-lista-larga-de-empresas-del-fondo
       micro_objective: Observar la lista larga de empresas distintas que el fondo del reino compró con el dinero junto.
-      narrative_beat: Dr. Rho muestra a Dino un pergamino larguísimo con los nombres de todas las empresas que el fondo del reino compró.
+      narrative_beat: Dr. Rho muestra a Liruf un pergamino larguísimo con los nombres de todas las empresas que el fondo del reino compró.
       difficulty: 1
       suggested_families:
       - story
@@ -1077,7 +1077,7 @@ sagas:
     - position: 3
       slug: comparar-armar-solo-vs-el-fondo
       micro_objective: Comparar cuánto tiempo tomaría armar sola una canasta tan grande frente a usar un fondo que ya la compró.
-      narrative_beat: Dr. Rho pregunta a Dino cuánto tardaría en comprar, él solo, todas las empresas de la lista del fondo.
+      narrative_beat: Dr. Rho pregunta a Liruf cuánto tardaría en comprar, él solo, todas las empresas de la lista del fondo.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1161,7 +1161,7 @@ sagas:
     - position: 2
       slug: un-pedacito-muchas-empresas
       micro_objective: Reconocer que ese único pedacito del fondo en realidad representa partes de muchas empresas distintas a la vez.
-      narrative_beat: Zara Vex explica a Dino que su único pedacito del fondo en realidad lo conecta con decenas de empresas distintas.
+      narrative_beat: Zara Vex explica a Liruf que su único pedacito del fondo en realidad lo conecta con decenas de empresas distintas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1169,7 +1169,7 @@ sagas:
     - position: 3
       slug: comparar-mi-pedacito-de-fondo-con-una-accion-sola
       micro_objective: Comparar tener un pedacito de un fondo con tener una sola acción de una sola empresa.
-      narrative_beat: Dr. Rho compara el pergamino del fondo de Dina con el pergamino de una sola acción que tiene Dino, y pide notar la diferencia.
+      narrative_beat: Dr. Rho compara el pergamino del fondo de Dina con el pergamino de una sola acción que tiene Liruf, y pide notar la diferencia.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1257,7 +1257,7 @@ sagas:
     - position: 2
       slug: el-fondo-tambien-bajo-ese-ano
       micro_objective: Reconocer que ese año, incluso el fondo diversificado bajó de valor junto con la mayoría de las empresas.
-      narrative_beat: Zara Vex muestra el gráfico del fondo ese año difícil, y Dino nota que también bajó, aunque menos que una sola empresa.
+      narrative_beat: Zara Vex muestra el gráfico del fondo ese año difícil, y Liruf nota que también bajó, aunque menos que una sola empresa.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1303,7 +1303,7 @@ sagas:
     - position: 2
       slug: que-hacen-los-guardianes-del-fondo
       micro_objective: 'Explicar, en términos simples, qué hace ese equipo: decidir qué empresas entran o salen del fondo.'
-      narrative_beat: Zara Vex pregunta a Dino qué cree que hacen los guardianes de la torre todo el día con el fondo.
+      narrative_beat: Zara Vex pregunta a Liruf qué cree que hacen los guardianes de la torre todo el día con el fondo.
       difficulty: 2
       suggested_families:
       - choice
@@ -1349,7 +1349,7 @@ sagas:
     - position: 2
       slug: comparar-que-tan-variados-son
       micro_objective: Comparar qué tan variadas son las empresas dentro de cada uno de los dos fondos presentados.
-      narrative_beat: Zara Vex reta a Dino a contar cuántos tipos distintos de negocio tiene cada uno de los dos fondos.
+      narrative_beat: Zara Vex reta a Liruf a contar cuántos tipos distintos de negocio tiene cada uno de los dos fondos.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1404,7 +1404,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-el-fondo
       micro_objective: Recordar y ordenar de nuevo por qué no hay que elegir cada empresa solo y qué es el pedacito de un fondo completo.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1445,7 +1445,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-repartir-y-adivinar
       micro_objective: Recordar, tal como se aprendió antes, por qué repartir gana a adivinar una sola ganadora.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de la canasta y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el fondo.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la canasta y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el fondo.
       difficulty: 1
       suggested_families:
       - choice
@@ -1461,7 +1461,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-fondo
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de repartir y de fondo combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1511,7 +1511,7 @@ sagas:
     - position: 2
       slug: la-lista-muestra-el-conjunto
       micro_objective: Reconocer que el índice no habla de una sola empresa, sino de cómo les va a todas juntas.
-      narrative_beat: Zara Vex explica a Dino que la lista real no dice cómo le fue a una sola empresa, sino a todas juntas ese día.
+      narrative_beat: Zara Vex explica a Liruf que la lista real no dice cómo le fue a una sola empresa, sino a todas juntas ese día.
       difficulty: 2
       suggested_families:
       - choice
@@ -1549,7 +1549,7 @@ sagas:
     - position: 1
       slug: el-torneo-del-reino
       micro_objective: Observar un torneo del reino donde cada niño puede apostar a un solo jugador o apoyar al equipo completo.
-      narrative_beat: En el gran torneo del reino, Zara Vex pregunta a Dino si prefiere apostar a un solo jugador favorito o apoyar al equipo completo.
+      narrative_beat: En el gran torneo del reino, Zara Vex pregunta a Liruf si prefiere apostar a un solo jugador favorito o apoyar al equipo completo.
       difficulty: 2
       suggested_families:
       - story
@@ -1557,7 +1557,7 @@ sagas:
     - position: 2
       slug: si-el-jugador-favorito-se-lastima
       micro_objective: Reconocer qué pasa con la apuesta si el jugador favorito elegido se lastima antes de terminar el torneo.
-      narrative_beat: El jugador favorito de Dino se lastima a mitad del torneo, y su apuesta a un solo jugador queda en problemas.
+      narrative_beat: El jugador favorito de Liruf se lastima a mitad del torneo, y su apuesta a un solo jugador queda en problemas.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1611,7 +1611,7 @@ sagas:
     - position: 3
       slug: cuando-gano-el-equipo-completo
       micro_objective: Identificar en qué torneos pasados apoyar al equipo completo resultó más parejo que apostar a un jugador solo.
-      narrative_beat: Dino revisa los otros cuatro torneos y nota que apoyar al equipo completo dio resultados más parejos casi siempre.
+      narrative_beat: Liruf revisa los otros cuatro torneos y nota que apoyar al equipo completo dio resultados más parejos casi siempre.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1653,7 +1653,7 @@ sagas:
     - position: 2
       slug: nadie-elige-jugador-por-jugador
       micro_objective: Reconocer que nadie del equipo de guardianes elige jugador por jugador en un fondo índice; solo copia la lista.
-      narrative_beat: Zara Vex explica a Dino que los guardianes de este fondo no eligen nada, solo copian automáticamente la lista completa.
+      narrative_beat: Zara Vex explica a Liruf que los guardianes de este fondo no eligen nada, solo copian automáticamente la lista completa.
       difficulty: 3
       suggested_families:
       - choice
@@ -1699,7 +1699,7 @@ sagas:
     - position: 2
       slug: el-promedio-se-equilibra
       micro_objective: Reconocer que el resultado del índice completo es como un promedio de todas esas subidas y bajadas juntas.
-      narrative_beat: Zara Vex explica a Dino que el resultado del índice es un poco como el promedio de todo lo que subió y bajó ese día.
+      narrative_beat: Zara Vex explica a Liruf que el resultado del índice es un poco como el promedio de todo lo que subió y bajó ese día.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1715,7 +1715,7 @@ sagas:
     - position: 4
       slug: mi-explicacion-de-por-que-es-mas-parejo
       micro_objective: Explicar, con un ejemplo propio, por qué el equipo completo suele dar un resultado más parejo que un jugador solo.
-      narrative_beat: Dina explica a Dino, con el ejemplo del torneo, por qué prefiere un resultado más parejo antes que uno arriesgado.
+      narrative_beat: Dina explica a Liruf, con el ejemplo del torneo, por qué prefiere un resultado más parejo antes que uno arriesgado.
       difficulty: 3
       suggested_families:
       - choice
@@ -1745,7 +1745,7 @@ sagas:
     - position: 2
       slug: el-numero-subio-hoy
       micro_objective: Leer que el número del índice subió hoy y explicar qué significa eso para el conjunto de empresas.
-      narrative_beat: Zara Vex señala que el número de hoy subió respecto a ayer, y pregunta a Dino qué cree que significa eso.
+      narrative_beat: Zara Vex señala que el número de hoy subió respecto a ayer, y pregunta a Liruf qué cree que significa eso.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1837,7 +1837,7 @@ sagas:
     - position: 2
       slug: revisar-las-razones-antes-de-decidir
       micro_objective: Revisar, antes de decidir, las razones de riesgo y resultado parejo aprendidas en la saga.
-      narrative_beat: Zara Vex reta a Dino a nombrar dos razones para elegir el equipo completo antes de tomar su decisión final.
+      narrative_beat: Zara Vex reta a Liruf a nombrar dos razones para elegir el equipo completo antes de tomar su decisión final.
       difficulty: 3
       suggested_families:
       - choice
@@ -1892,7 +1892,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-el-indice
       micro_objective: Recordar y ordenar de nuevo cómo un fondo índice sigue al equipo completo y por qué es más parejo.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1933,7 +1933,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-los-guardianes-del-fondo
       micro_objective: Recordar, tal como se aprendió antes, quién cuida un fondo en nombre de todos.
-      narrative_beat: Zara Vex trae un recuerdo de la torre de los guardianes del fondo y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el índice.
+      narrative_beat: Zara Vex trae un recuerdo de la torre de los guardianes del fondo y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el índice.
       difficulty: 1
       suggested_families:
       - choice
@@ -1949,7 +1949,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-indice
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de fondo cuidado por guardianes y fondo índice automático.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1996,7 +1996,7 @@ sagas:
     - position: 1
       slug: el-reino-vuelve-a-abrir-sus-puertas
       micro_objective: Recordar que una acción es un pedacito real de una empresa, sin ayuda nueva.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en el centro del reino y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre canastas.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el centro del reino y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre canastas.'
       difficulty: 1
       suggested_families:
       - story
@@ -2012,7 +2012,7 @@ sagas:
     - position: 3
       slug: leer-el-grafico-otra-vez
       micro_objective: Recordar cómo leer un gráfico simple de subidas y bajadas de una acción.
-      narrative_beat: Dino recuerda, sin ayuda, cómo leer el gráfico que le mostró Dr. Rho al principio de la aventura.
+      narrative_beat: Liruf recuerda, sin ayuda, cómo leer el gráfico que le mostró Dr. Rho al principio de la aventura.
       difficulty: 2
       suggested_families:
       - analyze
@@ -2029,7 +2029,7 @@ sagas:
     slug: la-canasta-de-la-gran-mision
     kind: review_quest
     title_es: La Canasta de la Gran Misión
-    concept: Dina y Dino recuerdan por qué no poner todo en una sola canasta y cómo una canasta variada reparte el riesgo.
+    concept: Dina y Liruf recuerdan por qué no poner todo en una sola canasta y cómo una canasta variada reparte el riesgo.
     learning_objective: Al final, el niño puede recordar y aplicar por qué diversificar reparte el riesgo mejor que concentrar todo en una sola cosa.
     key_vocabulary:
     - canasta
@@ -2046,7 +2046,7 @@ sagas:
     - position: 1
       slug: los-huevos-otra-vez
       micro_objective: Recordar por qué no conviene poner todos los huevos en una sola canasta.
-      narrative_beat: Zara Vex deja caer una canasta de un solo tipo en la plaza y reta a Dino a recordar, sin ayuda, por qué eso es un riesgo.
+      narrative_beat: Zara Vex deja caer una canasta de un solo tipo en la plaza y reta a Liruf a recordar, sin ayuda, por qué eso es un riesgo.
       difficulty: 1
       suggested_families:
       - story
@@ -2079,7 +2079,7 @@ sagas:
     slug: el-fondo-de-la-gran-mision
     kind: review_quest
     title_es: El Fondo de la Gran Misión
-    concept: Dina y Dino recuerdan qué es un fondo, por qué no hay que elegir cada empresa solo y quién lo cuida.
+    concept: Dina y Liruf recuerdan qué es un fondo, por qué no hay que elegir cada empresa solo y quién lo cuida.
     learning_objective: Al final, el niño puede recordar y aplicar cómo funciona un fondo compartido y quién lo cuida.
     key_vocabulary:
     - fondo
@@ -2104,7 +2104,7 @@ sagas:
     - position: 2
       slug: no-elegir-solo-otra-vez
       micro_objective: Recordar una ventaja de no tener que elegir cada empresa uno mismo al usar un fondo.
-      narrative_beat: Dino ordena, de memoria, las razones por las que prefiere que el fondo ya venga armado.
+      narrative_beat: Liruf ordena, de memoria, las razones por las que prefiere que el fondo ya venga armado.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2129,7 +2129,7 @@ sagas:
     slug: el-indice-de-la-gran-mision
     kind: review_quest
     title_es: El Índice de la Gran Misión
-    concept: Dina y Dino recuerdan qué es un índice, por qué es como el equipo completo, y cómo un fondo índice lo sigue automáticamente.
+    concept: Dina y Liruf recuerdan qué es un índice, por qué es como el equipo completo, y cómo un fondo índice lo sigue automáticamente.
     learning_objective: Al final, el niño puede recordar y aplicar cómo un índice representa al equipo completo del reino.
     key_vocabulary:
     - índice
@@ -2146,7 +2146,7 @@ sagas:
     - position: 1
       slug: la-lista-real-otra-vez
       micro_objective: Recordar qué es un índice y qué muestra sobre el reino en conjunto.
-      narrative_beat: Zara Vex muestra de nuevo la lista real del reino y reta a Dino a recordar qué es un índice.
+      narrative_beat: Zara Vex muestra de nuevo la lista real del reino y reta a Liruf a recordar qué es un índice.
       difficulty: 1
       suggested_families:
       - story
@@ -2162,7 +2162,7 @@ sagas:
     - position: 3
       slug: el-fondo-indice-otra-vez
       micro_objective: Recordar cómo un fondo índice sigue automáticamente al equipo completo de la lista.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿cómo sabe un fondo índice qué empresas incluir?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿cómo sabe un fondo índice qué empresas incluir?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2204,7 +2204,7 @@ sagas:
     - position: 2
       slug: un-aprendiz-nuevo-necesita-ayuda
       micro_objective: Aplicar las cuatro áreas para ayudar a un aprendiz nuevo del reino a armar su primera canasta.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo del reino y reta a Dino a guiarlo por las cuatro áreas del reino.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del reino y reta a Liruf a guiarlo por las cuatro áreas del reino.
       difficulty: 2
       suggested_families:
       - choice
@@ -2254,7 +2254,7 @@ sagas:
     - position: 2
       slug: el-reino-y-mi-canasta-propia
       micro_objective: Recordar por qué armar una canasta variada protege mejor que apostar todo a un solo negocio.
-      narrative_beat: Zara Vex recuerda a Dino la canasta con la limonadería, la panadería y la juguetería que armó en esta aventura.
+      narrative_beat: Zara Vex recuerda a Liruf la canasta con la limonadería, la panadería y la juguetería que armó en esta aventura.
       difficulty: 1
       suggested_families:
       - story
@@ -2270,7 +2270,7 @@ sagas:
     - position: 4
       slug: el-reino-sigue-repartiendo-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del reino.
-      narrative_beat: Con las canastas del reino brillando en la plaza, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión.
+      narrative_beat: Con las canastas del reino brillando en la plaza, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión.
       difficulty: 2
       suggested_families:
       - storyplay

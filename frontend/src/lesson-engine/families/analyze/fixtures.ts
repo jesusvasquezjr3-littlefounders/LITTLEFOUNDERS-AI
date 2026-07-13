@@ -7,24 +7,24 @@ export const analyzeFixtures: SegmentBase[] = [
   {
     id: 'fx-spot-error',
     type: 'spot_error',
-    prompt_md: 'Dino calculó su cambio. Encuentra el paso con **error**.',
+    prompt_md: 'Liruf calculó su cambio. Encuentra el paso con **error**.',
     difficulty: 2,
     xp: 15,
     hints: ['Revisa la resta: ¿cuánto es $50 menos $25?'],
     explanation_md: 'Para revisar un cálculo, sigue **cada paso** con calma: el error casi siempre se esconde en uno solo.',
     narrator: { character: 'rho', emotion: 'thinking' },
     payload: {
-      context_md: 'Dino quiere un cuaderno de **$25** y paga con un billete de **$50**.',
+      context_md: 'Liruf quiere un cuaderno de **$25** y paga con un billete de **$50**.',
       steps: [
         { id: 's1', text_md: 'El cuaderno cuesta $25.' },
-        { id: 's2', text_md: 'Dino paga con un billete de $50.' },
+        { id: 's2', text_md: 'Liruf paga con un billete de $50.' },
         { id: 's3', text_md: 'El cambio es $50 − $25 = **$35**.' },
-        { id: 's4', text_md: 'Dino guarda su cambio en la alcancía.' },
+        { id: 's4', text_md: 'Liruf guarda su cambio en la alcancía.' },
       ],
     },
     answer: {
       error_ids: ['s3'],
-      correction_md: 'El cambio correcto es **$50 − $25 = $25**. ¡A Dino le dieron $10 de más!',
+      correction_md: 'El cambio correcto es **$50 − $25 = $25**. ¡A Liruf le dieron $10 de más!',
     },
   },
   {
@@ -163,7 +163,7 @@ export const analyzeFixtures: SegmentBase[] = [
     narrator: { character: 'zara', emotion: 'surprised' },
     payload: {
       artifact_md:
-        '**¡GRATIS! El súper robot Dino-Bot 3000**\n**Solo hoy.** Solo paga el envío de $299.\n- ¡Los primeros 10 niños lo reciben doble!\n- Manda tu nombre y dirección **ya** al chat *TurboJuguetesVIP*',
+        '**¡GRATIS! El súper robot Liruf-Bot 3000**\n**Solo hoy.** Solo paga el envío de $299.\n- ¡Los primeros 10 niños lo reciben doble!\n- Manda tu nombre y dirección **ya** al chat *TurboJuguetesVIP*',
       artifact_kind: 'ad',
       flags: [
         { id: 'f1', text_md: 'Dice que es gratis pero cobra $299 de "envío"' },
@@ -184,7 +184,7 @@ export const analyzeFixtures: SegmentBase[] = [
     xp: 15,
     hints: ['Un hecho se puede comprobar; una opinión es lo que alguien siente o prefiere.'],
     explanation_md: 'Un **hecho** se puede comprobar con evidencia. Una **opinión** depende de los gustos de cada quien.',
-    narrator: { character: 'dino', emotion: 'thinking' },
+    narrator: { character: 'liruf', emotion: 'thinking' },
     payload: {
       statements: [
         { id: 'st1', text_md: 'Un billete de $100 vale más que uno de $50.' },

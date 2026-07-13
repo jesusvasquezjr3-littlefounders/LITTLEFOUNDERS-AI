@@ -9,10 +9,10 @@ adventure:
     es-MX: El Faro de los Fraudes
     pt-BR: O Farol das Fraudes
   description:
-    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Dino to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
-    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Dino a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
-    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Dino a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
-  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Dino con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
+    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Liruf to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
+    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Liruf a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
+    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Liruf a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
+  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Liruf con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
 sagas:
 - position: 1
   slug: promesas-de-dinero-rapido
@@ -43,7 +43,7 @@ sagas:
     - position: 1
       slug: zara-vex-vuelve-al-archipielago
       micro_objective: Reconocer a Zara Vex como guía de esta nueva parte del archipiélago dedicada a detectar fraudes.
-      narrative_beat: Zara Vex recibe a Dina y Dino en el muelle donde antes jugaban a detectar anuncios, ahora convertido en su escuela de detección de fraudes.
+      narrative_beat: Zara Vex recibe a Dina y Liruf en el muelle donde antes jugaban a detectar anuncios, ahora convertido en su escuela de detección de fraudes.
       difficulty: 1
       suggested_families:
       - story
@@ -51,7 +51,7 @@ sagas:
     - position: 2
       slug: un-mensaje-de-dinero-facil
       micro_objective: Observar un mensaje que promete dinero rápido y fácil sin pedir ningún esfuerzo a cambio.
-      narrative_beat: Un mensaje llega al muelle prometiendo 'dinero fácil y rápido, sin hacer nada', y Dino siente curiosidad.
+      narrative_beat: Un mensaje llega al muelle prometiendo 'dinero fácil y rápido, sin hacer nada', y Liruf siente curiosidad.
       difficulty: 2
       suggested_families:
       - story
@@ -89,7 +89,7 @@ sagas:
     - position: 1
       slug: el-dicho-del-faro
       micro_objective: Conocer el dicho 'si suena demasiado bueno para ser verdad, probablemente lo es' de boca de Zara Vex.
-      narrative_beat: Zara Vex enseña a Dino el dicho del faro, uno que ella misma usa cada vez que algo suena demasiado perfecto.
+      narrative_beat: Zara Vex enseña a Liruf el dicho del faro, uno que ella misma usa cada vez que algo suena demasiado perfecto.
       difficulty: 1
       suggested_families:
       - story
@@ -105,7 +105,7 @@ sagas:
     - position: 3
       slug: aplicar-el-dicho-a-una-oferta-nueva
       micro_objective: Aplicar el dicho a una oferta de inversión nueva presentada en el muelle.
-      narrative_beat: Zara Vex reta a Dino a aplicar el dicho frente a una nueva oferta que promete ganancias enormes sin ningún riesgo.
+      narrative_beat: Zara Vex reta a Liruf a aplicar el dicho frente a una nueva oferta que promete ganancias enormes sin ningún riesgo.
       difficulty: 3
       suggested_families:
       - analyze
@@ -139,7 +139,7 @@ sagas:
     - position: 1
       slug: ni-siquiera-dr-rho-lo-garantiza
       micro_objective: Reconocer que ni siquiera Dr. Rho, el guardián más sabio del archipiélago, puede garantizar ganancias seguras.
-      narrative_beat: Dino le pregunta a Dr. Rho si puede garantizarle que una inversión siempre va a ganar, y Dr. Rho responde con honestidad que no.
+      narrative_beat: Liruf le pregunta a Dr. Rho si puede garantizarle que una inversión siempre va a ganar, y Dr. Rho responde con honestidad que no.
       difficulty: 2
       suggested_families:
       - story
@@ -193,7 +193,7 @@ sagas:
     - position: 2
       slug: que-dice-el-cartel-realista
       micro_objective: Identificar qué dice el cartel realista sobre el riesgo de la inversión que ofrece.
-      narrative_beat: Zara Vex lee con Dino el primer cartel, que explica con honestidad que la inversión puede subir o bajar.
+      narrative_beat: Zara Vex lee con Liruf el primer cartel, que explica con honestidad que la inversión puede subir o bajar.
       difficulty: 2
       suggested_families:
       - analyze
@@ -201,7 +201,7 @@ sagas:
     - position: 3
       slug: que-dice-el-cartel-exagerado
       micro_objective: Identificar qué dice el cartel exagerado y por qué su promesa no suena creíble.
-      narrative_beat: Zara Vex lee con Dino el segundo cartel, que promete solo ganancias enormes, sin mencionar ningún riesgo.
+      narrative_beat: Zara Vex lee con Liruf el segundo cartel, que promete solo ganancias enormes, sin mencionar ningún riesgo.
       difficulty: 3
       suggested_families:
       - analyze
@@ -231,7 +231,7 @@ sagas:
     - position: 1
       slug: quien-gana-si-yo-creo
       micro_objective: Observar que alguien más, además de quien invierte, también puede ganar si la promesa se cree sin dudar.
-      narrative_beat: Zara Vex pregunta a Dino quién más, además de él, ganaría si creyera de inmediato el mensaje del muelle.
+      narrative_beat: Zara Vex pregunta a Liruf quién más, además de él, ganaría si creyera de inmediato el mensaje del muelle.
       difficulty: 2
       suggested_families:
       - story
@@ -247,7 +247,7 @@ sagas:
     - position: 3
       slug: hacer-la-pregunta-antes-de-creer
       micro_objective: Practicar formular la pregunta 'quién se beneficia si yo creo esto' antes de aceptar una promesa nueva.
-      narrative_beat: Zara Vex reta a Dino a hacerse la pregunta 'quién se beneficia si yo creo esto' frente a un mensaje nuevo del muelle.
+      narrative_beat: Zara Vex reta a Liruf a hacerse la pregunta 'quién se beneficia si yo creo esto' frente a un mensaje nuevo del muelle.
       difficulty: 3
       suggested_families:
       - choice
@@ -277,7 +277,7 @@ sagas:
     - position: 1
       slug: el-cartel-de-cero-riesgo
       micro_objective: Observar un cartel del muelle que promete una inversión de 'cero riesgo, garantizado'.
-      narrative_beat: Un nuevo cartel en el muelle promete 'cero riesgo, garantizado', y Dino se pregunta si eso es posible.
+      narrative_beat: Un nuevo cartel en el muelle promete 'cero riesgo, garantizado', y Liruf se pregunta si eso es posible.
       difficulty: 2
       suggested_families:
       - story
@@ -293,7 +293,7 @@ sagas:
     - position: 3
       slug: por-que-cero-riesgo-es-una-senal
       micro_objective: Explicar por qué la frase 'cero riesgo' es en sí misma una señal de alerta, no una garantía de seguridad.
-      narrative_beat: Zara Vex explica a Dino por qué la frase 'cero riesgo' suele ser justo la señal de que algo no anda bien.
+      narrative_beat: Zara Vex explica a Liruf por qué la frase 'cero riesgo' suele ser justo la señal de que algo no anda bien.
       difficulty: 3
       suggested_families:
       - story
@@ -323,7 +323,7 @@ sagas:
     - position: 1
       slug: cinco-mensajes-del-muelle
       micro_objective: Observar cinco mensajes distintos del muelle, algunos con señales de alerta de dinero rápido y otros sin ellas.
-      narrative_beat: Zara Vex reúne cinco mensajes distintos del muelle y los coloca frente a Dino para que los revise con cuidado.
+      narrative_beat: Zara Vex reúne cinco mensajes distintos del muelle y los coloca frente a Liruf para que los revise con cuidado.
       difficulty: 2
       suggested_families:
       - story
@@ -331,7 +331,7 @@ sagas:
     - position: 2
       slug: marcar-las-senales-de-alerta
       micro_objective: Marcar, en cada uno de los cinco mensajes, las señales de alerta de dinero rápido que encuentre.
-      narrative_beat: Dino revisa cada uno de los cinco mensajes, marcando las señales de alerta de dinero rápido que va encontrando.
+      narrative_beat: Liruf revisa cada uno de los cinco mensajes, marcando las señales de alerta de dinero rápido que va encontrando.
       difficulty: 3
       suggested_families:
       - analyze
@@ -367,9 +367,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: un-desconocido-le-escribe-a-dino
-      micro_objective: Observar un mensaje nuevo de un desconocido que le escribe a Dino con una promesa de dinero rápido.
-      narrative_beat: Un desconocido le escribe a Dino en el muelle, prometiéndole dinero rápido si invierte de inmediato.
+      slug: un-desconocido-le-escribe-a-liruf
+      micro_objective: Observar un mensaje nuevo de un desconocido que le escribe a Liruf con una promesa de dinero rápido.
+      narrative_beat: Un desconocido le escribe a Liruf en el muelle, prometiéndole dinero rápido si invierte de inmediato.
       difficulty: 2
       suggested_families:
       - story
@@ -377,7 +377,7 @@ sagas:
     - position: 2
       slug: revisar-las-senales-antes-de-responder
       micro_objective: Revisar el mensaje nuevo buscando las señales de alerta aprendidas en la saga antes de responder.
-      narrative_beat: Zara Vex reta a Dino a revisar el mensaje del desconocido, buscando todas las señales de alerta aprendidas en esta saga.
+      narrative_beat: Zara Vex reta a Liruf a revisar el mensaje del desconocido, buscando todas las señales de alerta aprendidas en esta saga.
       difficulty: 3
       suggested_families:
       - analyze
@@ -385,7 +385,7 @@ sagas:
     - position: 3
       slug: explicar-mi-conclusion-con-razones
       micro_objective: Explicar, con al menos dos razones concretas, por qué el mensaje del desconocido parece sospechoso.
-      narrative_beat: Dino explica a Dr. Rho, con dos razones concretas, por qué el mensaje del desconocido le parece sospechoso.
+      narrative_beat: Liruf explica a Dr. Rho, con dos razones concretas, por qué el mensaje del desconocido le parece sospechoso.
       difficulty: 3
       suggested_families:
       - choice
@@ -430,7 +430,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-las-promesas
       micro_objective: Recordar y ordenar de nuevo el dicho 'demasiado bueno para ser verdad' y por qué nadie garantiza ganar siempre.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -471,7 +471,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-del-bosque-nevado
       micro_objective: Recordar, tal como se aprendió antes, que el interés real toma tiempo en crecer.
-      narrative_beat: Zara Vex trae un recuerdo del bosque nevado y pide a Dino recordarlo sin ayuda, antes de mezclarlo con el faro.
+      narrative_beat: Zara Vex trae un recuerdo del bosque nevado y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el faro.
       difficulty: 1
       suggested_families:
       - choice
@@ -487,7 +487,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-del-faro
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de interés real y promesa falsa combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -537,7 +537,7 @@ sagas:
     - position: 2
       slug: la-palabra-piramide
       micro_objective: Conocer la palabra 'pirámide' como el nombre de este tipo de peligro disfrazado.
-      narrative_beat: Dr. Rho enseña a Dino la palabra 'pirámide' y por qué se usa este nombre para describir este tipo de peligro.
+      narrative_beat: Dr. Rho enseña a Liruf la palabra 'pirámide' y por qué se usa este nombre para describir este tipo de peligro.
       difficulty: 2
       suggested_families:
       - story
@@ -545,7 +545,7 @@ sagas:
     - position: 3
       slug: piramide-es-peligro-nunca-oportunidad
       micro_objective: Reconocer que una pirámide siempre se nombra como un peligro, nunca como una oportunidad válida.
-      narrative_beat: 'Zara Vex es clara con Dino: una pirámide siempre se nombra como un peligro que evitar, nunca como algo bueno que buscar.'
+      narrative_beat: 'Zara Vex es clara con Liruf: una pirámide siempre se nombra como un peligro que evitar, nunca como algo bueno que buscar.'
       difficulty: 2
       suggested_families:
       - choice
@@ -683,7 +683,7 @@ sagas:
     - position: 3
       slug: la-senal-de-no-vender-nada-real
       micro_objective: Reconocer que no vender ningún producto o servicio real es otra señal fuerte de pirámide.
-      narrative_beat: Zara Vex reta a Dino a buscar en la torre del muelle qué producto real se está vendiendo, y Dino no encuentra ninguno.
+      narrative_beat: Zara Vex reta a Liruf a buscar en la torre del muelle qué producto real se está vendiendo, y Liruf no encuentra ninguno.
       difficulty: 3
       suggested_families:
       - analyze
@@ -733,7 +733,7 @@ sagas:
     - position: 3
       slug: la-pregunta-que-es-lo-que-vende
       micro_objective: Practicar hacer la pregunta '¿qué es exactamente lo que vende?' frente a una oferta nueva.
-      narrative_beat: Dr. Rho enseña a Dino a preguntarse siempre '¿qué es exactamente lo que vende?' frente a cualquier oferta nueva del muelle.
+      narrative_beat: Dr. Rho enseña a Liruf a preguntarse siempre '¿qué es exactamente lo que vende?' frente a cualquier oferta nueva del muelle.
       difficulty: 3
       suggested_families:
       - choice
@@ -763,7 +763,7 @@ sagas:
     - position: 1
       slug: cuatro-ofertas-del-muelle
       micro_objective: Observar cuatro ofertas distintas del muelle, solo una de ellas siendo en realidad una pirámide disfrazada.
-      narrative_beat: Zara Vex reúne cuatro ofertas distintas del muelle, y reta a Dino a descubrir cuál de ellas es en realidad una pirámide.
+      narrative_beat: Zara Vex reúne cuatro ofertas distintas del muelle, y reta a Liruf a descubrir cuál de ellas es en realidad una pirámide.
       difficulty: 2
       suggested_families:
       - story
@@ -771,7 +771,7 @@ sagas:
     - position: 2
       slug: revisar-cada-oferta-con-las-senales
       micro_objective: Revisar cada una de las cuatro ofertas buscando las señales de pirámide aprendidas en la saga.
-      narrative_beat: Dino revisa cada una de las cuatro ofertas, buscando reclutar, promesas del doble y falta de producto real.
+      narrative_beat: Liruf revisa cada una de las cuatro ofertas, buscando reclutar, promesas del doble y falta de producto real.
       difficulty: 3
       suggested_families:
       - analyze
@@ -779,7 +779,7 @@ sagas:
     - position: 3
       slug: senalar-la-piramide-disfrazada
       micro_objective: Señalar, con razones concretas, cuál de las cuatro ofertas es en realidad la pirámide disfrazada.
-      narrative_beat: Dino señala, con razones concretas basadas en las señales encontradas, cuál de las cuatro ofertas es en realidad una pirámide.
+      narrative_beat: Liruf señala, con razones concretas basadas en las señales encontradas, cuál de las cuatro ofertas es en realidad una pirámide.
       difficulty: 3
       suggested_families:
       - analyze
@@ -817,7 +817,7 @@ sagas:
     - position: 2
       slug: contarselo-a-alguien-mas-ayuda
       micro_objective: Reconocer que contarle a alguien más sobre una posible pirámide ayuda a verla con más claridad.
-      narrative_beat: Dino le cuenta a Dr. Rho sobre una oferta sospechosa, y al explicarla en voz alta, ve con más claridad que era una pirámide.
+      narrative_beat: Liruf le cuenta a Dr. Rho sobre una oferta sospechosa, y al explicarla en voz alta, ve con más claridad que era una pirámide.
       difficulty: 2
       suggested_families:
       - story
@@ -825,7 +825,7 @@ sagas:
     - position: 3
       slug: practicar-nombrarla-en-voz-alta
       micro_objective: Practicar nombrar en voz alta una pirámide encontrada en un escenario simulado.
-      narrative_beat: Zara Vex reta a Dino a nombrar en voz alta, sin dudar, una pirámide que encuentra en un nuevo escenario del muelle.
+      narrative_beat: Zara Vex reta a Liruf a nombrar en voz alta, sin dudar, una pirámide que encuentra en un nuevo escenario del muelle.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -855,7 +855,7 @@ sagas:
     - position: 1
       slug: una-invitacion-de-un-amigo-del-muelle
       micro_objective: Observar una invitación de un amigo del muelle para sumarse a un grupo que promete ganar dinero invitando a más personas.
-      narrative_beat: Un amigo del muelle invita a Dino a sumarse a un grupo que promete ganar dinero solo por invitar a más y más personas.
+      narrative_beat: Un amigo del muelle invita a Liruf a sumarse a un grupo que promete ganar dinero solo por invitar a más y más personas.
       difficulty: 2
       suggested_families:
       - story
@@ -863,7 +863,7 @@ sagas:
     - position: 2
       slug: revisar-las-tres-senales-de-piramide
       micro_objective: Revisar la invitación buscando las tres señales principales de pirámide aprendidas en la saga.
-      narrative_beat: Dino revisa la invitación de su amigo buscando reclutar, promesas del doble y falta de producto real.
+      narrative_beat: Liruf revisa la invitación de su amigo buscando reclutar, promesas del doble y falta de producto real.
       difficulty: 3
       suggested_families:
       - analyze
@@ -871,7 +871,7 @@ sagas:
     - position: 3
       slug: nombrarla-y-explicarle-a-mi-amigo
       micro_objective: Nombrar la pirámide en voz alta y explicarle a un amigo, con calma, por qué no es una buena idea.
-      narrative_beat: Dino nombra la pirámide en voz alta y le explica con calma a su amigo del muelle por qué prefiere no sumarse.
+      narrative_beat: Liruf nombra la pirámide en voz alta y le explica con calma a su amigo del muelle por qué prefiere no sumarse.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -916,7 +916,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-las-piramides
       micro_objective: Recordar y ordenar de nuevo cómo se mueve el dinero por dentro de una pirámide y por qué siempre se cae.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -957,7 +957,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-quien-se-beneficia
       micro_objective: Recordar, tal como se aprendió antes, la pregunta de quién se beneficia si uno cree una promesa.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga del faro y pide a Dino recordarlo sin ayuda, antes de mezclarlo con las pirámides.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del faro y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con las pirámides.
       difficulty: 1
       suggested_families:
       - choice
@@ -973,7 +973,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-las-piramides
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de quién se beneficia y señales de pirámide combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1014,8 +1014,8 @@ sagas:
     lessons:
     - position: 1
       slug: decide-ya-o-lo-pierdes
-      micro_objective: Observar un mensaje del muelle que insiste en que Dino decida de inmediato o pierda la oportunidad.
-      narrative_beat: Un mensaje del muelle insiste una y otra vez en que Dino decida ya mismo, o dice que perderá la oportunidad para siempre.
+      micro_objective: Observar un mensaje del muelle que insiste en que Liruf decida de inmediato o pierda la oportunidad.
+      narrative_beat: Un mensaje del muelle insiste una y otra vez en que Liruf decida ya mismo, o dice que perderá la oportunidad para siempre.
       difficulty: 1
       suggested_families:
       - story
@@ -1023,7 +1023,7 @@ sagas:
     - position: 2
       slug: la-prisa-no-deja-pensar
       micro_objective: Reconocer que la prisa está diseñada para que la persona no tenga tiempo de pensar con calma.
-      narrative_beat: Zara Vex explica a Dino que la prisa del mensaje está diseñada a propósito, para que no tenga tiempo de pensar con calma.
+      narrative_beat: Zara Vex explica a Liruf que la prisa del mensaje está diseñada a propósito, para que no tenga tiempo de pensar con calma.
       difficulty: 2
       suggested_families:
       - story
@@ -1069,7 +1069,7 @@ sagas:
     - position: 2
       slug: que-revisar-durante-la-pausa
       micro_objective: Identificar qué señales de alerta conviene revisar durante esa pausa antes de decidir.
-      narrative_beat: Zara Vex enseña a Dino qué señales de alerta conviene revisar durante la pausa, antes de decidir cualquier cosa.
+      narrative_beat: Zara Vex enseña a Liruf qué señales de alerta conviene revisar durante la pausa, antes de decidir cualquier cosa.
       difficulty: 2
       suggested_families:
       - choice
@@ -1077,7 +1077,7 @@ sagas:
     - position: 3
       slug: practicar-la-pausa-frente-a-una-oferta
       micro_objective: Practicar aplicar la pausa frente a una oferta de inversión nueva presentada en el muelle.
-      narrative_beat: Zara Vex reta a Dino a practicar la pausa frente a una nueva oferta de inversión presentada en el muelle.
+      narrative_beat: Zara Vex reta a Liruf a practicar la pausa frente a una nueva oferta de inversión presentada en el muelle.
       difficulty: 2
       suggested_families:
       - storyplay
@@ -1110,7 +1110,7 @@ sagas:
     lessons:
     - position: 1
       slug: dr-rho-nunca-apura-a-nadie
-      micro_objective: Reconocer que Dr. Rho, cuando explica una inversión de verdad, nunca apura a Dina ni a Dino a decidir rápido.
+      micro_objective: Reconocer que Dr. Rho, cuando explica una inversión de verdad, nunca apura a Dina ni a Liruf a decidir rápido.
       narrative_beat: Dr. Rho explica una oportunidad real del reino con calma, sin apurar en ningún momento a Dina para que decida rápido.
       difficulty: 2
       suggested_families:
@@ -1127,7 +1127,7 @@ sagas:
     - position: 3
       slug: que-esconde-quien-apura-tanto
       micro_objective: Explicar qué podría estar escondiendo alguien que insiste tanto en que se decida en segundos.
-      narrative_beat: Dr. Rho pregunta a Dino qué cree que podría estar escondiendo alguien que insiste tanto en que decida en solo segundos.
+      narrative_beat: Dr. Rho pregunta a Liruf qué cree que podría estar escondiendo alguien que insiste tanto en que decida en solo segundos.
       difficulty: 3
       suggested_families:
       - choice
@@ -1165,7 +1165,7 @@ sagas:
     - position: 2
       slug: cual-parece-mas-confiable
       micro_objective: Decidir, con razones propias, cuál de las dos ofertas parece más confiable según el tiempo que da para decidir.
-      narrative_beat: Zara Vex reta a Dino a decidir, con sus propias razones, cuál de las dos ofertas le parece más confiable.
+      narrative_beat: Zara Vex reta a Liruf a decidir, con sus propias razones, cuál de las dos ofertas le parece más confiable.
       difficulty: 3
       suggested_families:
       - choice
@@ -1211,7 +1211,7 @@ sagas:
     - position: 2
       slug: que-pienso-mientras-cuento
       micro_objective: Identificar qué preguntas hacerse mientras se cuenta hasta diez, como '¿quién se beneficia?' o '¿qué esconde?'.
-      narrative_beat: Zara Vex enseña a Dino qué preguntas hacerse mientras cuenta hasta diez, como quién se beneficia y qué podría estar escondiendo.
+      narrative_beat: Zara Vex enseña a Liruf qué preguntas hacerse mientras cuenta hasta diez, como quién se beneficia y qué podría estar escondiendo.
       difficulty: 2
       suggested_families:
       - choice
@@ -1219,7 +1219,7 @@ sagas:
     - position: 3
       slug: practicar-contar-hasta-diez-en-una-historia
       micro_objective: Practicar contar hasta diez y pensar frente a una oferta apurada dentro de una historia simulada.
-      narrative_beat: Zara Vex pone a prueba a Dino con una oferta muy apurada del muelle, para ver si recuerda contar hasta diez antes de decidir.
+      narrative_beat: Zara Vex pone a prueba a Liruf con una oferta muy apurada del muelle, para ver si recuerda contar hasta diez antes de decidir.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1249,7 +1249,7 @@ sagas:
     - position: 1
       slug: ultima-oportunidad-para-siempre
       micro_objective: Observar un mensaje que asegura que esta es la 'última oportunidad para siempre' de una inversión especial.
-      narrative_beat: Un mensaje del muelle asegura que esta es la 'última oportunidad para siempre', y Dino siente miedo de perdérsela.
+      narrative_beat: Un mensaje del muelle asegura que esta es la 'última oportunidad para siempre', y Liruf siente miedo de perdérsela.
       difficulty: 2
       suggested_families:
       - story
@@ -1257,7 +1257,7 @@ sagas:
     - position: 2
       slug: nombrar-el-miedo-para-verlo-mejor
       micro_objective: Nombrar el sentimiento de miedo a perderse algo, para poder verlo con más claridad y no dejarse llevar por él.
-      narrative_beat: Zara Vex ayuda a Dino a nombrar en voz alta el miedo que siente a perderse la oportunidad, para verlo con más claridad.
+      narrative_beat: Zara Vex ayuda a Liruf a nombrar en voz alta el miedo que siente a perderse la oportunidad, para verlo con más claridad.
       difficulty: 3
       suggested_families:
       - story
@@ -1303,7 +1303,7 @@ sagas:
     - position: 2
       slug: aplicar-el-boton-de-pausa
       micro_objective: Aplicar el botón de pausa imaginado del faro frente a esta oferta muy apurada.
-      narrative_beat: Dino aplica su botón de pausa imaginado del faro frente a la oferta muy apurada que le presentó Zara Vex.
+      narrative_beat: Liruf aplica su botón de pausa imaginado del faro frente a la oferta muy apurada que le presentó Zara Vex.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1311,7 +1311,7 @@ sagas:
     - position: 3
       slug: contar-hasta-diez-y-revisar-senales
       micro_objective: Contar hasta diez y revisar las señales de alerta aprendidas en toda la saga antes de decidir.
-      narrative_beat: Dino cuenta hasta diez y revisa, una por una, las señales de alerta aprendidas antes de decidir qué hacer con la oferta.
+      narrative_beat: Liruf cuenta hasta diez y revisa, una por una, las señales de alerta aprendidas antes de decidir qué hacer con la oferta.
       difficulty: 3
       suggested_families:
       - analyze
@@ -1402,7 +1402,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-prisa
       micro_objective: Recordar y ordenar de nuevo por qué nadie serio apura una inversión y cómo comparar ofertas con y sin tiempo.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1443,7 +1443,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-las-piramides
       micro_objective: Recordar, tal como se aprendió antes, las señales que ayudan a identificar una pirámide.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de las pirámides y pide a Dino recordarlo sin ayuda, antes de mezclarlo con la prisa.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las pirámides y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la prisa.
       difficulty: 1
       suggested_families:
       - choice
@@ -1459,7 +1459,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-la-prisa
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de señales de pirámide y resistir la prisa combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1509,7 +1509,7 @@ sagas:
     - position: 2
       slug: incluso-si-parece-una-oportunidad-genial
       micro_objective: Reconocer que la regla de preguntar a la familia aplica incluso si la oferta parece una oportunidad genial.
-      narrative_beat: Zara Vex insiste con Dino en que la regla aplica incluso si la oferta parece la oportunidad más genial del muelle.
+      narrative_beat: Zara Vex insiste con Liruf en que la regla aplica incluso si la oferta parece la oportunidad más genial del muelle.
       difficulty: 2
       suggested_families:
       - choice
@@ -1555,7 +1555,7 @@ sagas:
     - position: 2
       slug: cuatro-ojos-ven-mas-que-dos
       micro_objective: Reconocer que revisar una oferta entre dos personas ayuda a notar señales que una sola persona podría pasar por alto.
-      narrative_beat: Zara Vex explica a Dino el dicho 'cuatro ojos ven más que dos', mostrando cómo Dr. Rho notó una señal que él solo no había visto.
+      narrative_beat: Zara Vex explica a Liruf el dicho 'cuatro ojos ven más que dos', mostrando cómo Dr. Rho notó una señal que él solo no había visto.
       difficulty: 2
       suggested_families:
       - story
@@ -1601,7 +1601,7 @@ sagas:
     - position: 2
       slug: un-mensaje-que-pide-datos-de-la-familia
       micro_objective: Observar un mensaje que pide datos de cuentas familiares para 'empezar a invertir'.
-      narrative_beat: Un mensaje del muelle pide a Dino los datos de las cuentas de su familia para 'empezar a invertir de inmediato'.
+      narrative_beat: Un mensaje del muelle pide a Liruf los datos de las cuentas de su familia para 'empezar a invertir de inmediato'.
       difficulty: 2
       suggested_families:
       - story
@@ -1609,7 +1609,7 @@ sagas:
     - position: 3
       slug: por-que-ese-dato-nunca-se-comparte
       micro_objective: Explicar por qué los datos de cuentas familiares nunca deben compartirse con un mensaje o desconocido.
-      narrative_beat: Zara Vex explica a Dino por qué los datos de las cuentas de su familia nunca deben compartirse con un mensaje así.
+      narrative_beat: Zara Vex explica a Liruf por qué los datos de las cuentas de su familia nunca deben compartirse con un mensaje así.
       difficulty: 3
       suggested_families:
       - choice
@@ -1647,7 +1647,7 @@ sagas:
     - position: 2
       slug: ni-siquiera-a-un-amigo-simpatico
       micro_objective: Reconocer que esa regla aplica incluso si quien lo pide parece un amigo simpático y de confianza.
-      narrative_beat: Zara Vex aclara a Dino que la regla aplica incluso si quien lo pide parece un amigo simpático y agradable.
+      narrative_beat: Zara Vex aclara a Liruf que la regla aplica incluso si quien lo pide parece un amigo simpático y agradable.
       difficulty: 3
       suggested_families:
       - choice
@@ -1655,7 +1655,7 @@ sagas:
     - position: 3
       slug: practicar-decir-que-no-comparto-eso
       micro_objective: Practicar, dentro de una historia, cómo responder con seguridad 'eso no lo comparto' frente a un pedido de datos.
-      narrative_beat: Zara Vex representa una situación donde alguien le pide datos a Dino, y él practica responder con seguridad 'eso no lo comparto'.
+      narrative_beat: Zara Vex representa una situación donde alguien le pide datos a Liruf, y él practica responder con seguridad 'eso no lo comparto'.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1693,7 +1693,7 @@ sagas:
     - position: 2
       slug: practicar-pedir-ayuda-en-una-historia
       micro_objective: Practicar, dentro de una historia simulada, cómo pedir ayuda a la familia frente a una oferta nueva.
-      narrative_beat: Zara Vex representa una oferta nueva del muelle, y Dino practica pedirle ayuda a Dr. Rho antes de decidir cualquier cosa.
+      narrative_beat: Zara Vex representa una oferta nueva del muelle, y Liruf practica pedirle ayuda a Dr. Rho antes de decidir cualquier cosa.
       difficulty: 2
       suggested_families:
       - storyplay
@@ -1747,7 +1747,7 @@ sagas:
     - position: 3
       slug: la-segunda-opinion-no-es-desconfiar-de-mi
       micro_objective: Reconocer que pedir una segunda opinión no significa desconfiar de uno mismo, sino cuidarse mejor.
-      narrative_beat: Zara Vex explica a Dino que pedir una segunda opinión no significa que no confíe en su propio juicio, sino que se cuida mejor.
+      narrative_beat: Zara Vex explica a Liruf que pedir una segunda opinión no significa que no confíe en su propio juicio, sino que se cuida mejor.
       difficulty: 3
       suggested_families:
       - story
@@ -1785,7 +1785,7 @@ sagas:
     - position: 2
       slug: practicar-los-tres-pasos-juntos
       micro_objective: Practicar los tres pasos en orden, uno tras otro, frente a una oferta nueva del muelle.
-      narrative_beat: Zara Vex presenta una oferta nueva del muelle, y Dino practica los tres pasos del hábito completo, uno tras otro.
+      narrative_beat: Zara Vex presenta una oferta nueva del muelle, y Liruf practica los tres pasos del hábito completo, uno tras otro.
       difficulty: 3
       suggested_families:
       - storyplay
@@ -1823,7 +1823,7 @@ sagas:
     - position: 1
       slug: la-graduacion-del-faro-de-los-fraudes
       micro_objective: Prepararse para el desafío final de la aventura, reuniendo todo lo aprendido sobre detectar fraudes.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino en la cima del faro para el desafío final: aplicar todo lo aprendido sobre detectar fraudes.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en la cima del faro para el desafío final: aplicar todo lo aprendido sobre detectar fraudes.'
       difficulty: 2
       suggested_families:
       - story
@@ -1884,7 +1884,7 @@ sagas:
     - position: 2
       slug: recordar-en-orden-la-familia
       micro_objective: Recordar y ordenar de nuevo cómo un adulto de confianza revisa una oferta y qué datos nunca se comparten.
-      narrative_beat: Dino saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Zara Vex le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
       - arrange
@@ -1925,7 +1925,7 @@ sagas:
     - position: 1
       slug: un-recuerdo-de-contar-hasta-diez
       micro_objective: Recordar, tal como se aprendió antes, cómo contar hasta diez ayuda a resistir la prisa de una oferta.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de la prisa y pide a Dino recordarlo sin ayuda, antes de mezclarlo con pedir ayuda a la familia.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la prisa y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con pedir ayuda a la familia.
       difficulty: 1
       suggested_families:
       - choice
@@ -1941,7 +1941,7 @@ sagas:
     - position: 3
       slug: practicar-el-entrelazado-de-la-familia
       micro_objective: Aplicar juntos, en una escena nueva, los conceptos de contar hasta diez y preguntar a la familia combinados.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del muelle usando a la vez ambas ideas combinadas.
       difficulty: 2
       suggested_families:
       - choice
@@ -1988,7 +1988,7 @@ sagas:
     - position: 1
       slug: el-faro-vuelve-a-encenderse
       micro_objective: Recordar que una promesa de dinero rápido sin esfuerzo es una señal de alerta.
-      narrative_beat: 'Zara Vex reúne a Dina y Dino en el muelle y anuncia la Gran Misión: recorrer una vez más todas las alertas del faro.'
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf en el muelle y anuncia la Gran Misión: recorrer una vez más todas las alertas del faro.'
       difficulty: 1
       suggested_families:
       - story
@@ -2004,7 +2004,7 @@ sagas:
     - position: 3
       slug: nadie-garantiza-otra-vez
       micro_objective: Recordar por qué nadie puede garantizar que una inversión siempre gana.
-      narrative_beat: Dino recuerda, sin ayuda, por qué ni siquiera Dr. Rho puede garantizarle ganancias seguras.
+      narrative_beat: Liruf recuerda, sin ayuda, por qué ni siquiera Dr. Rho puede garantizarle ganancias seguras.
       difficulty: 2
       suggested_families:
       - choice
@@ -2021,7 +2021,7 @@ sagas:
     slug: las-piramides-de-la-gran-mision
     kind: review_quest
     title_es: Las Pirámides de la Gran Misión
-    concept: Dina y Dino recuerdan qué es una pirámide, por qué siempre se cae, y las señales que ayudan a reconocerla.
+    concept: Dina y Liruf recuerdan qué es una pirámide, por qué siempre se cae, y las señales que ayudan a reconocerla.
     learning_objective: Al final, el niño puede recordar y aplicar cómo reconocer una pirámide y por qué representa un peligro.
     key_vocabulary:
     - pirámide
@@ -2038,7 +2038,7 @@ sagas:
     - position: 1
       slug: la-torre-otra-vez
       micro_objective: Recordar qué es una pirámide de dinero y por qué se nombra siempre como un peligro.
-      narrative_beat: Zara Vex muestra de nuevo la torre de tarjetas del muelle y reta a Dino a recordar, sin ayuda, qué representa.
+      narrative_beat: Zara Vex muestra de nuevo la torre de tarjetas del muelle y reta a Liruf a recordar, sin ayuda, qué representa.
       difficulty: 1
       suggested_families:
       - story
@@ -2054,7 +2054,7 @@ sagas:
     - position: 3
       slug: las-senales-otra-vez
       micro_objective: Recordar al menos dos señales que ayudan a reconocer una pirámide.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿cuáles son las señales que ayudan a reconocer una pirámide?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿cuáles son las señales que ayudan a reconocer una pirámide?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2071,7 +2071,7 @@ sagas:
     slug: la-prisa-de-la-gran-mision
     kind: review_quest
     title_es: La Prisa de la Gran Misión
-    concept: Dina y Dino recuerdan por qué la urgencia es una trampa y cómo pausar antes de decidir invertir en algo.
+    concept: Dina y Liruf recuerdan por qué la urgencia es una trampa y cómo pausar antes de decidir invertir en algo.
     learning_objective: Al final, el niño puede recordar y aplicar la pausa de pensar antes de decidir frente a una oferta apurada.
     key_vocabulary:
     - urgencia
@@ -2088,7 +2088,7 @@ sagas:
     - position: 1
       slug: decide-ya-otra-vez
       micro_objective: Recordar por qué la urgencia es una herramienta común del fraude de inversión.
-      narrative_beat: Zara Vex muestra de nuevo un mensaje que mete prisa y reta a Dino a recordar, sin ayuda, por qué eso es una señal de alerta.
+      narrative_beat: Zara Vex muestra de nuevo un mensaje que mete prisa y reta a Liruf a recordar, sin ayuda, por qué eso es una señal de alerta.
       difficulty: 1
       suggested_families:
       - story
@@ -2104,7 +2104,7 @@ sagas:
     - position: 3
       slug: nadie-serio-apura-otra-vez
       micro_objective: Recordar por qué una inversión seria nunca necesita una decisión en segundos.
-      narrative_beat: 'Dr. Rho pregunta a Dino si recuerda: ¿por qué nadie serio apura a alguien a invertir?'
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿por qué nadie serio apura a alguien a invertir?'
       difficulty: 2
       suggested_families:
       - choice
@@ -2121,7 +2121,7 @@ sagas:
     slug: la-familia-de-la-gran-mision
     kind: review_quest
     title_es: La Familia de la Gran Misión
-    concept: Dina y Dino recuerdan por qué preguntar a la familia es siempre el primer paso y qué datos nunca se comparten.
+    concept: Dina y Liruf recuerdan por qué preguntar a la familia es siempre el primer paso y qué datos nunca se comparten.
     learning_objective: Al final, el niño puede recordar y aplicar por qué preguntar a la familia y proteger sus datos son pasos esenciales antes de decidir.
     key_vocabulary:
     - familia
@@ -2146,7 +2146,7 @@ sagas:
     - position: 2
       slug: proteger-mis-datos-otra-vez
       micro_objective: Recordar por qué proteger los datos personales también aplica al hablar de invertir.
-      narrative_beat: Dino ordena, de memoria, la lista de datos que nunca se comparten para 'empezar a invertir'.
+      narrative_beat: Liruf ordena, de memoria, la lista de datos que nunca se comparten para 'empezar a invertir'.
       difficulty: 1
       suggested_families:
       - arrange
@@ -2196,7 +2196,7 @@ sagas:
     - position: 2
       slug: un-aprendiz-nuevo-necesita-proteccion
       micro_objective: Aplicar las cuatro áreas para ayudar a un aprendiz nuevo del faro a protegerse de un fraude.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo del faro y reta a Dino a guiarlo por las cuatro áreas de alerta aprendidas.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del faro y reta a Liruf a guiarlo por las cuatro áreas de alerta aprendidas.
       difficulty: 2
       suggested_families:
       - choice
@@ -2246,7 +2246,7 @@ sagas:
     - position: 2
       slug: el-faro-y-el-bosque-nevado
       micro_objective: Recordar por qué el interés real toma tiempo en crecer, tal como se aprendió en el Bosque del Interés Compuesto.
-      narrative_beat: Zara Vex recuerda a Dino la bola de nieve del bosque, que crecía con tiempo real, muy distinta a cualquier promesa de fraude.
+      narrative_beat: Zara Vex recuerda a Liruf la bola de nieve del bosque, que crecía con tiempo real, muy distinta a cualquier promesa de fraude.
       difficulty: 1
       suggested_families:
       - story
@@ -2262,7 +2262,7 @@ sagas:
     - position: 4
       slug: el-faro-protege-para-siempre
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del Faro de los Fraudes.
-      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Dr. Rho, Dino y Zara Vex el cierre de la Gran Misión, ahora sabiendo proteger su dinero y el de su familia.
+      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión, ahora sabiendo proteger su dinero y el de su familia.
       difficulty: 2
       suggested_families:
       - storyplay

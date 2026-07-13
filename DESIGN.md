@@ -268,7 +268,7 @@ for containers. Sharp corners prohibited.
 - **FileField** — custom image picker (never the native control's look):
   dashed well on `surface-sunken`, `primary` hover/drag state, chosen-file
   summary with a replace affordance.
-- **Characters** — Dina, Dino, Dr. Rho, Zara Vex (canonical; no new mascots
+- **Characters** — Dina, Liruf, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
 
 ## Screen Recipes

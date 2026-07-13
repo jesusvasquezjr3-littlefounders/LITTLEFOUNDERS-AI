@@ -16,6 +16,7 @@ agent/
   tools/
   workflows/
 audiogen/
+  scripts/
   src/
     __tests__/
     concurrency/
@@ -23,6 +24,14 @@ audiogen/
     filebase/
     narrate/
     routes/
+    samples/
+      EN/
+      ES/
+      PT/
+      trimmed/
+        en-US/
+        es-MX/
+        pt-BR/
     service/
     tts/
     types/
@@ -1118,6 +1127,46 @@ export default tseslint.config(
     "test:watch": "vitest",
 ```
 
+### audiogen/scripts/register-character-voices.ts
+
+```
+/*
+ * `npm run voices:register -- --confirm` — PAID, calls the real DashScope
+ * qwen-voice-enrollment API once per character/locale (12 calls, one per
+ * trimmed sample). OPERATOR-OPT-IN per /AGENTS.md BOUNDARIES: does nothing
+ * — makes zero network calls — unless invoked with the `--confirm` flag.
+ *
+ * Prereq: `npm run trim:samples` must have already produced clean output
+ * under src/samples/trimmed/{locale}/{character}.wav (run it first and
+ * review its pass/fail table).
+ *
+ * This script does NOT write to .env — it prints the resulting
+ * TTS_VOICE_<CHARACTER>_<LOCALE>=<voice-id> lines for a human to review and
+ * paste into audiogen/.env themselves (never auto-edit a secrets file).
+ */
+import { readFile } from 'node:fs/promises';
+```
+
+### audiogen/scripts/trim-samples.ts
+
+```
+/*
+ * `npm run trim:samples` — FREE, local-only, no network calls, safe to run
+ * any time. Reads the raw character voice reference samples (long-form,
+ * native-locale recordings the user added under src/samples/) and selects
+ * the cleanest ~18s window per DashScope's qwen-voice-enrollment
+ * constraints (src/tts/trimSample.ts), writing the trimmed WAVs to
+ * src/samples/trimmed/{locale}/{character}.wav. Prints a pass/fail table
+ * against the enrollment API's hard limits (60s max, 10MB max, 2s max
+ * pause) — run this and review the table BEFORE ever running
+ * `npm run voices:register` (which spends money).
+ */
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { parseWav } from '../src/tts/wav.js';
+```
+
 ### audiogen/src/__tests__/audioRoutes.test.ts
 
 ```
@@ -1238,6 +1287,46 @@ function tinyWav(): ArrayBuffer {
   const buffer = new ArrayBuffer(44 + samples.length * 2);
 ```
 
+### audiogen/src/__tests__/trimSample.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { selectCleanWindow, TARGET_SECONDS, MAX_PAUSE_MS } from '../tts/trimSample.js';
+import type { DecodedWav } from '../tts/wav.js';
+
+const SAMPLE_RATE = 8000;
+
+function loudSamples(seconds: number): Int16Array {
+  const count = Math.round(seconds * SAMPLE_RATE);
+  const out = new Int16Array(count);
+  for (let i = 0; i < count; i += 1) {
+    out[i] = Math.round(Math.sin((2 * Math.PI * 440 * i) / SAMPLE_RATE) * 8000);
+  }
+  return out;
+}
+
+```
+
+### audiogen/src/__tests__/voiceClone.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { registerVoice } from '../tts/voiceClone.js';
+import { TtsError } from '../tts/errors.js';
+
+const baseOpts = {
+  apiUrl: 'https://dashscope-intl.example/customization',
+  apiKey: 'k',
+  targetModel: 'qwen3-tts-vc-2026-01-22',
+  sleep: async () => undefined,
+  rand: () => 0,
+};
+
+const input = { audioBase64: 'ZmFrZS13YXYtYnl0ZXM=', mimeType: 'audio/wav', preferredName: 'dina-en-us' };
+
+function jsonResponse(status: number, body: unknown): Response {
+```
+
 ### audiogen/src/__tests__/voiceFor.test.ts
 
 ```
@@ -1248,14 +1337,34 @@ const CHARACTER_ENV_KEYS = [
   'TTS_VOICE_DINA_EN_US',
   'TTS_VOICE_DINA_ES_MX',
   'TTS_VOICE_DINA_PT_BR',
-  'TTS_VOICE_DINO_EN_US',
-  'TTS_VOICE_DINO_ES_MX',
-  'TTS_VOICE_DINO_PT_BR',
+  'TTS_VOICE_LIRUF_EN_US',
+  'TTS_VOICE_LIRUF_ES_MX',
+  'TTS_VOICE_LIRUF_PT_BR',
   'TTS_VOICE_RHO_EN_US',
   'TTS_VOICE_RHO_ES_MX',
   'TTS_VOICE_RHO_PT_BR',
   'TTS_VOICE_ZARA_EN_US',
   'TTS_VOICE_ZARA_ES_MX',
+```
+
+### audiogen/src/__tests__/wavEncode.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { encodeWav } from '../tts/wavEncode.js';
+import { parseWav } from '../tts/wav.js';
+
+function toArrayBuffer(buffer: Buffer): ArrayBuffer {
+  return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer;
+}
+
+function sineSamples(count: number, sampleRate: number, freq: number): Int16Array {
+  const out = new Int16Array(count);
+  for (let i = 0; i < count; i += 1) {
+    out[i] = Math.round(Math.sin((2 * Math.PI * freq * i) / sampleRate) * 8000);
+  }
+  return out;
+}
 ```
 
 ### audiogen/src/__tests__/wavMp3.test.ts
@@ -1472,7 +1581,7 @@ export interface NarrationUnit {
   field: string;
   /** Plain narration text — MarkdownLite already stripped. */
   text: string;
-  /** `segment.narrator?.character` (dina/dino/rho/zara) when the segment declares one — undefined otherwise. */
+  /** `segment.narrator?.character` (dina/liruf/rho/zara) when the segment declares one — undefined otherwise. */
   character?: string;
 }
 
@@ -1611,13 +1720,18 @@ export interface DashscopeClientOptions {
 /** Typed TTS failures — never leak raw provider payloads to callers/logs. */
 export class TtsError extends Error {
   constructor(
-    public readonly code: 'TTS_TIMEOUT' | 'TTS_RATE_LIMITED' | 'TTS_PROVIDER_ERROR' | 'TTS_BAD_RESPONSE' | 'TTS_DOWNLOAD_FAILED',
+    public readonly code:
+      | 'TTS_TIMEOUT'
+      | 'TTS_RATE_LIMITED'
+      | 'TTS_PROVIDER_ERROR'
+      | 'TTS_BAD_RESPONSE'
+      | 'TTS_DOWNLOAD_FAILED'
+      | 'VOICE_CLONE_PROVIDER_ERROR'
+      | 'VOICE_CLONE_BAD_RESPONSE',
     message: string,
   ) {
     super(message);
     this.name = 'TtsError';
-  }
-}
 ```
 
 ### audiogen/src/tts/mp3.ts
@@ -1640,6 +1754,46 @@ export function encodeMp3(wav: DecodedWav, bitrateKbps: number): Buffer {
   }
 ```
 
+### audiogen/src/tts/trimSample.ts
+
+```
+import type { DecodedWav } from './wav.js';
+
+/*
+ * Picks the cleanest ~TARGET_SECONDS continuous window out of a long raw
+ * voice-actor recording, for DashScope voice-clone enrollment
+ * (qwen-voice-enrollment): 10-20s recommended, 60s max, <10MB, no single
+ * silent gap over 2s inside the sample. Pure energy-based (RMS) silence
+ * detection — no external DSP dependency, deterministic, unit-testable
+ * against a synthetic signal.
+ */
+
+export const TARGET_SECONDS = 18;
+export const MAX_PAUSE_MS = 2000;
+const FRAME_MS = 50;
+const SILENCE_RATIO = 0.15; // a frame is "silent" if its RMS < 15% of the clip's overall RMS
+```
+
+### audiogen/src/tts/voiceClone.ts
+
+```
+import { computeBackoffMs, isRetryableStatus } from './backoff.js';
+import { TtsError } from './errors.js';
+
+export interface RegisterVoiceInput {
+  /** Reference audio, base64-encoded (no data: prefix). */
+  audioBase64: string;
+  /** e.g. 'audio/wav'. */
+  mimeType: string;
+  /** DashScope voice identifier — kebab/underscore, provider constraints unconfirmed; keep it short and simple. */
+  preferredName: string;
+}
+
+export interface VoiceCloneClientOptions {
+  apiUrl: string;
+  apiKey: string;
+```
+
 ### audiogen/src/tts/wav.ts
 
 ```
@@ -1658,6 +1812,26 @@ export class WavParseError extends Error {
 
 export interface DecodedWav {
   sampleRate: number;
+```
+
+### audiogen/src/tts/wavEncode.ts
+
+```
+/** Minimal mono 16-bit PCM WAV encoder — the inverse of wav.ts's parseWav(), for trimSample.ts's output. */
+export function encodeWav(samples: Int16Array, sampleRate: number): Buffer {
+  const bytesPerSample = 2;
+  const dataSize = samples.length * bytesPerSample;
+  const buffer = Buffer.alloc(44 + dataSize);
+
+  buffer.write('RIFF', 0, 'ascii');
+  buffer.writeUInt32LE(36 + dataSize, 4);
+  buffer.write('WAVE', 8, 'ascii');
+
+  buffer.write('fmt ', 12, 'ascii');
+  buffer.writeUInt32LE(16, 16); // fmt chunk size
+  buffer.writeUInt16LE(1, 20); // PCM
+  buffer.writeUInt16LE(1, 22); // mono
+  buffer.writeUInt32LE(sampleRate, 24);
 ```
 
 ### audiogen/src/types/lessonDocument.ts
@@ -2681,7 +2855,7 @@ adventure:
     en-US: Sail to a new island where everyday problems hide in plain sight, and every problem noticed is the seed of a helpful idea.
     es-MX: Navega a una isla nueva donde los problemas cotidianos se esconden a la vista de todos, y cada problema notado es la semilla de una idea que ayuda.
     pt-BR: Navegue até uma nova ilha onde os problemas do dia a dia se escondem à vista de todos, e cada problema percebido é a semente de uma ideia que ajuda.
-  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Dino, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Dino aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
+  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Liruf, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Liruf aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
 ```
 
 ### coursegen/curriculum/entrepreneurship/adventures/02-el-bosque-de-los-makers.yaml
@@ -2701,7 +2875,7 @@ adventure:
     en-US: Walk into a workshop hidden in the forest, where every idea from the island finally becomes a real, hand-made product.
     es-MX: Entra a un taller escondido en el bosque, donde cada idea de la isla por fin se convierte en un producto real, hecho a mano.
     pt-BR: Entre em uma oficina escondida na floresta, onde cada ideia da ilha finalmente se transforma em um produto real, feito à mão.
-  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Dino, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Dino se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
+  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Liruf, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Liruf se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
 ```
 
 ### coursegen/curriculum/entrepreneurship/adventures/03-la-ciudad-del-cliente.yaml
@@ -2721,7 +2895,7 @@ adventure:
     en-US: Bring your products to a bustling city and learn who really wants them, what they need, and how to earn their trust.
     es-MX: Lleva tus productos a una ciudad bulliciosa y aprende quién los quiere de verdad, qué necesita y cómo ganarte su confianza.
     pt-BR: Leve seus produtos a uma cidade movimentada e aprenda quem realmente os quer, o que precisa e como conquistar sua confiança.
-  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Dino, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Dino aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
+  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Liruf, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Liruf aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
 ```
 
 ### coursegen/curriculum/entrepreneurship/adventures/04-el-valle-del-precio-justo.yaml
@@ -2741,7 +2915,7 @@ adventure:
     en-US: Descend into a market valley and learn to turn cost into a fair price — one that covers your work and still respects your customer.
     es-MX: "Baja a un valle de mercado y aprende a convertir el costo en un precio justo: uno que cubra tu trabajo y aún así respete a tu cliente."
     pt-BR: "Desça a um vale de mercado e aprenda a transformar o custo em um preço justo: um que cubra seu trabalho e ainda assim respeite seu cliente."
-  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Dino, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Dino aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
+  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Liruf, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Liruf aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
 ```
 
 ### coursegen/curriculum/entrepreneurship/adventures/05-el-reino-de-las-ventas.yaml
@@ -2758,9 +2932,9 @@ adventure:
     es-MX: El Reino de las Ventas
     pt-BR: O Reino das Vendas
   description:
-    en-US: In a kingdom of traveling merchants, Dina and Dino open their first lemonade stall in the Grand
+    en-US: In a kingdom of traveling merchants, Dina and Liruf open their first lemonade stall in the Grand
       Plaza and learn to sell with honesty, pitch their idea, and treat every customer with care.
-    es-MX: En un reino de mercaderes, Dina y Dino abren su primer puesto de limonada en la Gran Plaza y
+    es-MX: En un reino de mercaderes, Dina y Liruf abren su primer puesto de limonada en la Gran Plaza y
       aprenden a vender con honestidad, a contar su idea en un minuto y a cuidar a cada cliente.
 ```
 
@@ -2778,9 +2952,9 @@ adventure:
     es-MX: El Taller del Equipo
     pt-BR: A Oficina da Equipe
   description:
-    en-US: In a valley workshop, Dina and Dino join a team of young founders and learn to work together,
+    en-US: In a valley workshop, Dina and Liruf join a team of young founders and learn to work together,
       discover each other's talents, split tasks and earnings fairly, and resolve disagreements.
-    es-MX: En un taller del valle, Dina y Dino se unen a un equipo de jóvenes founders y aprenden a trabajar
+    es-MX: En un taller del valle, Dina y Liruf se unen a un equipo de jóvenes founders y aprenden a trabajar
       juntos, descubrir sus talentos, repartir tareas y ganancias con justicia, y resolver desacuerdos.
 ```
 
@@ -2798,9 +2972,9 @@ adventure:
     es-MX: El Faro del Buen Negocio
     pt-BR: O Farol do Bom Negócio
   description:
-    en-US: Across an archipelago of small businesses, Dina and Dino learn what makes a business good all
+    en-US: Across an archipelago of small businesses, Dina and Liruf learn what makes a business good all
       the way through -- ethics, fair competition, kept promises, and caring for resources.
-    es-MX: En un archipiélago de pequeños negocios, Dina y Dino aprenden qué hace bueno a un negocio de
+    es-MX: En un archipiélago de pequeños negocios, Dina y Liruf aprenden qué hace bueno a un negocio de
       principio a fin -- ética, competencia justa, promesas cumplidas y cuidado de los recursos.
 ```
 
@@ -2818,9 +2992,9 @@ adventure:
     es-MX: El Cosmos del Founder
     pt-BR: O Cosmos do Founder
   description:
-    en-US: The capstone journey where Dina and Dino gather everything learned across every world into
+    en-US: The capstone journey where Dina and Liruf gather everything learned across every world into
       one complete mini-business plan, iterate it, present it, and graduate as founders.
-    es-MX: El viaje final donde Dina y Dino reúnen todo lo aprendido en cada mundo en un plan completo
+    es-MX: El viaje final donde Dina y Liruf reúnen todo lo aprendido en cada mundo en un plan completo
       de mini-empresa, lo iteran, lo presentan y se gradúan como founders.
 ```
 
@@ -2978,9 +3152,9 @@ adventure:
     es-MX: El Taller de los Inventores
     pt-BR: A Oficina dos Inventores
   description:
-    en-US: Dina and Dino discover a magical workshop where ideas become inventions, fair prices, and happy
+    en-US: Dina and Liruf discover a magical workshop where ideas become inventions, fair prices, and happy
       sales.
-    es-MX: Dina y Dino descubren un taller mágico donde las ideas se convierten en inventos, precios justos
+    es-MX: Dina y Liruf descubren un taller mágico donde las ideas se convierten en inventos, precios justos
       y ventas felices.
 ```
 
@@ -2998,9 +3172,9 @@ adventure:
     es-MX: El Faro de la Confianza
     pt-BR: O Farol da Confiança
   description:
-    en-US: Across a chain of islands, Dina and Dino learn to spot tricks, fake messages, and keep their
+    en-US: Across a chain of islands, Dina and Liruf learn to spot tricks, fake messages, and keep their
       information safe with help from Dr. Rho's lighthouse.
-    es-MX: En un archipiélago de islas, Dina y Dino aprenden a reconocer trampas, mensajes falsos y a
+    es-MX: En un archipiélago de islas, Dina y Liruf aprenden a reconocer trampas, mensajes falsos y a
       cuidar su información con la ayuda del faro de Dr. Rho.
 ```
 
@@ -3018,9 +3192,9 @@ adventure:
     es-MX: El Jardín Compartido
     pt-BR: O Jardim Compartilhado
   description:
-    en-US: In a forest community garden, Dina and Dino discover the joy of giving, cooperating, and caring
+    en-US: In a forest community garden, Dina and Liruf discover the joy of giving, cooperating, and caring
       together for what belongs to everyone.
-    es-MX: En un jardín comunitario del bosque, Dina y Dino descubren la alegría de dar, cooperar y cuidar
+    es-MX: En un jardín comunitario del bosque, Dina y Liruf descubren la alegría de dar, cooperar y cuidar
       juntos lo que es de todos.
 ```
 
@@ -3038,9 +3212,9 @@ adventure:
     es-MX: El Cosmos del Mañana
     pt-BR: O Cosmos do Amanhã
   description:
-    en-US: Aboard Dr. Rho's ship, Dina, Dino, and Zara Vex revisit everything they've learned and build
+    en-US: Aboard Dr. Rho's ship, Dina, Liruf, and Zara Vex revisit everything they've learned and build
       their own founder plan for the future.
-    es-MX: A bordo de la nave de Dr. Rho, Dina, Dino y Zara Vex repasan todo lo aprendido y construyen
+    es-MX: A bordo de la nave de Dr. Rho, Dina, Liruf y Zara Vex repasan todo lo aprendido y construyen
       su propio plan de founder hacia el futuro.
 ```
 
@@ -3118,9 +3292,9 @@ adventure:
     es-MX: El Jardín del Tiempo
     pt-BR: O Jardim do Tempo
   description:
-    en-US: Dina and Dino enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
+    en-US: Dina and Liruf enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
       that time itself -- not just effort -- is what makes what's saved grow big.
-    es-MX: Dina y Dino entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
+    es-MX: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
       el tiempo -y no solo el esfuerzo- es lo que hace crecer grande lo que se guarda.
 ```
 
@@ -3138,9 +3312,9 @@ adventure:
     es-MX: La Aldea del Interés
     pt-BR: A Aldeia do Juro
   description:
-    en-US: Dina and Dino reach a valley village where the local savings house gives a small prize for
+    en-US: Dina and Liruf reach a valley village where the local savings house gives a small prize for
       coins left saved for a while.
-    es-MX: Dina y Dino llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
+    es-MX: Dina y Liruf llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
       las monedas que se dejan guardadas un tiempo.
 ```
 
@@ -3158,9 +3332,9 @@ adventure:
     es-MX: El Archipiélago de los Riesgos
     pt-BR: O Arquipélago dos Riscos
   description:
-    en-US: Dina and Dino sail with Zara Vex among islands where different paths offer different possible
+    en-US: Dina and Liruf sail with Zara Vex among islands where different paths offer different possible
       rewards -- and different risks.
-    es-MX: Dina y Dino navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
+    es-MX: Dina y Liruf navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
       posibles -y distintos riesgos.
 ```
 
@@ -3178,9 +3352,9 @@ adventure:
     es-MX: La Ciudad de las Metas
     pt-BR: A Cidade das Metas
   description:
-    en-US: Dina and Dino reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
+    en-US: Dina and Liruf reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
       goals and discover why prices rise with time.
-    es-MX: Dina y Dino llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
+    es-MX: Dina y Liruf llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
       planear metas reales de largo plazo y a descubrir por qué los precios suben con el tiempo.
 ```
 
@@ -3198,10 +3372,10 @@ adventure:
     es-MX: El Reino de las Canastas
     pt-BR: O Reino das Cestas
   description:
-    en-US: In a kingdom ruled by baskets, Dina and Dino learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
-    es-MX: En un reino gobernado por canastas, Dina y Dino aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
-    pt-BR: Em um reino governado por cestas, Dina e Dino aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
-  narrative_arc: 'Dina y Dino llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
+    en-US: In a kingdom ruled by baskets, Dina and Liruf learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
+    es-MX: En un reino gobernado por canastas, Dina y Liruf aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
+    pt-BR: Em um reino governado por cestas, Dina e Liruf aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
+  narrative_arc: 'Dina y Liruf llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
 ```
 
 ### coursegen/curriculum/investing/adventures/06-el-bosque-del-interes-compuesto.yaml
@@ -3218,10 +3392,10 @@ adventure:
     es-MX: El Bosque del Interés Compuesto
     pt-BR: A Floresta dos Juros Compostos
   description:
-    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Dino discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
-    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Dino descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
-    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Dino descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
-  narrative_arc: Dina y Dino entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
+    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Liruf discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
+    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Liruf descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
+    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Liruf descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
+  narrative_arc: Dina y Liruf entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
 ```
 
 ### coursegen/curriculum/investing/adventures/07-el-faro-de-los-fraudes.yaml
@@ -3238,10 +3412,10 @@ adventure:
     es-MX: El Faro de los Fraudes
     pt-BR: O Farol das Fraudes
   description:
-    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Dino to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
-    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Dino a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
-    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Dino a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
-  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Dino con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
+    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Liruf to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
+    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Liruf a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
+    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Liruf a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
+  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Liruf con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
 ```
 
 ### coursegen/curriculum/investing/adventures/08-el-cosmos-del-inversionista.yaml
@@ -3258,10 +3432,10 @@ adventure:
     es-MX: El Cosmos del Inversionista
     pt-BR: O Cosmos do Investidor
   description:
-    en-US: 'The final voyage: Dina and Dino build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
-    es-MX: 'El viaje final: Dina y Dino arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
-    pt-BR: 'A viagem final: Dina e Dino montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
-  narrative_arc: Dina y Dino llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
+    en-US: 'The final voyage: Dina and Liruf build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
+    es-MX: 'El viaje final: Dina y Liruf arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
+    pt-BR: 'A viagem final: Dina e Liruf montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
+  narrative_arc: Dina y Liruf llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
 ```
 
 ### coursegen/curriculum/investing/catalog.yaml
@@ -4860,7 +5034,7 @@ npm run db:up       # start the local stack (first run generates .env secrets)
 npm run db:migrate  # apply migrations/*.sql in order (idempotent)
 npm run db:seed     # dev seed: role-stub users + demo published courses (never prod)
 npm run db:seed:users  # 6 real login-able test users (password123) + Tutor↔Niño linked
-npm run db:reset    # from-zero: nuke volumes → up → migrate
+npm run db:publish-course -- <slug>  # flip a Forge-generated course's full chain (course→adventures→sagas→topics→lessons) draft/review → published (dev only, human-in-the-loop per COURSE_ENGINE.md §6)
 ```
 
 ### database/migrations/0001_identity.sql
@@ -5061,6 +5235,26 @@ DO $$
 #   local-stack.sh reset     # nuke → up → migrate  (the from-zero gate)
 #   local-stack.sh migrate   # apply database/migrations/*.sql in order
 #   local-stack.sh seed      # apply database/seeds/dev_seed.sql (DEV ONLY)
+```
+
+### database/scripts/publish-course.sh
+
+```
+#!/usr/bin/env bash
+# publish-course.sh <course-slug> — LOCAL DEV ONLY. Never run against production.
+#
+# Forge (coursegen) writes the full hierarchy at status='draft' (courses,
+# adventures, sagas, topics — the table default) and status='review' for
+# lessons specifically (COURSE_ENGINE.md §6: lesson CONTENT always needs a
+# human review pass before reaching a kid). The read-side RLS policy
+# (database/migrations/0007_course_hierarchy.sql) requires status='published'
+# at EVERY level of the chain — course, adventure, saga, topic, AND lesson —
+# or the row (and everything under it) is invisible to the app.
+#
+# This script is that human "flip to published" action, scoped to one course
+# by slug, so a freshly-generated course can be reviewed and made visible in
+# one deliberate step instead of 5 hand-written cascading UPDATEs. Idempotent.
+#
 ```
 
 ### database/scripts/seed-dev-users.sh
@@ -6051,26 +6245,6 @@ interface DinaCharacterProps {
  * Dina — The friendly orange stegosaurus.
 ```
 
-### frontend/src/components/characters/DinoCharacter.tsx
-
-```
-import {useId, useEffect, useRef, useState, useCallback} from 'react';
-import { cn } from "@/lib/utils";
-import { useTranslation } from 'react-i18next';
-
-export type DinoMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
-
-interface DinoCharacterProps {
-    currentText?: string;
-    showBubble?: boolean;
-    className?: string;
-    mood?: DinoMood;
-    bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
-    isTalking?: boolean;
-}
-
-```
-
 ### frontend/src/components/characters/DrRhoCharacter.tsx
 
 ```
@@ -6089,6 +6263,26 @@ interface DrRhoCharacterProps {
 }
 
 const COLORS = {
+```
+
+### frontend/src/components/characters/LirufCharacter.tsx
+
+```
+import {useId, useEffect, useRef, useState, useCallback} from 'react';
+import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
+
+export type LirufMood = 'happy' | 'sad' | 'excited' | 'thinking' | 'shocked';
+
+interface LirufCharacterProps {
+    currentText?: string;
+    showBubble?: boolean;
+    className?: string;
+    mood?: LirufMood;
+    bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
+    isTalking?: boolean;
+}
+
 ```
 
 ### frontend/src/components/characters/ZaraVexCharacter.tsx
@@ -6117,7 +6311,7 @@ const COLORS = {
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 import DinaCharacter from '../DinaCharacter'
-import DinoCharacter, { type DinoMood } from '../DinoCharacter'
+import LirufCharacter, { type LirufMood } from '../LirufCharacter'
 import DrRhoCharacter, { type RhoMood } from '../DrRhoCharacter'
 import ZaraVexCharacter, { type ZaraMood } from '../ZaraVexCharacter'
 import {
@@ -6158,7 +6352,7 @@ import './rig.css'
 // characters (LESSON_ENGINE.md §9). Appearance is NON-NEGOTIABLE: this layer only
 // maps to each character's existing prop surface and adds wrapper/rig animation.
 
-export const CHARACTER_IDS = ['dina', 'dino', 'rho', 'zara'] as const
+export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
 export type CharacterId = (typeof CHARACTER_IDS)[number]
 
 export const CHARACTER_EMOTIONS = [
@@ -7202,7 +7396,7 @@ export const analyzeFixtures: SegmentBase[] = [
   {
     id: 'fx-spot-error',
     type: 'spot_error',
-    prompt_md: 'Dino calculó su cambio. Encuentra el paso con **error**.',
+    prompt_md: 'Liruf calculó su cambio. Encuentra el paso con **error**.',
     difficulty: 2,
     xp: 15,
     hints: ['Revisa la resta: ¿cuánto es $50 menos $25?'],
@@ -7662,7 +7856,7 @@ export const makerFixtures: SegmentBase[] = [
   {
     id: 'fx-code-order',
     type: 'code_order',
-    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Dino.',
+    prompt_md: 'Ordena los bloques para armar la **rutina de ahorro** de Liruf.',
     difficulty: 2,
     xp: 15,
     hints: ['Todo programa empieza con `inicio` y termina mostrando el resultado.'],

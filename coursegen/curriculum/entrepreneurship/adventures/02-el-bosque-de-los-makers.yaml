@@ -12,7 +12,7 @@ adventure:
     en-US: Walk into a workshop hidden in the forest, where every idea from the island finally becomes a real, hand-made product.
     es-MX: Entra a un taller escondido en el bosque, donde cada idea de la isla por fin se convierte en un producto real, hecho a mano.
     pt-BR: Entre em uma oficina escondida na floresta, onde cada ideia da ilha finalmente se transforma em um produto real, feito à mão.
-  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Dino, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Dino se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
+  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Liruf, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Liruf se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
 sagas:
   - position: 1
     slug: manos-a-la-obra
@@ -43,7 +43,7 @@ sagas:
           - position: 1
             slug: llegamos-al-bosque
             micro_objective: Reconoce en la historia el momento en que el taller del bosque recibe a la tripulación.
-            narrative_beat: Dina y Dino llegan a un taller de madera entre los árboles, listo para convertir ideas en productos reales.
+            narrative_beat: Dina y Liruf llegan a un taller de madera entre los árboles, listo para convertir ideas en productos reales.
             difficulty: 1
             suggested_families:
               - story
@@ -66,7 +66,7 @@ sagas:
           - position: 4
             slug: elijo-mi-primer-producto
             micro_objective: Elige, sin ayuda, la idea que convertirá en su primer producto del bosque.
-            narrative_beat: Dino elige con confianza qué va a construir primero en el taller del bosque.
+            narrative_beat: Liruf elige con confianza qué va a construir primero en el taller del bosque.
             difficulty: 2
             suggested_families:
               - storyplay
@@ -103,7 +103,7 @@ sagas:
           - position: 3
             slug: ordeno-mi-lista-de-materiales
             micro_objective: Ordena una lista de 3 a 4 materiales necesarios para un producto sencillo.
-            narrative_beat: Dino escribe en orden todo lo que necesita para armar su primer producto.
+            narrative_beat: Liruf escribe en orden todo lo que necesita para armar su primer producto.
             difficulty: 2
             suggested_families:
               - arrange
@@ -133,7 +133,7 @@ sagas:
           - position: 1
             slug: los-pasos-desordenados
             micro_objective: Reconoce en la historia por qué saltarse un paso hace que el producto salga mal.
-            narrative_beat: Dino intenta tejer su pulsera sin cortar primero el hilo y todo se enreda.
+            narrative_beat: Liruf intenta tejer su pulsera sin cortar primero el hilo y todo se enreda.
             difficulty: 1
             suggested_families:
               - story
@@ -175,9 +175,9 @@ sagas:
         parent_check: Observa si {{name}} logra trabajar con calma en una manualidad, sin apurarse para terminar rápido.
         lessons:
           - position: 1
-            slug: dino-se-apura-y-se-enreda
+            slug: liruf-se-apura-y-se-enreda
             micro_objective: Reconoce en la historia lo que pasa cuando un personaje trabaja con demasiada prisa.
-            narrative_beat: Dino teje su pulsera tan rápido que las cuentas se caen al piso una y otra vez.
+            narrative_beat: Liruf teje su pulsera tan rápido que las cuentas se caen al piso una y otra vez.
             difficulty: 1
             suggested_families:
               - story
@@ -185,7 +185,7 @@ sagas:
           - position: 2
             slug: con-calma-o-con-prisa
             micro_objective: Distingue, entre 2 escenas, cuál muestra trabajo cuidadoso y cuál trabajo apurado.
-            narrative_beat: Rho compara el trabajo tranquilo de Zara con el trabajo apurado de Dino en la misma tarde.
+            narrative_beat: Rho compara el trabajo tranquilo de Zara con el trabajo apurado de Liruf en la misma tarde.
             difficulty: 1
             suggested_families:
               - choice
@@ -222,7 +222,7 @@ sagas:
           - position: 1
             slug: la-pulsera-a-medias
             micro_objective: Reconoce en la historia por qué un producto a medio terminar todavía no sirve.
-            narrative_beat: Dino deja su pulsera a medio tejer para ir a jugar, y se da cuenta de que así no sirve todavía.
+            narrative_beat: Liruf deja su pulsera a medio tejer para ir a jugar, y se da cuenta de que así no sirve todavía.
             difficulty: 1
             suggested_families:
               - story
@@ -275,14 +275,14 @@ sagas:
           - position: 2
             slug: orgullo-o-verguenza
             micro_objective: Distingue, entre 2 escenas, cuál muestra orgullo por un trabajo terminado.
-            narrative_beat: Rho compara la cara de orgullo de Zara con la cara tímida de Dino frente a sus productos.
+            narrative_beat: Rho compara la cara de orgullo de Zara con la cara tímida de Liruf frente a sus productos.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: cuento-como-lo-hice
             micro_objective: Ordena 3 frases que explican cómo se hizo un producto, del primer paso al último.
-            narrative_beat: Dino explica, paso por paso, cómo construyó su primera pulsera terminada.
+            narrative_beat: Liruf explica, paso por paso, cómo construyó su primera pulsera terminada.
             difficulty: 2
             suggested_families:
               - arrange
@@ -334,7 +334,7 @@ sagas:
           - position: 3
             slug: elijo-el-paso-que-faltaba
             micro_objective: Elige, entre 2 recuerdos, cuál muestra un paso que se saltó por error.
-            narrative_beat: Dino compara dos recuerdos del cofre y decide cuál producto se hizo sin seguir el orden.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál producto se hizo sin seguir el orden.
             difficulty: 2
             suggested_families:
               - choice
@@ -383,7 +383,7 @@ sagas:
           - position: 3
             slug: ordeno-de-la-idea-al-producto-terminado
             micro_objective: Ordena, mezclando ambas aventuras, los pasos desde tener una idea hasta terminar el producto.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde la idea de la isla hasta el producto ya terminado."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde la idea de la isla hasta el producto ya terminado."
             difficulty: 2
             suggested_families:
               - arrange
@@ -433,7 +433,7 @@ sagas:
           - position: 2
             slug: madera-tela-o-hilo
             micro_objective: Identifica, entre 4 objetos, cuál está hecho de madera, cuál de tela y cuál de hilo.
-            narrative_beat: Dino clasifica los objetos del taller según el material principal de cada uno.
+            narrative_beat: Liruf clasifica los objetos del taller según el material principal de cada uno.
             difficulty: 1
             suggested_families:
               - choice
@@ -487,7 +487,7 @@ sagas:
           - position: 3
             slug: sigo-el-camino-del-algodon
             micro_objective: Ordena 3 pasos que muestran de dónde sale un material natural hasta llegar al taller.
-            narrative_beat: Dino ordena dibujos que muestran cómo el algodón de una planta se convierte en hilo.
+            narrative_beat: Liruf ordena dibujos que muestran cómo el algodón de una planta se convierte en hilo.
             difficulty: 2
             suggested_families:
               - arrange
@@ -532,7 +532,7 @@ sagas:
           - position: 3
             slug: comparo-donde-consigo-cada-material
             micro_objective: Compara 2 materiales del mismo producto y reconoce de dónde viene cada uno.
-            narrative_beat: Dino compara el hilo comprado en tienda con la madera que viene directo del bosque.
+            narrative_beat: Liruf compara el hilo comprado en tienda con la madera que viene directo del bosque.
             difficulty: 2
             suggested_families:
               - choice
@@ -559,9 +559,9 @@ sagas:
         parent_check: Observa si {{name}} corta o usa solo la cantidad de material que necesita, sin desperdiciar de más, en su próxima manualidad.
         lessons:
           - position: 1
-            slug: dino-corta-de-mas
+            slug: liruf-corta-de-mas
             micro_objective: Reconoce en la historia el momento en que un personaje desperdicia material sin darse cuenta.
-            narrative_beat: Dino corta un pedazo enorme de tela cuando solo necesitaba un cuadrito pequeño.
+            narrative_beat: Liruf corta un pedazo enorme de tela cuando solo necesitaba un cuadrito pequeño.
             difficulty: 1
             suggested_families:
               - story
@@ -569,7 +569,7 @@ sagas:
           - position: 2
             slug: con-desperdicio-o-sin-desperdicio
             micro_objective: Distingue, entre 2 escenas, cuál muestra un uso cuidadoso del material y cuál un desperdicio.
-            narrative_beat: Rho compara la mesa ordenada de Zara con los retazos tirados de Dino.
+            narrative_beat: Rho compara la mesa ordenada de Zara con los retazos tirados de Liruf.
             difficulty: 1
             suggested_families:
               - choice
@@ -620,7 +620,7 @@ sagas:
           - position: 3
             slug: encuentro-algo-para-reusar
             micro_objective: Encuentra, entre varios objetos del taller, cuál podría reusarse para el producto actual.
-            narrative_beat: Dino busca entre las sobras del taller algo que pueda reusar en vez de pedir más material.
+            narrative_beat: Liruf busca entre las sobras del taller algo que pueda reusar en vez de pedir más material.
             difficulty: 2
             suggested_families:
               - choice
@@ -669,7 +669,7 @@ sagas:
           - position: 3
             slug: reviso-de-donde-viene-y-como-sirve
             micro_objective: Revisa 2 factores (de dónde viene y qué tan bien sirve) antes de elegir un material.
-            narrative_beat: Dino revisa si el material es reusado, natural o comprado, y si sirve bien para su producto.
+            narrative_beat: Liruf revisa si el material es reusado, natural o comprado, y si sirve bien para su producto.
             difficulty: 2
             suggested_families:
               - analyze
@@ -722,7 +722,7 @@ sagas:
           - position: 3
             slug: elijo-el-material-mejor-cuidado-del-cofre
             micro_objective: Elige, entre 2 recuerdos, cuál muestra un uso más cuidadoso del material.
-            narrative_beat: Dino compara dos recuerdos del cofre y decide cuál material se usó con más cuidado.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál material se usó con más cuidado.
             difficulty: 2
             suggested_families:
               - choice
@@ -771,7 +771,7 @@ sagas:
           - position: 3
             slug: ordeno-de-elegir-material-a-terminar-producto
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde elegir un buen material hasta terminar el producto.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde elegir el material hasta terminar su producto."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde elegir el material hasta terminar su producto."
             difficulty: 2
             suggested_families:
               - arrange
@@ -832,7 +832,7 @@ sagas:
           - position: 3
             slug: reviso-tres-senales-de-calidad
             micro_objective: Identifica 3 señales que muestran que un producto está bien hecho.
-            narrative_beat: Dino revisa un producto buscando si es firme, se ve cuidado y funciona bien.
+            narrative_beat: Liruf revisa un producto buscando si es firme, se ve cuidado y funciona bien.
             difficulty: 2
             suggested_families:
               - analyze
@@ -870,14 +870,14 @@ sagas:
           - position: 2
             slug: reviso-o-no-reviso
             micro_objective: Distingue, entre 2 escenas, cuál muestra revisar el producto y cuál darlo por terminado sin revisar.
-            narrative_beat: Zara compara el hábito de revisar de Rho con la prisa de Dino por terminar rápido.
+            narrative_beat: Zara compara el hábito de revisar de Rho con la prisa de Liruf por terminar rápido.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: encuentro-lo-que-falta-revisar
             micro_objective: Encuentra, en una escena, un detalle que aún falta revisar antes de terminar.
-            narrative_beat: Dino revisa su carrito de juguete y encuentra una rueda floja que casi se le pasa.
+            narrative_beat: Liruf revisa su carrito de juguete y encuentra una rueda floja que casi se le pasa.
             difficulty: 2
             suggested_families:
               - analyze
@@ -922,7 +922,7 @@ sagas:
           - position: 3
             slug: encuentro-el-detalle-cuidado
             micro_objective: Encuentra, entre varias partes de un producto, cuál muestra el detalle mejor cuidado.
-            narrative_beat: Dino revisa su producto buscando qué parte quedó con el detalle más cuidado.
+            narrative_beat: Liruf revisa su producto buscando qué parte quedó con el detalle más cuidado.
             difficulty: 2
             suggested_families:
               - analyze
@@ -966,7 +966,7 @@ sagas:
           - position: 3
             slug: ordeno-tres-productos-por-calidad
             micro_objective: Ordena 3 productos parecidos de mejor a peor hecho, con una razón para cada uno.
-            narrative_beat: Dino ordena tres productos del taller según qué tan bien hechos están.
+            narrative_beat: Liruf ordena tres productos del taller según qué tan bien hechos están.
             difficulty: 2
             suggested_families:
               - arrange
@@ -994,9 +994,9 @@ sagas:
         parent_check: Si algo de la manualidad de {{name}} no quedó del todo bien, anímalo a intentar arreglarlo en vez de dejarlo así.
         lessons:
           - position: 1
-            slug: la-cuenta-floja-de-dino
+            slug: la-cuenta-floja-de-liruf
             micro_objective: Reconoce en la historia un defecto sencillo que un personaje decide arreglar.
-            narrative_beat: Dino nota una cuenta floja en su pulsera y decide apretarla antes de mostrarla.
+            narrative_beat: Liruf nota una cuenta floja en su pulsera y decide apretarla antes de mostrarla.
             difficulty: 1
             suggested_families:
               - story
@@ -1004,7 +1004,7 @@ sagas:
           - position: 2
             slug: arreglado-o-sin-arreglar
             micro_objective: Distingue, entre 2 escenas, cuál muestra un defecto ya arreglado y cuál sin arreglar.
-            narrative_beat: Rho compara el producto de Dino antes y después de arreglar la cuenta floja.
+            narrative_beat: Rho compara el producto de Liruf antes y después de arreglar la cuenta floja.
             difficulty: 1
             suggested_families:
               - choice
@@ -1056,7 +1056,7 @@ sagas:
           - position: 3
             slug: reconozco-mi-propio-estilo-cuidadoso
             micro_objective: Ordena 3 pasos que muestran cómo el cuidado de alguien se refleja en su producto final.
-            narrative_beat: Dino ordena los momentos donde puso más cuidado en su producto, del primero al último.
+            narrative_beat: Liruf ordena los momentos donde puso más cuidado en su producto, del primero al último.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1100,7 +1100,7 @@ sagas:
           - position: 2
             slug: recuerdo-un-defecto-arreglado
             micro_objective: Recuerda, sin ayuda, un defecto sencillo que se arregló en esta saga.
-            narrative_beat: Zara saca del cofre el recuerdo de la cuenta floja que Dino arregló a tiempo.
+            narrative_beat: Zara saca del cofre el recuerdo de la cuenta floja que Liruf arregló a tiempo.
             difficulty: 1
             suggested_families:
               - story
@@ -1108,7 +1108,7 @@ sagas:
           - position: 3
             slug: elijo-el-producto-mejor-hecho-del-cofre
             micro_objective: Elige, entre 2 productos recordados, cuál estaba mejor hecho.
-            narrative_beat: Dino compara dos productos guardados en el cofre y decide cuál estaba mejor hecho.
+            narrative_beat: Liruf compara dos productos guardados en el cofre y decide cuál estaba mejor hecho.
             difficulty: 2
             suggested_families:
               - choice
@@ -1157,7 +1157,7 @@ sagas:
           - position: 3
             slug: ordeno-de-elegir-material-a-detalle-cuidado
             micro_objective: Ordena, mezclando ambas sagas, los pasos desde elegir un buen material hasta lograr un detalle cuidado.
-            narrative_beat: "Dino ordena en su libreta todo el camino: desde el material elegido hasta el detalle final cuidado."
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el material elegido hasta el detalle final cuidado."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1211,14 +1211,14 @@ sagas:
           - position: 2
             slug: mostrar-o-guardar
             micro_objective: Distingue, entre 2 escenas, cuál muestra a alguien compartiendo su producto y cuál guardándolo sin mostrar a nadie.
-            narrative_beat: Rho compara el gesto de Zara de mostrar su producto con la timidez de Dino por guardarlo.
+            narrative_beat: Rho compara el gesto de Zara de mostrar su producto con la timidez de Liruf por guardarlo.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: elijo-a-quien-mostrarle
             micro_objective: Elige, entre 3 personajes, a quién le mostraría primero su producto para obtener una buena opinión.
-            narrative_beat: Dino piensa a quién del taller le conviene mostrarle primero su carrito mejorado.
+            narrative_beat: Liruf piensa a quién del taller le conviene mostrarle primero su carrito mejorado.
             difficulty: 2
             suggested_families:
               - choice
@@ -1255,14 +1255,14 @@ sagas:
           - position: 2
             slug: escucho-con-calma-o-me-enojo
             micro_objective: Distingue, entre 2 escenas, cuál muestra escuchar una opinión con calma y cuál reaccionar mal.
-            narrative_beat: Rho compara la calma de Zara al escuchar con el enojo de Dino ante la misma opinión.
+            narrative_beat: Rho compara la calma de Zara al escuchar con el enojo de Liruf ante la misma opinión.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: identifico-la-opinion-completa
             micro_objective: Identifica la opinión completa que un isleño da sobre un producto, sin quedarse solo con una parte.
-            narrative_beat: Dino escucha completa la opinión sobre su carrito, sin quedarse solo con la parte que le gusta.
+            narrative_beat: Liruf escucha completa la opinión sobre su carrito, sin quedarse solo con la parte que le gusta.
             difficulty: 2
             suggested_families:
               - choice
@@ -1307,7 +1307,7 @@ sagas:
           - position: 3
             slug: conecto-la-opinion-con-la-mejora
             micro_objective: Empareja 3 opiniones escuchadas con la mejora concreta que les corresponde.
-            narrative_beat: Dino conecta cada opinión que escuchó con la mejora concreta que piensa hacer.
+            narrative_beat: Liruf conecta cada opinión que escuchó con la mejora concreta que piensa hacer.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1345,14 +1345,14 @@ sagas:
           - position: 2
             slug: version-uno-o-version-dos
             micro_objective: Distingue, entre 2 productos, cuál es la primera versión y cuál la nueva versión mejorada.
-            narrative_beat: Rho compara la primera pulsera de Dino con la segunda, ya con las cuentas más firmes.
+            narrative_beat: Rho compara la primera pulsera de Liruf con la segunda, ya con las cuentas más firmes.
             difficulty: 1
             suggested_families:
               - choice
           - position: 3
             slug: sigo-los-pasos-de-la-nueva-version
             micro_objective: Ordena los pasos para construir la nueva versión mejorada de un producto.
-            narrative_beat: Dino ordena los pasos para armar la segunda versión de su carrito, ya sin la rueda floja.
+            narrative_beat: Liruf ordena los pasos para armar la segunda versión de su carrito, ya sin la rueda floja.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1389,7 +1389,7 @@ sagas:
           - position: 2
             slug: que-mejoro-entre-versiones
             micro_objective: Identifica, entre 2 versiones de un producto, qué detalle específico mejoró.
-            narrative_beat: Rho señala exactamente qué cambió entre la primera y la segunda pulsera de Dino.
+            narrative_beat: Rho señala exactamente qué cambió entre la primera y la segunda pulsera de Liruf.
             difficulty: 1
             suggested_families:
               - choice
@@ -1397,7 +1397,7 @@ sagas:
           - position: 3
             slug: ordeno-el-progreso-de-mi-producto
             micro_objective: Ordena 3 versiones de un mismo producto de la más antigua a la más mejorada.
-            narrative_beat: Dino ordena tres versiones de su carrito, de la primera y más simple a la más mejorada.
+            narrative_beat: Liruf ordena tres versiones de su carrito, de la primera y más simple a la más mejorada.
             difficulty: 2
             suggested_families:
               - arrange
@@ -1441,7 +1441,7 @@ sagas:
           - position: 3
             slug: armo-mi-producto-final-del-bosque
             micro_objective: Arma, sin ayuda, el resumen completo de su producto final usando lo aprendido en la aventura.
-            narrative_beat: Dino organiza su producto final poniendo en práctica todo lo que aprendió en el bosque.
+            narrative_beat: Liruf organiza su producto final poniendo en práctica todo lo que aprendió en el bosque.
             difficulty: 3
             suggested_families:
               - choice
@@ -1494,7 +1494,7 @@ sagas:
           - position: 3
             slug: elijo-la-mejor-segunda-version-del-cofre
             micro_objective: Elige, entre 2 segundas versiones recordadas, cuál mejoró más respecto a la primera.
-            narrative_beat: Dino compara dos segundas versiones guardadas en el cofre y decide cuál mejoró más.
+            narrative_beat: Liruf compara dos segundas versiones guardadas en el cofre y decide cuál mejoró más.
             difficulty: 2
             suggested_families:
               - choice
@@ -1543,7 +1543,7 @@ sagas:
           - position: 3
             slug: ordeno-todo-el-camino-del-bosque
             micro_objective: Ordena, mezclando varias sagas, los pasos desde terminar un producto hasta mejorarlo con una opinión.
-            narrative_beat: "Dino ordena en su mente todo el camino: desde terminar su producto hasta mejorarlo con cuidado."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde terminar su producto hasta mejorarlo con cuidado."
             difficulty: 2
             suggested_families:
               - arrange
@@ -1612,7 +1612,7 @@ sagas:
           - position: 4
             slug: aceptamos-el-reto-del-taller-escondido
             micro_objective: Completa, sin ayuda, la aceptación del reto explicando por qué elegir bien los materiales importa.
-            narrative_beat: "Dino y Dina aceptan el reto del taller escondido: el bosque tiene más secretos por descubrir."
+            narrative_beat: "Liruf y Dina aceptan el reto del taller escondido: el bosque tiene más secretos por descubrir."
             difficulty: 2
             suggested_families:
               - storyplay
@@ -1660,7 +1660,7 @@ sagas:
           - position: 4
             slug: superamos-la-prueba-del-cuidado
             micro_objective: Completa, sin ayuda, la prueba mostrando un producto ya revisado, cuidado y arreglado.
-            narrative_beat: Dino y Dina superan la prueba del cuidado mostrando el producto viejo ya como nuevo.
+            narrative_beat: Liruf y Dina superan la prueba del cuidado mostrando el producto viejo ya como nuevo.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -1707,7 +1707,7 @@ sagas:
           - position: 4
             slug: superamos-el-reto-de-mejorar
             micro_objective: Completa, sin ayuda, el reto mostrando la nueva versión mejorada del producto.
-            narrative_beat: Dino y Dina superan el reto de mejorar mostrando su producto ya en una versión mejor.
+            narrative_beat: Liruf y Dina superan el reto de mejorar mostrando su producto ya en una versión mejor.
             difficulty: 3
             suggested_families:
               - storyplay
@@ -1747,7 +1747,7 @@ sagas:
           - position: 3
             slug: revisamos-la-calidad-del-taller
             micro_objective: Revisa, sin ayuda, que el taller comunitario esté bien hecho y sin defectos antes de abrirlo.
-            narrative_beat: Dino revisa con cuidado cada mesa y herramienta antes de dejar entrar a los primeros makers del bosque.
+            narrative_beat: Liruf revisa con cuidado cada mesa y herramienta antes de dejar entrar a los primeros makers del bosque.
             difficulty: 2
             suggested_families:
               - choice
@@ -1796,7 +1796,7 @@ sagas:
           - position: 3
             slug: mostramos-el-producto-a-todo-el-bosque
             micro_objective: Muestra, sin ayuda, el producto final a los habitantes del bosque y escucha su opinión.
-            narrative_beat: Dino muestra el producto final a los habitantes del bosque y escucha con calma lo que piensan.
+            narrative_beat: Liruf muestra el producto final a los habitantes del bosque y escucha con calma lo que piensan.
             difficulty: 3
             suggested_families:
               - storyplay

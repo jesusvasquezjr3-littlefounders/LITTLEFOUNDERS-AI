@@ -9,17 +9,17 @@ adventure:
     es-MX: El Jardín del Tiempo
     pt-BR: O Jardim do Tempo
   description:
-    en-US: Dina and Dino enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
+    en-US: Dina and Liruf enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
       that time itself -- not just effort -- is what makes what's saved grow big.
-    es-MX: Dina y Dino entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
+    es-MX: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
       el tiempo -y no solo el esfuerzo- es lo que hace crecer grande lo que se guarda.
-    pt-BR: Dina e Dino entram numa floresta antiga onde Dr. Rho, seu paciente jardineiro, ensina que o
+    pt-BR: Dina e Liruf entram numa floresta antiga onde Dr. Rho, seu paciente jardineiro, ensina que o
       tempo -e não só o esforço- é o que faz crescer grande o que se guarda.
-  narrative_arc: 'Dina y Dino se internan en un bosque antiguo donde Dr. Rho ha cuidado el mismo jardín
+  narrative_arc: 'Dina y Liruf se internan en un bosque antiguo donde Dr. Rho ha cuidado el mismo jardín
     durante décadas. Él les revela el secreto que abre este viaje: el tiempo mismo es una herramienta
     -sembrar una semilla y dejarla crecer sin tocarla produce algo mucho más grande que comerse la fruta
     de inmediato. Zara Vex reta a ambos con acertijos del bosque sobre paciencia, protección y constancia,
-    mientras Dino aprende a domar sus ganas de tenerlo todo ya. Al final del bosque, Dina y Dino están
+    mientras Liruf aprende a domar sus ganas de tenerlo todo ya. Al final del bosque, Dina y Liruf están
     listos para descubrir que ese mismo tiempo, aplicado a las monedas guardadas en la aldea del valle,
     también hace crecer un premio.'
 sagas:
@@ -56,7 +56,7 @@ sagas:
       slug: las-manos-llenas-de-tierra-de-dr-rho
       micro_objective: Reconocer que una semilla pequeña plantada hoy se convierte en algo grande después
         de un tiempo.
-      narrative_beat: Dina y Dino entran a un bosque antiguo donde Dr. Rho, con las manos llenas de tierra,
+      narrative_beat: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, con las manos llenas de tierra,
         planta una semilla diminuta y les promete que un día será un árbol enorme.
       difficulty: 1
       suggested_families:
@@ -76,7 +76,7 @@ sagas:
       slug: por-que-no-hay-arbol-de-inmediato
       micro_objective: Explicar con palabras propias por qué sembrar hoy no produce un resultado grande
         de inmediato.
-      narrative_beat: Zara Vex reta a Dino a explicar, con sus propias palabras, por qué sembrar hoy no
+      narrative_beat: Zara Vex reta a Liruf a explicar, con sus propias palabras, por qué sembrar hoy no
         da un árbol de inmediato.
       difficulty: 2
       suggested_families:
@@ -112,7 +112,7 @@ sagas:
       slug: regar-tres-veces-en-un-dia
       micro_objective: Reconocer que regar más no acelera el paso del tiempo que una semilla necesita
         para crecer.
-      narrative_beat: Dino riega la semilla tres veces en un mismo día, esperando verla convertida en
+      narrative_beat: Liruf riega la semilla tres veces en un mismo día, esperando verla convertida en
         árbol al instante, pero Dr. Rho le explica que el tiempo no se puede apurar con más agua.
       difficulty: 1
       suggested_families:
@@ -132,7 +132,7 @@ sagas:
       slug: otras-cosas-que-tardan-en-crecer
       micro_objective: Nombrar otro ejemplo, distinto a la semilla, de algo que crece solo porque pasa
         el tiempo.
-      narrative_beat: Zara Vex pregunta a Dino qué otras cosas del bosque tardan en crecer aunque nadie
+      narrative_beat: Zara Vex pregunta a Liruf qué otras cosas del bosque tardan en crecer aunque nadie
         las apure.
       difficulty: 2
       suggested_families:
@@ -166,10 +166,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: la-fruta-jugosa-de-dino
+      slug: la-fruta-jugosa-de-liruf
       micro_objective: Reconocer que una fruta contiene semillas que podrían convertirse en más fruta
         en el futuro.
-      narrative_beat: Dino encuentra una fruta jugosa y está a punto de comérsela entera, hasta que Dr.
+      narrative_beat: Liruf encuentra una fruta jugosa y está a punto de comérsela entera, hasta que Dr.
         Rho le muestra que dentro tiene semillas que podrían convertirse en un árbol nuevo.
       difficulty: 1
       suggested_families:
@@ -188,7 +188,7 @@ sagas:
     - position: 3
       slug: si-solo-tuviera-una-fruta
       micro_objective: Decidir, en un caso concreto, entre comer una fruta única ahora o plantar su semilla.
-      narrative_beat: Zara Vex pregunta a Dino qué elegiría si tuviera solo una fruta y ninguna otra en
+      narrative_beat: Zara Vex pregunta a Liruf qué elegiría si tuviera solo una fruta y ninguna otra en
         el bosque.
       difficulty: 2
       suggested_families:
@@ -222,10 +222,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: la-cubeta-enorme-de-dino
+      slug: la-cubeta-enorme-de-liruf
       micro_objective: Observar que echarle toda el agua de golpe a una semilla nueva puede hacerle daño
         en vez de ayudar.
-      narrative_beat: Dino carga una cubeta enorme de agua y la vacía toda sobre una semilla nueva, pero
+      narrative_beat: Liruf carga una cubeta enorme de agua y la vacía toda sobre una semilla nueva, pero
         Dr. Rho corre a detenerlo antes de que la ahogue.
       difficulty: 1
       suggested_families:
@@ -243,7 +243,7 @@ sagas:
     - position: 3
       slug: por-que-poquito-funciona-mejor
       micro_objective: Explicar con sus palabras por qué regar poco a poco ayuda más que regar todo junto.
-      narrative_beat: Zara Vex pregunta a Dino por qué cree que un poquito cada día funciona mejor que
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que un poquito cada día funciona mejor que
         mucho de una sola vez.
       difficulty: 2
       suggested_families:
@@ -277,10 +277,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-desentierra-cada-manana
+      slug: liruf-desentierra-cada-manana
       micro_objective: Reconocer que desenterrar una semilla todos los días para revisarla puede impedir
         que crezca.
-      narrative_beat: Dino, curioso, desentierra la semilla cada mañana para ver si ya es un árbol, hasta
+      narrative_beat: Liruf, curioso, desentierra la semilla cada mañana para ver si ya es un árbol, hasta
         que Dr. Rho le explica que así nunca podrá crecer.
       difficulty: 1
       suggested_families:
@@ -300,7 +300,7 @@ sagas:
       slug: solo-para-ver-como-va
       micro_objective: Explicar por qué conviene resistir las ganas de desenterrar la semilla solo para
         revisarla.
-      narrative_beat: Zara Vex pregunta a Dino qué le diría a alguien que quiere desenterrar su semilla
+      narrative_beat: Zara Vex pregunta a Liruf qué le diría a alguien que quiere desenterrar su semilla
         'solo para ver cómo va'.
       difficulty: 2
       suggested_families:
@@ -348,7 +348,7 @@ sagas:
       micro_objective: Clasificar distintos resultados según pertenezcan a 'una fruta hoy' o 'un árbol
         mañana'.
       narrative_beat: 'Zara Vex dibuja dos columnas: ''una fruta hoy'' y ''un árbol mañana'', y pide a
-        Dino ordenar imágenes en la columna correcta.'
+        Liruf ordenar imágenes en la columna correcta.'
       difficulty: 2
       suggested_families:
       - analyze
@@ -357,7 +357,7 @@ sagas:
       slug: cuando-si-prefiero-la-fruta-de-hoy
       micro_objective: Reconocer que a veces sí conviene elegir la fruta de hoy, cuando de verdad se necesita
         en ese momento.
-      narrative_beat: Dino admite que a veces sí prefiere una fruta hoy, y Dr. Rho le explica que eso
+      narrative_beat: Liruf admite que a veces sí prefiere una fruta hoy, y Dr. Rho le explica que eso
         también está bien si de verdad la necesita ahora.
       difficulty: 2
       suggested_families:
@@ -391,10 +391,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-deja-de-regar-varios-dias
+      slug: liruf-deja-de-regar-varios-dias
       micro_objective: Observar que una semilla descuidada cuando nadie mira crece menos que una cuidada
         con constancia.
-      narrative_beat: Dino deja de regar la semilla varios días porque cree que, si Dr. Rho no lo ve,
+      narrative_beat: Liruf deja de regar la semilla varios días porque cree que, si Dr. Rho no lo ve,
         no importa, hasta que nota que la semilla ha crecido menos que la de Dina.
       difficulty: 1
       suggested_families:
@@ -414,17 +414,17 @@ sagas:
       slug: regar-en-secreto
       micro_objective: Practicar el hábito de cuidar algo de forma constante sin esperar que alguien lo
         note de inmediato.
-      narrative_beat: Zara Vex reta a Dino a regar su semilla en secreto, sin que nadie lo vea ni lo felicite,
+      narrative_beat: Zara Vex reta a Liruf a regar su semilla en secreto, sin que nadie lo vea ni lo felicite,
         durante varios días seguidos.
       difficulty: 3
       suggested_families:
       - storyplay
       - choice
     - position: 4
-      slug: la-semilla-crecida-de-dino
+      slug: la-semilla-crecida-de-liruf
       micro_objective: Aplicar con seguridad el hábito de cuidar algo de forma constante, incluso sin
         que nadie lo esté viendo.
-      narrative_beat: Al final de la semana, Dino muestra su semilla crecida y explica que la cuidó incluso
+      narrative_beat: Al final de la semana, Liruf muestra su semilla crecida y explica que la cuidó incluso
         los días en que nadie miraba.
       difficulty: 3
       suggested_families:
@@ -452,7 +452,7 @@ sagas:
       slug: elegir-mi-propia-semilla
       micro_objective: Elegir, dentro de una historia, qué sembrar como primer proyecto propio de largo
         plazo.
-      narrative_beat: Dr. Rho invita a Dina y Dino a elegir su propia semilla del bosque para plantarla
+      narrative_beat: Dr. Rho invita a Dina y Liruf a elegir su propia semilla del bosque para plantarla
         y cuidarla como su primer árbol.
       difficulty: 1
       suggested_families:
@@ -461,7 +461,7 @@ sagas:
     - position: 2
       slug: los-pasos-de-mi-plan
       micro_objective: Ordenar los pasos correctos de un plan simple para sembrar y cuidar algo propio.
-      narrative_beat: 'Zara Vex ayuda a Dino a ordenar los pasos de su plan: elegir la semilla, plantarla,
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos de su plan: elegir la semilla, plantarla,
         regarla poco a poco, y dejarla quieta.'
       difficulty: 2
       suggested_families:
@@ -481,7 +481,7 @@ sagas:
       slug: la-promesa-de-cuidar-mi-arbol
       micro_objective: Aplicar con seguridad el plan completo de sembrar, cuidar y esperar, comprometiéndose
         a seguirlo.
-      narrative_beat: Con su semilla ya plantada, Dina y Dino prometen frente a Dr. Rho cuidarla con constancia
+      narrative_beat: Con su semilla ya plantada, Dina y Liruf prometen frente a Dr. Rho cuidarla con constancia
         hasta que se convierta en árbol.
       difficulty: 3
       suggested_families:
@@ -526,7 +526,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo cómo decidir entre comer una fruta hoy o plantar su
         semilla, y por qué regar poco a poco ayuda más.
-      narrative_beat: Dino saca del cofre las semillas mezcladas de la saga y las ordena de memoria, sin
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de la saga y las ordena de memoria, sin
         que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -578,7 +578,7 @@ sagas:
       slug: un-recuerdo-del-cofre
       micro_objective: Recordar, tal como se aprendió antes, por qué sembrar hoy da algo grande en el
         futuro.
-      narrative_beat: Zara Vex trae dos semillas de recuerdo del cofre y pide a Dino unirlas en una sola
+      narrative_beat: Zara Vex trae dos semillas de recuerdo del cofre y pide a Liruf unirlas en una sola
         idea, sin ayuda nueva.
       difficulty: 2
       suggested_families:
@@ -598,7 +598,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, las ideas de crecer con el tiempo y de cuidar
         poco a poco.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -644,10 +644,10 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-arranca-una-fruta-verde
+      slug: liruf-arranca-una-fruta-verde
       micro_objective: Observar que una fruta arrancada antes de tiempo es más pequeña y sabe peor que
         una madura.
-      narrative_beat: Dino arranca una fruta verde del árbol, ansioso por probarla, y descubre que sabe
+      narrative_beat: Liruf arranca una fruta verde del árbol, ansioso por probarla, y descubre que sabe
         agria y es pequeña comparada con las maduras del árbol de al lado.
       difficulty: 1
       suggested_families:
@@ -664,9 +664,9 @@ sagas:
       - analyze
       - choice
     - position: 3
-      slug: la-prisa-de-dino
+      slug: la-prisa-de-liruf
       micro_objective: Reconocer la sensación de prisa que llevó a arrancar la fruta antes de que madurara.
-      narrative_beat: Zara Vex pregunta a Dino qué sintió al ver apenas apareció la fruta, y por qué no
+      narrative_beat: Zara Vex pregunta a Liruf qué sintió al ver apenas apareció la fruta, y por qué no
         pudo aguantar hasta que madurara.
       difficulty: 2
       suggested_families:
@@ -727,7 +727,7 @@ sagas:
       slug: por-que-alguien-elegiria-el-corto
       micro_objective: Explicar una razón válida por la que alguien podría elegir el camino corto de todos
         modos.
-      narrative_beat: Zara Vex pregunta a Dino por qué alguien elegiría el camino corto aunque dé menos.
+      narrative_beat: Zara Vex pregunta a Liruf por qué alguien elegiría el camino corto aunque dé menos.
       difficulty: 2
       suggested_families:
       - choice
@@ -759,9 +759,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: las-ganas-enormes-de-dino
+      slug: las-ganas-enormes-de-liruf
       micro_objective: Reconocer la sensación de impaciencia que aparece cuando cuesta esperar por algo.
-      narrative_beat: Dino se retuerce de impaciencia esperando que su semilla crezca, y le confiesa a
+      narrative_beat: Liruf se retuerce de impaciencia esperando que su semilla crezca, y le confiesa a
         Dina que sus ganas de verla ya crecida son enormes.
       difficulty: 1
       suggested_families:
@@ -788,7 +788,7 @@ sagas:
       slug: nombrar-antes-de-actuar
       micro_objective: Aplicar el reconocer y nombrar la sensación de impaciencia antes de actuar frente
         a ella.
-      narrative_beat: Frente a una nueva espera del bosque, Dino nombra en voz alta lo que siente antes
+      narrative_beat: Frente a una nueva espera del bosque, Liruf nombra en voz alta lo que siente antes
         de decidir qué hacer con esa sensación.
       difficulty: 3
       suggested_families:
@@ -814,7 +814,7 @@ sagas:
       slug: contar-las-hojas-cercanas
       micro_objective: Conocer un truco concreto (contar hojas) para hacer que la espera se sienta más
         fácil.
-      narrative_beat: 'Dr. Rho le enseña a Dino un truco: mientras espera que su semilla crezca, puede
+      narrative_beat: 'Dr. Rho le enseña a Liruf un truco: mientras espera que su semilla crezca, puede
         contar las hojas de los árboles cercanos.'
       difficulty: 1
       suggested_families:
@@ -832,7 +832,7 @@ sagas:
     - position: 3
       slug: ayudar-a-dr-rho-mientras-espera
       micro_objective: Practicar la aplicación de un truco propio para hacer más fácil una espera concreta.
-      narrative_beat: Dino practica su propio truco (ayudar a Dr. Rho a recoger hojas) mientras espera
+      narrative_beat: Liruf practica su propio truco (ayudar a Dr. Rho a recoger hojas) mientras espera
         que pase el tiempo de su semilla.
       difficulty: 2
       suggested_families:
@@ -875,7 +875,7 @@ sagas:
     - position: 2
       slug: clasificar-situaciones-del-bosque
       micro_objective: Clasificar distintas situaciones según si conviene esperar o no.
-      narrative_beat: Zara Vex presenta varias situaciones del bosque y pide a Dino clasificar cuáles
+      narrative_beat: Zara Vex presenta varias situaciones del bosque y pide a Liruf clasificar cuáles
         merecen espera y cuáles no.
       difficulty: 2
       suggested_families:
@@ -938,7 +938,7 @@ sagas:
       slug: el-error-del-conejo
       micro_objective: 'Identificar el error del conejo: confiar tanto en su velocidad que dejó de ser
         constante.'
-      narrative_beat: Zara Vex pregunta a Dino qué error cometió el conejo, aunque era mucho más veloz
+      narrative_beat: Zara Vex pregunta a Liruf qué error cometió el conejo, aunque era mucho más veloz
         que el caracol.
       difficulty: 2
       suggested_families:
@@ -973,7 +973,7 @@ sagas:
     - position: 1
       slug: elegir-algo-que-vale-la-pena-esperar
       micro_objective: Elegir, dentro de una historia, algo concreto que vale la pena esperar.
-      narrative_beat: Dr. Rho ayuda a Dino a elegir algo que de verdad quiere esperar, y juntos anotan
+      narrative_beat: Dr. Rho ayuda a Liruf a elegir algo que de verdad quiere esperar, y juntos anotan
         cuánto tiempo tomará.
       difficulty: 1
       suggested_families:
@@ -991,7 +991,7 @@ sagas:
     - position: 3
       slug: practicar-mi-plan-en-voz-alta
       micro_objective: Practicar explicar en voz alta un plan propio para sostener una espera.
-      narrative_beat: Dino practica en voz alta su plan de espera completo antes de comenzar a esperar
+      narrative_beat: Liruf practica en voz alta su plan de espera completo antes de comenzar a esperar
         de verdad.
       difficulty: 2
       suggested_families:
@@ -1001,7 +1001,7 @@ sagas:
       slug: comprometerme-con-mi-plan
       micro_objective: Aplicar con seguridad el plan completo, comprometiéndose a sostenerlo hasta el
         final.
-      narrative_beat: Con su plan ya armado, Dina se compromete frente a Dr. Rho y Dino a sostenerlo hasta
+      narrative_beat: Con su plan ya armado, Dina se compromete frente a Dr. Rho y Liruf a sostenerlo hasta
         el final.
       difficulty: 3
       suggested_families:
@@ -1024,9 +1024,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: la-primera-fruta-grande-de-dino
+      slug: la-primera-fruta-grande-de-liruf
       micro_objective: Reconocer el momento en que una espera termina y llega la recompensa esperada.
-      narrative_beat: Después de varias semanas, el árbol de Dino por fin da su primera fruta grande y
+      narrative_beat: Después de varias semanas, el árbol de Liruf por fin da su primera fruta grande y
         madura, y todo el bosque lo celebra junto a él.
       difficulty: 1
       suggested_families:
@@ -1036,7 +1036,7 @@ sagas:
       slug: que-fue-diferente-esta-vez
       micro_objective: Comparar la recompensa final de la espera con lo que se habría obtenido sin esperar.
       narrative_beat: Dr. Rho pregunta a Dina qué fue diferente entre esta fruta grande y la fruta verde
-        que Dino arrancó con prisa al inicio de la saga.
+        que Liruf arrancó con prisa al inicio de la saga.
       difficulty: 2
       suggested_families:
       - choice
@@ -1045,7 +1045,7 @@ sagas:
       slug: una-celebracion-por-la-paciencia
       micro_objective: Reconocer la importancia de celebrar la paciencia, no solo el resultado final.
       narrative_beat: Zara Vex organiza una pequeña celebración en el bosque para reconocer la paciencia
-        de Dino durante toda la espera.
+        de Liruf durante toda la espera.
       difficulty: 2
       suggested_families:
       - story
@@ -1099,7 +1099,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo por qué cuesta esperar y qué trucos ayudan a que la
         espera se sienta más fácil.
-      narrative_beat: Dino saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1151,7 +1151,7 @@ sagas:
       slug: un-recuerdo-de-la-primera-saga
       micro_objective: Recordar, tal como se aprendió antes, por qué una semilla enterrada debe dejarse
         quieta para crecer.
-      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Dino recordarlo sin ayuda,
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
         antes de mezclarlo con la prisa del conejo.
       difficulty: 2
       suggested_families:
@@ -1171,7 +1171,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la idea de sembrar para el futuro y la de
         la constancia del caracol.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1234,7 +1234,7 @@ sagas:
     - position: 2
       slug: tres-rincones-del-bosque
       micro_objective: Identificar, entre varios lugares, cuál es el más seguro para dejar crecer algo.
-      narrative_beat: Zara Vex muestra tres rincones del bosque y pide a Dino identificar cuál es el más
+      narrative_beat: Zara Vex muestra tres rincones del bosque y pide a Liruf identificar cuál es el más
         seguro para una semilla.
       difficulty: 2
       suggested_families:
@@ -1276,9 +1276,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-no-aguanta-la-curiosidad
+      slug: liruf-no-aguanta-la-curiosidad
       micro_objective: Observar que desenterrar una semilla a medio crecer interrumpe su desarrollo.
-      narrative_beat: Dino no aguanta la curiosidad y desentierra su semilla a la mitad de su crecimiento;
+      narrative_beat: Liruf no aguanta la curiosidad y desentierra su semilla a la mitad de su crecimiento;
         al volver a enterrarla, ya no crece igual de bien.
       difficulty: 1
       suggested_families:
@@ -1287,8 +1287,8 @@ sagas:
     - position: 2
       slug: la-semilla-interrumpida-y-la-de-dina
       micro_objective: Comparar el crecimiento de una semilla interrumpida contra una que nunca se tocó.
-      narrative_beat: Dr. Rho compara la semilla interrumpida de Dino con la semilla de Dina, que nunca
-        se tocó, y pide a Dino notar la diferencia.
+      narrative_beat: Dr. Rho compara la semilla interrumpida de Liruf con la semilla de Dina, que nunca
+        se tocó, y pide a Liruf notar la diferencia.
       difficulty: 2
       suggested_families:
       - analyze
@@ -1306,7 +1306,7 @@ sagas:
     - position: 4
       slug: resistir-una-nueva-tentacion
       micro_objective: Aplicar la decisión de resistir la tentación de interrumpir algo antes de tiempo.
-      narrative_beat: Frente a una nueva tentación de revisar antes de tiempo, Dino decide resistir y
+      narrative_beat: Frente a una nueva tentación de revisar antes de tiempo, Liruf decide resistir y
         explica qué habría pasado si no lo hiciera.
       difficulty: 3
       suggested_families:
@@ -1341,7 +1341,7 @@ sagas:
     - position: 2
       slug: ordenar-fotos-de-ambos-jardines
       micro_objective: Ordenar el crecimiento de ambos jardines para notar cuál avanzó más.
-      narrative_beat: Zara Vex pide a Dino ordenar fotos de ambos jardines desde el más pequeño hasta
+      narrative_beat: Zara Vex pide a Liruf ordenar fotos de ambos jardines desde el más pequeño hasta
         el más grande.
       difficulty: 2
       suggested_families:
@@ -1398,7 +1398,7 @@ sagas:
       slug: ordenar-las-tres-fotos
       micro_objective: Ordenar imágenes de crecimiento y relacionarlas con la cantidad de tiempo que ha
         pasado.
-      narrative_beat: Zara Vex pide a Dino ordenar las tres fotos del árbol de menor a mayor tamaño, y
+      narrative_beat: Zara Vex pide a Liruf ordenar las tres fotos del árbol de menor a mayor tamaño, y
         relacionarlas con el tiempo transcurrido.
       difficulty: 2
       suggested_families:
@@ -1443,7 +1443,7 @@ sagas:
     - position: 1
       slug: el-jardin-se-ve-igual-que-ayer
       micro_objective: Reconocer el desánimo de no ver cambios de un día para otro en un jardín protegido.
-      narrative_beat: Dino se desanima porque su jardín se ve exactamente igual que ayer, y piensa en
+      narrative_beat: Liruf se desanima porque su jardín se ve exactamente igual que ayer, y piensa en
         dejar de cuidarlo.
       difficulty: 1
       suggested_families:
@@ -1453,7 +1453,7 @@ sagas:
       slug: el-registro-de-fotos-diarias
       micro_objective: Comparar el cambio diario (casi nulo) contra el cambio total después de muchos
         días.
-      narrative_beat: Dr. Rho muestra a Dino un registro de fotos diarias donde casi no hay cambio, pero
+      narrative_beat: Dr. Rho muestra a Liruf un registro de fotos diarias donde casi no hay cambio, pero
         al comparar la primera y la última sí se nota un gran cambio.
       difficulty: 2
       suggested_families:
@@ -1463,7 +1463,7 @@ sagas:
       slug: los-cambios-pequenos-se-acumulan
       micro_objective: Explicar por qué los cambios pequeños de cada día se acumulan en un resultado grande
         con el tiempo.
-      narrative_beat: Zara Vex anima a Dino a seguir cuidando su jardín, recordándole que los cambios
+      narrative_beat: Zara Vex anima a Liruf a seguir cuidando su jardín, recordándole que los cambios
         pequeños se acumulan aunque no se vean cada día.
       difficulty: 2
       suggested_families:
@@ -1472,7 +1472,7 @@ sagas:
     - position: 4
       slug: no-rendirse-hoy
       micro_objective: Aplicar la decisión de seguir cuidando algo, incluso en un día sin cambios visibles.
-      narrative_beat: Dino decide no rendirse y sigue cuidando su jardín incluso en un día donde no se
+      narrative_beat: Liruf decide no rendirse y sigue cuidando su jardín incluso en un día donde no se
         nota ningún cambio.
       difficulty: 3
       suggested_families:
@@ -1508,7 +1508,7 @@ sagas:
     - position: 2
       slug: comparar-dos-semanas-de-registro
       micro_objective: Comparar dos registros de conteo para identificar en cuál semana hubo más crecimiento.
-      narrative_beat: Zara Vex compara con Dino dos semanas del registro de hojas y pide identificar en
+      narrative_beat: Zara Vex compara con Liruf dos semanas del registro de hojas y pide identificar en
         cuál creció más el árbol.
       difficulty: 2
       suggested_families:
@@ -1553,8 +1553,8 @@ sagas:
     - position: 1
       slug: el-consejo-de-un-amigo
       micro_objective: Reconocer una tentación concreta de tocar un jardín que está creciendo bien.
-      narrative_beat: Un amigo del bosque le sugiere a Dino remover la tierra de su jardín 'para ayudarlo
-        a crecer más rápido', y Dino duda si hacerlo.
+      narrative_beat: Un amigo del bosque le sugiere a Liruf remover la tierra de su jardín 'para ayudarlo
+        a crecer más rápido', y Liruf duda si hacerlo.
       difficulty: 1
       suggested_families:
       - story
@@ -1564,7 +1564,7 @@ sagas:
       micro_objective: Aplicar lo aprendido sobre jardines protegidos para aconsejar frente a una tentación
         concreta.
       narrative_beat: Dr. Rho pide a Dina recordar lo aprendido sobre jardines tocados y no tocados antes
-        de aconsejar a Dino.
+        de aconsejar a Liruf.
       difficulty: 2
       suggested_families:
       - choice
@@ -1572,7 +1572,7 @@ sagas:
     - position: 3
       slug: varias-tentaciones-del-bosque
       micro_objective: Practicar la decisión de proteger en varias situaciones distintas de tentación.
-      narrative_beat: Zara Vex pone a prueba a Dino con varias tentaciones distintas del bosque para ver
+      narrative_beat: Zara Vex pone a prueba a Liruf con varias tentaciones distintas del bosque para ver
         si elige proteger o tocar.
       difficulty: 2
       suggested_families:
@@ -1581,7 +1581,7 @@ sagas:
     - position: 4
       slug: decidir-con-seguridad-proteger
       micro_objective: Aplicar con seguridad la decisión de proteger un jardín frente a una nueva tentación.
-      narrative_beat: Frente a una última tentación, Dino decide con seguridad dejar su jardín protegido
+      narrative_beat: Frente a una última tentación, Liruf decide con seguridad dejar su jardín protegido
         y explica por qué.
       difficulty: 3
       suggested_families:
@@ -1616,7 +1616,7 @@ sagas:
     - position: 2
       slug: las-reglas-de-mi-jardin
       micro_objective: Ordenar las reglas correctas de un plan de protección para algo que está creciendo.
-      narrative_beat: 'Zara Vex ayuda a Dino a ordenar las reglas de su jardín protegido: elegir lugar
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar las reglas de su jardín protegido: elegir lugar
         seguro, no desenterrar, registrar cada semana.'
       difficulty: 2
       suggested_families:
@@ -1679,7 +1679,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo la comparación entre un jardín tocado y uno protegido,
         y la relación entre más tiempo y más tamaño.
-      narrative_beat: Dino saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -1731,7 +1731,7 @@ sagas:
       slug: un-recuerdo-de-la-segunda-saga
       micro_objective: Recordar, tal como se aprendió antes, cuándo sí conviene esperar y cómo armar un
         plan de espera.
-      narrative_beat: Zara Vex trae un recuerdo de la saga de la prisa del conejo y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la prisa del conejo y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con el jardín protegido.
       difficulty: 2
       suggested_families:
@@ -1751,7 +1751,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la idea de esperar con un plan y la de proteger
         un jardín sin tocarlo.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -1818,7 +1818,7 @@ sagas:
       slug: por-que-suma-mas-el-poquito
       micro_objective: Explicar por qué un poco de esfuerzo cada semana suma más, con el tiempo, que un
         esfuerzo enorme aislado.
-      narrative_beat: Dr. Rho pregunta a Dino por qué cree que un poquito cada semana suma más, con el
+      narrative_beat: Dr. Rho pregunta a Liruf por qué cree que un poquito cada semana suma más, con el
         tiempo, que un esfuerzo enorme una sola vez.
       difficulty: 2
       suggested_families:
@@ -1852,9 +1852,9 @@ sagas:
     fact_refs: []
     lessons:
     - position: 1
-      slug: dino-olvida-por-jugar
+      slug: liruf-olvida-por-jugar
       micro_objective: Reconocer la sensación de haber olvidado un día un hábito de constancia.
-      narrative_beat: Dino olvida cuidar su jardín un día por estar jugando, y al día siguiente se siente
+      narrative_beat: Liruf olvida cuidar su jardín un día por estar jugando, y al día siguiente se siente
         mal, pensando que arruinó todo.
       difficulty: 1
       suggested_families:
@@ -1864,7 +1864,7 @@ sagas:
       slug: el-registro-de-dr-rho-tambien-tiene-huecos
       micro_objective: Observar que olvidar algunos días no impide que un hábito siga funcionando con
         el tiempo.
-      narrative_beat: 'Dr. Rho muestra a Dino su propio registro: hay algunos días que él también olvidó,
+      narrative_beat: 'Dr. Rho muestra a Liruf su propio registro: hay algunos días que él también olvidó,
         pero su jardín igual creció bien con el tiempo.'
       difficulty: 2
       suggested_families:
@@ -1874,7 +1874,7 @@ sagas:
       slug: retomar-en-vez-de-rendirse
       micro_objective: Explicar por qué retomar un hábito después de olvidarlo es mejor que rendirse por
         completo.
-      narrative_beat: Zara Vex anima a Dino a retomar su cuidado al día siguiente, en vez de rendirse
+      narrative_beat: Zara Vex anima a Liruf a retomar su cuidado al día siguiente, en vez de rendirse
         por completo.
       difficulty: 2
       suggested_families:
@@ -1884,7 +1884,7 @@ sagas:
       slug: retomar-sin-sentirme-mal
       micro_objective: Aplicar la decisión de retomar un hábito, sin abandonarlo, después de haberlo olvidado
         un día.
-      narrative_beat: Dino retoma su cuidado del jardín al día siguiente de haberlo olvidado, sin sentirse
+      narrative_beat: Liruf retoma su cuidado del jardín al día siguiente de haberlo olvidado, sin sentirse
         mal por eso.
       difficulty: 3
       suggested_families:
@@ -1921,7 +1921,7 @@ sagas:
       slug: ordenar-ambos-jardines-por-tamano
       micro_objective: Ordenar el resultado de ambos jardines para notar el efecto de la constancia con
         el tiempo.
-      narrative_beat: Zara Vex pide a Dino ordenar ambos jardines de menor a mayor tamaño después de varios
+      narrative_beat: Zara Vex pide a Liruf ordenar ambos jardines de menor a mayor tamaño después de varios
         meses.
       difficulty: 2
       suggested_families:
@@ -1977,7 +1977,7 @@ sagas:
     - position: 2
       slug: armar-mi-propio-calendario
       micro_objective: Armar un calendario simple con un día fijo para sostener un hábito de cuidado.
-      narrative_beat: Zara Vex ayuda a Dino a armar su propio calendario, marcando el mismo día de cada
+      narrative_beat: Zara Vex ayuda a Liruf a armar su propio calendario, marcando el mismo día de cada
         semana para cuidar su jardín.
       difficulty: 2
       suggested_families:
@@ -1987,7 +1987,7 @@ sagas:
       slug: marcar-varias-semanas-seguidas
       micro_objective: Practicar el uso de un calendario simple para sostener un hábito durante varias
         semanas.
-      narrative_beat: Dino usa su calendario durante varias semanas seguidas y marca cada vez que cumple
+      narrative_beat: Liruf usa su calendario durante varias semanas seguidas y marca cada vez que cumple
         su cuidado semanal.
       difficulty: 2
       suggested_families:
@@ -2027,7 +2027,7 @@ sagas:
     - position: 1
       slug: recordar-al-caracol-constante
       micro_objective: Recordar cómo la constancia lenta puede sumar un resultado grande con el tiempo.
-      narrative_beat: Zara Vex le recuerda a Dino la carrera del caracol constante para explicarle que
+      narrative_beat: Zara Vex le recuerda a Liruf la carrera del caracol constante para explicarle que
         su pequeño esfuerzo semanal se está sumando, aunque no lo note cada día.
       difficulty: 1
       suggested_families:
@@ -2037,7 +2037,7 @@ sagas:
       slug: el-jardin-al-inicio-y-al-final
       micro_objective: Comparar el resultado inicial, intermedio y final de un esfuerzo pequeño y constante.
       narrative_beat: Dr. Rho muestra el jardín de Dina al inicio, a la mitad y al final de la aventura,
-        y pide a Dino notar cuánto sumó cada semana pequeña.
+        y pide a Liruf notar cuánto sumó cada semana pequeña.
       difficulty: 2
       suggested_families:
       - analyze
@@ -2083,7 +2083,7 @@ sagas:
       slug: el-jardin-mas-viejo
       micro_objective: Conocer el jardín más viejo del pueblo como ejemplo vivo de constancia de largo
         plazo.
-      narrative_beat: Dr. Rho lleva a Dina y Dino al jardín más viejo del pueblo, que ha cuidado sin faltar
+      narrative_beat: Dr. Rho lleva a Dina y Liruf al jardín más viejo del pueblo, que ha cuidado sin faltar
         una sola semana durante muchísimos años.
       difficulty: 1
       suggested_families:
@@ -2093,7 +2093,7 @@ sagas:
       slug: cuantas-semanas-seran
       micro_objective: Relacionar la cantidad de semanas de cuidado constante con el tamaño final del
         jardín más viejo del pueblo.
-      narrative_beat: Zara Vex pregunta a Dino cuántas semanas cree que ha cuidado Dr. Rho ese jardín,
+      narrative_beat: Zara Vex pregunta a Liruf cuántas semanas cree que ha cuidado Dr. Rho ese jardín,
         y compara la cifra con el tamaño del jardín.
       difficulty: 2
       suggested_families:
@@ -2104,7 +2104,7 @@ sagas:
       micro_objective: Reconocer que incluso el resultado más grande e impresionante comenzó igual de
         pequeño que cualquier otro.
       narrative_beat: Dr. Rho cuenta que, al principio, ese jardín también era una semilla pequeña, igual
-        que las de Dina y Dino.
+        que las de Dina y Liruf.
       difficulty: 2
       suggested_families:
       - story
@@ -2147,7 +2147,7 @@ sagas:
     - position: 2
       slug: cuanta-constancia-semanal-necesito
       micro_objective: Relacionar una meta de un año con la constancia semanal necesaria para lograrla.
-      narrative_beat: Zara Vex ayuda a Dino a pensar qué constancia semanal necesitaría para lograr su
+      narrative_beat: Zara Vex ayuda a Liruf a pensar qué constancia semanal necesitaría para lograr su
         meta de un año.
       difficulty: 2
       suggested_families:
@@ -2166,7 +2166,7 @@ sagas:
       slug: compartir-mi-meta-de-un-ano
       micro_objective: Aplicar con seguridad la elección de una meta de un año, comprometiéndose frente
         a otros a sostenerla.
-      narrative_beat: Con su meta de un año ya elegida, Dina la comparte con Dr. Rho y Dino, comprometiéndose
+      narrative_beat: Con su meta de un año ya elegida, Dina la comparte con Dr. Rho y Liruf, comprometiéndose
         a sostenerla.
       difficulty: 3
       suggested_families:
@@ -2193,7 +2193,7 @@ sagas:
       slug: reunidos-frente-al-jardin-mas-viejo
       micro_objective: Reconocer el momento de formular una promesa personal de constancia frente a un
         ejemplo inspirador.
-      narrative_beat: Dr. Rho reúne a Dina y Dino frente al jardín más viejo del pueblo para hacer, cada
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente al jardín más viejo del pueblo para hacer, cada
         uno, su propia promesa de constancia.
       difficulty: 1
       suggested_families:
@@ -2212,7 +2212,7 @@ sagas:
     - position: 3
       slug: practicar-mi-promesa-completa
       micro_objective: Practicar decir en voz alta una promesa de constancia completa, con sus tres partes.
-      narrative_beat: Dino practica decir en voz alta su promesa completa antes de comprometerse frente
+      narrative_beat: Liruf practica decir en voz alta su promesa completa antes de comprometerse frente
         a Dr. Rho.
       difficulty: 2
       suggested_families:
@@ -2222,7 +2222,7 @@ sagas:
       slug: sellar-mi-promesa
       micro_objective: Aplicar con seguridad la promesa completa de constancia, comprometiéndose frente
         a otros a sostenerla.
-      narrative_beat: Dina y Dino sellan juntos su promesa de constancia frente a Dr. Rho, listos para
+      narrative_beat: Dina y Liruf sellan juntos su promesa de constancia frente a Dr. Rho, listos para
         sostenerla durante todo un año.
       difficulty: 3
       suggested_families:
@@ -2267,7 +2267,7 @@ sagas:
       slug: recordar-en-orden
       micro_objective: Recordar y ordenar de nuevo la comparación entre cuidar algo constante y a veces,
         y cómo un calendario ayuda a sostenerlo.
-      narrative_beat: Dino saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
         sin que Dr. Rho le dé ninguna pista nueva.
       difficulty: 1
       suggested_families:
@@ -2319,7 +2319,7 @@ sagas:
       slug: un-recuerdo-de-la-tercera-saga
       micro_objective: Recordar, tal como se aprendió antes, la relación entre más tiempo y más tamaño
         de un jardín protegido.
-      narrative_beat: Zara Vex trae un recuerdo de la saga del jardín protegido y pide a Dino recordarlo
+      narrative_beat: Zara Vex trae un recuerdo de la saga del jardín protegido y pide a Liruf recordarlo
         sin ayuda, antes de mezclarlo con la constancia.
       difficulty: 2
       suggested_families:
@@ -2339,7 +2339,7 @@ sagas:
       slug: practicar-el-entrelazado
       micro_objective: Aplicar juntas, en una escena nueva, la constancia semanal y la protección de un
         jardín sin tocar.
-      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del bosque usando a la vez ambas
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
         ideas combinadas.
       difficulty: 2
       suggested_families:
@@ -2396,7 +2396,7 @@ sagas:
       slug: el-arbol-mas-grande-del-bosque
       micro_objective: Recordar que sembrar hoy da algo grande en el futuro, y que las cosas crecen con
         el tiempo, no con prisa.
-      narrative_beat: 'Dr. Rho reúne a Dina y Dino frente al árbol más grande del bosque y anuncia la
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente al árbol más grande del bosque y anuncia la
         Gran Misión: recorrer una vez más todo lo aprendido en el jardín.'
       difficulty: 1
       suggested_families:
@@ -2406,7 +2406,7 @@ sagas:
       slug: por-que-no-se-desentierra
       micro_objective: Recordar, sin ayuda nueva, por qué una semilla enterrada debe dejarse quieta para
         crecer.
-      narrative_beat: Zara Vex presenta una escena nueva y reta a Dino a recordar, sin ayuda, por qué
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, por qué
         no conviene desenterrar una semilla antes de tiempo.
       difficulty: 1
       suggested_families:
@@ -2435,7 +2435,7 @@ sagas:
     slug: la-gran-mision-de-la-espera
     kind: review_quest
     title_es: La Gran Misión de la Espera
-    concept: Dina y Dino recuerdan cómo elegir el camino largo, cómo usar un truco para esperar mejor,
+    concept: Dina y Liruf recuerdan cómo elegir el camino largo, cómo usar un truco para esperar mejor,
       y la lección del caracol constante.
     learning_objective: Al final, el niño puede recordar y aplicar cómo comparar caminos, usar un truco
       para esperar, y aplicar la lección del caracol.
@@ -2456,7 +2456,7 @@ sagas:
       slug: el-cruce-vuelve-a-aparecer
       micro_objective: Recordar cómo comparar un camino corto con recompensa pequeña contra uno largo
         con recompensa más grande.
-      narrative_beat: Zara Vex presenta de nuevo el cruce del camino corto y el largo, y reta a Dino a
+      narrative_beat: Zara Vex presenta de nuevo el cruce del camino corto y el largo, y reta a Liruf a
         elegir sin ayuda, recordando la lección.
       difficulty: 1
       suggested_families:
@@ -2474,7 +2474,7 @@ sagas:
     - position: 3
       slug: otra-carrera-del-caracol
       micro_objective: Recordar por qué la constancia lenta puede ganarle a la velocidad que no dura.
-      narrative_beat: Zara Vex organiza una nueva carrera del caracol y el conejo, y pide a Dino explicar
+      narrative_beat: Zara Vex organiza una nueva carrera del caracol y el conejo, y pide a Liruf explicar
         de memoria por qué gana el caracol.
       difficulty: 2
       suggested_families:
@@ -2522,7 +2522,7 @@ sagas:
     - position: 2
       slug: los-dos-jardines-de-memoria
       micro_objective: Recordar y ordenar de nuevo la comparación entre un jardín tocado y uno protegido.
-      narrative_beat: Zara Vex muestra de nuevo los dos jardines -tocado y protegido- y pide a Dino ordenarlos
+      narrative_beat: Zara Vex muestra de nuevo los dos jardines -tocado y protegido- y pide a Liruf ordenarlos
         de memoria según su tamaño.
       difficulty: 1
       suggested_families:
@@ -2580,7 +2580,7 @@ sagas:
     - position: 2
       slug: olvidar-un-dia-no-arruina-nada
       micro_objective: Recordar por qué olvidar un día no arruina un hábito, siempre que se retome.
-      narrative_beat: Zara Vex reta a Dino a explicar de memoria por qué olvidar un día no arruina un
+      narrative_beat: Zara Vex reta a Liruf a explicar de memoria por qué olvidar un día no arruina un
         hábito de constancia.
       difficulty: 1
       suggested_families:
@@ -2629,7 +2629,7 @@ sagas:
       slug: las-cuatro-zonas-del-jardin
       micro_objective: 'Recordar, en conjunto, las cuatro áreas del jardín del tiempo: sembrar, esperar,
         proteger y ser constante.'
-      narrative_beat: Dr. Rho reúne a Dina y Dino frente a las cuatro zonas del jardín, una por cada lección
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente a las cuatro zonas del jardín, una por cada lección
         aprendida en la aventura.
       difficulty: 1
       suggested_families:
@@ -2639,7 +2639,7 @@ sagas:
       slug: un-aprendiz-nuevo-necesita-ayuda
       micro_objective: Aplicar las cuatro áreas del jardín para ayudar a un personaje nuevo a entender
         el bosque.
-      narrative_beat: Zara Vex presenta a un aprendiz nuevo del bosque y reta a Dino a guiarlo por las
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del bosque y reta a Liruf a guiarlo por las
         cuatro áreas del jardín.
       difficulty: 2
       suggested_families:
@@ -2670,7 +2670,7 @@ sagas:
     kind: review_quest
     title_es: El Jardín del Tiempo Sigue Creciendo
     concept: El gran cierre de la aventura celebra todo lo aprendido en el jardín del tiempo y prepara
-      a Dina y Dino para el siguiente destino, donde el ahorro también recibe un premio por esperar.
+      a Dina y Liruf para el siguiente destino, donde el ahorro también recibe un premio por esperar.
     learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
       en la Gran Misión del jardín del tiempo.
     key_vocabulary:
@@ -2698,7 +2698,7 @@ sagas:
     - position: 2
       slug: los-cuatro-pasos-unidos
       micro_objective: Recordar en conjunto los cuatro pasos del jardín del tiempo unidos en un solo resultado.
-      narrative_beat: 'Zara Vex recuerda a Dino cada paso del camino: sembrar, esperar, proteger y ser
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: sembrar, esperar, proteger y ser
         constante, ahora todos unidos en un solo árbol grande.'
       difficulty: 1
       suggested_families:
@@ -2718,7 +2718,7 @@ sagas:
       slug: el-bosque-brilla-y-celebra
       micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
         jardín del tiempo.
-      narrative_beat: Con el bosque brillando a su alrededor, Dina celebra junto a Dr. Rho, Dino y Zara
+      narrative_beat: Con el bosque brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf y Zara
         Vex el cierre del jardín del tiempo, lista para descubrir qué premio guarda la aldea del valle
         por guardar con paciencia.
       difficulty: 2
