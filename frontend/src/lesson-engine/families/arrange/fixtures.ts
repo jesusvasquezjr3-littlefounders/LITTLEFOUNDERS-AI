@@ -1,0 +1,203 @@
+// `arrange` family — one demo segment per type for /dev/lesson-lab (es-MX content).
+// Fixtures are dev data, not UI strings; lesson documents are single-locale (§3).
+
+import type { SegmentBase } from '../../core/types'
+
+export const arrangeFixtures: SegmentBase[] = [
+  {
+    id: 'fx-match-pairs',
+    type: 'match_pairs',
+    prompt_md: 'Une cada **moneda** con lo que puedes comprar con ella.',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Empieza por la moneda más grande: ¿qué cosa cuesta más?'],
+    explanation_md: 'Cada cosa tiene un **precio** distinto — conocerlos te ayuda a planear tus compras.',
+    narrator: { character: 'dina', emotion: 'happy' },
+    payload: {
+      left: [
+        { id: 'l1', text_md: '$5' },
+        { id: 'l2', text_md: '$20' },
+        { id: 'l3', text_md: '$50' },
+      ],
+      right: [
+        { id: 'r1', text_md: 'Un chicle' },
+        { id: 'r2', text_md: 'Un jugo y unas galletas' },
+        { id: 'r3', text_md: 'Un cuento ilustrado' },
+        { id: 'r4', text_md: 'Una bicicleta nueva' },
+      ],
+    },
+    answer: { pairs: [['l1', 'r1'], ['l2', 'r2'], ['l3', 'r3']] },
+  },
+  {
+    id: 'fx-memory-flip',
+    type: 'memory_flip',
+    prompt_md: 'Encuentra las parejas: cada **palabra de dinero** con su significado.',
+    difficulty: 2,
+    xp: 15,
+    explanation_md: 'Repetir las parejas te ayuda a **recordar** qué significa cada palabra.',
+    narrator: { character: 'dino', emotion: 'excited' },
+    payload: {
+      pairs: [
+        { a_md: 'Ahorrar', b_md: 'Guardar dinero para después' },
+        { a_md: 'Gastar', b_md: 'Usar dinero para comprar' },
+        { a_md: 'Donar', b_md: 'Regalar para ayudar' },
+      ],
+    },
+  },
+  {
+    id: 'fx-sort-buckets',
+    type: 'sort_buckets',
+    prompt_md: 'Clasifica cada cosa: ¿es para **ahorrar**, **gastar** o **donar**?',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Ahorrar es para metas de mañana; gastar es para hoy.'],
+    narrator: { character: 'rho', emotion: 'thinking' },
+    payload: {
+      buckets: [
+        { id: 'ahorro', label: 'Ahorrar' },
+        { id: 'gasto', label: 'Gastar' },
+        { id: 'donar', label: 'Donar' },
+      ],
+      items: [
+        { id: 'i1', text_md: 'Guardar $10 para la patineta' },
+        { id: 'i2', text_md: 'Comprar el lunch de hoy' },
+        { id: 'i3', text_md: 'Dar $5 al refugio de perritos' },
+        { id: 'i4', text_md: 'Meter monedas a la alcancía' },
+      ],
+    },
+    answer: {
+      assignments: { i1: 'ahorro', i2: 'gasto', i3: 'donar', i4: 'ahorro' },
+    },
+  },
+  {
+    id: 'fx-order-steps',
+    type: 'order_steps',
+    prompt_md: 'Pon en orden los pasos para **ahorrar para una meta**.',
+    difficulty: 2,
+    xp: 15,
+    explanation_md: 'Primero eliges la meta, luego averiguas el precio, después guardas poco a poco… ¡y la compras!',
+    narrator: { character: 'dina', emotion: 'thinking' },
+    payload: {
+      items: [
+        { id: 's1', text_md: 'Elegir qué quiero comprar' },
+        { id: 's2', text_md: 'Averiguar cuánto cuesta' },
+        { id: 's3', text_md: 'Guardar un poco cada semana' },
+        { id: 's4', text_md: 'Comprarlo cuando junte todo' },
+      ],
+    },
+    answer: { order: ['s1', 's2', 's3', 's4'] },
+  },
+  {
+    id: 'fx-rank-choices',
+    type: 'rank_choices',
+    prompt_md: 'Ordena estas compras de la **más urgente** a la que puede esperar.',
+    difficulty: 3,
+    xp: 20,
+    narrator: { character: 'zara', emotion: 'thinking' },
+    payload: {
+      criterion_md: 'Piensa: ¿qué necesita tu familia **primero** para vivir bien esta semana?',
+      items: [
+        { id: 'c1', text_md: 'Comida para la semana' },
+        { id: 'c2', text_md: 'Medicina para la tos de tu hermano' },
+        { id: 'c3', text_md: 'Un juego nuevo para la consola' },
+        { id: 'c4', text_md: 'Estampas para el álbum' },
+      ],
+    },
+    answer: { order: ['c2', 'c1', 'c3', 'c4'] },
+  },
+  {
+    id: 'fx-build-sentence',
+    type: 'build_sentence',
+    prompt_md: 'Arma la frase secreta del ahorro con las fichas.',
+    difficulty: 2,
+    xp: 15,
+    explanation_md: '**Primero ahorro, después gasto** — la regla de oro de Dina.',
+    narrator: { character: 'dina', emotion: 'proud' },
+    payload: {
+      tokens: [
+        { id: 't1', text_md: 'Primero' },
+        { id: 't2', text_md: 'ahorro,' },
+        { id: 't3', text_md: 'después' },
+        { id: 't4', text_md: 'gasto' },
+        { id: 't5', text_md: 'nunca' },
+        { id: 't6', text_md: 'pierdo' },
+      ],
+      slots: 4,
+    },
+    answer: { order: ['t1', 't2', 't3', 't4'] },
+  },
+  {
+    id: 'fx-timeline-order',
+    type: 'timeline_order',
+    prompt_md: 'Coloca en la línea del tiempo la historia del **dinero**.',
+    difficulty: 3,
+    xp: 20,
+    explanation_md: 'Primero se intercambiaban cosas, luego llegaron las monedas, los billetes y al final las tarjetas.',
+    narrator: { character: 'rho', emotion: 'excited' },
+    payload: {
+      events: [
+        { id: 'e1', text_md: 'Trueque: cambiar gallinas por maíz', icon: 'swap_horiz' },
+        { id: 'e2', text_md: 'Primeras monedas de metal', icon: 'paid' },
+        { id: 'e3', text_md: 'Billetes de papel', icon: 'payments' },
+        { id: 'e4', text_md: 'Tarjetas y pagos digitales', icon: 'credit_card' },
+      ],
+    },
+    answer: { order: ['e1', 'e2', 'e3', 'e4'] },
+  },
+  {
+    id: 'fx-pattern-complete',
+    type: 'pattern_complete',
+    prompt_md: 'Observa el patrón de la alcancía y **complétalo**.',
+    difficulty: 2,
+    xp: 15,
+    hints: ['Mira cómo se repiten: moneda, moneda, billete…'],
+    narrator: { character: 'dino', emotion: 'thinking' },
+    payload: {
+      sequence: [
+        { icon: 'paid', tint: 'warning' },
+        { icon: 'paid', tint: 'warning' },
+        { icon: 'payments', tint: 'success' },
+        { icon: 'paid', tint: 'warning' },
+        { icon: 'paid', tint: 'warning' },
+      ],
+      options: [
+        { id: 'o1', icon: 'payments', tint: 'success' },
+        { id: 'o2', icon: 'paid', tint: 'warning' },
+        { id: 'o3', icon: 'savings', tint: 'primary' },
+      ],
+      missing_slots: 1,
+    },
+    answer: { correct: { '0': 'o1' } },
+  },
+  {
+    id: 'fx-group-sets',
+    type: 'group_sets',
+    prompt_md: 'Cada cosa: ¿se **compra**, se **ahorra**, las dos… o ninguna?',
+    difficulty: 3,
+    xp: 20,
+    explanation_md: 'Algunas cosas se compran hoy, otras se ahorran para lograrlas — ¡y el aire no cuesta nada!',
+    narrator: { character: 'zara', emotion: 'happy' },
+    payload: {
+      set_a: 'Cuesta poco (hoy)',
+      set_b: 'Meta de ahorro',
+      items: [
+        { id: 'g1', text_md: 'Una paleta' },
+        { id: 'g2', text_md: 'Una bicicleta' },
+        { id: 'g3', text_md: 'Un cuaderno que quiero ya, pero también junto para el de lujo' },
+        { id: 'g4', text_md: 'El aire del parque' },
+      ],
+    },
+    answer: { zones: { g1: 'a', g2: 'b', g3: 'both', g4: 'none' } },
+  },
+  {
+    id: 'fx-number-line',
+    type: 'number_line',
+    prompt_md: 'La paleta cuesta **$7**. Toca el lugar del **7** en la recta.',
+    difficulty: 1,
+    xp: 10,
+    hints: ['El 7 está entre el 5 y el 10, más cerca del 5.'],
+    narrator: { character: 'dino', emotion: 'encouraging' },
+    payload: { min: 0, max: 10, ticks: 10, labels: true },
+    answer: { value: 7, full_credit_delta: 0, zero_credit_delta: 3 },
+  },
+]

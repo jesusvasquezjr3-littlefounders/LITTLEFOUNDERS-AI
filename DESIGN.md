@@ -70,6 +70,7 @@ colors:
 
 typography:
   family: "Figtree"               # the ONLY UI family; Google Fonts 400–800
+  code: "ui-monospace stack"      # `font-code` — ONLY for code CONTENT inside lessons (maker family, inline `code`); never UI chrome
   icons: "Material Symbols Outlined"    # the ONLY icon set (ligatures)
   scale:                          # CLOSED — use the lf-* classes, never ad-hoc sizes
     lf-display-xl: {size: 44px (56px ≥sm), weight: 800, tracking: -0.03em, line-height: 1.08}
@@ -225,8 +226,17 @@ Five recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exceptions 
 5. **Arrow nudge** — CTA arrow `group-hover:translate-x-0.5`.
 6. **Global theme transition (NON-NEGOTIABLE)** — Every color, background, and border change transitions smoothly when switching themes. Enforced globally in `index.css`.
 
-`.lf-float` (hero illustration) is the only infinite animation. Everything is
-reduced-motion safe (wired in index.css).
+7. **Lesson Engine motion** (`LESSON_ENGINE.md` §9) — the character rig
+   (`lf-act-*` wrapper keyframes + `lf-rig-*` limb hooks in
+   `components/characters/control/rig.css`) and the player's feedback/combo
+   pops. All ONE-SHOT: every action auto-returns to idle; `celebrate`/`dance`
+   may loop only while a celebration overlay (results screen) is up and stop
+   with it. Timed exercises use the GentleTimerBar's linear width tween only.
+   Reduced-motion: rig animations disable entirely (emotion change remains).
+
+`.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
+(lesson celebration loops are bounded by their overlay, per recipe 7).
+Everything is reduced-motion safe (wired in index.css / rig.css).
 
 ## Shapes
 
@@ -323,8 +333,20 @@ that aren't truly destructive (block) use a two-step inline confirm — label
 flips to a `danger`-tone confirmation for a few seconds — rather than a
 modal; true modals stay reserved for nothing in this app so far.
 
-**Lesson** — focused single column (max-w ~720px), glass sticky progress
-header, one activity card at a time, `success` feedback moments.
+**Lesson** — the fullscreen Lesson Player (`lesson-engine/player/`, spec:
+`LESSON_ENGINE.md`). Own layer over everything (`fixed inset-0 bg-base`), no
+app chrome. Anatomy: sticky `.lf-glass` header (close pill, ProgressBar,
+hearts/streak/XP chips) → focused single column (max-w ~720px) with ONE
+segment at a time — narrator strip (CharacterActor + speech card) above the
+exercise body — → bottom `.lf-glass` action bar (hint left, papaya
+Check/Continue right, thumb-reachable). Feedback replaces the action bar as a
+tier-tinted banner (`success-soft`/`warning-soft`/`error-soft`) with the
+reacting character, rationale, and Retry/Continue; explanations always teach,
+never scold. Intro = cast + title + objectives + one papaya start CTA;
+Results = score ring, XP/streak stat cards, cast celebration. Exercises build
+ONLY from `lesson-engine/core/primitives.tsx` (OptionCard, TokenChip,
+SunkenWell, BigIconTile, NumberPad, KidSlider, GentleTimerBar) so all 50+
+types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 
 **Games hub** — poster-style `rounded-lg` media cards in a
 `md:grid-cols-2 lg:grid-cols-3` grid, hover lift, papaya "Play" pills.

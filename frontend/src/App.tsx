@@ -11,6 +11,8 @@ import { SignupPage } from '@/routes/auth/SignupPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
+import { CoursePage } from '@/routes/app/learn/CoursePage';
+import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
 import { AvatarEditorPage } from '@/routes/app/profile/AvatarEditorPage';
@@ -20,11 +22,27 @@ import { FollowingPage } from '@/routes/app/profile/FollowingPage';
 import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
 import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
+import { Suspense, lazy } from 'react';
+
+/* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
+ * DEV-gated so the lab (and its local grader) never reaches production bundles. */
+const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
 
 export function App() {
   return (
     <AuthProvider>
       <Routes>
+        {import.meta.env.DEV ? (
+          <Route
+            path="dev/lesson-lab"
+            element={
+              <Suspense fallback={null}>
+                <LessonLabPage />
+              </Suspense>
+            }
+          />
+        ) : null}
+
         {/* Marketing + auth (marketing chrome) */}
         <Route element={<MarketingLayout />}>
           <Route index element={<Landing />} />
@@ -54,6 +72,7 @@ export function App() {
           }
         >
           <Route path="learn" element={<LearnPage />} />
+          <Route path="learn/:courseSlug" element={<CoursePage />} />
           <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
           <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
           <Route
@@ -74,6 +93,18 @@ export function App() {
           <Route path=":handle/following" element={<PublicFollowingPage />} />
           <Route path=":handle" element={<PublicProfilePage />} />
         </Route>
+
+        {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md
+            Screen Recipes → Lesson). RequireAuth only, deliberately outside
+            the AppLayout route group above. */}
+        <Route
+          path="learn/lesson/:lessonId"
+          element={
+            <RequireAuth>
+              <LessonRoute />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </AuthProvider>
   );

@@ -1,0 +1,173 @@
+{
+  "check": "Verificar",
+  "progress": "Progresso da lição",
+  "checking": "Verificando…",
+  "continue": "Continuar",
+  "retry": "Tentar de novo",
+  "hint": "Dica",
+  "exit": "Sair da lição",
+  "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
+  "gradeError": "Não conseguimos verificar sua resposta agora. Tente de novo!",
+  "chips": {
+    "hearts_one": "{{count}} coração restante",
+    "hearts_other": "{{count}} corações restantes"
+  },
+  "intro": {
+    "start": "Começar lição",
+    "minutes_one": "{{count}} minuto",
+    "minutes_other": "{{count}} minutos",
+    "exercises_one": "{{count}} desafio",
+    "exercises_other": "{{count}} desafios"
+  },
+  "feedback": {
+    "perfect": { "v1": "Perfeito!", "v2": "Uau, sem erros!", "v3": "Mandou muito bem!" },
+    "great": { "v1": "Ótimo trabalho!", "v2": "Você conseguiu!", "v3": "Muito bem!" },
+    "almost": { "v1": "Quase lá!", "v2": "Por pouco!", "v3": "Bom raciocínio — mais um empurrão!" },
+    "tryAgain": { "v1": "Vamos pensar juntos!", "v2": "Errar faz parte de aprender!", "v3": "Nova pista desbloqueada — tente de novo!" }
+  },
+  "results": {
+    "passedTitle": "Lição concluída!",
+    "failedTitle": "Bom esforço!",
+    "score": "Pontuação: {{score}} de 100",
+    "xp": "XP ganhos",
+    "bestStreak": "Melhor sequência",
+    "passedBody": "Você está um passo mais perto de ser um grande founder.",
+    "failedBody": "Todo founder pratica. Jogue de novo e veja sua pontuação crescer!",
+    "done": "Concluir"
+  },
+  "flow": {
+    "start": "Começar!",
+    "done": "Pronto"
+  },
+  "timer": {
+    "secondsLeft_one": "Resta {{count}} segundo",
+    "secondsLeft_other": "Restam {{count}} segundos"
+  },
+  "numberPad": {
+    "label": "Teclado numérico",
+    "delete": "Apagar"
+  },
+  "trueFalse": {
+    "true": "Verdadeiro",
+    "false": "Falso",
+    "why": "Por quê?"
+  },
+  "oddOneOut": {
+    "why": "Por que não pertence?"
+  },
+  "yesNoCases": {
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "confidence": {
+    "howSure": "Quão certo você está?"
+  },
+  "lab": {
+    "title": "Laboratório de Lições",
+    "subtitle": "{{types}} tipos de segmento · {{graded}} avaliáveis",
+    "heartsOn": "Corações: sim",
+    "heartsOff": "Corações: não",
+    "showcase": "Jogar showcase",
+    "playFamily": "Jogar família"
+  },
+  "families": {
+    "analyze": {
+      "fact": "Fato",
+      "opinion": "Opinião",
+      "eventBank": "Banco de eventos",
+      "tokenBank": "Banco de respostas"
+    },
+    "arrange": {
+      "bank": "Peças disponíveis",
+      "slot": "Espaço {{index}}",
+      "tapToRemove": "Toque uma peça colocada para devolvê-la",
+      "matchPairs": { "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo." },
+      "memoryFlip": { "flips": "Viradas: {{count}}", "hiddenCard": "Carta oculta" },
+      "sortBuckets": { "placeHere": "Coloque aqui" },
+      "groupSets": { "both": "Os dois", "none": "Nenhum" },
+      "numberLine": { "help": "Toque na linha ou use o controle" },
+      "patternComplete": { "emptySlot": "Espaço vazio {{index}}" }
+    },
+    "input": {
+      "yourAnswer": "Sua resposta",
+      "charCounter": "{{used}}/{{max}}",
+      "correctAnswer": "Resposta correta: {{value}}",
+      "fillBlank": { "gapLabel": "Espaço {{n}}", "bankLabel": "Banco de fichas" },
+      "estimate": { "moveToAnswer": "Mova a barrinha para responder" },
+      "countObjects": { "howMany": "Quantos destes você vê?" },
+      "equation": { "target": "Deve dar {{value}}", "slotsLabel": "Sua equação", "bankLabel": "Fichas de números e símbolos" }
+    },
+    "money": {
+      "target": "Pague exatamente",
+      "total": "Total",
+      "price": "Preço",
+      "paidWith": "Pagou com",
+      "change": "Troco",
+      "tray": "Bandeja de dinheiro",
+      "trayEmpty": "Toque moedas e notas para adicioná-las",
+      "remove": "Remover",
+      "income": "Renda",
+      "remaining": "Restante",
+      "less": "Menos em",
+      "more": "Mais em",
+      "need": "Necessidade",
+      "want": "Desejo",
+      "yourOffer": "Sua escolha: {{price}} por unidade",
+      "bestOffer": "A melhor: {{price}} por unidade",
+      "budget": "Orçamento",
+      "goal": "Meta",
+      "savingPerWeek": "Poupando {{amount}} por semana",
+      "weeks": "semanas",
+      "fair": "Justo",
+      "aWins": "A ganha",
+      "bWins": "B ganha",
+      "principal": "Quantia inicial",
+      "rate": "Juros por período",
+      "periods": "Períodos",
+      "predict": "Eu prevejo!",
+      "final": "Termina em {{amount}}",
+      "yourPrediction": "Sua previsão: {{value}}"
+    },
+    "storyplay": {
+      "pathRecap": "Caminho percorrido",
+      "bestChoice": "Melhor escolha",
+      "bestReply": "Melhor resposta",
+      "correctAnswer": "Resposta correta",
+      "answeredStreak": "Sequência x{{count}}!",
+      "matchHint": "Toque em um cartão da esquerda e depois no seu par da direita.",
+      "pairs": "Seus pares",
+      "undoPair": "Toque em um par para desfazê-lo.",
+      "correctPairs": "Pares corretos",
+      "yourAnswers": "Suas respostas",
+      "questionOf": "Pergunta {{current}} de {{total}}",
+      "noAnswer": "Sem resposta",
+      "valueLabel": "Valor: {{score}}"
+    },
+    "maker": {
+      "run": "Executar",
+      "reset": "Reiniciar",
+      "forward": "Avançar",
+      "turnLeft": "Virar à esquerda",
+      "turnRight": "Virar à direita",
+      "program": "Seu programa",
+      "programEmpty": "Toque nos blocos para montar seu programa",
+      "bank": "Blocos",
+      "commands": "Comandos",
+      "grid": "Tabuleiro do robô",
+      "weights": "Pesos",
+      "leftPan": "Prato esquerdo",
+      "rightPan": "Prato direito",
+      "instrument": "Instrumento"
+    },
+    "story": {
+      "continue": "Continuar",
+      "tapToContinue": "Toque para continuar a história",
+      "lineProgress": "Fala {{current}} de {{total}}",
+      "flipHint_one": "Toque para virar — falta {{count}} carta",
+      "flipHint_other": "Toque para virar — faltam {{count}} cartas",
+      "allFlipped": "Você descobriu todas!",
+      "gotIt": "Já entendi!",
+      "review": "Quero revisar"
+    }
+  }
+}

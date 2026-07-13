@@ -244,12 +244,16 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                 </defs>
 
                 <g filter={`url(#rhoShadow-${uid})`}>
-                {/* Piernas */}
+                {/* Piernas — lf-rig-leg-*: Character Control hooks (appearance untouched) */}
                 <g transform="translate(0, 40)">
-                    <ellipse cx="165" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
-                    <ellipse cx="235" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
-                    <ellipse cx="165" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
-                    <ellipse cx="235" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
+                    <g className="lf-rig-leg-b">
+                        <ellipse cx="165" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
+                        <ellipse cx="165" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
+                    </g>
+                    <g className="lf-rig-leg-f">
+                        <ellipse cx="235" cy="410" rx="20" ry="45" fill={`url(#rhoPants-${uid})`} />
+                        <ellipse cx="235" cy="450" rx="24" ry="12" fill={COLORS.stroke} />
+                    </g>
                 </g>
 
                 {/* Cuerpo */}
@@ -260,12 +264,16 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
                     <path d="M200 300 L 185 330 L 200 350 L 215 330 Z" fill="#EF5777" />
                 </g>
 
-                {/* Brazos */}
+                {/* Brazos — lf-rig-arm-*: Character Control hooks (appearance untouched) */}
                 <g transform="translate(0, 40)" filter={`url(#innerDropShadow-${uid})`}>
-                    <path d="M135 290 Q 110 350 145 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
-                    <circle cx="145" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
-                    <path d="M265 290 Q 290 350 255 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
-                    <circle cx="255" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
+                    <g className="lf-rig-arm-b">
+                        <path d="M135 290 Q 110 350 145 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
+                        <circle cx="145" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
+                    </g>
+                    <g className="lf-rig-arm-f">
+                        <path d="M265 290 Q 290 350 255 370" stroke="url(#rhoShirt)" strokeWidth="24" fill="none" />
+                        <circle cx="255" cy="370" r="14" fill={`url(#rhoSkin-${uid})`} />
+                    </g>
                 </g>
 
                 {/* Cabeza */}

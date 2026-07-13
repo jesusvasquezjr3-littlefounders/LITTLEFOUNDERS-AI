@@ -255,21 +255,29 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 {/* === CABELLO TRASERO === */}
                 <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} filter={`url(#zaraHairHighlights-${uid})`} />
 
-                {/* === CUERPO INFERIOR === */}
-                <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
-                <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
-                <path d="M45 310 L 45 330 Q 56 335 67 330 L 67 310 Z" fill={COLORS.shoes} />
-                <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
+                {/* === CUERPO INFERIOR === — lf-rig-leg-*: Character Control hooks */}
+                <g className="lf-rig-leg-b">
+                    <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
+                    <path d="M45 310 L 45 330 Q 56 335 67 330 L 67 310 Z" fill={COLORS.shoes} />
+                </g>
+                <g className="lf-rig-leg-f">
+                    <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
+                    <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
+                </g>
 
                 {/* === CUERPO SUPERIOR === */}
                 <g filter={`url(#innerDropShadow-${uid})`}>
                     <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={`url(#zaraTop-${uid})`} />
 
-                    {/* Brazos */}
-                    <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="32" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
-                    <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                    <circle cx="108" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
+                    {/* Brazos — lf-rig-arm-*: Character Control hooks */}
+                    <g className="lf-rig-arm-b">
+                        <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
+                        <circle cx="32" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
+                    </g>
+                    <g className="lf-rig-arm-f">
+                        <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
+                        <circle cx="108" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
+                    </g>
 
                     {/* Cuello */}
                     <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2.5" />

@@ -224,17 +224,21 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                 </defs>
 
                 <g filter={`url(#dinoShadow-${uid})`}>
-                    {/* TAIL */}
+                    {/* TAIL — lf-rig-tail: Character Control hook (appearance untouched) */}
+                    <g className="lf-rig-tail">
                     <path className="dino-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
                     <g className="dino-tail-anim">
                         <path d="M50 200 L60 190 L70 205 Z" fill="#15803d" />
                         <path d="M70 215 L80 205 L90 220 Z" fill="#15803d" />
                         <path d="M90 230 L100 220 L110 235 Z" fill="#15803d" />
                     </g>
+                    </g>
 
-                    {/* BACK LEG (Behind) */}
+                    {/* BACK LEG (Behind) — lf-rig-leg-b: Character Control hook */}
+                    <g className="lf-rig-leg-b">
                     <ellipse cx="230" cy="330" rx="30" ry="20" fill="#16a34a" />
                     <path d="M200 330 Q 200 350 210 350 L 250 350 Q 260 350 260 330" fill="#16a34a" />
+                    </g>
 
                     {/* BODY */}
                     <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill={`url(#bodyGradient-${uid})`} />
@@ -252,7 +256,8 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                     <path d="M165 250 Q 200 260 225 250" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
                     <path d="M170 280 Q 200 290 220 280" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
 
-                    {/* FRONT LEG (Right) */}
+                    {/* FRONT LEG (Right) — lf-rig-leg-f: Character Control hook */}
+                    <g className="lf-rig-leg-f">
                     <g transform="translate(140, 310)" filter={`url(#innerDropShadow-${uid})`}>
                         <ellipse cx="30" cy="10" rx="35" ry="35" fill={`url(#bodyGradient-${uid})`} />
                         <path d="M10 30 Q 10 45 20 45 L 50 45 Q 60 45 60 30" fill="#22C55E" />
@@ -260,12 +265,15 @@ export function DinoCharacter({ currentText, showBubble, className, mood = 'happ
                         <circle cx="35" cy="45" r="5" fill="#f0fdf4" />
                         <circle cx="50" cy="45" r="5" fill="#f0fdf4" />
                     </g>
+                    </g>
 
-                    {/* ARM */}
+                    {/* ARM — lf-rig-arm-f: Character Control hook */}
+                    <g className="lf-rig-arm-f">
                     <g transform="translate(180, 220) rotate(-20)" filter={`url(#innerDropShadow-${uid})`}>
                         <path d="M0 0 Q 30 10 40 40 Q 10 40 0 0" fill="#22C55E" />
                         <circle cx="40" cy="40" r="4" fill="#f0fdf4" />
                         <circle cx="32" cy="42" r="4" fill="#f0fdf4" />
+                    </g>
                     </g>
 
                     {/* HEAD GROUP */}

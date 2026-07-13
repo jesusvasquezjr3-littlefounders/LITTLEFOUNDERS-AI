@@ -54,6 +54,7 @@ export default {
     fontFamily: {
       display: ['Figtree', 'system-ui', 'sans-serif'],
       body: ['Figtree', 'system-ui', 'sans-serif'],
+      code: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     },
     borderRadius: {
       none: '0',
