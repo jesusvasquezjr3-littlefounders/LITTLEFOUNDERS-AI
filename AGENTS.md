@@ -218,6 +218,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run type-check` — clean
 - [ ] `npm run lint` — clean
 - [ ] `npm test` — green, with tests added for new logic
+- [ ] `npm run build` — must pass green (verify CI in all services)
 - [ ] `npm run docs:check` (root) — AGENTS.md == CLAUDE.md
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
 - [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity

@@ -5,6 +5,7 @@ In every touched service:
 - [ ] `npm run type-check` clean
 - [ ] `npm run lint` clean
 - [ ] `npm test` green; new logic has tests (happy + sad path)
+- [ ] `npm run build` green (verify CI in all services)
 
 From repo root:
 
