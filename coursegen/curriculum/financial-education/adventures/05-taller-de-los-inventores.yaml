@@ -43,6 +43,7 @@ sagas:
     - idea
     - necesidad
     prior_knowledge: Sabe que las personas tienen necesidades y deseos distintos (aventuras 1 y 4).
+    parent_check: "¿{{name}} puede contarte un problema cotidiano que haya notado esta semana, sin que tú se lo digas primero?"
     fact_refs: []
     lessons:
     - position: 1
@@ -92,6 +93,7 @@ sagas:
     - solución
     - imaginar
     prior_knowledge: Puede nombrar un problema cotidiano concreto (tema anterior).
+    parent_check: "Si le describes un problema sencillo, ¿{{name}} puede proponerte una idea simple para resolverlo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -141,6 +143,11 @@ sagas:
     - ayudar
     - necesitar
     prior_knowledge: Distingue necesidades de deseos (aventura 4).
+    parent_check: "¿{{name}} puede explicarte quién usaría un invento y por qué le serviría a esa persona?"
+    prerequisites:
+    - path: mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+      strength: soft
+      reason: "Entender qué necesita alguien de verdad ayuda a imaginar quién usaría un invento nuevo."
     fact_refs: []
     lessons:
     - position: 1
@@ -190,6 +197,7 @@ sagas:
     - ventaja
     - útil
     prior_knowledge: Puede generar más de una idea para un mismo problema.
+    parent_check: "Si le das dos ideas para el mismo problema, ¿{{name}} puede decirte cuál es mejor y por qué?"
     fact_refs: []
     lessons:
     - position: 1
@@ -239,6 +247,7 @@ sagas:
     - pasos
     - orden
     prior_knowledge: Tiene una idea de invento elegida (tema anterior).
+    parent_check: "¿{{name}} puede ordenar, en pasos simples, cómo empezaría a construir algo sencillo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -287,6 +296,7 @@ sagas:
     - presentar
     - idea
     prior_knowledge: Tiene un plan de invento definido (tema anterior).
+    parent_check: "¿{{name}} puede explicarte su idea de invento en una o dos frases claras?"
     fact_refs: []
     lessons:
     - position: 1
@@ -453,6 +463,7 @@ sagas:
     - tela
     - herramienta
     prior_knowledge: Tiene un plano con partes definidas (aventura 5, saga 1).
+    parent_check: "Si le muestras un plan sencillo, ¿{{name}} puede decir qué materiales necesitaría para construirlo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -501,6 +512,11 @@ sagas:
     - moneda
     - billete
     prior_knowledge: Reconoce monedas y billetes (aventura 1).
+    parent_check: "¿{{name}} puede leer el precio de algo usando monedas y billetes?"
+    prerequisites:
+    - path: archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-grandes
+      strength: hard
+      reason: "Sin reconocer monedas y billetes grandes, no puede leer el precio de un material en el mercado del valle."
     fact_refs:
     - mxn.denominations.coins
     - mxn.denominations.bills
@@ -553,6 +569,11 @@ sagas:
     - cuenta
     - ahorro
     prior_knowledge: Puede leer precios individuales de materiales (tema anterior).
+    parent_check: "Si le da los precios de tres cosas, ¿{{name}} puede sumar cuánto cuestan juntas?"
+    prerequisites:
+    - path: bosque-de-la-abundancia/la-cosecha-de-monedas/guardo-un-registro-de-lo-que-gano
+      strength: soft
+      reason: "Llevar un registro de lo ganado en el bosque prepara para sumar y registrar el costo de varios materiales."
     fact_refs:
     - mxn.denominations.coins
     lessons:
@@ -602,6 +623,7 @@ sagas:
     - terminar
     - revisar
     prior_knowledge: Ha comenzado a construir su invento con los materiales comprados.
+    parent_check: "¿{{name}} puede explicarte una señal de que algo está bien hecho, y otra de que se hizo con prisa?"
     fact_refs: []
     lessons:
     - position: 1
@@ -653,6 +675,7 @@ sagas:
     - funcionar
     - ajustar
     prior_knowledge: Tiene un invento terminado con cuidado (tema anterior).
+    parent_check: "¿{{name}} puede decirte qué significa poner algo a prueba antes de darlo por terminado?"
     fact_refs: []
     lessons:
     - position: 1
@@ -702,6 +725,7 @@ sagas:
     - aprender
     - cambiar
     prior_knowledge: Ha probado su invento y conoce el resultado (tema anterior).
+    parent_check: "Si algo no funcionó como esperaba, ¿{{name}} puede proponer un ajuste concreto para mejorarlo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -869,6 +893,7 @@ sagas:
     - cobrar
     - gastar
     prior_knowledge: Sabe calcular el costo total de materiales (aventura 5, saga 2).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre lo que cuesta hacer algo y lo que se cobra por venderlo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -920,6 +945,7 @@ sagas:
     - trabajo
     - precio justo
     prior_knowledge: Distingue costo de precio (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué alguien debería cobrar un poco más de lo que gastó?"
     fact_refs: []
     lessons:
     - position: 1
@@ -971,6 +997,7 @@ sagas:
     - muy barato
     - alcanzar
     prior_knowledge: Puede calcular un precio con ganancia (tema anterior).
+    parent_check: "Si le muestra un precio, ¿{{name}} puede decirte si le parece demasiado alto o demasiado bajo, y por qué?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1023,6 +1050,11 @@ sagas:
     - parecido
     - razonable
     prior_knowledge: Tiene un precio propuesto para su invento (tema anterior).
+    parent_check: "¿{{name}} puede comparar el precio de algo con el de cosas parecidas antes de decidir si es razonable?"
+    prerequisites:
+    - path: mercado-de-los-colores/el-mercado-y-sus-precios/elijo-el-mejor-precio
+      strength: soft
+      reason: "Comparar precios de inventos parecidos usa la misma habilidad de comparar precios aprendida en el mercado."
     fact_refs: []
     lessons:
     - position: 1
@@ -1075,6 +1107,7 @@ sagas:
     - precio
     - combinación
     prior_knowledge: Reconoce las denominaciones de monedas y billetes (aventura 1).
+    parent_check: "¿{{name}} puede formar un precio dado usando monedas y billetes?"
     fact_refs:
     - mxn.denominations.coins
     - mxn.denominations.bills
@@ -1128,6 +1161,7 @@ sagas:
     - evidencia
     - decidir
     prior_knowledge: Tiene un precio final listo para cobrar (tema anterior).
+    parent_check: "¿{{name}} puede decirte una señal que indicaría que conviene subir o bajar un precio?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1296,6 +1330,7 @@ sagas:
     - exhibir
     - organizar
     prior_knowledge: Tiene un invento terminado y un precio definido.
+    parent_check: "¿{{name}} puede nombrar lo que necesita un puesto de venta para estar listo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1348,6 +1383,7 @@ sagas:
     - comprador
     - convencer
     prior_knowledge: Puede describir su idea con palabras simples (aventura 5, saga 1).
+    parent_check: "¿{{name}} puede explicarle a alguien más, en una frase, para qué sirve algo que hizo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1398,6 +1434,7 @@ sagas:
     - pagar
     - caja
     prior_knowledge: Puede formar un precio con monedas y billetes (aventura 5, saga 3).
+    parent_check: "Si le da un precio y un pago, ¿{{name}} puede calcular cuánto cambio hay que devolver?"
     fact_refs:
     - mxn.denominations.coins
     - mxn.denominations.bills
@@ -1451,6 +1488,7 @@ sagas:
     - mejorar
     - opinión
     prior_knowledge: Ha atendido ventas en su puesto (tema anterior).
+    parent_check: "¿{{name}} puede reconocer cuándo un comentario le ayuda a mejorar algo, aunque no sea del todo positivo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1504,6 +1542,11 @@ sagas:
     - compartir
     - repartir
     prior_knowledge: Conoce los frascos de ahorrar, gastar y compartir (aventura 3).
+    parent_check: "Si {{name}} recibiera dinero por algo que hizo, ¿podría explicar por qué conviene repartirlo entre ahorrar, gastar y compartir?"
+    prerequisites:
+    - path: aldea-del-ahorro/metas-de-la-aldea/divido-mis-monedas-en-frascos
+      strength: hard
+      reason: "Repartir las ganancias del día de mercado requiere ya saber dividir monedas entre los tres frascos."
     fact_refs: []
     lessons:
     - position: 1
@@ -1558,6 +1601,7 @@ sagas:
     - siguiente
     - ciclo
     prior_knowledge: Ha completado un ciclo completo de invento, precio y venta.
+    parent_check: "¿{{name}} puede contarte una lección que aprendió y que usaría de nuevo la próxima vez?"
     fact_refs: []
     lessons:
     - position: 1

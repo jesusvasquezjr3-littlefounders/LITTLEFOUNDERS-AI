@@ -44,6 +44,7 @@ sagas:
     - convencer
     - mensaje
     prior_knowledge: Ha comprado y vendido en el mercado del valle (aventura 5).
+    parent_check: "¿{{name}} puede reconocer cuándo un mensaje está tratando de convencerlo de comprar algo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -94,6 +95,7 @@ sagas:
     - honesto
     - real
     prior_knowledge: Reconoce qué es un anuncio (tema anterior).
+    parent_check: "Si le muestras un anuncio, ¿{{name}} puede decir si describe el producto tal cual es o si exagera?"
     fact_refs: []
     lessons:
     - position: 1
@@ -146,6 +148,7 @@ sagas:
     - oferta
     - a cambio
     prior_knowledge: Distingue anuncios honestos de exagerados (tema anterior).
+    parent_check: "¿{{name}} puede encontrar la condición escondida en una oferta que dice 'gratis'?"
     fact_refs: []
     lessons:
     - position: 1
@@ -198,6 +201,7 @@ sagas:
     - pensar
     - esperar
     prior_knowledge: Reconoce ofertas con condiciones ocultas (tema anterior).
+    parent_check: "¿{{name}} puede reconocer una frase de apuro, como 'solo hoy', dentro de un anuncio?"
     fact_refs: []
     lessons:
     - position: 1
@@ -249,6 +253,7 @@ sagas:
     - comparar
     - revisar
     prior_knowledge: Reconoce exageraciones y apuros en anuncios (temas anteriores).
+    parent_check: "¿{{name}} puede comparar lo que promete un anuncio con lo que el producto realmente ofrece?"
     fact_refs: []
     lessons:
     - position: 1
@@ -299,6 +304,7 @@ sagas:
     - decidir
     - pedir
     prior_knowledge: Ha practicado comparar anuncios con la realidad (tema anterior).
+    parent_check: "Antes de pedir algo que vio en un anuncio, ¿{{name}} se detiene a pensarlo con calma?"
     fact_refs: []
     lessons:
     - position: 1
@@ -338,6 +344,102 @@ sagas:
       - storyplay
       - analyze
   - position: 7
+    slug: presion-de-grupo-y-publicidad
+    title_es: Presión de grupo y publicidad
+    concept: A veces un anuncio no solo promete algo, sino que además hace sentir que 'todos lo tienen' para que uno también quiera comprarlo.
+    learning_objective: Al final, el niño puede reconocer cuándo un anuncio usa la presión de grupo para convencer, y no solo la calidad del producto.
+    key_vocabulary:
+    - presión
+    - grupo
+    - pertenecer
+    - convencer
+    prior_knowledge: Reconoce exageraciones y trucos de apuro en los anuncios (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre querer algo de verdad y quererlo solo porque 'todos lo tienen'?"
+    prerequisites:
+    - path: mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+      strength: soft
+      reason: "Distinguir lo que de verdad necesita de lo que solo desea ayuda a no dejarse llevar por la presión de grupo."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: todos-lo-tienen-menos-yo
+      micro_objective: Reconocer la frase 'todos lo tienen' como una forma de presión, no como un hecho comprobado.
+      narrative_beat: Un anuncio en el muelle asegura que 'todos los niños del archipiélago ya tienen este juguete', y Dino se pregunta si eso es cierto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-diferencia-entre-querer-y-pertenecer
+      micro_objective: Distinguir el deseo de encajar en un grupo del valor real de un producto anunciado.
+      narrative_beat: Dr. Rho pregunta a Dina si quiere el juguete porque le gusta de verdad, o porque teme quedarse fuera del grupo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: pensar-por-mi-cuenta
+      micro_objective: Practicar decidir con calma frente a un anuncio que usa presión de grupo.
+      narrative_beat: Zara Vex reta a Dino a decidir, sin dejarse llevar por lo que 'todos dicen', si de verdad le conviene el producto.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-propia-decision
+      micro_objective: Aplicar con seguridad la decisión propia frente a un anuncio nuevo que usa presión de grupo.
+      narrative_beat: Frente a un anuncio que promete que 'todo el archipiélago' ya compró algo, Dina decide con calma, pensando solo en lo que ella de verdad necesita.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 8
+    slug: quien-paga-por-el-anuncio
+    title_es: Quién paga por el anuncio
+    concept: Algunos mensajes que parecen una recomendación sincera en realidad son publicidad pagada por quien vende el producto.
+    learning_objective: Al final, el niño puede reconocer cuándo una recomendación es en realidad un anuncio pagado.
+    key_vocabulary:
+    - pagado
+    - recomendar
+    - patrocinado
+    - sincero
+    prior_knowledge: Sabe comparar lo que promete un anuncio con la realidad (tema anterior).
+    parent_check: "¿{{name}} puede reconocer cuándo una recomendación es en realidad un anuncio pagado?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-pescador-que-recomienda-una-red
+      micro_objective: Observar la diferencia entre una recomendación sincera y una pagada por quien vende.
+      narrative_beat: Un pescador del muelle recomienda una red de pesca a todos, y Dino descubre que el vendedor le paga por decirlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: sincero-o-pagado
+      micro_objective: Clasificar distintos mensajes entre recomendación sincera y anuncio pagado.
+      narrative_beat: Dr. Rho muestra varios mensajes del muelle y pide a Dina separar cuáles son opiniones sinceras y cuáles son pagadas.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: por-que-importa-saberlo
+      micro_objective: Explicar por qué conviene saber si una recomendación fue pagada antes de confiar en ella.
+      narrative_beat: Zara Vex pregunta a Dino por qué cambia su confianza en un consejo si descubre que alguien le pagó por darlo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: revisar-quien-habla
+      micro_objective: Aplicar la pregunta de quién paga por esto frente a un mensaje nuevo antes de confiar en él.
+      narrative_beat: Frente a un nuevo mensaje del muelle, Dina se pregunta primero quién lo pagó antes de decidir si confiar en lo que dice.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -357,6 +459,8 @@ sagas:
     - faro-de-la-confianza/anuncios-y-trampas/trucos-para-que-compres-rapido
     - faro-de-la-confianza/anuncios-y-trampas/comparar-anuncio-con-realidad
     - faro-de-la-confianza/anuncios-y-trampas/decir-espera-antes-de-pedir
+    - faro-de-la-confianza/anuncios-y-trampas/presion-de-grupo-y-publicidad
+    - faro-de-la-confianza/anuncios-y-trampas/quien-paga-por-el-anuncio
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -390,7 +494,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -463,6 +567,7 @@ sagas:
     - conocido
     - confianza
     prior_knowledge: Distingue anuncios de mensajes informativos (aventura 6, saga 1).
+    parent_check: "¿{{name}} puede distinguir un mensaje de alguien conocido de uno de un desconocido?"
     fact_refs: []
     lessons:
     - position: 1
@@ -513,6 +618,7 @@ sagas:
     - alerta
     - señal
     prior_knowledge: Reconoce mensajes de desconocidos (tema anterior).
+    parent_check: "¿{{name}} puede reconocer cuándo un premio suena demasiado bueno para ser verdad?"
     fact_refs: []
     lessons:
     - position: 1
@@ -566,6 +672,7 @@ sagas:
     - ayuda
     - pedir
     prior_knowledge: Reconoce premios y mensajes sospechosos (tema anterior).
+    parent_check: "¿{{name}} sabe en qué momentos conviene pedirte ayuda a ti antes de responder un mensaje?"
     fact_refs: []
     lessons:
     - position: 1
@@ -617,6 +724,11 @@ sagas:
     - sospecha
     - revisar
     prior_knowledge: Sabe pedir ayuda ante un mensaje sospechoso (tema anterior).
+    parent_check: "¿{{name}} puede nombrar al menos dos señales que indican que un mensaje podría ser falso?"
+    prerequisites:
+    - path: faro-de-la-confianza/anuncios-y-trampas/comparar-anuncio-con-realidad
+      strength: soft
+      reason: "Comparar un anuncio con la realidad entrena la misma atención a los detalles que ayuda a notar señales de un mensaje falso."
     fact_refs: []
     lessons:
     - position: 1
@@ -668,6 +780,7 @@ sagas:
     - avisar
     - seguro
     prior_knowledge: Conoce señales de mensajes falsos (tema anterior).
+    parent_check: "¿{{name}} puede explicarte los tres pasos a seguir cuando algo se siente raro: detenerse, no responder y avisar?"
     fact_refs: []
     lessons:
     - position: 1
@@ -721,6 +834,7 @@ sagas:
     - seguridad
     - práctica
     prior_knowledge: Conoce señales, pasos y a quién pedir ayuda ante mensajes sospechosos (temas anteriores).
+    parent_check: "Si le mezclas varios mensajes, ¿{{name}} puede separar los reales de los falsos y explicar por qué?"
     fact_refs: []
     lessons:
     - position: 1
@@ -762,6 +876,102 @@ sagas:
       - analyze
       - storyplay
   - position: 7
+    slug: promesas-que-suenan-perfectas
+    title_es: Promesas que suenan demasiado perfectas
+    concept: Cuando alguien promete duplicar o multiplicar lo que le des a cambio de nada, es casi siempre una trampa.
+    learning_objective: Al final, el niño puede reconocer una promesa de duplicar o multiplicar algo como una señal de trampa.
+    key_vocabulary:
+    - duplicar
+    - promesa
+    - trampa
+    - entregar
+    prior_knowledge: Reconoce premios sospechosos y sabe pedir ayuda a un adulto de confianza (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte por qué una promesa de 'devolver el doble' sin esfuerzo casi siempre es una trampa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: te-lo-devuelvo-doble
+      micro_objective: Reconocer la promesa de devolver el doble como una señal de alerta.
+      narrative_beat: Un mensaje en el faro promete devolver el doble de conchas a quien entregue las suyas primero, y Dino siente la tentación de probar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: por-que-nadie-regala-el-doble
+      micro_objective: Explicar por qué una promesa de multiplicar algo sin esfuerzo no tiene sentido real.
+      narrative_beat: Dr. Rho explica a Dina que nadie de verdad entrega más de lo que recibe sin ninguna razón.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: que-pide-primero
+      micro_objective: Identificar que este tipo de trampa siempre pide entregar algo primero, sin garantía de recibir nada.
+      narrative_beat: Zara Vex señala que el mensaje del doble siempre pide entregar las conchas antes de prometer devolver algo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: reconocer-la-promesa-perfecta
+      micro_objective: Aplicar la señal aprendida para reconocer una promesa demasiado perfecta en un mensaje nuevo.
+      narrative_beat: Frente a otro mensaje que promete triplicar sus monedas de juego, Dina reconoce la trampa sin ayuda.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 8
+    slug: perfiles-que-fingen-ser-otra-persona
+    title_es: Perfiles que fingen ser otra persona
+    concept: A veces alguien finge ser un amigo o un conocido detrás de un mensaje para ganar confianza y pedir algo indebido.
+    learning_objective: Al final, el niño puede reconocer señales de que un mensaje podría no ser en realidad de quien dice ser.
+    key_vocabulary:
+    - fingir
+    - verificar
+    - identidad
+    - confirmar
+    prior_knowledge: Sabe distinguir mensajes de conocidos y desconocidos (aventura 6, saga 2).
+    parent_check: "¿{{name}} sabe qué hacer si recibe un mensaje raro de alguien que dice ser un amigo suyo?"
+    prerequisites:
+    - path: faro-de-la-confianza/mensajes-sospechosos/mensajes-de-gente-que-no-conoces
+      strength: hard
+      reason: "Reconocer mensajes de desconocidos prepara para entender por qué también hay que verificar a alguien que dice ser conocido."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-mensaje-que-no-suena-igual
+      micro_objective: Reconocer cuando un mensaje que dice ser de un amigo se siente distinto a como esa persona habla normalmente.
+      narrative_beat: Dino recibe un mensaje que dice ser de su amigo del muelle, pero algo en la forma de escribir se siente distinto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: confirmar-antes-de-confiar
+      micro_objective: Aplicar el paso de confirmar con la persona real, por otro medio, antes de confiar en un mensaje dudoso.
+      narrative_beat: Dr. Rho enseña a Dina a preguntarle directamente a su amigo, en persona, si de verdad envió ese mensaje.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: senales-de-que-alguien-finge
+      micro_objective: Identificar señales de que alguien podría estar fingiendo ser un conocido, como pedir algo urgente o no sonar como siempre.
+      narrative_beat: Zara Vex reúne varias señales que ayudan a notar cuando alguien no es en verdad quien dice ser.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 4
+      slug: proteger-a-mis-amigos-tambien
+      micro_objective: Aplicar el paso de verificar y avisar a un adulto cuando un mensaje de un supuesto conocido parece sospechoso.
+      narrative_beat: Frente a un nuevo mensaje dudoso que dice ser de un amigo, Dina verifica y avisa a Dr. Rho antes de responder nada.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -781,6 +991,8 @@ sagas:
     - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
     - faro-de-la-confianza/mensajes-sospechosos/que-hacer-si-algo-se-siente-raro
     - faro-de-la-confianza/mensajes-sospechosos/practicar-detectar-el-mensaje-falso
+    - faro-de-la-confianza/mensajes-sospechosos/promesas-que-suenan-perfectas
+    - faro-de-la-confianza/mensajes-sospechosos/perfiles-que-fingen-ser-otra-persona
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -814,7 +1026,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -888,6 +1100,11 @@ sagas:
     - dato
     - personal
     prior_knowledge: Sabe reconocer mensajes de desconocidos (aventura 6, saga 2).
+    parent_check: "¿{{name}} puede darte un ejemplo de un dato que debe mantenerse privado?"
+    prerequisites:
+    - path: faro-de-la-confianza/mensajes-sospechosos/mensajes-de-gente-que-no-conoces
+      strength: soft
+      reason: "Distinguir a un desconocido en un mensaje entrena la misma cautela necesaria para decidir qué datos no compartir con cualquiera."
     fact_refs: []
     lessons:
     - position: 1
@@ -941,6 +1158,7 @@ sagas:
     - confianza
     - seguro
     prior_knowledge: Reconoce qué información es privada (tema anterior).
+    parent_check: "¿{{name}} puede nombrar a las personas de su círculo de confianza?"
     fact_refs: []
     lessons:
     - position: 1
@@ -994,6 +1212,7 @@ sagas:
     - llave
     - proteger
     prior_knowledge: Conoce su círculo de confianza (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué una contraseña no se comparte con cualquiera?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1046,6 +1265,7 @@ sagas:
     - cuidado
     - permiso
     prior_knowledge: Entiende el concepto de contraseñas secretas (tema anterior).
+    parent_check: "Antes de compartir una foto de alguien más, ¿{{name}} recuerda pedir permiso primero?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1101,6 +1321,7 @@ sagas:
     - compartir
     - cuidar
     prior_knowledge: Sabe cuándo decir que no a compartir datos o fotos (tema anterior).
+    parent_check: "¿{{name}} pide permiso antes de compartir información, aunque nadie se lo recuerde?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1152,6 +1373,7 @@ sagas:
     - respeto
     - confianza
     prior_knowledge: Ha practicado pedir permiso antes de compartir (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué también hay que cuidar la información privada de sus amigos?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1195,6 +1417,102 @@ sagas:
       - storyplay
       - analyze
   - position: 7
+    slug: compras-en-linea-seguras
+    title_es: Compras en línea seguras
+    concept: Comprar algo en línea siempre debe hacerlo un adulto de confianza, revisando que la tienda sea conocida antes de dar cualquier dato.
+    learning_objective: Al final, el niño puede explicar por qué una compra en línea siempre necesita la participación de un adulto de confianza.
+    key_vocabulary:
+    - tienda
+    - en línea
+    - adulto
+    - revisar
+    prior_knowledge: Conoce su círculo de confianza y por qué cuidar sus contraseñas (temas anteriores).
+    parent_check: "¿{{name}} sabe que una compra en línea siempre debe hacerla un adulto de confianza, nunca él o ella solo?"
+    prerequisites:
+    - path: mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+      strength: soft
+      reason: "Pensar antes de comprar en el mercado es la misma pausa que se necesita antes de una compra en línea."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-tienda-que-nadie-conoce
+      micro_objective: Reconocer que una tienda en línea desconocida merece más cuidado que una conocida.
+      narrative_beat: Dino encuentra un puesto flotante en línea que nadie del archipiélago conoce, ofreciendo velas muy baratas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quien-debe-comprar
+      micro_objective: Reconocer que las compras en línea las hace siempre un adulto de confianza, nunca un niño solo.
+      narrative_beat: Dr. Rho explica a Dina que, aunque encuentre algo que le guste en línea, siempre debe pedirle a un adulto que revise y compre.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: que-revisa-un-adulto
+      micro_objective: Identificar qué revisa un adulto de confianza antes de comprar algo en línea, como la tienda, el precio y las reseñas.
+      narrative_beat: Zara Vex muestra cómo un adulto revisa con calma una tienda en línea antes de decidir comprar algo ahí.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: pedir-ayuda-para-comprar
+      micro_objective: Aplicar el hábito de pedir ayuda a un adulto de confianza frente a un deseo de comprar algo en línea.
+      narrative_beat: Frente a una tienda en línea nueva y llamativa, Dina decide pedirle a Dr. Rho que la revise con ella antes de nada.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: mi-huella-digital
+    title_es: Mi huella digital
+    concept: Todo lo que se comparte en línea deja un rastro que puede quedarse guardado por mucho tiempo, incluso si se borra después.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa que algo compartido en línea puede quedarse guardado.
+    key_vocabulary:
+    - huella
+    - rastro
+    - guardado
+    - compartir
+    prior_knowledge: Sabe pedir permiso antes de compartir fotos o datos (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué algo que se comparte en línea puede quedarse guardado, aunque se borre después?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-marca-en-la-arena
+      micro_objective: Comparar una huella en la arena que el mar borra con algo compartido en línea que puede quedarse guardado.
+      narrative_beat: Dr. Rho compara las huellas en la arena, que el mar borra, con lo que se comparte en línea, que puede quedarse guardado mucho más tiempo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: se-borro-pero-alguien-lo-guardo
+      micro_objective: Reconocer que borrar algo compartido no siempre significa que desapareció por completo.
+      narrative_beat: Dino borra un mensaje que envió por error, pero Zara Vex le explica que alguien ya pudo haberlo guardado antes.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: pensar-antes-de-compartir
+      micro_objective: Aplicar la pausa de pensar antes de compartir algo, recordando que puede quedarse guardado.
+      narrative_beat: Antes de compartir una foto del faro, Dina se detiene a pensar si le parecería bien que quedara guardada para siempre.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-huella-con-cuidado
+      micro_objective: Aplicar con seguridad la pausa de pensar antes de compartir frente a una situación nueva.
+      narrative_beat: Frente a una nueva idea de compartir algo en línea, Dina piensa primero en la huella que dejaría.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1214,6 +1532,8 @@ sagas:
     - faro-de-la-confianza/guardar-datos-guardar-confianza/fotos-y-datos-no-son-para-cualquiera
     - faro-de-la-confianza/guardar-datos-guardar-confianza/pedir-permiso-antes-de-compartir
     - faro-de-la-confianza/guardar-datos-guardar-confianza/ser-un-buen-guardian-de-la-informacion
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/compras-en-linea-seguras
+    - faro-de-la-confianza/guardar-datos-guardar-confianza/mi-huella-digital
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1247,7 +1567,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -1322,6 +1642,7 @@ sagas:
     - seguro
     - dinero
     prior_knowledge: Conoce lugares seguros para guardar dinero, como la alcancía (aventura 3).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, para qué sirve un banco?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1373,6 +1694,11 @@ sagas:
     - depositar
     - guardar
     prior_knowledge: Sabe qué es un banco (tema anterior).
+    parent_check: "¿{{name}} puede describir qué es una cuenta de ahorro y para qué se usa?"
+    prerequisites:
+    - path: aldea-del-ahorro/el-frasco-de-los-suenos/tengo-un-sueno-que-cuesta-monedas
+      strength: soft
+      reason: "Tener una meta de ahorro clara ayuda a entender para qué sirve abrir una cuenta en el banco."
     fact_refs: []
     lessons:
     - position: 1
@@ -1427,6 +1753,7 @@ sagas:
     - extra
     - guardar
     prior_knowledge: Tiene una cuenta de ahorro abierta (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué el banco agrega un poco de dinero extra a quien guarda sus ahorros ahí?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1481,6 +1808,7 @@ sagas:
     - banco
     - alcancía
     prior_knowledge: Entiende el concepto de interés simple (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte una ventaja de guardar en el banco y una de guardar en la alcancía?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1534,6 +1862,7 @@ sagas:
     - planear
     - necesitar
     prior_knowledge: Compara ventajas de banco y alcancía (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo y cuándo se puede retirar dinero de una cuenta de ahorro?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1589,6 +1918,7 @@ sagas:
     - señal
     - preguntar
     prior_knowledge: Conoce el funcionamiento básico de una cuenta de ahorro (temas anteriores).
+    parent_check: "¿{{name}} puede nombrarte una señal que muestra que un banco es real y confiable?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1631,6 +1961,102 @@ sagas:
       - storyplay
       - money
   - position: 7
+    slug: proteger-mi-contrasena-del-banco
+    title_es: Proteger la contraseña del banco
+    concept: La contraseña o clave que protege el dinero guardado en el banco se cuida con el mismo cuidado que cualquier otro secreto importante.
+    learning_objective: Al final, el niño puede explicar por qué la clave de una cuenta bancaria nunca se comparte, ni siquiera para 'ayudar' a alguien.
+    key_vocabulary:
+    - clave
+    - cuenta
+    - proteger
+    - compartir
+    prior_knowledge: Entiende por qué una contraseña se mantiene en secreto (aventura 6, saga 3).
+    parent_check: "¿{{name}} puede explicarte por qué la clave de una cuenta de banco no se comparte con nadie, ni siquiera para 'ayudar'?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-clave-de-la-boveda
+      micro_objective: Reconocer que la cuenta de ahorro del banco también se protege con una clave secreta.
+      narrative_beat: La encargada del banco muestra a Dina que su cuenta de ahorro tiene una clave, igual que la puerta de la bóveda del faro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ni-para-ayudar-se-comparte
+      micro_objective: Reconocer que la clave del banco no se comparte ni siquiera con alguien que pide ayudar.
+      narrative_beat: Un mensaje le pide a Dino su clave del banco para 'ayudarlo a revisar su cuenta', y él reconoce la trampa.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: quien-si-puede-saberla
+      micro_objective: Identificar que solo un adulto de confianza específico puede conocer la clave de una cuenta de un niño.
+      narrative_beat: Dr. Rho explica a Dina que solo sus padres o tutores, junto con ella, deben conocer la clave de su cuenta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-clave-bien-guardada
+      micro_objective: Aplicar la regla de no compartir la clave del banco frente a una situación nueva dentro de una historia.
+      narrative_beat: Frente a un nuevo pedido sospechoso de su clave, Dina responde con seguridad que no la compartirá con nadie más.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: tarjetas-y-pagos-sin-efectivo
+    title_es: Tarjetas y pagos sin monedas ni billetes
+    concept: Además de monedas y billetes, existen tarjetas y otras formas de pagar que están conectadas al dinero guardado en el banco.
+    learning_objective: Al final, el niño puede explicar que una tarjeta de pago representa dinero real guardado en una cuenta, no dinero adicional gratis.
+    key_vocabulary:
+    - tarjeta
+    - pago
+    - cuenta
+    - representar
+    prior_knowledge: Sabe qué es una cuenta de ahorro y cómo retirar dinero de ella (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte que una tarjeta de pago usa dinero que ya está guardado, y no dinero extra gratis?"
+    prerequisites:
+    - path: taller-de-los-inventores/el-precio-justo/el-precio-en-monedas-y-billetes
+      strength: hard
+      reason: "Sin saber formar un precio con monedas y billetes, cuesta entender que una tarjeta representa esa misma cantidad de dinero real."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: pagar-sin-monedas
+      micro_objective: Observar que en el banco del archipiélago algunas personas pagan con una tarjeta en vez de monedas o billetes.
+      narrative_beat: Dina ve a un vecino pagar en el mercado con una tarjeta plateada, en vez de sacar monedas del bolsillo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-tarjeta-no-es-dinero-extra
+      micro_objective: Reconocer que una tarjeta de pago usa el dinero que ya está guardado en una cuenta, no dinero adicional.
+      narrative_beat: Dr. Rho explica que la tarjeta no crea monedas nuevas, solo usa las que ya están guardadas en la cuenta del banco.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: que-pasa-si-no-hay-suficiente
+      micro_objective: Explicar qué pasaría si alguien intenta pagar con tarjeta más de lo que tiene guardado en su cuenta.
+      narrative_beat: Zara Vex pregunta a Dino qué cree que pasaría si alguien intenta pagar con tarjeta más de lo que tiene ahorrado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-idea-sobre-las-tarjetas
+      micro_objective: Resumir con sus propias palabras la relación entre una tarjeta de pago y el dinero guardado en una cuenta.
+      narrative_beat: Antes de salir del banco, Dina le explica a Dino, con sus propias palabras, cómo funciona pagar con tarjeta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1650,6 +2076,8 @@ sagas:
     - faro-de-la-confianza/el-banco-del-faro/banco-vs-alcancia
     - faro-de-la-confianza/el-banco-del-faro/sacar-dinero-cuando-lo-necesitas
     - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    - faro-de-la-confianza/el-banco-del-faro/proteger-mi-contrasena-del-banco
+    - faro-de-la-confianza/el-banco-del-faro/tarjetas-y-pagos-sin-efectivo
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1683,7 +2111,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado

@@ -121,8 +121,21 @@ export interface AllowedTypesResult {
  * Palette SUBSETTING (COURSE_ENGINE.md §4): filter the full 56-type palette
  * down to what a given age tier may draw from — family allowlist first,
  * then named exceptions punch (extra-allowed) or close (banned) holes.
+ *
+ * `opts.fullPalette` (COURSE_ENGINE.md §3.3, adult register) bypasses tier
+ * subsetting entirely — every type in the closed canon is allowed, no
+ * allowlist/exception lookups at all.
  */
-export function resolveAllowedTypes(taxonomy: TaxonomyFile, tier: string): AllowedTypesResult {
+export function resolveAllowedTypes(
+  taxonomy: TaxonomyFile,
+  tier: string,
+  opts: { fullPalette?: boolean } = {},
+): AllowedTypesResult {
+  if (opts.fullPalette) {
+    const familiesUsed = Array.from(new Set(ALL_TYPES.map((t) => TYPE_TO_FAMILY.get(t)).filter((f): f is FamilyName => !!f)));
+    return { allowed: [...ALL_TYPES], familiesUsed };
+  }
+
   const families = new Set(taxonomy.family_allowlist_by_tier[tier] ?? []);
   const extraAllowed = new Set(taxonomy.type_exceptions[`${tier}_extra_allowed`] ?? []);
   const banned = new Set(taxonomy.type_exceptions[`${tier}_banned_types`] ?? []);

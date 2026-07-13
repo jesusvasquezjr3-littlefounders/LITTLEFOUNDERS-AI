@@ -22,6 +22,14 @@ export const reviewRubricSchema = z.object({
   narrative_quality: z.number().min(1).max(5),
   kid_safety: z.number().min(1).max(5),
   naturalness: z.number().min(1).max(5),
+  /**
+   * COURSE_ENGINE.md §4 review stage: ≥1 worked concrete instance (a
+   * specific number, character or scenario — gate 6b is the deterministic
+   * floor, this is the judge's holistic read) AND the lesson opens by
+   * connecting to the prior lesson's concept rather than restarting cold.
+   * <4 gates the same way age_fit does — see `passesJudgeGate` below.
+   */
+  concreteness: z.number().min(1).max(5),
   notes: z.string().min(1).max(2000),
 });
 export type ReviewRubric = z.infer<typeof reviewRubricSchema>;
@@ -32,8 +40,8 @@ export class ReviewFailedError extends Error {
 
   constructor(rubric: ReviewRubric, cycles: number) {
     super(
-      `review: kid_safety/age_fit gate failed after ${cycles} revise cycle(s) ` +
-        `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}). Notes: ${rubric.notes}`,
+      `review: kid_safety/age_fit/concreteness gate failed after ${cycles} revise cycle(s) ` +
+        `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}, concreteness=${rubric.concreteness}). Notes: ${rubric.notes}`,
     );
     this.name = 'ReviewFailedError';
     this.rubric = rubric;
@@ -42,7 +50,7 @@ export class ReviewFailedError extends Error {
 }
 
 function passesJudgeGate(rubric: ReviewRubric): boolean {
-  return rubric.kid_safety >= 5 && rubric.age_fit >= 4;
+  return rubric.kid_safety >= 5 && rubric.age_fit >= 4 && rubric.concreteness >= 4;
 }
 
 async function judgeDocument(
@@ -60,8 +68,9 @@ async function judgeDocument(
     '- narrative_quality: is the story engaging and coherent with the canon characters?',
     '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns?',
     '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)?',
+    '- concreteness: does at least one segment contain a WORKED CONCRETE instance (a specific number, a named character, or a specific scenario — not purely abstract phrasing)? AND, unless this is the very first lesson of the course, does the lesson OPEN by connecting explicitly to the prior lesson\'s concept instead of restarting cold?',
     '',
-    'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"notes":"..."}',
+    'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"notes":"..."}',
     '`notes` must be actionable — if any score is low, say exactly what to fix.',
     '',
     'LESSON DOCUMENT:',

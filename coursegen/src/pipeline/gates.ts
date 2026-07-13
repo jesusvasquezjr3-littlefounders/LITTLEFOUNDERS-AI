@@ -5,6 +5,7 @@
 
 import type { TaxonomyFile, FactsFile } from '../catalog/schema.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
+import type { LessonLocale } from '../contract/core/types.js';
 import {
   toCents,
   reachableWithRepetition,
@@ -14,7 +15,7 @@ import {
   approxEqual,
 } from './arithmetic.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5;
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -430,12 +431,163 @@ export function runRationaleAndCanonGate(document: LessonDocumentParsed): GatePr
   return [...rationaleGate(document), ...canonGate(document)];
 }
 
+// ---- Gate 6: anti-genericity (deterministic, COURSE_ENGINE.md §4 gate 6) ---
+//
+// Cheap garbage never reaches the (paid) judge — a two-phase pattern shared
+// with gates 2-5. Three independent detectors, all deterministic:
+//  (a) prompt_md that's basically just the lesson/topic title restated.
+//  (b) explanation_md that's too short, or has no grounding (no digit, no
+//      canon character, no string traceable back to this segment's payload).
+//  (c) a small curated per-locale filler-phrase list.
+
+const NEAR_DUPLICATE_MAX_RATIO = 0.2;
+const MIN_EXPLANATION_MD_LENGTH = 40;
+
+/** Classic DP edit distance — strings here are short (titles/prompts), no need for a library. */
+function levenshteinDistance(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const curr: number[] = [i];
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      curr[j] = Math.min(curr[j - 1]! + 1, prev[j]! + 1, prev[j - 1]! + cost);
+    }
+    prev = curr;
+  }
+  return prev[n]!;
+}
+
+/** Normalized edit distance <= 20% of the longer (normalized) string's length. */
+function isNearDuplicateText(a: string, b: string): boolean {
+  const na = normalizeText(a).trim();
+  const nb = normalizeText(b).trim();
+  const maxLen = Math.max(na.length, nb.length);
+  if (maxLen === 0) return false;
+  return levenshteinDistance(na, nb) / maxLen <= NEAR_DUPLICATE_MAX_RATIO;
+}
+
+function genericityTitleEcho(document: LessonDocumentParsed, topicTitle: string | undefined): GateProblem[] {
+  const problems: GateProblem[] = [];
+  const titles = [document.meta.title, topicTitle].filter((t): t is string => Boolean(t));
+  for (const segment of document.segments) {
+    const promptMd = (segment as { prompt_md: string }).prompt_md;
+    for (const title of titles) {
+      if (isNearDuplicateText(promptMd, title)) {
+        problems.push({
+          gate: 6,
+          segmentId: segment.id,
+          message: `prompt_md is a near-duplicate of the title "${title}" (restates instead of teaching)`,
+        });
+        break;
+      }
+    }
+  }
+  return problems;
+}
+
+function hasCharacterNameMention(text: string): boolean {
+  const normalized = normalizeText(text);
+  return Array.from(CANON_CHARACTERS).some((name) => buildForbiddenRegex(name).test(normalized));
+}
+
+/** Short (>=4 char) word-tokens drawn from every learner-visible payload string — a cheap proxy for "named entity". */
+function payloadEntityTokens(payload: unknown): string[] {
+  const strings: VisitedString[] = [];
+  collectLearnerVisibleStrings(payload, '', strings);
+  const tokens = new Set<string>();
+  for (const { value } of strings) {
+    for (const word of normalizeText(value).split(/[^a-z0-9]+/)) {
+      if (word.length >= 4) tokens.add(word);
+    }
+  }
+  return Array.from(tokens);
+}
+
+function referencesPayloadEntity(normalizedExplanation: string, payload: unknown): boolean {
+  return payloadEntityTokens(payload).some((token) => normalizedExplanation.includes(token));
+}
+
+function genericityExplanation(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const explanation = (segment as { explanation_md?: string }).explanation_md;
+    if (!explanation) continue; // explanation_md is optional — only checked when present
+    const trimmed = explanation.trim();
+    if (trimmed.length < MIN_EXPLANATION_MD_LENGTH) {
+      problems.push({
+        gate: 6,
+        segmentId: segment.id,
+        message: `explanation_md is too short (${trimmed.length} chars, minimum ${MIN_EXPLANATION_MD_LENGTH}) — too generic to teach anything`,
+      });
+      continue;
+    }
+    const hasDigit = /\d/.test(trimmed);
+    const hasCharacter = hasCharacterNameMention(trimmed);
+    const hasEntity = referencesPayloadEntity(normalizeText(trimmed), (segment as { payload: unknown }).payload);
+    if (!hasDigit && !hasCharacter && !hasEntity) {
+      problems.push({
+        gate: 6,
+        segmentId: segment.id,
+        message: 'explanation_md has no digit, no canon character name, and no string traceable to this segment\'s payload — too generic',
+      });
+    }
+  }
+  return problems;
+}
+
+/** Small curated per-locale filler lists — deliberately short; expand only with real judge-flagged offenders. */
+const BANNED_FILLER_BY_LOCALE: Record<LessonLocale, string[]> = {
+  'es-MX': ['es muy importante', 'como ya sabemos', 'en este ejercicio aprenderas'],
+  'en-US': ['this is very important', 'as we already know', 'in this exercise you will learn'],
+  'pt-BR': ['isso e muito importante', 'como ja sabemos', 'neste exercicio voce vai aprender'],
+};
+
+function genericityFiller(document: LessonDocumentParsed): GateProblem[] {
+  const fillers = BANNED_FILLER_BY_LOCALE[document.meta.locale] ?? [];
+  if (fillers.length === 0) return [];
+  const normalizedFillers = fillers.map((f) => normalizeText(f));
+
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const fields: { field: string; value: string | undefined }[] = [
+      { field: 'prompt_md', value: (segment as { prompt_md: string }).prompt_md },
+      { field: 'explanation_md', value: (segment as { explanation_md?: string }).explanation_md },
+    ];
+    for (const { field, value } of fields) {
+      if (!value) continue;
+      const normalized = normalizeText(value);
+      normalizedFillers.forEach((filler, i) => {
+        if (normalized.includes(filler)) {
+          problems.push({ gate: 6, segmentId: segment.id, message: `${field} contains banned filler phrase "${fillers[i]}"` });
+        }
+      });
+    }
+  }
+  return problems;
+}
+
+export function runAntiGenericityGate(document: LessonDocumentParsed, opts: { topicTitle?: string } = {}): GateProblem[] {
+  return [
+    ...genericityTitleEcho(document, opts.topicTitle),
+    ...genericityExplanation(document),
+    ...genericityFiller(document),
+  ];
+}
+
 // ---- Orchestration -----------------------------------------------------------
 
 export interface GateContext {
   taxonomy: TaxonomyFile;
   tier: string;
   facts: FactsFile;
+  /** Powers gate 6a's near-duplicate check against the topic title (document.meta.title is always checked regardless). */
+  topicTitle?: string;
+  /** COURSE_ENGINE.md §3.3 — adult register skips gate 2 (the Piaget vocabulary gate is a kid-only invariant). */
+  skipVocabularyGate?: boolean;
 }
 
 export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport {
@@ -445,10 +597,11 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
   }
   const document = gate1.document;
   const problems: GateProblem[] = [
-    ...runVocabularyGate(document, ctx.taxonomy, ctx.tier),
+    ...(ctx.skipVocabularyGate ? [] : runVocabularyGate(document, ctx.taxonomy, ctx.tier)),
     ...runFactGate(document, ctx.facts),
     ...runArithmeticGate(document),
     ...runRationaleAndCanonGate(document),
+    ...runAntiGenericityGate(document, { topicTitle: ctx.topicTitle }),
   ];
   return { ok: problems.length === 0, problems, document };
 }

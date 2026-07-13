@@ -52,10 +52,14 @@ mono MP3 → Depot, operator-triggered batch), and **Forge** fully implemented
 (catalog → plan → write → 5 deterministic gates incl. Piaget vocabulary +
 arithmetic re-execution → independent Qwen judge → structure-frozen localization
 → nanobanana images → publish-as-review) with the complete **Educación
-Financiera catalog: 1,216 lesson blueprints** — 768 teaching (8 adventures × 4
-sagas × 6 topics × 4 lessons) + 448 spaced-review (COURSE_ENGINE §3.1 ladder:
-per-saga Cofre del Repaso + Reto Entrelazado, per-adventure La Gran Misión
-review saga; ≈37% consolidation, ~3.3 years at 1/day), `catalog:check` green. E2E browser-verified:
+Financiera catalog: 1,312 lesson blueprints** — 864 teaching (tier2 sagas
+expanded to 8 topics) + 448 spaced-review (COURSE_ENGINE §3.1 ladder: per-saga
+Cofre del Repaso + Reto Entrelazado, per-adventure La Gran Misión review saga;
+34% consolidation, ~3.6 years at 1/day) + concept metadata (§3.2: 216
+parent_check mastery gut-checks, 43 hard/soft prerequisite edges with reasons —
+the future placement DAG) + adult register plumbing (§3.3: --register adult
+regenerates, never filters) + gate 6 anti-genericity + concreteness judge
+dimension + connect-to-prior prompt discipline, `catalog:check` green. E2E browser-verified:
 login → adventure map → real lesson → Core-graded verdicts → complete → XP/streak
 → next lesson unlocked; both breakpoints, light+dark. 524 tests across services.
 

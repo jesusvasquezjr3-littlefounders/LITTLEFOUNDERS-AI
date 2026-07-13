@@ -15,6 +15,7 @@ import { reviewLesson } from './review.js';
 import { localizeLesson } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
+import { resolveRegister, type Register } from './register.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 
@@ -25,10 +26,19 @@ export interface Slot {
   saga: AdventureFile['sagas'][number];
   topic: AdventureFile['sagas'][number]['topics'][number];
   lesson: AdventureFile['sagas'][number]['topics'][number]['lessons'][number];
+  /**
+   * Connect-to-prior (COURSE_ENGINE.md §3.1/§4): the previous slot's
+   * micro_objective in the GLOBAL linear walk (enumeration order) — same
+   * topic's previous lesson, or the last lesson of the previous topic when
+   * this lesson is position 1. Undefined ONLY for the course's very first
+   * lesson (exempt from the connect-to-prior requirement).
+   */
+  priorMicroObjective?: string;
 }
 
 export function enumerateSlots(adventures: LoadedAdventure[]): Slot[] {
   const slots: Slot[] = [];
+  let previousMicroObjective: string | undefined;
   for (const { data } of adventures) {
     for (const saga of data.sagas) {
       for (const topic of saga.topics) {
@@ -40,7 +50,9 @@ export function enumerateSlots(adventures: LoadedAdventure[]): Slot[] {
             saga,
             topic,
             lesson,
+            priorMicroObjective: previousMicroObjective,
           });
+          previousMicroObjective = lesson.micro_objective;
         }
       }
     }
@@ -62,6 +74,8 @@ export interface RunOptions {
   runId?: string;
   curriculumRoot: string;
   runsRoot: string;
+  /** COURSE_ENGINE.md §3.3 — defaults to 'kid'. */
+  register?: Register;
 }
 
 export interface RunDeps {
@@ -88,7 +102,13 @@ function courseTitleText(catalog: CatalogFile, locale: LessonLocale): string {
   return catalog.course.title[locale];
 }
 
-function buildPlanContext(slot: Slot, course: CourseCatalog, catalog: CatalogFile, taxonomy: TaxonomyFile): PlanContext {
+function buildPlanContext(
+  slot: Slot,
+  course: CourseCatalog,
+  catalog: CatalogFile,
+  taxonomy: TaxonomyFile,
+  register: ReturnType<typeof resolveRegister>,
+): PlanContext {
   const review =
     slot.topic.kind !== 'teaching' && slot.topic.review_of
       ? {
@@ -121,6 +141,8 @@ function buildPlanContext(slot: Slot, course: CourseCatalog, catalog: CatalogFil
       suggestedFamilies: slot.lesson.suggested_families,
     },
     review,
+    prior: slot.priorMicroObjective,
+    register: { fullPalette: register.fullPalette, toneDirectiveEs: register.toneDirectiveEs },
   };
 }
 
@@ -137,12 +159,19 @@ async function processSlot(
   store: CheckpointStore,
   options: RunOptions,
   ledger: UsageLedger,
+  register: ReturnType<typeof resolveRegister>,
 ): Promise<ProcessSlotOutcome> {
   if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
     return { slotId: slot.slotId, state: 'skipped', error: 'course taxonomy/facts/catalog failed to load' };
   }
-  const gateCtx: GateContext = { taxonomy: course.taxonomy, tier: slot.tier, facts: course.facts };
+  const gateCtx: GateContext = {
+    taxonomy: course.taxonomy,
+    tier: slot.tier,
+    facts: course.facts,
+    topicTitle: slot.topic.title_es,
+    skipVocabularyGate: !register.vocabularyGates,
+  };
   const locales = options.locales ?? DEFAULT_LOCALES;
 
   try {
@@ -150,7 +179,7 @@ async function processSlot(
 
     // ---- plan ----
     let current = getSlot(checkpoint, slot.slotId);
-    const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy);
+    const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy, register);
     let skeleton = current.data?.skeleton as PlanSkeleton | undefined;
     if (!skeleton || current.state === 'pending' || current.state === 'failed') {
       const planResult = await planLesson(planCtx, { ledger });
@@ -197,7 +226,11 @@ async function processSlot(
     if (current.state === 'reviewed') {
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
-        const localized = await localizeLesson(documents[AUTHORING_LOCALE]!, locale as 'en-US' | 'pt-BR', gateCtx, { ledger });
+        const localized = await localizeLesson(documents[AUTHORING_LOCALE]!, locale as 'en-US' | 'pt-BR', gateCtx, {
+          ledger,
+          registerToneEs: register.toneDirectiveEs,
+          skipVocabularyGate: !register.vocabularyGates,
+        });
         documents = { ...documents, [locale]: localized.document };
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'localized', { data: { skeleton, documents } });
@@ -223,11 +256,20 @@ async function processSlot(
         await store.save(checkpoint);
         return { slotId: slot.slotId, state: 'published' };
       }
+      // COURSE_ENGINE.md §3.3 — adult register publishes as a PARALLEL course,
+      // never overwriting the kid course: `<slug>-adultos`, title +" (Adultos)"
+      // in all 3 locales. Content itself was already regenerated end-to-end
+      // above (never filtered/dressed-up kid content — the documented
+      // anti-pattern this whole module exists to avoid).
       const publishInput: PublishInput = {
         course: {
-          slug: course.catalog.course.slug,
+          slug: `${course.catalog.course.slug}${register.slugSuffix}`,
           subject: course.catalog.course.subject,
-          title: course.catalog.course.title,
+          title: {
+            'en-US': `${course.catalog.course.title['en-US']}${register.titleSuffix}`,
+            'es-MX': `${course.catalog.course.title['es-MX']}${register.titleSuffix}`,
+            'pt-BR': `${course.catalog.course.title['pt-BR']}${register.titleSuffix}`,
+          },
           description: course.catalog.course.description,
           position: 0,
         },
@@ -307,6 +349,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   const ledger = deps.ledger ?? new UsageLedger(runDir);
   const allSlots = enumerateSlots(loadResult.course.adventures);
   const slots = filterSlots(allSlots, options.slots);
+  const register = resolveRegister(loadResult.course.taxonomy, options.register ?? 'kid');
 
   const published: string[] = [];
   const failed: { slotId: string; error: string }[] = [];
@@ -315,7 +358,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
       if (stoppedOnBudget) return;
-      const outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger);
+      const outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
       if (outcome.state === 'published') published.push(outcome.slotId);
       else if (outcome.state === 'failed') failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error' });
     });

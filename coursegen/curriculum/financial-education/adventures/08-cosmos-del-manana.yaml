@@ -44,6 +44,7 @@ sagas:
     - futuro
     - lograr
     prior_knowledge: Ha definido metas de ahorro concretas (aventura 3).
+    parent_check: "¿{{name}} puede nombrarte un sueño personal concreto que le gustaría lograr?"
     fact_refs: []
     lessons:
     - position: 1
@@ -94,6 +95,7 @@ sagas:
     - tamaño
     - estimar
     prior_knowledge: Tiene un sueño personal definido (tema anterior).
+    parent_check: "¿{{name}} puede darte una idea de cuánto costaría o cuánto tiempo tomaría lograr su sueño?"
     fact_refs: []
     lessons:
     - position: 1
@@ -143,6 +145,7 @@ sagas:
     - orden
     - plan
     prior_knowledge: Ha calculado el tamaño de su sueño (tema anterior).
+    parent_check: "¿{{name}} puede dividir un sueño grande en al menos tres pasos más pequeños?"
     fact_refs: []
     lessons:
     - position: 1
@@ -194,6 +197,7 @@ sagas:
     - paso
     - empezar
     prior_knowledge: Tiene el sueño dividido en pasos (tema anterior).
+    parent_check: "¿{{name}} puede decirte cuál sería el primer paso concreto para comenzar a perseguir su sueño?"
     fact_refs: []
     lessons:
     - position: 1
@@ -247,6 +251,7 @@ sagas:
     - enfrentar
     - plan
     prior_knowledge: Tiene el primer paso de su plan elegido (tema anterior).
+    parent_check: "¿{{name}} puede imaginar un obstáculo posible para su plan y cómo lo enfrentaría?"
     fact_refs: []
     lessons:
     - position: 1
@@ -300,6 +305,7 @@ sagas:
     - presentar
     prior_knowledge: Ha trabajado el sueño, su tamaño, sus pasos, el primer paso y los obstáculos (temas
       anteriores).
+    parent_check: "¿{{name}} puede presentarte un plan corto y completo para su propio sueño?"
     fact_refs: []
     lessons:
     - position: 1
@@ -341,6 +347,102 @@ sagas:
       - storyplay
       - story
   - position: 7
+    slug: metas-a-largo-plazo
+    title_es: Metas a largo plazo
+    concept: Algunas metas se logran en pocas semanas, y otras, como aprender un oficio o construir algo grande, toman meses o incluso años de trabajo constante.
+    learning_objective: Al final, el niño puede distinguir una meta de corto plazo de una meta de largo plazo y nombrar un ejemplo propio de cada una.
+    key_vocabulary:
+    - largo plazo
+    - corto plazo
+    - constancia
+    - tiempo
+    prior_knowledge: Ha calculado el tamaño de su sueño en costo y tiempo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre una meta que toma pocas semanas y una que toma meses o años?"
+    prerequisites:
+    - path: aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+      strength: soft
+      reason: "Haber practicado ahorrar un poco cada semana con paciencia prepara para perseguir una meta que toma mucho más tiempo."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: suenos-rapidos-y-suenos-lentos
+      micro_objective: Comparar un sueño que se logra en pocas semanas con uno que toma meses o años.
+      narrative_beat: Desde la nave, Dr. Rho muestra dos founders del cosmos, uno que ahorró para un juguete en un mes y otro que construyó su taller en dos años.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-algunos-suenos-toman-mas-tiempo
+      micro_objective: Explicar por qué algunos sueños necesitan mucho más tiempo y constancia que otros.
+      narrative_beat: Zara Vex explica que un sueño grande, como dominar un oficio, no se logra de un día para otro, sino con constancia.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: clasificar-mis-suenos
+      micro_objective: Clasificar varios sueños dados entre metas de corto plazo y de largo plazo.
+      narrative_beat: Dina ordena varios sueños de otros founders del cosmos entre los que toman semanas y los que toman años.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-meta-a-largo-plazo
+      micro_objective: Nombrar una meta a largo plazo propia y reconocer que requerirá constancia.
+      narrative_beat: Dina piensa en un sueño suyo que le tomaría mucho más que unas semanas, y decide que también vale la pena perseguirlo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: suenos-que-se-logran-en-equipo
+    title_es: Sueños que se logran en equipo
+    concept: Algunos sueños grandes se logran mejor cuando se persiguen junto con otras personas, en vez de intentarlo todo en solitario.
+    learning_objective: Al final, el niño puede reconocer cuándo un sueño propio se beneficiaría de la ayuda o compañía de otros.
+    key_vocabulary:
+    - equipo
+    - compañía
+    - juntos
+    - apoyo
+    prior_knowledge: Tiene un sueño personal definido y sabe que algunos toman más tiempo que otros (temas anteriores).
+    parent_check: "¿{{name}} puede reconocer cuándo un sueño suyo sería más fácil de lograr con la ayuda de otras personas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-sueno-demasiado-grande-para-uno
+      micro_objective: Reconocer un sueño que sería muy difícil de lograr completamente solo.
+      narrative_beat: Dino imagina un sueño enorme, como construir un puente entre dos islas, y se da cuenta de que solo no podría.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quien-podria-ayudarme
+      micro_objective: Identificar personas que podrían acompañar o ayudar a lograr un sueño grande.
+      narrative_beat: Zara Vex ayuda a Dino a pensar en quién del cosmos podría acompañarlo a construir su puente entre islas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: solo-o-en-equipo
+      micro_objective: Comparar, para un sueño dado, si conviene más perseguirlo solo o en equipo.
+      narrative_beat: Dr. Rho presenta dos sueños distintos y pregunta a Dina cuál conviene más hacer en equipo y cuál puede hacerse sola.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-equipo-de-sueno
+      micro_objective: Identificar, para el sueño propio, a alguien que podría acompañarlo en el camino.
+      narrative_beat: Dina anota en su cuaderno de viaje quién podría ayudarla a lograr su propio sueño de founder.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -360,6 +462,8 @@ sagas:
     - cosmos-del-manana/suenos-con-forma/elegir-el-primer-paso
     - cosmos-del-manana/suenos-con-forma/imaginar-obstaculos
     - cosmos-del-manana/suenos-con-forma/mi-sueno-mi-plan-corto
+    - cosmos-del-manana/suenos-con-forma/metas-a-largo-plazo
+    - cosmos-del-manana/suenos-con-forma/suenos-que-se-logran-en-equipo
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -393,7 +497,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -467,6 +571,7 @@ sagas:
     - intercambio
     - repaso
     prior_knowledge: Completó la aventura 1, El Archipiélago del Trueque.
+    parent_check: "¿{{name}} puede explicarte, en una frase, por qué el dinero facilita los intercambios frente al trueque?"
     fact_refs: []
     lessons:
     - position: 1
@@ -520,6 +625,7 @@ sagas:
     - ganar
     - repaso
     prior_knowledge: Completó la aventura 2, El Bosque de la Abundancia.
+    parent_check: "¿{{name}} puede explicarte, en una frase, la relación entre el esfuerzo y ganar dinero?"
     fact_refs: []
     lessons:
     - position: 1
@@ -571,6 +677,7 @@ sagas:
     - meta
     - repaso
     prior_knowledge: Completó la aventura 3, La Aldea del Ahorro.
+    parent_check: "¿{{name}} puede explicarte, en una frase, por qué ahorrar requiere paciencia?"
     fact_refs: []
     lessons:
     - position: 1
@@ -624,6 +731,7 @@ sagas:
     - comparar
     - repaso
     prior_knowledge: Completó la aventura 4, El Mercado de los Colores.
+    parent_check: "¿{{name}} puede explicarte, en una frase, qué significa comprar de forma inteligente?"
     fact_refs: []
     lessons:
     - position: 1
@@ -678,6 +786,7 @@ sagas:
     - vender
     - repaso
     prior_knowledge: Completó la aventura 5, El Taller de los Inventores.
+    parent_check: "¿{{name}} puede resumir, en orden, los pasos principales del ciclo de inventar y vender?"
     fact_refs: []
     lessons:
     - position: 1
@@ -733,6 +842,7 @@ sagas:
     - compartir
     - repaso
     prior_knowledge: Completó las aventuras 6 y 7, El Faro de la Confianza y El Jardín Compartido.
+    parent_check: "¿{{name}} puede nombrarte una lección de seguridad y una lección de comunidad que aprendió en el curso?"
     fact_refs: []
     lessons:
     - position: 1
@@ -776,6 +886,102 @@ sagas:
       - analyze
       - choice
   - position: 7
+    slug: revisar-y-ajustar-un-plan
+    title_es: Revisar y ajustar un plan
+    concept: Cuando un plan no está funcionando como se esperaba, revisarlo con calma y ajustar una parte ayuda a seguir avanzando.
+    learning_objective: Al final, el niño puede identificar una parte de un plan que no está funcionando y proponer un ajuste concreto.
+    key_vocabulary:
+    - revisar
+    - ajustar
+    - funcionar
+    - cambiar
+    prior_knowledge: Ha repasado el ciclo de ahorrar, comprar y vender de aventuras anteriores (aventura 8, saga 2).
+    parent_check: "Si algo de su plan no está funcionando, ¿{{name}} puede proponer un ajuste concreto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-plan-que-no-avanza
+      micro_objective: Reconocer una señal de que un plan no está funcionando como se esperaba.
+      narrative_beat: Zara Vex muestra el plan de ahorro de otro founder, que lleva semanas sin avanzar nada hacia su meta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: por-que-no-esta-funcionando
+      micro_objective: Identificar una posible razón por la que un plan dado no está avanzando.
+      narrative_beat: Dr. Rho ayuda a Dina a revisar el plan de ese founder y notar que está gastando en cosas que no había planeado.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: proponer-un-ajuste
+      micro_objective: Proponer un ajuste concreto para mejorar un plan que no está funcionando.
+      narrative_beat: Zara Vex reta a Dino a proponer un cambio simple que ayudaría al plan del founder a volver a avanzar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: revisar-mi-propio-plan
+      micro_objective: Revisar el propio plan corto de sueño y proponer un ajuste si detecta que algo no está funcionando.
+      narrative_beat: Dina revisa su propio plan de sueño y, con calma, decide si necesita ajustar alguna parte antes de seguir.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - storyplay
+  - position: 8
+    slug: aprender-de-un-error-del-pasado
+    title_es: Aprender de un error del pasado
+    concept: Recordar un error cometido en un mundo anterior del viaje, y cómo se corrigió, ayuda a no repetirlo en el futuro.
+    learning_objective: Al final, el niño puede recordar un error propio de una aventura anterior y explicar qué aprendió de él.
+    key_vocabulary:
+    - error
+    - aprender
+    - corregir
+    - recordar
+    prior_knowledge: Ha repasado las siete aventuras anteriores del viaje (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede contarte un error que cometió y qué aprendió de él?"
+    prerequisites:
+    - path: taller-de-los-inventores/manos-a-la-obra/mejorar-con-lo-que-aprendi
+      strength: soft
+      reason: "Haber aprendido a proponer un ajuste tras una prueba fallida en el taller es la misma habilidad que reflexionar sobre un error del pasado."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-error-en-el-mercado
+      micro_objective: Recordar un ejemplo de error cometido en una aventura anterior, como gastar sin pensar.
+      narrative_beat: El mapa estelar muestra el mercado de los colores, y Dino recuerda la vez que gastó todas sus monedas sin comparar precios.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-paso-despues-del-error
+      micro_objective: Recordar cómo se corrigió un error cometido en una aventura anterior.
+      narrative_beat: Dr. Rho recuerda con Dino cómo, después de ese gasto apresurado, aprendió a comparar precios antes de comprar.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: el-error-como-maestro
+      micro_objective: Explicar con una razón propia por qué un error puede enseñar algo útil, en vez de ser solo un fracaso.
+      narrative_beat: Zara Vex explica que cada founder del cosmos recuerda al menos un error que lo ayudó a mejorar después.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-leccion-de-un-error
+      micro_objective: Recordar un error propio de una aventura anterior y explicar qué aprendió de él.
+      narrative_beat: Dina comparte con el equipo un error que cometió en un mundo anterior y lo que aprendió gracias a él.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -795,6 +1001,8 @@ sagas:
     - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-comprar-inteligente
     - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-inventar-poner-precio-y-vender
     - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-cuidarse-confiar-y-compartir
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/revisar-y-ajustar-un-plan
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/aprender-de-un-error-del-pasado
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -828,7 +1036,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -902,6 +1110,7 @@ sagas:
     - objetivo
     - combinar
     prior_knowledge: Ha repasado las siete aventuras anteriores (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede elegir una meta propia que combine varias cosas que aprendió en el curso?"
     fact_refs: []
     lessons:
     - position: 1
@@ -955,6 +1164,11 @@ sagas:
     - total
     - límite
     prior_knowledge: Tiene una meta de founder elegida (tema anterior).
+    parent_check: "¿{{name}} puede armar un presupuesto simple sin pasarse del total que tiene disponible?"
+    prerequisites:
+    - path: mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+      strength: soft
+      reason: "Haber decidido qué comprar primero dentro de una bolsa de compras limitada prepara para repartir un presupuesto más grande sin excederse."
     fact_refs: []
     lessons:
     - position: 1
@@ -1007,6 +1221,7 @@ sagas:
     - compartir
     - repartir
     prior_knowledge: Tiene un presupuesto para su meta (tema anterior).
+    parent_check: "¿{{name}} puede repartir sus recursos de una meta entre ahorrar, gastar y compartir?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1062,6 +1277,7 @@ sagas:
     - proteger
     - plan
     prior_knowledge: Reconoce señales de anuncios engañosos y mensajes falsos (aventura 6).
+    parent_check: "¿{{name}} puede reconocer una posible trampa que podría afectar una meta que se está persiguiendo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1117,6 +1333,7 @@ sagas:
     - apoyo
     - pedir
     prior_knowledge: Ha practicado pedir y ofrecer ayuda en la comunidad (aventura 7).
+    parent_check: "¿{{name}} sabe identificar un momento en el que convendría pedir ayuda para avanzar en una meta?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1169,6 +1386,7 @@ sagas:
     - listo
     - lanzar
     prior_knowledge: Ha trabajado meta, presupuesto, reparto, protección y apoyo (temas anteriores).
+    parent_check: "¿{{name}} puede presentarte su plan de founder completo, con todas sus partes?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1211,6 +1429,106 @@ sagas:
       - storyplay
       - story
   - position: 7
+    slug: mi-rutina-de-ahorro-gasto-y-donacion
+    title_es: Mi rutina de ahorro, gasto y donación
+    concept: Convertir el reparto entre ahorrar, gastar y compartir en una rutina semanal, y no solo en algo de una sola vez, ayuda a mantenerlo en el tiempo.
+    learning_objective: Al final, el niño puede proponer una rutina simple y repetible para repartir el dinero que recibe entre ahorrar, gastar y donar.
+    key_vocabulary:
+    - rutina
+    - repetir
+    - semanal
+    - hábito
+    prior_knowledge: Ha repartido los recursos de su meta de founder entre ahorrar, gastar y compartir (tema anterior).
+    parent_check: "¿{{name}} puede proponerte una rutina simple para repartir su dinero cada semana entre ahorrar, gastar y donar?"
+    prerequisites:
+    - path: taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+      strength: soft
+      reason: "Haber repartido las ganancias de un día de mercado entre los tres frascos prepara para convertir ese reparto en una rutina semanal."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-sola-vez-no-basta
+      micro_objective: Reconocer que repartir el dinero una sola vez no es lo mismo que tener una rutina que se repite.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasará con sus tres frascos la próxima semana, cuando reciba más monedas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-rutina-de-otro-founder
+      micro_objective: Observar cómo otro founder repite, cada semana, el mismo reparto entre ahorrar, gastar y donar.
+      narrative_beat: Zara Vex comparte que cada semana reparte sus monedas nuevas en las mismas tres partes, sin tener que pensarlo de nuevo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: elegir-mi-propia-rutina
+      micro_objective: Proponer una proporción simple y repetible para su propio reparto semanal.
+      narrative_beat: Dino decide qué parte de cada semana irá a su ahorro, cuál a sus gastos y cuál a donar, para repetirlo siempre igual.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 4
+      slug: mi-rutina-lista
+      micro_objective: Presentar su propia rutina semanal de ahorro, gasto y donación, lista para repetirse cada semana.
+      narrative_beat: Dina presenta a Dr. Rho su rutina semanal completa, lista para repetirla cada vez que reciba nuevas monedas.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - money
+  - position: 8
+    slug: revisar-mi-presupuesto-cada-semana
+    title_es: Revisar mi presupuesto cada semana
+    concept: Revisar el presupuesto cada cierto tiempo permite notar si algo cambió y ajustar el plan antes de que se desordene.
+    learning_objective: Al final, el niño puede explicar por qué conviene revisar un presupuesto cada cierto tiempo, en vez de solo hacerlo una vez.
+    key_vocabulary:
+    - revisar
+    - presupuesto
+    - ajustar
+    - seguimiento
+    prior_knowledge: Ha armado un presupuesto para su meta de founder (aventura 8, saga 3).
+    parent_check: "¿{{name}} puede explicarte por qué conviene revisar un presupuesto de vez en cuando, y no solo hacerlo una vez?"
+    prerequisites:
+    - path: taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+      strength: hard
+      reason: "Saber sumar el costo total de varios materiales es la base aritmética para poder revisar y ajustar un presupuesto más adelante."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-presupuesto-de-hace-un-mes
+      micro_objective: Observar que un presupuesto hecho hace tiempo podría ya no coincidir con la realidad actual.
+      narrative_beat: Dina revisa el presupuesto que armó hace un mes y nota que algunos precios del taller han cambiado un poco.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: que-cambio-desde-entonces
+      micro_objective: Identificar qué cambió entre el presupuesto original y la situación actual.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar su presupuesto original con lo que en verdad ha gastado hasta ahora.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: ajustar-con-calma
+      micro_objective: Aplicar un ajuste simple al presupuesto tras notar un cambio en los precios o en el plan.
+      narrative_beat: Zara Vex ayuda a Dino a ajustar su presupuesto después de notar que un material cuesta un poco más de lo esperado.
+      difficulty: 3
+      suggested_families:
+      - money
+      - analyze
+    - position: 4
+      slug: mi-revision-semanal
+      micro_objective: Proponer un momento fijo, como cada semana, para revisar y ajustar su propio presupuesto.
+      narrative_beat: Dina decide revisar su presupuesto de founder cada domingo, para mantenerlo siempre al día.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1230,6 +1548,8 @@ sagas:
     - cosmos-del-manana/mi-plan-de-founder/protegerme-de-trampas-en-el-camino
     - cosmos-del-manana/mi-plan-de-founder/pedir-ayuda-cuando-la-necesito
     - cosmos-del-manana/mi-plan-de-founder/mi-plan-completo-listo-para-lanzar
+    - cosmos-del-manana/mi-plan-de-founder/mi-rutina-de-ahorro-gasto-y-donacion
+    - cosmos-del-manana/mi-plan-de-founder/revisar-mi-presupuesto-cada-semana
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1263,7 +1583,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -1340,6 +1660,7 @@ sagas:
     - camino
     - founder
     prior_knowledge: Tiene un plan de founder completo (tema anterior).
+    parent_check: "¿{{name}} puede contarte, en un resumen breve, su propia historia de founder a lo largo del curso?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1394,6 +1715,7 @@ sagas:
     - decidir
     - hábito
     prior_knowledge: Ha narrado su historia de founder (tema anterior).
+    parent_check: "¿{{name}} puede tomar una decisión financiera correcta rápido, sin ponerse nervioso?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1449,6 +1771,7 @@ sagas:
     - celebrar
     - reconocer
     prior_knowledge: Ha completado el reto de decisiones bajo presión (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte un logro propio y un logro de algún compañero durante el viaje?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1500,6 +1823,7 @@ sagas:
     - integrar
     - final
     prior_knowledge: Ha repasado todas las aventuras anteriores (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede resolver un desafío que combine habilidades de varias aventuras distintas?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1555,6 +1879,7 @@ sagas:
     - aplicar
     - futuro
     prior_knowledge: Ha completado el reto final integrador (tema anterior).
+    parent_check: "¿{{name}} puede proponerte un próximo paso concreto para seguir aplicando lo aprendido?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1610,6 +1935,7 @@ sagas:
     - founder
     - siempre
     prior_knowledge: Ha completado todo el viaje del curso, incluyendo el reto final y su próximo paso.
+    parent_check: "¿{{name}} puede resumir, con orgullo, todo su camino como founder?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1653,6 +1979,102 @@ sagas:
       - storyplay
       - story
   - position: 7
+    slug: ensenar-a-otros-lo-aprendido
+    title_es: Enseñar a otros lo aprendido
+    concept: Explicarle a alguien más lo que se aprendió durante el viaje ayuda a recordarlo mejor y también ayuda a esa persona a aprender.
+    learning_objective: Al final, el niño puede explicar una lección del curso a otra persona, como si fuera su maestro por un momento.
+    key_vocabulary:
+    - enseñar
+    - explicar
+    - ayudar
+    - aprender
+    prior_knowledge: Ha narrado su historia de founder completa (tema anterior).
+    parent_check: "¿{{name}} puede explicarle a alguien más, con sus palabras, algo que aprendió en el curso?"
+    prerequisites:
+    - path: bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+      strength: soft
+      reason: "Entender que un trabajo ayuda a alguien más conecta con la idea de que enseñar lo aprendido también ayuda a otro founder."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-founder-que-recien-empieza
+      micro_objective: Observar a un personaje nuevo que está empezando su propio viaje de founder y necesita ayuda.
+      narrative_beat: En el escenario flotante, un founder nuevo llega confundido, sin saber por dónde empezar su propio viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-que-ensenar
+      micro_objective: Elegir una lección propia del curso que le gustaría explicarle a un founder nuevo.
+      narrative_beat: Dino piensa en qué lección de todo su viaje le gustaría enseñarle primero al founder nuevo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: practicar-mi-ensenanza
+      micro_objective: Practicar explicar con palabras simples una lección aprendida a otro personaje.
+      narrative_beat: Dina practica con Zara Vex cómo explicarle al founder nuevo por qué conviene comparar precios antes de comprar.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-leccion-para-un-founder-nuevo
+      micro_objective: Enseñar con seguridad una lección propia del curso a un founder nuevo dentro de una historia.
+      narrative_beat: Dina le enseña al founder nuevo su lección favorita del viaje, y lo ve entender un poco mejor su propio camino.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 8
+    slug: mi-manual-de-founder
+    title_es: Mi manual de founder
+    concept: Escribir un pequeño manual con las reglas más importantes aprendidas en el viaje deja un recordatorio útil para consultarlo después.
+    learning_objective: Al final, el niño puede reunir al menos tres reglas importantes aprendidas en el curso en un manual propio breve.
+    key_vocabulary:
+    - manual
+    - reglas
+    - reunir
+    - recordatorio
+    prior_knowledge: Ha enseñado una lección propia a un founder nuevo (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte al menos tres reglas importantes que aprendió durante el curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cuaderno-lleno-de-lecciones
+      micro_objective: Reconocer que el cuaderno de viaje ya contiene muchas lecciones importantes de todo el curso.
+      narrative_beat: Dina hojea su cuaderno de viaje, lleno de notas desde el archipiélago hasta el cosmos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: elegir-las-reglas-mas-importantes
+      micro_objective: Elegir, entre varias lecciones del cuaderno, las que le parecen más importantes para recordar siempre.
+      narrative_beat: Zara Vex ayuda a Dino a elegir sus tres reglas favoritas de todo el viaje para no olvidarlas nunca.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: escribir-mi-manual
+      micro_objective: Escribir, con sus propias palabras, al menos tres reglas importantes aprendidas durante el curso.
+      narrative_beat: Dr. Rho ayuda a Dina a escribir su propio manual de founder con las reglas que más le sirvieron en el viaje.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - storyplay
+    - position: 4
+      slug: mi-manual-terminado
+      micro_objective: Presentar el manual de founder propio, completo, como un recordatorio para el futuro.
+      narrative_beat: Dina muestra a todo el equipo su manual de founder terminado, listo para consultarlo cuando lo necesite en el futuro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1672,6 +2094,8 @@ sagas:
     - cosmos-del-manana/el-gran-lanzamiento/el-reto-final-todo-junto
     - cosmos-del-manana/el-gran-lanzamiento/que-sigue-despues-de-este-viaje
     - cosmos-del-manana/el-gran-lanzamiento/lanzamiento-littlefounders-para-siempre
+    - cosmos-del-manana/el-gran-lanzamiento/ensenar-a-otros-lo-aprendido
+    - cosmos-del-manana/el-gran-lanzamiento/mi-manual-de-founder
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1705,7 +2129,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado

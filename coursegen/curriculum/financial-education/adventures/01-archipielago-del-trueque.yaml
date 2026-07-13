@@ -36,6 +36,7 @@ sagas:
         key_vocabulary: [querer, deseo, me gusta, tener]
         prior_knowledge: "Ninguno — es el punto de partida del curso."
         fact_refs: []
+        parent_check: "La próxima vez que estén en la tienda, pregúntale a {{name}} si eso que pide de verdad lo quiere o si ya tiene algo parecido en casa."
         lessons:
           - position: 1
             slug: mi-primer-deseo
@@ -69,6 +70,7 @@ sagas:
         key_vocabulary: [diferente, igual, preferir, cada quien]
         prior_knowledge: "Sabe nombrar sus propios deseos (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando {{name}} juegue con un amigo que prefiere otro juguete o sabor, fíjate si acepta con calma que el otro quiera algo distinto."
         lessons:
           - position: 1
             slug: dos-islenos-dos-deseos
@@ -102,6 +104,7 @@ sagas:
         key_vocabulary: [elegir, esperar, una cosa, después]
         prior_knowledge: "Reconoce que los deseos varían entre personas (tema anterior)."
         fact_refs: []
+        parent_check: "En la próxima tiendita o feria, deja que {{name}} elija solo un antojo entre varios y observa si acepta esperar por los demás sin berrinche."
         lessons:
           - position: 1
             slug: no-puedo-llevarme-todo
@@ -135,6 +138,7 @@ sagas:
         key_vocabulary: [cambiar, trueque, dar, recibir]
         prior_knowledge: "Sabe elegir entre varias cosas que quiere (tema anterior)."
         fact_refs: []
+        parent_check: "Invita a {{name}} a cambiar un juguete o estampita con un hermano o amigo y pídele que después te cuente qué dio y qué recibió."
         lessons:
           - position: 1
             slug: te-doy-esto-por-eso
@@ -168,6 +172,7 @@ sagas:
         key_vocabulary: [justo, contento, buen cambio, las dos partes]
         prior_knowledge: "Sabe describir y armar un trueque simple (tema anterior)."
         fact_refs: []
+        parent_check: "Después de que {{name}} cambie algo con un amigo, pregúntale si los dos quedaron contentos o si alguien se ve triste con el resultado."
         lessons:
           - position: 1
             slug: los-dos-quedan-contentos
@@ -201,6 +206,7 @@ sagas:
         key_vocabulary: [no quiere, se traba, no funciona, buscar otro]
         prior_knowledge: "Sabe juzgar si un trueque es justo (tema anterior)."
         fact_refs: []
+        parent_check: "Plantéale a {{name}} que quiere cambiar su paleta por el carrito de un amigo, pero ese amigo no quiere paletas: ¿logra explicar por qué el cambio no puede hacerse?"
         lessons:
           - position: 1
             slug: nadie-quiere-mi-concha
@@ -327,6 +333,7 @@ sagas:
         key_vocabulary: [todos aceptan, de acuerdo, fácil, para todos]
         prior_knowledge: "Entiende por qué un trueque puede trabarse (saga anterior)."
         fact_refs: []
+        parent_check: "Pregúntale a {{name}} por qué cree que en la tienda todos aceptan las mismas monedas, en vez de que cada quien pida algo distinto a cambio."
         lessons:
           - position: 1
             slug: y-si-todos-aceptaran-lo-mismo
@@ -360,6 +367,7 @@ sagas:
         key_vocabulary: [conchas, semillas, antes, hoy]
         prior_knowledge: "Entiende la idea de algo que todos aceptan (tema anterior)."
         fact_refs: []
+        parent_check: "Pídele a {{name}} que te cuente, como en el cuento, qué usaba la gente antes de tener monedas para cambiar cosas."
         lessons:
           - position: 1
             slug: las-conchas-especiales
@@ -393,6 +401,7 @@ sagas:
         key_vocabulary: [duran, fácil de cargar, fácil de contar, práctico]
         prior_knowledge: "Conoce qué se usaba como dinero antes de las monedas (tema anterior)."
         fact_refs: []
+        parent_check: "Muéstrale a {{name}} una moneda junto a una fruta y pregúntale cuál dura más tiempo guardada, y por qué eso importa para cambiar cosas."
         lessons:
           - position: 1
             slug: las-conchas-se-rompen
@@ -426,6 +435,11 @@ sagas:
         key_vocabulary: [cualquiera acepta, ya no busco, más rápido]
         prior_knowledge: "Sabe por qué las monedas son prácticas (tema anterior)."
         fact_refs: []
+        parent_check: "La próxima vez que compren algo juntos, pregúntale a {{name}} si sería más fácil conseguirlo pagando con dinero que cambiándolo por otro juguete."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+            strength: hard
+            reason: "Para entender cómo el dinero resuelve el trueque trabado, primero hay que recordar por qué un trueque puede fallar cuando nadie quiere lo que el otro ofrece."
         lessons:
           - position: 1
             slug: ya-no-busco-tanto
@@ -459,6 +473,7 @@ sagas:
         key_vocabulary: [se usa directo, sirve para cambiar, no se come, no se juega]
         prior_knowledge: "Entiende que las monedas ayudan a cambiar cosas más rápido (tema anterior)."
         fact_refs: []
+        parent_check: "Enséñale a {{name}} una moneda y pregúntale si se puede comer o jugar con ella directamente, o si solo sirve para cambiarla por otra cosa."
         lessons:
           - position: 1
             slug: no-puedo-morder-una-moneda
@@ -492,6 +507,7 @@ sagas:
         key_vocabulary: [confiar, de acuerdo, funciona, todos juntos]
         prior_knowledge: "Sabe que el dinero solo sirve para cambiar, no para usar directamente (tema anterior)."
         fact_refs: []
+        parent_check: "Imagina con {{name}} que la tienda de la esquina un día ya no aceptara las monedas de siempre: ¿entiende por qué eso sería un problema para todos?"
         lessons:
           - position: 1
             slug: todos-dicen-que-si
@@ -618,6 +634,7 @@ sagas:
         key_vocabulary: [moneda, un peso, dos pesos, cinco pesos]
         prior_knowledge: "Entiende que las monedas sirven para cambiar cosas (saga anterior)."
         fact_refs: [mxn.denominations.coins.tier1_subset]
+        parent_check: "Dale a {{name}} un puñito de monedas de $1, $2 y $5 revueltas y pídele que te diga el valor de cada una sin ayuda."
         lessons:
           - position: 1
             slug: la-moneda-de-un-peso
@@ -651,6 +668,7 @@ sagas:
         key_vocabulary: [diez pesos, más grande, vale más]
         prior_knowledge: "Reconoce las monedas de $1, $2 y $5 (tema anterior)."
         fact_refs: [mxn.denominations.coins.tier1_subset]
+        parent_check: "Pon frente a {{name}} una moneda de $10 junto con otras más chicas y pregúntale cuál vale más y cómo lo sabe."
         lessons:
           - position: 1
             slug: la-moneda-de-diez-pesos
@@ -684,6 +702,7 @@ sagas:
         key_vocabulary: [billete, veinte pesos, cincuenta pesos, papel]
         prior_knowledge: "Reconoce todas las monedas de $1 a $10 (tema anterior)."
         fact_refs: [mxn.denominations.bills.tier1_subset]
+        parent_check: "Saca un billete de $20 y uno de $50 y pídele a {{name}} que te diga cuál es cuál, sin decírselo tú primero."
         lessons:
           - position: 1
             slug: mi-primer-billete
@@ -717,6 +736,7 @@ sagas:
         key_vocabulary: [cien pesos, doscientos pesos, todavía más]
         prior_knowledge: "Reconoce los billetes de $20 y $50 (tema anterior)."
         fact_refs: [mxn.denominations.bills.tier1_subset]
+        parent_check: "Cuando tengas billetes de $100 o $200 a la mano, pídele a {{name}} que los reconozca y diga si valen más o menos que uno de $50."
         lessons:
           - position: 1
             slug: el-billete-de-cien
@@ -750,6 +770,7 @@ sagas:
         key_vocabulary: [vale más, vale menos, comparar, mayor]
         prior_knowledge: "Reconoce monedas y billetes hasta $200 (temas anteriores)."
         fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        parent_check: "Coloca junto a {{name}} una moneda de $10 y un billete de $20 y pregúntale cuál conviene más aceptar, aunque la moneda parezca más 'grande' por ser de metal."
         lessons:
           - position: 1
             slug: moneda-chica-o-billete-grande
@@ -783,6 +804,7 @@ sagas:
         key_vocabulary: [juntar, sumar, exacto, monto]
         prior_knowledge: "Reconoce todas las monedas y sabe comparar su valor (temas anteriores)."
         fact_refs: [mxn.denominations.coins.tier1_subset, math.max_single_coin_count_tier1]
+        parent_check: "Reta a {{name}} a juntar exactamente $15 o $18 con varias monedas sueltas, sin que tú hagas la cuenta por él."
         lessons:
           - position: 1
             slug: junto-dos-monedas
@@ -909,6 +931,7 @@ sagas:
         key_vocabulary: [grande, chico, no siempre, cuesta]
         prior_knowledge: "Sabe comparar el valor de monedas y billetes (saga anterior)."
         fact_refs: []
+        parent_check: "En el súper, muéstrale a {{name}} algo grande y barato junto a algo chico y caro, y pregúntale cuál cree que cuesta más antes de ver la etiqueta."
         lessons:
           - position: 1
             slug: la-piedra-grande-y-la-fruta-chica
@@ -942,6 +965,7 @@ sagas:
         key_vocabulary: [barato, cuesta poco, pocas monedas]
         prior_knowledge: "Sabe que el tamaño no define el precio (tema anterior)."
         fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.paleta]
+        parent_check: "Camina con {{name}} por una tienda y pídele que señale dos o tres cosas que le parezcan baratas, y fíjate si acierta con precios realmente bajos."
         lessons:
           - position: 1
             slug: la-fruta-suelta
@@ -975,6 +999,7 @@ sagas:
         key_vocabulary: [caro, cuesta más, muchas monedas]
         prior_knowledge: "Reconoce objetos que cuestan poco (tema anterior)."
         fact_refs: [mxn.reference_prices.juguete_pequeno, mxn.reference_prices.libro_infantil]
+        parent_check: "Pregúntale a {{name}} cuál de sus juguetes cree que costó más caro, y comprueba si su idea de 'caro' se acerca a la realidad."
         lessons:
           - position: 1
             slug: el-juguete-especial
@@ -1008,6 +1033,7 @@ sagas:
         key_vocabulary: [más caro, más barato, comparar precios]
         prior_knowledge: "Reconoce objetos baratos y caros por separado (temas anteriores)."
         fact_refs: [mxn.reference_prices.paleta, mxn.reference_prices.helado, mxn.reference_prices.torta]
+        parent_check: "Señálale a {{name}} dos precios escritos, como el de un dulce y el de una fruta, y pídele que diga cuál es mayor sin tu ayuda."
         lessons:
           - position: 1
             slug: dos-precios-uno-al-lado-del-otro
@@ -1041,6 +1067,11 @@ sagas:
         key_vocabulary: [justo, injusto, revisar, comparar valor]
         prior_knowledge: "Sabe comparar precios de dos objetos (tema anterior)."
         fact_refs: [mxn.reference_prices.juguete_pequeno, mxn.reference_prices.fruta_pieza]
+        parent_check: "Antes de que {{name}} cierre un cambio con un amigo, pregúntale si el trato le parece justo tomando en cuenta lo que cuesta cada cosa, no solo si le gusta."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+            strength: hard
+            reason: "Para juzgar con precios si un cambio es justo, primero hay que saber reconocer cuándo un trueque deja contentas a las dos partes."
         lessons:
           - position: 1
             slug: reviso-un-trueque-viejo
@@ -1074,6 +1105,7 @@ sagas:
         key_vocabulary: [repaso, recuerdo, aventura completa]
         prior_knowledge: "Domina todos los temas previos de la aventura del archipiélago."
         fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        parent_check: "Al terminar el viaje, pídele a {{name}} que narre cómo pasamos de cambiar cosas directamente a usar monedas y billetes, y fíjate si logra explicarlo de principio a fin."
         lessons:
           - position: 1
             slug: recuerdo-mis-deseos

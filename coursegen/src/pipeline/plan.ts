@@ -54,6 +54,18 @@ export const CONSOLIDATION_INSTRUCTION =
   'CONSOLIDATION LESSON: retrieval and application ONLY — never introduce a concept absent from the sources.';
 export const INTERLEAVE_INSTRUCTION = 'Interleave at least 2 distinct source topics within this lesson plan.';
 
+/** COURSE_ENGINE.md §3.1/§4 — connect-to-prior. Never a cold restart. */
+export function connectToPriorInstruction(prior: string): string {
+  return (
+    `CONNECT TO PRIOR: this lesson must OPEN by explicitly linking to what was just learned — "${prior}". ` +
+    'Do NOT restart cold or generic; the first story segment must reference or build on this.'
+  );
+}
+
+export function registerToneInstruction(toneDirectiveEs: string): string {
+  return `AUDIENCE REGISTER (adult): ${toneDirectiveEs}`;
+}
+
 export function effectiveDifficulty(ctx: PlanContext): 1 | 2 | 3 | 4 | 5 {
   if (!ctx.review) return ctx.lesson.difficulty;
   return Math.min(ctx.lesson.difficulty, REVIEW_DIFFICULTY_CAP[ctx.review.kind]) as 1 | 2 | 3 | 4 | 5;
@@ -88,6 +100,15 @@ export interface PlanContext {
   };
   /** Present only for review_spaced/review_interleaved/review_quest topics. */
   review?: PlanReviewContext;
+  /**
+   * Connect-to-prior (COURSE_ENGINE.md §3.1/§4): the previous slot's
+   * micro_objective in the linear walk — same topic's previous lesson, or
+   * the last lesson of the previous topic when this lesson is position 1.
+   * Undefined ONLY for the course's very first lesson (exempt).
+   */
+  prior?: string;
+  /** Audience registers (COURSE_ENGINE.md §3.3). Absent = kid, no prompt changes. */
+  register?: { fullPalette: boolean; toneDirectiveEs?: string };
 }
 
 export interface PlanResult {
@@ -243,6 +264,8 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     ctx.review && (ctx.review.kind === 'review_interleaved' || ctx.review.kind === 'review_quest')
       ? INTERLEAVE_INSTRUCTION
       : undefined,
+    ctx.prior ? connectToPriorInstruction(ctx.prior) : undefined,
+    ctx.register?.toneDirectiveEs ? registerToneInstruction(ctx.register.toneDirectiveEs) : undefined,
   ]
     .filter((line): line is string => Boolean(line))
     .map((line, i) => `${i + 1}. ${line}`)
@@ -304,7 +327,7 @@ export interface PlanDeps {
 
 export async function planLesson(ctx: PlanContext, deps: PlanDeps = {}): Promise<PlanResult> {
   const complete = deps.complete ?? completeDeepSeek;
-  const { allowed } = resolveAllowedTypes(ctx.taxonomy, ctx.tier);
+  const { allowed } = resolveAllowedTypes(ctx.taxonomy, ctx.tier, { fullPalette: ctx.register?.fullPalette });
   const paletteText = renderPalette(allowed);
   const moneyRequired = isMoneyRequired(ctx);
 

@@ -36,6 +36,7 @@ sagas:
         key_vocabulary: [esfuerzo, trabajar, cansado, lograr]
         prior_knowledge: "Sabe qué es una moneda y para qué sirve (aventura anterior)."
         fact_refs: []
+        parent_check: "La próxima vez que carguen algo pesado juntos, pregúntale a {{name}} si eso le costó esfuerzo o le salió fácil."
         lessons:
           - position: 1
             slug: el-arbol-no-crece-solo
@@ -69,6 +70,7 @@ sagas:
         key_vocabulary: [tarea de casa, ordenar, ayudar]
         prior_knowledge: "Sabe que hacer algo toma esfuerzo (tema anterior)."
         fact_refs: []
+        parent_check: "Pídele a {{name}} que nombre una tarea de la casa que de verdad sienta como un trabajo, como ordenar su cuarto o regar una planta."
         lessons:
           - position: 1
             slug: tender-la-cama-del-nido
@@ -102,6 +104,7 @@ sagas:
         key_vocabulary: [más esfuerzo, menos esfuerzo, distinto]
         prior_knowledge: "Reconoce tareas de casa como trabajo (tema anterior)."
         fact_refs: []
+        parent_check: "Muéstrale a {{name}} dos tareas distintas de casa y fíjate si logra decir cuál pide más esfuerzo."
         lessons:
           - position: 1
             slug: cargar-lena-o-regar-una-flor
@@ -135,6 +138,7 @@ sagas:
         key_vocabulary: [equipo, juntos, ayudarse]
         prior_knowledge: "Compara el esfuerzo de distintos trabajos (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando carguen algo pesado entre dos, observa si {{name}} nota que el trabajo se sintió más ligero por hacerlo en equipo."
         lessons:
           - position: 1
             slug: entre-dos-es-mas-facil
@@ -168,6 +172,7 @@ sagas:
         key_vocabulary: [terminar, a medias, completo]
         prior_knowledge: "Sabe trabajar en equipo (tema anterior)."
         fact_refs: []
+        parent_check: "Fíjate en {{name}} la próxima vez que deje una tarea a medias, y pregúntale con calma si ya está lista o le falta terminarla."
         lessons:
           - position: 1
             slug: el-camino-a-medias
@@ -201,6 +206,7 @@ sagas:
         key_vocabulary: [orgulloso, alegría, logré]
         prior_knowledge: "Sabe terminar una tarea de principio a fin (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando {{name}} termine algo que le costó trabajo, pregúntale cómo se siente por dentro y escucha si le pone nombre a ese orgullo."
         lessons:
           - position: 1
             slug: lo-logre-yo-solo
@@ -326,6 +332,7 @@ sagas:
         key_vocabulary: [chambita, tarea pequeña, pedir ayuda]
         prior_knowledge: "Sabe qué significa esforzarse y sentirse orgulloso (saga anterior)."
         fact_refs: []
+        parent_check: "Pregúntale a {{name}} qué significa para él o ella la palabra 'chambita' y pídele un ejemplo propio."
         lessons:
           - position: 1
             slug: la-primera-chambita
@@ -359,6 +366,7 @@ sagas:
         key_vocabulary: [chambita de casa, tender, guardar]
         prior_knowledge: "Sabe qué es una chambita (tema anterior)."
         fact_refs: []
+        parent_check: "Anímalo a {{name}} a nombrarte dos tareas pequeñas que podría hacer hoy mismo en casa, sin que tú las sugieras primero."
         lessons:
           - position: 1
             slug: chambitas-dentro-de-la-cabana
@@ -392,6 +400,7 @@ sagas:
         key_vocabulary: [vecino, ayudar, con permiso]
         prior_knowledge: "Sabe hacer chambitas en su propia casa (tema anterior)."
         fact_refs: []
+        parent_check: "Si surge la ocasión de ayudar a un vecino, observa si {{name}} recuerda pedirte permiso antes de ofrecerse."
         lessons:
           - position: 1
             slug: ayudo-al-vecino-ardilla
@@ -425,6 +434,11 @@ sagas:
         key_vocabulary: [recompensa, más esfuerzo, más recompensa]
         prior_knowledge: "Sabe hacer chambitas seguras para vecinos (tema anterior)."
         fact_refs: [mxn.reference_prices.chambita_pequena, mxn.reference_prices.chambita_mediana]
+        parent_check: "Dale a {{name}} dos tareitas de tamaño distinto con recompensas distintas y ve si entiende por qué una vale más que la otra."
+        prerequisites:
+          - path: archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+            strength: soft
+            reason: "Ya reconoce que algunas cosas cuestan más monedas, así que le resulta natural entender que una chambita más grande da una recompensa mayor."
         lessons:
           - position: 1
             slug: chambita-chica-recompensa-chica
@@ -458,6 +472,7 @@ sagas:
         key_vocabulary: [elegir hoy, tiempo, ganas]
         prior_knowledge: "Relaciona esfuerzo y recompensa en una chambita (tema anterior)."
         fact_refs: []
+        parent_check: "Deja que {{name}} elija entre dos o tres tareas posibles para hoy y observa si logra decidirse sin que tú resuelvas por él o ella."
         lessons:
           - position: 1
             slug: el-tablon-de-chambitas
@@ -491,6 +506,7 @@ sagas:
         key_vocabulary: [cumplir, recompensa, ciclo completo]
         prior_knowledge: "Sabe elegir una chambita según tiempo y ganas (tema anterior)."
         fact_refs: [mxn.reference_prices.chambita_pequena]
+        parent_check: "En la próxima chambita que haga en casa, pídele a {{name}} que te cuente cómo la eligió, cómo la hizo y qué recibió al terminarla."
         lessons:
           - position: 1
             slug: termino-mi-chambita
@@ -616,6 +632,7 @@ sagas:
         key_vocabulary: [ganar, recibir monedas, a cambio de esfuerzo]
         prior_knowledge: "Completó el ciclo de una chambita, incluida su recompensa (saga anterior)."
         fact_refs: [mxn.reference_prices.chambita_pequena]
+        parent_check: "Cuando {{name}} reciba unas monedas por ayudar en casa, pregúntale por qué las ganó y confirma que entiende que fue por su esfuerzo."
         lessons:
           - position: 1
             slug: mis-primeras-monedas-ganadas
@@ -649,6 +666,11 @@ sagas:
         key_vocabulary: [contar, sumar, total del día]
         prior_knowledge: "Reconoce monedas ganadas por esfuerzo (tema anterior)."
         fact_refs: [math.max_single_coin_count_tier1]
+        parent_check: "Al final de un día con dos o tres tareitas, pídele a {{name}} que sume en voz alta cuántas monedas ganó en total."
+        prerequisites:
+          - path: archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+            strength: hard
+            reason: "Sumar las monedas ganadas en el día usa la misma habilidad de juntar monedas hasta un monto exacto que se aprendió en el archipiélago."
         lessons:
           - position: 1
             slug: sumo-dos-chambitas
@@ -682,6 +704,7 @@ sagas:
         key_vocabulary: [acumular, varios días, total junto]
         prior_knowledge: "Sabe sumar las ganancias de un solo día (tema anterior)."
         fact_refs: [math.max_single_coin_count_tier1_late]
+        parent_check: "Después de un par de días ganando monedas, revisa con {{name}} si puede juntar lo de ambos días para saber cuánto tiene en total."
         lessons:
           - position: 1
             slug: lo-que-gane-ayer-y-hoy
@@ -715,6 +738,11 @@ sagas:
         key_vocabulary: [varía, más, menos, normal]
         prior_knowledge: "Sabe juntar ganancias de varios días (tema anterior)."
         fact_refs: []
+        parent_check: "En un día en que {{name}} gane menos monedas que otras veces, observa si logra aceptarlo con calma."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/solo-tengo-una-cosa-a-la-vez
+            strength: soft
+            reason: "La calma para aceptar que ganó menos un día se parece a la calma que ya practicó para elegir solo una cosa cuando no podía tener todas."
         lessons:
           - position: 1
             slug: hoy-gane-menos
@@ -748,6 +776,7 @@ sagas:
         key_vocabulary: [registro, anotar, marcar]
         prior_knowledge: "Acepta que las ganancias varían de un día a otro (tema anterior)."
         fact_refs: []
+        parent_check: "Invita a {{name}} a marcar con una rayita o un dibujo cada moneda que gane durante la semana."
         lessons:
           - position: 1
             slug: una-marca-por-cada-moneda
@@ -781,6 +810,7 @@ sagas:
         key_vocabulary: [semana completa, total, celebrar]
         prior_knowledge: "Sabe llevar un registro simple de ganancias (tema anterior)."
         fact_refs: [calendar.days_per_week, math.max_single_coin_count_tier1_late]
+        parent_check: "Al cerrar la semana, siéntate con {{name}} a sumar todo lo que ganó día por día y celebren juntos el total."
         lessons:
           - position: 1
             slug: siete-dias-de-chambitas
@@ -906,6 +936,7 @@ sagas:
         key_vocabulary: [soy bueno en, me gusta hacer, mi talento]
         prior_knowledge: "Sabe calcular ganancias semanales (saga anterior)."
         fact_refs: []
+        parent_check: "Escucha a {{name}} cuando hable de lo que le gusta hacer, y pregúntale en qué cree que es bueno de verdad."
         lessons:
           - position: 1
             slug: lo-que-se-me-da-bien
@@ -939,6 +970,11 @@ sagas:
         key_vocabulary: [ayudar a alguien, quién se beneficia]
         prior_knowledge: "Reconoce su propio talento (tema anterior)."
         fact_refs: []
+        parent_check: "Fíjate a quién ayudó {{name}} la próxima vez que haga algo por alguien, y pregúntale qué habría pasado si nadie lo hubiera hecho."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/no-todos-queremos-lo-mismo
+            strength: soft
+            reason: "Reconocer que cada isleño quería algo distinto ayuda a entender que cada trabajo ayuda a una persona distinta con una necesidad distinta."
         lessons:
           - position: 1
             slug: a-quien-ayudo-hoy
@@ -972,6 +1008,7 @@ sagas:
         key_vocabulary: [agradecimiento, recompensa por ayudar]
         prior_knowledge: "Reconoce a quién ayuda su trabajo (tema anterior)."
         fact_refs: [mxn.reference_prices.chambita_mediana]
+        parent_check: "Después de darle las gracias o una recompensa a {{name}} por ayudar, pregúntale por qué cree que la recibió."
         lessons:
           - position: 1
             slug: gracias-por-tu-ayuda
@@ -1005,6 +1042,11 @@ sagas:
         key_vocabulary: [oficio, comunidad, distintos trabajos]
         prior_knowledge: "Conecta ayuda y recompensa (tema anterior)."
         fact_refs: []
+        parent_check: "Camina con {{name}} por el vecindario y pregúntale cuántos oficios distintos puede reconocer y nombrar."
+        prerequisites:
+          - path: bosque-de-la-abundancia/semillas-de-esfuerzo/diferentes-trabajos-diferentes-esfuerzos
+            strength: soft
+            reason: "Ya comparó que unos trabajos piden más esfuerzo que otros, lo que ayuda a reconocer que existen distintos oficios en su comunidad."
         lessons:
           - position: 1
             slug: quien-cuida-los-animales
@@ -1038,6 +1080,7 @@ sagas:
         key_vocabulary: [me gustaría, algún día, imaginar]
         prior_knowledge: "Conoce distintos oficios del bosque (tema anterior)."
         fact_refs: []
+        parent_check: "Averigua con {{name}} qué chambita u oficio le gustaría probar algún día, y pídele que te diga por qué eligió justamente ese."
         lessons:
           - position: 1
             slug: si-yo-pudiera-elegir
@@ -1071,6 +1114,7 @@ sagas:
         key_vocabulary: [repaso, recuerdo, todo el viaje]
         prior_knowledge: "Domina todos los temas previos de la aventura del bosque."
         fact_refs: [mxn.reference_prices.chambita_pequena, mxn.reference_prices.chambita_mediana]
+        parent_check: "Cierren juntos esta etapa pidiéndole a {{name}} que te cuente, con sus propias palabras, qué aprendió sobre esforzarse, hacer chambitas y ganar sus propias monedas."
         lessons:
           - position: 1
             slug: recuerdo-mi-primera-chambita

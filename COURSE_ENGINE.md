@@ -102,9 +102,56 @@ micro-objectives are RETRIEVAL objectives ("recuerda y aplica X sin re-enseñar"
 The plan/write prompts receive the source topics' concepts and objectives and
 the instruction "consolidate — never introduce new concepts".
 
-**Totals: 8 adventures × (5 sagas) — 4 teaching sagas × 8 topics (6 teaching +
-2 review) + 1 review saga × 6 topics — × 4 lessons = 152 lessons/adventure =
-1,216 total** (768 teaching + 448 review ≈ 3.3 years at 1/day).
+**Totals:** tier1 adventures (1–5): 4 teaching sagas × 8 topics (6 teaching +
+2 review) + review saga × 6 topics = 152 lessons each. tier2 adventures (6–8)
+use the sanctioned teaching-breadth expansion — 8 teaching topics per saga
+(review shifts to positions 9–10) = 184 lessons each. **Course total: 5×152 +
+3×184 = 1,312 lessons (864 teaching + 448 review, 34% consolidation ≈ 3.6
+years at 1/day).**
+
+### §3.2 Concept metadata — mastery, placement and parent visibility
+
+(Adapted from Marble's os-taxonomy patterns — structure only, no text reuse.)
+
+- **`parent_check`** (optional, teaching topics; es-MX authoring locale): ONE
+  natural-language mastery gut-check a parent can ask, with a `{{name}}`
+  placeholder ("Si {{name}} recibiera dinero en su cumpleaños, ¿podría explicar
+  por qué conviene guardar una parte?"). Surfaces in the future parent
+  dashboard — a direct implementation of the §1.9 parent-visibility invariant.
+- **`prerequisites`** (optional, topics): `[{path, strength: 'hard'|'soft',
+  reason}]`. The linear walk already implies "previous lesson" as a hard edge —
+  these entries model the NON-obvious edges, especially cross-domain ones
+  (counting/arithmetic → money mechanics; reading a chart → red-flag audits),
+  which curriculum graphs habitually under-model. Every edge carries a
+  one-sentence human-readable `reason` (debuggability + judge grounding).
+  `hard` = a true gate for future placement; `soft` = a sequencing nudge.
+- These two fields power the **future onboarding/placement phase**
+  (Duolingo-style): a placement quiz walks the hard-edge DAG backwards from the
+  learner's claimed level, using topic objectives + parent_check territory to
+  probe mastery, and drops the learner at the earliest unmet hard edge. Design
+  reserved here; built in a later phase.
+
+### §3.3 Audience registers (kids today, adults later)
+
+The catalog's CONCEPTS are audience-agnostic; the RENDERING is not. `taxonomy.yaml`
+declares `registers`: `kid` (default — age tiers + Piaget gates apply) and
+`adult` (full 56-type palette, no vocabulary ceiling, tone: direct, respectful,
+never infantilizing; anchors in real adult life — nómina, súper, renta,
+comisiones). `npm run generate -- --register adult` regenerates the SAME
+blueprints as a parallel course (slug `<course>-adultos`) — content is
+REGENERATED per register, never filtered down or dressed up (a UI toggle that
+hides fields and calls itself "adaptation" is the documented anti-pattern).
+Piaget gates switch off for adult; the anti-genericity gate and judge stay.
+
+### §3.4 Locale scalability
+
+One document per locale, always. Adding locale N (e.g. fr-FR) touches exactly:
+(1) Vault: widen the `lesson_documents.locale` CHECK (delta migration);
+(2) frontend `LESSON_LOCALES` + i18n fragment directory; (3) `taxonomy.yaml`
+forbidden-vocabulary lists for the new locale; (4) Forge `--locales` target +
+Echo voice map env. Core's locale resolution (profile → authoring fallback)
+needs no change. Verified serving today: en-US / es-MX / pt-BR each return
+their own document for the same lesson when the profile locale changes.
 
 Catalog authoring is human-reviewed content design. The Educación Financiera
 catalog progression (ages 6→8):
@@ -149,9 +196,17 @@ gate      DETERMINISTIC, free, in order:
           4. Rationale gate — every wrong option carries rationale_md (P7)
           5. Character canon gate — cast ⊆ {dina,dino,rho,zara}, emotions/
              actions in the closed sets
+          6. Anti-genericity gate — deterministic detectors for content that
+             restates instead of teaching: prompt_md ≈ topic/lesson title,
+             explanation_md too short or with no concrete instance (no number,
+             character or scenario), banned filler phrases per locale. Cheap
+             garbage never reaches the judge (two-phase pattern).
    ↓
 review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
-          age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness.
+          age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,
+          concreteness (≥1 worked concrete instance; connects to the prior
+          lesson's concept — the write prompt receives the previous blueprint's
+          micro-objective and MUST open by linking to it, never restarting cold).
           kid_safety < 5 or age_fit < 4 → revise loop (max 2) → else fail slot.
    ↓
 localize  es-MX → en-US and pt-BR: translation-with-contract call (structure

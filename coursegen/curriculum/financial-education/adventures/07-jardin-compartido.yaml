@@ -44,6 +44,7 @@ sagas:
     - compartir
     - generosidad
     prior_knowledge: Conoce el frasco de compartir (aventura 3).
+    parent_check: "¿{{name}} puede explicarte con sus palabras qué significa dar?"
     fact_refs: []
     lessons:
     - position: 1
@@ -93,6 +94,7 @@ sagas:
     - dinero
     - formas de dar
     prior_knowledge: Sabe qué significa dar (tema anterior).
+    parent_check: "¿{{name}} puede darte un ejemplo de dar tiempo, dar cosas y dar dinero?"
     fact_refs: []
     lessons:
     - position: 1
@@ -146,6 +148,7 @@ sagas:
     - prioridad
     - ayudar
     prior_knowledge: Reconoce formas distintas de dar (tema anterior).
+    parent_check: "Si le presentas dos necesidades distintas, ¿{{name}} puede elegir a quién ayudaría primero y por qué?"
     fact_refs: []
     lessons:
     - position: 1
@@ -196,6 +199,7 @@ sagas:
     - guardar
     - dar
     prior_knowledge: Conoce los frascos de ahorrar, gastar y compartir (aventura 3).
+    parent_check: "¿{{name}} puede explicarte por qué no conviene dar todo lo que tiene, sino guardar también una parte?"
     fact_refs: []
     lessons:
     - position: 1
@@ -249,6 +253,7 @@ sagas:
     - favor
     - generosidad
     prior_knowledge: Ha decidido cuánto dar con un límite razonable (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre ayudar sin esperar nada y ayudar esperando algo a cambio?"
     fact_refs: []
     lessons:
     - position: 1
@@ -299,6 +304,7 @@ sagas:
     - sentir
     - gratitud
     prior_knowledge: Ha practicado dar sin esperar algo a cambio (tema anterior).
+    parent_check: "¿{{name}} puede contarte cómo se siente cuando ayuda a alguien más?"
     fact_refs: []
     lessons:
     - position: 1
@@ -340,6 +346,98 @@ sagas:
       - story
       - storyplay
   - position: 7
+    slug: donar-con-criterio
+    title_es: Donar con criterio
+    concept: Antes de donar, pensar a dónde va la ayuda y si de verdad llega a quien la necesita hace que dar sea más efectivo.
+    learning_objective: Al final, el niño puede explicar al menos una pregunta que conviene hacerse antes de donar algo a una causa.
+    key_vocabulary:
+    - donar
+    - criterio
+    - confiable
+    - verificar
+    prior_knowledge: Sabe distinguir dar sincero de dar con condición (aventura 7, saga 1).
+    parent_check: "¿{{name}} puede explicarte una pregunta que se haría antes de donar algo, para saber si de verdad ayuda?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-canastas-para-donar
+      micro_objective: Observar dos formas distintas de donar, una sin pensarlo y otra revisando a dónde va la ayuda.
+      narrative_beat: En el jardín, Dino ve dos canastas de donación, una organizada por Dr. Rho, con destino claro, y otra sin nadie a cargo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: a-donde-va-mi-donacion
+      micro_objective: Identificar a dónde llega una donación antes de decidir entregarla.
+      narrative_beat: Dr. Rho muestra a Dina que la canasta organizada del jardín llega directo a una familia que necesita semillas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: preguntas-antes-de-donar
+      micro_objective: Aplicar dos preguntas simples sobre a dónde va y si de verdad ayuda antes de decidir dónde donar.
+      narrative_beat: Zara Vex enseña a Dino dos preguntas rápidas para hacerse antes de dejar algo en cualquier canasta de donación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-donacion-pensada
+      micro_objective: Decidir, aplicando las preguntas aprendidas, dónde donar una parte del frasco de compartir propio.
+      narrative_beat: Dina revisa las dos canastas del jardín y elige, con una razón clara, dónde dejar su donación esta semana.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 8
+    slug: elegir-una-causa-que-me-importa
+    title_es: Elegir una causa que me importa
+    concept: Dar con más ganas y constancia ocurre cuando la causa elegida se conecta con algo que de verdad le importa a quien dona.
+    learning_objective: Al final, el niño puede nombrar una causa propia que le gustaría apoyar y explicar por qué le importa.
+    key_vocabulary:
+    - causa
+    - importar
+    - apoyar
+    - elegir
+    prior_knowledge: Ha practicado donar pensando a dónde va la ayuda (tema anterior).
+    parent_check: "¿{{name}} puede contarte una causa que le importa y por qué le gustaría apoyarla?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: muchas-causas-en-el-jardin
+      micro_objective: Observar varias causas distintas que existen en el jardín y el bosque, como animales, plantas o familias nuevas.
+      narrative_beat: Dr. Rho muestra un mural con varias causas del bosque, como cuidar animales, sembrar árboles y ayudar a familias nuevas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cual-me-mueve-mas
+      micro_objective: Comparar dos causas distintas y reconocer cuál conecta más con los propios intereses.
+      narrative_beat: Zara Vex pregunta a Dino cuál de las causas del mural le hace sentir más ganas de ayudar, y por qué.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: por-que-me-importa
+      micro_objective: Explicar con una razón propia por qué una causa elegida le importa más que otras.
+      narrative_beat: Dina explica a Dr. Rho por qué cuidar a los animales del bosque es la causa que más le importa a ella.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-causa-elegida
+      micro_objective: Elegir una causa personal propia y proponer una forma concreta de apoyarla.
+      narrative_beat: Dina elige su causa del jardín y decide, con una idea propia, cómo la apoyará esta temporada.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -359,6 +457,8 @@ sagas:
     - jardin-compartido/dar-con-el-corazon/cuanto-puedo-dar-sin-quedarme-sin-nada
     - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
     - jardin-compartido/dar-con-el-corazon/la-alegria-de-compartir
+    - jardin-compartido/dar-con-el-corazon/donar-con-criterio
+    - jardin-compartido/dar-con-el-corazon/elegir-una-causa-que-me-importa
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -392,7 +492,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -465,6 +565,7 @@ sagas:
     - entre todos
     - comunidad
     prior_knowledge: Sabe qué significa dar y compartir (aventura 7, saga 1).
+    parent_check: "¿{{name}} puede nombrarte algo del jardín o de su casa que se comparte entre varias personas?"
     fact_refs: []
     lessons:
     - position: 1
@@ -516,6 +617,7 @@ sagas:
     - responsabilidad
     - compartido
     prior_knowledge: Identifica recursos compartidos del jardín (tema anterior).
+    parent_check: "¿{{name}} puede darte un ejemplo de cómo cuidar algo que se comparte con otras personas?"
     fact_refs: []
     lessons:
     - position: 1
@@ -567,6 +669,7 @@ sagas:
     - justo
     - orden
     prior_knowledge: Sabe cuidar recursos compartidos (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué turnarse para usar algo compartido es más justo para todos?"
     fact_refs: []
     lessons:
     - position: 1
@@ -621,6 +724,7 @@ sagas:
     - justo
     - aportar
     prior_knowledge: Comprende la idea de turnos y cuidado compartido (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte qué pasa cuando alguien no hace su parte en el cuidado de algo compartido?"
     fact_refs: []
     lessons:
     - position: 1
@@ -673,6 +777,7 @@ sagas:
     - comunidad
     - apoyo
     prior_knowledge: Sabe qué pasa si alguien no colabora (tema anterior).
+    parent_check: "¿{{name}} pide ayuda cuando la necesita, y ofrece ayuda cuando ve que alguien más la necesita?"
     fact_refs: []
     lessons:
     - position: 1
@@ -724,6 +829,7 @@ sagas:
     - comunidad
     - juntos
     prior_knowledge: Ha practicado turnarse, cuidar y pedir/ofrecer ayuda (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte por qué algo compartido crece mejor cuando todos ponen su parte?"
     fact_refs: []
     lessons:
     - position: 1
@@ -766,6 +872,102 @@ sagas:
       - story
       - storyplay
   - position: 7
+    slug: cooperativas-escolares
+    title_es: Cooperativas escolares
+    concept: En una escuela, una cooperativa es un pequeño grupo donde varios estudiantes juntan esfuerzo o monedas para conseguir algo que beneficia a todos.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué es una cooperativa escolar y para qué sirve.
+    key_vocabulary:
+    - cooperativa
+    - escuela
+    - juntar
+    - beneficio
+    prior_knowledge: Sabe cuidar y turnarse con recursos compartidos del jardín (aventura 7, saga 2).
+    parent_check: "¿{{name}} puede explicarte con sus palabras qué es una cooperativa escolar?"
+    prerequisites:
+    - path: bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+      strength: soft
+      reason: "Entender que un trabajo ayuda a alguien más prepara para ver cómo una cooperativa junta el esfuerzo de varios para el bien de todos."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-tiendita-de-la-escuela
+      micro_objective: Reconocer una cooperativa escolar como un grupo que junta esfuerzo o monedas para algo que usan todos.
+      narrative_beat: Dr. Rho cuenta que en la escuela del bosque, un grupo de estudiantes organiza una pequeña tiendita cooperativa.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quien-participa
+      micro_objective: Identificar quiénes participan y se benefician de una cooperativa escolar.
+      narrative_beat: Zara Vex explica que todos los estudiantes que aportan a la tiendita también deciden juntos qué vender.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: como-se-parece-al-jardin
+      micro_objective: Comparar una cooperativa escolar con el jardín compartido, notando qué tienen en común.
+      narrative_beat: Dino compara la tiendita cooperativa de la escuela con el jardín compartido y nota que ambos funcionan con turnos y aportes.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-idea-de-cooperativa
+      micro_objective: Proponer una idea sencilla de cooperativa que podría funcionar en su propia escuela.
+      narrative_beat: Dina propone su propia idea de cooperativa escolar, inspirada en lo que aprendió del jardín compartido.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: cuidar-los-espacios-publicos
+    title_es: Cuidar los espacios públicos
+    concept: Un parque, una plaza o un patio de juegos son espacios públicos que se mantienen bonitos y seguros cuando todos ayudan a cuidarlos.
+    learning_objective: Al final, el niño puede identificar una acción de cuidado apropiada para un espacio público.
+    key_vocabulary:
+    - espacio público
+    - cuidar
+    - plaza
+    - comunidad
+    prior_knowledge: Sabe cuidar recursos compartidos del jardín (aventura 7, saga 2).
+    parent_check: "¿{{name}} puede nombrarte una acción que ayudaría a cuidar un parque o una plaza?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-plaza-del-bosque
+      micro_objective: Reconocer un espacio público del bosque que usan todas las familias, como una plaza o un patio de juegos.
+      narrative_beat: Dina y Dino visitan la plaza del bosque, donde juegan niños de todas las familias del jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-plaza-descuidada
+      micro_objective: Observar qué pasa con un espacio público cuando nadie lo cuida.
+      narrative_beat: Dr. Rho muestra una banca rota y basura olvidada en un rincón de la plaza que nadie ha cuidado.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: pequenas-acciones-grandes-cambios
+      micro_objective: Identificar pequeños gestos de cuidado que cualquier persona puede hacer en un espacio público.
+      narrative_beat: Zara Vex hace una lista de gestos simples, como recoger basura o avisar de algo roto, que ayudan a cuidar la plaza.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-compromiso-con-la-plaza
+      micro_objective: Proponer una acción propia de cuidado para un espacio público cercano.
+      narrative_beat: Dina decide qué hará ella la próxima vez que visite la plaza del bosque para ayudar a cuidarla.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -785,6 +987,8 @@ sagas:
     - jardin-compartido/el-jardin-de-todos/que-pasa-si-alguien-no-ayuda
     - jardin-compartido/el-jardin-de-todos/pedir-ayuda-y-ofrecer-ayuda
     - jardin-compartido/el-jardin-de-todos/un-jardin-que-crece-con-todos
+    - jardin-compartido/el-jardin-de-todos/cooperativas-escolares
+    - jardin-compartido/el-jardin-de-todos/cuidar-los-espacios-publicos
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -818,7 +1022,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -892,6 +1096,7 @@ sagas:
     - escuela
     - necesitar
     prior_knowledge: Entiende recursos compartidos del jardín (aventura 7, saga 2).
+    parent_check: "¿{{name}} puede nombrarte algo grande, como un camino o una escuela, que usa toda una comunidad?"
     fact_refs: []
     lessons:
     - position: 1
@@ -945,6 +1150,11 @@ sagas:
     - cooperación
     - sumar
     prior_knowledge: Reconoce recursos comunitarios grandes (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué una parte pequeña de cada familia, sumada, ayuda a mantener cosas grandes de la comunidad?"
+    prerequisites:
+    - path: archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+      strength: hard
+      reason: "Confiar en el dinero compartido por todos es la base para entender por qué cada quien aporta una parte pequeña a una caja común."
     fact_refs: []
     lessons:
     - position: 1
@@ -999,6 +1209,7 @@ sagas:
     - mantener
     - comunidad
     prior_knowledge: Entiende qué es una aportación pequeña compartida (tema anterior).
+    parent_check: "¿{{name}} puede explicarte en qué se usa el dinero que se junta entre todas las familias?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1054,6 +1265,7 @@ sagas:
     - fuerza
     - solo
     prior_knowledge: Sabe en qué se usa el dinero de la caja común (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué un problema grande se resuelve mejor cooperando que actuando solo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1106,6 +1318,7 @@ sagas:
     - aportar
     - comunidad
     prior_knowledge: Comprende por qué cooperar es más fuerte (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo se benefician todas las familias cuando cada una aporta su parte?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1161,6 +1374,7 @@ sagas:
     - comunidad
     prior_knowledge: Ha comprendido el ciclo completo de aportar, usar y beneficiarse de la caja común
       (temas anteriores).
+    parent_check: "Si le das un monto y varias necesidades, ¿{{name}} puede repartirlo y explicar por qué lo repartió así?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1203,6 +1417,106 @@ sagas:
       - money
       - storyplay
   - position: 7
+    slug: servicios-publicos-y-su-costo
+    title_es: Servicios públicos y su costo
+    concept: Cosas como el agua limpia, la luz de los faroles o la recolección de basura son servicios públicos que también cuestan dinero de mantener.
+    learning_objective: Al final, el niño puede nombrar un servicio público y explicar que mantenerlo también tiene un costo.
+    key_vocabulary:
+    - servicio público
+    - mantener
+    - costo
+    - luz
+    prior_knowledge: Entiende qué es una aportación pequeña compartida y en qué se usa (temas anteriores).
+    parent_check: "¿{{name}} puede nombrarte un servicio público y explicar que mantenerlo también cuesta dinero?"
+    prerequisites:
+    - path: taller-de-los-inventores/el-precio-justo/el-costo-no-es-el-precio
+      strength: soft
+      reason: "Distinguir costo de precio ayuda a entender que mantener un servicio público también tiene un costo real."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: los-faroles-del-camino
+      micro_objective: Reconocer un servicio público del bosque, como los faroles que iluminan el camino de noche.
+      narrative_beat: Al anochecer, Dino nota que los faroles del camino se encienden solos y se pregunta quién los cuida.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: alguien-cuida-los-faroles
+      micro_objective: Reconocer que mantener un servicio público, como los faroles, también tiene un costo.
+      narrative_beat: Dr. Rho explica que alguien revisa y repara los faroles cada semana, y que ese trabajo también cuesta monedas de la caja común.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: otros-servicios-del-bosque
+      micro_objective: Identificar otros servicios públicos del bosque además de los faroles, como el agua limpia o la recolección de hojas caídas.
+      narrative_beat: Zara Vex hace una lista con Dina de otros servicios del bosque que la caja común ayuda a mantener.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - story
+    - position: 4
+      slug: mi-lista-de-servicios-publicos
+      micro_objective: Elaborar una lista propia de servicios públicos observados y su relación con la caja común.
+      narrative_beat: Dina arma su propia lista de servicios públicos del bosque y explica por qué cada uno necesita mantenimiento.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 8
+    slug: presupuesto-familiar-participativo
+    title_es: Un presupuesto familiar entre todos
+    concept: Cuando una familia decide junta en qué usar su dinero disponible, cada quien puede opinar y así se sienten parte de la decisión.
+    learning_objective: Al final, el niño puede explicar cómo participar en una decisión familiar sobre en qué usar el dinero disponible.
+    key_vocabulary:
+    - familia
+    - decidir
+    - opinar
+    - disponible
+    prior_knowledge: Ha repartido un fondo comunitario entre varias necesidades (tema anterior).
+    parent_check: "¿{{name}} sabe que puede opinar en una decisión familiar sobre en qué usar el dinero disponible?"
+    prerequisites:
+    - path: aldea-del-ahorro/metas-de-la-aldea/divido-mis-monedas-en-frascos
+      strength: soft
+      reason: "Haber dividido monedas propias entre frascos ayuda a entender cómo una familia divide su dinero disponible entre varias necesidades."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-familia-de-dino-decide
+      micro_objective: Observar cómo una familia se reúne para decidir juntos en qué usar el dinero disponible de la semana.
+      narrative_beat: La familia de Dino se sienta a la mesa para decidir juntos si usar sus monedas extra en arreglar la cerca o en semillas nuevas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cada-quien-opina
+      micro_objective: Reconocer que cada integrante de la familia puede aportar una opinión antes de decidir.
+      narrative_beat: Dr. Rho explica que hasta el más pequeño de la familia puede opinar antes de decidir en qué gastar juntos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: escuchar-antes-de-decidir
+      micro_objective: Aplicar la escucha de varias opiniones antes de tomar una decisión familiar sobre el dinero.
+      narrative_beat: Zara Vex representa una reunión familiar donde Dino debe escuchar dos opiniones distintas antes de ayudar a decidir.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-opinion-en-familia
+      micro_objective: Proponer, con una razón propia, en qué le gustaría que su familia usara una parte del dinero disponible.
+      narrative_beat: Dina comparte su propia opinión sobre en qué usar el dinero extra de su familia esta semana, explicando por qué.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1222,6 +1536,8 @@ sagas:
     - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
     - jardin-compartido/una-parte-para-el-bien-comun/cuando-todos-ponen-su-parte-todos-ganan
     - jardin-compartido/una-parte-para-el-bien-comun/practicar-repartir-para-el-bien-de-todos
+    - jardin-compartido/una-parte-para-el-bien-comun/servicios-publicos-y-su-costo
+    - jardin-compartido/una-parte-para-el-bien-comun/presupuesto-familiar-participativo
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1255,7 +1571,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado
@@ -1330,6 +1646,7 @@ sagas:
     - fiesta
     prior_knowledge: Ha participado en decisiones comunitarias del jardín y el bosque (aventura 7, sagas
       1-3).
+    parent_check: "¿{{name}} puede nombrarte los elementos básicos que necesita organizar una celebración comunitaria?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1382,6 +1699,7 @@ sagas:
     - responsabilidad
     - equipo
     prior_knowledge: Tiene un plan básico de fiesta (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué repartir las tareas de un proyecto entre varias personas es más justo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1434,6 +1752,7 @@ sagas:
     - gratitud
     - comunidad
     prior_knowledge: Ha repartido tareas de la celebración (tema anterior).
+    parent_check: "¿{{name}} puede expresar un agradecimiento concreto hacia alguien que lo ayudó?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1485,6 +1804,7 @@ sagas:
     - resultado
     - juntos
     prior_knowledge: Ha agradecido a quienes ayudaron (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte dos logros que se consiguieron gracias a la cooperación de un grupo?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1539,6 +1859,7 @@ sagas:
     - comunidad
     - aprovechar
     prior_knowledge: Ha medido los logros conseguidos en conjunto (tema anterior).
+    parent_check: "Si sobra algo de un proyecto compartido, ¿{{name}} puede proponerte una decisión razonable sobre qué hacer con eso?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1592,6 +1913,7 @@ sagas:
     - continuar
     - comunidad
     prior_knowledge: Ha repasado logros y decisiones comunitarias de toda la aventura (temas anteriores).
+    parent_check: "¿{{name}} puede imaginar y contarte cómo se vería, en el futuro, algo que cuida junto con otras personas?"
     fact_refs: []
     lessons:
     - position: 1
@@ -1635,6 +1957,106 @@ sagas:
       - story
       - storyplay
   - position: 7
+    slug: reconocer-a-quienes-nos-cuidan
+    title_es: Reconocer a quienes nos cuidan
+    concept: Personas como quien cuida el agua, repara los caminos o atiende a los enfermos hacen un trabajo importante para toda la comunidad y merecen reconocimiento.
+    learning_objective: Al final, el niño puede nombrar a una persona que presta un servicio importante a la comunidad y explicar por qué su trabajo importa.
+    key_vocabulary:
+    - servicio
+    - reconocer
+    - importante
+    - comunidad
+    prior_knowledge: Ha agradecido a quienes ayudaron en el jardín (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte a alguien que presta un servicio importante a su comunidad?"
+    prerequisites:
+    - path: faro-de-la-confianza/el-banco-del-faro/que-es-un-banco
+      strength: soft
+      reason: "Conocer que hay personas que trabajan cuidando el dinero del banco ayuda a reconocer otros trabajos importantes de la comunidad."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: quien-arreglo-el-puente
+      micro_objective: Reconocer que una persona específica se encargó de reparar el puente que usa todo el bosque.
+      narrative_beat: En la fiesta del jardín, Dino pregunta quién fue la persona que arregló el puente que todos cruzan cada día.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: otros-trabajos-importantes
+      micro_objective: Identificar otras personas que prestan servicios importantes a la comunidad, como quien cuida el agua o atiende a los enfermos.
+      narrative_beat: Dr. Rho presenta a varias personas del bosque cuyo trabajo cuida a toda la comunidad, aunque no siempre se note.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: por-que-su-trabajo-importa
+      micro_objective: Explicar con una razón concreta por qué el trabajo de una persona que presta un servicio comunitario es importante.
+      narrative_beat: Zara Vex pregunta a Dino qué pasaría con el bosque si nadie cuidara el agua o reparara los caminos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-reconocimiento-especial
+      micro_objective: Expresar un reconocimiento propio hacia una persona que presta un servicio importante a su comunidad.
+      narrative_beat: Durante la fiesta, Dina reconoce en voz alta a la persona que cuida los faroles del camino cada noche.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 8
+    slug: planear-la-proxima-temporada
+    title_es: Planear la próxima temporada del jardín
+    concept: Lo aprendido en una temporada completa de cooperación sirve como punto de partida para planear cómo seguir cuidando el jardín juntos.
+    learning_objective: Al final, el niño puede proponer una idea concreta para mejorar la próxima temporada del jardín compartido.
+    key_vocabulary:
+    - temporada
+    - planear
+    - mejorar
+    - siguiente
+    prior_knowledge: Ha repasado logros y decisiones comunitarias de toda la aventura (temas anteriores).
+    parent_check: "¿{{name}} puede proponerte una idea para mejorar algo que ya hace bien?"
+    prerequisites:
+    - path: taller-de-los-inventores/dia-de-mercado/planear-el-proximo-invento
+      strength: soft
+      reason: "Planear un próximo invento con lo aprendido es la misma habilidad que planear la próxima temporada del jardín."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: lo-que-funciono-esta-temporada
+      micro_objective: Recordar, en conjunto, qué partes de la cooperación del jardín funcionaron mejor esta temporada.
+      narrative_beat: Sentados junto al puente arreglado, Dr. Rho pide a Dina y Dino recordar qué fue lo que mejor funcionó esta temporada en el jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: lo-que-podria-mejorar
+      micro_objective: Identificar algo que podría mejorar para la próxima temporada del jardín compartido.
+      narrative_beat: Zara Vex pregunta a Dino qué cambiaría él si el jardín compartido empezara de nuevo mañana.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: una-idea-para-el-futuro
+      micro_objective: Proponer una idea concreta para mejorar el cuidado o la organización del jardín en la próxima temporada.
+      narrative_beat: Dina propone turnos nuevos y más claros para que la próxima temporada del jardín funcione todavía mejor.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-plan-para-el-jardin
+      micro_objective: Elaborar un plan breve propio con una mejora concreta para la próxima temporada del jardín compartido.
+      narrative_beat: Antes de partir del bosque, Dina deja escrito su plan para la próxima temporada del jardín compartido.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - arrange
+  - position: 9
     slug: el-cofre-del-repaso
     kind: review_spaced
     title_es: El Cofre del Repaso
@@ -1654,6 +2076,8 @@ sagas:
     - jardin-compartido/celebrar-juntos/medir-lo-que-logramos-juntos
     - jardin-compartido/celebrar-juntos/compartir-lo-que-sobro
     - jardin-compartido/celebrar-juntos/el-jardin-compartido-un-ano-despues
+    - jardin-compartido/celebrar-juntos/reconocer-a-quienes-nos-cuidan
+    - jardin-compartido/celebrar-juntos/planear-la-proxima-temporada
     lessons:
     - position: 1
       slug: el-cofre-se-abre
@@ -1687,7 +2111,7 @@ sagas:
       suggested_families:
       - choice
       - storyplay
-  - position: 8
+  - position: 10
     slug: reto-entrelazado
     kind: review_interleaved
     title_es: Reto Entrelazado

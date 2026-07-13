@@ -65,11 +65,14 @@ function buildTranslateMessages(
   indexMap: Record<string, string>,
   targetLocale: LessonLocale,
   issues: string | undefined,
+  toneDirectiveEs?: string,
 ) {
   const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
+  const audienceLine = toneDirectiveEs
+    ? `This content targets ADULT learners, not children — preserve that register when translating. Source-language (es-MX) tone directive: ${toneDirectiveEs}`
+    : "Keep the warm, encouraging, age-appropriate register (this is children's content).";
   const system =
-    `You translate children's educational content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders, ` +
-    'a financial-literacy platform for kids. Keep the warm, encouraging, age-appropriate register. ' +
+    `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine} ` +
     'Preserve MarkdownLite markup exactly (**bold**, *italic*, `code`, "- " lists, line breaks) and any {{n}} gap markers verbatim. ' +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.';
   const user = [
@@ -98,6 +101,10 @@ export interface LocalizeResult {
 export interface LocalizeDeps {
   ledger?: UsageLedger;
   translate?: typeof completeDeepSeek;
+  /** COURSE_ENGINE.md §3.3 — injected into the translation prompt for the adult register. Absent = kid (no change). */
+  registerToneEs?: string;
+  /** COURSE_ENGINE.md §3.3 — adult register skips the forbidden-vocabulary re-gate (piaget gates are kid-only). */
+  skipVocabularyGate?: boolean;
 }
 
 export async function localizeLesson(
@@ -120,7 +127,7 @@ export async function localizeLesson(
   const { data: translatedMap } = await withCorrectiveRetry<Record<string, string>>({
     maxAttempts: MAX_TRANSLATE_ATTEMPTS,
     callModel: async (issues) => {
-      const messages = buildTranslateMessages(indexMap, targetLocale, issues);
+      const messages = buildTranslateMessages(indexMap, targetLocale, issues, deps.registerToneEs);
       const result = await translate(
         { messages, temperature: 0.3, jsonMode: true },
         { operation: 'localize', ledger: deps.ledger },
@@ -155,9 +162,11 @@ export async function localizeLesson(
     throw new Error(`localize: re-injected ${targetLocale} document failed contract validation: ${formatZodIssues(parsed.error.issues)}`);
   }
 
-  const vocabProblems = runVocabularyGate(parsed.data, gateCtx.taxonomy, gateCtx.tier);
-  if (vocabProblems.length > 0) {
-    throw new LocalizeVocabError(targetLocale, vocabProblems);
+  if (!deps.skipVocabularyGate) {
+    const vocabProblems = runVocabularyGate(parsed.data, gateCtx.taxonomy, gateCtx.tier);
+    if (vocabProblems.length > 0) {
+      throw new LocalizeVocabError(targetLocale, vocabProblems);
+    }
   }
 
   return { document: parsed.data, targetLocale };

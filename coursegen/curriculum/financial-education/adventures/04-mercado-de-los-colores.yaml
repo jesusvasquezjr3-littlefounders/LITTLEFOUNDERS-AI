@@ -36,6 +36,7 @@ sagas:
         key_vocabulary: [necesito, para vivir, importante]
         prior_knowledge: "Sabe dividir monedas entre ahorro, gasto y compartir (aventura anterior)."
         fact_refs: []
+        parent_check: "Un día cualquiera en casa, pregúntale a {{name}} qué cosas necesitamos de verdad para vivir bien, como comida, agua o un lugar para dormir, y escucha si logra nombrar al menos tres."
         lessons:
           - position: 1
             slug: lo-que-mi-cuerpo-necesita
@@ -69,6 +70,7 @@ sagas:
         key_vocabulary: [deseo, no indispensable, me gustaría]
         prior_knowledge: "Sabe nombrar necesidades básicas (tema anterior)."
         fact_refs: [mxn.reference_prices.juguete_pequeno]
+        parent_check: "La siguiente vez que estén en una tienda y {{name}} pida algo, pregúntale con calma si de verdad lo necesita o si nada más le gustaría tenerlo, sin hacerlo sentir mal por desear cosas."
         lessons:
           - position: 1
             slug: el-juguete-brillante
@@ -102,6 +104,7 @@ sagas:
         key_vocabulary: [las dos cosas, necesito y me gusta]
         prior_knowledge: "Distingue deseos de necesidades por separado (tema anterior)."
         fact_refs: []
+        parent_check: "Muéstrale a {{name}} algo que compraron porque hacía falta y que además les encantó, y pídele que te explique por qué esa cosa fue necesidad y gusto al mismo tiempo."
         lessons:
           - position: 1
             slug: unos-zapatos-que-me-encantan
@@ -135,6 +138,11 @@ sagas:
         key_vocabulary: [prioridad, más importante, elegir primero]
         prior_knowledge: "Reconoce que algo puede ser necesidad y deseo a la vez (tema anterior)."
         fact_refs: []
+        parent_check: "Con unas monedas de juego y dos opciones sobre la mesa, observa si {{name}} logra decidir cuál de las dos es más importante cubrir primero."
+        prerequisites:
+          - path: aldea-del-ahorro/metas-de-la-aldea/cuanto-guardo-cuanto-gasto
+            strength: soft
+            reason: "Ya practicó justificar una división simple entre ahorrar y gastar, lo que ayuda a elegir entre una necesidad y un deseo con monedas limitadas."
         lessons:
           - position: 1
             slug: solo-me-alcanza-para-uno
@@ -168,6 +176,7 @@ sagas:
         key_vocabulary: [lista, antes de comprar, hoy necesito]
         prior_knowledge: "Sabe priorizar entre necesidad y deseo (tema anterior)."
         fact_refs: []
+        parent_check: "Antes de salir juntos a hacer un mandado, invita a {{name}} a decir en voz alta dos o tres cosas que de verdad hacen falta comprar hoy."
         lessons:
           - position: 1
             slug: antes-de-entrar-al-mercado
@@ -201,6 +210,7 @@ sagas:
         key_vocabulary: [separar, clasificar, necesidad, deseo]
         prior_knowledge: "Sabe armar una lista de necesidades antes de comprar (tema anterior)."
         fact_refs: []
+        parent_check: "Señalando varios objetos de la casa o de un anuncio, pídele a {{name}} que separe cuáles son necesidades y cuáles son deseos, sin darle pistas."
         lessons:
           - position: 1
             slug: repaso-necesidad-o-deseo
@@ -326,6 +336,7 @@ sagas:
         key_vocabulary: [precio, etiqueta, cuesta]
         prior_knowledge: "Sabe clasificar necesidades y deseos (saga anterior)."
         fact_refs: [mxn.reference_prices.paleta]
+        parent_check: "En su próxima salida a comprar, invita a {{name}} a buscar y leer en voz alta el precio de un producto, ayudándolo solo con los números grandes."
         lessons:
           - position: 1
             slug: la-etiqueta-del-precio
@@ -359,6 +370,7 @@ sagas:
         key_vocabulary: [revisar antes, sin apurarse, decidir con calma]
         prior_knowledge: "Sabe leer precios en etiquetas (tema anterior)."
         fact_refs: []
+        parent_check: "Justo antes de que {{name}} decida comprar algo en una tienda, pregúntale por qué conviene revisar el precio con calma antes de decidir, y escucha su explicación."
         lessons:
           - position: 1
             slug: casi-compro-sin-mirar
@@ -392,6 +404,11 @@ sagas:
         key_vocabulary: [mismo objeto, distinto precio, comparar puestos]
         prior_knowledge: "Sabe revisar un precio antes de decidir (tema anterior)."
         fact_refs: [mxn.reference_prices.helado, mxn.reference_prices.paleta]
+        parent_check: "Si ven el mismo producto en dos tiendas distintas, aprovecha para pedirle a {{name}} que compare ambos precios y te diga cuál conviene más."
+        prerequisites:
+          - path: archipielago-del-trueque/el-valor-de-las-cosas/comparo-precios-de-dos-cosas
+            strength: hard
+            reason: "Comparar el mismo objeto en dos puestos usa la misma habilidad de comparar dos precios que se aprendió en el archipiélago."
         lessons:
           - position: 1
             slug: la-misma-fruta-dos-precios
@@ -425,6 +442,7 @@ sagas:
         key_vocabulary: [barato, caro, comparar con lo que ya sé]
         prior_knowledge: "Sabe comparar el precio del mismo objeto en distintos puestos (tema anterior)."
         fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.juguete_pequeno]
+        parent_check: "Mostrándole a {{name}} dos objetos parecidos, pregúntale cuál le parece barato y cuál caro, pidiéndole que compare con algo que ya conoce."
         lessons:
           - position: 1
             slug: esto-es-barato-o-caro
@@ -458,6 +476,7 @@ sagas:
         key_vocabulary: [dura más, mejor calidad, vale la pena]
         prior_knowledge: "Sabe clasificar objetos como baratos o caros (tema anterior)."
         fact_refs: []
+        parent_check: "Cuéntale a {{name}} sobre algo que compraron un poco más caro porque duraba más, y fíjate si entiende por qué en ese caso valió la pena."
         lessons:
           - position: 1
             slug: el-juguete-que-se-rompe-rapido
@@ -491,6 +510,7 @@ sagas:
         key_vocabulary: [mejor opción, combinar precio y calidad]
         prior_knowledge: "Sabe cuándo pagar más puede valer la pena (tema anterior)."
         fact_refs: [mxn.reference_prices.juguete_pequeno]
+        parent_check: "Frente a dos opciones parecidas en una tienda, deja que {{name}} elija cuál comprarían tomando en cuenta tanto el precio como qué tan buena es cada una."
         lessons:
           - position: 1
             slug: repaso-de-precios-del-mercado
@@ -616,6 +636,7 @@ sagas:
         key_vocabulary: [monedas disponibles, cuánto tengo]
         prior_knowledge: "Sabe comparar precios y elegir el mejor (saga anterior)."
         fact_refs: [math.budget_fit_ceiling_tier1]
+        parent_check: "Antes de entrar juntos a comprar algo, pídele a {{name}} que cuente cuántas monedas o cuánto dinero de juego tiene disponible para gastar ese día."
         lessons:
           - position: 1
             slug: cuento-mis-monedas-antes-de-entrar
@@ -649,6 +670,11 @@ sagas:
         key_vocabulary: [total no pasa, cabe en mi bolsa]
         prior_knowledge: "Sabe cuántas monedas tiene disponibles para gastar (tema anterior)."
         fact_refs: [math.budget_fit_ceiling_tier1]
+        parent_check: "Ponle a {{name}} un límite de monedas de juego y varios objetos con precio, y observa si elige un grupo cuyo total no se pase de ese límite."
+        prerequisites:
+          - path: archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+            strength: hard
+            reason: "Elegir objetos que quepan dentro de un límite de monedas usa la misma habilidad de juntar montos exactos aprendida en el archipiélago."
         lessons:
           - position: 1
             slug: dos-objetos-que-si-caben
@@ -682,6 +708,11 @@ sagas:
         key_vocabulary: [primero necesidades, después deseos]
         prior_knowledge: "Sabe elegir combinaciones de objetos dentro de un límite (tema anterior)."
         fact_refs: [math.budget_fit_ceiling_tier1]
+        parent_check: "Al armar juntos una compra imaginaria, pregúntale a {{name}} qué debería entrar primero en la bolsa: lo que hace falta o lo que solo le gustaría tener."
+        prerequisites:
+          - path: mercado-de-los-colores/lo-que-necesito-de-verdad/separar-necesidades-y-deseos
+            strength: hard
+            reason: "Para armar una bolsa de compras que cubra primero lo necesario, primero hay que saber separar necesidades de deseos."
         lessons:
           - position: 1
             slug: reviso-mi-lista-de-necesidades-primero
@@ -715,6 +746,7 @@ sagas:
         key_vocabulary: [me sobra, pequeño gusto, con lo que resta]
         prior_knowledge: "Sabe armar una bolsa priorizando necesidades (tema anterior)."
         fact_refs: [mxn.reference_prices.paleta, mxn.reference_prices.helado]
+        parent_check: "Después de cubrir lo necesario en un juego de compras, pregúntale a {{name}} qué pequeño gusto se daría con las monedas que le sobraron."
         lessons:
           - position: 1
             slug: cuanto-me-sobro
@@ -748,6 +780,7 @@ sagas:
         key_vocabulary: [no me alcanza, cambio por, quito por ahora]
         prior_knowledge: "Sabe elegir un pequeño gusto con lo que sobra (tema anterior)."
         fact_refs: [math.budget_fit_ceiling_tier1]
+        parent_check: "Si en un juego de compras a {{name}} no le alcanzan las monedas para toda su lista, pregúntale qué cambiaría o qué dejaría para después, en vez de rendirse."
         lessons:
           - position: 1
             slug: mi-lista-cuesta-de-mas
@@ -781,6 +814,7 @@ sagas:
         key_vocabulary: [compra completa, sin ayuda, límite de monedas]
         prior_knowledge: "Sabe ajustar una lista que no alcanza (tema anterior)."
         fact_refs: [math.budget_fit_ceiling_tier1]
+        parent_check: "Deja que {{name}} arme solo, sin tu ayuda, una compra completa dentro de un límite de monedas, y revisen juntos al final si el total sí le alcanzó."
         lessons:
           - position: 1
             slug: repaso-mi-bolsa-de-compras
@@ -906,6 +940,7 @@ sagas:
         key_vocabulary: [pensar antes, detenerme, de verdad lo quiero]
         prior_knowledge: "Sabe armar una bolsa de compras dentro de un límite (saga anterior)."
         fact_refs: []
+        parent_check: "Cuando veas a {{name}} a punto de pedir algo por impulso, pregúntale si puede detenerse un momento a pensarlo antes de decidir."
         lessons:
           - position: 1
             slug: me-detengo-un-momento
@@ -939,6 +974,11 @@ sagas:
         key_vocabulary: [comparar todo, antes de decidir]
         prior_knowledge: "Sabe pensar un momento antes de comprar (tema anterior)."
         fact_refs: []
+        parent_check: "Ante una decisión de compra sencilla, pídele a {{name}} que te diga el precio, qué tan buena es la cosa y si de verdad la necesita, los tres juntos, antes de decidir."
+        prerequisites:
+          - path: mercado-de-los-colores/el-mercado-y-sus-precios/vale-la-pena-pagar-mas
+            strength: hard
+            reason: "Para combinar precio, calidad y necesidad antes de decidir, primero hay que reconocer que a veces pagar más sí conviene."
         lessons:
           - position: 1
             slug: reviso-precio-calidad-y-necesidad
@@ -972,6 +1012,11 @@ sagas:
         key_vocabulary: [hoy o después, urgente, puede esperar]
         prior_knowledge: "Sabe comparar precio, calidad y necesidad (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando {{name}} pida algo, pregúntale si de verdad lo necesita hoy o si puede esperar hasta otro momento, y fíjate si sabe explicar por qué."
+        prerequisites:
+          - path: aldea-del-ahorro/paciencia-de-tortuga/lo-que-quiero-ahora-vs-lo-que-quiero-despues
+            strength: soft
+            reason: "Ya comparó lo que quiere ahora con lo que quiere después, lo que ayuda a decidir si una compra es urgente o puede esperar."
         lessons:
           - position: 1
             slug: esto-lo-necesito-ya
@@ -1005,6 +1050,11 @@ sagas:
         key_vocabulary: [pedir ayuda, adulto de confianza, consejo]
         prior_knowledge: "Sabe decidir si algo puede esperar (tema anterior)."
         fact_refs: []
+        parent_check: "Cuéntale a {{name}} que está bien pedirte consejo cuando una decisión de compra le resulte difícil, y observa si alguna vez te lo pide por su cuenta."
+        prerequisites:
+          - path: bosque-de-la-abundancia/chambitas-del-bosque/chambitas-para-mis-vecinos
+            strength: soft
+            reason: "Ya practicó pedir permiso a un adulto de confianza antes de ayudar a un vecino, lo que ayuda a reconocer cuándo conviene pedir ayuda antes de una compra."
         lessons:
           - position: 1
             slug: esta-decision-es-dificil
@@ -1038,6 +1088,7 @@ sagas:
         key_vocabulary: [orgulloso de mi compra, bien pensada]
         prior_knowledge: "Sabe pedir ayuda cuando una decisión es difícil (tema anterior)."
         fact_refs: []
+        parent_check: "Pregúntale a {{name}} cuál ha sido su compra favorita últimamente y por qué se siente orgulloso de haberla pensado bien antes de decidir."
         lessons:
           - position: 1
             slug: mi-mejor-compra-del-viaje
@@ -1071,6 +1122,7 @@ sagas:
         key_vocabulary: [repaso, recuerdo, todo el viaje]
         prior_knowledge: "Domina todos los temas previos de la aventura del mercado."
         fact_refs: [math.budget_fit_ceiling_tier1, mxn.reference_prices.juguete_pequeno]
+        parent_check: "Siéntate con {{name}} a recordar juntos lo que ha aprendido sobre necesidades, precios y decisiones de compra, y pídele que te explique con sus propias palabras cómo decide ahora."
         lessons:
           - position: 1
             slug: recuerdo-mi-primera-necesidad

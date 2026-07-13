@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Forge CLI — the ONLY entry point that spends money (COURSE_ENGINE.md §4).
 // `npm run generate -- --course financial-education [--slots a1-s1-t1-l1,...]
-//   [--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>]`
+//   [--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>]
+//   [--register kid|adult]`
 //
 // Operator-triggered only — never run by CI or any automatic process
 // (/AGENTS.md sign-off rule, BOUNDARIES.md #8).
@@ -9,6 +10,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runGeneration } from './pipeline/run.js';
+import { REGISTERS, isRegister, type Register } from './pipeline/register.js';
 import type { LessonLocale } from './contract/core/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -21,6 +23,7 @@ interface CliOptions {
   noImages?: boolean;
   dryRun?: boolean;
   runId?: string;
+  register?: Register;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -46,6 +49,15 @@ function parseArgs(argv: string[]): CliOptions {
       case '--run-id':
         opts.runId = argv[++i];
         break;
+      case '--register': {
+        const value = argv[++i] ?? '';
+        if (!isRegister(value)) {
+          console.error(`generate: --register must be one of ${REGISTERS.join('|')}, got "${value}"`);
+          process.exit(1);
+        }
+        opts.register = value;
+        break;
+      }
       default:
         console.error(`generate: unknown argument "${arg}"`);
         process.exit(1);
@@ -57,7 +69,7 @@ function parseArgs(argv: string[]): CliOptions {
 function printUsage(): void {
   console.error(
     'Usage: npm run generate -- --course <slug> [--slots a1-s1-t1-l1,...] ' +
-      '[--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>]',
+      '[--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>] [--register kid|adult]',
   );
 }
 
@@ -75,6 +87,7 @@ async function main(): Promise<void> {
     noImages: opts.noImages,
     dryRun: opts.dryRun,
     runId: opts.runId,
+    register: opts.register,
     curriculumRoot: path.join(PACKAGE_ROOT, 'curriculum'),
     runsRoot: path.join(PACKAGE_ROOT, 'runs'),
   });

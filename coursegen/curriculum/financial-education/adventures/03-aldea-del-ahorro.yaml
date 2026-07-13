@@ -36,6 +36,11 @@ sagas:
         key_vocabulary: [guardar, después, ahorrar]
         prior_knowledge: "Sabe ganar y contar sus propias monedas (aventura anterior)."
         fact_refs: []
+        parent_check: "La próxima vez que le des una moneda a {{name}}, fíjate si guarda una parte en vez de gastarla toda de inmediato."
+        prerequisites:
+          - path: bosque-de-la-abundancia/la-cosecha-de-monedas/gano-monedas-por-mi-chambita
+            strength: hard
+            reason: "No se puede guardar monedas para después sin antes haber ganado monedas propias con esfuerzo."
         lessons:
           - position: 1
             slug: no-gasto-todo-hoy
@@ -69,6 +74,11 @@ sagas:
         key_vocabulary: [meta, sueño, cuesta]
         prior_knowledge: "Entiende la idea de guardar monedas para después (tema anterior)."
         fact_refs: [mxn.reference_prices.juguete_pequeno]
+        parent_check: "Pregúntale a {{name}} qué le gustaría comprar algún día con sus propios ahorros y espera una respuesta concreta, no un 'no sé'."
+        prerequisites:
+          - path: archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+            strength: hard
+            reason: "Para nombrar una meta que cuesta varias monedas, primero hay que saber que existen cosas que cuestan más que otras."
         lessons:
           - position: 1
             slug: mi-sueno-en-el-valle
@@ -102,6 +112,7 @@ sagas:
         key_vocabulary: [frasco, lugar especial, guardar ahí]
         prior_knowledge: "Tiene una meta personal de ahorro (tema anterior)."
         fact_refs: []
+        parent_check: "Muéstrale a {{name}} dos recipientes distintos en casa y observa si sabe señalar cuál serviría mejor para guardar sus monedas."
         lessons:
           - position: 1
             slug: el-frasco-de-rho
@@ -135,6 +146,7 @@ sagas:
         key_vocabulary: [cada moneda, suma, acercarse a la meta]
         prior_knowledge: "Tiene su propio frasco de ahorro listo (tema anterior)."
         fact_refs: []
+        parent_check: "Ponle enfrente a {{name}} una moneda chica y una grande y pregúntale si las dos ayudan por igual a su meta."
         lessons:
           - position: 1
             slug: una-moneda-mas-cerca
@@ -168,6 +180,7 @@ sagas:
         key_vocabulary: [impulso, quiero ya, sentirlo está bien]
         prior_knowledge: "Sabe que cada moneda guardada suma hacia su meta (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando {{name}} vea algo que quiera comprar ya mismo, escucha si logra decirlo en voz alta sin sentirse mal por sentirlo."
         lessons:
           - position: 1
             slug: vi-algo-que-quiero-ya
@@ -201,6 +214,7 @@ sagas:
         key_vocabulary: [esperar, un poquito más, mi meta grande]
         prior_knowledge: "Reconoce el impulso de gastar de inmediato (tema anterior)."
         fact_refs: []
+        parent_check: "La próxima vez que {{name}} sienta ganas de gastar en algo pequeño, dale la opción de esperar y observa si la elige por su cuenta."
         lessons:
           - position: 1
             slug: rho-decide-esperar
@@ -326,6 +340,11 @@ sagas:
         key_vocabulary: [ahora, después, más grande]
         prior_knowledge: "Sabe elegir esperar en una situación simple (saga anterior)."
         fact_refs: []
+        parent_check: "Plantéale a {{name}} una elección sencilla entre algo chico hoy y algo más grande después, y fíjate si sabe explicarte cuál conviene."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/solo-tengo-una-cosa-a-la-vez
+            strength: soft
+            reason: "Ya practicó elegir una cosa y dejar la otra para después, lo que ayuda a comparar una recompensa pequeña de hoy con una meta más grande de mañana."
         lessons:
           - position: 1
             slug: la-tortuga-sabia-del-valle
@@ -359,6 +378,7 @@ sagas:
         key_vocabulary: [días que faltan, contar hacia adelante]
         prior_knowledge: "Compara recompensas inmediatas y futuras (tema anterior)."
         fact_refs: [calendar.days_per_week]
+        parent_check: "Pídele a {{name}} que cuente contigo cuántos días faltan para un evento cercano, como un cumpleaños o una salida especial."
         lessons:
           - position: 1
             slug: cuantos-dias-faltan
@@ -392,6 +412,7 @@ sagas:
         key_vocabulary: [cada semana, lo mismo, plan]
         prior_knowledge: "Sabe contar días que faltan para un evento (tema anterior)."
         fact_refs: [math.savings_weekly_options_tier1]
+        parent_check: "Esta semana y la próxima, pregúntale a {{name}} cuánto piensa guardar: si te da la misma cantidad las dos veces, ya entendió la idea de un plan constante."
         lessons:
           - position: 1
             slug: guardo-lo-mismo-cada-semana
@@ -425,6 +446,11 @@ sagas:
         key_vocabulary: [semanas que faltan, meta total, calcular]
         prior_knowledge: "Tiene un plan de ahorro semanal constante (tema anterior)."
         fact_refs: [math.savings_goal_ceiling_tier1, math.savings_weekly_options_tier1]
+        parent_check: "Ayúdale a {{name}} a poner sobre la mesa cuánto quiere ahorrar y cuánto guarda por semana, y observa si logra calcular cuántas semanas más le faltan."
+        prerequisites:
+          - path: bosque-de-la-abundancia/la-cosecha-de-monedas/mi-primera-semana-de-ganancias
+            strength: soft
+            reason: "Ya pensó en una semana completa de ganancias, lo que ayuda a calcular cuántas semanas le faltan para una meta de ahorro."
         lessons:
           - position: 1
             slug: mi-meta-y-mi-ahorro-semanal
@@ -458,6 +484,7 @@ sagas:
         key_vocabulary: [progreso, celebrar, a la mitad]
         prior_knowledge: "Sabe calcular semanas que faltan para una meta (tema anterior)."
         fact_refs: []
+        parent_check: "Cuando {{name}} llegue a la mitad de una meta real de ahorro, fíjate si lo nota solo y quiere celebrarlo de alguna forma."
         lessons:
           - position: 1
             slug: llegue-a-la-mitad
@@ -491,6 +518,7 @@ sagas:
         key_vocabulary: [cambiar de meta, nueva meta, está bien]
         prior_knowledge: "Sabe celebrar el progreso de una meta de ahorro (tema anterior)."
         fact_refs: []
+        parent_check: "Si {{name}} decide que ya no quiere lo que estaba ahorrando y prefiere otra cosa, observa si se siente tranquilo con el cambio, no culpable."
         lessons:
           - position: 1
             slug: ya-no-quiero-lo-mismo
@@ -616,6 +644,7 @@ sagas:
         key_vocabulary: [lugar apropiado, cerrado, seguro]
         prior_knowledge: "Tiene experiencia guardando monedas en un frasco (saga anterior)."
         fact_refs: []
+        parent_check: "Recorre la casa junto con {{name}} y pídele que señale dos o tres lugares donde sí guardaría sus monedas, y por qué."
         lessons:
           - position: 1
             slug: el-frasco-o-el-suelo
@@ -649,6 +678,7 @@ sagas:
         key_vocabulary: [cuidar, revisar, mantener cerrado]
         prior_knowledge: "Sabe elegir un buen lugar para guardar monedas (tema anterior)."
         fact_refs: []
+        parent_check: "Pregúntale a {{name}} qué hace para cuidar su frasco de monedas: busca una acción concreta, como cerrarlo bien, no solo 'lo cuido'."
         lessons:
           - position: 1
             slug: cierro-bien-mi-frasco
@@ -682,6 +712,7 @@ sagas:
         key_vocabulary: [compartir, familia, apoyo]
         prior_knowledge: "Sabe cuidar su frasco de ahorros (tema anterior)."
         fact_refs: []
+        parent_check: "Pregúntale directamente cuál es su meta de ahorro ahora mismo: si {{name}} te la cuenta con gusto, ya entendió que compartirla ayuda."
         lessons:
           - position: 1
             slug: le-cuento-a-mi-familia
@@ -715,6 +746,7 @@ sagas:
         key_vocabulary: [perder, accidente, seguir intentando]
         prior_knowledge: "Sabe compartir su meta de ahorro con su familia (tema anterior)."
         fact_refs: []
+        parent_check: "Si alguna vez {{name}} extravía una moneda de verdad, observa cómo reacciona: lo importante es que no se desanime y siga guardando."
         lessons:
           - position: 1
             slug: se-me-cayo-una-moneda
@@ -748,6 +780,7 @@ sagas:
         key_vocabulary: [en mi casa, con un adulto, lugar seguro]
         prior_knowledge: "Sabe que perder una moneda no significa dejar de ahorrar (tema anterior)."
         fact_refs: []
+        parent_check: "Pídele a {{name}} que te lleve al lugar de la casa donde guarda sus ahorros y que te explique por qué eligió ese rincón."
         lessons:
           - position: 1
             slug: busco-con-un-adulto
@@ -781,6 +814,7 @@ sagas:
         key_vocabulary: [revisar, cada semana, rutina]
         prior_knowledge: "Tiene un lugar seguro para guardar su frasco en casa (tema anterior)."
         fact_refs: [calendar.days_per_week]
+        parent_check: "Pregúntale si tiene un día fijo de la semana para revisar cuánto ha guardado; que {{name}} te lo diga sin dudar es buena señal."
         lessons:
           - position: 1
             slug: mi-dia-de-revision
@@ -907,6 +941,11 @@ sagas:
         key_vocabulary: [ahorrar, gastar, compartir, dividir]
         prior_knowledge: "Tiene una rutina de revisión semanal de ahorros (saga anterior)."
         fact_refs: [math.piggy_split_income_tier1]
+        parent_check: "Observa qué hace {{name}} la próxima vez que reciba monedas: si las reparte entre distintos espacios con un propósito para cada uno, ya domina la idea."
+        prerequisites:
+          - path: archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+            strength: hard
+            reason: "Repartir un monto de monedas entre varios frascos exige la misma precisión para juntar montos exactos que se practicó en el archipiélago."
         lessons:
           - position: 1
             slug: tres-frascos-distintos
@@ -940,6 +979,7 @@ sagas:
         key_vocabulary: [cuánto guardo, cuánto gasto, decidir]
         prior_knowledge: "Sabe dividir monedas en frascos con propósito (tema anterior)."
         fact_refs: [math.piggy_split_income_tier1]
+        parent_check: "Pregúntale a {{name}} por qué decidió guardar cierta cantidad y gastar el resto: busca una razón propia, no una respuesta al azar."
         lessons:
           - position: 1
             slug: guardo-mas-esta-semana
@@ -973,6 +1013,7 @@ sagas:
         key_vocabulary: [meta grande, pasos pequeños, poco a poco]
         prior_knowledge: "Sabe justificar cuánto ahorrar y cuánto gastar (tema anterior)."
         fact_refs: [math.savings_goal_ceiling_tier1]
+        parent_check: "Cuando {{name}} hable de una meta grande, fíjate si logra dividirla en pasos más chicos en vez de verla como algo imposible de una sola vez."
         lessons:
           - position: 1
             slug: la-meta-mas-grande-del-valle
@@ -1006,6 +1047,7 @@ sagas:
         key_vocabulary: [en familia, meta compartida, juntos]
         prior_knowledge: "Sabe dividir una meta grande en pasos pequeños (tema anterior)."
         fact_refs: []
+        parent_check: "Conversa con {{name}} sobre algo que podrían lograr juntos en familia y observa si entiende que cada quien puede aportar su parte."
         lessons:
           - position: 1
             slug: una-meta-de-toda-la-familia
@@ -1039,6 +1081,7 @@ sagas:
         key_vocabulary: [priorizar, comparar metas, cuál primero]
         prior_knowledge: "Sabe describir una meta familiar compartida (tema anterior)."
         fact_refs: []
+        parent_check: "Dale a {{name}} dos cosas que quiera lograr con sus ahorros y pídele que elija cuál va primero, con una razón."
         lessons:
           - position: 1
             slug: dos-metas-al-mismo-tiempo
@@ -1072,6 +1115,7 @@ sagas:
         key_vocabulary: [repaso, recuerdo, todo el viaje]
         prior_knowledge: "Domina todos los temas previos de la aventura de la aldea."
         fact_refs: [math.savings_goal_ceiling_tier1, math.piggy_split_income_tier1]
+        parent_check: "Siéntate con {{name}} y pídele que te cuente, en sus propias palabras, todo lo que aprendió sobre guardar, esperar y cuidar sus monedas."
         lessons:
           - position: 1
             slug: recuerdo-mi-primer-frasco

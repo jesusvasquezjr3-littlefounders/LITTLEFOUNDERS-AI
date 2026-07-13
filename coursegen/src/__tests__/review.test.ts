@@ -13,6 +13,7 @@ function rubricResponse(overrides: Partial<Record<string, number>> = {}, notes =
       narrative_quality: 5,
       kid_safety: 5,
       naturalness: 5,
+      concreteness: 5,
       notes,
       ...overrides,
     }),
@@ -77,5 +78,29 @@ describe('reviewLesson', () => {
 
     const result = await reviewLesson(buildDocument(), gateCtx, { judge: judge as never, author: author as never });
     expect(result.cycles).toBe(1);
+  });
+
+  it('concreteness below 4 also triggers a revise cycle (like age_fit)', async () => {
+    const judge = vi
+      .fn()
+      .mockResolvedValueOnce(rubricResponse({ concreteness: 2 }, 'no worked concrete instance, fully abstract'))
+      .mockResolvedValueOnce(rubricResponse());
+    const author = vi.fn().mockResolvedValue({
+      content: JSON.stringify(buildDocument()),
+      promptTokens: 5,
+      completionTokens: 5,
+    });
+
+    const result = await reviewLesson(buildDocument(), gateCtx, { judge: judge as never, author: author as never });
+    expect(result.cycles).toBe(1);
+    expect(judge).toHaveBeenCalledTimes(2);
+  });
+
+  it('passes at the concreteness gate boundary (concreteness=4)', async () => {
+    const judge = vi.fn().mockResolvedValue(rubricResponse({ concreteness: 4 }));
+    const author = vi.fn();
+    const result = await reviewLesson(buildDocument(), gateCtx, { judge: judge as never, author: author as never });
+    expect(result.cycles).toBe(0);
+    expect(author).not.toHaveBeenCalled();
   });
 });

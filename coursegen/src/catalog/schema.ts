@@ -36,6 +36,25 @@ export const ageTierSchema = z.object({
   forbidden_vocabulary: z.record(z.string().min(2).max(8), z.array(z.string().min(1).max(120))),
 });
 
+// ---- audience registers (COURSE_ENGINE.md §3.3) ----------------------------
+//
+// Minimal, additive Zod: taxonomy.yaml MAY declare a `registers` block; when
+// absent (every catalog authored before this field existed), the pipeline
+// falls back to kid-default behavior entirely in code (pipeline/register.ts)
+// — no catalog change required, so existing curriculum keeps validating
+// unchanged. `vocabulary_gates` is the only field with real teeth (kid's own
+// Piaget hard-gate is NEVER controlled by this — it's a §1.9 invariant, not
+// a catalog toggle); `tone_es`/`palette` are prompt-injection hints only.
+export const registerConfigSchema = z.object({
+  default: z.boolean().optional(),
+  tone_es: z.string().min(1).max(600).optional(),
+  palette: z.enum(['full']).optional(),
+  vocabulary_gates: z.boolean(),
+});
+export type RegisterConfig = z.infer<typeof registerConfigSchema>;
+
+export const registersSchema = z.record(z.string().min(1).max(40), registerConfigSchema);
+
 export const taxonomyFileSchema = z.object({
   schema_version: z.literal(1),
   themes: z.array(z.string().min(1).max(40)).min(1),
@@ -47,6 +66,8 @@ export const taxonomyFileSchema = z.object({
   // Named exception lists (`tier1_extra_allowed`, `tier1_banned_types`, and
   // any future `tierN_*` list) — a flat map keeps this open-ended.
   type_exceptions: z.record(z.string().min(1).max(60), z.array(z.string().min(1).max(60))),
+  /** Optional — §3.3. Absent = kid-only behavior, unchanged from pre-register catalogs. */
+  registers: registersSchema.optional(),
 });
 
 export type TaxonomyFile = z.infer<typeof taxonomyFileSchema>;
@@ -132,6 +153,30 @@ export const reviewOfPathSchema = z
     'review_of entries must be "<adventure-slug>/<saga-slug>" or "<adventure-slug>/<saga-slug>/<topic-slug>"',
   );
 
+// ---- concept metadata (COURSE_ENGINE.md §3.2) ------------------------------
+//
+// `parent_check` and `prerequisites` power the future placement/onboarding
+// phase (design reserved, not built yet) — both optional, additive, so
+// pre-existing adventure files with neither field keep validating unchanged.
+
+/** Required placeholder in `parent_check` — the future parent dashboard interpolates the kid's name here. */
+const PARENT_CHECK_PLACEHOLDER = '{{name}}';
+
+export const prerequisiteStrengthSchema = z.enum(['hard', 'soft']);
+export type PrerequisiteStrength = z.infer<typeof prerequisiteStrengthSchema>;
+
+// Paths use the exact same "<adv>/<saga>[/<topic>]" convention as review_of —
+// reusing reviewOfPathSchema keeps the two grammars byte-identical by
+// construction instead of two regexes that could silently drift apart.
+export const prerequisitePathSchema = reviewOfPathSchema;
+
+export const prerequisiteSchema = z.object({
+  path: prerequisitePathSchema,
+  strength: prerequisiteStrengthSchema,
+  reason: z.string().min(10).max(240),
+});
+export type Prerequisite = z.infer<typeof prerequisiteSchema>;
+
 export const topicBlueprintSchema = z
   .object({
     position: z.number().int().min(1),
@@ -144,6 +189,10 @@ export const topicBlueprintSchema = z
     key_vocabulary: z.array(z.string().min(1).max(80)).min(1),
     prior_knowledge: z.string().min(1).max(600),
     fact_refs: z.array(z.string().min(1).max(120)).default([]),
+    /** Optional, teaching topics only (§3.2) — ONE parent-facing mastery gut-check, es-MX, with a {{name}} placeholder. */
+    parent_check: z.string().min(1).max(400).optional(),
+    /** Optional (§3.2) — non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
+    prerequisites: z.array(prerequisiteSchema).min(1).optional(),
     lessons: z.array(lessonBlueprintSchema).min(1),
   })
   .refine((t) => t.kind === 'teaching' || (t.review_of !== undefined && t.review_of.length > 0), {
@@ -153,6 +202,10 @@ export const topicBlueprintSchema = z
   .refine((t) => t.kind !== 'teaching' || t.review_of === undefined, {
     message: 'teaching-kind topics must not carry review_of',
     path: ['review_of'],
+  })
+  .refine((t) => t.parent_check === undefined || t.parent_check.includes(PARENT_CHECK_PLACEHOLDER), {
+    message: `parent_check must include the ${PARENT_CHECK_PLACEHOLDER} placeholder`,
+    path: ['parent_check'],
   });
 
 export const sagaBlueprintSchema = z.object({

@@ -12,6 +12,8 @@ import {
   renderReviewSourcesBlock,
   CONSOLIDATION_INSTRUCTION,
   INTERLEAVE_INSTRUCTION,
+  connectToPriorInstruction,
+  registerToneInstruction,
   type PlanContext,
   type PlanSkeleton,
 } from './plan.js';
@@ -72,6 +74,9 @@ const BASE_HARD_RULES = [
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
   'Write in es-MX, warm and encouraging, at a reading level appropriate for the stated age tier. Never mock a wrong answer (P3).',
+  // LF-Brain finding (COURSE_ENGINE.md §4 "gate" stage 6 / judge concreteness):
+  // generic, restated content never teaches — ground the lesson in reality.
+  'At least ONE segment MUST include a worked CONCRETE instance — a specific number, a named character, or a specific scenario. Never leave the whole lesson in purely abstract phrasing.',
 ];
 
 function buildHardRules(ctx: PlanContext): string {
@@ -83,6 +88,8 @@ function buildHardRules(ctx: PlanContext): string {
       rules.push(INTERLEAVE_INSTRUCTION);
     }
   }
+  if (ctx.prior) rules.push(connectToPriorInstruction(ctx.prior));
+  if (ctx.register?.toneDirectiveEs) rules.push(registerToneInstruction(ctx.register.toneDirectiveEs));
   return rules.map((line, i) => `${i + 1}. ${line}`).join('\n');
 }
 
