@@ -109,6 +109,27 @@ use the sanctioned teaching-breadth expansion — 8 teaching topics per saga
 3×184 = 1,312 lessons (864 teaching + 448 review, 34% consolidation ≈ 3.6
 years at 1/day).**
 
+### §3.1b The course sequence (execution order)
+
+| # | Course (slug) | Tiers | Shape | Lessons | Requires |
+|---|---|---|---|---|---|
+| 1 | Educación Financiera (`financial-education`) | tier1×5 + tier2×3 | 5×152 + 3×184 | 1,312 | — |
+| 2 | Emprendimiento (`entrepreneurship`) | tier1×2 + tier2×6 | 2×152 + 6×184 | 1,408 | financial-education |
+| 3 | Inversiones (`investing`) | tier2×3 + tier3×5 | 8×184 | 1,472 | financial-education, entrepreneurship |
+
+- **tier3 (10–12, concrete-operational→formal transition):** created FOR
+  Inversiones — inversión, interés (simple y compuesto, siempre concreto y
+  visual), acciones ("un pedacito de una empresa"), fondo/canasta, índice,
+  riesgo, diversificar and inflación BECOME teachable; still forbidden:
+  apalancamiento, derivados, opciones, ventas en corto, margen, trading
+  intradía, forex, criptomonedas-como-inversión. Simulations only — nothing
+  transactional, ever (§1.9/COPPA posture); one full adventure is dedicated to
+  investment-fraud literacy.
+- **`course.requires`** (catalog.yaml, optional `[course-slugs]`): the
+  course-level prerequisite edge for future placement/unlock. Topic-level
+  `prerequisites` paths stay within-course.
+- `catalog:check` validates EVERY course directory under `coursegen/curriculum/`.
+
 ### §3.2 Concept metadata — mastery, placement and parent visibility
 
 (Adapted from Marble's os-taxonomy patterns — structure only, no text reuse.)

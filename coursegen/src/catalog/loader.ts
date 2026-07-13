@@ -70,8 +70,12 @@ const EXPECTED_REVIEW_SAGA_TOPICS = 6;
 const EXPECTED_LESSONS_PER_TOPIC = 4;
 // Course total (COURSE_ENGINE.md §3.1): 5 tier1 adventures × 152 + 3 tier2
 // adventures × 184 = 1,312 lessons (864 teaching + 448 review, ~34%
-// consolidation). Per-adventure totals below are the per-tier component.
-const EXPECTED_TOTAL_LESSONS_BY_TIER: Record<string, number> = { tier1: 152, tier2: 184 };
+// consolidation). The per-adventure total is no longer a hardcoded per-tier
+// lookup (that broke the moment a course introduces tier3 or any other age
+// tier, or simply structures an adventure differently) — it's COMPUTED from
+// the adventure's own actual saga/topic kinds below: (teaching-saga topics +
+// review-saga topics) × EXPECTED_LESSONS_PER_TOPIC. This reproduces 152/184
+// exactly for the tier1/tier2 shapes in §3.1 and generalizes to any tier.
 
 function readYaml(filePath: string): { data: unknown; error?: string } {
   if (!existsSync(filePath)) return { data: undefined, error: 'file not found' };
@@ -209,22 +213,32 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
       });
     }
 
-    // ---- total lesson count vs. tier1/tier2 expectation (§3.1 totals) ----
-    const expectedTotalLessons = EXPECTED_TOTAL_LESSONS_BY_TIER[data.adventure.age_tier];
-    if (expectedTotalLessons !== undefined) {
-      const totalLessonsInAdventure = data.sagas.reduce(
-        (n, s) => n + s.topics.reduce((m, t) => m + t.lessons.length, 0),
-        0,
-      );
-      if (totalLessonsInAdventure !== expectedTotalLessons) {
-        issues.push({
-          level: 'warning',
-          file: adventurePath,
-          message:
-            `adventure "${data.adventure.slug}" (age_tier=${data.adventure.age_tier}) has ${totalLessonsInAdventure} ` +
-            `total lesson blueprints (expected ${expectedTotalLessons} per COURSE_ENGINE.md §3.1)`,
-        });
-      }
+    // ---- total lesson count: computed from actual saga/topic kinds, never
+    // a hardcoded per-tier table (§3.1b — that table breaks the instant a
+    // tier3 course lands, or any course structures an adventure
+    // differently). expected = (teaching-saga topics + review-saga topics)
+    // × EXPECTED_LESSONS_PER_TOPIC — reproduces 152/184 exactly for the
+    // canonical tier1/tier2 shapes and generalizes to any tier or shape. ----
+    const teachingSagaTopicCount = data.sagas
+      .filter((s) => s.kind === 'teaching')
+      .reduce((n, s) => n + s.topics.length, 0);
+    const reviewSagaTopicCount = data.sagas
+      .filter((s) => s.kind === 'review')
+      .reduce((n, s) => n + s.topics.length, 0);
+    const expectedTotalLessons = (teachingSagaTopicCount + reviewSagaTopicCount) * EXPECTED_LESSONS_PER_TOPIC;
+    const totalLessonsInAdventure = data.sagas.reduce(
+      (n, s) => n + s.topics.reduce((m, t) => m + t.lessons.length, 0),
+      0,
+    );
+    if (totalLessonsInAdventure !== expectedTotalLessons) {
+      issues.push({
+        level: 'warning',
+        file: adventurePath,
+        message:
+          `adventure "${data.adventure.slug}" (age_tier=${data.adventure.age_tier}) has ${totalLessonsInAdventure} ` +
+          `total lesson blueprints (expected ${expectedTotalLessons} = ${teachingSagaTopicCount + reviewSagaTopicCount} ` +
+          `topics × ${EXPECTED_LESSONS_PER_TOPIC}, computed per COURSE_ENGINE.md §3.1)`,
+      });
     }
 
     const sagaSlugsSeen = new Set<string>();
@@ -538,4 +552,137 @@ export function resolveReviewSources(course: CourseCatalog, reviewOf: readonly s
   }
 
   return sources;
+}
+
+// ---- cross-course `requires` validation (COURSE_ENGINE.md §3.1b) ----------
+//
+// `catalog.yaml`'s optional `course.requires: [course-slug]` is the
+// course-level prerequisite edge for future placement/unlock (the course
+// SEQUENCE table in §3.1b: entrepreneurship requires financial-education;
+// investing requires financial-education + entrepreneurship). A single
+// `loadCourseCatalog(courseDir)` call only ever sees ONE course directory,
+// so it cannot resolve this — it runs as a separate pass, over every
+// `LoadResult` the caller already collected by scanning
+// `coursegen/curriculum/` (or an explicit list of course dirs for tests).
+//
+// Sibling courses may be authored out of order or mid-flight (§3.1b's own
+// sequence table is a target end-state, not a same-commit guarantee) — a
+// required course absent from the scanned set is a WARNING, never a crash
+// or a hard error. A cycle in the `requires` graph is also a warning: it's
+// not a runtime dependency today (nothing resolves/enforces it at
+// generation or publish time), only a future placement hint.
+export function crossValidateRequires(results: readonly LoadResult[]): LoadIssue[] {
+  const issues: LoadIssue[] = [];
+  const bySlug = new Map<string, { file: string; requires: string[] }>();
+
+  for (const result of results) {
+    const course = result.course.catalog?.course;
+    if (!course) continue; // catalog.yaml itself failed to load/parse — already reported by loadCourseCatalog
+    bySlug.set(course.slug, {
+      file: path.join(result.course.courseDir, 'catalog.yaml'),
+      requires: course.requires ?? [],
+    });
+  }
+
+  for (const [slug, { file, requires }] of bySlug) {
+    for (const req of requires) {
+      if (!bySlug.has(req)) {
+        issues.push({
+          level: 'warning',
+          file,
+          message: `course "${slug}" requires "${req}", which is not among the scanned course directories (may be mid-authoring)`,
+        });
+      }
+    }
+  }
+
+  // Cycle detection over the requires graph — restricted to edges whose
+  // target course is present in this scan (an absent target is already
+  // reported above and can't itself close a discoverable cycle here).
+  const WHITE = 0;
+  const GRAY = 1;
+  const BLACK = 2;
+  const color = new Map<string, number>(Array.from(bySlug.keys(), (slug) => [slug, WHITE]));
+  const reportedCycles = new Set<string>();
+
+  function visit(slug: string, stack: readonly string[]): void {
+    color.set(slug, GRAY);
+    const entry = bySlug.get(slug)!;
+    for (const dep of entry.requires) {
+      if (!bySlug.has(dep)) continue;
+      if (color.get(dep) === GRAY) {
+        const cycle = [...stack, slug, dep];
+        const dedupeKey = Array.from(new Set(cycle)).sort().join('|');
+        if (!reportedCycles.has(dedupeKey)) {
+          reportedCycles.add(dedupeKey);
+          issues.push({
+            level: 'warning',
+            file: entry.file,
+            message: `course "requires" graph has a cycle: ${cycle.join(' -> ')}`,
+          });
+        }
+        continue;
+      }
+      if (color.get(dep) === WHITE) visit(dep, [...stack, slug]);
+    }
+    color.set(slug, BLACK);
+  }
+
+  for (const slug of bySlug.keys()) {
+    if (color.get(slug) === WHITE) visit(slug, []);
+  }
+
+  return issues;
+}
+
+// ---- multi-course scan orchestration (COURSE_ENGINE.md §3.1b) -------------
+//
+// Pure — no filesystem discovery of `coursegen/curriculum/`, no console
+// output, no `process.exit`. `catalog/check.ts` (the CLI) does discovery +
+// printing; tests call this directly against fixture directories (mirrors
+// the `pipeline/run.ts` pure-orchestration / `cli.ts` thin-entrypoint split).
+
+export interface CourseCheckSummary {
+  courseDir: string;
+  result: LoadResult;
+  teachingLessons: number;
+  reviewLessons: number;
+}
+
+export interface CatalogCheckReport {
+  summaries: CourseCheckSummary[];
+  totalErrors: number;
+  totalWarnings: number;
+}
+
+export function checkCourseDirs(courseDirs: readonly string[]): CatalogCheckReport {
+  const results = courseDirs.map((courseDir) => loadCourseCatalog(courseDir));
+
+  // Fold cross-course `requires` issues back into the owning course's own
+  // issue list, keyed by its catalog.yaml path, so they print in that
+  // course's section (and count toward its error/warning tally) below.
+  const requiresIssues = crossValidateRequires(results);
+  for (const issue of requiresIssues) {
+    const owner = results.find((r) => path.join(r.course.courseDir, 'catalog.yaml') === issue.file);
+    if (owner) owner.issues.push(issue);
+  }
+
+  const summaries: CourseCheckSummary[] = results.map((result) => {
+    let teachingLessons = 0;
+    let reviewLessons = 0;
+    for (const adventure of result.course.adventures) {
+      for (const saga of adventure.data.sagas) {
+        for (const topic of saga.topics) {
+          if (topic.kind === 'teaching') teachingLessons += topic.lessons.length;
+          else reviewLessons += topic.lessons.length;
+        }
+      }
+    }
+    return { courseDir: result.course.courseDir, result, teachingLessons, reviewLessons };
+  });
+
+  const totalErrors = results.reduce((n, r) => n + r.issues.filter((i) => i.level === 'error').length, 0);
+  const totalWarnings = results.reduce((n, r) => n + r.issues.filter((i) => i.level === 'warning').length, 0);
+
+  return { summaries, totalErrors, totalWarnings };
 }

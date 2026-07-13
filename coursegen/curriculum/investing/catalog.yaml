@@ -1,0 +1,32 @@
+schema_version: 1
+
+course:
+  slug: investing
+  subject: money
+  title:
+    en-US: "Investing"
+    es-MX: "Inversiones"
+    pt-BR: "Investimentos"
+  description:
+    en-US: "A story adventure for kids who already know how money works and how to build something of their own — now they learn how time, patience and smart risk can grow what they save, and how to spot the traps that pretend to be opportunities."
+    es-MX: "Una aventura para niños que ya saben cómo funciona el dinero y cómo construir algo propio — ahora aprenden cómo el tiempo, la paciencia y el riesgo inteligente pueden hacer crecer lo que ahorran, y cómo reconocer las trampas que se disfrazan de oportunidades."
+    pt-BR: "Uma aventura para crianças que já sabem como o dinheiro funciona e como construir algo próprio — agora aprendem como o tempo, a paciência e o risco inteligente podem fazer crescer o que economizam, e como reconhecer as armadilhas que se disfarçam de oportunidades."
+  authoring_locale: es-MX
+  # COURSE_ENGINE.md §3.1b — course-level prerequisite edge for future
+  # placement/unlock. Cross-course resolution (do these courses exist? any
+  # cycles?) happens once every course directory has loaded; a single-course
+  # `loadCourseCatalog` call never resolves this list itself.
+  requires: [financial-education, entrepreneurship]
+
+adventures:
+  - file: adventures/01-el-jardin-del-tiempo.yaml
+  - file: adventures/02-la-aldea-del-interes.yaml
+  - file: adventures/03-el-archipielago-de-los-riesgos.yaml
+  - file: adventures/04-la-ciudad-de-las-metas.yaml
+  # 05-08 authored by a sibling agent (COURSE_ENGINE.md §3.1b arc table) —
+  # listed here so the catalog is a complete coverage oracle even before
+  # they land. DO NOT author these from this task (out of scope).
+  - file: adventures/05-el-reino-de-las-canastas.yaml
+  - file: adventures/06-el-bosque-del-interes-compuesto.yaml
+  - file: adventures/07-el-faro-de-los-fraudes.yaml
+  - file: adventures/08-el-cosmos-del-inversionista.yaml

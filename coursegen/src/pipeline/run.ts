@@ -277,7 +277,7 @@ async function processSlot(
           slug: slot.adventure.slug,
           position: slot.adventure.position,
           theme: slot.adventure.theme,
-          ageTier: slot.tier as 'tier1' | 'tier2',
+          ageTier: slot.tier,
           title: slot.adventure.title,
           description: slot.adventure.description,
           narrativeArc: slot.adventure.narrative_arc,

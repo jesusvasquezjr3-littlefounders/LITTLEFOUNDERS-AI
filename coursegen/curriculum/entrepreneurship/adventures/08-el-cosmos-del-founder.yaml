@@ -1,0 +1,2618 @@
+schema_version: 1
+adventure:
+  position: 8
+  slug: el-cosmos-del-founder
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: The Founder's Cosmos
+    es-MX: El Cosmos del Founder
+    pt-BR: O Cosmos do Founder
+  description:
+    en-US: The capstone journey where Dina and Dino gather everything learned across every world into
+      one complete mini-business plan, iterate it, present it, and graduate as founders.
+    es-MX: El viaje final donde Dina y Dino reúnen todo lo aprendido en cada mundo en un plan completo
+      de mini-empresa, lo iteran, lo presentan y se gradúan como founders.
+    pt-BR: A jornada final onde Dina e Dino reúnem tudo o que aprenderam em cada mundo em um plano completo
+      de mini-empresa, o iteram, o apresentam e se formam como founders.
+  narrative_arc: 'Dina y Dino dejan atrás el archipiélago del faro y suben hasta un observatorio flotante
+    en el cosmos, donde Dr. Rho reúne estrellas que representan cada mundo que visitaron: la isla de las
+    ideas, el bosque de los makers, la ciudad del cliente, el reino de las ventas, el taller del equipo
+    y el faro del buen negocio. Zara Vex, como estratega estrella de todo el viaje, ayuda a Dina y Dino
+    a reunir todo lo aprendido en un solo plan completo de mini-empresa, mientras Dino aprende haciendo,
+    probando y ajustando su plan una y otra vez hasta que funciona de verdad. Al final, frente a todo el
+    cosmos reunido, Dina y Dino presentan su proyecto completo y se gradúan como los primeros founders del
+    cosmos, listos para seguir creando con honestidad, equipo, ética y cuidado.'
+sagas:
+- position: 1
+  slug: el-plan-completo
+  icon: rocket_launch
+  title:
+    en-US: The Complete Plan
+    es-MX: El Plan Completo
+    pt-BR: O Plano Completo
+  description:
+    en-US: Gather idea, product, customer, price, sale and team into one single mini-business plan.
+    es-MX: Reúne idea, producto, cliente, precio, venta y equipo en un solo plan de mini-empresa.
+    pt-BR: Reúna ideia, produto, cliente, preço, venda e equipe em um único plano de mini-empresa.
+  topics:
+  - position: 1
+    slug: que-es-un-plan-de-mini-empresa
+    title_es: Qué es un plan de mini-empresa
+    concept: Un plan de mini-empresa reúne, en un solo lugar, la idea, el producto, el cliente, el precio,
+      la venta y el equipo de un proyecto.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué es un plan de mini-empresa
+      y qué partes tiene.
+    key_vocabulary:
+    - plan
+    - mini-empresa
+    - reunir
+    - partes
+    prior_knowledge: Ha aprendido, en aventuras anteriores, sobre ideas, productos, clientes, precios,
+      ventas y equipos.
+    parent_check: "¿{{name}} puede nombrarte las seis partes que tiene un plan completo de mini-empresa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-observatorio-del-cosmos
+      micro_objective: Reconocer que un plan de mini-empresa reúne, en un solo lugar, todo lo aprendido
+        en el viaje.
+      narrative_beat: Dina y Dino llegan a un observatorio flotante en el cosmos, donde Dr. Rho reúne estrellas
+        que representan cada mundo que visitaron.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: seis-estrellas-para-un-plan
+      micro_objective: Identificar las seis partes de un plan de mini-empresa, idea, producto, cliente,
+        precio, venta y equipo.
+      narrative_beat: Zara Vex muestra seis estrellas brillantes en el observatorio, una por cada parte
+        del plan de mini-empresa.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: por-que-conviene-tener-un-plan
+      micro_objective: Explicar para qué sirve tener todas las partes de un proyecto reunidas en un solo
+        plan.
+      narrative_beat: Dr. Rho explica a Dino por qué conviene tener todas las partes de su proyecto reunidas
+        en un solo lugar.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-primera-mirada-a-mi-plan
+      micro_objective: Observar, por primera vez, un plan de mini-empresa vacío listo para completarse.
+      narrative_beat: Dina observa, por primera vez, su propio plan de mini-empresa vacío, listo para
+        completarse estrella por estrella.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: mi-idea-en-el-plan
+    title_es: Mi idea en el plan
+    concept: Escribir la idea principal del plan, incluyendo qué problema resuelve, es la primera estrella
+      del plan completo.
+    learning_objective: Al final, el niño puede escribir la idea principal de su proyecto dentro de un
+      plan.
+    key_vocabulary:
+    - idea
+    - problema
+    - escribir
+    - principal
+    prior_knowledge: Sabe qué es un plan de mini-empresa (tema anterior).
+    parent_check: "¿{{name}} puede contarte, en una frase, la idea principal de su proyecto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: recordar-mi-idea-original
+      micro_objective: Recordar la idea original que empezó todo el viaje de negocio.
+      narrative_beat: Dino recuerda, mirando las estrellas del cosmos, la idea original que lo hizo empezar
+        su primer puesto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-el-problema-que-resuelve
+      micro_objective: Recordar y escribir el problema concreto que la idea original resuelve.
+      narrative_beat: Dr. Rho ayuda a Dina a recordar y escribir el problema exacto que su idea original
+        resuelve.
+      difficulty: 2
+      suggested_families:
+      - input
+      - choice
+    - position: 3
+      slug: escribir-mi-idea-en-la-primera-estrella
+      micro_objective: Escribir la idea principal, completa y clara, en la primera estrella del plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir su idea principal, completa y clara, en la primera
+        estrella de su plan.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-idea-lista-en-el-plan
+      micro_objective: Revisar y confirmar que la idea escrita en el plan es clara y contiene el problema
+        que resuelve.
+      narrative_beat: Dina revisa su idea escrita en el plan y confirma que se entiende clara, con el problema
+        que resuelve incluido.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+  - position: 3
+    slug: mi-producto-en-el-plan
+    title_es: Mi producto en el plan
+    concept: Describir el producto concreto que se hará para llevar la idea a la realidad es la segunda
+      estrella del plan completo.
+    learning_objective: Al final, el niño puede describir su producto concreto dentro de un plan de mini-empresa.
+    key_vocabulary:
+    - producto
+    - concreto
+    - describir
+    - realidad
+    prior_knowledge: Sabe escribir la idea principal en el plan (tema anterior).
+    parent_check: "¿{{name}} puede describirte, con palabras concretas, el producto que quiere hacer?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: de-la-idea-al-producto
+      micro_objective: Reconocer el paso de tener una idea a decidir un producto concreto que la representa.
+      narrative_beat: Dino piensa qué producto concreto podría hacer para llevar su idea del observatorio
+        a la realidad.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: describir-mi-producto-con-detalle
+      micro_objective: Describir el producto propio con detalles concretos, tamaño, forma o materiales.
+      narrative_beat: Dr. Rho ayuda a Dina a describir su producto con detalles concretos, como tamaño,
+        forma y materiales.
+      difficulty: 2
+      suggested_families:
+      - input
+      - analyze
+    - position: 3
+      slug: escribir-mi-producto-en-la-segunda-estrella
+      micro_objective: Escribir la descripción del producto en la segunda estrella del plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir la descripción de su producto en la segunda estrella
+        de su plan.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-producto-listo-en-el-plan
+      micro_objective: Revisar y confirmar que el producto escrito en el plan conecta con la idea principal.
+      narrative_beat: Dina revisa su producto escrito en el plan y confirma que conecta bien con la idea
+        principal de la primera estrella.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+  - position: 4
+    slug: mi-cliente-en-el-plan
+    title_es: Mi cliente en el plan
+    concept: Describir quién es el cliente ideal del producto es la tercera estrella del plan completo.
+    learning_objective: Al final, el niño puede describir a su cliente ideal dentro de un plan de mini-empresa.
+    key_vocabulary:
+    - cliente
+    - ideal
+    - describir
+    - producto
+    prior_knowledge: Sabe describir su producto en el plan (tema anterior).
+    parent_check: "¿{{name}} puede describirte quién sería el cliente ideal para su producto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: quien-querria-mi-producto
+      micro_objective: Pensar en quién querría de verdad el producto propio.
+      narrative_beat: Dino piensa en quién, del cosmos entero, querría de verdad el producto que está
+        planeando.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: describir-a-mi-cliente-ideal
+      micro_objective: Describir al cliente ideal con detalles concretos, como su edad o su necesidad principal.
+      narrative_beat: Dr. Rho ayuda a Dina a describir a su cliente ideal, con su edad y su necesidad principal.
+      difficulty: 2
+      suggested_families:
+      - input
+      - analyze
+    - position: 3
+      slug: escribir-mi-cliente-en-la-tercera-estrella
+      micro_objective: Escribir la descripción del cliente ideal en la tercera estrella del plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir la descripción de su cliente ideal en la tercera
+        estrella de su plan.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-cliente-listo-en-el-plan
+      micro_objective: Revisar y confirmar que el cliente escrito en el plan de verdad necesita el producto
+        descrito.
+      narrative_beat: Dina revisa su cliente escrito en el plan y confirma que de verdad necesita el producto
+        que describió.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+  - position: 5
+    slug: mi-precio-en-el-plan
+    title_es: Mi precio en el plan
+    concept: Calcular y anotar un precio justo, con su ganancia, es la cuarta estrella del plan completo.
+    learning_objective: Al final, el niño puede calcular y anotar un precio justo con su ganancia dentro
+      de un plan.
+    key_vocabulary:
+    - precio
+    - ganancia
+    - calcular
+    - anotar
+    prior_knowledge: Sabe describir a su cliente ideal en el plan (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+      strength: hard
+      reason: "El plan completo reutiliza directamente el cálculo de ganancia (precio menos costo) que el niño ya practicó al fijar el precio de su primer producto en el reino."
+    parent_check: "¿{{name}} puede calcular el precio justo de su producto, incluyendo el costo y la ganancia?"
+    fact_refs:
+    - business.math.formula_ganancia
+    - business.math.ejemplo_ganancia_15_10
+    lessons:
+    - position: 1
+      slug: cuanto-cuesta-mi-producto
+      micro_objective: Calcular el costo total de hacer el producto propio.
+      narrative_beat: Dino calcula, con ayuda de Zara Vex, cuánto le cuesta en total hacer su producto
+        para el cosmos.
+      difficulty: 1
+      suggested_families:
+      - money
+      - input
+    - position: 2
+      slug: calcular-la-ganancia-de-mi-plan
+      micro_objective: Calcular la ganancia esperada restando el costo del precio de venta propuesto, por
+        ejemplo $15 - $10 = $5.
+      narrative_beat: Dr. Rho ayuda a Dina a calcular la ganancia de su plan, vendiendo su producto en
+        $15 con un costo de $10.
+      difficulty: 2
+      suggested_families:
+      - money
+      - input
+    - position: 3
+      slug: escribir-mi-precio-en-la-cuarta-estrella
+      micro_objective: Escribir el precio, el costo y la ganancia calculados en la cuarta estrella del
+        plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir su precio, su costo y su ganancia en la cuarta estrella
+        de su plan.
+      difficulty: 2
+      suggested_families:
+      - money
+      - arrange
+    - position: 4
+      slug: mi-precio-listo-en-el-plan
+      micro_objective: Revisar y confirmar que el precio escrito en el plan es justo para el cliente descrito.
+      narrative_beat: Dina revisa su precio escrito en el plan y confirma que es justo para el cliente
+        que describió antes.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 6
+    slug: mi-venta-en-el-plan
+    title_es: Mi venta en el plan
+    concept: Describir cómo y dónde se venderá el producto es la quinta estrella del plan completo.
+    learning_objective: Al final, el niño puede describir cómo y dónde venderá su producto dentro de un
+      plan.
+    key_vocabulary:
+    - venta
+    - cómo
+    - dónde
+    - describir
+    prior_knowledge: Sabe calcular su precio justo en el plan (tema anterior).
+    parent_check: "¿{{name}} puede describirte cómo y dónde planea vender su producto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: donde-podria-vender
+      micro_objective: Pensar en lugares posibles donde se podría vender el producto propio.
+      narrative_beat: Dino piensa en distintos lugares del cosmos donde podría instalar su puesto para
+        vender.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: como-atraere-a-mi-cliente
+      micro_objective: Describir cómo se dará a conocer el producto al cliente ideal, usando lo aprendido
+        sobre el pitch.
+      narrative_beat: Dr. Rho ayuda a Dina a pensar cómo dará a conocer su producto a su cliente ideal.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: escribir-mi-venta-en-la-quinta-estrella
+      micro_objective: Escribir cómo y dónde se venderá el producto en la quinta estrella del plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir cómo y dónde venderá su producto en la quinta estrella
+        de su plan.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-venta-lista-en-el-plan
+      micro_objective: Revisar y confirmar que el plan de venta conecta bien con el cliente y el lugar
+        descritos.
+      narrative_beat: Dina revisa su plan de venta y confirma que conecta bien con el cliente y el lugar
+        que había descrito.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+  - position: 7
+    slug: mi-equipo-en-el-plan
+    title_es: Mi equipo en el plan
+    concept: Describir quién forma el equipo y qué rol tiene cada quien es la sexta y última estrella del
+      plan completo.
+    learning_objective: Al final, el niño puede describir su equipo y los roles de cada quien dentro de
+      un plan.
+    key_vocabulary:
+    - equipo
+    - rol
+    - describir
+    - última
+    prior_knowledge: Sabe describir cómo y dónde venderá su producto en el plan (tema anterior).
+    parent_check: "¿{{name}} puede describirte quién formaría su equipo y qué haría cada quien?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: quien-me-podria-ayudar
+      micro_objective: Pensar en quién podría formar parte del equipo del proyecto propio.
+      narrative_beat: Dino piensa en quién del cosmos podría ayudarlo a formar un equipo para su proyecto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pensar-en-roles-segun-talentos
+      micro_objective: Pensar en un rol posible para cada integrante del equipo, según su talento.
+      narrative_beat: Dr. Rho ayuda a Dina a pensar en un rol para cada integrante de su equipo, según
+        el talento de cada quien.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: escribir-mi-equipo-en-la-sexta-estrella
+      micro_objective: Escribir el equipo y los roles de cada quien en la sexta estrella del plan.
+      narrative_beat: Zara Vex ayuda a Dino a escribir su equipo y los roles de cada quien en la sexta
+        estrella de su plan.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-equipo-listo-en-el-plan
+      micro_objective: Revisar y confirmar que cada rol escrito en el plan tiene sentido para el proyecto
+        completo.
+      narrative_beat: Dina revisa su equipo escrito en el plan y confirma que cada rol tiene sentido para
+        todo el proyecto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+  - position: 8
+    slug: mi-plan-completo-de-mini-empresa
+    title_es: Mi plan completo de mini-empresa
+    concept: Reunir las seis estrellas -idea, producto, cliente, precio, venta y equipo- en un solo plan
+      completo y coherente.
+    learning_objective: Al final, el niño puede presentar un plan de mini-empresa completo con sus seis
+      partes conectadas.
+    key_vocabulary:
+    - completo
+    - coherente
+    - reunir
+    - seis
+    prior_knowledge: Conoce las seis partes del plan enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede mostrarte su plan completo de mini-empresa con sus seis partes?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: reviso-mis-seis-estrellas
+      micro_objective: Revisar juntas las seis estrellas del plan, una por una, antes de unirlas.
+      narrative_beat: Con ayuda de Zara Vex, Dina revisa juntas sus seis estrellas del plan, una por una,
+        antes de unirlas.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 2
+      slug: conecto-las-estrellas-entre-si
+      micro_objective: Verificar que las seis estrellas del plan se conectan bien entre sí, sin contradicciones.
+      narrative_beat: Dino verifica que sus seis estrellas del plan, de la idea al equipo, se conectan
+        bien entre sí.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: encuentro-una-estrella-floja
+      micro_objective: Identificar cuál de las seis estrellas del plan necesita más trabajo todavía.
+      narrative_beat: Dr. Rho ayuda a Dina a identificar cuál de sus seis estrellas del plan todavía necesita
+        más trabajo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-primer-plan-completo
+      micro_objective: Presentar el plan completo de mini-empresa con sus seis partes conectadas por primera
+        vez.
+      narrative_beat: Dina presenta, por primera vez, su plan completo de mini-empresa con las seis estrellas
+        conectadas.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del cosmos para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga El Plan Completo.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga El Plan Completo.
+    key_vocabulary:
+    - plan
+    - idea
+    - precio
+    - equipo
+    prior_knowledge: Ha completado los ocho temas de la saga El Plan Completo (aventura 8, saga 1).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/el-plan-completo/que-es-un-plan-de-mini-empresa
+    - el-cosmos-del-founder/el-plan-completo/mi-idea-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-producto-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-cliente-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-precio-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-venta-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-equipo-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-plan-completo-de-mini-empresa
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es un plan de mini-empresa y cómo escribir la idea
+        principal.
+      narrative_beat: Zara Vex abre el cofre del cosmos y reta a Dina a recordar, estrella por estrella,
+        lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo describir el producto y cómo describir al cliente
+        ideal.
+      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre calcular el precio
+        justo y describir la venta.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar
+        la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo reunir las seis
+        estrellas en un plan completo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada estrella
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Plan Completo con Cuidar Recursos y Aprender de Errores
+      del faro, en un reto que combina planear con cuidado y aprender de lo que no funciona.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Plan Completo con
+      un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - plan
+    prior_knowledge: Conoce El Plan Completo (saga 1, aventura 8) y Cuidar Recursos y Aprender de Errores
+      (aventura 7).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/que-son-los-recursos-de-un-negocio
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/un-error-no-es-el-final
+    - el-cosmos-del-founder/el-plan-completo/mi-precio-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-equipo-en-el-plan
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Cuidar Recursos y Aprender
+        de Errores.
+      narrative_beat: Zara Vex trae un recuerdo del faro del buen negocio y pide a Dino recordarlo sin
+        ayuda, antes de mezclarlo con el plan completo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Cuidar Recursos con lo aprendido en El Plan Completo.
+      narrative_beat: Dr. Rho muestra cómo cuidar los recursos del faro se conecta directamente con escribir
+        un precio justo y un equipo claro en el plan.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+        lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del cosmos, Dina combina lo aprendido sobre el plan completo
+        con el cuidado de recursos para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: iterar-el-plan
+  icon: autorenew
+  title:
+    en-US: Iterating the Plan
+    es-MX: Iterar el Plan
+    pt-BR: Iterar o Plano
+  description:
+    en-US: Learn that a plan gets better by testing it, listening, and improving it again and again.
+    es-MX: Aprende que un plan mejora al probarlo, escuchar y mejorarlo una y otra vez.
+    pt-BR: Aprenda que um plano melhora ao testá-lo, ouvir e melhorá-lo várias vezes.
+  topics:
+  - position: 1
+    slug: que-significa-iterar-un-plan
+    title_es: Qué significa iterar un plan
+    concept: Iterar un plan significa revisarlo y mejorarlo después de probarlo, en vez de dejarlo fijo
+      para siempre.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa iterar un plan.
+    key_vocabulary:
+    - iterar
+    - revisar
+    - mejorar
+    - probar
+    prior_knowledge: Tiene un primer plan completo de mini-empresa (saga anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué significa iterar un plan?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-plan-que-todavia-puede-cambiar
+      micro_objective: Reconocer que un plan terminado todavía puede cambiar y mejorar.
+      narrative_beat: Dino cree que su plan ya está terminado para siempre, hasta que Dr. Rho le muestra
+        que todavía puede cambiar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: iterar-o-empezar-de-cero
+      micro_objective: Distinguir iterar un plan (mejorarlo) de empezar un plan completamente distinto
+        de cero.
+      narrative_beat: Zara Vex compara mejorar un plan que ya existe con empezar uno completamente distinto
+        de cero.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-iterar-ayuda
+      micro_objective: Explicar por qué iterar un plan varias veces suele terminar en un mejor resultado.
+      narrative_beat: Dr. Rho explica a Dina por qué revisar y mejorar un plan varias veces suele terminar
+        en un mejor resultado.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-primera-idea-de-iterar
+      micro_objective: Proponer, en una escena nueva, una primera idea de cómo iterar un plan propio.
+      narrative_beat: Dina propone su primera idea de cómo empezar a iterar su propio plan de mini-empresa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: probar-mi-plan-con-alguien
+    title_es: Probar mi plan con alguien
+    concept: Mostrar el plan a alguien más y observar sus primeras reacciones es el primer paso para iterarlo.
+    learning_objective: Al final, el niño puede mostrar su plan a otra persona y observar su reacción.
+    key_vocabulary:
+    - mostrar
+    - reacción
+    - probar
+    - observar
+    prior_knowledge: Sabe qué significa iterar un plan (tema anterior).
+    parent_check: "¿{{name}} ha mostrado su plan o su idea a alguien más para ver qué opina?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: nervios-antes-de-mostrar
+      micro_objective: Reconocer los nervios normales que aparecen antes de mostrar un plan a alguien más.
+      narrative_beat: A Dino le dan un poco de nervios mostrar su plan completo a alguien del observatorio
+        por primera vez.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-a-quien-mostrarselo
+      micro_objective: Elegir a una persona de confianza para mostrarle el plan por primera vez.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir a una persona de confianza del cosmos para mostrarle
+        su plan primero.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: observar-la-reaccion-completa
+      micro_objective: Practicar observar con atención toda la reacción de alguien al mostrarle el plan.
+      narrative_beat: Zara Vex enseña a Dino a observar con atención toda la reacción de la persona mientras
+        le muestra su plan.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 4
+      slug: mi-primera-prueba-del-plan
+      micro_objective: Aplicar con seguridad mostrar el plan propio a alguien nuevo y observar su reacción.
+      narrative_beat: Dina muestra su plan completo a alguien nuevo del cosmos y observa con atención su
+        reacción.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: escuchar-lo-que-no-quedo-claro
+    title_es: Escuchar lo que no quedó claro
+    concept: Identificar qué parte del plan no quedó clara para quien lo escuchó ayuda a saber qué mejorar
+      primero.
+    learning_objective: Al final, el niño puede identificar qué parte de su plan no quedó clara para otra
+      persona.
+    key_vocabulary:
+    - claro
+    - identificar
+    - parte
+    - mejorar
+    prior_knowledge: Sabe probar su plan con alguien (tema anterior).
+    parent_check: "¿{{name}} pregunta qué parte de lo que explicó no quedó clara para el otro?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-cara-de-confusion
+      micro_objective: Reconocer una señal de que algo del plan no quedó claro, como una cara de confusión.
+      narrative_beat: Dino nota una cara de confusión mientras explica la parte del precio de su plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: preguntar-que-no-se-entendio
+      micro_objective: Practicar preguntar directamente qué parte del plan no se entendió bien.
+      narrative_beat: Dr. Rho enseña a Dina a preguntar directamente qué parte de su plan no se entendió
+        bien.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: anotar-lo-que-no-quedo-claro
+      micro_objective: Practicar anotar, con precisión, qué parte del plan no quedó clara para la otra
+        persona.
+      narrative_beat: Zara Vex ayuda a Dino a anotar, con precisión, qué parte de su plan no quedó clara
+        para quien lo escuchó.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-lista-de-partes-confusas
+      micro_objective: Elaborar una lista propia de partes del plan que no quedaron claras, para revisarlas.
+      narrative_beat: Dina arma su propia lista de partes del plan que no quedaron claras, lista para revisarlas.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 4
+    slug: encontrar-el-punto-mas-debil-del-plan
+    title_es: Encontrar el punto más débil del plan
+    concept: Identificar cuál es la parte más débil del plan actual ayuda a saber por dónde empezar a
+      mejorar.
+    learning_objective: Al final, el niño puede identificar la parte más débil de su plan actual.
+    key_vocabulary:
+    - débil
+    - identificar
+    - actual
+    - empezar
+    prior_knowledge: Sabe escuchar lo que no quedó claro (tema anterior).
+    parent_check: "¿{{name}} puede identificar cuál es la parte más débil de un trabajo suyo, para mejorarla primero?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: varias-partes-que-podrian-mejorar
+      micro_objective: Reconocer que un plan puede tener varias partes que podrían mejorar, no solo una.
+      narrative_beat: Dino revisa su lista de partes confusas y nota que hay varias partes de su plan que
+        podrían mejorar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-cual-es-mas-debil
+      micro_objective: Comparar varias partes débiles del plan para decidir cuál es la más débil de todas.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar varias partes débiles de su plan para decidir cuál
+        es la más débil.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-empezar-por-lo-mas-debil
+      micro_objective: Explicar por qué conviene empezar a mejorar por la parte más débil del plan.
+      narrative_beat: Zara Vex explica a Dino por qué conviene empezar a mejorar justo por la parte más
+        débil de su plan.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-punto-mas-debil-encontrado
+      micro_objective: Identificar con seguridad el punto más débil de un plan propio nuevo.
+      narrative_beat: Dina identifica, sin ayuda, el punto más débil de su plan actual de mini-empresa.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 5
+    slug: mejorar-esa-parte-del-plan
+    title_es: Mejorar esa parte del plan
+    concept: Aplicar un cambio concreto a la parte más débil del plan es el paso central de iterarlo.
+    learning_objective: Al final, el niño puede aplicar un cambio concreto a la parte más débil de su plan.
+    key_vocabulary:
+    - mejorar
+    - cambio
+    - concreto
+    - central
+    prior_knowledge: Sabe encontrar el punto más débil del plan (tema anterior).
+    parent_check: "¿{{name}} aplica un cambio concreto cuando identifica la parte más débil de algo que está haciendo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-idea-para-mejorar-esa-parte
+      micro_objective: Proponer una idea concreta de cómo mejorar la parte más débil identificada del plan.
+      narrative_beat: A Dino se le ocurre una idea concreta para mejorar la parte más débil que encontró
+        en su plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-la-mejor-idea-de-cambio
+      micro_objective: Elegir, entre varias ideas, la que mejor resuelve la parte más débil del plan.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir, entre varias ideas, cuál resuelve mejor la parte más
+        débil de su plan.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: aplicar-el-cambio-en-mi-plan
+      micro_objective: Aplicar el cambio elegido directamente en la parte débil del plan propio.
+      narrative_beat: Zara Vex acompaña a Dino mientras aplica el cambio elegido directamente en la parte
+        débil de su plan.
+      difficulty: 3
+      suggested_families:
+      - input
+      - maker
+    - position: 4
+      slug: mi-plan-con-esa-parte-mejorada
+      micro_objective: Presentar el plan con la parte débil ya mejorada, explicando qué cambió.
+      narrative_beat: Dina presenta su plan con la parte débil ya mejorada, explicando a Zara Vex qué cambió
+        exactamente.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - input
+  - position: 6
+    slug: volver-a-probar-el-plan-mejorado
+    title_es: Volver a probar el plan mejorado
+    concept: Mostrar el plan mejorado a alguien más y comparar su reacción con la anterior cierra un ciclo
+      de iteración.
+    learning_objective: Al final, el niño puede volver a probar su plan mejorado y comparar reacciones.
+    key_vocabulary:
+    - volver
+    - probar
+    - comparar
+    - ciclo
+    prior_knowledge: Sabe mejorar la parte más débil de su plan (tema anterior).
+    parent_check: "¿{{name}} vuelve a mostrar algo mejorado, para ver si de verdad mejoró?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mostrar-mi-plan-otra-vez
+      micro_objective: Mostrar el plan mejorado a la misma persona o a alguien nuevo del cosmos.
+      narrative_beat: Dino muestra su plan mejorado a la misma persona que lo ayudó a encontrar la parte
+        débil.
+      difficulty: 1
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 2
+      slug: comparar-las-dos-reacciones
+      micro_objective: Comparar la reacción nueva con la reacción anterior, antes del cambio.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar la nueva reacción con la reacción que tuvo antes
+        del cambio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: el-plan-mejoro-de-verdad
+      micro_objective: Confirmar, con evidencia concreta, si el plan mejoró de verdad después del cambio.
+      narrative_beat: Zara Vex ayuda a Dino a confirmar, con evidencia concreta, si su plan mejoró de verdad
+        después del cambio.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - money
+    - position: 4
+      slug: mi-ciclo-de-prueba-completo
+      micro_objective: Cerrar con seguridad un ciclo completo de probar, escuchar y mejorar el plan.
+      narrative_beat: Dina cierra, con seguridad, un ciclo completo de probar, escuchar y mejorar su plan
+        de mini-empresa.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: iterar-no-es-fallar
+    title_es: Iterar no es fallar
+    concept: Explicar por qué iterar un plan varias veces no significa que el plan original estaba mal,
+      sino que está mejorando.
+    learning_objective: Al final, el niño puede explicar por qué iterar varias veces no es lo mismo que
+      fallar.
+    key_vocabulary:
+    - fallar
+    - mejorar
+    - original
+    - explicar
+    prior_knowledge: Sabe volver a probar un plan mejorado (tema anterior).
+    parent_check: "¿{{name}} entiende que tener que mejorar algo varias veces no significa que falló, sino que está aprendiendo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: me-siento-mal-por-cambiar-tanto
+      micro_objective: Reconocer un sentimiento de desánimo al tener que cambiar el plan varias veces.
+      narrative_beat: Dino se siente un poco desanimado porque ya cambió su plan varias veces desde que
+        llegó al cosmos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cada-cambio-es-un-paso-adelante
+      micro_objective: Explicar por qué cada cambio del plan es en realidad un paso adelante, no un retroceso.
+      narrative_beat: Dr. Rho anima a Dino explicando que cada cambio de su plan fue en realidad un paso
+        adelante, no un retroceso.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: los-founders-tambien-iteran-mucho
+      micro_objective: Reconocer que los founders de verdad también iteran sus planes muchas veces antes
+        de lograrlo.
+      narrative_beat: Zara Vex cuenta que los mejores founders del cosmos también iteraron sus planes muchas
+        veces antes de lograrlo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-orgullo-por-iterar-tanto
+      micro_objective: Expresar, con orgullo propio, todas las veces que iteró su plan hasta mejorarlo.
+      narrative_beat: Dina cuenta, con orgullo, todas las veces que iteró su plan hasta dejarlo mucho mejor
+        que al principio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: mi-plan-despues-de-iterar
+    title_es: Mi plan después de iterar
+    concept: Presentar el plan ya iterado varias veces, explicando qué cambió y por qué, cierra el proceso
+      completo de iteración.
+    learning_objective: Al final, el niño puede presentar su plan iterado explicando qué cambió y por
+      qué.
+    key_vocabulary:
+    - iterado
+    - explicar
+    - cambió
+    - proceso
+    prior_knowledge: Conoce todo el proceso de iterar un plan enseñado en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte qué partes de su plan cambiaron después de mostrarlo a otras personas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: reviso-todo-lo-que-cambio
+      micro_objective: Revisar, en conjunto, todos los cambios que su plan tuvo durante el proceso de iterar.
+      narrative_beat: Con ayuda de Zara Vex, Dina revisa todos los cambios que su plan tuvo durante todo
+        el proceso de iterar.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 2
+      slug: explico-por-que-cambio-cada-parte
+      micro_objective: Explicar, parte por parte, por qué cambió cada sección del plan durante el proceso.
+      narrative_beat: Dino explica, parte por parte, por qué cambió cada sección de su plan durante todo
+        el proceso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: mi-plan-iterado-completo
+      micro_objective: Presentar el plan completo ya iterado varias veces, mostrando su versión final.
+      narrative_beat: Dina presenta su plan completo, ya iterado varias veces, mostrando con orgullo su
+        versión final.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+    - position: 4
+      slug: celebro-mi-proceso-de-iterar
+      micro_objective: Celebrar el proceso completo de iterar, reconociendo que mejoró gracias a probar
+        y escuchar.
+      narrative_beat: Dina celebra junto a Zara Vex y Dino todo el proceso de iterar que mejoró tanto su
+        plan de mini-empresa.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del cosmos para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Iterar el Plan.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Iterar el Plan.
+    key_vocabulary:
+    - iterar
+    - probar
+    - mejorar
+    - escuchar
+    prior_knowledge: Ha completado los ocho temas de la saga Iterar el Plan (aventura 8, saga 2).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/iterar-el-plan/que-significa-iterar-un-plan
+    - el-cosmos-del-founder/iterar-el-plan/probar-mi-plan-con-alguien
+    - el-cosmos-del-founder/iterar-el-plan/escuchar-lo-que-no-quedo-claro
+    - el-cosmos-del-founder/iterar-el-plan/encontrar-el-punto-mas-debil-del-plan
+    - el-cosmos-del-founder/iterar-el-plan/mejorar-esa-parte-del-plan
+    - el-cosmos-del-founder/iterar-el-plan/volver-a-probar-el-plan-mejorado
+    - el-cosmos-del-founder/iterar-el-plan/iterar-no-es-fallar
+    - el-cosmos-del-founder/iterar-el-plan/mi-plan-despues-de-iterar
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué significa iterar un plan y cómo probarlo con alguien.
+      narrative_beat: Zara Vex abre el cofre del cosmos y reta a Dina a recordar, estrella por estrella,
+        lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo escuchar lo que no quedó claro y cómo encontrar
+        el punto más débil del plan.
+      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre mejorar una parte del
+        plan y volver a probarlo.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar
+        la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo por qué iterar no es
+        fallar, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada estrella
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Iterar el Plan con El Plan Completo, en un reto que combina
+      cómo armar un plan y cómo mejorarlo después.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Iterar el Plan con un
+      concepto de El Plan Completo.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - iterar
+    prior_knowledge: Conoce Iterar el Plan (saga 2) y El Plan Completo (saga 1, aventura 8).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/el-plan-completo/mi-producto-en-el-plan
+    - el-cosmos-del-founder/el-plan-completo/mi-plan-completo-de-mini-empresa
+    - el-cosmos-del-founder/iterar-el-plan/encontrar-el-punto-mas-debil-del-plan
+    - el-cosmos-del-founder/iterar-el-plan/mejorar-esa-parte-del-plan
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga El Plan Completo.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del cosmos y pide a Dino recordarlo
+        sin ayuda, antes de mezclarlo con iterar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de El Plan Completo con lo aprendido en Iterar el
+        Plan.
+      narrative_beat: Dr. Rho muestra cómo describir el producto en el plan se conecta directamente con
+        encontrar su punto más débil al iterarlo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+        lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del cosmos, Dina combina lo aprendido sobre el plan completo
+        con iterarlo para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: presentar-el-proyecto
+  icon: campaign
+  title:
+    en-US: Presenting the Project
+    es-MX: Presentar el Proyecto
+    pt-BR: Apresentar o Projeto
+  description:
+    en-US: Learn to present a complete project in order, with pride and without exaggeration.
+    es-MX: Aprende a presentar un proyecto completo en orden, con orgullo y sin exagerar.
+    pt-BR: Aprenda a apresentar um projeto completo em ordem, com orgulho e sem exagerar.
+  topics:
+  - position: 1
+    slug: que-es-presentar-un-proyecto-completo
+    title_es: Qué es presentar un proyecto completo
+    concept: Presentar un proyecto completo significa contar el plan entero, no solo una parte, de forma
+      ordenada.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa presentar un proyecto
+      completo.
+    key_vocabulary:
+    - presentar
+    - completo
+    - ordenado
+    - entero
+    prior_knowledge: Tiene un plan de mini-empresa ya iterado (saga anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué significa presentar un proyecto completo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: contar-solo-una-parte
+      micro_objective: Reconocer que contar solo una parte del proyecto deja fuera información importante.
+      narrative_beat: Dino cuenta solo la parte del producto de su plan, y Zara Vex nota que falta contar
+        mucho más.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: contar-el-plan-entero
+      micro_objective: Reconocer la diferencia entre contar solo una parte y contar el plan entero, ordenado.
+      narrative_beat: Dr. Rho compara contar solo una parte del plan con contarlo entero, de forma ordenada.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: para-que-sirve-presentar-completo
+      micro_objective: Explicar para qué sirve presentar un proyecto completo frente a otras personas.
+      narrative_beat: Zara Vex explica a Dino para qué sirve presentar su proyecto completo frente a otras
+        personas del cosmos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primera-idea-de-presentacion
+      micro_objective: Proponer una primera idea de cómo presentar el proyecto propio completo.
+      narrative_beat: Dina propone su primera idea de cómo presentar su proyecto completo frente al cosmos.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: ordenar-las-partes-de-mi-presentacion
+    title_es: Ordenar las partes de mi presentación
+    concept: Ordenar las seis partes del plan en una secuencia clara ayuda a que la presentación se entienda
+      bien.
+    learning_objective: Al final, el niño puede ordenar las seis partes del plan en una secuencia clara
+      para presentarlas.
+    key_vocabulary:
+    - ordenar
+    - secuencia
+    - clara
+    - partes
+    prior_knowledge: Sabe qué es presentar un proyecto completo (tema anterior).
+    parent_check: "¿{{name}} puede ordenar, en una secuencia clara, las partes de algo que quiere explicar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-seis-estrellas-desordenadas
+      micro_objective: Reconocer que presentar las seis partes del plan sin orden confunde a quien escucha.
+      narrative_beat: Dino presenta las seis partes de su plan sin ningún orden, y su público se confunde
+        rápido.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-orden-que-se-entiende
+      micro_objective: Practicar ordenar las seis partes del plan en una secuencia que se entienda bien.
+      narrative_beat: Dr. Rho ayuda a Dina a ordenar las seis partes de su plan en una secuencia que se
+        entiende bien.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: practicar-el-orden-completo
+      micro_objective: Practicar decir el plan completo siguiendo el orden decidido, de principio a fin.
+      narrative_beat: Zara Vex ayuda a Dino a practicar decir su plan completo siguiendo el orden que decidió.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - storyplay
+    - position: 4
+      slug: mi-orden-listo-para-presentar
+      micro_objective: Confirmar que el orden elegido para la presentación es claro y completo.
+      narrative_beat: Dina confirma, revisando con calma, que el orden elegido para su presentación es
+        claro y completo.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 3
+    slug: elegir-que-mostrar-y-que-contar
+    title_es: Elegir qué mostrar y qué contar
+    concept: Decidir qué mostrar con objetos o dibujos y qué contar solo en palabras ayuda a que la presentación
+      sea más clara.
+    learning_objective: Al final, el niño puede decidir qué parte de su proyecto mostrar y qué parte contar
+      en palabras.
+    key_vocabulary:
+    - mostrar
+    - contar
+    - decidir
+    - claro
+    prior_knowledge: Sabe ordenar las partes de su presentación (tema anterior).
+    parent_check: "¿{{name}} decide qué mostrar y qué explicar con palabras cuando presenta algo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mostrar-mi-producto-de-verdad
+      micro_objective: Reconocer que mostrar el producto real ayuda más que solo describirlo con palabras.
+      narrative_beat: Dino descubre que mostrar su producto de verdad ayuda mucho más que solo describirlo
+        con palabras.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-conviene-contar-en-palabras
+      micro_objective: Identificar qué partes del plan conviene contar solo en palabras, como el precio
+        o el equipo.
+      narrative_beat: Dr. Rho ayuda a Dina a identificar qué partes de su plan conviene contar solo en
+        palabras, como el precio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: preparar-lo-que-voy-a-mostrar
+      micro_objective: Preparar los objetos o dibujos que se mostrarán durante la presentación.
+      narrative_beat: Zara Vex ayuda a Dino a preparar los objetos y dibujos que mostrará durante su presentación.
+      difficulty: 2
+      suggested_families:
+      - maker
+      - arrange
+    - position: 4
+      slug: mi-plan-de-mostrar-y-contar
+      micro_objective: Confirmar un plan claro de qué se mostrará y qué se contará en palabras.
+      narrative_beat: Dina confirma su plan claro de qué mostrará con objetos y qué contará solo con palabras.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 4
+    slug: practicar-la-presentacion-completa
+    title_es: Practicar la presentación completa
+    concept: Practicar la presentación completa del proyecto de principio a fin ayuda a sentirse más seguro
+      frente al público.
+    learning_objective: Al final, el niño puede practicar una presentación completa de su proyecto de
+      principio a fin.
+    key_vocabulary:
+    - practicar
+    - completa
+    - seguro
+    - público
+    prior_knowledge: Sabe elegir qué mostrar y qué contar (tema anterior).
+    parent_check: "¿{{name}} practica una presentación completa antes de mostrarla frente a otras personas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-primer-ensayo-completo
+      micro_objective: Realizar un primer ensayo completo de la presentación, de principio a fin.
+      narrative_beat: Dino realiza su primer ensayo completo frente a Dr. Rho, de principio a fin, sin
+        detenerse.
+      difficulty: 1
+      suggested_families:
+      - storyplay
+      - story
+    - position: 2
+      slug: encontrar-donde-me-atoro
+      micro_objective: Identificar el momento exacto de la presentación donde se sintió menos seguro.
+      narrative_beat: Dr. Rho ayuda a Dina a identificar el momento exacto de su presentación donde se
+        sintió menos segura.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: practicar-esa-parte-otra-vez
+      micro_objective: Practicar, varias veces, la parte específica de la presentación donde hubo menos
+        seguridad.
+      narrative_beat: Zara Vex ayuda a Dino a practicar, varias veces, justo la parte donde se sintió menos
+        seguro.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - input
+    - position: 4
+      slug: mi-presentacion-completa-y-segura
+      micro_objective: Realizar la presentación completa de principio a fin con más seguridad que la primera
+        vez.
+      narrative_beat: Dina realiza su presentación completa de principio a fin, con mucha más seguridad
+        que en su primer ensayo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 5
+    slug: responder-preguntas-del-publico
+    title_es: Responder preguntas del público
+    concept: Practicar responder con calma preguntas del público sobre el proyecto completo fortalece la
+      confianza en la presentación.
+    learning_objective: Al final, el niño puede responder con calma una pregunta del público sobre su
+      proyecto.
+    key_vocabulary:
+    - público
+    - pregunta
+    - calma
+    - responder
+    prior_knowledge: Sabe practicar su presentación completa (tema anterior).
+    parent_check: "¿{{name}} responde con calma cuando alguien le hace una pregunta sobre su proyecto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-pregunta-inesperada
+      micro_objective: Reconocer que el público puede hacer preguntas inesperadas sobre cualquier parte
+        del proyecto.
+      narrative_beat: Alguien del observatorio le hace a Dino una pregunta inesperada sobre la parte del
+        equipo de su plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pensar-antes-de-responder
+      micro_objective: Practicar tomarse un momento para pensar antes de responder una pregunta del público.
+      narrative_beat: Dr. Rho enseña a Dina a tomarse un momento para pensar antes de responder una pregunta
+        del público.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: practicar-preguntas-dificiles
+      micro_objective: Practicar responder preguntas más difíciles sobre distintas partes del plan.
+      narrative_beat: Zara Vex hace preguntas cada vez más difíciles a Dino sobre distintas partes de su
+        plan.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 4
+      slug: mis-respuestas-frente-al-publico
+      micro_objective: Responder con calma varias preguntas nuevas del público frente a la presentación
+        completa.
+      narrative_beat: Dina responde con calma varias preguntas nuevas del público durante su presentación
+        completa.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: usar-mi-pitch-dentro-de-la-presentacion
+    title_es: Usar mi pitch dentro de la presentación
+    concept: Aplicar el pitch de un minuto como la parte inicial de una presentación más larga y completa
+      ayuda a captar la atención desde el principio.
+    learning_objective: Al final, el niño puede usar un pitch de un minuto como inicio de una presentación
+      más larga.
+    key_vocabulary:
+    - pitch
+    - inicio
+    - captar
+    - atención
+    prior_knowledge: Sabe responder preguntas del público (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-ventas/el-pitch-en-un-minuto/mi-pitch-listo-para-el-reino
+      strength: hard
+      reason: "El niño ya practicó presentar un pitch completo de un minuto; ahora lo reutiliza como la apertura de la presentación completa de su proyecto."
+    parent_check: "¿{{name}} puede explicarte por qué empezar una presentación con un pitch corto y claro ayuda a captar la atención?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: recordar-mi-pitch-del-reino
+      micro_objective: Recordar el pitch de un minuto que practicó en el reino de las ventas.
+      narrative_beat: Dino recuerda el pitch de un minuto que practicó tanto en el reino de las ventas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-pitch-como-inicio
+      micro_objective: Usar el pitch de un minuto como la primera parte de la presentación completa del
+        proyecto.
+      narrative_beat: Dr. Rho ayuda a Dina a usar su pitch de un minuto como la primera parte de su presentación
+        completa.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - arrange
+    - position: 3
+      slug: conectar-el-pitch-con-el-resto
+      micro_objective: Practicar conectar el final del pitch con el resto de la presentación, sin cortes
+        bruscos.
+      narrative_beat: Zara Vex ayuda a Dino a conectar el final de su pitch con el resto de la presentación,
+        sin cortes bruscos.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 4
+      slug: mi-presentacion-que-empieza-con-pitch
+      micro_objective: Presentar el proyecto completo empezando con el pitch de un minuto ya practicado.
+      narrative_beat: Dina presenta su proyecto completo empezando con el pitch de un minuto que tanto
+        practicó.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: mostrar-orgullo-sin-exagerar
+    title_es: Mostrar orgullo sin exagerar
+    concept: Presentar el proyecto con orgullo genuino, sin exagerar lo que en realidad se logró, mantiene
+      la honestidad de todo el viaje.
+    learning_objective: Al final, el niño puede presentar su proyecto con orgullo genuino, sin exagerar.
+    key_vocabulary:
+    - orgullo
+    - genuino
+    - exagerar
+    - honestidad
+    prior_knowledge: Sabe usar su pitch dentro de la presentación (tema anterior).
+    parent_check: "¿{{name}} muestra orgullo genuino por lo que logró, sin exagerar lo que en realidad hizo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-tentacion-de-exagerar
+      micro_objective: Reconocer la tentación de exagerar un logro al presentarlo frente a otros.
+      narrative_beat: Dino siente la tentación de exagerar cuánto vendió su puesto, para impresionar más
+        al público.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-orgullo-genuino-alcanza
+      micro_objective: Explicar por qué el orgullo genuino por lo realmente logrado alcanza para una buena
+        presentación.
+      narrative_beat: Dr. Rho explica a Dina que el orgullo genuino por lo que de verdad logró alcanza
+        para una gran presentación.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: practicar-contar-lo-real
+      micro_objective: Practicar contar los logros del proyecto exactamente como sucedieron, sin exagerar.
+      narrative_beat: Zara Vex ayuda a Dino a practicar contar los logros de su proyecto exactamente como
+        sucedieron.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-orgullo-honesto
+      micro_objective: Presentar el proyecto con orgullo honesto frente a una situación nueva, sin exagerar
+        nada.
+      narrative_beat: Dina presenta su proyecto con orgullo honesto frente a un nuevo público del cosmos,
+        sin exagerar nada.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: mi-presentacion-lista-para-el-cosmos
+    title_es: Mi presentación lista para el cosmos
+    concept: Aplicar la presentación completa -ordenada, con pitch, mostrando lo justo y con orgullo honesto-
+      frente a un público nuevo del cosmos.
+    learning_objective: Al final, el niño puede presentar su proyecto completo frente a un público nuevo.
+    key_vocabulary:
+    - presentación
+    - completa
+    - público
+    - cosmos
+    prior_knowledge: Conoce todas las reglas de presentación enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales para presentar un proyecto que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: se-prepara-el-observatorio
+      micro_objective: Prepararse, junto al equipo, para la presentación final frente a un público nuevo.
+      narrative_beat: Con ayuda de Zara Vex, Dina se prepara junto a su equipo para la presentación final
+        en el observatorio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: empiezo-con-mi-pitch
+      micro_objective: Iniciar la presentación completa con el pitch de un minuto, captando la atención
+        del público.
+      narrative_beat: Dino inicia su presentación con su pitch de un minuto, captando la atención de todo
+        el público.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story
+    - position: 3
+      slug: respondo-preguntas-con-calma
+      micro_objective: Responder con calma varias preguntas del público durante la presentación final.
+      narrative_beat: Dina responde con calma varias preguntas del público durante su presentación final
+        en el observatorio.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-presentacion-completa-lista
+      micro_objective: Terminar la presentación completa con orgullo honesto, celebrando junto al equipo.
+      narrative_beat: Dina termina su presentación completa con orgullo honesto, celebrando junto a su
+        equipo y a Zara Vex.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del cosmos para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Presentar el Proyecto.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Presentar el Proyecto.
+    key_vocabulary:
+    - presentar
+    - ordenar
+    - pitch
+    - orgullo
+    prior_knowledge: Ha completado los ocho temas de la saga Presentar el Proyecto (aventura 8, saga 3).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/presentar-el-proyecto/que-es-presentar-un-proyecto-completo
+    - el-cosmos-del-founder/presentar-el-proyecto/ordenar-las-partes-de-mi-presentacion
+    - el-cosmos-del-founder/presentar-el-proyecto/elegir-que-mostrar-y-que-contar
+    - el-cosmos-del-founder/presentar-el-proyecto/practicar-la-presentacion-completa
+    - el-cosmos-del-founder/presentar-el-proyecto/responder-preguntas-del-publico
+    - el-cosmos-del-founder/presentar-el-proyecto/usar-mi-pitch-dentro-de-la-presentacion
+    - el-cosmos-del-founder/presentar-el-proyecto/mostrar-orgullo-sin-exagerar
+    - el-cosmos-del-founder/presentar-el-proyecto/mi-presentacion-lista-para-el-cosmos
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es presentar un proyecto completo y cómo ordenar
+        sus partes.
+      narrative_beat: Zara Vex abre el cofre del cosmos y reta a Dina a recordar, estrella por estrella,
+        lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo qué mostrar y qué contar, y cómo practicar la presentación
+        completa.
+      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre responder preguntas
+        del público y usar el pitch como inicio.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar
+        la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo mostrar orgullo sin
+        exagerar, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada estrella
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Presentar el Proyecto con Iterar el Plan, en un reto que combina
+      cómo mejorar un plan y cómo presentarlo con orgullo honesto.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Presentar el Proyecto
+      con un concepto de Iterar el Plan.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - presentar
+    prior_knowledge: Conoce Presentar el Proyecto (saga 3) y Iterar el Plan (saga 2, aventura 8).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/iterar-el-plan/iterar-no-es-fallar
+    - el-cosmos-del-founder/iterar-el-plan/mi-plan-despues-de-iterar
+    - el-cosmos-del-founder/presentar-el-proyecto/mostrar-orgullo-sin-exagerar
+    - el-cosmos-del-founder/presentar-el-proyecto/usar-mi-pitch-dentro-de-la-presentacion
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Iterar el Plan.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de iterar y pide a Dino recordarlo sin ayuda,
+        antes de mezclarlo con presentar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Iterar el Plan con lo aprendido en Presentar el
+        Proyecto.
+      narrative_beat: Dr. Rho muestra cómo todo lo mejorado al iterar se conecta directamente con el orgullo
+        honesto al presentar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+        lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del cosmos, Dina combina lo aprendido sobre presentar
+        con todo lo iterado en su plan para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: graduacion-founder
+  icon: military_tech
+  title:
+    en-US: Founder Graduation
+    es-MX: Graduación Founder
+    pt-BR: Formatura Founder
+  description:
+    en-US: Look back at the whole journey, thank those who helped, and graduate as a founder ready for
+      what comes next.
+    es-MX: Mira hacia atrás todo el camino recorrido, agradece a quienes ayudaron, y gradúate como founder
+      listo para lo que sigue.
+    pt-BR: Olhe para trás toda a jornada percorrida, agradeça a quem ajudou, e forme-se como founder pronto
+      para o que vem a seguir.
+  topics:
+  - position: 1
+    slug: que-significa-ser-un-founder
+    title_es: Qué significa ser un founder
+    concept: Un founder es alguien que convierte una idea propia en un proyecto real, cuidando a las personas
+      en el camino.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa ser un founder.
+    key_vocabulary:
+    - founder
+    - convertir
+    - real
+    - cuidar
+    prior_knowledge: Ha presentado su proyecto completo frente al cosmos (saga anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué significa ser un founder?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-titulo-de-founder
+      micro_objective: Reconocer que un founder es alguien que convirtió una idea propia en un proyecto
+        real.
+      narrative_beat: Dr. Rho explica a Dino que un founder es alguien que convirtió una idea propia en
+        un proyecto real, como él acaba de hacer.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: founder-o-solo-tener-una-idea
+      micro_objective: Distinguir tener una idea de ser un founder, que además la lleva a la realidad con
+        cuidado.
+      narrative_beat: Zara Vex explica la diferencia entre solo tener una idea y ser un founder que la
+        lleva a la realidad con cuidado.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: cuidar-a-las-personas-en-el-camino
+      micro_objective: Reconocer que ser founder incluye cuidar a las personas afectadas durante todo el
+        camino.
+      narrative_beat: Dr. Rho recuerda a Dina que ser founder también significa cuidar a las personas durante
+        todo el camino, no solo llegar a la meta.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-primera-idea-de-founder
+      micro_objective: Reconocerse, por primera vez, como founder de un proyecto propio ya realizado.
+      narrative_beat: Dina se reconoce, por primera vez, como founder de su propio proyecto ya hecho realidad.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: repasar-todo-el-camino-recorrido
+    title_es: Repasar todo el camino recorrido
+    concept: Repasar, en orden, todo el camino recorrido desde la primera idea hasta el plan completo ayuda
+      a valorar el viaje entero.
+    learning_objective: Al final, el niño puede repasar en orden las etapas principales de su camino como
+      founder.
+    key_vocabulary:
+    - repasar
+    - camino
+    - etapas
+    - orden
+    prior_knowledge: Sabe qué significa ser un founder (tema anterior).
+    parent_check: "¿{{name}} puede contarte, en orden, las etapas principales de su camino hasta hoy?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-mapa-de-mi-viaje
+      micro_objective: Reconocer que el camino recorrido tiene varias etapas que se pueden ordenar en un
+        mapa.
+      narrative_beat: Dr. Rho dibuja junto a Dino un mapa con todas las etapas de su viaje, desde la primera
+        idea hasta hoy.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ordenar-mis-etapas
+      micro_objective: Ordenar las etapas principales del propio viaje en la secuencia correcta.
+      narrative_beat: Zara Vex ayuda a Dina a ordenar las etapas principales de su viaje en la secuencia
+        correcta.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: recordar-un-momento-dificil
+      micro_objective: Recordar un momento difícil del camino y cómo se superó.
+      narrative_beat: Dino recuerda un momento difícil de su camino, cuando su primer lote de limonada
+        se echó a perder, y cómo lo superó.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-mapa-completo-del-viaje
+      micro_objective: Presentar el mapa completo del propio viaje, con sus etapas principales en orden.
+      narrative_beat: Dina presenta su mapa completo del viaje, desde la primera idea hasta el plan completo
+        de hoy.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - storyplay
+  - position: 3
+    slug: reconocer-cuanto-crecio-mi-proyecto
+    title_es: Reconocer cuánto creció mi proyecto
+    concept: Comparar el proyecto original con el proyecto actual para notar cuánto creció ayuda a valorar
+      el propio esfuerzo.
+    learning_objective: Al final, el niño puede comparar su proyecto original con el actual y notar cuánto
+      creció.
+    key_vocabulary:
+    - comparar
+    - crecer
+    - original
+    - actual
+    prior_knowledge: Sabe repasar todo el camino recorrido (tema anterior).
+    parent_check: "¿{{name}} puede compararte cómo era su proyecto al principio y cómo es ahora?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-primera-idea-muy-simple
+      micro_objective: Recordar la primera idea del proyecto, mucho más simple que la versión de hoy.
+      narrative_beat: Dino recuerda su primera idea, tan simple, comparada con el plan completo que tiene
+        hoy.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-antes-y-ahora
+      micro_objective: Comparar, punto por punto, el proyecto original con el proyecto actual.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar, punto por punto, su proyecto original con su proyecto
+        actual.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: nombrar-lo-que-mas-crecio
+      micro_objective: Identificar cuál parte del proyecto creció o mejoró más de todas.
+      narrative_beat: Zara Vex pregunta a Dino cuál parte de su proyecto cree que creció o mejoró más de
+        todas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-crecimiento-reconocido
+      micro_objective: Reconocer con orgullo, en voz alta, cuánto creció el proyecto propio desde el principio.
+      narrative_beat: Dina reconoce con orgullo, en voz alta, cuánto creció su proyecto desde aquella primera
+        idea simple.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: agradecer-a-quienes-ayudaron
+    title_es: Agradecer a quienes ayudaron
+    concept: Reconocer y agradecer a las personas que ayudaron en el camino del proyecto es parte de cerrar
+      bien el viaje.
+    learning_objective: Al final, el niño puede reconocer y agradecer a las personas que ayudaron en su
+      camino.
+    key_vocabulary:
+    - agradecer
+    - reconocer
+    - ayudar
+    - camino
+    prior_knowledge: Sabe reconocer cuánto creció su proyecto (tema anterior).
+    parent_check: "¿{{name}} agradece a las personas que lo ayudaron a lograr algo importante?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: quien-me-ayudo-en-el-camino
+      micro_objective: Identificar a las personas que ayudaron en distintos momentos del camino del proyecto.
+      narrative_beat: Dino piensa en todas las personas, como Dr. Rho y Zara Vex, que lo ayudaron en distintos
+        momentos de su camino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: nombrar-una-ayuda-especifica
+      micro_objective: Nombrar una ayuda específica que recibió de alguien durante el camino.
+      narrative_beat: Dr. Rho ayuda a Dina a nombrar una ayuda específica que recibió de cada persona durante
+        su camino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: preparar-un-agradecimiento
+      micro_objective: Preparar un agradecimiento propio para las personas que ayudaron en el camino.
+      narrative_beat: Zara Vex ayuda a Dino a preparar un agradecimiento propio para las personas que lo
+        ayudaron en su camino.
+      difficulty: 2
+      suggested_families:
+      - input
+      - storyplay
+    - position: 4
+      slug: mi-agradecimiento-completo
+      micro_objective: Expresar, con seguridad, un agradecimiento completo a las personas que ayudaron
+        en el camino.
+      narrative_beat: Dina expresa, con seguridad, su agradecimiento completo a todas las personas que
+        la ayudaron en su camino.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 5
+    slug: mi-proximo-paso-como-founder
+    title_es: Mi próximo paso como founder
+    concept: Proponer un próximo paso propio para seguir creciendo como founder mantiene el viaje abierto
+      hacia adelante.
+    learning_objective: Al final, el niño puede proponer un próximo paso propio para seguir como founder.
+    key_vocabulary:
+    - próximo
+    - paso
+    - seguir
+    - adelante
+    prior_knowledge: Sabe agradecer a quienes ayudaron en el camino (tema anterior).
+    parent_check: "¿{{name}} puede contarte un próximo paso que le gustaría dar con su proyecto o idea?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-camino-no-termina-aqui
+      micro_objective: Reconocer que el camino de un founder no termina con la graduación, sino que sigue.
+      narrative_beat: Dr. Rho explica a Dino que el camino de un founder no termina aquí, sino que apenas
+        empieza de verdad.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ideas-para-seguir-creciendo
+      micro_objective: Pensar en distintas ideas posibles para seguir creciendo el proyecto propio.
+      narrative_beat: Zara Vex ayuda a Dina a pensar en distintas ideas posibles para seguir creciendo
+        su proyecto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: elegir-mi-proximo-paso
+      micro_objective: Elegir, entre varias ideas, un próximo paso concreto para el proyecto propio.
+      narrative_beat: Dino elige, entre varias ideas, un próximo paso concreto para seguir creciendo su
+        proyecto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - input
+    - position: 4
+      slug: mi-proximo-paso-anunciado
+      micro_objective: Anunciar con seguridad el próximo paso propio frente al equipo y los mentores.
+      narrative_beat: Dina anuncia, con seguridad, su próximo paso como founder frente a su equipo y sus
+        mentores del cosmos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: lo-que-me-llevo-de-este-viaje
+    title_es: Lo que me llevo de este viaje
+    concept: Reflexionar y nombrar lo más importante que se lleva de todo el viaje ayuda a que el aprendizaje
+      permanezca.
+    learning_objective: Al final, el niño puede nombrar lo más importante que se lleva de todo su viaje
+      como founder.
+    key_vocabulary:
+    - reflexionar
+    - importante
+    - viaje
+    - permanecer
+    prior_knowledge: Sabe elegir su próximo paso como founder (tema anterior).
+    parent_check: "¿{{name}} puede contarte lo más importante que aprendió en todo este viaje?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: muchas-lecciones-en-un-solo-viaje
+      micro_objective: Reconocer que el viaje completo dejó muchas lecciones distintas, no solo una.
+      narrative_beat: Dino se da cuenta de que su viaje completo le dejó muchas lecciones distintas, desde
+        ideas hasta equipos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-la-mas-importante
+      micro_objective: Elegir, entre todas las lecciones, cuál se siente como la más importante de todas.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir, entre todas sus lecciones, cuál se siente como la
+        más importante de todas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: explicar-por-que-esa-lo-es
+      micro_objective: Explicar por qué esa lección elegida es, para uno mismo, la más importante del viaje.
+      narrative_beat: Zara Vex pregunta a Dino por qué esa lección que eligió es, para él, la más importante
+        de todo el viaje.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-leccion-para-siempre
+      micro_objective: Nombrar, con seguridad, la lección más importante del viaje frente al equipo y los
+        mentores.
+      narrative_beat: Dina nombra, con seguridad, la lección más importante de todo su viaje frente a su
+        equipo y sus mentores.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: celebrar-el-viaje-completo
+    title_es: Celebrar el viaje completo
+    concept: Celebrar, en conjunto, todo el viaje recorrido junto al equipo y los mentores reconoce el
+      esfuerzo de todos, no solo el propio.
+    learning_objective: Al final, el niño puede celebrar el viaje completo reconociendo el esfuerzo de
+      todos los que participaron.
+    key_vocabulary:
+    - celebrar
+    - conjunto
+    - esfuerzo
+    - reconocer
+    prior_knowledge: Sabe nombrar lo más importante que se lleva del viaje (tema anterior).
+    parent_check: "¿{{name}} celebra un logro reconociendo el esfuerzo de todas las personas que ayudaron, no solo el propio?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: se-reune-todo-el-equipo
+      micro_objective: Reconocer que celebrar el viaje completo incluye a todo el equipo, no solo a uno
+        mismo.
+      narrative_beat: Todo el equipo de Dina se reúne en el observatorio para celebrar juntos el viaje
+        completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cada-quien-comparte-un-recuerdo
+      micro_objective: Practicar compartir un recuerdo especial del viaje junto al equipo reunido.
+      narrative_beat: Dr. Rho invita a cada integrante del equipo a compartir un recuerdo especial de todo
+        el viaje.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story
+    - position: 3
+      slug: celebrar-sin-dejar-a-nadie-fuera
+      micro_objective: Reconocer la importancia de que nadie del equipo quede fuera de la celebración final.
+      narrative_beat: Zara Vex se asegura de que nadie del equipo quede fuera de la gran celebración final
+        del cosmos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-celebracion-del-viaje-completo
+      micro_objective: Organizar, junto al equipo, la celebración final de todo el viaje recorrido juntos.
+      narrative_beat: Dina organiza, junto a su equipo, la gran celebración final de todo el viaje que
+        recorrieron juntos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 8
+    slug: mi-graduacion-de-founder
+    title_es: Mi graduación de founder
+    concept: Aplicar el cierre completo del viaje -repasar el camino, reconocer el crecimiento, agradecer,
+      proponer un próximo paso y celebrar- en una ceremonia final de graduación founder.
+    learning_objective: Al final, el niño puede participar en una ceremonia de graduación founder que
+      cierra todo su viaje.
+    key_vocabulary:
+    - graduación
+    - founder
+    - ceremonia
+    - cierre
+    prior_knowledge: Conoce todos los pasos del cierre del viaje enseñados en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede contarte cómo se siente al terminar un gran proyecto y graduarse como founder?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: se-prepara-la-ceremonia
+      micro_objective: Prepararse, junto al equipo y los mentores, para la ceremonia final de graduación.
+      narrative_beat: Con ayuda de Zara Vex, Dr. Rho y todo el equipo, Dina se prepara para su ceremonia
+        final de graduación founder.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: repaso-mi-camino-en-la-ceremonia
+      micro_objective: Repasar, frente a todos, el camino completo recorrido desde la primera idea.
+      narrative_beat: Dino repasa, frente a todo el cosmos reunido, el camino completo que recorrió desde
+        su primera idea.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story
+    - position: 3
+      slug: agradezco-y-anuncio-mi-proximo-paso
+      micro_objective: Agradecer a quienes ayudaron y anunciar el próximo paso propio durante la ceremonia.
+      narrative_beat: Dina agradece a quienes la ayudaron y anuncia su próximo paso frente a todo el cosmos
+        reunido.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: me-gradue-como-founder
+      micro_objective: Celebrar, con todo el equipo y los mentores, la graduación completa como founder.
+      narrative_beat: Con el cosmos entero brillando, Dina se gradúa como founder junto a Dino, celebrando
+        con Zara Vex y Dr. Rho.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del cosmos para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Graduación Founder.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Graduación Founder.
+    key_vocabulary:
+    - founder
+    - camino
+    - agradecer
+    - celebrar
+    prior_knowledge: Ha completado los ocho temas de la saga Graduación Founder (aventura 8, saga 4).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/graduacion-founder/que-significa-ser-un-founder
+    - el-cosmos-del-founder/graduacion-founder/repasar-todo-el-camino-recorrido
+    - el-cosmos-del-founder/graduacion-founder/reconocer-cuanto-crecio-mi-proyecto
+    - el-cosmos-del-founder/graduacion-founder/agradecer-a-quienes-ayudaron
+    - el-cosmos-del-founder/graduacion-founder/mi-proximo-paso-como-founder
+    - el-cosmos-del-founder/graduacion-founder/lo-que-me-llevo-de-este-viaje
+    - el-cosmos-del-founder/graduacion-founder/celebrar-el-viaje-completo
+    - el-cosmos-del-founder/graduacion-founder/mi-graduacion-de-founder
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué significa ser un founder y cómo repasar el camino
+        recorrido.
+      narrative_beat: Zara Vex abre el cofre del cosmos y reta a Dina a recordar, estrella por estrella,
+        lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo reconocer el crecimiento del proyecto y cómo agradecer
+        a quienes ayudaron.
+      narrative_beat: Dino saca del cofre las estrellas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre elegir un próximo paso
+        y nombrar la lección más importante.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar
+        la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo celebrar el viaje completo,
+        para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada estrella
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Graduación Founder con Presentar el Proyecto, en un reto que
+      combina cómo cerrar bien un viaje y cómo presentarlo con orgullo.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Graduación Founder con
+      un concepto de Presentar el Proyecto.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - founder
+    prior_knowledge: Conoce Graduación Founder (saga 4) y Presentar el Proyecto (saga 3, aventura 8).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-founder/presentar-el-proyecto/mostrar-orgullo-sin-exagerar
+    - el-cosmos-del-founder/presentar-el-proyecto/mi-presentacion-lista-para-el-cosmos
+    - el-cosmos-del-founder/graduacion-founder/reconocer-cuanto-crecio-mi-proyecto
+    - el-cosmos-del-founder/graduacion-founder/agradecer-a-quienes-ayudaron
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Presentar el Proyecto.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de presentar y pide a Dino recordarlo sin ayuda,
+        antes de mezclarlo con la graduación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Presentar el Proyecto con lo aprendido en Graduación
+        Founder.
+      narrative_beat: Dr. Rho muestra cómo el orgullo honesto al presentar se conecta directamente con
+        reconocer cuánto creció el proyecto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva del cosmos usando a la vez las dos
+        lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del cosmos, Dina combina lo aprendido sobre graduarse
+        como founder con presentar su proyecto para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-cosmos-del-founder
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Founder's Cosmos Grand Mission
+    es-MX: La Gran Misión del Cosmos del Founder
+    pt-BR: A Grande Missão do Cosmos do Founder
+  description:
+    en-US: The finale of the whole entrepreneurship journey -- a quest that gathers ideas, making, customers,
+      fair pricing, selling, teamwork and ethics from every world visited into one last celebration.
+    es-MX: El cierre de todo el viaje de emprendimiento -una misión que reúne ideas, manos a la obra, clientes,
+      precios justos, ventas, equipo y ética de cada mundo visitado en una última celebración.
+    pt-BR: O fechamento de toda a jornada de empreendedorismo -uma missão que reúne ideias, mãos à obra,
+      clientes, preços justos, vendas, equipe e ética de cada mundo visitado em uma última celebração.
+  topics:
+  - position: 1
+    slug: el-cosmos-recuerda-las-ideas-y-lo-hecho-a-mano
+    kind: review_quest
+    title_es: El Cosmos Recuerda las Ideas y lo Hecho a Mano
+    concept: 'Zara Vex enciende las primeras dos estrellas del cosmos: la Isla de las Ideas y el Bosque
+      de los Makers, donde Dina y Dino aprendieron a notar problemas, tener ideas y hacer las cosas con
+      cuidado.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo notar un problema, tener una idea
+      que ayude, y hacer un producto con cuidado.
+    key_vocabulary:
+    - idea
+    - problema
+    - cuidado
+    prior_knowledge: Conoce la Isla de las Ideas y el Bosque de los Makers, las dos primeras aventuras
+      del viaje.
+    fact_refs: []
+    review_of:
+    - la-isla-de-las-ideas/ojos-que-notan/algo-no-funciona-bien
+    - la-isla-de-las-ideas/ideas-que-ayudan/una-idea-ayuda-a-alguien
+    - el-bosque-de-los-makers/manos-a-la-obra/uso-mis-manos-con-cuidado
+    - el-bosque-de-los-makers/hecho-con-cuidado/que-es-un-producto-bien-hecho
+    lessons:
+    - position: 1
+      slug: el-cosmos-enciende-la-isla-de-las-ideas
+      micro_objective: Recordar cómo notar que algo no funciona bien fue el primer paso de todo el viaje.
+      narrative_beat: 'Zara Vex reúne a Dina y Dino frente al observatorio y anuncia la Gran Misión final:
+        recorrer una vez más cada mundo del viaje completo.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-idea-que-ayuda-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo una idea propia puede ayudar a resolver el problema
+        de alguien.
+      narrative_beat: Dr. Rho presenta un problema nuevo del cosmos y reta a Dina a recordar, sin repasar
+        la lección, cómo pensar una idea que ayude.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: el-bosque-de-los-makers-otra-vez
+      micro_objective: Recordar cómo hacer un producto con cuidado, usando las manos con atención.
+      narrative_beat: Dino recuerda, sin ayuda, cómo usaba sus manos con cuidado en el bosque de los makers
+        para hacer un buen producto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - maker
+    - position: 4
+      slug: mi-idea-hecha-a-mano-para-la-mision
+      micro_objective: Aplicar con seguridad una idea nueva convertida en un producto hecho con cuidado.
+      narrative_beat: Dina aplica, sin ayuda de Zara Vex, una idea nueva convertida en un producto hecho
+        con cuidado para la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - maker
+      - storyplay
+  - position: 2
+    slug: el-cosmos-recuerda-a-los-clientes
+    kind: review_quest
+    title_es: El Cosmos Recuerda a los Clientes
+    concept: 'Zara Vex enciende la tercera estrella del cosmos: la Ciudad del Cliente, donde Dina y Dino
+      aprendieron a escuchar lo que sus clientes de verdad necesitan y a cumplir lo que les prometen.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo identificar a un cliente, escuchar
+      su necesidad y cumplir una promesa hecha.
+    key_vocabulary:
+    - cliente
+    - necesidad
+    - promesa
+    prior_knowledge: Conoce la Ciudad del Cliente, la tercera aventura del viaje.
+    fact_refs: []
+    review_of:
+    - la-ciudad-del-cliente/quien-es-mi-cliente/dibujo-a-mi-cliente-ideal
+    - la-ciudad-del-cliente/escucho-lo-que-necesitan/pregunto-que-le-hace-falta
+    - la-ciudad-del-cliente/promesas-que-se-cumplen/cumplir-a-tiempo-importa
+    lessons:
+    - position: 1
+      slug: el-cliente-ideal-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo describir a un cliente ideal para un producto.
+      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo dibujó a su cliente ideal en la
+        ciudad.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: escuchar-la-necesidad-otra-vez
+      micro_objective: Recordar cómo preguntar y escuchar qué le hace falta de verdad a un cliente.
+      narrative_beat: Dina recuerda, de memoria, cómo preguntaba a sus clientes qué les hacía falta de
+        verdad en la ciudad.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: cumplir-a-tiempo-otra-vez
+      micro_objective: Recordar y aplicar por qué cumplir a tiempo una promesa hecha a un cliente importa
+        tanto.
+      narrative_beat: Dr. Rho presenta una promesa nueva y pregunta a Dino si recuerda por qué cumplirla
+        a tiempo importa tanto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-cliente-para-la-mision
+      micro_objective: Aplicar con seguridad identificar y atender a un cliente nuevo dentro de la Gran
+        Misión.
+      narrative_beat: Dina identifica y atiende, sin ayuda, a un cliente nuevo del cosmos dentro de la
+        Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: el-cosmos-recuerda-el-reino-y-el-taller
+    kind: review_quest
+    title_es: El Cosmos Recuerda el Reino y el Taller
+    concept: 'Zara Vex enciende las estrellas del Reino de las Ventas y el Taller del Equipo, donde Dina
+      y Dino aprendieron a vender con honestidad, a presentar su pitch, y a trabajar en equipo repartiendo
+      con justicia.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo vender con honestidad, presentar
+      un pitch y trabajar en equipo con justicia.
+    key_vocabulary:
+    - honestidad
+    - pitch
+    - equipo
+    prior_knowledge: Conoce El Reino de las Ventas y El Taller del Equipo, las aventuras 5 y 6 del viaje.
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/mi-pitch-listo-para-el-reino
+    - el-taller-del-equipo/roles-y-talentos/asignar-roles-segun-el-talento
+    - el-taller-del-equipo/repartir-tareas-y-ganancias-con-justicia/repartir-la-ganancia-segun-el-aporte
+    lessons:
+    - position: 1
+      slug: el-reino-de-las-ventas-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo fijar un precio justo para un producto propio.
+      narrative_beat: Zara Vex reta a Dina a recordar, sin ayuda, cómo fijó el precio justo de su primera
+        limonada en el reino.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - money
+    - position: 2
+      slug: el-pitch-del-reino-otra-vez
+      micro_objective: Recordar cómo presentar un pitch completo de un minuto frente a un público nuevo.
+      narrative_beat: Dino recuerda, de memoria, cómo presentó su primer pitch completo frente al reino.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: el-taller-del-equipo-otra-vez
+      micro_objective: Recordar y aplicar cómo asignar roles según el talento y repartir la ganancia con
+        justicia.
+      narrative_beat: Dr. Rho presenta un equipo nuevo y pregunta a Dina si recuerda cómo asignar roles
+        y repartir la ganancia con justicia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-reino-y-taller-para-la-mision
+      micro_objective: Aplicar con seguridad vender con honestidad y trabajar en equipo dentro de un desafío
+        nuevo.
+      narrative_beat: Dina aplica, sin ayuda, vender con honestidad y trabajar en equipo con justicia en
+        un nuevo desafío de la misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - money
+  - position: 4
+    slug: el-cosmos-recuerda-el-faro-del-buen-negocio
+    kind: review_quest
+    title_es: El Cosmos Recuerda el Faro del Buen Negocio
+    concept: 'Zara Vex enciende la estrella del Faro del Buen Negocio, donde Dina y Dino aprendieron ética,
+      competencia justa, promesas cumplidas y cuidado de recursos.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo actuar con ética, competir de forma
+      justa y cuidar los recursos de un negocio.
+    key_vocabulary:
+    - ética
+    - competencia
+    - recursos
+    prior_knowledge: Conoce El Faro del Buen Negocio, la aventura 7 del viaje.
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/elegir-lo-correcto-sobre-lo-facil
+    - el-faro-del-buen-negocio/competencia-justa/mi-forma-justa-de-competir
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/mi-negocio-que-cuida-y-aprende
+    lessons:
+    - position: 1
+      slug: la-etica-del-faro-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir lo correcto sobre lo fácil en un negocio.
+      narrative_beat: Zara Vex reta a Dino a recordar, sin ayuda, cómo eligió lo correcto sobre lo fácil
+        en el faro.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: la-competencia-justa-otra-vez
+      micro_objective: Recordar cómo competir de forma justa, sin copiar ni hablar mal de otros.
+      narrative_beat: Dina recuerda, de memoria, cómo compitió de forma justa frente a un nuevo competidor
+        del archipiélago.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cuidar-recursos-otra-vez
+      micro_objective: Recordar y aplicar cómo cuidar los recursos y aprender de un error de negocio.
+      narrative_beat: Dr. Rho presenta un error nuevo y pregunta a Dino si recuerda cómo cuidar los recursos
+        y aprender de él.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-faro-para-la-mision
+      micro_objective: Aplicar con seguridad la brújula ética completa dentro de un desafío nuevo de la
+        misión.
+      narrative_beat: Dina aplica, sin ayuda, su brújula ética completa dentro de un nuevo desafío de la
+        Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: el-gran-plan-de-todos-los-mundos
+    kind: review_quest
+    title_es: El Gran Plan de Todos los Mundos
+    concept: Un desafío final combina, en un solo plan, una idea propia con lo aprendido en cada uno de
+      los mundos visitados durante todo el viaje de emprendimiento.
+    learning_objective: Al final, el niño puede aplicar en un solo plan lo aprendido en ideas, hacer, clientes,
+      precios justos, vender, equipo y ética.
+    key_vocabulary:
+    - plan
+    - idea
+    - equipo
+    prior_knowledge: Ha repasado por separado los mundos anteriores de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - la-isla-de-las-ideas/el-taller-de-las-chispas/elijo-mi-mejor-idea
+    - el-bosque-de-los-makers/pruebo-y-mejoro/mi-segunda-version-es-mejor
+    - la-ciudad-del-cliente/mis-primeras-encuestas/cambio-mi-idea-con-lo-que-aprendi
+    - el-valle-del-precio-justo/un-precio-justo/un-precio-justo-cubre-el-costo-y-deja-algo
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/servicio-que-hace-la-diferencia
+    - el-taller-del-equipo/trabajar-en-equipo/mi-primer-proyecto-en-equipo
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-cumplida-genera-mas-negocio
+    - el-cosmos-del-founder/el-plan-completo/mi-plan-completo-de-mini-empresa
+    lessons:
+    - position: 1
+      slug: seis-mundos-una-sola-estrella
+      micro_objective: 'Recordar, en conjunto, una lección clave de cada mundo visitado durante el viaje.'
+      narrative_beat: Zara Vex enciende, una por una, todas las estrellas del cosmos que representan cada
+        mundo del viaje completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-nuevo-founder-necesita-ayuda
+      micro_objective: Aplicar lecciones de varios mundos distintos para ayudar a un founder nuevo a armar
+        su plan.
+      narrative_beat: Dr. Rho presenta a un founder nuevo del cosmos y reta a Dina a guiarlo usando lecciones
+        de varios mundos distintos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-todos-los-mundos
+      micro_objective: Aplicar con seguridad lecciones de todos los mundos en un desafío único que las
+        combina todas.
+      narrative_beat: Dino resuelve un desafío del cosmos que combina, de una sola vez, ideas, hacer, clientes,
+        vender, equipo y ética.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-plan-con-todos-los-mundos-dentro
+      micro_objective: Presentar un plan propio que conecta explícitamente lecciones de cada mundo del
+        viaje.
+      narrative_beat: Dina presenta su plan completo, mostrando con orgullo cómo cada mundo del viaje dejó
+        su huella en él.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: la-gran-mision-del-cosmos-del-founder
+    kind: review_quest
+    title_es: La Gran Misión del Cosmos del Founder
+    concept: El gran cierre de todo el curso de emprendimiento combina las lecciones de cada mundo visitado
+      con la graduación final de Dina y Dino como founders.
+    learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido durante
+      el curso completo de emprendimiento.
+    key_vocabulary:
+    - emprendimiento
+    - founder
+    - graduación
+    prior_knowledge: Ha completado el reto combinado de todos los mundos de la Gran Misión (tema anterior).
+    fact_refs: []
+    review_of:
+    - la-isla-de-las-ideas/la-gran-mision-de-la-isla-de-las-ideas/el-tesoro-de-la-gran-idea
+    - el-bosque-de-los-makers/la-gran-mision-del-bosque-de-los-makers/el-producto-perfecto-del-bosque
+    - la-ciudad-del-cliente/la-gran-mision-de-la-ciudad-del-cliente/el-cliente-perfecto-encontrado
+    - el-cosmos-del-founder/graduacion-founder/mi-graduacion-de-founder
+    lessons:
+    - position: 1
+      slug: el-cosmos-recuerda-el-tesoro-de-la-idea
+      micro_objective: Recordar cómo se sintió encontrar, al principio del viaje, la gran idea que lo empezó
+        todo.
+      narrative_beat: Zara Vex recuerda junto a Dina y Dino aquel primer tesoro de una gran idea que encontraron
+        en la isla.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-cosmos-recuerda-el-producto-perfecto
+      micro_objective: Recordar cómo se sintió terminar, con cuidado, el primer producto bien hecho del
+        viaje.
+      narrative_beat: Dr. Rho recuerda junto a Dino el primer producto que hicieron con tanto cuidado en
+        el bosque de los makers.
+      difficulty: 1
+      suggested_families:
+      - story
+      - maker
+    - position: 3
+      slug: la-gran-mision-en-un-solo-founder
+      micro_objective: Aplicar en un desafío final todo el viaje completo, desde la primera idea hasta
+        el plan de hoy.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo su viaje, desde
+        la primera idea hasta el plan de hoy.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-cosmos-sigue-brillando-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo el viaje de emprendimiento completo.
+      narrative_beat: Con el cosmos entero brillando, Dina y Dino celebran junto a Zara Vex y Dr. Rho el
+        cierre de todo su viaje como founders.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

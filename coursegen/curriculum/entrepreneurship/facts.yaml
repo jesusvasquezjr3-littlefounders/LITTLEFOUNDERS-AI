@@ -1,0 +1,248 @@
+schema_version: 1
+
+# Canonical numeric ground truth (COURSE_ENGINE.md §3) for the entrepreneurship
+# course. Every number Forge puts in a money/business exercise must either
+# come from here or be pure arithmetic the deterministic gate can re-verify.
+# `verified: true` = safe to state as fact (denominations, calendar math,
+# pedagogical conventions/ceilings, and arithmetic identities that are
+# tautologically re-checkable — e.g. ganancia = precio - costo). `verified:
+# false` = a REFERENCE value for exercise flavor only (kid-business costs and
+# selling prices) — `enforce: false` means the gate must NOT treat it as a
+# hard-pinned constant.
+#
+# NEVER-INVENTED: no precise regulatory/legal numbers (business licensing,
+# tax rates, minimum wage) appear here. If a fact can't be stated with
+# confidence it is omitted, not guessed.
+
+facts:
+
+  # ---- MXN denominations (copied verbatim from financial-education/facts.yaml
+  # — Banxico currently-circulating denominations, project-wide, not
+  # reinvented per course) ----
+  mxn.denominations.coins:
+    value: [0.5, 1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación"
+    verified: true
+    notes: "Banxico; $20 existe como moneda Y billete — evitar ambigüedad usando 'moneda de $20' vs 'billete de $20' explícitamente en el prompt."
+
+  mxn.denominations.coins.tier1_subset:
+    value: [1, 2, 5, 10]
+    unit: MXN
+    label_es: "Subconjunto de monedas para ejercicios tier1 (6-7 años)"
+    verified: true
+    notes: "La moneda de $0.50 se omite en tier1 — decimales confunden a esta edad; $20 moneda se omite para no chocar con el billete de $20."
+
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200, 500, 1000]
+    unit: MXN
+    label_es: "Billetes de México en circulación"
+    verified: true
+    notes: "Banxico; familia G de billetes vigente."
+
+  mxn.denominations.bills.tier1_subset:
+    value: [20, 50, 100]
+    unit: MXN
+    label_es: "Subconjunto de billetes para ejercicios tier1"
+    verified: true
+    notes: "Billetes de $200+ quedan reservados para tier2, una vez dominado el conteo con montos menores."
+
+  # ---- Calendar / counting anchors (copied verbatim from
+  # financial-education/facts.yaml — used by savings/venta-por-semana math) ----
+  calendar.days_per_week:
+    value: 7
+    unit: days
+    label_es: "Días en una semana"
+    verified: true
+
+  calendar.weeks_per_month_approx:
+    value: 4
+    unit: weeks
+    label_es: "Semanas por mes (aproximado, para cálculos simples infantiles)"
+    verified: true
+    notes: "Aproximación deliberada (4, no 4.33) — tier1 no maneja fracciones de semana."
+
+  calendar.months_per_year:
+    value: 12
+    unit: months
+    label_es: "Meses en un año"
+    verified: true
+
+  calendar.days_per_month_approx:
+    value: 30
+    unit: days
+    label_es: "Días por mes (aproximado, redondeado para cálculos infantiles)"
+    verified: true
+
+  # ---- Kid-business reference costs & prices (MXN) — APPROXIMATE, for
+  # exercise flavor only. NOT regulated data; a "limonada" can cost $8 or $12
+  # in different lessons — only order-of-magnitude and MXN-plausibility
+  # matter (same convention as financial-education's mxn.reference_prices.*). ----
+  mxn.reference_costs.limonada_vaso:
+    value: 2
+    range: [1, 3]
+    unit: MXN
+    label_es: "Costo aproximado de un vaso desechable para el puesto de limonada"
+    verified: false
+    enforce: false
+    notes: "Precio ilustrativo de material de puesto infantil; NO usar como dato regulado."
+
+  mxn.reference_costs.limonada_limon:
+    value: 1
+    range: [1, 2]
+    unit: MXN
+    label_es: "Costo aproximado de limón por vaso de limonada"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.limonada_azucar:
+    value: 1
+    range: [1, 2]
+    unit: MXN
+    label_es: "Costo aproximado de azúcar por vaso de limonada"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.vaso_limonada:
+    value: 10
+    range: [8, 15]
+    unit: MXN
+    label_es: "Precio de venta de referencia de un vaso de limonada"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.pulsera_hilo:
+    value: 3
+    range: [2, 5]
+    unit: MXN
+    label_es: "Costo aproximado de hilo para una pulsera tejida"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.pulsera_cuentas:
+    value: 7
+    range: [5, 10]
+    unit: MXN
+    label_es: "Costo aproximado de cuentas de colores para una pulsera"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.pulsera:
+    value: 20
+    range: [15, 30]
+    unit: MXN
+    label_es: "Precio de venta de referencia de una pulsera tejida"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.galleta_ingredientes_lote:
+    value: 40
+    range: [30, 60]
+    unit: MXN
+    label_es: "Costo aproximado de ingredientes para un lote de 10 galletas caseras"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.galleta_casera:
+    value: 8
+    range: [5, 12]
+    unit: MXN
+    label_es: "Precio de venta de referencia de una galleta casera"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.tarjeta_materiales:
+    value: 5
+    range: [3, 8]
+    unit: MXN
+    label_es: "Costo aproximado de materiales para una tarjeta decorada a mano"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.tarjeta_decorada:
+    value: 15
+    range: [10, 25]
+    unit: MXN
+    label_es: "Precio de venta de referencia de una tarjeta decorada a mano"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.cartel_puesto:
+    value: 10
+    range: [5, 15]
+    unit: MXN
+    label_es: "Costo aproximado de un cartel o letrero para un puesto de venta infantil"
+    verified: false
+    enforce: false
+
+  # ---- Core arithmetic anchors (verified: true — tautological, the
+  # deterministic gate re-executes these sums, never trusts the model) ----
+  business.math.formula_ganancia:
+    value: "ganancia = precio - costo"
+    unit: n/a
+    label_es: "Fórmula base de ganancia usada en todos los ejercicios de precio justo"
+    verified: true
+    notes: "Identidad aritmética, no un dato externo — el gate determinista la re-verifica restando."
+
+  business.math.ejemplo_ganancia_15_10:
+    value: 5
+    unit: MXN
+    label_es: "Ejemplo verificable: precio $15 − costo $10 = ganancia $5"
+    verified: true
+    notes: "15 - 10 = 5; usado como ancla de referencia en El Valle del Precio Justo."
+
+  business.math.ejemplo_ganancia_20_12:
+    value: 8
+    unit: MXN
+    label_es: "Segundo ejemplo verificable: precio $20 − costo $12 = ganancia $8"
+    verified: true
+    notes: "20 - 12 = 8; segunda ancla de referencia con números distintos."
+
+  business.math.ejemplo_costo_total_limonada:
+    value: 4
+    unit: MXN
+    label_es: "Ejemplo verificable de costo total: vaso $2 + limón $1 + azúcar $1 = $4"
+    verified: true
+    notes: "2 + 1 + 1 = 4; ancla para 'contar costos completos' (no olvidar ningún material)."
+
+  # ---- Pedagogical conventions/ceilings (verified: true as CONVENTIONS, not
+  # external facts — identical pattern to financial-education's
+  # math.max_single_coin_count_tier1) ----
+  business.math.venta_semanal_dias:
+    value: 5
+    unit: days
+    label_es: "Días de venta por semana usados en los ejercicios de La Ciudad del Cliente y El Valle del Precio Justo"
+    verified: true
+    notes: "Convención pedagógica (puesto de fin de semana + un par de días entre semana), no un dato regulado."
+
+  business.math.ganancia_ceiling_tier2:
+    value: 100
+    unit: MXN
+    label_es: "Ganancia máxima objetivo usada en ejercicios de precio justo de esta aventura"
+    verified: true
+    notes: "Tope pedagógico para mantener las restas dentro del rango de cálculo mental de 8-10 años."
+
+  business.math.costo_ceiling_tier2:
+    value: 60
+    unit: MXN
+    label_es: "Costo total máximo usado en ejercicios de 'contar costos completos'"
+    verified: true
+    notes: "Tope pedagógico — permite sumar 3-4 materiales sin exceder la comprensión numérica tier2."
+
+  # ---- Character canon anchors (copied verbatim — used by narrative_beat
+  # authoring, not money math; identical across every course in the catalog) ----
+  characters.canon_ids:
+    value: [dina, dino, rho, zara]
+    unit: n/a
+    label_es: "IDs canónicos de personajes (LESSON_ENGINE.md §9) — únicos narradores permitidos"
+    verified: true
+
+  characters.roles:
+    value:
+      dina: mentora
+      dino: juguetón
+      rho: sabio detective
+      zara: estratega
+    unit: n/a
+    label_es: "Rol narrativo de cada personaje — en este curso Zara brilla como estratega de negocio y Rho como detective de costos"
+    verified: true

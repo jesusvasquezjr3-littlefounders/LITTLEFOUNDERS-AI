@@ -1,0 +1,2605 @@
+schema_version: 1
+adventure:
+  position: 5
+  slug: el-reino-de-las-ventas
+  theme: kingdom
+  age_tier: tier2
+  title:
+    en-US: The Kingdom of Selling
+    es-MX: El Reino de las Ventas
+    pt-BR: O Reino das Vendas
+  description:
+    en-US: In a kingdom of traveling merchants, Dina and Dino open their first lemonade stall in the Grand
+      Plaza and learn to sell with honesty, pitch their idea, and treat every customer with care.
+    es-MX: En un reino de mercaderes, Dina y Dino abren su primer puesto de limonada en la Gran Plaza y
+      aprenden a vender con honestidad, a contar su idea en un minuto y a cuidar a cada cliente.
+    pt-BR: Em um reino de mercadores, Dina e Dino abrem sua primeira barraca de limonada na Grande Praça
+      e aprendem a vender com honestidade, a contar sua ideia em um minuto e a cuidar de cada cliente.
+  narrative_arc: 'Dina y Dino cruzan las puertas del Reino de las Ventas, una tierra de mercaderes gobernada
+    desde la Gran Plaza, donde Zara Vex es la estratega más admirada del reino por su forma honesta y brillante
+    de vender. Dino instala su primer puesto de limonada y aprende haciendo, probando ideas una por una,
+    mientras Dina observa, pregunta y reflexiona junto a Dr. Rho, quien revisa que cada trato del reino
+    sea justo. Juntos descubren que vender de verdad no es convencer a cualquier costo, sino ofrecer algo
+    valioso, contarlo bien en un minuto, atender con cuidado a cada cliente y escuchar sus opiniones para
+    mejorar siempre.'
+sagas:
+- position: 1
+  slug: vender-con-honestidad
+  icon: storefront
+  title:
+    en-US: Selling with Honesty
+    es-MX: Vender con Honestidad
+    pt-BR: Vender com Honestidade
+  description:
+    en-US: Learn that selling for real means offering something valuable while always staying honest.
+    es-MX: Aprende que vender de verdad significa ofrecer algo valioso siendo siempre honesto.
+    pt-BR: Aprenda que vender de verdade significa oferecer algo valioso sendo sempre honesto.
+  topics:
+  - position: 1
+    slug: que-es-vender
+    title_es: Qué es vender
+    concept: Vender es ofrecer algo de valor a otra persona a cambio de dinero, y hacerlo bien siempre
+      empieza por ser honesto.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa vender algo.
+    key_vocabulary:
+    - vender
+    - ofrecer
+    - cliente
+    - honesto
+    prior_knowledge: Ha comprado y vendido cosas antes, y sabe que el dinero representa un valor de cambio
+      (curso de Educación Financiera).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué significa vender algo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-puertas-del-reino
+      micro_objective: Reconocer que vender es ofrecer algo de valor a otra persona a cambio de dinero.
+      narrative_beat: Dina y Dino cruzan las puertas del Reino de las Ventas y ven la Gran Plaza llena
+        de puestos donde la gente ofrece cosas a cambio de monedas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: vender-o-solo-mostrar
+      micro_objective: Distinguir la acción de vender (a cambio de dinero) de solo mostrar o regalar algo.
+      narrative_beat: Dino confunde a un mercader que muestra su mercancía con uno que la regala, y Dr.
+        Rho le ayuda a notar la diferencia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: quien-vende-y-quien-compra
+      micro_objective: Identificar quién vende y quién compra en distintas escenas del mercado.
+      narrative_beat: En la Gran Plaza, Dina observa varios puestos y separa quién ofrece algo y quién
+        busca algo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-primera-idea-para-vender
+      micro_objective: Proponer, en una escena nueva, una idea simple de algo que podría vender.
+      narrative_beat: Frente a su primer puesto vacío, Dino piensa en voz alta que le gustaría vender limonada
+        fresca en la Gran Plaza.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: describir-mi-producto-tal-como-es
+    title_es: Describir mi producto tal como es
+    concept: Cuando vendo algo, debo describirlo tal como es en realidad, sin agregar cualidades que no
+      tiene.
+    learning_objective: Al final, el niño puede describir un producto propio usando solo características
+      reales.
+    key_vocabulary:
+    - describir
+    - real
+    - característica
+    - exagerar
+    prior_knowledge: Sabe qué significa vender (tema anterior).
+    parent_check: "¿{{name}} puede describir uno de sus objetos usando solo características que de verdad tiene?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-mercader-que-exagera
+      micro_objective: Reconocer cuando un mercader describe su producto con cualidades que no tiene de
+        verdad.
+      narrative_beat: Un mercader del reino grita que su fruta es 'la más dulce de todo el mundo', y Dino
+        se pregunta si eso puede ser cierto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: describir-sin-agregar-de-mas
+      micro_objective: Practicar describir un producto usando solo palabras que son ciertas.
+      narrative_beat: Dr. Rho ayuda a Dina a describir su limonada usando solo palabras que de verdad la
+        describen, sin inventar nada.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: comparar-dos-descripciones
+      micro_objective: Comparar dos descripciones del mismo producto y elegir la más honesta.
+      narrative_beat: Zara Vex muestra dos formas distintas de describir la misma limonada y reta a Dino
+        a elegir cuál es más honesta.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-descripcion-honesta
+      micro_objective: Preparar la descripción honesta de un producto propio para el puesto.
+      narrative_beat: Dina prepara la descripción de la limonada que venderá en su puesto, revisando que
+        cada palabra sea verdad.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: la-diferencia-entre-vender-y-enganar
+    title_es: La diferencia entre vender y engañar
+    concept: Vender es ofrecer algo real de valor a alguien que lo quiere; engañar es hacer creer algo
+      falso para lograr una venta.
+    learning_objective: Al final, el niño puede distinguir una venta honesta de un engaño.
+    key_vocabulary:
+    - engañar
+    - honesto
+    - valor
+    - confianza
+    prior_knowledge: Sabe describir un producto con honestidad (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre vender algo de verdad y engañar a alguien para venderlo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-puesto-del-cambio-desigual
+      micro_objective: Reconocer una situación donde alguien intenta engañar para lograr una venta.
+      narrative_beat: Un vendedor del reino intenta cambiarle a Dino un vaso pequeño de limonada por el
+        precio de uno grande, diciendo que son iguales.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: senales-de-un-engano
+      micro_objective: Identificar una señal de que una venta no está siendo honesta.
+      narrative_beat: Dr. Rho enseña a Dina a notar cuando un mercader esconde información importante sobre
+        lo que vende.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: elegir-vender-con-confianza
+      micro_objective: Decidir la forma honesta de resolver una venta en la que se podría engañar fácilmente.
+      narrative_beat: Zara Vex pone a prueba a Dino con un cliente que no notaría un engaño, para ver si
+        igual decide ser honesto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-regla-de-no-enganar
+      micro_objective: Aplicar la regla de no engañar frente a una situación nueva de venta.
+      narrative_beat: Frente a una nueva oportunidad de venta, Dina recuerda su regla más importante,
+        nunca engañar, aunque nadie se dé cuenta.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: un-precio-justo-para-mi-producto
+    title_es: Un precio justo para mi producto
+    concept: Cobrar un precio justo significa pedir una cantidad que cubre lo que cuesta hacer el producto
+      y agrega una ganancia razonable, sin abusar del cliente.
+    learning_objective: Al final, el niño puede calcular la ganancia de una venta y explicar qué hace justo
+      a un precio.
+    key_vocabulary:
+    - precio
+    - costo
+    - ganancia
+    - justo
+    prior_knowledge: Distingue vender de engañar (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué hace que el precio de algo sea justo?"
+    fact_refs:
+    - business.math.formula_ganancia
+    - business.math.ejemplo_ganancia_15_10
+    lessons:
+    - position: 1
+      slug: cuanto-cuesta-hacerla
+      micro_objective: Reconocer que hacer un producto tiene un costo que debe cubrirse con el precio.
+      narrative_beat: Dino cuenta cuántas monedas gastó en vasos, limones y azúcar antes de decidir cuánto
+        cobrar por cada limonada.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: precio-justo-o-abusivo
+      micro_objective: Comparar dos precios del mismo producto y decidir cuál es justo y cuál abusa del
+        cliente.
+      narrative_beat: Zara Vex muestra dos puestos que venden limonada igual a precios muy distintos, y
+        pide a Dina decidir cuál es justo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: calcular-mi-ganancia
+      micro_objective: Calcular la ganancia de una venta restando el costo del precio de venta ($15 - $10
+        = $5).
+      narrative_beat: Dr. Rho ayuda a Dino a calcular cuánto ganó de verdad después de vender algo en $15
+        que le costó $10 hacer.
+      difficulty: 3
+      suggested_families:
+      - money
+      - input
+    - position: 4
+      slug: mi-precio-para-el-puesto
+      micro_objective: Fijar un precio justo propio para la limonada, explicando por qué cubre el costo
+        y deja una ganancia justa.
+      narrative_beat: Dina decide el precio final de su limonada, explicando a Zara Vex por qué cubre el
+        costo y deja una ganancia justa.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 5
+    slug: cumplir-lo-que-prometo-al-vender
+    title_es: Cumplir lo que prometo al vender
+    concept: Si prometo algo al vender, como el tiempo de entrega o la cantidad, debo cumplirlo exactamente
+      como lo dije.
+    learning_objective: Al final, el niño puede explicar por qué cumplir una promesa de venta genera confianza.
+    key_vocabulary:
+    - promesa
+    - cumplir
+    - entrega
+    - confianza
+    prior_knowledge: Sabe fijar un precio justo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué es importante cumplir lo que se promete al vender algo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-promesa-del-mercader
+      micro_objective: Reconocer una promesa hecha durante una venta, como el tiempo de entrega.
+      narrative_beat: Un mercader promete entregar un pedido 'mañana mismo', y Dino se pregunta si de verdad
+        lo cumplirá.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cumplida-o-rota
+      micro_objective: Clasificar distintas promesas de venta entre cumplidas y rotas.
+      narrative_beat: Dr. Rho muestra varios casos del reino y pide a Dina separar las promesas que se
+        cumplieron de las que no.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: que-pasa-si-no-cumplo
+      micro_objective: Explicar qué le pasa a la confianza de un cliente cuando una promesa de venta no
+        se cumple.
+      narrative_beat: Zara Vex cuenta la historia de un puesto que perdió clientes por no cumplir sus promesas
+        de entrega.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-promesa-cumplida
+      micro_objective: Aplicar el hábito de prometer solo lo que se puede cumplir en una venta nueva.
+      narrative_beat: Antes de prometer algo a un cliente nuevo, Dina se asegura de que de verdad podrá
+        cumplirlo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: decir-la-verdad-aunque-cueste-una-venta
+    title_es: Decir la verdad aunque cueste una venta
+    concept: A veces decir la verdad sobre un producto significa perder una venta, y aun así vale la pena
+      porque cuida la confianza.
+    learning_objective: Al final, el niño puede decidir decir la verdad aunque eso signifique perder una
+      venta.
+    key_vocabulary:
+    - verdad
+    - perder
+    - valer la pena
+    - confianza
+    prior_knowledge: Sabe por qué cumplir promesas genera confianza (tema anterior).
+    parent_check: "¿{{name}} entiende que a veces decir la verdad puede costar una venta, y aun así es lo correcto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: no-es-lo-que-el-cliente-busca
+      micro_objective: Reconocer una situación donde el producto propio no es lo que el cliente necesita.
+      narrative_beat: Un cliente busca una limonada bien fría, y Dino sabe que la suya, aunque buena, ya
+        no está tan fría.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decir-la-verdad-o-vender-igual
+      micro_objective: Decidir entre decir la verdad y perder la venta, o quedarse callado y vender igual.
+      narrative_beat: Zara Vex reta a Dino a decidir qué hacer frente al cliente que busca algo que su
+        producto no ofrece en ese momento.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: por-que-vale-la-pena-la-verdad
+      micro_objective: Explicar por qué decir la verdad, aunque cueste una venta, cuida la confianza a
+        largo plazo.
+      narrative_beat: Dr. Rho explica a Dina que un cliente que recibe la verdad suele volver, aunque esta
+        vez no compre nada.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-verdad-en-el-puesto
+      micro_objective: Aplicar con seguridad decir la verdad frente a una situación nueva donde se podría
+        perder una venta.
+      narrative_beat: Frente a un nuevo cliente, Dina dice la verdad sobre su limonada, aunque eso signifique
+        que esta vez no compre.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: reconocer-cuando-alguien-no-vende-con-honestidad
+    title_es: Reconocer cuando alguien no vende con honestidad
+    concept: Puedo reconocer señales cuando otro vendedor no está siendo honesto con sus clientes, como
+      esconder información o exagerar.
+    learning_objective: Al final, el niño puede reconocer al menos una señal de que un vendedor no está
+      siendo honesto.
+    key_vocabulary:
+    - señal
+    - esconder
+    - honestidad
+    - vendedor
+    prior_knowledge: Sabe decir la verdad aunque cueste una venta (tema anterior).
+    parent_check: "¿{{name}} puede reconocer una señal de que un vendedor no está siendo honesto con sus clientes?"
+    prerequisites:
+    - path: el-reino-de-las-ventas/vender-con-honestidad/la-diferencia-entre-vender-y-enganar
+      strength: soft
+      reason: "Distinguir vender de engañar en su propia venta ayuda a reconocer la misma señal cuando lo hace otro vendedor."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-puesto-vecino
+      micro_objective: Observar que un puesto vecino esconde información importante sobre su producto.
+      narrative_beat: Dino nota que el puesto de al lado no dice que su mercancía está algo dañada, y se
+        pregunta si eso es honesto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: senales-que-veo-en-otros
+      micro_objective: Identificar señales comunes de falta de honestidad en un vendedor, como esconder,
+        exagerar o prometer de más.
+      narrative_beat: Dr. Rho reúne varias señales que ha visto en mercaderes deshonestos del reino a lo
+        largo de los años.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: que-hago-si-lo-veo
+      micro_objective: Decidir una acción correcta al notar que otro vendedor no está siendo honesto.
+      narrative_beat: Zara Vex pregunta a Dina qué haría si ve que un mercader vecino no está siendo honesto
+        con un cliente.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-ojo-atento-del-reino
+      micro_objective: Aplicar las señales aprendidas para identificar la falta de honestidad en una escena
+        nueva del mercado.
+      narrative_beat: En una escena nueva de la Gran Plaza, Dina identifica, sin ayuda, las señales de
+        un vendedor poco honesto.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 8
+    slug: mi-primer-dia-de-ventas-honestas
+    title_es: Mi primer día de ventas honestas
+    concept: Aplicar juntas todas las reglas de honestidad -describir bien, cobrar justo, cumplir promesas
+      y decir la verdad- en un primer día completo de ventas.
+    learning_objective: Al final, el niño puede aplicar en conjunto las reglas de venta honesta durante
+      un día completo de práctica.
+    key_vocabulary:
+    - aplicar
+    - práctica
+    - honestidad
+    - puesto
+    prior_knowledge: Conoce todas las reglas de venta honesta enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales para vender con honestidad que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: abro-mi-puesto
+      micro_objective: Preparar el puesto propio aplicando una descripción honesta y un precio justo.
+      narrative_beat: Con ayuda de Zara Vex, Dina prepara su puesto de limonada para el gran día, revisando
+        que su descripción y su precio sean honestos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: mi-primer-cliente-del-dia
+      micro_objective: Atender a un primer cliente aplicando honestidad en la descripción y el precio.
+      narrative_beat: El primer cliente del día llega al puesto de Dino, y él aplica todo lo aprendido
+        sobre describir y cobrar con honestidad.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: un-reto-de-honestidad
+      micro_objective: Aplicar la decisión de decir la verdad frente a un cliente, aunque cueste una venta
+        durante el día.
+      narrative_beat: Un cliente pregunta algo directo sobre la limonada de Dina, y ella responde con la
+        verdad, tal como practicó.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: cierro-mi-primer-dia
+      micro_objective: Reflexionar sobre el día completo de ventas honestas y resumir lo aprendido.
+      narrative_beat: Al cerrar su puesto por primera vez, Dina y Dino celebran junto a Zara Vex un primer
+        día de ventas hecho con honestidad.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del reino para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Vender con Honestidad.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Vender con Honestidad.
+    key_vocabulary:
+    - vender
+    - honesto
+    - precio
+    - promesa
+    prior_knowledge: Ha completado los ocho temas de la saga Vender con Honestidad (aventura 5, saga 1).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/que-es-vender
+    - el-reino-de-las-ventas/vender-con-honestidad/describir-mi-producto-tal-como-es
+    - el-reino-de-las-ventas/vender-con-honestidad/la-diferencia-entre-vender-y-enganar
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/vender-con-honestidad/cumplir-lo-que-prometo-al-vender
+    - el-reino-de-las-ventas/vender-con-honestidad/decir-la-verdad-aunque-cueste-una-venta
+    - el-reino-de-las-ventas/vender-con-honestidad/reconocer-cuando-alguien-no-vende-con-honestidad
+    - el-reino-de-las-ventas/vender-con-honestidad/mi-primer-dia-de-ventas-honestas
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué significa vender y cómo describir un producto tal
+        como es.
+      narrative_beat: Zara Vex abre el cofre del reino y reta a Dina a recordar, moneda por moneda, lo
+        primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo la diferencia entre vender y engañar, y cómo fijar un
+        precio justo.
+      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre cumplir promesas y
+        decir la verdad aunque cueste una venta.
+      narrative_beat: Dr. Rho presenta una escena nueva de la Gran Plaza y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo reconocer a un vendedor
+        poco honesto, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada moneda
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla distintos momentos de la saga Vender con Honestidad en un solo reto, para
+      pensarlos juntos como un verdadero mercader del reino.
+    learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos temas distintos
+      de esta saga en una sola actividad.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - honestidad
+    prior_knowledge: Completó El Cofre del Repaso (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/que-es-vender
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/vender-con-honestidad/cumplir-lo-que-prometo-al-vender
+    - el-reino-de-las-ventas/vender-con-honestidad/decir-la-verdad-aunque-cueste-una-venta
+    lessons:
+    - position: 1
+      slug: vender-y-cobrar-en-la-misma-escena
+      micro_objective: Combinar, en una sola escena, la idea de vender algo con la de fijar un precio justo
+        por ello.
+      narrative_beat: Zara Vex arma una escena mezclando la primera venta de Dino con el precio justo que
+        decidió cobrar.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: prometer-y-decir-la-verdad-juntos
+      micro_objective: Combinar cumplir una promesa de venta con decir la verdad aunque cueste esa venta.
+      narrative_beat: Dr. Rho muestra cómo cumplir una promesa y decir la verdad son parte de la misma
+        honestidad en el reino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, dos ideas combinadas de la saga.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+        dos lecciones combinadas de la saga.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ideas de la saga en
+        una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre vender, cobrar
+        y decir la verdad para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: el-pitch-en-un-minuto
+  icon: podium
+  title:
+    en-US: 'The Pitch: Telling My Idea in One Minute'
+    es-MX: 'El Pitch: Contar mi Idea en Un Minuto'
+    pt-BR: 'O Pitch: Contando Minha Ideia em Um Minuto'
+  description:
+    en-US: Learn to tell your business idea clearly, briefly and with confidence, in just one minute.
+    es-MX: Aprende a contar tu idea de negocio de forma clara, breve y segura, en solo un minuto.
+    pt-BR: Aprenda a contar sua ideia de negócio de forma clara, breve e segura, em apenas um minuto.
+  topics:
+  - position: 1
+    slug: que-es-un-pitch
+    title_es: Qué es un pitch
+    concept: Un pitch es contar una idea de negocio de forma clara y breve, para que otra persona la entienda
+      rápido y se interese en ella.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué es un pitch.
+    key_vocabulary:
+    - pitch
+    - idea
+    - breve
+    - claro
+    prior_knowledge: Ha vendido su primer producto con honestidad (saga anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué es un pitch?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-idea-nueva-en-la-plaza
+      micro_objective: Reconocer que antes de vender algo nuevo conviene poder contarlo de forma clara
+        y breve.
+      narrative_beat: Dino tiene una idea nueva para el puesto, pero cuando trata de explicarla se enreda
+        y nadie lo entiende.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pitch-o-explicacion-larga
+      micro_objective: Distinguir un pitch breve y claro de una explicación larga y confusa.
+      narrative_beat: Zara Vex compara la explicación enredada de Dino con un pitch corto y claro sobre
+        la misma idea.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: para-que-sirve-un-buen-pitch
+      micro_objective: Explicar para qué sirve contar una idea de forma breve y clara.
+      narrative_beat: Dr. Rho explica que un buen pitch ayuda a que alguien entienda una idea antes de
+        perder el interés.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primera-idea-en-voz-alta
+      micro_objective: Intentar decir, por primera vez, una idea propia en pocas frases.
+      narrative_beat: Dina intenta decir su idea del puesto en solo unas frases, animada por Zara Vex.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 2
+    slug: lo-mas-importante-de-mi-idea
+    title_es: Lo más importante de mi idea
+    concept: Un buen pitch empieza por identificar la parte más importante de la idea, la que no puede
+      faltar al contarla.
+    learning_objective: Al final, el niño puede identificar la parte más importante de una idea propia.
+    key_vocabulary:
+    - importante
+    - esencial
+    - resumir
+    - idea
+    prior_knowledge: Sabe qué es un pitch (tema anterior).
+    parent_check: "¿{{name}} puede decirte cuál es la parte más importante de una idea suya, sin dar detalles de más?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: demasiados-detalles
+      micro_objective: Reconocer cuando una idea tiene demasiados detalles y pierde su punto principal.
+      narrative_beat: Dino cuenta su idea con tantos detalles que Zara Vex ya no recuerda de qué se trataba
+        al final.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: encontrar-el-corazon-de-la-idea
+      micro_objective: Identificar, entre varios detalles, cuál es el más importante de una idea dada.
+      narrative_beat: Dr. Rho ayuda a Dina a encontrar, entre todos los detalles de su idea, el que de
+        verdad importa más.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: quitar-lo-que-sobra
+      micro_objective: Practicar quitar detalles que no son esenciales al contar una idea.
+      narrative_beat: Zara Vex reta a Dino a contar su idea otra vez, esta vez quitando todo lo que no
+        es esencial.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - storyplay
+    - position: 4
+      slug: mi-idea-en-una-frase
+      micro_objective: Resumir una idea propia en una sola frase que contenga lo más importante.
+      narrative_beat: Dina logra resumir su idea del puesto en una sola frase clara, sin perder lo esencial.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: contar-el-problema-que-resuelvo
+    title_es: Contar el problema que resuelvo
+    concept: Un buen pitch empieza explicando qué problema resuelve la idea para alguien, antes de hablar
+      del producto.
+    learning_objective: Al final, el niño puede explicar qué problema resuelve una idea propia.
+    key_vocabulary:
+    - problema
+    - resolver
+    - necesidad
+    - idea
+    prior_knowledge: Sabe encontrar lo más importante de su idea (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué problema resuelve una de sus ideas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-problema-en-el-reino
+      micro_objective: Reconocer un problema real que las personas del reino tienen.
+      narrative_beat: Dino nota que muchos niños del reino llegan sedientos a la Gran Plaza sin tener dónde
+        comprar algo fresco para beber.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-idea-resuelve-esto
+      micro_objective: Conectar una idea propia con el problema específico que resuelve.
+      narrative_beat: Dr. Rho ayuda a Dina a conectar su idea de puesto de limonada con el problema exacto
+        que resuelve para sus clientes.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: empezar-por-el-problema
+      micro_objective: Practicar empezar el pitch nombrando el problema antes de describir la idea.
+      narrative_beat: Zara Vex enseña a Dino a comenzar siempre su pitch nombrando el problema, antes de
+        hablar de su producto.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-problema-y-mi-solucion
+      micro_objective: Contar, en orden, el problema y la solución que ofrece una idea propia.
+      narrative_beat: Dina practica contar, en orden, el problema que resuelve su idea y cómo la resuelve.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: explicar-mi-idea-en-pocas-palabras
+    title_es: Explicar mi idea en pocas palabras
+    concept: Practicar decir la idea completa -problema, solución y algo que la hace especial- usando solo
+      unas pocas frases claras.
+    learning_objective: Al final, el niño puede explicar una idea completa usando solo unas pocas frases.
+    key_vocabulary:
+    - explicar
+    - frase
+    - especial
+    - completo
+    prior_knowledge: Sabe contar el problema que resuelve su idea (tema anterior).
+    parent_check: "¿{{name}} puede contarte su idea completa usando solo unas pocas frases?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-piezas-de-mi-pitch
+      micro_objective: Reconocer las tres piezas de un pitch completo, problema, solución y algo especial.
+      narrative_beat: Dr. Rho muestra tres piezas de un rompecabezas del reino, el problema, la solución
+        y algo que la hace especial.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ordenar-las-piezas
+      micro_objective: Ordenar las tres piezas del pitch, problema, solución y algo especial, en el orden
+        correcto.
+      narrative_beat: Dina ordena las piezas de su propio pitch, revisando que el problema vaya primero.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: decirlo-en-pocas-frases
+      micro_objective: Practicar decir las tres piezas del pitch usando solo unas pocas frases.
+      narrative_beat: Zara Vex cronometra a Dino mientras intenta decir su pitch completo en solo unas
+        frases.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - input
+    - position: 4
+      slug: mi-pitch-completo-y-corto
+      micro_objective: Decir un pitch propio completo y corto frente a alguien nuevo.
+      narrative_beat: Dina dice su pitch completo, corto y claro, frente a un mercader nuevo de la plaza.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: practicar-el-tiempo-de-un-minuto
+    title_es: Practicar el tiempo de un minuto
+    concept: Ajustar el pitch para que quepa completo en aproximadamente un minuto, sin apurarse demasiado
+      ni alargarse de más.
+    learning_objective: Al final, el niño puede ajustar un pitch propio para que dure aproximadamente un
+      minuto.
+    key_vocabulary:
+    - minuto
+    - tiempo
+    - ajustar
+    - ritmo
+    prior_knowledge: Sabe decir su pitch completo en pocas frases (tema anterior).
+    parent_check: "¿{{name}} puede contarte su idea en aproximadamente un minuto, sin apurarse ni alargarse demasiado?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-reloj-de-arena-del-reino
+      micro_objective: Reconocer que un pitch tiene un tiempo aproximado para decirse completo.
+      narrative_beat: Zara Vex muestra un reloj de arena del reino y explica que un buen pitch cabe en
+        el tiempo que tarda en caer.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: muy-rapido-o-muy-lento
+      micro_objective: Reconocer cuando un pitch se dice demasiado rápido o se alarga demasiado.
+      narrative_beat: Dino practica su pitch tan rápido que nadie le entiende, y luego tan lento que pierde
+        a su público.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: ajustar-mi-ritmo
+      micro_objective: Practicar ajustar el ritmo de un pitch propio para que dure aproximadamente un minuto.
+      narrative_beat: Dr. Rho ayuda a Dina a encontrar el ritmo justo para decir su pitch mientras cae
+        la arena del reloj.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - input
+    - position: 4
+      slug: mi-minuto-completo
+      micro_objective: Decir un pitch propio completo dentro del tiempo de aproximadamente un minuto.
+      narrative_beat: Con el reloj de arena del reino, Dina dice su pitch completo justo antes de que se
+        acabe el tiempo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: hablar-con-seguridad-al-presentar
+    title_es: Hablar con seguridad al presentar
+    concept: Presentar una idea con voz clara, mirando a quien escucha y con seguridad ayuda a que otros
+      confíen en ella.
+    learning_objective: Al final, el niño puede presentar una idea propia con voz clara y seguridad.
+    key_vocabulary:
+    - seguridad
+    - voz clara
+    - presentar
+    - confianza
+    prior_knowledge: Sabe ajustar su pitch a un minuto (tema anterior).
+    parent_check: "¿{{name}} puede presentar una idea con voz clara y seguridad, sin esconderse?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-voz-que-tiembla
+      micro_objective: Reconocer que hablar muy bajo o con voz temblorosa dificulta que un pitch convenza.
+      narrative_beat: Dino presenta su pitch con voz tan bajita que casi nadie en la plaza lo escucha.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: practicar-la-voz-clara
+      micro_objective: Practicar decir un pitch con voz clara y volumen adecuado.
+      narrative_beat: Zara Vex ayuda a Dino a practicar su pitch con una voz clara que llega hasta el fondo
+        de la plaza.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: mirar-a-quien-escucha
+      micro_objective: Practicar mirar a la persona que escucha mientras se presenta un pitch.
+      narrative_beat: Dr. Rho recuerda a Dina la importancia de mirar a quien escucha mientras presenta
+        su idea, no al suelo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-presentacion-segura
+      micro_objective: Presentar un pitch propio completo con voz clara, mirando a quien escucha, con seguridad.
+      narrative_beat: Dina presenta su pitch completo frente a un grupo del reino, con voz clara y la mirada
+        firme.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: responder-una-pregunta-sobre-mi-idea
+    title_es: Responder una pregunta sobre mi idea
+    concept: Después de un pitch, alguien puede hacer una pregunta, y responderla con calma ayuda a que
+      confíen aún más en la idea.
+    learning_objective: Al final, el niño puede responder con calma una pregunta sencilla sobre su idea.
+    key_vocabulary:
+    - pregunta
+    - responder
+    - calma
+    - idea
+    prior_knowledge: Sabe presentar su pitch con seguridad (tema anterior).
+    parent_check: "¿{{name}} responde con calma cuando alguien le hace una pregunta sobre una idea suya?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: alguien-pregunta
+      micro_objective: Reconocer que después de un pitch alguien puede hacer una pregunta sobre la idea.
+      narrative_beat: Después del pitch de Dino, un mercader del reino levanta la mano y le hace una pregunta
+        que no esperaba.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: no-se-sabe-todo
+      micro_objective: Reconocer que está bien no saber la respuesta exacta a una pregunta, y decir eso
+        con calma.
+      narrative_beat: Dr. Rho tranquiliza a Dina explicando que no pasa nada si no sabe la respuesta exacta,
+        mientras lo diga con calma.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: practicar-responder-con-calma
+      micro_objective: Practicar responder con calma una pregunta sencilla sobre una idea, dentro de una
+        historia.
+      narrative_beat: Zara Vex hace preguntas sorpresa a Dino sobre su idea para que practique responder
+        sin ponerse nervioso.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-respuesta-tranquila
+      micro_objective: Aplicar con seguridad una respuesta calmada frente a una pregunta nueva sobre una
+        idea propia.
+      narrative_beat: Frente a una pregunta nueva e inesperada, Dina respira, piensa y responde con calma,
+        tal como practicó.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: mi-pitch-listo-para-el-reino
+    title_es: Mi pitch listo para el reino
+    concept: Aplicar juntas todas las partes del pitch -problema, solución, tiempo, voz segura y respuesta
+      a preguntas- en una presentación final.
+    learning_objective: Al final, el niño puede presentar un pitch completo de aproximadamente un minuto
+      frente a alguien del reino.
+    key_vocabulary:
+    - pitch
+    - completo
+    - presentar
+    - reino
+    prior_knowledge: Conoce todas las partes de un buen pitch enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede presentarte su pitch completo de un minuto, de principio a fin?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: preparar-mi-gran-presentacion
+      micro_objective: Preparar un pitch propio completo, revisando cada una de sus partes.
+      narrative_beat: Con ayuda de Zara Vex, Dina revisa cada parte de su pitch antes de presentarlo frente
+        al reino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ensayar-una-ultima-vez
+      micro_objective: Practicar el pitch completo una última vez, cuidando el tiempo y la voz.
+      narrative_beat: Dino ensaya su pitch una última vez frente a Dr. Rho, cuidando el tiempo y hablando
+        con voz clara.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - input
+    - position: 3
+      slug: presentar-frente-al-reino
+      micro_objective: Presentar el pitch completo frente a un público nuevo del reino.
+      narrative_beat: Dina se para frente a un grupo de mercaderes del reino y presenta su pitch completo,
+        de principio a fin.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+    - position: 4
+      slug: responder-y-celebrar
+      micro_objective: Responder con calma una pregunta final y celebrar la presentación completa.
+      narrative_beat: Tras responder con calma una última pregunta, Dina celebra junto a Zara Vex y Dino
+        su primer pitch completo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del reino para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga El Pitch, Contar mi Idea en Un Minuto.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga El Pitch.
+    key_vocabulary:
+    - pitch
+    - idea
+    - minuto
+    - seguridad
+    prior_knowledge: Ha completado los ocho temas de la saga El Pitch, Contar mi Idea en Un Minuto (aventura
+      5, saga 2).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/que-es-un-pitch
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/lo-mas-importante-de-mi-idea
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/contar-el-problema-que-resuelvo
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/explicar-mi-idea-en-pocas-palabras
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/practicar-el-tiempo-de-un-minuto
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/hablar-con-seguridad-al-presentar
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/responder-una-pregunta-sobre-mi-idea
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/mi-pitch-listo-para-el-reino
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es un pitch y cómo encontrar lo más importante de
+        una idea.
+      narrative_beat: Zara Vex abre el cofre del reino y reta a Dina a recordar, moneda por moneda, lo
+        primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo contar el problema que resuelve una idea y cómo
+        explicarla en pocas palabras.
+      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre ajustar el pitch a
+        un minuto y hablar con seguridad.
+      narrative_beat: Dr. Rho presenta una escena nueva de la Gran Plaza y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo responder una pregunta
+        con calma, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada moneda
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Pitch, Contar mi Idea en Un Minuto con la honestidad al
+      vender, en un reto que combina ambas partes del reino.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Pitch con un concepto
+      de Vender con Honestidad.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - pitch
+    prior_knowledge: Conoce El Pitch (saga 2) y Vender con Honestidad (saga 1, aventura 5).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/vender-con-honestidad/decir-la-verdad-aunque-cueste-una-venta
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/contar-el-problema-que-resuelvo
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/hablar-con-seguridad-al-presentar
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Vender con Honestidad.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Dino recordarlo sin ayuda, antes
+        de mezclarlo con el pitch.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Vender con Honestidad con lo aprendido en El Pitch.
+      narrative_beat: Dr. Rho muestra cómo esa lección de vender con honestidad se conecta directamente
+        con lo que Dina aprendió sobre el pitch.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre el pitch con
+        la honestidad al vender para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: atencion-y-servicio-al-cliente
+  icon: support_agent
+  title:
+    en-US: Customer Care and Service
+    es-MX: Atención y Servicio al Cliente
+    pt-BR: Atendimento e Serviço ao Cliente
+  description:
+    en-US: Learn to welcome, listen to and help every customer, turning good service into the reason they
+      come back.
+    es-MX: Aprende a recibir, escuchar y ayudar a cada cliente, convirtiendo el buen servicio en la razón
+      por la que vuelven.
+    pt-BR: Aprenda a receber, ouvir e ajudar cada cliente, transformando o bom atendimento no motivo pelo
+      qual eles voltam.
+  topics:
+  - position: 1
+    slug: que-es-atender-a-un-cliente
+    title_es: Qué es atender a un cliente
+    concept: Atender a un cliente es ayudarlo con atención y buena actitud mientras compra, no solo cobrarle
+      su dinero.
+    learning_objective: Al final, el niño puede explicar qué significa atender bien a un cliente.
+    key_vocabulary:
+    - atender
+    - cliente
+    - actitud
+    - ayudar
+    prior_knowledge: Sabe presentar su pitch completo frente al reino (saga anterior).
+    parent_check: "¿{{name}} puede explicarte qué significa atender bien a un cliente?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-cliente-llega-al-puesto
+      micro_objective: Reconocer que atender bien a un cliente empieza desde que llega al puesto.
+      narrative_beat: Un cliente se acerca al puesto de Dino, y Zara Vex observa con atención cómo lo recibe.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: atender-o-solo-cobrar
+      micro_objective: Distinguir atender bien a un cliente de solo cobrarle rápido sin prestarle atención.
+      narrative_beat: Dr. Rho compara a un mercader que solo cobra rápido con otro que de verdad atiende
+        a sus clientes.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: como-se-siente-un-cliente-bien-atendido
+      micro_objective: Explicar cómo se siente un cliente cuando lo atienden con buena actitud.
+      narrative_beat: Dina le pregunta a un cliente cómo se sintió después de ser atendido con calma y
+        buena actitud.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primera-atencion-al-cliente
+      micro_objective: Practicar atender a un cliente nuevo aplicando buena actitud desde el saludo.
+      narrative_beat: Dina atiende a su primer cliente del día, aplicando todo lo que aprendió sobre la
+        buena atención.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 2
+    slug: saludar-y-escuchar-primero
+    title_es: Saludar y escuchar primero
+    concept: Saludar con amabilidad y escuchar lo que el cliente busca, antes de hablar del producto, es
+      el primer paso de un buen servicio.
+    learning_objective: Al final, el niño puede aplicar el saludo y la escucha como primer paso al atender
+      a un cliente.
+    key_vocabulary:
+    - saludar
+    - escuchar
+    - amabilidad
+    - primero
+    prior_knowledge: Sabe qué significa atender bien a un cliente (tema anterior).
+    parent_check: "¿{{name}} saluda y escucha antes de hablar cuando atiende a alguien?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: hablar-antes-de-escuchar
+      micro_objective: Reconocer el error de hablar del producto antes de escuchar lo que el cliente busca.
+      narrative_beat: Dino empieza a hablar de su limonada sin dejar que el cliente le diga primero qué
+        necesita.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-saludo-que-abre-la-puerta
+      micro_objective: Practicar un saludo amable como primer paso de la atención.
+      narrative_beat: Zara Vex enseña a Dina un saludo cálido que hace sentir bienvenido a cualquier cliente
+        del reino.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: escuchar-lo-que-de-verdad-busca
+      micro_objective: Practicar escuchar con atención lo que un cliente busca antes de responder.
+      narrative_beat: Dr. Rho ayuda a Dino a escuchar con calma lo que un cliente busca, sin interrumpirlo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 4
+      slug: mi-saludo-y-mi-escucha
+      micro_objective: Aplicar juntos el saludo amable y la escucha atenta frente a un cliente nuevo.
+      narrative_beat: Dina saluda con calidez y escucha con atención a un nuevo cliente antes de decir
+        una sola palabra sobre su limonada.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: ayudar-a-encontrar-lo-que-busca
+    title_es: Ayudar a encontrar lo que busca
+    concept: Ayudar a un cliente a encontrar justo lo que necesita, aunque no sea lo que yo esperaba vender,
+      es parte de un buen servicio.
+    learning_objective: Al final, el niño puede ayudar a un cliente a encontrar lo que realmente necesita.
+    key_vocabulary:
+    - necesitar
+    - ayudar
+    - encontrar
+    - servicio
+    prior_knowledge: Sabe saludar y escuchar primero (tema anterior).
+    parent_check: "¿{{name}} intenta ayudar a alguien a encontrar lo que de verdad necesita, aunque no sea lo que él quería ofrecerle?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: no-es-lo-que-yo-vendo
+      micro_objective: Reconocer una situación donde lo que el cliente busca no es exactamente lo que ofrezco.
+      narrative_beat: Un cliente busca algo que el puesto de Dino no tiene, y él no sabe bien qué hacer.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: guiar-hacia-lo-correcto
+      micro_objective: Practicar guiar a un cliente hacia lo que de verdad necesita, aunque sea de otro
+        puesto.
+      narrative_beat: Zara Vex muestra cómo guiar con honestidad a un cliente hacia el puesto correcto,
+        aunque no sea el propio.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: por-que-esto-genera-confianza
+      micro_objective: Explicar por qué ayudar a un cliente, aunque no compre, genera confianza a largo
+        plazo.
+      narrative_beat: Dr. Rho explica que un cliente ayudado con honestidad suele volver, aunque esta vez
+        no haya comprado nada.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-ayuda-mas-alla-de-la-venta
+      micro_objective: Aplicar la ayuda genuina frente a un cliente nuevo que busca algo distinto a lo
+        que ofrezco.
+      narrative_beat: Dina ayuda con calma a un cliente a encontrar justo lo que necesita, aunque no sea
+        en su propio puesto.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: ser-paciente-con-un-cliente-dificil
+    title_es: Ser paciente con un cliente difícil
+    concept: Mantener la calma y la amabilidad, incluso cuando un cliente está molesto o indeciso, es parte
+      de dar un buen servicio.
+    learning_objective: Al final, el niño puede aplicar la calma frente a un cliente difícil o indeciso.
+    key_vocabulary:
+    - paciencia
+    - calma
+    - indeciso
+    - molesto
+    prior_knowledge: Sabe ayudar a un cliente a encontrar lo que busca (tema anterior).
+    parent_check: "¿{{name}} logra mantener la calma cuando alguien está molesto o indeciso con él?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-cliente-molesto
+      micro_objective: Reconocer una situación donde un cliente llega molesto al puesto.
+      narrative_beat: Un cliente llega molesto porque su compra anterior en otro puesto no salió como esperaba.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: respirar-antes-de-responder
+      micro_objective: Practicar la estrategia de respirar y pensar antes de responder a un cliente molesto.
+      narrative_beat: Zara Vex enseña a Dino a respirar hondo antes de responder a un cliente que está
+        molesto.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: un-cliente-que-no-se-decide
+      micro_objective: Practicar la paciencia con un cliente que tarda mucho en decidirse.
+      narrative_beat: Dr. Rho recuerda a Dina que un cliente indeciso solo necesita tiempo y paciencia,
+        no prisa.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-calma-ante-cualquier-cliente
+      micro_objective: Aplicar la calma y la paciencia frente a un cliente difícil nuevo.
+      narrative_beat: Frente a un cliente nuevo, molesto e indeciso a la vez, Dina responde con calma,
+        tal como practicó.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: resolver-un-problema-de-un-cliente
+    title_es: Resolver un problema de un cliente
+    concept: Aplicar pasos simples -escuchar, entender y proponer una solución- ayuda a resolver un problema
+      de un cliente durante o después de la compra.
+    learning_objective: Al final, el niño puede aplicar pasos simples para resolver un problema de un cliente.
+    key_vocabulary:
+    - problema
+    - resolver
+    - solución
+    - pasos
+    prior_knowledge: Sabe ser paciente con un cliente difícil (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte los pasos para resolver el problema de alguien: escuchar, entender y proponer una solución?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: algo-salio-mal
+      micro_objective: Reconocer una situación donde un producto vendido tuvo un problema para el cliente.
+      narrative_beat: Un cliente regresa al puesto de Dino porque su limonada de ayer ya no estaba tan
+        fría como esperaba.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-tres-pasos-para-resolver
+      micro_objective: Ordenar los tres pasos simples para resolver un problema de un cliente, escuchar,
+        entender, proponer.
+      narrative_beat: Dr. Rho enseña a Dina los tres pasos del reino para resolver cualquier problema de
+        un cliente.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: practicar-los-tres-pasos
+      micro_objective: Aplicar los tres pasos para resolver un problema dentro de una historia.
+      narrative_beat: Zara Vex pone a prueba a Dino con un cliente insatisfecho para ver si aplica los
+        tres pasos del reino.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - arrange
+    - position: 4
+      slug: mi-problema-resuelto
+      micro_objective: Aplicar con seguridad los tres pasos frente a un problema nuevo de un cliente.
+      narrative_beat: Frente a un nuevo cliente con un problema, Dina escucha, entiende y propone una solución
+        sin ayuda.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: decir-gracias-y-hacer-que-vuelva
+    title_es: Decir gracias y hacer que vuelva
+    concept: Agradecer a un cliente y tratarlo bien de principio a fin ayuda a que quiera volver a comprar
+      en el futuro.
+    learning_objective: Al final, el niño puede explicar por qué agradecer a un cliente ayuda a que regrese.
+    key_vocabulary:
+    - agradecer
+    - volver
+    - tratar bien
+    - futuro
+    prior_knowledge: Sabe resolver un problema de un cliente (tema anterior).
+    parent_check: "¿{{name}} agradece a las personas después de ayudarlas o venderles algo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-venta-que-termina-sin-gracias
+      micro_objective: Reconocer que una venta sin un agradecimiento final se siente incompleta.
+      narrative_beat: Dino termina una venta rápido y se olvida de agradecerle al cliente antes de que
+        se vaya.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-gracias-que-se-nota
+      micro_objective: Practicar decir un agradecimiento genuino al final de una venta o ayuda.
+      narrative_beat: Zara Vex muestra a Dina cómo un simple 'gracias' sincero hace que un cliente se sienta
+        bien atendido.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: por-que-un-cliente-vuelve
+      micro_objective: Explicar por qué un cliente bien tratado, de principio a fin, suele volver a comprar.
+      narrative_beat: Dr. Rho explica que los clientes que se sienten bien tratados son los que regresan
+        al puesto del reino.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-despedida-que-invita-a-volver
+      micro_objective: Aplicar un agradecimiento y una despedida amable frente a un cliente nuevo.
+      narrative_beat: Dina se despide de un cliente nuevo con un agradecimiento sincero que lo invita a
+        volver pronto.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: servicio-que-hace-la-diferencia
+    title_es: Servicio que hace la diferencia
+    concept: Reconocer que un servicio memorable -amable, atento y honesto- puede ser tan importante como
+      el precio para que un cliente elija un puesto.
+    learning_objective: Al final, el niño puede explicar por qué un buen servicio puede ser tan importante
+      como el precio.
+    key_vocabulary:
+    - memorable
+    - elegir
+    - diferencia
+    - servicio
+    prior_knowledge: Sabe agradecer y despedirse de forma que invite a volver (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué un buen servicio puede ser tan importante como el precio al elegir dónde comprar?"
+    prerequisites:
+    - path: el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+      strength: soft
+      reason: "Entender qué hace justo a un precio ayuda a comparar cuándo el servicio pesa tanto o más que el precio en la decisión de un cliente."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-puestos-el-mismo-precio
+      micro_objective: Comparar dos puestos con el mismo precio pero distinto nivel de servicio.
+      narrative_beat: Dos puestos del reino venden lo mismo al mismo precio, pero uno atiende mucho mejor
+        que el otro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: por-que-elegir-el-que-atiende-mejor
+      micro_objective: Explicar por qué un cliente puede preferir el puesto con mejor servicio, aunque
+        el precio sea igual.
+      narrative_beat: Dr. Rho pregunta a Dina por qué cree que la gente del reino prefiere el puesto que
+        atiende mejor.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: el-servicio-que-se-recuerda
+      micro_objective: Reconocer un ejemplo de servicio memorable que hace que alguien recuerde un puesto
+        con cariño.
+      narrative_beat: Zara Vex cuenta la historia de un mercader que todo el reino recuerda, no por sus
+        precios, sino por su trato.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-servicio-memorable
+      micro_objective: Proponer una idea propia de servicio memorable para el puesto.
+      narrative_beat: Dina piensa en una idea propia para que su puesto sea recordado por el buen trato,
+        no solo por el precio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - maker
+  - position: 8
+    slug: mi-puesto-con-el-mejor-servicio
+    title_es: Mi puesto con el mejor servicio
+    concept: Aplicar juntas todas las reglas de atención -saludar, escuchar, ayudar, ser paciente, resolver
+      problemas y agradecer- en un desafío final con varios clientes.
+    learning_objective: Al final, el niño puede aplicar en conjunto las reglas de buen servicio atendiendo
+      a varios clientes seguidos.
+    key_vocabulary:
+    - servicio
+    - aplicar
+    - clientes
+    - desafío
+    prior_knowledge: Conoce todas las reglas de buena atención enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales para dar un buen servicio que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: se-forma-una-fila
+      micro_objective: Reconocer que varios clientes llegan seguidos y cada uno merece la misma buena atención.
+      narrative_beat: Una fila de clientes se forma frente al puesto de Dino, uno detrás de otro, esperando
+        su turno.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-primer-cliente-de-la-fila
+      micro_objective: Aplicar el saludo, la escucha y la ayuda con el primer cliente de una fila.
+      narrative_beat: Dina atiende al primer cliente de la fila aplicando todo lo aprendido sobre saludar
+        y escuchar.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: un-cliente-dificil-en-la-fila
+      micro_objective: Aplicar la paciencia y la resolución de problemas con un cliente difícil dentro
+        de la fila.
+      narrative_beat: Un cliente molesto llega en medio de la fila, y Dino aplica la calma que practicó
+        para resolverlo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: cierro-la-fila-con-gracias
+      micro_objective: Terminar el desafío agradeciendo a cada cliente y reflexionando sobre el servicio
+        dado.
+      narrative_beat: Al atender al último cliente de la fila, Dina agradece a todos y celebra junto a
+        Zara Vex un día de excelente servicio.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del reino para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Atención y Servicio al Cliente.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Atención y Servicio al Cliente.
+    key_vocabulary:
+    - atender
+    - escuchar
+    - paciencia
+    - servicio
+    prior_knowledge: Ha completado los ocho temas de la saga Atención y Servicio al Cliente (aventura 5,
+      saga 3).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/que-es-atender-a-un-cliente
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/saludar-y-escuchar-primero
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/ayudar-a-encontrar-lo-que-busca
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/ser-paciente-con-un-cliente-dificil
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/resolver-un-problema-de-un-cliente
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/decir-gracias-y-hacer-que-vuelva
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/servicio-que-hace-la-diferencia
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/mi-puesto-con-el-mejor-servicio
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué significa atender bien y por qué saludar y escuchar
+        van primero.
+      narrative_beat: Zara Vex abre el cofre del reino y reta a Dina a recordar, moneda por moneda, lo
+        primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo ayudar a un cliente a encontrar lo que busca y
+        cómo ser paciente con uno difícil.
+      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre resolver un problema
+        y agradecer para que el cliente vuelva.
+      narrative_beat: Dr. Rho presenta una escena nueva de la Gran Plaza y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo por qué el servicio
+        hace la diferencia, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada moneda
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Atención y Servicio al Cliente con El Pitch, en un reto que
+      combina cómo presentar una idea y cómo atender a quien la escucha.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Atención y Servicio
+      al Cliente con un concepto de El Pitch.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - atender
+    prior_knowledge: Conoce Atención y Servicio al Cliente (saga 3) y El Pitch (saga 2, aventura 5).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/hablar-con-seguridad-al-presentar
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/responder-una-pregunta-sobre-mi-idea
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/saludar-y-escuchar-primero
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/resolver-un-problema-de-un-cliente
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga El Pitch.
+      narrative_beat: Zara Vex trae un recuerdo de la saga del pitch y pide a Dino recordarlo sin ayuda,
+        antes de mezclarlo con la atención al cliente.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de El Pitch con lo aprendido en Atención y Servicio
+        al Cliente.
+      narrative_beat: Dr. Rho muestra cómo hablar con seguridad al presentar se conecta directamente con
+        saludar y escuchar bien a un cliente.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre el pitch con
+        la atención al cliente para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: escuchar-y-mejorar
+  icon: rate_review
+  title:
+    en-US: Listening and Improving
+    es-MX: Escuchar y Mejorar
+    pt-BR: Ouvir e Melhorar
+  description:
+    en-US: Learn to ask for feedback without fear, listen to it with calm, and use it to make a product
+      better.
+    es-MX: Aprende a pedir la opinión de tus clientes sin miedo, escucharla con calma y usarla para mejorar
+      tu producto.
+    pt-BR: Aprenda a pedir a opinião dos seus clientes sem medo, ouvi-la com calma e usá-la para melhorar
+      seu produto.
+  topics:
+  - position: 1
+    slug: que-es-la-opinion-de-un-cliente
+    title_es: Qué es la opinión de un cliente
+    concept: La opinión de un cliente es lo que piensa o siente sobre un producto o servicio después de
+      probarlo, y escucharla ayuda a mejorar.
+    learning_objective: Al final, el niño puede explicar qué es la opinión de un cliente.
+    key_vocabulary:
+    - opinión
+    - cliente
+    - mejorar
+    - probar
+    prior_knowledge: Sabe dar un buen servicio a varios clientes seguidos (saga anterior).
+    parent_check: "¿{{name}} puede explicarte qué es la opinión de un cliente y para qué sirve escucharla?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-cliente-comenta-algo
+      micro_objective: Reconocer que después de comprar, un cliente puede compartir lo que piensa sobre
+        el producto.
+      narrative_beat: Un cliente que compró limonada en el puesto de Dino regresa al día siguiente y le
+        comenta qué le pareció.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: opinion-buena-o-que-se-puede-mejorar
+      micro_objective: Clasificar distintos comentarios de clientes entre positivos y de mejora.
+      narrative_beat: Dr. Rho muestra varios comentarios que ha recibido el puesto y pide a Dina separarlos
+        entre buenos y de mejora.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: para-que-sirve-escuchar-esto
+      micro_objective: Explicar para qué sirve escuchar la opinión de un cliente sobre un producto.
+      narrative_beat: Zara Vex explica a Dino que escuchar la opinión de un cliente es como recibir un
+        mapa para mejorar.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primera-opinion-recibida
+      micro_objective: Recibir y anotar la primera opinión real de un cliente sobre el producto propio.
+      narrative_beat: Dina recibe su primera opinión de un cliente sobre su limonada y la anota con cuidado.
+      difficulty: 3
+      suggested_families:
+      - input
+      - choice
+  - position: 2
+    slug: pedir-la-opinion-sin-miedo
+    title_es: Pedir la opinión sin miedo
+    concept: Pedir la opinión de un cliente, incluso si puede ser negativa, ayuda a mejorar y muestra interés
+      genuino.
+    learning_objective: Al final, el niño puede practicar pedir la opinión de un cliente sin miedo a una
+      respuesta negativa.
+    key_vocabulary:
+    - pedir
+    - miedo
+    - negativa
+    - interés
+    prior_knowledge: Sabe qué es la opinión de un cliente (tema anterior).
+    parent_check: "¿{{name}} se anima a preguntar qué le pareció algo a otra persona, aunque tema una respuesta negativa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: miedo-a-preguntar
+      micro_objective: Reconocer el miedo a pedir la opinión de un cliente por temor a una respuesta negativa.
+      narrative_beat: Dino tiene miedo de preguntarle a un cliente qué le pareció su limonada, por si la
+        respuesta no es buena.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: preguntar-de-todas-formas
+      micro_objective: Practicar pedir la opinión de un cliente a pesar del miedo a una respuesta negativa.
+      narrative_beat: Zara Vex anima a Dino a preguntar de todas formas, aunque tenga miedo de lo que el
+        cliente pueda decir.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: como-pedir-una-opinion
+      micro_objective: Practicar una forma amable de pedir la opinión de un cliente.
+      narrative_beat: Dr. Rho enseña a Dina una forma amable de preguntar '¿qué te pareció?' a sus clientes.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-pregunta-sin-miedo
+      micro_objective: Aplicar con seguridad pedir la opinión de un cliente nuevo, sin miedo a la respuesta.
+      narrative_beat: Dina le pregunta con calma a un cliente nuevo qué le pareció su limonada, sin miedo
+        a la respuesta.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: escuchar-una-critica-sin-enojarse
+    title_es: Escuchar una crítica sin enojarse
+    concept: Escuchar un comentario negativo con calma, sin enojarse ni ponerse a la defensiva, es parte
+      de aprender a mejorar.
+    learning_objective: Al final, el niño puede escuchar una crítica con calma, sin enojarse.
+    key_vocabulary:
+    - crítica
+    - calma
+    - enojarse
+    - escuchar
+    prior_knowledge: Sabe pedir la opinión de un cliente sin miedo (tema anterior).
+    parent_check: "¿{{name}} logra escuchar con calma cuando alguien le dice algo que no le gusta de su trabajo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-comentario-que-duele-un-poco
+      micro_objective: Reconocer que un comentario negativo puede sentirse incómodo al principio.
+      narrative_beat: Un cliente le dice a Dino que su limonada podría estar un poco más fría, y a él le
+        duele un poco escucharlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: enojarse-o-escuchar
+      micro_objective: Comparar la reacción de enojarse con la de escuchar con calma frente a una crítica.
+      narrative_beat: Zara Vex muestra dos formas de reaccionar ante una crítica, enojarse, o escuchar
+        con calma para aprender.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: respirar-antes-de-reaccionar
+      micro_objective: Practicar la estrategia de respirar antes de reaccionar a un comentario negativo.
+      narrative_beat: Dr. Rho ayuda a Dina a respirar hondo antes de responder a un comentario que no esperaba.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-critica-recibida-con-calma
+      micro_objective: Aplicar la calma frente a una crítica nueva de un cliente.
+      narrative_beat: Frente a una crítica nueva y algo directa, Dina respira, escucha con calma y agradece
+        el comentario.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: separar-lo-util-de-lo-que-no-ayuda
+    title_es: Separar lo útil de lo que no ayuda
+    concept: Distinguir, entre varios comentarios recibidos, cuáles ayudan de verdad a mejorar y cuáles
+      no aportan nada concreto.
+    learning_objective: Al final, el niño puede distinguir un comentario útil de uno que no ayuda a mejorar.
+    key_vocabulary:
+    - útil
+    - concreto
+    - distinguir
+    - comentario
+    prior_knowledge: Sabe escuchar una crítica sin enojarse (tema anterior).
+    parent_check: "¿{{name}} puede distinguir un comentario que sí ayuda a mejorar de uno que no dice nada concreto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: varios-comentarios-a-la-vez
+      micro_objective: Reconocer que un puesto puede recibir varios comentarios distintos de diferentes
+        clientes.
+      narrative_beat: Al final del día, Dina revisa una lista con varios comentarios distintos que dejaron
+        sus clientes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cual-comentario-ayuda-mas
+      micro_objective: Clasificar varios comentarios entre útiles, concretos, y poco útiles, vagos.
+      narrative_beat: Dr. Rho ayuda a Dina a separar los comentarios concretos, que sí ayudan a mejorar,
+        de los que no dicen nada claro.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 3
+      slug: pedir-que-sea-mas-concreto
+      micro_objective: Practicar pedir a un cliente que explique mejor un comentario poco claro.
+      narrative_beat: Zara Vex enseña a Dino a preguntar '¿qué parte exactamente?' cuando un comentario
+        es poco claro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-lista-de-comentarios-utiles
+      micro_objective: Elaborar una lista propia separando comentarios útiles de los que no ayudan.
+      narrative_beat: Dina arma su propia lista, separando los comentarios que de verdad le ayudarán a
+        mejorar su puesto.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 5
+    slug: hacer-un-cambio-a-partir-de-una-opinion
+    title_es: Hacer un cambio a partir de una opinión
+    concept: Aplicar un cambio concreto en el producto o servicio a partir de una opinión útil recibida
+      es el paso que de verdad mejora las cosas.
+    learning_objective: Al final, el niño puede aplicar un cambio concreto a partir de una opinión recibida.
+    key_vocabulary:
+    - cambio
+    - aplicar
+    - mejorar
+    - concreto
+    prior_knowledge: Sabe separar comentarios útiles de los que no ayudan (tema anterior).
+    parent_check: "¿{{name}} ha intentado cambiar algo después de escuchar una opinión útil sobre lo que hace?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-idea-para-mejorar
+      micro_objective: Reconocer una idea de cambio concreto que surge de una opinión recibida.
+      narrative_beat: A partir de un comentario sobre lo fría que debería estar la limonada, a Dino se
+        le ocurre una idea concreta para mejorarla.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-el-cambio-mas-util
+      micro_objective: Elegir, entre varias ideas de cambio, la que resuelve mejor la opinión recibida.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir, entre varias ideas, cuál resuelve mejor lo que sus
+        clientes pidieron.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: aplicar-el-cambio
+      micro_objective: Aplicar un cambio concreto en un producto propio a partir de una opinión recibida.
+      narrative_beat: Zara Vex acompaña a Dino mientras aplica, paso a paso, el cambio que decidió hacer
+        en su limonada.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - input
+    - position: 4
+      slug: mi-producto-mejorado
+      micro_objective: Presentar un producto propio ya mejorado, explicando qué cambió y por qué.
+      narrative_beat: Dina muestra su limonada mejorada a Zara Vex, explicando qué cambió gracias a la
+        opinión que recibió.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+  - position: 6
+    slug: agradecer-a-quien-opina
+    title_es: Agradecer a quien opina
+    concept: Agradecer a alguien que da su opinión, sea positiva o negativa, porque su comentario ayuda
+      a mejorar.
+    learning_objective: Al final, el niño puede agradecer a un cliente por su opinión, sea positiva o negativa.
+    key_vocabulary:
+    - agradecer
+    - opinión
+    - positiva
+    - negativa
+    prior_knowledge: Sabe aplicar un cambio a partir de una opinión (tema anterior).
+    parent_check: "¿{{name}} agradece a alguien que le da su opinión, aunque no sea lo que esperaba escuchar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: olvidar-decir-gracias
+      micro_objective: Reconocer que a veces se olvida agradecer a quien dio su opinión sobre algo.
+      narrative_beat: Dino recibe una opinión útil de un cliente, pero se va tan rápido que olvida agradecerle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-gracias-por-el-comentario
+      micro_objective: Practicar agradecer específicamente por una opinión recibida, sea buena o de mejora.
+      narrative_beat: Zara Vex muestra cómo agradecer con una frase concreta a alguien que dio su opinión
+        sobre el puesto.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: por-que-agradecer-ayuda-tambien
+      micro_objective: Explicar por qué agradecer a quien opina anima a que siga compartiendo su opinión
+        en el futuro.
+      narrative_beat: Dr. Rho explica que un cliente agradecido por dar su opinión suele volver a compartirla
+        en el futuro.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-agradecimiento-genuino
+      micro_objective: Aplicar un agradecimiento genuino frente a una opinión nueva, positiva o negativa.
+      narrative_beat: Dina agradece con sinceridad a un cliente nuevo que le compartió su opinión, sea
+        buena o de mejora.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: probar-la-mejora-y-ver-que-paso
+    title_es: Probar la mejora y ver qué pasó
+    concept: Probar el cambio hecho y observar con atención si de verdad mejoró la experiencia del cliente
+      cierra el ciclo de mejora.
+    learning_objective: Al final, el niño puede observar y explicar si un cambio hecho mejoró de verdad
+      algo.
+    key_vocabulary:
+    - probar
+    - observar
+    - resultado
+    - mejora
+    prior_knowledge: Sabe agradecer a quien opina (tema anterior).
+    parent_check: "¿{{name}} revisa si un cambio que hizo de verdad mejoró las cosas, o si hay que intentar algo distinto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-producto-mejorado-a-prueba
+      micro_objective: Reconocer que después de un cambio conviene observar si de verdad mejoró algo.
+      narrative_beat: Dino vende su limonada mejorada por primera vez y observa con atención cómo reacciona
+        el cliente.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mejor-igual-o-peor
+      micro_objective: Comparar el resultado del cambio con la situación anterior para ver si mejoró, quedó
+        igual o empeoró.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar las opiniones de antes y después del cambio que hizo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: que-hacer-si-no-mejoro
+      micro_objective: Decidir qué hacer si un cambio hecho no mejoró la situación como se esperaba.
+      narrative_beat: Zara Vex pregunta a Dino qué haría si su cambio no hubiera mejorado nada, y le muestra
+        que se puede intentar de nuevo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-revision-del-cambio
+      micro_objective: Revisar con seguridad, en una situación nueva, si un cambio propio funcionó como
+        se esperaba.
+      narrative_beat: Dina revisa con calma los resultados de su propio cambio, celebrando lo que sí mejoró.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 8
+    slug: mi-ciclo-de-mejorar-siempre
+    title_es: Mi ciclo de mejorar siempre
+    concept: Aplicar el ciclo completo -pedir opinión, escuchar con calma, elegir un cambio útil, aplicarlo
+      y probar el resultado- en un desafío final.
+    learning_objective: Al final, el niño puede aplicar el ciclo completo de mejora continua en un desafío
+      final.
+    key_vocabulary:
+    - ciclo
+    - mejorar
+    - siempre
+    - aplicar
+    prior_knowledge: Conoce todos los pasos del ciclo de mejora enseñados en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede explicarte, en orden, los pasos para mejorar algo a partir de la opinión de alguien más?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-puesto-listo-para-mejorar
+      micro_objective: Preparar el puesto propio para iniciar el ciclo completo de pedir y recibir opiniones.
+      narrative_beat: Con ayuda de Zara Vex, Dina prepara su puesto para pedir opiniones a todos sus clientes
+        durante un día entero.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: recibo-varias-opiniones
+      micro_objective: Recibir y escuchar con calma varias opiniones distintas durante el desafío.
+      narrative_beat: Durante el día, Dino recibe varias opiniones distintas de sus clientes y las escucha
+        una por una con calma.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - arrange
+    - position: 3
+      slug: elijo-y-aplico-un-cambio
+      micro_objective: Elegir la opinión más útil del día y aplicar un cambio concreto a partir de ella.
+      narrative_beat: Al final del día, Dina elige la opinión más útil que recibió y aplica un cambio concreto
+        en su limonada.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+    - position: 4
+      slug: mi-ciclo-completo-del-reino
+      micro_objective: Cerrar el ciclo probando el cambio y celebrando el aprendizaje de mejorar siempre.
+      narrative_beat: Dina prueba su cambio con un nuevo cliente y celebra junto a Zara Vex, Dino y Dr.
+        Rho su primer ciclo completo de mejora.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del reino para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Escuchar y Mejorar.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Escuchar y Mejorar.
+    key_vocabulary:
+    - opinión
+    - crítica
+    - cambio
+    - mejorar
+    prior_knowledge: Ha completado los ocho temas de la saga Escuchar y Mejorar (aventura 5, saga 4).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/escuchar-y-mejorar/que-es-la-opinion-de-un-cliente
+    - el-reino-de-las-ventas/escuchar-y-mejorar/pedir-la-opinion-sin-miedo
+    - el-reino-de-las-ventas/escuchar-y-mejorar/escuchar-una-critica-sin-enojarse
+    - el-reino-de-las-ventas/escuchar-y-mejorar/separar-lo-util-de-lo-que-no-ayuda
+    - el-reino-de-las-ventas/escuchar-y-mejorar/hacer-un-cambio-a-partir-de-una-opinion
+    - el-reino-de-las-ventas/escuchar-y-mejorar/agradecer-a-quien-opina
+    - el-reino-de-las-ventas/escuchar-y-mejorar/probar-la-mejora-y-ver-que-paso
+    - el-reino-de-las-ventas/escuchar-y-mejorar/mi-ciclo-de-mejorar-siempre
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es la opinión de un cliente y cómo pedirla sin miedo.
+      narrative_beat: Zara Vex abre el cofre del reino y reta a Dina a recordar, moneda por moneda, lo
+        primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo escuchar una crítica sin enojarse y cómo separar
+        lo útil de lo que no ayuda.
+      narrative_beat: Dino saca del cofre las monedas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre hacer un cambio a partir
+        de una opinión y agradecer a quien opina.
+      narrative_beat: Dr. Rho presenta una escena nueva de la Gran Plaza y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo el ciclo completo de
+        mejorar siempre, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada moneda
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Escuchar y Mejorar con Atención y Servicio al Cliente, en
+      un reto que combina cómo escuchar antes y después de la venta.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Escuchar y Mejorar con
+      un concepto de Atención y Servicio al Cliente.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - escuchar
+    prior_knowledge: Conoce Escuchar y Mejorar (saga 4) y Atención y Servicio al Cliente (saga 3, aventura
+      5).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/saludar-y-escuchar-primero
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/resolver-un-problema-de-un-cliente
+    - el-reino-de-las-ventas/escuchar-y-mejorar/pedir-la-opinion-sin-miedo
+    - el-reino-de-las-ventas/escuchar-y-mejorar/hacer-un-cambio-a-partir-de-una-opinion
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Atención y Servicio
+        al Cliente.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de atención al cliente y pide a Dino recordarlo
+        sin ayuda, antes de mezclarlo con escuchar y mejorar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Atención y Servicio al Cliente con lo aprendido
+        en Escuchar y Mejorar.
+      narrative_beat: Dr. Rho muestra cómo escuchar bien a un cliente durante la venta se conecta directamente
+        con escuchar su opinión después de la venta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Dino a resolver una escena nueva de la Gran Plaza usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre escuchar y
+        mejorar con la atención al cliente para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-reino-de-las-ventas
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Kingdom of Selling's Grand Mission
+    es-MX: La Gran Misión del Reino de las Ventas
+    pt-BR: A Grande Missão do Reino das Vendas
+  description:
+    en-US: A final quest that replays everything learned in the kingdom -- honest selling, the pitch, customer
+      care, and listening to improve -- one last time.
+    es-MX: Una misión final que repasa todo lo aprendido en el reino -- vender con honestidad, el pitch,
+      la atención al cliente y escuchar para mejorar -- una última vez.
+    pt-BR: Uma missão final que revisita tudo o que foi aprendido no reino -- vender com honestidade, o
+      pitch, o atendimento ao cliente e ouvir para melhorar -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-del-gran-reino
+    kind: review_quest
+    title_es: El Desafío del Gran Reino
+    concept: 'Zara Vex anuncia la Gran Misión del reino: un desafío final que reúne, sin enseñar nada nuevo,
+      todo lo aprendido sobre vender con honestidad.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo vender algo real, distinguir vender
+      de engañar, fijar un precio justo y decir la verdad aunque cueste una venta.
+    key_vocabulary:
+    - vender
+    - honesto
+    - precio
+    prior_knowledge: Ha completado las cuatro sagas de El Reino de las Ventas.
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/que-es-vender
+    - el-reino-de-las-ventas/vender-con-honestidad/la-diferencia-entre-vender-y-enganar
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/vender-con-honestidad/decir-la-verdad-aunque-cueste-una-venta
+    lessons:
+    - position: 1
+      slug: la-plaza-vuelve-a-brillar
+      micro_objective: Recordar que vender es ofrecer algo real de valor, y que engañar es distinto a
+        vender.
+      narrative_beat: 'Zara Vex reúne a Dina y Dino en el centro de la Gran Plaza y anuncia la Gran Misión:
+        recorrer una vez más todo lo aprendido en el reino.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-precio-justo-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo calcular la ganancia y fijar un precio justo para
+        un producto.
+      narrative_beat: Dr. Rho presenta un nuevo producto del reino y reta a Dina a calcular, sin repasar
+        la lección, un precio justo para él.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: la-verdad-que-cuesta-otra-vez
+      micro_objective: Recordar cómo decidir decir la verdad aunque eso signifique perder una venta.
+      narrative_beat: Dino recuerda, sin ayuda, aquella vez que dijo la verdad sobre su limonada aunque
+        eso le costó una venta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-honestidad-para-la-gran-mision
+      micro_objective: Aplicar con seguridad las reglas de venta honesta frente a una situación nueva del
+        reino.
+      narrative_beat: Dina aplica, sin ayuda de Zara Vex, todas las reglas de venta honesta frente a un
+        nuevo cliente del reino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-pitch-de-la-gran-mision
+    kind: review_quest
+    title_es: El Pitch de la Gran Misión
+    concept: Dina y Dino recuerdan cómo contar el problema que resuelve una idea, ajustar el pitch a un
+      minuto y responder una pregunta con calma.
+    learning_objective: Al final, el niño puede recordar y aplicar las partes de un pitch completo, corto
+      y con seguridad.
+    key_vocabulary:
+    - pitch
+    - problema
+    - minuto
+    prior_knowledge: Ha repasado la saga de vender con honestidad (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/que-es-un-pitch
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/contar-el-problema-que-resuelvo
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/practicar-el-tiempo-de-un-minuto
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/responder-una-pregunta-sobre-mi-idea
+    lessons:
+    - position: 1
+      slug: una-idea-en-la-gran-mision
+      micro_objective: Recordar que un buen pitch empieza por contar el problema que resuelve la idea.
+      narrative_beat: Zara Vex presenta una idea nueva del reino y reta a Dino a recordar, sin ayuda, cómo
+        empezar a contarla.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-minuto-de-la-gran-mision
+      micro_objective: Recordar cómo ajustar un pitch para que dure aproximadamente un minuto.
+      narrative_beat: Dina recuerda, de memoria, cómo encontrar el ritmo justo para decir un pitch en un
+        minuto.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - input
+    - position: 3
+      slug: la-pregunta-de-la-gran-mision
+      micro_objective: Recordar y aplicar cómo responder con calma una pregunta sobre una idea.
+      narrative_beat: 'Dr. Rho presenta una pregunta sorpresa y pregunta a Dina si recuerda cómo responder
+        con calma: respirar, pensar y responder.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-pitch-para-la-mision
+      micro_objective: Aplicar con seguridad un pitch completo de un minuto frente a una situación nueva.
+      narrative_beat: Dino presenta, sin ayuda, un pitch completo de un minuto frente a un grupo nuevo
+        del reino.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story
+  - position: 3
+    slug: servicio-de-la-gran-mision
+    kind: review_quest
+    title_es: Servicio de la Gran Misión
+    concept: Dina recuerda cómo atender bien a un cliente, ayudarlo a encontrar lo que busca y resolver
+      un problema con calma.
+    learning_objective: Al final, el niño puede recordar y aplicar las reglas de buena atención y resolución
+      de problemas con un cliente.
+    key_vocabulary:
+    - atender
+    - ayudar
+    - resolver
+    prior_knowledge: Ha repasado la saga del pitch (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/que-es-atender-a-un-cliente
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/ayudar-a-encontrar-lo-que-busca
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/resolver-un-problema-de-un-cliente
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/servicio-que-hace-la-diferencia
+    lessons:
+    - position: 1
+      slug: un-cliente-en-la-gran-mision
+      micro_objective: Recordar qué significa atender bien a un cliente desde que llega al puesto.
+      narrative_beat: Un cliente nuevo llega a la Gran Plaza, y Dina recuerda, sin ayuda, cómo recibirlo
+        con buena actitud.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ayudar-de-nuevo-en-la-mision
+      micro_objective: Recordar cómo ayudar a un cliente a encontrar lo que de verdad necesita.
+      narrative_beat: Dino recuerda, de memoria, cómo guiar a un cliente hacia lo que de verdad busca,
+        aunque no sea en su puesto.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: resolver-otra-vez-en-la-mision
+      micro_objective: Recordar y aplicar los tres pasos para resolver el problema de un cliente.
+      narrative_beat: Dr. Rho presenta un problema nuevo de un cliente y pregunta a Dina si recuerda los
+        tres pasos para resolverlo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: mi-servicio-para-la-mision
+      micro_objective: Aplicar con seguridad un servicio memorable frente a un cliente nuevo de la misión.
+      narrative_beat: Dina aplica, sin ayuda, un servicio memorable frente a un nuevo cliente de la Gran
+        Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: mejorar-en-la-gran-mision
+    kind: review_quest
+    title_es: Mejorar en la Gran Misión
+    concept: Dina y Dino recuerdan cómo pedir una opinión sin miedo, escuchar una crítica con calma y aplicar
+      un cambio a partir de ella.
+    learning_objective: Al final, el niño puede recordar y aplicar el ciclo de pedir, escuchar y aplicar
+      una mejora.
+    key_vocabulary:
+    - opinión
+    - crítica
+    - cambio
+    prior_knowledge: Ha repasado la saga de atención y servicio al cliente (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/escuchar-y-mejorar/pedir-la-opinion-sin-miedo
+    - el-reino-de-las-ventas/escuchar-y-mejorar/escuchar-una-critica-sin-enojarse
+    - el-reino-de-las-ventas/escuchar-y-mejorar/hacer-un-cambio-a-partir-de-una-opinion
+    - el-reino-de-las-ventas/escuchar-y-mejorar/mi-ciclo-de-mejorar-siempre
+    lessons:
+    - position: 1
+      slug: pedir-otra-vez-en-la-mision
+      micro_objective: Recordar cómo pedir la opinión de un cliente sin miedo a una respuesta negativa.
+      narrative_beat: Zara Vex reta a Dino a pedirle su opinión a un cliente nuevo, sin miedo, tal como
+        aprendió en su saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: escuchar-otra-vez-en-la-mision
+      micro_objective: Recordar cómo escuchar una crítica con calma, sin enojarse.
+      narrative_beat: Dina recuerda, de memoria, cómo respirar y escuchar con calma un comentario que no
+        esperaba.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: cambiar-otra-vez-en-la-mision
+      micro_objective: Recordar y aplicar cómo elegir y aplicar un cambio útil a partir de una opinión.
+      narrative_beat: Dr. Rho presenta una opinión nueva y pregunta a Dino si recuerda cómo convertirla
+        en un cambio concreto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - maker
+    - position: 4
+      slug: mi-ciclo-para-la-mision
+      micro_objective: Aplicar con seguridad el ciclo completo de mejora frente a una situación nueva.
+      narrative_beat: Dina aplica, sin ayuda, el ciclo completo de pedir, escuchar y mejorar frente a un
+        nuevo cliente de la misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: el-reto-completo-del-reino
+    kind: review_quest
+    title_es: El Reto Completo del Reino
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del reino: vender con honestidad,
+      el pitch, la atención al cliente y escuchar para mejorar.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido lo aprendido sobre vender,
+      presentar, atender y mejorar.
+    key_vocabulary:
+    - honestidad
+    - pitch
+    - servicio
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/un-precio-justo-para-mi-producto
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/hablar-con-seguridad-al-presentar
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/resolver-un-problema-de-un-cliente
+    - el-reino-de-las-ventas/escuchar-y-mejorar/hacer-un-cambio-a-partir-de-una-opinion
+    lessons:
+    - position: 1
+      slug: las-cuatro-torres-del-reino
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del reino: vender, presentar, atender y
+        mejorar.'
+      narrative_beat: Zara Vex ilumina las cuatro torres de la Gran Plaza, una por cada área aprendida
+        en esta aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-nuevo-mercader-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas del reino para ayudar a un personaje nuevo a abrir su puesto.
+      narrative_beat: Dr. Rho presenta a un aprendiz nuevo del reino y reta a Dina a guiarlo por las cuatro
+        áreas aprendidas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-torres
+      micro_objective: Aplicar con seguridad las cuatro áreas del reino en un desafío único que las combina
+        todas.
+      narrative_beat: Dino resuelve un desafío del reino que combina, de una sola vez, vender, presentar,
+        atender y mejorar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-completo-del-reino
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del reino aplicadas a
+        una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro torres del reino, de principio a
+        fin, sin ayuda de Zara Vex.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: la-gran-mision-del-reino-de-las-ventas
+    kind: review_quest
+    title_es: La Gran Misión del Reino de las Ventas
+    concept: El gran cierre de la aventura combina las cuatro áreas del reino en una última celebración
+      del primer puesto de Dina y Dino.
+    learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido en El
+      Reino de las Ventas.
+    key_vocabulary:
+    - honestidad
+    - servicio
+    - mejorar
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del reino (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/mi-primer-dia-de-ventas-honestas
+    - el-reino-de-las-ventas/el-pitch-en-un-minuto/mi-pitch-listo-para-el-reino
+    - el-reino-de-las-ventas/atencion-y-servicio-al-cliente/mi-puesto-con-el-mejor-servicio
+    - el-reino-de-las-ventas/escuchar-y-mejorar/mi-ciclo-de-mejorar-siempre
+    lessons:
+    - position: 1
+      slug: el-reino-recuerda-el-primer-dia
+      micro_objective: Recordar el primer día de ventas honestas de Dina y Dino en la Gran Plaza.
+      narrative_beat: Zara Vex recuerda junto a Dina y Dino aquel primer día en que abrieron su puesto
+        de limonada en el reino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-reino-recuerda-el-pitch
+      micro_objective: Recordar el primer pitch completo presentado frente al reino.
+      narrative_beat: Dino recuerda, con orgullo, la primera vez que presentó su pitch completo frente
+        a los mercaderes del reino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: la-gran-mision-en-un-solo-dia
+      micro_objective: Aplicar en un desafío final las cuatro áreas del reino combinadas en un solo día
+        de trabajo.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando vender, presentar, atender
+        y mejorar en un solo día.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-reino-sigue-abierto-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
+        reino.
+      narrative_beat: Con la Gran Plaza llena de clientes contentos, Dina celebra junto a Zara Vex, Dino
+        y Dr. Rho el cierre de la Gran Misión del reino.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

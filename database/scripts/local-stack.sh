@@ -82,7 +82,23 @@ psql_in_db() {
 
 cmd_up() {
   ensure_env
-  (cd "$DOCKER_DIR" && sh run.sh start)
+  # `run.sh start` = `docker compose up -d --wait`, which aborts the moment
+  # any container reports unhealthy. On a from-zero boot (post-nuke) the
+  # storage service must run its own internal migrations against the fresh
+  # Postgres, which can exceed its 25s healthcheck window (upstream compose
+  # file — not ours to edit) before flipping healthy seconds later. The
+  # containers are already up at that point, so retrying the same idempotent
+  # `up -d --wait` simply re-checks health; give it up to 3 attempts.
+  local attempt
+  for attempt in 1 2 3; do
+    if (cd "$DOCKER_DIR" && sh run.sh start); then
+      return 0
+    fi
+    echo "start attempt ${attempt} reported unhealthy container(s); retrying after settle ..."
+    sleep 20
+  done
+  echo "FAIL: stack did not become healthy after 3 start attempts" >&2
+  return 1
 }
 
 cmd_down() { require_clone; (cd "$DOCKER_DIR" && sh run.sh stop); }

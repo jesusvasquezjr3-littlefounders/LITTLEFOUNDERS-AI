@@ -1,13 +1,19 @@
 #!/usr/bin/env node
 // catalog:check CLI — `npm run catalog:check [-- <path>]`.
-// With no path, validates every course directory under coursegen/curriculum/.
-// With a path, validates just that course directory (absolute or relative
-// to the coursegen package root).
+// With no path, validates EVERY course directory under coursegen/curriculum/
+// (today: financial-education; entrepreneurship/investing land alongside it
+// per COURSE_ENGINE.md §3.1b — siblings may be mid-authoring, that's an
+// acceptable transient state to report, not crash on). With a path,
+// validates just that course directory.
+//
+// Thin entrypoint only: discovery + printing + exit code. The actual
+// load/cross-validate/summarize logic is `checkCourseDirs` in loader.ts —
+// pure, and what the test suite calls directly against fixture directories.
 
 import { readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { loadCourseCatalog } from './loader.js';
+import { checkCourseDirs } from './loader.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PACKAGE_ROOT = path.resolve(__dirname, '../..');
@@ -34,22 +40,17 @@ function main(): void {
     return;
   }
 
+  const report = checkCourseDirs(courseDirs);
+
   let anyErrors = false;
-  for (const courseDir of courseDirs) {
-    const result = loadCourseCatalog(courseDir);
+  let totalTeaching = 0;
+  let totalReview = 0;
+
+  for (const { courseDir, result, teachingLessons, reviewLessons } of report.summaries) {
     const errors = result.issues.filter((i) => i.level === 'error');
     const warnings = result.issues.filter((i) => i.level === 'warning');
-
-    let teachingLessons = 0;
-    let reviewLessons = 0;
-    for (const a of result.course.adventures) {
-      for (const s of a.data.sagas) {
-        for (const t of s.topics) {
-          if (t.kind === 'teaching') teachingLessons += t.lessons.length;
-          else reviewLessons += t.lessons.length;
-        }
-      }
-    }
+    totalTeaching += teachingLessons;
+    totalReview += reviewLessons;
 
     console.log(`\n── ${path.relative(PACKAGE_ROOT, courseDir) || courseDir} ──`);
     console.log(
@@ -69,6 +70,12 @@ function main(): void {
       console.log(`  catalog:check OK — 0 errors, ${warnings.length} warning(s)`);
     }
   }
+
+  console.log(
+    `\n══ ALL COURSES ══\n` +
+      `  ${report.summaries.length} course(s) scanned, ${totalTeaching + totalReview} total lesson blueprints ` +
+      `(${totalTeaching} teaching, ${totalReview} review), ${report.totalErrors} error(s), ${report.totalWarnings} warning(s)`,
+  );
 
   if (anyErrors) process.exit(1);
 }

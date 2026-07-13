@@ -63,10 +63,19 @@ dimension + connect-to-prior prompt discipline, `catalog:check` green. E2E brows
 login → adventure map → real lesson → Core-graded verdicts → complete → XP/streak
 → next lesson unlocked; both breakpoints, light+dark. 524 tests across services.
 
+**The lessons platform is COMPLETE (2026-07-13):** three full course catalogs —
+financial-education 1,312 · entrepreneurship 1,408 · investing 1,472 (tier3
+debut) = **4,192 blueprints, catalog:check 0/0** — plus migration 0008
+(tier1|2|3, `courses.requires`), multi-course catalog:check, and the 3-course
+sequence seeded (FE published, the other two draft until generated). Estimated
+full FE generation run: ~$225–320 USD all-in (text+TTS×3+images), ~5–6 GB in
+Depot, ~1.5–3 dedicated days; calibrate with a 1-saga pilot first.
+
 Next, in Jesús's stated order of interest:
 - **Execute the Forge run for Educación Financiera** (operator-triggered:
   `npm run generate -- --course financial-education`; needs GEMINI_API_KEY for
-  images, character voices for Echo; lessons land as `review` for human publish).
+  images, character voices for Echo; lessons land as `review` for human publish;
+  start with a 1-saga `--slots` pilot to calibrate cost/latency from the ledger).
 - **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
   (Testing Tutor ↔ Testing Niño seed pair exists for this).
 

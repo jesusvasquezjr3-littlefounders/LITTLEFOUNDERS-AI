@@ -62,7 +62,15 @@ export interface PublishInput {
     slug: string;
     position: number;
     theme: string;
-    ageTier: 'tier1' | 'tier2';
+    /**
+     * Whatever tier key the course's taxonomy.yaml age_tiers declares
+     * (tier1/tier2 today, tier3 once Inversiones lands — COURSE_ENGINE.md
+     * §3.1b) — NOT a closed literal union here; the catalog is the source
+     * of truth (§1.3-style: no hardcoded taxonomy in code). Vault's
+     * `adventures.age_tier` column CHECK constraint (database/migrations/
+     * 0007) is a separate, DB-level gate — out of scope for coursegen/src.
+     */
+    ageTier: string;
     title: LocalizedText;
     description: LocalizedText;
     narrativeArc: string;

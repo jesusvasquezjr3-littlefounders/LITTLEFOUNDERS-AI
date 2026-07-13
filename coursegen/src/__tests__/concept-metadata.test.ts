@@ -4,7 +4,9 @@
 //    (a topic may not cite itself or later/same-position material),
 //    parent_check kind warning
 //  - loader: position-agnostic teaching-saga quota (6+2 or 8+2 topics) and
-//    the tier1/tier2 total-lesson-count warning (152/184, COURSE_ENGINE §3.1)
+//    the total-lesson-count warning, COMPUTED from actual saga/topic kinds
+//    — never a hardcoded per-tier 152/184 table (COURSE_ENGINE §3.1b; see
+//    catalog-multicourse.test.ts for the tier3-generalization coverage)
 
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -438,9 +440,15 @@ describe('loadCourseCatalog — position-agnostic teaching-saga quota (§3.1)', 
   });
 });
 
-describe('loadCourseCatalog — tier1/tier2 total lesson count warning (§3.1)', () => {
-  it('warns when a tier1 adventure does not total 152 lessons', () => {
-    const adv = adventureData('adv-1', 1, [saga(1, 'saga-1', [baseTopicFields({ position: 1, slug: 'topic-1' })])], 'tier1');
+describe('loadCourseCatalog — total lesson count warning, computed from actual kinds (§3.1b)', () => {
+  it('warns when a tier1-shaped adventure\'s aggregate diverges from the computed topics×4 expectation (152)', () => {
+    // A canonical tier1 shape computes to 38 topics × 4 = 152 — but this is
+    // no longer a hardcoded per-tier lookup; give one review-saga topic an
+    // EXTRA lesson so the aggregate (153) diverges from the computed value,
+    // even though every other topic still reports its own correct count.
+    const adv = buildFullAdventure('tier1', 6);
+    const reviewSagaTopics = (adv.sagas[4] as { topics: Array<{ lessons: unknown[] }> }).topics;
+    reviewSagaTopics[0]!.lessons = [...reviewSagaTopics[0]!.lessons, baseLesson(5)];
     writeCourse({ 'adventures/01-a.yaml': adv });
     const result = loadCourseCatalog(courseDir);
     expect(
@@ -450,8 +458,12 @@ describe('loadCourseCatalog — tier1/tier2 total lesson count warning (§3.1)',
     ).toBe(true);
   });
 
-  it('warns when a tier2 adventure does not total 184 lessons', () => {
-    const adv = adventureData('adv-1', 1, [saga(1, 'saga-1', [baseTopicFields({ position: 1, slug: 'topic-1' })])], 'tier2');
+  it('warns when a tier2-shaped adventure\'s aggregate diverges from the computed topics×4 expectation (184)', () => {
+    // A canonical tier2 shape computes to 46 topics × 4 = 184 — drop one
+    // lesson from a review-saga topic so the aggregate (183) diverges.
+    const adv = buildFullAdventure('tier2', 8);
+    const reviewSagaTopics = (adv.sagas[4] as { topics: Array<{ lessons: unknown[] }> }).topics;
+    reviewSagaTopics[0]!.lessons = reviewSagaTopics[0]!.lessons.slice(0, 3);
     writeCourse({ 'adventures/01-a.yaml': adv });
     const result = loadCourseCatalog(courseDir);
     expect(

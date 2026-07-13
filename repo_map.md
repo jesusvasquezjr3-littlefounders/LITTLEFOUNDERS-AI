@@ -46,7 +46,11 @@ backend/
     services/
 coursegen/
   curriculum/
+    entrepreneurship/
+      adventures/
     financial-education/
+      adventures/
+    investing/
       adventures/
   src/
     __tests__/
@@ -2638,6 +2642,226 @@ npm test
 ## Routes
 ```
 
+### coursegen/curriculum/entrepreneurship/adventures/01-la-isla-de-las-ideas.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 1
+  slug: la-isla-de-las-ideas
+  theme: archipelago
+  age_tier: tier1
+  title:
+    en-US: The Island of Ideas
+    es-MX: La Isla de las Ideas
+    pt-BR: A Ilha das Ideias
+  description:
+    en-US: Sail to a new island where everyday problems hide in plain sight, and every problem noticed is the seed of a helpful idea.
+    es-MX: Navega a una isla nueva donde los problemas cotidianos se esconden a la vista de todos, y cada problema notado es la semilla de una idea que ayuda.
+    pt-BR: Navegue até uma nova ilha onde os problemas do dia a dia se escondem à vista de todos, e cada problema percebido é a semente de uma ideia que ajuda.
+  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Dino, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Dino aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/02-el-bosque-de-los-makers.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 2
+  slug: el-bosque-de-los-makers
+  theme: forest
+  age_tier: tier1
+  title:
+    en-US: The Forest of Makers
+    es-MX: El Bosque de los Makers
+    pt-BR: A Floresta dos Makers
+  description:
+    en-US: Walk into a workshop hidden in the forest, where every idea from the island finally becomes a real, hand-made product.
+    es-MX: Entra a un taller escondido en el bosque, donde cada idea de la isla por fin se convierte en un producto real, hecho a mano.
+    pt-BR: Entre em uma oficina escondida na floresta, onde cada ideia da ilha finalmente se transforma em um produto real, feito à mão.
+  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Dino, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Dino se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/03-la-ciudad-del-cliente.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 3
+  slug: la-ciudad-del-cliente
+  theme: city
+  age_tier: tier2
+  title:
+    en-US: The City of the Customer
+    es-MX: La Ciudad del Cliente
+    pt-BR: A Cidade do Cliente
+  description:
+    en-US: Bring your products to a bustling city and learn who really wants them, what they need, and how to earn their trust.
+    es-MX: Lleva tus productos a una ciudad bulliciosa y aprende quién los quiere de verdad, qué necesita y cómo ganarte su confianza.
+    pt-BR: Leve seus produtos a uma cidade movimentada e aprenda quem realmente os quer, o que precisa e como conquistar sua confiança.
+  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Dino, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Dino aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/04-el-valle-del-precio-justo.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 4
+  slug: el-valle-del-precio-justo
+  theme: valley
+  age_tier: tier2
+  title:
+    en-US: The Valley of the Fair Price
+    es-MX: El Valle del Precio Justo
+    pt-BR: O Vale do Preço Justo
+  description:
+    en-US: Descend into a market valley and learn to turn cost into a fair price — one that covers your work and still respects your customer.
+    es-MX: "Baja a un valle de mercado y aprende a convertir el costo en un precio justo: uno que cubra tu trabajo y aún así respete a tu cliente."
+    pt-BR: "Desça a um vale de mercado e aprenda a transformar o custo em um preço justo: um que cubra seu trabalho e ainda assim respeite seu cliente."
+  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Dino, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Dino aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/05-el-reino-de-las-ventas.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 5
+  slug: el-reino-de-las-ventas
+  theme: kingdom
+  age_tier: tier2
+  title:
+    en-US: The Kingdom of Selling
+    es-MX: El Reino de las Ventas
+    pt-BR: O Reino das Vendas
+  description:
+    en-US: In a kingdom of traveling merchants, Dina and Dino open their first lemonade stall in the Grand
+      Plaza and learn to sell with honesty, pitch their idea, and treat every customer with care.
+    es-MX: En un reino de mercaderes, Dina y Dino abren su primer puesto de limonada en la Gran Plaza y
+      aprenden a vender con honestidad, a contar su idea en un minuto y a cuidar a cada cliente.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/06-el-taller-del-equipo.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 6
+  slug: el-taller-del-equipo
+  theme: valley
+  age_tier: tier2
+  title:
+    en-US: The Workshop of the Team
+    es-MX: El Taller del Equipo
+    pt-BR: A Oficina da Equipe
+  description:
+    en-US: In a valley workshop, Dina and Dino join a team of young founders and learn to work together,
+      discover each other's talents, split tasks and earnings fairly, and resolve disagreements.
+    es-MX: En un taller del valle, Dina y Dino se unen a un equipo de jóvenes founders y aprenden a trabajar
+      juntos, descubrir sus talentos, repartir tareas y ganancias con justicia, y resolver desacuerdos.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/07-el-faro-del-buen-negocio.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 7
+  slug: el-faro-del-buen-negocio
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Lighthouse of Good Business
+    es-MX: El Faro del Buen Negocio
+    pt-BR: O Farol do Bom Negócio
+  description:
+    en-US: Across an archipelago of small businesses, Dina and Dino learn what makes a business good all
+      the way through -- ethics, fair competition, kept promises, and caring for resources.
+    es-MX: En un archipiélago de pequeños negocios, Dina y Dino aprenden qué hace bueno a un negocio de
+      principio a fin -- ética, competencia justa, promesas cumplidas y cuidado de los recursos.
+```
+
+### coursegen/curriculum/entrepreneurship/adventures/08-el-cosmos-del-founder.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 8
+  slug: el-cosmos-del-founder
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: The Founder's Cosmos
+    es-MX: El Cosmos del Founder
+    pt-BR: O Cosmos do Founder
+  description:
+    en-US: The capstone journey where Dina and Dino gather everything learned across every world into
+      one complete mini-business plan, iterate it, present it, and graduate as founders.
+    es-MX: El viaje final donde Dina y Dino reúnen todo lo aprendido en cada mundo en un plan completo
+      de mini-empresa, lo iteran, lo presentan y se gradúan como founders.
+```
+
+### coursegen/curriculum/entrepreneurship/catalog.yaml
+
+```
+schema_version: 1
+
+course:
+  slug: entrepreneurship
+  subject: economics
+  title:
+    en-US: "Entrepreneurship"
+    es-MX: "Emprendimiento"
+    pt-BR: "Empreendedorismo"
+  description:
+    en-US: "A story adventure that runs after Financial Education, where kids turn ideas into real little businesses — spotting problems, making things with care, understanding customers and pricing fairly."
+    es-MX: "Una aventura que continúa después de Educación Financiera, donde los niños convierten ideas en pequeños negocios reales: detectan problemas, hacen cosas con cuidado, entienden a sus clientes y ponen precios justos."
+    pt-BR: "Uma aventura que continua depois de Educação Financeira, onde as crianças transformam ideias em pequenos negócios reais: identificam problemas, fazem coisas com cuidado, entendem seus clientes e definem preços justos."
+  authoring_locale: es-MX
+  # Course-level prerequisite edge (COURSE_ENGINE.md §3.1b) — Emprendimiento
+```
+
+### coursegen/curriculum/entrepreneurship/facts.yaml
+
+```
+schema_version: 1
+
+# Canonical numeric ground truth (COURSE_ENGINE.md §3) for the entrepreneurship
+# course. Every number Forge puts in a money/business exercise must either
+# come from here or be pure arithmetic the deterministic gate can re-verify.
+# `verified: true` = safe to state as fact (denominations, calendar math,
+# pedagogical conventions/ceilings, and arithmetic identities that are
+# tautologically re-checkable — e.g. ganancia = precio - costo). `verified:
+# false` = a REFERENCE value for exercise flavor only (kid-business costs and
+# selling prices) — `enforce: false` means the gate must NOT treat it as a
+# hard-pinned constant.
+#
+# NEVER-INVENTED: no precise regulatory/legal numbers (business licensing,
+# tax rates, minimum wage) appear here. If a fact can't be stated with
+# confidence it is omitted, not guessed.
+```
+
+### coursegen/curriculum/entrepreneurship/taxonomy.yaml
+
+```
+schema_version: 1
+
+# Closed vocabulary for the entrepreneurship course catalog.
+# Consumed by Forge (coursegen) as a HARD-FAIL gate (COURSE_ENGINE.md §3, §4):
+# the forbidden-vocabulary lists are checked against every generated string
+# (titles, concepts, objectives, prompts) for the matching age tier + locale.
+#
+# This course runs AFTER financial-education (COURSE_ENGINE.md §3.1b —
+# `course.requires: [financial-education]`), so kids arrive already knowing
+# what money is, how to earn/save/spend it. The age-tier vocabulary GATE
+# itself is project-wide and shared verbatim with financial-education's
+# taxonomy.yaml (same Piaget ceiling per tier, same three locales) — it is
+# NOT reinvented per course. tier1 here covers adventures 1-2 (foundational,
+# concrete idea/making skills); tier2 covers adventures 3-8 (money-adjacent
+# business mechanics: customers, pricing, profit).
+```
+
 ### coursegen/curriculum/financial-education/adventures/01-archipielago-del-trueque.yaml
 
 ```
@@ -2858,6 +3082,226 @@ age_tiers:
     # never through the words below, in any locale.
 ```
 
+### coursegen/curriculum/investing/adventures/01-el-jardin-del-tiempo.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 1
+  slug: el-jardin-del-tiempo
+  theme: forest
+  age_tier: tier2
+  title:
+    en-US: The Garden of Time
+    es-MX: El Jardín del Tiempo
+    pt-BR: O Jardim do Tempo
+  description:
+    en-US: Dina and Dino enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
+      that time itself -- not just effort -- is what makes what's saved grow big.
+    es-MX: Dina y Dino entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
+      el tiempo -y no solo el esfuerzo- es lo que hace crecer grande lo que se guarda.
+```
+
+### coursegen/curriculum/investing/adventures/02-la-aldea-del-interes.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 2
+  slug: la-aldea-del-interes
+  theme: valley
+  age_tier: tier2
+  title:
+    en-US: The Village of Interest
+    es-MX: La Aldea del Interés
+    pt-BR: A Aldeia do Juro
+  description:
+    en-US: Dina and Dino reach a valley village where the local savings house gives a small prize for
+      coins left saved for a while.
+    es-MX: Dina y Dino llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
+      las monedas que se dejan guardadas un tiempo.
+```
+
+### coursegen/curriculum/investing/adventures/03-el-archipielago-de-los-riesgos.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 3
+  slug: el-archipielago-de-los-riesgos
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Archipelago of Risks
+    es-MX: El Archipiélago de los Riesgos
+    pt-BR: O Arquipélago dos Riscos
+  description:
+    en-US: Dina and Dino sail with Zara Vex among islands where different paths offer different possible
+      rewards -- and different risks.
+    es-MX: Dina y Dino navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
+      posibles -y distintos riesgos.
+```
+
+### coursegen/curriculum/investing/adventures/04-la-ciudad-de-las-metas.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 4
+  slug: la-ciudad-de-las-metas
+  theme: city
+  age_tier: tier3
+  title:
+    en-US: The City of Goals
+    es-MX: La Ciudad de las Metas
+    pt-BR: A Cidade das Metas
+  description:
+    en-US: Dina and Dino reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
+      goals and discover why prices rise with time.
+    es-MX: Dina y Dino llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
+      planear metas reales de largo plazo y a descubrir por qué los precios suben con el tiempo.
+```
+
+### coursegen/curriculum/investing/adventures/05-el-reino-de-las-canastas.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 5
+  slug: el-reino-de-las-canastas
+  theme: kingdom
+  age_tier: tier3
+  title:
+    en-US: The Kingdom of Baskets
+    es-MX: El Reino de las Canastas
+    pt-BR: O Reino das Cestas
+  description:
+    en-US: In a kingdom ruled by baskets, Dina and Dino learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
+    es-MX: En un reino gobernado por canastas, Dina y Dino aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
+    pt-BR: Em um reino governado por cestas, Dina e Dino aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
+  narrative_arc: 'Dina y Dino llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
+```
+
+### coursegen/curriculum/investing/adventures/06-el-bosque-del-interes-compuesto.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 6
+  slug: el-bosque-del-interes-compuesto
+  theme: forest
+  age_tier: tier3
+  title:
+    en-US: The Forest of Compound Interest
+    es-MX: El Bosque del Interés Compuesto
+    pt-BR: A Floresta dos Juros Compostos
+  description:
+    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Dino discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
+    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Dino descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
+    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Dino descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
+  narrative_arc: Dina y Dino entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
+```
+
+### coursegen/curriculum/investing/adventures/07-el-faro-de-los-fraudes.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 7
+  slug: el-faro-de-los-fraudes
+  theme: archipelago
+  age_tier: tier3
+  title:
+    en-US: The Lighthouse of Frauds
+    es-MX: El Faro de los Fraudes
+    pt-BR: O Farol das Fraudes
+  description:
+    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Dino to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
+    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Dino a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
+    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Dino a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
+  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Dino con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
+```
+
+### coursegen/curriculum/investing/adventures/08-el-cosmos-del-inversionista.yaml
+
+```
+schema_version: 1
+adventure:
+  position: 8
+  slug: el-cosmos-del-inversionista
+  theme: cosmos
+  age_tier: tier3
+  title:
+    en-US: The Investor's Cosmos
+    es-MX: El Cosmos del Inversionista
+    pt-BR: O Cosmos do Investidor
+  description:
+    en-US: 'The final voyage: Dina and Dino build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
+    es-MX: 'El viaje final: Dina y Dino arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
+    pt-BR: 'A viagem final: Dina e Dino montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
+  narrative_arc: Dina y Dino llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
+```
+
+### coursegen/curriculum/investing/catalog.yaml
+
+```
+schema_version: 1
+
+course:
+  slug: investing
+  subject: money
+  title:
+    en-US: "Investing"
+    es-MX: "Inversiones"
+    pt-BR: "Investimentos"
+  description:
+    en-US: "A story adventure for kids who already know how money works and how to build something of their own — now they learn how time, patience and smart risk can grow what they save, and how to spot the traps that pretend to be opportunities."
+    es-MX: "Una aventura para niños que ya saben cómo funciona el dinero y cómo construir algo propio — ahora aprenden cómo el tiempo, la paciencia y el riesgo inteligente pueden hacer crecer lo que ahorran, y cómo reconocer las trampas que se disfrazan de oportunidades."
+    pt-BR: "Uma aventura para crianças que já sabem como o dinheiro funciona e como construir algo próprio — agora aprendem como o tempo, a paciência e o risco inteligente podem fazer crescer o que economizam, e como reconhecer as armadilhas que se disfarçam de oportunidades."
+  authoring_locale: es-MX
+  # COURSE_ENGINE.md §3.1b — course-level prerequisite edge for future
+```
+
+### coursegen/curriculum/investing/facts.yaml
+
+```
+schema_version: 1
+
+# Canonical numeric ground truth for the investing course (COURSE_ENGINE.md
+# §3). Every number Forge puts in a money exercise must either come from
+# here or be pure arithmetic the deterministic gate can re-verify.
+# `verified: true` = safe to state as fact (denominations, calendar math, OR
+# an internally-consistent pedagogical example whose arithmetic is 100%
+# re-derivable — financial-education/facts.yaml already established this
+# precedent, e.g. its `math.savings_goal_ceiling_tier1`: "Tope pedagógico,
+# no un hecho externo"). `verified: false` = a REFERENCE value for exercise
+# flavor only; `enforce: false` means the gate must NOT treat it as a
+# hard-pinned constant.
+#
+# NEVER-INVENTED, doubly strict for this course (COURSE_ENGINE.md §3.1b —
+# tier3 introduces inversión/riesgo, simulations only): NO real market
+```
+
+### coursegen/curriculum/investing/taxonomy.yaml
+
+```
+schema_version: 1
+
+# Closed vocabulary for the investing course catalog (COURSE_ENGINE.md §3,
+# §3.1b). Consumed by Forge (coursegen) as a HARD-FAIL gate: the
+# forbidden-vocabulary lists are checked against every generated string
+# (titles, concepts, objectives, prompts) for the matching age tier + locale.
+#
+# This is the course that introduces **tier3** (COURSE_ENGINE.md §3.1b,
+# 10-12, concrete-operational -> formal transition). tier2 is copied
+# byte-for-byte from financial-education/taxonomy.yaml (adventures 1-3 of
+# this course stay tier2 — jardin-del-tiempo, aldea-del-interes,
+# archipielago-de-los-riesgos); tier3 is new (adventure 4 onward —
+# ciudad-de-las-metas and the sibling-authored 5-8).
+
+themes: [archipelago, forest, city, valley, kingdom, cosmos]
+```
+
 ### coursegen/eslint.config.js
 
 ```
@@ -2914,6 +3358,26 @@ function taxonomyFixture() {
     families: ['story', 'choice', 'money'],
 ```
 
+### coursegen/src/__tests__/catalog-multicourse.test.ts
+
+```
+// Multi-course catalog tests (COURSE_ENGINE.md §3.1b — the course sequence:
+// financial-education, entrepreneurship, investing):
+//  - checkCourseDirs(): scans N course directories independently, folds
+//    per-course + cross-course issues, returns the report catalog:check prints
+//  - crossValidateRequires(): course.requires — missing-course and cycle are
+//    both WARNINGS (siblings may be mid-authoring; not a runtime dependency
+//    today, only a future placement hint), never a crash
+//  - catalogFileSchema.course.requires: optional, kebab-slug array
+//  - tier3 taxonomy-driven generalization: quota/palette/vocabulary gating
+//    NEVER hardcodes tier1/tier2 — any tier key in the course's own
+//    taxonomy.yaml age_tiers just works; an unknown tier is a loader error
+
+import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+```
+
 ### coursegen/src/__tests__/checkpoint.test.ts
 
 ```
@@ -2943,15 +3407,15 @@ beforeEach(() => {
 //    (a topic may not cite itself or later/same-position material),
 //    parent_check kind warning
 //  - loader: position-agnostic teaching-saga quota (6+2 or 8+2 topics) and
-//    the tier1/tier2 total-lesson-count warning (152/184, COURSE_ENGINE §3.1)
+//    the total-lesson-count warning, COMPUTED from actual saga/topic kinds
+//    — never a hardcoded per-tier 152/184 table (COURSE_ENGINE §3.1b; see
+//    catalog-multicourse.test.ts for the tier3-generalization coverage)
 
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { stringify } from 'yaml';
-import { loadCourseCatalog } from '../catalog/loader.js';
-import { topicBlueprintSchema, prerequisiteSchema } from '../catalog/schema.js';
 ```
 
 ### coursegen/src/__tests__/connect-to-prior.test.ts
@@ -3379,19 +3843,19 @@ export function createApp(): express.Express {
 ```
 #!/usr/bin/env node
 // catalog:check CLI — `npm run catalog:check [-- <path>]`.
-// With no path, validates every course directory under coursegen/curriculum/.
-// With a path, validates just that course directory (absolute or relative
-// to the coursegen package root).
+// With no path, validates EVERY course directory under coursegen/curriculum/
+// (today: financial-education; entrepreneurship/investing land alongside it
+// per COURSE_ENGINE.md §3.1b — siblings may be mid-authoring, that's an
+// acceptable transient state to report, not crash on). With a path,
+// validates just that course directory.
+//
+// Thin entrypoint only: discovery + printing + exit code. The actual
+// load/cross-validate/summarize logic is `checkCourseDirs` in loader.ts —
+// pure, and what the test suite calls directly against fixture directories.
 
 import { readdirSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
-import { loadCourseCatalog } from './loader.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PACKAGE_ROOT = path.resolve(__dirname, '../..');
-const CURRICULUM_ROOT = path.join(PACKAGE_ROOT, 'curriculum');
-
 ```
 
 ### coursegen/src/catalog/loader.ts
@@ -4415,6 +4879,26 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS username text;
 -- Retire the 0002-provisional `lessons` table. CASCADE also drops its RLS
 -- policy, its 0003 index (idx_lessons_course_position), and any dev rows —
 -- all of it was placeholder data, never real content.
+```
+
+### database/migrations/0008_course_sequence.sql
+
+```
+-- 0008_course_sequence.sql — the course sequence: widen the age-tier taxonomy
+-- to tier3 and add course-level prerequisite edges (COURSE_ENGINE.md §3.1b).
+-- Delta over 0001-0007 (never edit an applied migration). Idempotent.
+
+-- ─────────────────────────────────────────────────────────────
+-- adventures.age_tier: widen tier1|tier2 → tier1|tier2|tier3. 0007 only
+-- anticipated tier1/tier2; COURSE_ENGINE §3.1b introduces tier3 (10-12yo,
+-- concrete-operational→formal transition) for the Inversiones course.
+-- The 0007 column CHECK was unnamed, so Postgres auto-named it
+-- `adventures_age_tier_check` — drop it (idempotent via IF EXISTS) and
+-- re-add widened, wrapped in the same DO-block pattern 0007 uses for
+-- constraint churn (courses_subject_check).
+-- ─────────────────────────────────────────────────────────────
+ALTER TABLE public.adventures DROP CONSTRAINT IF EXISTS adventures_age_tier_check;
+DO $$
 ```
 
 ### database/package.json

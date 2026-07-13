@@ -53,7 +53,8 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **topic (tema)** | A concept unit inside a saga (~6 per saga) carrying objective/vocabulary/prior-knowledge metadata. |
 | **catalog** | The curated curriculum map in `coursegen/curriculum/<course>/` — taxonomy + facts + every planned lesson blueprint. The generation coverage oracle and stop condition. |
 | **blueprint** | One planned lesson slot in the catalog: micro-objective, narrative beat, difficulty, suggested families. |
-| **Piaget gate** | The hard-fail forbidden-vocabulary scan per age tier per locale (tier1 6-7, tier2 8-10). |
+| **Piaget gate** | The hard-fail forbidden-vocabulary scan per age tier per locale (tier1 6-7, tier2 8-10, tier3 10-12 — tier3 unlocks investing vocabulary concretely, still bans leverage/derivatives/trading jargon). |
+| **course sequence** | The 3-course track (COURSE_ENGINE §3.1b): financial-education → entrepreneurship → investing, wired by `courses.requires` (the course-level placement edge). |
 | **fact anchor** | An entry in the catalog's `facts.yaml` — the only source of real-world numbers in generated lessons. |
 
 ## Product sections

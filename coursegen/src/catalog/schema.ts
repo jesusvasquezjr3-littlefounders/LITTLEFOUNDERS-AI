@@ -112,6 +112,17 @@ export const catalogFileSchema = z.object({
     title: localized(160),
     description: localized(600),
     authoring_locale: z.enum(LOCALE_KEYS),
+    /**
+     * Optional (COURSE_ENGINE.md §3.1b) — the course-level prerequisite
+     * edge for future placement/unlock (e.g. `investing` requires
+     * `financial-education` + `entrepreneurship`). Kebab course slugs, NOT
+     * resolved against other course directories here — a single-course
+     * `loadCourseCatalog` call only ever sees this one directory. Cross-
+     * course resolution (does the required course exist? any cycles?) is
+     * `crossValidateRequires`, run by `catalog:check` once every course
+     * directory under `coursegen/curriculum/` has been scanned.
+     */
+    requires: z.array(slugSchema).optional(),
   }),
   adventures: z.array(z.object({ file: z.string().min(1).max(200) })).min(1),
 });

@@ -131,6 +131,7 @@ export type Database = {
           description: Json
           id: string
           position: number
+          requires: Json
           slug: string
           status: string
           subject: string
@@ -141,6 +142,7 @@ export type Database = {
           description?: Json
           id?: string
           position?: number
+          requires?: Json
           slug: string
           status?: string
           subject?: string
@@ -151,6 +153,7 @@ export type Database = {
           description?: Json
           id?: string
           position?: number
+          requires?: Json
           slug?: string
           status?: string
           subject?: string
