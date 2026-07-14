@@ -237,10 +237,11 @@ localize  es-MX → en-US and pt-BR: translation-with-contract call (structure
    ↓
 images    OPTIONAL per slot: visual options (picture_choice etc.) get
           generated illustrations — Gemini image API ("nanobanana"), prompt
-          enforces flat light background; script post-processes to
-          transparent-background PNG (edge flood-fill) and uploads to
-          filebase `lesson-images` (content-addressed). Skippable
-          (--no-images) — icons remain the fallback, NEVER emojis.
+          asks for a COMPLETE illustrated scene (full background, no cutout —
+          the frontend renders it inside a bordered rounded tile, so a full
+          background reads fine there); raw PNG uploaded as-is to filebase
+          `lesson-images` (content-addressed). Skippable (--no-images) —
+          icons remain the fallback, NEVER emojis.
    ↓
 publish   upsert lesson + 3 lesson_documents rows via service role;
           document/answer_keys split server-side; lesson lands as

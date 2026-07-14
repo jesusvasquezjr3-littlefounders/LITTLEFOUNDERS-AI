@@ -92,6 +92,10 @@ const BASE_HARD_RULES = [
   'equation_builder segments ONLY: each `answer.accepted` entry is a SPACE-SEPARATED SEQUENCE OF TOKEN IDS from `payload.tokens` (e.g. "t1 t3 t2" where t1.text="2", t3.text="+", t2.text="3") — NEVER the rendered equation text like "2+3=5". The token texts, concatenated in that order, must evaluate arithmetically to `payload.target_result` (it is re-executed). Do NOT include an "=" token: the sequence is only the left-hand expression.',
   'pattern_complete segments ONLY: `answer.correct` keys are the ZERO-BASED missing-slot indexes as digit strings ("0", and "1" when missing_slots=2) — never icon names, option ids, or labels like "slot1"; values are ids from `payload.options`.',
   'story_branch segments ONLY: EVERY node needs at least 1 entry in `choices` — an ending node uses a single choice with `next: null` (e.g. {"id":"fin","text_md":"Fin de la historia","next":null}); never an empty choices array.',
+  '`emotion` fields (story_dialogue lines, story_scene, story_branch nodes) are OPTIONAL — if you write one it MUST be EXACTLY one of: neutral, happy, excited, thinking, surprised, encouraging, proud (never any other word, e.g. never "sad"/"confused"/"worried"/"curious"). If none of those fit, OMIT the field entirely rather than inventing one.',
+  'Never write `explanation_md` (or any *_md field) as an empty string `""` — if you have nothing real to add, OMIT the field entirely; an empty string always fails validation.',
+  'interest_peek segments ONLY: if `prediction.kind` is "choice", the answer is `correct_option_id` alone — OMIT `value`/`tolerance` entirely. If `prediction.kind` is "slider", the answer is `value` + `tolerance`, and `tolerance` MUST be a positive number greater than 0 (never 0) — pick something proportional to the values in play, e.g. 1-5 units.',
+  'balance_scale segments ONLY: let leftSum = sum of every `left_fixed[].value`. `payload.weights` (3-8 entries) MUST contain SOME SUBSET of its `value`s that adds up to EXACTLY leftSum (it is re-checked programmatically) — e.g. if leftSum=8, weights could be [5,3,2,4] (5+3=8) or [2,2,4,6] (2+2+4=8); pick the weight values DELIBERATELY to satisfy this, never at random.',
   'Every number you use MUST come from the FACTS block below or be exact arithmetic the blueprint implies — never invent a fact. All arithmetic in `answer` fields must be EXACTLY correct (it is re-executed programmatically and will be rejected if wrong).',
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
@@ -269,7 +273,12 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
       callModel: async (issues) => {
         const messages = buildWriteMessages(input, factsBlock, issues);
         const result = await complete(
-          { messages, temperature: 0.4, jsonMode: true },
+          // maxTokens explicit: a full lesson document (segments + hints +
+          // rationale_md per distractor) can run long, and DeepSeek's
+          // implicit default silently truncates mid-string instead of
+          // erroring — surfaced live 2026-07-14 as "invalid JSON:
+          // Unterminated string" on a content-heavy balance_scale lesson.
+          { messages, temperature: 0.4, jsonMode: true, maxTokens: 8192 },
           { operation: 'write', ledger: deps.ledger },
         );
         return result.content;
@@ -278,6 +287,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
         const json = safeJsonParse(raw);
         if (!json.ok) {
           lastIssues = `invalid JSON: ${json.error}`;
+          if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output (unparseable):', raw);
           return { ok: false, issues: lastIssues };
         }
         lastRawJson = json.value;
@@ -317,7 +327,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
   // Last resort: one regen at a lower, more literal temperature.
   const messages = buildWriteMessages(input, factsBlock, lastIssues);
   const result = await complete(
-    { messages, temperature: 0.2, jsonMode: true },
+    { messages, temperature: 0.2, jsonMode: true, maxTokens: 8192 },
     { operation: 'write-last-resort', ledger: deps.ledger },
   );
   const json = safeJsonParse(result.content);

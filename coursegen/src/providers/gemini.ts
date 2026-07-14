@@ -6,7 +6,6 @@
 import { getConfig } from '../env.js';
 import { ProviderHttpError, ProviderNetworkError, ProviderNotConfiguredError, ProviderTimeoutError } from './errors.js';
 import { withTransportRetry } from './retry.js';
-import { makeBackgroundTransparent } from './pngTransparency.js';
 import type { UsageLedger } from './usage.js';
 
 export interface GenerateImageRequest {
@@ -17,12 +16,16 @@ export interface GenerateImageRequest {
 }
 
 export interface GenerateImageResult {
-  /** Transparent-background PNG, ready for filebase upload. */
+  /** Full illustration PNG (complete scene/background included), ready for filebase upload. */
   pngBuffer: Buffer;
 }
 
+// Full illustrated scene, not a sticker cutout — the frontend renders this
+// inside a bordered, rounded tile (object-contain), so a complete background
+// reads fine there. Never ask for a flat/solid background here: that phrasing
+// was specifically for a since-removed chroma-key transparency step.
 const STYLE_SUFFIX =
-  ' Flat solid light background (single pale color, no gradient, no shadow on the background), ' +
+  ' Complete illustrated scene with a full, appropriate background (no isolated cutout), ' +
   'centered subject, no text, no watermark, friendly rounded illustration style suitable for a children\'s app.';
 
 interface GeminiGenerateContentResponse {
@@ -77,7 +80,6 @@ export async function generateImage(req: GenerateImageRequest): Promise<Generate
   }
 
   const rawPng = Buffer.from(base64, 'base64');
-  const transparent = makeBackgroundTransparent(rawPng);
 
   if (req.ledger) {
     await req.ledger.record({
@@ -89,5 +91,5 @@ export async function generateImage(req: GenerateImageRequest): Promise<Generate
     });
   }
 
-  return { pngBuffer: transparent };
+  return { pngBuffer: rawPng };
 }

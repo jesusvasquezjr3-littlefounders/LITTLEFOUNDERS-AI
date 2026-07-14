@@ -61,6 +61,23 @@ describe('illustrateSegments', () => {
     expect(options.every((o) => o.image_url?.startsWith('https://'))).toBe(true);
   });
 
+  it('skips a single failing option (icon fallback) without failing the whole lesson — quota/HTTP/network errors are per-option, not fatal', async () => {
+    const doc = docWithPictureChoice();
+    const generate = vi.fn().mockRejectedValue(new Error('gemini-image HTTP 429: quota exceeded, limit: 0'));
+    const upload = vi.fn();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+
+    expect(result.generated).toBe(0);
+    expect(result.skippedReason).toBeUndefined();
+    expect(upload).not.toHaveBeenCalled();
+    const options = (result.document.segments.find((s) => s.type === 'picture_choice')!.payload as { options: { image_url?: string }[] }).options;
+    expect(options.every((o) => o.image_url === undefined)).toBe(true); // icons remain the fallback
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it('never touches segments that already have image_url set', async () => {
     const doc = docWithPictureChoice();
     const pictureSegment = doc.segments.find((s) => s.type === 'picture_choice')! as { payload: { options: { image_url?: string }[] } };

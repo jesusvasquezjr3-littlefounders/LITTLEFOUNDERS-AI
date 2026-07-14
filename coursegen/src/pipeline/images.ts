@@ -1,9 +1,14 @@
 // images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Generates
 // illustrations for visual-option segments missing `image_url` (today:
 // `picture_choice`), uploads them to filebase, and patches the url back in.
-// Skips CLEANLY (never fails the run) when `--no-images` is passed or
-// Gemini has no API key configured — icons remain the fallback, never
-// emojis (DESIGN.md / LESSON_ENGINE.md §5.2 #8).
+// Skips CLEANLY (never fails the run, never fails the SLOT) on ANY
+// provider-level failure — `--no-images`, no API key, quota/billing
+// exhausted (429 with limit:0 is a real, non-transient case we hit live),
+// network errors, timeouts. Each is a per-OPTION skip (icon stays the
+// fallback, never emojis — DESIGN.md / LESSON_ENGINE.md §5.2 #8); only
+// NOT_CONFIGURED short-circuits the whole document (no key = no point
+// trying the rest). A lesson must never be unpublishable just because an
+// illustration failed — that would make "images are optional" a lie.
 
 import { getConfig } from '../env.js';
 import { generateImage } from '../providers/gemini.js';
@@ -104,10 +109,14 @@ export async function illustrateSegments(
         generated++;
       } catch (err) {
         if (err instanceof ProviderNotConfiguredError) {
-          // Clean skip — return the UNMODIFIED original document (icons stay the fallback).
+          // No key at all — clean skip, return the UNMODIFIED original document
+          // (icons stay the fallback); no point trying the remaining options.
           return { document, generated: 0, skippedReason: 'not-configured' };
         }
-        throw err;
+        // Any other provider failure (quota/billing, HTTP, network, timeout,
+        // or an unexpected shape from the API) is this ONE option's problem,
+        // not the lesson's — leave its icon as the fallback and keep going.
+        console.warn(`images: skipping illustration for ${segment.id}/${option.id} — ${err instanceof Error ? err.message : String(err)}`);
       }
     }
   }

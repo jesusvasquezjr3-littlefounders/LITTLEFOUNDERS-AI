@@ -129,7 +129,10 @@ export async function localizeLesson(
     callModel: async (issues) => {
       const messages = buildTranslateMessages(indexMap, targetLocale, issues, deps.registerToneEs);
       const result = await translate(
-        { messages, temperature: 0.3, jsonMode: true },
+        // See write.ts's write-stage comment: a full document's translated
+        // string map can run long enough to hit DeepSeek's implicit
+        // max_tokens default and silently truncate mid-string.
+        { messages, temperature: 0.3, jsonMode: true, maxTokens: 8192 },
         { operation: 'localize', ledger: deps.ledger },
       );
       return result.content;

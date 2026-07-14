@@ -159,7 +159,8 @@ async function reviseDocument(
         { role: 'system' as const, content: system },
         { role: 'user' as const, content: issues ? `${user}\n\nYour previous JSON was invalid: ${issues}. Resend the FULL corrected JSON.` : user },
       ];
-      const result = await author({ messages, temperature: 0.4, jsonMode: true }, { operation: 'revise', ledger });
+      // Same silent-truncation risk as write.ts: revise resends the FULL document.
+      const result = await author({ messages, temperature: 0.4, jsonMode: true, maxTokens: 8192 }, { operation: 'revise', ledger });
       return result.content;
     },
     parse: (raw) => {
