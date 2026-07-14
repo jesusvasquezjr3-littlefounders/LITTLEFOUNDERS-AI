@@ -20,13 +20,29 @@ import {
 import { createDirector, type CharacterReaction } from '../core/director'
 import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
+import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
+import { StreakCelebration } from './StreakCelebration'
+import { formatDuration, useCountUp, type ServerCompletion } from './completion'
 
 export interface LessonPlayerProps {
   /** Client-safe document (answers stripped in production; the grader knows them). */
   document: LessonDocument
   grader: Grader
+  /** Echo's narration manifest for this locale (Core serves it with the document). Absent/empty = silent lesson. */
+  audio?: AudioManifest | null
   onExit: () => void
-  onComplete?: (result: { score: number; passed: boolean; xp: number }) => void
+  /**
+   * Fired once on reaching results. May resolve the server's completion
+   * summary (POST /complete response) — the results screen then shows the
+   * authoritative XP delta / day streak, and the streak celebration runs
+   * when today's pass extended it.
+   */
+  onComplete?: (result: {
+    score: number
+    passed: boolean
+    xp: number
+    seconds_spent: number
+  }) => void | Promise<ServerCompletion | null>
 }
 
 interface Reaction extends CharacterReaction {
@@ -34,15 +50,28 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, grader, onExit, onComplete }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, grader, audio, onExit, onComplete }: LessonPlayerProps) {
+  return (
+    <NarrationProvider manifest={audio}>
+      <LessonPlayerInner document={doc} grader={grader} onExit={onExit} onComplete={onComplete} />
+    </NarrationProvider>
+  )
+}
+
+function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
   const [state, dispatch] = useReducer(reducer, doc, initialSession)
   const [draft, setDraft] = useState<unknown>(undefined)
   const [reaction, setReaction] = useState<Reaction | null>(null)
   const [gradeError, setGradeError] = useState(false)
+  const [server, setServer] = useState<ServerCompletion | null>(null)
+  const [celebrationDone, setCelebrationDone] = useState(false)
   const director = useMemo(() => createDirector(doc.meta.cast), [doc])
+  const narration = useNarration()
   const segStartRef = useRef<number>(Date.now())
+  const lessonStartRef = useRef<number>(Date.now())
+  const secondsSpentRef = useRef(0)
   const completedRef = useRef(false)
 
   const segment = doc.segments[state.index]
@@ -56,16 +85,34 @@ export function LessonPlayer({ document: doc, grader, onExit, onComplete }: Less
     segStartRef.current = Date.now()
   }, [state.index])
 
+  // Auto-narrate each segment's prompt as it appears (story_dialogue voices
+  // its own lines instead — line 0 covers the beat, the prompt would talk
+  // over it). Segment changes are click-driven, so play() has activation.
+  useEffect(() => {
+    if (state.phase !== 'playing' || !segment) return
+    if (segment.type === 'story_dialogue') return
+    narration.play(narrationUnitId(segment.id, 'prompt'))
+    return () => narration.stop()
+  }, [state.phase, segment, narration])
+
   useEffect(() => {
     if (state.phase === 'results' && !completedRef.current) {
       completedRef.current = true
-      onComplete?.({
+      narration.stop()
+      secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
+      const maybe = onComplete?.({
         score: lessonScore(doc, state),
         passed: state.outcome === 'passed',
         xp: earnedXp(doc, state),
+        seconds_spent: secondsSpentRef.current,
       })
+      if (maybe && typeof (maybe as Promise<ServerCompletion | null>).then === 'function') {
+        void (maybe as Promise<ServerCompletion | null>).then((data) => {
+          if (data) setServer(data)
+        })
+      }
     }
-  }, [state, doc, onComplete])
+  }, [state, doc, onComplete, narration])
 
   const react = useCallback(
     (event: Parameters<typeof director.react>[0], preferred?: CharacterId) => {
@@ -103,15 +150,30 @@ export function LessonPlayer({ document: doc, grader, onExit, onComplete }: Less
   if (state.phase === 'intro') {
     return (
       <Shell>
-        <IntroScreen doc={doc} onStart={() => { dispatch({ type: 'BEGIN' }); react('lesson_start') }} onExit={onExit} />
+        <IntroScreen
+          doc={doc}
+          onStart={() => {
+            lessonStartRef.current = Date.now()
+            dispatch({ type: 'BEGIN' })
+            react('lesson_start')
+          }}
+          onExit={onExit}
+        />
       </Shell>
     )
   }
 
   if (state.phase === 'results') {
+    // v1 flow: the cinematic streak overlay runs FIRST (once per day, when
+    // this pass extended the day streak), then reveals the results summary.
+    const showStreakCelebration =
+      !celebrationDone && server !== null && server.streak_extended && server.first_today && server.streak_days > 0
+    if (showStreakCelebration) {
+      return <StreakCelebration streakDays={server.streak_days} onContinue={() => setCelebrationDone(true)} />
+    }
     return (
       <Shell>
-        <ResultsScreen doc={doc} state={state} onExit={onExit} />
+        <ResultsScreen doc={doc} state={state} server={server} secondsSpent={secondsSpentRef.current} onExit={onExit} />
       </Shell>
     )
   }
@@ -196,12 +258,16 @@ export function LessonPlayer({ document: doc, grader, onExit, onComplete }: Less
                 size="sm"
                 className="shrink-0"
               />
-              <div className="rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
-                <MarkdownLite text={segment.prompt_md} className="lf-title text-content" />
+              <div className="flex min-w-0 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 text-content" />
+                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
               </div>
             </div>
           ) : (
-            <MarkdownLite text={segment.prompt_md} className="lf-headline text-content" />
+            <div className="flex items-start gap-2">
+              <MarkdownLite text={segment.prompt_md} className="lf-headline min-w-0 flex-1 text-content" />
+              <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
+            </div>
           )}
 
           {/* Hints shown so far */}
@@ -289,6 +355,23 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-base">
       {children}
     </div>
+  )
+}
+
+/** Speaker button — visible only when Echo narrated this unit. Doubles as the fallback when autoplay was refused. */
+function NarrationReplayButton({ unitId }: { unitId: string }) {
+  const { t } = useTranslation()
+  const narration = useNarration()
+  if (!narration.has(unitId)) return null
+  return (
+    <button
+      type="button"
+      onClick={() => narration.play(unitId)}
+      aria-label={t('lesson.audio.replay')}
+      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+    >
+      <Icon name="volume_up" className="text-[20px]" />
+    </button>
   )
 }
 
@@ -438,17 +521,26 @@ function FeedbackBanner({
 function ResultsScreen({
   doc,
   state,
+  server,
+  secondsSpent,
   onExit,
 }: {
   doc: LessonDocument
   state: ReturnType<typeof initialSession>
+  server: ServerCompletion | null
+  secondsSpent: number
   onExit: () => void
 }) {
   const { t } = useTranslation()
-  const score = lessonScore(doc, state)
-  const xp = earnedXp(doc, state)
-  const passed = state.outcome === 'passed'
+  // Server truth wins once /complete responds; the client's own numbers are
+  // the instant fallback so the screen never waits on the network (§7).
+  const score = server?.score ?? lessonScore(doc, state)
+  const xp = server?.xp_delta ?? earnedXp(doc, state)
+  const passed = server?.passed ?? state.outcome === 'passed'
+  const streakDays = server?.streak_days ?? 0
   const circumference = 2 * Math.PI * 52
+  const xpShown = useCountUp(xp, 1000)
+  const streakShown = useCountUp(streakDays, 800)
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-6 px-5 py-10 text-center md:px-0">
@@ -488,15 +580,17 @@ function ResultsScreen({
           {score}
         </span>
       </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-lg border border-outline/70 bg-surface px-6 py-3 shadow-glass-sm">
-          <p className="lf-caption text-content-muted">{t('lesson.results.xp')}</p>
-          <p className="lf-headline lf-number text-primary">+{xp}</p>
-        </div>
-        <div className="rounded-lg border border-outline/70 bg-surface px-6 py-3 shadow-glass-sm">
-          <p className="lf-caption text-content-muted">{t('lesson.results.bestStreak')}</p>
-          <p className="lf-headline lf-number text-warning-strong">{state.bestStreak}</p>
-        </div>
+      {/* v1-parity stat row: XP · real time · day streak · best answer streak */}
+      <div className="grid w-full max-w-md grid-cols-2 gap-4 sm:grid-cols-4">
+        <ResultStat icon="bolt" label={t('lesson.results.xp')} value={`+${xpShown}`} tone="text-primary" />
+        <ResultStat icon="timer" label={t('lesson.results.time')} value={formatDuration(secondsSpent)} tone="text-content" />
+        <ResultStat
+          icon="local_fire_department"
+          label={t('lesson.results.dayStreak')}
+          value={String(streakShown)}
+          tone={streakDays > 0 ? 'text-warning-strong' : 'text-content-faint'}
+        />
+        <ResultStat icon="target" label={t('lesson.results.bestStreak')} value={String(state.bestStreak)} tone="text-success-strong" />
       </div>
       <p className="lf-body text-content-muted">
         {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
@@ -504,6 +598,18 @@ function ResultsScreen({
       <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="px-10">
         {t('lesson.results.done')}
       </Button>
+    </div>
+  )
+}
+
+function ResultStat({ icon, label, value, tone }: { icon: string; label: string; value: string; tone: string }) {
+  return (
+    <div className="rounded-lg border border-outline/70 bg-surface px-3 py-3 shadow-glass-sm">
+      <p className="flex items-center justify-center gap-1 lf-caption text-content-muted">
+        <Icon name={icon} className="text-[16px]" />
+        {label}
+      </p>
+      <p className={cn('lf-headline lf-number', tone)}>{value}</p>
     </div>
   )
 }

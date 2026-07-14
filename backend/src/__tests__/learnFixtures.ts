@@ -104,6 +104,11 @@ export function makeDb(userId: string): FakeDb {
         schema_version: 1,
         document: lessonDocument('en-US'),
         answer_keys: { 'quiz-1': { correct_option_id: 'a' } },
+        audio: {
+          version: 1,
+          voice_profile: 'Jennifer',
+          units: { 'story-1.prompt': { url: 'http://filebase.test/files/abc', duration_ms: 2000, voice: 'Jennifer' } },
+        },
       },
       {
         lesson_id: LESSON_1_ID,
@@ -111,6 +116,25 @@ export function makeDb(userId: string): FakeDb {
         schema_version: 1,
         document: lessonDocument('es-MX'),
         answer_keys: { 'quiz-1': { correct_option_id: 'a' } },
+        audio: {},
+      },
+      // lesson-2 is STORY-ONLY (no graded segments, empty answer keys) — the
+      // "completing IS passing, score 100" case every real course's opening
+      // lessons hit (LESSON_ENGINE.md §5.1 / client lessonScore parity).
+      {
+        lesson_id: LESSON_2_ID,
+        locale: 'en-US',
+        schema_version: 1,
+        document: {
+          schema_version: 1,
+          meta: { slug: 'lesson-2', title: 'Lesson Two', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },
+          scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
+          segments: [
+            { id: 'story-only', type: 'story_scene', prompt_md: 'Only a story', difficulty: 1, xp: 0, payload: { backdrop: 'band', body_md: 'The end.' } },
+          ],
+        },
+        answer_keys: {},
+        audio: {},
       },
     ],
     lesson_progress: [],

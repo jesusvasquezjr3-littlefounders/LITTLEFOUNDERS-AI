@@ -302,14 +302,79 @@
     }
   }
 
+  /* ── Day-streak celebration (Lesson Player) — v1 StreakCelebration echo ── */
+  .lf-streak-flame {
+    animation: lf-streak-flame-bob 2.2s var(--lf-ease) infinite;
+  }
+  @keyframes lf-streak-flame-bob {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-6px) scale(1.04);
+    }
+  }
+  .lf-streak-number {
+    animation: lf-streak-number-in 0.6s var(--lf-ease) both;
+  }
+  @keyframes lf-streak-number-in {
+    from {
+      opacity: 0;
+      transform: scale(0.7);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  .lf-streak-ring {
+    animation: lf-streak-ring 1.8s var(--lf-ease) infinite;
+  }
+  @keyframes lf-streak-ring {
+    from {
+      opacity: 0.7;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.9);
+    }
+  }
+  .lf-streak-spark {
+    animation-name: lf-streak-spark;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+  }
+  @keyframes lf-streak-spark {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(1);
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-260px) scale(0.4);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
     .lf-float,
     .lf-page-enter,
-    .lf-pop {
+    .lf-pop,
+    .lf-streak-flame,
+    .lf-streak-number,
+    .lf-streak-ring,
+    .lf-streak-spark {
       animation: none;
+    }
+    .lf-streak-spark {
+      opacity: 0;
     }
     .lf-reveal {
       opacity: 1;

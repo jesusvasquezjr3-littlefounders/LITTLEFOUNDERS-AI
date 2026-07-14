@@ -20,10 +20,26 @@
     "exercises_other": "{{count}} challenges"
   },
   "feedback": {
-    "perfect": { "v1": "Perfect!", "v2": "Wow, flawless!", "v3": "Nailed it!" },
-    "great": { "v1": "Great job!", "v2": "You got it!", "v3": "Well done!" },
-    "almost": { "v1": "So close!", "v2": "Almost there!", "v3": "Good thinking — one more push!" },
-    "tryAgain": { "v1": "Let's think it through!", "v2": "Mistakes help us learn!", "v3": "New clue unlocked — try again!" }
+    "perfect": {
+      "v1": "Perfect!",
+      "v2": "Wow, flawless!",
+      "v3": "Nailed it!"
+    },
+    "great": {
+      "v1": "Great job!",
+      "v2": "You got it!",
+      "v3": "Well done!"
+    },
+    "almost": {
+      "v1": "So close!",
+      "v2": "Almost there!",
+      "v3": "Good thinking — one more push!"
+    },
+    "tryAgain": {
+      "v1": "Let's think it through!",
+      "v2": "Mistakes help us learn!",
+      "v3": "New clue unlocked — try again!"
+    }
   },
   "results": {
     "passedTitle": "Lesson complete!",
@@ -33,7 +49,9 @@
     "bestStreak": "Best streak",
     "passedBody": "You're one step closer to being a great founder.",
     "failedBody": "Every founder practices. Play it again and watch your score grow!",
-    "done": "Finish"
+    "done": "Finish",
+    "time": "Time",
+    "dayStreak": "Day streak"
   },
   "flow": {
     "start": "Start!",
@@ -81,21 +99,46 @@
       "bank": "Available pieces",
       "slot": "Slot {{index}}",
       "tapToRemove": "Tap a placed piece to send it back",
-      "matchPairs": { "help": "Tap one on the left, then its match on the right. Tap a pair to undo it." },
-      "memoryFlip": { "flips": "Flips: {{count}}", "hiddenCard": "Hidden card" },
-      "sortBuckets": { "placeHere": "Place here" },
-      "groupSets": { "both": "Both", "none": "None" },
-      "numberLine": { "help": "Tap the line or use the slider" },
-      "patternComplete": { "emptySlot": "Empty slot {{index}}" }
+      "matchPairs": {
+        "help": "Tap one on the left, then its match on the right. Tap a pair to undo it."
+      },
+      "memoryFlip": {
+        "flips": "Flips: {{count}}",
+        "hiddenCard": "Hidden card"
+      },
+      "sortBuckets": {
+        "placeHere": "Place here"
+      },
+      "groupSets": {
+        "both": "Both",
+        "none": "None"
+      },
+      "numberLine": {
+        "help": "Tap the line or use the slider"
+      },
+      "patternComplete": {
+        "emptySlot": "Empty slot {{index}}"
+      }
     },
     "input": {
       "yourAnswer": "Your answer",
       "charCounter": "{{used}}/{{max}}",
       "correctAnswer": "Correct answer: {{value}}",
-      "fillBlank": { "gapLabel": "Blank {{n}}", "bankLabel": "Word bank" },
-      "estimate": { "moveToAnswer": "Move the slider to answer" },
-      "countObjects": { "howMany": "How many of these do you see?" },
-      "equation": { "target": "It must equal {{value}}", "slotsLabel": "Your equation", "bankLabel": "Number and symbol tiles" }
+      "fillBlank": {
+        "gapLabel": "Blank {{n}}",
+        "bankLabel": "Word bank"
+      },
+      "estimate": {
+        "moveToAnswer": "Move the slider to answer"
+      },
+      "countObjects": {
+        "howMany": "How many of these do you see?"
+      },
+      "equation": {
+        "target": "It must equal {{value}}",
+        "slotsLabel": "Your equation",
+        "bankLabel": "Number and symbol tiles"
+      }
     },
     "money": {
       "target": "Pay exactly",
@@ -169,5 +212,14 @@
       "gotIt": "I've got it!",
       "review": "I want to review"
     }
+  },
+  "streak": {
+    "title_one": "{{count}} day streak!",
+    "title_other": "{{count}} day streak!",
+    "body": "You learned today. Come back tomorrow to keep the flame alive!",
+    "continue": "Continue"
+  },
+  "audio": {
+    "replay": "Listen again"
   }
 }

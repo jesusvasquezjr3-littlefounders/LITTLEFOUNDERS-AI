@@ -25,9 +25,9 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 | GET | /api/v1/auth/me | Bearer | User + profile + roles (RLS-scoped reads with the user's own token) |
 | GET | /api/v1/learn/courses | Bearer | Published courses + rollup progress for the caller (adventureCount, lessonCount, progress) |
 | GET | /api/v1/learn/courses/:slug/tree | Bearer | Full course tree (adventures → sagas → topics → lessons) with per-node unlock state + `nextLessonId` — the single source of truth (COURSE_ENGINE.md §2) |
-| GET | /api/v1/learn/lessons/:id | Bearer | Lesson meta + client-safe document, locale-resolved (caller locale → es-MX → any). 403 `LESSON_LOCKED` if not yet unlocked |
+| GET | /api/v1/learn/lessons/:id | Bearer | Lesson meta + client-safe document + Echo's narration manifest (`audio`), locale-resolved (caller locale → es-MX → any). 403 `LESSON_LOCKED` if not yet unlocked |
 | POST | /api/v1/learn/lessons/:id/grade | Bearer | Server-authoritative single-segment grading via `lesson-contract/` graders. 409 `ATTEMPTS_EXHAUSTED`, 422 `UNSUPPORTED_SEGMENT` |
-| POST | /api/v1/learn/lessons/:id/complete | Bearer | Recomputes the lesson score from recorded attempts (never trusts a client score), upserts `lesson_progress`, applies the XP/streak delta to `learning_stats` |
+| POST | /api/v1/learn/lessons/:id/complete | Bearer | Body `{seconds_spent}` (legacy `minutes_spent` accepted). Recomputes the lesson score from recorded attempts (never trusts a client score; no graded weight = 100/passed), upserts `lesson_progress`, applies the XP/time/streak delta to `learning_stats`, and returns day-streak facts (`streak_days`/`streak_extended`/`first_today`) for the celebration screen |
 | GET | /api/v1/profile | Bearer | Own profile: identity, cover, avatar options, birthDate, follow counts, learningStats |
 | PATCH | /api/v1/profile | Bearer | Update displayName / @username (409 USERNAME_TAKEN) / locale (language of record) / birthDate |
 | PUT | /api/v1/profile/cover | Bearer | Set cover PRESET id (token gradients only — no binary/upload path exists) |

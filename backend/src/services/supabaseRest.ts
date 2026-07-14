@@ -524,12 +524,14 @@ export interface LessonDocumentRow {
   schema_version: number;
   document: Json;
   answer_keys: Json;
+  /** Echo's narration manifest — `{version, voice_profile, units: {unit_id: {url, duration_ms, …}}}`, `{}` until narrated. */
+  audio: Json;
 }
 
 /** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback (LESSON_ENGINE.md §3). */
 export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
   return rest<LessonDocumentRow[]>(
-    `/lesson_documents?lesson_id=eq.${lessonId}&select=lesson_id,locale,schema_version,document,answer_keys`,
+    `/lesson_documents?lesson_id=eq.${lessonId}&select=lesson_id,locale,schema_version,document,answer_keys,audio`,
     serviceToken(),
   );
 }

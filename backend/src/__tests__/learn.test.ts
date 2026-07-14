@@ -266,4 +266,66 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ minutes_spent: 1 });
     expect(res.status).toBe(403);
   });
+
+  it('a story-only lesson (no graded segments) scores 100 and PASSES on completion', async () => {
+    const app = createApp();
+    // Pass lesson-1 first to unlock the story-only lesson-2.
+    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'a' },
+      attempt_number: 1,
+    });
+    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 60 });
+
+    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_2_ID}/complete`)).send({ seconds_spent: 25 });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ score: 100, passed: true });
+
+    const progressRow = db.lesson_progress.find((p) => p.lesson_id === LESSON_2_ID);
+    expect(progressRow).toMatchObject({ best_score: 100, passed: true });
+    const stats = db.learning_stats.find((s) => s.user_id === userId);
+    expect(stats?.lessons_completed).toBe(2);
+  });
+
+  it('accepts seconds_spent and floors the accrued time at 1 minute per completion', async () => {
+    const app = createApp();
+    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'a' },
+      attempt_number: 1,
+    });
+    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 20 });
+    expect(res.status).toBe(200);
+    const stats = db.learning_stats.find((s) => s.user_id === userId);
+    expect(stats?.minutes_learned).toBe(1); // 20s rounds to 0 — the floor keeps a finished lesson from counting as no learning time
+  });
+
+  it('returns day-streak facts (streak_days / streak_extended / first_today) for the celebration screen', async () => {
+    const app = createApp();
+    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'a' },
+      attempt_number: 1,
+    });
+    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ seconds_spent: 90 });
+    expect(res.status).toBe(200);
+    // Fixture stats were last touched in 2020 → this pass starts a fresh streak today.
+    expect(res.body.data).toMatchObject({ streak_days: 1, streak_extended: true, first_today: true });
+  });
+
+  it('400s when neither seconds_spent nor minutes_spent is provided', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({});
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /api/v1/learn/lessons/:id (audio manifest)', () => {
+  it('includes Echo\'s narration manifest alongside the client-safe document', async () => {
+    const res = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(res.status).toBe(200);
+    expect(res.body.data.audio).toMatchObject({
+      version: 1,
+      units: { 'story-1.prompt': { url: 'http://filebase.test/files/abc' } },
+    });
+  });
 });

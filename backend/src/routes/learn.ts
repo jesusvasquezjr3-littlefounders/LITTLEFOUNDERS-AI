@@ -6,7 +6,7 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { nextStreak } from '../services/streak.js';
+import { isFirstActivityToday, nextStreak } from '../services/streak.js';
 import {
   countSegmentAttempts,
   getAdventureById,
@@ -164,6 +164,9 @@ export function learnRouter(): Router {
       },
       locale: picked.locale,
       document: safeDocument,
+      // Echo's narration manifest (unit_id -> public MP3 url). Client-safe:
+      // it references prompt/story/explanation audio only — never answers.
+      audio: picked.audio ?? {},
     });
   });
 
@@ -231,9 +234,19 @@ export function learnRouter(): Router {
 
   // 5. POST /lessons/:id/complete — server recomputes the lesson score from
   // recorded attempts; no client-reported scores are ever trusted.
-  const CompleteBody = z.object({
-    minutes_spent: z.number().min(0).max(120),
-  });
+  // `seconds_spent` is the wall-clock the player actually measured; the old
+  // rounded `minutes_spent` stays accepted for compatibility. Rounding
+  // seconds server-side floors at 1 minute per completion — v1 did the same
+  // (a finished lesson always counts as learning time; Math.round alone
+  // silently dropped every sub-30s story lesson to 0).
+  const CompleteBody = z
+    .object({
+      minutes_spent: z.number().min(0).max(120).optional(),
+      seconds_spent: z.number().int().min(0).max(7200).optional(),
+    })
+    .refine((b) => b.minutes_spent !== undefined || b.seconds_spent !== undefined, {
+      message: 'seconds_spent (or legacy minutes_spent) is required',
+    });
 
   router.post('/lessons/:id/complete', async (req, res) => {
     const parsed = CompleteBody.safeParse(req.body);
@@ -278,7 +291,12 @@ export function learnRouter(): Router {
       totalXp += xp;
       weightedSum += (best / 100) * xp;
     }
-    const lessonScore = totalXp === 0 ? 0 : Math.round((weightedSum / totalXp) * 100);
+    // No graded weight (story-only lessons) → completing IS passing, score 100.
+    // Mirrors the client's lessonScore() and LESSON_ENGINE.md §5.1 (content
+    // types auto-complete). The old `? 0` made story lessons unpassable: the
+    // player showed 100 while the server recorded 0/failed, so the map never
+    // advanced — first real course play-through caught it (2026-07-13).
+    const lessonScore = totalXp === 0 ? 100 : Math.round((weightedSum / totalXp) * 100);
     const xpEarnedThisRun = Math.round(weightedSum);
     const passedNow = lessonScore >= passThreshold;
 
@@ -303,11 +321,22 @@ export function learnRouter(): Router {
     if (!upserted) return fail(res, 502, 'INTERNAL', 'Could not save progress');
 
     const stats = await getLearningStatsForUpdate(user.id);
-    const newStreak = newlyPassed ? nextStreak(stats.updated_at, stats.streak_days) : stats.streak_days;
+    // Streak semantics (v1 parity / Duolingo model): ANY lesson passed today
+    // sustains or extends the day streak — not only lessons never passed
+    // before. Gating on `newlyPassed` meant replaying passed lessons could
+    // never keep a streak alive once a course was finished.
+    const firstToday = isFirstActivityToday(stats.updated_at);
+    const newStreak = passedNow ? nextStreak(stats.updated_at, stats.streak_days) : stats.streak_days;
+    const streakExtended = newStreak > stats.streak_days;
+
+    const minutesDelta =
+      parsed.data.seconds_spent !== undefined
+        ? Math.max(1, Math.round(parsed.data.seconds_spent / 60))
+        : (parsed.data.minutes_spent ?? 0);
 
     const statsUpdated = await patchLearningStats(user.id, {
       xp_points: stats.xp_points + xpDelta,
-      minutes_learned: stats.minutes_learned + parsed.data.minutes_spent,
+      minutes_learned: stats.minutes_learned + minutesDelta,
       lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
       streak_days: newStreak,
     });
@@ -321,6 +350,13 @@ export function learnRouter(): Router {
       passed: newPassed,
       xp_earned: newXpEarned,
       xp_delta: xpDelta,
+      // Day-streak facts for the results/celebration screen (v1 parity —
+      // completeLesson returned new_streak/streak_extended/was_first_today).
+      streak_days: newStreak,
+      streak_extended: streakExtended,
+      first_today: firstToday,
+      minutes_learned: stats.minutes_learned + minutesDelta,
+      lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
       progress: refreshedTree?.course.progress ?? ctx.tree.course.progress,
       next_lesson_id: refreshedTree?.nextLessonId ?? ctx.tree.nextLessonId,
     });

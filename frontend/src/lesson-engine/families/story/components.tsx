@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { SunkenWell } from '../../core/primitives'
@@ -52,6 +53,14 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
   const [index, setIndex] = useState(0)
   const [finished, setFinished] = useState(false)
   const markDone = useContentDoneOnce(onContentDone)
+  const narration = useNarration()
+
+  // Voice each line as it appears (Echo narrates dialogue per line, in the
+  // line's own character voice — unit `<segment_id>.line.<n>`).
+  useEffect(() => {
+    if (finished) return
+    narration.play(narrationUnitId(segment.id, `line.${index}`))
+  }, [narration, segment.id, index, finished])
 
   const line = lines[Math.min(index, lines.length - 1)]
   if (!line) return null

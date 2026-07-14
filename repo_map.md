@@ -2821,7 +2821,7 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { nextStreak } from '../services/streak.js';
+import { isFirstActivityToday, nextStreak } from '../services/streak.js';
 import {
   countSegmentAttempts,
   getAdventureById,
@@ -2943,11 +2943,11 @@ export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocal
  * for "the last day the learner passed a lesson". A future session that adds
  * a real `last_active_date` column should replace this proxy.
  */
+const dateOnly = (d: Date): string => d.toISOString().slice(0, 10);
+
 export function nextStreak(lastUpdatedAt: string, currentStreakDays: number, now: Date = new Date()): number {
-  const dateOnly = (d: Date): string => d.toISOString().slice(0, 10);
   const today = dateOnly(now);
   const yesterday = dateOnly(new Date(now.getTime() - 24 * 60 * 60 * 1000));
-  const lastDate = dateOnly(new Date(lastUpdatedAt));
 ```
 
 ### backend/src/services/supabaseRest.ts
@@ -18825,9 +18825,9 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import { CharacterActor } from '@/components/characters/control/CharacterActor'
+import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { SunkenWell } from '../../core/primitives'
 ```
 
 ### frontend/src/lesson-engine/families/story/fixtures.ts
@@ -19103,6 +19103,66 @@ import {
   initialSession,
 ```
 
+### frontend/src/lesson-engine/player/StreakCelebration.tsx
+
+```
+// Cinematic day-streak celebration — shown ONCE per day, before the results
+// summary, when a pass extends the streak (v1's StreakCelebration.tsx feel,
+// rebuilt self-contained: CSS flame ignition + count-up + pulse rings + CSS
+// sparks — no Lottie/canvas-confetti dependencies). Keyframes live in
+// index.css under "lf-streak-*"; everything honors prefers-reduced-motion.
+
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
+import { Button, Icon } from '@/components/ui'
+import { useCountUp } from './completion'
+
+const SPARKS = [
+  { left: '18%', delay: '1.1s', duration: '1.6s' },
+  { left: '32%', delay: '1.35s', duration: '1.9s' },
+```
+
+### frontend/src/lesson-engine/player/completion.ts
+
+```
+// Server-completion contract + count-up hook for the results/celebration
+// screens (LESSON_ENGINE.md §7). The shape mirrors Core's POST
+// /learn/lessons/:id/complete response — day-streak facts included so the
+// player can run the v1-style streak celebration without a second fetch.
+
+import { useEffect, useRef, useState } from 'react'
+
+export interface ServerCompletion {
+  score: number
+  passed: boolean
+  xp_earned: number
+  xp_delta: number
+  streak_days: number
+  streak_extended: boolean
+  first_today: boolean
+```
+
+### frontend/src/lesson-engine/player/narration.tsx
+
+```
+// Narration playback — wires Echo's audio manifest (lesson_documents.audio,
+// served by Core alongside the document) into the player. One shared
+// HTMLAudioElement; unit ids follow Echo's extractor convention
+// (`<segment_id>.prompt`, `<segment_id>.line.<n>`, `<segment_id>.explanation`).
+// Exercise components reach it through context so e.g. story_dialogue can
+// voice each line as the kid taps through — without the registry's prop
+// surface growing an audio-specific field per family.
+
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+
+export interface AudioManifest {
+  version?: number
+  units?: Record<string, { url?: string; duration_ms?: number | null }>
+}
+
+```
+
 ### frontend/src/lesson-engine/registry.test.tsx
 
 ```
@@ -19360,27 +19420,27 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 ### frontend/src/routes/app/learn/LessonPathNode.tsx
 
 ```
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Icon } from '@/components/ui';
-import { localizedText, type LessonNode } from './types';
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui'
+import CharacterActor from '@/components/characters/control/CharacterActor'
+import type { CharacterId } from '@/components/characters/control/types'
+import { localizedText, type LessonNode } from './types'
 
 /*
- * One circular node on a saga's wavy lesson path (DESIGN.md §Layout closed
- * grid categories don't cover this shape — a path, not a grid — kept single
- * column per the task brief; see AdventureBanner's composition note).
- */
-
-const STATE_CLASSES: Record<LessonNode['state'], string> = {
-  passed: 'bg-success text-on-success shadow-glass-sm',
+ * One 3D "candy" node on the winding lesson path — the v1 caminito look
+ * (main: LessonPath.tsx TopicNode): a pressed-button circle with a fat
+ * bottom border that squashes on :active, gold once passed, a pulsing ring
+ * + bouncing "Start here" beacon on the current node, and an ambient canon
+ * character floating beside wave-peak nodes. Appearance rules per DESIGN.md
 ```
 
 ### frontend/src/routes/app/learn/LessonRoute.tsx
 
 ```
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -19390,31 +19450,31 @@ import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
 import type { LessonDocument } from '@/lesson-engine/core/types';
+import type { AudioManifest } from '@/lesson-engine/player/narration';
+import type { ServerCompletion } from '@/lesson-engine/player/completion';
 import { createCoreGrader } from './coreGrader';
 
 /*
- * /learn/lesson/:lessonId — the fullscreen Lesson Player wired to Core
- * (COURSE_ENGINE.md §2, LESSON_ENGINE.md §7). Registered OUTSIDE the
 ```
 
 ### frontend/src/routes/app/learn/SagaSection.tsx
 
 ```
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, IconChip, ProgressBar } from '@/components/ui';
+import type { CharacterId } from '@/components/characters/control/types';
 import { LessonPathNode } from './LessonPathNode';
 import { localizedText, type SagaNode } from './types';
 
-interface SagaSectionProps {
-  saga: SagaNode;
-  locale: string;
-  courseSlug: string;
-  nextLessonId: string | null;
-  registerNodeRef: (lessonId: string, el: HTMLElement | null) => void;
-}
-
-/** One saga: icon chip + title + progress header, then its topics threaded into ONE continuous wavy lesson path (one node per lesson — improves on v1's per-topic grouping). */
-export function SagaSection({ saga, locale, courseSlug, nextLessonId, registerNodeRef }: SagaSectionProps) {
+/*
+ * One saga: icon chip + title + progress header, then its topics threaded
+ * into ONE continuous winding lesson path — the v1 "caminito"
+ * (main:frontend/src/components/lessons/LessonPath.tsx): nodes weave left
+ * and right on a fixed wave pattern, connected by a fat rounded bezier
+ * track drawn from the nodes' LIVE on-screen centers (getBoundingClientRect,
+ * recomputed on resize/layout settle), with a dashed inner guide line and
+ * canon characters decorating the wave peaks.
 ```
 
 ### frontend/src/routes/app/learn/__tests__/CoursePage.test.tsx

@@ -25,7 +25,7 @@ vi.mock('react-router-dom', async () => {
 vi.mock('@/lesson-engine/player/LessonPlayer', () => ({
   default: ({ onComplete, onExit }: ComponentProps<typeof LessonPlayerType>) => (
     <div>
-      <button type="button" onClick={() => onComplete?.({ score: 100, passed: true, xp: 10 })}>
+      <button type="button" onClick={() => onComplete?.({ score: 100, passed: true, xp: 10, seconds_spent: 42 })}>
         mock-complete
       </button>
       <button type="button" onClick={onExit}>
@@ -69,9 +69,9 @@ describe('LessonRoute', () => {
     expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1', { token: 'token-123' });
   });
 
-  it('posts minutes_spent on complete WITHOUT navigating away (the Results screen must stay up until the kid exits)', async () => {
+  it('posts the measured seconds_spent on complete WITHOUT navigating away (the Results screen must stay up until the kid exits)', async () => {
     mockedApi.mockResolvedValueOnce({ data: { lesson: { id: 'lesson-1', slug: 'l1' }, locale: 'en-US', document: fixtureDocument }, error: null });
-    mockedApi.mockResolvedValueOnce({ data: { score: 100, passed: true, xp_earned: 10, xp_delta: 10, progress: { passed: 1, total: 1, pct: 100 }, next_lesson_id: null }, error: null });
+    mockedApi.mockResolvedValueOnce({ data: { score: 100, passed: true, xp_earned: 10, xp_delta: 10, streak_days: 1, streak_extended: true, first_today: true, minutes_learned: 1, lessons_completed: 1, progress: { passed: 1, total: 1, pct: 100 }, next_lesson_id: null }, error: null });
 
     renderLessonRoute([{ pathname: '/learn/lesson/lesson-1', state: { courseSlug: 'money-basics' } }]);
     await screen.findByText('mock-complete');
@@ -81,7 +81,7 @@ describe('LessonRoute', () => {
     await waitFor(() => {
       expect(mockedApi).toHaveBeenCalledWith(
         '/learn/lessons/lesson-1/complete',
-        expect.objectContaining({ method: 'POST', token: 'token-123', body: expect.objectContaining({ minutes_spent: expect.any(Number) }) }),
+        expect.objectContaining({ method: 'POST', token: 'token-123', body: { seconds_spent: 42 } }),
       );
     });
     expect(mockNavigate).not.toHaveBeenCalled();

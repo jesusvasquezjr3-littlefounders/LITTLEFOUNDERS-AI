@@ -20,10 +20,26 @@
     "exercises_other": "{{count}} desafios"
   },
   "feedback": {
-    "perfect": { "v1": "Perfeito!", "v2": "Uau, sem erros!", "v3": "Mandou muito bem!" },
-    "great": { "v1": "Ótimo trabalho!", "v2": "Você conseguiu!", "v3": "Muito bem!" },
-    "almost": { "v1": "Quase lá!", "v2": "Por pouco!", "v3": "Bom raciocínio — mais um empurrão!" },
-    "tryAgain": { "v1": "Vamos pensar juntos!", "v2": "Errar faz parte de aprender!", "v3": "Nova pista desbloqueada — tente de novo!" }
+    "perfect": {
+      "v1": "Perfeito!",
+      "v2": "Uau, sem erros!",
+      "v3": "Mandou muito bem!"
+    },
+    "great": {
+      "v1": "Ótimo trabalho!",
+      "v2": "Você conseguiu!",
+      "v3": "Muito bem!"
+    },
+    "almost": {
+      "v1": "Quase lá!",
+      "v2": "Por pouco!",
+      "v3": "Bom raciocínio — mais um empurrão!"
+    },
+    "tryAgain": {
+      "v1": "Vamos pensar juntos!",
+      "v2": "Errar faz parte de aprender!",
+      "v3": "Nova pista desbloqueada — tente de novo!"
+    }
   },
   "results": {
     "passedTitle": "Lição concluída!",
@@ -33,7 +49,9 @@
     "bestStreak": "Melhor sequência",
     "passedBody": "Você está um passo mais perto de ser um grande founder.",
     "failedBody": "Todo founder pratica. Jogue de novo e veja sua pontuação crescer!",
-    "done": "Concluir"
+    "done": "Concluir",
+    "time": "Tempo",
+    "dayStreak": "Sequência de dias"
   },
   "flow": {
     "start": "Começar!",
@@ -81,21 +99,46 @@
       "bank": "Peças disponíveis",
       "slot": "Espaço {{index}}",
       "tapToRemove": "Toque uma peça colocada para devolvê-la",
-      "matchPairs": { "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo." },
-      "memoryFlip": { "flips": "Viradas: {{count}}", "hiddenCard": "Carta oculta" },
-      "sortBuckets": { "placeHere": "Coloque aqui" },
-      "groupSets": { "both": "Os dois", "none": "Nenhum" },
-      "numberLine": { "help": "Toque na linha ou use o controle" },
-      "patternComplete": { "emptySlot": "Espaço vazio {{index}}" }
+      "matchPairs": {
+        "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo."
+      },
+      "memoryFlip": {
+        "flips": "Viradas: {{count}}",
+        "hiddenCard": "Carta oculta"
+      },
+      "sortBuckets": {
+        "placeHere": "Coloque aqui"
+      },
+      "groupSets": {
+        "both": "Os dois",
+        "none": "Nenhum"
+      },
+      "numberLine": {
+        "help": "Toque na linha ou use o controle"
+      },
+      "patternComplete": {
+        "emptySlot": "Espaço vazio {{index}}"
+      }
     },
     "input": {
       "yourAnswer": "Sua resposta",
       "charCounter": "{{used}}/{{max}}",
       "correctAnswer": "Resposta correta: {{value}}",
-      "fillBlank": { "gapLabel": "Espaço {{n}}", "bankLabel": "Banco de fichas" },
-      "estimate": { "moveToAnswer": "Mova a barrinha para responder" },
-      "countObjects": { "howMany": "Quantos destes você vê?" },
-      "equation": { "target": "Deve dar {{value}}", "slotsLabel": "Sua equação", "bankLabel": "Fichas de números e símbolos" }
+      "fillBlank": {
+        "gapLabel": "Espaço {{n}}",
+        "bankLabel": "Banco de fichas"
+      },
+      "estimate": {
+        "moveToAnswer": "Mova a barrinha para responder"
+      },
+      "countObjects": {
+        "howMany": "Quantos destes você vê?"
+      },
+      "equation": {
+        "target": "Deve dar {{value}}",
+        "slotsLabel": "Sua equação",
+        "bankLabel": "Fichas de números e símbolos"
+      }
     },
     "money": {
       "target": "Pague exatamente",
@@ -169,5 +212,14 @@
       "gotIt": "Já entendi!",
       "review": "Quero revisar"
     }
+  },
+  "streak": {
+    "title_one": "Sequência de {{count}} dia!",
+    "title_other": "Sequência de {{count}} dias!",
+    "body": "Você aprendeu hoje! Volte amanhã para manter a chama acesa.",
+    "continue": "Continuar"
+  },
+  "audio": {
+    "replay": "Ouvir de novo"
   }
 }

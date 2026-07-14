@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -8,6 +8,8 @@ import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
 import type { LessonDocument } from '@/lesson-engine/core/types';
+import type { AudioManifest } from '@/lesson-engine/player/narration';
+import type { ServerCompletion } from '@/lesson-engine/player/completion';
 import { createCoreGrader } from './coreGrader';
 
 /*
@@ -31,9 +33,13 @@ interface LessonResponse {
   lesson: { id: string; slug: string };
   locale: string;
   document: LessonDocument;
+  audio: AudioManifest;
 }
 
-type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; document: LessonDocument };
+type LoadState =
+  | { status: 'loading' }
+  | { status: 'error'; code: string }
+  | { status: 'ready'; document: LessonDocument; audio: AudioManifest };
 
 interface LocationState {
   courseSlug?: string;
@@ -46,20 +52,18 @@ export function LessonRoute() {
   const navigate = useNavigate();
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const mountedAtRef = useRef(Date.now());
 
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? null;
   const grader = useMemo(() => createCoreGrader(lessonId, getToken), [lessonId, getToken]);
 
   useEffect(() => {
     let cancelled = false;
-    mountedAtRef.current = Date.now();
     setState({ status: 'loading' });
     void (async () => {
       const token = await getToken();
       const { data, error } = await api<LessonResponse>(`/learn/lessons/${lessonId}`, { token });
       if (cancelled) return;
-      setState(error ? { status: 'error', code: error.code } : { status: 'ready', document: data.document });
+      setState(error ? { status: 'error', code: error.code } : { status: 'ready', document: data.document, audio: data.audio ?? {} });
     })();
     return () => {
       cancelled = true;
@@ -70,13 +74,17 @@ export function LessonRoute() {
     navigate(courseSlug ? `/learn/${courseSlug}` : '/learn');
   }
 
-  async function persistCompletion() {
-    const minutesSpent = Math.min(120, Math.max(0, Math.round((Date.now() - mountedAtRef.current) / 60000)));
+  async function persistCompletion(secondsSpent: number): Promise<ServerCompletion | null> {
     const token = await getToken();
-    // Fire-and-forget from the UI's perspective: api() never throws, and a
-    // failed persist shouldn't block the kid's Results screen or exit path
-    // (the Lesson Engine's "never punish the kid for our outage" rule, §7).
-    await api(`/learn/lessons/${lessonId}/complete`, { method: 'POST', token, body: { minutes_spent: minutesSpent } });
+    // A failed persist never blocks the kid's Results screen or exit path
+    // (the Lesson Engine's "never punish the kid for our outage" rule, §7) —
+    // the player falls back to its client-computed numbers on null.
+    const { data, error } = await api<ServerCompletion>(`/learn/lessons/${lessonId}/complete`, {
+      method: 'POST',
+      token,
+      body: { seconds_spent: Math.min(7200, Math.max(1, secondsSpent)) },
+    });
+    return error ? null : data;
   }
 
   if (state.status === 'loading') {
@@ -107,10 +115,9 @@ export function LessonRoute() {
     <LessonPlayer
       document={state.document}
       grader={grader}
+      audio={state.audio}
       onExit={goBack}
-      onComplete={() => {
-        void persistCompletion();
-      }}
+      onComplete={(result) => persistCompletion(result.seconds_spent)}
     />
   );
 }
