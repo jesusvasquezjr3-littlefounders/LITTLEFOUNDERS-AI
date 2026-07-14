@@ -111,11 +111,11 @@ scripts:
    `TTS_VOICE_<CHARACTER>_<LOCALE>=<voice-id>` lines for a human to paste
    into `.env` — it never auto-edits a secrets file.
 
-The exact enrollment response schema wasn't independently verified against
-a live call at the time this was built (confirmed only against Alibaba
-Cloud's published docs), so `registerVoice()` parses the response
-defensively across a few plausible field-name shapes and surfaces the raw
-provider error on failure.
+Contract CONFIRMED against live calls (2026-07-13, 12/12 enrollments OK):
+the response carries `output.voice_id`. Two live gotchas: `preferred_name`
+rejects hyphens (use `dina_es_mx`, never `dina-es-mx`), and synthesis with
+a cloned voice MUST use `TTS_CLONE_MODEL` (`qwen3-tts-vc-2026-01-22`) — the
+flash model 400s on cloned voice ids. `voiceFor()` already pairs them.
 
 ## Cost warning
 

@@ -140,7 +140,7 @@ export function makeDb(userId: string): FakeDb {
     lesson_progress: [],
     lesson_segment_attempts: [],
     learning_stats: [
-      { user_id: userId, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, updated_at: '2020-01-01T00:00:00.000Z' },
+      { user_id: userId, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, last_active_date: null, updated_at: '2020-01-01T00:00:00.000Z' },
     ],
     profiles: [
       { user_id: userId, display_name: 'Test User', username: null, locale: 'en-US', theme: 'light', cover: {}, birth_date: null, created_at: '2026-01-01T00:00:00.000Z' },

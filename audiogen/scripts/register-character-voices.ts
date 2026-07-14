@@ -50,11 +50,13 @@ async function main(): Promise<void> {
       const path = join(TRIMMED_DIR, locale, `${character}.wav`);
       try {
         const wav = await readFile(path);
+        // preferred_name rejects hyphens (probed live 2026-07-13: "dina-en-us"
+        // → InvalidParameter; "dina_es_mx"/"dinaesmx" pass validation).
         const voiceId = await registerVoice(
           {
             audioBase64: wav.toString('base64'),
             mimeType: 'audio/wav',
-            preferredName: `${character}-${locale}`,
+            preferredName: `${character}_${LOCALE_ENV_SLUG[locale].toLowerCase()}`,
           },
           {
             apiUrl: config.TTS_ENROLLMENT_API_URL,

@@ -6,7 +6,7 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { isFirstActivityToday, nextStreak } from '../services/streak.js';
+import { isCalendarDate, isFirstActivityToday, nextStreak } from '../services/streak.js';
 import {
   countSegmentAttempts,
   getAdventureById,
@@ -243,6 +243,11 @@ export function learnRouter(): Router {
     .object({
       minutes_spent: z.number().min(0).max(120).optional(),
       seconds_spent: z.number().int().min(0).max(7200).optional(),
+      // The learner's LOCAL calendar date (YYYY-MM-DD) — the day-streak
+      // anchor. A kid's day follows their wall clock, not the server's UTC
+      // (in Mexico UTC day-rollover lands at 6 pm local). Optional for
+      // compatibility; defaults to the server's UTC date.
+      local_date: z.string().refine(isCalendarDate, 'local_date must be YYYY-MM-DD').optional(),
     })
     .refine((b) => b.minutes_spent !== undefined || b.seconds_spent !== undefined, {
       message: 'seconds_spent (or legacy minutes_spent) is required',
@@ -322,11 +327,11 @@ export function learnRouter(): Router {
 
     const stats = await getLearningStatsForUpdate(user.id);
     // Streak semantics (v1 parity / Duolingo model): ANY lesson passed today
-    // sustains or extends the day streak — not only lessons never passed
-    // before. Gating on `newlyPassed` meant replaying passed lessons could
-    // never keep a streak alive once a course was finished.
-    const firstToday = isFirstActivityToday(stats.updated_at);
-    const newStreak = passedNow ? nextStreak(stats.updated_at, stats.streak_days) : stats.streak_days;
+    // sustains or extends the day streak — anchored to last_active_date
+    // (the learner's LOCAL calendar day, 0009), pure date math only.
+    const todayLocal = parsed.data.local_date ?? new Date().toISOString().slice(0, 10);
+    const firstToday = passedNow && isFirstActivityToday(stats.last_active_date, todayLocal);
+    const newStreak = passedNow ? nextStreak(stats.last_active_date, stats.streak_days, todayLocal) : stats.streak_days;
     const streakExtended = newStreak > stats.streak_days;
 
     const minutesDelta =
@@ -339,6 +344,7 @@ export function learnRouter(): Router {
       minutes_learned: stats.minutes_learned + minutesDelta,
       lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
       streak_days: newStreak,
+      ...(passedNow ? { last_active_date: todayLocal } : {}),
     });
     if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
 

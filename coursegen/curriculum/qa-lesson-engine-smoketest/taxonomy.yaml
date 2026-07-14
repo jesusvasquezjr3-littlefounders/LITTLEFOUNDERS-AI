@@ -5,6 +5,7 @@ schema_version: 1
 # the 56 LESSON_ENGINE segment types is selectable for isolated testing.
 themes:
   - cosmos
+  - city
 age_tiers:
   tier2:
     ages: "8-10"

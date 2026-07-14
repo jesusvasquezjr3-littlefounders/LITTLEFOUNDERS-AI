@@ -82,7 +82,12 @@ export function LessonRoute() {
     const { data, error } = await api<ServerCompletion>(`/learn/lessons/${lessonId}/complete`, {
       method: 'POST',
       token,
-      body: { seconds_spent: Math.min(7200, Math.max(1, secondsSpent)) },
+      body: {
+        seconds_spent: Math.min(7200, Math.max(1, secondsSpent)),
+        // The kid's LOCAL calendar day anchors the streak (v1 parity) — 'sv'
+        // formats as YYYY-MM-DD in the device's own timezone.
+        local_date: new Date().toLocaleDateString('sv'),
+      },
     });
     return error ? null : data;
   }

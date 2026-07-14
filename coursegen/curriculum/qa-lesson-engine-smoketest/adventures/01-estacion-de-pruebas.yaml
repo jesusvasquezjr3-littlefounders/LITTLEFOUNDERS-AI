@@ -1,580 +1,583 @@
 schema_version: 1
-# QA/authoring content (COURSE_ENGINE.md §4 addendum). Every lesson below
-# pins `forced_types` — the plan-stage LLM call is skipped entirely; write,
-# gates, judge, localization, images and publish all still run for real.
-# One lesson per LESSON_ENGINE segment type (56 total), plus a few combined
-# lessons to test in-lesson sequencing, plus a minimal review-layer lesson.
+# QA/authoring course (COURSE_ENGINE.md §4 addendum). Every lesson pins
+# `forced_types` so all 56 LESSON_ENGINE segment types get exercised — but
+# the CONTENT is a real, coherent micro-course (Liruf's lemonade stand):
+# every lesson teaches a genuine money/entrepreneurship micro-concept in
+# warm, kid-facing es-MX. Rewritten 2026-07-13 after the first generated
+# batch read as meta/test placeholders ("Verificar el ejercicio X…") — QA
+# coverage and real pedagogy are NOT in tension; briefs must always be real.
 adventure:
   position: 1
   slug: estacion-de-pruebas
-  theme: cosmos
+  theme: city
   age_tier: tier2
   title:
-    en-US: "The Testing Station"
-    es-MX: "La Estación de Pruebas"
-    pt-BR: "A Estação de Testes"
+    en-US: "Liruf's Lemonade Stand"
+    es-MX: "El Puesto de Limonada de Liruf"
+    pt-BR: "A Barraca de Limonada do Liruf"
   description:
-    en-US: "A diagnostics station where every exercise type gets checked before a real course launches."
-    es-MX: "Una estación de diagnóstico donde se revisa cada tipo de ejercicio antes de lanzar un curso real."
-    pt-BR: "Uma estação de diagnóstico onde cada tipo de exercício é verificado antes de lançar um curso real."
-  narrative_arc: "Antes de lanzar un curso real, dina, liruf, rho y zara recorren la Estación de Pruebas y encienden, uno por uno, los paneles de diagnóstico del Motor de Lecciones — para asegurarse de que todo funcione a la perfección."
+    en-US: "Liruf opens his first lemonade stand and learns to count money, set prices, save, and sell — one small skill at a time."
+    es-MX: "Liruf abre su primer puesto de limonada y aprende a contar dinero, poner precios, ahorrar y vender — una habilidad pequeña a la vez."
+    pt-BR: "Liruf abre sua primeira barraca de limonada e aprende a contar dinheiro, definir preços, poupar e vender — uma habilidade de cada vez."
+  narrative_arc: "Liruf quiere una guitarra que cuesta 80 pesos. Con ayuda de Dina, Rho y Zara decide ganarse el dinero con un puesto de limonada: primero imagina la idea, luego cuenta sus monedas, arma el puesto, fija un precio justo de 5 pesos por vaso, atiende a sus primeros clientes, aprende de sus errores de cuentas y, día a día, ahorra sus ganancias hasta acercarse a su meta."
 sagas:
   - position: 1
     slug: camara-de-tipos
-    icon: science
+    icon: storefront
     title:
-      en-US: "Chamber of Types"
-      es-MX: "Cámara de Tipos"
-      pt-BR: "Câmara de Tipos"
+      en-US: "Opening the Stand"
+      es-MX: "Abrir el Puesto"
+      pt-BR: "Abrindo a Barraca"
     description:
-      en-US: "One diagnostic panel per exercise type, grouped by family."
-      es-MX: "Un panel de diagnóstico por tipo de ejercicio, agrupado por familia."
-      pt-BR: "Um painel de diagnóstico por tipo de exercício, agrupado por família."
+      en-US: "From the first idea to the first sale: money basics, one skill per lesson."
+      es-MX: "De la primera idea a la primera venta: fundamentos del dinero, una habilidad por lección."
+      pt-BR: "Da primeira ideia à primeira venda: fundamentos do dinheiro, uma habilidade por lição."
     topics:
       - position: 1
         slug: tipos-story
-        title_es: "Panel de Historia"
-        concept: "Los 5 tipos de contenido narrativo del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia story se genera y renderiza correctamente."
-        key_vocabulary: [historia, personaje, escena]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "La Gran Idea"
+        concept: "Ganar dinero empieza con una idea: Liruf quiere una guitarra de 80 pesos y decide vender limonada al vecindario en lugar de solo esperar."
+        learning_objective: "Entender que el dinero se gana ofreciendo algo que otros quieren, y que una meta clara (la guitarra de 80 pesos) ayuda a empezar."
+        key_vocabulary: [meta, ganar, vender]
+        prior_knowledge: "Ninguno — es el inicio del curso."
+        fact_refs: [qa.reference_price.guitar, qa.reference_price.cup]
+        parent_check: "Pregúntale a {{name}}: ¿qué quiere comprar Liruf y cómo decidió conseguir el dinero?"
         lessons:
           - position: 1
             slug: story-dialogue
-            micro_objective: 'Verificar el ejercicio "story_dialogue" de forma aislada.'
-            narrative_beat: "Dina enciende el panel de diálogo y prueba una escena con dos personajes hablando."
+            micro_objective: "Descubrir, en una charla entre Dina y Liruf, que el dinero para la guitarra se puede GANAR vendiendo limonada — no solo esperar un regalo."
+            narrative_beat: "Liruf suspira frente al aparador de la guitarra de 80 pesos; Dina le propone: '¿Y si la ganas tú mismo con un puesto de limonada?'"
             difficulty: 1
             suggested_families: [story]
             forced_types: [story_dialogue]
           - position: 2
             slug: story-scene
-            micro_objective: 'Verificar el ejercicio "story_scene" de forma aislada.'
-            narrative_beat: "Liruf revisa una escena ilustrada de fondo completo."
+            micro_objective: "Ver el plan completo en una escena: vender vasos de limonada a 5 pesos hasta juntar los 80 de la guitarra."
+            narrative_beat: "Liruf dibuja su plan en una cartulina: un vaso = 5 pesos; muchos vasos = una guitarra."
             difficulty: 1
             suggested_families: [story]
             forced_types: [story_scene]
           - position: 3
             slug: key-ideas
-            micro_objective: 'Verificar el ejercicio "key_ideas" de forma aislada.'
-            narrative_beat: "Rho revisa un panel de tarjetas de ideas clave."
+            micro_objective: "Fijar las 3 ideas clave del plan: tener una meta (80 pesos), ofrecer algo que la gente quiera (limonada fría), y guardar lo ganado."
+            narrative_beat: "Rho resume en su pizarra las tres reglas de oro del pequeño vendedor."
             difficulty: 1
             suggested_families: [story]
             forced_types: [key_ideas]
           - position: 4
             slug: concept-reveal
-            micro_objective: 'Verificar el ejercicio "concept_reveal" de forma aislada.'
-            narrative_beat: "Zara voltea tarjetas para revelar un concepto escondido."
-            difficulty: 1
+            micro_objective: "Voltear tarjetas para descubrir qué significa 'costo' (lo que gastas en limones y azúcar) y 'ganancia' (lo que te queda después de pagar el costo)."
+            narrative_beat: "Zara esconde los conceptos en tarjetas: ¿qué habrá detrás de 'costo'? ¿y detrás de 'ganancia'?"
+            difficulty: 2
             suggested_families: [story]
             forced_types: [concept_reveal]
           - position: 5
             slug: checkpoint
-            micro_objective: 'Verificar el ejercicio "checkpoint" de forma aislada.'
-            narrative_beat: "Dina revisa el panel de repaso y autoevaluación."
+            micro_objective: "Respirar y repasar: ya tienes meta (80 pesos), producto (limonada a 5 pesos) y sabes qué es costo y ganancia. ¿Cómo te sientes para abrir el puesto?"
+            narrative_beat: "Dina pregunta a Liruf cómo se siente antes del gran día de apertura."
             difficulty: 1
             suggested_families: [story]
             forced_types: [checkpoint]
       - position: 2
         slug: tipos-choice
-        title_es: "Panel de Selección"
-        concept: "Los 8 tipos de la familia choice del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia choice se genera y renderiza correctamente."
-        key_vocabulary: [opción, respuesta, elegir]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Decisiones de Vendedor"
+        concept: "Un vendedor toma decisiones todo el día: qué precio poner, dónde guardar el dinero, a qué cliente atender primero y qué gastos valen la pena."
+        learning_objective: "Tomar decisiones simples de dinero comparando opciones: precio justo, lugar seguro para guardar, y distinguir un buen trato de uno malo."
+        key_vocabulary: [precio, decisión, seguro]
+        prior_knowledge: "La meta de 80 pesos y el precio de 5 pesos por vaso."
+        fact_refs: [qa.reference_price.cup, mxn.denominations.coins]
+        parent_check: "Pregúntale a {{name}}: ¿dónde está más seguro el dinero del puesto y por qué?"
         lessons:
           - position: 1
             slug: quiz-mcq
-            micro_objective: 'Verificar el ejercicio "quiz_mcq" de forma aislada.'
-            narrative_beat: "Liruf prueba una pregunta de opción múltiple."
+            micro_objective: "Elegir el precio justo para un vaso de limonada (5 pesos) entre opciones exageradas (50 pesos ahuyenta clientes; 1 peso no cubre el costo)."
+            narrative_beat: "Primer dilema del puesto: ¿a cuánto el vaso? Liruf duda entre varias etiquetas de precio."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [quiz_mcq]
           - position: 2
             slug: true-false
-            micro_objective: 'Verificar el ejercicio "true_false" de forma aislada.'
-            narrative_beat: "Rho prueba una afirmación verdadero o falso con justificación."
+            micro_objective: "Decidir si es cierto o falso: 'Si guardo 5 pesos de cada venta, mi ahorro CRECE cada día'."
+            narrative_beat: "Zara lanza una frase sobre el ahorro y Liruf debe atraparla como cierta o falsa."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [true_false]
           - position: 3
             slug: picture-choice
-            micro_objective: 'Verificar el ejercicio "picture_choice" de forma aislada (incluye generación de imágenes).'
-            narrative_beat: "Zara prueba un panel de opciones ilustradas."
+            micro_objective: "Elegir con imágenes el lugar más seguro para guardar las ganancias del día: la alcancía con llave (no el bolsillo roto ni la mesa del puesto)."
+            narrative_beat: "Al cerrar el puesto, Liruf mira tres lugares posibles para su dinero."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [picture_choice]
           - position: 4
             slug: odd-one-out
-            micro_objective: 'Verificar el ejercicio "odd_one_out" de forma aislada.'
-            narrative_beat: "Dina busca el elemento que no pertenece al grupo."
+            micro_objective: "Detectar cuál NO es un ingrediente de la limonada (limones, azúcar, agua… ¿y una pelota?): separar lo que sí cuesta dinero producir."
+            narrative_beat: "Rho revisa la lista de compras y algo raro se coló."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [odd_one_out]
           - position: 5
             slug: best-decision
-            micro_objective: 'Verificar el ejercicio "best_decision" de forma aislada.'
-            narrative_beat: "Liruf evalúa varias decisiones posibles ante un dilema."
-            difficulty: 1
+            micro_objective: "Elegir la MEJOR decisión cuando un cliente paga con billete de 20 por un vaso de 5: contar el cambio con calma (no adivinarlo ni quedárselo)."
+            narrative_beat: "La primera clienta paga con un billete grande y Liruf siente nervios."
+            difficulty: 2
             suggested_families: [choice]
             forced_types: [best_decision]
           - position: 6
             slug: yes-no-cases
-            micro_objective: 'Verificar el ejercicio "yes_no_cases" de forma aislada.'
-            narrative_beat: "Rho aplica una regla a varios casos, sí o no."
-            difficulty: 1
+            micro_objective: "Decir sí o no, caso por caso: ¿este gasto ayuda al puesto? (más limones: sí; un juguete nuevo hoy: no, todavía no)."
+            narrative_beat: "Liruf repasa su lista de tentaciones y necesidades con Dina."
+            difficulty: 2
             suggested_families: [choice]
             forced_types: [yes_no_cases]
           - position: 7
             slug: speed-tap
-            micro_objective: 'Verificar el ejercicio "speed_tap" de forma aislada (flujo cronometrado).'
-            narrative_beat: "Zara toca rápido los elementos correctos antes de que se acabe el tiempo."
+            micro_objective: "Atrapar rápido solo las MONEDAS entre los objetos que pasan (monedas sí; botones y corcholatas no): reconocer el dinero de un vistazo."
+            narrative_beat: "¡Se volcó el frasco! Ayuda a Liruf a rescatar sus monedas antes de que rueden."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [speed_tap]
           - position: 8
             slug: confidence-quiz
-            micro_objective: 'Verificar el ejercicio "confidence_quiz" de forma aislada.'
-            narrative_beat: "Dina responde y califica qué tan segura está de su respuesta."
-            difficulty: 1
+            micro_objective: "Responder cuánto es 5 + 5 (dos vasos vendidos) y además decir qué tan seguro te sientes de tu respuesta — aprender a confiar en tus cuentas."
+            narrative_beat: "Dos ventas seguidas: Liruf suma mentalmente y Dina le pregunta '¿qué tan seguro estás?'"
+            difficulty: 2
             suggested_families: [choice]
             forced_types: [confidence_quiz]
       - position: 3
         slug: tipos-input
-        title_es: "Panel de Entrada"
-        concept: "Los 6 tipos de la familia input del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia input se genera y renderiza correctamente."
-        key_vocabulary: [número, respuesta, escribir]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Las Cuentas del Puesto"
+        concept: "Escribir y calcular números reales del puesto: cuántos limones hay, cuánto se ganó, cuánto falta para la meta."
+        learning_objective: "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20)."
+        key_vocabulary: [suma, total, contar]
+        prior_knowledge: "El precio de 5 pesos por vaso y la meta de 80."
+        fact_refs: [qa.reference_price.cup, qa.reference_price.guitar]
+        parent_check: "Pídele a {{name}} que te diga cuánto gana Liruf si vende 4 vasos a 5 pesos."
         lessons:
           - position: 1
             slug: type-answer
-            micro_objective: 'Verificar el ejercicio "type_answer" de forma aislada.'
-            narrative_beat: "Liruf escribe una respuesta corta en el panel."
+            micro_objective: "Escribir la palabra que nombra el dinero que guardas para después: 'ahorro'."
+            narrative_beat: "Rho juega al ahorcado financiero: '¿cómo se llama el dinero que no gastas hoy?'"
             difficulty: 1
             suggested_families: [input]
             forced_types: [type_answer]
           - position: 2
             slug: fill-blank
-            micro_objective: 'Verificar el ejercicio "fill_blank" de forma aislada.'
-            narrative_beat: "Rho completa los espacios en blanco de una frase."
-            difficulty: 1
+            micro_objective: "Completar la frase de la ganancia: 'Vendí un vaso en 5 pesos, los ingredientes costaron 2, mi ganancia es ___ pesos'."
+            narrative_beat: "Dina deja huecos en el cuaderno de cuentas para que Liruf los llene."
+            difficulty: 2
             suggested_families: [input]
             forced_types: [fill_blank]
           - position: 3
             slug: number-input
-            micro_objective: 'Verificar el ejercicio "number_input" de forma aislada.'
-            narrative_beat: "Zara escribe un número en el teclado numérico."
-            difficulty: 1
+            micro_objective: "Calcular y escribir cuánto ganó Liruf en total si vendió 4 vasos a 5 pesos cada uno (20 pesos)."
+            narrative_beat: "Fin de la mañana: 4 vasos vendidos. ¿Cuánto hay en la caja?"
+            difficulty: 2
             suggested_families: [input]
             forced_types: [number_input]
           - position: 4
             slug: estimate-slider
-            micro_objective: 'Verificar el ejercicio "estimate_slider" de forma aislada.'
-            narrative_beat: "Dina mueve una barra para estimar una cantidad."
+            micro_objective: "Estimar con la barra cuántos vasos salen de una jarra grande (ni 1 ni 100: alrededor de 8) — estimar antes de contar."
+            narrative_beat: "Zara prepara la jarra del día y pregunta: 'sin contar, ¿como cuántos vasos crees que salgan?'"
             difficulty: 1
             suggested_families: [input]
             forced_types: [estimate_slider]
           - position: 5
             slug: count-objects
-            micro_objective: 'Verificar el ejercicio "count_objects" de forma aislada.'
-            narrative_beat: "Liruf cuenta los objetos que aparecen en la escena."
+            micro_objective: "Contar los limones que quedan en la canasta para saber si alcanzan para mañana."
+            narrative_beat: "Inventario nocturno: Liruf cuenta limones a la luz de una lamparita."
             difficulty: 1
             suggested_families: [input]
             forced_types: [count_objects]
           - position: 6
             slug: equation-builder
-            micro_objective: 'Verificar el ejercicio "equation_builder" de forma aislada.'
-            narrative_beat: "Rho arma una ecuación con fichas de números y símbolos."
-            difficulty: 1
+            micro_objective: "Armar con fichas la suma de la tarde: 5 + 5 + 5 = 15 pesos (tres vasos vendidos)."
+            narrative_beat: "Rho da fichas con números y signos: 'arma tú mismo la cuenta de la tarde'."
+            difficulty: 2
             suggested_families: [input]
             forced_types: [equation_builder]
       - position: 4
         slug: tipos-arrange
-        title_es: "Panel de Orden"
-        concept: "Los 10 tipos de la familia arrange del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia arrange se genera y renderiza correctamente."
-        key_vocabulary: [orden, pareja, grupo]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Organizar el Puesto"
+        concept: "Un puesto ordenado vende más: los pasos de la receta en orden, los precios emparejados con sus productos, y las compras por prioridad."
+        learning_objective: "Ordenar pasos, emparejar productos con precios y clasificar compras entre necesidades del puesto y gustos que pueden esperar."
+        key_vocabulary: [orden, primero, prioridad]
+        prior_knowledge: "Costo y ganancia; el precio del vaso."
+        fact_refs: [qa.reference_price.cup]
+        parent_check: "Pídele a {{name}} que te diga los pasos para preparar la limonada en orden."
         lessons:
           - position: 1
             slug: match-pairs
-            micro_objective: 'Verificar el ejercicio "match_pairs" de forma aislada.'
-            narrative_beat: "Zara empareja elementos de dos columnas."
+            micro_objective: "Emparejar cada producto del puesto con su precio correcto (vaso chico–5, jarra–20, galleta–3)."
+            narrative_beat: "El viento tiró las etiquetas de precios; hay que devolver cada una a su producto."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [match_pairs]
           - position: 2
             slug: memory-flip
-            micro_objective: 'Verificar el ejercicio "memory_flip" de forma aislada (flujo de memoria).'
-            narrative_beat: "Dina voltea cartas para encontrar parejas."
+            micro_objective: "Encontrar los pares escondidos de monedas iguales (1 con 1, 5 con 5, 10 con 10): reconocer las monedas de México."
+            narrative_beat: "Zara inventa un juego de memoria con las monedas de la caja."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [memory_flip]
           - position: 3
             slug: sort-buckets
-            micro_objective: 'Verificar el ejercicio "sort_buckets" de forma aislada.'
-            narrative_beat: "Liruf clasifica objetos en distintas canastas."
-            difficulty: 1
+            micro_objective: "Clasificar las compras del día en dos cubetas: NECESIDAD del puesto (limones, vasos) o GUSTO que puede esperar (stickers, globos)."
+            narrative_beat: "Antes de ir al mercado, Dina y Liruf separan la lista en dos montones."
+            difficulty: 2
             suggested_families: [arrange]
             forced_types: [sort_buckets]
           - position: 4
             slug: order-steps
-            micro_objective: 'Verificar el ejercicio "order_steps" de forma aislada.'
-            narrative_beat: "Rho ordena los pasos de un procedimiento."
+            micro_objective: "Poner en orden los pasos de la limonada: exprimir limones → agregar agua → endulzar → probar → servir."
+            narrative_beat: "Receta revuelta: las tarjetas de pasos se cayeron y hay que reordenarlas."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [order_steps]
           - position: 5
             slug: rank-choices
-            micro_objective: 'Verificar el ejercicio "rank_choices" de forma aislada.'
-            narrative_beat: "Zara ordena opciones según un criterio."
-            difficulty: 1
+            micro_objective: "Ordenar de más a menos urgente en qué gastar la ganancia de hoy: reponer limones primero, luego vasos, y al final adornos."
+            narrative_beat: "Con 20 pesos ganados, Rho ayuda a decidir qué compra va primero."
+            difficulty: 2
             suggested_families: [arrange]
             forced_types: [rank_choices]
           - position: 6
             slug: build-sentence
-            micro_objective: 'Verificar el ejercicio "build_sentence" de forma aislada.'
-            narrative_beat: "Dina arma una frase con fichas de palabras."
+            micro_objective: "Armar, palabra por palabra, el letrero del puesto: 'Limonada fría a 5 pesos'."
+            narrative_beat: "Las palabras del cartel están sueltas sobre la mesa; hay que armarlo bonito."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [build_sentence]
           - position: 7
             slug: timeline-order
-            micro_objective: 'Verificar el ejercicio "timeline_order" de forma aislada.'
-            narrative_beat: "Liruf coloca eventos en una línea del tiempo."
-            difficulty: 1
+            micro_objective: "Ordenar el día de venta en el tiempo: comprar ingredientes por la mañana → preparar → vender al mediodía → contar dinero y guardar al cierre."
+            narrative_beat: "Liruf recuerda su primer día completo y acomoda las fotos en orden."
+            difficulty: 2
             suggested_families: [arrange]
             forced_types: [timeline_order]
           - position: 8
             slug: pattern-complete
-            micro_objective: 'Verificar el ejercicio "pattern_complete" de forma aislada.'
-            narrative_beat: "Rho completa un patrón visual."
+            micro_objective: "Completar el patrón de la fila de vasos del mostrador (chico, grande, chico, grande…): descubrir qué sigue."
+            narrative_beat: "Zara acomoda los vasos con un patrón y deja huecos a propósito."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [pattern_complete]
           - position: 9
             slug: group-sets
-            micro_objective: 'Verificar el ejercicio "group_sets" de forma aislada.'
-            narrative_beat: "Zara agrupa elementos en zonas tipo diagrama de conjuntos."
+            micro_objective: "Agrupar el dinero de la caja: monedas con monedas y billetes con billetes, para contarlo más fácil."
+            narrative_beat: "Cierre del día: la caja está revuelta y hay que separar el dinero por tipo."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [group_sets]
           - position: 10
             slug: number-line
-            micro_objective: 'Verificar el ejercicio "number_line" de forma aislada.'
-            narrative_beat: "Dina ubica un valor sobre una recta numérica."
-            difficulty: 1
+            micro_objective: "Ubicar en la recta numérica del 0 al 100 dónde va el ahorro de Liruf (20 pesos) y dónde la meta (80): ver cuánto falta."
+            narrative_beat: "Rho dibuja una recta gigante con gis: 'marca dónde vas y a dónde quieres llegar'."
+            difficulty: 2
             suggested_families: [arrange]
             forced_types: [number_line]
       - position: 5
         slug: tipos-money
-        title_es: "Panel de Dinero"
-        concept: "Los 9 tipos de la familia money del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia money se genera y renderiza correctamente."
-        key_vocabulary: [moneda, precio, ahorro]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: [mxn.denominations.coins, mxn.denominations.bills, qa.reference_price.toy, qa.reference_price.snack]
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "La Caja del Dinero"
+        concept: "Manejar dinero de verdad: contar monedas mexicanas, dar cambio exacto, repartir la ganancia y avanzar hacia la meta de 80 pesos."
+        learning_objective: "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta."
+        key_vocabulary: [cambio, alcancía, meta]
+        prior_knowledge: "Sumas hasta 80; monedas y billetes de México."
+        fact_refs: [mxn.denominations.coins, mxn.denominations.bills, qa.reference_price.cup, qa.reference_price.guitar]
+        parent_check: "Dale a {{name}} un billete imaginario de 20 por un vaso de 5 y pídele tu cambio."
         lessons:
           - position: 1
             slug: coin-count
-            micro_objective: 'Verificar el ejercicio "coin_count" de forma aislada.'
-            narrative_beat: "Liruf paga una cantidad exacta con monedas y billetes."
+            micro_objective: "Contar las monedas de la primera venta: juntar 5 pesos exactos con monedas de 1 y 2."
+            narrative_beat: "Un cliente paga su vaso todo en moneditas; hay que verificar que sean 5."
             difficulty: 1
             suggested_families: [money]
             forced_types: [coin_count]
           - position: 2
             slug: make-change
-            micro_objective: 'Verificar el ejercicio "make_change" de forma aislada.'
-            narrative_beat: "Rho da el cambio correcto tras una compra."
-            difficulty: 1
+            micro_objective: "Dar el cambio correcto: el vaso cuesta 5, pagan con billete de 20 → regresar 15 (10 + 5)."
+            narrative_beat: "La señora del perrito paga con 20 y espera sonriente su cambio."
+            difficulty: 2
             suggested_families: [money]
             forced_types: [make_change]
           - position: 3
             slug: piggy-split
-            micro_objective: 'Verificar el ejercicio "piggy_split" de forma aislada.'
-            narrative_beat: "Zara reparte sus ingresos entre distintos frascos de ahorro."
-            difficulty: 1
+            micro_objective: "Repartir 10 pesos de ganancia entre las dos alcancías: una parte para la meta de la guitarra y otra para reponer ingredientes."
+            narrative_beat: "Dos alcancías esperan: la de la guitarra y la del puesto. ¿Cómo repartir lo de hoy?"
+            difficulty: 2
             suggested_families: [money]
             forced_types: [piggy_split]
           - position: 4
             slug: needs-wants
-            micro_objective: 'Verificar el ejercicio "needs_wants" de forma aislada.'
-            narrative_beat: "Dina separa necesidades de gustos."
+            micro_objective: "Separar necesidades del puesto (limones, hielo) de deseos personales (paleta, cómic): el puesto come primero."
+            narrative_beat: "En el mercado todo brilla; Dina ayuda a Liruf a no perder el rumbo."
             difficulty: 1
             suggested_families: [money]
             forced_types: [needs_wants]
           - position: 5
             slug: price-compare
-            micro_objective: 'Verificar el ejercicio "price_compare" de forma aislada.'
-            narrative_beat: "Liruf compara dos ofertas para ver cuál conviene más."
-            difficulty: 1
+            micro_objective: "Comparar precios de limones en dos puestos del mercado y elegir el más barato para gastar menos (costo más bajo = más ganancia)."
+            narrative_beat: "Dos marchantes gritan sus ofertas de limones; solo una conviene."
+            difficulty: 2
             suggested_families: [money]
             forced_types: [price_compare]
           - position: 6
             slug: budget-fit
-            micro_objective: 'Verificar el ejercicio "budget_fit" de forma aislada.'
-            narrative_beat: "Rho arma un carrito de compras dentro de un presupuesto."
-            difficulty: 1
+            micro_objective: "Armar la compra del día sin pasarse del presupuesto de 20 pesos: elegir qué ingredientes caben."
+            narrative_beat: "Con un billete de 20 en la mano, Liruf recorre el mercado calculando."
+            difficulty: 3
             suggested_families: [money]
             forced_types: [budget_fit]
           - position: 7
             slug: savings-goal
-            micro_objective: 'Verificar el ejercicio "savings_goal" de forma aislada.'
-            narrative_beat: "Zara calcula cuántas semanas le tomará llegar a su meta de ahorro."
-            difficulty: 1
+            micro_objective: "Calcular cuántas semanas faltan para la guitarra de 80 pesos si Liruf ahorra 20 pesos por semana (4 semanas)."
+            narrative_beat: "Rho saca su calendario: 'si guardas lo mismo cada semana, ¿cuándo llega la guitarra?'"
+            difficulty: 3
             suggested_families: [money]
             forced_types: [savings_goal]
           - position: 8
             slug: fair-trade
-            micro_objective: 'Verificar el ejercicio "fair_trade" de forma aislada.'
-            narrative_beat: "Dina decide si un intercambio es justo."
-            difficulty: 1
+            micro_objective: "Decidir si un trueque es justo: ¿cambiar 2 vasos de limonada (10 pesos) por una bolsa de limones que vale 10? Comparar valores antes de aceptar."
+            narrative_beat: "El frutero propone un intercambio sin dinero; Liruf hace cuentas antes de dar la mano."
+            difficulty: 3
             suggested_families: [money]
             forced_types: [fair_trade]
           - position: 9
             slug: interest-peek
-            micro_objective: 'Verificar el ejercicio "interest_peek" de forma aislada (flujo de predicción).'
-            narrative_beat: "Liruf predice cómo crecerá su ahorro con el tiempo."
-            difficulty: 1
+            micro_objective: "Asomarse a un secreto del ahorro: si la alcancía del banco 'agradece' con moneditas extra por esperar, el dinero guardado crece solito con el tiempo."
+            narrative_beat: "La abuela le cuenta a Liruf por qué su dinero en el banco 'trabaja' mientras él duerme."
+            difficulty: 3
             suggested_families: [money]
             forced_types: [interest_peek]
       - position: 6
         slug: tipos-analyze
-        title_es: "Panel de Análisis"
-        concept: "Los 7 tipos de la familia analyze del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia analyze se genera y renderiza correctamente."
-        key_vocabulary: [analizar, revisar, evidencia]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Detective de Números"
+        concept: "Leer y revisar la información del puesto: encontrar errores de cuentas, leer la gráfica de ventas y desconfiar de tratos demasiado buenos."
+        learning_objective: "Detectar un error en una suma de ventas, leer una gráfica simple de vasos vendidos por día y reconocer señales de un mal trato."
+        key_vocabulary: [gráfica, error, comparar]
+        prior_knowledge: "Sumas del puesto y días de venta."
+        fact_refs: [qa.reference_price.cup]
+        parent_check: "Muéstrale a {{name}} una suma con un error a propósito y pídele encontrarlo."
         lessons:
           - position: 1
             slug: spot-error
-            micro_objective: 'Verificar el ejercicio "spot_error" de forma aislada.'
-            narrative_beat: "Rho encuentra el paso equivocado en un procedimiento."
-            difficulty: 1
+            micro_objective: "Encontrar el paso equivocado en la cuenta de Liruf: 5 + 5 + 5 no puede dar 20."
+            narrative_beat: "Algo no cuadra al cierre: sobra una cifra en el cuaderno."
+            difficulty: 2
             suggested_families: [analyze]
             forced_types: [spot_error]
           - position: 2
             slug: cause-effect
-            micro_objective: 'Verificar el ejercicio "cause_effect" de forma aislada.'
-            narrative_beat: "Zara arma la cadena de causa y efecto."
-            difficulty: 1
+            micro_objective: "Conectar causas y efectos del puesto: día soleado → más sed → más vasos vendidos; subir el precio al doble → menos clientes."
+            narrative_beat: "Rho y Liruf comparan dos días muy distintos de ventas y buscan el porqué."
+            difficulty: 2
             suggested_families: [analyze]
             forced_types: [cause_effect]
           - position: 3
             slug: compare-table
-            micro_objective: 'Verificar el ejercicio "compare_table" de forma aislada.'
-            narrative_beat: "Dina llena una tabla comparativa."
-            difficulty: 1
+            micro_objective: "Leer la tabla de dos proveedores de limones (precio y cantidad) y elegir el que da más por menos."
+            narrative_beat: "Dina hace una tabla comparativa en la libreta antes de decidir dónde comprar."
+            difficulty: 3
             suggested_families: [analyze]
             forced_types: [compare_table]
           - position: 4
             slug: read-chart
-            micro_objective: 'Verificar el ejercicio "read_chart" de forma aislada.'
-            narrative_beat: "Liruf lee una gráfica y responde preguntas sobre ella."
-            difficulty: 1
+            micro_objective: "Leer la gráfica de barras de vasos vendidos por día y responder cuál fue el mejor día de la semana."
+            narrative_beat: "Zara dibuja barras de colores con las ventas de lunes a viernes."
+            difficulty: 2
             suggested_families: [analyze]
             forced_types: [read_chart]
           - position: 5
             slug: evidence-hunt
-            micro_objective: 'Verificar el ejercicio "evidence_hunt" de forma aislada.'
-            narrative_beat: "Rho subraya las frases que apoyan una afirmación."
-            difficulty: 1
+            micro_objective: "Buscar en el recibo del mercado la evidencia exacta de cuánto costaron los limones."
+            narrative_beat: "'¿Y en qué se fue el dinero?' — el recibo arrugado tiene la respuesta."
+            difficulty: 2
             suggested_families: [analyze]
             forced_types: [evidence_hunt]
           - position: 6
             slug: red-flags
-            micro_objective: 'Verificar el ejercicio "red_flags" de forma aislada.'
-            narrative_beat: "Zara detecta señales sospechosas en un anuncio falso."
-            difficulty: 1
+            micro_objective: "Detectar las señales de alerta en la oferta de un desconocido ('dame tus 20 pesos hoy y mañana te doy 100'): promesas demasiado buenas no son de fiar."
+            narrative_beat: "Un vendedor apurado ofrece a Liruf un 'negocio mágico' que huele raro."
+            difficulty: 3
             suggested_families: [analyze]
             forced_types: [red_flags]
           - position: 7
             slug: fact-opinion
-            micro_objective: 'Verificar el ejercicio "fact_opinion" de forma aislada.'
-            narrative_beat: "Dina separa hechos de opiniones en varias frases."
-            difficulty: 1
+            micro_objective: "Separar hechos ('el vaso cuesta 5 pesos') de opiniones ('mi limonada es la más rica del mundo') en las frases del puesto."
+            narrative_beat: "Rho lee en voz alta frases del día: unas se pueden comprobar, otras solo son gustos."
+            difficulty: 2
             suggested_families: [analyze]
             forced_types: [fact_opinion]
       - position: 7
         slug: tipos-storyplay
-        title_es: "Panel de Historias Interactivas"
-        concept: "Los 5 tipos de la familia storyplay del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia storyplay se genera y renderiza correctamente."
-        key_vocabulary: [decisión, historia, elegir]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Historias con Decisiones"
+        concept: "Vivir el puesto en historias jugables: cada decisión (precio, trato al cliente, gasto) cambia cómo termina el día."
+        learning_objective: "Tomar decisiones dentro de historias del puesto y ver sus consecuencias inmediatas en las ventas y el ahorro."
+        key_vocabulary: [decisión, consecuencia, cliente]
+        prior_knowledge: "Todo lo aprendido del puesto hasta aquí."
+        fact_refs: [qa.reference_price.cup]
+        parent_check: "Pregúntale a {{name}} qué decisión tomó en la historia del primer cliente y qué pasó después."
         lessons:
           - position: 1
             slug: story-branch
-            micro_objective: 'Verificar el ejercicio "story_branch" de forma aislada (flujo ramificado).'
-            narrative_beat: "Liruf toma decisiones en una historia ramificada."
-            difficulty: 1
+            micro_objective: "Vivir el primer día del puesto eligiendo el camino: ¿precio de 5 o de 50?, ¿sonreír al cliente o ignorarlo? Cada rama enseña una consecuencia."
+            narrative_beat: "El primer día se juega: cada elección de Liruf abre un final distinto."
+            difficulty: 2
             suggested_families: [storyplay]
             forced_types: [story_branch]
           - position: 2
             slug: dialogue-choice
-            micro_objective: 'Verificar el ejercicio "dialogue_choice" de forma aislada (flujo de diálogo).'
-            narrative_beat: "Rho conversa con un personaje eligiendo qué responder."
-            difficulty: 1
+            micro_objective: "Elegir qué responderle a un cliente que pide rebaja: negociar con amabilidad sin regalar la ganancia."
+            narrative_beat: "'¿Me lo dejas en 3?' — Liruf debe contestar sin perder ni al cliente ni la ganancia."
+            difficulty: 2
             suggested_families: [storyplay]
             forced_types: [dialogue_choice]
           - position: 3
             slug: flash-match
-            micro_objective: 'Verificar el ejercicio "flash_match" de forma aislada (flujo cronometrado).'
-            narrative_beat: "Zara empareja elementos rápido antes de que se acabe el tiempo."
-            difficulty: 1
+            micro_objective: "Relacionar a toda velocidad cada palabra del puesto con su ejemplo (ahorro→alcancía, costo→limones, ganancia→lo que sobra)."
+            narrative_beat: "Zara saca su cronómetro: '¡a ver qué tan rápido conectas los conceptos!'"
+            difficulty: 2
             suggested_families: [storyplay]
             forced_types: [flash_match]
           - position: 4
             slug: lightning-round
-            micro_objective: 'Verificar el ejercicio "lightning_round" de forma aislada (flujo cronometrado).'
-            narrative_beat: "Dina responde una ronda rápida de preguntas."
-            difficulty: 1
+            micro_objective: "Ronda relámpago de cuentas del puesto: sumas de vasos y cambios simples contra el reloj."
+            narrative_beat: "Hora pico: llegan clientes en fila y las cuentas deben salir al vuelo."
+            difficulty: 3
             suggested_families: [storyplay]
             forced_types: [lightning_round]
           - position: 5
             slug: would-you-rather
-            micro_objective: 'Verificar el ejercicio "would_you_rather" de forma aislada.'
-            narrative_beat: "Liruf elige entre dos opciones y descubre qué gana cada una."
-            difficulty: 1
+            micro_objective: "Elegir entre dos caminos del vendedor y defenderlo: ¿ganar 10 pesos hoy o 20 la próxima semana? No hay respuesta única, hay razones."
+            narrative_beat: "Dina propone dilemas de sobremesa mientras cierran el puesto."
+            difficulty: 2
             suggested_families: [storyplay]
             forced_types: [would_you_rather]
       - position: 8
         slug: tipos-maker
-        title_es: "Panel de Construcción"
-        concept: "Los 6 tipos de la familia maker del Motor de Lecciones."
-        learning_objective: "Confirmar que cada tipo de la familia maker se genera y renderiza correctamente."
-        key_vocabulary: [construir, medir, programar]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: []
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Constructores del Puesto"
+        concept: "Construir y calibrar las herramientas del puesto: la ruta del repartidor, la balanza de trueques, la jarra medidora y la máquina registradora."
+        learning_objective: "Resolver retos de construcción y medición aplicados al puesto: ordenar instrucciones, leer medidas y balancear cantidades."
+        key_vocabulary: [medir, construir, balanza]
+        prior_knowledge: "Conteos y sumas del puesto."
+        fact_refs: [qa.reference_price.cup]
+        parent_check: "Pídele a {{name}} que te explique cómo dejó balanceada la balanza de trueques."
         lessons:
           - position: 1
             slug: code-order
-            micro_objective: 'Verificar el ejercicio "code_order" de forma aislada.'
-            narrative_beat: "Rho ordena bloques de código en el orden correcto."
-            difficulty: 1
+            micro_objective: "Ordenar las instrucciones de la 'registradora' casera: recibir pago → verificar monto → dar cambio → anotar la venta."
+            narrative_beat: "Rho inventa una registradora de cartón que sigue instrucciones paso a paso."
+            difficulty: 2
             suggested_families: [maker]
             forced_types: [code_order]
           - position: 2
             slug: robot-path
-            micro_objective: 'Verificar el ejercicio "robot_path" de forma aislada (flujo de simulación).'
-            narrative_beat: "Zara programa el camino de un robot en una cuadrícula."
-            difficulty: 1
+            micro_objective: "Guiar al carrito repartidor por la cuadrícula del barrio hasta la casa del cliente gastando la menor cantidad de pasos."
+            narrative_beat: "Pedido a domicilio: el carrito de Zara necesita la ruta más corta."
+            difficulty: 2
             suggested_families: [maker]
             forced_types: [robot_path]
           - position: 3
             slug: debug-hunt
-            micro_objective: 'Verificar el ejercicio "debug_hunt" de forma aislada.'
-            narrative_beat: "Dina encuentra el bloque de código con el error."
-            difficulty: 1
+            micro_objective: "Encontrar el error en el cartel de promoción ('2 vasos por 8 pesos… ¡sale más caro que comprarlos sueltos!') y corregirlo."
+            narrative_beat: "La promo nueva no cuadra: los clientes hacen cuentas y se ríen."
+            difficulty: 3
             suggested_families: [maker]
             forced_types: [debug_hunt]
           - position: 4
             slug: balance-scale
-            micro_objective: 'Verificar el ejercicio "balance_scale" de forma aislada.'
-            narrative_beat: "Liruf equilibra una balanza colocando pesas."
-            difficulty: 1
+            micro_objective: "Equilibrar la balanza del trueque: cuántas galletas de 3 pesos igualan el valor de un vaso de 5 más una galleta — hasta que ambos lados valgan lo mismo."
+            narrative_beat: "El trato con el galletero se decide en la balanza de valores."
+            difficulty: 3
             suggested_families: [maker]
             forced_types: [balance_scale]
           - position: 5
             slug: measure-read
-            micro_objective: 'Verificar el ejercicio "measure_read" de forma aislada.'
-            narrative_beat: "Rho lee la medida que marca un instrumento."
-            difficulty: 1
+            micro_objective: "Leer la marca de la jarra medidora para servir vasos parejos: cada vaso justo hasta la línea, ni de más ni de menos."
+            narrative_beat: "Vasos disparejos causan reclamos; la jarra medidora pone orden."
+            difficulty: 2
             suggested_families: [maker]
             forced_types: [measure_read]
           - position: 6
             slug: machine-io
-            micro_objective: 'Verificar el ejercicio "machine_io" de forma aislada.'
-            narrative_beat: "Zara descubre la regla de una máquina de funciones a partir de ejemplos."
-            difficulty: 1
+            micro_objective: "Descubrir la regla de la 'máquina de propinas' viendo entradas y salidas (entra 1 sale 2, entra 3 sale 6): la máquina duplica."
+            narrative_beat: "La abuela tiene una maquinita misteriosa que devuelve el doble de lo que entra."
+            difficulty: 3
             suggested_families: [maker]
             forced_types: [machine_io]
   - position: 2
     slug: secuencias-y-repaso
     icon: repeat
     title:
-      en-US: "Sequences & Review"
-      es-MX: "Secuencias y Repaso"
-      pt-BR: "Sequências e Revisão"
+      en-US: "Sale Days & Review"
+      es-MX: "Días de Venta y Repaso"
+      pt-BR: "Dias de Venda e Revisão"
     description:
-      en-US: "A few multi-type lessons to test in-lesson sequencing, plus a minimal review-layer check."
-      es-MX: "Algunas lecciones con varios tipos para probar la secuencia dentro de una lección, más una prueba mínima de la capa de repaso."
-      pt-BR: "Algumas lições com vários tipos para testar a sequência dentro de uma lição, além de uma verificação mínima da camada de revisão."
+      en-US: "Full sale days that mix skills, and quick reviews to make them stick."
+      es-MX: "Días de venta completos que mezclan habilidades, y repasos veloces para que se queden."
+      pt-BR: "Dias de venda completos que misturam habilidades, e revisões rápidas para fixá-las."
     topics:
       - position: 1
         slug: combinaciones
-        title_es: "Combinaciones"
-        concept: "Lecciones con 2 a 4 tipos de ejercicio en secuencia, para probar que el jugador avanza correctamente entre tipos distintos dentro de una misma lección."
-        learning_objective: "Confirmar que el player renderiza y califica correctamente una lección con varios tipos de segmento en orden."
-        key_vocabulary: [secuencia, combinación]
-        prior_knowledge: "Ninguno — contenido de diagnóstico interno."
-        fact_refs: [mxn.denominations.coins]
-        parent_check: "Esto es un panel de diagnóstico interno; no hay una pregunta real que hacerle a {{name}} sobre este contenido."
+        title_es: "Un Día Completo de Ventas"
+        concept: "Un día real del puesto mezcla todo a la vez: historia, decisiones, cuentas y cambio — como en la vida."
+        learning_objective: "Encadenar varias habilidades en una misma lección: escuchar la situación, decidir, calcular y cobrar."
+        key_vocabulary: [venta, cambio, jornada]
+        prior_knowledge: "Todas las habilidades de la saga anterior."
+        fact_refs: [qa.reference_price.cup, mxn.denominations.coins, mxn.denominations.bills]
+        parent_check: "Pídele a {{name}} que te cuente el día de ventas completo: qué decidió y cuánto ganó."
         lessons:
           - position: 1
             slug: combo-narrativa-choice
-            micro_objective: "Verificar que una narrativa seguida de una pregunta de opción múltiple fluya en secuencia."
-            narrative_beat: "Dina cuenta una breve historia y después hace una pregunta sobre ella."
+            micro_objective: "Vivir la apertura del sábado (escena) y decidir enseguida el precio del día entre opciones — historia y decisión encadenadas."
+            narrative_beat: "Sábado soleado: el puesto abre con fila de clientes y una decisión urgente de precio."
             difficulty: 2
             suggested_families: [story, choice]
             forced_types: [story_scene, quiz_mcq]
           - position: 2
             slug: combo-dialogo-doble-choice
-            micro_objective: "Verificar una secuencia de diálogo seguida de dos tipos de selección distintos."
-            narrative_beat: "Liruf conversa con un amigo y luego resuelve dos preguntas sobre lo que dijeron."
+            micro_objective: "Escuchar a dos clientes conversar sobre la limonada y responder dos preguntas seguidas: una de cierto/falso y una con imágenes."
+            narrative_beat: "En la mesa de al lado, dos vecinos opinan del puesto; Liruf escucha con atención."
             difficulty: 2
             suggested_families: [story, choice]
             forced_types: [story_dialogue, true_false, picture_choice]
           - position: 3
             slug: combo-dinero
-            micro_objective: "Verificar una secuencia de tres ejercicios de dinero encadenados."
-            narrative_beat: "Rho paga, recibe cambio y calcula cuánto le falta ahorrar, todo en una misma visita a la tienda."
-            difficulty: 2
+            micro_objective: "Cerrar la caja del día completo: contar las monedas, dar un cambio de 20 y calcular cuántas semanas faltan para los 80 de la guitarra."
+            narrative_beat: "Atardecer de domingo: el gran cierre de caja de la semana."
+            difficulty: 3
             suggested_families: [money]
             forced_types: [coin_count, make_change, savings_goal]
           - position: 4
             slug: combo-arrange-largo
-            micro_objective: "Verificar una secuencia larga de cuatro tipos de la familia arrange."
-            narrative_beat: "Zara ordena, empareja, clasifica y ubica eventos en una sola sesión de práctica."
-            difficulty: 3
+            micro_objective: "Dejar el puesto listo para mañana: emparejar precios, ordenar la receta, clasificar compras y acomodar la línea del tiempo del día."
+            narrative_beat: "Gran limpieza nocturna: todo el puesto se reorganiza pieza por pieza."
+            difficulty: 2
             suggested_families: [arrange]
             forced_types: [match_pairs, order_steps, sort_buckets, timeline_order]
       - position: 2
         slug: repaso-veloz
         kind: review_spaced
-        review_of: [estacion-de-pruebas/camara-de-tipos/tipos-choice]
+        review_of: [estacion-de-pruebas/camara-de-tipos/tipos-choice, estacion-de-pruebas/camara-de-tipos/tipos-money]
         title_es: "Repaso Veloz"
-        concept: "Retoma dos tipos de la familia choice ya probados en la Cámara de Tipos, para verificar el flujo de la capa de repaso espaciado."
-        learning_objective: "Confirmar que un topic de kind review_spaced con review_of genera contenido de consolidación (nunca conceptos nuevos)."
-        key_vocabulary: [repaso, recordar]
-        prior_knowledge: "Panel de Selección (tipos-choice)."
-        fact_refs: []
+        concept: "Volver a tocar lo aprendido días después hace que se quede: precio justo, ahorro y cambio, en versión rápida."
+        learning_objective: "Responder de memoria, sin ayuda, las ideas centrales del puesto: el precio justo del vaso y cómo crece el ahorro."
+        key_vocabulary: [repaso, memoria]
+        prior_knowledge: "El curso completo del puesto."
+        fact_refs: [qa.reference_price.cup, qa.reference_price.guitar]
+        parent_check: "Pregúntale a {{name}}, sin pistas: ¿de cuánto era la meta y cómo la fue juntando Liruf?"
         lessons:
           - position: 1
             slug: repaso-quiz-mcq
-            micro_objective: "Verificar la generación de un repaso de tipo quiz_mcq."
-            narrative_beat: "Dina abre el cofre de repaso y recuerda una pregunta de opción múltiple."
-            difficulty: 1
+            micro_objective: "Repasar con una pregunta directa el corazón del negocio: si el vaso cuesta 5 y los ingredientes 2, ¿cuál es la ganancia por vaso?"
+            narrative_beat: "Días después, Dina sorprende a Liruf: 'sin ver el cuaderno… ¿cuánto ganas por vaso?'"
+            difficulty: 2
             suggested_families: [choice]
             forced_types: [quiz_mcq]
           - position: 2
             slug: repaso-true-false
-            micro_objective: "Verificar la generación de un repaso de tipo true_false."
-            narrative_beat: "Liruf recuerda una afirmación verdadero o falso del panel anterior."
-            difficulty: 1
+            micro_objective: "Confirmar de memoria si es cierto que guardando 20 pesos por semana la guitarra de 80 llega en un mes."
+            narrative_beat: "Rho lanza la última frase del curso para atraparla como cierta o falsa."
+            difficulty: 2
             suggested_families: [choice]
             forced_types: [true_false]

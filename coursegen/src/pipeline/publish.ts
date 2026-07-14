@@ -215,6 +215,10 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
       schema_version: 1,
       document: clientDocument,
       answer_keys: answerKeys,
+      // New/changed text invalidates any prior narration: reset the manifest
+      // so Echo's batch (which only picks rows with audio->>version null)
+      // re-narrates this document instead of leaving stale clips attached.
+      audio: {},
     };
   });
   await vaultUpsert('lesson_documents', documentRows, 'lesson_id,locale');

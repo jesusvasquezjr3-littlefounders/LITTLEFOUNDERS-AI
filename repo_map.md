@@ -65,6 +65,7 @@ coursegen/
       adventures/
   runs/
     qa-lesson-engine-smoketest-2026-07-13T23-11-31-572Z/
+    qa-lesson-engine-smoketest-2026-07-14T03-07-31-318Z/
   src/
     __tests__/
     catalog/
@@ -97,9 +98,11 @@ filebase/
     .tmp/
     lesson-audio/
       00/
+      01/
       02/
       03/
       04/
+      05/
       06/
       07/
       08/
@@ -143,6 +146,7 @@ filebase/
       2f/
       30/
       31/
+      32/
       34/
       35/
       36/
@@ -152,10 +156,12 @@ filebase/
       3a/
       3b/
       3c/
+      3d/
       3e/
       3f/
       40/
       41/
+      42/
       43/
       44/
       45/
@@ -163,6 +169,7 @@ filebase/
       47/
       48/
       49/
+      4a/
       4b/
       4c/
       4d/
@@ -202,6 +209,7 @@ filebase/
       70/
       71/
       72/
+      73/
       74/
       75/
       76/
@@ -209,10 +217,12 @@ filebase/
       78/
       79/
       7a/
+      7b/
       7c/
       7d/
       7e/
       7f/
+      80/
       81/
       82/
       83/
@@ -226,6 +236,7 @@ filebase/
       8b/
       8c/
       8d/
+      8e/
       8f/
       90/
       91/
@@ -270,22 +281,27 @@ filebase/
       ba/
       bb/
       bc/
+      bd/
       be/
       bf/
+      c0/
       c1/
       c2/
       c3/
       c4/
       c5/
+      c6/
       c7/
       c8/
       c9/
+      ca/
       cb/
       cc/
       cd/
       ce/
       cf/
       d0/
+      d1/
       d2/
       d3/
       d4/
@@ -299,8 +315,10 @@ filebase/
       dc/
       dd/
       de/
+      df/
       e0/
       e1/
+      e2/
       e3/
       e4/
       e5/
@@ -317,6 +335,7 @@ filebase/
       f0/
       f1/
       f2/
+      f3/
       f4/
       f5/
       f6/
@@ -2406,20 +2425,20 @@ const PROFILE_ROW = {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { nextStreak } from '../services/streak.js';
+import { isCalendarDate, isFirstActivityToday, nextStreak } from '../services/streak.js';
 
-const NOW = new Date('2026-07-12T18:00:00.000Z');
+const TODAY = '2026-07-12';
 
-describe('nextStreak', () => {
-  it('increments when the last update was yesterday', () => {
-    expect(nextStreak('2026-07-11T09:00:00.000Z', 3, NOW)).toBe(4);
+describe('nextStreak (calendar-date anchored, 0009)', () => {
+  it('first pass ever (no anchor) starts the streak at 1', () => {
+    expect(nextStreak(null, 0, TODAY)).toBe(1);
   });
 
-  it('does not double-increment when already updated today', () => {
-    expect(nextStreak('2026-07-12T08:00:00.000Z', 3, NOW)).toBe(3);
+  it('increments when the last pass was exactly yesterday', () => {
+    expect(nextStreak('2026-07-11', 3, TODAY)).toBe(4);
   });
 
-  it('starts a first-ever streak at 1, even if the row was created today with streak_days=0', () => {
+  it('REGRESSION (2026-07-13 live bug): many lessons on the SAME day never grow the streak past that day', () => {
 ```
 
 ### backend/src/__tests__/unlockRules.test.ts
@@ -2821,7 +2840,7 @@ import { GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
-import { isFirstActivityToday, nextStreak } from '../services/streak.js';
+import { isCalendarDate, isFirstActivityToday, nextStreak } from '../services/streak.js';
 import {
   countSegmentAttempts,
   getAdventureById,
@@ -2934,20 +2953,20 @@ export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocal
 
 ```
 /*
- * Pure streak computation for POST /learn/lessons/:id/complete.
+ * Pure day-streak computation for POST /learn/lessons/:id/complete.
  *
- * DOCUMENTED LIMITATION: no schema change was in scope for this session, so
- * there is no dedicated "last activity date" column — `learning_stats` has
- * no other writer than this endpoint (0006: system-written only, no client
- * INSERT/UPDATE), so its `updated_at` doubles as a reasonably faithful proxy
- * for "the last day the learner passed a lesson". A future session that adds
- * a real `last_active_date` column should replace this proxy.
+ * The streak is anchored to learning_stats.last_active_date (0009): the
+ * LOCAL calendar date (client-reported, YYYY-MM-DD) of the learner's last
+ * passed lesson. A kid's "day" follows their wall clock, not UTC — so the
+ * client sends `local_date` and everything here is pure calendar-date math.
+ *
+ * History: the first implementation proxied "last activity" through the
+ * row's updated_at, which nothing ever advanced — after the first UTC
+ * rollover every completed lesson read "last activity = yesterday" and the
+ * streak grew +1 PER LESSON. Never reintroduce a timestamp proxy here.
  */
-const dateOnly = (d: Date): string => d.toISOString().slice(0, 10);
 
-export function nextStreak(lastUpdatedAt: string, currentStreakDays: number, now: Date = new Date()): number {
-  const today = dateOnly(now);
-  const yesterday = dateOnly(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 ```
 
 ### backend/src/services/supabaseRest.ts
@@ -3740,20 +3759,20 @@ themes: [archipelago, forest, city, valley, kingdom, cosmos]
 
 ```
 schema_version: 1
-# QA/authoring content (COURSE_ENGINE.md §4 addendum). Every lesson below
-# pins `forced_types` — the plan-stage LLM call is skipped entirely; write,
-# gates, judge, localization, images and publish all still run for real.
-# One lesson per LESSON_ENGINE segment type (56 total), plus a few combined
-# lessons to test in-lesson sequencing, plus a minimal review-layer lesson.
+# QA/authoring course (COURSE_ENGINE.md §4 addendum). Every lesson pins
+# `forced_types` so all 56 LESSON_ENGINE segment types get exercised — but
+# the CONTENT is a real, coherent micro-course (Liruf's lemonade stand):
+# every lesson teaches a genuine money/entrepreneurship micro-concept in
+# warm, kid-facing es-MX. Rewritten 2026-07-13 after the first generated
+# batch read as meta/test placeholders ("Verificar el ejercicio X…") — QA
+# coverage and real pedagogy are NOT in tension; briefs must always be real.
 adventure:
   position: 1
   slug: estacion-de-pruebas
-  theme: cosmos
+  theme: city
   age_tier: tier2
   title:
-    en-US: "The Testing Station"
-    es-MX: "La Estación de Pruebas"
-    pt-BR: "A Estação de Testes"
+    en-US: "Liruf's Lemonade Stand"
 ```
 
 ### coursegen/curriculum/qa-lesson-engine-smoketest/catalog.yaml
@@ -3806,6 +3825,7 @@ schema_version: 1
 # the 56 LESSON_ENGINE segment types is selectable for isolated testing.
 themes:
   - cosmos
+  - city
 age_tiers:
   tier2:
     ages: "8-10"
@@ -3813,7 +3833,6 @@ age_tiers:
       es-MX: [porcentaje, interés compuesto, hipoteca, acciones, bolsa de valores, dividendo, criptomoneda]
       en-US: [percentage, compound interest, mortgage, stocks, stock market, dividend, cryptocurrency]
       pt-BR: [porcentagem, juros compostos, hipoteca, ações, bolsa de valores, dividendo, criptomoeda]
-families:
 ```
 
 ### coursegen/eslint.config.js
@@ -3870,6 +3889,26 @@ export default tseslint.config(
           "courseId": "aab40d79-a597-4e18-a656-b6cc3a29ad47",
           "adventureId": "2c90f904-3896-409b-aab8-7c0ecc7ab2bf",
           "sagaId": "3467f69b-7248-4910-aec2-720d49b2db00",
+```
+
+### coursegen/runs/qa-lesson-engine-smoketest-2026-07-14T03-07-31-318Z/checkpoint.json
+
+```
+{
+  "runId": "qa-lesson-engine-smoketest-2026-07-14T03-07-31-318Z",
+  "course": "qa-lesson-engine-smoketest",
+  "startedAt": "2026-07-14T03:07:31.319Z",
+  "updatedAt": "2026-07-14T03:31:19.121Z",
+  "slots": {
+    "estacion-de-pruebas/camara-de-tipos/tipos-story/story-dialogue": {
+      "slotId": "estacion-de-pruebas/camara-de-tipos/tipos-story/story-dialogue",
+      "state": "failed",
+      "updatedAt": "2026-07-14T03:26:37.248Z",
+      "data": {
+        "skeleton": {
+          "segments": [
+            {
+              "type": "story_dialogue",
 ```
 
 ### coursegen/src/__tests__/catalog-loader.test.ts
@@ -5515,6 +5554,26 @@ ALTER TABLE public.adventures DROP CONSTRAINT IF EXISTS adventures_age_tier_chec
 DO $$
 ```
 
+### database/migrations/0009_learning_activity_date.sql
+
+```
+-- 0009_learning_activity_date.sql
+--
+-- Day-streak correctness (found live 2026-07-13): streak.ts used
+-- learning_stats.updated_at as a proxy for "last day the learner passed a
+-- lesson", but nothing ever advanced that column (no touch trigger, and
+-- patchLearningStats never wrote it) — so once the UTC day rolled over,
+-- EVERY completed lesson read "last activity = yesterday" and incremented
+-- the streak: +1 per lesson instead of +1 per day.
+--
+-- The real model (v1 parity): the CLIENT reports its local calendar date
+-- (YYYY-MM-DD) on completion — a kid's "day" follows their wall clock, not
+-- UTC — and Core stores it here. streak.ts compares calendar dates only.
+--
+-- learning_stats remains system-written-only (0006): no client policies
+-- change; Core (service role) is still the only writer.
+```
+
 ### database/package.json
 
 ```
@@ -5683,16 +5742,16 @@ VALUES
 -- DO NOT hand-edit — regenerate with the export script instead.
 BEGIN;
 INSERT INTO courses (id, slug, title, status, subject, description, position, requires) VALUES ('aab40d79-a597-4e18-a656-b6cc3a29ad47', 'qa-lesson-engine-smoketest', '{"en-US": "Lesson Engine QA — Smoke Test", "es-MX": "Motor de Lecciones — Prueba de Humo", "pt-BR": "Motor de Lições — Teste de Fumaça"}', 'published', 'mixed', '{"en-US": "Internal QA content — one isolated exercise per Lesson Engine type, used to validate the full generation pipeline (text, gates, judge, localization, images, audio, endpoints) before a real course run. Not for learners.", "es-MX": "Contenido interno de QA — un ejercicio aislado por cada tipo del Motor de Lecciones, para validar el pipeline completo de generación (texto, gates, juez, localización, imágenes, audio, endpoints) antes de una corrida real. No es para alumnos.", "pt-BR": "Conteúdo interno de QA — um exercício isolado por tipo do Motor de Lições, para validar todo o pipeline de geração (texto, gates, juiz, localização, imagens, áudio, endpoints) antes de uma execução real. Não é para alunos."}', '0', '[]') ON CONFLICT (id) DO NOTHING;
-INSERT INTO adventures (id, course_id, position, slug, title, description, narrative_arc, theme, age_tier, status) VALUES ('2c90f904-3896-409b-aab8-7c0ecc7ab2bf', 'aab40d79-a597-4e18-a656-b6cc3a29ad47', '1', 'estacion-de-pruebas', '{"en-US": "The Testing Station", "es-MX": "La Estación de Pruebas", "pt-BR": "A Estação de Testes"}', '{"en-US": "A diagnostics station where every exercise type gets checked before a real course launches.", "es-MX": "Una estación de diagnóstico donde se revisa cada tipo de ejercicio antes de lanzar un curso real.", "pt-BR": "Uma estação de diagnóstico onde cada tipo de exercício é verificado antes de lançar um curso real."}', 'Antes de lanzar un curso real, dina, liruf, rho y zara recorren la Estación de Pruebas y encienden, uno por uno, los paneles de diagnóstico del Motor de Lecciones — para asegurarse de que todo funcione a la perfección.', 'cosmos', 'tier2', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO sagas (id, adventure_id, position, slug, title, description, icon, status) VALUES ('3467f69b-7248-4910-aec2-720d49b2db00', '2c90f904-3896-409b-aab8-7c0ecc7ab2bf', '1', 'camara-de-tipos', '{"en-US": "Chamber of Types", "es-MX": "Cámara de Tipos", "pt-BR": "Câmara de Tipos"}', '{"en-US": "One diagnostic panel per exercise type, grouped by family.", "es-MX": "Un panel de diagnóstico por tipo de ejercicio, agrupado por familia.", "pt-BR": "Um painel de diagnóstico por tipo de exercício, agrupado por família."}', 'science', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO sagas (id, adventure_id, position, slug, title, description, icon, status) VALUES ('9ffbe461-9967-4037-93cf-9f30b50790c7', '2c90f904-3896-409b-aab8-7c0ecc7ab2bf', '2', 'secuencias-y-repaso', '{"en-US": "Sequences & Review", "es-MX": "Secuencias y Repaso", "pt-BR": "Sequências e Revisão"}', '{"en-US": "A few multi-type lessons to test in-lesson sequencing, plus a minimal review-layer check.", "es-MX": "Algunas lecciones con varios tipos para probar la secuencia dentro de una lección, más una prueba mínima de la capa de repaso.", "pt-BR": "Algumas lições com vários tipos para testar a sequência dentro de uma lição, além de uma verificação mínima da camada de revisão."}', 'repeat', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('c0517497-736c-4d14-b8d4-86e2777d7554', '3467f69b-7248-4910-aec2-720d49b2db00', '3', 'tipos-input', '{"en-US": "Panel de Entrada", "es-MX": "Panel de Entrada", "pt-BR": "Panel de Entrada"}', 'Los 6 tipos de la familia input del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia input se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia input se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia input se genera y renderiza correctamente."}', '["número", "respuesta", "escribir"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('e4b09cd0-6133-41dd-ba93-43d34dda8dff', '3467f69b-7248-4910-aec2-720d49b2db00', '5', 'tipos-money', '{"en-US": "Panel de Dinero", "es-MX": "Panel de Dinero", "pt-BR": "Panel de Dinero"}', 'Los 9 tipos de la familia money del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia money se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia money se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia money se genera y renderiza correctamente."}', '["moneda", "precio", "ahorro"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('37c8107a-682c-424b-a8ec-d6a3a45a9594', '3467f69b-7248-4910-aec2-720d49b2db00', '7', 'tipos-storyplay', '{"en-US": "Panel de Historias Interactivas", "es-MX": "Panel de Historias Interactivas", "pt-BR": "Panel de Historias Interactivas"}', 'Los 5 tipos de la familia storyplay del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia storyplay se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia storyplay se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia storyplay se genera y renderiza correctamente."}', '["decisión", "historia", "elegir"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('46ef76be-b497-4863-b868-2baa537fd2c2', '3467f69b-7248-4910-aec2-720d49b2db00', '1', 'tipos-story', '{"en-US": "Panel de Historia", "es-MX": "Panel de Historia", "pt-BR": "Panel de Historia"}', 'Los 5 tipos de contenido narrativo del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia story se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia story se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia story se genera y renderiza correctamente."}', '["historia", "personaje", "escena"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('029fdc52-a280-462a-8e37-23787145b233', '3467f69b-7248-4910-aec2-720d49b2db00', '4', 'tipos-arrange', '{"en-US": "Panel de Orden", "es-MX": "Panel de Orden", "pt-BR": "Panel de Orden"}', 'Los 10 tipos de la familia arrange del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia arrange se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia arrange se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia arrange se genera y renderiza correctamente."}', '["orden", "pareja", "grupo"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('b2f8b049-5c84-4bf4-ab53-e30a7ab4563e', '3467f69b-7248-4910-aec2-720d49b2db00', '2', 'tipos-choice', '{"en-US": "Panel de Selección", "es-MX": "Panel de Selección", "pt-BR": "Panel de Selección"}', 'Los 8 tipos de la familia choice del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia choice se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia choice se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia choice se genera y renderiza correctamente."}', '["opción", "respuesta", "elegir"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
-INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('08a1006e-d9fe-4a0c-865a-7c147399dfe9', '3467f69b-7248-4910-aec2-720d49b2db00', '8', 'tipos-maker', '{"en-US": "Panel de Construcción", "es-MX": "Panel de Construcción", "pt-BR": "Panel de Construcción"}', 'Los 6 tipos de la familia maker del Motor de Lecciones.', '{"en-US": "Confirmar que cada tipo de la familia maker se genera y renderiza correctamente.", "es-MX": "Confirmar que cada tipo de la familia maker se genera y renderiza correctamente.", "pt-BR": "Confirmar que cada tipo de la familia maker se genera y renderiza correctamente."}', '["construir", "medir", "programar"]', 'Ninguno — contenido de diagnóstico interno.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO adventures (id, course_id, position, slug, title, description, narrative_arc, theme, age_tier, status) VALUES ('2c90f904-3896-409b-aab8-7c0ecc7ab2bf', 'aab40d79-a597-4e18-a656-b6cc3a29ad47', '1', 'estacion-de-pruebas', '{"en-US": "Liruf''s Lemonade Stand", "es-MX": "El Puesto de Limonada de Liruf", "pt-BR": "A Barraca de Limonada do Liruf"}', '{"en-US": "Liruf opens his first lemonade stand and learns to count money, set prices, save, and sell — one small skill at a time.", "es-MX": "Liruf abre su primer puesto de limonada y aprende a contar dinero, poner precios, ahorrar y vender — una habilidad pequeña a la vez.", "pt-BR": "Liruf abre sua primeira barraca de limonada e aprende a contar dinheiro, definir preços, poupar e vender — uma habilidade de cada vez."}', 'Liruf quiere una guitarra que cuesta 80 pesos. Con ayuda de Dina, Rho y Zara decide ganarse el dinero con un puesto de limonada: primero imagina la idea, luego cuenta sus monedas, arma el puesto, fija un precio justo de 5 pesos por vaso, atiende a sus primeros clientes, aprende de sus errores de cuentas y, día a día, ahorra sus ganancias hasta acercarse a su meta.', 'city', 'tier2', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO sagas (id, adventure_id, position, slug, title, description, icon, status) VALUES ('3467f69b-7248-4910-aec2-720d49b2db00', '2c90f904-3896-409b-aab8-7c0ecc7ab2bf', '1', 'camara-de-tipos', '{"en-US": "Opening the Stand", "es-MX": "Abrir el Puesto", "pt-BR": "Abrindo a Barraca"}', '{"en-US": "From the first idea to the first sale: money basics, one skill per lesson.", "es-MX": "De la primera idea a la primera venta: fundamentos del dinero, una habilidad por lección.", "pt-BR": "Da primeira ideia à primeira venda: fundamentos do dinheiro, uma habilidade por lição."}', 'storefront', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO sagas (id, adventure_id, position, slug, title, description, icon, status) VALUES ('9ffbe461-9967-4037-93cf-9f30b50790c7', '2c90f904-3896-409b-aab8-7c0ecc7ab2bf', '2', 'secuencias-y-repaso', '{"en-US": "Sale Days & Review", "es-MX": "Días de Venta y Repaso", "pt-BR": "Dias de Venda e Revisão"}', '{"en-US": "Full sale days that mix skills, and quick reviews to make them stick.", "es-MX": "Días de venta completos que mezclan habilidades, y repasos veloces para que se queden.", "pt-BR": "Dias de venda completos que misturam habilidades, e revisões rápidas para fixá-las."}', 'repeat', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('e4b09cd0-6133-41dd-ba93-43d34dda8dff', '3467f69b-7248-4910-aec2-720d49b2db00', '5', 'tipos-money', '{"en-US": "La Caja del Dinero", "es-MX": "La Caja del Dinero", "pt-BR": "La Caja del Dinero"}', 'Manejar dinero de verdad: contar monedas mexicanas, dar cambio exacto, repartir la ganancia y avanzar hacia la meta de 80 pesos.', '{"en-US": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta.", "es-MX": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta.", "pt-BR": "Contar dinero con monedas de 1, 2, 5 y 10, calcular cambio de un billete de 20, y planear cuántas semanas faltan para la meta."}', '["cambio", "alcancía", "meta"]', 'Sumas hasta 80; monedas y billetes de México.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('c0517497-736c-4d14-b8d4-86e2777d7554', '3467f69b-7248-4910-aec2-720d49b2db00', '3', 'tipos-input', '{"en-US": "Las Cuentas del Puesto", "es-MX": "Las Cuentas del Puesto", "pt-BR": "Las Cuentas del Puesto"}', 'Escribir y calcular números reales del puesto: cuántos limones hay, cuánto se ganó, cuánto falta para la meta.', '{"en-US": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20).", "es-MX": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20).", "pt-BR": "Escribir respuestas numéricas y de texto exactas sobre las ventas del día (sumas hasta 80, conteos hasta 20)."}', '["suma", "total", "contar"]', 'El precio de 5 pesos por vaso y la meta de 80.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('08a1006e-d9fe-4a0c-865a-7c147399dfe9', '3467f69b-7248-4910-aec2-720d49b2db00', '8', 'tipos-maker', '{"en-US": "Constructores del Puesto", "es-MX": "Constructores del Puesto", "pt-BR": "Constructores del Puesto"}', 'Construir y calibrar las herramientas del puesto: la ruta del repartidor, la balanza de trueques, la jarra medidora y la máquina registradora.', '{"en-US": "Resolver retos de construcción y medición aplicados al puesto: ordenar instrucciones, leer medidas y balancear cantidades.", "es-MX": "Resolver retos de construcción y medición aplicados al puesto: ordenar instrucciones, leer medidas y balancear cantidades.", "pt-BR": "Resolver retos de construcción y medición aplicados al puesto: ordenar instrucciones, leer medidas y balancear cantidades."}', '["medir", "construir", "balanza"]', 'Conteos y sumas del puesto.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('2a11616d-8dc3-481d-8725-687286d1dfa3', '3467f69b-7248-4910-aec2-720d49b2db00', '6', 'tipos-analyze', '{"en-US": "Detective de Números", "es-MX": "Detective de Números", "pt-BR": "Detective de Números"}', 'Leer y revisar la información del puesto: encontrar errores de cuentas, leer la gráfica de ventas y desconfiar de tratos demasiado buenos.', '{"en-US": "Detectar un error en una suma de ventas, leer una gráfica simple de vasos vendidos por día y reconocer señales de un mal trato.", "es-MX": "Detectar un error en una suma de ventas, leer una gráfica simple de vasos vendidos por día y reconocer señales de un mal trato.", "pt-BR": "Detectar un error en una suma de ventas, leer una gráfica simple de vasos vendidos por día y reconocer señales de un mal trato."}', '["gráfica", "error", "comparar"]', 'Sumas del puesto y días de venta.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('37c8107a-682c-424b-a8ec-d6a3a45a9594', '3467f69b-7248-4910-aec2-720d49b2db00', '7', 'tipos-storyplay', '{"en-US": "Historias con Decisiones", "es-MX": "Historias con Decisiones", "pt-BR": "Historias con Decisiones"}', 'Vivir el puesto en historias jugables: cada decisión (precio, trato al cliente, gasto) cambia cómo termina el día.', '{"en-US": "Tomar decisiones dentro de historias del puesto y ver sus consecuencias inmediatas en las ventas y el ahorro.", "es-MX": "Tomar decisiones dentro de historias del puesto y ver sus consecuencias inmediatas en las ventas y el ahorro.", "pt-BR": "Tomar decisiones dentro de historias del puesto y ver sus consecuencias inmediatas en las ventas y el ahorro."}', '["decisión", "consecuencia", "cliente"]', 'Todo lo aprendido del puesto hasta aquí.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('61a15ceb-4618-4d2b-bf72-aebf238c98ce', '9ffbe461-9967-4037-93cf-9f30b50790c7', '2', 'repaso-veloz', '{"en-US": "Repaso Veloz", "es-MX": "Repaso Veloz", "pt-BR": "Repaso Veloz"}', 'Volver a tocar lo aprendido días después hace que se quede: precio justo, ahorro y cambio, en versión rápida.', '{"en-US": "Responder de memoria, sin ayuda, las ideas centrales del puesto: el precio justo del vaso y cómo crece el ahorro.", "es-MX": "Responder de memoria, sin ayuda, las ideas centrales del puesto: el precio justo del vaso y cómo crece el ahorro.", "pt-BR": "Responder de memoria, sin ayuda, las ideas centrales del puesto: el precio justo del vaso y cómo crece el ahorro."}', '["repaso", "memoria"]', 'El curso completo del puesto.', 'published') ON CONFLICT (id) DO NOTHING;
+INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES ('46ef76be-b497-4863-b868-2baa537fd2c2', '3467f69b-7248-4910-aec2-720d49b2db00', '1', 'tipos-story', '{"en-US": "La Gran Idea", "es-MX": "La Gran Idea", "pt-BR": "La Gran Idea"}', 'Ganar dinero empieza con una idea: Liruf quiere una guitarra de 80 pesos y decide vender limonada al vecindario en lugar de solo esperar.', '{"en-US": "Entender que el dinero se gana ofreciendo algo que otros quieren, y que una meta clara (la guitarra de 80 pesos) ayuda a empezar.", "es-MX": "Entender que el dinero se gana ofreciendo algo que otros quieren, y que una meta clara (la guitarra de 80 pesos) ayuda a empezar.", "pt-BR": "Entender que el dinero se gana ofreciendo algo que otros quieren, y que una meta clara (la guitarra de 80 pesos) ayuda a empezar."}', '["meta", "ganar", "vender"]', 'Ninguno — es el inicio del curso.', 'published') ON CONFLICT (id) DO NOTHING;
 ```
 
 ### database/types/database.ts
@@ -5991,6 +6050,70 @@ npm test
   "createdAt": "2026-07-14T00:17:58.203Z"
 }```
 
+### filebase/data/lesson-audio/00/001e1578d967c72bdaf6a1b9a9174011332271d02cbefee78c5229cc82432f61.json
+
+```
+{
+  "id": "lesson-audio/001e1578d967c72bdaf6a1b9a9174011332271d02cbefee78c5229cc82432f61.mp3",
+  "bucket": "lesson-audio",
+  "hash": "001e1578d967c72bdaf6a1b9a9174011332271d02cbefee78c5229cc82432f61",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69408,
+  "originalName": "s1-group-sets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:38.984Z"
+}```
+
+### filebase/data/lesson-audio/00/002de82e45ddb1446e240e82470aadb35aab2a511fe0f0a7a7a8fb2c32b75425.json
+
+```
+{
+  "id": "lesson-audio/002de82e45ddb1446e240e82470aadb35aab2a511fe0f0a7a7a8fb2c32b75425.mp3",
+  "bucket": "lesson-audio",
+  "hash": "002de82e45ddb1446e240e82470aadb35aab2a511fe0f0a7a7a8fb2c32b75425",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 84384,
+  "originalName": "s1-ahorro.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:57.570Z"
+}```
+
+### filebase/data/lesson-audio/00/00d2451dc5c44a5de928fe43ef68e905a9cc77d9ecc1817a409ced5be6c3d353.json
+
+```
+{
+  "id": "lesson-audio/00d2451dc5c44a5de928fe43ef68e905a9cc77d9ecc1817a409ced5be6c3d353.mp3",
+  "bucket": "lesson-audio",
+  "hash": "00d2451dc5c44a5de928fe43ef68e905a9cc77d9ecc1817a409ced5be6c3d353",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 70848,
+  "originalName": "s1-odd-one-out.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:12.033Z"
+}```
+
+### filebase/data/lesson-audio/01/015be5ee0c49fc3b190ea4aad0bf452a96ace40687d7fd7c40157f36af8a7485.json
+
+```
+{
+  "id": "lesson-audio/015be5ee0c49fc3b190ea4aad0bf452a96ace40687d7fd7c40157f36af8a7485.mp3",
+  "bucket": "lesson-audio",
+  "hash": "015be5ee0c49fc3b190ea4aad0bf452a96ace40687d7fd7c40157f36af8a7485",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34416,
+  "originalName": "s1-apertura-sabado.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:00.041Z"
+}```
+
 ### filebase/data/lesson-audio/02/02535ec6a1f1003bd66930510f52a0f38f6f7f92d9c80e965ce1759f3cd20fcc.json
 
 ```
@@ -6103,6 +6226,22 @@ npm test
   "createdAt": "2026-07-14T00:04:26.746Z"
 }```
 
+### filebase/data/lesson-audio/04/04693d07b30261301db6fb88bef42b7f263ceaff6d6bdf8e61d407cbeca099c7.json
+
+```
+{
+  "id": "lesson-audio/04693d07b30261301db6fb88bef42b7f263ceaff6d6bdf8e61d407cbeca099c7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "04693d07b30261301db6fb88bef42b7f263ceaff6d6bdf8e61d407cbeca099c7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 76608,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:56.821Z"
+}```
+
 ### filebase/data/lesson-audio/04/049c690aab1e146ad3eb4d9cf927a22cbb533ac691b155d3778b251b831a4c92.json
 
 ```
@@ -6117,6 +6256,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:25.158Z"
+}```
+
+### filebase/data/lesson-audio/05/05665ddd53f846c12754077a4fc80356472fe44e77909157b1e2592d034b9ddc.json
+
+```
+{
+  "id": "lesson-audio/05665ddd53f846c12754077a4fc80356472fe44e77909157b1e2592d034b9ddc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "05665ddd53f846c12754077a4fc80356472fe44e77909157b1e2592d034b9ddc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34416,
+  "originalName": "s1-branch.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:53.721Z"
 }```
 
 ### filebase/data/lesson-audio/06/0601b7f3afc2b0551916715c1dd27fa36ad7e6ce82a8cc408ab7ae15e31f9a67.json
@@ -6183,6 +6338,22 @@ npm test
   "createdAt": "2026-07-14T00:12:04.339Z"
 }```
 
+### filebase/data/lesson-audio/07/072202868b2f114b4721cbef1e1db41762623425cb03979b316b15391ee157d0.json
+
+```
+{
+  "id": "lesson-audio/072202868b2f114b4721cbef1e1db41762623425cb03979b316b15391ee157d0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "072202868b2f114b4721cbef1e1db41762623425cb03979b316b15391ee157d0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 50688,
+  "originalName": "s1-order-steps.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:49.827Z"
+}```
+
 ### filebase/data/lesson-audio/07/0761a9c943e34a2f9fb7205add9332aed84bb883ef678a3baf2b10ad0128e810.json
 
 ```
@@ -6197,6 +6368,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:24.998Z"
+}```
+
+### filebase/data/lesson-audio/07/0777829e21817671e602eef80c2e7580484f58cf111957bcb6e848affcaa5976.json
+
+```
+{
+  "id": "lesson-audio/0777829e21817671e602eef80c2e7580484f58cf111957bcb6e848affcaa5976.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0777829e21817671e602eef80c2e7580484f58cf111957bcb6e848affcaa5976",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 41616,
+  "originalName": "s1-dialogo.line.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:16.975Z"
 }```
 
 ### filebase/data/lesson-audio/07/0793cd16d0cf77eac02dabcb60995d194e9855019ba9845128e64c464d4c9313.json
@@ -6247,6 +6434,22 @@ npm test
   "createdAt": "2026-07-14T00:12:40.085Z"
 }```
 
+### filebase/data/lesson-audio/08/08c4da05450053c5cdaa38cb54ad0010ec3639ec600090b9cd56451b431ff886.json
+
+```
+{
+  "id": "lesson-audio/08c4da05450053c5cdaa38cb54ad0010ec3639ec600090b9cd56451b431ff886.mp3",
+  "bucket": "lesson-audio",
+  "hash": "08c4da05450053c5cdaa38cb54ad0010ec3639ec600090b9cd56451b431ff886",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 101664,
+  "originalName": "s1-checkpoint.recap.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:24.114Z"
+}```
+
 ### filebase/data/lesson-audio/08/08dafb1cdae00f81fe856352487faaf2f89cd433318f0a89867d25bead49cdad.json
 
 ```
@@ -6293,6 +6496,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:37.640Z"
+}```
+
+### filebase/data/lesson-audio/09/09ddd05bc130a7c24ef1cfb851eda0fbd1449233c37efbd838918efa8a9083fe.json
+
+```
+{
+  "id": "lesson-audio/09ddd05bc130a7c24ef1cfb851eda0fbd1449233c37efbd838918efa8a9083fe.mp3",
+  "bucket": "lesson-audio",
+  "hash": "09ddd05bc130a7c24ef1cfb851eda0fbd1449233c37efbd838918efa8a9083fe",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 58896,
+  "originalName": "s1-piggy-split.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:47.719Z"
 }```
 
 ### filebase/data/lesson-audio/0a/0a02d7d7d0bab96433e0b7cc94d9f222cdccaaca38e23280520f2d25b205519b.json
@@ -6423,6 +6642,38 @@ npm test
   "createdAt": "2026-07-14T00:06:04.017Z"
 }```
 
+### filebase/data/lesson-audio/0c/0c46edc9708abebc289bd22425dd6f746b1d080670c9345d9f1c11841f828fb7.json
+
+```
+{
+  "id": "lesson-audio/0c46edc9708abebc289bd22425dd6f746b1d080670c9345d9f1c11841f828fb7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0c46edc9708abebc289bd22425dd6f746b1d080670c9345d9f1c11841f828fb7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 65088,
+  "originalName": "s1-lightning-round.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:14.428Z"
+}```
+
+### filebase/data/lesson-audio/0c/0c8c4f729338ed5469135f673b2d59f16cedeb5e33d9bd0e16345945190669ca.json
+
+```
+{
+  "id": "lesson-audio/0c8c4f729338ed5469135f673b2d59f16cedeb5e33d9bd0e16345945190669ca.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0c8c4f729338ed5469135f673b2d59f16cedeb5e33d9bd0e16345945190669ca",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 111744,
+  "originalName": "s1-match-precios.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:35.176Z"
+}```
+
 ### filebase/data/lesson-audio/0c/0cc6a8d31ca3ff52d31d789c762a25b105974572f28b2336f9ae834cbf687a76.json
 
 ```
@@ -6487,6 +6738,22 @@ npm test
   "createdAt": "2026-07-14T00:17:01.007Z"
 }```
 
+### filebase/data/lesson-audio/0d/0d1130cb676ec7c0f5fb48b75c49f89a769186da5afe17cdc2bb0dc548e9d3ae.json
+
+```
+{
+  "id": "lesson-audio/0d1130cb676ec7c0f5fb48b75c49f89a769186da5afe17cdc2bb0dc548e9d3ae.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0d1130cb676ec7c0f5fb48b75c49f89a769186da5afe17cdc2bb0dc548e9d3ae",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 107424,
+  "originalName": "s1-estimate-slider.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:58.761Z"
+}```
+
 ### filebase/data/lesson-audio/0d/0d1d4bfa18eac800f2c263cf7b98c4398f5a0342b0dd59f24167bdc1880708ba.json
 
 ```
@@ -6501,6 +6768,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:33.570Z"
+}```
+
+### filebase/data/lesson-audio/0d/0d2f838f862698786086ebba59a6f23aae4e9bc1d38383a1ca3e52aa7a2f176f.json
+
+```
+{
+  "id": "lesson-audio/0d2f838f862698786086ebba59a6f23aae4e9bc1d38383a1ca3e52aa7a2f176f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0d2f838f862698786086ebba59a6f23aae4e9bc1d38383a1ca3e52aa7a2f176f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 164448,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:08.260Z"
+}```
+
+### filebase/data/lesson-audio/0d/0d6eeec4e173ec4a5cb740d17cc7d8306d1adeeeffe4d0eb3a26dcc41662dfbe.json
+
+```
+{
+  "id": "lesson-audio/0d6eeec4e173ec4a5cb740d17cc7d8306d1adeeeffe4d0eb3a26dcc41662dfbe.mp3",
+  "bucket": "lesson-audio",
+  "hash": "0d6eeec4e173ec4a5cb740d17cc7d8306d1adeeeffe4d0eb3a26dcc41662dfbe",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 84816,
+  "originalName": "s1-fact-opinion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:19.913Z"
 }```
 
 ### filebase/data/lesson-audio/0d/0d8a1da94af5fee26b5386d74c0a0788e65965a90cd08c99d5ed09c10572e3be.json
@@ -6727,6 +7026,38 @@ npm test
   "createdAt": "2026-07-14T00:07:56.828Z"
 }```
 
+### filebase/data/lesson-audio/10/101bf689acfa82f087eba1d71e016c9010aacda9d544a699e36c8d18438518b3.json
+
+```
+{
+  "id": "lesson-audio/101bf689acfa82f087eba1d71e016c9010aacda9d544a699e36c8d18438518b3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "101bf689acfa82f087eba1d71e016c9010aacda9d544a699e36c8d18438518b3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 80928,
+  "originalName": "s1-timeline-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:23.816Z"
+}```
+
+### filebase/data/lesson-audio/10/102e47e350d524a274c2f21f7a60922853253130340532c9c76635f618faeb67.json
+
+```
+{
+  "id": "lesson-audio/102e47e350d524a274c2f21f7a60922853253130340532c9c76635f618faeb67.mp3",
+  "bucket": "lesson-audio",
+  "hash": "102e47e350d524a274c2f21f7a60922853253130340532c9c76635f618faeb67",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74736,
+  "originalName": "s1-concept-reveal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:32.322Z"
+}```
+
 ### filebase/data/lesson-audio/10/107d3a1d0a4528b185eed2d8dc820dc79f9410d57bc861311ebce594d34f3ca1.json
 
 ```
@@ -6741,6 +7072,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:31.065Z"
+}```
+
+### filebase/data/lesson-audio/10/10c134227f5deb80d89dbd2765a0c88c855b7cb0f89a58a911f26b1daf1286e4.json
+
+```
+{
+  "id": "lesson-audio/10c134227f5deb80d89dbd2765a0c88c855b7cb0f89a58a911f26b1daf1286e4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "10c134227f5deb80d89dbd2765a0c88c855b7cb0f89a58a911f26b1daf1286e4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 94464,
+  "originalName": "s1-branch.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:57.020Z"
 }```
 
 ### filebase/data/lesson-audio/10/10f225ffc00d3c09921efdb9b8d2557ca20d77a2b45e3bc3515438ce53d8e57a.json
@@ -6759,6 +7106,22 @@ npm test
   "createdAt": "2026-07-14T00:19:08.287Z"
 }```
 
+### filebase/data/lesson-audio/11/1114438d2edfbb04d121c928930f814df30e67230800c503f562853901c95272.json
+
+```
+{
+  "id": "lesson-audio/1114438d2edfbb04d121c928930f814df30e67230800c503f562853901c95272.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1114438d2edfbb04d121c928930f814df30e67230800c503f562853901c95272",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57024,
+  "originalName": "s1-lightning-round.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:02.140Z"
+}```
+
 ### filebase/data/lesson-audio/11/111c185badd6dbba279835fd983e94485129a4d931cbcc48e8901d42842cbf1a.json
 
 ```
@@ -6773,6 +7136,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:43.794Z"
+}```
+
+### filebase/data/lesson-audio/11/115643c7b766c03fa7b995b38fdfc01c2b9f1f429fbc2270d5e997e1c6f392a5.json
+
+```
+{
+  "id": "lesson-audio/115643c7b766c03fa7b995b38fdfc01c2b9f1f429fbc2270d5e997e1c6f392a5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "115643c7b766c03fa7b995b38fdfc01c2b9f1f429fbc2270d5e997e1c6f392a5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 77184,
+  "originalName": "s1-concept-reveal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:15.701Z"
+}```
+
+### filebase/data/lesson-audio/11/1161a5383fdf2c2e948c0ac24e4cae13035ccca278c85b16305353a790894662.json
+
+```
+{
+  "id": "lesson-audio/1161a5383fdf2c2e948c0ac24e4cae13035ccca278c85b16305353a790894662.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1161a5383fdf2c2e948c0ac24e4cae13035ccca278c85b16305353a790894662",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34848,
+  "originalName": "s2-decision-precio.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:10.049Z"
+}```
+
+### filebase/data/lesson-audio/11/117dd199e7d46a4d0d017584be43d2bb2688c55724bdd0025d986f9bb20f5d84.json
+
+```
+{
+  "id": "lesson-audio/117dd199e7d46a4d0d017584be43d2bb2688c55724bdd0025d986f9bb20f5d84.mp3",
+  "bucket": "lesson-audio",
+  "hash": "117dd199e7d46a4d0d017584be43d2bb2688c55724bdd0025d986f9bb20f5d84",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36864,
+  "originalName": "s1-cuenta-limones.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:35.461Z"
 }```
 
 ### filebase/data/lesson-audio/12/124178738e337b67ecbf4193892b9d76edb535e45cdf7a902b9b765ad1e6a05f.json
@@ -6823,6 +7234,22 @@ npm test
   "createdAt": "2026-07-14T00:06:50.071Z"
 }```
 
+### filebase/data/lesson-audio/12/12fe9aa7de8cbfed6787bb5aff6b62179021eeff7302cc96088e1817e8cf93d6.json
+
+```
+{
+  "id": "lesson-audio/12fe9aa7de8cbfed6787bb5aff6b62179021eeff7302cc96088e1817e8cf93d6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "12fe9aa7de8cbfed6787bb5aff6b62179021eeff7302cc96088e1817e8cf93d6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 81936,
+  "originalName": "s1-pattern-vasos.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:33.960Z"
+}```
+
 ### filebase/data/lesson-audio/13/132cbb3e2505ab2d2c6d43f0a5ced8fc8bcee0d365eaac6300647366a3028ec3.json
 
 ```
@@ -6837,6 +7264,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:52.230Z"
+}```
+
+### filebase/data/lesson-audio/13/13a1ed3b3468d32831c446e576f725da3cbf1b464619df9bf802308eb35699e1.json
+
+```
+{
+  "id": "lesson-audio/13a1ed3b3468d32831c446e576f725da3cbf1b464619df9bf802308eb35699e1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "13a1ed3b3468d32831c446e576f725da3cbf1b464619df9bf802308eb35699e1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31104,
+  "originalName": "s1-key-ideas.idea.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:15.740Z"
+}```
+
+### filebase/data/lesson-audio/13/13b5c52b38473e97a1b3f69fd1e61c28a056a4ed5395796d18649d3185a851a3.json
+
+```
+{
+  "id": "lesson-audio/13b5c52b38473e97a1b3f69fd1e61c28a056a4ed5395796d18649d3185a851a3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "13b5c52b38473e97a1b3f69fd1e61c28a056a4ed5395796d18649d3185a851a3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 19008,
+  "originalName": "s1-plan.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:56.714Z"
 }```
 
 ### filebase/data/lesson-audio/13/13cb3989dbd1a7273ee3b0583e29ea254624273232f4d10a864ecbf50fedfd68.json
@@ -6869,6 +7328,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:18:10.650Z"
+}```
+
+### filebase/data/lesson-audio/13/13ea63f047ba9b7894d884e01c9431a51c6259540cebb617ab46798628c5e559.json
+
+```
+{
+  "id": "lesson-audio/13ea63f047ba9b7894d884e01c9431a51c6259540cebb617ab46798628c5e559.mp3",
+  "bucket": "lesson-audio",
+  "hash": "13ea63f047ba9b7894d884e01c9431a51c6259540cebb617ab46798628c5e559",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73296,
+  "originalName": "s1-spot-error.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:16.894Z"
 }```
 
 ### filebase/data/lesson-audio/14/1455c218c7d14bcfe863e2c4833e93380fe347fc58afbd64330fa8c8f8cac9a1.json
@@ -6919,6 +7394,38 @@ npm test
   "createdAt": "2026-07-14T00:06:16.012Z"
 }```
 
+### filebase/data/lesson-audio/15/153a98ba02c6c3d9234cb073309dd31d1aa4366c6937827bc7de981ed5359354.json
+
+```
+{
+  "id": "lesson-audio/153a98ba02c6c3d9234cb073309dd31d1aa4366c6937827bc7de981ed5359354.mp3",
+  "bucket": "lesson-audio",
+  "hash": "153a98ba02c6c3d9234cb073309dd31d1aa4366c6937827bc7de981ed5359354",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 139104,
+  "originalName": "s1-plan.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:42.920Z"
+}```
+
+### filebase/data/lesson-audio/15/15590ffd45ba997e8c541d6a8fd52bc1c2a052f70759f8e9d1f0fb9b7b1099b6.json
+
+```
+{
+  "id": "lesson-audio/15590ffd45ba997e8c541d6a8fd52bc1c2a052f70759f8e9d1f0fb9b7b1099b6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "15590ffd45ba997e8c541d6a8fd52bc1c2a052f70759f8e9d1f0fb9b7b1099b6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 149184,
+  "originalName": "s1-number-line.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:47.206Z"
+}```
+
 ### filebase/data/lesson-audio/15/156565c9ee43873cc0edae0e07d9b937b89eb031094c44e1f3852ddffba6e259.json
 
 ```
@@ -6965,6 +7472,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:20:05.447Z"
+}```
+
+### filebase/data/lesson-audio/15/15a2d1fa9e58a34fdc31763bb5009af1eb73dd1bef779443587cf47aa591ba15.json
+
+```
+{
+  "id": "lesson-audio/15a2d1fa9e58a34fdc31763bb5009af1eb73dd1bef779443587cf47aa591ba15.mp3",
+  "bucket": "lesson-audio",
+  "hash": "15a2d1fa9e58a34fdc31763bb5009af1eb73dd1bef779443587cf47aa591ba15",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57024,
+  "originalName": "s1-number-line.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:22.450Z"
 }```
 
 ### filebase/data/lesson-audio/15/15d744213b9e6a9b526e28b9de0720e8f4cb35591a954007b24fe925a7778930.json
@@ -7015,6 +7538,70 @@ npm test
   "createdAt": "2026-07-14T00:13:31.844Z"
 }```
 
+### filebase/data/lesson-audio/16/169ec7fcd3cfe404968d7412b66200de8810a5dca46e02870a2d80da7afa7405.json
+
+```
+{
+  "id": "lesson-audio/169ec7fcd3cfe404968d7412b66200de8810a5dca46e02870a2d80da7afa7405.mp3",
+  "bucket": "lesson-audio",
+  "hash": "169ec7fcd3cfe404968d7412b66200de8810a5dca46e02870a2d80da7afa7405",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 66528,
+  "originalName": "s1-branch.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:42.464Z"
+}```
+
+### filebase/data/lesson-audio/16/16f7c4ae9dc37d5ba35ffbce34b15d6c71c0b87c432811ee233b21cb15ff01d9.json
+
+```
+{
+  "id": "lesson-audio/16f7c4ae9dc37d5ba35ffbce34b15d6c71c0b87c432811ee233b21cb15ff01d9.mp3",
+  "bucket": "lesson-audio",
+  "hash": "16f7c4ae9dc37d5ba35ffbce34b15d6c71c0b87c432811ee233b21cb15ff01d9",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 181728,
+  "originalName": "s1-red-flags.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:43.304Z"
+}```
+
+### filebase/data/lesson-audio/17/1729f2f47f2034421061bde3fe23e90dc1669aacb56d495e7481016ad6f01e10.json
+
+```
+{
+  "id": "lesson-audio/1729f2f47f2034421061bde3fe23e90dc1669aacb56d495e7481016ad6f01e10.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1729f2f47f2034421061bde3fe23e90dc1669aacb56d495e7481016ad6f01e10",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 261504,
+  "originalName": "s1-apertura-sabado.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:29.527Z"
+}```
+
+### filebase/data/lesson-audio/17/173414b96c2d1675efafdace4ea1a22a8bb3397bfb64935151dc8541a9a4f571.json
+
+```
+{
+  "id": "lesson-audio/173414b96c2d1675efafdace4ea1a22a8bb3397bfb64935151dc8541a9a4f571.mp3",
+  "bucket": "lesson-audio",
+  "hash": "173414b96c2d1675efafdace4ea1a22a8bb3397bfb64935151dc8541a9a4f571",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 79488,
+  "originalName": "s1-balance-scale.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:32.092Z"
+}```
+
 ### filebase/data/lesson-audio/17/17645b8d67ce77b84ec69c708cfc45b04dfc10775e097957eb7869baf79fc860.json
 
 ```
@@ -7029,6 +7616,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:31.160Z"
+}```
+
+### filebase/data/lesson-audio/17/17650c9ac1272e8fa3f9166276e05c4f2c0606384dfb7086ac325c693f1b840a.json
+
+```
+{
+  "id": "lesson-audio/17650c9ac1272e8fa3f9166276e05c4f2c0606384dfb7086ac325c693f1b840a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "17650c9ac1272e8fa3f9166276e05c4f2c0606384dfb7086ac325c693f1b840a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 35424,
+  "originalName": "s1-evidence-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:27.896Z"
+}```
+
+### filebase/data/lesson-audio/17/17be23b9f8fa0a6b772bd802b50fc08660f9b252e176327ab3e53b7e63b406c8.json
+
+```
+{
+  "id": "lesson-audio/17be23b9f8fa0a6b772bd802b50fc08660f9b252e176327ab3e53b7e63b406c8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "17be23b9f8fa0a6b772bd802b50fc08660f9b252e176327ab3e53b7e63b406c8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 41616,
+  "originalName": "s1-plan.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:50.617Z"
 }```
 
 ### filebase/data/lesson-audio/18/18665532e86d9a2e5d8d3b7ccee40186d29d09c0eaf3d44b5e9708c38ec2a3db.json
@@ -7047,6 +7666,22 @@ npm test
   "createdAt": "2026-07-14T00:07:24.915Z"
 }```
 
+### filebase/data/lesson-audio/18/1883ffa5bb209c8c89256d68d07fe08266c8cd99ff8e1ee5e4acfaa8972814ff.json
+
+```
+{
+  "id": "lesson-audio/1883ffa5bb209c8c89256d68d07fe08266c8cd99ff8e1ee5e4acfaa8972814ff.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1883ffa5bb209c8c89256d68d07fe08266c8cd99ff8e1ee5e4acfaa8972814ff",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 91584,
+  "originalName": "s1-red-flags.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:39.486Z"
+}```
+
 ### filebase/data/lesson-audio/18/18db2c7c40b4583cac976825fdc0cabfbe25c3fb8d4fc545b78a678da70d6397.json
 
 ```
@@ -7063,6 +7698,22 @@ npm test
   "createdAt": "2026-07-14T00:10:44.870Z"
 }```
 
+### filebase/data/lesson-audio/19/192de92cc8a4f8fda7161a6581f1369ebdd1a9105389f986cd7fabb4ef570472.json
+
+```
+{
+  "id": "lesson-audio/192de92cc8a4f8fda7161a6581f1369ebdd1a9105389f986cd7fabb4ef570472.mp3",
+  "bucket": "lesson-audio",
+  "hash": "192de92cc8a4f8fda7161a6581f1369ebdd1a9105389f986cd7fabb4ef570472",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 156816,
+  "originalName": "s1-number-line.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:27.319Z"
+}```
+
 ### filebase/data/lesson-audio/19/196b7f7df81c9779b8dd2a4a0e3fa82dc0fa070d7d9d10139721aa65518ca5b5.json
 
 ```
@@ -7077,6 +7728,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:20:59.097Z"
+}```
+
+### filebase/data/lesson-audio/19/19e36210f7b819d4940ff3de6c6a71891568e9684e85287ac4caa2b44f96866e.json
+
+```
+{
+  "id": "lesson-audio/19e36210f7b819d4940ff3de6c6a71891568e9684e85287ac4caa2b44f96866e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "19e36210f7b819d4940ff3de6c6a71891568e9684e85287ac4caa2b44f96866e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 56016,
+  "originalName": "s1-needs-wants.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:58.512Z"
 }```
 
 ### filebase/data/lesson-audio/1a/1a6a9881d37d52869506d3055f90f5ff4ee30f434ca5cf514af1d228803b397a.json
@@ -7159,6 +7826,22 @@ npm test
   "createdAt": "2026-07-14T00:17:18.705Z"
 }```
 
+### filebase/data/lesson-audio/1b/1b50aa01679088ab53a1e6dc5ecb5f18c2b1fd3ac9ca7c5686478d8df3258bb1.json
+
+```
+{
+  "id": "lesson-audio/1b50aa01679088ab53a1e6dc5ecb5f18c2b1fd3ac9ca7c5686478d8df3258bb1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1b50aa01679088ab53a1e6dc5ecb5f18c2b1fd3ac9ca7c5686478d8df3258bb1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 99216,
+  "originalName": "s1-number-input.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:19.559Z"
+}```
+
 ### filebase/data/lesson-audio/1b/1bce7504f6a1308a1bcfea2aeac0a5c5eda0c30d520f3059c31d6b1b2aae5805.json
 
 ```
@@ -7223,6 +7906,22 @@ npm test
   "createdAt": "2026-07-14T00:06:45.844Z"
 }```
 
+### filebase/data/lesson-audio/1c/1cae3ab8f3f43d3d0be8cd3b0a0aea3aa83b2626128f34d0fcb69a119d059612.json
+
+```
+{
+  "id": "lesson-audio/1cae3ab8f3f43d3d0be8cd3b0a0aea3aa83b2626128f34d0fcb69a119d059612.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1cae3ab8f3f43d3d0be8cd3b0a0aea3aa83b2626128f34d0fcb69a119d059612",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 92016,
+  "originalName": "s1-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:10.791Z"
+}```
+
 ### filebase/data/lesson-audio/1c/1cceebeccff1de0b1b1cce2c28e3216ced8938e84126d5f5408bd3b623362683.json
 
 ```
@@ -7237,6 +7936,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:41.437Z"
+}```
+
+### filebase/data/lesson-audio/1d/1d8975b080b4b2b28ee442244e1dd6f2e68ff74dca7711dba560c5c8052ef463.json
+
+```
+{
+  "id": "lesson-audio/1d8975b080b4b2b28ee442244e1dd6f2e68ff74dca7711dba560c5c8052ef463.mp3",
+  "bucket": "lesson-audio",
+  "hash": "1d8975b080b4b2b28ee442244e1dd6f2e68ff74dca7711dba560c5c8052ef463",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 95328,
+  "originalName": "s1-needs-wants.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:59.492Z"
 }```
 
 ### filebase/data/lesson-audio/1d/1da86a4b1b672b4ae6a055e9612dd2b7c6a1a9a98c9baf237b837d18bd9d8763.json
@@ -7383,6 +8098,38 @@ npm test
   "createdAt": "2026-07-14T00:19:24.358Z"
 }```
 
+### filebase/data/lesson-audio/20/202376bcfacb9f1e366e7c71520a30dc8bbcdb324da54aa6c36b0231412c45a3.json
+
+```
+{
+  "id": "lesson-audio/202376bcfacb9f1e366e7c71520a30dc8bbcdb324da54aa6c36b0231412c45a3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "202376bcfacb9f1e366e7c71520a30dc8bbcdb324da54aa6c36b0231412c45a3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102528,
+  "originalName": "s1-debug-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:39.089Z"
+}```
+
+### filebase/data/lesson-audio/20/202ba42b39aee1b5b82e2f4093ede53f5c7c97e90e8f23b4f67e5a52edcdc12a.json
+
+```
+{
+  "id": "lesson-audio/202ba42b39aee1b5b82e2f4093ede53f5c7c97e90e8f23b4f67e5a52edcdc12a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "202ba42b39aee1b5b82e2f4093ede53f5c7c97e90e8f23b4f67e5a52edcdc12a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 70416,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:02.411Z"
+}```
+
 ### filebase/data/lesson-audio/20/207d35200e291f14393209544b456ad3ce9f01c609b35ac73e42c135770d6e24.json
 
 ```
@@ -7429,6 +8176,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:40.307Z"
+}```
+
+### filebase/data/lesson-audio/20/20c7f8cb13a640b09fe980bc1ec9eef23e9a562644966583db1d7821e14f730e.json
+
+```
+{
+  "id": "lesson-audio/20c7f8cb13a640b09fe980bc1ec9eef23e9a562644966583db1d7821e14f730e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "20c7f8cb13a640b09fe980bc1ec9eef23e9a562644966583db1d7821e14f730e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59904,
+  "originalName": "s1-estimate-slider.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:18.901Z"
 }```
 
 ### filebase/data/lesson-audio/21/21100a838d55b90c5348b61fb48d93932db6c1a9d10265a37a3a175898bce17a.json
@@ -7479,6 +8242,38 @@ npm test
   "createdAt": "2026-07-14T00:04:05.834Z"
 }```
 
+### filebase/data/lesson-audio/21/21c809584eb74b74b0291d843b198cf09c63fdd62138d9ce114a5d57663ec9b5.json
+
+```
+{
+  "id": "lesson-audio/21c809584eb74b74b0291d843b198cf09c63fdd62138d9ce114a5d57663ec9b5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "21c809584eb74b74b0291d843b198cf09c63fdd62138d9ce114a5d57663ec9b5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 46944,
+  "originalName": "s3-sort-compras.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:17.937Z"
+}```
+
+### filebase/data/lesson-audio/21/21f0ec6f2eef9894028c122b6ac4bd83a09c545643778448f691244d92bf9a3b.json
+
+```
+{
+  "id": "lesson-audio/21f0ec6f2eef9894028c122b6ac4bd83a09c545643778448f691244d92bf9a3b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "21f0ec6f2eef9894028c122b6ac4bd83a09c545643778448f691244d92bf9a3b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 58896,
+  "originalName": "s1-rank-choices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:36.381Z"
+}```
+
 ### filebase/data/lesson-audio/22/22054f1964d39baab1b5f7c0291c4a3acb28366ff140b639c56da921a0e19118.json
 
 ```
@@ -7527,6 +8322,22 @@ npm test
   "createdAt": "2026-07-14T00:20:22.208Z"
 }```
 
+### filebase/data/lesson-audio/22/2287cf795459aa5a591cfa0b7783db69df1f23873c7bb88b843f82366fc13501.json
+
+```
+{
+  "id": "lesson-audio/2287cf795459aa5a591cfa0b7783db69df1f23873c7bb88b843f82366fc13501.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2287cf795459aa5a591cfa0b7783db69df1f23873c7bb88b843f82366fc13501",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100656,
+  "originalName": "s1-speed-tap.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:25.432Z"
+}```
+
 ### filebase/data/lesson-audio/22/22af40e7f22ad2d37137bd36884f14f6e46f327754d2cb17a40e3337c0ff0c9c.json
 
 ```
@@ -7541,6 +8352,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:09:05.635Z"
+}```
+
+### filebase/data/lesson-audio/22/22d0794d3c1bfbd6409d6b7c648b403a8ac7db77a043c8e600dec41442ab6043.json
+
+```
+{
+  "id": "lesson-audio/22d0794d3c1bfbd6409d6b7c648b403a8ac7db77a043c8e600dec41442ab6043.mp3",
+  "bucket": "lesson-audio",
+  "hash": "22d0794d3c1bfbd6409d6b7c648b403a8ac7db77a043c8e600dec41442ab6043",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 27216,
+  "originalName": "s1-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:52.478Z"
 }```
 
 ### filebase/data/lesson-audio/22/22e63bdf632d12885060dfd839d28085f2e49975a1556e06f742eb3601ca7a63.json
@@ -7559,6 +8386,38 @@ npm test
   "createdAt": "2026-07-14T00:04:51.934Z"
 }```
 
+### filebase/data/lesson-audio/22/22ee2884d66d7596c820f686b0cf761b423d6e87d2f3fc1adc81291d4be93ca3.json
+
+```
+{
+  "id": "lesson-audio/22ee2884d66d7596c820f686b0cf761b423d6e87d2f3fc1adc81291d4be93ca3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "22ee2884d66d7596c820f686b0cf761b423d6e87d2f3fc1adc81291d4be93ca3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 121248,
+  "originalName": "s1-causa-efecto.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:27.635Z"
+}```
+
+### filebase/data/lesson-audio/23/23888bd3a5f2f0cd31dffe875531550d4800807af7e9f8375a7be06a0777be02.json
+
+```
+{
+  "id": "lesson-audio/23888bd3a5f2f0cd31dffe875531550d4800807af7e9f8375a7be06a0777be02.mp3",
+  "bucket": "lesson-audio",
+  "hash": "23888bd3a5f2f0cd31dffe875531550d4800807af7e9f8375a7be06a0777be02",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74304,
+  "originalName": "s1-price-compare.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:29.566Z"
+}```
+
 ### filebase/data/lesson-audio/23/23b95f22815c1fcc7bda690ad85c7c87ed2e10cf4d9d51526827149fc5063e8d.json
 
 ```
@@ -7573,6 +8432,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:40.224Z"
+}```
+
+### filebase/data/lesson-audio/23/23c3933d6df720c9c87b45d6024db354ad347815b2c239fc427c6068bdaad1f6.json
+
+```
+{
+  "id": "lesson-audio/23c3933d6df720c9c87b45d6024db354ad347815b2c239fc427c6068bdaad1f6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "23c3933d6df720c9c87b45d6024db354ad347815b2c239fc427c6068bdaad1f6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36864,
+  "originalName": "s2-decision-precio.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:26.776Z"
+}```
+
+### filebase/data/lesson-audio/23/23ecde36a59c647cab662d47efa54fe431c08bbef569c2bd0323e64e044210ca.json
+
+```
+{
+  "id": "lesson-audio/23ecde36a59c647cab662d47efa54fe431c08bbef569c2bd0323e64e044210ca.mp3",
+  "bucket": "lesson-audio",
+  "hash": "23ecde36a59c647cab662d47efa54fe431c08bbef569c2bd0323e64e044210ca",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100224,
+  "originalName": "s1-group-sets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:48.710Z"
+}```
+
+### filebase/data/lesson-audio/23/23fed0657826bcded5fa9b419c51137c9659fe055935b1465159d6f7eee13dcf.json
+
+```
+{
+  "id": "lesson-audio/23fed0657826bcded5fa9b419c51137c9659fe055935b1465159d6f7eee13dcf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "23fed0657826bcded5fa9b419c51137c9659fe055935b1465159d6f7eee13dcf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 113184,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:47.254Z"
 }```
 
 ### filebase/data/lesson-audio/24/2403acccb5820958e8e161f39449c2cc59a2d97a4c0e60a8c77c500399a87eeb.json
@@ -7591,6 +8498,22 @@ npm test
   "createdAt": "2026-07-14T00:17:20.655Z"
 }```
 
+### filebase/data/lesson-audio/24/24320ea2ba30c735fb11cea6ea331dad21f069e955500218cd22fb094ada83d2.json
+
+```
+{
+  "id": "lesson-audio/24320ea2ba30c735fb11cea6ea331dad21f069e955500218cd22fb094ada83d2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "24320ea2ba30c735fb11cea6ea331dad21f069e955500218cd22fb094ada83d2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103104,
+  "originalName": "s1-balance-scale.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:05.540Z"
+}```
+
 ### filebase/data/lesson-audio/24/248d33b3937c25954e66d524e07e2d1c96c66687533f77b3f0c2c4c7bf943c10.json
 
 ```
@@ -7607,6 +8530,22 @@ npm test
   "createdAt": "2026-07-14T00:10:00.852Z"
 }```
 
+### filebase/data/lesson-audio/25/25398c0fd99be4ccc32126ce8e5571afc4383beb90d02d254abad63e2a7fd977.json
+
+```
+{
+  "id": "lesson-audio/25398c0fd99be4ccc32126ce8e5571afc4383beb90d02d254abad63e2a7fd977.mp3",
+  "bucket": "lesson-audio",
+  "hash": "25398c0fd99be4ccc32126ce8e5571afc4383beb90d02d254abad63e2a7fd977",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 177984,
+  "originalName": "s1-precio-justo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:30.715Z"
+}```
+
 ### filebase/data/lesson-audio/25/2569fc3ddba3b0f0d8b25ce821a7daf109670bdac46e4730ee4d587ada24badd.json
 
 ```
@@ -7621,6 +8560,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:21:01.906Z"
+}```
+
+### filebase/data/lesson-audio/25/258ce6b34f338fd46707ca7f60818e0381ad9e80fcd0dbf29b1703842be5e5ab.json
+
+```
+{
+  "id": "lesson-audio/258ce6b34f338fd46707ca7f60818e0381ad9e80fcd0dbf29b1703842be5e5ab.mp3",
+  "bucket": "lesson-audio",
+  "hash": "258ce6b34f338fd46707ca7f60818e0381ad9e80fcd0dbf29b1703842be5e5ab",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 46944,
+  "originalName": "s1-arma-letrero.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:41.179Z"
 }```
 
 ### filebase/data/lesson-audio/25/25b55724a87bb7a3c6f8b90aa310973e244511bceb7cf4873a3180bbeb23ff05.json
@@ -7655,6 +8610,38 @@ npm test
   "createdAt": "2026-07-14T01:06:53.705Z"
 }```
 
+### filebase/data/lesson-audio/26/2632c606bb742e9237478523d17d43706ae09a05247208ba6de5014bddc5e993.json
+
+```
+{
+  "id": "lesson-audio/2632c606bb742e9237478523d17d43706ae09a05247208ba6de5014bddc5e993.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2632c606bb742e9237478523d17d43706ae09a05247208ba6de5014bddc5e993",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 87696,
+  "originalName": "s1-confidence.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:48.649Z"
+}```
+
+### filebase/data/lesson-audio/26/2649f8f33673682a0fbe4246bc7f33f4fc1c10bd6e34bf4086a7b95182136174.json
+
+```
+{
+  "id": "lesson-audio/2649f8f33673682a0fbe4246bc7f33f4fc1c10bd6e34bf4086a7b95182136174.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2649f8f33673682a0fbe4246bc7f33f4fc1c10bd6e34bf4086a7b95182136174",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62784,
+  "originalName": "s1-key-ideas.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:11.257Z"
+}```
+
 ### filebase/data/lesson-audio/26/26692717d9c06492d5a87d169c267f1f03f84a0953105887bb5859680b1a3dc7.json
 
 ```
@@ -7669,6 +8656,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:05.974Z"
+}```
+
+### filebase/data/lesson-audio/26/26cfe406b51248f06fdbcce8df00f28f2689c25e9d1e8d8f605b14306c4e501c.json
+
+```
+{
+  "id": "lesson-audio/26cfe406b51248f06fdbcce8df00f28f2689c25e9d1e8d8f605b14306c4e501c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "26cfe406b51248f06fdbcce8df00f28f2689c25e9d1e8d8f605b14306c4e501c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69408,
+  "originalName": "s1-evidence-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:52.345Z"
 }```
 
 ### filebase/data/lesson-audio/26/26d7b4e7784029b028796ca6c27bb15cfbd56c28000fe89a2514a7f911da1971.json
@@ -7687,6 +8690,38 @@ npm test
   "createdAt": "2026-07-14T00:04:06.249Z"
 }```
 
+### filebase/data/lesson-audio/26/26e309ab5885e61c8e7d82787d64257ee4a70bb889c46bc48acf5a6220c32942.json
+
+```
+{
+  "id": "lesson-audio/26e309ab5885e61c8e7d82787d64257ee4a70bb889c46bc48acf5a6220c32942.mp3",
+  "bucket": "lesson-audio",
+  "hash": "26e309ab5885e61c8e7d82787d64257ee4a70bb889c46bc48acf5a6220c32942",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 128016,
+  "originalName": "s1-key-ideas.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:27.717Z"
+}```
+
+### filebase/data/lesson-audio/26/26fbe48440d0a228fd1e8a53c847a94820f662196aa2a12b67d9fde57f41006b.json
+
+```
+{
+  "id": "lesson-audio/26fbe48440d0a228fd1e8a53c847a94820f662196aa2a12b67d9fde57f41006b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "26fbe48440d0a228fd1e8a53c847a94820f662196aa2a12b67d9fde57f41006b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 124128,
+  "originalName": "s1-best-decision.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:33.488Z"
+}```
+
 ### filebase/data/lesson-audio/27/27a8778841e17c6aa732c8dfd514dc957108cbfae431b043b37e49b1c70d14df.json
 
 ```
@@ -7701,6 +8736,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:03.548Z"
+}```
+
+### filebase/data/lesson-audio/27/27b86189c173e625f0dc7174dadefa0fbca0a0a876833b7fb550499644922b01.json
+
+```
+{
+  "id": "lesson-audio/27b86189c173e625f0dc7174dadefa0fbca0a0a876833b7fb550499644922b01.mp3",
+  "bucket": "lesson-audio",
+  "hash": "27b86189c173e625f0dc7174dadefa0fbca0a0a876833b7fb550499644922b01",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31968,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:38.239Z"
+}```
+
+### filebase/data/lesson-audio/27/27e9286ec3e7ad7cc8bdc5104ce5ac429e9450415557194970ecc94df5b937d7.json
+
+```
+{
+  "id": "lesson-audio/27e9286ec3e7ad7cc8bdc5104ce5ac429e9450415557194970ecc94df5b937d7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "27e9286ec3e7ad7cc8bdc5104ce5ac429e9450415557194970ecc94df5b937d7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78624,
+  "originalName": "s1-needs-wants.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:06.064Z"
+}```
+
+### filebase/data/lesson-audio/28/283990ae9bca31eb3c13868bd658978ae43e99e3080495944d4d387ad75bd966.json
+
+```
+{
+  "id": "lesson-audio/283990ae9bca31eb3c13868bd658978ae43e99e3080495944d4d387ad75bd966.mp3",
+  "bucket": "lesson-audio",
+  "hash": "283990ae9bca31eb3c13868bd658978ae43e99e3080495944d4d387ad75bd966",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 15264,
+  "originalName": "s1-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:58.293Z"
+}```
+
+### filebase/data/lesson-audio/28/2897983e101963ac4f38107465adc8c3b9a4ff716b6042ee45fccccf690875b1.json
+
+```
+{
+  "id": "lesson-audio/2897983e101963ac4f38107465adc8c3b9a4ff716b6042ee45fccccf690875b1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2897983e101963ac4f38107465adc8c3b9a4ff716b6042ee45fccccf690875b1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 38304,
+  "originalName": "s1-arma-letrero.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:33.408Z"
 }```
 
 ### filebase/data/lesson-audio/28/28bceabe6bddb8d872f0c4a42358e832454cf6b193f2727ff42ff22d17aed6a9.json
@@ -7719,6 +8818,22 @@ npm test
   "createdAt": "2026-07-14T00:07:20.967Z"
 }```
 
+### filebase/data/lesson-audio/28/28c4abb31461489de07784faadce40df57b499efc59a9940a3539a9210dae06f.json
+
+```
+{
+  "id": "lesson-audio/28c4abb31461489de07784faadce40df57b499efc59a9940a3539a9210dae06f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "28c4abb31461489de07784faadce40df57b499efc59a9940a3539a9210dae06f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 120384,
+  "originalName": "s1-order-steps.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:52.933Z"
+}```
+
 ### filebase/data/lesson-audio/28/28fabd9e0eee33021da71201308e44a7171cd9490dcf3e50ccaab89078ced1d5.json
 
 ```
@@ -7733,6 +8848,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:10.701Z"
+}```
+
+### filebase/data/lesson-audio/29/2939b520a697954cc808485445d9777596ec8929095924ef71ee98576794b412.json
+
+```
+{
+  "id": "lesson-audio/2939b520a697954cc808485445d9777596ec8929095924ef71ee98576794b412.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2939b520a697954cc808485445d9777596ec8929095924ef71ee98576794b412",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45936,
+  "originalName": "s2-truefalse.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:46.854Z"
 }```
 
 ### filebase/data/lesson-audio/29/29d9219e40685af314556301bb2842efd383d487d82daa526c9773ac85d37fe3.json
@@ -7767,6 +8898,54 @@ npm test
   "createdAt": "2026-07-14T00:06:12.055Z"
 }```
 
+### filebase/data/lesson-audio/2a/2a844e4e3a849d2f2c6d2e4063bff9c33a2a772fe689e8e4c61c012b97561964.json
+
+```
+{
+  "id": "lesson-audio/2a844e4e3a849d2f2c6d2e4063bff9c33a2a772fe689e8e4c61c012b97561964.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2a844e4e3a849d2f2c6d2e4063bff9c33a2a772fe689e8e4c61c012b97561964",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42048,
+  "originalName": "s1-checkpoint.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:24.505Z"
+}```
+
+### filebase/data/lesson-audio/2a/2aa8981404f985ca3eff83137910c6b143a6d1ee0b26afbad53476e34517ba8f.json
+
+```
+{
+  "id": "lesson-audio/2aa8981404f985ca3eff83137910c6b143a6d1ee0b26afbad53476e34517ba8f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2aa8981404f985ca3eff83137910c6b143a6d1ee0b26afbad53476e34517ba8f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 91584,
+  "originalName": "s1-fair-trade.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:40.164Z"
+}```
+
+### filebase/data/lesson-audio/2a/2acbaac30fa1033e374044825c3011af90dd17f7ddcde9c0484883bbee58ff9a.json
+
+```
+{
+  "id": "lesson-audio/2acbaac30fa1033e374044825c3011af90dd17f7ddcde9c0484883bbee58ff9a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2acbaac30fa1033e374044825c3011af90dd17f7ddcde9c0484883bbee58ff9a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 115056,
+  "originalName": "s1-concept-reveal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:40.631Z"
+}```
+
 ### filebase/data/lesson-audio/2a/2aefef29bcd332c79e4ca8eb92cae43ffaf874f103a5c6bd33c5b55084fabd79.json
 
 ```
@@ -7799,6 +8978,22 @@ npm test
   "createdAt": "2026-07-14T00:20:10.775Z"
 }```
 
+### filebase/data/lesson-audio/2b/2bb0f4c620d510421457e30f2b80367ab1abbdfae3bf19078772a3b4e02b159a.json
+
+```
+{
+  "id": "lesson-audio/2bb0f4c620d510421457e30f2b80367ab1abbdfae3bf19078772a3b4e02b159a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2bb0f4c620d510421457e30f2b80367ab1abbdfae3bf19078772a3b4e02b159a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 149616,
+  "originalName": "s1-price-compare.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:45.521Z"
+}```
+
 ### filebase/data/lesson-audio/2b/2be34ea2f16b1071f90faf319b898601851b5cab0f1d4af469e51c2a6bf2df7a.json
 
 ```
@@ -7813,6 +9008,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:11:52.254Z"
+}```
+
+### filebase/data/lesson-audio/2b/2be3d1356933ed27b52693ea121ddc2f56f129e5afe75be8b95acf68be073b34.json
+
+```
+{
+  "id": "lesson-audio/2be3d1356933ed27b52693ea121ddc2f56f129e5afe75be8b95acf68be073b34.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2be3d1356933ed27b52693ea121ddc2f56f129e5afe75be8b95acf68be073b34",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 92448,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:56.614Z"
 }```
 
 ### filebase/data/lesson-audio/2c/2c2ecceb3c7ee234fc632459def42b6375219296e5fda4c40e0aae4f52c53b8b.json
@@ -7863,6 +9074,54 @@ npm test
   "createdAt": "2026-07-14T00:08:03.604Z"
 }```
 
+### filebase/data/lesson-audio/2c/2c5240c723d8d568e0eda47b8991b9618616990c8c53b17e2eb5a6d6face2362.json
+
+```
+{
+  "id": "lesson-audio/2c5240c723d8d568e0eda47b8991b9618616990c8c53b17e2eb5a6d6face2362.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2c5240c723d8d568e0eda47b8991b9618616990c8c53b17e2eb5a6d6face2362",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53136,
+  "originalName": "s1-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:09.429Z"
+}```
+
+### filebase/data/lesson-audio/2c/2c6540a7753217f2311e0e504ec9b81de6f89b32732400aaa15407748e64a7d5.json
+
+```
+{
+  "id": "lesson-audio/2c6540a7753217f2311e0e504ec9b81de6f89b32732400aaa15407748e64a7d5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2c6540a7753217f2311e0e504ec9b81de6f89b32732400aaa15407748e64a7d5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 135648,
+  "originalName": "s1-flash-match.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:37.310Z"
+}```
+
+### filebase/data/lesson-audio/2c/2c7aff104429bc8618c6ba53fcc2565ea645809b9f8527a0993fda1d95e03af7.json
+
+```
+{
+  "id": "lesson-audio/2c7aff104429bc8618c6ba53fcc2565ea645809b9f8527a0993fda1d95e03af7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2c7aff104429bc8618c6ba53fcc2565ea645809b9f8527a0993fda1d95e03af7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 143856,
+  "originalName": "s1-code-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:09.526Z"
+}```
+
 ### filebase/data/lesson-audio/2c/2c88f81dcf59c1af68f0d1ba82889a6498a3b3be5640ffb48366239bb68f0501.json
 
 ```
@@ -7893,6 +9152,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:18.110Z"
+}```
+
+### filebase/data/lesson-audio/2c/2c97e6b3fe30bddab75ef9b2f1acefb96fcbe0eed542dc553ad402d06ad46686.json
+
+```
+{
+  "id": "lesson-audio/2c97e6b3fe30bddab75ef9b2f1acefb96fcbe0eed542dc553ad402d06ad46686.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2c97e6b3fe30bddab75ef9b2f1acefb96fcbe0eed542dc553ad402d06ad46686",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 66528,
+  "originalName": "s1-odd-one-out.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:39.538Z"
 }```
 
 ### filebase/data/lesson-audio/2c/2ca4c04394bd197923524ec9ffa1d4b0e583e8bb4677fe986ee0f72e58f9d16c.json
@@ -8007,6 +9282,22 @@ npm test
   "createdAt": "2026-07-14T00:09:13.618Z"
 }```
 
+### filebase/data/lesson-audio/2e/2ed3a862b8ee28b2181a997c1090d1a64f005d0b29bde095257f6fbcfcc45803.json
+
+```
+{
+  "id": "lesson-audio/2ed3a862b8ee28b2181a997c1090d1a64f005d0b29bde095257f6fbcfcc45803.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2ed3a862b8ee28b2181a997c1090d1a64f005d0b29bde095257f6fbcfcc45803",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62784,
+  "originalName": "s1-balance-scale.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:54.290Z"
+}```
+
 ### filebase/data/lesson-audio/2e/2ef52bb4b2b6fef77bb2b76a9d8d79e8ffdb0bebcf73c9503198899848599cfe.json
 
 ```
@@ -8021,6 +9312,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:04.654Z"
+}```
+
+### filebase/data/lesson-audio/2f/2f0abcb3625e8f76c2019a35d9a0bdff8ce6b0d20a3e4e35685677a6fbc8af00.json
+
+```
+{
+  "id": "lesson-audio/2f0abcb3625e8f76c2019a35d9a0bdff8ce6b0d20a3e4e35685677a6fbc8af00.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2f0abcb3625e8f76c2019a35d9a0bdff8ce6b0d20a3e4e35685677a6fbc8af00",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 95904,
+  "originalName": "s1-budget-fit.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:55.274Z"
+}```
+
+### filebase/data/lesson-audio/2f/2f1acae2ac84a6edd8dc5b364e6b0f263ea75413b4cf80a05a275b2746172347.json
+
+```
+{
+  "id": "lesson-audio/2f1acae2ac84a6edd8dc5b364e6b0f263ea75413b4cf80a05a275b2746172347.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2f1acae2ac84a6edd8dc5b364e6b0f263ea75413b4cf80a05a275b2746172347",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 79488,
+  "originalName": "s3-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:10.965Z"
 }```
 
 ### filebase/data/lesson-audio/2f/2f1f941a577b753f3cc2c917357b1279e0cb57e79527c3b5762dd3240e3eb5c8.json
@@ -8053,6 +9376,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:07:40.270Z"
+}```
+
+### filebase/data/lesson-audio/2f/2f82948dc47c4016ef5d8c78f2b59afb43d4470a4e7683fb02c7c928b8e2f633.json
+
+```
+{
+  "id": "lesson-audio/2f82948dc47c4016ef5d8c78f2b59afb43d4470a4e7683fb02c7c928b8e2f633.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2f82948dc47c4016ef5d8c78f2b59afb43d4470a4e7683fb02c7c928b8e2f633",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 47808,
+  "originalName": "s3-sort-compras.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:51.501Z"
+}```
+
+### filebase/data/lesson-audio/2f/2fda95cc8b75d08af91c8bec2a14306a75ce5715981b9b2b5ee8bbbdd9ef00c5.json
+
+```
+{
+  "id": "lesson-audio/2fda95cc8b75d08af91c8bec2a14306a75ce5715981b9b2b5ee8bbbdd9ef00c5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "2fda95cc8b75d08af91c8bec2a14306a75ce5715981b9b2b5ee8bbbdd9ef00c5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 151056,
+  "originalName": "s1-red-flags.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:29.673Z"
 }```
 
 ### filebase/data/lesson-audio/2f/2fdace59cfa8ecb4ee7a98f599534204371ea29f1328284d9fd644987ccd5d74.json
@@ -8103,6 +9458,22 @@ npm test
   "createdAt": "2026-07-14T00:06:47.102Z"
 }```
 
+### filebase/data/lesson-audio/30/303cb354a2d43a1689fabc66e7d5b7a94b716df971a9a01393d4bfd385cb848c.json
+
+```
+{
+  "id": "lesson-audio/303cb354a2d43a1689fabc66e7d5b7a94b716df971a9a01393d4bfd385cb848c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "303cb354a2d43a1689fabc66e7d5b7a94b716df971a9a01393d4bfd385cb848c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 30528,
+  "originalName": "s2-order-receta.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:47.044Z"
+}```
+
 ### filebase/data/lesson-audio/30/305bfb76ae6cf6682608f7296f6890ae734fb37fd0b8f22545895832efd3869f.json
 
 ```
@@ -8135,6 +9506,54 @@ npm test
   "createdAt": "2026-07-14T00:04:39.403Z"
 }```
 
+### filebase/data/lesson-audio/30/3072a5e0888c7b78eb30ad0d5ef3e183e88522c7f6e09e194561561a985be831.json
+
+```
+{
+  "id": "lesson-audio/3072a5e0888c7b78eb30ad0d5ef3e183e88522c7f6e09e194561561a985be831.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3072a5e0888c7b78eb30ad0d5ef3e183e88522c7f6e09e194561561a985be831",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 16704,
+  "originalName": "s1-would-you-rather.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:01.707Z"
+}```
+
+### filebase/data/lesson-audio/30/30b238922cf755622baa3d137529d461a96c8c6bdf653e03eb951e81d0cec2cf.json
+
+```
+{
+  "id": "lesson-audio/30b238922cf755622baa3d137529d461a96c8c6bdf653e03eb951e81d0cec2cf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "30b238922cf755622baa3d137529d461a96c8c6bdf653e03eb951e81d0cec2cf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67536,
+  "originalName": "s1-sort-buckets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:47.216Z"
+}```
+
+### filebase/data/lesson-audio/30/30fc53033b4651d340131bd9d1045924c644d154f0424247ccc6cb47df959362.json
+
+```
+{
+  "id": "lesson-audio/30fc53033b4651d340131bd9d1045924c644d154f0424247ccc6cb47df959362.mp3",
+  "bucket": "lesson-audio",
+  "hash": "30fc53033b4651d340131bd9d1045924c644d154f0424247ccc6cb47df959362",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59904,
+  "originalName": "s1-piggy-split.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:37.493Z"
+}```
+
 ### filebase/data/lesson-audio/31/312589ab34a6a9f11cf007cd21f781c284f31fcfb8af0805eb4abd639db0e69d.json
 
 ```
@@ -8149,6 +9568,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:02.717Z"
+}```
+
+### filebase/data/lesson-audio/31/312897e187f107f7404f5149a0fded160ebbcce393a6ce6a7cb6715bde226aea.json
+
+```
+{
+  "id": "lesson-audio/312897e187f107f7404f5149a0fded160ebbcce393a6ce6a7cb6715bde226aea.mp3",
+  "bucket": "lesson-audio",
+  "hash": "312897e187f107f7404f5149a0fded160ebbcce393a6ce6a7cb6715bde226aea",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 88704,
+  "originalName": "s1-match-precios.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:46.585Z"
+}```
+
+### filebase/data/lesson-audio/31/315b7dd7bcfb2e7857aca2434a90a7cf8aacb7e809dd9440e04435408a897c34.json
+
+```
+{
+  "id": "lesson-audio/315b7dd7bcfb2e7857aca2434a90a7cf8aacb7e809dd9440e04435408a897c34.mp3",
+  "bucket": "lesson-audio",
+  "hash": "315b7dd7bcfb2e7857aca2434a90a7cf8aacb7e809dd9440e04435408a897c34",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 122688,
+  "originalName": "s1-ahorro.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:28.187Z"
+}```
+
+### filebase/data/lesson-audio/31/316f2cc3d7b323e867bfec2fc7289c66b5cd4c0306221d409de3f3ba253b0d89.json
+
+```
+{
+  "id": "lesson-audio/316f2cc3d7b323e867bfec2fc7289c66b5cd4c0306221d409de3f3ba253b0d89.mp3",
+  "bucket": "lesson-audio",
+  "hash": "316f2cc3d7b323e867bfec2fc7289c66b5cd4c0306221d409de3f3ba253b0d89",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31104,
+  "originalName": "s2-decision-precio.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:57.105Z"
+}```
+
+### filebase/data/lesson-audio/31/3170c44015b1cf750489583846252b6f19ebd630c1cf23f75d9d2057e69f01df.json
+
+```
+{
+  "id": "lesson-audio/3170c44015b1cf750489583846252b6f19ebd630c1cf23f75d9d2057e69f01df.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3170c44015b1cf750489583846252b6f19ebd630c1cf23f75d9d2057e69f01df",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69984,
+  "originalName": "s1-arma-letrero.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:33.744Z"
 }```
 
 ### filebase/data/lesson-audio/31/3172b9a8128f28d390e591444116afda62e7471cd870e4e8aa069276dc371062.json
@@ -8181,6 +9664,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:54.284Z"
+}```
+
+### filebase/data/lesson-audio/32/3209136036a9aa4c6fec312b40d7bb3536ea520bd0e5f9dcf62e11cbeebdb000.json
+
+```
+{
+  "id": "lesson-audio/3209136036a9aa4c6fec312b40d7bb3536ea520bd0e5f9dcf62e11cbeebdb000.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3209136036a9aa4c6fec312b40d7bb3536ea520bd0e5f9dcf62e11cbeebdb000",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 50688,
+  "originalName": "s1-yes-no-cases.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:21.103Z"
+}```
+
+### filebase/data/lesson-audio/32/3241665b226ea919936dd6c9aed3c9a0daf29e70eadb8a48284ac93e1f307fff.json
+
+```
+{
+  "id": "lesson-audio/3241665b226ea919936dd6c9aed3c9a0daf29e70eadb8a48284ac93e1f307fff.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3241665b226ea919936dd6c9aed3c9a0daf29e70eadb8a48284ac93e1f307fff",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-precio-justo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:49.773Z"
+}```
+
+### filebase/data/lesson-audio/32/32a00131890b2d6ba4a6209b0aefb892fce10e8ce96a2aa1db68c9aec4293e3c.json
+
+```
+{
+  "id": "lesson-audio/32a00131890b2d6ba4a6209b0aefb892fce10e8ce96a2aa1db68c9aec4293e3c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "32a00131890b2d6ba4a6209b0aefb892fce10e8ce96a2aa1db68c9aec4293e3c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 20448,
+  "originalName": "s1-dialogo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:22.943Z"
+}```
+
+### filebase/data/lesson-audio/34/341bc90f7976a0a4fb418f7cf4c634709998a5b7d3e3b3941666fe337f8b7b9f.json
+
+```
+{
+  "id": "lesson-audio/341bc90f7976a0a4fb418f7cf4c634709998a5b7d3e3b3941666fe337f8b7b9f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "341bc90f7976a0a4fb418f7cf4c634709998a5b7d3e3b3941666fe337f8b7b9f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 89136,
+  "originalName": "s1-ahorro.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:16.894Z"
 }```
 
 ### filebase/data/lesson-audio/34/34886fb38016ef1dc839ba432d12a82f2810d680b710407188dc97229729d49c.json
@@ -8231,6 +9778,22 @@ npm test
   "createdAt": "2026-07-14T01:06:51.134Z"
 }```
 
+### filebase/data/lesson-audio/35/359a2601fc0d7e56a3e4935b550003a93d2ccfc2821eeb9e2130e4411c4ed9bb.json
+
+```
+{
+  "id": "lesson-audio/359a2601fc0d7e56a3e4935b550003a93d2ccfc2821eeb9e2130e4411c4ed9bb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "359a2601fc0d7e56a3e4935b550003a93d2ccfc2821eeb9e2130e4411c4ed9bb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 110736,
+  "originalName": "s1-balance-scale.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:32.786Z"
+}```
+
 ### filebase/data/lesson-audio/36/3653393696e907b5c0c82d33d7f3834def76371d7ea8422a05b9411239d8174d.json
 
 ```
@@ -8245,6 +9808,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:10.662Z"
+}```
+
+### filebase/data/lesson-audio/36/3668498526eb1899b70e64e67d16a1f7da262c59ce9419b22051e4358c2c08ea.json
+
+```
+{
+  "id": "lesson-audio/3668498526eb1899b70e64e67d16a1f7da262c59ce9419b22051e4358c2c08ea.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3668498526eb1899b70e64e67d16a1f7da262c59ce9419b22051e4358c2c08ea",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 109296,
+  "originalName": "s1-machine-io.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:05.051Z"
+}```
+
+### filebase/data/lesson-audio/36/366c101156ca62c202a4bf3775e97bc29950b1446436bf9aa5513c81f0bfea85.json
+
+```
+{
+  "id": "lesson-audio/366c101156ca62c202a4bf3775e97bc29950b1446436bf9aa5513c81f0bfea85.mp3",
+  "bucket": "lesson-audio",
+  "hash": "366c101156ca62c202a4bf3775e97bc29950b1446436bf9aa5513c81f0bfea85",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 151056,
+  "originalName": "s1-causa-efecto.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:30.472Z"
 }```
 
 ### filebase/data/lesson-audio/36/367e75e58b301cd71fd580dc367c4cee8275e7818308cdeffbd18e7b256285da.json
@@ -8359,6 +9954,38 @@ npm test
   "createdAt": "2026-07-14T00:04:15.235Z"
 }```
 
+### filebase/data/lesson-audio/38/38294d7bb1b1fef0d742185beec866cba093cfb2d058e012129badc053bd337c.json
+
+```
+{
+  "id": "lesson-audio/38294d7bb1b1fef0d742185beec866cba093cfb2d058e012129badc053bd337c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "38294d7bb1b1fef0d742185beec866cba093cfb2d058e012129badc053bd337c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 76608,
+  "originalName": "s1-estimate-slider.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:49.450Z"
+}```
+
+### filebase/data/lesson-audio/38/3831ff05d7e51bfd179b46f144d488853fd82d79687eb23f7c004e6e0ad33c08.json
+
+```
+{
+  "id": "lesson-audio/3831ff05d7e51bfd179b46f144d488853fd82d79687eb23f7c004e6e0ad33c08.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3831ff05d7e51bfd179b46f144d488853fd82d79687eb23f7c004e6e0ad33c08",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 106416,
+  "originalName": "s1-debug-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:52.407Z"
+}```
+
 ### filebase/data/lesson-audio/38/38382ca03160fbc8a62b9a3b94192c807c319e98cdd6deb9f563527937395c64.json
 
 ```
@@ -8391,6 +10018,22 @@ npm test
   "createdAt": "2026-07-14T01:06:12.926Z"
 }```
 
+### filebase/data/lesson-audio/38/389ebe78def9f3dd82fd04798369fcfdab1abfbe92f27cf8875218e036be43e0.json
+
+```
+{
+  "id": "lesson-audio/389ebe78def9f3dd82fd04798369fcfdab1abfbe92f27cf8875218e036be43e0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "389ebe78def9f3dd82fd04798369fcfdab1abfbe92f27cf8875218e036be43e0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 18576,
+  "originalName": "s1-key-ideas.idea.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:05.389Z"
+}```
+
 ### filebase/data/lesson-audio/38/38d23e58aa5f7538e814b7a50a7a2046b22a384373176e6f10b3a4bb089d7dc7.json
 
 ```
@@ -8405,6 +10048,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:00.940Z"
+}```
+
+### filebase/data/lesson-audio/38/38e26103ed7a1b3cd02a9809626a202632d33fe86831687e0fece1eccd012748.json
+
+```
+{
+  "id": "lesson-audio/38e26103ed7a1b3cd02a9809626a202632d33fe86831687e0fece1eccd012748.mp3",
+  "bucket": "lesson-audio",
+  "hash": "38e26103ed7a1b3cd02a9809626a202632d33fe86831687e0fece1eccd012748",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55008,
+  "originalName": "s1-best-decision.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:30.259Z"
 }```
 
 ### filebase/data/lesson-audio/39/39a7f1e620589b1ba5870a5faf87d182673d553147810724d2fd9183b33a59a6.json
@@ -8439,6 +10098,38 @@ npm test
   "createdAt": "2026-07-14T00:15:58.423Z"
 }```
 
+### filebase/data/lesson-audio/39/39ce648bd038b3c415ddc965e8d9c17fca40880bc9b306a6104d9db656d22831.json
+
+```
+{
+  "id": "lesson-audio/39ce648bd038b3c415ddc965e8d9c17fca40880bc9b306a6104d9db656d22831.mp3",
+  "bucket": "lesson-audio",
+  "hash": "39ce648bd038b3c415ddc965e8d9c17fca40880bc9b306a6104d9db656d22831",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60336,
+  "originalName": "s1-rank-choices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:18.236Z"
+}```
+
+### filebase/data/lesson-audio/3a/3a100b459fdbfb3fff7a4b01f9d268adf0e9be4f0e2ff981ac73d014a4264ccf.json
+
+```
+{
+  "id": "lesson-audio/3a100b459fdbfb3fff7a4b01f9d268adf0e9be4f0e2ff981ac73d014a4264ccf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3a100b459fdbfb3fff7a4b01f9d268adf0e9be4f0e2ff981ac73d014a4264ccf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 22464,
+  "originalName": "s2-decision-precio.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:22.882Z"
+}```
+
 ### filebase/data/lesson-audio/3a/3a2a83ee59151bad87e753babe1cc00373e4e5893c397936ef80bdb80f98bd2e.json
 
 ```
@@ -8471,6 +10162,38 @@ npm test
   "createdAt": "2026-07-14T00:04:04.395Z"
 }```
 
+### filebase/data/lesson-audio/3a/3ac1302cbe468a113240efdf6145332e511ad4885cb5091b28d748c41f1f2551.json
+
+```
+{
+  "id": "lesson-audio/3ac1302cbe468a113240efdf6145332e511ad4885cb5091b28d748c41f1f2551.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3ac1302cbe468a113240efdf6145332e511ad4885cb5091b28d748c41f1f2551",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-flash-match.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:34.550Z"
+}```
+
+### filebase/data/lesson-audio/3a/3afb0a7bdc6c25c75c20ca025e9e7f7d3a56bbfaded46bd05f9a601db2132256.json
+
+```
+{
+  "id": "lesson-audio/3afb0a7bdc6c25c75c20ca025e9e7f7d3a56bbfaded46bd05f9a601db2132256.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3afb0a7bdc6c25c75c20ca025e9e7f7d3a56bbfaded46bd05f9a601db2132256",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 116928,
+  "originalName": "s1-memory-flip.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:02.911Z"
+}```
+
 ### filebase/data/lesson-audio/3b/3b0c7e2894a02964924fe92ee1a2573b83ea4f7fb4950f9750fef1cc9a8ad5ab.json
 
 ```
@@ -8501,6 +10224,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:30.883Z"
+}```
+
+### filebase/data/lesson-audio/3b/3b9bdd3bcb523213c029fdd2330d4341cde51f4e1b14aa5ba4f54d58609a218c.json
+
+```
+{
+  "id": "lesson-audio/3b9bdd3bcb523213c029fdd2330d4341cde51f4e1b14aa5ba4f54d58609a218c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3b9bdd3bcb523213c029fdd2330d4341cde51f4e1b14aa5ba4f54d58609a218c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 33984,
+  "originalName": "s1-dialogo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:36.904Z"
 }```
 
 ### filebase/data/lesson-audio/3b/3bc958a8fca75ea9883ea346150792671c787cdc56a18711b9b0f840c5632ef7.json
@@ -8551,6 +10290,118 @@ npm test
   "createdAt": "2026-07-14T00:05:07.027Z"
 }```
 
+### filebase/data/lesson-audio/3c/3cddcf02c970bf174124f13b0b63c69da791f2a8d1351a6ae3f5e36cf4e323a8.json
+
+```
+{
+  "id": "lesson-audio/3cddcf02c970bf174124f13b0b63c69da791f2a8d1351a6ae3f5e36cf4e323a8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3cddcf02c970bf174124f13b0b63c69da791f2a8d1351a6ae3f5e36cf4e323a8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55008,
+  "originalName": "s1-match-prices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:02.996Z"
+}```
+
+### filebase/data/lesson-audio/3d/3d26a3770844f83b8f6e64c07107bf6c30fff1600f590fa57d3529368ceb8be1.json
+
+```
+{
+  "id": "lesson-audio/3d26a3770844f83b8f6e64c07107bf6c30fff1600f590fa57d3529368ceb8be1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3d26a3770844f83b8f6e64c07107bf6c30fff1600f590fa57d3529368ceb8be1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 101088,
+  "originalName": "s1-negociar-cliente.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:32.096Z"
+}```
+
+### filebase/data/lesson-audio/3d/3d26a43e669807ac2772b1bbaef20f94d450673988eeb31f6808ecd9620c0abc.json
+
+```
+{
+  "id": "lesson-audio/3d26a43e669807ac2772b1bbaef20f94d450673988eeb31f6808ecd9620c0abc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3d26a43e669807ac2772b1bbaef20f94d450673988eeb31f6808ecd9620c0abc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31968,
+  "originalName": "s1-apertura-sabado.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:46.883Z"
+}```
+
+### filebase/data/lesson-audio/3d/3d29f45d2ada89ade91cf424f6e930bacd8084bc82784f4c27915dc665e106cd.json
+
+```
+{
+  "id": "lesson-audio/3d29f45d2ada89ade91cf424f6e930bacd8084bc82784f4c27915dc665e106cd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3d29f45d2ada89ade91cf424f6e930bacd8084bc82784f4c27915dc665e106cd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 65664,
+  "originalName": "s1-dialogo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:36.704Z"
+}```
+
+### filebase/data/lesson-audio/3d/3d89f7f0f835e95d1bcc9e2427c6b26f00f400bbd77d9ce86b6f90c5a8896d45.json
+
+```
+{
+  "id": "lesson-audio/3d89f7f0f835e95d1bcc9e2427c6b26f00f400bbd77d9ce86b6f90c5a8896d45.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3d89f7f0f835e95d1bcc9e2427c6b26f00f400bbd77d9ce86b6f90c5a8896d45",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 48816,
+  "originalName": "s1-dialogo.line.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:20.810Z"
+}```
+
+### filebase/data/lesson-audio/3e/3e3f9ab4c6e915e53eea289885dee1d43fa99710aa4517d9f5aa9f28588404ab.json
+
+```
+{
+  "id": "lesson-audio/3e3f9ab4c6e915e53eea289885dee1d43fa99710aa4517d9f5aa9f28588404ab.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3e3f9ab4c6e915e53eea289885dee1d43fa99710aa4517d9f5aa9f28588404ab",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 117504,
+  "originalName": "s1-piggy-split.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:49.969Z"
+}```
+
+### filebase/data/lesson-audio/3e/3e6407258c27317dc0c3fe35750ab9b84e2a2b9fce8100da6a60b2dd628a936d.json
+
+```
+{
+  "id": "lesson-audio/3e6407258c27317dc0c3fe35750ab9b84e2a2b9fce8100da6a60b2dd628a936d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3e6407258c27317dc0c3fe35750ab9b84e2a2b9fce8100da6a60b2dd628a936d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 80496,
+  "originalName": "s1-memory-flip.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:01.862Z"
+}```
+
 ### filebase/data/lesson-audio/3e/3e7a5b02f74a50f835c83982179f28fd7f1a1490052b59c081da03230e7362ef.json
 
 ```
@@ -8565,6 +10416,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:47.003Z"
+}```
+
+### filebase/data/lesson-audio/3e/3e92a757c912b3cbaf7276cf06b9fe13f9da277b09b353b7480fb1d97a866d2d.json
+
+```
+{
+  "id": "lesson-audio/3e92a757c912b3cbaf7276cf06b9fe13f9da277b09b353b7480fb1d97a866d2d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3e92a757c912b3cbaf7276cf06b9fe13f9da277b09b353b7480fb1d97a866d2d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 52704,
+  "originalName": "s3-sort-compras.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:45.726Z"
 }```
 
 ### filebase/data/lesson-audio/3e/3ecf9d4436607691aef622728a1015e9269c85acbdd7483dca6086ce69364120.json
@@ -8615,6 +10482,22 @@ npm test
   "createdAt": "2026-07-14T00:06:32.508Z"
 }```
 
+### filebase/data/lesson-audio/3f/3f29bfc894e52cdb54929ee946b4b1c13fead128553c23e34b78d172b73af280.json
+
+```
+{
+  "id": "lesson-audio/3f29bfc894e52cdb54929ee946b4b1c13fead128553c23e34b78d172b73af280.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3f29bfc894e52cdb54929ee946b4b1c13fead128553c23e34b78d172b73af280",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 51696,
+  "originalName": "s1-dialogo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:18.057Z"
+}```
+
 ### filebase/data/lesson-audio/3f/3f31a52d36729cbaf086438c1b1c46f13c5e7b2ab8aa9352bbb643c9a191316c.json
 
 ```
@@ -8647,6 +10530,54 @@ npm test
   "createdAt": "2026-07-14T00:19:34.639Z"
 }```
 
+### filebase/data/lesson-audio/3f/3fdd085a89909896f05b7e793a05d4ec297a9f6138c8065091b81bee868b9ce6.json
+
+```
+{
+  "id": "lesson-audio/3fdd085a89909896f05b7e793a05d4ec297a9f6138c8065091b81bee868b9ce6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3fdd085a89909896f05b7e793a05d4ec297a9f6138c8065091b81bee868b9ce6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103968,
+  "originalName": "s1-group-sets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:49.473Z"
+}```
+
+### filebase/data/lesson-audio/3f/3fe8f202ce9155748c88e79f80416ea5865bef398c84cda3037ff522439f5a0d.json
+
+```
+{
+  "id": "lesson-audio/3fe8f202ce9155748c88e79f80416ea5865bef398c84cda3037ff522439f5a0d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "3fe8f202ce9155748c88e79f80416ea5865bef398c84cda3037ff522439f5a0d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 135216,
+  "originalName": "s1-timeline-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:21.484Z"
+}```
+
+### filebase/data/lesson-audio/40/401c8f90ae8ad00d0926bddb87007e35b5fc6c8a4bb80a87d4631e59f26c4475.json
+
+```
+{
+  "id": "lesson-audio/401c8f90ae8ad00d0926bddb87007e35b5fc6c8a4bb80a87d4631e59f26c4475.mp3",
+  "bucket": "lesson-audio",
+  "hash": "401c8f90ae8ad00d0926bddb87007e35b5fc6c8a4bb80a87d4631e59f26c4475",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 39168,
+  "originalName": "s1-apertura-sabado.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:50.827Z"
+}```
+
 ### filebase/data/lesson-audio/40/402531bab37df63df66778596bd4c4e78a98836c743ababb37dab2be763e5fdd.json
 
 ```
@@ -8661,6 +10592,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:10.197Z"
+}```
+
+### filebase/data/lesson-audio/40/4042e1fd9da6d07e5a45d223dc358e07d2b2ec9685a5c039f8dbb0d28ba4578b.json
+
+```
+{
+  "id": "lesson-audio/4042e1fd9da6d07e5a45d223dc358e07d2b2ec9685a5c039f8dbb0d28ba4578b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4042e1fd9da6d07e5a45d223dc358e07d2b2ec9685a5c039f8dbb0d28ba4578b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59328,
+  "originalName": "s1-flash-match.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:25.149Z"
 }```
 
 ### filebase/data/lesson-audio/40/40b1de373f1e22f64a297f3ea591a1965954162122bbc920b1266e9e8458d819.json
@@ -8711,6 +10658,38 @@ npm test
   "createdAt": "2026-07-14T01:05:36.961Z"
 }```
 
+### filebase/data/lesson-audio/41/413b5f9e6ffde544d86c2b23c3a7bd364a57690b3039b754af07e43a65fc1807.json
+
+```
+{
+  "id": "lesson-audio/413b5f9e6ffde544d86c2b23c3a7bd364a57690b3039b754af07e43a65fc1807.mp3",
+  "bucket": "lesson-audio",
+  "hash": "413b5f9e6ffde544d86c2b23c3a7bd364a57690b3039b754af07e43a65fc1807",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53136,
+  "originalName": "s1-apertura-sabado.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:20.692Z"
+}```
+
+### filebase/data/lesson-audio/41/41b98cd5a12815230ff93a7c1cdc53d881b805c5985fcae50e82f696a6314792.json
+
+```
+{
+  "id": "lesson-audio/41b98cd5a12815230ff93a7c1cdc53d881b805c5985fcae50e82f696a6314792.mp3",
+  "bucket": "lesson-audio",
+  "hash": "41b98cd5a12815230ff93a7c1cdc53d881b805c5985fcae50e82f696a6314792",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 71424,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:09.781Z"
+}```
+
 ### filebase/data/lesson-audio/41/41e46626440af5e8d6b39b90b3632466369d46f51786cb1170cb5c1f941886d8.json
 
 ```
@@ -8725,6 +10704,86 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:11:03.842Z"
+}```
+
+### filebase/data/lesson-audio/42/420dffa811b4cf14cc57a4242f9acea43869f0825e3ea480e8c9c2a2b05d38f4.json
+
+```
+{
+  "id": "lesson-audio/420dffa811b4cf14cc57a4242f9acea43869f0825e3ea480e8c9c2a2b05d38f4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "420dffa811b4cf14cc57a4242f9acea43869f0825e3ea480e8c9c2a2b05d38f4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 119376,
+  "originalName": "s1-causa-efecto.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:07.847Z"
+}```
+
+### filebase/data/lesson-audio/42/4226e9393410c1e21277e261c584931d5c2c3fca89660ef51665891a3a8cac76.json
+
+```
+{
+  "id": "lesson-audio/4226e9393410c1e21277e261c584931d5c2c3fca89660ef51665891a3a8cac76.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4226e9393410c1e21277e261c584931d5c2c3fca89660ef51665891a3a8cac76",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 185184,
+  "originalName": "s1-price-compare.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:45.945Z"
+}```
+
+### filebase/data/lesson-audio/42/42f2f5a84cfaa4c73a1bfa9c21af6c37fe7ccce801d9cd3f3e7a49d9c2e89723.json
+
+```
+{
+  "id": "lesson-audio/42f2f5a84cfaa4c73a1bfa9c21af6c37fe7ccce801d9cd3f3e7a49d9c2e89723.mp3",
+  "bucket": "lesson-audio",
+  "hash": "42f2f5a84cfaa4c73a1bfa9c21af6c37fe7ccce801d9cd3f3e7a49d9c2e89723",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 132336,
+  "originalName": "s1-timeline-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:31.666Z"
+}```
+
+### filebase/data/lesson-audio/43/4332a7309b92b1ac5f91701318889b8813a595a2652e689f73e88c460b58c928.json
+
+```
+{
+  "id": "lesson-audio/4332a7309b92b1ac5f91701318889b8813a595a2652e689f73e88c460b58c928.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4332a7309b92b1ac5f91701318889b8813a595a2652e689f73e88c460b58c928",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 98784,
+  "originalName": "s1-odd-one-out.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:13.009Z"
+}```
+
+### filebase/data/lesson-audio/43/43b4afd03a05e331b841d94837b76dbded1dc9c643173ee52122a14a24ed4268.json
+
+```
+{
+  "id": "lesson-audio/43b4afd03a05e331b841d94837b76dbded1dc9c643173ee52122a14a24ed4268.mp3",
+  "bucket": "lesson-audio",
+  "hash": "43b4afd03a05e331b841d94837b76dbded1dc9c643173ee52122a14a24ed4268",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 88128,
+  "originalName": "s1-compare-table.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:38.640Z"
 }```
 
 ### filebase/data/lesson-audio/43/43d75af5d162d908e9e87b5a7714cde12a83c635270f4ab4f7d7581b69596a54.json
@@ -8775,6 +10834,38 @@ npm test
   "createdAt": "2026-07-14T00:04:53.953Z"
 }```
 
+### filebase/data/lesson-audio/44/442b50fa6600d4604fde7b768c27d63a8033e84bd182725e38dff86e03085855.json
+
+```
+{
+  "id": "lesson-audio/442b50fa6600d4604fde7b768c27d63a8033e84bd182725e38dff86e03085855.mp3",
+  "bucket": "lesson-audio",
+  "hash": "442b50fa6600d4604fde7b768c27d63a8033e84bd182725e38dff86e03085855",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55008,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:18.372Z"
+}```
+
+### filebase/data/lesson-audio/44/446d6b5e4371a72007899d29d87757ae18536c4887eef6db49851dd66654d1e0.json
+
+```
+{
+  "id": "lesson-audio/446d6b5e4371a72007899d29d87757ae18536c4887eef6db49851dd66654d1e0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "446d6b5e4371a72007899d29d87757ae18536c4887eef6db49851dd66654d1e0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 101088,
+  "originalName": "s1-fact-opinion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:51.111Z"
+}```
+
 ### filebase/data/lesson-audio/44/44c3760c715fc9858cf3bdd6055bdcc6e33589a0d305e77a9354fd6f87b426c8.json
 
 ```
@@ -8805,6 +10896,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:07:40.816Z"
+}```
+
+### filebase/data/lesson-audio/45/453aaed96b2a31d7c0c718e5cd8c4dcadba614910e8d77c4a8d9a962c94c2b7e.json
+
+```
+{
+  "id": "lesson-audio/453aaed96b2a31d7c0c718e5cd8c4dcadba614910e8d77c4a8d9a962c94c2b7e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "453aaed96b2a31d7c0c718e5cd8c4dcadba614910e8d77c4a8d9a962c94c2b7e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 235008,
+  "originalName": "s1-apertura-sabado.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:13.159Z"
 }```
 
 ### filebase/data/lesson-audio/45/4551c37f3b1db6b793bebcc604a19276b0cd9f94971854964fceb072d140309d.json
@@ -8919,6 +11026,86 @@ npm test
   "createdAt": "2026-07-14T00:18:07.961Z"
 }```
 
+### filebase/data/lesson-audio/46/46f4d2666c8adecfa7cf8eec01ef78f05f6164cc4cddf09f376e6ec586217cf5.json
+
+```
+{
+  "id": "lesson-audio/46f4d2666c8adecfa7cf8eec01ef78f05f6164cc4cddf09f376e6ec586217cf5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "46f4d2666c8adecfa7cf8eec01ef78f05f6164cc4cddf09f376e6ec586217cf5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64656,
+  "originalName": "s1-order-steps.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:15.683Z"
+}```
+
+### filebase/data/lesson-audio/47/470ff835a8d9e7d9b0bfb549c5a037d25dd05d685a947f7b8493fa5241940711.json
+
+```
+{
+  "id": "lesson-audio/470ff835a8d9e7d9b0bfb549c5a037d25dd05d685a947f7b8493fa5241940711.mp3",
+  "bucket": "lesson-audio",
+  "hash": "470ff835a8d9e7d9b0bfb549c5a037d25dd05d685a947f7b8493fa5241940711",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 130464,
+  "originalName": "s1-machine-io.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:12.926Z"
+}```
+
+### filebase/data/lesson-audio/47/473367c244777b1f2af6f9d3ce80909a011b7d43ae9e31ad4ac5ad31919b4139.json
+
+```
+{
+  "id": "lesson-audio/473367c244777b1f2af6f9d3ce80909a011b7d43ae9e31ad4ac5ad31919b4139.mp3",
+  "bucket": "lesson-audio",
+  "hash": "473367c244777b1f2af6f9d3ce80909a011b7d43ae9e31ad4ac5ad31919b4139",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 106848,
+  "originalName": "s1-read-chart.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:15.179Z"
+}```
+
+### filebase/data/lesson-audio/47/473bc0ddcafd93c3d60243f83c2eaf8706e329c6bba3c16d56084909ae972921.json
+
+```
+{
+  "id": "lesson-audio/473bc0ddcafd93c3d60243f83c2eaf8706e329c6bba3c16d56084909ae972921.mp3",
+  "bucket": "lesson-audio",
+  "hash": "473bc0ddcafd93c3d60243f83c2eaf8706e329c6bba3c16d56084909ae972921",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 140976,
+  "originalName": "s1-repaso-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:23.845Z"
+}```
+
+### filebase/data/lesson-audio/47/47448952d547339348a291b7fd7073b343241dcea741353b9765277799838da7.json
+
+```
+{
+  "id": "lesson-audio/47448952d547339348a291b7fd7073b343241dcea741353b9765277799838da7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "47448952d547339348a291b7fd7073b343241dcea741353b9765277799838da7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 38304,
+  "originalName": "s1-dialogo.line.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:27.163Z"
+}```
+
 ### filebase/data/lesson-audio/47/4752b2a45285ad63eb9f933951d238402e675103f27a6ff4d48cad635dd04125.json
 
 ```
@@ -8951,6 +11138,22 @@ npm test
   "createdAt": "2026-07-14T00:04:44.941Z"
 }```
 
+### filebase/data/lesson-audio/47/477708b87b741119dcf12b34663d50bcb15b8c7dafefcab8fa941ccf12fe750f.json
+
+```
+{
+  "id": "lesson-audio/477708b87b741119dcf12b34663d50bcb15b8c7dafefcab8fa941ccf12fe750f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "477708b87b741119dcf12b34663d50bcb15b8c7dafefcab8fa941ccf12fe750f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 75168,
+  "originalName": "s1-number-input.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:47.919Z"
+}```
+
 ### filebase/data/lesson-audio/47/47c42c2164587314eb5f83b381c0145f140d56d0fcca2e250797c5631371dffe.json
 
 ```
@@ -8965,6 +11168,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:15.108Z"
+}```
+
+### filebase/data/lesson-audio/48/4829a47da076a35022ec34e6c971458f790e387888747176a1fb981d546718ef.json
+
+```
+{
+  "id": "lesson-audio/4829a47da076a35022ec34e6c971458f790e387888747176a1fb981d546718ef.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4829a47da076a35022ec34e6c971458f790e387888747176a1fb981d546718ef",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78624,
+  "originalName": "s1-price-compare.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:39.634Z"
+}```
+
+### filebase/data/lesson-audio/48/487be02541e74c3cf68d0d32ef5396736863df21deb64d0ef4678d9e736c221a.json
+
+```
+{
+  "id": "lesson-audio/487be02541e74c3cf68d0d32ef5396736863df21deb64d0ef4678d9e736c221a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "487be02541e74c3cf68d0d32ef5396736863df21deb64d0ef4678d9e736c221a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 189504,
+  "originalName": "s1-code-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:55.849Z"
 }```
 
 ### filebase/data/lesson-audio/48/488acf944e138fa3a81e199344a11d65e433dc3d295d2c787f3e4f97ea06c047.json
@@ -9015,6 +11250,22 @@ npm test
   "createdAt": "2026-07-14T00:20:48.956Z"
 }```
 
+### filebase/data/lesson-audio/48/48ec988fcd17fe33d5899ba7439a7f207555d20131ba97cb4cc4956e7f95254e.json
+
+```
+{
+  "id": "lesson-audio/48ec988fcd17fe33d5899ba7439a7f207555d20131ba97cb4cc4956e7f95254e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "48ec988fcd17fe33d5899ba7439a7f207555d20131ba97cb4cc4956e7f95254e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 134208,
+  "originalName": "s1-key-ideas.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:04.702Z"
+}```
+
 ### filebase/data/lesson-audio/48/48f6cb18fedee4654a04f0842abef0fc96fb8d62f9128bfbea7ced261547c887.json
 
 ```
@@ -9029,6 +11280,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:25.691Z"
+}```
+
+### filebase/data/lesson-audio/49/4902d58e7d99839b6b868b14dfc2c9ff8ccefe9a5d8a09d5d65d22f5cfa7582d.json
+
+```
+{
+  "id": "lesson-audio/4902d58e7d99839b6b868b14dfc2c9ff8ccefe9a5d8a09d5d65d22f5cfa7582d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4902d58e7d99839b6b868b14dfc2c9ff8ccefe9a5d8a09d5d65d22f5cfa7582d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 48384,
+  "originalName": "s1-lightning-round.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:52.319Z"
 }```
 
 ### filebase/data/lesson-audio/49/490c5d6cfd41f0bf9b2eade79f7376ad523fb657a681cc850d29abb68774d800.json
@@ -9079,6 +11346,70 @@ npm test
   "createdAt": "2026-07-14T00:15:09.396Z"
 }```
 
+### filebase/data/lesson-audio/4a/4a481de690270ae8b6995c26f190033b4526cb1c93611ec86de44394fcbc5129.json
+
+```
+{
+  "id": "lesson-audio/4a481de690270ae8b6995c26f190033b4526cb1c93611ec86de44394fcbc5129.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4a481de690270ae8b6995c26f190033b4526cb1c93611ec86de44394fcbc5129",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74736,
+  "originalName": "s1-match-prices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:59.717Z"
+}```
+
+### filebase/data/lesson-audio/4b/4b19b9c537d7effc19722703dd8eaf04ea5ce9fc37dd13b0163d30e4a72b663a.json
+
+```
+{
+  "id": "lesson-audio/4b19b9c537d7effc19722703dd8eaf04ea5ce9fc37dd13b0163d30e4a72b663a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4b19b9c537d7effc19722703dd8eaf04ea5ce9fc37dd13b0163d30e4a72b663a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67104,
+  "originalName": "s3-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:13.378Z"
+}```
+
+### filebase/data/lesson-audio/4b/4b84b1efe525f4a725a2e4f35f0d432a339ba4d40838b7320cdc7088561a602e.json
+
+```
+{
+  "id": "lesson-audio/4b84b1efe525f4a725a2e4f35f0d432a339ba4d40838b7320cdc7088561a602e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4b84b1efe525f4a725a2e4f35f0d432a339ba4d40838b7320cdc7088561a602e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 40608,
+  "originalName": "s1-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:42.463Z"
+}```
+
+### filebase/data/lesson-audio/4b/4b92d7b0d7b7c56e7fe74c824da2985917524eaf804dc23937f54136814c68a8.json
+
+```
+{
+  "id": "lesson-audio/4b92d7b0d7b7c56e7fe74c824da2985917524eaf804dc23937f54136814c68a8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4b92d7b0d7b7c56e7fe74c824da2985917524eaf804dc23937f54136814c68a8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57888,
+  "originalName": "s1-best-decision.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:43.366Z"
+}```
+
 ### filebase/data/lesson-audio/4b/4bb5742972b20dc88295268d91d71596937da39f7cb95893c87f309caaf302f2.json
 
 ```
@@ -9093,6 +11424,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:11:06.850Z"
+}```
+
+### filebase/data/lesson-audio/4c/4c6f67dfb70d2a15ddd21e35ee8a662719a3b3745f31d9494c0edd19fa7fea5c.json
+
+```
+{
+  "id": "lesson-audio/4c6f67dfb70d2a15ddd21e35ee8a662719a3b3745f31d9494c0edd19fa7fea5c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4c6f67dfb70d2a15ddd21e35ee8a662719a3b3745f31d9494c0edd19fa7fea5c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 94896,
+  "originalName": "s1-negociar-cliente.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:33.208Z"
+}```
+
+### filebase/data/lesson-audio/4c/4c86bb8241932b71aa66c34338e0f57188117cdb899ba386818d45ab9ffd9fc3.json
+
+```
+{
+  "id": "lesson-audio/4c86bb8241932b71aa66c34338e0f57188117cdb899ba386818d45ab9ffd9fc3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4c86bb8241932b71aa66c34338e0f57188117cdb899ba386818d45ab9ffd9fc3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31968,
+  "originalName": "s1-checkpoint.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:45.174Z"
 }```
 
 ### filebase/data/lesson-audio/4c/4ca406dd929776927b1526883ef4feab21f58dbae34b61e5389afc858cc8b503.json
@@ -9143,6 +11506,38 @@ npm test
   "createdAt": "2026-07-14T00:20:27.475Z"
 }```
 
+### filebase/data/lesson-audio/4d/4de15d6949b92c3b2ff39f0c7a4c64acc9dc59722ad286a84bec0e7c1119d418.json
+
+```
+{
+  "id": "lesson-audio/4de15d6949b92c3b2ff39f0c7a4c64acc9dc59722ad286a84bec0e7c1119d418.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4de15d6949b92c3b2ff39f0c7a4c64acc9dc59722ad286a84bec0e7c1119d418",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 89136,
+  "originalName": "s1-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:01.854Z"
+}```
+
+### filebase/data/lesson-audio/4e/4e00ba899c5d8d4a0c005534abb4a6f5dd47a98573bbd54b3fb67ccbcae8fef8.json
+
+```
+{
+  "id": "lesson-audio/4e00ba899c5d8d4a0c005534abb4a6f5dd47a98573bbd54b3fb67ccbcae8fef8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4e00ba899c5d8d4a0c005534abb4a6f5dd47a98573bbd54b3fb67ccbcae8fef8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 77184,
+  "originalName": "s1-red-flags.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:27.778Z"
+}```
+
 ### filebase/data/lesson-audio/4e/4e323f052c652f77a8194befa9717d6424446ad257bd84ea4d53b3161354e6c5.json
 
 ```
@@ -9157,6 +11552,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:25.755Z"
+}```
+
+### filebase/data/lesson-audio/4e/4e5d90a5af5e63291fb9aab84715e282c0d8562f953d8e65bd5059f8acb44c6d.json
+
+```
+{
+  "id": "lesson-audio/4e5d90a5af5e63291fb9aab84715e282c0d8562f953d8e65bd5059f8acb44c6d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4e5d90a5af5e63291fb9aab84715e282c0d8562f953d8e65bd5059f8acb44c6d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 153936,
+  "originalName": "s1-plan.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:53.515Z"
+}```
+
+### filebase/data/lesson-audio/4e/4e98a813cb4b12575cb5d66d6685ac1666800fc640bcd91e56f35b8946fc1416.json
+
+```
+{
+  "id": "lesson-audio/4e98a813cb4b12575cb5d66d6685ac1666800fc640bcd91e56f35b8946fc1416.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4e98a813cb4b12575cb5d66d6685ac1666800fc640bcd91e56f35b8946fc1416",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78624,
+  "originalName": "s1-pattern-vasos.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:25.304Z"
 }```
 
 ### filebase/data/lesson-audio/4e/4ea7054b4eccd006f5c634e7695b075150f85db3a83c4b52d0d8589dad9fa721.json
@@ -9175,6 +11602,22 @@ npm test
   "createdAt": "2026-07-14T00:17:16.570Z"
 }```
 
+### filebase/data/lesson-audio/4e/4efff143c2f2cb443bb887feb37b309f0b8885d8a9a0eb46882614842dc23b3d.json
+
+```
+{
+  "id": "lesson-audio/4efff143c2f2cb443bb887feb37b309f0b8885d8a9a0eb46882614842dc23b3d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4efff143c2f2cb443bb887feb37b309f0b8885d8a9a0eb46882614842dc23b3d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57456,
+  "originalName": "s2-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:07.413Z"
+}```
+
 ### filebase/data/lesson-audio/4f/4f36546a6fc7311703161cee616963b67a9e7f35f3e41d4779a1e08408537faa.json
 
 ```
@@ -9189,6 +11632,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:19:39.482Z"
+}```
+
+### filebase/data/lesson-audio/4f/4f4502762b8675a3597a748da222dded679da3802fd52e73a1e18794db957653.json
+
+```
+{
+  "id": "lesson-audio/4f4502762b8675a3597a748da222dded679da3802fd52e73a1e18794db957653.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4f4502762b8675a3597a748da222dded679da3802fd52e73a1e18794db957653",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 132336,
+  "originalName": "s1-needs-wants.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:34.788Z"
+}```
+
+### filebase/data/lesson-audio/4f/4f81d9134bec01a22c5051934c38a62462a494cc9327f03cab6f07b9454ed432.json
+
+```
+{
+  "id": "lesson-audio/4f81d9134bec01a22c5051934c38a62462a494cc9327f03cab6f07b9454ed432.mp3",
+  "bucket": "lesson-audio",
+  "hash": "4f81d9134bec01a22c5051934c38a62462a494cc9327f03cab6f07b9454ed432",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-order-steps.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:59.075Z"
 }```
 
 ### filebase/data/lesson-audio/4f/4fc6e3077bb5a490839a4cf43234ef963b9ff9f6688bdb58d4a128cc14715391.json
@@ -9239,6 +11714,70 @@ npm test
   "createdAt": "2026-07-14T00:06:29.921Z"
 }```
 
+### filebase/data/lesson-audio/50/505e68e38758645a9d6d4e65bba5e4542cc2f90f7ce974305202509851e659c6.json
+
+```
+{
+  "id": "lesson-audio/505e68e38758645a9d6d4e65bba5e4542cc2f90f7ce974305202509851e659c6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "505e68e38758645a9d6d4e65bba5e4542cc2f90f7ce974305202509851e659c6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 108864,
+  "originalName": "s1-ahorro.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:58.358Z"
+}```
+
+### filebase/data/lesson-audio/50/506465433b6261c07554ecaffa49c51b8efc67ba38ee6a5739f565e1223d81a7.json
+
+```
+{
+  "id": "lesson-audio/506465433b6261c07554ecaffa49c51b8efc67ba38ee6a5739f565e1223d81a7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "506465433b6261c07554ecaffa49c51b8efc67ba38ee6a5739f565e1223d81a7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 24768,
+  "originalName": "s1-branch.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:40.322Z"
+}```
+
+### filebase/data/lesson-audio/50/5080b006e5cc6febd88d3ae1b3f2b33f8cb8753fd9e818509f55c5809d56399e.json
+
+```
+{
+  "id": "lesson-audio/5080b006e5cc6febd88d3ae1b3f2b33f8cb8753fd9e818509f55c5809d56399e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5080b006e5cc6febd88d3ae1b3f2b33f8cb8753fd9e818509f55c5809d56399e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 92016,
+  "originalName": "s1-rank-choices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:19.199Z"
+}```
+
+### filebase/data/lesson-audio/50/50d2ade6a7417010dfcc1b6f360f01e9884dea3925876c86e90f34c07bc42114.json
+
+```
+{
+  "id": "lesson-audio/50d2ade6a7417010dfcc1b6f360f01e9884dea3925876c86e90f34c07bc42114.mp3",
+  "bucket": "lesson-audio",
+  "hash": "50d2ade6a7417010dfcc1b6f360f01e9884dea3925876c86e90f34c07bc42114",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64224,
+  "originalName": "s1-concept-reveal.card.1.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:17.116Z"
+}```
+
 ### filebase/data/lesson-audio/51/510476a89782f98f9d7796d00f05253f988d4ebed13fdc03e53bde83e0fe1c6c.json
 
 ```
@@ -9253,6 +11792,118 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:22.773Z"
+}```
+
+### filebase/data/lesson-audio/51/51067e2bccd90aed683a098a0bcfd3a151610e1b66251e5e043642599c588cb9.json
+
+```
+{
+  "id": "lesson-audio/51067e2bccd90aed683a098a0bcfd3a151610e1b66251e5e043642599c588cb9.mp3",
+  "bucket": "lesson-audio",
+  "hash": "51067e2bccd90aed683a098a0bcfd3a151610e1b66251e5e043642599c588cb9",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 97344,
+  "originalName": "s1-budget-fit.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:37.521Z"
+}```
+
+### filebase/data/lesson-audio/51/512b6449a9f9c6a04b5382df82be36e24e3e273b1e90dc8fe2227c60f0d5280c.json
+
+```
+{
+  "id": "lesson-audio/512b6449a9f9c6a04b5382df82be36e24e3e273b1e90dc8fe2227c60f0d5280c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "512b6449a9f9c6a04b5382df82be36e24e3e273b1e90dc8fe2227c60f0d5280c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44496,
+  "originalName": "s3-picturechoice.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:43.862Z"
+}```
+
+### filebase/data/lesson-audio/51/5168159423cb071afd6031d430461dc8f0a9936b6d4f0d89c4b8683f3d48e43a.json
+
+```
+{
+  "id": "lesson-audio/5168159423cb071afd6031d430461dc8f0a9936b6d4f0d89c4b8683f3d48e43a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5168159423cb071afd6031d430461dc8f0a9936b6d4f0d89c4b8683f3d48e43a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74736,
+  "originalName": "s1-ecuacion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:22.777Z"
+}```
+
+### filebase/data/lesson-audio/51/5198a71b92bb2499118a572d69ced0c1c20e452d0668898dd9b320f88e6f5d8b.json
+
+```
+{
+  "id": "lesson-audio/5198a71b92bb2499118a572d69ced0c1c20e452d0668898dd9b320f88e6f5d8b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5198a71b92bb2499118a572d69ced0c1c20e452d0668898dd9b320f88e6f5d8b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 38736,
+  "originalName": "s1-measure-read.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:59.117Z"
+}```
+
+### filebase/data/lesson-audio/51/51c239d98d1d3ff480bc9d362a1f6395e436b1f83f888ef05e62b5ccbb5c8db5.json
+
+```
+{
+  "id": "lesson-audio/51c239d98d1d3ff480bc9d362a1f6395e436b1f83f888ef05e62b5ccbb5c8db5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "51c239d98d1d3ff480bc9d362a1f6395e436b1f83f888ef05e62b5ccbb5c8db5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93024,
+  "originalName": "s4-timeline-dia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:49.729Z"
+}```
+
+### filebase/data/lesson-audio/51/51f019e66df9a69b1530541a2ca4d658d9b89f07ca2b3fb419f00de57f108267.json
+
+```
+{
+  "id": "lesson-audio/51f019e66df9a69b1530541a2ca4d658d9b89f07ca2b3fb419f00de57f108267.mp3",
+  "bucket": "lesson-audio",
+  "hash": "51f019e66df9a69b1530541a2ca4d658d9b89f07ca2b3fb419f00de57f108267",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 80064,
+  "originalName": "s4-timeline-dia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:27.329Z"
+}```
+
+### filebase/data/lesson-audio/51/51f797b7f5e1cc7cd1e36d475050e8dc566d3640852e5bc9e5fdfdca64109032.json
+
+```
+{
+  "id": "lesson-audio/51f797b7f5e1cc7cd1e36d475050e8dc566d3640852e5bc9e5fdfdca64109032.mp3",
+  "bucket": "lesson-audio",
+  "hash": "51f797b7f5e1cc7cd1e36d475050e8dc566d3640852e5bc9e5fdfdca64109032",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59328,
+  "originalName": "s1-fair-trade.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:49.040Z"
 }```
 
 ### filebase/data/lesson-audio/53/5300efc368c93e6186a3d9dada2dad15c70c20be9b19208cc86228806508bd31.json
@@ -9303,6 +11954,38 @@ npm test
   "createdAt": "2026-07-14T00:13:17.406Z"
 }```
 
+### filebase/data/lesson-audio/53/53b30799b92bef1c5f305c11ddaf53de5db2e30d4db8e7f291fcb9edae4fd20d.json
+
+```
+{
+  "id": "lesson-audio/53b30799b92bef1c5f305c11ddaf53de5db2e30d4db8e7f291fcb9edae4fd20d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "53b30799b92bef1c5f305c11ddaf53de5db2e30d4db8e7f291fcb9edae4fd20d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 72288,
+  "originalName": "s1-balance-scale.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:04.472Z"
+}```
+
+### filebase/data/lesson-audio/53/53deccdfb68b5def9918eb3a750dfbeb92b3008b2bfcb3eda5336a6218bdaafb.json
+
+```
+{
+  "id": "lesson-audio/53deccdfb68b5def9918eb3a750dfbeb92b3008b2bfcb3eda5336a6218bdaafb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "53deccdfb68b5def9918eb3a750dfbeb92b3008b2bfcb3eda5336a6218bdaafb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55008,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:55.618Z"
+}```
+
 ### filebase/data/lesson-audio/54/546347ef2f1808c5695fd9950e6b722a3c19bc5acdd7cbfc44cf551d38181cd4.json
 
 ```
@@ -9317,6 +12000,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:38.384Z"
+}```
+
+### filebase/data/lesson-audio/54/54b7f37adeee02f1f009161379e7a497d611b9f91123f340a0cbd2d18b33420b.json
+
+```
+{
+  "id": "lesson-audio/54b7f37adeee02f1f009161379e7a497d611b9f91123f340a0cbd2d18b33420b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "54b7f37adeee02f1f009161379e7a497d611b9f91123f340a0cbd2d18b33420b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 127008,
+  "originalName": "s1-compare-table.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:48.249Z"
+}```
+
+### filebase/data/lesson-audio/55/55162a5585e3af70ba2fc31dda9bd66cfa0c89a2ef116fad5a6cde57c04581bd.json
+
+```
+{
+  "id": "lesson-audio/55162a5585e3af70ba2fc31dda9bd66cfa0c89a2ef116fad5a6cde57c04581bd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "55162a5585e3af70ba2fc31dda9bd66cfa0c89a2ef116fad5a6cde57c04581bd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55008,
+  "originalName": "s1-repaso-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:21.417Z"
+}```
+
+### filebase/data/lesson-audio/55/5520dc2444ddfb411cb8910850a28f7b17b98f1bcc9d96996853981ed8f2e95c.json
+
+```
+{
+  "id": "lesson-audio/5520dc2444ddfb411cb8910850a28f7b17b98f1bcc9d96996853981ed8f2e95c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5520dc2444ddfb411cb8910850a28f7b17b98f1bcc9d96996853981ed8f2e95c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 86256,
+  "originalName": "s1-negociar-cliente.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:24.139Z"
 }```
 
 ### filebase/data/lesson-audio/55/5565499fe9d8039980ca280ce026da68a1cc65174dcfcca0a592db38c278b8fb.json
@@ -9335,6 +12066,22 @@ npm test
   "createdAt": "2026-07-14T00:06:43.084Z"
 }```
 
+### filebase/data/lesson-audio/55/55719c5142bce2e36dabf873b0fd9837dff466c494cdd3248a7916a3456aa2a1.json
+
+```
+{
+  "id": "lesson-audio/55719c5142bce2e36dabf873b0fd9837dff466c494cdd3248a7916a3456aa2a1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "55719c5142bce2e36dabf873b0fd9837dff466c494cdd3248a7916a3456aa2a1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 189504,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:59.307Z"
+}```
+
 ### filebase/data/lesson-audio/55/55ac053da579b1dbea98f253f4ff6b937007942f060cef3690f2e1c4e8a39644.json
 
 ```
@@ -9349,6 +12096,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:09:31.228Z"
+}```
+
+### filebase/data/lesson-audio/55/55ae232ab26d1b39a3d304cec5aed514c42c70bc0e257e323ea36ac74a69a185.json
+
+```
+{
+  "id": "lesson-audio/55ae232ab26d1b39a3d304cec5aed514c42c70bc0e257e323ea36ac74a69a185.mp3",
+  "bucket": "lesson-audio",
+  "hash": "55ae232ab26d1b39a3d304cec5aed514c42c70bc0e257e323ea36ac74a69a185",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103536,
+  "originalName": "s1-red-flags.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:53.322Z"
 }```
 
 ### filebase/data/lesson-audio/56/563761e9e369057c0605fa94bdd00658255857f786faca642405bc6a1192d279.json
@@ -9399,6 +12162,22 @@ npm test
   "createdAt": "2026-07-14T00:06:10.388Z"
 }```
 
+### filebase/data/lesson-audio/56/56e2780f78b26f2807fa55ace75d96001b382c1c2e872500643fa993e0af9502.json
+
+```
+{
+  "id": "lesson-audio/56e2780f78b26f2807fa55ace75d96001b382c1c2e872500643fa993e0af9502.mp3",
+  "bucket": "lesson-audio",
+  "hash": "56e2780f78b26f2807fa55ace75d96001b382c1c2e872500643fa993e0af9502",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 58896,
+  "originalName": "s1-pattern-vasos.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:25.612Z"
+}```
+
 ### filebase/data/lesson-audio/57/572f2ef0ebcb7f70bf514907cea6f4722e1941215509439bc74796540874b433.json
 
 ```
@@ -9413,6 +12192,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:09:56.708Z"
+}```
+
+### filebase/data/lesson-audio/57/57b614198edcd0c7687f2ce4a4c1e70589dd3688a46a31b8fb0188e202c36e94.json
+
+```
+{
+  "id": "lesson-audio/57b614198edcd0c7687f2ce4a4c1e70589dd3688a46a31b8fb0188e202c36e94.mp3",
+  "bucket": "lesson-audio",
+  "hash": "57b614198edcd0c7687f2ce4a4c1e70589dd3688a46a31b8fb0188e202c36e94",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103536,
+  "originalName": "s1-estimate-slider.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:49.450Z"
 }```
 
 ### filebase/data/lesson-audio/57/57bd79508f8a27aa1f2103971533e4837d1eab5bee1d15b23edc43e19c55e02a.json
@@ -9431,6 +12226,54 @@ npm test
   "createdAt": "2026-07-14T00:10:19.211Z"
 }```
 
+### filebase/data/lesson-audio/58/581e9b432fbee34d2a24cf6541cdad6da5e420c5ba02801949fb4857fc579d85.json
+
+```
+{
+  "id": "lesson-audio/581e9b432fbee34d2a24cf6541cdad6da5e420c5ba02801949fb4857fc579d85.mp3",
+  "bucket": "lesson-audio",
+  "hash": "581e9b432fbee34d2a24cf6541cdad6da5e420c5ba02801949fb4857fc579d85",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 112176,
+  "originalName": "s1-causa-efecto.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:51.212Z"
+}```
+
+### filebase/data/lesson-audio/58/5839e406dae9f528e2828a53ace830e6364cce6a186b4fe5f5841b7372ee062f.json
+
+```
+{
+  "id": "lesson-audio/5839e406dae9f528e2828a53ace830e6364cce6a186b4fe5f5841b7372ee062f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5839e406dae9f528e2828a53ace830e6364cce6a186b4fe5f5841b7372ee062f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102528,
+  "originalName": "s1-number-input.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:41.953Z"
+}```
+
+### filebase/data/lesson-audio/58/583e72260472eb2740f6804c05674b56d447e0a472fccefc21b83b70ca2624e8.json
+
+```
+{
+  "id": "lesson-audio/583e72260472eb2740f6804c05674b56d447e0a472fccefc21b83b70ca2624e8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "583e72260472eb2740f6804c05674b56d447e0a472fccefc21b83b70ca2624e8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 46368,
+  "originalName": "s1-apertura-sabado.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:03.825Z"
+}```
+
 ### filebase/data/lesson-audio/58/58ae424ff54b17b51cb219976fc04e643510ced8a6c21bcc80f42f1a869e818e.json
 
 ```
@@ -9445,6 +12288,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:28.549Z"
+}```
+
+### filebase/data/lesson-audio/58/58be0f081760079b04fc4781bf83337f50272f048abfb70093f569231518eb13.json
+
+```
+{
+  "id": "lesson-audio/58be0f081760079b04fc4781bf83337f50272f048abfb70093f569231518eb13.mp3",
+  "bucket": "lesson-audio",
+  "hash": "58be0f081760079b04fc4781bf83337f50272f048abfb70093f569231518eb13",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 99648,
+  "originalName": "s1-best-decision.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:21.969Z"
 }```
 
 ### filebase/data/lesson-audio/59/59314d57d2e4bf7ceb0e0035a0fffe4082838f20dea9d961598a783720100dbf.json
@@ -9479,6 +12338,22 @@ npm test
   "createdAt": "2026-07-14T00:04:20.946Z"
 }```
 
+### filebase/data/lesson-audio/59/596ea5e5fe7697833b631e258323477b79bcd003871fa5efcc52e4a19166b342.json
+
+```
+{
+  "id": "lesson-audio/596ea5e5fe7697833b631e258323477b79bcd003871fa5efcc52e4a19166b342.mp3",
+  "bucket": "lesson-audio",
+  "hash": "596ea5e5fe7697833b631e258323477b79bcd003871fa5efcc52e4a19166b342",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 128016,
+  "originalName": "s1-needs-wants.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:12.416Z"
+}```
+
 ### filebase/data/lesson-audio/59/5973c03881e96dde293170b593976d7287bb12c77539f04f85bc67f5dd76b133.json
 
 ```
@@ -9509,6 +12384,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:17:33.809Z"
+}```
+
+### filebase/data/lesson-audio/59/59a05f9839b5250c69dea842b0e90e11416739abdbad02710c3192b8902deb6f.json
+
+```
+{
+  "id": "lesson-audio/59a05f9839b5250c69dea842b0e90e11416739abdbad02710c3192b8902deb6f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "59a05f9839b5250c69dea842b0e90e11416739abdbad02710c3192b8902deb6f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 94896,
+  "originalName": "s1-piggy-split.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:28.829Z"
 }```
 
 ### filebase/data/lesson-audio/59/59df9efade3d81cc81ce99854d87bf6d36c2d62a352e0f236b2e58f8738d2329.json
@@ -9575,6 +12466,54 @@ npm test
   "createdAt": "2026-07-14T00:11:39.472Z"
 }```
 
+### filebase/data/lesson-audio/5b/5b92e6d97f22f1f3fef874f37592fb8de655b042125eaf7b1926829e27d4505a.json
+
+```
+{
+  "id": "lesson-audio/5b92e6d97f22f1f3fef874f37592fb8de655b042125eaf7b1926829e27d4505a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5b92e6d97f22f1f3fef874f37592fb8de655b042125eaf7b1926829e27d4505a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 66096,
+  "originalName": "s1-fair-trade.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:58.978Z"
+}```
+
+### filebase/data/lesson-audio/5b/5bb1f853fa4692e3ea7cf06c33aa2db83046127975a353e6de8d09445d51a2b4.json
+
+```
+{
+  "id": "lesson-audio/5bb1f853fa4692e3ea7cf06c33aa2db83046127975a353e6de8d09445d51a2b4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5bb1f853fa4692e3ea7cf06c33aa2db83046127975a353e6de8d09445d51a2b4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44064,
+  "originalName": "s1-budget-fit.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:28.968Z"
+}```
+
+### filebase/data/lesson-audio/5b/5be00616e53500ba60352a5299c10d96acd6d8e4f59b28490cad285d6c3f8469.json
+
+```
+{
+  "id": "lesson-audio/5be00616e53500ba60352a5299c10d96acd6d8e4f59b28490cad285d6c3f8469.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5be00616e53500ba60352a5299c10d96acd6d8e4f59b28490cad285d6c3f8469",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67968,
+  "originalName": "s1-number-line.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:44.636Z"
+}```
+
 ### filebase/data/lesson-audio/5b/5be834266ca325c890105de66fb00936c09b99242f50b81bdcfea9dd683660b5.json
 
 ```
@@ -9637,6 +12576,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:25.582Z"
+}```
+
+### filebase/data/lesson-audio/5c/5ce6e4a67e180aca40ac39831d7ca29e7125bb2ae475e400c6eebad1e8416d4a.json
+
+```
+{
+  "id": "lesson-audio/5ce6e4a67e180aca40ac39831d7ca29e7125bb2ae475e400c6eebad1e8416d4a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5ce6e4a67e180aca40ac39831d7ca29e7125bb2ae475e400c6eebad1e8416d4a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 40176,
+  "originalName": "s1-apertura-sabado.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:16.744Z"
+}```
+
+### filebase/data/lesson-audio/5d/5d2cd2fef9c637652006b9e0fe9784a9f01069055f4942ca0dc0c32a4e4a8b96.json
+
+```
+{
+  "id": "lesson-audio/5d2cd2fef9c637652006b9e0fe9784a9f01069055f4942ca0dc0c32a4e4a8b96.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5d2cd2fef9c637652006b9e0fe9784a9f01069055f4942ca0dc0c32a4e4a8b96",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 109728,
+  "originalName": "s1-measure-read.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:04.766Z"
+}```
+
+### filebase/data/lesson-audio/5d/5d3994a3e3c8c4e268297d68150965e508992179e93eb6c9e4b9748def0a6b88.json
+
+```
+{
+  "id": "lesson-audio/5d3994a3e3c8c4e268297d68150965e508992179e93eb6c9e4b9748def0a6b88.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5d3994a3e3c8c4e268297d68150965e508992179e93eb6c9e4b9748def0a6b88",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 125136,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:02.830Z"
 }```
 
 ### filebase/data/lesson-audio/5d/5d669628abf2a5288e7bf9bcc3acb37229bfc80799d6cbd0b02f33f95b86aba3.json
@@ -9719,6 +12706,22 @@ npm test
   "createdAt": "2026-07-14T00:16:08.219Z"
 }```
 
+### filebase/data/lesson-audio/5e/5e699e2f6244333cb803be0b50f9a72838219ee4c38cd912a6ccef00f1a4332e.json
+
+```
+{
+  "id": "lesson-audio/5e699e2f6244333cb803be0b50f9a72838219ee4c38cd912a6ccef00f1a4332e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "5e699e2f6244333cb803be0b50f9a72838219ee4c38cd912a6ccef00f1a4332e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62784,
+  "originalName": "s3-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:17.569Z"
+}```
+
 ### filebase/data/lesson-audio/5e/5e6a7685a4a15f25c1a6e6189815049d03a9909704c00ffaad964dd926fec2d7.json
 
 ```
@@ -9783,6 +12786,22 @@ npm test
   "createdAt": "2026-07-14T00:08:16.444Z"
 }```
 
+### filebase/data/lesson-audio/60/602fb3096c3c641f761146790614be83aff284cb4b79b673674e65d888397683.json
+
+```
+{
+  "id": "lesson-audio/602fb3096c3c641f761146790614be83aff284cb4b79b673674e65d888397683.mp3",
+  "bucket": "lesson-audio",
+  "hash": "602fb3096c3c641f761146790614be83aff284cb4b79b673674e65d888397683",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 99648,
+  "originalName": "s1-timeline-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:22.967Z"
+}```
+
 ### filebase/data/lesson-audio/60/60d7afcfcb8283689929ec08be291e4c7bf28ae5d9c98aedbdb995f3c44620bd.json
 
 ```
@@ -9831,6 +12850,22 @@ npm test
   "createdAt": "2026-07-14T00:16:12.950Z"
 }```
 
+### filebase/data/lesson-audio/61/619f00fe1e0f1c85ee7b41ed58e82f7f3d182b5338e27afd77e0a57e3224c8d9.json
+
+```
+{
+  "id": "lesson-audio/619f00fe1e0f1c85ee7b41ed58e82f7f3d182b5338e27afd77e0a57e3224c8d9.mp3",
+  "bucket": "lesson-audio",
+  "hash": "619f00fe1e0f1c85ee7b41ed58e82f7f3d182b5338e27afd77e0a57e3224c8d9",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62784,
+  "originalName": "s3-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:13.125Z"
+}```
+
 ### filebase/data/lesson-audio/61/61fbe7085983927c9e19644cb4a59429d5daee5ab8d776c7d732196b264e4af8.json
 
 ```
@@ -9861,6 +12896,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:15:42.446Z"
+}```
+
+### filebase/data/lesson-audio/62/62e5fbc14c57613141edf3a2916fc980505dc561883fcb76008a6f11a404552e.json
+
+```
+{
+  "id": "lesson-audio/62e5fbc14c57613141edf3a2916fc980505dc561883fcb76008a6f11a404552e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "62e5fbc14c57613141edf3a2916fc980505dc561883fcb76008a6f11a404552e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 24768,
+  "originalName": "s1-key-ideas.idea.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:59.083Z"
 }```
 
 ### filebase/data/lesson-audio/63/6327929f8091177fa9eb3e82bb29531a6bcc58ea14746ddfd9930c5839e8798c.json
@@ -9959,6 +13010,22 @@ npm test
   "createdAt": "2026-07-14T00:09:38.073Z"
 }```
 
+### filebase/data/lesson-audio/65/651228ae7d4bb5f179df52ad121a80a149601da4c4000ec13c401881f3eb21d2.json
+
+```
+{
+  "id": "lesson-audio/651228ae7d4bb5f179df52ad121a80a149601da4c4000ec13c401881f3eb21d2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "651228ae7d4bb5f179df52ad121a80a149601da4c4000ec13c401881f3eb21d2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57456,
+  "originalName": "s1-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:30.113Z"
+}```
+
 ### filebase/data/lesson-audio/65/653bb7316c53df829d58d269f98dcc9bca5bc071c4357bb782c5631931bcc6e5.json
 
 ```
@@ -9973,6 +13040,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:43.465Z"
+}```
+
+### filebase/data/lesson-audio/66/66020f8bf6180d3b65175e5ec347af725e2c973b55b6c0169bcbdf397a2c11d5.json
+
+```
+{
+  "id": "lesson-audio/66020f8bf6180d3b65175e5ec347af725e2c973b55b6c0169bcbdf397a2c11d5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "66020f8bf6180d3b65175e5ec347af725e2c973b55b6c0169bcbdf397a2c11d5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 49824,
+  "originalName": "s1-budget-fit.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:35.825Z"
 }```
 
 ### filebase/data/lesson-audio/66/66189863be93c797f5223f472fd7d3ccbb16c636a75b5c0df7b586f5c6a7d431.json
@@ -10039,6 +13122,22 @@ npm test
   "createdAt": "2026-07-14T00:16:39.539Z"
 }```
 
+### filebase/data/lesson-audio/67/6799de68d0a4b00f5f52ba92fbcb4b77ea29f79696a07344b22cff29aab3b601.json
+
+```
+{
+  "id": "lesson-audio/6799de68d0a4b00f5f52ba92fbcb4b77ea29f79696a07344b22cff29aab3b601.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6799de68d0a4b00f5f52ba92fbcb4b77ea29f79696a07344b22cff29aab3b601",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 119808,
+  "originalName": "s1-fair-trade.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:52.082Z"
+}```
+
 ### filebase/data/lesson-audio/67/67b2c62899a453fae2fb225808c9ce5353fd8f544a8cb11918b4e60ef87ea094.json
 
 ```
@@ -10055,6 +13154,38 @@ npm test
   "createdAt": "2026-07-14T00:16:42.690Z"
 }```
 
+### filebase/data/lesson-audio/68/681410ec7184506a10f46b8befa473613602681eda9a73af06328fbe5d4ec8a7.json
+
+```
+{
+  "id": "lesson-audio/681410ec7184506a10f46b8befa473613602681eda9a73af06328fbe5d4ec8a7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "681410ec7184506a10f46b8befa473613602681eda9a73af06328fbe5d4ec8a7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 145728,
+  "originalName": "s1-flash-match.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:37.655Z"
+}```
+
+### filebase/data/lesson-audio/68/68545c37b380ed7bb81ad0f0ef956cf1ad904690b14021e46f94cca8dca15ee1.json
+
+```
+{
+  "id": "lesson-audio/68545c37b380ed7bb81ad0f0ef956cf1ad904690b14021e46f94cca8dca15ee1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "68545c37b380ed7bb81ad0f0ef956cf1ad904690b14021e46f94cca8dca15ee1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 57456,
+  "originalName": "s1-repaso-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:12.256Z"
+}```
+
 ### filebase/data/lesson-audio/68/68c874664c34f3233347c455727beb6856da5e202f7e533fb0710bb761c78a35.json
 
 ```
@@ -10069,6 +13200,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:37.100Z"
+}```
+
+### filebase/data/lesson-audio/68/68e61ca6632043109a172f412a72a274c57b1840e3ee1d250a618b13be1fc3b0.json
+
+```
+{
+  "id": "lesson-audio/68e61ca6632043109a172f412a72a274c57b1840e3ee1d250a618b13be1fc3b0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "68e61ca6632043109a172f412a72a274c57b1840e3ee1d250a618b13be1fc3b0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 165024,
+  "originalName": "s1-order-steps.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:09.411Z"
 }```
 
 ### filebase/data/lesson-audio/68/68e71cab2b89f1146f20c04b0a2a0e8f29a605a1f4816b1278e74fa18eb1f0c4.json
@@ -10101,6 +13248,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:18.388Z"
+}```
+
+### filebase/data/lesson-audio/69/6920bab8d2d54c7a1805e2ba7d8c4f4d0e696d446ac8483841230b5b49cfbe1c.json
+
+```
+{
+  "id": "lesson-audio/6920bab8d2d54c7a1805e2ba7d8c4f4d0e696d446ac8483841230b5b49cfbe1c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6920bab8d2d54c7a1805e2ba7d8c4f4d0e696d446ac8483841230b5b49cfbe1c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36864,
+  "originalName": "s2-truefalse.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:26.637Z"
 }```
 
 ### filebase/data/lesson-audio/69/694f3d1be3dc172e3d163ddbf69d7bd35d0e26f219079c5dee41f6a29d958191.json
@@ -10213,6 +13376,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:07:13.321Z"
+}```
+
+### filebase/data/lesson-audio/6a/6aba871746ffa98e942099ef0bdf2d9ba3a4aac7a714e406cb36870511e1536e.json
+
+```
+{
+  "id": "lesson-audio/6aba871746ffa98e942099ef0bdf2d9ba3a4aac7a714e406cb36870511e1536e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6aba871746ffa98e942099ef0bdf2d9ba3a4aac7a714e406cb36870511e1536e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 96768,
+  "originalName": "s1-arma-letrero.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:47.923Z"
 }```
 
 ### filebase/data/lesson-audio/6a/6ac969ce956e2796ee8e5c927cf0faa0fdc1d06cfff5bbd32fcf08db66934d41.json
@@ -10375,6 +13554,38 @@ npm test
   "createdAt": "2026-07-14T00:05:14.007Z"
 }```
 
+### filebase/data/lesson-audio/6c/6caa1481295dd8b7fe1228e894792781a7bc42f67bc0844799fcee6ca3a4afdb.json
+
+```
+{
+  "id": "lesson-audio/6caa1481295dd8b7fe1228e894792781a7bc42f67bc0844799fcee6ca3a4afdb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6caa1481295dd8b7fe1228e894792781a7bc42f67bc0844799fcee6ca3a4afdb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 25344,
+  "originalName": "s1-dialogo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:42.897Z"
+}```
+
+### filebase/data/lesson-audio/6c/6cd74ea36c1d44f494a031ad5395c4cc5337953d37f6edd2181ed95cc9aa04e1.json
+
+```
+{
+  "id": "lesson-audio/6cd74ea36c1d44f494a031ad5395c4cc5337953d37f6edd2181ed95cc9aa04e1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6cd74ea36c1d44f494a031ad5395c4cc5337953d37f6edd2181ed95cc9aa04e1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 43056,
+  "originalName": "s1-evidence-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:57.017Z"
+}```
+
 ### filebase/data/lesson-audio/6c/6cfc61c6bc92e82f1fb19bfd05c4ab7cfc8f869efb7b634ab8e01f7836b2ff71.json
 
 ```
@@ -10389,6 +13600,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:52.469Z"
+}```
+
+### filebase/data/lesson-audio/6d/6d1136c5bd530c6cfea8e11318c8e4be100d93412f3be8294d75db2b0539b650.json
+
+```
+{
+  "id": "lesson-audio/6d1136c5bd530c6cfea8e11318c8e4be100d93412f3be8294d75db2b0539b650.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6d1136c5bd530c6cfea8e11318c8e4be100d93412f3be8294d75db2b0539b650",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 108288,
+  "originalName": "s1-lightning-round.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:05.468Z"
+}```
+
+### filebase/data/lesson-audio/6d/6d19536a1968b0fc075309e5d7baebe76111dd6a5ce05a3eef1ae94625b15900.json
+
+```
+{
+  "id": "lesson-audio/6d19536a1968b0fc075309e5d7baebe76111dd6a5ce05a3eef1ae94625b15900.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6d19536a1968b0fc075309e5d7baebe76111dd6a5ce05a3eef1ae94625b15900",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 56016,
+  "originalName": "s1-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:05.928Z"
 }```
 
 ### filebase/data/lesson-audio/6d/6d4872b277bea8f3f3d3fa77dbbe0c92c4d9987507ce2317c5c81d8a9eab446f.json
@@ -10407,6 +13650,54 @@ npm test
   "createdAt": "2026-07-14T00:09:25.368Z"
 }```
 
+### filebase/data/lesson-audio/6d/6d8968e3bdb8b75670b222964e7aa364c0a73eaf247e5489054f2e8f37d72adf.json
+
+```
+{
+  "id": "lesson-audio/6d8968e3bdb8b75670b222964e7aa364c0a73eaf247e5489054f2e8f37d72adf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6d8968e3bdb8b75670b222964e7aa364c0a73eaf247e5489054f2e8f37d72adf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 125568,
+  "originalName": "s1-key-ideas.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:04.067Z"
+}```
+
+### filebase/data/lesson-audio/6d/6da1968262964500fe2e9eacb38f1881523edd4196879658cc1b579bcf88f821.json
+
+```
+{
+  "id": "lesson-audio/6da1968262964500fe2e9eacb38f1881523edd4196879658cc1b579bcf88f821.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6da1968262964500fe2e9eacb38f1881523edd4196879658cc1b579bcf88f821",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 50688,
+  "originalName": "s3-sort-compras.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:21.810Z"
+}```
+
+### filebase/data/lesson-audio/6d/6dbd5d64804a2500eb7daed869ad16477d293d4f8dd2d8e633b386029d903f21.json
+
+```
+{
+  "id": "lesson-audio/6dbd5d64804a2500eb7daed869ad16477d293d4f8dd2d8e633b386029d903f21.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6dbd5d64804a2500eb7daed869ad16477d293d4f8dd2d8e633b386029d903f21",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42624,
+  "originalName": "s1-machine-io.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:10.467Z"
+}```
+
 ### filebase/data/lesson-audio/6d/6dbea9ad04c76b0f57c967d1e03c7c5a823c600282e167ece3f34f37507c273c.json
 
 ```
@@ -10423,6 +13714,22 @@ npm test
   "createdAt": "2026-07-14T00:14:35.136Z"
 }```
 
+### filebase/data/lesson-audio/6d/6de2f9a7e12cb47ebf4ff0c13eb220e26e50b1adcbda72997932cc2b4e2986ec.json
+
+```
+{
+  "id": "lesson-audio/6de2f9a7e12cb47ebf4ff0c13eb220e26e50b1adcbda72997932cc2b4e2986ec.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6de2f9a7e12cb47ebf4ff0c13eb220e26e50b1adcbda72997932cc2b4e2986ec",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44496,
+  "originalName": "s2-order-receta.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:38.074Z"
+}```
+
 ### filebase/data/lesson-audio/6e/6e02792c835feb81402eaa6deb0b7f116a876d6decd967e1f4673563304ed3fa.json
 
 ```
@@ -10437,6 +13744,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:16:48.352Z"
+}```
+
+### filebase/data/lesson-audio/6e/6e0de32c55c15ca49977bc8a569156459ef76dd322068da4a6e888a24e1a2adb.json
+
+```
+{
+  "id": "lesson-audio/6e0de32c55c15ca49977bc8a569156459ef76dd322068da4a6e888a24e1a2adb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6e0de32c55c15ca49977bc8a569156459ef76dd322068da4a6e888a24e1a2adb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44064,
+  "originalName": "s3-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:17.331Z"
 }```
 
 ### filebase/data/lesson-audio/6e/6e5e663bb8b20e1fc738bf26a8089d3f5bfd67e77666c1dca7ce7516f5f73fac.json
@@ -10503,6 +13826,22 @@ npm test
   "createdAt": "2026-07-14T00:20:47.275Z"
 }```
 
+### filebase/data/lesson-audio/6f/6f1a2c0dbecf1420c99118f5eee6d0aebeb98756bbbe07313a138f4d12f6186d.json
+
+```
+{
+  "id": "lesson-audio/6f1a2c0dbecf1420c99118f5eee6d0aebeb98756bbbe07313a138f4d12f6186d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6f1a2c0dbecf1420c99118f5eee6d0aebeb98756bbbe07313a138f4d12f6186d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36288,
+  "originalName": "s1-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:58.758Z"
+}```
+
 ### filebase/data/lesson-audio/6f/6f1bf2ca97928125497dbb19e3296ea2753f269be0f85a1b0bf02ad8503bfd88.json
 
 ```
@@ -10549,6 +13888,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:53.232Z"
+}```
+
+### filebase/data/lesson-audio/6f/6f75db312e8e598dd2b0df6e411a31e9ae28468d01551db674bf24bb539e6232.json
+
+```
+{
+  "id": "lesson-audio/6f75db312e8e598dd2b0df6e411a31e9ae28468d01551db674bf24bb539e6232.mp3",
+  "bucket": "lesson-audio",
+  "hash": "6f75db312e8e598dd2b0df6e411a31e9ae28468d01551db674bf24bb539e6232",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 29664,
+  "originalName": "s1-evidence-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:49.194Z"
 }```
 
 ### filebase/data/lesson-audio/6f/6fb4580443d66bda66c71b1eda53724587c9e764c3396637e9a181fa0e87ef0d.json
@@ -10631,6 +13986,38 @@ npm test
   "createdAt": "2026-07-14T00:09:35.320Z"
 }```
 
+### filebase/data/lesson-audio/70/708669bd8aa71cedd3c9da94c595e39d65debd88197278b85c0598948d0ad6fe.json
+
+```
+{
+  "id": "lesson-audio/708669bd8aa71cedd3c9da94c595e39d65debd88197278b85c0598948d0ad6fe.mp3",
+  "bucket": "lesson-audio",
+  "hash": "708669bd8aa71cedd3c9da94c595e39d65debd88197278b85c0598948d0ad6fe",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 163008,
+  "originalName": "s1-memory-flip.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:11.916Z"
+}```
+
+### filebase/data/lesson-audio/70/70df21abce198a1426bc1c69908bc36c0ca4d880db8bc1a3b697d794d8b33703.json
+
+```
+{
+  "id": "lesson-audio/70df21abce198a1426bc1c69908bc36c0ca4d880db8bc1a3b697d794d8b33703.mp3",
+  "bucket": "lesson-audio",
+  "hash": "70df21abce198a1426bc1c69908bc36c0ca4d880db8bc1a3b697d794d8b33703",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 114048,
+  "originalName": "s1-read-chart.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:41.271Z"
+}```
+
 ### filebase/data/lesson-audio/71/7127b071903805b772803f3e4816b2ab6f6515f77c6a53ebbb6e5a4d3a04e167.json
 
 ```
@@ -10645,6 +14032,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:36.354Z"
+}```
+
+### filebase/data/lesson-audio/71/714b17688e49967300a245982c461a8dae5ec8e7ec60374074b64665f02955fd.json
+
+```
+{
+  "id": "lesson-audio/714b17688e49967300a245982c461a8dae5ec8e7ec60374074b64665f02955fd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "714b17688e49967300a245982c461a8dae5ec8e7ec60374074b64665f02955fd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 148608,
+  "originalName": "s1-causa-efecto.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:18.346Z"
+}```
+
+### filebase/data/lesson-audio/71/71844f2c9f0e48ec830af7ca43d3bc6bb3192098e57d7bf4bc1f844edd6d320c.json
+
+```
+{
+  "id": "lesson-audio/71844f2c9f0e48ec830af7ca43d3bc6bb3192098e57d7bf4bc1f844edd6d320c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "71844f2c9f0e48ec830af7ca43d3bc6bb3192098e57d7bf4bc1f844edd6d320c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45504,
+  "originalName": "s1-pattern-vasos.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:29.480Z"
 }```
 
 ### filebase/data/lesson-audio/71/71f6278f40f91a756481356c848dc42cfe107b9cd9ddc14a1da2c2f94594fe68.json
@@ -10679,6 +14098,22 @@ npm test
   "createdAt": "2026-07-14T00:05:23.993Z"
 }```
 
+### filebase/data/lesson-audio/72/729d1b0e370a71511024f6f2aa312864ebf4e8355b4222cd55d26c25a491efe0.json
+
+```
+{
+  "id": "lesson-audio/729d1b0e370a71511024f6f2aa312864ebf4e8355b4222cd55d26c25a491efe0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "729d1b0e370a71511024f6f2aa312864ebf4e8355b4222cd55d26c25a491efe0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 88128,
+  "originalName": "s1-rank-choices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:29.284Z"
+}```
+
 ### filebase/data/lesson-audio/72/72a74e32d9a7cb81c79b5e59d6ed3d03a23496fa34ca8812b4a4839b20cce4e5.json
 
 ```
@@ -10693,6 +14128,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:49.873Z"
+}```
+
+### filebase/data/lesson-audio/72/72cfb0e9eaadbff4d5144e12975d6ce033620e07e86d9d7146cb61c81c304842.json
+
+```
+{
+  "id": "lesson-audio/72cfb0e9eaadbff4d5144e12975d6ce033620e07e86d9d7146cb61c81c304842.mp3",
+  "bucket": "lesson-audio",
+  "hash": "72cfb0e9eaadbff4d5144e12975d6ce033620e07e86d9d7146cb61c81c304842",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 165888,
+  "originalName": "s1-memory-flip.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:21.901Z"
+}```
+
+### filebase/data/lesson-audio/73/73009a16bf8eae563e5f048398a8ed08558b1ce3df9fd29adafc9c2551dd4d69.json
+
+```
+{
+  "id": "lesson-audio/73009a16bf8eae563e5f048398a8ed08558b1ce3df9fd29adafc9c2551dd4d69.mp3",
+  "bucket": "lesson-audio",
+  "hash": "73009a16bf8eae563e5f048398a8ed08558b1ce3df9fd29adafc9c2551dd4d69",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 109728,
+  "originalName": "s1-measure-read.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:21.794Z"
+}```
+
+### filebase/data/lesson-audio/73/7376f3bc1789b336987252ea9986fae6498f75d34b12fa3c6d6cbef72aaeec6b.json
+
+```
+{
+  "id": "lesson-audio/7376f3bc1789b336987252ea9986fae6498f75d34b12fa3c6d6cbef72aaeec6b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7376f3bc1789b336987252ea9986fae6498f75d34b12fa3c6d6cbef72aaeec6b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 21888,
+  "originalName": "s1-would-you-rather.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:26.445Z"
+}```
+
+### filebase/data/lesson-audio/73/73d88593eda13daf15fa460d517879e85d673ad79da4682634a045fcdd11c2ee.json
+
+```
+{
+  "id": "lesson-audio/73d88593eda13daf15fa460d517879e85d673ad79da4682634a045fcdd11c2ee.mp3",
+  "bucket": "lesson-audio",
+  "hash": "73d88593eda13daf15fa460d517879e85d673ad79da4682634a045fcdd11c2ee",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93024,
+  "originalName": "s1-rank-choices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:43.825Z"
 }```
 
 ### filebase/data/lesson-audio/74/74593f1783613e1ddc6335d0b608494f299dc5ab02156655a3a0194f65b76594.json
@@ -10711,6 +14210,22 @@ npm test
   "createdAt": "2026-07-14T00:05:17.219Z"
 }```
 
+### filebase/data/lesson-audio/74/747fa3b99d2b60d23a2c105e617b8703ece73ce2a49596e3d226740de2d1367f.json
+
+```
+{
+  "id": "lesson-audio/747fa3b99d2b60d23a2c105e617b8703ece73ce2a49596e3d226740de2d1367f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "747fa3b99d2b60d23a2c105e617b8703ece73ce2a49596e3d226740de2d1367f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 48384,
+  "originalName": "s2-truefalse.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:25.603Z"
+}```
+
 ### filebase/data/lesson-audio/74/74855bace1590f3a2a0703d3d63ce9f65747812c3fb3e84f2c6841af5bb6bc94.json
 
 ```
@@ -10725,6 +14240,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:16.480Z"
+}```
+
+### filebase/data/lesson-audio/74/749c3e242c215fb2746382f5bacdaf1b9ce21632692da1665e6fe5656ffeb00a.json
+
+```
+{
+  "id": "lesson-audio/749c3e242c215fb2746382f5bacdaf1b9ce21632692da1665e6fe5656ffeb00a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "749c3e242c215fb2746382f5bacdaf1b9ce21632692da1665e6fe5656ffeb00a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32544,
+  "originalName": "s1-confidence.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:03.390Z"
 }```
 
 ### filebase/data/lesson-audio/75/757a1ffa0a46a6a965568b98017648128a6597a6d3b6dd2bdeaf6dd5ef575814.json
@@ -10791,6 +14322,22 @@ npm test
   "createdAt": "2026-07-14T00:13:40.975Z"
 }```
 
+### filebase/data/lesson-audio/76/7684eedf3d91188a64a123398f435d230e70f24a40bcc32495595a29d9b81bbe.json
+
+```
+{
+  "id": "lesson-audio/7684eedf3d91188a64a123398f435d230e70f24a40bcc32495595a29d9b81bbe.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7684eedf3d91188a64a123398f435d230e70f24a40bcc32495595a29d9b81bbe",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 55584,
+  "originalName": "s1-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:59.891Z"
+}```
+
 ### filebase/data/lesson-audio/76/7687adb316dabb6d28f50f5f32f8d0ca36e76261cc0cb85711cca060b8f5d2a2.json
 
 ```
@@ -10823,6 +14370,38 @@ npm test
   "createdAt": "2026-07-14T00:14:27.877Z"
 }```
 
+### filebase/data/lesson-audio/77/772dbc06f2ebb5d78e35972d4d5a5c81accbfeeea1a0726b98047d9691151ee2.json
+
+```
+{
+  "id": "lesson-audio/772dbc06f2ebb5d78e35972d4d5a5c81accbfeeea1a0726b98047d9691151ee2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "772dbc06f2ebb5d78e35972d4d5a5c81accbfeeea1a0726b98047d9691151ee2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100656,
+  "originalName": "s1-speed-tap.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:09.022Z"
+}```
+
+### filebase/data/lesson-audio/77/774881650a1a25a177718bd2698fdd12c4e23168b74046002a5df2033d718850.json
+
+```
+{
+  "id": "lesson-audio/774881650a1a25a177718bd2698fdd12c4e23168b74046002a5df2033d718850.mp3",
+  "bucket": "lesson-audio",
+  "hash": "774881650a1a25a177718bd2698fdd12c4e23168b74046002a5df2033d718850",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 153504,
+  "originalName": "s1-plan.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:04.397Z"
+}```
+
 ### filebase/data/lesson-audio/77/778f26141a3990c5557d9ea8e729b53e2fda7b11aef03421d66f5efffdb82241.json
 
 ```
@@ -10837,6 +14416,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:38.111Z"
+}```
+
+### filebase/data/lesson-audio/77/77a8334783a79eb484960c1386f08464ab3942e563a35eccc7456d8f505b4db6.json
+
+```
+{
+  "id": "lesson-audio/77a8334783a79eb484960c1386f08464ab3942e563a35eccc7456d8f505b4db6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "77a8334783a79eb484960c1386f08464ab3942e563a35eccc7456d8f505b4db6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 148176,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:24.839Z"
 }```
 
 ### filebase/data/lesson-audio/78/782c9734675029f969cd2c434b6f3f28ef4da607152940691febfa3621f871cf.json
@@ -10903,6 +14498,22 @@ npm test
   "createdAt": "2026-07-14T00:15:43.003Z"
 }```
 
+### filebase/data/lesson-audio/79/79184400c5d3b369420989eb13919818fa6daf4e9a926c502267bd9812bc7156.json
+
+```
+{
+  "id": "lesson-audio/79184400c5d3b369420989eb13919818fa6daf4e9a926c502267bd9812bc7156.mp3",
+  "bucket": "lesson-audio",
+  "hash": "79184400c5d3b369420989eb13919818fa6daf4e9a926c502267bd9812bc7156",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 149184,
+  "originalName": "s1-yes-no-cases.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:36.421Z"
+}```
+
 ### filebase/data/lesson-audio/79/79588ff8eef2ec48c505553fd1521483d053551bac2ee459571a5ab4e370ec48.json
 
 ```
@@ -10917,6 +14528,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:39.992Z"
+}```
+
+### filebase/data/lesson-audio/79/7980a3b71700f04ec08b11de0d4ff4b9dde69eb56c33affc3cea96935726a618.json
+
+```
+{
+  "id": "lesson-audio/7980a3b71700f04ec08b11de0d4ff4b9dde69eb56c33affc3cea96935726a618.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7980a3b71700f04ec08b11de0d4ff4b9dde69eb56c33affc3cea96935726a618",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 96336,
+  "originalName": "s1-cuenta-limones.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:07.410Z"
 }```
 
 ### filebase/data/lesson-audio/79/798e7e1d877338ead36f35c4234c3015876f01d5ee2e7c90c301dc7d8715b78a.json
@@ -10935,6 +14562,22 @@ npm test
   "createdAt": "2026-07-14T00:07:33.802Z"
 }```
 
+### filebase/data/lesson-audio/79/7993b3eda15434cace3706d68eaddb54eca327999afc8820915baab5f4f3f022.json
+
+```
+{
+  "id": "lesson-audio/7993b3eda15434cace3706d68eaddb54eca327999afc8820915baab5f4f3f022.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7993b3eda15434cace3706d68eaddb54eca327999afc8820915baab5f4f3f022",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53136,
+  "originalName": "s1-negociar-cliente.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:31.105Z"
+}```
+
 ### filebase/data/lesson-audio/79/79cf5a30f1f942f46b5db39ccbde515a8e61720b86acdbd6ed51e0a4a24402b6.json
 
 ```
@@ -10951,6 +14594,22 @@ npm test
   "createdAt": "2026-07-14T00:05:24.396Z"
 }```
 
+### filebase/data/lesson-audio/79/79ff6a584888784f3473ef06122d41f0f3c044d8dd57c0edae3d210eedab0349.json
+
+```
+{
+  "id": "lesson-audio/79ff6a584888784f3473ef06122d41f0f3c044d8dd57c0edae3d210eedab0349.mp3",
+  "bucket": "lesson-audio",
+  "hash": "79ff6a584888784f3473ef06122d41f0f3c044d8dd57c0edae3d210eedab0349",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 152496,
+  "originalName": "s1-number-line.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:57.630Z"
+}```
+
 ### filebase/data/lesson-audio/7a/7a2349bf75759e6caef33873fd749f28e8fa056e8b0a817fd8d3a52e76747688.json
 
 ```
@@ -10965,6 +14624,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:15:52.564Z"
+}```
+
+### filebase/data/lesson-audio/7a/7a64e693e510f29f6c8aa66ae36829e35632c634ed76d6e1e462974246934061.json
+
+```
+{
+  "id": "lesson-audio/7a64e693e510f29f6c8aa66ae36829e35632c634ed76d6e1e462974246934061.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7a64e693e510f29f6c8aa66ae36829e35632c634ed76d6e1e462974246934061",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102096,
+  "originalName": "s1-odd-one-out.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:40.610Z"
+}```
+
+### filebase/data/lesson-audio/7b/7b1f37e9181746e32cb4fe9eb6c8ae62392f76609a8230bb1ce24ad7c5231704.json
+
+```
+{
+  "id": "lesson-audio/7b1f37e9181746e32cb4fe9eb6c8ae62392f76609a8230bb1ce24ad7c5231704.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7b1f37e9181746e32cb4fe9eb6c8ae62392f76609a8230bb1ce24ad7c5231704",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 120816,
+  "originalName": "s1-match-precios.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:12.279Z"
+}```
+
+### filebase/data/lesson-audio/7b/7b49fbf703d31f73804f6d946d5b7f250b01369bd107874534426fefd3b62e96.json
+
+```
+{
+  "id": "lesson-audio/7b49fbf703d31f73804f6d946d5b7f250b01369bd107874534426fefd3b62e96.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7b49fbf703d31f73804f6d946d5b7f250b01369bd107874534426fefd3b62e96",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44496,
+  "originalName": "s1-confidence.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:09.034Z"
 }```
 
 ### filebase/data/lesson-audio/7c/7c0d651b2ffc10f402700589934eccb809252fb06cd81fe2f608197ba0994bcb.json
@@ -11063,6 +14770,22 @@ npm test
   "createdAt": "2026-07-14T00:06:48.336Z"
 }```
 
+### filebase/data/lesson-audio/7c/7cd0d2e878dd0f6fbe09e7314761bfd89090843a1c07e223247dd49ddf618f8f.json
+
+```
+{
+  "id": "lesson-audio/7cd0d2e878dd0f6fbe09e7314761bfd89090843a1c07e223247dd49ddf618f8f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7cd0d2e878dd0f6fbe09e7314761bfd89090843a1c07e223247dd49ddf618f8f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 146736,
+  "originalName": "s1-sort-buckets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:50.736Z"
+}```
+
 ### filebase/data/lesson-audio/7c/7cf327597785fc6364535c93cea70c3bf7562fa722d8d64d7495a7729a56d155.json
 
 ```
@@ -11077,6 +14800,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:54.247Z"
+}```
+
+### filebase/data/lesson-audio/7d/7d5b8d9da5eb9e2a7825e737bfcb3b29f159f08273924710f66c5ce7891860bd.json
+
+```
+{
+  "id": "lesson-audio/7d5b8d9da5eb9e2a7825e737bfcb3b29f159f08273924710f66c5ce7891860bd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7d5b8d9da5eb9e2a7825e737bfcb3b29f159f08273924710f66c5ce7891860bd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 95904,
+  "originalName": "s1-pattern-vasos.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:43.220Z"
+}```
+
+### filebase/data/lesson-audio/7d/7db4fc4c0dc7adc19fa3a83e3cc02704b629d1d88e9c5d01d50d0e84dc813363.json
+
+```
+{
+  "id": "lesson-audio/7db4fc4c0dc7adc19fa3a83e3cc02704b629d1d88e9c5d01d50d0e84dc813363.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7db4fc4c0dc7adc19fa3a83e3cc02704b629d1d88e9c5d01d50d0e84dc813363",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36864,
+  "originalName": "s3-picturechoice.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:30.203Z"
 }```
 
 ### filebase/data/lesson-audio/7d/7df555c33da937dc6e8998e4f734fb944a16c2c94af153e02f0deced026b4966.json
@@ -11127,6 +14882,22 @@ npm test
   "createdAt": "2026-07-14T00:10:41.424Z"
 }```
 
+### filebase/data/lesson-audio/7e/7e7e6da574ef32b9cfcc4ed8fe633c449baafc3299b703c3c17a958b9fe70747.json
+
+```
+{
+  "id": "lesson-audio/7e7e6da574ef32b9cfcc4ed8fe633c449baafc3299b703c3c17a958b9fe70747.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7e7e6da574ef32b9cfcc4ed8fe633c449baafc3299b703c3c17a958b9fe70747",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 56448,
+  "originalName": "s2-order-receta.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:16.715Z"
+}```
+
 ### filebase/data/lesson-audio/7f/7f35eb59fd167dff486bc7aa4b167f016d244810f361c42b9594b7db95306ab6.json
 
 ```
@@ -11157,6 +14928,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:14:27.195Z"
+}```
+
+### filebase/data/lesson-audio/7f/7fc4d6933a3e2310e680b7a728015e3934f4f7bb55522f4f47e10eb3f59c1ae4.json
+
+```
+{
+  "id": "lesson-audio/7fc4d6933a3e2310e680b7a728015e3934f4f7bb55522f4f47e10eb3f59c1ae4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7fc4d6933a3e2310e680b7a728015e3934f4f7bb55522f4f47e10eb3f59c1ae4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64224,
+  "originalName": "s2-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:03.635Z"
+}```
+
+### filebase/data/lesson-audio/7f/7ffd1f75ab4d81c817bf7fb9252da61a2eba5ec6ff76aa305ddef30cfd734897.json
+
+```
+{
+  "id": "lesson-audio/7ffd1f75ab4d81c817bf7fb9252da61a2eba5ec6ff76aa305ddef30cfd734897.mp3",
+  "bucket": "lesson-audio",
+  "hash": "7ffd1f75ab4d81c817bf7fb9252da61a2eba5ec6ff76aa305ddef30cfd734897",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 139104,
+  "originalName": "s1-machine-io.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:21.491Z"
+}```
+
+### filebase/data/lesson-audio/80/807c086920d1a95d6de1a0fab8b2cf36ec72d72fb9ccf75ca91459eea43898f4.json
+
+```
+{
+  "id": "lesson-audio/807c086920d1a95d6de1a0fab8b2cf36ec72d72fb9ccf75ca91459eea43898f4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "807c086920d1a95d6de1a0fab8b2cf36ec72d72fb9ccf75ca91459eea43898f4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 20016,
+  "originalName": "s1-spot-error.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:11.657Z"
 }```
 
 ### filebase/data/lesson-audio/81/815285b9f483c7fa5dcf45b801f1bf2dabdd281afe64b3ce1d46c3c06b4fe42c.json
@@ -11221,6 +15040,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:16:27.447Z"
+}```
+
+### filebase/data/lesson-audio/81/81ee77c9dcf07a299451066aa697e6985a4d85e54cf4b3ef33ab9c66457c0697.json
+
+```
+{
+  "id": "lesson-audio/81ee77c9dcf07a299451066aa697e6985a4d85e54cf4b3ef33ab9c66457c0697.mp3",
+  "bucket": "lesson-audio",
+  "hash": "81ee77c9dcf07a299451066aa697e6985a4d85e54cf4b3ef33ab9c66457c0697",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 76608,
+  "originalName": "s4-timeline-dia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:01.644Z"
 }```
 
 ### filebase/data/lesson-audio/82/8291b94b86787753f1742e7c9d1f692d420204c147dfaf6f1135a4bd753ebe99.json
@@ -11303,6 +15138,38 @@ npm test
   "createdAt": "2026-07-14T00:08:44.725Z"
 }```
 
+### filebase/data/lesson-audio/84/84fe19ca495738d32ea6b1f2a2ad3e00babcc852763070cb5f595b17c850cb6b.json
+
+```
+{
+  "id": "lesson-audio/84fe19ca495738d32ea6b1f2a2ad3e00babcc852763070cb5f595b17c850cb6b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "84fe19ca495738d32ea6b1f2a2ad3e00babcc852763070cb5f595b17c850cb6b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73296,
+  "originalName": "s1-odd-one-out.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:50.149Z"
+}```
+
+### filebase/data/lesson-audio/85/850642786cf3740ecde0be0e03e2f987e8ec69e89fa903b6dc4dc44736bd7ce7.json
+
+```
+{
+  "id": "lesson-audio/850642786cf3740ecde0be0e03e2f987e8ec69e89fa903b6dc4dc44736bd7ce7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "850642786cf3740ecde0be0e03e2f987e8ec69e89fa903b6dc4dc44736bd7ce7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 129024,
+  "originalName": "s1-fair-trade.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:00.228Z"
+}```
+
 ### filebase/data/lesson-audio/85/85539ff2f6bc59dcb5a32458b392135d0ede2b8c6846b0d272dfee77ad57b42b.json
 
 ```
@@ -11317,6 +15184,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:19:06.872Z"
+}```
+
+### filebase/data/lesson-audio/85/8555348ba5301ec370c640f734d3990d9c70bde63d750f82e9346d79ec76e780.json
+
+```
+{
+  "id": "lesson-audio/8555348ba5301ec370c640f734d3990d9c70bde63d750f82e9346d79ec76e780.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8555348ba5301ec370c640f734d3990d9c70bde63d750f82e9346d79ec76e780",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44064,
+  "originalName": "s1-repaso-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:02.892Z"
 }```
 
 ### filebase/data/lesson-audio/85/8555751a8c18be2f4b9708f722d6314a1a2562b521994fdbff7d9b75e767748f.json
@@ -11383,6 +15266,38 @@ npm test
   "createdAt": "2026-07-14T00:06:31.982Z"
 }```
 
+### filebase/data/lesson-audio/85/85eeefa9bb6c6a482d10cd03cd1f0df242edaaeb52df148223f9d107ba5da0d8.json
+
+```
+{
+  "id": "lesson-audio/85eeefa9bb6c6a482d10cd03cd1f0df242edaaeb52df148223f9d107ba5da0d8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "85eeefa9bb6c6a482d10cd03cd1f0df242edaaeb52df148223f9d107ba5da0d8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 128016,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:08.706Z"
+}```
+
+### filebase/data/lesson-audio/86/86347cdb007bfdbb76ce7555c3ff0729d29c1ee9ccba48b198b9912a2377d050.json
+
+```
+{
+  "id": "lesson-audio/86347cdb007bfdbb76ce7555c3ff0729d29c1ee9ccba48b198b9912a2377d050.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86347cdb007bfdbb76ce7555c3ff0729d29c1ee9ccba48b198b9912a2377d050",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 95904,
+  "originalName": "s1-memory-flip.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:19.403Z"
+}```
+
 ### filebase/data/lesson-audio/86/8669040c6876a7792a083d40d08d4a884c79cc4e49223ba29d0e9fae292b6a9d.json
 
 ```
@@ -11413,6 +15328,86 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:12.225Z"
+}```
+
+### filebase/data/lesson-audio/86/86c8d34cf887afdcadc419e5263bf0ef4f24eda589fc31afc12385d87c498579.json
+
+```
+{
+  "id": "lesson-audio/86c8d34cf887afdcadc419e5263bf0ef4f24eda589fc31afc12385d87c498579.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86c8d34cf887afdcadc419e5263bf0ef4f24eda589fc31afc12385d87c498579",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 82944,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:02.259Z"
+}```
+
+### filebase/data/lesson-audio/86/86ce12654a48c4972b3d99b0a70965f917919c117bff92ed136b1fc31231cb78.json
+
+```
+{
+  "id": "lesson-audio/86ce12654a48c4972b3d99b0a70965f917919c117bff92ed136b1fc31231cb78.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86ce12654a48c4972b3d99b0a70965f917919c117bff92ed136b1fc31231cb78",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 75168,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:04.785Z"
+}```
+
+### filebase/data/lesson-audio/86/86d98bf7962382a403df73e32dd25b8ce5b1b002d589cd9f20fa303a444e73ec.json
+
+```
+{
+  "id": "lesson-audio/86d98bf7962382a403df73e32dd25b8ce5b1b002d589cd9f20fa303a444e73ec.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86d98bf7962382a403df73e32dd25b8ce5b1b002d589cd9f20fa303a444e73ec",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 71424,
+  "originalName": "s1-sort-buckets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:59.182Z"
+}```
+
+### filebase/data/lesson-audio/86/86f53457cf998180b4d3900321dd6c0ca6f7bd6df636a088a8314f32f72489d5.json
+
+```
+{
+  "id": "lesson-audio/86f53457cf998180b4d3900321dd6c0ca6f7bd6df636a088a8314f32f72489d5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86f53457cf998180b4d3900321dd6c0ca6f7bd6df636a088a8314f32f72489d5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 229824,
+  "originalName": "s1-robot-path.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:24.422Z"
+}```
+
+### filebase/data/lesson-audio/86/86f6c6aacabc450c5e5f5d8144a17137dc61339f54c08e66ce3163b85ad47c78.json
+
+```
+{
+  "id": "lesson-audio/86f6c6aacabc450c5e5f5d8144a17137dc61339f54c08e66ce3163b85ad47c78.mp3",
+  "bucket": "lesson-audio",
+  "hash": "86f6c6aacabc450c5e5f5d8144a17137dc61339f54c08e66ce3163b85ad47c78",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42048,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:43.128Z"
 }```
 
 ### filebase/data/lesson-audio/87/870cea032e641f66513e180091eb6a946608ecc27aa4b1a9f48dd2d421fe324f.json
@@ -11477,6 +15472,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:41.962Z"
+}```
+
+### filebase/data/lesson-audio/87/877a7bc9400e47e9aefac889b80238b3afaba6f2992a0fc7e69fbea98d47ec5f.json
+
+```
+{
+  "id": "lesson-audio/877a7bc9400e47e9aefac889b80238b3afaba6f2992a0fc7e69fbea98d47ec5f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "877a7bc9400e47e9aefac889b80238b3afaba6f2992a0fc7e69fbea98d47ec5f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 58464,
+  "originalName": "s2-truefalse.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:46.854Z"
 }```
 
 ### filebase/data/lesson-audio/87/87b1956acab2034ccb608865fafa690867a0a2b2debb38714378afd780a8fe4c.json
@@ -11575,6 +15586,22 @@ npm test
   "createdAt": "2026-07-14T00:17:01.971Z"
 }```
 
+### filebase/data/lesson-audio/89/895e698915f759734c659d5b9402cd6c2dc78af6f152808f07dab1df34e56290.json
+
+```
+{
+  "id": "lesson-audio/895e698915f759734c659d5b9402cd6c2dc78af6f152808f07dab1df34e56290.mp3",
+  "bucket": "lesson-audio",
+  "hash": "895e698915f759734c659d5b9402cd6c2dc78af6f152808f07dab1df34e56290",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 76608,
+  "originalName": "s1-lightning-round.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:56.975Z"
+}```
+
 ### filebase/data/lesson-audio/8a/8a5fc689e054904048acdff4116b0e7e20e456b798d9597443d622a5e35b0c90.json
 
 ```
@@ -11589,6 +15616,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:48.118Z"
+}```
+
+### filebase/data/lesson-audio/8a/8a6e3c95076b49794b2c082baa47d9a247a61fe56d164d670aceb59dba84e0a3.json
+
+```
+{
+  "id": "lesson-audio/8a6e3c95076b49794b2c082baa47d9a247a61fe56d164d670aceb59dba84e0a3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8a6e3c95076b49794b2c082baa47d9a247a61fe56d164d670aceb59dba84e0a3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53568,
+  "originalName": "s1-negociar-cliente.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:30.895Z"
+}```
+
+### filebase/data/lesson-audio/8b/8b14562a883a5d64eda176e1f0db74ac316c70c0f3e7750a6aeb55b18bb51dc4.json
+
+```
+{
+  "id": "lesson-audio/8b14562a883a5d64eda176e1f0db74ac316c70c0f3e7750a6aeb55b18bb51dc4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8b14562a883a5d64eda176e1f0db74ac316c70c0f3e7750a6aeb55b18bb51dc4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 171648,
+  "originalName": "s1-robot-path.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:09.212Z"
 }```
 
 ### filebase/data/lesson-audio/8b/8bb84485ac6e13c5bb62e45b0a2912e2df4e58dbb5f94b0e6d7189a17414d34f.json
@@ -11687,6 +15746,38 @@ npm test
   "createdAt": "2026-07-14T00:12:00.039Z"
 }```
 
+### filebase/data/lesson-audio/8c/8cab14f6624f5a2e3bf1edee9a0a1cb59b536c21dff041e36f138a558f0c0291.json
+
+```
+{
+  "id": "lesson-audio/8cab14f6624f5a2e3bf1edee9a0a1cb59b536c21dff041e36f138a558f0c0291.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8cab14f6624f5a2e3bf1edee9a0a1cb59b536c21dff041e36f138a558f0c0291",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 31536,
+  "originalName": "s1-read-chart.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:09.041Z"
+}```
+
+### filebase/data/lesson-audio/8c/8cbe964ec9df60b3a5c5a633a8c47293fcff8ae6887df2996e7e1aba8a361b83.json
+
+```
+{
+  "id": "lesson-audio/8cbe964ec9df60b3a5c5a633a8c47293fcff8ae6887df2996e7e1aba8a361b83.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8cbe964ec9df60b3a5c5a633a8c47293fcff8ae6887df2996e7e1aba8a361b83",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 188064,
+  "originalName": "s1-true-false.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:14.627Z"
+}```
+
 ### filebase/data/lesson-audio/8c/8ce0b4a2a93f12888def6a2898db8e6e27e2cbf68bf1a0d5eeeb787b70f602ec.json
 
 ```
@@ -11719,6 +15810,22 @@ npm test
   "createdAt": "2026-07-14T00:20:12.722Z"
 }```
 
+### filebase/data/lesson-audio/8d/8d20a6295e33b59c2e2acc6b26f4c82188dc86ded1e2d4223f32946ebddf019e.json
+
+```
+{
+  "id": "lesson-audio/8d20a6295e33b59c2e2acc6b26f4c82188dc86ded1e2d4223f32946ebddf019e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8d20a6295e33b59c2e2acc6b26f4c82188dc86ded1e2d4223f32946ebddf019e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67536,
+  "originalName": "s1-confidence.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:05.390Z"
+}```
+
 ### filebase/data/lesson-audio/8d/8d80607e419cbd3e9652770a4df93e7f8faa694e5a245adae13b7408a9e5c631.json
 
 ```
@@ -11733,6 +15840,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:44.476Z"
+}```
+
+### filebase/data/lesson-audio/8d/8daf103cf31b78a92cb7f46f1a551d928b2dd70a565514c92953438224216c51.json
+
+```
+{
+  "id": "lesson-audio/8daf103cf31b78a92cb7f46f1a551d928b2dd70a565514c92953438224216c51.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8daf103cf31b78a92cb7f46f1a551d928b2dd70a565514c92953438224216c51",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74304,
+  "originalName": "s1-confidence.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:10.346Z"
+}```
+
+### filebase/data/lesson-audio/8d/8de46e310608ca3982a8e85e9d863098d0a7ee46a2881efb5f54bfb292359238.json
+
+```
+{
+  "id": "lesson-audio/8de46e310608ca3982a8e85e9d863098d0a7ee46a2881efb5f54bfb292359238.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8de46e310608ca3982a8e85e9d863098d0a7ee46a2881efb5f54bfb292359238",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 104976,
+  "originalName": "s1-cuenta-limones.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:36.899Z"
+}```
+
+### filebase/data/lesson-audio/8e/8e272e85e305a7b521972c991e44018c6a8cc4ad66be9278e14044169dbdcddc.json
+
+```
+{
+  "id": "lesson-audio/8e272e85e305a7b521972c991e44018c6a8cc4ad66be9278e14044169dbdcddc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8e272e85e305a7b521972c991e44018c6a8cc4ad66be9278e14044169dbdcddc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 116064,
+  "originalName": "s1-piggy-split.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:41.421Z"
 }```
 
 ### filebase/data/lesson-audio/8f/8f2256d3bde44db39d403480268b06567a910db88a48be9298331e0f361aab78.json
@@ -11783,6 +15938,22 @@ npm test
   "createdAt": "2026-07-14T01:06:37.736Z"
 }```
 
+### filebase/data/lesson-audio/8f/8f5961682111596294c1109d2bf908f77f97f75824fe31a7b3fddb189f637aff.json
+
+```
+{
+  "id": "lesson-audio/8f5961682111596294c1109d2bf908f77f97f75824fe31a7b3fddb189f637aff.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8f5961682111596294c1109d2bf908f77f97f75824fe31a7b3fddb189f637aff",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 21456,
+  "originalName": "s2-decision-precio.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:06.507Z"
+}```
+
 ### filebase/data/lesson-audio/8f/8f63cabfbd6df1e9d76e1e3a3ad4882fa298a6caaf7e2debb6c45bf8b9161619.json
 
 ```
@@ -11815,6 +15986,38 @@ npm test
   "createdAt": "2026-07-14T00:05:19.039Z"
 }```
 
+### filebase/data/lesson-audio/8f/8f87a947b4fa05916214617fdbdbff9a01b8a8d1dadfe4c972b092152dac6e07.json
+
+```
+{
+  "id": "lesson-audio/8f87a947b4fa05916214617fdbdbff9a01b8a8d1dadfe4c972b092152dac6e07.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8f87a947b4fa05916214617fdbdbff9a01b8a8d1dadfe4c972b092152dac6e07",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 220176,
+  "originalName": "s1-price-compare.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:34.343Z"
+}```
+
+### filebase/data/lesson-audio/8f/8f9506c5872cfc3226197191484402a860b4ff87479886b8a80945f0bd95a0a2.json
+
+```
+{
+  "id": "lesson-audio/8f9506c5872cfc3226197191484402a860b4ff87479886b8a80945f0bd95a0a2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "8f9506c5872cfc3226197191484402a860b4ff87479886b8a80945f0bd95a0a2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 35856,
+  "originalName": "s1-number-input.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:46.050Z"
+}```
+
 ### filebase/data/lesson-audio/8f/8fd6f3e5be3e04224fbc37aeb3b07f1dd1c7b0605e34b45f19e3de12acec819d.json
 
 ```
@@ -11831,6 +16034,22 @@ npm test
   "createdAt": "2026-07-14T00:19:12.067Z"
 }```
 
+### filebase/data/lesson-audio/90/90244025efb63648ac0ff649315cbd504dd76704e3eae58a15e74caa7235170a.json
+
+```
+{
+  "id": "lesson-audio/90244025efb63648ac0ff649315cbd504dd76704e3eae58a15e74caa7235170a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "90244025efb63648ac0ff649315cbd504dd76704e3eae58a15e74caa7235170a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53568,
+  "originalName": "s1-rank-choices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:24.399Z"
+}```
+
 ### filebase/data/lesson-audio/90/9029bb2c5a76b6aea37f374416b323fb52997b3cdca7382dff8c13c6b5e03ef0.json
 
 ```
@@ -11845,6 +16064,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:07:13.975Z"
+}```
+
+### filebase/data/lesson-audio/90/904e4cddeb59e9863c5b93746007f33248fa54363764afd3d0173db77347d2a5.json
+
+```
+{
+  "id": "lesson-audio/904e4cddeb59e9863c5b93746007f33248fa54363764afd3d0173db77347d2a5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "904e4cddeb59e9863c5b93746007f33248fa54363764afd3d0173db77347d2a5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32544,
+  "originalName": "s1-key-ideas.idea.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:02.743Z"
+}```
+
+### filebase/data/lesson-audio/90/90709023ceac053e054f3f1e22165c06203bdc05dd95ad4ba1ed80aebba4b5d0.json
+
+```
+{
+  "id": "lesson-audio/90709023ceac053e054f3f1e22165c06203bdc05dd95ad4ba1ed80aebba4b5d0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "90709023ceac053e054f3f1e22165c06203bdc05dd95ad4ba1ed80aebba4b5d0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73296,
+  "originalName": "s1-speed-tap.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:01.292Z"
+}```
+
+### filebase/data/lesson-audio/90/9099d8aaf609ac7db9ce4cd83de383a6acde143a579cbb049fe67f3273d3eeff.json
+
+```
+{
+  "id": "lesson-audio/9099d8aaf609ac7db9ce4cd83de383a6acde143a579cbb049fe67f3273d3eeff.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9099d8aaf609ac7db9ce4cd83de383a6acde143a579cbb049fe67f3273d3eeff",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 49248,
+  "originalName": "s1-read-chart.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:36.827Z"
 }```
 
 ### filebase/data/lesson-audio/90/90cccd8a08c76288d5220c0db0c29ddb2c2c83784f1efa2ebdf3523342feb206.json
@@ -11895,6 +16162,22 @@ npm test
   "createdAt": "2026-07-14T00:06:01.286Z"
 }```
 
+### filebase/data/lesson-audio/91/91a6d54e927fc7d48ffba330bb59e41edb20d883242821021d4fe5397b36d37a.json
+
+```
+{
+  "id": "lesson-audio/91a6d54e927fc7d48ffba330bb59e41edb20d883242821021d4fe5397b36d37a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "91a6d54e927fc7d48ffba330bb59e41edb20d883242821021d4fe5397b36d37a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34848,
+  "originalName": "s1-plan.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:39.352Z"
+}```
+
 ### filebase/data/lesson-audio/92/927fe952ec7633003f05b0219fef59f166f7c386281d64a25623af9e55acceb4.json
 
 ```
@@ -11909,6 +16192,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:50.546Z"
+}```
+
+### filebase/data/lesson-audio/92/92d9d4d6f628600cb0dc7fd96681819fe0b4902847f4887dd3b44d48c479da8d.json
+
+```
+{
+  "id": "lesson-audio/92d9d4d6f628600cb0dc7fd96681819fe0b4902847f4887dd3b44d48c479da8d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "92d9d4d6f628600cb0dc7fd96681819fe0b4902847f4887dd3b44d48c479da8d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 44064,
+  "originalName": "s3-picturechoice.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:51.004Z"
 }```
 
 ### filebase/data/lesson-audio/92/92f81b6e8873157595f2f5c4362fdd8320bd8bd1903b1cc1601b4f9b73249cfa.json
@@ -11943,6 +16242,70 @@ npm test
   "createdAt": "2026-07-14T00:15:11.995Z"
 }```
 
+### filebase/data/lesson-audio/93/937d21271daecd5c9775b16aa107bb730d94f841a72f4bbe99c8b2ad14fbb82c.json
+
+```
+{
+  "id": "lesson-audio/937d21271daecd5c9775b16aa107bb730d94f841a72f4bbe99c8b2ad14fbb82c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "937d21271daecd5c9775b16aa107bb730d94f841a72f4bbe99c8b2ad14fbb82c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 41616,
+  "originalName": "s1-read-chart.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:10.841Z"
+}```
+
+### filebase/data/lesson-audio/94/945b30104ad578f239154d99064f86534fa0d9dbaed5dfb10743712a6474c854.json
+
+```
+{
+  "id": "lesson-audio/945b30104ad578f239154d99064f86534fa0d9dbaed5dfb10743712a6474c854.mp3",
+  "bucket": "lesson-audio",
+  "hash": "945b30104ad578f239154d99064f86534fa0d9dbaed5dfb10743712a6474c854",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 52704,
+  "originalName": "s1-would-you-rather.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:27.425Z"
+}```
+
+### filebase/data/lesson-audio/94/94607aadba97c5e784f8b8117a16b9df8ee1fc0194599ebf61588f1702d51248.json
+
+```
+{
+  "id": "lesson-audio/94607aadba97c5e784f8b8117a16b9df8ee1fc0194599ebf61588f1702d51248.mp3",
+  "bucket": "lesson-audio",
+  "hash": "94607aadba97c5e784f8b8117a16b9df8ee1fc0194599ebf61588f1702d51248",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 29664,
+  "originalName": "s1-checkpoint.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:52.474Z"
+}```
+
+### filebase/data/lesson-audio/94/9469416c73083255ef212a8bffcd7e1647950e266e80cffbffc5dd7bc8544413.json
+
+```
+{
+  "id": "lesson-audio/9469416c73083255ef212a8bffcd7e1647950e266e80cffbffc5dd7bc8544413.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9469416c73083255ef212a8bffcd7e1647950e266e80cffbffc5dd7bc8544413",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 43488,
+  "originalName": "s1-measure-read.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:19.487Z"
+}```
+
 ### filebase/data/lesson-audio/94/949984711a7fced6856159903161683072497e41abca11d501502b2ebd6fb700.json
 
 ```
@@ -11957,6 +16320,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:49.820Z"
+}```
+
+### filebase/data/lesson-audio/95/9544d68346d2da77341ade1ab9678b4a604cab1afc57a158747448bd6f163cd3.json
+
+```
+{
+  "id": "lesson-audio/9544d68346d2da77341ade1ab9678b4a604cab1afc57a158747448bd6f163cd3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9544d68346d2da77341ade1ab9678b4a604cab1afc57a158747448bd6f163cd3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 24768,
+  "originalName": "s1-debug-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:32.830Z"
+}```
+
+### filebase/data/lesson-audio/95/9551f9885333ce37cd63186814a570096f88a717ba01f025d6482f9004b2c759.json
+
+```
+{
+  "id": "lesson-audio/9551f9885333ce37cd63186814a570096f88a717ba01f025d6482f9004b2c759.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9551f9885333ce37cd63186814a570096f88a717ba01f025d6482f9004b2c759",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 26208,
+  "originalName": "s1-key-ideas.idea.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:49.728Z"
 }```
 
 ### filebase/data/lesson-audio/95/95935ad229e33d01c09e29972b514bbc845c3bb637442d45eba1d0339df39254.json
@@ -11975,6 +16370,22 @@ npm test
   "createdAt": "2026-07-14T00:09:59.920Z"
 }```
 
+### filebase/data/lesson-audio/95/95ab787522e6437cb27cd64775d083bd272b66cccfc297c543a209647c3f8670.json
+
+```
+{
+  "id": "lesson-audio/95ab787522e6437cb27cd64775d083bd272b66cccfc297c543a209647c3f8670.mp3",
+  "bucket": "lesson-audio",
+  "hash": "95ab787522e6437cb27cd64775d083bd272b66cccfc297c543a209647c3f8670",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 98784,
+  "originalName": "s1-causa-efecto.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:57.640Z"
+}```
+
 ### filebase/data/lesson-audio/95/95f6c9c2f4c85a12c64227c438c219b0ed0d9bbba5d37b814d3090a4836187da.json
 
 ```
@@ -11989,6 +16400,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:20.172Z"
+}```
+
+### filebase/data/lesson-audio/96/967b77ed45bb2823d35b47bdc185a68c57c408c1b7f406a637d1fb509201b11f.json
+
+```
+{
+  "id": "lesson-audio/967b77ed45bb2823d35b47bdc185a68c57c408c1b7f406a637d1fb509201b11f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "967b77ed45bb2823d35b47bdc185a68c57c408c1b7f406a637d1fb509201b11f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 47808,
+  "originalName": "s1-dialogo.line.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:31.262Z"
 }```
 
 ### filebase/data/lesson-audio/96/969c0ee8c60a2691674d33f8b27844d99043278fde504be30d2c4a1085e6a16d.json
@@ -12021,6 +16448,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:16:17.600Z"
+}```
+
+### filebase/data/lesson-audio/96/96b58bb641c8bcd41b05fcac2878d7297fb0c4a75d43c9ebc086eb867c6794fa.json
+
+```
+{
+  "id": "lesson-audio/96b58bb641c8bcd41b05fcac2878d7297fb0c4a75d43c9ebc086eb867c6794fa.mp3",
+  "bucket": "lesson-audio",
+  "hash": "96b58bb641c8bcd41b05fcac2878d7297fb0c4a75d43c9ebc086eb867c6794fa",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 106848,
+  "originalName": "s1-ecuacion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:22.778Z"
+}```
+
+### filebase/data/lesson-audio/97/9715ad2bdc1b4404ad2192f75d8d9603770bd771868acf882bf20252d0eaef23.json
+
+```
+{
+  "id": "lesson-audio/9715ad2bdc1b4404ad2192f75d8d9603770bd771868acf882bf20252d0eaef23.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9715ad2bdc1b4404ad2192f75d8d9603770bd771868acf882bf20252d0eaef23",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 15264,
+  "originalName": "s2-decision-precio.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:52.682Z"
+}```
+
+### filebase/data/lesson-audio/97/973c8de10567d1b2e1c5fdc42e367fb111b6efb66cd72e72d1963a51e15b12b4.json
+
+```
+{
+  "id": "lesson-audio/973c8de10567d1b2e1c5fdc42e367fb111b6efb66cd72e72d1963a51e15b12b4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "973c8de10567d1b2e1c5fdc42e367fb111b6efb66cd72e72d1963a51e15b12b4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 61776,
+  "originalName": "s1-precio-justo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:25.878Z"
+}```
+
+### filebase/data/lesson-audio/97/9741df8ba11b46ceb2ae94c33c1eb94317fc6029263266b4d48ff7fa6f296973.json
+
+```
+{
+  "id": "lesson-audio/9741df8ba11b46ceb2ae94c33c1eb94317fc6029263266b4d48ff7fa6f296973.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9741df8ba11b46ceb2ae94c33c1eb94317fc6029263266b4d48ff7fa6f296973",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 219168,
+  "originalName": "s1-code-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:10.301Z"
 }```
 
 ### filebase/data/lesson-audio/97/9785676e4095ec2d0f7f7244ca23e811d529dc77f0e199b5261ab9cafbde4bb9.json
@@ -12087,6 +16578,54 @@ npm test
   "createdAt": "2026-07-14T00:11:48.211Z"
 }```
 
+### filebase/data/lesson-audio/97/97fcc5c80126982b6908f9b9b8f3dc9455e035e53cfd19d5f8bf0018d314a5b7.json
+
+```
+{
+  "id": "lesson-audio/97fcc5c80126982b6908f9b9b8f3dc9455e035e53cfd19d5f8bf0018d314a5b7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "97fcc5c80126982b6908f9b9b8f3dc9455e035e53cfd19d5f8bf0018d314a5b7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 99648,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:42.813Z"
+}```
+
+### filebase/data/lesson-audio/98/9809d1b8e6ab335176dd26713c4d3be86152b2e4305f50993aea2e8ec4989666.json
+
+```
+{
+  "id": "lesson-audio/9809d1b8e6ab335176dd26713c4d3be86152b2e4305f50993aea2e8ec4989666.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9809d1b8e6ab335176dd26713c4d3be86152b2e4305f50993aea2e8ec4989666",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 43488,
+  "originalName": "s1-plan.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:00.831Z"
+}```
+
+### filebase/data/lesson-audio/98/985cd126835a3dee82c1a64d60cdef25fd2c8fbc6254141c464b423c979f8245.json
+
+```
+{
+  "id": "lesson-audio/985cd126835a3dee82c1a64d60cdef25fd2c8fbc6254141c464b423c979f8245.mp3",
+  "bucket": "lesson-audio",
+  "hash": "985cd126835a3dee82c1a64d60cdef25fd2c8fbc6254141c464b423c979f8245",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59328,
+  "originalName": "s1-flash-match.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:39.473Z"
+}```
+
 ### filebase/data/lesson-audio/98/986e9c38334badbcee281cc41fe01e0ca6c0aac2ce0e3e91ffdbd8a971050bf1.json
 
 ```
@@ -12101,6 +16640,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:18:23.469Z"
+}```
+
+### filebase/data/lesson-audio/98/98912b12be3db53a65d3a255f5ca64bae1478c82f557554be36e3b7fef341abf.json
+
+```
+{
+  "id": "lesson-audio/98912b12be3db53a65d3a255f5ca64bae1478c82f557554be36e3b7fef341abf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "98912b12be3db53a65d3a255f5ca64bae1478c82f557554be36e3b7fef341abf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62208,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:09.401Z"
+}```
+
+### filebase/data/lesson-audio/98/98c1730de9c54519e86f255e7375b01efd5677d6922d6365a4099dcc8d902832.json
+
+```
+{
+  "id": "lesson-audio/98c1730de9c54519e86f255e7375b01efd5677d6922d6365a4099dcc8d902832.mp3",
+  "bucket": "lesson-audio",
+  "hash": "98c1730de9c54519e86f255e7375b01efd5677d6922d6365a4099dcc8d902832",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 116064,
+  "originalName": "s1-ecuacion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:14.608Z"
 }```
 
 ### filebase/data/lesson-audio/99/990975a0e594b96580a087b93cbea5ce1fef9fe87a044108b8ca55d2fad43e36.json
@@ -12199,6 +16770,54 @@ npm test
   "createdAt": "2026-07-14T00:18:59.006Z"
 }```
 
+### filebase/data/lesson-audio/99/99f2791c576a3cfe73eb0dcb3fddcad0ec9853f1301c5c37915d5ed1f83ffc5b.json
+
+```
+{
+  "id": "lesson-audio/99f2791c576a3cfe73eb0dcb3fddcad0ec9853f1301c5c37915d5ed1f83ffc5b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "99f2791c576a3cfe73eb0dcb3fddcad0ec9853f1301c5c37915d5ed1f83ffc5b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 79488,
+  "originalName": "s1-balance-scale.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:53.697Z"
+}```
+
+### filebase/data/lesson-audio/9a/9a0555d2823a95a78b96006fd9516f47a753df0f71d384055167eaea15b66488.json
+
+```
+{
+  "id": "lesson-audio/9a0555d2823a95a78b96006fd9516f47a753df0f71d384055167eaea15b66488.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9a0555d2823a95a78b96006fd9516f47a753df0f71d384055167eaea15b66488",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 87264,
+  "originalName": "s1-match-precios.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:10.643Z"
+}```
+
+### filebase/data/lesson-audio/9a/9a4fa4248b586bc4c4aca8a0dd95e6280a53c66cdfbd9aa9e86ee0d96a0ce4ed.json
+
+```
+{
+  "id": "lesson-audio/9a4fa4248b586bc4c4aca8a0dd95e6280a53c66cdfbd9aa9e86ee0d96a0ce4ed.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9a4fa4248b586bc4c4aca8a0dd95e6280a53c66cdfbd9aa9e86ee0d96a0ce4ed",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 30096,
+  "originalName": "s1-measure-read.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:10.755Z"
+}```
+
 ### filebase/data/lesson-audio/9a/9ac0ee1545ef0b18f597a09ba8fca00622d4ce4eeffe7abe98c1fb03afd29d55.json
 
 ```
@@ -12231,6 +16850,38 @@ npm test
   "createdAt": "2026-07-14T00:13:16.696Z"
 }```
 
+### filebase/data/lesson-audio/9b/9b17008fcb43c0a48b9e9be3bb1e021e7f7ccfbd45d63fa27f11b5c1601cac48.json
+
+```
+{
+  "id": "lesson-audio/9b17008fcb43c0a48b9e9be3bb1e021e7f7ccfbd45d63fa27f11b5c1601cac48.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9b17008fcb43c0a48b9e9be3bb1e021e7f7ccfbd45d63fa27f11b5c1601cac48",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 125136,
+  "originalName": "s1-ahorro.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:11.370Z"
+}```
+
+### filebase/data/lesson-audio/9b/9b5c5fbb19a5a67aca28657f47c71c5b3aea00b4eed96db94a38d8a361f0a729.json
+
+```
+{
+  "id": "lesson-audio/9b5c5fbb19a5a67aca28657f47c71c5b3aea00b4eed96db94a38d8a361f0a729.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9b5c5fbb19a5a67aca28657f47c71c5b3aea00b4eed96db94a38d8a361f0a729",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 49248,
+  "originalName": "s1-dialogo.line.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:42.075Z"
+}```
+
 ### filebase/data/lesson-audio/9b/9b5fb523cf0d73a64f3eb7eb9caf78406e5aeefcd5ba0095df1ce9253052398b.json
 
 ```
@@ -12245,6 +16896,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:20.563Z"
+}```
+
+### filebase/data/lesson-audio/9d/9d0697cdb8e9e0a0af02f1fd2f15784cc3249dd6d6e11884b95894263368c2cd.json
+
+```
+{
+  "id": "lesson-audio/9d0697cdb8e9e0a0af02f1fd2f15784cc3249dd6d6e11884b95894263368c2cd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9d0697cdb8e9e0a0af02f1fd2f15784cc3249dd6d6e11884b95894263368c2cd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 120384,
+  "originalName": "s1-lightning-round.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:15.622Z"
 }```
 
 ### filebase/data/lesson-audio/9d/9d15ef69216c27e09244391783158c34c3990c4df7198b7fc79855ceffcfdfe1.json
@@ -12263,6 +16930,22 @@ npm test
   "createdAt": "2026-07-14T00:14:54.303Z"
 }```
 
+### filebase/data/lesson-audio/9d/9d365c91e49245b8df374c5332db50d67be14a7d331272739b45f7325504ceba.json
+
+```
+{
+  "id": "lesson-audio/9d365c91e49245b8df374c5332db50d67be14a7d331272739b45f7325504ceba.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9d365c91e49245b8df374c5332db50d67be14a7d331272739b45f7325504ceba",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74736,
+  "originalName": "s1-read-chart.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:11.768Z"
+}```
+
 ### filebase/data/lesson-audio/9d/9d84d3a874447382184851338dbaff4b21308e458de7ad9a36b848f93cd7a6a5.json
 
 ```
@@ -12277,6 +16960,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:19:16.299Z"
+}```
+
+### filebase/data/lesson-audio/9d/9db75945ff8e263e0a0882d445dd9c0bf74f286be9b0b222e5a4d3540a350099.json
+
+```
+{
+  "id": "lesson-audio/9db75945ff8e263e0a0882d445dd9c0bf74f286be9b0b222e5a4d3540a350099.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9db75945ff8e263e0a0882d445dd9c0bf74f286be9b0b222e5a4d3540a350099",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103536,
+  "originalName": "s1-checkpoint.recap.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:54.961Z"
 }```
 
 ### filebase/data/lesson-audio/9d/9dd15d2d2bd5c6c796cbf96a075a1076e7bfbf9d1c7866218a0677a0e3b22e32.json
@@ -12359,6 +17058,38 @@ npm test
   "createdAt": "2026-07-14T01:05:09.617Z"
 }```
 
+### filebase/data/lesson-audio/9f/9f5c190faa64f6621afcd1644eedaf18bf1218a38e7348d55b3a826aaeb14177.json
+
+```
+{
+  "id": "lesson-audio/9f5c190faa64f6621afcd1644eedaf18bf1218a38e7348d55b3a826aaeb14177.mp3",
+  "bucket": "lesson-audio",
+  "hash": "9f5c190faa64f6621afcd1644eedaf18bf1218a38e7348d55b3a826aaeb14177",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-would-you-rather.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:07.221Z"
+}```
+
+### filebase/data/lesson-audio/a0/a0613832583b2cbd82024186b5df76ef136575ebee7ead8b11188a2428765c2f.json
+
+```
+{
+  "id": "lesson-audio/a0613832583b2cbd82024186b5df76ef136575ebee7ead8b11188a2428765c2f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a0613832583b2cbd82024186b5df76ef136575ebee7ead8b11188a2428765c2f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 72288,
+  "originalName": "s1-ecuacion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:33.131Z"
+}```
+
 ### filebase/data/lesson-audio/a0/a093fcc3466e0682a2c8d48439e62b559768f3ea560d4a536942f2ad5b8b8899.json
 
 ```
@@ -12407,6 +17138,22 @@ npm test
   "createdAt": "2026-07-14T00:14:48.004Z"
 }```
 
+### filebase/data/lesson-audio/a0/a0f9989823f768ea05de55bcdb183d65d2c306a9518f0cef5fce3935776f3b38.json
+
+```
+{
+  "id": "lesson-audio/a0f9989823f768ea05de55bcdb183d65d2c306a9518f0cef5fce3935776f3b38.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a0f9989823f768ea05de55bcdb183d65d2c306a9518f0cef5fce3935776f3b38",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 19584,
+  "originalName": "s1-spot-error.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:21.694Z"
+}```
+
 ### filebase/data/lesson-audio/a1/a1781be850c0bd0d18e1a9171c3d8a60809a4c8d47e85c5cb24fc49570c9ebb6.json
 
 ```
@@ -12423,6 +17170,22 @@ npm test
   "createdAt": "2026-07-14T00:06:46.428Z"
 }```
 
+### filebase/data/lesson-audio/a2/a231916f1fab702af8794449d166fbc609952721567db18b90dc1440e44c59bc.json
+
+```
+{
+  "id": "lesson-audio/a231916f1fab702af8794449d166fbc609952721567db18b90dc1440e44c59bc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a231916f1fab702af8794449d166fbc609952721567db18b90dc1440e44c59bc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 165888,
+  "originalName": "s1-order-steps.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:23.137Z"
+}```
+
 ### filebase/data/lesson-audio/a2/a2474397574edac6dcf9d9f549101a7e5fd64881959074bc909b827a79f89f03.json
 
 ```
@@ -12437,6 +17200,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:53.170Z"
+}```
+
+### filebase/data/lesson-audio/a2/a27f4434bf7e62ad7ccae0dd81477edf766d5ea16a703198887d543887e24ae6.json
+
+```
+{
+  "id": "lesson-audio/a27f4434bf7e62ad7ccae0dd81477edf766d5ea16a703198887d543887e24ae6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a27f4434bf7e62ad7ccae0dd81477edf766d5ea16a703198887d543887e24ae6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 29088,
+  "originalName": "s1-dialogo.line.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:31.336Z"
 }```
 
 ### filebase/data/lesson-audio/a3/a30bd9d2f77c591e3af1564a8d5e06a3b271c20c9acb94f0a9d872607793dd83.json
@@ -12535,6 +17314,38 @@ npm test
   "createdAt": "2026-07-14T00:20:20.349Z"
 }```
 
+### filebase/data/lesson-audio/a3/a3590f4bb4484e1f5c62f26024a8a9d8fa6802b39dfdde06b622c3329e167079.json
+
+```
+{
+  "id": "lesson-audio/a3590f4bb4484e1f5c62f26024a8a9d8fa6802b39dfdde06b622c3329e167079.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a3590f4bb4484e1f5c62f26024a8a9d8fa6802b39dfdde06b622c3329e167079",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 52128,
+  "originalName": "s1-match-prices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:06.109Z"
+}```
+
+### filebase/data/lesson-audio/a3/a39ee31051e18d7ed6a79e03f9a8af72ad7ffa35565fce199852bbc21fabc35a.json
+
+```
+{
+  "id": "lesson-audio/a39ee31051e18d7ed6a79e03f9a8af72ad7ffa35565fce199852bbc21fabc35a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a39ee31051e18d7ed6a79e03f9a8af72ad7ffa35565fce199852bbc21fabc35a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67104,
+  "originalName": "s2-truefalse.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:35.953Z"
+}```
+
 ### filebase/data/lesson-audio/a3/a3b0554ffe10ea4db8b5a741576e4865201affe529c905cb219fd91b45f6bf42.json
 
 ```
@@ -12567,6 +17378,38 @@ npm test
   "createdAt": "2026-07-14T00:05:15.299Z"
 }```
 
+### filebase/data/lesson-audio/a4/a41f4b1eeb08af4fcce58bfc8a6b6bdc12d554b2874c822b2ee6c5dd2106797f.json
+
+```
+{
+  "id": "lesson-audio/a41f4b1eeb08af4fcce58bfc8a6b6bdc12d554b2874c822b2ee6c5dd2106797f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a41f4b1eeb08af4fcce58bfc8a6b6bdc12d554b2874c822b2ee6c5dd2106797f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42624,
+  "originalName": "s1-confidence.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:47.037Z"
+}```
+
+### filebase/data/lesson-audio/a4/a4562159f829ab2446c2ae2726d40bff2e248c9318106217b73c6fbcb80ca03e.json
+
+```
+{
+  "id": "lesson-audio/a4562159f829ab2446c2ae2726d40bff2e248c9318106217b73c6fbcb80ca03e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a4562159f829ab2446c2ae2726d40bff2e248c9318106217b73c6fbcb80ca03e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 46368,
+  "originalName": "s2-order-receta.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:14.569Z"
+}```
+
 ### filebase/data/lesson-audio/a4/a4d560852d2d62540fb9e120f1aac8e390ac64365544518e58b2435330ec95a0.json
 
 ```
@@ -12597,6 +17440,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:57.004Z"
+}```
+
+### filebase/data/lesson-audio/a5/a51fb6d6fc0931a7c731089f005bc80ce0784996cf03adbdf600b629c0f1e099.json
+
+```
+{
+  "id": "lesson-audio/a51fb6d6fc0931a7c731089f005bc80ce0784996cf03adbdf600b629c0f1e099.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a51fb6d6fc0931a7c731089f005bc80ce0784996cf03adbdf600b629c0f1e099",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 56016,
+  "originalName": "s2-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:11.954Z"
 }```
 
 ### filebase/data/lesson-audio/a5/a52bafa674dd98a9688a3007b9d074861e0b19cf53964ade5389a13fbbc17135.json
@@ -12727,6 +17586,22 @@ npm test
   "createdAt": "2026-07-14T00:13:57.076Z"
 }```
 
+### filebase/data/lesson-audio/a7/a73bd9bc6e4363fb78dbb37d77b7585ba562d47460da10652cb5fb896bb731d7.json
+
+```
+{
+  "id": "lesson-audio/a73bd9bc6e4363fb78dbb37d77b7585ba562d47460da10652cb5fb896bb731d7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a73bd9bc6e4363fb78dbb37d77b7585ba562d47460da10652cb5fb896bb731d7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34848,
+  "originalName": "s1-dialogo.line.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:40.317Z"
+}```
+
 ### filebase/data/lesson-audio/a7/a74c81a6198ace0c1a5b17417545b340bd4669246c1ed6609b27f5449fd89397.json
 
 ```
@@ -12741,6 +17616,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:04:01.152Z"
+}```
+
+### filebase/data/lesson-audio/a7/a7640e4f50762a3991316129b58cbcdc477c8a4f525dc0c3d02be70902addac1.json
+
+```
+{
+  "id": "lesson-audio/a7640e4f50762a3991316129b58cbcdc477c8a4f525dc0c3d02be70902addac1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a7640e4f50762a3991316129b58cbcdc477c8a4f525dc0c3d02be70902addac1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103536,
+  "originalName": "s1-odd-one-out.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:50.149Z"
 }```
 
 ### filebase/data/lesson-audio/a7/a7b7df4ca79c2751a89dfcd845015519f75bb3f3fa4379d0e2ddf1520d135baf.json
@@ -12855,6 +17746,22 @@ npm test
   "createdAt": "2026-07-14T00:15:56.844Z"
 }```
 
+### filebase/data/lesson-audio/a9/a93cc10e214639600150d50c75dc5f75f8b5c2aad840b41d28c9af9e155a75a3.json
+
+```
+{
+  "id": "lesson-audio/a93cc10e214639600150d50c75dc5f75f8b5c2aad840b41d28c9af9e155a75a3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "a93cc10e214639600150d50c75dc5f75f8b5c2aad840b41d28c9af9e155a75a3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 16704,
+  "originalName": "s1-plan.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:46.732Z"
+}```
+
 ### filebase/data/lesson-audio/a9/a96a811692287adf0c7f55d3e3a395c674424ef21f03b67c68de04e60598cae2.json
 
 ```
@@ -12869,6 +17776,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:03:55.800Z"
+}```
+
+### filebase/data/lesson-audio/aa/aa1d449e5cf5965ffa279b63ba4650f72d6c5c829d15beed7c7a4724d489db97.json
+
+```
+{
+  "id": "lesson-audio/aa1d449e5cf5965ffa279b63ba4650f72d6c5c829d15beed7c7a4724d489db97.mp3",
+  "bucket": "lesson-audio",
+  "hash": "aa1d449e5cf5965ffa279b63ba4650f72d6c5c829d15beed7c7a4724d489db97",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 135648,
+  "originalName": "s1-flash-match.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:28.430Z"
 }```
 
 ### filebase/data/lesson-audio/aa/aa6604bcb8989a12900ba895820e94daf2aea885cf8b3dafa53119d360ce6797.json
@@ -12887,6 +17810,22 @@ npm test
   "createdAt": "2026-07-14T00:09:21.654Z"
 }```
 
+### filebase/data/lesson-audio/aa/aa77f6bee04697c70fe43719d3c3e3204da0ecf46c668e3fb73af426b054f6a4.json
+
+```
+{
+  "id": "lesson-audio/aa77f6bee04697c70fe43719d3c3e3204da0ecf46c668e3fb73af426b054f6a4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "aa77f6bee04697c70fe43719d3c3e3204da0ecf46c668e3fb73af426b054f6a4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-price-compare.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:40.466Z"
+}```
+
 ### filebase/data/lesson-audio/ab/ab096c5f97e0d99c57aeceeab09c43c245885ec16850474be07f9bdeae3fe4d7.json
 
 ```
@@ -12901,6 +17840,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:12.955Z"
+}```
+
+### filebase/data/lesson-audio/ab/ab205a7a4412328aa1eef1402bc19b1dd54309706131e5160dd7166e746068ce.json
+
+```
+{
+  "id": "lesson-audio/ab205a7a4412328aa1eef1402bc19b1dd54309706131e5160dd7166e746068ce.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ab205a7a4412328aa1eef1402bc19b1dd54309706131e5160dd7166e746068ce",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59904,
+  "originalName": "s3-picturechoice.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:31.574Z"
 }```
 
 ### filebase/data/lesson-audio/ab/ab30e84995f3fc9c359c6a39a0a739ec6536f90b4c0c585b8ba6df55cc5f19d8.json
@@ -12999,6 +17954,38 @@ npm test
   "createdAt": "2026-07-14T00:05:50.039Z"
 }```
 
+### filebase/data/lesson-audio/ab/abf17fb5118b4e3c66b0a3b217835a19070988b518e35f3c111f18b135061785.json
+
+```
+{
+  "id": "lesson-audio/abf17fb5118b4e3c66b0a3b217835a19070988b518e35f3c111f18b135061785.mp3",
+  "bucket": "lesson-audio",
+  "hash": "abf17fb5118b4e3c66b0a3b217835a19070988b518e35f3c111f18b135061785",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102096,
+  "originalName": "s1-ecuacion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:32.580Z"
+}```
+
+### filebase/data/lesson-audio/ac/acc567ef429ce04312c576a4aac4f4924e94c5852fb326c5eb3c46ab3a43e315.json
+
+```
+{
+  "id": "lesson-audio/acc567ef429ce04312c576a4aac4f4924e94c5852fb326c5eb3c46ab3a43e315.mp3",
+  "bucket": "lesson-audio",
+  "hash": "acc567ef429ce04312c576a4aac4f4924e94c5852fb326c5eb3c46ab3a43e315",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34416,
+  "originalName": "s1-coin-count.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:48.574Z"
+}```
+
 ### filebase/data/lesson-audio/ac/acedb01986f8dacf7db4763387f5d0851cb2593c5b9505a044891381d5dac01f.json
 
 ```
@@ -13029,6 +18016,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:22.095Z"
+}```
+
+### filebase/data/lesson-audio/ad/ad6d2477a027077ff6bccba2816824e037fee66278ada3c38efa1bdfc45a1a32.json
+
+```
+{
+  "id": "lesson-audio/ad6d2477a027077ff6bccba2816824e037fee66278ada3c38efa1bdfc45a1a32.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ad6d2477a027077ff6bccba2816824e037fee66278ada3c38efa1bdfc45a1a32",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 104544,
+  "originalName": "s1-code-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:34.832Z"
 }```
 
 ### filebase/data/lesson-audio/ad/ad853490839dabb25be19fac7bc7cc70e915a8a19b6ad9fb6ae0248d77fb7892.json
@@ -13109,6 +18112,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:49.968Z"
+}```
+
+### filebase/data/lesson-audio/af/af2641a5dd6045a3f28586af138b98bd9a5058756f49c5008e0c8148f4168769.json
+
+```
+{
+  "id": "lesson-audio/af2641a5dd6045a3f28586af138b98bd9a5058756f49c5008e0c8148f4168769.mp3",
+  "bucket": "lesson-audio",
+  "hash": "af2641a5dd6045a3f28586af138b98bd9a5058756f49c5008e0c8148f4168769",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64656,
+  "originalName": "s1-spot-error.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:07.758Z"
 }```
 
 ### filebase/data/lesson-audio/af/af492f58e67bfc9e74f39f7ac546433f81afbdf5012eefb6e172774e3218ef78.json
@@ -13207,6 +18226,22 @@ npm test
   "createdAt": "2026-07-14T00:21:02.034Z"
 }```
 
+### filebase/data/lesson-audio/b0/b06de0a05b9b73224292c7103d8621805f18da45d1a79564f0930d5677a26691.json
+
+```
+{
+  "id": "lesson-audio/b06de0a05b9b73224292c7103d8621805f18da45d1a79564f0930d5677a26691.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b06de0a05b9b73224292c7103d8621805f18da45d1a79564f0930d5677a26691",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73728,
+  "originalName": "s1-compare-table.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:37.639Z"
+}```
+
 ### filebase/data/lesson-audio/b0/b0ed1820b32a66ae1f6c8965d9bdc776ddc615f0e4ccbe9e5e39e97c937bbf96.json
 
 ```
@@ -13269,6 +18304,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:43.149Z"
+}```
+
+### filebase/data/lesson-audio/b3/b399de0ebb2af87c910f59ecc5a2859595503168524a8f84aa9e7f5d6a825109.json
+
+```
+{
+  "id": "lesson-audio/b399de0ebb2af87c910f59ecc5a2859595503168524a8f84aa9e7f5d6a825109.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b399de0ebb2af87c910f59ecc5a2859595503168524a8f84aa9e7f5d6a825109",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53136,
+  "originalName": "s1-savings-goal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:17.509Z"
 }```
 
 ### filebase/data/lesson-audio/b3/b39d8bac391773c39637449c0d7d4f39201c48c81107e9b50eab38f4f944e61e.json
@@ -13399,6 +18450,38 @@ npm test
   "createdAt": "2026-07-14T00:13:11.128Z"
 }```
 
+### filebase/data/lesson-audio/b6/b63c2d67de6f5434da0ce9fa577858c6c816ff9563f960d99fcb9b3e10f407c1.json
+
+```
+{
+  "id": "lesson-audio/b63c2d67de6f5434da0ce9fa577858c6c816ff9563f960d99fcb9b3e10f407c1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b63c2d67de6f5434da0ce9fa577858c6c816ff9563f960d99fcb9b3e10f407c1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 108864,
+  "originalName": "s1-compare-table.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:41.051Z"
+}```
+
+### filebase/data/lesson-audio/b6/b65602525c9d9f51303574bc8bb6fd6ad6c6f42df31b80c8d70abe2a81b457f5.json
+
+```
+{
+  "id": "lesson-audio/b65602525c9d9f51303574bc8bb6fd6ad6c6f42df31b80c8d70abe2a81b457f5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b65602525c9d9f51303574bc8bb6fd6ad6c6f42df31b80c8d70abe2a81b457f5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64656,
+  "originalName": "s1-match-precios.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:44.284Z"
+}```
+
 ### filebase/data/lesson-audio/b6/b69a63421598be5dabf09636ee6f52586e662cdcf71da5bfe9f0640a1a74eaab.json
 
 ```
@@ -13479,6 +18562,22 @@ npm test
   "createdAt": "2026-07-14T01:06:48.511Z"
 }```
 
+### filebase/data/lesson-audio/b8/b831be158e5f927f396b3485543f664bc1bdba71e0303ac11ddcb4d9d05c6ead.json
+
+```
+{
+  "id": "lesson-audio/b831be158e5f927f396b3485543f664bc1bdba71e0303ac11ddcb4d9d05c6ead.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b831be158e5f927f396b3485543f664bc1bdba71e0303ac11ddcb4d9d05c6ead",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 148608,
+  "originalName": "s1-yes-no-cases.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:46.326Z"
+}```
+
 ### filebase/data/lesson-audio/b8/b87a746c6bb9393e43c1c93d0d3e397f5baef22473bc46d5524faed2841c638a.json
 
 ```
@@ -13493,6 +18592,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:13:04.632Z"
+}```
+
+### filebase/data/lesson-audio/b9/b95adca6268316c02f1e145a741bdf8b245ecc932fbe83ffc606f37e6469650e.json
+
+```
+{
+  "id": "lesson-audio/b95adca6268316c02f1e145a741bdf8b245ecc932fbe83ffc606f37e6469650e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b95adca6268316c02f1e145a741bdf8b245ecc932fbe83ffc606f37e6469650e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45504,
+  "originalName": "s2-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:08.279Z"
 }```
 
 ### filebase/data/lesson-audio/b9/b9a6da04fee7f99c1704f110e106a92535d53246fab59c3afac90a268edd0b77.json
@@ -13543,6 +18658,22 @@ npm test
   "createdAt": "2026-07-14T01:06:33.942Z"
 }```
 
+### filebase/data/lesson-audio/b9/b9f30dd22dd41a438f85a06e146d2d0bf5f9319c7a8bdd56da9e05080e12fa87.json
+
+```
+{
+  "id": "lesson-audio/b9f30dd22dd41a438f85a06e146d2d0bf5f9319c7a8bdd56da9e05080e12fa87.mp3",
+  "bucket": "lesson-audio",
+  "hash": "b9f30dd22dd41a438f85a06e146d2d0bf5f9319c7a8bdd56da9e05080e12fa87",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102528,
+  "originalName": "s1-group-sets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:57.014Z"
+}```
+
 ### filebase/data/lesson-audio/ba/ba4e437eaebb5541cde69e180a31ccc0e2514fe6652efe1747855fd3bb120d7b.json
 
 ```
@@ -13575,6 +18706,54 @@ npm test
   "createdAt": "2026-07-14T00:14:01.037Z"
 }```
 
+### filebase/data/lesson-audio/ba/ba8b68fc9cdf7c5d5b5440a6d75b2904ac6abee82ace1b4dd1bc8e54fe2c4ed1.json
+
+```
+{
+  "id": "lesson-audio/ba8b68fc9cdf7c5d5b5440a6d75b2904ac6abee82ace1b4dd1bc8e54fe2c4ed1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ba8b68fc9cdf7c5d5b5440a6d75b2904ac6abee82ace1b4dd1bc8e54fe2c4ed1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 88128,
+  "originalName": "s1-measure-read.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:14.679Z"
+}```
+
+### filebase/data/lesson-audio/ba/ba91d8d1697315ce12c29b7f307a50e170bdbdabbaa856213ec63738220ad1f1.json
+
+```
+{
+  "id": "lesson-audio/ba91d8d1697315ce12c29b7f307a50e170bdbdabbaa856213ec63738220ad1f1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ba91d8d1697315ce12c29b7f307a50e170bdbdabbaa856213ec63738220ad1f1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 52128,
+  "originalName": "s1-piggy-split.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:26.651Z"
+}```
+
+### filebase/data/lesson-audio/ba/baae6085936cbf9ac6c1ac0de5466987a7350d2a9eda46ea7146f262d907d5f7.json
+
+```
+{
+  "id": "lesson-audio/baae6085936cbf9ac6c1ac0de5466987a7350d2a9eda46ea7146f262d907d5f7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "baae6085936cbf9ac6c1ac0de5466987a7350d2a9eda46ea7146f262d907d5f7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 70416,
+  "originalName": "s1-yes-no-cases.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:42.549Z"
+}```
+
 ### filebase/data/lesson-audio/ba/baeb118c3a7d48ebeb871e975be10646114add80737ef424ac73b9797b9191a8.json
 
 ```
@@ -13605,6 +18784,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:19:20.852Z"
+}```
+
+### filebase/data/lesson-audio/bb/bb8dd61c2cea1d6a06a95f33a7ab04f93743af034ec20135092c3eee64b4b688.json
+
+```
+{
+  "id": "lesson-audio/bb8dd61c2cea1d6a06a95f33a7ab04f93743af034ec20135092c3eee64b4b688.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bb8dd61c2cea1d6a06a95f33a7ab04f93743af034ec20135092c3eee64b4b688",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 38736,
+  "originalName": "s1-negociar-cliente.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:19.422Z"
 }```
 
 ### filebase/data/lesson-audio/bb/bb9c276e7523c5101083c9a01817593a65769879880e64a03b9a93cd484d5273.json
@@ -13671,6 +18866,22 @@ npm test
   "createdAt": "2026-07-14T00:13:37.636Z"
 }```
 
+### filebase/data/lesson-audio/bc/bcc84749bdc77142e36a85fa729eb5841dcc88e56ca4d21663b18f806cffd8ec.json
+
+```
+{
+  "id": "lesson-audio/bcc84749bdc77142e36a85fa729eb5841dcc88e56ca4d21663b18f806cffd8ec.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bcc84749bdc77142e36a85fa729eb5841dcc88e56ca4d21663b18f806cffd8ec",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 51696,
+  "originalName": "s3-sort-compras.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:42.222Z"
+}```
+
 ### filebase/data/lesson-audio/bc/bcec2d522f015e498f106b30afe597a12b1e9bb8291271f11ca4ce93eb75525a.json
 
 ```
@@ -13685,6 +18896,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:59.758Z"
+}```
+
+### filebase/data/lesson-audio/bd/bdede8739895226dd4212e3b9f9518ff39e09644975de3f0c3cc6365892d1c40.json
+
+```
+{
+  "id": "lesson-audio/bdede8739895226dd4212e3b9f9518ff39e09644975de3f0c3cc6365892d1c40.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bdede8739895226dd4212e3b9f9518ff39e09644975de3f0c3cc6365892d1c40",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 47808,
+  "originalName": "s1-sort-buckets.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:36.928Z"
 }```
 
 ### filebase/data/lesson-audio/be/be1ee668fe68ec81bd8a38042943ddf998e419b17a847a28ea8e6f5bc169000f.json
@@ -13719,6 +18946,22 @@ npm test
   "createdAt": "2026-07-14T00:06:18.559Z"
 }```
 
+### filebase/data/lesson-audio/be/be7e8f815ba8cc00aeab081d560dcefa3dbcf8de659e934c18b41060402f8a6b.json
+
+```
+{
+  "id": "lesson-audio/be7e8f815ba8cc00aeab081d560dcefa3dbcf8de659e934c18b41060402f8a6b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "be7e8f815ba8cc00aeab081d560dcefa3dbcf8de659e934c18b41060402f8a6b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 15696,
+  "originalName": "s1-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:55.134Z"
+}```
+
 ### filebase/data/lesson-audio/bf/bf2ef716bed159022a53368bc9e4bdd7cc145a6cca9637362348068a78d78e98.json
 
 ```
@@ -13733,6 +18976,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:05.332Z"
+}```
+
+### filebase/data/lesson-audio/bf/bf4ac61863daa5aa4a5e562a2dc59aead1bd4a17b7c19f674a8e5a6c6baf1dce.json
+
+```
+{
+  "id": "lesson-audio/bf4ac61863daa5aa4a5e562a2dc59aead1bd4a17b7c19f674a8e5a6c6baf1dce.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bf4ac61863daa5aa4a5e562a2dc59aead1bd4a17b7c19f674a8e5a6c6baf1dce",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45504,
+  "originalName": "s3-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:14.440Z"
 }```
 
 ### filebase/data/lesson-audio/bf/bf4da5b7bb3aed6a26689c0f8a05ae3608066ce27ee4892835a62766567fa3c2.json
@@ -13765,6 +19024,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:13:20.212Z"
+}```
+
+### filebase/data/lesson-audio/bf/bf8dc62e58d401037c20690a2b48a10594b0e15417c43e925acbb635e432246d.json
+
+```
+{
+  "id": "lesson-audio/bf8dc62e58d401037c20690a2b48a10594b0e15417c43e925acbb635e432246d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bf8dc62e58d401037c20690a2b48a10594b0e15417c43e925acbb635e432246d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 46368,
+  "originalName": "s1-fair-trade.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:01:36.945Z"
+}```
+
+### filebase/data/lesson-audio/bf/bffaadbc55d1baf245dc4fb8e22cf5af08e914d8af0b59d2101ffc788aed449c.json
+
+```
+{
+  "id": "lesson-audio/bffaadbc55d1baf245dc4fb8e22cf5af08e914d8af0b59d2101ffc788aed449c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "bffaadbc55d1baf245dc4fb8e22cf5af08e914d8af0b59d2101ffc788aed449c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32544,
+  "originalName": "s1-key-ideas.idea.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:19.642Z"
+}```
+
+### filebase/data/lesson-audio/c0/c0391de7e180330142d5fe5fafdae90661cefff650537c237299ae093a6da7d9.json
+
+```
+{
+  "id": "lesson-audio/c0391de7e180330142d5fe5fafdae90661cefff650537c237299ae093a6da7d9.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c0391de7e180330142d5fe5fafdae90661cefff650537c237299ae093a6da7d9",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 92448,
+  "originalName": "s1-robot-path.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:23.176Z"
+}```
+
+### filebase/data/lesson-audio/c0/c08de48d2cc93bdaeb6d8976feb80c21065e1fbfa58b53b07dcecca0fd32dbc7.json
+
+```
+{
+  "id": "lesson-audio/c08de48d2cc93bdaeb6d8976feb80c21065e1fbfa58b53b07dcecca0fd32dbc7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c08de48d2cc93bdaeb6d8976feb80c21065e1fbfa58b53b07dcecca0fd32dbc7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45504,
+  "originalName": "s1-dialogo.line.0.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:35.630Z"
 }```
 
 ### filebase/data/lesson-audio/c1/c1033d1092cfc5bfe671b77e5978e3cd7adff95d1000f81264a10ed7deff1d0c.json
@@ -13815,6 +19138,38 @@ npm test
   "createdAt": "2026-07-14T00:18:22.360Z"
 }```
 
+### filebase/data/lesson-audio/c1/c15d0ef3bd439ed0b367acb0a2b99964af8283b7321849a6233d05b42d9dfabb.json
+
+```
+{
+  "id": "lesson-audio/c15d0ef3bd439ed0b367acb0a2b99964af8283b7321849a6233d05b42d9dfabb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c15d0ef3bd439ed0b367acb0a2b99964af8283b7321849a6233d05b42d9dfabb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 74736,
+  "originalName": "s1-dialogo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:28.473Z"
+}```
+
+### filebase/data/lesson-audio/c1/c1ffe3b400157d08a8b656ec74ed0622b91138e7ac297cf68d15d616bfe93792.json
+
+```
+{
+  "id": "lesson-audio/c1ffe3b400157d08a8b656ec74ed0622b91138e7ac297cf68d15d616bfe93792.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c1ffe3b400157d08a8b656ec74ed0622b91138e7ac297cf68d15d616bfe93792",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 139968,
+  "originalName": "s1-precio-justo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:15.284Z"
+}```
+
 ### filebase/data/lesson-audio/c2/c22f57086d89b1f7de47e4615ac7be3338f17e7556dea6d59a6b8d16e2e92da1.json
 
 ```
@@ -13829,6 +19184,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:36.312Z"
+}```
+
+### filebase/data/lesson-audio/c2/c2498101a88cfee69002670389fadcf0d75c9a7de3c584daebebb91fb8d53108.json
+
+```
+{
+  "id": "lesson-audio/c2498101a88cfee69002670389fadcf0d75c9a7de3c584daebebb91fb8d53108.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c2498101a88cfee69002670389fadcf0d75c9a7de3c584daebebb91fb8d53108",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 155376,
+  "originalName": "s1-code-order.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:37.018Z"
 }```
 
 ### filebase/data/lesson-audio/c2/c250e5cbf47e75538f372173e92268a1d8c260099b2895ed5008d0f64234ad81.json
@@ -13863,6 +19234,22 @@ npm test
   "createdAt": "2026-07-14T00:05:12.916Z"
 }```
 
+### filebase/data/lesson-audio/c2/c2b5e8a2afdb2f2957bfeaec4d71bd04a7e097e4a3ebe3c67a81fb30e72b1567.json
+
+```
+{
+  "id": "lesson-audio/c2b5e8a2afdb2f2957bfeaec4d71bd04a7e097e4a3ebe3c67a81fb30e72b1567.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c2b5e8a2afdb2f2957bfeaec4d71bd04a7e097e4a3ebe3c67a81fb30e72b1567",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100224,
+  "originalName": "s1-match-prices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:06.788Z"
+}```
+
 ### filebase/data/lesson-audio/c2/c2d0de5a9667d2b094453f66bddcbee7eed3c485c21a1ae56cedac27fece7e01.json
 
 ```
@@ -13877,6 +19264,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:20:41.776Z"
+}```
+
+### filebase/data/lesson-audio/c2/c2d1fcfa87f1cb7f32766dd031b992b1c32cad4051962c52a64633ab6d146261.json
+
+```
+{
+  "id": "lesson-audio/c2d1fcfa87f1cb7f32766dd031b992b1c32cad4051962c52a64633ab6d146261.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c2d1fcfa87f1cb7f32766dd031b992b1c32cad4051962c52a64633ab6d146261",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 111744,
+  "originalName": "s1-yes-no-cases.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:25.664Z"
+}```
+
+### filebase/data/lesson-audio/c3/c320bc01b592b77016b7948ca2212ead8befade505ab332e3f3a4e7975ff3d5e.json
+
+```
+{
+  "id": "lesson-audio/c320bc01b592b77016b7948ca2212ead8befade505ab332e3f3a4e7975ff3d5e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c320bc01b592b77016b7948ca2212ead8befade505ab332e3f3a4e7975ff3d5e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 131904,
+  "originalName": "s1-fact-opinion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:52.122Z"
 }```
 
 ### filebase/data/lesson-audio/c3/c327803fd1f3f9c20d81a8ba602f666257206b20f4c4098e8c0659e1aab2a7ff.json
@@ -13911,6 +19330,22 @@ npm test
   "createdAt": "2026-07-14T00:20:55.513Z"
 }```
 
+### filebase/data/lesson-audio/c3/c360433638e8423126ffff6ef69fe0df555c5d5d7f4a75ba4d8353c71dcc5e2c.json
+
+```
+{
+  "id": "lesson-audio/c360433638e8423126ffff6ef69fe0df555c5d5d7f4a75ba4d8353c71dcc5e2c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c360433638e8423126ffff6ef69fe0df555c5d5d7f4a75ba4d8353c71dcc5e2c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 30096,
+  "originalName": "s1-key-ideas.idea.1.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:15.215Z"
+}```
+
 ### filebase/data/lesson-audio/c3/c3941121b01b4f89503d826c9788200d5e22b7d9e810a094fd2b7228f6e09fac.json
 
 ```
@@ -13941,6 +19376,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:17:26.018Z"
+}```
+
+### filebase/data/lesson-audio/c3/c3dd09fe7550f5acbe45fb5bde91debca4d679fb2e36d0290c380a96890b02fa.json
+
+```
+{
+  "id": "lesson-audio/c3dd09fe7550f5acbe45fb5bde91debca4d679fb2e36d0290c380a96890b02fa.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c3dd09fe7550f5acbe45fb5bde91debca4d679fb2e36d0290c380a96890b02fa",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 29664,
+  "originalName": "s1-cuenta-limones.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:10.437Z"
+}```
+
+### filebase/data/lesson-audio/c3/c3fc2472b9344e8a8daa276044617f5d9682ee1384a35b6bf5812c9665da0ae8.json
+
+```
+{
+  "id": "lesson-audio/c3fc2472b9344e8a8daa276044617f5d9682ee1384a35b6bf5812c9665da0ae8.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c3fc2472b9344e8a8daa276044617f5d9682ee1384a35b6bf5812c9665da0ae8",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 22464,
+  "originalName": "s1-concept-reveal.card.0.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:25.094Z"
 }```
 
 ### filebase/data/lesson-audio/c4/c41a8a4ba3a89e8ffe2f82410feee917e674c59cd8cdda399603d837e54d72a4.json
@@ -14023,6 +19490,22 @@ npm test
   "createdAt": "2026-07-14T00:04:46.456Z"
 }```
 
+### filebase/data/lesson-audio/c4/c4c667c275240a97a3bf54047faa2ccd3b4dbfeb04d4cbccc165a74aea8aadd2.json
+
+```
+{
+  "id": "lesson-audio/c4c667c275240a97a3bf54047faa2ccd3b4dbfeb04d4cbccc165a74aea8aadd2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c4c667c275240a97a3bf54047faa2ccd3b4dbfeb04d4cbccc165a74aea8aadd2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 96336,
+  "originalName": "s1-robot-path.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:33.980Z"
+}```
+
 ### filebase/data/lesson-audio/c4/c4e1d4066fcd1a1b9bb6d30706d888869dd7b3bcf6f9720c2fd7bf9a91ace71a.json
 
 ```
@@ -14037,6 +19520,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:28.403Z"
+}```
+
+### filebase/data/lesson-audio/c4/c4e29995a8ab700a228d943362f7655b6cefe29eb757130eaa8f66f5c8ea1c1b.json
+
+```
+{
+  "id": "lesson-audio/c4e29995a8ab700a228d943362f7655b6cefe29eb757130eaa8f66f5c8ea1c1b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c4e29995a8ab700a228d943362f7655b6cefe29eb757130eaa8f66f5c8ea1c1b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 17568,
+  "originalName": "s1-debug-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:50.846Z"
 }```
 
 ### filebase/data/lesson-audio/c5/c553760735571741abcadd41823e008d8b49f37f0bd15cc23ddcc9f3633dcec8.json
@@ -14055,6 +19554,22 @@ npm test
   "createdAt": "2026-07-14T01:05:27.799Z"
 }```
 
+### filebase/data/lesson-audio/c5/c5625cc164a41485f6e2d589370a63c3de7fd8353ed34d6ffd2935f992b59f27.json
+
+```
+{
+  "id": "lesson-audio/c5625cc164a41485f6e2d589370a63c3de7fd8353ed34d6ffd2935f992b59f27.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c5625cc164a41485f6e2d589370a63c3de7fd8353ed34d6ffd2935f992b59f27",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 43488,
+  "originalName": "s2-order-receta.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:50.847Z"
+}```
+
 ### filebase/data/lesson-audio/c5/c57ac16bf1d4b084df430b970ea6353fb7b42c868f012f37e52a2dd6e4f2f7cd.json
 
 ```
@@ -14069,6 +19584,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:13:25.111Z"
+}```
+
+### filebase/data/lesson-audio/c6/c60bbff33f4fcc62ac1a3e0bcc0f793fa5f653ac56b30c2d93f834deeaa40b2d.json
+
+```
+{
+  "id": "lesson-audio/c60bbff33f4fcc62ac1a3e0bcc0f793fa5f653ac56b30c2d93f834deeaa40b2d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c60bbff33f4fcc62ac1a3e0bcc0f793fa5f653ac56b30c2d93f834deeaa40b2d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 51696,
+  "originalName": "s3-sort-compras.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:56.387Z"
+}```
+
+### filebase/data/lesson-audio/c7/c71f5162c567802f1ddd30518c93dec490e27c1dc5c1405e4714009ff2407030.json
+
+```
+{
+  "id": "lesson-audio/c71f5162c567802f1ddd30518c93dec490e27c1dc5c1405e4714009ff2407030.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c71f5162c567802f1ddd30518c93dec490e27c1dc5c1405e4714009ff2407030",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78048,
+  "originalName": "s1-concept-reveal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:48.539Z"
+}```
+
+### filebase/data/lesson-audio/c7/c79ccd8857550e208aa299fa5f3412086d6dff48f8d717c34f9e154e1830381b.json
+
+```
+{
+  "id": "lesson-audio/c79ccd8857550e208aa299fa5f3412086d6dff48f8d717c34f9e154e1830381b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c79ccd8857550e208aa299fa5f3412086d6dff48f8d717c34f9e154e1830381b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 84384,
+  "originalName": "s1-debug-hunt.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:54.397Z"
 }```
 
 ### filebase/data/lesson-audio/c7/c7af15ffee05c14b808c3e158114f2e6752cc7e865035618122e7d9e1ec38785.json
@@ -14135,6 +19698,54 @@ npm test
   "createdAt": "2026-07-14T00:06:13.447Z"
 }```
 
+### filebase/data/lesson-audio/c8/c86fb0023b34cf526e3bd99ef3c98f21c03602ef005d99ee891b43b7aafbcebd.json
+
+```
+{
+  "id": "lesson-audio/c86fb0023b34cf526e3bd99ef3c98f21c03602ef005d99ee891b43b7aafbcebd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c86fb0023b34cf526e3bd99ef3c98f21c03602ef005d99ee891b43b7aafbcebd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 38736,
+  "originalName": "s1-branch.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:57.491Z"
+}```
+
+### filebase/data/lesson-audio/c8/c8ae2929de96e39d45281ab47e3e0c199829d4491c8972fb585fd52a7fc96641.json
+
+```
+{
+  "id": "lesson-audio/c8ae2929de96e39d45281ab47e3e0c199829d4491c8972fb585fd52a7fc96641.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c8ae2929de96e39d45281ab47e3e0c199829d4491c8972fb585fd52a7fc96641",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 80496,
+  "originalName": "s1-estimate-slider.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:57.140Z"
+}```
+
+### filebase/data/lesson-audio/c8/c8df66029a4c4442fa1e4c49fb92d413c4f4c230aec2b171c77bbe708f0ae58b.json
+
+```
+{
+  "id": "lesson-audio/c8df66029a4c4442fa1e4c49fb92d413c4f4c230aec2b171c77bbe708f0ae58b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c8df66029a4c4442fa1e4c49fb92d413c4f4c230aec2b171c77bbe708f0ae58b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 25344,
+  "originalName": "s1-debug-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:43.553Z"
+}```
+
 ### filebase/data/lesson-audio/c8/c8e4596d716b63ef8bc9fc10bbe610aaddb0a750557fb9e6f9530ab5fb60ce94.json
 
 ```
@@ -14149,6 +19760,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:09:28.808Z"
+}```
+
+### filebase/data/lesson-audio/c9/c96f29c767539d912d4a2d0264310b1fecdd3f122f01036c01fd29e0e0aa8be3.json
+
+```
+{
+  "id": "lesson-audio/c96f29c767539d912d4a2d0264310b1fecdd3f122f01036c01fd29e0e0aa8be3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c96f29c767539d912d4a2d0264310b1fecdd3f122f01036c01fd29e0e0aa8be3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 102528,
+  "originalName": "s1-group-sets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:40.026Z"
 }```
 
 ### filebase/data/lesson-audio/c9/c980bc7a400a54c18ef3f30395943536bd79edb9f5ef3403371f4cec58b4888f.json
@@ -14183,6 +19810,22 @@ npm test
   "createdAt": "2026-07-14T00:05:00.156Z"
 }```
 
+### filebase/data/lesson-audio/c9/c9c3bb0f80023b19f72755d43f3593ac306b9d9b6ea20dc2d5a298929c2d63f3.json
+
+```
+{
+  "id": "lesson-audio/c9c3bb0f80023b19f72755d43f3593ac306b9d9b6ea20dc2d5a298929c2d63f3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "c9c3bb0f80023b19f72755d43f3593ac306b9d9b6ea20dc2d5a298929c2d63f3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 198576,
+  "originalName": "s1-red-flags.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:54.659Z"
+}```
+
 ### filebase/data/lesson-audio/c9/c9d844b264165627cfb0b2a7ebf71ad06d437eb87ee81cd4778a29bb41774ef6.json
 
 ```
@@ -14197,6 +19840,70 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:09:01.962Z"
+}```
+
+### filebase/data/lesson-audio/ca/ca2122a112b96832f2954e18282db59b547af14dff63b3d6f61a1bfc366465e4.json
+
+```
+{
+  "id": "lesson-audio/ca2122a112b96832f2954e18282db59b547af14dff63b3d6f61a1bfc366465e4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ca2122a112b96832f2954e18282db59b547af14dff63b3d6f61a1bfc366465e4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60768,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:10.295Z"
+}```
+
+### filebase/data/lesson-audio/ca/ca775ba624ad8da5b5671039c97798f9054fbcc6a213b6247544aa5ca4cfb41b.json
+
+```
+{
+  "id": "lesson-audio/ca775ba624ad8da5b5671039c97798f9054fbcc6a213b6247544aa5ca4cfb41b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ca775ba624ad8da5b5671039c97798f9054fbcc6a213b6247544aa5ca4cfb41b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 59904,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:01.219Z"
+}```
+
+### filebase/data/lesson-audio/ca/cac7720020a9e6d2ce5d30e15898678ddd3054575d5e681f47e6a5f1a7779850.json
+
+```
+{
+  "id": "lesson-audio/cac7720020a9e6d2ce5d30e15898678ddd3054575d5e681f47e6a5f1a7779850.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cac7720020a9e6d2ce5d30e15898678ddd3054575d5e681f47e6a5f1a7779850",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 103968,
+  "originalName": "s1-compare-table.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:45:53.555Z"
+}```
+
+### filebase/data/lesson-audio/ca/caeb2ca903339ac3a5217e31c6637d30d24f129e1a655678d04db8b454e477b2.json
+
+```
+{
+  "id": "lesson-audio/caeb2ca903339ac3a5217e31c6637d30d24f129e1a655678d04db8b454e477b2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "caeb2ca903339ac3a5217e31c6637d30d24f129e1a655678d04db8b454e477b2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 86256,
+  "originalName": "s4-timeline-dia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:25.670Z"
 }```
 
 ### filebase/data/lesson-audio/cb/cbb5dc2696b2ed70f91bf0780513e262944cde89593346796b5267fe2783e868.json
@@ -14247,6 +19954,22 @@ npm test
   "createdAt": "2026-07-14T00:05:19.245Z"
 }```
 
+### filebase/data/lesson-audio/cc/cc3d25f0475ee59e9896fd490ecde5b3604a9ed3483fb00e9237b30d10c17ccc.json
+
+```
+{
+  "id": "lesson-audio/cc3d25f0475ee59e9896fd490ecde5b3604a9ed3483fb00e9237b30d10c17ccc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cc3d25f0475ee59e9896fd490ecde5b3604a9ed3483fb00e9237b30d10c17ccc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73728,
+  "originalName": "s1-key-ideas.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:32.265Z"
+}```
+
 ### filebase/data/lesson-audio/cc/cc3fdc9fdc8607a18a8ada77126f2013725c9221be9128e9cf7920ff1b24ef01.json
 
 ```
@@ -14263,6 +19986,70 @@ npm test
   "createdAt": "2026-07-14T01:05:08.413Z"
 }```
 
+### filebase/data/lesson-audio/cc/cc72cfd9cf99ab476ff4d6aa842df40103b2091256623e152f84fc0f43fb88d6.json
+
+```
+{
+  "id": "lesson-audio/cc72cfd9cf99ab476ff4d6aa842df40103b2091256623e152f84fc0f43fb88d6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cc72cfd9cf99ab476ff4d6aa842df40103b2091256623e152f84fc0f43fb88d6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93888,
+  "originalName": "s1-speed-tap.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:24.413Z"
+}```
+
+### filebase/data/lesson-audio/cc/ccb13d110a1e560d747856bfa51056d4ae7c80055bb9139cde05ebf5941104cd.json
+
+```
+{
+  "id": "lesson-audio/ccb13d110a1e560d747856bfa51056d4ae7c80055bb9139cde05ebf5941104cd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ccb13d110a1e560d747856bfa51056d4ae7c80055bb9139cde05ebf5941104cd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 91584,
+  "originalName": "s1-memory-flip.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:10.689Z"
+}```
+
+### filebase/data/lesson-audio/cc/cce4a0271d8067033653ddb60eb960cb4c3062b2765c39938910bf6e796692a5.json
+
+```
+{
+  "id": "lesson-audio/cce4a0271d8067033653ddb60eb960cb4c3062b2765c39938910bf6e796692a5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cce4a0271d8067033653ddb60eb960cb4c3062b2765c39938910bf6e796692a5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 25344,
+  "originalName": "s1-checkpoint.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:49.742Z"
+}```
+
+### filebase/data/lesson-audio/cd/cda71e18b5bf0a74e8c60ca94a9a009c7f0a4b32665e551ce840b404294edb82.json
+
+```
+{
+  "id": "lesson-audio/cda71e18b5bf0a74e8c60ca94a9a009c7f0a4b32665e551ce840b404294edb82.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cda71e18b5bf0a74e8c60ca94a9a009c7f0a4b32665e551ce840b404294edb82",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 49824,
+  "originalName": "s1-best-decision.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:19.058Z"
+}```
+
 ### filebase/data/lesson-audio/cd/cde4c7b67587aa8fe2930a42e950145755bab6d9eb4eb8e6f97df4a125eb23d1.json
 
 ```
@@ -14277,6 +20064,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:06:09.273Z"
+}```
+
+### filebase/data/lesson-audio/cd/cdf3d1625de372dac58d7d1f96af4b206edb83b59f45c3dab36c8e7e368fc100.json
+
+```
+{
+  "id": "lesson-audio/cdf3d1625de372dac58d7d1f96af4b206edb83b59f45c3dab36c8e7e368fc100.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cdf3d1625de372dac58d7d1f96af4b206edb83b59f45c3dab36c8e7e368fc100",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 33984,
+  "originalName": "s1-ganancia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:55.491Z"
 }```
 
 ### filebase/data/lesson-audio/ce/ce05cdecc202996e7a4d022a82e78ef81783b383814a59dbccefc181fddaeff6.json
@@ -14309,6 +20112,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:17:44.507Z"
+}```
+
+### filebase/data/lesson-audio/ce/ce27d9e10fe874f9db15c39690f3561cdeac10722f73704704276df1f3e68bfc.json
+
+```
+{
+  "id": "lesson-audio/ce27d9e10fe874f9db15c39690f3561cdeac10722f73704704276df1f3e68bfc.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ce27d9e10fe874f9db15c39690f3561cdeac10722f73704704276df1f3e68bfc",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 72288,
+  "originalName": "s1-needs-wants.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:34:31.748Z"
 }```
 
 ### filebase/data/lesson-audio/ce/ce68d40cb7459cebc17afa62d341f90124c810b3ab3878c7bde9833637ab6db7.json
@@ -14359,6 +20178,22 @@ npm test
   "createdAt": "2026-07-14T00:13:06.543Z"
 }```
 
+### filebase/data/lesson-audio/ce/cec945c0b00e0eaffd4c1c65798a1498c05a32bda7e5503caf18e384a0c3ae11.json
+
+```
+{
+  "id": "lesson-audio/cec945c0b00e0eaffd4c1c65798a1498c05a32bda7e5503caf18e384a0c3ae11.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cec945c0b00e0eaffd4c1c65798a1498c05a32bda7e5503caf18e384a0c3ae11",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42624,
+  "originalName": "s1-checkpoint.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:50.356Z"
+}```
+
 ### filebase/data/lesson-audio/cf/cf171302c359b253429b22f23fded260619a211c11042f7d50c25c7d475d6b1c.json
 
 ```
@@ -14391,6 +20226,38 @@ npm test
   "createdAt": "2026-07-14T00:08:58.130Z"
 }```
 
+### filebase/data/lesson-audio/cf/cf5d3eacc7dd306453339ea117ca860856f935a0a2db28a38dcfcc67bc03325f.json
+
+```
+{
+  "id": "lesson-audio/cf5d3eacc7dd306453339ea117ca860856f935a0a2db28a38dcfcc67bc03325f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cf5d3eacc7dd306453339ea117ca860856f935a0a2db28a38dcfcc67bc03325f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93024,
+  "originalName": "s1-arma-letrero.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:40.467Z"
+}```
+
+### filebase/data/lesson-audio/cf/cfb24f0f1aa3df50ea7e881aa1e609e30a1963d2c466affd1fde53514ecc50c3.json
+
+```
+{
+  "id": "lesson-audio/cfb24f0f1aa3df50ea7e881aa1e609e30a1963d2c466affd1fde53514ecc50c3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cfb24f0f1aa3df50ea7e881aa1e609e30a1963d2c466affd1fde53514ecc50c3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 64656,
+  "originalName": "s1-key-ideas.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:11.847Z"
+}```
+
 ### filebase/data/lesson-audio/cf/cfd02a7fc21f648c44c442235ea0376720e62e3e7c9d70e675fa2986e6db33b2.json
 
 ```
@@ -14405,6 +20272,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:20:39.643Z"
+}```
+
+### filebase/data/lesson-audio/cf/cfda9b629794688fa48c4d4e619c27e8ef5c9bad96eb31c4ff0d148a9ff946b1.json
+
+```
+{
+  "id": "lesson-audio/cfda9b629794688fa48c4d4e619c27e8ef5c9bad96eb31c4ff0d148a9ff946b1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cfda9b629794688fa48c4d4e619c27e8ef5c9bad96eb31c4ff0d148a9ff946b1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 34848,
+  "originalName": "s1-machine-io.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:01.199Z"
+}```
+
+### filebase/data/lesson-audio/cf/cfdab7b09e6c159bdfb756e9537329b8ff41861da126419052b57280895e1066.json
+
+```
+{
+  "id": "lesson-audio/cfdab7b09e6c159bdfb756e9537329b8ff41861da126419052b57280895e1066.mp3",
+  "bucket": "lesson-audio",
+  "hash": "cfdab7b09e6c159bdfb756e9537329b8ff41861da126419052b57280895e1066",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93456,
+  "originalName": "s1-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:18.717Z"
 }```
 
 ### filebase/data/lesson-audio/d0/d011b9bce5937b3c64e9a0ee45f2c21b5a21d6cae68b847329032d5eaa9722b5.json
@@ -14471,6 +20370,54 @@ npm test
   "createdAt": "2026-07-14T00:15:45.638Z"
 }```
 
+### filebase/data/lesson-audio/d0/d0ab94c65e71364d159228f22f9b591540fc82da85bdd5794d4af3602bd31d3e.json
+
+```
+{
+  "id": "lesson-audio/d0ab94c65e71364d159228f22f9b591540fc82da85bdd5794d4af3602bd31d3e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d0ab94c65e71364d159228f22f9b591540fc82da85bdd5794d4af3602bd31d3e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42624,
+  "originalName": "s1-machine-io.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:16.605Z"
+}```
+
+### filebase/data/lesson-audio/d1/d1b1c427a2c15cc8003ec6c0193b84d7543664cb61b67f189898e33e35f983d1.json
+
+```
+{
+  "id": "lesson-audio/d1b1c427a2c15cc8003ec6c0193b84d7543664cb61b67f189898e33e35f983d1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d1b1c427a2c15cc8003ec6c0193b84d7543664cb61b67f189898e33e35f983d1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 93888,
+  "originalName": "s1-concept-reveal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:27.043Z"
+}```
+
+### filebase/data/lesson-audio/d1/d1f83424aa12c99f848210e683d727bcd169481ee9d433166835b0bece0fce49.json
+
+```
+{
+  "id": "lesson-audio/d1f83424aa12c99f848210e683d727bcd169481ee9d433166835b0bece0fce49.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d1f83424aa12c99f848210e683d727bcd169481ee9d433166835b0bece0fce49",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 107856,
+  "originalName": "s1-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:08.704Z"
+}```
+
 ### filebase/data/lesson-audio/d2/d22e4b001dba804904dcd6b2c5d11e46cf1b6ccc39ba8fcaf4304dfce8759254.json
 
 ```
@@ -14519,6 +20466,22 @@ npm test
   "createdAt": "2026-07-14T00:08:23.413Z"
 }```
 
+### filebase/data/lesson-audio/d2/d2767979d952149ec472576a8bf04e1afe379e607bf00f38dfcc8dcf804c8dd2.json
+
+```
+{
+  "id": "lesson-audio/d2767979d952149ec472576a8bf04e1afe379e607bf00f38dfcc8dcf804c8dd2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d2767979d952149ec472576a8bf04e1afe379e607bf00f38dfcc8dcf804c8dd2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 98784,
+  "originalName": "s1-timeline-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:19.791Z"
+}```
+
 ### filebase/data/lesson-audio/d3/d32b6fbbf084b05cbecbdc56d9ee5b2857be1cc4d2d71d0c03191b6ab2d61744.json
 
 ```
@@ -14533,6 +20496,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:10:34.840Z"
+}```
+
+### filebase/data/lesson-audio/d3/d363b535e7489d2ca066aec37e712f70118a1b46bcb46007c7c8c540e675c6f6.json
+
+```
+{
+  "id": "lesson-audio/d363b535e7489d2ca066aec37e712f70118a1b46bcb46007c7c8c540e675c6f6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d363b535e7489d2ca066aec37e712f70118a1b46bcb46007c7c8c540e675c6f6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 61776,
+  "originalName": "s1-concept-reveal.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:20.945Z"
 }```
 
 ### filebase/data/lesson-audio/d3/d3abdac3a2064795dfcc60669ea963a09e1256feeadc5f933c5b8cf326c994ce.json
@@ -14551,6 +20530,22 @@ npm test
   "createdAt": "2026-07-14T00:07:04.446Z"
 }```
 
+### filebase/data/lesson-audio/d3/d3cfebdf475173f135aab653f9c07e7bfca2201c6a866ac9a5494c5417d9b460.json
+
+```
+{
+  "id": "lesson-audio/d3cfebdf475173f135aab653f9c07e7bfca2201c6a866ac9a5494c5417d9b460.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d3cfebdf475173f135aab653f9c07e7bfca2201c6a866ac9a5494c5417d9b460",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 98208,
+  "originalName": "s1-timeline-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:29.954Z"
+}```
+
 ### filebase/data/lesson-audio/d3/d3db6d56a33f64169809f72b4f540459bc2aa23adc68a7c4860126b42187b68d.json
 
 ```
@@ -14565,6 +20560,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:20:56.606Z"
+}```
+
+### filebase/data/lesson-audio/d3/d3e00e30f973f0328c6cc51347ec39e163974cacbcd22b1aa4c69187edfe5926.json
+
+```
+{
+  "id": "lesson-audio/d3e00e30f973f0328c6cc51347ec39e163974cacbcd22b1aa4c69187edfe5926.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d3e00e30f973f0328c6cc51347ec39e163974cacbcd22b1aa4c69187edfe5926",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 157824,
+  "originalName": "s1-sort-buckets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:02.571Z"
+}```
+
+### filebase/data/lesson-audio/d4/d457488d0576ab744a95f12f4febab7de3250afb89e80bcc81b68f364e4177a7.json
+
+```
+{
+  "id": "lesson-audio/d457488d0576ab744a95f12f4febab7de3250afb89e80bcc81b68f364e4177a7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d457488d0576ab744a95f12f4febab7de3250afb89e80bcc81b68f364e4177a7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 91584,
+  "originalName": "s1-compare-table.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:39.803Z"
 }```
 
 ### filebase/data/lesson-audio/d4/d4833ea0ec6b569638f926af9bffc74fe7df6a6f4fd92a12a113a2f9a828f6b3.json
@@ -14631,6 +20658,22 @@ npm test
   "createdAt": "2026-07-14T00:10:24.676Z"
 }```
 
+### filebase/data/lesson-audio/d5/d57eeccd4581911d663b02d56df1cee9d4ec719404fc5064f74685bbc65af0e6.json
+
+```
+{
+  "id": "lesson-audio/d57eeccd4581911d663b02d56df1cee9d4ec719404fc5064f74685bbc65af0e6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d57eeccd4581911d663b02d56df1cee9d4ec719404fc5064f74685bbc65af0e6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32976,
+  "originalName": "s1-checkpoint.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:20.252Z"
+}```
+
 ### filebase/data/lesson-audio/d6/d616c38e89a781a3656b618fb3b966784d7ffb67404fd47896dd908157bffc30.json
 
 ```
@@ -14645,6 +20688,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:12:16.059Z"
+}```
+
+### filebase/data/lesson-audio/d6/d6170efde0972071f59ecb45a9ffe379087511f2661bb3dfee481faf4d0485e0.json
+
+```
+{
+  "id": "lesson-audio/d6170efde0972071f59ecb45a9ffe379087511f2661bb3dfee481faf4d0485e0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d6170efde0972071f59ecb45a9ffe379087511f2661bb3dfee481faf4d0485e0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 114048,
+  "originalName": "s1-speed-tap.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:10.397Z"
 }```
 
 ### filebase/data/lesson-audio/d6/d643b42704b3ccecbc74d72f8cca53fe93394b7a39137bc203da5e514749912f.json
@@ -14679,6 +20738,22 @@ npm test
   "createdAt": "2026-07-14T00:15:20.970Z"
 }```
 
+### filebase/data/lesson-audio/d6/d69165682b150147e1f8851354c0ba0bc99706ee1f7bbeccc6cc96f7ed3d7831.json
+
+```
+{
+  "id": "lesson-audio/d69165682b150147e1f8851354c0ba0bc99706ee1f7bbeccc6cc96f7ed3d7831.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d69165682b150147e1f8851354c0ba0bc99706ee1f7bbeccc6cc96f7ed3d7831",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 89136,
+  "originalName": "s1-ahorro.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:28.187Z"
+}```
+
 ### filebase/data/lesson-audio/d7/d71936dcb811075d04e3dec4a0383ecbca2a34609f0fcdf21c0a0443a069702d.json
 
 ```
@@ -14693,6 +20768,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:17:04.367Z"
+}```
+
+### filebase/data/lesson-audio/d7/d729b2d2156acf85804e3ccc0e5ef284c0625ac3eccdae6a51b7daffd7e5ebb2.json
+
+```
+{
+  "id": "lesson-audio/d729b2d2156acf85804e3ccc0e5ef284c0625ac3eccdae6a51b7daffd7e5ebb2.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d729b2d2156acf85804e3ccc0e5ef284c0625ac3eccdae6a51b7daffd7e5ebb2",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 76608,
+  "originalName": "s3-picturechoice.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:42.823Z"
+}```
+
+### filebase/data/lesson-audio/d7/d761b54ac0cea68c01b43444989301e5187b1c0f7cddef70c85002300d74e91b.json
+
+```
+{
+  "id": "lesson-audio/d761b54ac0cea68c01b43444989301e5187b1c0f7cddef70c85002300d74e91b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d761b54ac0cea68c01b43444989301e5187b1c0f7cddef70c85002300d74e91b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 47808,
+  "originalName": "s1-number-input.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:00:40.759Z"
 }```
 
 ### filebase/data/lesson-audio/d7/d7af7b1ef7b6537d471219aa5a344f66f28c6af13bd35c888fa2b7978aaed3e8.json
@@ -14791,6 +20898,38 @@ npm test
   "createdAt": "2026-07-14T00:04:30.122Z"
 }```
 
+### filebase/data/lesson-audio/d8/d8efe888e59f2612932307a7a8e57d46d53668ea1ee060f5d8dd364098ea80bd.json
+
+```
+{
+  "id": "lesson-audio/d8efe888e59f2612932307a7a8e57d46d53668ea1ee060f5d8dd364098ea80bd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d8efe888e59f2612932307a7a8e57d46d53668ea1ee060f5d8dd364098ea80bd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69408,
+  "originalName": "s1-concept-reveal.card.1.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:30.310Z"
+}```
+
+### filebase/data/lesson-audio/d9/d909c27ee103f865fec75e8d6396e63b3a547662e9e832c1f45dd7b73c3980b0.json
+
+```
+{
+  "id": "lesson-audio/d909c27ee103f865fec75e8d6396e63b3a547662e9e832c1f45dd7b73c3980b0.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d909c27ee103f865fec75e8d6396e63b3a547662e9e832c1f45dd7b73c3980b0",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 67104,
+  "originalName": "s1-number-line.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:55:54.174Z"
+}```
+
 ### filebase/data/lesson-audio/d9/d90a2e0952fa01fb03a2d0f06c817de17a9c2cb312edb7478c5f5941fa5358ce.json
 
 ```
@@ -14823,6 +20962,22 @@ npm test
   "createdAt": "2026-07-14T00:07:47.453Z"
 }```
 
+### filebase/data/lesson-audio/d9/d9d4a411a05149369b97149081d76315737593b88ac9fe0fb6c0e324220950ed.json
+
+```
+{
+  "id": "lesson-audio/d9d4a411a05149369b97149081d76315737593b88ac9fe0fb6c0e324220950ed.mp3",
+  "bucket": "lesson-audio",
+  "hash": "d9d4a411a05149369b97149081d76315737593b88ac9fe0fb6c0e324220950ed",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 73296,
+  "originalName": "s3-picturechoice.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:52.623Z"
+}```
+
 ### filebase/data/lesson-audio/d9/d9d8bdf6d96f43afcce32e5f436b3940ec128ff8033d505791f050d614a4f72c.json
 
 ```
@@ -14837,6 +20992,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:19:29.572Z"
+}```
+
+### filebase/data/lesson-audio/da/dab544010fb022188d17b4c37dbaf6c646cb360a6d0b1066d63b1221234e2628.json
+
+```
+{
+  "id": "lesson-audio/dab544010fb022188d17b4c37dbaf6c646cb360a6d0b1066d63b1221234e2628.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dab544010fb022188d17b4c37dbaf6c646cb360a6d0b1066d63b1221234e2628",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42048,
+  "originalName": "s1-arma-letrero.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:47.014Z"
+}```
+
+### filebase/data/lesson-audio/da/dac0477a5356964636016caa700d844720b1067edcfa3af719729c683f327eea.json
+
+```
+{
+  "id": "lesson-audio/dac0477a5356964636016caa700d844720b1067edcfa3af719729c683f327eea.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dac0477a5356964636016caa700d844720b1067edcfa3af719729c683f327eea",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78048,
+  "originalName": "s1-concept-reveal.card.1.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:46.170Z"
 }```
 
 ### filebase/data/lesson-audio/da/dac5514146317cd14c239d118d21b4d3d0c7ed7fc7d5e8152191ed5825406c24.json
@@ -14871,6 +21058,22 @@ npm test
   "createdAt": "2026-07-14T00:04:55.809Z"
 }```
 
+### filebase/data/lesson-audio/db/db1ac0f277bcbad496fe9069b1b3960af4ccfaecaad3069041c5485e6e660967.json
+
+```
+{
+  "id": "lesson-audio/db1ac0f277bcbad496fe9069b1b3960af4ccfaecaad3069041c5485e6e660967.mp3",
+  "bucket": "lesson-audio",
+  "hash": "db1ac0f277bcbad496fe9069b1b3960af4ccfaecaad3069041c5485e6e660967",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 112176,
+  "originalName": "s1-sort-buckets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:46:40.728Z"
+}```
+
 ### filebase/data/lesson-audio/db/db48e872bbd2e6e427f6ffe1a397ecb3b7bfbaa960f3a002dad611e53bbe3009.json
 
 ```
@@ -14901,6 +21104,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:11:56.829Z"
+}```
+
+### filebase/data/lesson-audio/db/dbe8a7803929b4b08283977d53f5d9311cd871f5cee1520fb763b6e6cb5798bf.json
+
+```
+{
+  "id": "lesson-audio/dbe8a7803929b4b08283977d53f5d9311cd871f5cee1520fb763b6e6cb5798bf.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dbe8a7803929b4b08283977d53f5d9311cd871f5cee1520fb763b6e6cb5798bf",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 20448,
+  "originalName": "s1-key-ideas.idea.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:07.455Z"
 }```
 
 ### filebase/data/lesson-audio/db/dbfdebe9e1e824894d1bdd409979e2bad99b570d105b82bd1338c9dce5b78432.json
@@ -14951,6 +21170,22 @@ npm test
   "createdAt": "2026-07-14T00:07:58.986Z"
 }```
 
+### filebase/data/lesson-audio/dc/dc68c8442c31245735234fb28bf5ccaafe7112c4f33b869251d31e6facdaaeb3.json
+
+```
+{
+  "id": "lesson-audio/dc68c8442c31245735234fb28bf5ccaafe7112c4f33b869251d31e6facdaaeb3.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dc68c8442c31245735234fb28bf5ccaafe7112c4f33b869251d31e6facdaaeb3",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 82368,
+  "originalName": "s1-checkpoint.recap.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:54.276Z"
+}```
+
 ### filebase/data/lesson-audio/dc/dcd3917ab3a1732680a3d1471ecea82641a7a1f556f7cd365ab25c29feb5b0b1.json
 
 ```
@@ -14967,6 +21202,22 @@ npm test
   "createdAt": "2026-07-14T00:05:55.814Z"
 }```
 
+### filebase/data/lesson-audio/dc/dcd4cf6edb99673d2469f30cdb5766d1a9113442080262754aca7a1ef60a504f.json
+
+```
+{
+  "id": "lesson-audio/dcd4cf6edb99673d2469f30cdb5766d1a9113442080262754aca7a1ef60a504f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dcd4cf6edb99673d2469f30cdb5766d1a9113442080262754aca7a1ef60a504f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 96768,
+  "originalName": "s1-branch.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:00.808Z"
+}```
+
 ### filebase/data/lesson-audio/dc/dceda8f8a33d78f1e11b004c297ee4558e45ec019b5ea196538fab7558f264b5.json
 
 ```
@@ -14981,6 +21232,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:37.678Z"
+}```
+
+### filebase/data/lesson-audio/dd/dd8372a2403d5828ff54c8a613842522f0743a425d37e038daffdceb2079987f.json
+
+```
+{
+  "id": "lesson-audio/dd8372a2403d5828ff54c8a613842522f0743a425d37e038daffdceb2079987f.mp3",
+  "bucket": "lesson-audio",
+  "hash": "dd8372a2403d5828ff54c8a613842522f0743a425d37e038daffdceb2079987f",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 81504,
+  "originalName": "s4-timeline-dia.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:53.223Z"
 }```
 
 ### filebase/data/lesson-audio/dd/ddb4010aaee88a13ad04956eab8ea9c51dc74c9df30ae622bdbe0bdbdd2c56aa.json
@@ -15047,6 +21314,38 @@ npm test
   "createdAt": "2026-07-14T00:08:57.238Z"
 }```
 
+### filebase/data/lesson-audio/de/de9c87f73fbe15aeb8c929f81df8b223e4ca9c98ba509116d32e4c7e42825ca7.json
+
+```
+{
+  "id": "lesson-audio/de9c87f73fbe15aeb8c929f81df8b223e4ca9c98ba509116d32e4c7e42825ca7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "de9c87f73fbe15aeb8c929f81df8b223e4ca9c98ba509116d32e4c7e42825ca7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 56448,
+  "originalName": "s1-pattern-vasos.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:47:41.563Z"
+}```
+
+### filebase/data/lesson-audio/df/df1701fb4901217b268c4d6e93b53b7d35aa7de1370d221d66410189b47f4d54.json
+
+```
+{
+  "id": "lesson-audio/df1701fb4901217b268c4d6e93b53b7d35aa7de1370d221d66410189b47f4d54.mp3",
+  "bucket": "lesson-audio",
+  "hash": "df1701fb4901217b268c4d6e93b53b7d35aa7de1370d221d66410189b47f4d54",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 150048,
+  "originalName": "s1-precio-justo.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:33:54.766Z"
+}```
+
 ### filebase/data/lesson-audio/e0/e01abdba6d6069981142a64f1346a7a55f32cda366c706dea78428d4d44f2009.json
 
 ```
@@ -15079,6 +21378,22 @@ npm test
   "createdAt": "2026-07-14T00:03:59.913Z"
 }```
 
+### filebase/data/lesson-audio/e0/e0d30249ec0f8b3a549b9059809a37e073455e5b8e2649cc401ede87660ec641.json
+
+```
+{
+  "id": "lesson-audio/e0d30249ec0f8b3a549b9059809a37e073455e5b8e2649cc401ede87660ec641.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e0d30249ec0f8b3a549b9059809a37e073455e5b8e2649cc401ede87660ec641",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69408,
+  "originalName": "s1-ecuacion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:13.596Z"
+}```
+
 ### filebase/data/lesson-audio/e0/e0de54909701a795263ceef83c5e4a0b7d738ad76773624601147938cdb1f7ce.json
 
 ```
@@ -15093,6 +21408,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:06:14.329Z"
+}```
+
+### filebase/data/lesson-audio/e1/e101eed3e48846df3911f5df2f3ac0fe60eb10c1af1b4cf4ea3c10481abc97cd.json
+
+```
+{
+  "id": "lesson-audio/e101eed3e48846df3911f5df2f3ac0fe60eb10c1af1b4cf4ea3c10481abc97cd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e101eed3e48846df3911f5df2f3ac0fe60eb10c1af1b4cf4ea3c10481abc97cd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 114624,
+  "originalName": "s1-make-change.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:32.146Z"
 }```
 
 ### filebase/data/lesson-audio/e1/e17d62a6d9867c8a7c7e1e88beff1ffd3377ac021a2a5020fb3b0093bb5d475a.json
@@ -15127,6 +21458,38 @@ npm test
   "createdAt": "2026-07-14T00:18:04.711Z"
 }```
 
+### filebase/data/lesson-audio/e1/e1952bacfe50613a845db028b2011fa4fac51fd3b628331200cf904d75c9a04a.json
+
+```
+{
+  "id": "lesson-audio/e1952bacfe50613a845db028b2011fa4fac51fd3b628331200cf904d75c9a04a.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e1952bacfe50613a845db028b2011fa4fac51fd3b628331200cf904d75c9a04a",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 71856,
+  "originalName": "s1-budget-fit.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:30.597Z"
+}```
+
+### filebase/data/lesson-audio/e2/e2f5d7e2c3f8e6269cd19dfd1cb4472d0a7156fbbc62cfcd0ac4d174f7ac38a4.json
+
+```
+{
+  "id": "lesson-audio/e2f5d7e2c3f8e6269cd19dfd1cb4472d0a7156fbbc62cfcd0ac4d174f7ac38a4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e2f5d7e2c3f8e6269cd19dfd1cb4472d0a7156fbbc62cfcd0ac4d174f7ac38a4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 15696,
+  "originalName": "s1-spot-error.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:03.811Z"
+}```
+
 ### filebase/data/lesson-audio/e3/e3185dae210aaf254f32772667c979db248ef8a12e884cd6d01d7c94059c00a7.json
 
 ```
@@ -15141,6 +21504,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:13:30.431Z"
+}```
+
+### filebase/data/lesson-audio/e3/e31b1714c982b9427a4bf38260336e5b95e737a195e576e4ba022127a6898e9b.json
+
+```
+{
+  "id": "lesson-audio/e31b1714c982b9427a4bf38260336e5b95e737a195e576e4ba022127a6898e9b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e31b1714c982b9427a4bf38260336e5b95e737a195e576e4ba022127a6898e9b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 119376,
+  "originalName": "s1-coin-count.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:59.041Z"
+}```
+
+### filebase/data/lesson-audio/e3/e35d8ec14aa6c8a5bbd4c5b4ce422f0e8311d0292a6b87b2e90ff85d2d6d3fef.json
+
+```
+{
+  "id": "lesson-audio/e35d8ec14aa6c8a5bbd4c5b4ce422f0e8311d0292a6b87b2e90ff85d2d6d3fef.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e35d8ec14aa6c8a5bbd4c5b4ce422f0e8311d0292a6b87b2e90ff85d2d6d3fef",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 17136,
+  "originalName": "s1-concept-reveal.card.0.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:12.636Z"
 }```
 
 ### filebase/data/lesson-audio/e3/e3e3c9754dcf9a1afc77eaa1ed9cdf45a271cb89bac6081aa7763b7bd4344514.json
@@ -15159,6 +21554,22 @@ npm test
   "createdAt": "2026-07-14T00:04:23.648Z"
 }```
 
+### filebase/data/lesson-audio/e4/e41cda2f0c2fab7320c6bfc0d9f4b6dc6eaedac5450f1d5950d829301028e94d.json
+
+```
+{
+  "id": "lesson-audio/e41cda2f0c2fab7320c6bfc0d9f4b6dc6eaedac5450f1d5950d829301028e94d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e41cda2f0c2fab7320c6bfc0d9f4b6dc6eaedac5450f1d5950d829301028e94d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 52704,
+  "originalName": "s1-number-input.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:53:18.914Z"
+}```
+
 ### filebase/data/lesson-audio/e4/e46dc328b217fff9d5a2282a572f495b339f62db517eafe7672454c6bf0dbee4.json
 
 ```
@@ -15173,6 +21584,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:11:31.474Z"
+}```
+
+### filebase/data/lesson-audio/e4/e47ed885c4bae30335a15384ab5d326c66ef07b54603daf59d8094c5a4fb2721.json
+
+```
+{
+  "id": "lesson-audio/e47ed885c4bae30335a15384ab5d326c66ef07b54603daf59d8094c5a4fb2721.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e47ed885c4bae30335a15384ab5d326c66ef07b54603daf59d8094c5a4fb2721",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78624,
+  "originalName": "s1-robot-path.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:06.143Z"
 }```
 
 ### filebase/data/lesson-audio/e4/e48af974617a9d36da9b537badfc97610c77fdb5e8c181181c4c6f1b5039eb34.json
@@ -15221,6 +21648,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:27.148Z"
+}```
+
+### filebase/data/lesson-audio/e5/e50e0892554c1513290193837f26ccf906be36461f112d38c71462def35c189c.json
+
+```
+{
+  "id": "lesson-audio/e50e0892554c1513290193837f26ccf906be36461f112d38c71462def35c189c.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e50e0892554c1513290193837f26ccf906be36461f112d38c71462def35c189c",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 104976,
+  "originalName": "s1-match-prices.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:05.001Z"
+}```
+
+### filebase/data/lesson-audio/e5/e51cfce3c60523cc6072927b8c0760f643b2174c291a2842eabf0bb01cc385bb.json
+
+```
+{
+  "id": "lesson-audio/e51cfce3c60523cc6072927b8c0760f643b2174c291a2842eabf0bb01cc385bb.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e51cfce3c60523cc6072927b8c0760f643b2174c291a2842eabf0bb01cc385bb",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 87696,
+  "originalName": "s1-cuenta-limones.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:41:13.955Z"
 }```
 
 ### filebase/data/lesson-audio/e5/e5795e2afe936ec668e0588c0fd5cbdd627d4d85e6819615a930c5c6fddea7de.json
@@ -15285,6 +21744,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:08:07.734Z"
+}```
+
+### filebase/data/lesson-audio/e6/e6aad4f2819d7196ea8926b9e635ed97f3a83c49aafb5b9eeaeea9817dab7b08.json
+
+```
+{
+  "id": "lesson-audio/e6aad4f2819d7196ea8926b9e635ed97f3a83c49aafb5b9eeaeea9817dab7b08.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e6aad4f2819d7196ea8926b9e635ed97f3a83c49aafb5b9eeaeea9817dab7b08",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 121248,
+  "originalName": "s1-group-sets.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:57.796Z"
+}```
+
+### filebase/data/lesson-audio/e6/e6d2719da936a74851c885d2e20f8c4a812ff4eb6131623deab7d697c4c19e03.json
+
+```
+{
+  "id": "lesson-audio/e6d2719da936a74851c885d2e20f8c4a812ff4eb6131623deab7d697c4c19e03.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e6d2719da936a74851c885d2e20f8c4a812ff4eb6131623deab7d697c4c19e03",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 11808,
+  "originalName": "s1-plan.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:35.491Z"
 }```
 
 ### filebase/data/lesson-audio/e7/e705b850d2e003d99b02344e5043e68cf1ce0718fe76f9be3cf7e231b2fa41fb.json
@@ -15399,6 +21890,22 @@ npm test
   "createdAt": "2026-07-14T00:12:01.147Z"
 }```
 
+### filebase/data/lesson-audio/e8/e8b5f181523146be713c9d67748a7dee6b4c13ee2defb0b3188a79acdbe92cf7.json
+
+```
+{
+  "id": "lesson-audio/e8b5f181523146be713c9d67748a7dee6b4c13ee2defb0b3188a79acdbe92cf7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e8b5f181523146be713c9d67748a7dee6b4c13ee2defb0b3188a79acdbe92cf7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78048,
+  "originalName": "s1-match-precios.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:34.029Z"
+}```
+
 ### filebase/data/lesson-audio/e8/e8c2ceb4fe8325993fa232ff5bab589743d8a667920b3eb3fc1ea821f9365929.json
 
 ```
@@ -15413,6 +21920,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:15:27.209Z"
+}```
+
+### filebase/data/lesson-audio/e8/e8c6643e556b4b432f8d938113ce379ddc5f09a4a04df6825c2ffb654637448b.json
+
+```
+{
+  "id": "lesson-audio/e8c6643e556b4b432f8d938113ce379ddc5f09a4a04df6825c2ffb654637448b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e8c6643e556b4b432f8d938113ce379ddc5f09a4a04df6825c2ffb654637448b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 237888,
+  "originalName": "s1-robot-path.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:39.492Z"
+}```
+
+### filebase/data/lesson-audio/e9/e90484a700a63e52bba0ad2567d7857128da0a83795b0af48896b4da5aec61db.json
+
+```
+{
+  "id": "lesson-audio/e90484a700a63e52bba0ad2567d7857128da0a83795b0af48896b4da5aec61db.mp3",
+  "bucket": "lesson-audio",
+  "hash": "e90484a700a63e52bba0ad2567d7857128da0a83795b0af48896b4da5aec61db",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100656,
+  "originalName": "s1-evidence-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:31.766Z"
 }```
 
 ### filebase/data/lesson-audio/e9/e9171ac1b3c8cee5740e77e8681eeab608a4a654a434fe0a6e43f357c33483fe.json
@@ -15495,6 +22034,38 @@ npm test
   "createdAt": "2026-07-14T00:09:55.740Z"
 }```
 
+### filebase/data/lesson-audio/ea/ea5d7adfeb6b31a5d1ca821b9b113e5484feccb5d42c26f97919c46709aa6657.json
+
+```
+{
+  "id": "lesson-audio/ea5d7adfeb6b31a5d1ca821b9b113e5484feccb5d42c26f97919c46709aa6657.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ea5d7adfeb6b31a5d1ca821b9b113e5484feccb5d42c26f97919c46709aa6657",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 185616,
+  "originalName": "s1-apertura-sabado.body.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:57.105Z"
+}```
+
+### filebase/data/lesson-audio/ea/ea75c8ff4c1cae1e0db2470936671f1f0fccf299d55088854a2e7a327650c17e.json
+
+```
+{
+  "id": "lesson-audio/ea75c8ff4c1cae1e0db2470936671f1f0fccf299d55088854a2e7a327650c17e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ea75c8ff4c1cae1e0db2470936671f1f0fccf299d55088854a2e7a327650c17e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 60336,
+  "originalName": "s1-budget-fit.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:48:55.274Z"
+}```
+
 ### filebase/data/lesson-audio/ea/eafc5e4e0439208118b3469945216eefdab8fa2b3664c8ba866b8736d4e6b3d9.json
 
 ```
@@ -15575,6 +22146,22 @@ npm test
   "createdAt": "2026-07-14T00:14:07.619Z"
 }```
 
+### filebase/data/lesson-audio/eb/ebb897860f2cc96dc8a32a93befc4ebf0492183cc5cecd6dbbd45cce15e371db.json
+
+```
+{
+  "id": "lesson-audio/ebb897860f2cc96dc8a32a93befc4ebf0492183cc5cecd6dbbd45cce15e371db.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ebb897860f2cc96dc8a32a93befc4ebf0492183cc5cecd6dbbd45cce15e371db",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 42624,
+  "originalName": "s1-match-prices.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:58.278Z"
+}```
+
 ### filebase/data/lesson-audio/ec/ec0674b47c67cfc138165ce7c0501a2750f15a2825d7eef52b537a9a8275aec9.json
 
 ```
@@ -15639,6 +22226,22 @@ npm test
   "createdAt": "2026-07-14T00:07:45.672Z"
 }```
 
+### filebase/data/lesson-audio/ec/ecce289d1bed157e844fb0ad316a2208e58f0af54408f827c42a9a5ad2e7f24d.json
+
+```
+{
+  "id": "lesson-audio/ecce289d1bed157e844fb0ad316a2208e58f0af54408f827c42a9a5ad2e7f24d.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ecce289d1bed157e844fb0ad316a2208e58f0af54408f827c42a9a5ad2e7f24d",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32544,
+  "originalName": "s1-cuenta-limones.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:37:04.165Z"
+}```
+
 ### filebase/data/lesson-audio/ed/ed4cdf3ba7ac632e4bb67323895ddecf643a2d118218658bb52a3491a108fbcf.json
 
 ```
@@ -15669,6 +22272,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:07:18.286Z"
+}```
+
+### filebase/data/lesson-audio/ed/edba1ca8dca867a12a49d801b5b12a653ce82a72af14e8b892356d0950cab2a7.json
+
+```
+{
+  "id": "lesson-audio/edba1ca8dca867a12a49d801b5b12a653ce82a72af14e8b892356d0950cab2a7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "edba1ca8dca867a12a49d801b5b12a653ce82a72af14e8b892356d0950cab2a7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 89568,
+  "originalName": "s1-evidence-hunt.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:02:59.399Z"
+}```
+
+### filebase/data/lesson-audio/ed/edbb90012f0ad3708851f5fc1377c369b72d731de5997942264e1655cb44ace9.json
+
+```
+{
+  "id": "lesson-audio/edbb90012f0ad3708851f5fc1377c369b72d731de5997942264e1655cb44ace9.mp3",
+  "bucket": "lesson-audio",
+  "hash": "edbb90012f0ad3708851f5fc1377c369b72d731de5997942264e1655cb44ace9",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 22464,
+  "originalName": "s1-key-ideas.idea.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:49:22.500Z"
 }```
 
 ### filebase/data/lesson-audio/ee/ee11fda33bd517f3f7b10539e4fc8f9fc4f3d00a3c9197195d0f8178e657a888.json
@@ -15719,6 +22354,22 @@ npm test
   "createdAt": "2026-07-14T00:13:03.477Z"
 }```
 
+### filebase/data/lesson-audio/ef/eff020f72c70709a2a203de049ba6f7acb66b75c170abe65cc1d18e599d3c63e.json
+
+```
+{
+  "id": "lesson-audio/eff020f72c70709a2a203de049ba6f7acb66b75c170abe65cc1d18e599d3c63e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "eff020f72c70709a2a203de049ba6f7acb66b75c170abe65cc1d18e599d3c63e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 32544,
+  "originalName": "s1-dialogo.line.2.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:36:21.606Z"
+}```
+
 ### filebase/data/lesson-audio/f0/f026a3ebd845a936dbcaecb07994c72cd9e24978c81bc24594b0048888172adb.json
 
 ```
@@ -15733,6 +22384,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:17:35.616Z"
+}```
+
+### filebase/data/lesson-audio/f0/f06efa3a9887f50e6b8c14ec80011794b5247378193ce18797a32c7acb7b472e.json
+
+```
+{
+  "id": "lesson-audio/f06efa3a9887f50e6b8c14ec80011794b5247378193ce18797a32c7acb7b472e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f06efa3a9887f50e6b8c14ec80011794b5247378193ce18797a32c7acb7b472e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 62784,
+  "originalName": "s1-savings-goal.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:42.936Z"
 }```
 
 ### filebase/data/lesson-audio/f0/f08db020696b7d02bf69062b0e8459cdfafaaab769b9b31cc8f97f45e5217dc7.json
@@ -15895,6 +22562,38 @@ npm test
   "createdAt": "2026-07-14T00:04:31.691Z"
 }```
 
+### filebase/data/lesson-audio/f3/f3dc4f37d6d264417e46ace8d6193114a95e5e04c8066e82674f4679e552f289.json
+
+```
+{
+  "id": "lesson-audio/f3dc4f37d6d264417e46ace8d6193114a95e5e04c8066e82674f4679e552f289.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f3dc4f37d6d264417e46ace8d6193114a95e5e04c8066e82674f4679e552f289",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 48816,
+  "originalName": "s2-truefalse.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:44:40.177Z"
+}```
+
+### filebase/data/lesson-audio/f3/f3dd128f47820cfb742701133230a0d3f5fe144a7641d256415789f44b3bcf5e.json
+
+```
+{
+  "id": "lesson-audio/f3dd128f47820cfb742701133230a0d3f5fe144a7641d256415789f44b3bcf5e.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f3dd128f47820cfb742701133230a0d3f5fe144a7641d256415789f44b3bcf5e",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 24336,
+  "originalName": "s1-would-you-rather.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:05.371Z"
+}```
+
 ### filebase/data/lesson-audio/f4/f47970591da1242eae68b689546928e5ff352e9629555960c96adbd193971f0f.json
 
 ```
@@ -15959,6 +22658,22 @@ npm test
   "createdAt": "2026-07-14T00:09:08.334Z"
 }```
 
+### filebase/data/lesson-audio/f4/f4d0407cc1b493730cde5a8a68a7b476583c3e5e2c01a99d59ea2a4cc6e2f306.json
+
+```
+{
+  "id": "lesson-audio/f4d0407cc1b493730cde5a8a68a7b476583c3e5e2c01a99d59ea2a4cc6e2f306.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f4d0407cc1b493730cde5a8a68a7b476583c3e5e2c01a99d59ea2a4cc6e2f306",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 127584,
+  "originalName": "s1-fact-opinion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:42.140Z"
+}```
+
 ### filebase/data/lesson-audio/f4/f4dba0df4c2b54f1ac30d7b7fc22aa1481874c2f037867ad168e90e8983b8476.json
 
 ```
@@ -15973,6 +22688,54 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:16:51.218Z"
+}```
+
+### filebase/data/lesson-audio/f5/f5337f8842c33d023449718c2ad6021065904cc8b0d0a861fa0e841e136020ed.json
+
+```
+{
+  "id": "lesson-audio/f5337f8842c33d023449718c2ad6021065904cc8b0d0a861fa0e841e136020ed.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f5337f8842c33d023449718c2ad6021065904cc8b0d0a861fa0e841e136020ed",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 63648,
+  "originalName": "s2-order-receta.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:40.149Z"
+}```
+
+### filebase/data/lesson-audio/f5/f5455628624d3325c798d6af8ef3eabb6c067f573ee1fba3cc0f7f9eb547d92b.json
+
+```
+{
+  "id": "lesson-audio/f5455628624d3325c798d6af8ef3eabb6c067f573ee1fba3cc0f7f9eb547d92b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f5455628624d3325c798d6af8ef3eabb6c067f573ee1fba3cc0f7f9eb547d92b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 129888,
+  "originalName": "s1-best-decision.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:52:48.729Z"
+}```
+
+### filebase/data/lesson-audio/f5/f54b8670b1e2c62f592dd9c81982acb3f3e5216dfa84b117699e973cbede9959.json
+
+```
+{
+  "id": "lesson-audio/f54b8670b1e2c62f592dd9c81982acb3f3e5216dfa84b117699e973cbede9959.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f54b8670b1e2c62f592dd9c81982acb3f3e5216dfa84b117699e973cbede9959",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 84384,
+  "originalName": "s1-fact-opinion.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:51:41.331Z"
 }```
 
 ### filebase/data/lesson-audio/f5/f55d84d29d99cacbc4d9580df20f7e1863a0e3bf2f71e1873ba2f76180d53750.json
@@ -16055,6 +22818,70 @@ npm test
   "createdAt": "2026-07-14T00:20:02.372Z"
 }```
 
+### filebase/data/lesson-audio/f6/f6f40b2f86fc80ea14ac09f48ea779ff72e40cd3c110464a5e1b87a9c9dde1e6.json
+
+```
+{
+  "id": "lesson-audio/f6f40b2f86fc80ea14ac09f48ea779ff72e40cd3c110464a5e1b87a9c9dde1e6.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f6f40b2f86fc80ea14ac09f48ea779ff72e40cd3c110464a5e1b87a9c9dde1e6",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 100224,
+  "originalName": "s1-estimate-slider.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:40:23.008Z"
+}```
+
+### filebase/data/lesson-audio/f7/f704d6bf3380789e83d506976275010941e957935c021a6ee3cbc129e9e503d4.json
+
+```
+{
+  "id": "lesson-audio/f704d6bf3380789e83d506976275010941e957935c021a6ee3cbc129e9e503d4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f704d6bf3380789e83d506976275010941e957935c021a6ee3cbc129e9e503d4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 78048,
+  "originalName": "s1-spot-error.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:50:27.686Z"
+}```
+
+### filebase/data/lesson-audio/f7/f75e8d04e378105b2b7e5a479c118ff93c4de339e518e1a9f5133007c3dab09b.json
+
+```
+{
+  "id": "lesson-audio/f75e8d04e378105b2b7e5a479c118ff93c4de339e518e1a9f5133007c3dab09b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f75e8d04e378105b2b7e5a479c118ff93c4de339e518e1a9f5133007c3dab09b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 65088,
+  "originalName": "s2-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:38:05.960Z"
+}```
+
+### filebase/data/lesson-audio/f7/f761471868e8afbdb1b2c7ba8f99dd5fffc79f53b5357d7c4e576116adeede85.json
+
+```
+{
+  "id": "lesson-audio/f761471868e8afbdb1b2c7ba8f99dd5fffc79f53b5357d7c4e576116adeede85.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f761471868e8afbdb1b2c7ba8f99dd5fffc79f53b5357d7c4e576116adeede85",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 124128,
+  "originalName": "s1-code-order.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:35:44.394Z"
+}```
+
 ### filebase/data/lesson-audio/f7/f787af55e13e13b795000e882b98553fabd37f2e462b707df6d825016d6cae7e.json
 
 ```
@@ -16087,6 +22914,38 @@ npm test
   "createdAt": "2026-07-14T00:13:49.226Z"
 }```
 
+### filebase/data/lesson-audio/f7/f7ab4fd4d16e23da57cfdc44eceb1b1b33e495bc595bd5c73959d8de69104254.json
+
+```
+{
+  "id": "lesson-audio/f7ab4fd4d16e23da57cfdc44eceb1b1b33e495bc595bd5c73959d8de69104254.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f7ab4fd4d16e23da57cfdc44eceb1b1b33e495bc595bd5c73959d8de69104254",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 69984,
+  "originalName": "s1-speed-tap.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:01.586Z"
+}```
+
+### filebase/data/lesson-audio/f8/f80f63bdcb936dd796c0cb3f4e0be35684967acb3961a2a2d40fd9916d77e9d4.json
+
+```
+{
+  "id": "lesson-audio/f80f63bdcb936dd796c0cb3f4e0be35684967acb3961a2a2d40fd9916d77e9d4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f80f63bdcb936dd796c0cb3f4e0be35684967acb3961a2a2d40fd9916d77e9d4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 53136,
+  "originalName": "s2-make-change.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:56:13.812Z"
+}```
+
 ### filebase/data/lesson-audio/f8/f83df0309904ef8142807168056c263d9c31b7061b88a2ada1880f20c0c99cf5.json
 
 ```
@@ -16101,6 +22960,38 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:18:15.311Z"
+}```
+
+### filebase/data/lesson-audio/f8/f8930a732c4e7116171320aefb143c869be6a7f138d03ea39b3723288e807dd1.json
+
+```
+{
+  "id": "lesson-audio/f8930a732c4e7116171320aefb143c869be6a7f138d03ea39b3723288e807dd1.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f8930a732c4e7116171320aefb143c869be6a7f138d03ea39b3723288e807dd1",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 127584,
+  "originalName": "s1-fact-opinion.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:39:22.532Z"
+}```
+
+### filebase/data/lesson-audio/f8/f89db5eb6af5023a59d56e08a2da7e42b62babf3057e5445e77e9d32127b9588.json
+
+```
+{
+  "id": "lesson-audio/f89db5eb6af5023a59d56e08a2da7e42b62babf3057e5445e77e9d32127b9588.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f89db5eb6af5023a59d56e08a2da7e42b62babf3057e5445e77e9d32127b9588",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 107856,
+  "originalName": "s1-repaso-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:06.084Z"
 }```
 
 ### filebase/data/lesson-audio/f8/f8fc018824d9b4aa1b228d6a83e396c13ac858dd4731054f548b815214e3d54e.json
@@ -16119,6 +23010,38 @@ npm test
   "createdAt": "2026-07-14T00:19:41.164Z"
 }```
 
+### filebase/data/lesson-audio/f9/f93333867142daf1c5170fb923aa35d0dcb39a08fe01354df4a8d1a86b3cf8c5.json
+
+```
+{
+  "id": "lesson-audio/f93333867142daf1c5170fb923aa35d0dcb39a08fe01354df4a8d1a86b3cf8c5.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f93333867142daf1c5170fb923aa35d0dcb39a08fe01354df4a8d1a86b3cf8c5",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 24336,
+  "originalName": "s1-concept-reveal.card.0.back.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:54:39.846Z"
+}```
+
+### filebase/data/lesson-audio/f9/f93cca22315301dddbd4ce01912d89368c7775e4d46563738beef4cc6164dc13.json
+
+```
+{
+  "id": "lesson-audio/f93cca22315301dddbd4ce01912d89368c7775e4d46563738beef4cc6164dc13.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f93cca22315301dddbd4ce01912d89368c7775e4d46563738beef4cc6164dc13",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 48816,
+  "originalName": "s1-precio-justo.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:43:09.377Z"
+}```
+
 ### filebase/data/lesson-audio/f9/f9436ee9bcec3c9874c421a257a1e130c8de552e91130090675c72403fe04032.json
 
 ```
@@ -16133,6 +23056,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:57.259Z"
+}```
+
+### filebase/data/lesson-audio/f9/f9885b69af545c958ba0d58679459643aaa9076e60571fac50e43e7e050da06b.json
+
+```
+{
+  "id": "lesson-audio/f9885b69af545c958ba0d58679459643aaa9076e60571fac50e43e7e050da06b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "f9885b69af545c958ba0d58679459643aaa9076e60571fac50e43e7e050da06b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 61344,
+  "originalName": "s1-yes-no-cases.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:59:32.724Z"
 }```
 
 ### filebase/data/lesson-audio/fa/fa28e99848c084fd31fd64fba9ce8cc23a6ea1209ff7f0fe19a9f2c46ac8ebcd.json
@@ -16151,6 +23090,22 @@ npm test
   "createdAt": "2026-07-14T01:05:12.812Z"
 }```
 
+### filebase/data/lesson-audio/fa/fa47d5c943ba83a9db4fa389964c2adae0c33729f4cd1bc09a541c7065a5ccdd.json
+
+```
+{
+  "id": "lesson-audio/fa47d5c943ba83a9db4fa389964c2adae0c33729f4cd1bc09a541c7065a5ccdd.mp3",
+  "bucket": "lesson-audio",
+  "hash": "fa47d5c943ba83a9db4fa389964c2adae0c33729f4cd1bc09a541c7065a5ccdd",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 137088,
+  "originalName": "s1-repaso-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:42:15.039Z"
+}```
+
 ### filebase/data/lesson-audio/fa/fa4f9ef1ef29df5a3ec032134119cb070704b163f7ed33d1b988276430f17e4d.json
 
 ```
@@ -16167,6 +23122,22 @@ npm test
   "createdAt": "2026-07-14T00:03:59.405Z"
 }```
 
+### filebase/data/lesson-audio/fa/fa948c022b38c030262e400dddf0989530ccb55c8dbbfb58b38138b7672df7c4.json
+
+```
+{
+  "id": "lesson-audio/fa948c022b38c030262e400dddf0989530ccb55c8dbbfb58b38138b7672df7c4.mp3",
+  "bucket": "lesson-audio",
+  "hash": "fa948c022b38c030262e400dddf0989530ccb55c8dbbfb58b38138b7672df7c4",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 11808,
+  "originalName": "s1-ganancia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:04:50.815Z"
+}```
+
 ### filebase/data/lesson-audio/fb/fbde61e86330c65d131aab614e04c67366e97c7846c31ae49b9b25e4cac4706f.json
 
 ```
@@ -16181,6 +23152,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T01:05:18.464Z"
+}```
+
+### filebase/data/lesson-audio/fc/fc13d4154bcf7574e759e5ada57b544612e6aa3c135159009eace88a79fbf6d7.json
+
+```
+{
+  "id": "lesson-audio/fc13d4154bcf7574e759e5ada57b544612e6aa3c135159009eace88a79fbf6d7.mp3",
+  "bucket": "lesson-audio",
+  "hash": "fc13d4154bcf7574e759e5ada57b544612e6aa3c135159009eace88a79fbf6d7",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 81504,
+  "originalName": "s4-timeline-dia.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:57:57.594Z"
 }```
 
 ### filebase/data/lesson-audio/fc/fc8abbc9c5a55c60567dafffdc88b4af0d5ad895fb25e7ebec8fa74702addc17.json
@@ -16295,6 +23282,22 @@ npm test
   "createdAt": "2026-07-14T00:03:48.557Z"
 }```
 
+### filebase/data/lesson-audio/fd/fdacea8a9ddc8ba8eebb2cfe4c2538db97aef8baa2137b1dceadf9c011ce0280.json
+
+```
+{
+  "id": "lesson-audio/fdacea8a9ddc8ba8eebb2cfe4c2538db97aef8baa2137b1dceadf9c011ce0280.mp3",
+  "bucket": "lesson-audio",
+  "hash": "fdacea8a9ddc8ba8eebb2cfe4c2538db97aef8baa2137b1dceadf9c011ce0280",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 36288,
+  "originalName": "s1-would-you-rather.prompt.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T04:03:02.729Z"
+}```
+
 ### filebase/data/lesson-audio/fd/fdb67a7486dd6f5e7629794a8a2a23f4a9ec97ae49c5927e1ce03b4766ccd90c.json
 
 ```
@@ -16341,6 +23344,22 @@ npm test
   "visibility": "public",
   "uploaderService": "unknown",
   "createdAt": "2026-07-14T00:05:51.261Z"
+}```
+
+### filebase/data/lesson-audio/ff/ff5ab3c9fda8f7b7f856bbebcffdd848cfd0ed97f5676f20f7b9b7880871b55b.json
+
+```
+{
+  "id": "lesson-audio/ff5ab3c9fda8f7b7f856bbebcffdd848cfd0ed97f5676f20f7b9b7880871b55b.mp3",
+  "bucket": "lesson-audio",
+  "hash": "ff5ab3c9fda8f7b7f856bbebcffdd848cfd0ed97f5676f20f7b9b7880871b55b",
+  "ext": "mp3",
+  "mime": "audio/mpeg",
+  "bytes": 45936,
+  "originalName": "s1-true-false.explanation.mp3",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-14T03:58:57.661Z"
 }```
 
 ### filebase/eslint.config.js

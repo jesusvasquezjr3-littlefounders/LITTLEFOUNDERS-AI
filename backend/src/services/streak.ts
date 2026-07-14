@@ -1,26 +1,44 @@
 /*
- * Pure streak computation for POST /learn/lessons/:id/complete.
+ * Pure day-streak computation for POST /learn/lessons/:id/complete.
  *
- * DOCUMENTED LIMITATION: no schema change was in scope for this session, so
- * there is no dedicated "last activity date" column — `learning_stats` has
- * no other writer than this endpoint (0006: system-written only, no client
- * INSERT/UPDATE), so its `updated_at` doubles as a reasonably faithful proxy
- * for "the last day the learner passed a lesson". A future session that adds
- * a real `last_active_date` column should replace this proxy.
+ * The streak is anchored to learning_stats.last_active_date (0009): the
+ * LOCAL calendar date (client-reported, YYYY-MM-DD) of the learner's last
+ * passed lesson. A kid's "day" follows their wall clock, not UTC — so the
+ * client sends `local_date` and everything here is pure calendar-date math.
+ *
+ * History: the first implementation proxied "last activity" through the
+ * row's updated_at, which nothing ever advanced — after the first UTC
+ * rollover every completed lesson read "last activity = yesterday" and the
+ * streak grew +1 PER LESSON. Never reintroduce a timestamp proxy here.
  */
-const dateOnly = (d: Date): string => d.toISOString().slice(0, 10);
 
-export function nextStreak(lastUpdatedAt: string, currentStreakDays: number, now: Date = new Date()): number {
-  const today = dateOnly(now);
-  const yesterday = dateOnly(new Date(now.getTime() - 24 * 60 * 60 * 1000));
-  const lastDate = dateOnly(new Date(lastUpdatedAt));
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-  if (lastDate === today) return Math.max(currentStreakDays, 1); // already logged today — don't double-increment, but a first-ever pass still counts as day 1
-  if (lastDate === yesterday) return currentStreakDays + 1; // consecutive day
-  return 1; // gap (or clock skew) — restart the streak
+/** Whole-day difference between two YYYY-MM-DD calendar dates (b - a). */
+function dayDiff(a: string, b: string): number {
+  return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
 }
 
-/** True when this is the first learning activity of the (UTC) day — the moment worth the full-screen streak celebration (v1's `was_first_today`). */
-export function isFirstActivityToday(lastUpdatedAt: string, now: Date = new Date()): boolean {
-  return dateOnly(new Date(lastUpdatedAt)) !== dateOnly(now);
+export function isCalendarDate(value: string): boolean {
+  return DATE_RE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+}
+
+/**
+ * The streak after a lesson PASSED on `todayLocal`:
+ * - first pass ever (no anchor) → 1
+ * - same day as the anchor      → unchanged (never +1 twice in one day)
+ * - exactly the next day        → +1
+ * - any gap (or clock skew)     → restart at 1
+ */
+export function nextStreak(lastActiveDate: string | null, currentStreakDays: number, todayLocal: string): number {
+  if (!lastActiveDate) return 1;
+  const diff = dayDiff(lastActiveDate, todayLocal);
+  if (diff === 0) return Math.max(currentStreakDays, 1);
+  if (diff === 1) return currentStreakDays + 1;
+  return 1;
+}
+
+/** True when no lesson has been passed yet on `todayLocal` — the moment worth the full-screen streak celebration (v1's `was_first_today`). */
+export function isFirstActivityToday(lastActiveDate: string | null, todayLocal: string): boolean {
+  return lastActiveDate !== todayLocal;
 }

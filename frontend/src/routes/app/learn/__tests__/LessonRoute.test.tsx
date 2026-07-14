@@ -81,7 +81,11 @@ describe('LessonRoute', () => {
     await waitFor(() => {
       expect(mockedApi).toHaveBeenCalledWith(
         '/learn/lessons/lesson-1/complete',
-        expect.objectContaining({ method: 'POST', token: 'token-123', body: { seconds_spent: 42 } }),
+        expect.objectContaining({
+          method: 'POST',
+          token: 'token-123',
+          body: { seconds_spent: 42, local_date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) },
+        }),
       );
     });
     expect(mockNavigate).not.toHaveBeenCalled();

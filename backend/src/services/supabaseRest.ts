@@ -237,17 +237,18 @@ export async function getLearningStatsByUserId(userId: string): Promise<Learning
   return rows?.[0] ?? ZERO_STATS;
 }
 
-/** Same row, plus `updated_at` — the streak proxy `services/streak.ts` needs (see its file header for why). Used only by POST /learn/lessons/:id/complete. */
+/** Same row, plus `last_active_date` (0009) — the day-streak anchor `services/streak.ts` compares against. Used only by POST /learn/lessons/:id/complete. */
 export interface LearningStatsForUpdateRow extends LearningStatsRow {
-  updated_at: string;
+  /** Local calendar date (YYYY-MM-DD) of the last passed lesson, null until the first pass. */
+  last_active_date: string | null;
 }
 
 export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
-    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days,updated_at`,
+    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
     serviceToken(),
   );
-  return rows?.[0] ?? { ...ZERO_STATS, updated_at: new Date(0).toISOString() };
+  return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
 }
 
 // ── Follow / block lists (0006) ──────────────────────────────
@@ -593,7 +594,7 @@ export async function upsertLessonProgress(
 /** Learning stats are system-written only (0006) — Core applies the XP/lesson/minute/streak delta via service role. */
 export async function patchLearningStats(
   userId: string,
-  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number },
+  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; last_active_date?: string },
 ): Promise<boolean> {
   const res = await restRaw(`/learning_stats?user_id=eq.${userId}`, serviceToken(), {
     method: 'PATCH',
