@@ -59,10 +59,25 @@ async function judgeDocument(
   document: LessonDocumentParsed,
   judge: typeof completeQwen,
   ledger: UsageLedger | undefined,
+  priorMicroObjective?: string | null,
 ): Promise<ReviewRubric> {
   const system =
     'You are an INDEPENDENT quality judge for a children\'s financial-literacy lesson platform (LittleFounders). ' +
     'You did not write this lesson — review it critically. Output ONLY strict JSON, no prose outside the JSON.';
+
+  // Ground the "connect to prior lesson" half of concreteness in FACT instead
+  // of the judge's guess: undefined = caller didn't say (legacy behavior),
+  // null = this IS the course's first lesson (exempt), string = the actual
+  // prior micro-objective the opening should connect to. On the first real
+  // QA run the judge repeatedly wrote "assuming this isn't the first lesson"
+  // and failed lessons on that assumption.
+  const priorLine =
+    priorMicroObjective === undefined
+      ? null
+      : priorMicroObjective === null
+        ? 'PRIOR-LESSON FACT: this IS the very first lesson of the course — do NOT penalize concreteness for not referencing a previous lesson.'
+        : `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
+
   const user = [
     'Rate this lesson document 1-5 on each dimension:',
     '- age_fit: is the language/complexity right for the stated age band?',
@@ -71,6 +86,7 @@ async function judgeDocument(
     '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns?',
     '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)?',
     '- concreteness: does at least one segment contain a WORKED CONCRETE instance (a specific number, a named character, or a specific scenario — not purely abstract phrasing)? AND, unless this is the very first lesson of the course, does the lesson OPEN by connecting explicitly to the prior lesson\'s concept instead of restarting cold?',
+    ...(priorLine ? ['', priorLine] : []),
     '',
     'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"notes":"..."}',
     '`notes` must be actionable — if any score is low, say exactly what to fix.',
@@ -162,6 +178,8 @@ export interface ReviewDeps {
   ledger?: UsageLedger;
   judge?: typeof completeQwen;
   author?: typeof completeDeepSeek;
+  /** null = this IS the course's first lesson (exempt from connect-to-prior); string = the actual prior micro-objective; undefined = unknown (legacy). */
+  priorMicroObjective?: string | null;
 }
 
 export interface ReviewResult {
@@ -179,7 +197,7 @@ export async function reviewLesson(
   const author = deps.author ?? completeDeepSeek;
 
   let current = document;
-  let rubric = await judgeDocument(current, judge, deps.ledger);
+  let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   let cycles = 0;
 
   while (!passesJudgeGate(rubric) && cycles < MAX_REVISE_CYCLES) {
@@ -192,7 +210,7 @@ export async function reviewLesson(
       continue;
     }
     current = gateReport.document;
-    rubric = await judgeDocument(current, judge, deps.ledger);
+    rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   }
 
   if (!passesJudgeGate(rubric)) {

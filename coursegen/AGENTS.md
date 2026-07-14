@@ -49,6 +49,19 @@ Catalog content (`curriculum/<course-slug>/*.yaml`) is **human-reviewed content 
 
 Never hand-edit curriculum YAML from this package's code — if `catalog:check` reports a content problem, that's a finding to report to whoever is authoring that file, not something to patch programmatically.
 
+## Lessons from the first real run (2026-07-13) — read before ANY pipeline change
+
+The `qa-lesson-engine-smoketest` course was the first time this pipeline ever ran against real APIs. Every rule below exists because its absence cost a real failure that day. Do not relearn these the expensive way:
+
+1. **The model cannot infer JSON shapes from type names — never remove the shape examples.** `write.ts`/`review.ts` inject an exact per-type JSON example derived live from the Zod schemas (`shapeExample.ts`). Before that existed, DeepSeek invented a different wrong shape on every retry (`story_scene` produced 4 distinct invalid shapes in 4 attempts). If you add a segment type, the example is derived automatically — but if a type has NON-OBVIOUS semantics the schema can't express (id-reference sequences, index-keyed records, sentinel values), it ALSO needs a targeted line in `BASE_HARD_RULES` (see `equation_builder`/`pattern_complete`/`story_branch`/`savings_goal`/`fill_blank`/`picture_choice` there for the pattern).
+2. **Gate failures are corrective feedback, not death sentences.** Gates run INSIDE `write.ts`'s corrective-retry loop (via `WriteInput.gateCtx`) so their actionable messages reach the model's next attempt. If you add a gate, write its `message` so a model can act on it — name the field, the expected value, and the observed value.
+3. **The judge must be given facts it otherwise guesses.** `reviewLesson` receives `priorMicroObjective` (`null` = first lesson, exempt from connect-to-prior). Before that, the judge failed lessons on "assuming this isn't the first lesson". If you add a rubric dimension that depends on course position, catalog intent, or anything outside the document itself, pass that context in — never let the judge assume.
+4. **Every enum-valued payload/answer key must be in `gates.ts#NON_VISIBLE_KEYS`** or `localize.ts` will send it to the translator, which will happily "translate" the enum (`mode: "typed"` came back as pt-BR prose and failed the contract). `nonVisibleKeys.test.ts` derives this requirement from the schemas and fails CI on any gap — when it fails, add the key to the set; never weaken the test.
+5. **Operator npm scripts must load `.env` explicitly** (`tsx --env-file-if-exists=.env …`). `dev` scripts had it; `generate` and audiogen's `narrate:all` didn't, and both crashed on their very first real invocation. Any new script that reaches `getConfig()` needs the flag.
+6. **`checkpoint.ts` is shared by concurrent slot workers** — its `save()` serializes writes through an internal queue. Never call `writeFile`/`rename` on the checkpoint path directly, and never "simplify" the queue away: `FORGE_CONCURRENCY=2` is the default and the pre-queue version crashed with tmp-file `ENOENT` races.
+7. **Verify visibility end-to-end after publishing, not just row counts.** The DB rows being present proves nothing — a missing RLS policy on `lessons` made every published course render 0 lessons to real users while every service-role query looked perfectly healthy. After any schema/RLS/publish change: log in as a real (non-service-role) user in the browser and see the lessons.
+8. **Remaining known-hard spots** (fail-prone even after the above, acceptable losses on a big run, revisit if they spike): `equation_builder` (models struggle with id-sequence arithmetic), `story_branch` (graph coherence across 8+ nodes), and judge rejections of content whose *framing* is meta/test-like — real courses with real narrative beats don't trigger that last one.
+
 ## Read before touching
 
 - `/COURSE_ENGINE.md` — the pipeline spec (hierarchy, catalog format, stages, gates, providers, safety).

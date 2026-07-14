@@ -91,6 +91,16 @@ export const NON_VISIBLE_KEYS = new Set([
   'next',
   'start_node',
   'schema_version',
+  // Enum payload/answer vocab missed by the original list — discovered when
+  // localize.ts translated fill_blank's `mode: "typed"` into pt-BR prose and
+  // broke contract validation (first real QA run, 2026-07-13). The
+  // enum-coverage test in gates.test.ts now derives this requirement from
+  // the schemas themselves, so a new enum key can't silently slip through.
+  'mode',
+  'commands',
+  'scale',
+  'verdict',
+  'zones',
 ]);
 
 interface VisitedString {

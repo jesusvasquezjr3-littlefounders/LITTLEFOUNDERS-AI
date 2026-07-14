@@ -204,6 +204,10 @@ async function processSlot(
           locale: AUTHORING_LOCALE,
           slug: slot.lesson.slug,
           subject: course.catalog.course.subject,
+          // Gates run inside write's corrective loop (actionable feedback →
+          // retry) — this outer re-run below stays as the final authority
+          // because write's salvage/last-resort paths bypass the loop.
+          gateCtx,
         },
         { ledger },
       );
@@ -219,7 +223,15 @@ async function processSlot(
     // ---- review (Qwen judge, es-MX only) ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'written') {
-      const reviewResult = await reviewLesson(documents[AUTHORING_LOCALE]!, gateCtx, { ledger });
+      const reviewResult = await reviewLesson(documents[AUTHORING_LOCALE]!, gateCtx, {
+        ledger,
+        // COURSE_ENGINE.md §4 review: the judge's concreteness dimension asks
+        // "does it connect to the prior lesson, unless it's the first?" —
+        // without telling it WHICH lesson came before (or that none did), it
+        // guessed, and guessed against us (top false-rejection cause on the
+        // first real QA run).
+        priorMicroObjective: slot.priorMicroObjective ?? null,
+      });
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });
       await store.save(checkpoint);

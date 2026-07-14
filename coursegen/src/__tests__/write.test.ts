@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { writeLessonDocument, type WriteInput } from '../pipeline/write.js';
-import { buildFacts, baseSegments } from './fixtures.js';
+import { buildFacts, buildTaxonomy, baseSegments } from './fixtures.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 
 function baseInput(): WriteInput {
@@ -72,6 +72,34 @@ describe('writeLessonDocument', () => {
     const secondCallArgs = complete.mock.calls[1]![0] as ChatCompleteRequest;
     const joined = secondCallArgs.messages.map((m) => m.content).join(' ');
     expect(joined).toContain('previous JSON failed validation');
+  });
+
+  it('feeds GATE failures (not just Zod issues) back into the next call when gateCtx is provided', async () => {
+    // Zod-valid document whose one graded segment carries a too-short,
+    // ungrounded explanation_md — passes the contract, fails gate 6.
+    const gateBreaking = validDocumentJson(false) as { segments: Record<string, unknown>[] };
+    const graded = gateBreaking.segments.find((s) => s.type === 'quiz_mcq');
+    expect(graded).toBeDefined();
+    graded!.explanation_md = '¡Muy bien hecho!'; // <40 chars, no digit/character/payload token
+
+    let call = 0;
+    const complete = vi.fn(async (): Promise<ChatCompleteResult> => {
+      call++;
+      if (call === 1) return { content: JSON.stringify(gateBreaking), promptTokens: 1, completionTokens: 1 };
+      return { content: JSON.stringify(validDocumentJson(false)), promptTokens: 1, completionTokens: 1 };
+    });
+
+    const input: WriteInput = {
+      ...baseInput(),
+      gateCtx: { taxonomy: buildTaxonomy(), tier: 'tier1', facts: buildFacts(), topicTitle: 'x' },
+    };
+    const result = await writeLessonDocument(input, { complete: complete as never });
+    expect(result.attempts).toBe(2);
+    // The 2nd call's messages must carry the gate's actionable message.
+    const secondCallArgs = complete.mock.calls[1]![0] as ChatCompleteRequest;
+    const joined = secondCallArgs.messages.map((m) => m.content).join(' ');
+    expect(joined).toContain('[gate 6');
+    expect(joined).toContain('too generic');
   });
 
   it('salvages a document with one unsalvageable segment when corrective retries are exhausted', async () => {

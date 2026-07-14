@@ -23,6 +23,7 @@ import { lessonMetaSchema, lessonScoringSchema } from '../contract/core/schemaBa
 import { TYPE_TO_SCHEMA, GRADED_TYPES } from '../contract/registry.js';
 import { shapeExample } from './shapeExample.js';
 import type { LessonLocale } from '../contract/core/types.js';
+import { runAllGates, type GateContext } from './gates.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExhaustedError } from './correctiveRetry.js';
 
 const MAX_WRITE_ATTEMPTS = 4;
@@ -36,6 +37,18 @@ export interface WriteInput {
   locale: LessonLocale;
   slug: string;
   subject: string;
+  /**
+   * When provided, the deterministic gates run INSIDE the corrective-retry
+   * loop: a Zod-valid document that fails a gate (uncast character, generic
+   * explanation_md, wrong savings arithmetic, missing {{n}} markers…) gets
+   * the gate's actionable message fed back for another attempt instead of
+   * failing the slot outright. Found on the first real QA run (2026-07-13):
+   * gate messages are exactly the kind of feedback the model fixes on the
+   * next try, but they were thrown away — a whole slot died for a one-line
+   * fixable problem. run.ts still re-runs gates afterwards as the final
+   * authority (the salvage/last-resort paths here bypass this loop).
+   */
+  gateCtx?: GateContext;
 }
 
 export interface WriteResult {
@@ -76,6 +89,9 @@ const BASE_HARD_RULES = [
   'fill_blank segments ONLY: `payload.text_md` MUST contain a `{{1}}`, `{{2}}`… marker (matching each `answer.gaps[].gap` number, 1-indexed, in order) at the exact point each blank belongs — one marker per gap, no exceptions.',
   'savings_goal segments ONLY: OMIT `answer.correct` entirely — the grader computes it automatically from `payload.goal`/`payload.weekly_options`. If you do include it, every key must be the exact string form of one of the `weekly_options` numbers (e.g. "20"), never a label like "weeks".',
   'picture_choice segments ONLY: NEVER invent `payload.options[].image_url` (no "https://example.com/..." or any other placeholder) — OMIT it entirely so the real image-generation stage fills it in; `icon` is the only field you provide for the image.',
+  'equation_builder segments ONLY: each `answer.accepted` entry is a SPACE-SEPARATED SEQUENCE OF TOKEN IDS from `payload.tokens` (e.g. "t1 t3 t2" where t1.text="2", t3.text="+", t2.text="3") — NEVER the rendered equation text like "2+3=5". The token texts, concatenated in that order, must evaluate arithmetically to `payload.target_result` (it is re-executed). Do NOT include an "=" token: the sequence is only the left-hand expression.',
+  'pattern_complete segments ONLY: `answer.correct` keys are the ZERO-BASED missing-slot indexes as digit strings ("0", and "1" when missing_slots=2) — never icon names, option ids, or labels like "slot1"; values are ids from `payload.options`.',
+  'story_branch segments ONLY: EVERY node needs at least 1 entry in `choices` — an ending node uses a single choice with `next: null` (e.g. {"id":"fin","text_md":"Fin de la historia","next":null}); never an empty choices array.',
   'Every number you use MUST come from the FACTS block below or be exact arithmetic the blueprint implies — never invent a fact. All arithmetic in `answer` fields must be EXACTLY correct (it is re-executed programmatically and will be rejected if wrong).',
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
@@ -270,6 +286,17 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
           lastIssues = formatZodIssues(parsed.error.issues, WRITE_ISSUE_TRUNCATE);
           if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output:', JSON.stringify(json.value, null, 2));
           return { ok: false, issues: lastIssues };
+        }
+        if (input.gateCtx) {
+          const gateReport = runAllGates(parsed.data, input.gateCtx);
+          if (!gateReport.ok || !gateReport.document) {
+            lastIssues = gateReport.problems
+              .slice(0, WRITE_ISSUE_TRUNCATE)
+              .map((p) => `[gate ${p.gate}${p.segmentId ? ` @${p.segmentId}` : ''}] ${p.message}`)
+              .join('; ');
+            return { ok: false, issues: lastIssues };
+          }
+          return { ok: true, data: gateReport.document };
         }
         return { ok: true, data: parsed.data };
       },

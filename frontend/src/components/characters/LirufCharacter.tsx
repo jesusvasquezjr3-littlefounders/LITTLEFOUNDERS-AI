@@ -26,7 +26,9 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
     const [isBlinking, setIsBlinking] = useState(false);
     const [_clickPulse, setClickPulse] = useState(0);
     const [isSurprised, setIsSurprised] = useState(false);
-    const { t } = useTranslation('common');
+    // Default namespace — common.json is spread into `translation` in
+    // i18n/index.ts; a 'common' ns does not exist and renders the raw key.
+    const { t } = useTranslation();
 
     // ── Smooth mouse tracking (spring physics) ────────────────────────────
     const targetPupil = useRef({ x: 0, y: 0 });
