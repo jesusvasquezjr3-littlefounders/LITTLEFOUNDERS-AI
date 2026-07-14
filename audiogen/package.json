@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "narrate:all": "tsx src/narrateAll.ts",
+    "narrate:all": "tsx --env-file-if-exists=.env src/narrateAll.ts",
     "trim:samples": "tsx scripts/trim-samples.ts",
     "voices:register": "tsx --env-file-if-exists=.env scripts/register-character-voices.ts"
   },

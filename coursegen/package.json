@@ -13,7 +13,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate": "tsx src/cli.ts",
+    "generate": "tsx --env-file-if-exists=.env src/cli.ts",
     "catalog:check": "tsx src/catalog/check.ts",
     "contract:check": "tsx src/contract/check.ts"
   },

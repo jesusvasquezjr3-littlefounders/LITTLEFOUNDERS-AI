@@ -13,6 +13,8 @@ npm run db:migrate  # apply migrations/*.sql in order (idempotent)
 npm run db:seed     # dev seed: role-stub users + demo published courses (never prod)
 npm run db:seed:users  # 6 real login-able test users (password123) + Tutor↔Niño linked
 npm run db:publish-course -- <slug>  # flip a Forge-generated course's full chain (course→adventures→sagas→topics→lessons) draft/review → published (dev only, human-in-the-loop per COURSE_ENGINE.md §6)
+npm run db:export-course -- <slug> [file]  # snapshot a course's rows (ids preserved) to a git-committable .sql fixture — no image/audio binaries, no LLM re-spend
+npm run db:import-course -- <file>         # load a fixture into your local Vault (idempotent); publish-course afterwards to make it visible
 npm run db:reset    # from-zero: nuke volumes → up → migrate
 npm run db:down     # stop containers (data kept)
 npm run db:nuke     # stop + delete volumes (data gone)

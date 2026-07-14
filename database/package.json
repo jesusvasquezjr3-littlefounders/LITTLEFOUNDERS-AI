@@ -16,6 +16,8 @@
     "db:seed": "bash scripts/local-stack.sh seed",
     "db:seed:users": "bash scripts/seed-dev-users.sh",
     "db:publish-course": "bash scripts/publish-course.sh",
+    "db:export-course": "bash scripts/export-course-fixture.sh",
+    "db:import-course": "bash scripts/import-course-fixture.sh",
     "db:status": "bash scripts/local-stack.sh status",
     "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts"
   }

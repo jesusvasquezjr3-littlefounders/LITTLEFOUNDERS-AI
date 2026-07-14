@@ -90,4 +90,26 @@ describe('CheckpointStore (kill-mid-run resume simulation)', () => {
     const reloaded = await new CheckpointStore(filePath).load();
     expect(isSlotDone(reloaded!, 'a1/s1/t1/l1')).toBe(true);
   });
+
+  it('survives concurrent save() calls from parallel slot workers (FORGE_CONCURRENCY > 1) without ENOENT', async () => {
+    const filePath = path.join(dir, 'run-3', 'checkpoint.json');
+    const store = new CheckpointStore(filePath);
+    let cp = newRunCheckpoint('run-3', 'financial-education');
+
+    // Simulate two concurrent slot workers sharing the SAME checkpoint object
+    // (exactly what run.ts's promisePool does), each racing to save().
+    const saves: Promise<void>[] = [];
+    for (let i = 0; i < 10; i++) {
+      cp = setSlotState(cp, `a1/s1/t1/l${i}`, 'written', { data: { i } });
+      saves.push(store.save(cp));
+    }
+    await expect(Promise.all(saves)).resolves.toBeDefined();
+
+    // The final on-disk state must reflect ALL 10 slots — not a stale
+    // mid-sequence snapshot from an earlier save() that happened to finish last.
+    const reloaded = await new CheckpointStore(filePath).load();
+    for (let i = 0; i < 10; i++) {
+      expect(getSlot(reloaded!, `a1/s1/t1/l${i}`).state).toBe('written');
+    }
+  });
 });

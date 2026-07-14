@@ -11,6 +11,8 @@ import type { UsageLedger } from '../providers/usage.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+import { TYPE_TO_SCHEMA } from '../contract/registry.js';
+import { shapeExample } from './shapeExample.js';
 
 export const MAX_REVISE_CYCLES = 2;
 const MAX_JUDGE_ATTEMPTS = 2;
@@ -108,11 +110,30 @@ async function reviseDocument(
     'You are Forge, revising a children\'s lesson document based on independent judge feedback. ' +
     'Preserve segment ids, order and count where possible; only change what the judge notes require. ' +
     'Output ONLY the full corrected JSON document — same shape as the input.';
+
+  // Same fix as write.ts: without an exact shape reminder, revisions
+  // sometimes drift a segment's payload/answer field names even though a
+  // valid document is right there in the prompt (observed empirically —
+  // e.g. a revise call renaming a valid `backdrop` enum value while
+  // "fixing" unrelated tone feedback).
+  const uniqueTypes = [...new Set(document.segments.map((s) => (s as { type: string }).type))];
+  const shapeExamplesText = uniqueTypes
+    .map((type) => {
+      const schema = TYPE_TO_SCHEMA.get(type);
+      if (!schema) return null;
+      return `type="${type}":\n${JSON.stringify(shapeExample(schema))}`;
+    })
+    .filter((s): s is string => s !== null)
+    .join('\n\n');
+
   const user = [
     `JUDGE NOTES (fix these):\n${judgeNotes}`,
     '',
     'CURRENT DOCUMENT:',
     JSON.stringify(document),
+    '',
+    'EXACT JSON SHAPE per type in this document (field names/nesting/enum options are LAW — never invent, rename, or move a field while revising):',
+    shapeExamplesText,
   ].join('\n');
 
   const { data } = await withCorrectiveRetry<unknown>({

@@ -5,6 +5,7 @@
 // slot's current state and no-ops past whatever already succeeded.
 
 import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
 export type SlotState =
@@ -76,6 +77,18 @@ export function isSlotDone(checkpoint: RunCheckpoint, slotId: string): boolean {
 }
 
 export class CheckpointStore {
+  // run.ts shares ONE checkpoint object across FORGE_CONCURRENCY concurrent
+  // slot workers (COURSE_ENGINE.md §4) — save() can be called concurrently.
+  // This queue serializes the actual disk writes in call order: each save()
+  // snapshots the checkpoint to JSON SYNCHRONOUSLY (matching the exact
+  // ordering of the synchronous in-memory mutations that preceded the call),
+  // then appends the write to the queue. Without this, two concurrent saves
+  // used the SAME pid-only tmp filename (a second rename of an
+  // already-renamed-away file threw ENOENT) and, even with unique tmp names,
+  // could still race the final rename and leave checkpoint.json holding a
+  // STALER snapshot than what was already on disk.
+  private queue: Promise<void> = Promise.resolve();
+
   constructor(private readonly filePath: string) {}
 
   async load(): Promise<RunCheckpoint | null> {
@@ -88,11 +101,20 @@ export class CheckpointStore {
     }
   }
 
-  /** Atomic write (tmp file + rename) so a crash mid-write never corrupts the checkpoint. */
   async save(checkpoint: RunCheckpoint): Promise<void> {
+    const json = JSON.stringify(checkpoint, null, 2);
+    const next = this.queue.then(() => this.writeAtomic(json));
+    // Swallow here so one failed write doesn't poison the queue for later,
+    // independent saves — the caller's own `await store.save(...)` still sees the rejection.
+    this.queue = next.catch(() => undefined);
+    return next;
+  }
+
+  /** Atomic write (unique tmp file + rename) so a crash mid-write never corrupts the checkpoint. */
+  private async writeAtomic(json: string): Promise<void> {
     await mkdir(path.dirname(this.filePath), { recursive: true });
-    const tmpPath = `${this.filePath}.tmp-${process.pid}`;
-    await writeFile(tmpPath, JSON.stringify(checkpoint, null, 2), 'utf8');
+    const tmpPath = `${this.filePath}.tmp-${process.pid}-${randomUUID()}`;
+    await writeFile(tmpPath, json, 'utf8');
     await rename(tmpPath, this.filePath);
   }
 }
