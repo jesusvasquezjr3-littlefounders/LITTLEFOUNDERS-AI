@@ -57,28 +57,14 @@ create_user superadmin@littlefounders.ai 'Testing Superadmin'
 
 echo "==> Granting roles + linking Testing Tutor ↔ Testing Niño"
 bash "$DB_DIR/scripts/local-stack.sh" psql -q <<'SQL'
--- The 0003 signup trigger already gave everyone `universal` + a profile.
--- Grant each account its specific role (idempotent).
-INSERT INTO public.user_roles (user_id, role)
-SELECT u.id, v.role
-FROM (VALUES
-    ('tutor@email.com', 'parent'),
-    ('kid@email.com', 'kid'),
-    ('bigfounder@email.com', 'bigfounder'),
-    ('admin@email.com', 'admin'),
-    ('superadmin@littlefounders.ai', 'superadmin')
-) AS v(email, role)
-JOIN auth.users u ON u.email = v.email
-ON CONFLICT (user_id, role) DO NOTHING;
-
 -- Testing Family: Tutor + Niño members, guardian link VERIFIED.
 INSERT INTO public.families (id, name, created_by)
-SELECT '20000000-0000-0000-0000-000000000001', 'Testing Family', u.id
+SELECT '20000000-0000-4000-a000-000000000001', 'Testing Family', u.id
 FROM auth.users u WHERE u.email = 'tutor@email.com'
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.family_members (family_id, user_id, member_role)
-SELECT '20000000-0000-0000-0000-000000000001', u.id,
+SELECT '20000000-0000-4000-a000-000000000001', u.id,
        CASE u.email WHEN 'tutor@email.com' THEN 'parent' ELSE 'kid' END
 FROM auth.users u WHERE u.email IN ('tutor@email.com', 'kid@email.com')
 ON CONFLICT DO NOTHING;
@@ -88,6 +74,29 @@ SELECT p.id, k.id, 'verified', now()
 FROM auth.users p, auth.users k
 WHERE p.email = 'tutor@email.com' AND k.email = 'kid@email.com'
 ON CONFLICT ON CONSTRAINT guardian_link_unique DO NOTHING;
+
+-- The 0003 signup trigger already gave everyone `universal` + a profile.
+-- Grant each account its specific role (idempotent).
+INSERT INTO public.user_roles (user_id, role)
+SELECT u.id, 'superadmin'
+FROM auth.users u WHERE u.email = 'superadmin@littlefounders.ai'
+ON CONFLICT (user_id, role) DO NOTHING;
+
+INSERT INTO public.user_roles (user_id, role)
+SELECT u.id, v.role
+FROM (VALUES
+    ('tutor@email.com', 'parent'),
+    ('kid@email.com', 'kid'),
+    ('bigfounder@email.com', 'bigfounder')
+) AS v(email, role)
+JOIN auth.users u ON u.email = v.email
+ON CONFLICT (user_id, role) DO NOTHING;
+
+INSERT INTO public.user_roles (user_id, role, granted_by)
+SELECT u.id, 'admin', s.id
+FROM auth.users u, auth.users s
+WHERE u.email = 'admin@email.com' AND s.email = 'superadmin@littlefounders.ai'
+ON CONFLICT (user_id, role) DO NOTHING;
 
 -- @usernames for the test accounts (0005)
 UPDATE public.profiles p SET username = v.username

@@ -84,9 +84,13 @@ export function LessonRoute() {
       token,
       body: {
         seconds_spent: Math.min(7200, Math.max(1, secondsSpent)),
-        // The kid's LOCAL calendar day anchors the streak (v1 parity) — 'sv'
-        // formats as YYYY-MM-DD in the device's own timezone.
-        local_date: new Date().toLocaleDateString('sv'),
+        // The kid's LOCAL calendar day anchors the streak (v1 parity).
+        // Constructed mathematically to guarantee YYYY-MM-DD universally,
+        // since toLocaleDateString('sv') falls back to M/D/YYYY on some browsers.
+        local_date: (() => {
+          const d = new Date();
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        })(),
       },
     });
     return error ? null : data;

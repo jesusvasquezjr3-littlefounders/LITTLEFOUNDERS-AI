@@ -24,17 +24,22 @@
 
 TypeScript + Express (ESM, Node 24) on every service · React 18 + Vite + Tailwind frontend · Supabase (self-hosted on Railway): Postgres, Auth, Storage, Realtime · Vitest + Supertest · Zod · i18n: `en-US`, `es-MX`, `pt-BR` · light/dark mode.
 
-## Quickstart
+## Quickstart (Automated Local Setup)
 
-Each service is an independent npm package — no workspaces:
+To set up the entire workspace, install dependencies for all 8 microservices, provision the Supabase database, and load the test users and QA courses, run:
 
 ```bash
-cd <service>
-npm install
-npm run dev        # dev server on the port above
-npm test           # vitest
-npm run type-check # tsc --noEmit
+npm run setup
 ```
+
+After setup is complete, start all services simultaneously with a single command:
+
+```bash
+npm run dev
+```
+*(This streams all backend, frontend, and generation services into one unified terminal. Press `Ctrl+C` to cleanly stop all of them.)*
+
+> **Advanced Database Management**: If you need to manage Supabase manually (e.g., generate new TS types, run raw migrations, or export a course), see the detailed commands in [`database/README.md`](database/README.md).
 
 Repo-wide gates (from root):
 
