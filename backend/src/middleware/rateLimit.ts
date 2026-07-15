@@ -3,7 +3,7 @@ import RedisStore from 'rate-limit-redis';
 import { createClient } from 'redis';
 import { getConfig } from '../config.js';
 
-const isTest = process.env.NODE_ENV === 'test';
+export const isTestOrDev = process.env.NODE_ENV !== 'production';
 
 // Create a Redis client for distributed rate limiting
 export const redisClient = createClient({
@@ -11,13 +11,13 @@ export const redisClient = createClient({
 });
 
 // We connect manually in the entry point (index.ts) but handle connection errors here silently
-if (!isTest) {
+if (!isTestOrDev) {
   redisClient.on('error', (err) => console.error('Redis Client Error', err));
 }
 
 // Function to get the appropriate store based on the environment
 const getStore = () => {
-  if (isTest) return new MemoryStore();
+  if (isTestOrDev) return new MemoryStore();
   return new RedisStore({
     sendCommand: (...args: string[]) => redisClient.sendCommand(args),
   });
