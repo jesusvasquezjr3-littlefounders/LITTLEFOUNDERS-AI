@@ -15,10 +15,6 @@ export function AuthShell({ title, subtitle, children, footer, wide = false }: {
 }) {
   return (
     <div className="relative flex justify-center px-5 py-14 sm:py-20 md:px-8">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-6 mx-auto h-72 max-w-lg rounded-full bg-primary/10 blur-3xl"
-      />
       <div className={wide ? 'relative w-full max-w-2xl' : 'relative w-full max-w-md'}>
         <header className="mb-8 text-center">
           <h1 className="lf-display-lg text-content">{title}</h1>

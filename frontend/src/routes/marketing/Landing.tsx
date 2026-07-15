@@ -28,8 +28,8 @@ export function Landing() {
 
   return (
     <div>
-      {/* 1. Hero — navy band; no reveal: the page-enter transition covers it. */}
-      <section className="bg-inverse text-on-inverse">
+      {/* 1. Hero — responds to light/dark mode (user requested override of navy band) */}
+      <section className="bg-base text-content">
         <div className="mx-auto grid max-w-container items-center gap-12 px-5 py-24 md:grid-cols-2 md:px-8 md:py-32 lg:py-40">
           <div className="z-10 flex flex-col items-start gap-6">
             <h1 className="lf-display-xl">
@@ -37,7 +37,7 @@ export function Landing() {
               <br />
               <span className="text-accent">{t('marketing.hero.titleHighlight')}</span>
             </h1>
-            <p className="lf-body-lg max-w-lg text-on-inverse-muted">
+            <p className="lf-body-lg max-w-lg text-content-muted">
               {t('marketing.hero.subtitle')}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
@@ -50,12 +50,11 @@ export function Landing() {
                   />
                 </Button>
               </Link>
-              <Link
-                to="/how-it-works"
-                className="lf-label lf-glass-deep motion-safe-press inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-7 py-3.5 text-on-inverse transition-colors duration-200 hover:bg-white/15 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
-              >
-                <Icon name="play_circle" />
-                {t('marketing.hero.ctaSecondary')}
+              <Link to="/how-it-works">
+                <Button variant="secondary">
+                  <Icon name="play_circle" />
+                  {t('marketing.hero.ctaSecondary')}
+                </Button>
               </Link>
             </div>
           </div>

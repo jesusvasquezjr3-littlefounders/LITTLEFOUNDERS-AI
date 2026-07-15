@@ -67,13 +67,19 @@
     --lf-shadow-glass-sm: 0 2px 12px rgba(8, 15, 40, 0.08);
     --lf-shadow-pop: 0 16px 48px rgba(8, 15, 40, 0.18);
     --lf-glass-border: rgba(255, 255, 255, 0.55);
+
+    /* Liquid Glass & Gaming Details */
+    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.25) 0%, transparent 55%);
+    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.06) 0deg, rgba(200,230,255,0.06) 90deg, rgba(230,200,255,0.06) 180deg, rgba(200,220,255,0.06) 270deg, rgba(210,210,255,0.06) 360deg);
+    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1);
+    --lf-btn-inner-glow-hover: inset 0 2px 6px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.15);
   }
 
   .dark {
-    --lf-base: 8 15 40; /* blue-950 */
+    --lf-base: 26 26 29; /* #1A1A1D */
     --lf-surface: 17 27 64;
     --lf-surface-sunken: 12 20 52;
-    --lf-band: 14 23 58;
+    --lf-band: 26 26 29;
     --lf-content: 240 243 255;
     --lf-content-muted: 197 206 238;
     --lf-content-faint: 148 158 199;
@@ -102,6 +108,12 @@
     --lf-shadow-glass-sm: 0 2px 12px rgba(0, 0, 0, 0.35);
     --lf-shadow-pop: 0 16px 48px rgba(0, 0, 0, 0.5);
     --lf-glass-border: rgba(255, 255, 255, 0.12);
+
+    /* Liquid Glass & Gaming Details */
+    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.1) 0%, transparent 55%);
+    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.02) 0deg, rgba(200,230,255,0.02) 90deg, rgba(230,200,255,0.02) 180deg, rgba(200,220,255,0.02) 270deg, rgba(210,210,255,0.02) 360deg);
+    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -2px 4px rgba(0,0,0,0.4);
+    --lf-btn-inner-glow-hover: inset 0 2px 6px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.5);
   }
 
   :root {
@@ -208,12 +220,18 @@
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     backdrop-filter: blur(16px) saturate(1.4);
     border: 1px solid var(--lf-glass-border);
+    background-image: var(--lf-glass-mesh);
+    background-blend-mode: overlay;
+    box-shadow: var(--lf-shadow-glass);
   }
   .lf-glass-deep {
     background-color: rgb(255 255 255 / 0.08);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     backdrop-filter: blur(16px) saturate(1.4);
     border: 1px solid rgb(255 255 255 / 0.14);
+    background-image: var(--lf-glass-caustic), var(--lf-glass-mesh);
+    background-blend-mode: overlay, overlay;
+    box-shadow: var(--lf-shadow-pop);
   }
   @supports not (backdrop-filter: blur(1px)) {
     .lf-glass {
@@ -408,6 +426,35 @@
     .lf-display-lg {
       font-size: 38px;
     }
+  }
+
+  /* ── Gaming Button Global Enhancement ── */
+  .lf-gaming-btn {
+    box-shadow: var(--lf-btn-inner-glow), var(--lf-shadow-glass-sm);
+    position: relative;
+    overflow: hidden;
+  }
+  .lf-gaming-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--lf-glass-caustic);
+    opacity: 0;
+    transition: opacity var(--lf-dur-base) var(--lf-ease);
+    pointer-events: none;
+    border-radius: inherit;
+    z-index: 0;
+  }
+  .lf-gaming-btn:hover {
+    box-shadow: var(--lf-btn-inner-glow-hover), var(--lf-shadow-glass-sm);
+  }
+  .lf-gaming-btn:hover::after {
+    opacity: 1;
+  }
+  /* Ensure button content is above the pseudo-element */
+  .lf-gaming-btn > * {
+    position: relative;
+    z-index: 1;
   }
 }
 
