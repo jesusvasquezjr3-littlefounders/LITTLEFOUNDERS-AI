@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 
 /* Composition per /DESIGN.md §Screen Recipes → Landing: full-bleed alternating
@@ -18,6 +20,11 @@ const FEATURES = [
 
 export function Landing() {
   const { t } = useTranslation();
+  const { session } = useAuth();
+  
+  const ctaTo = session ? APP_HOME : '/signup';
+  const primaryCtaLabel = session ? t('dashboard.continueCta') : t('marketing.hero.ctaPrimary');
+  const finalCtaLabel = session ? t('dashboard.continueCta') : t('marketing.finalCta.button');
 
   return (
     <div>
@@ -34,9 +41,9 @@ export function Landing() {
               {t('marketing.hero.subtitle')}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
-              <Link to="/signup">
+              <Link to={ctaTo}>
                 <Button className="group">
-                  {t('marketing.hero.ctaPrimary')}
+                  {primaryCtaLabel}
                   <Icon
                     name="arrow_forward"
                     className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"
@@ -152,9 +159,9 @@ export function Landing() {
           <div>
             <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
             <p className="lf-body-lg mt-3 text-content-muted">{t('marketing.finalCta.body')}</p>
-            <Link to="/signup" className="mt-6 inline-block">
+            <Link to={ctaTo} className="mt-6 inline-block">
               <Button className="group">
-                {t('marketing.finalCta.button')}
+                {finalCtaLabel}
                 <Icon
                   name="arrow_forward"
                   className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5"

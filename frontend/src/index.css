@@ -302,6 +302,23 @@
     }
   }
 
+  /* Attention pulse — explicitly requests #FF8F00 for the lesson button */
+  .lf-pulse-attention {
+    animation: lf-pulse-attention 2s infinite;
+  }
+  @keyframes lf-pulse-attention {
+    0%, 100% {
+      /* Fallback to original styles */
+      box-shadow: 0 16px 48px rgba(8, 15, 40, 0.18);
+    }
+    50% {
+      background-color: #FF8F00;
+      border-color: #FF8F00;
+      color: #fff;
+      box-shadow: 0 0 20px 4px rgba(255, 143, 0, 0.6);
+    }
+  }
+
   /* ── Day-streak celebration (Lesson Player) — v1 StreakCelebration echo ── */
   .lf-streak-flame {
     animation: lf-streak-flame-bob 2.2s var(--lf-ease) infinite;
@@ -367,6 +384,7 @@
     .lf-float,
     .lf-page-enter,
     .lf-pop,
+    .lf-pulse-attention,
     .lf-streak-flame,
     .lf-streak-number,
     .lf-streak-ring,

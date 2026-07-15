@@ -162,6 +162,11 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 6. **Surface uncertainty, don't paper over it.** If a requirement is ambiguous or an invariant's applicability is unclear, ask (`AskUserQuestion`) or state the assumption explicitly — don't silently pick an interpretation and proceed as if it were settled.
 7. **No silent scope-cutting.** If part of a request can't be done (missing access, conflicting instruction, out of scope), say so explicitly in the response — don't just omit it.
 
+### §1.13 Auth & Route Cybersecurity — NON-NEGOTIABLE
+
+- **Guest-only routes:** Authenticated users MUST NEVER be able to access `/login` or `/signup`. These routes must be protected by `<RequireGuest>`, redirecting active sessions to the dashboard (`APP_HOME`). This prevents session hijacking, confusing states, and ensures proper flow.
+- **Contextual CTAs:** Marketing pages and public landing pages MUST be session-aware. If a user is logged in, CTA buttons must dynamically change their copy (e.g., "Continúa donde lo dejaste") and destination (dashboard) instead of prompting them to "Start for free" or log in.
+
 ---
 
 ## §2 Companion-document manifest

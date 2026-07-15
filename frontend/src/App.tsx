@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/auth/AuthContext';
 import { RequireAuth } from '@/auth/RequireAuth';
+import { RequireGuest } from '@/auth/RequireGuest';
 import { RequireRole } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
@@ -51,8 +52,8 @@ export function App() {
           <Route path="faq" element={<ComingSoon page="faq" />} />
           <Route path="legal/terms" element={<LegalPage doc="terms" />} />
           <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
+          <Route path="login" element={<RequireGuest><LoginPage /></RequireGuest>} />
+          <Route path="signup" element={<RequireGuest><SignupPage /></RequireGuest>} />
           <Route
             path="verify-parent"
             element={

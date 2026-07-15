@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
-import { Badge, Button, Icon, ThemeToggle } from '@/components/ui';
+import { api } from '@/lib/api';
+import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
@@ -16,6 +18,12 @@ import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
  */
 
 const COLLAPSE_KEY = 'lf-sidebar-collapsed';
+
+const LOCALE_FLAGS: Record<Locale, string> = {
+  'en-US': '🇺🇸',
+  'es-MX': '🇲🇽',
+  'pt-BR': '🇧🇷',
+};
 
 function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[]; collapsed: boolean }) {
   const { t } = useTranslation();
@@ -112,7 +120,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
 
 export function AppLayout() {
   const { t, i18n } = useTranslation();
-  const { session, profile, roles, avatarOptions, logout } = useAuth();
+  const { session, profile, roles, avatarOptions, logout, getToken, refreshMe } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1');
@@ -134,6 +142,20 @@ export function AppLayout() {
       localStorage.setItem(COLLAPSE_KEY, c ? '0' : '1');
       return !c;
     });
+  }
+
+  const localeOptions: DropdownOption<Locale>[] = LOCALES.map((l) => ({
+    value: l,
+    label: t(`language.${l}`),
+    prefix: <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>,
+  }));
+
+  async function handleLanguageChange(l: Locale) {
+    void i18n.changeLanguage(l);
+    if (!session) return;
+    const token = await getToken();
+    await api('/profile', { method: 'PATCH', body: { locale: l }, token });
+    await refreshMe();
   }
 
   async function onLogout() {
@@ -195,7 +217,16 @@ export function AppLayout() {
           )}
 
           {!collapsed && (
-            <div className="flex items-center justify-end px-1">
+            <div className="flex items-center justify-between px-1">
+              <Dropdown
+                compact
+                placement="top"
+                align="left"
+                value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
+                options={localeOptions}
+                onChange={(l) => void handleLanguageChange(l)}
+                ariaLabel={t('language.label') ?? 'Language'}
+              />
               <ThemeToggle />
             </div>
           )}
@@ -241,6 +272,13 @@ export function AppLayout() {
           <img src="/logo-main-trimmed.png" alt={t('app.name')} className="h-8 w-auto" />
         </NavLink>
         <div className="flex items-center gap-2">
+          <Dropdown
+            compact
+            value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
+            options={localeOptions}
+            onChange={(l) => void handleLanguageChange(l)}
+            ariaLabel={t('language.label') ?? 'Language'}
+          />
           <ThemeToggle />
           <button
             type="button"

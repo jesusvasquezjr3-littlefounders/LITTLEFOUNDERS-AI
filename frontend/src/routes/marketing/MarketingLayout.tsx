@@ -42,7 +42,7 @@ export function MarketingLayout() {
 
   // Signed-in visitors get "open my dashboard" instead of "login".
   const ctaTo = session ? APP_HOME : '/login';
-  const ctaLabel = session ? t('dashboard.openCta') : t('marketing.nav.loginCta');
+  const ctaLabel = session ? t('dashboard.continueCta') : t('marketing.nav.loginCta');
 
   // Every new page starts at the top — SPA navigation doesn't reset scroll
   // for free (only native full-page loads do that). Explicit 'auto' overrides

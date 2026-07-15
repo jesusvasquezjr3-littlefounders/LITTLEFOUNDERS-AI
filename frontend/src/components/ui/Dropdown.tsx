@@ -22,6 +22,10 @@ interface DropdownProps<T extends string> {
   className?: string;
   /** Trigger shows only the prefix (e.g. a flag) — full label stays in the open panel. */
   compact?: boolean;
+  /** Controls if the dropdown opens downwards (default) or upwards */
+  placement?: 'top' | 'bottom';
+  /** Controls horizontal alignment of the panel relative to the trigger. Defaults to right. */
+  align?: 'left' | 'right';
 }
 
 export function Dropdown<T extends string>({
@@ -31,6 +35,8 @@ export function Dropdown<T extends string>({
   ariaLabel,
   className,
   compact = false,
+  placement = 'bottom',
+  align = 'right',
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -61,8 +67,8 @@ export function Dropdown<T extends string>({
         aria-label={selected ? `${ariaLabel}: ${selected.label}` : ariaLabel}
         onClick={() => setOpen((o) => !o)}
         className={cn(
-          'lf-label motion-safe-press flex min-h-11 items-center gap-1.5 rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          compact ? 'px-2.5 py-2' : 'px-4 py-2',
+          'lf-label motion-safe-press flex items-center rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          compact ? 'h-11 px-3 gap-1' : 'min-h-11 px-4 py-2 gap-1.5',
         )}
       >
         {selected?.prefix}
@@ -74,7 +80,11 @@ export function Dropdown<T extends string>({
         <ul
           role="listbox"
           aria-label={ariaLabel}
-          className="lf-pop lf-glass absolute right-0 z-50 mt-2 min-w-full overflow-hidden rounded-md py-1 shadow-pop"
+          className={cn(
+            'lf-pop lf-glass absolute z-50 min-w-full max-h-60 overflow-y-auto rounded-md py-1 shadow-pop',
+            placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
+            align === 'left' ? 'left-0' : 'right-0'
+          )}
         >
           {options.map((option) => (
             <li key={option.value} role="presentation">

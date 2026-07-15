@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
@@ -172,15 +173,23 @@ export function CoursePage() {
         })}
       </div>
 
-      {tree.nextLessonId && (
+      {/* 
+        ⚠️ AI AGENT INSTRUCTION: DO NOT REMOVE `createPortal`.
+        This button MUST remain in a Portal attached to `document.body`. 
+        If placed normally, the `lf-page-enter` animation's `transform` creates a stacking context 
+        that breaks `fixed` positioning, pinning the button to the bottom of the content rather 
+        than the viewport. 
+      */}
+      {tree.nextLessonId && createPortal(
         <button
           type="button"
           onClick={goToMyLesson}
-          className="lf-glass motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full px-5 py-3 shadow-pop lf-label text-content lg:bottom-8 lg:right-8"
+          className="lf-glass lf-pulse-attention motion-safe-press fixed bottom-20 right-4 z-40 flex min-h-11 items-center gap-2 rounded-full px-5 py-3 shadow-pop lf-label text-content lg:bottom-8 lg:right-8"
         >
-          <Icon name="near_me" className="text-primary" />
+          <Icon name="target" className="text-current" />
           {t('learn.goToMyLesson')}
-        </button>
+        </button>,
+        document.body
       )}
     </div>
   );
