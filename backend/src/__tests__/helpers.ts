@@ -9,6 +9,8 @@ export function mintToken(overrides: Partial<{ sub: string; email: string; role:
       sub: overrides.sub ?? randomUUID(),
       email: overrides.email ?? 'user@example.com',
       role: overrides.role ?? 'authenticated',
+      aud: 'authenticated',
+      iss: 'supabase',
       exp: overrides.exp ?? Math.floor(Date.now() / 1000) + 3600,
     }),
   );

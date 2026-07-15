@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
@@ -18,6 +19,17 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
 
   app.get('/health', (_req, res) => {
     res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
+  });
+
+  app.use('/api/v1/send', (req, res, next) => {
+    const provided = req.get('x-internal-api-key') ?? '';
+    const expected = process.env.INTERNAL_API_KEY ?? '';
+    
+    // Check key presence securely
+    if (!expected || provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
+      return res.status(401).json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Invalid internal API key' } });
+    }
+    next();
   });
 
   app.post('/api/v1/send', async (req, res) => {

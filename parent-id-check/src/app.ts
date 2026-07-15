@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import { getConfig } from './config.js';
 import { verificationsRouter } from './routes/verifications.js';
@@ -22,7 +23,9 @@ export function createApp(deps: AppDeps = {}): express.Express {
 
   // Everything below /internal is service-to-service only (/AGENTS.md §1.5).
   app.use('/internal', (req, res, next) => {
-    if (req.get('x-internal-api-key') !== config.INTERNAL_API_KEY) {
+    const provided = req.get('x-internal-api-key') ?? '';
+    const expected = config.INTERNAL_API_KEY;
+    if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
       return res
         .status(401)
         .json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Invalid internal API key' } });

@@ -258,6 +258,7 @@ export type Database = {
       }
       learning_stats: {
         Row: {
+          last_active_date: string | null
           lessons_completed: number
           minutes_learned: number
           streak_days: number
@@ -266,6 +267,7 @@ export type Database = {
           xp_points: number
         }
         Insert: {
+          last_active_date?: string | null
           lessons_completed?: number
           minutes_learned?: number
           streak_days?: number
@@ -274,6 +276,7 @@ export type Database = {
           xp_points?: number
         }
         Update: {
+          last_active_date?: string | null
           lessons_completed?: number
           minutes_learned?: number
           streak_days?: number

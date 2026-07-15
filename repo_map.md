@@ -36,6 +36,7 @@ audiogen/
     tts/
     types/
 backend/
+  scratch/
   scripts/
   src/
     __tests__/
@@ -1647,6 +1648,7 @@ function buildWav(sampleRate: number, channels: 1 | 2, interleaved: Int16Array):
 ### audiogen/src/app.ts
 
 ```
+import crypto from 'crypto';
 import express from 'express';
 import { getConfig } from './env.js';
 import { audioRouter, type AudioRouterDeps } from './routes/audio.js';
@@ -1661,7 +1663,6 @@ export interface AppDeps {
 export function createApp(deps: AppDeps = {}): express.Express {
   const config = getConfig();
   const app = express();
-  app.use(express.json());
 ```
 
 ### audiogen/src/batch.ts
@@ -2221,6 +2222,46 @@ export default tseslint.config(
     "lint": "eslint .",
 ```
 
+### backend/scratch/fix.ts
+
+```
+import fs from 'fs';
+const path = '/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/backend/src/services/supabaseRest.ts';
+let content = fs.readFileSync(path, 'utf8');
+
+// Añadir Zod a los imports
+content = content.replace("import { getConfig } from '../config.js';", "import { z } from 'zod';\nimport { getConfig } from '../config.js';\n\nconst UUID = z.string().uuid();\nconst eu = (val: string) => encodeURIComponent(UUID.parse(val).toString());\nconst es = (val: string) => encodeURIComponent(val.toString());");
+
+// Reemplazar IDs
+const varsToEu = ['userId', 'followerId', 'followedId', 'blockerId', 'blockedId', 'a', 'b', 'courseId', 'adventureId', 'sagaId', 'topicId', 'lessonId'];
+varsToEu.forEach(v => {
+  content = content.replace(new RegExp(`\\$\\{${v}\\}`, 'g'), `\${eu(${v})}`);
+});
+
+// Segment, slug, username
+content = content.replace(/\$\{encodeURIComponent\(segmentId\)\}/g, '${es(segmentId)}');
+```
+
+### backend/scratch/fix_supabase_rest.js
+
+```
+const fs = require('fs');
+const path = '/Users/guadalupebaltazar/Movies/LITTLEFOUNDERS/LITTLEFOUNDERS-AI/backend/src/services/supabaseRest.ts';
+let content = fs.readFileSync(path, 'utf8');
+
+// Añadir Zod a los imports
+content = content.replace("import { getConfig } from '../config.js';", "import { z } from 'zod';\nimport { getConfig } from '../config.js';\n\nconst UUID = z.string().uuid();\nconst eu = (val) => encodeURIComponent(UUID.parse(val).toString());\nconst es = (val) => encodeURIComponent(val.toString());");
+
+// Reemplazar ${userId} por ${eu(userId)}
+content = content.replace(/\$\{userId\}/g, '${eu(userId)}');
+content = content.replace(/\$\{followerId\}/g, '${eu(followerId)}');
+content = content.replace(/\$\{followedId\}/g, '${eu(followedId)}');
+content = content.replace(/\$\{blockerId\}/g, '${eu(blockerId)}');
+content = content.replace(/\$\{blockedId\}/g, '${eu(blockedId)}');
+content = content.replace(/\$\{a\}/g, '${eu(a)}');
+content = content.replace(/\$\{b\}/g, '${eu(b)}');
+```
+
 ### backend/scripts/contract-check.ts
 
 ```
@@ -2253,7 +2294,7 @@ const SESSION = {
   access_token: 'at',
   refresh_token: 'rt',
   expires_in: 3600,
-  user: { id: 'u-1', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
+  user: { id: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
 };
 
 afterEach(() => vi.unstubAllGlobals());
@@ -2335,10 +2376,10 @@ export function mintToken(overrides: Partial<{ sub: string; email: string; role:
       sub: overrides.sub ?? randomUUID(),
       email: overrides.email ?? 'user@example.com',
       role: overrides.role ?? 'authenticated',
+      aud: 'authenticated',
+      iss: 'supabase',
       exp: overrides.exp ?? Math.floor(Date.now() / 1000) + 3600,
     }),
-  );
-  const sig = createHmac('sha256', process.env.SUPABASE_JWT_SECRET as string)
 ```
 
 ### backend/src/__tests__/learn.test.ts
@@ -2356,7 +2397,7 @@ let userId: string;
 let token: string;
 
 beforeEach(() => {
-  userId = 'user-11111111-1111-1111-1111-111111111111';
+  userId = '11111111-1111-4111-8111-111111111111';
   token = mintToken({ sub: userId });
   db = makeDb(userId);
 ```
@@ -2373,12 +2414,12 @@ import type { FakeDb } from './fakePostgrest.js';
  * grading/completion can be exercised end to end.
  */
 
-export const COURSE_ID = 'course-1';
-export const ADVENTURE_ID = 'adventure-1';
-export const SAGA_ID = 'saga-1';
-export const TOPIC_ID = 'topic-1';
-export const LESSON_1_ID = 'lesson-1';
-export const LESSON_2_ID = 'lesson-2';
+export const COURSE_ID = '33333333-3333-4333-8333-333333333333';
+export const ADVENTURE_ID = '44444444-4444-4444-8444-444444444444';
+export const SAGA_ID = '55555555-5555-4555-8555-555555555555';
+export const TOPIC_ID = '66666666-6666-4666-8666-666666666666';
+export const LESSON_1_ID = '77777777-7777-4777-8777-777777777777';
+export const LESSON_2_ID = '88888888-8888-4888-8888-888888888888';
 ```
 
 ### backend/src/__tests__/lessonDocument.test.ts
@@ -2410,7 +2451,7 @@ import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 const PROFILE_ROW = {
-  user_id: 'u-1',
+  user_id: '11111111-1111-4111-8111-111111111111',
   display_name: 'Ana',
   username: 'ana',
   locale: 'es-MX',
@@ -2485,7 +2526,9 @@ const FIELDS = {
 
 ```
 import express from 'express';
+import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -2496,9 +2539,7 @@ export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
-  app.use(cors);
-  app.use(express.json({ limit: '64kb' }));
-
+  app.use(helmet());
 ```
 
 ### backend/src/config.ts
@@ -2526,11 +2567,19 @@ const Env = z.object({
 ```
 import { createApp, SERVICE } from './app.js';
 import { getConfig } from './config.js';
+import { redisClient } from './middleware/rateLimit.js';
 
 const { PORT } = getConfig();
-createApp().listen(PORT, () => {
-  console.log(`[${SERVICE}] listening on :${PORT}`);
-});
+
+async function startServer() {
+  try {
+    await redisClient.connect();
+    console.log(`[${SERVICE}] Connected to Redis for distributed rate limiting`);
+  } catch (error) {
+    console.error(`[${SERVICE}] Failed to connect to Redis:`, error);
+    process.exit(1);
+  }
+
 ```
 
 ### backend/src/lesson-contract/core/scoring.ts
@@ -2763,19 +2812,21 @@ export interface AccessTokenClaims {
   sub: string;
   email: string;
   role: string; // postgres role, e.g. "authenticated"
+  aud?: string;
+  iss?: string;
   exp: number;
 }
-
-function b64urlDecode(s: string): Buffer {
 ```
 
 ### backend/src/middleware/auth.ts
 
 ```
+import crypto from 'crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { getConfig } from '../config.js';
 import { fail } from '../lib/http.js';
 import { verifyAccessToken } from '../lib/jwt.js';
+import { getOwnRoles } from '../services/supabaseRest.js';
 
 export interface AuthedUser {
   id: string;
@@ -2785,8 +2836,6 @@ export interface AuthedUser {
 }
 
 /** Typed accessor for the user set by requireAuth. */
-export function authedUser(res: Response): AuthedUser {
-  return res.locals.user as AuthedUser;
 ```
 
 ### backend/src/middleware/cors.ts
@@ -2802,11 +2851,31 @@ import { getConfig } from '../config.js';
  */
 export function cors(req: Request, res: Response, next: NextFunction): void {
   const origin = req.get('origin');
-  if (origin === getConfig().FRONTEND_URL) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
+  
+  // If an origin is provided and it doesn't match our frontend, reject preflight outright
+  if (origin && origin !== getConfig().FRONTEND_URL) {
+    if (req.method === 'OPTIONS') {
+      res.status(403).end();
+```
+
+### backend/src/middleware/rateLimit.ts
+
+```
+import rateLimit, { MemoryStore } from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
+import { createClient } from 'redis';
+import { getConfig } from '../config.js';
+
+const isTest = process.env.NODE_ENV === 'test';
+
+// Create a Redis client for distributed rate limiting
+export const redisClient = createClient({
+  url: getConfig().REDIS_URL,
+});
+
+// We connect manually in the entry point (index.ts) but handle connection errors here silently
+if (!isTest) {
+  redisClient.on('error', (err) => console.error('Redis Client Error', err));
 ```
 
 ### backend/src/routes/auth.ts
@@ -2816,6 +2885,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
+import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
 import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
@@ -2826,7 +2896,6 @@ import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRe
  *
  * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
  * trigger (migration 0003), not by anything the client sends. `parentIntent`
- * only records that the user wants the Tutor upgrade; the ONLY path to the
 ```
 
 ### backend/src/routes/learn.ts
@@ -2972,7 +3041,12 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 ### backend/src/services/supabaseRest.ts
 
 ```
+import { z } from 'zod';
 import { getConfig } from '../config.js';
+
+const UUID = z.string().uuid();
+const eu = (val: string) => encodeURIComponent(UUID.parse(val).toString());
+const es = (val: string) => encodeURIComponent(val.toString());
 
 /*
  * PostgREST access in two grades:
@@ -2982,11 +3056,6 @@ import { getConfig } from '../config.js';
  *    audit_logs) — never for reads on behalf of a user.
  */
 
-interface RestInit {
-  method?: string;
-  headers?: Record<string, string>;
-  body?: string;
-}
 ```
 
 ### backend/src/services/unlockRules.ts
@@ -5534,6 +5603,26 @@ DO $$
 -- change; Core (service role) is still the only writer.
 ```
 
+### database/migrations/0010_security_fixes.sql
+
+```
+-- 0010_security_fixes.sql — Security Hardening & Invariant Protection
+-- Implements protections for child safety invariants and prevents dangerous cascades
+
+-- 1. Kid Orphan Protection: Ensure a 'kid' role cannot be created/updated without a verified guardian
+CREATE OR REPLACE FUNCTION public.enforce_kid_has_guardian()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    IF NEW.role = 'kid' THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM public.guardian_links 
+            WHERE kid_user_id = NEW.user_id 
+```
+
 ### database/package.json
 
 ```
@@ -5873,6 +5962,7 @@ describe('POST /api/v1/send', () => {
 ### email-server/src/app.ts
 
 ```
+import crypto from 'crypto';
 import express from 'express';
 import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
@@ -5887,7 +5977,6 @@ const SendBody = z.object({
   text: z.string().optional(),
 });
 
-export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Express {
 ```
 
 ### email-server/src/index.ts
@@ -24385,6 +24474,7 @@ describe('object visibility', () => {
 ### filebase/src/app.ts
 
 ```
+import crypto from 'crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { getConfig } from './config.js';
 import { downloadRouter } from './routes/download.js';
@@ -24399,7 +24489,6 @@ export function createApp(): express.Express {
   app.use(express.json());
 
   app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
 ```
 
 ### filebase/src/config.ts
@@ -24477,6 +24566,7 @@ export function isValidBucket(value: string): boolean {
 ### filebase/src/routes/download.ts
 
 ```
+import crypto from 'crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Router, type Request, type Response } from 'express';
@@ -24491,7 +24581,6 @@ import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
  * a 200/206 success response streams raw object bytes with binary headers,
  * because it has to work as the `src` of an <audio>/<img> tag. Every ERROR
  * status from this route still uses the standard `{ data, error }` envelope
- * — only the successful payload is non-JSON.
 ```
 
 ### filebase/src/routes/files.ts
@@ -28485,6 +28574,7 @@ const PNG_1PX = Buffer.from(
 ### parent-id-check/src/app.ts
 
 ```
+import crypto from 'crypto';
 import express from 'express';
 import { getConfig } from './config.js';
 import { verificationsRouter } from './routes/verifications.js';
@@ -28499,7 +28589,6 @@ export interface AppDeps {
 }
 
 export function createApp(deps: AppDeps = {}): express.Express {
-  const config = getConfig();
 ```
 
 ### parent-id-check/src/config.ts

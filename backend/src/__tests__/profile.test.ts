@@ -4,7 +4,7 @@ import { createApp } from '../app.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 const PROFILE_ROW = {
-  user_id: 'u-1',
+  user_id: '11111111-1111-4111-8111-111111111111',
   display_name: 'Ana',
   username: 'ana',
   locale: 'es-MX',
@@ -98,7 +98,7 @@ describe('GET /api/v1/profile', () => {
     stub({ learningStats: [{ xp_points: 120, minutes_learned: 45, lessons_completed: 3, streak_days: 2 }] });
     const res = await request(createApp())
       .get('/api/v1/profile')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1', email: 'ana@example.com' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       displayName: 'Ana',
@@ -120,7 +120,7 @@ describe('PATCH /api/v1/profile', () => {
     const calls = stub();
     const res = await request(createApp())
       .patch('/api/v1/profile')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`)
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`)
       .send({ displayName: 'Ana María', username: 'AnaMaria_1', locale: 'pt-BR', birthDate: '1990-05-01' });
     expect(res.status).toBe(200);
     const patch = calls.find((c) => c.method === 'PATCH');
@@ -207,43 +207,43 @@ describe('PUT /api/v1/profile/avatar', () => {
 describe('GET /api/v1/profile/followers, /following, /blocked', () => {
   it('lists own followers hydrated with profile + avatar + tutor role', async () => {
     stub({
-      followEdges: [{ follower_id: 'u-9' }],
-      hydrateProfiles: [{ user_id: 'u-9', display_name: 'Bea', username: 'bea' }],
-      hydrateAvatars: [{ user_id: 'u-9', options: { top: ['bun'] } }],
-      hydrateTutorIds: [{ user_id: 'u-9' }],
+      followEdges: [{ follower_id: '99999999-9999-4999-8999-999999999999' }],
+      hydrateProfiles: [{ user_id: '99999999-9999-4999-8999-999999999999', display_name: 'Bea', username: 'bea' }],
+      hydrateAvatars: [{ user_id: '99999999-9999-4999-8999-999999999999', options: { top: ['bun'] } }],
+      hydrateTutorIds: [{ user_id: '99999999-9999-4999-8999-999999999999' }],
     });
     const res = await request(createApp())
       .get('/api/v1/profile/followers')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.users).toEqual([
-      { userId: 'u-9', displayName: 'Bea', username: 'bea', avatarOptions: { top: ['bun'] }, isTutor: true },
+      { userId: '99999999-9999-4999-8999-999999999999', displayName: 'Bea', username: 'bea', avatarOptions: { top: ['bun'] }, isTutor: true },
     ]);
   });
 
   it('lists own following', async () => {
-    stub({ followEdges: [{ followed_id: 'u-9' }], hydrateProfiles: [{ user_id: 'u-9', display_name: 'Bea', username: 'bea' }] });
+    stub({ followEdges: [{ followed_id: '99999999-9999-4999-8999-999999999999' }], hydrateProfiles: [{ user_id: '99999999-9999-4999-8999-999999999999', display_name: 'Bea', username: 'bea' }] });
     const res = await request(createApp())
       .get('/api/v1/profile/following')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data.users[0]).toMatchObject({ userId: 'u-9', username: 'bea' });
+    expect(res.body.data.users[0]).toMatchObject({ userId: '99999999-9999-4999-8999-999999999999', username: 'bea' });
   });
 
   it('lists blocked accounts', async () => {
-    stub({ blockedRows: [{ blocked_id: 'u-9' }], hydrateProfiles: [{ user_id: 'u-9', display_name: 'Bea', username: 'bea' }] });
+    stub({ blockedRows: [{ blocked_id: '99999999-9999-4999-8999-999999999999' }], hydrateProfiles: [{ user_id: '99999999-9999-4999-8999-999999999999', display_name: 'Bea', username: 'bea' }] });
     const res = await request(createApp())
       .get('/api/v1/profile/blocked')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(200);
-    expect(res.body.data.users[0]).toMatchObject({ userId: 'u-9', username: 'bea' });
+    expect(res.body.data.users[0]).toMatchObject({ userId: '99999999-9999-4999-8999-999999999999', username: 'bea' });
   });
 
   it('an empty edge list never calls the batch hydrate endpoints', async () => {
     const calls = stub({ followEdges: [] });
     const res = await request(createApp())
       .get('/api/v1/profile/followers')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.users).toEqual([]);
     expect(calls.some((c) => c.url.includes('user_id=in.'))).toBe(false);
@@ -255,7 +255,7 @@ describe('public profiles', () => {
     stub({ blockedRows: [] });
     const res = await request(createApp())
       .get('/api/v1/profiles/ana')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-2' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({
       displayName: 'Ana',
@@ -277,10 +277,10 @@ describe('public profiles', () => {
   });
 
   it('404s (not 403) for a profile that blocked the viewer — never leaks the block', async () => {
-    stub({ blockedRows: [{ blocker_id: 'u-1' }] }); // is_blocked query returns a row => blocked either-way
+    stub({ blockedRows: [{ blocker_id: '11111111-1111-4111-8111-111111111111' }] }); // is_blocked query returns a row => blocked either-way
     const res = await request(createApp())
       .get('/api/v1/profiles/ana')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-2' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
     expect(res.status).toBe(404);
     expect(res.body.error.code).toBe('NOT_FOUND');
   });
@@ -289,24 +289,24 @@ describe('public profiles', () => {
     stub({ blockedRows: [] });
     const res = await request(createApp())
       .post('/api/v1/profiles/ana/follow')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(400);
   });
 
   it('follows through the user token (RLS-owned write)', async () => {
     const calls = stub({ blockedRows: [] });
-    const token = mintToken({ sub: 'u-2' });
+    const token = mintToken({ sub: '22222222-2222-4222-8222-222222222222' });
     const res = await request(createApp()).post('/api/v1/profiles/ana/follow').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
     const follow = calls.find((c) => c.url.includes('/rest/v1/follows') && c.method === 'POST');
-    expect(follow?.body).toContain('"follower_id":"u-2"');
+    expect(follow?.body).toContain('"follower_id":"22222222-2222-4222-8222-222222222222"');
   });
 
   it('a blocked viewer cannot follow (profile resolves to 404 first)', async () => {
-    stub({ blockedRows: [{ blocker_id: 'u-1' }] });
+    stub({ blockedRows: [{ blocker_id: '11111111-1111-4111-8111-111111111111' }] });
     const res = await request(createApp())
       .post('/api/v1/profiles/ana/follow')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-2' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
     expect(res.status).toBe(404);
   });
 });
@@ -316,29 +316,29 @@ describe('block / unblock', () => {
     const calls = stub();
     const res = await request(createApp())
       .post('/api/v1/profiles/ana/block')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-2' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.blocked).toBe(true);
     expect(calls.some((c) => c.url.includes('/rest/v1/blocks') && c.method === 'POST')).toBe(true);
     const followDeletes = calls.filter((c) => c.url.includes('/rest/v1/follows') && c.method === 'DELETE');
     expect(followDeletes).toHaveLength(2);
-    expect(followDeletes.some((c) => c.url.includes('follower_id=eq.u-2') && c.url.includes('followed_id=eq.u-1'))).toBe(true);
-    expect(followDeletes.some((c) => c.url.includes('follower_id=eq.u-1') && c.url.includes('followed_id=eq.u-2'))).toBe(true);
+    expect(followDeletes.some((c) => c.url.includes('follower_id=eq.22222222-2222-4222-8222-222222222222') && c.url.includes('followed_id=eq.11111111-1111-4111-8111-111111111111'))).toBe(true);
+    expect(followDeletes.some((c) => c.url.includes('follower_id=eq.11111111-1111-4111-8111-111111111111') && c.url.includes('followed_id=eq.22222222-2222-4222-8222-222222222222'))).toBe(true);
   });
 
   it('rejects self-block', async () => {
     stub();
     const res = await request(createApp())
       .post('/api/v1/profiles/ana/block')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-1' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '11111111-1111-4111-8111-111111111111' })}`);
     expect(res.status).toBe(400);
   });
 
   it('unblocks even though the block would otherwise hide the profile from resolveVisible', async () => {
-    const calls = stub({ blockedRows: [{ blocker_id: 'u-2' }] }); // u-2 has blocked u-1
+    const calls = stub({ blockedRows: [{ blocker_id: '22222222-2222-4222-8222-222222222222' }] }); // u-2 has blocked u-1
     const res = await request(createApp())
       .delete('/api/v1/profiles/ana/block')
-      .set('Authorization', `Bearer ${mintToken({ sub: 'u-2' })}`);
+      .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
     expect(res.status).toBe(200);
     expect(res.body.data.blocked).toBe(false);
     expect(calls.some((c) => c.url.includes('/rest/v1/blocks') && c.method === 'DELETE')).toBe(true);

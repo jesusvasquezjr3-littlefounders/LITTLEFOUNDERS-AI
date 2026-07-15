@@ -7,7 +7,7 @@ const SESSION = {
   access_token: 'at',
   refresh_token: 'rt',
   expires_in: 3600,
-  user: { id: 'u-1', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
+  user: { id: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com', user_metadata: { display_name: 'Ana' } },
 };
 
 afterEach(() => vi.unstubAllGlobals());
@@ -31,7 +31,7 @@ describe('POST /api/v1/auth/signup', () => {
   });
 
   it('flags confirmationRequired when GoTrue returns no session (prod autoconfirm off)', async () => {
-    stubFetch(() => jsonResponse(200, { id: 'u-1', email: 'ana@example.com' }));
+    stubFetch(() => jsonResponse(200, { id: '11111111-1111-4111-8111-111111111111', email: 'ana@example.com' }));
     const res = await request(createApp())
       .post('/api/v1/auth/signup')
       .send({ email: 'ana@example.com', password: 'longenough1', displayName: 'Ana' });
@@ -103,12 +103,12 @@ describe('GET /api/v1/auth/me', () => {
   });
 
   it('returns user + profile + roles (RLS-scoped fetches)', async () => {
-    const token = mintToken({ sub: 'u-9', email: 'ana@example.com' });
+    const token = mintToken({ sub: '99999999-9999-4999-8999-999999999999', email: 'ana@example.com' });
     stubFetch((url, init) => {
       const headers = init?.headers as Record<string, string>;
       expect(headers.Authorization).toBe(`Bearer ${token}`); // user token, not service key
       if (url.includes('/rest/v1/profiles')) {
-        return jsonResponse(200, [{ user_id: 'u-9', display_name: 'Ana', locale: 'es-MX', theme: 'system' }]);
+        return jsonResponse(200, [{ user_id: '99999999-9999-4999-8999-999999999999', display_name: 'Ana', locale: 'es-MX', theme: 'system' }]);
       }
       return jsonResponse(200, [{ role: 'universal' }, { role: 'parent' }]);
     });

@@ -9,6 +9,8 @@ export interface AccessTokenClaims {
   sub: string;
   email: string;
   role: string; // postgres role, e.g. "authenticated"
+  aud?: string;
+  iss?: string;
   exp: number;
 }
 
@@ -31,13 +33,24 @@ export function verifyAccessToken(token: string, secret: string): AccessTokenCla
     if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) return null;
 
     const claims = JSON.parse(b64urlDecode(payloadB64).toString('utf8')) as Partial<AccessTokenClaims>;
+    
+    // Core structure check
     if (typeof claims.sub !== 'string' || typeof claims.exp !== 'number') return null;
     if (claims.exp * 1000 <= Date.now()) return null;
+    
+    // Strict audience check (Supabase GoTrue convention)
+    if (claims.aud !== 'authenticated') return null;
+    
+    // Strict issuer check if expected (Supabase GoTrue default is often 'supabase' or the URL)
+    // We enforce presence, and if it's the default, we enforce it.
+    if (!claims.iss) return null;
 
     return {
       sub: claims.sub,
       email: typeof claims.email === 'string' ? claims.email : '',
       role: typeof claims.role === 'string' ? claims.role : '',
+      aud: claims.aud,
+      iss: claims.iss,
       exp: claims.exp,
     };
   } catch {

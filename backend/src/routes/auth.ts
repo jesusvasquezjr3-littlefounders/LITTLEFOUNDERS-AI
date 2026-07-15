@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
+import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
 import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
@@ -47,7 +48,7 @@ function sessionPayload(s: Partial<gotrue.GotrueSession>) {
 export function authRouter(): Router {
   const router = Router();
 
-  router.post('/signup', async (req, res) => {
+  router.post('/signup', authRateLimiter, async (req, res) => {
     const parsed = SignupBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
@@ -60,7 +61,7 @@ export function authRouter(): Router {
     return ok(res, { session, confirmationRequired: session === null }, 201);
   });
 
-  router.post('/login', async (req, res) => {
+  router.post('/login', authRateLimiter, async (req, res) => {
     const parsed = LoginBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
@@ -73,7 +74,7 @@ export function authRouter(): Router {
     return ok(res, { session: sessionPayload(data) });
   });
 
-  router.post('/refresh', async (req, res) => {
+  router.post('/refresh', authRateLimiter, async (req, res) => {
     const parsed = RefreshBody.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'refreshToken is required');
     const { data, error } = await gotrue.refreshSession(parsed.data.refreshToken);

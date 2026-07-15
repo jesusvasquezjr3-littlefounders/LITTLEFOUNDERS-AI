@@ -1,5 +1,7 @@
 import express from 'express';
+import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -10,6 +12,8 @@ export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
+  app.use(helmet());
+  app.use(globalRateLimiter);
   app.use(cors);
   app.use(express.json({ limit: '64kb' }));
 
@@ -29,8 +33,13 @@ export function createApp(): express.Express {
 
   // Envelope error handler (multer size limits, JSON parse errors, …).
   // Express identifies error middleware by arity — the 4th param must exist.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-    void _next;
+    if (process.env.NODE_ENV === 'test') {
+      console.error('TEST 500 ERROR:', err);
+    } else {
+      console.error(`[${SERVICE}] unhandled error:`, err);
+    }
     const message = err instanceof Error && err.name === 'MulterError' ? 'Upload rejected (size/shape)' : 'Unexpected error';
     const status = err instanceof Error && err.name === 'MulterError' ? 400 : 500;
     res.status(status).json({ data: null, error: { code: status === 400 ? 'VALIDATION_ERROR' : 'INTERNAL', message } });

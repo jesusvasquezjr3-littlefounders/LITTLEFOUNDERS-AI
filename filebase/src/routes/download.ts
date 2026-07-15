@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Router, type Request, type Response } from 'express';
@@ -44,7 +45,11 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
 
   if (meta.visibility === 'internal') {
     const config = getConfig();
-    if (req.get('x-internal-api-key') !== config.INTERNAL_API_KEY) return unauthorized(res);
+    const provided = req.get('x-internal-api-key') ?? '';
+    const expected = config.INTERNAL_API_KEY;
+    if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
+      return unauthorized(res);
+    }
   }
 
   const path = objectPath(bucket, parts.hash, parts.ext);

@@ -1,4 +1,9 @@
+import { z } from 'zod';
 import { getConfig } from '../config.js';
+
+const UUID = z.string().uuid();
+const eu = (val: string) => encodeURIComponent(UUID.parse(val).toString());
+const es = (val: string) => encodeURIComponent(val.toString());
 
 /*
  * PostgREST access in two grades:
@@ -56,13 +61,13 @@ export interface RoleRow {
 
 export function getOwnProfile(accessToken: string, userId: string): Promise<ProfileRow[] | null> {
   return rest<ProfileRow[]>(
-    `/profiles?user_id=eq.${userId}&select=user_id,display_name,username,locale,theme,cover`,
+    `/profiles?user_id=eq.${eu(userId)}&select=user_id,display_name,username,locale,theme,cover`,
     accessToken,
   );
 }
 
 export function getOwnRoles(accessToken: string, userId: string): Promise<RoleRow[] | null> {
-  return rest<RoleRow[]>(`/user_roles?user_id=eq.${userId}&select=role`, accessToken);
+  return rest<RoleRow[]>(`/user_roles?user_id=eq.${eu(userId)}&select=role`, accessToken);
 }
 
 interface RawResult {
@@ -114,7 +119,7 @@ export interface FullProfileRow {
 const PROFILE_FIELDS = 'user_id,display_name,username,locale,theme,cover,birth_date,created_at';
 
 export function getFullOwnProfile(accessToken: string, userId: string): Promise<FullProfileRow[] | null> {
-  return rest<FullProfileRow[]>(`/profiles?user_id=eq.${userId}&select=${PROFILE_FIELDS}`, accessToken);
+  return rest<FullProfileRow[]>(`/profiles?user_id=eq.${eu(userId)}&select=${PROFILE_FIELDS}`, accessToken);
 }
 
 export interface ProfilePatch {
@@ -129,7 +134,7 @@ export type PatchOutcome = 'ok' | 'conflict' | 'error';
 
 /** Self-update through the USER's token — RLS enforces ownership. */
 export async function patchOwnProfile(accessToken: string, userId: string, patch: ProfilePatch): Promise<PatchOutcome> {
-  const res = await restRaw(`/profiles?user_id=eq.${userId}`, accessToken, {
+  const res = await restRaw(`/profiles?user_id=eq.${eu(userId)}`, accessToken, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify(patch),
@@ -143,7 +148,7 @@ export interface AvatarRow {
 }
 
 export function getOwnAvatar(accessToken: string, userId: string): Promise<AvatarRow[] | null> {
-  return rest<AvatarRow[]>(`/avatars?user_id=eq.${userId}&select=options`, accessToken);
+  return rest<AvatarRow[]>(`/avatars?user_id=eq.${eu(userId)}&select=options`, accessToken);
 }
 
 /** Upsert via the USER's token (avatars self insert/update policies, 0002). */
@@ -160,11 +165,11 @@ export async function upsertOwnAvatar(accessToken: string, userId: string, optio
 // RLS stays self+guardian; Core is the sole public window).
 
 export function findProfileByUsername(username: string): Promise<FullProfileRow[] | null> {
-  return rest<FullProfileRow[]>(`/profiles?username=eq.${encodeURIComponent(username)}&select=${PROFILE_FIELDS}`, serviceToken());
+  return rest<FullProfileRow[]>(`/profiles?username=eq.${es(username)}&select=${PROFILE_FIELDS}`, serviceToken());
 }
 
 export function getAvatarByUserId(userId: string): Promise<AvatarRow[] | null> {
-  return rest<AvatarRow[]>(`/avatars?user_id=eq.${userId}&select=options`, serviceToken());
+  return rest<AvatarRow[]>(`/avatars?user_id=eq.${eu(userId)}&select=options`, serviceToken());
 }
 
 async function countRows(pathWithFilter: string): Promise<number> {
@@ -177,15 +182,15 @@ async function countRows(pathWithFilter: string): Promise<number> {
 
 export async function getFollowCounts(userId: string): Promise<{ followers: number; following: number }> {
   const [followers, following] = await Promise.all([
-    countRows(`/follows?followed_id=eq.${userId}&select=follower_id`),
-    countRows(`/follows?follower_id=eq.${userId}&select=followed_id`),
+    countRows(`/follows?followed_id=eq.${eu(userId)}&select=follower_id`),
+    countRows(`/follows?follower_id=eq.${eu(userId)}&select=followed_id`),
   ]);
   return { followers, following };
 }
 
 export async function isFollowing(followerId: string, followedId: string): Promise<boolean> {
   const rows = await rest<unknown[]>(
-    `/follows?follower_id=eq.${followerId}&followed_id=eq.${followedId}&select=follower_id`,
+    `/follows?follower_id=eq.${eu(followerId)}&followed_id=eq.${eu(followedId)}&select=follower_id`,
     serviceToken(),
   );
   return Array.isArray(rows) && rows.length > 0;
@@ -202,7 +207,7 @@ export async function insertFollow(accessToken: string, followerId: string, foll
 }
 
 export async function deleteFollow(accessToken: string, followerId: string, followedId: string): Promise<boolean> {
-  const res = await restRaw(`/follows?follower_id=eq.${followerId}&followed_id=eq.${followedId}`, accessToken, {
+  const res = await restRaw(`/follows?follower_id=eq.${eu(followerId)}&followed_id=eq.${eu(followedId)}`, accessToken, {
     method: 'DELETE',
     headers: { Prefer: 'return=minimal' },
   });
@@ -223,7 +228,7 @@ const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons
 /** Self or guardian, per RLS. Every user has a row (0006 trigger) — zeroed default is a defensive fallback only. */
 export async function getLearningStats(accessToken: string, userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
     accessToken,
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -231,7 +236,7 @@ export async function getLearningStats(accessToken: string, userId: string): Pro
 
 export async function getLearningStatsByUserId(userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
     serviceToken(),
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -245,7 +250,7 @@ export interface LearningStatsForUpdateRow extends LearningStatsRow {
 
 export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
-    `/learning_stats?user_id=eq.${userId}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
@@ -296,7 +301,7 @@ const LIST_LIMIT = 60;
 
 export async function listFollowers(userId: string): Promise<ListedUser[]> {
   const rows = await rest<{ follower_id: string }[]>(
-    `/follows?followed_id=eq.${userId}&select=follower_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    `/follows?followed_id=eq.${eu(userId)}&select=follower_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
   return hydrateUsers((rows ?? []).map((r) => r.follower_id));
@@ -304,7 +309,7 @@ export async function listFollowers(userId: string): Promise<ListedUser[]> {
 
 export async function listFollowing(userId: string): Promise<ListedUser[]> {
   const rows = await rest<{ followed_id: string }[]>(
-    `/follows?follower_id=eq.${userId}&select=followed_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    `/follows?follower_id=eq.${eu(userId)}&select=followed_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
   return hydrateUsers((rows ?? []).map((r) => r.followed_id));
@@ -312,7 +317,7 @@ export async function listFollowing(userId: string): Promise<ListedUser[]> {
 
 export async function listBlocked(userId: string): Promise<ListedUser[]> {
   const rows = await rest<{ blocked_id: string }[]>(
-    `/blocks?blocker_id=eq.${userId}&select=blocked_id&order=created_at.desc&limit=${LIST_LIMIT}`,
+    `/blocks?blocker_id=eq.${eu(userId)}&select=blocked_id&order=created_at.desc&limit=${LIST_LIMIT}`,
     serviceToken(),
   );
   return hydrateUsers((rows ?? []).map((r) => r.blocked_id));
@@ -321,7 +326,7 @@ export async function listBlocked(userId: string): Promise<ListedUser[]> {
 /** Either direction — mirrors the DB's is_blocked(), read via the service role. */
 export async function isBlockedEitherWay(a: string, b: string): Promise<boolean> {
   const rows = await rest<unknown[]>(
-    `/blocks?select=blocker_id&or=(and(blocker_id.eq.${a},blocked_id.eq.${b}),and(blocker_id.eq.${b},blocked_id.eq.${a}))`,
+    `/blocks?select=blocker_id&or=(and(blocker_id.eq.${eu(a)},blocked_id.eq.${eu(b)}),and(blocker_id.eq.${eu(b)},blocked_id.eq.${eu(a)}))`,
     serviceToken(),
   );
   return Array.isArray(rows) && rows.length > 0;
@@ -340,11 +345,11 @@ export async function blockUser(accessToken: string, blockerId: string, blockedI
   });
   if (!inserted.ok) return false;
   await Promise.all([
-    restRaw(`/follows?follower_id=eq.${blockerId}&followed_id=eq.${blockedId}`, serviceToken(), {
+    restRaw(`/follows?follower_id=eq.${eu(blockerId)}&followed_id=eq.${eu(blockedId)}`, serviceToken(), {
       method: 'DELETE',
       headers: { Prefer: 'return=minimal' },
     }),
-    restRaw(`/follows?follower_id=eq.${blockedId}&followed_id=eq.${blockerId}`, serviceToken(), {
+    restRaw(`/follows?follower_id=eq.${eu(blockedId)}&followed_id=eq.${eu(blockerId)}`, serviceToken(), {
       method: 'DELETE',
       headers: { Prefer: 'return=minimal' },
     }),
@@ -353,7 +358,7 @@ export async function blockUser(accessToken: string, blockerId: string, blockedI
 }
 
 export async function unblockUser(accessToken: string, blockerId: string, blockedId: string): Promise<boolean> {
-  const res = await restRaw(`/blocks?blocker_id=eq.${blockerId}&blocked_id=eq.${blockedId}`, accessToken, {
+  const res = await restRaw(`/blocks?blocker_id=eq.${eu(blockerId)}&blocked_id=eq.${eu(blockedId)}`, accessToken, {
     method: 'DELETE',
     headers: { Prefer: 'return=minimal' },
   });
@@ -387,7 +392,7 @@ export function getPublishedCourseRows(accessToken: string): Promise<CourseHiera
 
 export async function getPublishedCourseBySlug(accessToken: string, slug: string): Promise<CourseHierarchyRow | null> {
   const rows = await rest<CourseHierarchyRow[]>(
-    `/courses?slug=eq.${encodeURIComponent(slug)}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
+    `/courses?slug=eq.${es(slug)}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
     accessToken,
   );
   return rows?.[0] ?? null;
@@ -395,7 +400,7 @@ export async function getPublishedCourseBySlug(accessToken: string, slug: string
 
 export async function getPublishedCourseById(accessToken: string, courseId: string): Promise<CourseHierarchyRow | null> {
   const rows = await rest<CourseHierarchyRow[]>(
-    `/courses?id=eq.${courseId}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
+    `/courses?id=eq.${eu(courseId)}&status=eq.published&select=${COURSE_HIERARCHY_FIELDS}`,
     accessToken,
   );
   return rows?.[0] ?? null;
@@ -415,7 +420,7 @@ const ADVENTURE_FIELDS = 'id,course_id,position,slug,title,description,theme';
 
 /** `in.(...)` filters short-circuit to [] on an empty id list — never send `in.()` to PostgREST. */
 function inFilter(ids: string[]): string {
-  return `in.(${ids.join(',')})`;
+  return `in.(${ids.map(eu).join(',')})`;
 }
 
 export function getAdventuresByCourseIds(accessToken: string, courseIds: string[]): Promise<AdventureHierarchyRow[] | null> {
@@ -424,7 +429,7 @@ export function getAdventuresByCourseIds(accessToken: string, courseIds: string[
 }
 
 export async function getAdventureById(accessToken: string, adventureId: string): Promise<AdventureHierarchyRow | null> {
-  const rows = await rest<AdventureHierarchyRow[]>(`/adventures?id=eq.${adventureId}&select=${ADVENTURE_FIELDS}`, accessToken);
+  const rows = await rest<AdventureHierarchyRow[]>(`/adventures?id=eq.${eu(adventureId)}&select=${ADVENTURE_FIELDS}`, accessToken);
   return rows?.[0] ?? null;
 }
 
@@ -445,7 +450,7 @@ export function getSagasByAdventureIds(accessToken: string, adventureIds: string
 }
 
 export async function getSagaById(accessToken: string, sagaId: string): Promise<SagaHierarchyRow | null> {
-  const rows = await rest<SagaHierarchyRow[]>(`/sagas?id=eq.${sagaId}&select=${SAGA_FIELDS}`, accessToken);
+  const rows = await rest<SagaHierarchyRow[]>(`/sagas?id=eq.${eu(sagaId)}&select=${SAGA_FIELDS}`, accessToken);
   return rows?.[0] ?? null;
 }
 
@@ -465,7 +470,7 @@ export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Prom
 }
 
 export async function getTopicById(accessToken: string, topicId: string): Promise<TopicHierarchyRow | null> {
-  const rows = await rest<TopicHierarchyRow[]>(`/topics?id=eq.${topicId}&select=${TOPIC_FIELDS}`, accessToken);
+  const rows = await rest<TopicHierarchyRow[]>(`/topics?id=eq.${eu(topicId)}&select=${TOPIC_FIELDS}`, accessToken);
   return rows?.[0] ?? null;
 }
 
@@ -489,7 +494,7 @@ export function getLessonsByTopicIds(accessToken: string, topicIds: string[]): P
 
 /** Single lesson by id — RLS's published-chain policy means a hit here also proves "published w/ published ancestors". */
 export async function getLessonById(accessToken: string, lessonId: string): Promise<LessonHierarchyRow | null> {
-  const rows = await rest<LessonHierarchyRow[]>(`/lessons?id=eq.${lessonId}&select=${LESSON_FIELDS}`, accessToken);
+  const rows = await rest<LessonHierarchyRow[]>(`/lessons?id=eq.${eu(lessonId)}&select=${LESSON_FIELDS}`, accessToken);
   return rows?.[0] ?? null;
 }
 
@@ -504,14 +509,14 @@ export interface LessonProgressRow {
 export function getLessonProgressForLessons(accessToken: string, userId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
   if (lessonIds.length === 0) return Promise.resolve([]);
   return rest<LessonProgressRow[]>(
-    `/lesson_progress?user_id=eq.${userId}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+    `/lesson_progress?user_id=eq.${eu(userId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
     accessToken,
   );
 }
 
 export async function getLessonProgressRow(accessToken: string, userId: string, lessonId: string): Promise<LessonProgressRow | null> {
   const rows = await rest<LessonProgressRow[]>(
-    `/lesson_progress?user_id=eq.${userId}&lesson_id=eq.${lessonId}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+    `/lesson_progress?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
     accessToken,
   );
   return rows?.[0] ?? null;
@@ -532,7 +537,7 @@ export interface LessonDocumentRow {
 /** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback (LESSON_ENGINE.md §3). */
 export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
   return rest<LessonDocumentRow[]>(
-    `/lesson_documents?lesson_id=eq.${lessonId}&select=lesson_id,locale,schema_version,document,answer_keys,audio`,
+    `/lesson_documents?lesson_id=eq.${eu(lessonId)}&select=lesson_id,locale,schema_version,document,answer_keys,audio`,
     serviceToken(),
   );
 }
@@ -548,14 +553,14 @@ export interface SegmentAttemptRow {
 /** Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own token is enough. */
 export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string): Promise<SegmentAttemptRow[] | null> {
   return rest<SegmentAttemptRow[]>(
-    `/lesson_segment_attempts?user_id=eq.${userId}&lesson_id=eq.${lessonId}&select=segment_id,attempt_number,score`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=segment_id,attempt_number,score`,
     accessToken,
   );
 }
 
 export async function countSegmentAttempts(accessToken: string, userId: string, lessonId: string, segmentId: string): Promise<number> {
   const rows = await rest<unknown[]>(
-    `/lesson_segment_attempts?user_id=eq.${userId}&lesson_id=eq.${lessonId}&segment_id=eq.${encodeURIComponent(segmentId)}&select=segment_id`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}&select=segment_id`,
     accessToken,
   );
   return rows?.length ?? 0;
@@ -596,7 +601,7 @@ export async function patchLearningStats(
   userId: string,
   patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; last_active_date?: string },
 ): Promise<boolean> {
-  const res = await restRaw(`/learning_stats?user_id=eq.${userId}`, serviceToken(), {
+  const res = await restRaw(`/learning_stats?user_id=eq.${eu(userId)}`, serviceToken(), {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify(patch),
@@ -640,7 +645,7 @@ export async function grantRole(userId: string, role: string, grantedBy: string)
 }
 
 export async function hasRole(userId: string, role: string): Promise<boolean> {
-  const rows = await rest<RoleRow[]>(`/user_roles?user_id=eq.${userId}&role=eq.${role}&select=role`, serviceToken());
+  const rows = await rest<RoleRow[]>(`/user_roles?user_id=eq.${eu(userId)}&role=eq.${role}&select=role`, serviceToken());
   return Array.isArray(rows) && rows.length > 0;
 }
 

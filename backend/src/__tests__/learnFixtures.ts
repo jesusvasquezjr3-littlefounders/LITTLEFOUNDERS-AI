@@ -7,12 +7,12 @@ import type { FakeDb } from './fakePostgrest.js';
  * grading/completion can be exercised end to end.
  */
 
-export const COURSE_ID = 'course-1';
-export const ADVENTURE_ID = 'adventure-1';
-export const SAGA_ID = 'saga-1';
-export const TOPIC_ID = 'topic-1';
-export const LESSON_1_ID = 'lesson-1';
-export const LESSON_2_ID = 'lesson-2';
+export const COURSE_ID = '33333333-3333-4333-8333-333333333333';
+export const ADVENTURE_ID = '44444444-4444-4444-8444-444444444444';
+export const SAGA_ID = '55555555-5555-4555-8555-555555555555';
+export const TOPIC_ID = '66666666-6666-4666-8666-666666666666';
+export const LESSON_1_ID = '77777777-7777-4777-8777-777777777777';
+export const LESSON_2_ID = '88888888-8888-4888-8888-888888888888';
 export const COURSE_SLUG = 'financial-education';
 
 function lessonDocument(locale: string) {

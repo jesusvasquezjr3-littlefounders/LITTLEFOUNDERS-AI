@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import express from 'express';
 import { getConfig } from './env.js';
 import { audioRouter, type AudioRouterDeps } from './routes/audio.js';
@@ -21,7 +22,9 @@ export function createApp(deps: AppDeps = {}): express.Express {
   // Everything below /internal is service-to-service only (/AGENTS.md §1.5),
   // same header convention as parent-id-check: x-internal-api-key.
   app.use('/internal', (req, res, next) => {
-    if (req.get('x-internal-api-key') !== config.INTERNAL_API_KEY) {
+    const provided = req.get('x-internal-api-key') ?? '';
+    const expected = config.INTERNAL_API_KEY;
+    if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
       return res.status(401).json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Invalid internal API key' } });
     }
     next();

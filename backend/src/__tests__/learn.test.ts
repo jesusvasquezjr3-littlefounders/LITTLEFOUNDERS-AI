@@ -10,7 +10,7 @@ let userId: string;
 let token: string;
 
 beforeEach(() => {
-  userId = 'user-11111111-1111-1111-1111-111111111111';
+  userId = '11111111-1111-4111-8111-111111111111';
   token = mintToken({ sub: userId });
   db = makeDb(userId);
   vi.stubGlobal('fetch', createFakeFetch(db));
@@ -31,7 +31,7 @@ describe('GET /api/v1/learn/courses', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.courses).toEqual([
       {
-        id: 'course-1',
+        id: '33333333-3333-4333-8333-333333333333',
         slug: COURSE_SLUG,
         title: { 'en-US': 'Financial Education' },
         lessonCount: 2,
@@ -71,7 +71,7 @@ describe('GET /api/v1/learn/courses/:slug/tree', () => {
 
 describe('GET /api/v1/learn/lessons/:id', () => {
   it('404s for an unknown lesson', async () => {
-    const res = await auth(request(createApp()).get('/api/v1/learn/lessons/does-not-exist'));
+    const res = await auth(request(createApp()).get('/api/v1/learn/lessons/00000000-0000-4000-8000-000000000000'));
     expect(res.status).toBe(404);
   });
 
