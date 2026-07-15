@@ -221,14 +221,15 @@ export interface LearningStatsRow {
   minutes_learned: number;
   lessons_completed: number;
   streak_days: number;
+  last_active_date?: string | null;
 }
 
-const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0 };
+const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, last_active_date: null };
 
 /** Self or guardian, per RLS. Every user has a row (0006 trigger) — zeroed default is a defensive fallback only. */
 export async function getLearningStats(accessToken: string, userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
     accessToken,
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -236,7 +237,7 @@ export async function getLearningStats(accessToken: string, userId: string): Pro
 
 export async function getLearningStatsByUserId(userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? ZERO_STATS;

@@ -15,11 +15,13 @@ interface StatCardProps {
 
 export function StatCard({ icon, value, label, tone = 'primary', className }: StatCardProps) {
   return (
-    <Card className={cn('flex flex-col items-center gap-3 text-center', className)}>
-      <IconChip tone={tone}>{icon}</IconChip>
-      <div>
-        <p className="lf-display-lg lf-number">{value}</p>
-        <p className="lf-caption text-content-muted">{label}</p>
+    <Card className={cn('flex flex-row items-center gap-4 text-left p-4 sm:p-5', className)}>
+      <IconChip tone={tone} size="lg" className="shrink-0 relative overflow-visible">
+        {icon}
+      </IconChip>
+      <div className="flex flex-col min-w-0">
+        <p className="lf-display-lg lf-number leading-none truncate">{value}</p>
+        <p className="lf-caption text-content-muted mt-1 truncate">{label}</p>
       </div>
     </Card>
   );

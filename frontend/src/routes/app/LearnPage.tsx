@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, IconChip, ProgressBar } from '@/components/ui';
+import { Badge, Card, Icon, IconChip, LoadingOverlay, ProgressBar } from '@/components/ui';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
@@ -62,16 +62,7 @@ export function LearnPage() {
 
       <section className="mt-8" aria-busy={state.status === 'loading'}>
         {state.status === 'loading' && (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <Card key={i} aria-hidden="true" className="animate-pulse">
-                <div className="h-12 w-12 rounded-full bg-surface-sunken" />
-                <div className="mt-4 h-5 w-3/4 rounded-full bg-surface-sunken" />
-                <div className="mt-3 h-3 w-1/2 rounded-full bg-surface-sunken" />
-                <div className="mt-6 h-2.5 w-full rounded-full bg-surface-sunken" />
-              </Card>
-            ))}
-          </div>
+          <LoadingOverlay label={t('learn.loading')} />
         )}
 
         {state.status === 'error' && <ErrorBanner code={state.code} />}

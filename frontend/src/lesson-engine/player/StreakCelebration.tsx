@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Button, Icon } from '@/components/ui'
+import { Button, LottieIcon } from '@/components/ui'
 import { useCountUp } from './completion'
 
 const SPARKS = [
@@ -58,24 +58,25 @@ export function StreakCelebration({ streakDays, onContinue }: { streakDays: numb
           />
         ))}
 
-      <div className="relative flex flex-col items-center gap-2">
-        <Icon
-          name="local_fire_department"
-          fill
-          className={cn(
-            'lf-streak-flame text-[140px] transition-[color,filter,transform] duration-700',
-            ignited ? 'text-warning drop-shadow-[0_0_28px_rgba(255,140,0,0.55)]' : 'scale-90 text-content-faint grayscale',
-          )}
-        />
+      <div className="relative flex flex-col items-center justify-center min-h-[300px]">
+        {/* Massive flame behind the number. The Lottie artwork is top-heavy, so we push it down with mt-32 (128px) to center the actual flame graphic behind the text. */}
+        <div className={cn('absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none mt-32 transition-[filter,transform,opacity] duration-700 w-[420px] h-[420px]', ignited ? 'drop-shadow-[0_0_40px_rgba(255,140,0,0.45)] scale-[1.35] opacity-100' : 'scale-90 opacity-0')}>
+          <LottieIcon name="streak" value={streakDays} activated={ignited} />
+        </div>
+
+        {/* The streak number */}
         <p
           className={cn(
-            'lf-number font-black leading-none transition-colors duration-700',
-            ignited ? 'lf-streak-number text-warning' : 'text-content-faint',
+            'lf-number font-black leading-none transition-all duration-700 relative z-10',
+            ignited ? 'lf-streak-number text-warning drop-shadow-2xl [-webkit-text-stroke:2px_rgba(15,15,25,0.85)]' : 'text-content-faint',
           )}
-          style={{ fontSize: 'clamp(88px, 22vw, 132px)' }}
+          style={{ fontSize: 'clamp(110px, 28vw, 160px)' }}
         >
           {shown}
         </p>
+      </div>
+
+      <div className="flex flex-col items-center gap-2 mt-4 relative z-10">
         <h2 className="lf-display-lg text-on-inverse">{t('lesson.streak.title', { count: streakDays })}</h2>
         <p className="lf-body max-w-sm text-on-inverse/70">{t('lesson.streak.body')}</p>
       </div>

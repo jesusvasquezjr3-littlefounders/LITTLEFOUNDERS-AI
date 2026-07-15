@@ -216,7 +216,7 @@ Depth comes from translucency and light, not skeuomorphism:
 
 ## Motion — closed system
 
-Five recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exceptions for page/theme fades):
+System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exceptions for page/theme fades):
 
 1. **Page transition** — `.lf-page-enter` on `<main>` keyed by route (uses a softer `ease-out` rather than the bouncy default).
 2. **Scroll reveal** — `<Reveal>`; grids stagger ≤3 × 80ms.
@@ -233,6 +233,9 @@ Five recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exceptions 
    may loop only while a celebration overlay (results screen) is up and stop
    with it. Timed exercises use the GentleTimerBar's linear width tween only.
    Reduced-motion: rig animations disable entirely (emotion change remains).
+8. **Lottie Animations** — strict usage and state conditions (Activated vs Not Activated)
+   for streak, coins, time, etc., are governed exclusively by `frontend/public/lottie/README.md`.
+   No new animations or visual states can be introduced without updating that document.
 
 `.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
 (lesson celebration loops are bounded by their overlay, per recipe 7).

@@ -8,6 +8,8 @@ export { Card } from './Card';
 export { IconChip } from './IconChip';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
+export { LottieIcon } from './LottieIcon';
+export { LoadingOverlay } from './LoadingOverlay';
 export { StatCard } from './StatCard';
 export { Field } from './Field';
 export { Checkbox } from './Checkbox';

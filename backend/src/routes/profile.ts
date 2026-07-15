@@ -120,7 +120,7 @@ function publicShape(profile: FullProfileRow, avatarOptions: Record<string, unkn
 }
 
 function statsShape(s: LearningStatsRow) {
-  return { xpPoints: s.xp_points, minutesLearned: s.minutes_learned, lessonsCompleted: s.lessons_completed, streakDays: s.streak_days };
+  return { xpPoints: s.xp_points, minutesLearned: s.minutes_learned, lessonsCompleted: s.lessons_completed, streakDays: s.streak_days, lastActiveDate: s.last_active_date ?? null };
 }
 
 /** /api/v1/profile — the signed-in user's own profile + social lists. */

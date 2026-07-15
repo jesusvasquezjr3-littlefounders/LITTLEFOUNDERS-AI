@@ -9,3 +9,24 @@ window.scrollTo = () => {};
 // auto-scroll-to-current-lesson effect (routes/app/learn/CoursePage.tsx)
 // doesn't spam "Not implemented" errors in test output.
 window.HTMLElement.prototype.scrollIntoView = () => {};
+
+// Mock IntersectionObserver for JSDOM
+class IntersectionObserverMock {
+  observe = () => {};
+  unobserve = () => {};
+  disconnect = () => {};
+  root = null;
+  rootMargin = '';
+  thresholds = [];
+  takeRecords = () => [];
+}
+Object.defineProperty(window, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: IntersectionObserverMock,
+});
+Object.defineProperty(global, 'IntersectionObserver', {
+  writable: true,
+  configurable: true,
+  value: IntersectionObserverMock,
+});

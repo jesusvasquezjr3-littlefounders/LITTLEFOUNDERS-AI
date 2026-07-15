@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Icon } from '@/components/ui';
+import { Button, Icon, LoadingOverlay } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
@@ -99,8 +99,7 @@ export function LessonRoute() {
   if (state.status === 'loading') {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-base">
-        <div aria-hidden="true" className="h-16 w-16 animate-pulse rounded-full bg-surface-sunken" />
-        <span className="sr-only">{t('learn.loading')}</span>
+        <LoadingOverlay label={t('learn.loading')} />
       </div>
     );
   }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Card, Icon, ProgressBar } from '@/components/ui';
+import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
@@ -100,14 +100,7 @@ export function CoursePage() {
 
   if (state.status === 'loading') {
     return (
-      <div aria-busy="true">
-        <div className="mb-6 h-8 w-1/2 animate-pulse rounded-full bg-surface-sunken" />
-        <div className="flex flex-col gap-5">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-[120px] w-full animate-pulse rounded-lg bg-surface-sunken md:h-[280px]" />
-          ))}
-        </div>
-      </div>
+      <LoadingOverlay label={t('learn.loading')} />
     );
   }
 

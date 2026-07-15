@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Button, Icon, ProgressBar } from '@/components/ui'
+import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
 import CharacterActor from '@/components/characters/control/CharacterActor'
 import type { CharacterId } from '@/components/characters/control/types'
 import type { Grader, LessonDocument, SegmentBase, Verdict } from '../core/types'
@@ -581,16 +581,21 @@ function ResultsScreen({
         </span>
       </div>
       {/* v1-parity stat row: XP · real time · day streak · best answer streak */}
-      <div className="grid w-full max-w-md grid-cols-2 gap-4 sm:grid-cols-4">
-        <ResultStat icon="bolt" label={t('lesson.results.xp')} value={`+${xpShown}`} tone="text-primary" />
-        <ResultStat icon="timer" label={t('lesson.results.time')} value={formatDuration(secondsSpent)} tone="text-content" />
+      <div className="grid w-full max-w-4xl grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
+        <ResultStat icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="gold-coin" value={xpShown} activated={true} className="w-full h-full scale-150" /></div>} label={t('lesson.results.xp')} value={`+${xpShown}`} tone="text-primary" />
+        <ResultStat icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="time" value={secondsSpent} activated={true} className="w-full h-full scale-150" /></div>} label={t('lesson.results.time')} value={formatDuration(secondsSpent)} tone="text-content" />
         <ResultStat
-          icon="local_fire_department"
+          icon={<div className="flex w-14 h-14 shrink-0 items-center justify-center"><LottieIcon name="streak" value={streakShown} activated={true} className="w-full h-full scale-150" /></div>}
           label={t('lesson.results.dayStreak')}
           value={String(streakShown)}
           tone={streakDays > 0 ? 'text-warning-strong' : 'text-content-faint'}
         />
-        <ResultStat icon="target" label={t('lesson.results.bestStreak')} value={String(state.bestStreak)} tone="text-success-strong" />
+        <ResultStat
+          icon="target"
+          label={t('lesson.results.bestStreak')}
+          value={String(state.bestStreak)}
+          tone="text-success-strong"
+        />
       </div>
       <p className="lf-body text-content-muted">
         {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
@@ -602,14 +607,16 @@ function ResultsScreen({
   )
 }
 
-function ResultStat({ icon, label, value, tone }: { icon: string; label: string; value: string; tone: string }) {
+function ResultStat({ icon, label, value, tone }: { icon: React.ReactNode | string; label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-lg border border-outline/70 bg-surface px-3 py-3 shadow-glass-sm">
-      <p className="flex items-center justify-center gap-1 lf-caption text-content-muted">
-        <Icon name={icon} className="text-[16px]" />
-        {label}
-      </p>
-      <p className={cn('lf-headline lf-number', tone)}>{value}</p>
+    <div className="rounded-lg border border-outline/70 bg-surface px-3 py-3 shadow-glass-sm flex items-center justify-start gap-3">
+      <div className="flex shrink-0 items-center justify-center text-content-faint">
+        {typeof icon === 'string' ? <Icon name={icon} className="text-[32px]" /> : icon}
+      </div>
+      <div className="flex flex-col text-left">
+        <p className="lf-caption text-content-faint leading-tight">{label}</p>
+        <p className={cn('lf-title font-bold leading-none mt-1', tone)}>{value}</p>
+      </div>
     </div>
   )
 }
