@@ -35,6 +35,15 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
           chmod 600 ~/.ssh/railway_backup_key
+          # Railway's SSH proxy host is ephemeral per-session, not a fixed
+          # host worth pinning — a fresh runner has no cached host key, so
+          # strict checking would always fail here.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          CONFIG
+          chmod 600 ~/.ssh/config
 
       - name: Dump Postgres and store on the Depot volume
         env:
