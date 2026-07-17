@@ -1,13 +1,10 @@
 # RUNBOOK.md — Incident Response
 
-## Rollback to v1
+## Rollback to v1 (historical — v2 is in production as of 2026-07-17)
 
-v1 is fully intact on `main`. Emergency path:
-```bash
-git checkout main            # local inspection
-# Production rollback = re-point Vercel/Railway to main (v1 deploy configs live there)
-```
-The v2 wipe is a single revertable commit on `littlefounders_v2` (`git log --diff-filter=D` to find it).
+v1 is no longer live and no longer on `main` (superseded by the `feat: total v2 rewrite` squash commit, 2026-07-17). To inspect or resurrect it: `git log main --diff-filter=D` finds the squash commit; v1's actual last state is the parent of that commit. There is no automatic rollback — reverting to v1 in production would mean redeploying its old Render/Railway/Vercel config from that commit by hand, which no longer matches the current Railway project (`littlefounders-b2c`) or Vercel project settings (Root Directory now `frontend`). Treat this as "possible but non-trivial," not a one-command undo.
+
+For a v2 production incident, prefer **rolling forward** (fix + redeploy via CD, or `railway redeploy`/`vercel deploy --prebuilt --prod` to the last known-good build) over reaching for v1.
 
 ## Secrets leak (a credential landed in git)
 
@@ -22,12 +19,12 @@ The v2 wipe is a single revertable commit on `littlefounders_v2` (`git log --dif
 2. Reproduce locally: `cd <service> && npm ci && npm run type-check && npm run lint && npm test`.
 3. Fix forward if < 30 min; otherwise revert the breaking commit. Never merge over red.
 
-## Supabase self-hosted on Railway (placeholders — MUST be completed before real user data)
+## Supabase self-hosted on Railway (deployed 2026-07-17 — backup/restore still open, see below)
 
-- **Restart procedure:** TBD at deploy (Day 4–5).
-- **Backup:** TBD — scheduled `pg_dump` to external storage; REQUIRED before onboarding any real user.
-- **Restore drill:** TBD — must be executed once successfully before launch.
-- **Upgrade procedure:** TBD — component versions pinned in `database/DEPLOYMENT.md`.
+- **Restart procedure:** `railway redeploy --service <name> --yes` (db, kong, auth, rest, realtime, storage, meta, supavisor, studio — all in Railway project `littlefounders-b2c`). Restart `db` first if the whole stack is down; the rest depend on it and will recover on their own restart-on-failure policy once `db` is healthy again. Check `railway logs --service <name>` for `FATAL`/crash-loop before assuming a redeploy will help.
+- **Backup: NOT YET CONFIGURED — blocking, do not onboard real users.** Plan (started, not finished): a dedicated Railway volume + `pg_dump` run directly inside the `db` container via `railway ssh --service db -- pg_dump ...`, on a scheduled GitHub Actions `cron` job. Blocked mid-implementation 2026-07-17 — Railway's trial expired ("Your trial has expired. Please select a plan to continue using Railway") and refused to create the new volume/service the plan needs. **Next step once billing is resolved:** create the backup volume + service, finish `.github/workflows/vault-backup.yml`, then do the restore drill below.
+- **Restore drill: NOT YET PERFORMED** — depends on backups existing first (see above). Drill procedure once backups exist: restore the latest dump into a scratch database (`createdb restore_drill_test`, `pg_restore -d restore_drill_test <dump>`), compare row counts against `postgres` for a few key tables, then `dropdb restore_drill_test`. Record the result (pass/fail, duration) here.
+- **Upgrade procedure:** bump `database/SUPABASE_VERSION` → `npm run db:sync` → local `db:reset` ×2 + tests green → update the pin table in `database/DEPLOYMENT.md` → **take a verified backup first** (see above — this is exactly the scenario backups exist for) → rebuild/redeploy `database/railway/db` and `database/railway/kong` (their Dockerfiles pin the same version) → `railway add --image <new-tag>` or update each plain-image service's source for auth/rest/realtime/storage/meta/supavisor/studio → re-apply any new migrations → verify `/health` chain + a real login before considering it done.
 
 ## Service down (Railway)
 
@@ -46,3 +43,19 @@ The v2 wipe is a single revertable commit on `littlefounders_v2` (`git log --dif
 **Fix:** re-apply the exact `CREATE POLICY` block from the authoritative migration (0007 for the course hierarchy) via `local-stack.sh psql`. Then verify **as a real user in the browser** — service-role queries bypass RLS and prove nothing about visibility.
 
 **Prevention:** until the delta migration lands, do NOT re-run `db:migrate` on an instance that is already past 0007; after any publish/RLS/schema change, the acceptance check is a real login seeing the content, never a row count.
+
+## Frontend deep links 404 / every API call 405s — incident 2026-07-17 (first production deploy)
+
+**Symptom A:** `littlefounders.ai` loads, but any deep link (`/signup`, `/login`, `/faq`, a refresh on any non-root route) returns Vercel's 404 page.
+
+**Cause A:** the Vercel project's Root Directory was unset (= repo root) with a manual Build Command override (`cd frontend && npm install && npm run build`) and Output Directory override (`frontend/dist`) — a leftover pattern from before `frontend/vercel.json`'s SPA rewrite existed. Vercel only reads `vercel.json` from the configured Root Directory; with Root Directory empty, it looked for a `vercel.json` at the true repo root (deleted along with v1) and found none, so it fell back to a default static-site config with no SPA fallback (`^(?!/api).*$` → `/404.html`).
+
+**Fix:** set Root Directory = `frontend` in Vercel Project Settings → Build and Deployment, and remove the manual Build Command/Output Directory overrides (Vite framework auto-detect now provides correct defaults from within `frontend/`). Confirm the fix by inspecting `.vercel/output/config.json` after `vercel build` — it must show `{"handle": "filesystem"}` then a catch-all rewrite to `/index.html`, not a catch-all to `/404.html`.
+
+**Symptom B:** every frontend API call resolved to `https://littlefounders.ai/[SENSITIVE]/api/v1/...` → HTTP 405, instead of hitting the backend domain.
+
+**Cause B:** `VITE_BACKEND_URL` was added as a Vercel environment variable with the "Sensitive" toggle ON (the dashboard's default state for new variables). Sensitive variables are **write-only** — Vercel will never return their real value again, not via the dashboard, not via `vercel pull`, not even to the project owner. The build baked in the literal placeholder string `"[SENSITIVE]"` as the value, which Vite/the router then resolved as a relative path segment.
+
+**Fix:** delete the Sensitive variable and re-add it with the toggle OFF. `VITE_BACKEND_URL` is not actually a secret — Vite inlines it into the public JS bundle regardless, so marking it Sensitive only broke the build without adding any real protection. Reserve "Sensitive" for values that must never appear in the dashboard UI again (e.g. server-side API keys), never for `VITE_*`/public client config.
+
+**Prevention:** after any Vercel project settings change or new environment variable, do a real `vercel build && vercel deploy --prebuilt --prod` and click through at least one deep link and one API-calling flow (e.g. signup) in a browser before considering the deploy done — a green build does not prove routing or env vars are correct.

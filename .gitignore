@@ -57,3 +57,5 @@ coursegen/runs/
 # ── Echo (audiogen) character voice reference samples — large binary audio,
 #    never tracked. Trimmed/registration output also stays local-only. ──
 audiogen/src/samples/
+.vercel
+.env*
