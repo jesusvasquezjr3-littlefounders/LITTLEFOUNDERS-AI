@@ -1,0 +1,68 @@
+name: Vault backup
+
+# Daily pg_dump of the production Vault (Supabase self-hosted) database,
+# stored on filebase's (Depot) Railway volume — a genuinely separate disk
+# and service from the live `db` volume, so a `db`-volume incident doesn't
+# take out its own backups. Reached via `railway ssh` directly (not
+# filebase's HTTP API, which only accepts audio/image/JSON mime types —
+# this writes straight to the container filesystem, bypassing that
+# whitelist by design, since a backup dump isn't "media").
+#
+# Why not a dedicated backup volume/service: Railway only allows one volume
+# per service (`db` already uses its one for PGDATA), and creating a new
+# service was blocked by an expired Railway trial at rollout time
+# (2026-07-17, see RUNBOOK.md). Revisit once billing/plan allows a properly
+# separate, dedicated backup volume.
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # 08:00 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
+          chmod 600 ~/.ssh/railway_backup_key
+
+      - name: Dump Postgres and store on the Depot volume
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          TS=$(date -u +%Y%m%d-%H%M%S)
+          FILE="vault-${TS}.dump"
+
+          railway ssh --service db -i ~/.ssh/railway_backup_key -- \
+            pg_dump -U supabase_admin -d postgres -Fc -f /tmp/backup.dump
+
+          railway ssh --service db -i ~/.ssh/railway_backup_key -- \
+            cat /tmp/backup.dump > "$FILE"
+
+          # Fail loudly on an empty/truncated dump rather than uploading garbage.
+          test -s "$FILE"
+
+          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            sh -c "cat > /data/backups/$FILE"
+
+          railway ssh --service db -i ~/.ssh/railway_backup_key -- rm -f /tmp/backup.dump
+
+          echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
+
+      - name: Prune backups older than 30 days
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            find /data/backups -name 'vault-*.dump' -mtime +30 -delete
