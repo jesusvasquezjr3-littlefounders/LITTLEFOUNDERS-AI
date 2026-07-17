@@ -1,0 +1,178 @@
+/* Character Control rig — LESSON_ENGINE.md §9.
+ * Wrapper-level action keyframes + limb animation via the lf-rig-* hooks that the
+ * four character SVGs expose. NEVER animates head/pupil groups (RAF-owned by the
+ * characters' own tracking loops). Appearance (paths, colors) is untouched.
+ * All one-shot; durations mirror ACTION_DURATION_MS in control/types.ts. */
+
+.lf-actor { position: relative; }
+.lf-actor > * { width: 100%; height: 100%; }
+
+/* Limb pivots: percentage origins over each limb's own bbox (fill-box) — no
+ * per-character coordinate math, safe against internal attribute transforms. */
+.lf-rig-arm-f, .lf-rig-arm-b { transform-box: fill-box; transform-origin: 50% 10%; }
+.lf-rig-leg-f, .lf-rig-leg-b { transform-box: fill-box; transform-origin: 50% 10%; }
+.lf-rig-tail                 { transform-box: fill-box; transform-origin: 100% 100%; }
+
+/* Per-character pivot corrections (where the limb attaches off-center). */
+.lf-actor-liruf .lf-rig-arm-f { transform-origin: 0% 20%; }
+.lf-actor-rho  .lf-rig-arm-f { transform-origin: 10% 0%; }
+.lf-actor-rho  .lf-rig-arm-b { transform-origin: 90% 0%; }
+.lf-actor-zara .lf-rig-arm-f { transform-origin: 10% 0%; }
+.lf-actor-zara .lf-rig-arm-b { transform-origin: 90% 0%; }
+
+/* ---- Wrapper actions -------------------------------------------------------- */
+
+.lf-act-jump      { animation: lf-jump 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.lf-act-hop       { animation: lf-hop 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.lf-act-celebrate { animation: lf-celebrate 1.1s ease-in-out; }
+.lf-act-nod       { animation: lf-nod 0.6s ease-in-out; }
+.lf-act-shake     { animation: lf-shake 0.6s ease-in-out; }
+.lf-act-think     { animation: lf-think 1s ease-in-out; }
+.lf-act-dance     { animation: lf-dance 1.2s ease-in-out; }
+.lf-act-peek      { animation: lf-peek 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.lf-act-bow       { animation: lf-bow 0.9s ease-in-out; }
+.lf-act-wave      { animation: lf-lean 0.9s ease-in-out; }
+.lf-act-point     { animation: lf-lean 0.8s ease-in-out; }
+
+.lf-act-loop.lf-act-celebrate { animation: lf-celebrate 1.1s ease-in-out infinite; }
+.lf-act-loop.lf-act-dance     { animation: lf-dance 1.2s ease-in-out infinite; }
+
+/* ---- Limb choreography (rides the lf-rig-* hooks) ---------------------------- */
+
+.lf-act-wave .lf-rig-arm-f      { animation: lf-rig-wave 0.9s ease-in-out; }
+.lf-act-point .lf-rig-arm-f     { animation: lf-rig-point 0.8s ease-in-out; }
+.lf-act-celebrate .lf-rig-arm-f { animation: lf-rig-raise 1.1s ease-in-out; }
+.lf-act-celebrate .lf-rig-arm-b { animation: lf-rig-raise-b 1.1s ease-in-out; }
+.lf-act-dance .lf-rig-arm-f     { animation: lf-rig-wave 1.2s ease-in-out; }
+.lf-act-dance .lf-rig-arm-b     { animation: lf-rig-raise-b 1.2s ease-in-out; }
+.lf-act-jump .lf-rig-leg-f      { animation: lf-rig-tuck 0.7s ease-in-out; }
+.lf-act-jump .lf-rig-leg-b      { animation: lf-rig-tuck-b 0.7s ease-in-out; }
+.lf-act-hop .lf-rig-leg-f       { animation: lf-rig-tuck 0.5s ease-in-out; }
+.lf-act-celebrate .lf-rig-tail,
+.lf-act-dance .lf-rig-tail      { animation: lf-rig-tail-wag 0.55s ease-in-out 2; }
+.lf-act-think .lf-rig-arm-f     { animation: lf-rig-chin 1s ease-in-out; }
+.lf-act-bow .lf-rig-arm-f       { animation: lf-rig-sweep 0.9s ease-in-out; }
+
+.lf-act-loop.lf-act-celebrate .lf-rig-arm-f { animation: lf-rig-raise 1.1s ease-in-out infinite; }
+.lf-act-loop.lf-act-celebrate .lf-rig-arm-b { animation: lf-rig-raise-b 1.1s ease-in-out infinite; }
+.lf-act-loop.lf-act-dance .lf-rig-arm-f     { animation: lf-rig-wave 1.2s ease-in-out infinite; }
+.lf-act-loop.lf-act-dance .lf-rig-arm-b     { animation: lf-rig-raise-b 1.2s ease-in-out infinite; }
+
+/* ---- Keyframes ---------------------------------------------------------------- */
+
+@keyframes lf-jump {
+  0%   { transform: translateY(0) scale(1, 1); }
+  18%  { transform: translateY(3%) scale(1.06, 0.9); }   /* squash */
+  45%  { transform: translateY(-22%) scale(0.96, 1.06); } /* stretch up */
+  70%  { transform: translateY(0) scale(1.04, 0.94); }    /* land squash */
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes lf-hop {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-12%) scale(0.98, 1.03); }
+  75%  { transform: translateY(0) scale(1.03, 0.96); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes lf-celebrate {
+  0%   { transform: translateY(0) rotate(0deg); }
+  20%  { transform: translateY(-14%) rotate(-4deg); }
+  40%  { transform: translateY(0) rotate(3deg); }
+  60%  { transform: translateY(-10%) rotate(4deg); }
+  80%  { transform: translateY(0) rotate(-3deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+@keyframes lf-nod {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(4deg) translateY(2%); }
+  60% { transform: rotate(-1deg); }
+}
+@keyframes lf-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4%) rotate(-2deg); }
+  45% { transform: translateX(4%) rotate(2deg); }
+  70% { transform: translateX(-2%) rotate(-1deg); }
+}
+@keyframes lf-think {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-3deg) translateY(-2%); }
+  70% { transform: rotate(-3deg) translateY(-1%); }
+}
+@keyframes lf-dance {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  15% { transform: translateX(-5%) rotate(-5deg) translateY(-4%); }
+  35% { transform: translateX(5%) rotate(5deg); }
+  55% { transform: translateX(-5%) rotate(-5deg) translateY(-4%); }
+  75% { transform: translateX(5%) rotate(5deg); }
+}
+@keyframes lf-peek {
+  0%   { transform: translateY(18%) scale(0.9); opacity: 0; }
+  55%  { transform: translateY(-3%) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes lf-bow {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(8deg) translateY(4%); }
+  70% { transform: rotate(8deg) translateY(4%); }
+}
+@keyframes lf-lean {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-3deg); }
+  70% { transform: rotate(-3deg); }
+}
+
+@keyframes lf-rig-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-38deg); }
+  45% { transform: rotate(-18deg); }
+  65% { transform: rotate(-38deg); }
+  85% { transform: rotate(-12deg); }
+}
+@keyframes lf-rig-point {
+  0%, 100% { transform: rotate(0deg); }
+  35% { transform: rotate(-30deg); }
+  75% { transform: rotate(-30deg); }
+}
+@keyframes lf-rig-raise {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-45deg); }
+  70% { transform: rotate(-35deg); }
+}
+@keyframes lf-rig-raise-b {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(45deg); }
+  70% { transform: rotate(35deg); }
+}
+@keyframes lf-rig-tuck {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(18deg) translateY(-2%); }
+}
+@keyframes lf-rig-tuck-b {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(-18deg) translateY(-2%); }
+}
+@keyframes lf-rig-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(8deg); }
+}
+@keyframes lf-rig-chin {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(-22deg) translateY(-1%); }
+  75% { transform: rotate(-22deg) translateY(-1%); }
+}
+@keyframes lf-rig-sweep {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(28deg); }
+  70% { transform: rotate(28deg); }
+}
+
+/* Reduced motion: actions fall back to emotion change only. */
+@media (prefers-reduced-motion: reduce) {
+  .lf-actor[class*='lf-act-'],
+  .lf-actor .lf-rig-arm-f,
+  .lf-actor .lf-rig-arm-b,
+  .lf-actor .lf-rig-leg-f,
+  .lf-actor .lf-rig-leg-b,
+  .lf-actor .lf-rig-tail {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,2506 @@
+schema_version: 1
+adventure:
+  position: 8
+  slug: cosmos-del-manana
+  theme: cosmos
+  age_tier: tier2
+  title:
+    en-US: Tomorrow's Cosmos
+    es-MX: El Cosmos del Mañana
+    pt-BR: O Cosmos do Amanhã
+  description:
+    en-US: Aboard Dr. Rho's ship, Dina, Liruf, and Zara Vex revisit everything they've learned and build
+      their own founder plan for the future.
+    es-MX: A bordo de la nave de Dr. Rho, Dina, Liruf y Zara Vex repasan todo lo aprendido y construyen
+      su propio plan de founder hacia el futuro.
+    pt-BR: A bordo da nave do Dr. Rho, Dina, Liruf e Zara Vex revisitam tudo o que aprenderam e constroem
+      seu próprio plano de founder para o futuro.
+  narrative_arc: 'Dr. Rho revela una nave con forma de cosmos que lleva a Dina, Liruf y Zara Vex de vuelta
+    por cada mundo que visitaron: el archipiélago, el bosque, la aldea, el mercado, el taller, el faro
+    y el jardín. Juntos convierten todo lo aprendido en un plan de founder propio, y cierran el viaje
+    con un gran lanzamiento que celebra el camino recorrido.'
+sagas:
+- position: 1
+  slug: suenos-con-forma
+  icon: rocket_launch
+  title:
+    en-US: Dreams Take Shape
+    es-MX: Sueños con Forma
+    pt-BR: Sonhos com Forma
+  description:
+    en-US: Turn a big dream into a goal with real steps and size.
+    es-MX: Convierte un sueño grande en una meta con pasos y tamaño real.
+    pt-BR: Transforme um grande sonho em uma meta com passos e tamanho real.
+  topics:
+  - position: 1
+    slug: con-que-sueno
+    title_es: Con qué sueño
+    concept: Un sueño es algo que a alguien le encantaría lograr algún día, y nombrarlo con claridad es
+      el primer paso para perseguirlo.
+    learning_objective: Al final, el niño puede nombrar un sueño personal concreto que le gustaría lograr.
+    key_vocabulary:
+    - sueño
+    - meta
+    - futuro
+    - lograr
+    prior_knowledge: Ha definido metas de ahorro concretas (aventura 3).
+    parent_check: "¿{{name}} puede nombrarte un sueño personal concreto que le gustaría lograr?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-nave-de-dr-rho
+      micro_objective: Reconocer la diferencia entre un deseo pasajero y un sueño que alguien quiere perseguir
+        de verdad.
+      narrative_beat: Dr. Rho revela una nave con forma de cosmos y invita a Dina, Liruf y Zara Vex a un
+        viaje para repasar todo lo aprendido y soñar en grande.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: suenos-de-otros-founders
+      micro_objective: Observar ejemplos de sueños concretos de otros personajes del universo LittleFounders.
+      narrative_beat: 'Desde la nave, ven pequeñas escenas de otros founders: uno sueña con un huerto
+        propio, otro con viajar a todas las islas del archipiélago.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: mi-sueno-en-una-frase
+      micro_objective: Formular un sueño personal en una frase clara y concreta.
+      narrative_beat: Zara Vex reta a Liruf a decir su sueño en una sola frase, sin vueltas ni dudas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: elegir-mi-sueno-principal
+      micro_objective: Elegir, entre varios sueños posibles, uno principal para trabajar durante el viaje.
+      narrative_beat: Entre varias ideas, Dina elige el sueño que más le entusiasma perseguir durante
+        este viaje por el cosmos.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: ponerle-un-tamano-a-mi-sueno
+    title_es: Ponerle un tamaño a mi sueño
+    concept: Calcular cuánto cuesta o cuánto tiempo toma un sueño ayuda a verlo como algo alcanzable,
+      no solo como una idea lejana.
+    learning_objective: Al final, el niño puede estimar un costo o tiempo aproximado para su sueño personal.
+    key_vocabulary:
+    - costo
+    - tiempo
+    - tamaño
+    - estimar
+    prior_knowledge: Tiene un sueño personal definido (tema anterior).
+    parent_check: "¿{{name}} puede darte una idea de cuánto costaría o cuánto tiempo tomaría lograr su sueño?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cuanto-cuesta-un-sueno
+      micro_objective: Reconocer que un sueño puede tener un costo o un tiempo asociado para lograrlo.
+      narrative_beat: Dr. Rho muestra en un mapa estelar cuánto costó y cuánto tardó el sueño de otro
+        founder del cosmos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: estimar-el-costo
+      micro_objective: Estimar, con una guía dada, el costo aproximado de un sueño concreto.
+      narrative_beat: Zara Vex ayuda a Liruf a calcular más o menos cuánto costaría su sueño de tener un
+        telescopio propio.
+      difficulty: 2
+      suggested_families:
+      - money
+      - input
+    - position: 3
+      slug: estimar-el-tiempo
+      micro_objective: Estimar, con una guía dada, cuánto tiempo podría tomar lograr un sueño concreto.
+      narrative_beat: Dina calcula cuántas semanas de ahorro le tomaría alcanzar su sueño, usando lo aprendido
+        en aventuras anteriores.
+      difficulty: 2
+      suggested_families:
+      - input
+      - money
+    - position: 4
+      slug: el-tamano-de-mi-sueno
+      micro_objective: Calcular el costo y tiempo aproximados del sueño personal propio del niño.
+      narrative_beat: 'Con la ayuda de Dr. Rho, Dina calcula el tamaño real de su sueño: cuánto cuesta
+        y cuánto tiempo le tomará.'
+      difficulty: 3
+      suggested_families:
+      - money
+      - input
+  - position: 3
+    slug: dividir-el-sueno-en-pasos
+    title_es: Dividir el sueño en pasos
+    concept: Un sueño grande se vuelve manejable cuando se divide en pasos más pequeños y concretos.
+    learning_objective: Al final, el niño puede dividir un sueño en al menos tres pasos concretos y ordenados.
+    key_vocabulary:
+    - paso
+    - dividir
+    - orden
+    - plan
+    prior_knowledge: Ha calculado el tamaño de su sueño (tema anterior).
+    parent_check: "¿{{name}} puede dividir un sueño grande en al menos tres pasos más pequeños?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-sueno-enorme
+      micro_objective: Reconocer que un sueño grande puede sentirse difícil si se piensa como un solo
+        paso.
+      narrative_beat: Liruf mira su sueño enorme y se siente un poco abrumado, hasta que Dr. Rho le muestra
+        un mapa estelar dividido en tramos pequeños.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pasos-para-otro-founder
+      micro_objective: Observar cómo otro founder dividió su propio sueño en pasos concretos.
+      narrative_beat: 'En la nave, ven cómo otro founder dividió su sueño de un huerto en pasos: ahorrar,
+        comprar semillas, sembrar, cuidar.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: ordenar-mis-pasos
+      micro_objective: Ordenar en secuencia lógica los pasos propuestos para lograr un sueño dado.
+      narrative_beat: Zara Vex mezcla los pasos del sueño de Dina y la reta a ordenarlos correctamente.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-sueno-en-pasos
+      micro_objective: Dividir el sueño personal propio en al menos tres pasos ordenados.
+      narrative_beat: Dina divide su propio sueño en pasos claros, del primero al último, en su cuaderno
+        de viaje.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 4
+    slug: elegir-el-primer-paso
+    title_es: Elegir el primer paso
+    concept: Elegir con claridad el primer paso de un plan ayuda a comenzar a perseguir un sueño sin sentirse
+      perdido.
+    learning_objective: Al final, el niño puede identificar cuál es el primer paso correcto para comenzar
+      a perseguir su sueño.
+    key_vocabulary:
+    - primero
+    - comenzar
+    - paso
+    - empezar
+    prior_knowledge: Tiene el sueño dividido en pasos (tema anterior).
+    parent_check: "¿{{name}} puede decirte cuál sería el primer paso concreto para comenzar a perseguir su sueño?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: por-donde-empezar
+      micro_objective: Reconocer que no todos los pasos de un plan se hacen al mismo tiempo; hay que elegir
+        uno primero.
+      narrative_beat: Liruf mira todos los pasos de su sueño a la vez y no sabe por cuál empezar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-paso-mas-facil-de-empezar
+      micro_objective: Identificar, entre varios pasos, cuál conviene comenzar primero por ser el más
+        accesible.
+      narrative_beat: Dr. Rho ayuda a Dina a ver que el primer paso de su plan es simplemente empezar
+        a ahorrar un poquito cada semana.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-elegir-el-primer-paso
+      micro_objective: Elegir el primer paso correcto para el sueño de otro personaje dentro de una historia.
+      narrative_beat: Zara Vex presenta el sueño de otro founder y reta a Liruf a decidir cuál sería su
+        primer paso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-primer-paso-elegido
+      micro_objective: Elegir con claridad el primer paso concreto para comenzar a perseguir el sueño
+        personal propio.
+      narrative_beat: Dina marca en su cuaderno el primer paso de su plan, listo para comenzar en cuanto
+        la nave aterrice.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: imaginar-obstaculos
+    title_es: Imaginar obstáculos
+    concept: Pensar por adelantado en los obstáculos posibles de un plan ayuda a no rendirse cuando aparecen
+      de verdad.
+    learning_objective: Al final, el niño puede anticipar al menos un obstáculo posible para su plan y
+      una forma de enfrentarlo.
+    key_vocabulary:
+    - obstáculo
+    - imaginar
+    - enfrentar
+    - plan
+    prior_knowledge: Tiene el primer paso de su plan elegido (tema anterior).
+    parent_check: "¿{{name}} puede imaginar un obstáculo posible para su plan y cómo lo enfrentaría?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-meteorito-en-el-camino
+      micro_objective: Reconocer que todo plan puede encontrarse con un obstáculo inesperado en el camino.
+      narrative_beat: La nave de Dr. Rho esquiva un pequeño meteorito, y él compara eso con los obstáculos
+        que aparecen en cualquier plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: posibles-obstaculos
+      micro_objective: Identificar obstáculos posibles (gastar sin querer, olvidar el plan, un imprevisto)
+        para un sueño dado.
+      narrative_beat: Zara Vex ayuda a Liruf a imaginar qué podría salir mal en su plan de ahorro para
+        el telescopio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: elegir-como-obstaculo-o-no
+      micro_objective: Decidir, entre dos caminos posibles dentro de una historia, cuál ayuda mejor a
+        superar un obstáculo del plan.
+      narrative_beat: Frente a una tentación de gastar sus ahorros, Liruf elige, dentro de la historia,
+        si seguir su plan o desviarse.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-plan-a-prueba-de-obstaculos
+      micro_objective: Anticipar un obstáculo concreto para el sueño propio y proponer una forma de enfrentarlo.
+      narrative_beat: Dina anota en su cuaderno un obstáculo posible para su sueño y decide, con calma,
+        cómo lo enfrentará si aparece.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 6
+    slug: mi-sueno-mi-plan-corto
+    title_es: Mi sueño, mi plan corto
+    concept: Juntar el sueño, su tamaño, sus pasos y sus posibles obstáculos forma un plan corto y claro
+      para empezar a perseguirlo.
+    learning_objective: Al final, el niño puede presentar un plan corto y completo para su propio sueño.
+    key_vocabulary:
+    - plan
+    - resumen
+    - sueño
+    - presentar
+    prior_knowledge: Ha trabajado el sueño, su tamaño, sus pasos, el primer paso y los obstáculos (temas
+      anteriores).
+    parent_check: "¿{{name}} puede presentarte un plan corto y completo para su propio sueño?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: todas-las-piezas-juntas
+      micro_objective: Reconocer que un plan completo junta el sueño, el tamaño, los pasos y los obstáculos
+        ya trabajados.
+      narrative_beat: Dr. Rho reúne todas las notas del cuaderno de viaje y muestra cómo todas las piezas
+        ya trabajadas forman un plan completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: el-plan-de-otro-founder
+      micro_objective: Revisar el plan corto completo de otro founder como modelo antes de armar el propio.
+      narrative_beat: 'En la nave, ven el plan corto completo de otro founder: su sueño, su tamaño, sus
+        pasos y su primer paso.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: armar-mi-plan-corto
+      micro_objective: 'Armar, en orden, las piezas del plan corto propio: sueño, tamaño, pasos, primer
+        paso.'
+      narrative_beat: Zara Vex ayuda a Dina a ordenar todas las piezas de su plan corto en una sola página
+        del cuaderno.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: presentar-mi-plan
+      micro_objective: Presentar el plan corto completo del sueño propio frente a los demás personajes.
+      narrative_beat: Antes de que la nave aterrice en el siguiente destino, Dina presenta su plan corto
+        completo a Dr. Rho, Liruf y Zara Vex.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: metas-a-largo-plazo
+    title_es: Metas a largo plazo
+    concept: Algunas metas se logran en pocas semanas, y otras, como aprender un oficio o construir algo grande, toman meses o incluso años de trabajo constante.
+    learning_objective: Al final, el niño puede distinguir una meta de corto plazo de una meta de largo plazo y nombrar un ejemplo propio de cada una.
+    key_vocabulary:
+    - largo plazo
+    - corto plazo
+    - constancia
+    - tiempo
+    prior_knowledge: Ha calculado el tamaño de su sueño en costo y tiempo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre una meta que toma pocas semanas y una que toma meses o años?"
+    prerequisites:
+    - path: aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+      strength: soft
+      reason: "Haber practicado ahorrar un poco cada semana con paciencia prepara para perseguir una meta que toma mucho más tiempo."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: suenos-rapidos-y-suenos-lentos
+      micro_objective: Comparar un sueño que se logra en pocas semanas con uno que toma meses o años.
+      narrative_beat: Desde la nave, Dr. Rho muestra dos founders del cosmos, uno que ahorró para un juguete en un mes y otro que construyó su taller en dos años.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-algunos-suenos-toman-mas-tiempo
+      micro_objective: Explicar por qué algunos sueños necesitan mucho más tiempo y constancia que otros.
+      narrative_beat: Zara Vex explica que un sueño grande, como dominar un oficio, no se logra de un día para otro, sino con constancia.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: clasificar-mis-suenos
+      micro_objective: Clasificar varios sueños dados entre metas de corto plazo y de largo plazo.
+      narrative_beat: Dina ordena varios sueños de otros founders del cosmos entre los que toman semanas y los que toman años.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-meta-a-largo-plazo
+      micro_objective: Nombrar una meta a largo plazo propia y reconocer que requerirá constancia.
+      narrative_beat: Dina piensa en un sueño suyo que le tomaría mucho más que unas semanas, y decide que también vale la pena perseguirlo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: suenos-que-se-logran-en-equipo
+    title_es: Sueños que se logran en equipo
+    concept: Algunos sueños grandes se logran mejor cuando se persiguen junto con otras personas, en vez de intentarlo todo en solitario.
+    learning_objective: Al final, el niño puede reconocer cuándo un sueño propio se beneficiaría de la ayuda o compañía de otros.
+    key_vocabulary:
+    - equipo
+    - compañía
+    - juntos
+    - apoyo
+    prior_knowledge: Tiene un sueño personal definido y sabe que algunos toman más tiempo que otros (temas anteriores).
+    parent_check: "¿{{name}} puede reconocer cuándo un sueño suyo sería más fácil de lograr con la ayuda de otras personas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-sueno-demasiado-grande-para-uno
+      micro_objective: Reconocer un sueño que sería muy difícil de lograr completamente solo.
+      narrative_beat: Liruf imagina un sueño enorme, como construir un puente entre dos islas, y se da cuenta de que solo no podría.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quien-podria-ayudarme
+      micro_objective: Identificar personas que podrían acompañar o ayudar a lograr un sueño grande.
+      narrative_beat: Zara Vex ayuda a Liruf a pensar en quién del cosmos podría acompañarlo a construir su puente entre islas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: solo-o-en-equipo
+      micro_objective: Comparar, para un sueño dado, si conviene más perseguirlo solo o en equipo.
+      narrative_beat: Dr. Rho presenta dos sueños distintos y pregunta a Dina cuál conviene más hacer en equipo y cuál puede hacerse sola.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-equipo-de-sueno
+      micro_objective: Identificar, para el sueño propio, a alguien que podría acompañarlo en el camino.
+      narrative_beat: Dina anota en su cuaderno de viaje quién podría ayudarla a lograr su propio sueño de founder.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Sueños con Forma.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Sueños con Forma.
+    key_vocabulary:
+    - sueño
+    - costo
+    - paso
+    - primero
+    prior_knowledge: Ha completado los seis temas de la saga Sueños con Forma (aventura 8, saga 1).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/suenos-con-forma/con-que-sueno
+    - cosmos-del-manana/suenos-con-forma/ponerle-un-tamano-a-mi-sueno
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    - cosmos-del-manana/suenos-con-forma/elegir-el-primer-paso
+    - cosmos-del-manana/suenos-con-forma/imaginar-obstaculos
+    - cosmos-del-manana/suenos-con-forma/mi-sueno-mi-plan-corto
+    - cosmos-del-manana/suenos-con-forma/metas-a-largo-plazo
+    - cosmos-del-manana/suenos-con-forma/suenos-que-se-logran-en-equipo
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo nombrar un sueño personal concreto y cómo estimar el costo o tiempo de un sueño.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo dividir un sueño en pasos concretos y cómo elegir el primer paso correcto para comenzar.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre anticipar un obstáculo posible del plan.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo presentar un plan corto y completo del sueño, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Sueños con Forma con ideas de aventuras anteriores en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Sueños con Forma con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - sueño
+    prior_knowledge: Conoce Sueños con Forma (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+    - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Sueños con Forma.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Sueños con Forma.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en Sueños con Forma con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: el-mapa-de-todo-lo-aprendido
+  icon: map
+  title:
+    en-US: The Map of Everything Learned
+    es-MX: El Mapa de Todo lo Aprendido
+    pt-BR: O Mapa de Tudo o que Aprendemos
+  description:
+    en-US: Travel through every past world and review everything learned along the way.
+    es-MX: Viaja por cada mundo anterior y repasa lo que aprendiste en el camino.
+    pt-BR: Viaje por cada mundo anterior e revise tudo o que aprendeu no caminho.
+  topics:
+  - position: 1
+    slug: recordar-el-trueque-y-el-dinero
+    title_es: Recordar el trueque y el dinero
+    concept: Repasar por qué existe el dinero y cómo reemplazó al trueque directo refuerza las bases de
+      toda la aventura financiera.
+    learning_objective: Al final, el niño puede explicar, en una frase, por qué el dinero facilita los
+      intercambios frente al trueque.
+    key_vocabulary:
+    - trueque
+    - dinero
+    - intercambio
+    - repaso
+    prior_knowledge: Completó la aventura 1, El Archipiélago del Trueque.
+    parent_check: "¿{{name}} puede explicarte, en una frase, por qué el dinero facilita los intercambios frente al trueque?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-primer-mapa-estelar
+      micro_objective: Recordar la idea central de por qué surgió el dinero, vista en la primera aventura.
+      narrative_beat: La nave se detiene sobre una proyección del archipiélago del trueque, y Dr. Rho
+        pide a todos recordar cómo empezó su viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: trueque-o-dinero
+      micro_objective: Distinguir, en un ejemplo de repaso, una situación de trueque de una situación
+        con dinero.
+      narrative_beat: Zara Vex presenta dos escenas del archipiélago y reta a Liruf a identificar cuál
+        usa trueque y cuál usa dinero.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: por-que-cambiamos-al-dinero
+      micro_objective: Explicar con una razón concreta por qué el dinero resulta más práctico que el trueque
+        directo.
+      narrative_beat: Dina recuerda, con sus propias palabras, por qué cambiar cocos por pescado a veces
+        no funcionaba bien.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-trueque-y-dinero
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre trueque y dinero de la primera aventura.
+      narrative_beat: La nave presenta un pequeño desafío final sobre el archipiélago antes de avanzar
+        al siguiente mapa estelar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: recordar-el-trabajo-y-el-esfuerzo
+    title_es: Recordar el trabajo y el esfuerzo
+    concept: Repasar cómo el trabajo y el esfuerzo generan ingresos refuerza la relación entre esfuerzo
+      y recompensa.
+    learning_objective: Al final, el niño puede explicar, en una frase, la relación entre esfuerzo y ganar
+      dinero.
+    key_vocabulary:
+    - trabajo
+    - esfuerzo
+    - ganar
+    - repaso
+    prior_knowledge: Completó la aventura 2, El Bosque de la Abundancia.
+    parent_check: "¿{{name}} puede explicarte, en una frase, la relación entre el esfuerzo y ganar dinero?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-segundo-mapa-estelar
+      micro_objective: Recordar la idea central de ganar dinero a través del trabajo, vista en la segunda
+        aventura.
+      narrative_beat: El siguiente mapa estelar muestra el bosque de la abundancia, y Liruf recuerda sus
+        primeras chambitas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: trabajo-facil-o-dificil
+      micro_objective: Comparar distintos tipos de trabajo repasados de la segunda aventura según su esfuerzo.
+      narrative_beat: Zara Vex compara dos chambitas del bosque y pregunta cuál requería más esfuerzo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-el-esfuerzo-se-recompensa
+      micro_objective: Explicar con una razón propia por qué el trabajo genera una recompensa.
+      narrative_beat: Dina recuerda por qué recibía monedas después de ayudar en el bosque, y no solo
+        por pedirlas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-trabajo-y-esfuerzo
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre trabajo y esfuerzo de la segunda
+        aventura.
+      narrative_beat: La nave presenta un desafío final sobre el bosque de la abundancia antes de seguir
+        el viaje.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: recordar-ahorrar-y-esperar
+    title_es: Recordar ahorrar y esperar
+    concept: Repasar la paciencia de ahorrar para una meta refuerza el valor de esperar en vez de gastar
+      de inmediato.
+    learning_objective: Al final, el niño puede explicar, en una frase, por qué ahorrar requiere paciencia.
+    key_vocabulary:
+    - ahorrar
+    - paciencia
+    - meta
+    - repaso
+    prior_knowledge: Completó la aventura 3, La Aldea del Ahorro.
+    parent_check: "¿{{name}} puede explicarte, en una frase, por qué ahorrar requiere paciencia?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-tercer-mapa-estelar
+      micro_objective: Recordar la idea central de ahorrar con paciencia para una meta, vista en la tercera
+        aventura.
+      narrative_beat: El mapa estelar muestra la aldea del ahorro, y Dina recuerda su primera alcancía
+        y su primera meta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: esperar-o-gastar-ya
+      micro_objective: Comparar, en un ejemplo de repaso, la opción de esperar y ahorrar frente a gastar
+        de inmediato.
+      narrative_beat: Zara Vex recuerda a Liruf la vez que decidió esperar en vez de gastar todo de inmediato
+        en un capricho.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: por-que-vale-la-pena-esperar
+      micro_objective: Explicar con una razón propia por qué esperar y ahorrar puede valer la pena.
+      narrative_beat: Dina recuerda cómo se sintió al lograr su meta de ahorro después de varias semanas
+        de paciencia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-ahorrar-y-esperar
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre ahorrar y esperar de la tercera aventura.
+      narrative_beat: La nave presenta un desafío final sobre la aldea del ahorro antes de continuar el
+        viaje por el cosmos.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: recordar-comprar-inteligente
+    title_es: Recordar comprar inteligente
+    concept: Repasar cómo distinguir necesidades de deseos y comparar precios refuerza las bases de comprar
+      con inteligencia.
+    learning_objective: Al final, el niño puede explicar, en una frase, qué significa comprar de forma
+      inteligente.
+    key_vocabulary:
+    - necesidad
+    - deseo
+    - comparar
+    - repaso
+    prior_knowledge: Completó la aventura 4, El Mercado de los Colores.
+    parent_check: "¿{{name}} puede explicarte, en una frase, qué significa comprar de forma inteligente?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cuarto-mapa-estelar
+      micro_objective: Recordar la idea central de distinguir necesidades de deseos, vista en la cuarta
+        aventura.
+      narrative_beat: El mapa estelar muestra el mercado de los colores, y Liruf recuerda cuando aprendió
+        a diferenciar lo que necesitaba de lo que solo quería.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: necesidad-o-deseo-repaso
+      micro_objective: Clasificar, en un ejemplo de repaso, distintos artículos entre necesidades y deseos.
+      narrative_beat: Zara Vex reparte tarjetas del mercado de colores y reta a Dina a separarlas entre
+        necesidades y deseos.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: comparar-antes-de-comprar-repaso
+      micro_objective: Explicar con una razón propia por qué comparar precios ayuda a comprar de forma
+        inteligente.
+      narrative_beat: Dina recuerda por qué comparar precios en dos puestos del mercado la ayudó a ahorrar
+        monedas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-comprar-inteligente
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre necesidades, deseos y comparación
+        de precios de la cuarta aventura.
+      narrative_beat: La nave presenta un desafío final sobre el mercado de los colores antes de seguir
+        el viaje.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: recordar-inventar-poner-precio-y-vender
+    title_es: Recordar inventar, poner precio y vender
+    concept: Repasar el ciclo de inventar, calcular costo, poner un precio justo y vender refuerza la
+      idea de emprender con propósito.
+    learning_objective: Al final, el niño puede resumir, en orden, los pasos principales del ciclo de
+      inventar y vender.
+    key_vocabulary:
+    - inventar
+    - precio
+    - vender
+    - repaso
+    prior_knowledge: Completó la aventura 5, El Taller de los Inventores.
+    parent_check: "¿{{name}} puede resumir, en orden, los pasos principales del ciclo de inventar y vender?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-quinto-mapa-estelar
+      micro_objective: Recordar la idea central del ciclo de inventar, poner precio y vender, vista en
+        la quinta aventura.
+      narrative_beat: El mapa estelar muestra el taller de los inventores, y Dina recuerda su primer invento
+        vendido en el mercado del valle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-el-ciclo-repaso
+      micro_objective: Ordenar, como repaso, los pasos principales del ciclo de inventar, poner precio
+        y vender.
+      narrative_beat: Zara Vex mezcla las tarjetas del ciclo del taller y reta a Liruf a ordenarlas de
+        nuevo.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: por-que-el-precio-justo-importa-repaso
+      micro_objective: Explicar con una razón propia por qué un precio justo beneficia tanto al vendedor
+        como al comprador.
+      narrative_beat: Dina recuerda por qué su precio justo hizo que los clientes del valle regresaran
+        a su puesto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-inventar-y-vender
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre inventar, poner precio y vender de
+        la quinta aventura.
+      narrative_beat: La nave presenta un desafío final sobre el taller de los inventores antes de continuar
+        el viaje.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 6
+    slug: recordar-cuidarse-confiar-y-compartir
+    title_es: Recordar cuidarse, confiar y compartir
+    concept: Repasar cómo reconocer trampas, cuidar la información y colaborar con la comunidad refuerza
+      la seguridad y la generosidad aprendidas.
+    learning_objective: Al final, el niño puede nombrar una lección de seguridad y una lección de comunidad
+      aprendidas en aventuras anteriores.
+    key_vocabulary:
+    - cuidarse
+    - confiar
+    - compartir
+    - repaso
+    prior_knowledge: Completó las aventuras 6 y 7, El Faro de la Confianza y El Jardín Compartido.
+    parent_check: "¿{{name}} puede nombrarte una lección de seguridad y una lección de comunidad que aprendió en el curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-sexto-y-septimo-mapa-estelar
+      micro_objective: Recordar las ideas centrales de seguridad y comunidad vistas en las aventuras del
+        faro y el jardín.
+      narrative_beat: El mapa estelar muestra el faro y el jardín juntos, y Liruf recuerda las lecciones
+        de confianza y cooperación de ambos mundos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: senal-de-alerta-o-de-confianza
+      micro_objective: Clasificar, en un ejemplo de repaso, situaciones entre señal de alerta y señal
+        de confianza.
+      narrative_beat: Zara Vex presenta varias escenas del faro y el jardín, y reta a Dina a clasificarlas
+        entre alerta y confianza.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: cuidarse-y-cooperar-a-la-vez
+      micro_objective: Explicar cómo cuidarse de trampas y cooperar con la comunidad pueden practicarse
+        al mismo tiempo.
+      narrative_beat: Dina explica cómo cuidó su información privada en el faro mientras cooperaba con
+        el jardín al mismo tiempo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repaso-mixto-cuidarse-confiar-compartir
+      micro_objective: Aplicar en un desafío mixto lo repasado sobre seguridad, confianza y cooperación
+        de las aventuras 6 y 7.
+      narrative_beat: La nave presenta el desafío final combinado del faro y el jardín antes del último
+        tramo del viaje.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 7
+    slug: revisar-y-ajustar-un-plan
+    title_es: Revisar y ajustar un plan
+    concept: Cuando un plan no está funcionando como se esperaba, revisarlo con calma y ajustar una parte ayuda a seguir avanzando.
+    learning_objective: Al final, el niño puede identificar una parte de un plan que no está funcionando y proponer un ajuste concreto.
+    key_vocabulary:
+    - revisar
+    - ajustar
+    - funcionar
+    - cambiar
+    prior_knowledge: Ha repasado el ciclo de ahorrar, comprar y vender de aventuras anteriores (aventura 8, saga 2).
+    parent_check: "Si algo de su plan no está funcionando, ¿{{name}} puede proponer un ajuste concreto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-plan-que-no-avanza
+      micro_objective: Reconocer una señal de que un plan no está funcionando como se esperaba.
+      narrative_beat: Zara Vex muestra el plan de ahorro de otro founder, que lleva semanas sin avanzar nada hacia su meta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: por-que-no-esta-funcionando
+      micro_objective: Identificar una posible razón por la que un plan dado no está avanzando.
+      narrative_beat: Dr. Rho ayuda a Dina a revisar el plan de ese founder y notar que está gastando en cosas que no había planeado.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: proponer-un-ajuste
+      micro_objective: Proponer un ajuste concreto para mejorar un plan que no está funcionando.
+      narrative_beat: Zara Vex reta a Liruf a proponer un cambio simple que ayudaría al plan del founder a volver a avanzar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: revisar-mi-propio-plan
+      micro_objective: Revisar el propio plan corto de sueño y proponer un ajuste si detecta que algo no está funcionando.
+      narrative_beat: Dina revisa su propio plan de sueño y, con calma, decide si necesita ajustar alguna parte antes de seguir.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - storyplay
+  - position: 8
+    slug: aprender-de-un-error-del-pasado
+    title_es: Aprender de un error del pasado
+    concept: Recordar un error cometido en un mundo anterior del viaje, y cómo se corrigió, ayuda a no repetirlo en el futuro.
+    learning_objective: Al final, el niño puede recordar un error propio de una aventura anterior y explicar qué aprendió de él.
+    key_vocabulary:
+    - error
+    - aprender
+    - corregir
+    - recordar
+    prior_knowledge: Ha repasado las siete aventuras anteriores del viaje (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede contarte un error que cometió y qué aprendió de él?"
+    prerequisites:
+    - path: taller-de-los-inventores/manos-a-la-obra/mejorar-con-lo-que-aprendi
+      strength: soft
+      reason: "Haber aprendido a proponer un ajuste tras una prueba fallida en el taller es la misma habilidad que reflexionar sobre un error del pasado."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-error-en-el-mercado
+      micro_objective: Recordar un ejemplo de error cometido en una aventura anterior, como gastar sin pensar.
+      narrative_beat: El mapa estelar muestra el mercado de los colores, y Liruf recuerda la vez que gastó todas sus monedas sin comparar precios.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-paso-despues-del-error
+      micro_objective: Recordar cómo se corrigió un error cometido en una aventura anterior.
+      narrative_beat: Dr. Rho recuerda con Liruf cómo, después de ese gasto apresurado, aprendió a comparar precios antes de comprar.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: el-error-como-maestro
+      micro_objective: Explicar con una razón propia por qué un error puede enseñar algo útil, en vez de ser solo un fracaso.
+      narrative_beat: Zara Vex explica que cada founder del cosmos recuerda al menos un error que lo ayudó a mejorar después.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-leccion-de-un-error
+      micro_objective: Recordar un error propio de una aventura anterior y explicar qué aprendió de él.
+      narrative_beat: Dina comparte con el equipo un error que cometió en un mundo anterior y lo que aprendió gracias a él.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Mapa de Todo lo Aprendido.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Mapa de Todo lo Aprendido.
+    key_vocabulary:
+    - trueque
+    - trabajo
+    - ahorrar
+    - necesidad
+    prior_knowledge: Ha completado los seis temas de la saga El Mapa de Todo lo Aprendido (aventura 8, saga 2).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-el-trueque-y-el-dinero
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-el-trabajo-y-el-esfuerzo
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-ahorrar-y-esperar
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-comprar-inteligente
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-inventar-poner-precio-y-vender
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-cuidarse-confiar-y-compartir
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/revisar-y-ajustar-un-plan
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/aprender-de-un-error-del-pasado
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo explicar por qué el dinero facilita los intercambios y cómo explicar la relación entre esfuerzo y ganar dinero.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo explicar por qué ahorrar requiere paciencia y cómo explicar qué significa comprar de forma inteligente.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre resumir el ciclo de inventar, poner precio y vender.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo nombrar una lección de seguridad y una de comunidad, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Mapa de Todo lo Aprendido con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Mapa de Todo lo Aprendido con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - trueque
+    prior_knowledge: Conoce El Mapa de Todo lo Aprendido (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Mapa de Todo lo Aprendido.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Mapa de Todo lo Aprendido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en El Mapa de Todo lo Aprendido con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: mi-plan-de-founder
+  icon: flight_takeoff
+  title:
+    en-US: My Founder Plan
+    es-MX: Mi Plan de Founder
+    pt-BR: Meu Plano de Founder
+  description:
+    en-US: 'Build your own complete plan: goal, budget, savings, and safety.'
+    es-MX: 'Construye tu propio plan completo: meta, presupuesto, ahorro y cuidado.'
+    pt-BR: 'Construa seu próprio plano completo: meta, orçamento, poupança e cuidado.'
+  topics:
+  - position: 1
+    slug: elegir-mi-meta-de-founder
+    title_es: Elegir mi meta de founder
+    concept: Una meta de founder combina lo aprendido en el viaje —ahorrar, ganar, cuidar y compartir—
+      en un solo objetivo personal grande.
+    learning_objective: Al final, el niño puede elegir una meta de founder propia que combine varios aprendizajes
+      del curso.
+    key_vocabulary:
+    - meta
+    - founder
+    - objetivo
+    - combinar
+    prior_knowledge: Ha repasado las siete aventuras anteriores (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede elegir una meta propia que combine varias cosas que aprendió en el curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-meta-mas-grande
+      micro_objective: Reconocer que una meta de founder puede combinar varias ideas aprendidas, no solo
+        una.
+      narrative_beat: Dr. Rho invita a Dina, Liruf y Zara Vex a pensar en una meta de founder que use todo
+        lo que aprendieron en el viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ejemplos-de-metas-de-founder
+      micro_objective: Observar ejemplos de metas de founder que combinan ahorro, trabajo y cuidado.
+      narrative_beat: 'Zara Vex comparte su propia meta de founder: abrir un pequeño puesto de mapas estelares
+        en el próximo puerto.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: que-combina-mi-meta
+      micro_objective: Identificar qué aprendizajes del viaje (ahorrar, ganar, cuidar, compartir) combina
+        una meta de founder dada.
+      narrative_beat: Liruf revisa la meta de Zara Vex e identifica qué partes usan ahorro, cuáles usan
+        cuidado y cuáles usan cooperación.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-meta-de-founder
+      micro_objective: Elegir y describir la meta de founder propia del niño.
+      narrative_beat: 'Dina elige su propia meta de founder para cerrar el viaje: abrir un pequeño taller
+        de inventos que también ayude al jardín.'
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: presupuestar-mi-meta
+    title_es: Presupuestar mi meta
+    concept: Presupuestar una meta significa decidir cuánto se puede gastar en cada parte sin pasarse
+      del total disponible.
+    learning_objective: Al final, el niño puede armar un presupuesto simple para su meta de founder sin
+      exceder un total dado.
+    key_vocabulary:
+    - presupuesto
+    - gastar
+    - total
+    - límite
+    prior_knowledge: Tiene una meta de founder elegida (tema anterior).
+    parent_check: "¿{{name}} puede armar un presupuesto simple sin pasarse del total que tiene disponible?"
+    prerequisites:
+    - path: mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+      strength: soft
+      reason: "Haber decidido qué comprar primero dentro de una bolsa de compras limitada prepara para repartir un presupuesto más grande sin excederse."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cuanto-tengo-para-mi-meta
+      micro_objective: Reconocer que toda meta tiene un total disponible que no se debe exceder.
+      narrative_beat: Dr. Rho muestra a Dina el total de monedas que tiene disponible para comenzar su
+        meta de founder.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: repartir-el-presupuesto
+      micro_objective: Repartir un total dado entre varias partes necesarias para una meta, sin excederse.
+      narrative_beat: Zara Vex ayuda a Liruf a repartir su presupuesto entre materiales, herramientas y
+        una pequeña reserva.
+      difficulty: 2
+      suggested_families:
+      - money
+      - arrange
+    - position: 3
+      slug: ajustar-si-me-paso
+      micro_objective: Ajustar un presupuesto que se excede del total disponible, quitando o reduciendo
+        alguna parte.
+      narrative_beat: Dina nota que su presupuesto inicial se pasa del total disponible y debe ajustar
+        alguna parte.
+      difficulty: 3
+      suggested_families:
+      - money
+      - analyze
+    - position: 4
+      slug: mi-presupuesto-de-founder
+      micro_objective: Armar el presupuesto completo y ajustado de la meta de founder propia del niño.
+      narrative_beat: Con calma, Dina arma el presupuesto final de su meta de founder, sin exceder lo
+        que tiene disponible.
+      difficulty: 3
+      suggested_families:
+      - money
+      - input
+  - position: 3
+    slug: repartir-ahorrar-gastar-compartir
+    title_es: 'Repartir: ahorrar, gastar y compartir'
+    concept: Aplicar el reparto entre ahorrar, gastar y compartir a la meta de founder cierra el círculo
+      de todo lo aprendido sobre el dinero.
+    learning_objective: Al final, el niño puede repartir los recursos de su meta de founder entre ahorrar,
+      gastar y compartir.
+    key_vocabulary:
+    - ahorrar
+    - gastar
+    - compartir
+    - repartir
+    prior_knowledge: Tiene un presupuesto para su meta (tema anterior).
+    parent_check: "¿{{name}} puede repartir sus recursos de una meta entre ahorrar, gastar y compartir?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: los-tres-frascos-del-cosmos
+      micro_objective: Recordar los tres frascos de ahorrar, gastar y compartir aplicados ahora a la meta
+        de founder.
+      narrative_beat: 'Dr. Rho muestra tres frascos flotando en la nave: ahorrar, gastar y compartir,
+        listos para la meta final de Dina.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: repartir-para-mi-meta
+      micro_objective: Repartir un monto dado entre los tres frascos considerando las necesidades de una
+        meta de founder.
+      narrative_beat: Zara Vex ayuda a Liruf a repartir sus monedas entre los tres frascos pensando en
+        su meta de founder.
+      difficulty: 2
+      suggested_families:
+      - money
+      - arrange
+    - position: 3
+      slug: equilibrar-los-tres-frascos
+      micro_objective: Evaluar si un reparto entre los tres frascos está equilibrado para lograr una meta
+        sin descuidar el compartir.
+      narrative_beat: Dina revisa su propio reparto y nota que casi olvida dejar algo para el frasco de
+        compartir.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - money
+    - position: 4
+      slug: mi-reparto-final-de-founder
+      micro_objective: Repartir los recursos propios de la meta de founder entre ahorrar, gastar y compartir
+        de forma equilibrada.
+      narrative_beat: 'Dina completa el reparto final de su meta de founder: una parte para ahorrar, una
+        para gastar en su taller, y una para compartir con el jardín.'
+      difficulty: 3
+      suggested_families:
+      - money
+      - storyplay
+  - position: 4
+    slug: protegerme-de-trampas-en-el-camino
+    title_es: Protegerme de trampas en el camino
+    concept: Perseguir una meta de founder también significa estar alerta ante anuncios engañosos o mensajes
+      falsos que puedan desviar el plan.
+    learning_objective: Al final, el niño puede identificar una posible trampa que podría afectar su meta
+      de founder.
+    key_vocabulary:
+    - trampa
+    - alerta
+    - proteger
+    - plan
+    prior_knowledge: Reconoce señales de anuncios engañosos y mensajes falsos (aventura 6).
+    parent_check: "¿{{name}} puede reconocer una posible trampa que podría afectar una meta que se está persiguiendo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-oferta-tentadora
+      micro_objective: Reconocer una posible trampa (oferta exagerada) que podría desviar los recursos
+        de una meta de founder.
+      narrative_beat: Un anuncio brillante en el puerto promete 'todo lo que necesitas para tu taller,
+        gratis', y Liruf siente la tentación de creerlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: aplicar-las-senales-de-alerta
+      micro_objective: Aplicar las señales de alerta aprendidas para reconocer si una oferta relacionada
+        con la meta es confiable o no.
+      narrative_beat: Zara Vex ayuda a Dina a revisar el anuncio del puerto con las señales de alerta
+        aprendidas en el faro.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: decidir-con-cuidado
+      micro_objective: Decidir, con base en las señales de alerta, si aceptar o rechazar una oferta relacionada
+        con la meta de founder.
+      narrative_beat: Con toda la información revisada, Liruf decide si conviene o no aceptar la oferta
+        tentadora del puerto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-meta-protegida
+      micro_objective: Aplicar el proceso completo de revisión de alertas a una situación nueva relacionada
+        con su propia meta de founder.
+      narrative_beat: Dina revisa con cuidado una nueva oferta relacionada con su taller antes de aceptarla,
+        protegiendo así su meta de founder.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - storyplay
+  - position: 5
+    slug: pedir-ayuda-cuando-la-necesito
+    title_es: Pedir ayuda cuando la necesito
+    concept: Perseguir una meta grande no significa hacerlo todo solo; pedir ayuda a la comunidad o a
+      un adulto de confianza sigue siendo parte del plan.
+    learning_objective: Al final, el niño puede identificar un momento en su meta de founder donde convendría
+      pedir ayuda.
+    key_vocabulary:
+    - ayuda
+    - comunidad
+    - apoyo
+    - pedir
+    prior_knowledge: Ha practicado pedir y ofrecer ayuda en la comunidad (aventura 7).
+    parent_check: "¿{{name}} sabe identificar un momento en el que convendría pedir ayuda para avanzar en una meta?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: atascado-con-mi-meta
+      micro_objective: Reconocer un momento en que perseguir una meta de founder se vuelve difícil sin
+        ayuda.
+      narrative_beat: Liruf se siente atascado con su meta de founder y no sabe cómo seguir avanzando solo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: a-quien-le-pido-ayuda-en-mi-meta
+      micro_objective: Identificar a quién podría pedir ayuda (comunidad, adulto de confianza) para avanzar
+        en su meta.
+      narrative_beat: Dr. Rho recuerda a Liruf que, igual que en el jardín compartido, puede pedir ayuda
+        a la comunidad o a un adulto de confianza.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: practicar-pedir-ayuda-para-mi-meta
+      micro_objective: Practicar, dentro de una historia, cómo pedir ayuda concreta relacionada con la
+        meta de founder.
+      narrative_beat: Zara Vex ayuda a Liruf a practicar cómo pedirle apoyo a Dr. Rho para resolver un
+        obstáculo de su meta.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-plan-de-apoyo
+      micro_objective: Identificar, para su propia meta de founder, un apoyo específico que podría pedir
+        en caso de necesitarlo.
+      narrative_beat: Dina anota en su cuaderno a quién le pediría ayuda si se atasca con su meta de founder.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: mi-plan-completo-listo-para-lanzar
+    title_es: Mi plan completo, listo para lanzar
+    concept: Juntar la meta, el presupuesto, el reparto, la protección ante trampas y el plan de apoyo
+      forma un plan de founder completo y listo para comenzar.
+    learning_objective: Al final, el niño puede presentar su plan de founder completo con todas sus partes.
+    key_vocabulary:
+    - plan completo
+    - founder
+    - listo
+    - lanzar
+    prior_knowledge: Ha trabajado meta, presupuesto, reparto, protección y apoyo (temas anteriores).
+    parent_check: "¿{{name}} puede presentarte su plan de founder completo, con todas sus partes?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: todas-las-piezas-del-plan
+      micro_objective: 'Reconocer que un plan de founder completo junta todas las piezas trabajadas: meta,
+        presupuesto, reparto, protección y apoyo.'
+      narrative_beat: Dr. Rho reúne todas las notas del viaje de Dina y le muestra que ya tiene todas
+        las piezas de un plan de founder completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: revisar-el-plan-de-zara
+      micro_objective: Revisar el plan de founder completo de otro personaje como modelo antes de presentar
+        el propio.
+      narrative_beat: Zara Vex comparte su plan de founder completo del puesto de mapas estelares, con
+        todas sus piezas en orden.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: armar-mi-plan-completo
+      micro_objective: Armar, en orden, todas las piezas del plan de founder propio en una sola presentación.
+      narrative_beat: 'Dina ordena todas las piezas de su plan de founder: meta, presupuesto, reparto,
+        protección y apoyo.'
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: listo-para-lanzar
+      micro_objective: Presentar el plan de founder completo y confirmar que está listo para comenzar
+        a ejecutarse.
+      narrative_beat: Con su plan de founder completo en mano, Dina anuncia a toda la tripulación que
+        está lista para lanzarlo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: mi-rutina-de-ahorro-gasto-y-donacion
+    title_es: Mi rutina de ahorro, gasto y donación
+    concept: Convertir el reparto entre ahorrar, gastar y compartir en una rutina semanal, y no solo en algo de una sola vez, ayuda a mantenerlo en el tiempo.
+    learning_objective: Al final, el niño puede proponer una rutina simple y repetible para repartir el dinero que recibe entre ahorrar, gastar y donar.
+    key_vocabulary:
+    - rutina
+    - repetir
+    - semanal
+    - hábito
+    prior_knowledge: Ha repartido los recursos de su meta de founder entre ahorrar, gastar y compartir (tema anterior).
+    parent_check: "¿{{name}} puede proponerte una rutina simple para repartir su dinero cada semana entre ahorrar, gastar y donar?"
+    prerequisites:
+    - path: taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+      strength: soft
+      reason: "Haber repartido las ganancias de un día de mercado entre los tres frascos prepara para convertir ese reparto en una rutina semanal."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-sola-vez-no-basta
+      micro_objective: Reconocer que repartir el dinero una sola vez no es lo mismo que tener una rutina que se repite.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasará con sus tres frascos la próxima semana, cuando reciba más monedas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-rutina-de-otro-founder
+      micro_objective: Observar cómo otro founder repite, cada semana, el mismo reparto entre ahorrar, gastar y donar.
+      narrative_beat: Zara Vex comparte que cada semana reparte sus monedas nuevas en las mismas tres partes, sin tener que pensarlo de nuevo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: elegir-mi-propia-rutina
+      micro_objective: Proponer una proporción simple y repetible para su propio reparto semanal.
+      narrative_beat: Liruf decide qué parte de cada semana irá a su ahorro, cuál a sus gastos y cuál a donar, para repetirlo siempre igual.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 4
+      slug: mi-rutina-lista
+      micro_objective: Presentar su propia rutina semanal de ahorro, gasto y donación, lista para repetirse cada semana.
+      narrative_beat: Dina presenta a Dr. Rho su rutina semanal completa, lista para repetirla cada vez que reciba nuevas monedas.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - money
+  - position: 8
+    slug: revisar-mi-presupuesto-cada-semana
+    title_es: Revisar mi presupuesto cada semana
+    concept: Revisar el presupuesto cada cierto tiempo permite notar si algo cambió y ajustar el plan antes de que se desordene.
+    learning_objective: Al final, el niño puede explicar por qué conviene revisar un presupuesto cada cierto tiempo, en vez de solo hacerlo una vez.
+    key_vocabulary:
+    - revisar
+    - presupuesto
+    - ajustar
+    - seguimiento
+    prior_knowledge: Ha armado un presupuesto para su meta de founder (aventura 8, saga 3).
+    parent_check: "¿{{name}} puede explicarte por qué conviene revisar un presupuesto de vez en cuando, y no solo hacerlo una vez?"
+    prerequisites:
+    - path: taller-de-los-inventores/manos-a-la-obra/sumar-el-costo-total
+      strength: hard
+      reason: "Saber sumar el costo total de varios materiales es la base aritmética para poder revisar y ajustar un presupuesto más adelante."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-presupuesto-de-hace-un-mes
+      micro_objective: Observar que un presupuesto hecho hace tiempo podría ya no coincidir con la realidad actual.
+      narrative_beat: Dina revisa el presupuesto que armó hace un mes y nota que algunos precios del taller han cambiado un poco.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: que-cambio-desde-entonces
+      micro_objective: Identificar qué cambió entre el presupuesto original y la situación actual.
+      narrative_beat: Dr. Rho ayuda a Dina a comparar su presupuesto original con lo que en verdad ha gastado hasta ahora.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: ajustar-con-calma
+      micro_objective: Aplicar un ajuste simple al presupuesto tras notar un cambio en los precios o en el plan.
+      narrative_beat: Zara Vex ayuda a Liruf a ajustar su presupuesto después de notar que un material cuesta un poco más de lo esperado.
+      difficulty: 3
+      suggested_families:
+      - money
+      - analyze
+    - position: 4
+      slug: mi-revision-semanal
+      micro_objective: Proponer un momento fijo, como cada semana, para revisar y ajustar su propio presupuesto.
+      narrative_beat: Dina decide revisar su presupuesto de founder cada domingo, para mantenerlo siempre al día.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Mi Plan de Founder.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Mi Plan de Founder.
+    key_vocabulary:
+    - meta
+    - presupuesto
+    - ahorrar
+    - trampa
+    prior_knowledge: Ha completado los seis temas de la saga Mi Plan de Founder (aventura 8, saga 3).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/mi-plan-de-founder/elegir-mi-meta-de-founder
+    - cosmos-del-manana/mi-plan-de-founder/presupuestar-mi-meta
+    - cosmos-del-manana/mi-plan-de-founder/repartir-ahorrar-gastar-compartir
+    - cosmos-del-manana/mi-plan-de-founder/protegerme-de-trampas-en-el-camino
+    - cosmos-del-manana/mi-plan-de-founder/pedir-ayuda-cuando-la-necesito
+    - cosmos-del-manana/mi-plan-de-founder/mi-plan-completo-listo-para-lanzar
+    - cosmos-del-manana/mi-plan-de-founder/mi-rutina-de-ahorro-gasto-y-donacion
+    - cosmos-del-manana/mi-plan-de-founder/revisar-mi-presupuesto-cada-semana
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir una meta de founder que combine varios aprendizajes y cómo armar un presupuesto simple sin exceder un total dado.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo repartir los recursos entre ahorrar, gastar y compartir y cómo identificar una posible trampa que afecte la meta.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre identificar un momento donde conviene pedir ayuda.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo presentar el plan de founder completo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Mi Plan de Founder con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Mi Plan de Founder con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - meta
+    prior_knowledge: Conoce Mi Plan de Founder (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-mapa-de-todo-lo-aprendido/recordar-inventar-poner-precio-y-vender
+    - mercado-de-los-colores/lo-que-necesito-de-verdad/cosas-que-necesito-para-vivir-bien
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en Mi Plan de Founder.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en Mi Plan de Founder.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en Mi Plan de Founder con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: el-gran-lanzamiento
+  icon: stars
+  title:
+    en-US: The Big Launch
+    es-MX: El Gran Lanzamiento
+    pt-BR: O Grande Lançamento
+  description:
+    en-US: Tell your founder story and celebrate everything you achieved with Dina, Liruf, Dr. Rho, and
+      Zara Vex.
+    es-MX: Cuenta tu historia de founder y celebra todo lo que lograste con Dina, Liruf, Dr. Rho y Zara
+      Vex.
+    pt-BR: Conte sua história de founder e celebre tudo o que conquistou com Dina, Liruf, Dr. Rho e Zara
+      Vex.
+  topics:
+  - position: 1
+    slug: contar-mi-historia-de-founder
+    title_es: Contar mi historia de founder
+    concept: Contar la propia historia de founder —desde el primer problema hasta el plan actual— ayuda
+      a ver todo el camino recorrido.
+    learning_objective: Al final, el niño puede narrar, en un flujo breve, su propia historia de founder
+      a lo largo del curso.
+    key_vocabulary:
+    - historia
+    - contar
+    - camino
+    - founder
+    prior_knowledge: Tiene un plan de founder completo (tema anterior).
+    parent_check: "¿{{name}} puede contarte, en un resumen breve, su propia historia de founder a lo largo del curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-escenario-final
+      micro_objective: Reconocer que se acerca el momento de contar la historia completa del propio viaje
+        como founder.
+      narrative_beat: La nave llega a un gran escenario flotante en el cosmos, donde otros founders comparten
+        sus historias antes del gran lanzamiento.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-el-camino-de-mi-historia
+      micro_objective: Elegir, dentro de una historia ramificada, cómo contar distintos momentos de su
+        viaje como founder.
+      narrative_beat: 'Dina recorre una historia ramificada donde elige qué momentos de su viaje contar
+        primero: el trueque, el taller, o el jardín.'
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: practicar-mi-historia
+      micro_objective: Practicar la narración breve del propio viaje frente a un personaje antes de presentarla
+        en el escenario.
+      narrative_beat: Liruf practica contar su historia de founder frente a Zara Vex, quien le da ideas
+        para mejorarla.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-historia-de-founder
+      micro_objective: Narrar la historia de founder propia, completa, ante el resto de la tripulación.
+      narrative_beat: Dina sube al escenario flotante y cuenta su historia de founder completa, del archipiélago
+        hasta el cosmos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 2
+    slug: elegir-bien-bajo-presion
+    title_es: Elegir bien bajo presión
+    concept: Aplicar rápido lo aprendido, incluso bajo presión de tiempo, demuestra que las decisiones
+      financieras ya se volvieron un hábito.
+    learning_objective: Al final, el niño puede tomar decisiones financieras correctas dentro de un límite
+      de tiempo dado.
+    key_vocabulary:
+    - presión
+    - rapidez
+    - decidir
+    - hábito
+    prior_knowledge: Ha narrado su historia de founder (tema anterior).
+    parent_check: "¿{{name}} puede tomar una decisión financiera correcta rápido, sin ponerse nervioso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-reto-relampago
+      micro_objective: Observar cómo otros founders enfrentan decisiones rápidas en un reto con tiempo
+        limitado.
+      narrative_beat: En el escenario, un grupo de founders participa en un reto relámpago de decisiones
+        financieras rápidas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decidir-rapido-y-bien
+      micro_objective: Tomar decisiones financieras correctas dentro de un tiempo límite en un reto de
+        práctica.
+      narrative_beat: Zara Vex reta a Liruf a responder rápido varias preguntas sobre precios, ahorro y
+        trampas antes de que se acabe el tiempo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: dilemas-del-cosmos
+      micro_objective: Elegir entre dos opciones difíciles relacionadas con decisiones financieras aprendidas
+        durante el curso.
+      narrative_beat: 'Dr. Rho presenta un dilema: ¿gastar ahora en algo divertido o seguir ahorrando
+        para la meta de founder?'
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-desempeno-bajo-presion
+      micro_objective: Completar un reto final de decisiones rápidas aplicando lo aprendido en todo el
+        curso.
+      narrative_beat: Dina completa el reto relámpago del escenario, tomando decisión tras decisión con
+        seguridad y calma.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: celebrar-los-logros-del-equipo
+    title_es: Celebrar los logros del equipo
+    concept: Celebrar los logros propios junto con los de Dina, Liruf, Dr. Rho y Zara Vex reconoce que
+      el viaje se hizo en equipo.
+    learning_objective: Al final, el niño puede nombrar un logro propio y un logro de algún personaje
+      del equipo durante el viaje.
+    key_vocabulary:
+    - logro
+    - equipo
+    - celebrar
+    - reconocer
+    prior_knowledge: Ha completado el reto de decisiones bajo presión (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte un logro propio y un logro de algún compañero durante el viaje?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-equipo-completo
+      micro_objective: Recordar que el viaje se hizo en equipo, junto a Dina, Liruf, Dr. Rho y Zara Vex.
+      narrative_beat: En el escenario flotante, los cuatro personajes se reúnen para repasar juntos todo
+        lo que lograron en el viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: logros-de-cada-quien
+      micro_objective: Identificar un logro específico de cada personaje del equipo durante las aventuras
+        del curso.
+      narrative_beat: Zara Vex recuerda cómo Liruf aprendió a detectar mensajes falsos, y Liruf recuerda
+        cómo Dina armó su primer invento.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: mi-logro-favorito
+      micro_objective: Elegir y describir el logro personal favorito conseguido durante todo el curso.
+      narrative_beat: Dina elige, entre todos sus logros del viaje, el que más orgullo le da recordar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: celebracion-de-equipo
+      micro_objective: Participar en la celebración final del equipo completo, reconociendo logros propios
+        y ajenos.
+      narrative_beat: Con música y luces de estrellas, todo el equipo celebra junto los logros del viaje
+        completo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 4
+    slug: el-reto-final-todo-junto
+    title_es: 'El reto final: todo junto'
+    concept: El reto final combina decisiones de todas las aventuras del curso en un solo desafío integrador.
+    learning_objective: Al final, el niño puede resolver correctamente un desafío que combina habilidades
+      de varias aventuras previas.
+    key_vocabulary:
+    - reto
+    - combinar
+    - integrar
+    - final
+    prior_knowledge: Ha repasado todas las aventuras anteriores (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede resolver un desafío que combine habilidades de varias aventuras distintas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-desafio-de-las-estrellas
+      micro_objective: Reconocer que el reto final combinará ideas de trueque, trabajo, ahorro, compras,
+        inventos, confianza y comunidad.
+      narrative_beat: Dr. Rho anuncia el gran desafío final de las estrellas, que pondrá a prueba todo
+        lo aprendido en el viaje completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: primera-ronda-del-reto
+      micro_objective: Resolver una primera ronda del reto final combinando dos habilidades de aventuras
+        distintas.
+      narrative_beat: En la primera ronda, Dina combina lo aprendido sobre precios justos y sobre detectar
+        anuncios engañosos.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: segunda-ronda-del-reto
+      micro_objective: Resolver una segunda ronda del reto final combinando habilidades de ahorro, cooperación
+        y planeación.
+      narrative_beat: En la segunda ronda, Liruf combina ahorro, cooperación comunitaria y su plan de founder
+        para resolver el desafío.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+    - position: 4
+      slug: reto-final-completado
+      micro_objective: Completar la ronda final del desafío integrador, aplicando habilidades de todas
+        las aventuras del curso.
+      narrative_beat: Dina completa la ronda final del gran desafío de las estrellas, usando todo lo aprendido
+        en su viaje como founder.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - analyze
+  - position: 5
+    slug: que-sigue-despues-de-este-viaje
+    title_es: ¿Qué sigue después de este viaje?
+    concept: Pensar en los próximos pasos después de terminar el curso ayuda a seguir aplicando lo aprendido
+      en la vida real.
+    learning_objective: Al final, el niño puede proponer un próximo paso concreto para seguir aplicando
+      lo aprendido después del curso.
+    key_vocabulary:
+    - siguiente
+    - continuar
+    - aplicar
+    - futuro
+    prior_knowledge: Ha completado el reto final integrador (tema anterior).
+    parent_check: "¿{{name}} puede proponerte un próximo paso concreto para seguir aplicando lo aprendido?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-viaje-no-termina-aqui
+      micro_objective: Reconocer que las habilidades aprendidas en el curso se pueden seguir usando después
+        de terminarlo.
+      narrative_beat: Dr. Rho recuerda a todos que, aunque el viaje por el cosmos termina, las habilidades
+        de founder siguen siendo útiles siempre.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ideas-para-seguir-practicando
+      micro_objective: Observar ejemplos de cómo otros founders siguen practicando lo aprendido en su
+        vida diaria.
+      narrative_beat: Zara Vex comparte cómo sigue usando su frasco de compartir y su presupuesto incluso
+        después del viaje.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: elegir-mi-proximo-paso
+      micro_objective: Elegir, entre varias opciones, un próximo paso concreto para seguir aplicando lo
+        aprendido.
+      narrative_beat: Liruf elige seguir ahorrando cada semana para su siguiente sueño, ahora que sabe
+        cómo hacerlo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-proximo-paso-de-founder
+      micro_objective: Proponer, con sus propias palabras, un próximo paso personal concreto después de
+        terminar el curso.
+      narrative_beat: Dina escribe en su cuaderno cuál será su próximo paso de founder ahora que el viaje
+        por el cosmos está por terminar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 6
+    slug: lanzamiento-littlefounders-para-siempre
+    title_es: 'Lanzamiento: LittleFounders para siempre'
+    concept: El gran lanzamiento final celebra el cierre del curso y reafirma que ser founder es un camino
+      que continúa más allá del viaje.
+    learning_objective: Al final, el niño puede participar en la celebración final resumiendo, con orgullo,
+      todo su camino como founder.
+    key_vocabulary:
+    - lanzamiento
+    - celebrar
+    - founder
+    - siempre
+    prior_knowledge: Ha completado todo el viaje del curso, incluyendo el reto final y su próximo paso.
+    parent_check: "¿{{name}} puede resumir, con orgullo, todo su camino como founder?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-cuenta-regresiva
+      micro_objective: Participar en la cuenta regresiva final que marca el cierre simbólico del viaje
+        por el cosmos.
+      narrative_beat: Toda la tripulación se reúne en la nave para la cuenta regresiva del gran lanzamiento
+        final.
+      difficulty: 1
+      suggested_families:
+      - story
+      - storyplay
+    - position: 2
+      slug: un-mensaje-para-otros-founders
+      micro_objective: Elegir, entre varias opciones, un mensaje breve de aliento para futuros founders
+        que comiencen el curso.
+      narrative_beat: Zara Vex pide a Dina elegir un mensaje breve para dejarles a los founders que comiencen
+        este viaje después de ella.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: repasar-todo-mi-camino
+      micro_objective: Resumir, en un flujo final de reflexión, los momentos más importantes de todo el
+        curso.
+      narrative_beat: Liruf repasa, junto a Dr. Rho, los momentos que más le costaron y los que más disfrutó
+        de todo el viaje.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+    - position: 4
+      slug: el-gran-lanzamiento
+      micro_objective: Cerrar el curso participando en la celebración final junto a Dina, Liruf, Dr. Rho
+        y Zara Vex.
+      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Liruf, Dr. Rho
+        y Zara Vex celebran juntos el gran lanzamiento: LittleFounders, para siempre.'
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 7
+    slug: ensenar-a-otros-lo-aprendido
+    title_es: Enseñar a otros lo aprendido
+    concept: Explicarle a alguien más lo que se aprendió durante el viaje ayuda a recordarlo mejor y también ayuda a esa persona a aprender.
+    learning_objective: Al final, el niño puede explicar una lección del curso a otra persona, como si fuera su maestro por un momento.
+    key_vocabulary:
+    - enseñar
+    - explicar
+    - ayudar
+    - aprender
+    prior_knowledge: Ha narrado su historia de founder completa (tema anterior).
+    parent_check: "¿{{name}} puede explicarle a alguien más, con sus palabras, algo que aprendió en el curso?"
+    prerequisites:
+    - path: bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+      strength: soft
+      reason: "Entender que un trabajo ayuda a alguien más conecta con la idea de que enseñar lo aprendido también ayuda a otro founder."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-founder-que-recien-empieza
+      micro_objective: Observar a un personaje nuevo que está empezando su propio viaje de founder y necesita ayuda.
+      narrative_beat: En el escenario flotante, un founder nuevo llega confundido, sin saber por dónde empezar su propio viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-que-ensenar
+      micro_objective: Elegir una lección propia del curso que le gustaría explicarle a un founder nuevo.
+      narrative_beat: Liruf piensa en qué lección de todo su viaje le gustaría enseñarle primero al founder nuevo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: practicar-mi-ensenanza
+      micro_objective: Practicar explicar con palabras simples una lección aprendida a otro personaje.
+      narrative_beat: Dina practica con Zara Vex cómo explicarle al founder nuevo por qué conviene comparar precios antes de comprar.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-leccion-para-un-founder-nuevo
+      micro_objective: Enseñar con seguridad una lección propia del curso a un founder nuevo dentro de una historia.
+      narrative_beat: Dina le enseña al founder nuevo su lección favorita del viaje, y lo ve entender un poco mejor su propio camino.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 8
+    slug: mi-manual-de-founder
+    title_es: Mi manual de founder
+    concept: Escribir un pequeño manual con las reglas más importantes aprendidas en el viaje deja un recordatorio útil para consultarlo después.
+    learning_objective: Al final, el niño puede reunir al menos tres reglas importantes aprendidas en el curso en un manual propio breve.
+    key_vocabulary:
+    - manual
+    - reglas
+    - reunir
+    - recordatorio
+    prior_knowledge: Ha enseñado una lección propia a un founder nuevo (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte al menos tres reglas importantes que aprendió durante el curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cuaderno-lleno-de-lecciones
+      micro_objective: Reconocer que el cuaderno de viaje ya contiene muchas lecciones importantes de todo el curso.
+      narrative_beat: Dina hojea su cuaderno de viaje, lleno de notas desde el archipiélago hasta el cosmos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: elegir-las-reglas-mas-importantes
+      micro_objective: Elegir, entre varias lecciones del cuaderno, las que le parecen más importantes para recordar siempre.
+      narrative_beat: Zara Vex ayuda a Liruf a elegir sus tres reglas favoritas de todo el viaje para no olvidarlas nunca.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: escribir-mi-manual
+      micro_objective: Escribir, con sus propias palabras, al menos tres reglas importantes aprendidas durante el curso.
+      narrative_beat: Dr. Rho ayuda a Dina a escribir su propio manual de founder con las reglas que más le sirvieron en el viaje.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - storyplay
+    - position: 4
+      slug: mi-manual-terminado
+      micro_objective: Presentar el manual de founder propio, completo, como un recordatorio para el futuro.
+      narrative_beat: Dina muestra a todo el equipo su manual de founder terminado, listo para consultarlo cuando lo necesite en el futuro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre estelar de la nave para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Gran Lanzamiento.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Gran Lanzamiento.
+    key_vocabulary:
+    - historia
+    - presión
+    - logro
+    - reto
+    prior_knowledge: Ha completado los seis temas de la saga El Gran Lanzamiento (aventura 8, saga 4).
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/el-gran-lanzamiento/contar-mi-historia-de-founder
+    - cosmos-del-manana/el-gran-lanzamiento/elegir-bien-bajo-presion
+    - cosmos-del-manana/el-gran-lanzamiento/celebrar-los-logros-del-equipo
+    - cosmos-del-manana/el-gran-lanzamiento/el-reto-final-todo-junto
+    - cosmos-del-manana/el-gran-lanzamiento/que-sigue-despues-de-este-viaje
+    - cosmos-del-manana/el-gran-lanzamiento/lanzamiento-littlefounders-para-siempre
+    - cosmos-del-manana/el-gran-lanzamiento/ensenar-a-otros-lo-aprendido
+    - cosmos-del-manana/el-gran-lanzamiento/mi-manual-de-founder
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo narrar la propia historia de founder y cómo tomar decisiones financieras correctas bajo un límite de tiempo.
+      narrative_beat: Zara Vex abre un cofre estelar de la nave y reta a Dina a recordar, tarjeta por tarjeta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo nombrar un logro propio y uno del equipo y cómo resolver un desafío que combina habilidades de varias aventuras.
+      narrative_beat: Liruf saca del cofre estelar las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre proponer un próximo paso concreto tras el curso.
+      narrative_beat: Dr. Rho presenta una escena nueva de la nave y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo participar en la celebración final del curso, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre estelar, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Gran Lanzamiento con una saga anterior de la nave y con ideas de aventuras anteriores en un reto que combina varios mundos.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Gran Lanzamiento con un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - historia
+    prior_knowledge: Conoce El Gran Lanzamiento (aventura 8) y las lecciones citadas de aventuras anteriores.
+    fact_refs: []
+    review_of:
+    - cosmos-del-manana/mi-plan-de-founder/repartir-ahorrar-gastar-compartir
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-otro-mundo
+      micro_objective: Recordar, tal como se aprendió antes, el concepto de una aventura anterior citado en este reto.
+      narrative_beat: Zara Vex trae un recuerdo de un mundo anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-los-dos-mundos
+      micro_objective: Combinar el concepto recordado de una aventura anterior con lo aprendido en El Gran Lanzamiento.
+      narrative_beat: Dr. Rho muestra cómo esa lección de otro mundo se conecta directamente con lo que Dina aprendió en El Gran Lanzamiento.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la nave usando a la vez las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena de la nave, Dina combina lo aprendido en El Gran Lanzamiento con la lección de la aventura anterior para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-cosmos
+  kind: review
+  icon: workspace_premium
+  title:
+    en-US: The Cosmos's Grand Mission
+    es-MX: La Gran Misión del Cosmos
+    pt-BR: A Grande Missão do Cosmos
+  description:
+    en-US: The course's graduation quest -- a final celebration that interleaves every one of the eight worlds visited on the journey.
+    es-MX: La misión de graduación del curso -- una celebración final que entrelaza cada uno de los ocho mundos visitados en el viaje.
+    pt-BR: A missão de formatura do curso -- uma celebração final que entrelaça cada um dos oito mundos visitados na jornada.
+  topics:
+  - position: 1
+    slug: el-desafio-de-la-graduacion
+    kind: review_quest
+    title_es: El Desafío de la Graduación
+    concept: 'Dr. Rho anuncia el desafío final de la nave: revivir por qué existe el dinero y convertirlo en el primer paso de un sueño de founder.'
+    learning_objective: Al final, el niño puede recordar por qué el dinero facilita los intercambios y nombrar un sueño personal con al menos un paso concreto.
+    key_vocabulary:
+    - dinero
+    - sueño
+    - paso
+    prior_knowledge: Ha viajado por las siete aventuras anteriores y ha comenzado su plan de founder.
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+    - archipielago-del-trueque/el-valor-de-las-cosas/comparo-precios-de-dos-cosas
+    - cosmos-del-manana/suenos-con-forma/con-que-sueno
+    - cosmos-del-manana/suenos-con-forma/dividir-el-sueno-en-pasos
+    lessons:
+    - position: 1
+      slug: el-primer-mapa-estelar-de-la-graduacion
+      micro_objective: Recordar por qué el dinero reemplazó al trueque directo, tal como se vio en la primera aventura.
+      narrative_beat: 'Dr. Rho enciende el primer mapa estelar del viaje: el archipiélago del trueque, donde todo comenzó.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: de-conchas-a-suenos
+      micro_objective: Recordar cómo comparar el valor de dos cosas antes de decidir cuál conviene más.
+      narrative_beat: Zara Vex compara dos objetos del archipiélago y reta a Liruf a recordar cuál valía más y por qué.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: un-sueno-con-forma-otra-vez
+      micro_objective: Recordar cómo nombrar un sueño personal y dividirlo en pasos concretos.
+      narrative_beat: Dina recuerda, sin ayuda, cómo nombró su sueño y lo dividió en pasos al principio de esta aventura.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: mi-primer-paso-de-graduacion
+      micro_objective: Aplicar con seguridad el primer paso de un sueño combinado con la idea de que el dinero facilita los intercambios.
+      narrative_beat: Dina conecta, sin ayuda de Dr. Rho, el primer paso de su sueño con lo que aprendió sobre el dinero en el archipiélago.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+
+  - position: 2
+    slug: trabajo-ahorro-y-compras-de-toda-una-vida
+    kind: review_quest
+    title_es: Trabajo, Ahorro y Compras de Toda una Vida
+    concept: Un desafío combina el esfuerzo del bosque, la paciencia de la aldea y las compras inteligentes del mercado con el presupuesto del plan de founder.
+    learning_objective: Al final, el niño puede recordar y combinar el esfuerzo del trabajo, la paciencia de ahorrar y comprar de forma inteligente con el presupuesto de su meta de founder.
+    key_vocabulary:
+    - esfuerzo
+    - ahorrar
+    - presupuesto
+    prior_knowledge: Ha repasado los orígenes del dinero y el primer paso de su sueño (tema anterior).
+    fact_refs: []
+    review_of:
+    - bosque-de-la-abundancia/chambitas-del-bosque/cuanto-esfuerzo-cuanta-recompensa
+    - aldea-del-ahorro/paciencia-de-tortuga/ahorro-un-poco-cada-semana
+    - mercado-de-los-colores/decisiones-inteligentes/pienso-antes-de-comprar
+    - cosmos-del-manana/mi-plan-de-founder/presupuestar-mi-meta
+    lessons:
+    - position: 1
+      slug: el-segundo-y-tercer-mapa-estelar
+      micro_objective: Recordar por qué el esfuerzo del trabajo merece una recompensa y por qué ahorrar requiere paciencia.
+      narrative_beat: Dr. Rho enciende los mapas estelares del bosque y de la aldea, y pide a Dina recordar el esfuerzo y la paciencia de esos mundos.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-cuarto-mapa-estelar
+      micro_objective: Recordar cómo pensar antes de comprar ayuda a decidir mejor.
+      narrative_beat: Zara Vex recuerda a Liruf una compra del mercado de los colores y le pregunta si pensó bien antes de decidir.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: presupuestar-con-todo-lo-aprendido
+      micro_objective: Combinar el esfuerzo, la paciencia y las compras inteligentes con el presupuesto de la meta de founder.
+      narrative_beat: Dina arma su presupuesto de founder recordando el esfuerzo del bosque, la paciencia de la aldea y las compras del mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-presupuesto-de-toda-una-vida
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación de esfuerzo, ahorro y compras inteligentes en el presupuesto propio.
+      narrative_beat: Dina revisa su presupuesto de founder y confirma que refleja todo lo aprendido sobre esfuerzo, ahorro y compras inteligentes.
+      difficulty: 2
+      suggested_families:
+      - money
+      - storyplay
+
+  - position: 3
+    slug: inventar-cuidarse-y-compartir-de-toda-una-vida
+    kind: review_quest
+    title_es: Inventar, Cuidarse y Compartir de Toda una Vida
+    concept: Un desafío combina el precio justo del taller, las señales de alerta del faro y la cooperación del jardín con la protección del plan de founder.
+    learning_objective: Al final, el niño puede recordar y combinar un precio justo, una señal de alerta y la cooperación comunitaria con la protección de su propia meta de founder.
+    key_vocabulary:
+    - precio justo
+    - alerta
+    - cooperar
+    prior_knowledge: Ha combinado esfuerzo, ahorro y compras inteligentes en su presupuesto (tema anterior).
+    fact_refs: []
+    review_of:
+    - taller-de-los-inventores/el-precio-justo/ni-muy-caro-ni-muy-barato
+    - faro-de-la-confianza/mensajes-sospechosos/senales-de-un-mensaje-falso
+    - jardin-compartido/una-parte-para-el-bien-comun/cooperar-es-mas-fuerte-que-solo
+    - cosmos-del-manana/mi-plan-de-founder/protegerme-de-trampas-en-el-camino
+    lessons:
+    - position: 1
+      slug: el-quinto-mapa-estelar
+      micro_objective: Recordar cómo reconocer si un precio propuesto es demasiado alto o demasiado bajo.
+      narrative_beat: Dr. Rho enciende el mapa estelar del taller y pide a Liruf recordar cómo se ponía un precio justo a un invento.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-sexto-y-septimo-mapa-estelar
+      micro_objective: Recordar una señal de alerta de un mensaje falso y por qué cooperar resuelve mejor un problema grande.
+      narrative_beat: Zara Vex enciende juntos los mapas del faro y del jardín, y reta a Dina a recordar una señal de alerta y una lección de cooperación.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: proteger-mi-meta-con-todo-lo-aprendido
+      micro_objective: Combinar el precio justo, las señales de alerta y la cooperación con la protección de la meta de founder.
+      narrative_beat: Dina revisa una oferta tentadora relacionada con su meta de founder, aplicando precio justo, señales de alerta y cooperación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-meta-protegida-de-toda-una-vida
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación de precio justo, alerta y cooperación para proteger la meta propia.
+      narrative_beat: Dina confirma, sin ayuda de Dr. Rho, que su meta de founder está protegida con todo lo aprendido en el taller, el faro y el jardín.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 4
+    slug: el-reto-de-los-ocho-mundos
+    kind: review_quest
+    title_es: El Reto de los Ocho Mundos
+    concept: El primer gran desafío de la graduación combina, en un solo recorrido, una idea de cada uno de los ocho mundos visitados.
+    learning_objective: Al final, el niño puede aplicar en un solo desafío una idea representativa de cada una de las ocho aventuras del curso.
+    key_vocabulary:
+    - confianza
+    - trabajo
+    - ahorro
+    prior_knowledge: Ha repasado por separado los orígenes del dinero, el trabajo y el ahorro, y la protección del plan (temas anteriores).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/un-trabajo-ayuda-a-alguien-mas
+    - aldea-del-ahorro/metas-de-la-aldea/divido-mis-monedas-en-frascos
+    - mercado-de-los-colores/mi-bolsa-de-compras/primero-lo-que-necesito
+    - taller-de-los-inventores/dia-de-mercado/guardar-las-ganancias
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    lessons:
+    - position: 1
+      slug: las-ocho-luces-de-la-nave
+      micro_objective: Recordar, en conjunto, una idea representativa de cada uno de los ocho mundos visitados.
+      narrative_beat: Dr. Rho enciende, una por una, las ocho luces de la nave, cada una representando un mundo del viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-founder-nuevo-en-la-nave
+      micro_objective: Aplicar ideas de varios mundos para ayudar a un personaje nuevo a entender el viaje completo.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo de founder y reta a Liruf a explicarle, con ejemplos de varios mundos, cómo funciona el dinero.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-primer-reto-de-los-ocho-mundos
+      micro_objective: Aplicar con seguridad ideas de confianza, trabajo, ahorro, compras, ventas y bancos en un desafío único.
+      narrative_beat: Dina resuelve el primer gran desafío de la nave, combinando de una sola vez ideas de seis mundos distintos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-por-los-ocho-mundos
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, ideas de varios mundos aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido combinando lo aprendido en varios mundos, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 5
+    slug: el-segundo-reto-de-los-ocho-mundos
+    kind: review_quest
+    title_es: El Segundo Reto de los Ocho Mundos
+    concept: Un segundo gran desafío combina, con ejemplos distintos a los del primero, otra idea de cada uno de los ocho mundos visitados.
+    learning_objective: Al final, el niño puede aplicar en un solo desafío una segunda idea representativa de cada una de las ocho aventuras del curso.
+    key_vocabulary:
+    - registro
+    - cuidado
+    - compartir
+    prior_knowledge: Ha completado el primer reto de los ocho mundos (tema anterior).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+    - bosque-de-la-abundancia/la-cosecha-de-monedas/guardo-un-registro-de-lo-que-gano
+    - aldea-del-ahorro/lugares-seguros-para-mis-monedas/cuidar-mi-frasco-de-ahorros
+    - mercado-de-los-colores/el-mercado-y-sus-precios/elijo-el-mejor-precio
+    - jardin-compartido/dar-con-el-corazon/dar-sin-esperar-algo-a-cambio
+    - cosmos-del-manana/el-gran-lanzamiento/celebrar-los-logros-del-equipo
+    lessons:
+    - position: 1
+      slug: las-ocho-luces-brillan-de-nuevo
+      micro_objective: Recordar cómo juntar monedas para llegar a un número y cómo llevar un registro de lo ganado.
+      narrative_beat: Dr. Rho enciende de nuevo las ocho luces de la nave y pide a Dina recordar cómo contaba y registraba sus monedas al inicio del viaje.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: cuidar-y-elegir-de-nuevo
+      micro_objective: Recordar cómo cuidar un frasco de ahorros y cómo elegir el mejor precio entre dos opciones.
+      narrative_beat: Zara Vex reta a Liruf a recordar cómo cuidaba su frasco de ahorros y cómo elegía el mejor precio en el mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: el-segundo-reto-de-los-ocho-mundos
+      micro_objective: Aplicar con seguridad ideas de conteo, cuidado, comparación, dar sin condición y celebración en equipo en un desafío único.
+      narrative_beat: Dina resuelve el segundo gran desafío de la nave, combinando de una sola vez ideas de otros seis mundos distintos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-segundo-recorrido-por-los-ocho-mundos
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, una segunda combinación de ideas de varios mundos.
+      narrative_beat: Dina completa su segundo recorrido combinando lo aprendido en varios mundos, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+
+  - position: 6
+    slug: la-gran-mision-del-cosmos
+    kind: review_quest
+    title_es: La Gran Misión del Cosmos
+    concept: La graduación final del curso reúne, uno por uno, el cierre de cada uno de los ocho mundos visitados en un solo gran lanzamiento.
+    learning_objective: Al final, el niño puede resumir, con orgullo, la lección de cierre de cada una de las ocho aventuras del curso como parte de su graduación de founder.
+    key_vocabulary:
+    - graduación
+    - founder
+    - celebrar
+    prior_knowledge: Ha completado los dos retos de los ocho mundos y todo el viaje del curso (temas anteriores).
+    fact_refs: []
+    review_of:
+    - archipielago-del-trueque/el-valor-de-las-cosas/isla-del-trueque-repaso-final
+    - bosque-de-la-abundancia/el-circulo-de-dar-y-recibir/bosque-de-la-abundancia-repaso-final
+    - aldea-del-ahorro/metas-de-la-aldea/aldea-del-ahorro-repaso-final
+    - mercado-de-los-colores/decisiones-inteligentes/mercado-de-los-colores-repaso-final
+    - taller-de-los-inventores/dia-de-mercado/planear-el-proximo-invento
+    - faro-de-la-confianza/el-banco-del-faro/confiar-en-un-banco-de-verdad
+    - jardin-compartido/celebrar-juntos/el-jardin-compartido-un-ano-despues
+    - cosmos-del-manana/el-gran-lanzamiento/lanzamiento-littlefounders-para-siempre
+    lessons:
+    - position: 1
+      slug: ocho-mundos-una-sola-nave
+      micro_objective: Recordar, uno por uno, el cierre de cada uno de los ocho mundos visitados durante el curso.
+      narrative_beat: Toda la tripulación se reúne en la nave mientras Dr. Rho repasa, mundo por mundo, el cierre de cada aventura recorrida.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: lo-que-cada-mundo-me-dejo
+      micro_objective: Recordar y ordenar una lección de cierre distinta de cada uno de los ocho mundos.
+      narrative_beat: Zara Vex reparte ocho tarjetas, una por mundo, y reta a Dina a ordenarlas con la lección de cierre de cada una.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: la-graduacion-de-founder
+      micro_objective: Aplicar, en un desafío final integrador, la lección de cierre de los ocho mundos combinada con el plan de founder propio.
+      narrative_beat: Dina enfrenta el desafío final de graduación, combinando el cierre de los ocho mundos con su propio plan de founder.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: littlefounders-para-siempre
+      micro_objective: Celebrar, resumiendo con orgullo, todo el camino recorrido desde el archipiélago hasta el cosmos.
+      narrative_beat: 'Con las estrellas del cosmos brillando alrededor de la nave, Dina, Liruf, Dr. Rho y Zara Vex celebran juntos la graduación de founder: LittleFounders, para siempre.'
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

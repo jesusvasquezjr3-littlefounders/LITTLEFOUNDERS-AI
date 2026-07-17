@@ -1,0 +1,20 @@
+{
+  "api": {
+    "VALIDATION_ERROR": "Something in the request wasn't right.",
+    "UNAUTHORIZED": "You need to sign in for that.",
+    "FORBIDDEN": "You don't have permission for that.",
+    "NOT_FOUND": "We couldn't find that.",
+    "CONFLICT": "That conflicts with something that already exists.",
+    "RATE_LIMITED": "Too many tries — wait a moment.",
+    "INTERNAL": "Something went wrong on our side.",
+    "INVALID_CREDENTIALS": "That email and password don't match.",
+    "EMAIL_IN_USE": "There's already an account with that email.",
+    "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
+    "ALREADY_VERIFIED": "This account is already a verified Tutor.",
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
+    "USERNAME_TAKEN": "That @username is taken — try another one.",
+    "LESSON_LOCKED": "This lesson isn't unlocked yet — finish the ones before it first.",
+    "ATTEMPTS_EXHAUSTED": "No attempts left for this question.",
+    "UNSUPPORTED_SEGMENT": "This part of the lesson can't be graded right now."
+  }
+}

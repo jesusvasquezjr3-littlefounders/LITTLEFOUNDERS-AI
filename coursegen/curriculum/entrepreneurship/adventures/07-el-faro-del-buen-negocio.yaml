@@ -1,0 +1,2636 @@
+schema_version: 1
+adventure:
+  position: 7
+  slug: el-faro-del-buen-negocio
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Lighthouse of Good Business
+    es-MX: El Faro del Buen Negocio
+    pt-BR: O Farol do Bom Negócio
+  description:
+    en-US: Across an archipelago of small businesses, Dina and Liruf learn what makes a business good all
+      the way through -- ethics, fair competition, kept promises, and caring for resources.
+    es-MX: En un archipiélago de pequeños negocios, Dina y Liruf aprenden qué hace bueno a un negocio de
+      principio a fin -- ética, competencia justa, promesas cumplidas y cuidado de los recursos.
+    pt-BR: Em um arquipélago de pequenos negócios, Dina e Liruf aprendem o que torna um negócio bom do início
+      ao fim -- ética, concorrência justa, promessas cumpridas e cuidado com os recursos.
+  narrative_arc: 'Dina y Liruf navegan desde el taller del valle hasta un archipiélago de pequeños negocios
+    coronado por un faro donde Dr. Rho vigila, como siempre, que cada trato sea justo. Zara Vex organiza
+    una feria de negocios del archipiélago donde varios puestos compiten por los mismos clientes, y ahí
+    Dina y Liruf descubren que un buen negocio no se mide solo por cuánto vende, sino por cómo trata a las
+    personas, cómo compite, si cumple lo que promete y si cuida los recursos que usa. Liruf aprende haciendo,
+    metiendo las manos en cada decisión difícil del faro, mientras Dina reflexiona junto a Dr. Rho sobre
+    lo que de verdad hace bueno a un negocio, más allá de la ganancia.'
+sagas:
+- position: 1
+  slug: etica-del-negocio
+  icon: verified_user
+  title:
+    en-US: Business Ethics
+    es-MX: Ética del Negocio
+    pt-BR: Ética do Negócio
+  description:
+    en-US: Learn to make the right choice in a business, even when it is harder than the easy one.
+    es-MX: Aprende a elegir lo correcto en un negocio, incluso cuando es más difícil que lo fácil.
+    pt-BR: Aprenda a escolher o certo em um negócio, mesmo quando é mais difícil do que o fácil.
+  topics:
+  - position: 1
+    slug: que-es-la-etica-en-un-negocio
+    title_es: Qué es la ética en un negocio
+    concept: La ética en un negocio es hacer lo correcto en cada decisión, aunque nadie esté mirando en
+      ese momento.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa la ética en un
+      negocio.
+    key_vocabulary:
+    - ética
+    - correcto
+    - decisión
+    - negocio
+    prior_knowledge: Sabe resolver desacuerdos y repartir con justicia dentro de un equipo (aventura anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué significa hacer lo correcto en un negocio?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-puertas-del-faro-del-negocio
+      micro_objective: Reconocer que un buen negocio se mide también por hacer lo correcto, no solo por
+        vender mucho.
+      narrative_beat: Dina y Liruf llegan a un archipiélago de pequeños negocios coronado por un faro donde
+        Dr. Rho vigila que cada trato sea justo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: lo-correcto-o-lo-conveniente
+      micro_objective: Distinguir una decisión correcta de una decisión que solo es conveniente para el
+        negocio.
+      narrative_beat: Dr. Rho compara una decisión correcta con una que solo conviene al negocio, para
+        que Liruf note la diferencia.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: quien-decide-lo-que-es-correcto
+      micro_objective: Reconocer que las decisiones correctas de un negocio se piensan considerando a
+        todas las personas afectadas.
+      narrative_beat: Zara Vex explica que decidir qué es correcto en un negocio significa pensar en todas
+        las personas a las que afecta esa decisión.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-primera-decision-etica
+      micro_objective: Proponer, en una escena nueva, una primera decisión ética simple para un negocio.
+      narrative_beat: Frente a su primer puesto del archipiélago, Dina propone su primera decisión pensada
+        con ética.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: hacer-lo-correcto-aunque-nadie-mire
+    title_es: Hacer lo correcto aunque nadie mire
+    concept: Practicar hacer lo correcto en un negocio incluso cuando nadie lo estaría viendo es lo que
+      de verdad define la ética.
+    learning_objective: Al final, el niño puede decidir hacer lo correcto en una situación donde nadie
+      se daría cuenta.
+    key_vocabulary:
+    - nadie
+    - mirar
+    - correcto
+    - definir
+    prior_knowledge: Sabe qué es la ética en un negocio (tema anterior).
+    parent_check: "¿{{name}} hace lo correcto incluso cuando sabe que nadie se daría cuenta si no lo hiciera?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: nadie-esta-viendo
+      micro_objective: Reconocer una situación de negocio donde nadie notaría si se hace algo incorrecto.
+      narrative_beat: Liruf se da cuenta de que podría cobrar de más a un cliente distraído sin que nadie
+        más lo notara.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decidir-igual-que-si-me-vieran
+      micro_objective: Practicar decidir de la misma forma correcta, esté alguien mirando o no.
+      narrative_beat: Dr. Rho enseña a Dina a decidir siempre de la misma forma correcta, la vean o no
+        la vean.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: como-me-siento-despues
+      micro_objective: Explicar cómo se siente una persona después de haber hecho lo correcto, aunque nadie
+        lo supiera.
+      narrative_beat: Zara Vex pregunta a Liruf cómo se sintió después de haber devuelto el cambio de más
+        que nadie hubiera notado.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-decision-sin-testigos
+      micro_objective: Aplicar con seguridad hacer lo correcto frente a una situación nueva sin testigos.
+      narrative_beat: Frente a una nueva oportunidad sin testigos, Dina elige hacer lo correcto, tal como
+        practicó.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: un-negocio-que-cuida-a-las-personas
+    title_es: Un negocio que cuida a las personas
+    concept: Un negocio ético piensa en cómo sus decisiones afectan a las personas -clientes, equipo y
+      comunidad-, no solo en la ganancia.
+    learning_objective: Al final, el niño puede identificar cómo una decisión de negocio afecta a distintas
+      personas.
+    key_vocabulary:
+    - afectar
+    - personas
+    - comunidad
+    - cuidar
+    prior_knowledge: Sabe hacer lo correcto aunque nadie mire (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte a quién puede afectar una decisión de un negocio, además del cliente?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mas-alla-del-cliente
+      micro_objective: Reconocer que una decisión de negocio puede afectar a más personas que solo el
+        cliente directo.
+      narrative_beat: Liruf descubre que una decisión de su puesto también afecta al vecino del muelle,
+        no solo a su cliente.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pensar-en-el-equipo-tambien
+      micro_objective: Reconocer que las decisiones de un negocio también afectan a las personas del equipo.
+      narrative_beat: Dr. Rho recuerda a Dina que una decisión del negocio también afecta a los compañeros
+        que trabajan con ella.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: pensar-en-la-comunidad
+      micro_objective: Reconocer que un negocio también forma parte de una comunidad a la que puede afectar.
+      narrative_beat: Zara Vex explica cómo un negocio del archipiélago afecta también a toda la comunidad
+        que vive alrededor.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-mapa-de-personas-afectadas
+      micro_objective: Elaborar un mapa simple de las personas que afecta una decisión propia de negocio.
+      narrative_beat: Dina dibuja un mapa simple de todas las personas a las que afecta una decisión nueva
+        de su puesto.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 4
+    slug: cuando-la-ganancia-facil-no-es-correcta
+    title_es: Cuando la ganancia fácil no es correcta
+    concept: Reconocer una situación donde se podría lograr una ganancia fácil haciendo algo incorrecto,
+      y elegir no hacerlo.
+    learning_objective: Al final, el niño puede reconocer cuándo una ganancia fácil vendría de algo incorrecto.
+    key_vocabulary:
+    - ganancia
+    - fácil
+    - incorrecto
+    - elegir
+    prior_knowledge: Sabe cómo un negocio afecta a distintas personas (tema anterior).
+    parent_check: "¿{{name}} puede reconocer cuándo ganar dinero fácil vendría de hacer algo incorrecto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-oferta-tentadora
+      micro_objective: Reconocer una oferta tentadora de negocio que en realidad implica hacer algo incorrecto.
+      narrative_beat: A Liruf le ofrecen ganar mucho dinero fácil si vende algo que sabe que no funciona
+        bien.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ganancia-facil-o-ganancia-correcta
+      micro_objective: Comparar el resultado de una ganancia fácil incorrecta con una ganancia correcta,
+        aunque sea menor.
+      narrative_beat: Dr. Rho compara con Dina lo que pasaría si eligiera la ganancia fácil incorrecta
+        frente a la ganancia correcta.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-decir-que-no
+      micro_objective: Explicar por qué conviene decir que no a una ganancia fácil que viene de algo incorrecto.
+      narrative_beat: Zara Vex explica a Liruf por qué decir que no a una ganancia fácil incorrecta cuida
+        el negocio a largo plazo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-no-a-la-ganancia-facil
+      micro_objective: Aplicar con seguridad decir que no a una ganancia fácil incorrecta en una situación
+        nueva.
+      narrative_beat: Frente a una nueva oferta tentadora, Dina dice que no, eligiendo la ganancia correcta
+        en vez de la fácil.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: elegir-lo-correcto-sobre-lo-facil
+    title_es: Elegir lo correcto sobre lo fácil
+    concept: Practicar elegir la opción correcta de un negocio, aunque sea más difícil o lenta que la opción
+      fácil.
+    learning_objective: Al final, el niño puede elegir la opción correcta de un negocio aunque sea más
+      difícil.
+    key_vocabulary:
+    - elegir
+    - correcto
+    - difícil
+    - opción
+    prior_knowledge: Sabe reconocer cuándo una ganancia fácil no es correcta (tema anterior).
+    parent_check: "¿{{name}} elige hacer las cosas de la forma correcta, aunque sea más lenta o más difícil?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-camino-facil-y-el-correcto
+      micro_objective: Reconocer dos caminos posibles para un negocio, uno fácil y uno correcto pero más
+        lento.
+      narrative_beat: Liruf ve dos caminos posibles para terminar un pedido, uno rápido y descuidado, otro
+        correcto pero más lento.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-pasa-a-largo-plazo
+      micro_objective: Explicar qué pasa a largo plazo cuando un negocio elige siempre lo correcto sobre
+        lo fácil.
+      narrative_beat: Dr. Rho explica a Dina qué le pasa a un negocio, con el tiempo, cuando siempre elige
+        lo correcto sobre lo fácil.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: practicar-elegir-lo-correcto
+      micro_objective: Practicar elegir la opción correcta dentro de una historia, aunque tome más tiempo.
+      narrative_beat: Zara Vex pone a prueba a Liruf con una decisión donde lo correcto toma más tiempo
+        que lo fácil.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-eleccion-correcta
+      micro_objective: Aplicar con seguridad elegir la opción correcta frente a una situación nueva de
+        negocio.
+      narrative_beat: Dina elige, sin ayuda, la opción correcta de su negocio, aunque sea más difícil que
+        la fácil.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: las-reglas-que-todo-negocio-respeta
+    title_es: Las reglas que todo negocio respeta
+    concept: Reconocer reglas básicas que todo negocio ético respeta, como no dañar a nadie a propósito
+      y ser honesto siempre.
+    learning_objective: Al final, el niño puede nombrar al menos dos reglas básicas que un negocio ético
+      respeta.
+    key_vocabulary:
+    - reglas
+    - respetar
+    - dañar
+    - básico
+    prior_knowledge: Sabe elegir lo correcto sobre lo fácil (tema anterior).
+    parent_check: "¿{{name}} puede nombrarte al menos dos reglas básicas que un negocio ético siempre respeta?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-libro-de-reglas-del-faro
+      micro_objective: Reconocer que existe un pequeño conjunto de reglas básicas que todo negocio del
+        archipiélago respeta.
+      narrative_beat: Dr. Rho muestra a Dina un pequeño libro con las reglas básicas que todo negocio del
+        archipiélago respeta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: no-danar-a-proposito
+      micro_objective: Reconocer la regla de no dañar a nadie a propósito como una regla básica de todo
+        negocio.
+      narrative_beat: Zara Vex explica que ningún negocio ético del archipiélago debe dañar a propósito
+        a otra persona.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: ser-honesto-siempre
+      micro_objective: Reconocer la regla de ser honesto siempre como otra regla básica de todo negocio.
+      narrative_beat: Liruf recuerda que ser honesto siempre, tal como aprendió en el reino, también es
+        una regla básica del faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: mi-lista-de-reglas-basicas
+      micro_objective: Elaborar una lista propia con al menos dos reglas básicas de un negocio ético.
+      narrative_beat: Dina arma su propia lista de reglas básicas para su negocio, inspirada en el libro
+        del faro.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 7
+    slug: un-negocio-etico-se-gana-el-respeto
+    title_es: Un negocio ético se gana el respeto
+    concept: Explicar cómo un negocio ético se gana el respeto de la comunidad con el tiempo, decisión
+      tras decisión.
+    learning_objective: Al final, el niño puede explicar cómo un negocio ético gana el respeto de su comunidad.
+    key_vocabulary:
+    - respeto
+    - ganar
+    - comunidad
+    - tiempo
+    prior_knowledge: Conoce las reglas básicas que todo negocio respeta (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo un negocio se gana el respeto de las personas con el tiempo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-negocio-mas-respetado-del-archipielago
+      micro_objective: Reconocer un ejemplo de negocio que se ganó el respeto de todo el archipiélago con
+        el tiempo.
+      narrative_beat: Dr. Rho cuenta la historia de un negocio del archipiélago que se ganó el respeto
+        de todos, decisión tras decisión.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decision-tras-decision
+      micro_objective: Explicar que el respeto de un negocio se construye con muchas decisiones correctas,
+        no una sola.
+      narrative_beat: Zara Vex explica a Liruf que el respeto de un negocio no llega de un solo golpe, sino
+        de muchas decisiones correctas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: el-respeto-tambien-se-puede-perder
+      micro_objective: Reconocer que el respeto de un negocio, aunque tome tiempo en ganarse, se puede
+        perder rápido con una mala decisión.
+      narrative_beat: Dr. Rho explica que el respeto que un negocio tarda tanto en ganar se puede perder
+        muy rápido con una sola mala decisión.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-camino-hacia-el-respeto
+      micro_objective: Proponer un plan propio de pequeñas decisiones correctas para ganar el respeto de
+        los clientes.
+      narrative_beat: Dina propone su propio plan de pequeñas decisiones correctas para ganar el respeto
+        de sus clientes del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: mi-brujula-etica-del-faro
+    title_es: Mi brújula ética del faro
+    concept: Aplicar una guía ética propia -una brújula de decisiones correctas- frente a decisiones nuevas
+      de negocio.
+    learning_objective: Al final, el niño puede aplicar una guía ética propia frente a decisiones nuevas
+      de negocio.
+    key_vocabulary:
+    - brújula
+    - guía
+    - decisión
+    - aplicar
+    prior_knowledge: Conoce todo lo aprendido sobre ética de negocio enseñado en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales de ética de negocio que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: armo-mi-brujula
+      micro_objective: Armar una brújula ética propia con las reglas principales aprendidas en la saga.
+      narrative_beat: Con ayuda de Dr. Rho, Dina arma su propia brújula ética con las reglas principales
+        que aprendió en el faro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: primera-decision-con-mi-brujula
+      micro_objective: Aplicar la brújula ética propia frente a una primera decisión de negocio nueva.
+      narrative_beat: Liruf usa su nueva brújula ética para decidir frente a una situación nueva de su puesto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 3
+      slug: una-decision-dificil-con-mi-brujula
+      micro_objective: Aplicar la brújula ética propia frente a una decisión de negocio más difícil.
+      narrative_beat: Zara Vex pone a prueba la brújula ética de Liruf con una decisión de negocio más difícil
+        que las anteriores.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-brujula-lista-para-el-archipielago
+      micro_objective: Presentar la brújula ética propia terminada, explicando cómo la usará en su negocio.
+      narrative_beat: Dina presenta su brújula ética terminada a Zara Vex, explicando cómo la usará en
+        su negocio del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Ética del Negocio.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Ética del Negocio.
+    key_vocabulary:
+    - ética
+    - correcto
+    - reglas
+    - respeto
+    prior_knowledge: Ha completado los ocho temas de la saga Ética del Negocio (aventura 7, saga 1).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/que-es-la-etica-en-un-negocio
+    - el-faro-del-buen-negocio/etica-del-negocio/hacer-lo-correcto-aunque-nadie-mire
+    - el-faro-del-buen-negocio/etica-del-negocio/un-negocio-que-cuida-a-las-personas
+    - el-faro-del-buen-negocio/etica-del-negocio/cuando-la-ganancia-facil-no-es-correcta
+    - el-faro-del-buen-negocio/etica-del-negocio/elegir-lo-correcto-sobre-lo-facil
+    - el-faro-del-buen-negocio/etica-del-negocio/las-reglas-que-todo-negocio-respeta
+    - el-faro-del-buen-negocio/etica-del-negocio/un-negocio-etico-se-gana-el-respeto
+    - el-faro-del-buen-negocio/etica-del-negocio/mi-brujula-etica-del-faro
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es la ética en un negocio y por qué hacer lo correcto
+        aunque nadie mire.
+      narrative_beat: Zara Vex abre el cofre del faro y reta a Dina a recordar, señal por señal, lo primero
+        que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo un negocio cuida a las personas y cuándo una ganancia
+        fácil no es correcta.
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre elegir lo correcto
+        sobre lo fácil y respetar las reglas básicas.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo un negocio ético
+        se gana el respeto, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada señal
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Ética del Negocio con la honestidad al vender, en un reto
+      que combina ambos mundos del faro y del reino.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Ética del Negocio con
+      un concepto de una aventura anterior.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - ética
+    prior_knowledge: Conoce Ética del Negocio (saga 1, aventura 7) y Vender con Honestidad (aventura 5).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-ventas/vender-con-honestidad/decir-la-verdad-aunque-cueste-una-venta
+    - el-reino-de-las-ventas/vender-con-honestidad/reconocer-cuando-alguien-no-vende-con-honestidad
+    - el-faro-del-buen-negocio/etica-del-negocio/hacer-lo-correcto-aunque-nadie-mire
+    - el-faro-del-buen-negocio/etica-del-negocio/cuando-la-ganancia-facil-no-es-correcta
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Vender con Honestidad.
+      narrative_beat: Zara Vex trae un recuerdo del reino de las ventas y pide a Liruf recordarlo sin ayuda,
+        antes de mezclarlo con la ética del faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Vender con Honestidad con lo aprendido en Ética
+        del Negocio.
+      narrative_beat: Dr. Rho muestra cómo decir la verdad al vender se conecta directamente con elegir
+        lo correcto sobre lo fácil en un negocio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido sobre ética de negocio
+        con la honestidad al vender para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: competencia-justa
+  icon: flag
+  title:
+    en-US: Fair Competition
+    es-MX: Competencia Justa
+    pt-BR: Concorrência Justa
+  description:
+    en-US: Learn to compete for the same customers with a better product, never by lying or copying.
+    es-MX: Aprende a competir por los mismos clientes con un mejor producto, nunca mintiendo ni copiando.
+    pt-BR: Aprenda a competir pelos mesmos clientes com um produto melhor, nunca mentindo ou copiando.
+  topics:
+  - position: 1
+    slug: que-es-la-competencia
+    title_es: Qué es la competencia
+    concept: La competencia es cuando varios negocios ofrecen algo parecido y las personas eligen entre
+      ellos según lo que más les convenga.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué es la competencia entre negocios.
+    key_vocabulary:
+    - competencia
+    - parecido
+    - elegir
+    - convenir
+    prior_knowledge: Sabe usar su brújula ética frente a decisiones de negocio (saga anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus palabras, qué es la competencia entre negocios?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-puestos-parecidos
+      micro_objective: Reconocer una situación donde dos puestos del archipiélago ofrecen algo parecido.
+      narrative_beat: Liruf descubre dos puestos del archipiélago que venden limonada muy parecida, uno
+        frente al otro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-elige-el-cliente
+      micro_objective: Reconocer distintas razones por las que un cliente puede elegir un negocio sobre
+        otro parecido.
+      narrative_beat: Dr. Rho pregunta a Dina por qué un cliente elegiría un puesto de limonada sobre el
+        otro, casi idéntico.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: la-competencia-no-es-mala
+      micro_objective: Explicar por qué la competencia entre negocios no es algo malo en sí misma.
+      narrative_beat: Zara Vex explica a Liruf que competir por los mismos clientes no es malo, si se hace
+        de forma justa.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-primer-competidor
+      micro_objective: Reconocer, en una situación propia, a un competidor y qué ofrece de parecido.
+      narrative_beat: Dina reconoce a su primer competidor del archipiélago y observa qué ofrece de parecido
+        a su propio puesto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: competir-con-un-buen-producto
+    title_es: Competir con un buen producto
+    concept: Competir mejorando el propio producto -su calidad, su sabor, su cuidado- es una forma justa
+      de ganar más clientes.
+    learning_objective: Al final, el niño puede proponer una mejora al propio producto para competir de
+      forma justa.
+    key_vocabulary:
+    - mejorar
+    - calidad
+    - competir
+    - justo
+    prior_knowledge: Sabe qué es la competencia entre negocios (tema anterior).
+    parent_check: "¿{{name}} entiende que la forma justa de ganar clientes es mejorar lo que ofrece, no otra cosa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mejorar-en-vez-de-quejarse
+      micro_objective: Reconocer que mejorar el propio producto es más útil que quejarse de un competidor.
+      narrative_beat: En vez de quejarse del puesto vecino, Liruf decide pensar en cómo mejorar su propia
+        limonada.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-puedo-mejorar
+      micro_objective: Identificar una característica concreta del propio producto que se podría mejorar.
+      narrative_beat: Dr. Rho ayuda a Dina a identificar una característica concreta de su producto que
+        podría mejorar.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: aplicar-la-mejora-para-competir
+      micro_objective: Aplicar una mejora concreta al producto propio pensando en competir de forma justa.
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica una mejora concreta a su producto para competir
+        mejor.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+    - position: 4
+      slug: mi-producto-mejorado-para-competir
+      micro_objective: Presentar un producto propio mejorado, explicando cómo compite mejor de forma justa.
+      narrative_beat: Dina presenta su producto mejorado a Zara Vex, explicando cómo ahora compite mejor
+        de forma justa.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - storyplay
+  - position: 3
+    slug: competir-sin-hablar-mal-de-otros
+    title_es: Competir sin hablar mal de otros
+    concept: Competir de forma justa significa no hablar mal ni mentir sobre otro negocio para ganar clientes.
+    learning_objective: Al final, el niño puede reconocer y evitar hablar mal de un negocio competidor.
+    key_vocabulary:
+    - hablar mal
+    - mentir
+    - competidor
+    - evitar
+    prior_knowledge: Sabe competir con un buen producto (tema anterior).
+    parent_check: "¿{{name}} evita hablar mal de otros para verse mejor él mismo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-comentario-que-no-es-cierto
+      micro_objective: Reconocer un comentario falso o exagerado sobre un negocio competidor.
+      narrative_beat: Liruf escucha a otro mercader decir algo falso sobre el puesto vecino, solo para verse
+        mejor.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-esto-no-es-justo
+      micro_objective: Explicar por qué hablar mal de un competidor, aunque ayude a corto plazo, no es
+        una forma justa de competir.
+      narrative_beat: Dr. Rho explica a Dina por qué hablar mal de un competidor no es una forma justa
+        de ganar clientes.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: que-decir-en-vez-de-hablar-mal
+      micro_objective: Practicar qué decir sobre el propio negocio en vez de hablar mal de un competidor.
+      narrative_beat: Zara Vex enseña a Liruf a hablar de las cualidades de su propio puesto, en vez de
+        criticar al vecino.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-competencia-sin-hablar-mal
+      micro_objective: Aplicar con seguridad competir sin hablar mal de otros en una situación nueva.
+      narrative_beat: Frente a la tentación de hablar mal de un competidor, Dina elige hablar solo de las
+        cualidades de su propio puesto.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: copiar-una-idea-no-es-justo
+    title_es: Copiar una idea no es justo
+    concept: Copiar exactamente la idea de otro negocio, sin crear nada propio, no es una forma justa de
+      competir.
+    learning_objective: Al final, el niño puede reconocer cuándo copiar exactamente una idea de otro negocio
+      no es justo.
+    key_vocabulary:
+    - copiar
+    - exactamente
+    - justo
+    - propio
+    prior_knowledge: Sabe competir sin hablar mal de otros (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué copiar exactamente la idea de alguien más no es justo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-puesto-identico
+      micro_objective: Reconocer una situación donde un negocio copió exactamente la idea de otro.
+      narrative_beat: Liruf descubre un nuevo puesto que copió exactamente el diseño y las recetas del
+        suyo, sin cambiar nada.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: como-se-siente-que-copien-mi-idea
+      micro_objective: Explicar cómo se siente el dueño de un negocio cuando alguien copia exactamente
+        su idea.
+      narrative_beat: Dr. Rho pregunta a Dina cómo se sentiría si alguien copiara exactamente su idea sin
+        cambiar nada.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: reconocer-una-copia-exacta
+      micro_objective: Distinguir, en varios ejemplos, cuáles son copias exactas y cuáles no lo son.
+      narrative_beat: Zara Vex muestra varios ejemplos de negocios del archipiélago y pide a Liruf identificar
+        cuáles copiaron exactamente a otro.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 4
+      slug: mi-idea-que-no-copio-a-nadie
+      micro_objective: Revisar una idea propia para asegurarse de que no copia exactamente a otro negocio.
+      narrative_beat: Dina revisa su propia idea para asegurarse de que no está copiando exactamente a
+        ningún otro negocio del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 5
+    slug: inspirarse-es-distinto-a-copiar
+    title_es: Inspirarse es distinto a copiar
+    concept: Inspirarse en una buena idea y crear algo propio a partir de ella es muy distinto a copiarla
+      exactamente sin ningún cambio.
+    learning_objective: Al final, el niño puede distinguir inspirarse en una idea de copiarla exactamente.
+    key_vocabulary:
+    - inspirarse
+    - distinto
+    - crear
+    - propio
+    prior_knowledge: Sabe que copiar una idea no es justo (tema anterior).
+    prerequisites:
+    - path: la-isla-de-las-ideas/el-taller-de-las-chispas/combino-dos-ideas-en-una
+      strength: soft
+      reason: "Practicar combinar ideas propias para crear algo nuevo prepara para entender la diferencia entre inspirarse en una idea y copiarla exactamente."
+    parent_check: "¿{{name}} puede explicarte la diferencia entre inspirarse en una idea y copiarla exactamente?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-idea-parecida-pero-distinta
+      micro_objective: Reconocer un ejemplo de negocio que se inspiró en otro, pero le agregó algo propio.
+      narrative_beat: Liruf ve un puesto que se inspiró en el diseño de otro, pero le agregó su propio toque
+        especial.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-cambio-y-que-no
+      micro_objective: Identificar qué cambió y qué se mantuvo igual entre una idea inspirada y su fuente
+        original.
+      narrative_beat: Dr. Rho ayuda a Dina a identificar qué cambió y qué se mantuvo igual entre dos puestos
+        parecidos del archipiélago.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: agregar-mi-propio-toque
+      micro_objective: Practicar agregar un toque propio a una idea que sirvió de inspiración.
+      narrative_beat: Zara Vex reta a Liruf a inspirarse en una buena idea del archipiélago, agregando siempre
+        su propio toque.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+    - position: 4
+      slug: mi-idea-inspirada-y-propia
+      micro_objective: Presentar una idea propia que se inspiró en algo existente, explicando qué le agregó.
+      narrative_beat: Dina presenta su idea, inspirada en algo que vio en el archipiélago, explicando qué
+        le agregó de propio.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - storyplay
+  - position: 6
+    slug: un-competidor-tambien-merece-respeto
+    title_es: Un competidor también merece respeto
+    concept: Tratar con respeto a un negocio competidor, aunque se esté compitiendo por los mismos clientes,
+      es parte de competir de forma justa.
+    learning_objective: Al final, el niño puede tratar con respeto a un competidor dentro de una situación
+      de negocio.
+    key_vocabulary:
+    - competidor
+    - respeto
+    - tratar
+    - justo
+    prior_knowledge: Sabe que inspirarse es distinto a copiar (tema anterior).
+    parent_check: "¿{{name}} trata con respeto a alguien con quien compite, en un juego o en una actividad?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: saludar-al-competidor
+      micro_objective: Reconocer que se puede saludar con respeto a un competidor, incluso compitiendo
+        por los mismos clientes.
+      narrative_beat: Liruf se sorprende cuando Dina saluda con respeto al dueño del puesto competidor de
+        al lado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-el-respeto-no-depende-de-competir
+      micro_objective: Explicar por qué el respeto hacia una persona no depende de si es o no un competidor.
+      narrative_beat: Dr. Rho explica a Liruf que el respeto hacia una persona no depende de si compite
+        con ella o no.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: ayudar-a-un-competidor-en-apuros
+      micro_objective: Reconocer una situación donde ayudar a un competidor en apuros es lo correcto, aunque
+        compitan.
+      narrative_beat: Zara Vex cuenta cómo un mercader ayudó a su competidor en apuros, aunque compitieran
+        por los mismos clientes.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-respeto-por-un-competidor
+      micro_objective: Aplicar con seguridad el respeto hacia un competidor frente a una situación nueva.
+      narrative_beat: Dina trata con respeto a un nuevo competidor del archipiélago, aunque compitan por
+        los mismos clientes.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: aprender-de-un-buen-competidor
+    title_es: Aprender de un buen competidor
+    concept: Reconocer que se puede aprender algo bueno de un competidor, sin dejar de ser honesto ni copiar
+      exactamente.
+    learning_objective: Al final, el niño puede identificar algo bueno que aprendió de observar a un competidor.
+    key_vocabulary:
+    - aprender
+    - observar
+    - competidor
+    - honesto
+    prior_knowledge: Sabe que un competidor también merece respeto (tema anterior).
+    parent_check: "¿{{name}} puede aprender algo bueno de alguien con quien compite, sin dejar de ser honesto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: algo-que-hace-bien-mi-competidor
+      micro_objective: Observar algo que un competidor hace especialmente bien.
+      narrative_beat: Liruf observa que el puesto competidor decora sus vasos de una forma que él nunca
+        había pensado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: aprender-sin-copiar-exacto
+      micro_objective: Practicar tomar una idea de inspiración de un competidor sin copiarla exactamente.
+      narrative_beat: Dr. Rho ayuda a Dina a tomar una idea de inspiración de un competidor, sin copiarla
+        exactamente.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: mejorar-gracias-a-lo-aprendido
+      micro_objective: Aplicar una mejora propia inspirada en algo bueno observado en un competidor.
+      narrative_beat: Zara Vex acompaña a Liruf mientras mejora su propio puesto, inspirado en algo bueno
+        que vio en su competidor.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+    - position: 4
+      slug: mi-aprendizaje-de-un-competidor
+      micro_objective: Explicar, con un ejemplo propio, qué aprendió de un competidor sin dejar de ser
+        honesto.
+      narrative_beat: Dina explica a Zara Vex qué aprendió de un competidor del archipiélago sin dejar
+        de ser honesta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-forma-justa-de-competir
+    title_es: Mi forma justa de competir
+    concept: Aplicar juntas todas las reglas de competencia justa -mejorar el producto, no hablar mal,
+      no copiar, respetar y aprender- en un desafío final.
+    learning_objective: Al final, el niño puede aplicar en conjunto las reglas de competencia justa en
+      una situación de negocio.
+    key_vocabulary:
+    - competencia
+    - justa
+    - aplicar
+    - reglas
+    prior_knowledge: Conoce todas las reglas de competencia justa enseñadas en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales de competencia justa que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: llega-un-nuevo-competidor
+      micro_objective: Reconocer la llegada de un nuevo competidor cercano al propio puesto.
+      narrative_beat: Un nuevo competidor abre su puesto justo al lado del de Liruf, ofreciendo algo muy
+        parecido.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mejoro-mi-producto-para-competir
+      micro_objective: Aplicar una mejora al producto propio como respuesta justa a la nueva competencia.
+      narrative_beat: Dina mejora su producto, con calma, como respuesta justa a la llegada del nuevo competidor.
+      difficulty: 2
+      suggested_families:
+      - maker
+      - choice
+    - position: 3
+      slug: trato-con-respeto-al-nuevo-competidor
+      micro_objective: Aplicar el respeto y evitar hablar mal frente al nuevo competidor cercano.
+      narrative_beat: Liruf saluda con respeto al nuevo competidor, sin hablar mal de él frente a los clientes.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-competencia-justa-completa
+      micro_objective: Cerrar el desafío aplicando en conjunto todas las reglas de competencia justa aprendidas.
+      narrative_beat: Dina celebra junto a Zara Vex haber competido de forma completamente justa frente
+        a su nuevo competidor.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Competencia Justa.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Competencia Justa.
+    key_vocabulary:
+    - competencia
+    - justa
+    - copiar
+    - respeto
+    prior_knowledge: Ha completado los ocho temas de la saga Competencia Justa (aventura 7, saga 2).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/competencia-justa/que-es-la-competencia
+    - el-faro-del-buen-negocio/competencia-justa/competir-con-un-buen-producto
+    - el-faro-del-buen-negocio/competencia-justa/competir-sin-hablar-mal-de-otros
+    - el-faro-del-buen-negocio/competencia-justa/copiar-una-idea-no-es-justo
+    - el-faro-del-buen-negocio/competencia-justa/inspirarse-es-distinto-a-copiar
+    - el-faro-del-buen-negocio/competencia-justa/un-competidor-tambien-merece-respeto
+    - el-faro-del-buen-negocio/competencia-justa/aprender-de-un-buen-competidor
+    - el-faro-del-buen-negocio/competencia-justa/mi-forma-justa-de-competir
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es la competencia y cómo competir con un buen producto.
+      narrative_beat: Zara Vex abre el cofre del faro y reta a Dina a recordar, señal por señal, lo primero
+        que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué no hablar mal de otros y por qué copiar una
+        idea no es justo.
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre inspirarse sin copiar
+        y respetar a un competidor.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo aprender de un buen
+        competidor, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada señal
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Competencia Justa con Ética del Negocio, en un reto que combina
+      cómo competir bien y cómo decidir con ética.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Competencia Justa con
+      un concepto de Ética del Negocio.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - competencia
+    prior_knowledge: Conoce Competencia Justa (saga 2) y Ética del Negocio (saga 1, aventura 7).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/elegir-lo-correcto-sobre-lo-facil
+    - el-faro-del-buen-negocio/etica-del-negocio/un-negocio-etico-se-gana-el-respeto
+    - el-faro-del-buen-negocio/competencia-justa/competir-con-un-buen-producto
+    - el-faro-del-buen-negocio/competencia-justa/un-competidor-tambien-merece-respeto
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Ética del Negocio.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del faro y pide a Liruf recordarlo sin
+        ayuda, antes de mezclarlo con la competencia justa.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Ética del Negocio con lo aprendido en Competencia
+        Justa.
+      narrative_beat: Dr. Rho muestra cómo elegir lo correcto sobre lo fácil se conecta directamente con
+        competir de forma justa.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido sobre competencia
+        justa con la ética de negocio para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: cumplir-promesas
+  icon: assignment_turned_in
+  title:
+    en-US: Keeping Promises
+    es-MX: Cumplir Promesas
+    pt-BR: Cumprir Promessas
+  description:
+    en-US: Learn why keeping a business promise -- or saying early when it cannot be kept -- is what makes
+      a business trustworthy.
+    es-MX: Aprende por qué cumplir una promesa de negocio -o avisar a tiempo cuando no se podrá- es lo
+      que hace confiable a un negocio.
+    pt-BR: Aprenda por que cumprir uma promessa de negócio -ou avisar a tempo quando não puder- é o que
+      torna um negócio confiável.
+  topics:
+  - position: 1
+    slug: que-es-una-promesa-de-negocio
+    title_es: Qué es una promesa de negocio
+    concept: Una promesa de negocio es un compromiso que se hace a un cliente, un compañero o un proveedor,
+      y que se espera cumplir.
+    learning_objective: Al final, el niño puede reconocer ejemplos de promesas hechas dentro de un negocio.
+    key_vocabulary:
+    - promesa
+    - compromiso
+    - cliente
+    - proveedor
+    prior_knowledge: Sabe aplicar las reglas de competencia justa (saga anterior).
+    parent_check: "¿{{name}} puede darte un ejemplo de una promesa que se hace dentro de un negocio?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-promesa-en-el-muelle
+      micro_objective: Reconocer una promesa hecha durante una conversación de negocio en el muelle.
+      narrative_beat: Liruf escucha a un mercader del muelle prometerle a un cliente que su pedido estará
+        listo el viernes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: promesas-a-distintas-personas
+      micro_objective: Reconocer que un negocio puede hacer promesas a distintos tipos de personas, no
+        solo a clientes.
+      narrative_beat: Dr. Rho muestra a Dina promesas que un negocio le hace a un cliente, a un compañero
+        y a un proveedor de materiales.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 3
+      slug: reconocer-una-promesa-oculta
+      micro_objective: Reconocer una promesa que se hace de forma indirecta, sin decir la palabra 'prometo'.
+      narrative_beat: Zara Vex explica a Liruf que decir 'seguro lo tienes mañana' también es una promesa,
+        aunque no use la palabra exacta.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-primera-promesa-de-negocio
+      micro_objective: Identificar, en una situación propia, una promesa de negocio que se acaba de hacer.
+      narrative_beat: Dina identifica la primera promesa de negocio que hizo hoy en su puesto del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: anotar-las-promesas-para-no-olvidarlas
+    title_es: Anotar las promesas para no olvidarlas
+    concept: Anotar una promesa hecha, con su fecha o su detalle exacto, ayuda a no olvidarla y a poder
+      cumplirla de verdad.
+    learning_objective: Al final, el niño puede practicar anotar una promesa de negocio para no olvidarla.
+    key_vocabulary:
+    - anotar
+    - olvidar
+    - detalle
+    - registro
+    prior_knowledge: Sabe qué es una promesa de negocio (tema anterior).
+    parent_check: "¿{{name}} anota o recuerda con cuidado las promesas que hace, para no olvidarlas?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-promesa-olvidada
+      micro_objective: Reconocer un caso donde una promesa se olvidó por no haberla anotado en ningún lugar.
+      narrative_beat: Un mercader olvida por completo una promesa que hizo, porque nunca la anotó en ningún
+        lugar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-cuaderno-de-promesas
+      micro_objective: Practicar anotar una promesa de negocio en un cuaderno o registro simple.
+      narrative_beat: Dr. Rho muestra a Dina un pequeño cuaderno donde anota cada promesa que hace su negocio.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 3
+      slug: revisar-mis-promesas-anotadas
+      micro_objective: Practicar revisar un registro de promesas anotadas para saber cuáles ya se cumplieron.
+      narrative_beat: Zara Vex enseña a Liruf a revisar su cuaderno de promesas para saber cuáles ya cumplió
+        y cuáles faltan.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 4
+      slug: mi-cuaderno-de-promesas
+      micro_objective: Crear un registro propio de promesas de negocio para no olvidarlas.
+      narrative_beat: Dina crea su propio cuaderno de promesas para su puesto, inspirada en el de Dr. Rho.
+      difficulty: 3
+      suggested_families:
+      - input
+      - maker
+  - position: 3
+    slug: cumplir-una-promesa-dificil
+    title_es: Cumplir una promesa difícil
+    concept: Practicar cumplir una promesa incluso cuando resulta más difícil de lo esperado en el momento
+      de hacerla.
+    learning_objective: Al final, el niño puede decidir cumplir una promesa aunque resulte más difícil
+      de lo esperado.
+    key_vocabulary:
+    - cumplir
+    - difícil
+    - esperado
+    - decidir
+    prior_knowledge: Sabe anotar sus promesas para no olvidarlas (tema anterior).
+    parent_check: "¿{{name}} intenta cumplir lo que promete, aunque termine siendo más difícil de lo que esperaba?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mas-dificil-de-lo-esperado
+      micro_objective: Reconocer un caso donde cumplir una promesa resultó más difícil de lo esperado al
+        hacerla.
+      narrative_beat: A Liruf le cuesta mucho más de lo esperado terminar el pedido que prometió para el
+        viernes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: buscar-una-forma-de-cumplir
+      micro_objective: Practicar buscar una forma de cumplir una promesa difícil, en vez de abandonarla.
+      narrative_beat: Dr. Rho ayuda a Liruf a buscar una forma de cumplir su promesa difícil, en vez de
+        abandonarla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: pedir-ayuda-para-cumplir
+      micro_objective: Reconocer que pedir ayuda para cumplir una promesa difícil también es una opción
+        válida.
+      narrative_beat: Zara Vex recuerda a Liruf que puede pedir ayuda a su equipo para cumplir una promesa
+        que resultó difícil.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-promesa-dificil-cumplida
+      micro_objective: Aplicar con seguridad el esfuerzo de cumplir una promesa difícil nueva.
+      narrative_beat: Dina cumple, con esfuerzo, una promesa que resultó más difícil de lo que esperaba
+        al hacerla.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: avisar-a-tiempo-si-algo-cambia
+    title_es: Avisar a tiempo si algo cambia
+    concept: Si una promesa no se podrá cumplir tal como se dijo, avisar a tiempo, y no en el último momento,
+      es parte de ser confiable.
+    learning_objective: Al final, el niño puede practicar avisar a tiempo cuando una promesa no se podrá
+      cumplir como se dijo.
+    key_vocabulary:
+    - avisar
+    - tiempo
+    - cambiar
+    - confiable
+    prior_knowledge: Sabe cumplir una promesa difícil (tema anterior).
+    parent_check: "¿{{name}} avisa a tiempo cuando algo que prometió no va a poder cumplirse tal como dijo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: no-va-a-poder-cumplirse
+      micro_objective: Reconocer un momento en que se hace evidente que una promesa no se podrá cumplir
+        tal como se dijo.
+      narrative_beat: Liruf se da cuenta, a mitad de semana, de que no podrá terminar el pedido exactamente
+        como prometió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: avisar-ahora-o-avisar-tarde
+      micro_objective: Comparar el resultado de avisar a tiempo con el de avisar en el último momento.
+      narrative_beat: Dr. Rho compara con Dina qué pasaría si avisara ahora o si esperara hasta el último
+        momento.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: como-avisar-con-calma
+      micro_objective: Practicar cómo avisar con calma y claridad que una promesa cambiará.
+      narrative_beat: Zara Vex enseña a Liruf a avisar con calma y claridad cuando una promesa de su negocio
+        va a cambiar.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-aviso-a-tiempo
+      micro_objective: Aplicar con seguridad avisar a tiempo frente a una promesa nueva que no se podrá
+        cumplir igual.
+      narrative_beat: Dina avisa a tiempo a un cliente que su pedido llegará un día después de lo prometido.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: una-promesa-cumplida-genera-mas-negocio
+    title_es: Una promesa cumplida genera más negocio
+    concept: Explicar cómo cumplir promesas, una tras otra, ayuda a que un negocio crezca porque las personas
+      confían en él.
+    learning_objective: Al final, el niño puede explicar cómo cumplir promesas ayuda a que un negocio crezca.
+    key_vocabulary:
+    - crecer
+    - confiar
+    - cumplir
+    - negocio
+    prior_knowledge: Sabe avisar a tiempo si algo cambia (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-ventas/vender-con-honestidad/cumplir-lo-que-prometo-al-vender
+      strength: hard
+      reason: "Ya sabe por qué cumplir una promesa de venta genera confianza; ahora extiende esa misma idea a todas las promesas de un negocio, no solo las de venta."
+    parent_check: "¿{{name}} puede explicarte por qué cumplir promesas ayuda a que un negocio crezca?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-negocio-que-siempre-cumple
+      micro_objective: Reconocer un ejemplo de negocio del archipiélago que creció por cumplir siempre
+        sus promesas.
+      narrative_beat: Dr. Rho cuenta la historia de un negocio del archipiélago que creció mucho porque
+        siempre cumplió lo que prometió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-cliente-que-vuelve-y-trae-a-otro
+      micro_objective: Explicar cómo un cliente satisfecho por una promesa cumplida puede traer nuevos
+        clientes.
+      narrative_beat: Zara Vex explica que un cliente que recibió justo lo prometido suele volver, y a
+        veces trae a un amigo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: contar-las-promesas-cumplidas
+      micro_objective: Contar cuántas promesas cumplió un negocio en una semana, como señal de confiabilidad.
+      narrative_beat: Dina cuenta, orgullosa, cuántas promesas cumplió su puesto durante toda la semana.
+      difficulty: 2
+      suggested_families:
+      - input
+      - money
+    - position: 4
+      slug: mi-negocio-que-crece-cumpliendo
+      micro_objective: Explicar, con un ejemplo propio, cómo cumplir promesas está ayudando a crecer al
+        propio negocio.
+      narrative_beat: Dina explica a Zara Vex cómo cumplir sus promesas, una tras otra, está ayudando a
+        crecer a su puesto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 6
+    slug: una-promesa-rota-tiene-consecuencias
+    title_es: Una promesa rota tiene consecuencias
+    concept: Reconocer las consecuencias de no cumplir una promesa de negocio, como perder la confianza
+      de un cliente.
+    learning_objective: Al final, el niño puede reconocer al menos una consecuencia de no cumplir una promesa
+      de negocio.
+    key_vocabulary:
+    - romper
+    - consecuencia
+    - perder
+    - confianza
+    prior_knowledge: Sabe cómo una promesa cumplida ayuda a crecer un negocio (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué puede pasar cuando alguien no cumple lo que prometió?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-promesa-que-no-se-cumplio
+      micro_objective: Reconocer un caso donde un negocio no cumplió una promesa hecha a un cliente.
+      narrative_beat: Un puesto del archipiélago no cumple una promesa hecha a un cliente, y él se va decepcionado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-siente-el-cliente
+      micro_objective: Explicar cómo se siente un cliente cuando una promesa hecha a él no se cumple.
+      narrative_beat: Dr. Rho pregunta a Dina cómo se sentiría ella si le prometieran algo y no se lo cumplieran.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: el-cliente-no-vuelve
+      micro_objective: Reconocer que un cliente decepcionado por una promesa rota puede no volver a comprar.
+      narrative_beat: Zara Vex explica que el cliente decepcionado del puesto vecino ya no volvió a comprar
+        ahí.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-lista-de-consecuencias
+      micro_objective: Elaborar una lista propia de consecuencias posibles de no cumplir una promesa de
+        negocio.
+      narrative_beat: Dina arma su propia lista de consecuencias de no cumplir una promesa, para recordarlas
+        siempre.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 7
+    slug: reparar-la-confianza-despues-de-un-error
+    title_es: Reparar la confianza después de un error
+    concept: Practicar reparar la confianza de alguien después de no haber cumplido una promesa, con una
+      disculpa sincera y una solución.
+    learning_objective: Al final, el niño puede aplicar pasos simples para reparar la confianza después
+      de romper una promesa.
+    key_vocabulary:
+    - reparar
+    - confianza
+    - disculpa
+    - solución
+    prior_knowledge: Sabe que una promesa rota tiene consecuencias (tema anterior).
+    parent_check: "¿{{name}} intenta reparar la confianza de alguien, con una disculpa sincera, cuando no cumple algo prometido?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cliente-decepcionado-regresa
+      micro_objective: Reconocer la oportunidad de reparar la confianza cuando un cliente decepcionado
+        regresa.
+      narrative_beat: El cliente decepcionado regresa al puesto, y Liruf tiene la oportunidad de reparar
+        la confianza perdida.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-disculpa-y-una-solucion
+      micro_objective: Practicar ofrecer una disculpa sincera junto con una solución concreta al cliente.
+      narrative_beat: Dr. Rho ayuda a Dina a ofrecer una disculpa sincera junto con una solución concreta
+        para el cliente.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: cumplir-la-nueva-promesa-de-solucion
+      micro_objective: Reconocer la importancia de cumplir esta vez la nueva promesa de solución hecha
+        al cliente.
+      narrative_beat: Zara Vex recuerda a Liruf que esta segunda promesa, la de la solución, debe cumplirse
+        sin falta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-confianza-reparada
+      micro_objective: Aplicar con seguridad los pasos para reparar la confianza frente a un error nuevo.
+      narrative_beat: Dina repara, con una disculpa sincera y una solución cumplida, la confianza de un
+        cliente nuevo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: mi-registro-de-promesas-cumplidas
+    title_es: Mi registro de promesas cumplidas
+    concept: Aplicar un registro propio de promesas hechas y cumplidas -o avisadas a tiempo- en un negocio
+      durante varios días.
+    learning_objective: Al final, el niño puede mantener un registro propio de promesas de negocio hechas
+      y cumplidas.
+    key_vocabulary:
+    - registro
+    - promesa
+    - cumplida
+    - varios días
+    prior_knowledge: Conoce todo lo aprendido sobre cumplir promesas enseñado en la saga (temas anteriores).
+    parent_check: "¿{{name}} puede resumir por qué cumplir o avisar a tiempo sobre una promesa es tan importante en un negocio?"
+    fact_refs:
+    - business.math.venta_semanal_dias
+    lessons:
+    - position: 1
+      slug: abro-mi-registro
+      micro_objective: Abrir un registro propio de promesas de negocio para llevarlo durante varios días.
+      narrative_beat: Con ayuda de Dr. Rho, Dina abre su registro de promesas para llevarlo durante toda
+        la semana de venta.
+      difficulty: 1
+      suggested_families:
+      - input
+      - arrange
+    - position: 2
+      slug: anoto-una-promesa-nueva
+      micro_objective: Anotar una promesa nueva de negocio en el registro propio, con su detalle exacto.
+      narrative_beat: Liruf anota, con cuidado, una nueva promesa de negocio en su registro, con todos sus
+        detalles.
+      difficulty: 2
+      suggested_families:
+      - input
+      - money
+    - position: 3
+      slug: una-promesa-que-tengo-que-avisar
+      micro_objective: Aplicar avisar a tiempo sobre una promesa del registro que no se podrá cumplir igual.
+      narrative_beat: Dina revisa su registro y avisa a tiempo a un cliente sobre una promesa que va a
+        cambiar un poco.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - input
+    - position: 4
+      slug: mi-semana-de-promesas-cumplidas
+      micro_objective: Cerrar la semana revisando el registro completo de promesas cumplidas o avisadas
+        a tiempo.
+      narrative_beat: Al final de la semana, Dina revisa su registro y celebra junto a Zara Vex cuántas
+        promesas cumplió.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Cumplir Promesas.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Cumplir Promesas.
+    key_vocabulary:
+    - promesa
+    - cumplir
+    - avisar
+    - confianza
+    prior_knowledge: Ha completado los ocho temas de la saga Cumplir Promesas (aventura 7, saga 3).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cumplir-promesas/que-es-una-promesa-de-negocio
+    - el-faro-del-buen-negocio/cumplir-promesas/anotar-las-promesas-para-no-olvidarlas
+    - el-faro-del-buen-negocio/cumplir-promesas/cumplir-una-promesa-dificil
+    - el-faro-del-buen-negocio/cumplir-promesas/avisar-a-tiempo-si-algo-cambia
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-cumplida-genera-mas-negocio
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-rota-tiene-consecuencias
+    - el-faro-del-buen-negocio/cumplir-promesas/reparar-la-confianza-despues-de-un-error
+    - el-faro-del-buen-negocio/cumplir-promesas/mi-registro-de-promesas-cumplidas
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es una promesa de negocio y por qué anotarla ayuda
+        a no olvidarla.
+      narrative_beat: Zara Vex abre el cofre del faro y reta a Dina a recordar, señal por señal, lo primero
+        que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo cumplir una promesa difícil y cómo avisar a tiempo
+        si algo cambia.
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre las consecuencias de
+        una promesa rota y cómo reparar la confianza.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo una promesa cumplida
+        genera más negocio, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada señal
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Cumplir Promesas con Competencia Justa, en un reto que combina
+      cómo ser confiable y cómo competir bien.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Cumplir Promesas con
+      un concepto de Competencia Justa.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - promesa
+    prior_knowledge: Conoce Cumplir Promesas (saga 3) y Competencia Justa (saga 2, aventura 7).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/competencia-justa/competir-con-un-buen-producto
+    - el-faro-del-buen-negocio/competencia-justa/aprender-de-un-buen-competidor
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-cumplida-genera-mas-negocio
+    - el-faro-del-buen-negocio/cumplir-promesas/reparar-la-confianza-despues-de-un-error
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Competencia Justa.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de competencia justa y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con las promesas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Competencia Justa con lo aprendido en Cumplir
+        Promesas.
+      narrative_beat: Dr. Rho muestra cómo competir con un buen producto se conecta directamente con cumplir
+        lo que se promete sobre él.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido sobre promesas cumplidas
+        con la competencia justa para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: cuidar-recursos-y-aprender-de-errores
+  icon: recycling
+  title:
+    en-US: Caring for Resources and Learning from Mistakes
+    es-MX: Cuidar Recursos y Aprender de Errores
+    pt-BR: Cuidar dos Recursos e Aprender com os Erros
+  description:
+    en-US: Learn to take care of a business's materials, time and money, and turn every mistake into a
+      lesson.
+    es-MX: Aprende a cuidar los materiales, el tiempo y el dinero de un negocio, y a convertir cada error
+      en un aprendizaje.
+    pt-BR: Aprenda a cuidar dos materiais, do tempo e do dinheiro de um negócio, e a transformar cada erro
+      em um aprendizado.
+  topics:
+  - position: 1
+    slug: que-son-los-recursos-de-un-negocio
+    title_es: Qué son los recursos de un negocio
+    concept: Los recursos de un negocio son los materiales, el tiempo y el dinero que se usan para que
+      funcione.
+    learning_objective: Al final, el niño puede nombrar los recursos principales que usa un negocio.
+    key_vocabulary:
+    - recurso
+    - material
+    - tiempo
+    - dinero
+    prior_knowledge: Sabe mantener un registro de promesas cumplidas (saga anterior).
+    parent_check: "¿{{name}} puede nombrarte los recursos principales que usa un negocio para funcionar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-inventario-del-faro
+      micro_objective: Reconocer que un negocio necesita materiales, tiempo y dinero para funcionar.
+      narrative_beat: Dr. Rho muestra a Dina el inventario del faro, con los materiales, el tiempo y el
+        dinero que usa cada negocio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cual-recurso-es-cual
+      micro_objective: Clasificar distintos elementos de un negocio entre material, tiempo o dinero.
+      narrative_beat: Zara Vex muestra varios elementos del puesto de Liruf y pide clasificarlos entre material,
+        tiempo o dinero.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: los-recursos-son-limitados
+      micro_objective: Explicar por qué los recursos de un negocio, aunque distintos, son siempre limitados.
+      narrative_beat: Dr. Rho explica a Liruf que los materiales, el tiempo y el dinero de un negocio siempre
+        tienen un límite.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-lista-de-recursos
+      micro_objective: Elaborar una lista propia de los recursos que usa el negocio propio.
+      narrative_beat: Dina arma su propia lista de recursos, materiales, tiempo y dinero, que usa su puesto
+        del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 2
+    slug: no-desperdiciar-materiales
+    title_es: No desperdiciar materiales
+    concept: Cuidar los materiales de un negocio para no desperdiciarlos ayuda a cuidar tanto la ganancia
+      como el entorno.
+    learning_objective: Al final, el niño puede identificar una forma concreta de no desperdiciar materiales.
+    key_vocabulary:
+    - desperdiciar
+    - cuidar
+    - material
+    - entorno
+    prior_knowledge: Sabe qué son los recursos de un negocio (tema anterior).
+    prerequisites:
+    - path: el-bosque-de-los-makers/de-donde-vienen-las-cosas/cuido-los-materiales-para-no-desperdiciar
+      strength: hard
+      reason: "El niño ya practicó cuidar materiales para no desperdiciar al hacer un producto; este tema extiende esa misma habilidad al contexto completo de un negocio."
+    parent_check: "¿{{name}} puede darte un ejemplo de cómo cuidar los materiales para no desperdiciarlos?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: materiales-tirados-sin-usar
+      micro_objective: Reconocer una situación donde se desperdiciaron materiales de un negocio sin necesidad.
+      narrative_beat: Liruf nota que su puesto tiró varios materiales sin usar, sin que nadie se diera cuenta
+        del desperdicio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: medir-antes-de-usar
+      micro_objective: Practicar medir o calcular la cantidad justa de material antes de usarlo, para no
+        desperdiciar.
+      narrative_beat: Dr. Rho ayuda a Dina a medir la cantidad justa de material antes de empezar a usarlo
+        en su puesto.
+      difficulty: 2
+      suggested_families:
+      - money
+      - input
+    - position: 3
+      slug: guardar-lo-que-sobra
+      micro_objective: Practicar guardar con cuidado el material que sobra de un proyecto para usarlo después.
+      narrative_beat: Zara Vex enseña a Liruf a guardar con cuidado el material que sobra, en vez de tirarlo.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-plan-para-no-desperdiciar
+      micro_objective: Proponer un plan propio para cuidar los materiales del negocio y no desperdiciarlos.
+      narrative_beat: Dina propone su propio plan para cuidar los materiales de su puesto y no desperdiciar
+        nada.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - maker
+  - position: 3
+    slug: reusar-lo-que-todavia-sirve
+    title_es: Reusar lo que todavía sirve
+    concept: Reconocer cuándo un material o herramienta usada todavía sirve y se puede reusar, en vez de
+      comprar algo nuevo.
+    learning_objective: Al final, el niño puede reconocer cuándo un material usado todavía se puede reusar.
+    key_vocabulary:
+    - reusar
+    - servir
+    - herramienta
+    - comprar
+    prior_knowledge: Sabe no desperdiciar materiales (tema anterior).
+    parent_check: "¿{{name}} puede reconocer cuándo algo usado todavía sirve y se puede reusar, en vez de comprar algo nuevo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-frasco-que-todavia-sirve
+      micro_objective: Reconocer un ejemplo de material usado que todavía sirve para volver a usarse.
+      narrative_beat: Liruf encuentra un frasco de vidrio ya usado que todavía sirve perfectamente para
+        su puesto de limonada.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: sirve-o-ya-no-sirve
+      micro_objective: Clasificar distintos materiales usados entre los que todavía sirven y los que no.
+      narrative_beat: Dr. Rho ayuda a Dina a clasificar varios materiales usados del taller entre los que
+        todavía sirven y los que no.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 3
+      slug: darle-un-segundo-uso
+      micro_objective: Proponer un segundo uso creativo para un material que todavía sirve.
+      narrative_beat: Zara Vex reta a Liruf a proponer un segundo uso creativo para un material que su puesto
+        ya no ocupaba.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+    - position: 4
+      slug: mi-material-reusado
+      micro_objective: Aplicar el reuso de un material propio en un proyecto nuevo del negocio.
+      narrative_beat: Dina reusa, con orgullo, un material que ya tenía guardado en un proyecto nuevo de
+        su puesto.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - storyplay
+  - position: 4
+    slug: un-error-no-es-el-final
+    title_es: Un error no es el final
+    concept: Reconocer que un error en un negocio no significa que todo terminó, sino una oportunidad de
+      aprender y seguir adelante.
+    learning_objective: Al final, el niño puede reaccionar ante un error de negocio sin sentir que todo
+      terminó.
+    key_vocabulary:
+    - error
+    - final
+    - oportunidad
+    - seguir
+    prior_knowledge: Sabe reusar lo que todavía sirve (tema anterior).
+    parent_check: "¿{{name}} reacciona ante un error propio sin sentir que todo terminó, buscando qué hacer después?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: algo-salio-mal-en-el-puesto
+      micro_objective: Reconocer un error real que ocurrió en un negocio, sin dramatizarlo de más.
+      narrative_beat: Un lote entero de limonada de Liruf se echó a perder por dejarlo demasiado tiempo
+        al sol.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-error-no-borra-lo-bueno
+      micro_objective: Reconocer que un error no borra todo lo bueno que un negocio ha logrado antes.
+      narrative_beat: Dr. Rho recuerda a Liruf que un solo error no borra todo lo bueno que su puesto ha
+        logrado antes.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: que-hago-despues-del-error
+      micro_objective: Practicar decidir un siguiente paso concreto después de un error de negocio.
+      narrative_beat: Zara Vex ayuda a Liruf a decidir un siguiente paso concreto después de perder el lote
+        de limonada.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-siguiente-paso-tras-el-error
+      micro_objective: Aplicar con seguridad un siguiente paso propio frente a un error nuevo de negocio.
+      narrative_beat: Dina decide, sin desanimarse, un siguiente paso claro después de un error nuevo en
+        su puesto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: que-aprendo-de-este-error
+    title_es: Qué aprendo de este error
+    concept: Practicar identificar qué se puede aprender de un error concreto de negocio, para no repetirlo.
+    learning_objective: Al final, el niño puede identificar una lección concreta aprendida de un error
+      de negocio.
+    key_vocabulary:
+    - aprender
+    - lección
+    - concreto
+    - repetir
+    prior_knowledge: Sabe que un error no es el final (tema anterior).
+    prerequisites:
+    - path: el-bosque-de-los-makers/pruebo-y-mejoro/encuentro-una-forma-de-mejorar
+      strength: soft
+      reason: "Practicar encontrar una forma de mejorar un producto propio entrena la misma habilidad de extraer una lección concreta a partir de un error de negocio."
+    parent_check: "¿{{name}} puede nombrarte una lección concreta que aprendió de un error suyo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: revisar-que-paso
+      micro_objective: Revisar con calma qué pasó exactamente antes y durante un error de negocio.
+      narrative_beat: Dr. Rho ayuda a Dina a revisar con calma qué pasó exactamente antes de que su lote
+        de limonada se echara a perder.
+      difficulty: 1
+      suggested_families:
+      - analyze
+      - story
+    - position: 2
+      slug: encontrar-la-leccion
+      micro_objective: Identificar una lección concreta que se puede aprender de un error de negocio revisado.
+      narrative_beat: Zara Vex ayuda a Liruf a encontrar la lección concreta escondida detrás del error
+        de su puesto.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: escribir-la-leccion-aprendida
+      micro_objective: Practicar anotar una lección aprendida de un error, para no olvidarla.
+      narrative_beat: Dina anota, en su cuaderno del puesto, la lección concreta que aprendió del error
+        de la limonada.
+      difficulty: 2
+      suggested_families:
+      - input
+      - arrange
+    - position: 4
+      slug: mi-leccion-de-un-error-nuevo
+      micro_objective: Aplicar con seguridad identificar una lección concreta frente a un error nuevo de
+        negocio.
+      narrative_beat: Frente a un nuevo error de su puesto, Dina identifica sin ayuda una lección concreta
+        que puede aprender.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 6
+    slug: cambiar-algo-a-partir-del-error
+    title_es: Cambiar algo a partir del error
+    concept: Aplicar un cambio concreto en el negocio a partir de lo aprendido de un error, para que no
+      vuelva a repetirse igual.
+    learning_objective: Al final, el niño puede aplicar un cambio concreto en un negocio a partir de un
+      error aprendido.
+    key_vocabulary:
+    - cambiar
+    - aplicar
+    - concreto
+    - repetirse
+    prior_knowledge: Sabe qué aprender de un error de negocio (tema anterior).
+    parent_check: "¿{{name}} aplica un cambio concreto después de aprender una lección de un error?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-idea-para-que-no-se-repita
+      micro_objective: Proponer una idea de cambio concreto para que un error de negocio no vuelva a pasar.
+      narrative_beat: A Liruf se le ocurre una idea concreta para que su limonada nunca más se eche a perder
+        por el sol.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-el-mejor-cambio
+      micro_objective: Elegir, entre varias ideas de cambio, la que mejor resuelve el error aprendido.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir, entre varias ideas, cuál resuelve mejor el error que
+        tuvo su puesto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: aplicar-el-cambio-en-el-negocio
+      micro_objective: Aplicar un cambio concreto en el negocio propio a partir de lo aprendido del error.
+      narrative_beat: Zara Vex acompaña a Liruf mientras aplica, paso a paso, el cambio para que su producto
+        no vuelva a echarse a perder.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - input
+    - position: 4
+      slug: mi-negocio-cambiado-por-un-error
+      micro_objective: Presentar un negocio propio ya cambiado, explicando qué error lo motivó y qué cambió.
+      narrative_beat: Dina presenta su puesto renovado a Zara Vex, explicando qué error lo motivó y qué
+        cambió gracias a él.
+      difficulty: 3
+      suggested_families:
+      - maker
+      - choice
+  - position: 7
+    slug: cuidar-recursos-y-aprender-van-juntos
+    title_es: Cuidar recursos y aprender van juntos
+    concept: Explicar cómo cuidar los recursos y aprender de los errores trabajan juntos para que un negocio
+      dure más tiempo.
+    learning_objective: Al final, el niño puede explicar cómo cuidar recursos y aprender de errores ayudan
+      juntos a un negocio.
+    key_vocabulary:
+    - juntos
+    - durar
+    - recursos
+    - aprender
+    prior_knowledge: Sabe cambiar algo a partir de un error (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo cuidar los materiales y aprender de los errores ayudan juntos a que algo dure más?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-negocio-que-lleva-anos
+      micro_objective: Reconocer un ejemplo de negocio del archipiélago que lleva años funcionando gracias
+        a cuidar recursos y aprender.
+      narrative_beat: Dr. Rho cuenta que el negocio más antiguo del archipiélago lleva años funcionando
+        gracias a cuidar sus recursos y aprender de sus errores.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: sin-cuidar-recursos-no-alcanza
+      micro_objective: Explicar qué pasaría con un negocio que aprende de sus errores, pero desperdicia
+        sus recursos igual.
+      narrative_beat: Zara Vex explica que un negocio que aprende mucho pero desperdicia sus recursos igual
+        no logra crecer.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: sin-aprender-no-alcanza
+      micro_objective: Explicar qué pasaría con un negocio que cuida sus recursos, pero nunca aprende de
+        sus errores.
+      narrative_beat: Dr. Rho explica que un negocio que cuida sus recursos pero nunca aprende de sus errores
+        también se estanca.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-negocio-que-cuida-y-aprende-juntos
+      micro_objective: Explicar, con un ejemplo propio, cómo cuidar recursos y aprender de errores están
+        ayudando juntos a su negocio.
+      narrative_beat: Dina explica a Zara Vex cómo cuidar sus recursos y aprender de sus errores están
+        ayudando juntos a su puesto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-negocio-que-cuida-y-aprende
+    title_es: Mi negocio que cuida y aprende
+    concept: Aplicar en conjunto el cuidado de recursos y el aprendizaje de errores en un desafío final
+      de negocio.
+    learning_objective: Al final, el niño puede aplicar en conjunto el cuidado de recursos y el aprendizaje
+      de errores.
+    key_vocabulary:
+    - cuidar
+    - aprender
+    - aplicar
+    - desafío
+    prior_knowledge: Conoce todo lo aprendido sobre cuidar recursos y aprender de errores en la saga (temas
+      anteriores).
+    parent_check: "¿{{name}} puede resumir las reglas principales para cuidar recursos y aprender de errores que aprendió esta semana?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: reviso-mis-recursos
+      micro_objective: Revisar los recursos disponibles del negocio antes de empezar un nuevo proyecto.
+      narrative_beat: Con ayuda de Dr. Rho, Dina revisa los materiales, el tiempo y el dinero disponibles
+        antes de un nuevo proyecto.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - money
+    - position: 2
+      slug: cuido-los-materiales-durante-el-proyecto
+      micro_objective: Aplicar el cuidado de materiales, evitando desperdicio, durante todo un nuevo proyecto.
+      narrative_beat: Liruf cuida con atención los materiales durante todo el nuevo proyecto, sin desperdiciar
+        nada.
+      difficulty: 2
+      suggested_families:
+      - maker
+      - choice
+    - position: 3
+      slug: aparece-un-error-y-lo-aprovecho
+      micro_objective: Aplicar la búsqueda de una lección concreta cuando aparece un error durante el proyecto.
+      narrative_beat: Un error nuevo aparece durante el proyecto, y Dina lo aprovecha para encontrar una
+        lección concreta.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - maker
+    - position: 4
+      slug: mi-negocio-fuerte-y-sabio
+      micro_objective: Cerrar el desafío celebrando un negocio que cuida sus recursos y aprende de sus
+        errores.
+      narrative_beat: Dina celebra junto a Zara Vex, Liruf y Dr. Rho un negocio que ahora cuida sus recursos
+        y aprende de sus errores.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre del faro para poner a prueba, sin enseñar nada nuevo, todo lo aprendido
+      en la saga Cuidar Recursos y Aprender de Errores.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Cuidar Recursos y Aprender de Errores.
+    key_vocabulary:
+    - recursos
+    - desperdiciar
+    - error
+    - aprender
+    prior_knowledge: Ha completado los ocho temas de la saga Cuidar Recursos y Aprender de Errores (aventura
+      7, saga 4).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/que-son-los-recursos-de-un-negocio
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/no-desperdiciar-materiales
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/reusar-lo-que-todavia-sirve
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/un-error-no-es-el-final
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/que-aprendo-de-este-error
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/cambiar-algo-a-partir-del-error
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/cuidar-recursos-y-aprender-van-juntos
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/mi-negocio-que-cuida-y-aprende
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué son los recursos de un negocio y cómo no desperdiciar
+        materiales.
+      narrative_beat: Zara Vex abre el cofre del faro y reta a Dina a recordar, señal por señal, lo primero
+        que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo reusar lo que todavía sirve y por qué un error
+        no es el final.
+      narrative_beat: Liruf saca del cofre las señales mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre qué aprender de un
+        error y cómo cambiar algo a partir de él.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo por qué cuidar recursos
+        y aprender van juntos, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada señal
+        con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Cuidar Recursos y Aprender de Errores con Cumplir Promesas,
+      en un reto que combina cómo ser confiable y cómo aprender siempre.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Cuidar Recursos y Aprender
+      de Errores con un concepto de Cumplir Promesas.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - recursos
+    prior_knowledge: Conoce Cuidar Recursos y Aprender de Errores (saga 4) y Cumplir Promesas (saga 3,
+      aventura 7).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cumplir-promesas/avisar-a-tiempo-si-algo-cambia
+    - el-faro-del-buen-negocio/cumplir-promesas/reparar-la-confianza-despues-de-un-error
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/un-error-no-es-el-final
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/que-aprendo-de-este-error
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-antes
+      micro_objective: Recordar, tal como se aprendió antes, un concepto de la saga Cumplir Promesas.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las promesas y pide a Liruf recordarlo sin
+        ayuda, antes de mezclarlo con los recursos y errores.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-dos-ideas
+      micro_objective: Combinar el concepto recordado de Cumplir Promesas con lo aprendido en Cuidar Recursos
+        y Aprender de Errores.
+      narrative_beat: Dr. Rho muestra cómo avisar a tiempo si algo cambia se conecta directamente con aprender
+        de un error y cambiar algo a partir de él.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntos, en una escena nueva, ambos conceptos combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        las dos lecciones combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en
+        una situación final.
+      narrative_beat: Frente a una última escena del faro, Dina combina lo aprendido sobre cuidar recursos
+        y aprender de errores con cumplir promesas para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-faro-del-buen-negocio
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Lighthouse of Good Business's Grand Mission
+    es-MX: La Gran Misión del Faro del Buen Negocio
+    pt-BR: A Grande Missão do Farol do Bom Negócio
+  description:
+    en-US: A final quest that replays everything learned in the archipelago -- ethics, fair competition,
+      kept promises, and caring for resources -- one last time.
+    es-MX: Una misión final que repasa todo lo aprendido en el archipiélago -- ética, competencia justa,
+      promesas cumplidas y cuidado de recursos -- una última vez.
+    pt-BR: Uma missão final que revisita tudo o que foi aprendido no arquipélago -- ética, concorrência
+      justa, promessas cumpridas e cuidado com os recursos -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-del-gran-faro-de-negocios
+    kind: review_quest
+    title_es: El Desafío del Gran Faro de Negocios
+    concept: 'Zara Vex anuncia la Gran Misión del faro: un desafío final que reúne, sin enseñar nada nuevo,
+      todo lo aprendido sobre ética de negocio.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo hacer lo correcto, cuidar a las
+      personas y elegir lo correcto sobre lo fácil.
+    key_vocabulary:
+    - ética
+    - correcto
+    - respeto
+    prior_knowledge: Ha completado las cuatro sagas de El Faro del Buen Negocio.
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/hacer-lo-correcto-aunque-nadie-mire
+    - el-faro-del-buen-negocio/etica-del-negocio/un-negocio-que-cuida-a-las-personas
+    - el-faro-del-buen-negocio/etica-del-negocio/elegir-lo-correcto-sobre-lo-facil
+    - el-faro-del-buen-negocio/etica-del-negocio/un-negocio-etico-se-gana-el-respeto
+    lessons:
+    - position: 1
+      slug: el-faro-del-buen-negocio-vuelve-a-brillar
+      micro_objective: Recordar que la ética significa hacer lo correcto aunque nadie esté mirando.
+      narrative_beat: 'Zara Vex reúne a Dina y Liruf en la cima del faro y anuncia la Gran Misión: recorrer
+        una vez más todo lo aprendido en el archipiélago.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuidar-a-las-personas-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo una decisión de negocio afecta a distintas personas.
+      narrative_beat: Dr. Rho presenta una decisión nueva y reta a Dina a recordar, sin repasar la lección,
+        a quién afecta.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: lo-correcto-sobre-lo-facil-otra-vez
+      micro_objective: Recordar cómo elegir la opción correcta de un negocio, aunque sea más difícil.
+      narrative_beat: Liruf recuerda, sin ayuda, aquella vez que eligió lo correcto sobre lo fácil en su
+        puesto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-etica-para-la-gran-mision
+      micro_objective: Aplicar con seguridad la brújula ética completa frente a una situación nueva del
+        archipiélago.
+      narrative_beat: Dina aplica, sin ayuda de Zara Vex, su brújula ética completa frente a un nuevo desafío
+        del faro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: competencia-de-la-gran-mision
+    kind: review_quest
+    title_es: Competencia de la Gran Misión
+    concept: Dina y Liruf recuerdan cómo competir con un buen producto, sin hablar mal de otros, sin copiar,
+      y tratando con respeto a un competidor.
+    learning_objective: Al final, el niño puede recordar y aplicar las reglas de competencia justa.
+    key_vocabulary:
+    - competencia
+    - justa
+    - respeto
+    prior_knowledge: Ha repasado la saga de ética del negocio (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/competencia-justa/competir-con-un-buen-producto
+    - el-faro-del-buen-negocio/competencia-justa/copiar-una-idea-no-es-justo
+    - el-faro-del-buen-negocio/competencia-justa/un-competidor-tambien-merece-respeto
+    - el-faro-del-buen-negocio/competencia-justa/mi-forma-justa-de-competir
+    lessons:
+    - position: 1
+      slug: competir-con-un-buen-producto-otra-vez
+      micro_objective: Recordar cómo competir mejorando el producto propio, en vez de otra cosa.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo mejoró su producto para competir
+        de forma justa.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - maker
+    - position: 2
+      slug: copiar-no-es-justo-otra-vez
+      micro_objective: Recordar por qué copiar exactamente una idea de otro negocio no es justo.
+      narrative_beat: Dina recuerda, de memoria, por qué copiar exactamente la idea de otro puesto del
+        archipiélago no es justo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: respeto-al-competidor-otra-vez
+      micro_objective: Recordar y aplicar el respeto hacia un competidor dentro de una situación nueva.
+      narrative_beat: Dr. Rho presenta un nuevo competidor y pregunta a Liruf si recuerda cómo tratarlo
+        con respeto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-competencia-para-la-mision
+      micro_objective: Aplicar con seguridad la competencia justa completa frente a una situación nueva
+        de la misión.
+      narrative_beat: Dina compite, sin ayuda, de forma completamente justa frente a un nuevo desafío de
+        la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: promesas-de-la-gran-mision
+    kind: review_quest
+    title_es: Promesas de la Gran Misión
+    concept: Dina y Liruf recuerdan cómo cumplir una promesa difícil, avisar a tiempo si algo cambia y reparar
+      la confianza después de un error.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo mantener promesas de negocio confiables.
+    key_vocabulary:
+    - promesa
+    - avisar
+    - confianza
+    prior_knowledge: Ha repasado la saga de competencia justa (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cumplir-promesas/cumplir-una-promesa-dificil
+    - el-faro-del-buen-negocio/cumplir-promesas/avisar-a-tiempo-si-algo-cambia
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-rota-tiene-consecuencias
+    - el-faro-del-buen-negocio/cumplir-promesas/reparar-la-confianza-despues-de-un-error
+    lessons:
+    - position: 1
+      slug: cumplir-lo-dificil-otra-vez
+      micro_objective: Recordar cómo cumplir una promesa difícil de negocio, sin abandonarla.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, cómo cumplió una promesa difícil de su
+        puesto.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 2
+      slug: avisar-a-tiempo-otra-vez
+      micro_objective: Recordar cómo avisar a tiempo cuando una promesa no se podrá cumplir tal como se
+        dijo.
+      narrative_beat: Dina recuerda, de memoria, cómo avisó a tiempo a un cliente sobre un cambio en su
+        promesa.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: reparar-la-confianza-otra-vez
+      micro_objective: Recordar y aplicar cómo reparar la confianza después de no cumplir una promesa.
+      narrative_beat: Dr. Rho presenta una situación nueva y pregunta a Liruf si recuerda cómo reparar la
+        confianza de un cliente decepcionado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mis-promesas-para-la-mision
+      micro_objective: Aplicar con seguridad promesas confiables completas frente a una situación nueva
+        de la misión.
+      narrative_beat: Dina mantiene, sin ayuda, todas sus promesas confiables frente a un nuevo desafío
+        de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: recursos-de-la-gran-mision
+    kind: review_quest
+    title_es: Recursos de la Gran Misión
+    concept: Dina y Liruf recuerdan cómo no desperdiciar materiales, reusar lo que todavía sirve y aprender
+      de un error concreto.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo cuidar recursos y aprender de errores.
+    key_vocabulary:
+    - recursos
+    - reusar
+    - aprender
+    prior_knowledge: Ha repasado la saga de cumplir promesas (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/no-desperdiciar-materiales
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/reusar-lo-que-todavia-sirve
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/que-aprendo-de-este-error
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/cambiar-algo-a-partir-del-error
+    lessons:
+    - position: 1
+      slug: no-desperdiciar-otra-vez
+      micro_objective: Recordar una forma concreta de no desperdiciar materiales de un negocio.
+      narrative_beat: Zara Vex reta a Dina a recordar, sin ayuda, cómo cuidó los materiales de su puesto
+        para no desperdiciarlos.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - money
+    - position: 2
+      slug: reusar-otra-vez-en-la-mision
+      micro_objective: Recordar cómo reconocer un material usado que todavía sirve para reusarse.
+      narrative_beat: Liruf recuerda, de memoria, cómo le dio un segundo uso a un material que su puesto
+        ya no ocupaba.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - maker
+    - position: 3
+      slug: aprender-del-error-otra-vez
+      micro_objective: Recordar y aplicar cómo encontrar una lección concreta a partir de un error de negocio.
+      narrative_beat: Dr. Rho presenta un error nuevo y pregunta a Dina si recuerda cómo encontrar una
+        lección concreta en él.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mis-recursos-para-la-mision
+      micro_objective: Aplicar con seguridad el cuidado de recursos y el aprendizaje de errores en un desafío
+        nuevo de la misión.
+      narrative_beat: Dina cuida sus recursos y aprende de un error nuevo, sin ayuda, en un desafío de
+        la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - money
+  - position: 5
+    slug: el-reto-completo-del-faro-de-negocios
+    kind: review_quest
+    title_es: El Reto Completo del Faro de Negocios
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del faro: ética, competencia
+      justa, promesas cumplidas y cuidado de recursos.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido lo aprendido sobre ética,
+      competencia, promesas y recursos.
+    key_vocabulary:
+    - ética
+    - promesas
+    - recursos
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/elegir-lo-correcto-sobre-lo-facil
+    - el-faro-del-buen-negocio/competencia-justa/un-competidor-tambien-merece-respeto
+    - el-faro-del-buen-negocio/cumplir-promesas/una-promesa-cumplida-genera-mas-negocio
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/cuidar-recursos-y-aprender-van-juntos
+    lessons:
+    - position: 1
+      slug: las-cuatro-luces-del-faro-de-negocios
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del faro: ética, competencia, promesas
+        y recursos.'
+      narrative_beat: Zara Vex enciende las cuatro luces del faro, una por cada área aprendida en esta
+        aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-negocio-nuevo-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas del faro para ayudar a un negocio nuevo del archipiélago.
+      narrative_beat: Dr. Rho presenta un negocio nuevo del archipiélago y reta a Dina a guiarlo por las
+        cuatro áreas aprendidas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-luces-de-negocios
+      micro_objective: Aplicar con seguridad las cuatro áreas del faro en un desafío único que las combina
+        todas.
+      narrative_beat: Liruf resuelve un desafío del faro que combina, de una sola vez, ética, competencia,
+        promesas y recursos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-completo-del-faro-de-negocios
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del faro aplicadas a una
+        situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro luces del faro, de principio a
+        fin, sin ayuda de Zara Vex.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: la-gran-mision-del-faro-del-buen-negocio
+    kind: review_quest
+    title_es: La Gran Misión del Faro del Buen Negocio
+    concept: El gran cierre de la aventura combina las cuatro áreas del faro con lecciones del reino de
+      las ventas y el taller del equipo, celebrando el crecimiento de Dina y Liruf como founders.
+    learning_objective: Al final, el niño puede aplicar, en una situación final, todo lo aprendido en El
+      Faro del Buen Negocio conectándolo con aventuras anteriores.
+    key_vocabulary:
+    - ética
+    - equipo
+    - negocio
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del faro (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-faro-del-buen-negocio/etica-del-negocio/mi-brujula-etica-del-faro
+    - el-faro-del-buen-negocio/cuidar-recursos-y-aprender-de-errores/mi-negocio-que-cuida-y-aprende
+    - el-reino-de-las-ventas/vender-con-honestidad/mi-primer-dia-de-ventas-honestas
+    - el-taller-del-equipo/resolver-desacuerdos/mi-desacuerdo-resuelto-en-el-taller
+    lessons:
+    - position: 1
+      slug: el-faro-recuerda-el-reino
+      micro_objective: Recordar cómo la honestidad al vender en el reino se conecta con la ética del negocio
+        del faro.
+      narrative_beat: Zara Vex recuerda junto a Dina y Liruf cómo la honestidad que practicaron en el reino
+        se convirtió en la ética del faro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-faro-recuerda-el-taller
+      micro_objective: Recordar cómo resolver desacuerdos en el taller se conecta con cuidar recursos y
+        aprender de errores en el faro.
+      narrative_beat: Dr. Rho conecta cómo el equipo del taller resolvía sus desacuerdos con cómo el faro
+        aprende de sus propios errores.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 3
+      slug: la-gran-mision-en-un-solo-negocio
+      micro_objective: Aplicar en un desafío final las cuatro áreas del faro combinadas en un solo negocio
+        completo.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando ética, competencia,
+        promesas y recursos en un solo negocio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-faro-sigue-guiando-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
+        faro.
+      narrative_beat: Con el faro brillando sobre el archipiélago, Dina celebra junto a Zara Vex, Liruf
+        y Dr. Rho el cierre de la Gran Misión del faro.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

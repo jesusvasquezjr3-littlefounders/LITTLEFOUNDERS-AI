@@ -1,0 +1,1862 @@
+schema_version: 1
+adventure:
+  position: 2
+  slug: el-bosque-de-los-makers
+  theme: forest
+  age_tier: tier1
+  title:
+    en-US: The Forest of Makers
+    es-MX: El Bosque de los Makers
+    pt-BR: A Floresta dos Makers
+  description:
+    en-US: Walk into a workshop hidden in the forest, where every idea from the island finally becomes a real, hand-made product.
+    es-MX: Entra a un taller escondido en el bosque, donde cada idea de la isla por fin se convierte en un producto real, hecho a mano.
+    pt-BR: Entre em uma oficina escondida na floresta, onde cada ideia da ilha finalmente se transforma em um produto real, feito à mão.
+  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Liruf, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Liruf se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
+sagas:
+  - position: 1
+    slug: manos-a-la-obra
+    icon: construction
+    title:
+      en-US: Hands to Work
+      es-MX: Manos a la Obra
+      pt-BR: Mãos à Obra
+    description:
+      en-US: Turn an idea into a real product, made step by step with your own hands.
+      es-MX: Convierte una idea en un producto real, hecho paso a paso con tus propias manos.
+      pt-BR: Transforme uma ideia em um produto real, feito passo a passo com as próprias mãos.
+    topics:
+      - position: 1
+        slug: elijo-que-voy-a-hacer
+        title_es: Elijo qué voy a hacer
+        concept: De todas las ideas que traigo de la isla, elijo una para convertirla en un producto real.
+        learning_objective: Al final, el niño puede elegir, entre varias ideas, cuál convertirá en un producto.
+        key_vocabulary:
+          - producto
+          - elegir
+          - hacer
+          - real
+        prior_knowledge: Trae de la Isla de las Ideas una idea sencilla ya elegida.
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} cuál de sus ideas eligió para convertir en un producto de verdad en el taller del bosque.
+        lessons:
+          - position: 1
+            slug: llegamos-al-bosque
+            micro_objective: Reconoce en la historia el momento en que el taller del bosque recibe a la tripulación.
+            narrative_beat: Dina y Liruf llegan a un taller de madera entre los árboles, listo para convertir ideas en productos reales.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: una-idea-se-vuelve-producto
+            micro_objective: Distingue, entre 3 ideas, cuál ya está lista para convertirse en un producto concreto.
+            narrative_beat: Rho revisa las ideas de la isla y elige la de la sombrilla de tela para empezar a construirla.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: comparo-mis-ideas-para-elegir
+            micro_objective: Compara 2 ideas propias y elige cuál conviene construir primero.
+            narrative_beat: Zara compara su idea de pulsera con su idea de tarjeta y decide cuál hacer primero en el taller.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - arrange
+          - position: 4
+            slug: elijo-mi-primer-producto
+            micro_objective: Elige, sin ayuda, la idea que convertirá en su primer producto del bosque.
+            narrative_beat: Liruf elige con confianza qué va a construir primero en el taller del bosque.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: junto-lo-que-necesito
+        title_es: Junto lo que necesito
+        concept: Antes de empezar a hacer mi producto, junto todos los materiales que voy a necesitar.
+        learning_objective: Al final, el niño puede listar los materiales necesarios para hacer un producto sencillo.
+        key_vocabulary:
+          - materiales
+          - juntar
+          - necesitar
+          - antes de empezar
+        prior_knowledge: Sabe qué producto va a hacer (tema anterior).
+        fact_refs: []
+        parent_check: Ayuda a {{name}} a hacer una lista de todo lo que necesitaría para hacer su producto antes de empezar.
+        lessons:
+          - position: 1
+            slug: la-mesa-de-materiales
+            micro_objective: Reconoce en la historia los materiales que un personaje junta antes de empezar.
+            narrative_beat: Rho pone sobre la mesa del taller hilo, cuentas y tela antes de empezar a construir.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: me-falta-algo
+            micro_objective: Identifica, entre 4 materiales mostrados, cuál falta para completar el producto.
+            narrative_beat: Zara revisa su mesa de trabajo y nota que le falta un material para terminar su pulsera.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-mi-lista-de-materiales
+            micro_objective: Ordena una lista de 3 a 4 materiales necesarios para un producto sencillo.
+            narrative_beat: Liruf escribe en orden todo lo que necesita para armar su primer producto.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - input
+          - position: 4
+            slug: junto-todo-antes-de-empezar
+            micro_objective: Reúne, sin ayuda, todos los materiales necesarios antes de comenzar en la historia.
+            narrative_beat: Dina junta con calma cada material de su lista antes de tocar las herramientas.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: sigo-los-pasos-en-orden
+        title_es: Sigo los pasos en orden
+        concept: Hacer un producto bien hecho significa seguir los pasos en el orden correcto, sin saltarse ninguno.
+        learning_objective: Al final, el niño puede ordenar los pasos para construir un producto sencillo.
+        key_vocabulary:
+          - pasos
+          - en orden
+          - primero
+          - después
+        prior_knowledge: Sabe juntar los materiales necesarios (tema anterior).
+        fact_refs: []
+        parent_check: Invita a {{name}} a explicarte, paso por paso y en orden, cómo piensa construir su producto.
+        lessons:
+          - position: 1
+            slug: los-pasos-desordenados
+            micro_objective: Reconoce en la historia por qué saltarse un paso hace que el producto salga mal.
+            narrative_beat: Liruf intenta tejer su pulsera sin cortar primero el hilo y todo se enreda.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: que-va-primero
+            micro_objective: Elige, entre 2 pasos, cuál debe ir primero al construir un producto sencillo.
+            narrative_beat: Rho decide si primero se corta la tela o primero se cose el borde de la sombrilla.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-los-pasos-de-mi-pulsera
+            micro_objective: Ordena 4 pasos para construir una pulsera sencilla en el orden correcto.
+            narrative_beat: Zara ordena con cordeles los cuatro pasos para tejer su primera pulsera.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: sigo-mis-pasos-sin-saltarme-ninguno
+            micro_objective: Sigue, sin ayuda, los pasos en orden para construir un producto nuevo en la historia.
+            narrative_beat: Dina construye su producto siguiendo cada paso en orden, sin saltarse ninguno.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: uso-mis-manos-con-cuidado
+        title_es: Uso mis manos con cuidado
+        concept: Trabajar con cuidado, sin apurarme, ayuda a que el producto quede mejor hecho.
+        learning_objective: Al final, el niño puede reconocer la diferencia entre trabajar con cuidado y trabajar con prisa.
+        key_vocabulary:
+          - cuidado
+          - con calma
+          - prisa
+          - con las manos
+        prior_knowledge: Sabe seguir los pasos en orden (tema anterior).
+        fact_refs: []
+        parent_check: Observa si {{name}} logra trabajar con calma en una manualidad, sin apurarse para terminar rápido.
+        lessons:
+          - position: 1
+            slug: liruf-se-apura-y-se-enreda
+            micro_objective: Reconoce en la historia lo que pasa cuando un personaje trabaja con demasiada prisa.
+            narrative_beat: Liruf teje su pulsera tan rápido que las cuentas se caen al piso una y otra vez.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: con-calma-o-con-prisa
+            micro_objective: Distingue, entre 2 escenas, cuál muestra trabajo cuidadoso y cuál trabajo apurado.
+            narrative_beat: Rho compara el trabajo tranquilo de Zara con el trabajo apurado de Liruf en la misma tarde.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reviso-mis-manos-mientras-trabajo
+            micro_objective: Identifica 3 momentos en los que conviene ir despacio para trabajar con cuidado.
+            narrative_beat: Zara señala los momentos exactos donde hay que ir despacio al coser la sombrilla.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: trabajo-con-calma-en-mi-producto
+            micro_objective: Trabaja, sin ayuda, con calma y cuidado en un producto nuevo de la historia.
+            narrative_beat: Dina respira hondo y trabaja despacio, sin prisa, en su propio producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: termino-lo-que-empiezo
+        title_es: Termino lo que empiezo
+        concept: "Un producto a medio hacer no sirve todavía: hay que llegar hasta el final para que esté completo."
+        learning_objective: Al final, el niño puede reconocer la diferencia entre un producto terminado y uno a medias.
+        key_vocabulary:
+          - terminar
+          - a medias
+          - completo
+          - hasta el final
+        prior_knowledge: Sabe trabajar con cuidado (tema anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a terminar por completo su manualidad antes de pasar a otra cosa, aunque tome un poco más de tiempo.
+        lessons:
+          - position: 1
+            slug: la-pulsera-a-medias
+            micro_objective: Reconoce en la historia por qué un producto a medio terminar todavía no sirve.
+            narrative_beat: Liruf deja su pulsera a medio tejer para ir a jugar, y se da cuenta de que así no sirve todavía.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: terminado-o-a-medias
+            micro_objective: Distingue, entre 4 productos, cuáles están terminados y cuáles a medias.
+            narrative_beat: Rho revisa la mesa del taller y separa los productos terminados de los que faltan por completar.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-lo-que-falta
+            micro_objective: Identifica qué pasos faltan para terminar un producto que está a medias.
+            narrative_beat: Zara revisa su sombrilla a medio hacer y anota qué le falta para estar completa.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: termino-mi-producto-por-completo
+            micro_objective: Termina, sin ayuda, un producto hasta el final en una historia nueva.
+            narrative_beat: Dina regresa a su producto y no se levanta hasta dejarlo completamente terminado.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: muestro-mi-primer-producto
+        title_es: Muestro mi primer producto
+        concept: Terminar mi primer producto y mostrarlo a otros se siente como un logro que vale la pena celebrar.
+        learning_objective: Al final, el niño puede presentar con orgullo un producto que terminó de hacer.
+        key_vocabulary:
+          - mostrar
+          - primer producto
+          - logro
+          - orgullo
+        prior_knowledge: Sabe terminar un producto hasta el final (tema anterior).
+        fact_refs: []
+        parent_check: Pídele a {{name}} que te muestre y te explique con orgullo el primer producto que terminó de hacer.
+        lessons:
+          - position: 1
+            slug: zara-muestra-su-sombrilla
+            micro_objective: Reconoce en la historia el momento en que un personaje muestra con orgullo su primer producto.
+            narrative_beat: Zara levanta su sombrilla terminada frente a toda la tripulación del taller.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: orgullo-o-verguenza
+            micro_objective: Distingue, entre 2 escenas, cuál muestra orgullo por un trabajo terminado.
+            narrative_beat: Rho compara la cara de orgullo de Zara con la cara tímida de Liruf frente a sus productos.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-como-lo-hice
+            micro_objective: Ordena 3 frases que explican cómo se hizo un producto, del primer paso al último.
+            narrative_beat: Liruf explica, paso por paso, cómo construyó su primera pulsera terminada.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: presento-mi-primer-producto
+            micro_objective: Presenta, sin ayuda, su propio primer producto terminado frente a la tripulación.
+            narrative_beat: Dina presenta con orgullo su primer producto terminado en el taller del bosque.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 7
+        slug: cofre-del-repaso-de-manos-a-la-obra
+        kind: review_spaced
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra/elijo-que-voy-a-hacer
+          - el-bosque-de-los-makers/manos-a-la-obra/junto-lo-que-necesito
+          - el-bosque-de-los-makers/manos-a-la-obra/sigo-los-pasos-en-orden
+          - el-bosque-de-los-makers/manos-a-la-obra/uso-mis-manos-con-cuidado
+          - el-bosque-de-los-makers/manos-a-la-obra/termino-lo-que-empiezo
+          - el-bosque-de-los-makers/manos-a-la-obra/muestro-mi-primer-producto
+        title_es: El Cofre del Repaso de Manos a la Obra
+        concept: Repasamos desde el cofre de recuerdos cómo elegir, juntar materiales y construir un producto de principio a fin.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre construir con las manos.
+        key_vocabulary:
+          - producto
+          - materiales
+          - pasos
+          - terminar
+        prior_knowledge: Completó los 6 temas de Manos a la Obra.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-del-taller-de-manos
+            micro_objective: Recuerda y nombra, sin ayuda, el producto que eligió construir en esta saga.
+            narrative_beat: "Rho encuentra un cofre lleno de virutas de madera y retazos: recuerdos del primer taller."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-mis-materiales
+            micro_objective: Recuerda, sin ayuda, los materiales que juntó para su producto en esta saga.
+            narrative_beat: Zara saca del cofre el hilo y las cuentas que juntó para su primera pulsera.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-el-paso-que-faltaba
+            micro_objective: Elige, entre 2 recuerdos, cuál muestra un paso que se saltó por error.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál producto se hizo sin seguir el orden.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-con-mi-producto-terminado
+            micro_objective: "Aplica sin ayuda lo recordado: termina un producto de principio a fin en una escena nueva."
+            narrative_beat: Dina cierra el cofre de manos a la obra, lista para aprender de dónde vienen los materiales.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: reto-entrelazado-de-manos-a-la-obra
+        kind: review_interleaved
+        review_of:
+          - la-isla-de-las-ideas/el-taller-de-las-chispas/elijo-mi-mejor-idea
+          - la-isla-de-las-ideas/ideas-que-ayudan/cuento-mi-idea-en-una-frase
+          - el-bosque-de-los-makers/manos-a-la-obra/sigo-los-pasos-en-orden
+          - el-bosque-de-los-makers/manos-a-la-obra/termino-lo-que-empiezo
+        title_es: Reto Entrelazado de Manos a la Obra
+        concept: Mezclamos lo aprendido en la Isla de las Ideas con lo aprendido sobre construir un producto con las manos.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la aventura anterior con ideas de esta saga.
+        key_vocabulary:
+          - idea
+          - producto
+          - pasos
+          - terminar
+        prior_knowledge: Completó El Cofre del Repaso de Manos a la Obra (tema anterior) y La Isla de las Ideas (aventura anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: de-la-idea-elegida-al-primer-paso
+            micro_objective: Combina la idea elegida en la isla con el primer paso para construirla en el bosque.
+            narrative_beat: Rho recuerda la idea que Zara eligió en la isla y ahora la conecta con el primer paso para construirla.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: la-frase-de-mi-idea-y-mi-producto
+            micro_objective: Combina la frase que resumía una idea con el producto real que resultó de ella.
+            narrative_beat: Zara recuerda la frase que resumía su idea y la compara con el producto que terminó armando.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-de-la-idea-al-producto-terminado
+            micro_objective: Ordena, mezclando ambas aventuras, los pasos desde tener una idea hasta terminar el producto.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde la idea de la isla hasta el producto ya terminado."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: construyo-una-idea-vieja-hasta-el-final
+            micro_objective: Construye, sin ayuda, una idea del inicio del viaje hasta convertirla en un producto terminado.
+            narrative_beat: Dina construye por fin, hasta el final, la primera idea que tuvo en la isla de las ideas.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 2
+    slug: de-donde-vienen-las-cosas
+    icon: eco
+    title:
+      en-US: Where Things Come From
+      es-MX: De Dónde Vienen las Cosas
+      pt-BR: De Onde Vêm as Coisas
+    description:
+      en-US: Discover what materials are made of, where they come from, and how to use them without waste.
+      es-MX: Descubre de qué están hechos los materiales, de dónde vienen y cómo usarlos sin desperdiciar.
+      pt-BR: Descubra do que são feitos os materiais, de onde vêm e como usá-los sem desperdiçar.
+    topics:
+      - position: 1
+        slug: de-que-esta-hecho
+        title_es: ¿De qué está hecho?
+        concept: Cada producto está hecho de uno o varios materiales, y reconocerlos es el primer paso para entenderlos.
+        learning_objective: Al final, el niño puede identificar de qué material está hecho un objeto sencillo.
+        key_vocabulary:
+          - material
+          - hecho de
+          - identificar
+          - objeto
+        prior_knowledge: Sabe construir un producto sencillo con las manos (saga anterior).
+        fact_refs: []
+        parent_check: Pídele a {{name}} que identifique de qué material están hechos 3 objetos distintos de la casa.
+        lessons:
+          - position: 1
+            slug: de-que-esta-hecha-la-pulsera
+            micro_objective: Reconoce en la historia de qué material está hecho un producto mostrado.
+            narrative_beat: Rho toma la pulsera de Zara y pregunta de qué está hecha cada una de sus partes.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: madera-tela-o-hilo
+            micro_objective: Identifica, entre 4 objetos, cuál está hecho de madera, cuál de tela y cuál de hilo.
+            narrative_beat: Liruf clasifica los objetos del taller según el material principal de cada uno.
+            difficulty: 1
+            suggested_families:
+              - choice
+              - arrange
+          - position: 3
+            slug: un-producto-varios-materiales
+            micro_objective: Reconoce que un mismo producto puede estar hecho de más de un material.
+            narrative_beat: Zara señala que su sombrilla usa tela, madera y un poco de hilo, todo junto.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: identifico-los-materiales-de-mi-producto
+            micro_objective: Identifica, sin ayuda, todos los materiales de un producto nuevo en la historia.
+            narrative_beat: Dina revisa su propio producto y nombra cada material que lo compone.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: algunos-materiales-vienen-de-la-naturaleza
+        title_es: Algunos materiales vienen de la naturaleza
+        concept: Materiales como la madera, el algodón o las semillas vienen de plantas y árboles de la naturaleza.
+        learning_objective: Al final, el niño puede reconocer un material que viene de la naturaleza.
+        key_vocabulary:
+          - naturaleza
+          - árbol
+          - planta
+          - venir de
+        prior_knowledge: Sabe identificar de qué material está hecho un objeto (tema anterior).
+        fact_refs: []
+        parent_check: Camina con {{name}} por el jardín o parque y pregúntale qué materiales de sus productos podrían venir de la naturaleza.
+        lessons:
+          - position: 1
+            slug: la-madera-viene-del-arbol
+            micro_objective: Reconoce en la historia que un material del taller viene directamente de un árbol.
+            narrative_beat: Rho muestra un tronco cortado y explica que de ahí sale la madera del taller.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: de-la-naturaleza-o-no
+            micro_objective: Distingue, entre 4 materiales, cuáles vienen de la naturaleza y cuáles no.
+            narrative_beat: Zara separa en dos montones los materiales que salen de plantas y los que no.
+            difficulty: 1
+            suggested_families:
+              - choice
+              - arrange
+          - position: 3
+            slug: sigo-el-camino-del-algodon
+            micro_objective: Ordena 3 pasos que muestran de dónde sale un material natural hasta llegar al taller.
+            narrative_beat: Liruf ordena dibujos que muestran cómo el algodón de una planta se convierte en hilo.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: reconozco-un-material-natural-nuevo
+            micro_objective: Reconoce, sin ayuda, un material natural nuevo en una escena de la historia.
+            narrative_beat: Dina reconoce un material nuevo del bosque y explica de qué planta o árbol podría venir.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: algunos-materiales-se-compran-en-la-tienda
+        title_es: Algunos materiales se compran en la tienda
+        concept: Otros materiales, como las cuentas de colores o el papel, se compran ya hechos en una tienda.
+        learning_objective: Al final, el niño puede reconocer un material que se compra en la tienda.
+        key_vocabulary:
+          - tienda
+          - comprar
+          - ya hecho
+          - conseguir
+        prior_knowledge: Sabe reconocer materiales que vienen de la naturaleza (tema anterior).
+        fact_refs: []
+        parent_check: La próxima vez que compren materiales para una manualidad, pregúntale a {{name}} si ese material se compra en la tienda o viene directo de la naturaleza.
+        lessons:
+          - position: 1
+            slug: las-cuentas-de-la-tienda
+            micro_objective: Reconoce en la historia un material que se compró ya hecho en una tienda.
+            narrative_beat: Zara muestra las cuentas de colores que compró en la tienda de la isla para su pulsera.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: de-la-tienda-o-de-la-naturaleza
+            micro_objective: Clasifica 4 materiales entre los que se compran en tienda y los que vienen de la naturaleza.
+            narrative_beat: Rho separa los materiales del taller entre comprados y naturales.
+            difficulty: 1
+            suggested_families:
+              - arrange
+              - choice
+          - position: 3
+            slug: comparo-donde-consigo-cada-material
+            micro_objective: Compara 2 materiales del mismo producto y reconoce de dónde viene cada uno.
+            narrative_beat: Liruf compara el hilo comprado en tienda con la madera que viene directo del bosque.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: elijo-donde-conseguir-mi-material
+            micro_objective: Elige, sin ayuda, dónde conseguir un material necesario en una escena nueva.
+            narrative_beat: Dina decide si un material lo consigue en la naturaleza o si necesita comprarlo en la tienda.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: cuido-los-materiales-para-no-desperdiciar
+        title_es: Cuido los materiales para no desperdiciar
+        concept: Usar solo lo que necesito, sin cortar ni gastar de más, evita desperdiciar materiales.
+        learning_objective: Al final, el niño puede reconocer cuándo se está desperdiciando un material.
+        key_vocabulary:
+          - desperdiciar
+          - cuidar
+          - solo lo necesario
+          - sobrante
+        prior_knowledge: Sabe distinguir materiales naturales de materiales comprados (tema anterior).
+        fact_refs: []
+        parent_check: Observa si {{name}} corta o usa solo la cantidad de material que necesita, sin desperdiciar de más, en su próxima manualidad.
+        lessons:
+          - position: 1
+            slug: liruf-corta-de-mas
+            micro_objective: Reconoce en la historia el momento en que un personaje desperdicia material sin darse cuenta.
+            narrative_beat: Liruf corta un pedazo enorme de tela cuando solo necesitaba un cuadrito pequeño.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: con-desperdicio-o-sin-desperdicio
+            micro_objective: Distingue, entre 2 escenas, cuál muestra un uso cuidadoso del material y cuál un desperdicio.
+            narrative_beat: Rho compara la mesa ordenada de Zara con los retazos tirados de Liruf.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: mido-antes-de-cortar
+            micro_objective: Ordena los pasos para medir un material antes de cortarlo, evitando desperdiciarlo.
+            narrative_beat: Zara mide con cuidado el hilo antes de cortarlo, para no gastar de más.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: uso-solo-lo-necesario
+            micro_objective: Usa, sin ayuda, solo la cantidad necesaria de un material en una escena nueva.
+            narrative_beat: Dina corta exactamente lo que necesita, ni un poquito más, para su producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: reuso-lo-que-ya-tengo
+        title_es: Reúso lo que ya tengo
+        concept: Antes de pedir un material nuevo, puedo revisar si ya tengo algo que sirva o se pueda volver a usar.
+        learning_objective: Al final, el niño puede reconocer un ejemplo de reusar un material existente.
+        key_vocabulary:
+          - reusar
+          - ya tengo
+          - volver a usar
+          - antes de pedir
+        prior_knowledge: Sabe evitar el desperdicio de materiales (tema anterior).
+        fact_refs: []
+        parent_check: Antes de comprar un material nuevo para una manualidad, revisa con {{name}} si algo que ya tienen en casa podría reusarse.
+        lessons:
+          - position: 1
+            slug: la-tela-vieja-vuelve-a-servir
+            micro_objective: Reconoce en la historia cómo un material usado antes vuelve a servir para algo nuevo.
+            narrative_beat: Rho encuentra un retazo de tela vieja y decide reusarlo para el borde de una nueva sombrilla.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: reuso-o-material-nuevo
+            micro_objective: Distingue, entre 4 escenas, cuáles muestran reusar algo y cuáles usar un material totalmente nuevo.
+            narrative_beat: Zara revisa el taller buscando qué materiales ya usados podrían servir de nuevo.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: encuentro-algo-para-reusar
+            micro_objective: Encuentra, entre varios objetos del taller, cuál podría reusarse para el producto actual.
+            narrative_beat: Liruf busca entre las sobras del taller algo que pueda reusar en vez de pedir más material.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: reuso-un-material-en-mi-producto
+            micro_objective: Reusa, sin ayuda, un material existente en un producto nuevo de la historia.
+            narrative_beat: Dina reusa un cordel que ya tenía guardado en vez de pedir uno nuevo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: elijo-materiales-buenos-para-mi-producto
+        title_es: Elijo materiales buenos para mi producto
+        concept: Un buen material para mi producto es uno que sirve bien, dura y no se consigue con desperdicio.
+        learning_objective: Al final, el niño puede elegir un material adecuado para un producto, considerando de dónde viene y qué tan bien sirve.
+        key_vocabulary:
+          - material adecuado
+          - servir bien
+          - durar
+          - elegir
+        prior_knowledge: Sabe reusar materiales existentes (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué material eligió para su producto y por qué le pareció el mejor entre las opciones.
+        prerequisites:
+          - path: el-bosque-de-los-makers/manos-a-la-obra/uso-mis-manos-con-cuidado
+            strength: soft
+            reason: Elegir un buen material para el producto se conecta con haber practicado antes el trabajo cuidadoso con las manos.
+        lessons:
+          - position: 1
+            slug: dos-telas-para-elegir
+            micro_objective: Reconoce en la historia por qué un personaje elige un material sobre otro para su producto.
+            narrative_beat: Zara compara dos telas y elige la que resiste mejor el viento para su sombrilla.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: material-que-sirve-o-que-no
+            micro_objective: Elige, entre 3 materiales, cuál sirve mejor para un producto mostrado.
+            narrative_beat: Rho compara tres tipos de hilo y elige el que no se rompe fácil para la pulsera.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reviso-de-donde-viene-y-como-sirve
+            micro_objective: Revisa 2 factores (de dónde viene y qué tan bien sirve) antes de elegir un material.
+            narrative_beat: Liruf revisa si el material es reusado, natural o comprado, y si sirve bien para su producto.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: elijo-el-mejor-material-para-mi-producto
+            micro_objective: Elige, sin ayuda, el material más adecuado para su propio producto en la historia.
+            narrative_beat: Dina elige con cuidado el material que mejor sirve para su producto final del bosque.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 7
+        slug: cofre-del-repaso-de-de-donde-vienen-las-cosas
+        kind: review_spaced
+        review_of:
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/de-que-esta-hecho
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/algunos-materiales-vienen-de-la-naturaleza
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/algunos-materiales-se-compran-en-la-tienda
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/cuido-los-materiales-para-no-desperdiciar
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/reuso-lo-que-ya-tengo
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/elijo-materiales-buenos-para-mi-producto
+        title_es: El Cofre del Repaso de De Dónde Vienen las Cosas
+        concept: Repasamos desde el cofre de recuerdos de dónde vienen los materiales y cómo cuidarlos sin desperdiciar.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre los materiales.
+        key_vocabulary:
+          - material
+          - naturaleza
+          - tienda
+          - reusar
+        prior_knowledge: Completó los 6 temas de De Dónde Vienen las Cosas.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-materiales
+            micro_objective: Recuerda y nombra, sin ayuda, un material y de dónde viene, visto en esta saga.
+            narrative_beat: "Rho abre un cofre lleno de retazos, cuentas y trozos de madera: recuerdos de materiales."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-un-material-reusado
+            micro_objective: Recuerda, sin ayuda, un ejemplo de reusar un material en esta saga.
+            narrative_beat: Zara saca del cofre el retazo de tela vieja que reusó para su sombrilla.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-el-material-mejor-cuidado-del-cofre
+            micro_objective: Elige, entre 2 recuerdos, cuál muestra un uso más cuidadoso del material.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál material se usó con más cuidado.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-de-materiales
+            micro_objective: "Aplica sin ayuda lo recordado: elige un material adecuado para un producto nuevo."
+            narrative_beat: Dina cierra el cofre de materiales, lista para aprender sobre la calidad y el cuidado.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: reto-entrelazado-de-de-donde-vienen-las-cosas
+        kind: review_interleaved
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra/junto-lo-que-necesito
+          - el-bosque-de-los-makers/manos-a-la-obra/termino-lo-que-empiezo
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/cuido-los-materiales-para-no-desperdiciar
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/elijo-materiales-buenos-para-mi-producto
+        title_es: Reto Entrelazado de De Dónde Vienen las Cosas
+        concept: Mezclamos lo aprendido sobre construir un producto con las manos con lo aprendido sobre los materiales.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la saga anterior con ideas de esta saga.
+        key_vocabulary:
+          - producto
+          - material
+          - reusar
+          - terminar
+        prior_knowledge: Completó El Cofre del Repaso de De Dónde Vienen las Cosas (tema anterior) y Manos a la Obra (saga anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: junto-materiales-cuidando-no-desperdiciar
+            micro_objective: Combina juntar materiales necesarios con cuidar de no desperdiciarlos.
+            narrative_beat: Rho junta sus materiales para el producto midiendo con cuidado para no desperdiciar nada.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: termino-mi-producto-con-buenos-materiales
+            micro_objective: Combina terminar un producto por completo con haber elegido materiales adecuados.
+            narrative_beat: Zara termina su sombrilla usando el material que eligió con cuidado desde el principio.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-de-elegir-material-a-terminar-producto
+            micro_objective: Ordena, mezclando ambas sagas, los pasos desde elegir un buen material hasta terminar el producto.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde elegir el material hasta terminar su producto."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: mejoro-un-producto-viejo-con-mejor-material
+            micro_objective: Mejora, sin ayuda, un producto anterior cambiando a un material más adecuado.
+            narrative_beat: Dina mejora un producto que ya había hecho, esta vez usando un material mejor elegido.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 3
+    slug: hecho-con-cuidado
+    icon: verified
+    title:
+      en-US: Made With Care
+      es-MX: Hecho con Cuidado
+      pt-BR: Feito com Cuidado
+    description:
+      en-US: Discover what makes a product well made, and how to check and fix it before calling it done.
+      es-MX: Descubre qué hace que un producto esté bien hecho, y cómo revisarlo y arreglarlo antes de darlo por terminado.
+      pt-BR: Descubra o que faz um produto ser bem feito, e como revisá-lo e consertá-lo antes de considerá-lo pronto.
+    topics:
+      - position: 1
+        slug: que-es-un-producto-bien-hecho
+        title_es: ¿Qué es un producto bien hecho?
+        concept: Un producto bien hecho es firme, se ve cuidado y funciona para lo que fue creado.
+        learning_objective: Al final, el niño puede reconocer las características de un producto bien hecho.
+        key_vocabulary:
+          - bien hecho
+          - firme
+          - cuidado
+          - funciona
+        prior_knowledge: Sabe elegir materiales adecuados para su producto (saga anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué hace que un producto esté bien hecho, usando algo que él o ella haya construido como ejemplo.
+        prerequisites:
+          - path: el-bosque-de-los-makers/de-donde-vienen-las-cosas/elijo-materiales-buenos-para-mi-producto
+            strength: hard
+            reason: Para reconocer si un producto está bien hecho, primero hay que saber si se usaron materiales adecuados para construirlo.
+        lessons:
+          - position: 1
+            slug: la-pulsera-firme-de-zara
+            micro_objective: Reconoce en la historia las características de un producto bien hecho.
+            narrative_beat: "Zara muestra su pulsera: firme, sin hilos sueltos y con las cuentas bien acomodadas."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: bien-hecho-o-no-tanto
+            micro_objective: Distingue, entre 4 productos, cuáles están bien hechos y cuáles no.
+            narrative_beat: Rho compara varios productos del taller y separa los que están bien hechos de los que no.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reviso-tres-senales-de-calidad
+            micro_objective: Identifica 3 señales que muestran que un producto está bien hecho.
+            narrative_beat: Liruf revisa un producto buscando si es firme, se ve cuidado y funciona bien.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: describo-mi-producto-bien-hecho
+            micro_objective: Describe, sin ayuda, por qué su propio producto está bien hecho.
+            narrative_beat: Dina describe con orgullo por qué su producto quedó firme, cuidado y funcional.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - story
+      - position: 2
+        slug: reviso-antes-de-terminar
+        title_es: Reviso antes de terminar
+        concept: Antes de dar un producto por terminado, vale la pena revisarlo con calma una vez más.
+        learning_objective: Al final, el niño puede reconocer el momento de revisar un producto antes de terminarlo.
+        key_vocabulary:
+          - revisar
+          - antes de terminar
+          - una vez más
+          - checar
+        prior_knowledge: Sabe qué es un producto bien hecho (tema anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a revisar su manualidad una vez más antes de decir que ya terminó.
+        lessons:
+          - position: 1
+            slug: rho-revisa-antes-de-terminar
+            micro_objective: Reconoce en la historia el momento en que un personaje revisa su producto antes de terminarlo.
+            narrative_beat: Rho da una última mirada a su producto antes de decir que ya está listo.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: reviso-o-no-reviso
+            micro_objective: Distingue, entre 2 escenas, cuál muestra revisar el producto y cuál darlo por terminado sin revisar.
+            narrative_beat: Zara compara el hábito de revisar de Rho con la prisa de Liruf por terminar rápido.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: encuentro-lo-que-falta-revisar
+            micro_objective: Encuentra, en una escena, un detalle que aún falta revisar antes de terminar.
+            narrative_beat: Liruf revisa su carrito de juguete y encuentra una rueda floja que casi se le pasa.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: reviso-mi-producto-una-vez-mas
+            micro_objective: Revisa, sin ayuda, su propio producto una vez más antes de darlo por terminado.
+            narrative_beat: Dina revisa con calma su producto una última vez antes de mostrarlo a los demás.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: un-detalle-cuidado-se-nota
+        title_es: Un detalle cuidado se nota
+        concept: Un pequeño detalle hecho con cuidado, como un acabado limpio, hace que todo el producto se vea mejor.
+        learning_objective: Al final, el niño puede identificar un detalle cuidado que mejora un producto.
+        key_vocabulary:
+          - detalle
+          - se nota
+          - acabado
+          - mejora
+        prior_knowledge: Sabe revisar su producto antes de terminarlo (tema anterior).
+        fact_refs: []
+        parent_check: Señálale a {{name}} un pequeño detalle bien cuidado en su manualidad y pregúntale cómo cree que se nota la diferencia.
+        lessons:
+          - position: 1
+            slug: el-nudo-bien-hecho
+            micro_objective: Reconoce en la historia un pequeño detalle cuidado que mejora el producto completo.
+            narrative_beat: Zara hace un nudo final perfecto en su pulsera, y ese pequeño detalle se nota enseguida.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: con-detalle-o-sin-detalle
+            micro_objective: Compara 2 productos similares y elige cuál tiene un mejor detalle de acabado.
+            narrative_beat: Rho compara dos sombrillas casi iguales y nota cuál tiene un mejor acabado en el borde.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: encuentro-el-detalle-cuidado
+            micro_objective: Encuentra, entre varias partes de un producto, cuál muestra el detalle mejor cuidado.
+            narrative_beat: Liruf revisa su producto buscando qué parte quedó con el detalle más cuidado.
+            difficulty: 2
+            suggested_families:
+              - analyze
+          - position: 4
+            slug: agrego-un-detalle-cuidado
+            micro_objective: Agrega, sin ayuda, un pequeño detalle cuidado a un producto nuevo de la historia.
+            narrative_beat: Dina agrega un último detalle cuidado a su producto antes de mostrarlo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: comparo-dos-productos-cual-esta-mejor-hecho
+        title_es: "Comparo dos productos: cuál está mejor hecho"
+        concept: Puedo comparar dos productos parecidos y decir cuál está mejor hecho, fijándome en detalles concretos.
+        learning_objective: Al final, el niño puede comparar dos productos y decir cuál está mejor hecho, con una razón concreta.
+        key_vocabulary:
+          - comparar
+          - mejor hecho
+          - razón
+          - fijarse
+        prior_knowledge: Sabe identificar un detalle cuidado (tema anterior).
+        fact_refs: []
+        parent_check: Muéstrale a {{name}} dos versiones de la misma manualidad y pregúntale cuál está mejor hecha y por qué.
+        lessons:
+          - position: 1
+            slug: dos-pulseras-una-al-lado-de-la-otra
+            micro_objective: Compara dos productos parecidos y reconoce cuál está mejor hecho.
+            narrative_beat: Rho pone dos pulseras lado a lado y pregunta a la tripulación cuál está mejor hecha.
+            difficulty: 1
+            suggested_families:
+              - choice
+              - story
+          - position: 2
+            slug: por-que-esta-mejor-hecho
+            micro_objective: Elige, entre 2 razones, cuál explica mejor por qué un producto está mejor hecho que otro.
+            narrative_beat: Zara explica que una pulsera está mejor hecha porque las cuentas están parejas, no solo porque le gusta más.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-tres-productos-por-calidad
+            micro_objective: Ordena 3 productos parecidos de mejor a peor hecho, con una razón para cada uno.
+            narrative_beat: Liruf ordena tres productos del taller según qué tan bien hechos están.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - analyze
+          - position: 4
+            slug: comparo-mi-producto-con-otro
+            micro_objective: Compara, sin ayuda, su propio producto con otro y explica cuál está mejor hecho.
+            narrative_beat: Dina compara su producto con el de un compañero de taller y explica con calma la diferencia.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: arreglo-lo-que-no-quedo-bien
+        title_es: Arreglo lo que no quedó bien
+        concept: Si al revisar encuentro algo que no quedó bien, puedo arreglarlo antes de mostrar mi producto.
+        learning_objective: Al final, el niño puede reconocer y corregir un defecto sencillo en un producto.
+        key_vocabulary:
+          - arreglar
+          - defecto
+          - corregir
+          - no quedó bien
+        prior_knowledge: Sabe comparar dos productos por calidad (tema anterior).
+        fact_refs: []
+        parent_check: Si algo de la manualidad de {{name}} no quedó del todo bien, anímalo a intentar arreglarlo en vez de dejarlo así.
+        lessons:
+          - position: 1
+            slug: la-cuenta-floja-de-liruf
+            micro_objective: Reconoce en la historia un defecto sencillo que un personaje decide arreglar.
+            narrative_beat: Liruf nota una cuenta floja en su pulsera y decide apretarla antes de mostrarla.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: arreglado-o-sin-arreglar
+            micro_objective: Distingue, entre 2 escenas, cuál muestra un defecto ya arreglado y cuál sin arreglar.
+            narrative_beat: Rho compara el producto de Liruf antes y después de arreglar la cuenta floja.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: encuentro-el-defecto-a-arreglar
+            micro_objective: Encuentra, en una escena nueva, el defecto sencillo que necesita arreglo.
+            narrative_beat: Zara revisa un producto del taller y encuentra el hilo suelto que hay que arreglar.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: arreglo-mi-propio-defecto
+            micro_objective: Arregla, sin ayuda, un defecto sencillo en su propio producto dentro de la historia.
+            narrative_beat: Dina arregla con calma el pequeño defecto que encontró en su producto antes de mostrarlo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: mi-producto-tiene-mi-sello-de-cuidado
+        title_es: Mi producto tiene mi sello de cuidado
+        concept: Cuando reviso, cuido los detalles y arreglo lo necesario, mi producto lleva mi propio sello de cuidado.
+        learning_objective: Al final, el niño puede explicar con orgullo por qué su producto refleja su propio cuidado.
+        key_vocabulary:
+          - sello
+          - cuidado
+          - propio
+          - orgullo
+        prior_knowledge: Sabe arreglar un defecto sencillo (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué parte de su producto muestra mejor el cuidado que le puso, como si fuera su sello personal.
+        lessons:
+          - position: 1
+            slug: el-sello-de-zara
+            micro_objective: Reconoce en la historia cómo el cuidado de un personaje se nota como un sello propio en su producto.
+            narrative_beat: Zara explica que cada nudo perfecto de su pulsera es su forma de poner cuidado en lo que hace.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: con-sello-de-cuidado-o-sin-el
+            micro_objective: Distingue, entre 2 productos, cuál muestra más claramente el cuidado de quien lo hizo.
+            narrative_beat: Rho compara dos productos y nota cuál refleja mejor el cuidado de su creador.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reconozco-mi-propio-estilo-cuidadoso
+            micro_objective: Ordena 3 pasos que muestran cómo el cuidado de alguien se refleja en su producto final.
+            narrative_beat: Liruf ordena los momentos donde puso más cuidado en su producto, del primero al último.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: mi-producto-lleva-mi-cuidado
+            micro_objective: Explica, sin ayuda, por qué su propio producto refleja el cuidado que le puso.
+            narrative_beat: Dina explica con orgullo cómo su producto terminado lleva su propio sello de cuidado.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - story
+      - position: 7
+        slug: cofre-del-repaso-de-hecho-con-cuidado
+        kind: review_spaced
+        review_of:
+          - el-bosque-de-los-makers/hecho-con-cuidado/que-es-un-producto-bien-hecho
+          - el-bosque-de-los-makers/hecho-con-cuidado/reviso-antes-de-terminar
+          - el-bosque-de-los-makers/hecho-con-cuidado/un-detalle-cuidado-se-nota
+          - el-bosque-de-los-makers/hecho-con-cuidado/comparo-dos-productos-cual-esta-mejor-hecho
+          - el-bosque-de-los-makers/hecho-con-cuidado/arreglo-lo-que-no-quedo-bien
+          - el-bosque-de-los-makers/hecho-con-cuidado/mi-producto-tiene-mi-sello-de-cuidado
+        title_es: El Cofre del Repaso de Hecho con Cuidado
+        concept: Repasamos desde el cofre de recuerdos cómo revisar, cuidar los detalles y arreglar un producto.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre la calidad y el cuidado.
+        key_vocabulary:
+          - bien hecho
+          - revisar
+          - detalle
+          - arreglar
+        prior_knowledge: Completó los 6 temas de Hecho con Cuidado.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-del-cuidado
+            micro_objective: Recuerda y nombra, sin ayuda, una señal de que un producto está bien hecho.
+            narrative_beat: "Rho encuentra un cofre lleno de nudos perfectos y bordes cuidados: recuerdos de calidad."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-un-defecto-arreglado
+            micro_objective: Recuerda, sin ayuda, un defecto sencillo que se arregló en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo de la cuenta floja que Liruf arregló a tiempo.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-el-producto-mejor-hecho-del-cofre
+            micro_objective: Elige, entre 2 productos recordados, cuál estaba mejor hecho.
+            narrative_beat: Liruf compara dos productos guardados en el cofre y decide cuál estaba mejor hecho.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-con-mi-sello-de-cuidado
+            micro_objective: "Aplica sin ayuda lo recordado: revisa y mejora un producto nuevo con su propio sello de cuidado."
+            narrative_beat: Dina cierra el cofre de la calidad, lista para probar y mejorar sus productos.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: reto-entrelazado-de-hecho-con-cuidado
+        kind: review_interleaved
+        review_of:
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/elijo-materiales-buenos-para-mi-producto
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas/cuido-los-materiales-para-no-desperdiciar
+          - el-bosque-de-los-makers/hecho-con-cuidado/un-detalle-cuidado-se-nota
+          - el-bosque-de-los-makers/hecho-con-cuidado/arreglo-lo-que-no-quedo-bien
+        title_es: Reto Entrelazado de Hecho con Cuidado
+        concept: Mezclamos lo aprendido sobre los materiales con lo aprendido sobre la calidad y el cuidado.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la saga de los materiales con ideas de esta saga.
+        key_vocabulary:
+          - material
+          - bien hecho
+          - detalle
+          - arreglar
+        prior_knowledge: Completó El Cofre del Repaso de Hecho con Cuidado (tema anterior) y De Dónde Vienen las Cosas (saga anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: buen-material-buen-detalle
+            micro_objective: Combina elegir un material adecuado con lograr un detalle cuidado en el producto.
+            narrative_beat: Rho recuerda cómo elegir el material correcto ayudó a lograr un mejor detalle final.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: cuido-el-material-y-arreglo-el-defecto
+            micro_objective: Combina cuidar los materiales sin desperdiciar con arreglar un defecto encontrado.
+            narrative_beat: Zara cuida el material que le queda mientras arregla el pequeño defecto de su producto.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-de-elegir-material-a-detalle-cuidado
+            micro_objective: Ordena, mezclando ambas sagas, los pasos desde elegir un buen material hasta lograr un detalle cuidado.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el material elegido hasta el detalle final cuidado."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: mejoro-un-producto-viejo-con-cuidado-y-buen-material
+            micro_objective: Mejora, sin ayuda, un producto anterior usando mejor material y más cuidado en los detalles.
+            narrative_beat: Dina mejora un producto anterior combinando un mejor material con mucho más cuidado en los detalles.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 4
+    slug: pruebo-y-mejoro
+    icon: refresh
+    title:
+      en-US: I Try and I Improve
+      es-MX: Pruebo y Mejoro
+      pt-BR: Experimento e Melhoro
+    description:
+      en-US: Show your product to someone, listen to what they think, and make a better second version.
+      es-MX: Muestra tu producto a alguien, escucha lo que piensa y haz una segunda versión mejor.
+      pt-BR: Mostre seu produto a alguém, ouça o que pensa e faça uma segunda versão melhor.
+    topics:
+      - position: 1
+        slug: le-muestro-mi-producto-a-alguien
+        title_es: Le muestro mi producto a alguien
+        concept: Mostrar mi producto a otra persona es el primer paso para saber si de verdad funciona bien.
+        learning_objective: Al final, el niño puede reconocer la utilidad de mostrar un producto a otra persona.
+        key_vocabulary:
+          - mostrar
+          - a alguien
+          - primer paso
+          - saber si funciona
+        prior_knowledge: Tiene un producto terminado con su propio sello de cuidado (saga anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a mostrarle su producto a un familiar o amigo y observar cómo reacciona.
+        prerequisites:
+          - path: el-bosque-de-los-makers/hecho-con-cuidado/mi-producto-tiene-mi-sello-de-cuidado
+            strength: hard
+            reason: Mostrar un producto a alguien más para recibir una opinión solo tiene sentido después de haberlo terminado con el propio sello de cuidado.
+        lessons:
+          - position: 1
+            slug: zara-muestra-su-producto-a-un-isleno
+            micro_objective: Reconoce en la historia por qué mostrar un producto a alguien más ayuda a saber si funciona.
+            narrative_beat: Zara le muestra su sombrilla terminada a un isleño del bosque para ver qué le parece.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: mostrar-o-guardar
+            micro_objective: Distingue, entre 2 escenas, cuál muestra a alguien compartiendo su producto y cuál guardándolo sin mostrar a nadie.
+            narrative_beat: Rho compara el gesto de Zara de mostrar su producto con la timidez de Liruf por guardarlo.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: elijo-a-quien-mostrarle
+            micro_objective: Elige, entre 3 personajes, a quién le mostraría primero su producto para obtener una buena opinión.
+            narrative_beat: Liruf piensa a quién del taller le conviene mostrarle primero su carrito mejorado.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: muestro-mi-producto-en-la-historia
+            micro_objective: Muestra, sin ayuda, su propio producto a otro personaje dentro de una escena nueva.
+            narrative_beat: Dina muestra con confianza su producto a un isleño nuevo del bosque.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: escucho-lo-que-piensan
+        title_es: Escucho lo que piensan
+        concept: Cuando alguien opina sobre mi producto, lo mejor es escuchar con calma, aunque no siempre sea lo que esperaba oír.
+        learning_objective: Al final, el niño puede reconocer una escucha calmada de una opinión sobre su producto.
+        key_vocabulary:
+          - opinión
+          - escuchar
+          - con calma
+          - aunque no espere
+        prior_knowledge: Sabe mostrar su producto a otra persona (tema anterior).
+        fact_refs: []
+        parent_check: Observa si {{name}} logra escuchar con calma una opinión sobre su manualidad, aunque no sea del todo positiva.
+        lessons:
+          - position: 1
+            slug: el-isleno-opina-sobre-la-sombrilla
+            micro_objective: Reconoce en la historia la opinión que un isleño da sobre un producto mostrado.
+            narrative_beat: Un isleño le dice a Zara que la sombrilla es bonita, pero que se ve algo pesada para cargar.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: escucho-con-calma-o-me-enojo
+            micro_objective: Distingue, entre 2 escenas, cuál muestra escuchar una opinión con calma y cuál reaccionar mal.
+            narrative_beat: Rho compara la calma de Zara al escuchar con el enojo de Liruf ante la misma opinión.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: identifico-la-opinion-completa
+            micro_objective: Identifica la opinión completa que un isleño da sobre un producto, sin quedarse solo con una parte.
+            narrative_beat: Liruf escucha completa la opinión sobre su carrito, sin quedarse solo con la parte que le gusta.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: escucho-una-opinion-sobre-mi-producto
+            micro_objective: Escucha, sin ayuda, una opinión completa sobre su propio producto en una historia nueva.
+            narrative_beat: Dina escucha con calma toda la opinión de un isleño sobre su producto, sin interrumpir.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: encuentro-una-forma-de-mejorar
+        title_es: Encuentro una forma de mejorar
+        concept: Con la opinión que escuché, puedo pensar una forma concreta de mejorar mi producto.
+        learning_objective: Al final, el niño puede proponer una mejora concreta basada en una opinión escuchada.
+        key_vocabulary:
+          - mejorar
+          - forma concreta
+          - basado en
+          - opinión
+        prior_knowledge: Sabe escuchar una opinión con calma (tema anterior).
+        fact_refs: []
+        parent_check: Ayuda a {{name}} a pensar una mejora concreta para su producto, basada en la opinión que escuchó.
+        lessons:
+          - position: 1
+            slug: zara-piensa-como-aligerar-la-sombrilla
+            micro_objective: Reconoce en la historia cómo un personaje piensa una mejora concreta a partir de una opinión.
+            narrative_beat: Zara piensa usar un palo más delgado para que la sombrilla pese menos, tal como le dijeron.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: mejora-concreta-o-vaga
+            micro_objective: Distingue, entre 2 ideas de mejora, cuál es concreta y cuál demasiado vaga para aplicarse.
+            narrative_beat: Rho compara 'hacerlo más ligero con un palo delgado' con 'hacerlo mejor' y nota cuál ayuda más.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-la-opinion-con-la-mejora
+            micro_objective: Empareja 3 opiniones escuchadas con la mejora concreta que les corresponde.
+            narrative_beat: Liruf conecta cada opinión que escuchó con la mejora concreta que piensa hacer.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 4
+            slug: propongo-mi-mejora-concreta
+            micro_objective: Propone, sin ayuda, una mejora concreta para su propio producto en la historia.
+            narrative_beat: Dina propone una mejora concreta para su producto, basada en lo que escuchó de un isleño.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: pruebo-la-nueva-version
+        title_es: Pruebo la nueva versión
+        concept: Después de pensar una mejora, hago una nueva versión de mi producto para probarla.
+        learning_objective: Al final, el niño puede reconocer una nueva versión de un producto ya mejorada.
+        key_vocabulary:
+          - nueva versión
+          - probar
+          - mejorada
+          - segundo intento
+        prior_knowledge: Sabe proponer una mejora concreta (tema anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a hacer una segunda versión de su producto aplicando la mejora que pensó.
+        lessons:
+          - position: 1
+            slug: la-sombrilla-mas-ligera
+            micro_objective: Reconoce en la historia una nueva versión de un producto, ya con la mejora aplicada.
+            narrative_beat: Zara termina su segunda sombrilla, esta vez más ligera gracias al palo delgado.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: version-uno-o-version-dos
+            micro_objective: Distingue, entre 2 productos, cuál es la primera versión y cuál la nueva versión mejorada.
+            narrative_beat: Rho compara la primera pulsera de Liruf con la segunda, ya con las cuentas más firmes.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: sigo-los-pasos-de-la-nueva-version
+            micro_objective: Ordena los pasos para construir la nueva versión mejorada de un producto.
+            narrative_beat: Liruf ordena los pasos para armar la segunda versión de su carrito, ya sin la rueda floja.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: pruebo-mi-nueva-version
+            micro_objective: Construye y prueba, sin ayuda, una nueva versión mejorada de su producto en la historia.
+            narrative_beat: Dina construye y prueba la nueva versión de su producto, aplicando la mejora que pensó.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: mi-segunda-version-es-mejor
+        title_es: Mi segunda versión es mejor
+        concept: Comparar la primera y la segunda versión de mi producto me ayuda a ver cuánto mejoré.
+        learning_objective: Al final, el niño puede comparar dos versiones de un producto y explicar por qué la segunda es mejor.
+        key_vocabulary:
+          - segunda versión
+          - mejor
+          - comparar
+          - cuánto mejoré
+        prior_knowledge: Sabe construir y probar una nueva versión (tema anterior).
+        fact_refs: []
+        parent_check: Pídele a {{name}} que compare su primera y su segunda versión de un producto, y que explique qué mejoró.
+        lessons:
+          - position: 1
+            slug: zara-compara-sus-dos-sombrillas
+            micro_objective: Reconoce en la historia cómo un personaje compara su primera y segunda versión de un producto.
+            narrative_beat: Zara pone lado a lado sus dos sombrillas y muestra con orgullo cuánto mejoró la segunda.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: que-mejoro-entre-versiones
+            micro_objective: Identifica, entre 2 versiones de un producto, qué detalle específico mejoró.
+            narrative_beat: Rho señala exactamente qué cambió entre la primera y la segunda pulsera de Liruf.
+            difficulty: 1
+            suggested_families:
+              - choice
+              - analyze
+          - position: 3
+            slug: ordeno-el-progreso-de-mi-producto
+            micro_objective: Ordena 3 versiones de un mismo producto de la más antigua a la más mejorada.
+            narrative_beat: Liruf ordena tres versiones de su carrito, de la primera y más simple a la más mejorada.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: explico-por-que-mi-segunda-version-es-mejor
+            micro_objective: Explica, sin ayuda, por qué la segunda versión de su propio producto es mejor que la primera.
+            narrative_beat: Dina explica con orgullo, punto por punto, por qué su segunda versión superó a la primera.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - story
+      - position: 6
+        slug: bosque-de-los-makers-repaso-final
+        title_es: "Bosque de los Makers: repaso final"
+        concept: "Repasamos todo el viaje: hacer con las manos, los materiales, la calidad y el cuidado, y probar para mejorar."
+        learning_objective: Al final, el niño puede recordar y aplicar juntos los conceptos clave de la aventura del bosque de los makers.
+        key_vocabulary:
+          - repaso
+          - recuerdo
+          - aventura completa
+          - mejorar
+        prior_knowledge: Domina todos los temas previos de la aventura del bosque de los makers.
+        fact_refs: []
+        parent_check: Al terminar el viaje, pídele a {{name}} que narre cómo pasamos de una idea a un producto terminado y mejorado.
+        lessons:
+          - position: 1
+            slug: recuerdo-mi-primer-producto
+            micro_objective: Recuerda y nombra un producto, un material y una mejora de toda la aventura.
+            narrative_beat: Rho reúne a la tripulación en el taller para recordar juntos todo lo vivido en el bosque.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: reconozco-todo-el-proceso-de-hacer
+            micro_objective: Identifica correctamente los pasos para pasar de una idea a un producto terminado y mejorado.
+            narrative_beat: "Zara organiza un último repaso: recordar todos los pasos del proceso de hacer sin equivocarse."
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: armo-mi-producto-final-del-bosque
+            micro_objective: Arma, sin ayuda, el resumen completo de su producto final usando lo aprendido en la aventura.
+            narrative_beat: Liruf organiza su producto final poniendo en práctica todo lo que aprendió en el bosque.
+            difficulty: 3
+            suggested_families:
+              - choice
+              - storyplay
+          - position: 4
+            slug: zarpo-hacia-la-ciudad-del-cliente
+            micro_objective: Explica en una frase qué aprendió sobre hacer productos antes de zarpar hacia la próxima aventura.
+            narrative_beat: "Dina cierra el taller del bosque: sus productos están listos, y la Ciudad del Cliente espera para conocer a quien los usará."
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice
+      - position: 7
+        slug: cofre-del-repaso-de-pruebo-y-mejoro
+        kind: review_spaced
+        review_of:
+          - el-bosque-de-los-makers/pruebo-y-mejoro/le-muestro-mi-producto-a-alguien
+          - el-bosque-de-los-makers/pruebo-y-mejoro/escucho-lo-que-piensan
+          - el-bosque-de-los-makers/pruebo-y-mejoro/encuentro-una-forma-de-mejorar
+          - el-bosque-de-los-makers/pruebo-y-mejoro/pruebo-la-nueva-version
+          - el-bosque-de-los-makers/pruebo-y-mejoro/mi-segunda-version-es-mejor
+          - el-bosque-de-los-makers/pruebo-y-mejoro/bosque-de-los-makers-repaso-final
+        title_es: El Cofre del Repaso de Pruebo y Mejoro
+        concept: Repasamos desde el cofre de recuerdos cómo mostrar, escuchar, mejorar y probar una nueva versión.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre probar y mejorar.
+        key_vocabulary:
+          - mostrar
+          - escuchar
+          - mejorar
+          - nueva versión
+        prior_knowledge: Completó los 6 temas de Pruebo y Mejoro.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-mejoras
+            micro_objective: Recuerda y nombra, sin ayuda, una opinión escuchada durante esta saga.
+            narrative_beat: "Rho abre un cofre lleno de notas de opiniones: recuerdos de todo lo escuchado en el bosque."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-una-mejora-concreta
+            micro_objective: Recuerda, sin ayuda, una mejora concreta aplicada a un producto en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo del palo delgado que hizo su sombrilla más ligera.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-la-mejor-segunda-version-del-cofre
+            micro_objective: Elige, entre 2 segundas versiones recordadas, cuál mejoró más respecto a la primera.
+            narrative_beat: Liruf compara dos segundas versiones guardadas en el cofre y decide cuál mejoró más.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-de-pruebo-y-mejoro
+            micro_objective: "Aplica sin ayuda lo recordado: mejora un producto nuevo usando una opinión escuchada."
+            narrative_beat: Dina cierra el cofre del bosque, lista para la Gran Misión final.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: reto-entrelazado-de-pruebo-y-mejoro
+        kind: review_interleaved
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra/termino-lo-que-empiezo
+          - el-bosque-de-los-makers/hecho-con-cuidado/mi-producto-tiene-mi-sello-de-cuidado
+          - el-bosque-de-los-makers/pruebo-y-mejoro/encuentro-una-forma-de-mejorar
+          - el-bosque-de-los-makers/pruebo-y-mejoro/mi-segunda-version-es-mejor
+        title_es: Reto Entrelazado de Pruebo y Mejoro
+        concept: "Mezclamos todo lo aprendido en el bosque: hacer con las manos, los materiales, la calidad y probar para mejorar."
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos sagas anteriores con lo aprendido sobre probar y mejorar.
+        key_vocabulary:
+          - producto
+          - material
+          - cuidado
+          - mejorar
+        prior_knowledge: Completó El Cofre del Repaso de Pruebo y Mejoro (tema anterior) y las tres sagas previas del bosque.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: termino-y-luego-mejoro
+            micro_objective: Revisa un producto terminado con cuidado y explica cómo una opinión ayudó a mejorarlo aún más.
+            narrative_beat: Rho recuerda un producto ya terminado y con cuidado, y cómo una opinión lo mejoró todavía más.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: mi-sello-de-cuidado-en-la-segunda-version
+            micro_objective: Combina el sello de cuidado personal con la segunda versión mejorada de un producto.
+            narrative_beat: Zara combina su sello de cuidado con la mejora que aplicó en la segunda versión de su sombrilla.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-todo-el-camino-del-bosque
+            micro_objective: Ordena, mezclando varias sagas, los pasos desde terminar un producto hasta mejorarlo con una opinión.
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde terminar su producto hasta mejorarlo con cuidado."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: mejoro-el-producto-final-de-todo-el-bosque
+            micro_objective: Mejora, sin ayuda, el producto final de toda la aventura combinando lo aprendido en varias sagas.
+            narrative_beat: Dina mejora el producto final de la tripulación, combinando todo lo vivido en el bosque.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 5
+    slug: la-gran-mision-del-bosque-de-los-makers
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: The Forest of Makers' Great Quest
+      es-MX: La Gran Misión del Bosque de los Makers
+      pt-BR: A Grande Missão da Floresta dos Makers
+    description:
+      en-US: A final challenge tests everything learned about making, materials, care and improving, before the whole forest celebrates the Great Exhibition.
+      es-MX: Un último reto pone a prueba todo lo aprendido sobre hacer, materiales, cuidado y mejorar, antes de que todo el bosque celebre la Gran Exhibición.
+      pt-BR: Um último desafio coloca à prova tudo o que foi aprendido sobre fazer, materiais, cuidado e melhorar, antes que toda a floresta celebre a Grande Exposição.
+    topics:
+      - position: 1
+        slug: el-taller-escondido
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas
+        title_es: El Taller Escondido
+        concept: Un taller escondido en lo profundo del bosque guarda recuerdos de cómo construir un producto y elegir bien los materiales.
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo construir un producto y elegir buenos materiales.
+        key_vocabulary:
+          - producto
+          - material
+          - taller
+          - recordar
+        prior_knowledge: Completó Manos a la Obra y De Dónde Vienen las Cosas.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: encontramos-el-taller-escondido
+            micro_objective: Recuerda, sin ayuda, los pasos que sigue la tripulación para construir un producto.
+            narrative_beat: La tripulación encuentra un taller escondido entre las raíces de un árbol gigante del bosque.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recordamos-los-materiales-del-viaje
+            micro_objective: Recuerda y clasifica, sin ayuda, materiales naturales y comprados encontrados en el taller escondido.
+            narrative_beat: Rho revisa los estantes del taller escondido y recuerda de dónde venía cada material del viaje.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 3
+            slug: elegimos-el-mejor-material-del-taller
+            micro_objective: Elige, entre 3 materiales del taller escondido, el más adecuado para reparar una herramienta vieja.
+            narrative_beat: Zara elige, entre los materiales guardados, el que mejor serviría para reparar una herramienta antigua.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: aceptamos-el-reto-del-taller-escondido
+            micro_objective: Completa, sin ayuda, la aceptación del reto explicando por qué elegir bien los materiales importa.
+            narrative_beat: "Liruf y Dina aceptan el reto del taller escondido: el bosque tiene más secretos por descubrir."
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: la-prueba-del-cuidado
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/hecho-con-cuidado
+        title_es: La Prueba del Cuidado
+        concept: El taller escondido reta a la tripulación a reconocer y arreglar productos hechos sin cuidado.
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo revisar, cuidar los detalles y arreglar un producto.
+        key_vocabulary:
+          - revisar
+          - detalle
+          - arreglar
+          - prueba
+        prior_knowledge: Completó Hecho con Cuidado.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: los-productos-descuidados-del-taller
+            micro_objective: Recuerda, sin ayuda, las señales de un producto que no está bien hecho.
+            narrative_beat: El taller escondido guarda productos viejos hechos sin cuidado, con nudos flojos y bordes torcidos.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: encontramos-los-defectos-escondidos
+            micro_objective: Encuentra, sin ayuda, los defectos escondidos en los productos viejos del taller.
+            narrative_beat: Rho revisa uno por uno los productos viejos, encontrando los defectos que nadie arregló.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 3
+            slug: arreglamos-los-productos-del-taller
+            micro_objective: Arregla, sin ayuda, un defecto sencillo en un producto viejo encontrado en el taller.
+            narrative_beat: Zara arregla con cuidado uno de los productos viejos, aplicando su sello de cuidado.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - storyplay
+          - position: 4
+            slug: superamos-la-prueba-del-cuidado
+            micro_objective: Completa, sin ayuda, la prueba mostrando un producto ya revisado, cuidado y arreglado.
+            narrative_beat: Liruf y Dina superan la prueba del cuidado mostrando el producto viejo ya como nuevo.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: el-reto-de-mejorar
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/pruebo-y-mejoro
+        title_es: El Reto de Mejorar
+        concept: "El taller escondido guarda un reto final: mostrar, escuchar y mejorar un producto una vez más."
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo mostrar un producto, escuchar una opinión y mejorarlo.
+        key_vocabulary:
+          - mostrar
+          - escuchar
+          - mejorar
+          - reto
+        prior_knowledge: Completó Pruebo y Mejoro.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: mostramos-el-producto-arreglado
+            micro_objective: Recuerda, sin ayuda, por qué mostrar un producto arreglado a alguien más ayuda a mejorarlo aún más.
+            narrative_beat: La tripulación muestra el producto ya arreglado a un guardián del taller escondido.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: escuchamos-al-guardian-del-taller
+            micro_objective: Reconoce, sin ayuda, una opinión completa dada por el guardián del taller escondido.
+            narrative_beat: Rho escucha con calma toda la opinión del guardián sobre el producto mostrado.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - story
+          - position: 3
+            slug: pensamos-una-ultima-mejora
+            micro_objective: Propone, sin ayuda, una mejora concreta basada en la opinión del guardián del taller.
+            narrative_beat: Zara piensa una mejora concreta para el producto, basada en lo que el guardián opinó.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: superamos-el-reto-de-mejorar
+            micro_objective: Completa, sin ayuda, el reto mostrando la nueva versión mejorada del producto.
+            narrative_beat: Liruf y Dina superan el reto de mejorar mostrando su producto ya en una versión mejor.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: construimos-el-taller-comunitario
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra/sigo-los-pasos-en-orden
+          - el-bosque-de-los-makers/hecho-con-cuidado/que-es-un-producto-bien-hecho
+        title_es: Construimos el Taller Comunitario
+        concept: Todo el bosque decide construir un taller comunitario donde cualquiera pueda hacer productos con cuidado.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, hacer con las manos y hacerlo con cuidado en un proyecto compartido del bosque.
+        key_vocabulary:
+          - proyecto
+          - taller comunitario
+          - compartir
+          - bosque
+        prior_knowledge: Completó Manos a la Obra y Hecho con Cuidado.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: elegimos-el-lugar-del-taller-comunitario
+            micro_objective: Reconoce, sin ayuda, por qué todo el bosque se beneficia de un taller compartido bien organizado.
+            narrative_beat: Rho elige, junto a los isleños del bosque, el claro donde construirán el Taller Comunitario.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: ordenamos-los-pasos-de-construccion
+            micro_objective: Ordena, sin ayuda, los pasos para construir las mesas de trabajo del taller comunitario.
+            narrative_beat: Zara ordena los pasos para construir las primeras mesas de trabajo del taller compartido.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 3
+            slug: revisamos-la-calidad-del-taller
+            micro_objective: Revisa, sin ayuda, que el taller comunitario esté bien hecho y sin defectos antes de abrirlo.
+            narrative_beat: Liruf revisa con cuidado cada mesa y herramienta antes de dejar entrar a los primeros makers del bosque.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: inauguramos-el-taller-comunitario
+            micro_objective: Completa, sin ayuda, la inauguración del taller combinando construcción ordenada y revisión de calidad.
+            narrative_beat: Dina corta la cinta del Taller Comunitario ante todo el bosque reunido.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: el-producto-perfecto-del-bosque
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas
+          - el-bosque-de-los-makers/hecho-con-cuidado
+          - el-bosque-de-los-makers/pruebo-y-mejoro
+        title_es: El Producto Perfecto del Bosque
+        concept: "El taller escondido lleva a la tripulación al reto final: crear un producto que combine buen material, cuidado y mejora."
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, elegir materiales, cuidar los detalles y mejorar con una opinión en un solo reto final.
+        key_vocabulary:
+          - material
+          - cuidado
+          - mejorar
+          - producto final
+        prior_knowledge: Completó De Dónde Vienen las Cosas, Hecho con Cuidado y Pruebo y Mejoro.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: elegimos-el-material-final
+            micro_objective: Elige, sin ayuda, el material más adecuado para el producto final del bosque.
+            narrative_beat: Rho elige con cuidado el material final para el producto que representará a toda la tripulación.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 2
+            slug: cuidamos-cada-detalle-final
+            micro_objective: Aplica, sin ayuda, un detalle cuidado al producto final del bosque.
+            narrative_beat: Zara aplica el último detalle cuidado, el mismo sello que ha perfeccionado en todo el viaje.
+            difficulty: 3
+            suggested_families:
+              - choice
+              - storyplay
+          - position: 3
+            slug: mostramos-el-producto-a-todo-el-bosque
+            micro_objective: Muestra, sin ayuda, el producto final a los habitantes del bosque y escucha su opinión.
+            narrative_beat: Liruf muestra el producto final a los habitantes del bosque y escucha con calma lo que piensan.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+          - position: 4
+            slug: terminamos-el-producto-perfecto-del-bosque
+            micro_objective: Completa, sin ayuda, el producto perfecto del bosque combinando material, cuidado y mejora.
+            narrative_beat: Dina y toda la tripulación terminan el producto perfecto del bosque, listo para la Gran Exhibición.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: la-gran-exhibicion-del-bosque
+        kind: review_quest
+        review_of:
+          - el-bosque-de-los-makers/manos-a-la-obra
+          - el-bosque-de-los-makers/de-donde-vienen-las-cosas
+          - el-bosque-de-los-makers/hecho-con-cuidado
+          - el-bosque-de-los-makers/pruebo-y-mejoro
+        title_es: La Gran Exhibición del Bosque
+        concept: "Todo el bosque celebra la Gran Exhibición, recordando el viaje completo: hacer, materiales, cuidado y mejora."
+        learning_objective: Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de toda la aventura del bosque de los makers.
+        key_vocabulary:
+          - celebrar
+          - exhibición
+          - recordar
+          - aventura completa
+        prior_knowledge: Domina todas las sagas de El Bosque de los Makers.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: contamos-toda-la-aventura-del-bosque
+            micro_objective: "Recuerda y narra, sin ayuda, los momentos clave de la aventura: hacer, materiales, cuidado y mejora."
+            narrative_beat: Toda la tripulación se sienta en el claro del bosque a contar, paso a paso, la aventura completa.
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: presentamos-nuestros-productos-en-la-exhibicion
+            micro_objective: Presenta, sin ayuda, los productos finales de la tripulación frente a los habitantes del bosque.
+            narrative_beat: Rho presenta ante todo el bosque los productos terminados por la tripulación durante el viaje.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+          - position: 3
+            slug: celebramos-cada-producto-del-bosque
+            micro_objective: Reconoce, sin ayuda, otros productos de la exhibición que también están bien hechos y cuidados.
+            narrative_beat: Zara recorre la exhibición reconociendo el cuidado que cada maker del bosque puso en su producto.
+            difficulty: 3
+            suggested_families:
+              - choice
+              - story
+          - position: 4
+            slug: zarpamos-hacia-la-ciudad-con-nuestros-productos
+            micro_objective: Explica en una frase, combinando toda la aventura, qué fue lo que más le enorgulleció construir en el bosque.
+            narrative_beat: "Dina cierra la Gran Exhibición: el Bosque de los Makers queda atrás, y la Ciudad del Cliente espera para conocer a quien usará sus productos."
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice

@@ -1,0 +1,1453 @@
+schema_version: 1
+
+adventure:
+  position: 1
+  slug: archipielago-del-trueque
+  theme: archipelago
+  age_tier: tier1
+  title:
+    en-US: "The Archipelago of Trade"
+    es-MX: "El Archipiélago del Trueque"
+    pt-BR: "O Arquipélago da Troca"
+  description:
+    en-US: "Sail between tiny islands to discover what wants are, why trading things is tricky, and how coins were born."
+    es-MX: "Navega entre islitas para descubrir qué son los deseos, por qué cambiar cosas es difícil y cómo nacieron las monedas."
+    pt-BR: "Navegue entre ilhotas para descobrir o que são desejos, por que trocar coisas é difícil e como nasceram as moedas."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan a un archipiélago donde cada isla tiene solo una cosa especial. Al principio intentan cambiar sus tesoros directamente y descubren que no siempre encuentran a alguien que quiera justo lo que ellos ofrecen. Juntos inventan — y luego adoptan — las monedas como una forma más fácil de cambiar cosas con todos los isleños."
+
+sagas:
+  - position: 1
+    slug: islas-de-los-deseos
+    icon: waves
+    title:
+      en-US: "The Islands of Wishes"
+      es-MX: "Las Islas de los Deseos"
+      pt-BR: "As Ilhas dos Desejos"
+    description:
+      en-US: "Every islander wants something different — the first step to understanding money."
+      es-MX: "Cada isleño quiere algo distinto: el primer paso para entender el dinero."
+      pt-BR: "Cada habitante da ilha quer algo diferente: o primeiro passo para entender o dinheiro."
+    topics:
+      - position: 1
+        slug: cosas-que-quiero
+        title_es: "Cosas que quiero"
+        concept: "Cada persona tiene cosas que le gustaría tener o hacer: eso se llama un deseo."
+        learning_objective: "Al final, el niño puede nombrar cosas que quiere y distinguirlas de lo que ya tiene."
+        key_vocabulary: [querer, deseo, me gusta, tener]
+        prior_knowledge: "Ninguno — es el punto de partida del curso."
+        fact_refs: []
+        parent_check: "La próxima vez que estén en la tienda, pregúntale a {{name}} si eso que pide de verdad lo quiere o si ya tiene algo parecido en casa."
+        lessons:
+          - position: 1
+            slug: mi-primer-deseo
+            micro_objective: "Nombra 3 cosas que le gustaría tener usando la palabra 'quiero'."
+            narrative_beat: "Dina llega a la primera isla y abre su cofre de deseos: una concha, una pluma y una fruta dulce."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: quiero-o-ya-tengo
+            micro_objective: "Distingue, entre 4 tarjetas, cuáles muestran algo que 'quiero' y cuáles algo que ya tiene."
+            narrative_beat: "Liruf salta entre rocas señalando cosas que quiere y cosas que ya carga en su mochila."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: por-que-lo-quiero
+            micro_objective: "Explica en una frase corta por qué eligió su deseo favorito."
+            narrative_beat: "Rho investiga con su lupa cuál deseo parece más importante para cada isleño."
+            difficulty: 1
+            suggested_families: [choice, story]
+          - position: 4
+            slug: mi-lista-de-deseos
+            micro_objective: "Ordena 3 deseos propios del que más al que menos le importa hoy."
+            narrative_beat: "Zara dibuja su lista de deseos en el mapa de la isla antes de zarpar."
+            difficulty: 2
+            suggested_families: [arrange, choice]
+      - position: 2
+        slug: no-todos-queremos-lo-mismo
+        title_es: "No todos queremos lo mismo"
+        concept: "Dos personas pueden querer cosas muy distintas, y eso está bien."
+        learning_objective: "Al final, el niño puede reconocer que los deseos de otra persona pueden ser diferentes a los suyos."
+        key_vocabulary: [diferente, igual, preferir, cada quien]
+        prior_knowledge: "Sabe nombrar sus propios deseos (tema anterior)."
+        fact_refs: []
+        parent_check: "Cuando {{name}} juegue con un amigo que prefiere otro juguete o sabor, fíjate si acepta con calma que el otro quiera algo distinto."
+        lessons:
+          - position: 1
+            slug: dos-islenos-dos-deseos
+            micro_objective: "Identifica el deseo de un personaje distinto al propio en una escena corta."
+            narrative_beat: "Liruf cuenta que quiere una fruta, pero su vecino isleño quiere una concha brillante."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: a-cada-quien-lo-suyo
+            micro_objective: "Empareja 4 personajes con el deseo que cada uno mencionó."
+            narrative_beat: "Rho hace una ronda de preguntas por la isla y anota qué quiere cada isleño."
+            difficulty: 1
+            suggested_families: [arrange]
+          - position: 3
+            slug: mismo-deseo-distinta-razon
+            micro_objective: "Elige entre dos razones distintas por las que dos niños quieren la misma fruta."
+            narrative_beat: "Zara nota que dos isleños quieren la misma fruta, pero uno tiene hambre y el otro la colecciona."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: respeto-por-lo-que-otros-quieren
+            micro_objective: "Elige la respuesta amable cuando el deseo de otro es distinto al suyo."
+            narrative_beat: "Dina reúne al grupo para celebrar que cada quien tiene su propio tesoro favorito."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 3
+        slug: solo-tengo-una-cosa-a-la-vez
+        title_es: "Solo tengo una cosa a la vez"
+        concept: "No siempre puedo tener todo lo que quiero al mismo tiempo; a veces hay que elegir."
+        learning_objective: "Al final, el niño puede elegir una cosa entre varias que quiere, aceptando que las demás esperan."
+        key_vocabulary: [elegir, esperar, una cosa, después]
+        prior_knowledge: "Reconoce que los deseos varían entre personas (tema anterior)."
+        fact_refs: []
+        parent_check: "En la próxima tiendita o feria, deja que {{name}} elija solo un antojo entre varios y observa si acepta esperar por los demás sin berrinche."
+        lessons:
+          - position: 1
+            slug: no-puedo-llevarme-todo
+            micro_objective: "Observa una escena y señala por qué el personaje solo puede llevarse un tesoro."
+            narrative_beat: "Rho encuentra tres tesoros en una cueva pero su bolsa solo tiene espacio para uno."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: elijo-uno-entre-varios
+            micro_objective: "Elige un objeto entre 3 opciones y justifica su elección con una palabra."
+            narrative_beat: "Zara mira tres conchas de colores y debe quedarse con una sola para el viaje."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: lo-que-dejo-para-despues
+            micro_objective: "Distingue entre 'lo elijo ahora' y 'lo espero para después' en 4 escenarios."
+            narrative_beat: "Dina guarda su segunda opción en un mapa de 'tesoros para otro día'."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 4
+            slug: elegir-sin-tristeza
+            micro_objective: "Elige la reacción de calma cuando no puede tener las dos cosas que quiere."
+            narrative_beat: "Liruf se pone un poquito triste por no llevarse las dos frutas, y Dina le recuerda que puede volver mañana."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 4
+        slug: cambiar-es-una-idea
+        title_es: "Cambiar es una idea"
+        concept: "Puedo dar algo mío a otra persona a cambio de algo que ella tiene: eso es un cambio o trueque."
+        learning_objective: "Al final, el niño puede describir un trueque simple entre dos personajes."
+        key_vocabulary: [cambiar, trueque, dar, recibir]
+        prior_knowledge: "Sabe elegir entre varias cosas que quiere (tema anterior)."
+        fact_refs: []
+        parent_check: "Invita a {{name}} a cambiar un juguete o estampita con un hermano o amigo y pídele que después te cuente qué dio y qué recibió."
+        lessons:
+          - position: 1
+            slug: te-doy-esto-por-eso
+            micro_objective: "Describe con una frase un trueque simple entre dos personajes."
+            narrative_beat: "Zara le ofrece su pluma a Liruf a cambio de su fruta dulce."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: identifico-un-trueque
+            micro_objective: "Reconoce, entre 4 escenas, cuáles muestran un trueque y cuáles no."
+            narrative_beat: "Dina observa distintas islas y anota en cuáles los isleños están cambiando cosas."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: armo-mi-propio-trueque
+            micro_objective: "Empareja 3 objetos propios con 3 objetos ajenos formando trueques válidos."
+            narrative_beat: "Rho arma un tablero de trueques con los tesoros de toda la tripulación."
+            difficulty: 2
+            suggested_families: [arrange]
+          - position: 4
+            slug: mi-primer-cambio-feliz
+            micro_objective: "Completa un trueque en la historia y explica si quedó contento con el resultado."
+            narrative_beat: "Liruf cambia su concha por la fruta que tanto quería y celebra con un salto."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 5
+        slug: es-un-buen-cambio
+        title_es: "¿Es un buen cambio?"
+        concept: "Un buen trueque deja contentas a las dos personas; si solo una queda feliz, algo anda mal."
+        learning_objective: "Al final, el niño puede juzgar si un trueque parece justo para ambas partes."
+        key_vocabulary: [justo, contento, buen cambio, las dos partes]
+        prior_knowledge: "Sabe describir y armar un trueque simple (tema anterior)."
+        fact_refs: []
+        parent_check: "Después de que {{name}} cambie algo con un amigo, pregúntale si los dos quedaron contentos o si alguien se ve triste con el resultado."
+        lessons:
+          - position: 1
+            slug: los-dos-quedan-contentos
+            micro_objective: "Señala en una escena si ambos personajes se ven contentos tras el trueque."
+            narrative_beat: "Dina cambia su fruta por una concha y ambas caras en la isla se ven sonrientes."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: uno-quedo-triste
+            micro_objective: "Identifica en una escena cuál de los dos personajes no quedó contento con el trueque."
+            narrative_beat: "Liruf nota que su amigo isleño se quedó triste después de cambiar su tesoro favorito."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: elijo-el-trueque-justo
+            micro_objective: "Elige, entre dos trueques propuestos, el que parece más justo para ambos."
+            narrative_beat: "Rho compara dos ofertas de trueque y busca pistas de cuál conviene a los dos isleños."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: propongo-un-trueque-justo
+            micro_objective: "Arma un trueque entre dos personajes en el que ambos terminen contentos."
+            narrative_beat: "Zara ayuda a dos isleños tímidos a proponerse trueques que dejen a ambos felices."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 6
+        slug: el-problema-del-trueque
+        title_es: "El problema del trueque"
+        concept: "A veces quiero lo que otro tiene, pero él no quiere lo que yo le ofrezco: el trueque se traba."
+        learning_objective: "Al final, el niño puede explicar por qué un trueque puede fallar cuando nadie quiere lo que el otro ofrece."
+        key_vocabulary: [no quiere, se traba, no funciona, buscar otro]
+        prior_knowledge: "Sabe juzgar si un trueque es justo (tema anterior)."
+        fact_refs: []
+        parent_check: "Plantéale a {{name}} que quiere cambiar su paleta por el carrito de un amigo, pero ese amigo no quiere paletas: ¿logra explicar por qué el cambio no puede hacerse?"
+        lessons:
+          - position: 1
+            slug: nadie-quiere-mi-concha
+            micro_objective: "Reconoce en la historia por qué un trueque no se pudo completar."
+            narrative_beat: "Dina ofrece su concha por un pez, pero el pescador solo quiere fruta, no conchas."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: busco-a-alguien-mas
+            micro_objective: "Elige, entre 3 isleños, cuál sí podría querer el objeto ofrecido."
+            narrative_beat: "Liruf recorre la isla buscando a alguien que sí quiera cambiar su concha por algo."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: muchos-pasos-para-un-trueque
+            micro_objective: "Ordena los pasos de una cadena de 3 trueques necesarios para conseguir lo que quería al inicio."
+            narrative_beat: "Rho descubre que Zara necesitó tres cambios distintos antes de conseguir el pez que quería."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: el-trueque-cansa
+            micro_objective: "Explica en una frase por qué hacer muchos trueques seguidos es cansado."
+            narrative_beat: "Toda la tripulación se sienta agotada tras un día de trueques que no salieron a la primera."
+            difficulty: 3
+            suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-de-los-deseos
+        title_es: "El Cofre del Repaso de los Deseos"
+        concept: "Antes de zarpar a la siguiente isla, la tripulación abre el cofre de recuerdos y repasa todo lo aprendido sobre los deseos y el trueque."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de deseo, elección y trueque justo de esta saga."
+        key_vocabulary: [deseo, elegir, trueque, contento]
+        prior_knowledge: "Completó los 6 temas de Las Islas de los Deseos."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/cosas-que-quiero
+          - archipielago-del-trueque/islas-de-los-deseos/no-todos-queremos-lo-mismo
+          - archipielago-del-trueque/islas-de-los-deseos/solo-tengo-una-cosa-a-la-vez
+          - archipielago-del-trueque/islas-de-los-deseos/cambiar-es-una-idea
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-deseos
+            micro_objective: "Recuerda y nombra, sin ayuda, un deseo propio usando lo aprendido en esta saga."
+            narrative_beat: "Rho encuentra un cofre de madera tallado y, al abrirlo, aparecen recuerdos de todos los deseos de la tripulación."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-mi-trueque-favorito
+            micro_objective: "Recuerda y describe, sin ayuda, un trueque simple ya vivido en la saga."
+            narrative_beat: "Zara saca del cofre una conchita y recuerda el trueque que hizo con ella al principio del viaje."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-el-trueque-mas-justo-del-cofre
+            micro_objective: "Elige, entre 2 trueques recordados del cofre, cuál fue el más justo para ambas partes."
+            narrative_beat: "Liruf compara dos recuerdos guardados en el cofre y decide cuál trueque dejó más contentos a los dos isleños."
+            difficulty: 2
+            suggested_families: [choice, storyplay]
+          - position: 4
+            slug: cierro-el-cofre-listo-para-seguir
+            micro_objective: "Aplica sin ayuda lo recordado: elige la mejor reacción cuando un deseo no se puede cumplir de inmediato."
+            narrative_beat: "Dina cierra el cofre de recuerdos: la tripulación está lista para seguir explorando el archipiélago."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 8
+        slug: reto-entrelazado-de-los-deseos
+        title_es: "Reto Entrelazado de los Deseos"
+        concept: "Mezclamos ideas de distintos momentos de esta saga para pensarlas juntas, como un verdadero reto de isleño experto."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos temas distintos de esta saga en una sola actividad."
+        key_vocabulary: [deseo, trueque, justo, elegir]
+        prior_knowledge: "Completó El Cofre del Repaso de los Deseos (tema anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/cosas-que-quiero
+          - archipielago-del-trueque/islas-de-los-deseos/no-todos-queremos-lo-mismo
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+        lessons:
+          - position: 1
+            slug: deseo-y-trueque-en-la-misma-escena
+            micro_objective: "Combina, en una sola escena, el deseo de un personaje y el trueque que hizo para conseguirlo."
+            narrative_beat: "Rho arma una escena mezclando el deseo inicial de Liruf con el trueque que finalmente hizo para lograrlo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: dos-islenos-dos-trueques-distintos
+            micro_objective: "Compara el deseo y el trueque de dos isleños distintos, aplicando ambos temas a la vez."
+            narrative_beat: "Zara compara dos isleños del archipiélago: cada uno tuvo un deseo distinto y resolvió un trueque distinto."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 3
+            slug: cuando-un-trueque-no-cumple-el-deseo
+            micro_objective: "Reconoce, combinando deseo y trueque trabado, por qué un cambio fallido deja un deseo sin cumplir."
+            narrative_beat: "Liruf recuerda cuando nadie quería su concha y su deseo de comer fruta tuvo que esperar."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: armo-un-trueque-justo-para-mi-deseo
+            micro_objective: "Arma, sin ayuda, un trueque justo que cumpla un deseo propio, combinando ambas ideas de la saga."
+            narrative_beat: "Dina cierra el reto entrelazado logrando un trueque justo que por fin cumple su deseo inicial."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+
+  - position: 2
+    slug: nace-el-dinero
+    icon: token
+    title:
+      en-US: "Money Is Born"
+      es-MX: "Nace el Dinero"
+      pt-BR: "O Dinheiro Nasce"
+    description:
+      en-US: "The crew invents something everyone accepts — and trading gets a lot easier."
+      es-MX: "La tripulación inventa algo que todos aceptan, y cambiar cosas se vuelve mucho más fácil."
+      pt-BR: "A tripulação inventa algo que todos aceitam, e trocar coisas fica muito mais fácil."
+    topics:
+      - position: 1
+        slug: algo-que-todos-aceptan
+        title_es: "Algo que todos aceptan"
+        concept: "Si todos están de acuerdo en aceptar la misma cosa a cambio, cambiar se vuelve fácil para todos."
+        learning_objective: "Al final, el niño puede explicar con sus palabras la idea de 'algo que todos aceptan'."
+        key_vocabulary: [todos aceptan, de acuerdo, fácil, para todos]
+        prior_knowledge: "Entiende por qué un trueque puede trabarse (saga anterior)."
+        fact_refs: []
+        parent_check: "Pregúntale a {{name}} por qué cree que en la tienda todos aceptan las mismas monedas, en vez de que cada quien pida algo distinto a cambio."
+        lessons:
+          - position: 1
+            slug: y-si-todos-aceptaran-lo-mismo
+            micro_objective: "Repite con sus palabras la idea de tener algo que todos acepten a cambio."
+            narrative_beat: "Rho reúne a toda la isla y pregunta: ¿qué pasaría si todos aceptáramos la misma cosita a cambio?"
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: elijo-lo-que-todos-quieren
+            micro_objective: "Elige, entre 3 objetos, cuál parece que la mayoría de la isla aceptaría."
+            narrative_beat: "Zara pregunta a varios isleños qué objeto les gustaría recibir siempre a cambio."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: comparo-antes-y-despues
+            micro_objective: "Compara una escena de trueque difícil con una escena donde todos usan lo mismo."
+            narrative_beat: "Dina muestra dos dibujos: uno de trueques trabados y otro de cambios rápidos y felices."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: mi-idea-para-la-isla
+            micro_objective: "Propone en una frase un objeto que la isla entera podría aceptar."
+            narrative_beat: "Liruf junta a la tripulación para votar su primera idea de 'algo para todos'."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: de-conchas-a-monedas
+        title_es: "De conchas a monedas"
+        concept: "Antes de las monedas de metal, la gente usó conchas, semillas y piedritas especiales para cambiar cosas."
+        learning_objective: "Al final, el niño puede nombrar un objeto antiguo que se usó como el dinero de hoy."
+        key_vocabulary: [conchas, semillas, antes, hoy]
+        prior_knowledge: "Entiende la idea de algo que todos aceptan (tema anterior)."
+        fact_refs: []
+        parent_check: "Pídele a {{name}} que te cuente, como en el cuento, qué usaba la gente antes de tener monedas para cambiar cosas."
+        lessons:
+          - position: 1
+            slug: las-conchas-especiales
+            micro_objective: "Reconoce en la historia qué objeto usaba antes la isla como su 'algo especial'."
+            narrative_beat: "Rho encuentra un cofre viejo lleno de conchas brillantes que los abuelos isleños usaban para cambiar cosas."
+            difficulty: 1
+            suggested_families: [story]
+          - position: 2
+            slug: semillas-que-valen
+            micro_objective: "Empareja 3 objetos antiguos con la isla o pueblo que los usaba."
+            narrative_beat: "Zara descubre un mapa viejo que muestra semillas especiales usadas en otra isla lejana."
+            difficulty: 1
+            suggested_families: [arrange, choice]
+          - position: 3
+            slug: de-lo-antiguo-a-lo-nuevo
+            micro_objective: "Ordena en una línea de tiempo simple: conchas, semillas, monedas de metal."
+            narrative_beat: "Dina arma con piedritas una línea del tiempo del archipiélago sobre 'cómo cambiábamos cosas antes'."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: cuento-mi-descubrimiento
+            micro_objective: "Explica con una frase por qué las conchas fueron el primer 'dinero' de la isla."
+            narrative_beat: "Liruf cuenta emocionado a todo el barco lo que Rho descubrió en el cofre viejo."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 3
+        slug: por-que-usamos-monedas
+        title_es: "Por qué usamos monedas"
+        concept: "Las monedas de metal duran mucho, son fáciles de cargar y de contar; por eso son mejores que conchas o semillas."
+        learning_objective: "Al final, el niño puede dar una razón de por qué las monedas son prácticas."
+        key_vocabulary: [duran, fácil de cargar, fácil de contar, práctico]
+        prior_knowledge: "Conoce qué se usaba como dinero antes de las monedas (tema anterior)."
+        fact_refs: []
+        parent_check: "Muéstrale a {{name}} una moneda junto a una fruta y pregúntale cuál dura más tiempo guardada, y por qué eso importa para cambiar cosas."
+        lessons:
+          - position: 1
+            slug: las-conchas-se-rompen
+            micro_objective: "Observa una escena y señala por qué una concha rota ya no sirve para cambiar."
+            narrative_beat: "Zara se lamenta: su concha especial se quebró en el camino y ya nadie la quiere aceptar."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: la-moneda-no-se-rompe
+            micro_objective: "Compara una concha y una moneda y elige cuál dura más tiempo."
+            narrative_beat: "Rho golpea suavemente una moneda de metal contra una piedra y nota que no se daña."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: cargo-monedas-facil
+            micro_objective: "Elige, entre una bolsa de conchas grandes y una bolsa de monedas, cuál es más fácil de cargar."
+            narrative_beat: "Liruf carga una bolsa pesada de conchas y luego prueba una bolsita ligera de monedas."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 4
+            slug: tres-razones-para-monedas
+            micro_objective: "Nombra dos razones por las que las monedas son mejores que las conchas para cambiar cosas."
+            narrative_beat: "Dina resume frente a toda la tripulación las razones por las que la isla eligió usar monedas."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 4
+        slug: el-dinero-ayuda-a-cambiar
+        title_es: "El dinero ayuda a cambiar"
+        concept: "Con monedas, ya no necesito encontrar a alguien que quiera justo mi concha: cualquiera acepta mis monedas."
+        learning_objective: "Al final, el niño puede explicar cómo el dinero resuelve el problema del trueque trabado."
+        key_vocabulary: [cualquiera acepta, ya no busco, más rápido]
+        prior_knowledge: "Sabe por qué las monedas son prácticas (tema anterior)."
+        fact_refs: []
+        parent_check: "La próxima vez que compren algo juntos, pregúntale a {{name}} si sería más fácil conseguirlo pagando con dinero que cambiándolo por otro juguete."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+            strength: hard
+            reason: "Para entender cómo el dinero resuelve el trueque trabado, primero hay que recordar por qué un trueque puede fallar cuando nadie quiere lo que el otro ofrece."
+        lessons:
+          - position: 1
+            slug: ya-no-busco-tanto
+            micro_objective: "Compara una escena de búsqueda larga de trueque con una escena de pago rápido con monedas."
+            narrative_beat: "Rho recuerda cuánto tardó en cambiar su concha por un pez, y ahora paga con monedas en un segundo."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: cualquiera-acepta-monedas
+            micro_objective: "Reconoce, en 3 escenas distintas, que todos los isleños aceptan las mismas monedas."
+            narrative_beat: "Zara recorre tres puestos distintos de la isla y en todos aceptan sus monedas sin problema."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: comparo-el-antes-y-el-ahora
+            micro_objective: "Ordena en dos columnas las ventajas de trueque y de monedas."
+            narrative_beat: "Dina compara con Liruf cómo cambiaban las cosas antes y cómo las cambian ahora con monedas."
+            difficulty: 2
+            suggested_families: [arrange, choice]
+          - position: 4
+            slug: el-viaje-mas-rapido
+            micro_objective: "Completa una historia corta en la que usar monedas resuelve un trueque trabado."
+            narrative_beat: "Liruf necesita un pez para su abuela y esta vez lo consigue enseguida pagando con una moneda."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 5
+        slug: el-dinero-no-se-come
+        title_es: "El dinero no se come"
+        concept: "Una moneda no es un juguete ni una fruta: por sí sola no sirve para nada, solo vale porque puedo cambiarla por otras cosas."
+        learning_objective: "Al final, el niño puede distinguir entre cosas que uso directamente y el dinero, que solo sirve para cambiar."
+        key_vocabulary: [se usa directo, sirve para cambiar, no se come, no se juega]
+        prior_knowledge: "Entiende que las monedas ayudan a cambiar cosas más rápido (tema anterior)."
+        fact_refs: []
+        parent_check: "Enséñale a {{name}} una moneda y pregúntale si se puede comer o jugar con ella directamente, o si solo sirve para cambiarla por otra cosa."
+        lessons:
+          - position: 1
+            slug: no-puedo-morder-una-moneda
+            micro_objective: "Reconoce en la historia por qué Liruf no puede comerse una moneda cuando tiene hambre."
+            narrative_beat: "Liruf intenta morder una moneda pensando que es dulce, y Dina se ríe explicándole que no se come."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: que-se-usa-y-que-se-cambia
+            micro_objective: "Clasifica 4 objetos entre 'se usa directamente' y 'sirve para cambiar'."
+            narrative_beat: "Rho separa en dos montones los tesoros de la isla: los que se usan y los que solo sirven para cambiar."
+            difficulty: 1
+            suggested_families: [arrange, choice]
+          - position: 3
+            slug: la-moneda-se-transforma
+            micro_objective: "Explica en una frase que una moneda se puede cambiar por algo que sí se usa o se come."
+            narrative_beat: "Zara cambia su moneda por una fruta dulce y le explica a Liruf que ese era el plan desde el inicio."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 4
+            slug: elijo-cambiar-mi-moneda
+            micro_objective: "Elige, en una historia, el momento correcto para cambiar una moneda por algo útil."
+            narrative_beat: "Liruf guarda su moneda todo el día y al final la cambia justo por el pez que tanto quería."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 6
+        slug: todos-confiamos-en-el-dinero
+        title_es: "Todos confiamos en el dinero"
+        concept: "Las monedas funcionan porque todos en la isla están de acuerdo en que valen algo; eso se llama confianza."
+        learning_objective: "Al final, el niño puede explicar con sus palabras por qué el dinero solo funciona si todos confían en él."
+        key_vocabulary: [confiar, de acuerdo, funciona, todos juntos]
+        prior_knowledge: "Sabe que el dinero solo sirve para cambiar, no para usar directamente (tema anterior)."
+        fact_refs: []
+        parent_check: "Imagina con {{name}} que la tienda de la esquina un día ya no aceptara las monedas de siempre: ¿entiende por qué eso sería un problema para todos?"
+        lessons:
+          - position: 1
+            slug: todos-dicen-que-si
+            micro_objective: "Reconoce en la historia que la moneda funciona porque toda la isla está de acuerdo en aceptarla."
+            narrative_beat: "Rho pregunta isla por isla si todos aceptan la misma moneda, y todos responden que sí."
+            difficulty: 1
+            suggested_families: [story]
+          - position: 2
+            slug: si-uno-no-confia
+            micro_objective: "Reconoce en una escena qué pasaría si un isleño dejara de aceptar la moneda de todos."
+            narrative_beat: "Un isleño nuevo duda de la moneda hasta que ve que todos los demás la usan sin problema."
+            difficulty: 1
+            suggested_families: [choice, story]
+          - position: 3
+            slug: la-isla-se-pone-de-acuerdo
+            micro_objective: "Ordena los pasos de cómo toda la isla decidió confiar en la misma moneda."
+            narrative_beat: "Zara reúne a los líderes de cada isla del archipiélago para acordar usar las mismas monedas."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: isla-del-trueque-repaso
+            micro_objective: "Explica de principio a fin, en sus palabras, por qué el archipiélago pasó del trueque a las monedas."
+            narrative_beat: "Toda la tripulación celebra en la playa: el trueque difícil quedó atrás y ahora todos usan monedas."
+            difficulty: 3
+            suggested_families: [story, choice, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-del-dinero
+        title_es: "El Cofre del Repaso del Dinero"
+        concept: "Repasamos, desde el cofre de recuerdos, cómo nació el dinero en el archipiélago y por qué todos confían en él."
+        learning_objective: "Al final, el niño recuerda y usa, sin nueva enseñanza, las ideas de esta saga sobre el nacimiento del dinero."
+        key_vocabulary: [moneda, todos aceptan, confiar, cambiar]
+        prior_knowledge: "Completó los 6 temas de Nace el Dinero."
+        fact_refs: []
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/algo-que-todos-aceptan
+          - archipielago-del-trueque/nace-el-dinero/de-conchas-a-monedas
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-ayuda-a-cambiar
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-no-se-come
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+        lessons:
+          - position: 1
+            slug: recuerdo-las-conchas-de-antes
+            micro_objective: "Recuerda y nombra, sin ayuda, un objeto antiguo que se usó como dinero antes de las monedas."
+            narrative_beat: "Rho abre el cofre y encuentra una concha vieja: recuerda cuando esa concha servía como dinero."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-confiamos-en-la-moneda
+            micro_objective: "Recuerda, sin ayuda, una razón por la que toda la isla confía en la misma moneda."
+            narrative_beat: "Zara saca del cofre la primera moneda del archipiélago y recuerda por qué todos la aceptan."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elijo-la-mejor-razon-para-usar-monedas
+            micro_objective: "Elige, entre 3 razones recordadas, la que mejor explica por qué las monedas son mejores que las conchas."
+            narrative_beat: "Liruf compara en el cofre las conchas rotas con las monedas resistentes y recuerda por qué ganaron las monedas."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 4
+            slug: cierro-el-cofre-del-dinero
+            micro_objective: "Aplica sin ayuda lo recordado: explica en una frase por qué el dinero solo sirve para cambiar, no para comer o jugar."
+            narrative_beat: "Dina cierra el cofre del dinero, lista para seguir explorando con monedas propias en el bolsillo."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 8
+        slug: reto-entrelazado-del-dinero
+        title_es: "Reto Entrelazado del Dinero"
+        concept: "Mezclamos lo aprendido sobre los deseos y el trueque con lo aprendido sobre el nacimiento del dinero."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de la saga de los deseos con ideas de la saga del dinero."
+        key_vocabulary: [deseo, trueque, moneda, confiar]
+        prior_knowledge: "Completó El Cofre del Repaso del Dinero (tema anterior) y Las Islas de los Deseos (saga anterior)."
+        fact_refs: []
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+          - archipielago-del-trueque/nace-el-dinero/algo-que-todos-aceptan
+          - archipielago-del-trueque/nace-el-dinero/el-dinero-ayuda-a-cambiar
+        lessons:
+          - position: 1
+            slug: el-trueque-trabado-y-la-solucion-moneda
+            micro_objective: "Combina el problema de un trueque trabado con la solución que ofrece usar monedas."
+            narrative_beat: "Rho recuerda un trueque que se trabó y muestra cómo una moneda lo habría resuelto al instante."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: comparo-trueque-justo-y-pago-con-moneda
+            micro_objective: "Compara un trueque justo de la primera saga con un pago justo usando monedas."
+            narrative_beat: "Zara compara dos formas de dejar contento a un isleño: con un buen trueque o con una moneda justa."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: de-la-concha-al-trueque-perfecto
+            micro_objective: "Ordena, mezclando ambas sagas, los pasos desde tener un deseo hasta pagarlo con una moneda de todos."
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde su primer deseo hasta pagar con una moneda que todos aceptan."
+            difficulty: 2
+            suggested_families: [arrange, story]
+          - position: 4
+            slug: resuelvo-un-deseo-con-una-moneda
+            micro_objective: "Resuelve, sin ayuda, un deseo del inicio del viaje usando una moneda del archipiélago."
+            narrative_beat: "Dina resuelve el primer deseo que tuvo en la aventura, esta vez pagando con una sola moneda."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+
+  - position: 3
+    slug: monedas-y-billetes-de-mi-tierra
+    icon: payments
+    title:
+      en-US: "Coins and Bills of My Land"
+      es-MX: "Monedas y Billetes de mi Tierra"
+      pt-BR: "Moedas e Notas da Minha Terra"
+    description:
+      en-US: "Learn to recognize and count the real coins and bills the crew finds on their journey."
+      es-MX: "Aprende a reconocer y contar las monedas y billetes reales que la tripulación encuentra en su viaje."
+      pt-BR: "Aprenda a reconhecer e contar as moedas e notas reais que a tripulação encontra em sua jornada."
+    topics:
+      - position: 1
+        slug: conozco-las-monedas-chiquitas
+        title_es: "Conozco las monedas chiquitas"
+        concept: "Las monedas de $1, $2 y $5 son las más pequeñas que usamos para pagar cosas chicas."
+        learning_objective: "Al final, el niño puede identificar por su valor las monedas de $1, $2 y $5."
+        key_vocabulary: [moneda, un peso, dos pesos, cinco pesos]
+        prior_knowledge: "Entiende que las monedas sirven para cambiar cosas (saga anterior)."
+        fact_refs: [mxn.denominations.coins.tier1_subset]
+        parent_check: "Dale a {{name}} un puñito de monedas de $1, $2 y $5 revueltas y pídele que te diga el valor de cada una sin ayuda."
+        lessons:
+          - position: 1
+            slug: la-moneda-de-un-peso
+            micro_objective: "Reconoce visualmente la moneda de $1 entre otras monedas."
+            narrative_beat: "Dina saca de su bolsillo la moneda más chiquita del cofre y la muestra a todos."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: la-moneda-de-dos-pesos
+            micro_objective: "Reconoce visualmente la moneda de $2 y la distingue de la de $1."
+            narrative_beat: "Liruf encuentra una moneda un poco más grande y pregunta si vale lo mismo que la de Dina."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: la-moneda-de-cinco-pesos
+            micro_objective: "Reconoce visualmente la moneda de $5 entre un grupo de monedas mezcladas."
+            narrative_beat: "Rho ordena todas las monedas encontradas en la cueva y separa las de $5 en un montón."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 4
+            slug: ordeno-mis-monedas-chiquitas
+            micro_objective: "Ordena de menor a mayor tres monedas: $1, $2 y $5."
+            narrative_beat: "Zara acomoda sus monedas en fila, de la más chiquita a la más grande, antes de guardarlas."
+            difficulty: 2
+            suggested_families: [arrange, money]
+      - position: 2
+        slug: conozco-las-monedas-grandes
+        title_es: "Conozco las monedas grandes"
+        concept: "La moneda de $10 es más grande y vale más que las monedas chiquitas."
+        learning_objective: "Al final, el niño puede identificar la moneda de $10 y compararla con las más pequeñas."
+        key_vocabulary: [diez pesos, más grande, vale más]
+        prior_knowledge: "Reconoce las monedas de $1, $2 y $5 (tema anterior)."
+        fact_refs: [mxn.denominations.coins.tier1_subset]
+        parent_check: "Pon frente a {{name}} una moneda de $10 junto con otras más chicas y pregúntale cuál vale más y cómo lo sabe."
+        lessons:
+          - position: 1
+            slug: la-moneda-de-diez-pesos
+            micro_objective: "Reconoce visualmente la moneda de $10 entre otras monedas."
+            narrative_beat: "Liruf desentierra en la arena una moneda dorada más grande que todas las demás."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: diez-vale-mas-que-cinco
+            micro_objective: "Compara dos monedas y elige cuál vale más entre $5 y $10."
+            narrative_beat: "Rho pone lado a lado una moneda de $5 y una de $10 y pregunta cuál vale más."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: encuentro-la-moneda-de-diez
+            micro_objective: "Encuentra la moneda de $10 escondida entre 6 monedas de distinto valor."
+            narrative_beat: "Zara esconde monedas por toda la cubierta del barco y reta a Liruf a encontrar la de $10."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 4
+            slug: ordeno-todas-mis-monedas
+            micro_objective: "Ordena de menor a mayor cuatro monedas: $1, $2, $5 y $10."
+            narrative_beat: "Dina guarda sus cuatro monedas en fila dentro de su cofrecito personal."
+            difficulty: 2
+            suggested_families: [arrange, money]
+      - position: 3
+        slug: conozco-los-billetes
+        title_es: "Conozco los billetes"
+        concept: "Los billetes de $20 y $50 son de papel y valen más que cualquier moneda que conocemos."
+        learning_objective: "Al final, el niño puede identificar los billetes de $20 y $50."
+        key_vocabulary: [billete, veinte pesos, cincuenta pesos, papel]
+        prior_knowledge: "Reconoce todas las monedas de $1 a $10 (tema anterior)."
+        fact_refs: [mxn.denominations.bills.tier1_subset]
+        parent_check: "Saca un billete de $20 y uno de $50 y pídele a {{name}} que te diga cuál es cuál, sin decírselo tú primero."
+        lessons:
+          - position: 1
+            slug: mi-primer-billete
+            micro_objective: "Reconoce que un billete es de papel y distinto a una moneda."
+            narrative_beat: "Rho encuentra en un cofre algo nuevo: un papel de colores que dice veinte pesos."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: el-billete-de-veinte
+            micro_objective: "Reconoce visualmente el billete de $20 entre otros billetes y monedas."
+            narrative_beat: "Zara compara el billete nuevo con sus monedas y nota que se ve muy distinto."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: el-billete-de-cincuenta
+            micro_objective: "Reconoce visualmente el billete de $50 y lo distingue del de $20."
+            narrative_beat: "Liruf encuentra un segundo billete, más grande en valor, escondido bajo una roca."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 4
+            slug: monedas-y-billetes-juntos
+            micro_objective: "Ordena de menor a mayor un grupo mixto de monedas y billetes conocidos."
+            narrative_beat: "Dina junta todo el tesoro del barco: monedas y billetes, y los ordena del más chico al más grande."
+            difficulty: 2
+            suggested_families: [arrange, money]
+      - position: 4
+        slug: billetes-de-mas-valor
+        title_es: "Billetes de más valor"
+        concept: "Existen billetes de $100 y $200 que valen todavía más que el de $50."
+        learning_objective: "Al final, el niño puede identificar los billetes de $100 y $200 entre otros valores."
+        key_vocabulary: [cien pesos, doscientos pesos, todavía más]
+        prior_knowledge: "Reconoce los billetes de $20 y $50 (tema anterior)."
+        fact_refs: [mxn.denominations.bills.tier1_subset]
+        parent_check: "Cuando tengas billetes de $100 o $200 a la mano, pídele a {{name}} que los reconozca y diga si valen más o menos que uno de $50."
+        lessons:
+          - position: 1
+            slug: el-billete-de-cien
+            micro_objective: "Reconoce visualmente el billete de $100 entre otros billetes."
+            narrative_beat: "Rho abre un cofre del tesoro del capitán y encuentra un billete todavía más grande en valor."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: el-billete-de-doscientos
+            micro_objective: "Reconoce visualmente el billete de $200 y lo distingue del de $100."
+            narrative_beat: "Zara descubre el billete más valioso que ha visto en todo el archipiélago."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: comparo-todos-los-billetes
+            micro_objective: "Ordena de menor a mayor los billetes de $20, $50, $100 y $200."
+            narrative_beat: "Liruf acomoda los cuatro billetes del tesoro sobre la cubierta, del menor al mayor."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: cual-billete-uso
+            micro_objective: "Elige el billete correcto entre 3 opciones para una situación simple del cuento."
+            narrative_beat: "Dina decide cuál billete llevar consigo para su próxima aventura en el mercado."
+            difficulty: 2
+            suggested_families: [money, choice]
+      - position: 5
+        slug: cual-vale-mas
+        title_es: "¿Cuál vale más?"
+        concept: "Puedo comparar dos monedas o billetes y decir cuál vale más, sin importar su tamaño físico."
+        learning_objective: "Al final, el niño puede comparar el valor de dos denominaciones y decir cuál es mayor."
+        key_vocabulary: [vale más, vale menos, comparar, mayor]
+        prior_knowledge: "Reconoce monedas y billetes hasta $200 (temas anteriores)."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        parent_check: "Coloca junto a {{name}} una moneda de $10 y un billete de $20 y pregúntale cuál conviene más aceptar, aunque la moneda parezca más 'grande' por ser de metal."
+        lessons:
+          - position: 1
+            slug: moneda-chica-o-billete-grande
+            micro_objective: "Compara una moneda de $10 y un billete de $20 y elige cuál vale más."
+            narrative_beat: "Rho pone una moneda de $10 junto a un billete de $20 y pregunta a la tripulación cuál conviene más."
+            difficulty: 1
+            suggested_families: [choice, story]
+          - position: 2
+            slug: el-tamano-no-decide
+            micro_objective: "Reconoce que una moneda pequeña puede valer más que un billete de papel grande y viejo, si su número es mayor."
+            narrative_beat: "Zara le explica a Liruf que no es el tamaño lo que importa, sino el número escrito."
+            difficulty: 2
+            suggested_families: [choice]
+          - position: 3
+            slug: ordeno-por-valor
+            micro_objective: "Ordena 4 monedas y billetes mezclados solo por su valor, de menor a mayor."
+            narrative_beat: "Liruf mezcla todas las monedas y billetes del cofre y los reordena solo por su valor."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: cual-me-conviene-mas
+            micro_objective: "Elige la denominación de mayor valor entre 3 opciones para pagar un tesoro caro."
+            narrative_beat: "Dina debe elegir con cuál moneda o billete pagar al comerciante de la isla vecina."
+            difficulty: 2
+            suggested_families: [money, choice]
+      - position: 6
+        slug: junto-monedas-para-llegar-a-un-numero
+        title_es: "Junto monedas para llegar a un número"
+        concept: "Puedo combinar varias monedas hasta juntar exactamente el número que necesito."
+        learning_objective: "Al final, el niño puede combinar monedas de $1, $2, $5 y $10 para llegar a un monto de hasta $20."
+        key_vocabulary: [juntar, sumar, exacto, monto]
+        prior_knowledge: "Reconoce todas las monedas y sabe comparar su valor (temas anteriores)."
+        fact_refs: [mxn.denominations.coins.tier1_subset, math.max_single_coin_count_tier1]
+        parent_check: "Reta a {{name}} a juntar exactamente $15 o $18 con varias monedas sueltas, sin que tú hagas la cuenta por él."
+        lessons:
+          - position: 1
+            slug: junto-dos-monedas
+            micro_objective: "Combina dos monedas para llegar exactamente a un monto de hasta $10."
+            narrative_beat: "Rho reta a la tripulación: junten monedas hasta llegar exacto al número mágico de la isla."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: junto-tres-monedas
+            micro_objective: "Combina tres monedas para llegar exactamente a un monto de hasta $15."
+            narrative_beat: "Zara arma su primera combinación de tres monedas para pagar la entrada al templo de la isla."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: mas-de-una-forma-de-juntar
+            micro_objective: "Encuentra dos combinaciones distintas de monedas que sumen el mismo monto de hasta $20."
+            narrative_beat: "Liruf descubre que puede pagar el mismo tesoro juntando monedas de formas diferentes."
+            difficulty: 2
+            suggested_families: [money, arrange]
+          - position: 4
+            slug: pago-el-tesoro-exacto
+            micro_objective: "Junta monedas hasta pagar el monto exacto de un tesoro de hasta $20 en la historia."
+            narrative_beat: "Dina paga con monedas justas al guardián del templo y las puertas del tesoro se abren."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+      - position: 7
+        slug: cofre-del-repaso-de-monedas-y-billetes
+        title_es: "El Cofre del Repaso de Monedas y Billetes"
+        concept: "Repasamos desde el cofre de recuerdos todas las monedas y billetes que hemos conocido en el archipiélago."
+        learning_objective: "Al final, el niño recuerda y reconoce, sin nueva enseñanza, las monedas y billetes trabajados en esta saga."
+        key_vocabulary: [moneda, billete, vale más, ordenar]
+        prior_knowledge: "Completó los 6 temas de Monedas y Billetes de mi Tierra."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-chiquitas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-grandes
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-los-billetes
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/billetes-de-mas-valor
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/cual-vale-mas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+        lessons:
+          - position: 1
+            slug: reconozco-mis-monedas-del-cofre
+            micro_objective: "Reconoce, sin ayuda, las monedas de $1, $2, $5 y $10 mezcladas en el cofre."
+            narrative_beat: "Rho vuelca el cofre y aparecen todas las monedas que la tripulación ha ido juntando."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 2
+            slug: reconozco-mis-billetes-del-cofre
+            micro_objective: "Reconoce, sin ayuda, los billetes de $20, $50, $100 y $200 mezclados en el cofre."
+            narrative_beat: "Zara encuentra entre los recuerdos del cofre los billetes que ha guardado durante el viaje."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: ordeno-todo-el-tesoro-del-cofre
+            micro_objective: "Ordena, sin ayuda, un grupo mixto de monedas y billetes recordados de menor a mayor valor."
+            narrative_beat: "Liruf ordena todo el tesoro del cofre, de la monedita más chica al billete más grande."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: junto-monedas-recordadas
+            micro_objective: "Combina monedas recordadas del cofre para llegar exactamente a un monto de hasta $20."
+            narrative_beat: "Dina junta monedas del cofre hasta llegar justo al número mágico que recuerda de la aventura."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-de-monedas-y-billetes
+        title_es: "Reto Entrelazado de Monedas y Billetes"
+        concept: "Mezclamos lo aprendido sobre el nacimiento del dinero con el reconocimiento de monedas y billetes reales."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas sobre confiar en el dinero con reconocer y contar monedas y billetes."
+        key_vocabulary: [confiar, moneda, billete, contar]
+        prior_knowledge: "Completó El Cofre del Repaso de Monedas y Billetes (tema anterior) y Nace el Dinero (saga anterior)."
+        fact_refs: [mxn.denominations.coins.tier1_subset]
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-las-monedas-chiquitas
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/conozco-los-billetes
+        lessons:
+          - position: 1
+            slug: confio-y-reconozco-mis-monedas
+            micro_objective: "Combina la idea de confiar en el dinero con reconocer correctamente 3 monedas distintas."
+            narrative_beat: "Rho recuerda por qué confía en las monedas mientras las reconoce una por una en su bolsillo."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: por-que-confio-en-este-billete
+            micro_objective: "Explica, mezclando ambos temas, por qué confía en un billete aunque nunca lo haya visto antes."
+            narrative_beat: "Zara reconoce un billete nuevo y recuerda que confía en él porque toda la isla lo acepta igual."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: ordeno-y-confio-a-la-vez
+            micro_objective: "Ordena monedas y billetes de menor a mayor mientras explica por qué todos confían en ellos."
+            narrative_beat: "Liruf ordena su tesoro y, mientras tanto, recuerda por qué el archipiélago entero confía en esas piezas."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: pago-confiado-con-mi-tesoro
+            micro_objective: "Paga, sin ayuda, un monto exacto combinando monedas y billetes, confiando en que serán aceptados."
+            narrative_beat: "Dina paga con calma un monto exacto, segura de que su tesoro será aceptado en cualquier isla."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+
+  - position: 4
+    slug: el-valor-de-las-cosas
+    icon: scale
+    title:
+      en-US: "The Value of Things"
+      es-MX: "El Valor de las Cosas"
+      pt-BR: "O Valor das Coisas"
+    description:
+      en-US: "Big isn't always expensive — the crew learns to compare prices and spot a fair trade."
+      es-MX: "Lo grande no siempre cuesta más: la tripulación aprende a comparar precios y reconocer un trueque justo."
+      pt-BR: "O grande nem sempre custa mais: a tripulação aprende a comparar preços e reconhecer uma troca justa."
+    topics:
+      - position: 1
+        slug: las-cosas-grandes-no-siempre-valen-mas
+        title_es: "Las cosas grandes no siempre valen más"
+        concept: "El tamaño de un objeto no dice cuánto vale; una fruta chica puede costar más que una piedra grande."
+        learning_objective: "Al final, el niño puede identificar que el tamaño de un objeto no determina su precio."
+        key_vocabulary: [grande, chico, no siempre, cuesta]
+        prior_knowledge: "Sabe comparar el valor de monedas y billetes (saga anterior)."
+        fact_refs: []
+        parent_check: "En el súper, muéstrale a {{name}} algo grande y barato junto a algo chico y caro, y pregúntale cuál cree que cuesta más antes de ver la etiqueta."
+        lessons:
+          - position: 1
+            slug: la-piedra-grande-y-la-fruta-chica
+            micro_objective: "Compara una piedra grande y una fruta chica y reconoce cuál cuesta más según la historia."
+            narrative_beat: "Rho muestra una piedra enorme junto a una fruta diminuta y pregunta cuál cree que cuesta más."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: no-juzgo-por-tamano
+            micro_objective: "Elige, entre 4 pares de objetos, cuáles NO se pueden comparar solo por tamaño."
+            narrative_beat: "Zara arma un juego de parejas de objetos grandes y chicos para probar a la tripulación."
+            difficulty: 1
+            suggested_families: [choice]
+          - position: 3
+            slug: reviso-el-precio-no-el-tamano
+            micro_objective: "Ordena 3 objetos de distinto tamaño según su precio, no según su tamaño físico."
+            narrative_beat: "Liruf se sorprende al ordenar los tesoros por precio y ver que el más chico queda primero."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: cuento-mi-sorpresa
+            micro_objective: "Explica en una frase por qué se sorprendió con el precio de un objeto pequeño."
+            narrative_beat: "Dina cuenta a la tripulación cómo una concha chiquita resultó valer más de lo que pensaba."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 2
+        slug: cosas-que-cuestan-poco
+        title_es: "Cosas que cuestan poco"
+        concept: "Hay cosas que cuestan pocas monedas, como una fruta suelta o un dulce chico."
+        learning_objective: "Al final, el niño puede reconocer objetos de precio bajo dentro de un rango de referencia."
+        key_vocabulary: [barato, cuesta poco, pocas monedas]
+        prior_knowledge: "Sabe que el tamaño no define el precio (tema anterior)."
+        fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.paleta]
+        parent_check: "Camina con {{name}} por una tienda y pídele que señale dos o tres cosas que le parezcan baratas, y fíjate si acierta con precios realmente bajos."
+        lessons:
+          - position: 1
+            slug: la-fruta-suelta
+            micro_objective: "Reconoce en la historia un objeto que cuesta pocas monedas."
+            narrative_beat: "Dina compra una fruta suelta en el puesto de la isla y le sobran varias monedas."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: encuentro-lo-barato
+            micro_objective: "Elige, entre 4 objetos, los 2 que cuestan menos monedas."
+            narrative_beat: "Rho revisa el puesto del mercado isleño buscando las cosas más económicas."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: cuanto-me-sobra
+            micro_objective: "Calcula cuántas monedas le sobran tras comprar un objeto barato con un monto dado."
+            narrative_beat: "Zara paga con sus monedas un dulce chico y cuenta cuánto le queda en el bolsillo."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: compro-algo-barato
+            micro_objective: "Elige y paga con monedas exactas un objeto barato dentro de la historia."
+            narrative_beat: "Liruf junta justo las monedas necesarias para comprarse su primer dulce de la isla."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 3
+        slug: cosas-que-cuestan-mas
+        title_es: "Cosas que cuestan más"
+        concept: "Hay cosas que cuestan más monedas, como un juguete o un libro ilustrado."
+        learning_objective: "Al final, el niño puede reconocer objetos de precio más alto dentro de un rango de referencia."
+        key_vocabulary: [caro, cuesta más, muchas monedas]
+        prior_knowledge: "Reconoce objetos que cuestan poco (tema anterior)."
+        fact_refs: [mxn.reference_prices.juguete_pequeno, mxn.reference_prices.libro_infantil]
+        parent_check: "Pregúntale a {{name}} cuál de sus juguetes cree que costó más caro, y comprueba si su idea de 'caro' se acerca a la realidad."
+        lessons:
+          - position: 1
+            slug: el-juguete-especial
+            micro_objective: "Reconoce en la historia un objeto que cuesta más monedas que los demás."
+            narrative_beat: "Rho ve un juguete tallado en madera en el puesto más lujoso de la isla."
+            difficulty: 1
+            suggested_families: [story, money]
+          - position: 2
+            slug: encuentro-lo-caro
+            micro_objective: "Elige, entre 4 objetos, los 2 que cuestan más monedas."
+            narrative_beat: "Zara compara puestos de la isla buscando los tesoros más costosos."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: me-alcanza-o-no
+            micro_objective: "Determina si un monto dado de monedas alcanza para pagar un objeto caro."
+            narrative_beat: "Liruf cuenta sus monedas una y otra vez para ver si le alcanza para el juguete especial."
+            difficulty: 2
+            suggested_families: [money, input]
+          - position: 4
+            slug: ahorro-un-poco-mas
+            micro_objective: "Reconoce en la historia que a veces hace falta juntar más monedas para algo caro."
+            narrative_beat: "Dina decide guardar más monedas antes de intentar comprar el juguete tallado."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 4
+        slug: comparo-precios-de-dos-cosas
+        title_es: "Comparo precios de dos cosas"
+        concept: "Puedo mirar dos precios y decir cuál es más y cuál es menos, sin necesitar restar todavía."
+        learning_objective: "Al final, el niño puede comparar dos precios y decir cuál es mayor o menor."
+        key_vocabulary: [más caro, más barato, comparar precios]
+        prior_knowledge: "Reconoce objetos baratos y caros por separado (temas anteriores)."
+        fact_refs: [mxn.reference_prices.paleta, mxn.reference_prices.helado, mxn.reference_prices.torta]
+        parent_check: "Señálale a {{name}} dos precios escritos, como el de un dulce y el de una fruta, y pídele que diga cuál es mayor sin tu ayuda."
+        lessons:
+          - position: 1
+            slug: dos-precios-uno-al-lado-del-otro
+            micro_objective: "Compara dos precios mostrados juntos y elige cuál es mayor."
+            narrative_beat: "Rho pone lado a lado el precio de una paleta y el de un helado, y pregunta cuál cuesta más."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 2
+            slug: cual-cuesta-menos
+            micro_objective: "Compara dos precios mostrados juntos y elige cuál es menor."
+            narrative_beat: "Zara compara dos puestos de fruta para saber en cuál le rinden mejor sus monedas."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: ordeno-tres-precios
+            micro_objective: "Ordena tres precios distintos de menor a mayor."
+            narrative_beat: "Liruf visita tres puestos de la isla y ordena sus precios del más barato al más caro."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: elijo-donde-comprar
+            micro_objective: "Elige, entre dos puestos con precios distintos, el que conviene más para el mismo objeto."
+            narrative_beat: "Dina decide en qué puesto comprar su torta favorita después de comparar los precios."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 5
+        slug: un-cambio-justo
+        title_es: "Un cambio justo"
+        concept: "Ahora que sé de precios, puedo revisar un trueque o compra y decir si de verdad es justo para todos."
+        learning_objective: "Al final, el niño puede evaluar si un trueque o compra parece justo usando lo que sabe de precios."
+        key_vocabulary: [justo, injusto, revisar, comparar valor]
+        prior_knowledge: "Sabe comparar precios de dos objetos (tema anterior)."
+        fact_refs: [mxn.reference_prices.juguete_pequeno, mxn.reference_prices.fruta_pieza]
+        parent_check: "Antes de que {{name}} cierre un cambio con un amigo, pregúntale si el trato le parece justo tomando en cuenta lo que cuesta cada cosa, no solo si le gusta."
+        prerequisites:
+          - path: archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+            strength: hard
+            reason: "Para juzgar con precios si un cambio es justo, primero hay que saber reconocer cuándo un trueque deja contentas a las dos partes."
+        lessons:
+          - position: 1
+            slug: reviso-un-trueque-viejo
+            micro_objective: "Revisa un trueque de la saga anterior y decide si, con lo que ahora sabe de precios, parece justo."
+            narrative_beat: "Rho recuerda el primer trueque de la aventura y lo revisa con ojos nuevos."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: detecto-un-cambio-injusto
+            micro_objective: "Identifica en una escena un trueque donde un objeto caro se cambia por uno muy barato."
+            narrative_beat: "Zara nota que un comerciante quiere cambiar una fruta suelta por el juguete especial de Liruf."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: propongo-algo-mas-justo
+            micro_objective: "Propone un ajuste (agregar una moneda más) para volver justo un trueque desigual."
+            narrative_beat: "Liruf ofrece una moneda extra para que el cambio por su juguete sea justo para el comerciante."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+          - position: 4
+            slug: cierro-un-trato-justo
+            micro_objective: "Completa en la historia un trueque o compra final que deja contentas a ambas partes."
+            narrative_beat: "Dina cierra un trato con el comerciante y ambos se despiden con una sonrisa."
+            difficulty: 2
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: isla-del-trueque-repaso-final
+        title_es: "Isla del Trueque: repaso final"
+        concept: "Repasamos todo el viaje: los deseos, el trueque, el nacimiento del dinero y el valor de las cosas."
+        learning_objective: "Al final, el niño puede recordar y aplicar juntos los conceptos clave de la aventura del archipiélago."
+        key_vocabulary: [repaso, recuerdo, aventura completa]
+        prior_knowledge: "Domina todos los temas previos de la aventura del archipiélago."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        parent_check: "Al terminar el viaje, pídele a {{name}} que narre cómo pasamos de cambiar cosas directamente a usar monedas y billetes, y fíjate si logra explicarlo de principio a fin."
+        lessons:
+          - position: 1
+            slug: recuerdo-mis-deseos
+            micro_objective: "Recuerda y nombra un deseo, un trueque y una moneda de toda la aventura."
+            narrative_beat: "Rho reúne a la tripulación en la playa para recordar juntos todo lo vivido en el archipiélago."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: reconozco-todo-el-dinero
+            micro_objective: "Identifica correctamente todas las monedas y billetes aprendidos hasta ahora."
+            narrative_beat: "Zara organiza un último desafío: reconocer todo el tesoro del archipiélago sin equivocarse."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: armo-un-trueque-justo-final
+            micro_objective: "Arma, sin ayuda, un trueque o compra justa usando lo aprendido sobre precios."
+            narrative_beat: "Liruf organiza su propio puesto de intercambio y pone en práctica todo lo que aprendió."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 4
+            slug: zarpo-hacia-el-bosque
+            micro_objective: "Explica en una frase qué aprendió sobre el dinero antes de zarpar hacia la próxima aventura."
+            narrative_beat: "Dina iza las velas del barco: el archipiélago del trueque queda atrás, y el Bosque de la Abundancia espera."
+            difficulty: 3
+            suggested_families: [story, choice]
+      - position: 7
+        slug: cofre-del-repaso-del-valor
+        title_es: "El Cofre del Repaso del Valor"
+        concept: "Repasamos desde el cofre de recuerdos cómo comparar precios y reconocer un cambio justo."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, las ideas de esta saga sobre comparar precios y trueques justos."
+        key_vocabulary: [precio, comparar, barato, caro, justo]
+        prior_knowledge: "Completó los 6 temas de El Valor de las Cosas."
+        fact_refs: [mxn.reference_prices.fruta_pieza, mxn.reference_prices.juguete_pequeno]
+        kind: review_spaced
+        review_of:
+          - archipielago-del-trueque/el-valor-de-las-cosas/las-cosas-grandes-no-siempre-valen-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-poco
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/comparo-precios-de-dos-cosas
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+          - archipielago-del-trueque/el-valor-de-las-cosas/isla-del-trueque-repaso-final
+        lessons:
+          - position: 1
+            slug: recuerdo-que-el-tamano-no-importa
+            micro_objective: "Recuerda y explica, sin ayuda, por qué el tamaño de un objeto no dice cuánto vale."
+            narrative_beat: "Rho saca del cofre una piedra grande y una fruta chica y recuerda cuál costaba más."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recuerdo-precios-baratos-y-caros
+            micro_objective: "Recuerda y clasifica, sin ayuda, 3 objetos del cofre entre baratos y caros."
+            narrative_beat: "Zara vacía el cofre y separa los recuerdos de compras baratas y compras caras del archipiélago."
+            difficulty: 1
+            suggested_families: [choice, money]
+          - position: 3
+            slug: comparo-precios-recordados
+            micro_objective: "Compara dos precios recordados del cofre y elige cuál es mayor."
+            narrative_beat: "Liruf compara dos etiquetas de precio que guardó como recuerdo de sus compras en las islas."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 4
+            slug: cierro-el-cofre-con-un-trueque-justo
+            micro_objective: "Aplica sin ayuda lo recordado: arma un trueque o compra justa usando precios ya conocidos."
+            narrative_beat: "Dina cierra el cofre del valor armando, sin ayuda, un último trueque justo con lo que recuerda."
+            difficulty: 2
+            suggested_families: [money, storyplay]
+      - position: 8
+        slug: reto-entrelazado-del-valor
+        title_es: "Reto Entrelazado del Valor"
+        concept: "Mezclamos todo lo aprendido en el archipiélago: deseos, nacimiento del dinero, monedas y billetes, y el valor de las cosas."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos sagas anteriores con lo aprendido sobre el valor de las cosas."
+        key_vocabulary: [deseo, moneda, billete, precio, justo]
+        prior_knowledge: "Completó El Cofre del Repaso del Valor (tema anterior) y las tres sagas previas del archipiélago."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        kind: review_interleaved
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos/el-problema-del-trueque
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+          - archipielago-del-trueque/el-valor-de-las-cosas/cosas-que-cuestan-mas
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+        lessons:
+          - position: 1
+            slug: el-trueque-viejo-y-su-precio-real
+            micro_objective: "Revisa un trueque trabado de la primera saga y explica, usando precios, por qué se habría resuelto distinto."
+            narrative_beat: "Rho recuerda un trueque que se trabó al inicio del viaje y ahora lo explica usando lo que sabe de precios."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: junto-monedas-para-pagar-lo-caro
+            micro_objective: "Combina juntar monedas exactas con reconocer si un precio es caro o barato."
+            narrative_beat: "Zara junta sus monedas con cuidado para pagar exactamente un objeto que sabe que es un poco caro."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 3
+            slug: comparo-precios-y-cuento-mi-tesoro
+            micro_objective: "Compara dos precios y cuenta si sus monedas y billetes reunidos le alcanzan para el más caro."
+            narrative_beat: "Liruf compara dos precios del mercado isleño y cuenta si su tesoro junto le alcanza."
+            difficulty: 2
+            suggested_families: [money, choice]
+          - position: 4
+            slug: armo-el-trueque-mas-justo-de-todos
+            micro_objective: "Arma, sin ayuda, un trueque final que combine monedas justas y un precio justo para ambas partes."
+            narrative_beat: "Dina cierra el reto entrelazado armando el trueque más justo de toda su aventura por el archipiélago."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+
+  - position: 5
+    slug: la-gran-mision-del-archipielago
+    icon: anchor
+    title:
+      en-US: "The Archipelago's Great Quest"
+      es-MX: "La Gran Misión del Archipiélago"
+      pt-BR: "A Grande Missão do Arquipélago"
+    description:
+      en-US: "A final voyage puts every lesson about wants, trade, and money to the test before the whole archipelago celebrates together."
+      es-MX: "Un último viaje pone a prueba todo lo aprendido sobre deseos, trueque y dinero, antes de que todo el archipiélago celebre junto."
+      pt-BR: "Uma última viagem coloca à prova tudo o que foi aprendido sobre desejos, troca e dinheiro, antes de todo o arquipélago comemorar junto."
+    kind: review
+    topics:
+      - position: 1
+        slug: el-llamado-del-capitan-fantasma
+        title_es: "El Llamado del Capitán Fantasma"
+        concept: "Un antiguo capitán dejó un mapa que solo se puede leer recordando por qué nacieron los deseos, el trueque y el dinero."
+        learning_objective: "Al final, el niño recuerda y aplica, sin nueva enseñanza, por qué el trueque nació de los deseos y por qué el dinero resolvió su problema."
+        key_vocabulary: [deseo, trueque, moneda, mapa]
+        prior_knowledge: "Completó Las Islas de los Deseos y Nace el Dinero."
+        fact_refs: []
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/nace-el-dinero
+        lessons:
+          - position: 1
+            slug: el-mapa-del-capitan-fantasma
+            micro_objective: "Recuerda, sin ayuda, por qué la tripulación empezó a usar monedas en vez de trueques."
+            narrative_beat: "Un mapa antiguo aparece flotando junto al barco: el Capitán Fantasma reta a la tripulación a recordar todo su viaje."
+            difficulty: 1
+            suggested_families: [story, choice]
+          - position: 2
+            slug: recordamos-el-primer-deseo-del-viaje
+            micro_objective: "Recuerda y describe, combinando lo aprendido, el primer deseo y el primer trueque de toda la aventura."
+            narrative_beat: "Rho relee la primera página del mapa: muestra la primera isla donde nació un deseo de la tripulación."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 3
+            slug: elegimos-la-ruta-correcta
+            micro_objective: "Elige, entre 3 rutas del mapa, la que sigue el orden correcto de deseo, trueque y moneda."
+            narrative_beat: "Zara traza en el mapa la ruta que sigue el mismo orden que vivió la tripulación."
+            difficulty: 2
+            suggested_families: [choice, arrange]
+          - position: 4
+            slug: aceptamos-el-reto-del-capitan
+            micro_objective: "Completa, sin ayuda, la aceptación del reto explicando por qué el dinero nació de un problema real."
+            narrative_beat: "Dina acepta el reto del Capitán Fantasma: la tripulación zarpa en busca del tesoro final del archipiélago."
+            difficulty: 2
+            suggested_families: [storyplay, choice]
+      - position: 2
+        slug: la-prueba-de-las-monedas-perdidas
+        title_es: "La Prueba de las Monedas Perdidas"
+        concept: "El mapa lleva a la tripulación a recuperar monedas y billetes perdidos, reconociéndolos uno por uno."
+        learning_objective: "Al final, el niño reconoce y ordena, sin nueva enseñanza, monedas y billetes conocidos del archipiélago."
+        key_vocabulary: [moneda, billete, reconocer, ordenar]
+        prior_knowledge: "Completó Monedas y Billetes de mi Tierra y Nace el Dinero."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/nace-el-dinero/por-que-usamos-monedas
+        lessons:
+          - position: 1
+            slug: encontramos-el-primer-cofre-perdido
+            micro_objective: "Reconoce, sin ayuda, las monedas escondidas en el primer cofre perdido del mapa."
+            narrative_beat: "Rho desentierra el primer cofre perdido: dentro hay monedas mezcladas de todos los valores conocidos."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 2
+            slug: reconocemos-los-billetes-del-capitan
+            micro_objective: "Reconoce, sin ayuda, los billetes guardados por el Capitán Fantasma hace muchos años."
+            narrative_beat: "Zara encuentra billetes viejos entre las pertenencias del capitán y los reconoce sin dudar."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 3
+            slug: ordenamos-el-tesoro-encontrado
+            micro_objective: "Ordena, sin ayuda, todo el tesoro encontrado de menor a mayor valor."
+            narrative_beat: "Liruf ordena sobre la arena todo el tesoro recuperado, del más chico al más grande."
+            difficulty: 2
+            suggested_families: [arrange, money]
+          - position: 4
+            slug: explicamos-por-que-confiamos-en-este-tesoro
+            micro_objective: "Explica, sin ayuda, por qué el tesoro recuperado sigue sirviendo aunque sea antiguo."
+            narrative_beat: "Dina explica a la tripulación por qué todos seguirían aceptando ese tesoro hoy mismo."
+            difficulty: 2
+            suggested_families: [story, choice]
+      - position: 3
+        slug: el-desafio-de-los-precios-justos
+        title_es: "El Desafío de los Precios Justos"
+        concept: "En cada isla del mapa, la tripulación debe comparar precios y decidir cuál cambio es justo."
+        learning_objective: "Al final, el niño compara precios y evalúa, sin nueva enseñanza, si un cambio es justo para ambas partes."
+        key_vocabulary: [precio, comparar, justo, cambio]
+        prior_knowledge: "Completó El Valor de las Cosas y Las Islas de los Deseos."
+        fact_refs: [mxn.reference_prices.fruta_pieza]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/el-valor-de-las-cosas
+          - archipielago-del-trueque/islas-de-los-deseos/es-un-buen-cambio
+        lessons:
+          - position: 1
+            slug: la-isla-de-los-precios-escondidos
+            micro_objective: "Compara, sin ayuda, dos precios escondidos en la siguiente isla del mapa."
+            narrative_beat: "El mapa lleva a la tripulación a una isla donde los precios están escondidos bajo piedras de colores."
+            difficulty: 2
+            suggested_families: [choice, money]
+          - position: 2
+            slug: detectamos-un-cambio-injusto-del-capitan
+            micro_objective: "Identifica, sin ayuda, un cambio injusto dejado como trampa por el Capitán Fantasma."
+            narrative_beat: "Rho descubre una trampa del capitán: un cambio que parece bueno pero no es justo para los dos."
+            difficulty: 2
+            suggested_families: [choice, story]
+          - position: 3
+            slug: arreglamos-el-cambio-de-la-trampa
+            micro_objective: "Propone, sin ayuda, un ajuste que vuelve justo el cambio de la trampa del capitán."
+            narrative_beat: "Zara agrega una moneda extra al cambio de la trampa para que quede justo para ambas partes."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 4
+            slug: superamos-la-prueba-de-precios
+            micro_objective: "Completa, sin ayuda, un cambio justo final para superar la prueba de precios de la isla."
+            narrative_beat: "Liruf y Dina completan el último cambio justo y la isla les revela la siguiente pista del mapa."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 4
+        slug: la-gran-casa-de-cambios
+        title_es: "La Gran Casa de Cambios"
+        concept: "La tripulación decide construir una Casa de Cambios donde todo el archipiélago pueda cambiar cosas con monedas justas."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, confianza en el dinero, conteo de monedas y precios justos para un proyecto común."
+        key_vocabulary: [confiar, juntar, justo, casa de cambios]
+        prior_knowledge: "Completó Nace el Dinero, Monedas y Billetes de mi Tierra y El Valor de las Cosas."
+        fact_refs: [math.max_single_coin_count_tier1_late]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/nace-el-dinero/todos-confiamos-en-el-dinero
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra/junto-monedas-para-llegar-a-un-numero
+          - archipielago-del-trueque/el-valor-de-las-cosas/un-cambio-justo
+        lessons:
+          - position: 1
+            slug: elegimos-el-lugar-de-la-casa-de-cambios
+            micro_objective: "Reconoce, sin ayuda, por qué toda la isla debe confiar en el lugar elegido para cambiar cosas."
+            narrative_beat: "Rho elige, junto a los isleños, el lugar central donde construirán la Gran Casa de Cambios."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: juntamos-monedas-para-construir
+            micro_objective: "Junta, sin ayuda, monedas exactas hasta un monto necesario para los materiales de construcción."
+            narrative_beat: "Zara junta monedas de toda la tripulación hasta llegar justo al monto de los materiales."
+            difficulty: 2
+            suggested_families: [money]
+          - position: 3
+            slug: ponemos-precios-justos-en-la-casa
+            micro_objective: "Propone, sin ayuda, precios justos para los primeros cambios que se harán en la Casa de Cambios."
+            narrative_beat: "Liruf ayuda a poner las primeras etiquetas de precio justo en la nueva Casa de Cambios."
+            difficulty: 3
+            suggested_families: [money, choice]
+          - position: 4
+            slug: inauguramos-la-casa-de-cambios
+            micro_objective: "Completa, sin ayuda, la inauguración de la Casa de Cambios combinando confianza, monedas y precios justos."
+            narrative_beat: "Dina corta la cinta de la Gran Casa de Cambios ante todo el archipiélago reunido."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 5
+        slug: el-tesoro-final-del-capitan
+        title_es: "El Tesoro Final del Capitán"
+        concept: "El mapa lleva a la tripulación al último cofre, que solo se abre combinando deseos, monedas y precios justos."
+        learning_objective: "Al final, el niño combina, sin nueva enseñanza, deseos, reconocimiento de dinero y comparación de precios en un solo reto final."
+        key_vocabulary: [deseo, moneda, precio, tesoro final]
+        prior_knowledge: "Completó Las Islas de los Deseos, Monedas y Billetes de mi Tierra y El Valor de las Cosas."
+        fact_refs: [mxn.reference_prices.juguete_pequeno]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/el-valor-de-las-cosas
+        lessons:
+          - position: 1
+            slug: llegamos-a-la-ultima-isla
+            micro_objective: "Recuerda, sin ayuda, el deseo más grande que tuvo la tripulación en toda la aventura."
+            narrative_beat: "El barco llega a la última isla del mapa, donde brilla un cofre enorme bajo la arena."
+            difficulty: 2
+            suggested_families: [story, choice]
+          - position: 2
+            slug: reconocemos-la-llave-de-monedas
+            micro_objective: "Reconoce, sin ayuda, la combinación exacta de monedas y billetes que abre el cofre final."
+            narrative_beat: "Rho descubre que el cofre solo se abre con la combinación exacta de monedas y billetes."
+            difficulty: 3
+            suggested_families: [money, arrange]
+          - position: 3
+            slug: comparamos-el-precio-del-tesoro
+            micro_objective: "Compara, sin ayuda, si el tesoro final vale lo que costó todo el viaje de la tripulación."
+            narrative_beat: "Zara compara con una sonrisa todo lo aprendido con lo que el tesoro final representa."
+            difficulty: 3
+            suggested_families: [choice, story]
+          - position: 4
+            slug: abrimos-el-tesoro-final
+            micro_objective: "Completa, sin ayuda, la apertura del tesoro final combinando deseo, monedas y precio justo."
+            narrative_beat: "Liruf y Dina abren juntos el tesoro final: dentro hay un regalo para todo el archipiélago."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+      - position: 6
+        slug: la-gran-celebracion-del-archipielago
+        title_es: "La Gran Celebración del Archipiélago"
+        concept: "Todo el archipiélago celebra junto, recordando el viaje completo: deseos, trueque, dinero, monedas y precios justos."
+        learning_objective: "Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de toda la aventura del archipiélago."
+        key_vocabulary: [celebrar, recordar, aventura completa, justo]
+        prior_knowledge: "Domina todas las sagas de El Archipiélago del Trueque."
+        fact_refs: [mxn.denominations.coins.tier1_subset, mxn.denominations.bills.tier1_subset]
+        kind: review_quest
+        review_of:
+          - archipielago-del-trueque/islas-de-los-deseos
+          - archipielago-del-trueque/nace-el-dinero
+          - archipielago-del-trueque/monedas-y-billetes-de-mi-tierra
+          - archipielago-del-trueque/el-valor-de-las-cosas
+        lessons:
+          - position: 1
+            slug: contamos-toda-la-aventura
+            micro_objective: "Recuerda y narra, sin ayuda, los momentos clave de la aventura: deseo, trueque, dinero y precios."
+            narrative_beat: "Toda la tripulación se sienta en la playa a contar, isla por isla, la aventura completa del archipiélago."
+            difficulty: 3
+            suggested_families: [story, choice]
+          - position: 2
+            slug: repartimos-el-tesoro-del-capitan
+            micro_objective: "Reparte, sin ayuda, el tesoro final entre la Casa de Cambios y las familias de las islas."
+            narrative_beat: "Rho reparte con cuidado el tesoro del Capitán Fantasma entre toda la comunidad del archipiélago."
+            difficulty: 3
+            suggested_families: [money, storyplay]
+          - position: 3
+            slug: bailamos-en-la-casa-de-cambios
+            micro_objective: "Completa, sin ayuda, un último cambio justo dentro de la fiesta de la Casa de Cambios."
+            narrative_beat: "Zara y Liruf bailan frente a la Casa de Cambios mientras isleños de todas las edades celebran juntos."
+            difficulty: 3
+            suggested_families: [storyplay, money]
+          - position: 4
+            slug: zarpamos-hacia-el-bosque-con-el-corazon-lleno
+            micro_objective: "Explica en una frase, combinando toda la aventura, qué fue lo que más le enorgulleció aprender en el archipiélago."
+            narrative_beat: "Dina alza la vela del barco frente a todo el archipiélago en fiesta: el trueque quedó atrás, y el Bosque de la Abundancia los espera."
+            difficulty: 3
+            suggested_families: [story, choice]

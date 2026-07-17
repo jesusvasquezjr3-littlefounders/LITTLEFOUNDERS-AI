@@ -1,0 +1,156 @@
+schema_version: 1
+
+# Closed vocabulary for the entrepreneurship course catalog.
+# Consumed by Forge (coursegen) as a HARD-FAIL gate (COURSE_ENGINE.md §3, §4):
+# the forbidden-vocabulary lists are checked against every generated string
+# (titles, concepts, objectives, prompts) for the matching age tier + locale.
+#
+# This course runs AFTER financial-education (COURSE_ENGINE.md §3.1b —
+# `course.requires: [financial-education]`), so kids arrive already knowing
+# what money is, how to earn/save/spend it. The age-tier vocabulary GATE
+# itself is project-wide and shared verbatim with financial-education's
+# taxonomy.yaml (same Piaget ceiling per tier, same three locales) — it is
+# NOT reinvented per course. tier1 here covers adventures 1-2 (foundational,
+# concrete idea/making skills); tier2 covers adventures 3-8 (money-adjacent
+# business mechanics: customers, pricing, profit).
+
+themes: [archipelago, forest, city, valley, kingdom, cosmos]
+
+age_tiers:
+  tier1:
+    ages: "6-7"
+    # Piaget-gate: no abstract financial/business jargon at this age. Concepts
+    # are taught only through concrete objects, stories and hands-on making —
+    # never through the words below, in any locale. Identical list to
+    # financial-education/taxonomy.yaml (project-wide, not course-specific).
+    forbidden_vocabulary:
+      es-MX:
+        - porcentaje
+        - interés
+        - interés compuesto
+        - crédito
+        - deuda
+        - hipoteca
+        - inversión
+        - acciones
+        - bolsa de valores
+        - dividendo
+        - inflación
+        - impuesto sobre la renta
+        - tasa
+        - criptomoneda
+        - préstamo
+        - cuenta bancaria
+        - tarjeta de crédito
+        - presupuesto  # tier1 uses "bolsa de compras" / "lo que puedo gastar", never the abstract noun
+      en-US:
+        - percentage
+        - interest
+        - compound interest
+        - credit
+        - debt
+        - mortgage
+        - investment
+        - stocks
+        - stock market
+        - dividend
+        - inflation
+        - income tax
+        - rate
+        - cryptocurrency
+        - loan
+        - bank account
+        - credit card
+        - budget
+      pt-BR:
+        - porcentagem
+        - juros
+        - juros compostos
+        - crédito
+        - dívida
+        - hipoteca
+        - investimento
+        - ações
+        - bolsa de valores
+        - dividendo
+        - inflação
+        - imposto de renda
+        - taxa
+        - criptomoeda
+        - empréstimo
+        - conta bancária
+        - cartão de crédito
+        - orçamento
+
+  tier2:
+    ages: "8-10"
+    # Smaller list — simple-interest / percent CONCEPTS may be taught if
+    # grounded in a concrete manipulative; the jargon words themselves stay
+    # banned. Identical list to financial-education/taxonomy.yaml. Business
+    # vocabulary like "ganancia", "costo", "precio", "cliente", "negocio" is
+    # NOT on this list — it is core, tier-appropriate entrepreneurship
+    # vocabulary at both tiers (COURSE_ENGINE.md content-design note).
+    forbidden_vocabulary:
+      es-MX:
+        - interés compuesto
+        - hipoteca
+        - acciones
+        - bolsa de valores
+        - dividendo
+        - criptomoneda
+        - apalancamiento
+        - derivados
+        - amortización
+        - tasa de interés anual
+      en-US:
+        - compound interest
+        - mortgage
+        - stocks
+        - stock market
+        - dividend
+        - cryptocurrency
+        - leverage
+        - derivatives
+        - amortization
+        - annual percentage rate
+      pt-BR:
+        - juros compostos
+        - hipoteca
+        - ações
+        - bolsa de valores
+        - dividendo
+        - criptomoeda
+        - alavancagem
+        - derivativos
+        - amortização
+        - taxa de juros anual
+
+families: [story, choice, input, arrange, money, analyze, storyplay, maker]
+
+# Which of the 8 families a plan/write prompt may draw exercise TYPES from,
+# per age tier. Identical to financial-education/taxonomy.yaml.
+family_allowlist_by_tier:
+  tier1: [story, choice, input, arrange, money, storyplay]
+  tier2: [story, choice, input, arrange, money, analyze, storyplay, maker]
+
+type_exceptions:
+  # Individual analyze/maker TYPES allowed in tier1 despite their family
+  # being excluded above — each one is concrete/visual enough to clear the
+  # Piaget gate on its own. Identical list to financial-education/taxonomy.yaml.
+  tier1_extra_allowed:
+    - red_flags        # not used before safety content exists in this course
+    - robot_path        # grid-walking is concrete, not abstract
+    - pattern_complete   # pre-algebra pattern recognition, fully visual
+    - fact_opinion       # simple sorting game, no jargon required
+
+  # Types explicitly too abstract / too jargon-adjacent for tier1 even as
+  # exceptions — listed for the plan-prompt palette to hard-exclude.
+  tier1_banned_types:
+    - confidence_quiz    # calibration/certainty rating is a tier2 metacognitive skill
+    - rank_choices       # Spearman-footrule ranking of 3-7 items is too abstract at 6-7
+    - compare_table       # grid-of-cells reasoning is a tier2 skill
+    - evidence_hunt        # Jaccard textual-evidence matching needs reading fluency tier1 lacks
+    - interest_peek         # growth-prediction flow is reserved for tier2+
+    - machine_io              # function-induction from examples is a tier2 pre-algebra skill
+    - debug_hunt                # multi-line code reading is a tier2/maker skill
+    - code_order                  # code-block ordering needs reading fluency tier1 lacks

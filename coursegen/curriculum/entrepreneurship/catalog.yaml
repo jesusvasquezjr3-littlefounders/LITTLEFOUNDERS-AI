@@ -1,0 +1,34 @@
+schema_version: 1
+
+course:
+  slug: entrepreneurship
+  subject: economics
+  title:
+    en-US: "Entrepreneurship"
+    es-MX: "Emprendimiento"
+    pt-BR: "Empreendedorismo"
+  description:
+    en-US: "A story adventure that runs after Financial Education, where kids turn ideas into real little businesses — spotting problems, making things with care, understanding customers and pricing fairly."
+    es-MX: "Una aventura que continúa después de Educación Financiera, donde los niños convierten ideas en pequeños negocios reales: detectan problemas, hacen cosas con cuidado, entienden a sus clientes y ponen precios justos."
+    pt-BR: "Uma aventura que continua depois de Educação Financeira, onde as crianças transformam ideias em pequenos negócios reais: identificam problemas, fazem coisas com cuidado, entendem seus clientes e definem preços justos."
+  authoring_locale: es-MX
+  # Course-level prerequisite edge (COURSE_ENGINE.md §3.1b) — Emprendimiento
+  # assumes the money mechanics (coins/bills, saving, fair trade, pricing
+  # basics) already taught in financial-education. Topic-level
+  # `prerequisites` stay within-course; this is the course-to-course edge.
+  requires: [financial-education]
+
+adventures:
+  - file: adventures/01-la-isla-de-las-ideas.yaml
+  - file: adventures/02-el-bosque-de-los-makers.yaml
+  - file: adventures/03-la-ciudad-del-cliente.yaml
+  - file: adventures/04-el-valle-del-precio-justo.yaml
+  # 05-08 authored by a sibling agent in parallel (COURSE_ENGINE.md §3.1b) —
+  # listed here so the catalog is a complete coverage oracle even before
+  # they land. `catalog:check` will report "file not found" for these until
+  # the sibling publishes them — an expected transient state, not a defect
+  # in adventures 01-04.
+  - file: adventures/05-el-reino-de-las-ventas.yaml
+  - file: adventures/06-el-taller-del-equipo.yaml
+  - file: adventures/07-el-faro-del-buen-negocio.yaml
+  - file: adventures/08-el-cosmos-del-founder.yaml

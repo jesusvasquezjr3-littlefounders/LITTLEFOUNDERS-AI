@@ -1,0 +1,255 @@
+schema_version: 1
+
+# Canonical numeric ground truth (COURSE_ENGINE.md §3). Every number Forge
+# puts in a money exercise must either come from here or be pure arithmetic
+# the deterministic gate can re-verify. `verified: true` = safe to state as
+# fact (denominations, calendar math). `verified: false` = a REFERENCE value
+# for exercise flavor only — `enforce: false` means the gate must NOT treat
+# it as a hard-pinned constant (a "paleta" can cost $12 or $18 in different
+# lessons; only the ORDER OF MAGNITUDE and MXN-plausibility matter).
+#
+# NEVER-INVENTED: no precise regulatory/legal numbers (minimum ages for bank
+# products, tax brackets, interest rates) appear here. If a fact can't be
+# stated with confidence it is omitted, not guessed.
+
+facts:
+
+  # ---- MXN denominations (Banxico, currently circulating) ----
+  mxn.denominations.coins:
+    value: [0.5, 1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación"
+    verified: true
+    notes: "Banxico; $20 existe como moneda Y billete — evitar ambigüedad usando 'moneda de $20' vs 'billete de $20' explícitamente en el prompt."
+
+  mxn.denominations.coins.tier1_subset:
+    value: [1, 2, 5, 10]
+    unit: MXN
+    label_es: "Subconjunto de monedas para ejercicios tier1 (6-7 años)"
+    verified: true
+    notes: "La moneda de $0.50 se omite en tier1 — decimales confunden a esta edad; $20 moneda se omite para no chocar con el billete de $20."
+
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200, 500, 1000]
+    unit: MXN
+    label_es: "Billetes de México en circulación"
+    verified: true
+    notes: "Banxico; familia G de billetes vigente."
+
+  mxn.denominations.bills.tier1_subset:
+    value: [20, 50, 100]
+    unit: MXN
+    label_es: "Subconjunto de billetes para ejercicios tier1"
+    verified: true
+    notes: "Billetes de $200+ aparecen a partir de tier2 o adventure 3+ una vez dominado el conteo con montos menores."
+
+  # ---- USD denominations ----
+  usd.denominations.coins:
+    value: [0.01, 0.05, 0.10, 0.25]
+    unit: USD
+    label_es: "Monedas de Estados Unidos (penny, nickel, dime, quarter)"
+    verified: true
+    notes: "USD subunit is decimal cents; used only in later locale-specific exercises, not adventures 1-4 (es-MX authoring locale defaults to MXN)."
+
+  usd.denominations.bills:
+    value: [1, 5, 10, 20, 50, 100]
+    unit: USD
+    label_es: "Billetes de Estados Unidos"
+    verified: true
+
+  # ---- BRL denominations ----
+  brl.denominations.coins:
+    value: [0.05, 0.10, 0.25, 0.50, 1]
+    unit: BRL
+    label_es: "Moedas do Brasil"
+    verified: true
+
+  brl.denominations.bills:
+    value: [2, 5, 10, 20, 50, 100, 200]
+    unit: BRL
+    label_es: "Notas do Brasil"
+    verified: true
+
+  # ---- Kid-world reference prices (MXN) — APPROXIMATE, for exercise flavor ----
+  mxn.reference_prices.paleta:
+    value: 15
+    range: [10, 20]
+    unit: MXN
+    label_es: "Paleta de hielo (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+    notes: "Precio ilustrativo de tiendita de barrio; varía por región. NO usar como dato regulado."
+
+  mxn.reference_prices.torta:
+    value: 50
+    range: [35, 65]
+    unit: MXN
+    label_es: "Torta (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.juguete_pequeno:
+    value: 100
+    range: [80, 150]
+    unit: MXN
+    label_es: "Juguete pequeño (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.util_escolar:
+    value: 30
+    range: [20, 40]
+    unit: MXN
+    label_es: "Útil escolar — lápiz, borrador, cuaderno chico (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.fruta_pieza:
+    value: 8
+    range: [5, 12]
+    unit: MXN
+    label_es: "Pieza de fruta suelta (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.agua_botella:
+    value: 12
+    range: [10, 18]
+    unit: MXN
+    label_es: "Botella de agua chica (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.helado:
+    value: 25
+    range: [18, 35]
+    unit: MXN
+    label_es: "Helado de una bola (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.libro_infantil:
+    value: 120
+    range: [90, 180]
+    unit: MXN
+    label_es: "Libro infantil ilustrado (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.entrada_cine_infantil:
+    value: 70
+    range: [50, 90]
+    unit: MXN
+    label_es: "Entrada de cine para niño (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.mascota_pez_pecera:
+    value: 60
+    range: [40, 90]
+    unit: MXN
+    label_es: "Pez de pecera pequeño (precio de referencia aproximado, usado en el archipiélago)"
+    verified: false
+    enforce: false
+
+  # ---- Kid "chambita" (small-job) reference earnings, MXN ----
+  mxn.reference_prices.chambita_pequena:
+    value: 10
+    range: [5, 15]
+    unit: MXN
+    label_es: "Recompensa por una chambita pequeña (tender la cama, recoger juguetes)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.chambita_mediana:
+    value: 20
+    range: [15, 30]
+    unit: MXN
+    label_es: "Recompensa por una chambita mediana (regar plantas toda la semana, ayudar a poner la mesa varios días)"
+    verified: false
+    enforce: false
+
+  # ---- Calendar / counting anchors used by savings-goal arithmetic ----
+  calendar.days_per_week:
+    value: 7
+    unit: days
+    label_es: "Días en una semana"
+    verified: true
+
+  calendar.weeks_per_month_approx:
+    value: 4
+    unit: weeks
+    label_es: "Semanas por mes (aproximado, para cálculos simples de ahorro infantil)"
+    verified: true
+    notes: "Aproximación deliberada (4, no 4.33) — tier1 no maneja fracciones de semana."
+
+  calendar.months_per_year:
+    value: 12
+    unit: months
+    label_es: "Meses en un año"
+    verified: true
+
+  calendar.days_per_month_approx:
+    value: 30
+    unit: days
+    label_es: "Días por mes (aproximado, redondeado para cálculos infantiles)"
+    verified: true
+
+  # ---- Arithmetic anchors for money exercises ----
+  math.max_single_coin_count_tier1:
+    value: 20
+    unit: MXN
+    label_es: "Monto máximo objetivo en ejercicios coin_count/make_change de tier1 (adventure 1-2)"
+    verified: true
+    notes: "Tope pedagógico, no un hecho externo — mantiene el conteo dentro del rango de suma mental de 6-7 años."
+
+  math.max_single_coin_count_tier1_late:
+    value: 50
+    unit: MXN
+    label_es: "Monto máximo objetivo en coin_count/make_change hacia el final de tier1 (adventure 3-4)"
+    verified: true
+    notes: "Sube gradualmente conforme el niño domina montos menores (P2 progresión)."
+
+  math.savings_goal_ceiling_tier1:
+    value: 150
+    unit: MXN
+    label_es: "Meta de ahorro máxima usada en savings_goal durante adventure 3 (La Aldea del Ahorro)"
+    verified: true
+    notes: "Elegido para que goal/weekly_options produzca semanas enteras pequeñas (2-8 semanas) con weekly_options de {10,15,20,25,30}."
+
+  math.savings_weekly_options_tier1:
+    value: [10, 15, 20, 25, 30]
+    unit: MXN
+    label_es: "Montos semanales de ahorro ofrecidos en savings_goal (adventure 3)"
+    verified: true
+
+  math.piggy_split_income_tier1:
+    value: [20, 30, 40, 50]
+    unit: MXN
+    label_es: "Ingresos usados en piggy_split (ahorrar/gastar/compartir) durante adventure 3-4"
+    verified: true
+    notes: "Múltiplos de 10 para que las divisiones entre 2-3 frascos den enteros razonables."
+
+  math.budget_fit_ceiling_tier1:
+    value: 80
+    unit: MXN
+    label_es: "Presupuesto (bolsa de compras) máximo usado en budget_fit durante adventure 4"
+    verified: true
+    notes: "Suficiente para 2-4 artículos de mxn.reference_prices sin exceder la comprensión numérica tier1."
+
+  # ---- Character canon anchors (used by narrative_beat authoring, not money math) ----
+  characters.canon_ids:
+    value: [dina, liruf, rho, zara]
+    unit: n/a
+    label_es: "IDs canónicos de personajes (LESSON_ENGINE.md §9) — únicos narradores permitidos"
+    verified: true
+
+  characters.roles:
+    value:
+      dina: mentora
+      liruf: juguetón
+      rho: sabio detective
+      zara: estratega
+    unit: n/a
+    label_es: "Rol narrativo de cada personaje, usado para asignar narrative_beat"
+    verified: true

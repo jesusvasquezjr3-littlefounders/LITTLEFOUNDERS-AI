@@ -1,10 +1,22 @@
 {
-    "name": "littlefounders-monorepo",
-    "version": "1.0.0",
-    "scripts": {
-        "build": "cd frontend && npm install && npm run build && mkdir -p ../dist && cp -r dist/* ../dist"
-    },
-    "engines": {
-        "node": "24.x"
-    }
+  "name": "littlefounders",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "setup": "bash scripts/setup-dev.sh",
+    "dev": "bash scripts/start-dev.sh",
+    "repo:map": "bash scripts/update-repo-map.sh",
+    "docs:check": "bash agent/tools/check-docs-sync.sh",
+    "secrets:check": "bash agent/tools/check-secrets.sh",
+    "i18n:check": "bash agent/tools/check-i18n.sh",
+    "deps:check": "bash agent/tools/check-dep-drift.sh",
+    "test:all": "bash agent/tools/run-all.sh test",
+    "typecheck:all": "bash agent/tools/run-all.sh type-check",
+    "lint:all": "bash agent/tools/run-all.sh lint"
+  }
 }

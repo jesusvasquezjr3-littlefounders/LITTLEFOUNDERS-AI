@@ -1,30 +1,43 @@
-# Product
+# PRODUCT.md — LittleFounders (skill-facing summary)
+
+> Strategic context for design tooling. Canonical sources (never duplicate,
+> always defer): `agent/core/CONTEXT.md` (product/architecture),
+> `GLOSSARY.md` (terms), `ROADMAP.md` (scope), `DESIGN.md` (visual system —
+> AUTHORITATIVE, root AGENTS.md §1.1 rank 4).
 
 ## Register
 
-brand
+product — app UI (design serves the product). Marketing pages exist but the
+platform surface (auth, dashboard, learn/tutor/games/tasks/profile) is the
+primary register.
 
-## Users
-Parents of children ages 4-12 seeking high-quality financial literacy education. Parents value structured, engaging learning experiences that build real-world skills. Children interact with the platform through gamified lessons and activities.
+## Who / What / Why
 
-## Product Purpose
-LittleFounders AI is a financial literacy education platform for children ages 4-12. It combines AI-powered personalized learning with gamification to teach money management, entrepreneurship, and financial decision-making through interactive lessons, games, and real-world practice scenarios.
+Financial-literacy learning platform for families. Kids learn money skills
+through gamified courses, an AI tutor, and minigames; parents (Tutors) manage
+kid accounts, assign real-world tasks with rewards, and keep full visibility.
+Six roles; everyone signs up as `universal` (zero friction), upgrades are
+verification-gated (Guardian service). Locales: en-US, es-MX, pt-BR. Light +
+dark, desktop + mobile — all four are product invariants.
 
-## Brand Personality
-Trustworthy, playful, educational. The platform should feel professional enough for parents to trust with their children's education, while remaining engaging and fun for kids. Clean, modern, approachable—not corporate or intimidating.
+## Brand personality
+
+"LittleFounders Arcade" — premium learning game: Brilliant.org-style clarity,
+one loud papaya CTA per view, extrabold tight Figtree headlines, pills and big
+radii, liquid-glass floating chrome. Minimal by default; color is spent on
+meaning, never decoration. Kid-friendly without being childish.
 
 ## Anti-references
-- Overly gamified platforms that sacrifice educational substance
-- Corporate fintech aesthetics that feel cold or intimidating for children
-- Cluttered, overwhelming interfaces with too many competing elements
-- Generic edtech platforms that lack personality or polish
 
-## Design Principles
-1. **Island-based layout**: Content organized in clean, rounded containers on subtle backgrounds, creating visual breathing room and clear content hierarchy
-2. **Generous spacing**: Ample whitespace between sections and elements, allowing content to breathe and reducing cognitive load
-3. **Subtle refinement**: Borders, shadows, and transitions should be barely perceptible—premium feel without visual noise
-4. **Clear visual hierarchy**: Bold headings, readable body text, and intentional use of color to guide attention
-5. **Responsive by default**: Mobile-first approach with thoughtful breakpoints for tablet and desktop
+Corporate fintech navy-and-gold; SaaS cream landing kits; dark-pattern
+gamification (no streak-shaming, no manipulative urgency — COPPA-minded,
+/AGENTS.md §1.9); clip-art kid-app rainbow noise.
 
-## Accessibility & Inclusion
-WCAG 2.1 AA compliance. High contrast ratios for text, keyboard navigation support, reduced motion alternatives for animations, screen reader compatibility.
+## Strategic principles
+
+1. DESIGN.md is law — closed token sets; skills refine execution, never
+   override tokens (/AGENTS.md §4).
+2. Trust surfaces (auth, verification, parent controls) read calm and safe:
+   clear copy, honest errors, no tricks.
+3. Every string i18n'd ×3 locales; every screen verified at ~375px and
+   ~1280px in both themes before done.

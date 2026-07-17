@@ -1,0 +1,2227 @@
+schema_version: 1
+adventure:
+  position: 3
+  slug: la-ciudad-del-cliente
+  theme: city
+  age_tier: tier2
+  title:
+    en-US: The City of the Customer
+    es-MX: La Ciudad del Cliente
+    pt-BR: A Cidade do Cliente
+  description:
+    en-US: Bring your products to a bustling city and learn who really wants them, what they need, and how to earn their trust.
+    es-MX: Lleva tus productos a una ciudad bulliciosa y aprende quién los quiere de verdad, qué necesita y cómo ganarte su confianza.
+    pt-BR: Leve seus produtos a uma cidade movimentada e aprenda quem realmente os quer, o que precisa e como conquistar sua confiança.
+  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Liruf, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Liruf aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
+sagas:
+  - position: 1
+    slug: quien-es-mi-cliente
+    icon: person_search
+    title:
+      en-US: Who Is My Customer?
+      es-MX: ¿Quién es mi Cliente?
+      pt-BR: Quem é o Meu Cliente?
+    description:
+      en-US: Not everyone is your customer — learn to picture exactly who your product is for.
+      es-MX: "No todos son tu cliente: aprende a imaginar exactamente para quién es tu producto."
+      pt-BR: "Nem todo mundo é seu cliente: aprenda a imaginar exatamente para quem é o seu produto."
+    topics:
+      - position: 1
+        slug: no-le-vendo-a-todo-el-mundo
+        title_es: No le vendo a todo el mundo
+        concept: Un producto no le sirve ni le interesa a todas las personas por igual; pensar en quién sí lo quiere es el primer paso para vender.
+        learning_objective: Al final, el niño puede reconocer que un producto no interesa a todas las personas por igual.
+        key_vocabulary:
+          - cliente
+          - todo el mundo
+          - interesa
+          - no a todos
+        prior_knowledge: Trae del Bosque de los Makers un producto ya terminado y cuidado.
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si cree que su producto le interesaría a un bebé, a un adulto y a un niño de su edad por igual, y por qué no.
+        lessons:
+          - position: 1
+            slug: la-plaza-llena-de-gente
+            micro_objective: Reconoce en la historia que no toda la gente de una plaza se interesa por el mismo producto.
+            narrative_beat: "Dina llega a la Ciudad del Cliente y ve una plaza llena de gente distinta: no todos se detienen a ver lo mismo."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: a-quien-si-a-quien-no
+            micro_objective: Distingue, entre 4 personas de la plaza, a quiénes sí les interesaría un producto mostrado.
+            narrative_beat: Zara observa la plaza y separa a quién le interesaría su pulsera de a quién no.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: un-producto-no-es-para-todos
+            micro_objective: Reconoce, entre 3 productos, cuál tiene un público más específico y cuál es más general.
+            narrative_beat: Rho compara la pulsera, pensada para niños, con el agua embotellada, que le sirve a casi cualquiera.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: identifico-quien-no-es-mi-cliente
+            micro_objective: Identifica, sin ayuda, a alguien de una escena que probablemente NO sería cliente de un producto dado.
+            narrative_beat: Liruf identifica en la plaza a alguien que seguro no querría su carrito de juguete, y explica por qué.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: quien-quiere-lo-que-yo-hago
+        title_es: ¿Quién quiere lo que yo hago?
+        concept: Pensar en quién de verdad querría comprar mi producto me ayuda a enfocar mejor mi negocio.
+        learning_objective: Al final, el niño puede nombrar el tipo de persona que más querría su producto.
+        key_vocabulary:
+          - querer comprar
+          - enfocar
+          - tipo de persona
+          - mi producto
+        prior_knowledge: Sabe que un producto no interesa a todos por igual (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué tipo de persona cree que más querría comprar su producto, y por qué.
+        lessons:
+          - position: 1
+            slug: quien-querria-mi-pulsera
+            micro_objective: Reconoce en la historia el tipo de persona que más querría un producto mostrado.
+            narrative_beat: "Zara piensa en quién de la plaza querría más una pulsera de colores brillantes: sobre todo, otros niños."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: interesado-o-no-interesado
+            micro_objective: Distingue, entre 4 personajes, cuáles muestran interés genuino en un producto y cuáles no.
+            narrative_beat: "Rho observa las caras de la gente cuando ve la pulsera: unos sonríen, otros ni voltean."
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: comparo-quien-quiere-cada-producto
+            micro_objective: Compara 2 productos distintos y reconoce qué tipo de persona querría cada uno.
+            narrative_beat: Liruf compara quién querría su carrito de juguete con quién querría la limonada fría de Zara.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: nombro-quien-querria-mi-producto
+            micro_objective: Nombra, sin ayuda, el tipo de persona que más querría su propio producto en la historia.
+            narrative_beat: Dina nombra con claridad qué tipo de persona de la ciudad más querría su producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: un-cliente-tiene-una-necesidad
+        title_es: Un cliente tiene una necesidad
+        concept: Alguien se convierte en cliente cuando mi producto resuelve algo que de verdad necesita o quiere en ese momento.
+        learning_objective: Al final, el niño puede identificar la necesidad que motiva a un cliente a interesarse en un producto.
+        key_vocabulary:
+          - necesidad
+          - motiva
+          - en ese momento
+          - resuelve
+        prior_knowledge: Sabe nombrar quién querría su producto (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué necesidad resuelve su producto para la persona que lo compraría.
+        lessons:
+          - position: 1
+            slug: tiene-sed-y-hay-limonada
+            micro_objective: Reconoce en la historia la necesidad que hace que alguien se interese en un producto.
+            narrative_beat: Un isleño de la ciudad tiene mucha sed justo cuando pasa frente al puesto de limonada de Liruf.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: necesidad-clara-o-confusa
+            micro_objective: Distingue, entre 2 escenas, cuál muestra una necesidad clara detrás del interés de un cliente.
+            narrative_beat: Zara compara a alguien que compra limonada por sed real con alguien que solo mira sin necesitar nada.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-cliente-con-su-necesidad
+            micro_objective: Empareja 3 clientes con la necesidad que cada uno tiene.
+            narrative_beat: Rho conecta a cada persona de la plaza con lo que de verdad le hace falta en ese momento.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 4
+            slug: identifico-la-necesidad-de-mi-cliente
+            micro_objective: Identifica, sin ayuda, la necesidad detrás del interés de un cliente en una escena nueva.
+            narrative_beat: Dina identifica exactamente qué necesita la persona que se detiene a ver su producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: clientes-grandes-y-clientes-chicos
+        title_es: Clientes grandes y clientes chicos
+        concept: Los adultos y los niños suelen querer e interesarse en cosas distintas, y eso cambia quién es mi cliente.
+        learning_objective: Al final, el niño puede distinguir cómo cambia el interés de un producto entre adultos y niños.
+        key_vocabulary:
+          - adultos
+          - niños
+          - distinto interés
+          - depende de quién
+        prior_knowledge: Sabe identificar la necesidad de un cliente (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si su producto le interesaría más a un adulto o a un niño de su edad, y por qué.
+        prerequisites:
+          - path: el-bosque-de-los-makers/pruebo-y-mejoro/le-muestro-mi-producto-a-alguien
+            strength: soft
+            reason: Haber mostrado antes un producto a alguien más facilita imaginar distintos tipos de personas que podrían interesarse en él.
+        lessons:
+          - position: 1
+            slug: el-adulto-y-el-nino-en-la-plaza
+            micro_objective: Reconoce en la historia cómo un adulto y un niño reaccionan distinto frente al mismo producto.
+            narrative_beat: Un adulto pasa de largo frente a las pulseras de colores, pero un niño se detiene encantado.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: para-adultos-o-para-ninos
+            micro_objective: Clasifica 4 productos entre los que interesan más a adultos y los que interesan más a niños.
+            narrative_beat: Zara clasifica los puestos de la plaza según a quién le interesa más cada uno.
+            difficulty: 1
+            suggested_families:
+              - arrange
+              - choice
+          - position: 3
+            slug: un-producto-para-ambos
+            micro_objective: Reconoce, entre 3 productos, cuál podría interesarle tanto a adultos como a niños.
+            narrative_beat: Rho nota que la limonada fría le interesa tanto a los niños como a los adultos en un día caluroso.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: pienso-si-mi-producto-es-para-ambos
+            micro_objective: Reconoce, sin ayuda, si su propio producto interesa más a adultos, a niños, o a ambos.
+            narrative_beat: Liruf piensa con calma si su carrito de juguete interesa solo a niños o también a algunos adultos.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: pienso-en-la-edad-de-mi-cliente
+        title_es: Pienso en la edad de mi cliente
+        concept: Pensar más o menos en qué edad tiene mi cliente me ayuda a imaginarlo mejor y a preparar mi producto para él.
+        learning_objective: Al final, el niño puede estimar, de forma aproximada, la edad de su cliente más probable.
+        key_vocabulary:
+          - edad aproximada
+          - imaginar
+          - preparar
+          - cliente probable
+        prior_knowledge: Sabe distinguir el interés de adultos y niños (tema anterior).
+        fact_refs: []
+        parent_check: Ayuda a {{name}} a pensar más o menos qué edad tendría su cliente más probable.
+        lessons:
+          - position: 1
+            slug: zara-imagina-la-edad-de-su-cliente
+            micro_objective: Reconoce en la historia cómo un personaje imagina la edad aproximada de su cliente.
+            narrative_beat: Zara imagina que su pulsera le interesaría más a niños de más o menos su misma edad.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: edad-que-encaja-o-no-encaja
+            micro_objective: Elige, entre 2 edades aproximadas, cuál encaja mejor con el interés de un producto mostrado.
+            narrative_beat: Rho compara si el carrito de juguete encaja mejor con un bebé o con un niño de 7 años.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-productos-por-edad-del-cliente
+            micro_objective: Ordena 3 productos según la edad aproximada de cliente para la que están pensados.
+            narrative_beat: Liruf ordena los puestos de la plaza según si son para bebés, niños o adultos.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: estimo-la-edad-de-mi-cliente
+            micro_objective: Estima, sin ayuda, la edad aproximada del cliente más probable de su propio producto.
+            narrative_beat: Dina estima con calma la edad aproximada de quien más disfrutaría su producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: dibujo-a-mi-cliente-ideal
+        title_es: Dibujo a mi cliente ideal
+        concept: "Puedo imaginar y describir a mi cliente ideal: cómo es, qué le gusta y por qué querría mi producto."
+        learning_objective: Al final, el niño puede describir con detalles simples a su cliente ideal.
+        key_vocabulary:
+          - cliente ideal
+          - describir
+          - imaginar
+          - detalles
+        prior_knowledge: Sabe estimar la edad de su cliente (tema anterior).
+        fact_refs: []
+        parent_check: "Pídele a {{name}} que describa a su cliente ideal: qué edad tiene, qué le gusta y por qué querría su producto."
+        lessons:
+          - position: 1
+            slug: el-retrato-de-zara
+            micro_objective: Reconoce en la historia la descripción del cliente ideal de un personaje.
+            narrative_beat: "Zara dibuja a su cliente ideal: un niño que ama los colores brillantes y juega afuera todo el día."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: retrato-completo-o-incompleto
+            micro_objective: Distingue, entre 2 descripciones, cuál da más detalles sobre el cliente ideal.
+            narrative_beat: Rho compara una descripción vaga del cliente con una descripción llena de detalles útiles.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: sumo-detalles-a-mi-retrato
+            micro_objective: Ordena 3 detalles (edad, gusto, motivo) para armar la descripción de un cliente ideal.
+            narrative_beat: "Liruf ordena los datos de su cliente ideal: edad, qué le gusta y por qué querría el carrito."
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: dibujo-a-mi-propio-cliente-ideal
+            micro_objective: Describe, sin ayuda, a su propio cliente ideal con al menos dos detalles simples.
+            narrative_beat: Dina describe con cariño a su cliente ideal, imaginando cómo es y qué le gustaría de su producto.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 7
+        slug: mi-cliente-y-yo-compartimos-un-lugar
+        title_es: Mi cliente y yo compartimos un lugar
+        concept: Para vender bien, conviene pensar en qué lugar de la ciudad es más probable encontrarse con mi cliente ideal.
+        learning_objective: Al final, el niño puede elegir un lugar donde sea probable encontrar a su cliente ideal.
+        key_vocabulary:
+          - lugar
+          - encontrar
+          - probable
+          - compartir
+        prior_knowledge: Sabe describir a su cliente ideal (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} en qué lugar cree que sería más fácil encontrar a su cliente ideal.
+        lessons:
+          - position: 1
+            slug: el-parque-lleno-de-ninos
+            micro_objective: Reconoce en la historia por qué un lugar concreto es bueno para encontrar cierto tipo de cliente.
+            narrative_beat: Zara elige el parque de la ciudad para vender su pulsera, porque ahí juegan muchos niños.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: lugar-correcto-o-lugar-equivocado
+            micro_objective: Elige, entre 2 lugares, cuál conviene más para encontrar al cliente ideal de un producto.
+            narrative_beat: Rho compara vender limonada en el parque soleado o en una biblioteca fresca y tranquila.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-lugares-por-cuantos-clientes-tienen
+            micro_objective: Ordena 3 lugares de la ciudad según qué tantos clientes ideales podrían encontrarse ahí.
+            narrative_beat: Liruf ordena tres lugares de la ciudad según cuántos niños como sus clientes pasan por ahí.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - money
+          - position: 4
+            slug: elijo-el-lugar-para-mi-producto
+            micro_objective: Elige, sin ayuda, el lugar más probable para encontrar a su propio cliente ideal.
+            narrative_beat: Dina elige con calma el lugar de la ciudad donde más probablemente encontrará a su cliente.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: cierro-el-retrato-de-mi-cliente
+        title_es: Cierro el retrato de mi cliente
+        concept: "Junto todo lo que sé de mi cliente ideal: quién es, qué necesita, qué edad tiene y dónde encontrarlo."
+        learning_objective: Al final, el niño puede resumir el retrato completo de su cliente ideal.
+        key_vocabulary:
+          - retrato completo
+          - juntar
+          - resumir
+          - cliente ideal
+        prior_knowledge: Sabe elegir un lugar para encontrar a su cliente (tema anterior).
+        fact_refs: []
+        parent_check: "Pídele a {{name}} que te cuente el retrato completo de su cliente ideal: quién es, qué necesita y dónde lo encontraría."
+        lessons:
+          - position: 1
+            slug: zara-junta-todo-el-retrato
+            micro_objective: Reconoce en la historia cómo un personaje junta todos los datos de su cliente ideal.
+            narrative_beat: Zara junta en una sola hoja quién es su cliente, qué necesita, su edad y dónde encontrarlo.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: retrato-completo-de-quien
+            micro_objective: Identifica, entre 2 retratos, cuál está completo con todos los datos del cliente ideal.
+            narrative_beat: Rho compara dos retratos de cliente y encuentra cuál tiene todos los datos necesarios.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-todo-el-retrato-de-mi-cliente
+            micro_objective: Ordena los 4 datos clave (quién, necesidad, edad, lugar) para completar el retrato de un cliente.
+            narrative_beat: Liruf ordena en su libreta los cuatro datos que arman el retrato completo de su cliente.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: presento-el-retrato-de-mi-cliente
+            micro_objective: Presenta, sin ayuda, el retrato completo de su propio cliente ideal frente a la tripulación.
+            narrative_beat: Dina presenta con orgullo el retrato completo de su cliente ideal, listo para la siguiente saga.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 9
+        slug: cofre-del-repaso-de-quien-es-mi-cliente
+        kind: review_spaced
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente/no-le-vendo-a-todo-el-mundo
+          - la-ciudad-del-cliente/quien-es-mi-cliente/quien-quiere-lo-que-yo-hago
+          - la-ciudad-del-cliente/quien-es-mi-cliente/un-cliente-tiene-una-necesidad
+          - la-ciudad-del-cliente/quien-es-mi-cliente/clientes-grandes-y-clientes-chicos
+          - la-ciudad-del-cliente/quien-es-mi-cliente/pienso-en-la-edad-de-mi-cliente
+          - la-ciudad-del-cliente/quien-es-mi-cliente/dibujo-a-mi-cliente-ideal
+          - la-ciudad-del-cliente/quien-es-mi-cliente/mi-cliente-y-yo-compartimos-un-lugar
+          - la-ciudad-del-cliente/quien-es-mi-cliente/cierro-el-retrato-de-mi-cliente
+        title_es: El Cofre del Repaso de ¿Quién es mi Cliente?
+        concept: Repasamos desde el cofre de recuerdos cómo imaginar y describir a nuestro cliente ideal.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre identificar al cliente.
+        key_vocabulary:
+          - cliente
+          - necesidad
+          - edad
+          - lugar
+        prior_knowledge: Completó los 8 temas de ¿Quién es mi Cliente?
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-clientes
+            micro_objective: Recuerda y nombra, sin ayuda, un tipo de cliente identificado durante esta saga.
+            narrative_beat: Rho encuentra un cofre lleno de retratos de clientes imaginados durante el recorrido por la ciudad.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-una-necesidad-de-cliente
+            micro_objective: Recuerda, sin ayuda, la necesidad de un cliente vista en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo de la persona con sed que compró limonada.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-el-lugar-correcto-del-cofre
+            micro_objective: Elige, entre 2 lugares recordados, cuál era mejor para encontrar a cierto cliente.
+            narrative_beat: Liruf compara dos lugares guardados en el cofre y recuerda cuál tenía más clientes ideales.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-con-mi-retrato-completo
+            micro_objective: "Aplica sin ayuda lo recordado: arma el retrato completo de un cliente nuevo."
+            narrative_beat: Dina cierra el cofre de clientes, lista para escuchar de verdad lo que necesitan.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 10
+        slug: reto-entrelazado-de-quien-es-mi-cliente
+        kind: review_interleaved
+        review_of:
+          - el-bosque-de-los-makers/pruebo-y-mejoro/mi-segunda-version-es-mejor
+          - el-bosque-de-los-makers/hecho-con-cuidado/que-es-un-producto-bien-hecho
+          - la-ciudad-del-cliente/quien-es-mi-cliente/un-cliente-tiene-una-necesidad
+          - la-ciudad-del-cliente/quien-es-mi-cliente/dibujo-a-mi-cliente-ideal
+        title_es: Reto Entrelazado de ¿Quién es mi Cliente?
+        concept: Mezclamos lo aprendido en el bosque sobre hacer productos con lo aprendido en la ciudad sobre identificar al cliente.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la aventura del bosque con ideas de esta saga.
+        key_vocabulary:
+          - producto
+          - cliente
+          - necesidad
+          - mejorar
+        prior_knowledge: Completó El Cofre del Repaso de ¿Quién es mi Cliente? (tema anterior) y El Bosque de los Makers (aventura anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: mi-producto-bien-hecho-y-su-necesidad
+            micro_objective: Combina un producto bien hecho del bosque con la necesidad del cliente que podría resolver.
+            narrative_beat: Rho recuerda el producto bien hecho del bosque y ahora piensa qué necesidad de un cliente podría resolver.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: mi-segunda-version-para-mi-cliente-ideal
+            micro_objective: Combina la segunda versión mejorada de un producto con el retrato del cliente que más la disfrutaría.
+            narrative_beat: Zara conecta la segunda versión mejorada de su sombrilla con el cliente ideal que más la necesitaría.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-del-producto-al-cliente
+            micro_objective: Ordena, mezclando ambas aventuras, los pasos desde tener un producto terminado hasta describir a su cliente.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el producto del bosque hasta el cliente de la ciudad."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: encuentro-el-cliente-de-un-producto-viejo
+            micro_objective: Encuentra, sin ayuda, al cliente ideal de un producto construido en la aventura anterior.
+            narrative_beat: Dina encuentra por fin al cliente ideal para el primer producto que construyó en el bosque.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 2
+    slug: escucho-lo-que-necesitan
+    icon: hearing
+    title:
+      en-US: I Listen to What They Need
+      es-MX: Escucho lo que Necesitan
+      pt-BR: Escuto o que Precisam
+    description:
+      en-US: Turn careful listening into real clues about what your customers actually need.
+      es-MX: Convierte una escucha atenta en pistas reales sobre lo que tus clientes de verdad necesitan.
+      pt-BR: Transforme uma escuta atenta em pistas reais sobre o que seus clientes realmente precisam.
+    topics:
+      - position: 1
+        slug: necesito-vs-quiero-otra-vez
+        title_es: Necesito vs. quiero, otra vez
+        concept: Distinguir lo que un cliente necesita de lo que solo quiere me ayuda a entender mejor qué ofrecerle.
+        learning_objective: Al final, el niño puede distinguir, en una situación de cliente, lo que necesita de lo que solo quiere.
+        key_vocabulary:
+          - necesito
+          - quiero
+          - distinguir
+          - ofrecer
+        prior_knowledge: Sabe describir el retrato completo de su cliente ideal (saga anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué necesita de verdad su cliente ideal, y qué es solo algo que le gustaría tener.
+        prerequisites:
+          - path: la-ciudad-del-cliente/quien-es-mi-cliente/un-cliente-tiene-una-necesidad
+            strength: hard
+            reason: Para distinguir lo que un cliente necesita de lo que solo quiere, primero hay que saber reconocer que todo cliente tiene una necesidad detrás de su interés.
+        lessons:
+          - position: 1
+            slug: tiene-sed-quiere-limonada-de-fresa
+            micro_objective: Reconoce en la historia la diferencia entre lo que un cliente necesita y lo que solo prefiere.
+            narrative_beat: Una señora necesita algo de tomar por el calor, pero solo quiere que sea de sabor fresa si es posible.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: necesidad-o-preferencia
+            micro_objective: Distingue, entre 4 frases de clientes, cuáles muestran una necesidad y cuáles solo una preferencia.
+            narrative_beat: Rho separa las frases de los clientes entre lo que de verdad necesitan y lo que solo prefieren.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reconozco-la-necesidad-detras-del-quiero
+            micro_objective: Identifica la necesidad real que hay detrás de lo que un cliente dice que quiere.
+            narrative_beat: Zara escucha a un niño pedir una pulsera "bonita" y reconoce que en el fondo quiere sentirse especial.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: distingo-necesidad-y-preferencia-de-mi-cliente
+            micro_objective: Distingue, sin ayuda, la necesidad y la preferencia de un cliente en una escena nueva.
+            narrative_beat: Liruf distingue con calma lo que su cliente necesita de lo que solamente prefiere.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: pregunto-que-le-hace-falta
+        title_es: Pregunto qué le hace falta
+        concept: Preguntarle directamente a un posible cliente qué le hace falta es la forma más segura de saberlo.
+        learning_objective: Al final, el niño puede formular una pregunta directa para descubrir qué le hace falta a un cliente.
+        key_vocabulary:
+          - hace falta
+          - preguntar directamente
+          - descubrir
+          - segura
+        prior_knowledge: Sabe distinguir necesidad de preferencia (tema anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a preguntarle directamente a alguien qué le hace falta antes de ofrecerle su producto.
+        lessons:
+          - position: 1
+            slug: zara-pregunta-directo
+            micro_objective: Reconoce en la historia una pregunta directa que descubre qué le hace falta a un cliente.
+            narrative_beat: "Zara pregunta directo a un isleño: '¿qué es lo que más te hace falta hoy en la plaza?'"
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: pregunta-directa-o-suposicion
+            micro_objective: Distingue, entre 2 acciones, cuál es preguntar directamente y cuál es solo suponer.
+            narrative_beat: Rho compara preguntar directamente con solo adivinar lo que el cliente necesita.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: elijo-la-pregunta-que-descubre-mas
+            micro_objective: Elige, entre 3 preguntas, la que mejor descubre qué le hace falta a un cliente.
+            narrative_beat: Liruf elige entre '¿te gusta esto?' y '¿qué te hace falta hoy?' la que descubre más información.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: pregunto-que-le-hace-falta-a-mi-cliente
+            micro_objective: Formula, sin ayuda, una pregunta directa para descubrir qué le hace falta a un cliente nuevo.
+            narrative_beat: Dina formula con confianza una pregunta directa a su primer cliente de la ciudad.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 3
+        slug: una-queja-es-una-pista
+        title_es: Una queja es una pista
+        concept: Cuando alguien se queja de algo, esa queja puede ser una pista valiosa de una necesidad sin resolver.
+        learning_objective: Al final, el niño puede reconocer una queja como una pista de una necesidad.
+        key_vocabulary:
+          - queja
+          - pista
+          - valiosa
+          - sin resolver
+        prior_knowledge: Sabe preguntar directamente qué le hace falta a alguien (tema anterior).
+        fact_refs: []
+        parent_check: La próxima vez que alguien se queje de algo cerca de {{name}}, pregúntale qué necesidad cree que esconde esa queja.
+        lessons:
+          - position: 1
+            slug: el-isleno-se-queja-del-calor
+            micro_objective: Reconoce en la historia cómo una queja esconde una necesidad sin resolver.
+            narrative_beat: Un isleño se queja de lo caluroso que está el día, y Zara reconoce ahí una pista de necesidad.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: queja-con-pista-o-sin-pista
+            micro_objective: Distingue, entre 4 quejas, cuáles esconden una pista de necesidad clara y cuáles no.
+            narrative_beat: Rho revisa varias quejas escuchadas en la plaza y separa las que traen una buena pista.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-la-queja-con-la-necesidad
+            micro_objective: Empareja 3 quejas con la necesidad que esconde cada una.
+            narrative_beat: Liruf conecta cada queja que escuchó con la necesidad real que hay detrás.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - analyze
+          - position: 4
+            slug: encuentro-la-pista-en-una-queja-nueva
+            micro_objective: Encuentra, sin ayuda, la pista de necesidad escondida en una queja nueva de la historia.
+            narrative_beat: Dina encuentra la pista escondida en la queja de un cliente y piensa cómo ayudarlo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: escucho-sin-interrumpir
+        title_es: Escucho sin interrumpir
+        concept: Para entender bien a un cliente, hay que dejarlo terminar de hablar antes de responder.
+        learning_objective: Al final, el niño puede reconocer una escucha atenta y sin interrupciones a un cliente.
+        key_vocabulary:
+          - sin interrumpir
+          - dejar terminar
+          - atenta
+          - entender bien
+        prior_knowledge: Sabe reconocer una queja como pista (tema anterior).
+        fact_refs: []
+        parent_check: Observa si {{name}} logra escuchar a alguien hasta el final antes de responder, sin interrumpir.
+        lessons:
+          - position: 1
+            slug: liruf-interrumpe-al-cliente
+            micro_objective: Reconoce en la historia lo que pasa cuando un personaje interrumpe a un cliente antes de tiempo.
+            narrative_beat: Liruf interrumpe a un cliente a la mitad de su explicación, seguro de que ya entendió todo.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: escucho-completo-o-interrumpo
+            micro_objective: Distingue, entre 2 escenas, cuál muestra escuchar completo a un cliente y cuál interrumpir.
+            narrative_beat: Rho compara su propia escucha completa con la interrupción de Liruf frente al mismo cliente.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: identifico-lo-que-se-perdio-por-interrumpir
+            micro_objective: Identifica qué información importante se perdió un personaje por interrumpir a un cliente.
+            narrative_beat: Zara nota que Liruf se perdió el dato más importante del cliente por no dejarlo terminar.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: escucho-a-mi-cliente-hasta-el-final
+            micro_objective: Escucha, sin ayuda, a un cliente completo y sin interrupciones en una historia nueva.
+            narrative_beat: Dina escucha con paciencia a su cliente hasta que termina de hablar por completo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: repito-lo-que-entendi
+        title_es: Repito lo que entendí
+        concept: Repetirle al cliente, con mis palabras, lo que entendí me ayuda a confirmar si de verdad lo comprendí bien.
+        learning_objective: Al final, el niño puede repetir con sus palabras lo que entendió de un cliente.
+        key_vocabulary:
+          - repetir
+          - confirmar
+          - con mis palabras
+          - comprendí bien
+        prior_knowledge: Sabe escuchar sin interrumpir (tema anterior).
+        fact_refs: []
+        parent_check: Anima a {{name}} a repetir con sus propias palabras lo que entendió después de escuchar a alguien.
+        lessons:
+          - position: 1
+            slug: zara-repite-para-confirmar
+            micro_objective: Reconoce en la historia cómo un personaje repite lo que entendió para confirmarlo con el cliente.
+            narrative_beat: "Zara repite: 'entonces necesitas algo fresco para el calor, ¿verdad?' y el cliente asiente."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: repeticion-correcta-o-incorrecta
+            micro_objective: Distingue, entre 2 repeticiones, cuál entendió correctamente lo que dijo el cliente.
+            narrative_beat: Rho compara dos formas de repetir lo mismo y nota cuál se ajusta más a lo que el cliente dijo.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: completo-la-repeticion-con-mis-palabras
+            micro_objective: Completa una frase que repite, con palabras propias, lo que un cliente explicó.
+            narrative_beat: Liruf arma con tarjetas de palabras la frase que repite lo que el cliente le pidió.
+            difficulty: 2
+            suggested_families:
+              - input
+              - choice
+          - position: 4
+            slug: repito-lo-que-entendi-de-mi-cliente
+            micro_objective: Repite, sin ayuda, con sus propias palabras lo que entendió de un cliente nuevo.
+            narrative_beat: Dina repite con calma lo que entendió de su cliente antes de ofrecerle algo.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: no-todos-necesitan-lo-mismo
+        title_es: No todos necesitan lo mismo
+        concept: Dos clientes distintos pueden necesitar cosas muy diferentes, aunque estén parados en el mismo lugar.
+        learning_objective: Al final, el niño puede reconocer que dos clientes distintos pueden tener necesidades diferentes.
+        key_vocabulary:
+          - dos clientes
+          - diferentes
+          - mismo lugar
+          - no siempre igual
+        prior_knowledge: Sabe repetir lo que entendió de un cliente (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si cree que dos personas distintas necesitarían siempre lo mismo de su producto, o si podría cambiar.
+        lessons:
+          - position: 1
+            slug: dos-clientes-la-misma-plaza
+            micro_objective: Reconoce en la historia cómo dos clientes en el mismo lugar tienen necesidades distintas.
+            narrative_beat: En la misma esquina, un cliente necesita algo dulce y otro necesita algo salado.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: misma-necesidad-o-distinta
+            micro_objective: Distingue, entre 4 pares de clientes, cuáles tienen la misma necesidad y cuáles distinta.
+            narrative_beat: Zara compara varios pares de clientes y decide cuáles se parecen y cuáles no en lo que necesitan.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-clientes-por-tipo-de-necesidad
+            micro_objective: Agrupa 4 clientes según el tipo de necesidad que comparten.
+            narrative_beat: Rho agrupa a los clientes de la plaza según si necesitan algo para el calor, para el hambre o para jugar.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: reconozco-necesidades-distintas-en-mi-plaza
+            micro_objective: Reconoce, sin ayuda, dos necesidades distintas entre clientes de una escena nueva.
+            narrative_beat: Liruf reconoce que dos clientes frente a él necesitan cosas muy distintas, aunque estén juntos.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 7
+        slug: anoto-las-necesidades-que-escucho
+        title_es: Anoto las necesidades que escucho
+        concept: Anotar las necesidades que voy escuchando me ayuda a recordarlas y a buscar patrones entre varios clientes.
+        learning_objective: Al final, el niño puede anotar de forma simple las necesidades escuchadas de varios clientes.
+        key_vocabulary:
+          - anotar
+          - patrones
+          - varios clientes
+          - recordar
+        prior_knowledge: Sabe reconocer necesidades distintas entre clientes (tema anterior).
+        fact_refs: []
+        parent_check: Dale a {{name}} una libreta y anímalo a anotar, aunque sea con dibujos, las necesidades que va escuchando de la gente.
+        lessons:
+          - position: 1
+            slug: la-libreta-de-necesidades-de-rho
+            micro_objective: Reconoce en la historia por qué un personaje anota las necesidades que va escuchando.
+            narrative_beat: Rho anota en su libreta cada necesidad que escucha, para no olvidar ningún dato importante.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: anoto-o-se-me-olvida-la-necesidad
+            micro_objective: Reconoce, entre 2 escenas, cuál muestra que anotar ayudó a no olvidar una necesidad importante.
+            narrative_beat: Zara compara el día que anotó las necesidades con el día que no lo hizo y olvidó un dato clave.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: encuentro-un-patron-en-mis-notas
+            micro_objective: Identifica, entre varias notas, cuál necesidad se repite más entre distintos clientes.
+            narrative_beat: "Liruf revisa sus notas y encuentra que muchos clientes mencionan lo mismo: quieren algo fresco."
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: anoto-las-necesidades-de-mis-clientes
+            micro_objective: Anota, sin ayuda, las necesidades de al menos dos clientes distintos en una historia nueva.
+            narrative_beat: Dina anota con cuidado las necesidades de cada cliente que conoce en la plaza.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 8
+        slug: de-necesidad-a-producto
+        title_es: De necesidad a producto
+        concept: Las necesidades que escuché y anoté pueden convertirse en ideas para mejorar o crear un producto.
+        learning_objective: Al final, el niño puede proponer un ajuste a un producto a partir de una necesidad escuchada.
+        key_vocabulary:
+          - convertir
+          - ajuste
+          - a partir de
+          - mejorar producto
+        prior_knowledge: Sabe anotar las necesidades escuchadas (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si alguna necesidad que escuchó le da una idea para mejorar su producto.
+        lessons:
+          - position: 1
+            slug: la-limonada-mas-fria-de-zara
+            micro_objective: Reconoce en la historia cómo una necesidad escuchada se convierte en un ajuste al producto.
+            narrative_beat: Zara agrega más hielo a su limonada después de escuchar que varios clientes la querían más fría.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: ajuste-conectado-o-sin-conexion
+            micro_objective: Distingue, entre 2 ajustes propuestos, cuál se conecta mejor con una necesidad escuchada.
+            narrative_beat: Rho compara dos ajustes a un producto y decide cuál responde mejor a lo que los clientes pidieron.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-necesidades-con-ajustes
+            micro_objective: Empareja 3 necesidades escuchadas con el ajuste de producto que les correspondería.
+            narrative_beat: Liruf conecta cada necesidad anotada con el ajuste que podría hacer a su carrito de juguete.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 4
+            slug: ajusto-mi-producto-con-una-necesidad
+            micro_objective: Propone, sin ayuda, un ajuste a su propio producto basado en una necesidad escuchada.
+            narrative_beat: Dina propone un ajuste a su producto, inspirada en lo que sus clientes le contaron que necesitaban.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 9
+        slug: cofre-del-repaso-de-escucho-lo-que-necesitan
+        kind: review_spaced
+        review_of:
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/necesito-vs-quiero-otra-vez
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/pregunto-que-le-hace-falta
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/una-queja-es-una-pista
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/escucho-sin-interrumpir
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/repito-lo-que-entendi
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/no-todos-necesitan-lo-mismo
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/anoto-las-necesidades-que-escucho
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/de-necesidad-a-producto
+        title_es: El Cofre del Repaso de Escucho lo que Necesitan
+        concept: Repasamos desde el cofre de recuerdos cómo escuchar, anotar y convertir necesidades en mejoras.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre escuchar necesidades.
+        key_vocabulary:
+          - necesidad
+          - escuchar
+          - anotar
+          - ajustar
+        prior_knowledge: Completó los 8 temas de Escucho lo que Necesitan.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-necesidades
+            micro_objective: Recuerda y nombra, sin ayuda, una necesidad escuchada durante esta saga.
+            narrative_beat: Rho abre un cofre lleno de notas de necesidades escuchadas por toda la ciudad.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-una-queja-con-pista
+            micro_objective: Recuerda, sin ayuda, una queja que escondía una pista de necesidad en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo de la queja sobre el calor que dio una gran pista.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-la-escucha-mas-completa-del-cofre
+            micro_objective: Elige, entre 2 recuerdos, cuál muestra una escucha más completa de un cliente.
+            narrative_beat: Liruf compara dos recuerdos del cofre y decide cuál escucha fue más completa.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-con-un-ajuste-nuevo
+            micro_objective: "Aplica sin ayuda lo recordado: propone un ajuste a un producto usando una necesidad del cofre."
+            narrative_beat: Dina cierra el cofre de necesidades, lista para aprender sobre promesas y confianza.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 10
+        slug: reto-entrelazado-de-escucho-lo-que-necesitan
+        kind: review_interleaved
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente/dibujo-a-mi-cliente-ideal
+          - la-ciudad-del-cliente/quien-es-mi-cliente/un-cliente-tiene-una-necesidad
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/pregunto-que-le-hace-falta
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/de-necesidad-a-producto
+        title_es: Reto Entrelazado de Escucho lo que Necesitan
+        concept: Mezclamos lo aprendido sobre identificar al cliente con lo aprendido sobre escuchar sus necesidades.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la saga del cliente con ideas de esta saga.
+        key_vocabulary:
+          - cliente
+          - necesidad
+          - escuchar
+          - ajustar
+        prior_knowledge: Completó El Cofre del Repaso de Escucho lo que Necesitan (tema anterior) y ¿Quién es mi Cliente? (saga anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: le-pregunto-a-mi-cliente-ideal
+            micro_objective: Combina el retrato de un cliente ideal con la pregunta directa para descubrir qué le hace falta.
+            narrative_beat: Rho piensa en el retrato de su cliente ideal y le pregunta directamente qué le hace falta.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: la-necesidad-de-mi-cliente-ideal
+            micro_objective: Combina la necesidad general de un tipo de cliente con lo escuchado de un cliente real.
+            narrative_beat: Zara compara la necesidad que imaginó de su cliente ideal con lo que un cliente real le contó.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-del-retrato-a-la-necesidad-escuchada
+            micro_objective: Ordena, mezclando ambas sagas, los pasos desde describir a un cliente hasta ajustar el producto por su necesidad.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde el retrato de su cliente hasta el ajuste de su producto."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: ajusto-mi-producto-para-mi-cliente-ideal
+            micro_objective: Ajusta, sin ayuda, un producto anterior usando el retrato de un cliente y una necesidad escuchada.
+            narrative_beat: Dina ajusta su producto pensando a la vez en su cliente ideal y en lo que escuchó que necesitaba.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 3
+    slug: promesas-que-se-cumplen
+    icon: handshake
+    title:
+      en-US: Promises That Are Kept
+      es-MX: Promesas que se Cumplen
+      pt-BR: Promessas que se Cumprem
+    description:
+      en-US: Build trust one small kept promise at a time — a customer who trusts you always comes back.
+      es-MX: "Construye confianza una promesa cumplida a la vez: un cliente que confía en ti siempre regresa."
+      pt-BR: "Construa confiança uma promessa cumprida de cada vez: um cliente que confia em você sempre volta."
+    topics:
+      - position: 1
+        slug: prometo-solo-lo-que-puedo-cumplir
+        title_es: Prometo solo lo que puedo cumplir
+        concept: Antes de prometer algo a un cliente, hay que estar seguro de que de verdad se puede cumplir.
+        learning_objective: Al final, el niño puede reconocer una promesa que sí se puede cumplir de una que no.
+        key_vocabulary:
+          - prometer
+          - cumplir
+          - seguro
+          - antes de
+        prior_knowledge: Sabe convertir una necesidad escuchada en un ajuste de producto (saga anterior).
+        fact_refs: []
+        parent_check: Habla con {{name}} sobre por qué es importante prometer solo lo que de verdad se puede cumplir.
+        lessons:
+          - position: 1
+            slug: liruf-promete-de-mas
+            micro_objective: Reconoce en la historia una promesa que un personaje no puede cumplir de verdad.
+            narrative_beat: Liruf le promete a un cliente que tendrá su pulsera lista en cinco minutos, aunque tarda una hora en hacerlas.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: promesa-cumplible-o-no
+            micro_objective: Distingue, entre 4 promesas, cuáles se pueden cumplir de verdad y cuáles no.
+            narrative_beat: Rho revisa varias promesas hechas por la tripulación y separa las que sí se pueden cumplir.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reviso-antes-de-prometer
+            micro_objective: Ordena los pasos para revisar si una promesa se puede cumplir antes de hacerla.
+            narrative_beat: Zara revisa cuánto tiempo y materiales tiene antes de prometer una fecha de entrega.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: prometo-algo-que-si-puedo-cumplir
+            micro_objective: Elige, sin ayuda, una promesa que sí puede cumplir en una situación nueva de la historia.
+            narrative_beat: Dina elige con cuidado una promesa que de verdad puede cumplir a su cliente.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: cumplir-a-tiempo-importa
+        title_es: Cumplir a tiempo importa
+        concept: Entregar lo prometido cuando dije que lo haría es parte de cumplir una promesa por completo.
+        learning_objective: Al final, el niño puede reconocer la diferencia entre cumplir a tiempo y cumplir tarde.
+        key_vocabulary:
+          - a tiempo
+          - tarde
+          - entregar
+          - cuando dije
+        prior_knowledge: Sabe prometer solo lo que puede cumplir (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} por qué entregar algo a tiempo es parte de cumplir una promesa.
+        lessons:
+          - position: 1
+            slug: la-pulsera-lista-a-tiempo
+            micro_objective: Reconoce en la historia la diferencia entre entregar algo a tiempo y entregarlo tarde.
+            narrative_beat: Zara entrega la pulsera exactamente cuando prometió, y el cliente se ve muy contento.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: a-tiempo-o-tarde
+            micro_objective: Distingue, entre 4 escenas, cuáles muestran una entrega a tiempo y cuáles una entrega tarde.
+            narrative_beat: Rho revisa varias entregas de la tripulación y separa las que llegaron a tiempo de las que no.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-cuanto-tiempo-tomo
+            micro_objective: Compara el tiempo prometido con el tiempo real que tomó entregar un producto en 2 escenas.
+            narrative_beat: Liruf compara el tiempo que prometió con el tiempo que de verdad le tomó terminar el carrito.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: entrego-a-tiempo-lo-prometido
+            micro_objective: Entrega, sin ayuda, un producto justo a tiempo en una historia nueva.
+            narrative_beat: Dina entrega su producto exactamente cuando lo había prometido a su cliente.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: si-algo-sale-mal-lo-digo
+        title_es: Si algo sale mal, lo digo
+        concept: Cuando algo no sale como prometí, decirlo con honestidad es mejor que quedarme callado.
+        learning_objective: Al final, el niño puede reconocer la diferencia entre avisar con honestidad y quedarse callado cuando algo sale mal.
+        key_vocabulary:
+          - sale mal
+          - avisar
+          - honestidad
+          - quedarse callado
+        prior_knowledge: Sabe cumplir a tiempo lo prometido (tema anterior).
+        fact_refs: []
+        parent_check: "Habla con {{name}} sobre qué haría si algo de su producto no sale como esperaba: ¿lo diría o se quedaría callado?"
+        lessons:
+          - position: 1
+            slug: zara-avisa-a-tiempo
+            micro_objective: Reconoce en la historia cómo un personaje avisa con honestidad cuando algo no sale como prometió.
+            narrative_beat: "Zara avisa a su cliente: 'se me acabaron las cuentas rojas, ¿te sirve otro color?' en vez de quedarse callada."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: avisar-o-quedarse-callado
+            micro_objective: Distingue, entre 2 escenas, cuál muestra avisar con honestidad y cuál quedarse callado.
+            narrative_beat: Rho compara el aviso honesto de Zara con el silencio de Liruf cuando algo no sale bien.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reconozco-cuando-algo-salio-mal
+            micro_objective: Identifica, en una escena, el momento exacto en que algo no salió como se prometió.
+            narrative_beat: Liruf revisa su pedido y nota el momento exacto en que algo no salió como había prometido.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: aviso-con-honestidad-a-mi-cliente
+            micro_objective: Avisa, sin ayuda, con honestidad a un cliente cuando algo no sale como esperaba.
+            narrative_beat: Dina avisa con calma y honestidad a su cliente cuando algo de su pedido no salió como prometió.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: la-confianza-se-construye-poquito-a-poquito
+        title_es: La confianza se construye poquito a poquito
+        concept: "La confianza de un cliente no llega de un día para otro: se va construyendo con cada promesa cumplida."
+        learning_objective: Al final, el niño puede explicar que la confianza crece con cada promesa cumplida, no de golpe.
+        key_vocabulary:
+          - confianza
+          - poquito a poquito
+          - crece
+          - cada promesa
+        prior_knowledge: Sabe avisar con honestidad cuando algo sale mal (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si cree que la confianza de un cliente se gana de una vez o poquito a poquito, y por qué.
+        lessons:
+          - position: 1
+            slug: la-confianza-crece-visita-tras-visita
+            micro_objective: Reconoce en la historia cómo la confianza de un cliente crece con cada visita cumplida.
+            narrative_beat: Un cliente vuelve al puesto de Zara una y otra vez, y cada vez confía un poquito más.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: confianza-que-crece-o-que-no
+            micro_objective: Distingue, entre 2 escenas, cuál muestra la confianza de un cliente creciendo poco a poco.
+            narrative_beat: Rho compara a un cliente que cada vez confía más con uno que sigue dudando.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-como-crece-la-confianza
+            micro_objective: Ordena 3 escenas que muestran cómo la confianza de un cliente crece con el tiempo.
+            narrative_beat: Liruf ordena tres visitas de un mismo cliente, mostrando cómo su confianza fue creciendo.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: explico-como-construyo-confianza
+            micro_objective: Explica, sin ayuda, cómo la confianza de su propio cliente se construye poquito a poquito.
+            narrative_beat: Dina explica con calma cómo cada promesa cumplida hace crecer la confianza de su cliente.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - story
+      - position: 5
+        slug: un-cliente-contento-regresa
+        title_es: Un cliente contento regresa
+        concept: Un cliente que quedó contento con mi producto y mi palabra suele volver a comprar.
+        learning_objective: Al final, el niño puede reconocer que un cliente contento tiende a regresar.
+        key_vocabulary:
+          - contento
+          - regresa
+          - volver a comprar
+          - tiende a
+        prior_knowledge: Sabe que la confianza crece poquito a poquito (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué haría él o ella si un producto y su vendedor le dejaron muy contento.
+        lessons:
+          - position: 1
+            slug: el-cliente-vuelve-por-mas
+            micro_objective: Reconoce en la historia por qué un cliente contento decide regresar al mismo puesto.
+            narrative_beat: Un cliente que quedó feliz con su limonada regresa la siguiente semana por otra.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: regresa-o-no-regresa
+            micro_objective: Distingue, entre 2 escenas, cuál muestra a un cliente contento que regresa y cuál a uno que no vuelve.
+            narrative_beat: Rho compara a un cliente que regresa feliz con otro que ya no aparece por la plaza.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-cuantos-clientes-regresan
+            micro_objective: Cuenta, entre varios clientes mostrados, cuántos regresaron después de quedar contentos.
+            narrative_beat: Zara cuenta en su libreta cuántos de sus clientes contentos han vuelto a comprarle.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - money
+          - position: 4
+            slug: reconozco-a-un-cliente-que-regresara
+            micro_objective: Reconoce, sin ayuda, señales de que un cliente probablemente regresará en una escena nueva.
+            narrative_beat: Liruf reconoce, por su sonrisa y sus palabras, que ese cliente probablemente va a regresar.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: un-cliente-decepcionado-se-aleja
+        title_es: Un cliente decepcionado se aleja
+        concept: Un cliente que se sintió decepcionado por una promesa no cumplida suele dejar de comprarme.
+        learning_objective: Al final, el niño puede reconocer que un cliente decepcionado tiende a alejarse.
+        key_vocabulary:
+          - decepcionado
+          - se aleja
+          - dejar de comprar
+          - promesa no cumplida
+        prior_knowledge: Sabe que un cliente contento tiende a regresar (tema anterior).
+        fact_refs: []
+        parent_check: "Pregúntale a {{name}} qué pasaría si le prometieran algo y no se lo cumplieran: ¿regresaría a comprar ahí?"
+        lessons:
+          - position: 1
+            slug: el-cliente-decepcionado-de-liruf
+            micro_objective: Reconoce en la historia cómo un cliente se aleja después de una promesa no cumplida.
+            narrative_beat: Un cliente de Liruf se va decepcionado porque el carrito prometido nunca estuvo listo.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: decepcionado-o-contento
+            micro_objective: Distingue, entre 4 escenas, cuáles muestran a un cliente decepcionado y cuáles a uno contento.
+            narrative_beat: Rho revisa varias escenas de clientes y separa a los decepcionados de los contentos.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: reconozco-por-que-se-alejo
+            micro_objective: Identifica la razón concreta por la que un cliente decepcionado decidió no volver.
+            narrative_beat: Zara identifica que el cliente se alejó porque su pedido llegó tarde y sin avisar.
+            difficulty: 2
+            suggested_families:
+              - analyze
+              - choice
+          - position: 4
+            slug: evito-decepcionar-a-mi-cliente
+            micro_objective: Elige, sin ayuda, la acción que evita decepcionar a un cliente en una situación nueva.
+            narrative_beat: Dina elige con cuidado la acción que evita decepcionar a su cliente antes de que sea tarde.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 7
+        slug: cuido-mi-palabra-como-mi-mejor-herramienta
+        title_es: Cuido mi palabra como mi mejor herramienta
+        concept: Mi palabra —lo que digo y prometo— es una de mis herramientas más valiosas como pequeño emprendedor.
+        learning_objective: Al final, el niño puede explicar por qué cuidar su palabra es tan importante como cuidar su producto.
+        key_vocabulary:
+          - mi palabra
+          - herramienta valiosa
+          - cuidar
+          - emprendedor
+        prior_knowledge: Sabe que un cliente decepcionado se aleja (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} por qué cree que cuidar lo que promete es tan importante como cuidar su producto.
+        lessons:
+          - position: 1
+            slug: la-palabra-de-zara-vale-oro
+            micro_objective: Reconoce en la historia por qué la palabra de un personaje se vuelve tan valiosa como su producto.
+            narrative_beat: Zara es conocida en la plaza porque su palabra siempre se cumple, tanto como sus productos bien hechos.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: palabra-cuidada-o-descuidada
+            micro_objective: Distingue, entre 2 personajes, cuál cuida más su palabra frente a los clientes.
+            narrative_beat: Rho compara la reputación de dos vendedores según qué tanto cuidan lo que prometen.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-por-que-la-palabra-importa
+            micro_objective: Ordena 3 razones que explican por qué cuidar la palabra es tan importante como el producto.
+            narrative_beat: Liruf ordena las razones por las que su palabra debería valer tanto como su carrito bien hecho.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: cuido-mi-palabra-en-la-historia
+            micro_objective: Explica, sin ayuda, por qué cuida su palabra tanto como su producto en una escena nueva.
+            narrative_beat: Dina explica con orgullo por qué cuida su palabra tanto como cuida cada producto que hace.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - story
+      - position: 8
+        slug: mi-reputacion-es-lo-que-la-gente-cuenta-de-mi
+        title_es: Mi reputación es lo que la gente cuenta de mí
+        concept: Mi reputación es lo que otras personas dicen de mí cuando no estoy presente, y se construye con cada promesa cumplida.
+        learning_objective: Al final, el niño puede explicar con sus palabras qué es la reputación de un pequeño negocio.
+        key_vocabulary:
+          - reputación
+          - lo que dicen
+          - no estoy presente
+          - se construye
+        prior_knowledge: Sabe por qué cuidar su palabra es importante (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué cree que dirían sus clientes de él o ella si hablaran de su negocio cuando no está presente.
+        lessons:
+          - position: 1
+            slug: lo-que-dicen-de-zara-en-la-plaza
+            micro_objective: Reconoce en la historia lo que otras personas cuentan sobre un personaje cuando no está presente.
+            narrative_beat: 'Dos isleños comentan en la plaza: "el puesto de Zara siempre cumple lo que promete".'
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: buena-reputacion-o-mala-reputacion
+            micro_objective: Distingue, entre 2 comentarios, cuál refleja una buena reputación y cuál una mala.
+            narrative_beat: Rho compara lo que la gente dice de dos vendedores distintos en la plaza.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-promesas-cumplidas-con-reputacion
+            micro_objective: Ordena 3 promesas cumplidas y su efecto en la reputación de un pequeño negocio.
+            narrative_beat: Liruf ordena cómo cada promesa cumplida fue construyendo la buena fama de su carrito.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: pienso-en-mi-propia-reputacion
+            micro_objective: Explica, sin ayuda, qué reputación le gustaría construir con su propio negocio.
+            narrative_beat: Dina explica con calma qué le gustaría que la gente contara sobre su negocio.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - story
+      - position: 9
+        slug: cofre-del-repaso-de-promesas-que-se-cumplen
+        kind: review_spaced
+        review_of:
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/prometo-solo-lo-que-puedo-cumplir
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/cumplir-a-tiempo-importa
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/si-algo-sale-mal-lo-digo
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/la-confianza-se-construye-poquito-a-poquito
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/un-cliente-contento-regresa
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/un-cliente-decepcionado-se-aleja
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/cuido-mi-palabra-como-mi-mejor-herramienta
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/mi-reputacion-es-lo-que-la-gente-cuenta-de-mi
+        title_es: El Cofre del Repaso de Promesas que se Cumplen
+        concept: Repasamos desde el cofre de recuerdos cómo prometer, cumplir y cuidar la reputación de un pequeño negocio.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre promesas y confianza.
+        key_vocabulary:
+          - promesa
+          - confianza
+          - reputación
+          - cumplir
+        prior_knowledge: Completó los 8 temas de Promesas que se Cumplen.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-promesas
+            micro_objective: Recuerda y nombra, sin ayuda, una promesa cumplida durante esta saga.
+            narrative_beat: Rho abre un cofre lleno de recuerdos de promesas cumplidas por toda la tripulación.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-un-cliente-que-regreso
+            micro_objective: Recuerda, sin ayuda, un cliente que regresó después de quedar contento en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo del cliente que volvió por más limonada.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-la-promesa-mejor-cumplida-del-cofre
+            micro_objective: Elige, entre 2 promesas recordadas, cuál se cumplió mejor.
+            narrative_beat: Liruf compara dos promesas guardadas en el cofre y decide cuál se cumplió mejor.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-cuidando-mi-reputacion
+            micro_objective: "Aplica sin ayuda lo recordado: elige la acción que mejor cuida la reputación en una escena nueva."
+            narrative_beat: Dina cierra el cofre de promesas, lista para hacer sus primeras encuestas.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 10
+        slug: reto-entrelazado-de-promesas-que-se-cumplen
+        kind: review_interleaved
+        review_of:
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/de-necesidad-a-producto
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/anoto-las-necesidades-que-escucho
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/prometo-solo-lo-que-puedo-cumplir
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/un-cliente-contento-regresa
+        title_es: Reto Entrelazado de Promesas que se Cumplen
+        concept: Mezclamos lo aprendido sobre escuchar necesidades con lo aprendido sobre promesas y confianza.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de la saga de las necesidades con ideas de esta saga.
+        key_vocabulary:
+          - necesidad
+          - promesa
+          - confianza
+          - cliente
+        prior_knowledge: Completó El Cofre del Repaso de Promesas que se Cumplen (tema anterior) y Escucho lo que Necesitan (saga anterior).
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: prometo-resolver-la-necesidad-escuchada
+            micro_objective: Combina una necesidad escuchada con una promesa que sí se puede cumplir para resolverla.
+            narrative_beat: Rho recuerda una necesidad que escuchó y ahora piensa en una promesa que de verdad puede cumplir para resolverla.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: cumplo-la-promesa-y-el-cliente-regresa
+            micro_objective: Combina cumplir una promesa con el efecto de que el cliente regrese contento.
+            narrative_beat: Zara conecta el ajuste que hizo por una necesidad escuchada con que ese cliente ahora siempre regresa.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-de-la-necesidad-a-la-confianza
+            micro_objective: Ordena, mezclando ambas sagas, los pasos desde escuchar una necesidad hasta ganar la confianza del cliente.
+            narrative_beat: "Liruf ordena en su libreta todo el camino: desde la necesidad escuchada hasta la confianza ganada."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: gano-la-confianza-de-un-cliente-viejo
+            micro_objective: Gana, sin ayuda, la confianza de un cliente anterior cumpliendo una promesa basada en su necesidad.
+            narrative_beat: Dina gana por fin la confianza completa de un cliente, cumpliendo la promesa que nació de su necesidad.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 4
+    slug: mis-primeras-encuestas
+    icon: poll
+    title:
+      en-US: My First Surveys
+      es-MX: Mis Primeras Encuestas
+      pt-BR: Minhas Primeiras Pesquisas
+    description:
+      en-US: Ask clear questions, count the answers, and use what you learn to improve your idea.
+      es-MX: Haz preguntas claras, cuenta las respuestas y usa lo que aprendes para mejorar tu idea.
+      pt-BR: Faça perguntas claras, conte as respostas e use o que aprender para melhorar sua ideia.
+    topics:
+      - position: 1
+        slug: que-es-una-encuesta
+        title_es: ¿Qué es una encuesta?
+        concept: Una encuesta es hacerle la misma pregunta a varias personas distintas, para conocer lo que piensan en conjunto.
+        learning_objective: Al final, el niño puede explicar con sus palabras qué es una encuesta.
+        key_vocabulary:
+          - encuesta
+          - misma pregunta
+          - varias personas
+          - en conjunto
+        prior_knowledge: Sabe cuidar su reputación cumpliendo promesas (saga anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué es una encuesta, usando sus propias palabras.
+        prerequisites:
+          - path: la-ciudad-del-cliente/escucho-lo-que-necesitan/anoto-las-necesidades-que-escucho
+            strength: soft
+            reason: Haber practicado anotar necesidades escuchadas facilita entender por qué una encuesta ordenada ayuda a ver patrones entre varias personas.
+        lessons:
+          - position: 1
+            slug: zara-le-pregunta-a-todos-lo-mismo
+            micro_objective: Reconoce en la historia el momento en que un personaje hace la misma pregunta a varias personas.
+            narrative_beat: 'Zara le pregunta a cinco personas distintas de la plaza: "¿qué sabor de limonada prefieres?"'
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: encuesta-o-pregunta-suelta
+            micro_objective: Distingue, entre 2 escenas, cuál muestra una encuesta real y cuál solo una pregunta suelta a una sola persona.
+            narrative_beat: Rho compara preguntarle a una sola persona con preguntarle lo mismo a un grupo entero.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-cuantas-personas-respondieron
+            micro_objective: Cuenta cuántas personas distintas respondieron la misma pregunta en una escena.
+            narrative_beat: Liruf cuenta cuántos clientes distintos respondieron su pregunta sobre el color favorito de pulsera.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - money
+          - position: 4
+            slug: explico-que-es-una-encuesta
+            micro_objective: Explica, sin ayuda, con sus propias palabras qué es una encuesta en una historia nueva.
+            narrative_beat: Dina explica con calma a un isleño nuevo qué es una encuesta y para qué sirve.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - story
+      - position: 2
+        slug: hago-una-pregunta-clara
+        title_es: Hago una pregunta clara
+        concept: Una buena encuesta empieza con una pregunta clara, fácil de entender para cualquiera que la escuche.
+        learning_objective: Al final, el niño puede reconocer si una pregunta de encuesta es clara o confusa.
+        key_vocabulary:
+          - pregunta clara
+          - fácil de entender
+          - confusa
+          - buena encuesta
+        prior_knowledge: Sabe qué es una encuesta (tema anterior).
+        fact_refs: []
+        parent_check: Ayuda a {{name}} a revisar si la pregunta de su encuesta es clara y fácil de entender.
+        lessons:
+          - position: 1
+            slug: la-pregunta-confusa-de-liruf
+            micro_objective: Reconoce en la historia por qué una pregunta confusa dificulta una encuesta.
+            narrative_beat: Liruf pregunta '¿te gusta o no te gusta o tal vez?' y nadie entiende bien qué responder.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: pregunta-clara-o-confusa-de-encuesta
+            micro_objective: Elige, entre 2 preguntas de encuesta, cuál es más clara y fácil de entender.
+            narrative_beat: Zara compara '¿prefieres limonada de fresa o de limón?' con una versión mucho más confusa.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: mejoro-mi-pregunta-de-encuesta
+            micro_objective: Ordena los pasos para convertir una pregunta confusa de encuesta en una pregunta clara.
+            narrative_beat: Rho reescribe paso a paso su pregunta de encuesta hasta que queda clara para todos.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: hago-una-pregunta-clara-de-encuesta
+            micro_objective: Formula, sin ayuda, una pregunta clara de encuesta para una escena nueva.
+            narrative_beat: Dina formula con cuidado una pregunta clara para su primera encuesta en la plaza.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 3
+        slug: una-pregunta-a-la-vez
+        title_es: Una pregunta a la vez
+        concept: Una buena encuesta pregunta una cosa a la vez, para que las respuestas sean fáciles de entender y contar.
+        learning_objective: Al final, el niño puede reconocer cuándo una encuesta mezcla más de una pregunta a la vez.
+        key_vocabulary:
+          - una a la vez
+          - mezclar preguntas
+          - fácil de contar
+          - por separado
+        prior_knowledge: Sabe formular una pregunta clara (tema anterior).
+        fact_refs: []
+        parent_check: Revisa con {{name}} si su encuesta pregunta una cosa a la vez, o si mezcla varias preguntas juntas.
+        lessons:
+          - position: 1
+            slug: dos-preguntas-en-una
+            micro_objective: Reconoce en la historia el problema de mezclar dos preguntas en una sola encuesta.
+            narrative_beat: Liruf pregunta '¿qué sabor prefieres y cuánto pagarías?' todo junto, y las respuestas se confunden.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: una-pregunta-o-varias-mezcladas
+            micro_objective: Distingue, entre 4 preguntas de encuesta, cuáles preguntan una cosa a la vez y cuáles mezclan varias.
+            narrative_beat: Rho revisa varias preguntas de encuesta y separa las que preguntan una sola cosa.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: separo-una-pregunta-mezclada
+            micro_objective: Divide una pregunta mezclada de encuesta en dos preguntas separadas y claras.
+            narrative_beat: Zara separa su pregunta mezclada en dos preguntas distintas, cada una sobre una sola cosa.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - input
+          - position: 4
+            slug: hago-una-encuesta-de-una-pregunta-a-la-vez
+            micro_objective: Formula, sin ayuda, una encuesta que pregunta solo una cosa a la vez.
+            narrative_beat: Dina formula su encuesta cuidando de preguntar solo una cosa a la vez.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: cuento-las-respuestas
+        title_es: Cuento las respuestas
+        concept: Después de preguntar a varias personas, cuento cuántas respondieron cada opción para ver los resultados.
+        learning_objective: Al final, el niño puede contar y registrar cuántas personas respondieron cada opción de una encuesta.
+        key_vocabulary:
+          - contar
+          - registrar
+          - resultados
+          - cada opción
+        prior_knowledge: Sabe hacer una encuesta de una pregunta a la vez (tema anterior).
+        fact_refs: []
+        parent_check: Ayuda a {{name}} a contar cuántas personas respondieron cada opción de su encuesta.
+        lessons:
+          - position: 1
+            slug: zara-cuenta-los-votos-de-sabor
+            micro_objective: Reconoce en la historia cómo un personaje cuenta las respuestas de su encuesta.
+            narrative_beat: Zara hace una marca por cada persona que prefiere fresa, y otra marca por cada una que prefiere limón.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: cuento-bien-o-me-equivoco
+            micro_objective: Distingue, entre 2 conteos, cuál cuenta correctamente las respuestas de una encuesta.
+            narrative_beat: Rho revisa dos conteos de la misma encuesta y encuentra cuál tiene un error.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cuento-las-respuestas-de-mi-encuesta
+            micro_objective: Cuenta, sin ayuda, cuántas personas respondieron cada opción en una encuesta de hasta 10 respuestas.
+            narrative_beat: Liruf cuenta con cuidado cuántos clientes prefieren cada sabor de su limonada.
+            difficulty: 2
+            suggested_families:
+              - input
+              - money
+          - position: 4
+            slug: registro-los-resultados-de-mi-encuesta
+            micro_objective: Registra, sin ayuda, los resultados contados de una encuesta nueva en la historia.
+            narrative_beat: Dina registra con orden los resultados de su primera encuesta completa.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 5
+        slug: las-respuestas-me-dan-pistas
+        title_es: Las respuestas me dan pistas
+        concept: Los resultados de una encuesta son pistas que me ayudan a entender mejor a mis clientes.
+        learning_objective: Al final, el niño puede interpretar una pista simple a partir de los resultados de una encuesta.
+        key_vocabulary:
+          - pista
+          - resultados
+          - interpretar
+          - entender mejor
+        prior_knowledge: Sabe contar las respuestas de una encuesta (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} qué pista le dan los resultados de su encuesta sobre lo que sus clientes prefieren.
+        lessons:
+          - position: 1
+            slug: la-pista-de-los-resultados
+            micro_objective: Reconoce en la historia la pista que dan los resultados de una encuesta.
+            narrative_beat: "Zara ve que la mayoría marcó fresa, y entiende la pista: debería hacer más limonada de ese sabor."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: pista-clara-o-sin-pista
+            micro_objective: Distingue, entre 2 resultados de encuesta, cuál da una pista clara y cuál no dice mucho todavía.
+            narrative_beat: Rho compara un resultado muy parejo con uno donde casi todos prefirieron lo mismo.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: interpreto-los-resultados-de-una-encuesta
+            micro_objective: Interpreta, entre 3 conclusiones posibles, cuál se ajusta mejor a un resultado de encuesta mostrado.
+            narrative_beat: Liruf interpreta los resultados de su encuesta y elige la conclusión que mejor los explica.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - analyze
+          - position: 4
+            slug: encuentro-la-pista-de-mi-propia-encuesta
+            micro_objective: Encuentra, sin ayuda, la pista principal en los resultados de su propia encuesta.
+            narrative_beat: Dina encuentra la pista principal en los resultados de su encuesta y la explica con calma.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: comparo-lo-que-mas-y-menos-se-repitio
+        title_es: Comparo lo que más y menos se repitió
+        concept: Puedo comparar cuál respuesta se repitió más veces y cuál menos, para saber qué prefiere la mayoría.
+        learning_objective: Al final, el niño puede identificar la respuesta más y la menos repetida en los resultados de una encuesta.
+        key_vocabulary:
+          - más repetida
+          - menos repetida
+          - mayoría
+          - comparar resultados
+        prior_knowledge: Sabe interpretar una pista de una encuesta (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} cuál fue la respuesta más repetida de su encuesta y cuál la menos repetida.
+        lessons:
+          - position: 1
+            slug: fresa-gano-la-encuesta
+            micro_objective: Reconoce en la historia cuál respuesta se repitió más veces en una encuesta.
+            narrative_beat: "Zara cuenta las marcas: fresa se repitió ocho veces y limón solo tres, así que fresa ganó."
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: mas-repetida-o-menos-repetida
+            micro_objective: Elige, entre 2 opciones de una encuesta, cuál fue la más repetida y cuál la menos.
+            narrative_beat: Rho compara los resultados de una encuesta y señala cuál opción ganó y cuál casi nadie eligió.
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-resultados-de-mas-a-menos
+            micro_objective: Ordena 3 o 4 opciones de una encuesta de la más repetida a la menos repetida.
+            narrative_beat: Liruf ordena los sabores de su encuesta, del más pedido al menos pedido.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - money
+          - position: 4
+            slug: comparo-los-resultados-de-mi-encuesta
+            micro_objective: Compara, sin ayuda, la respuesta más y menos repetida de su propia encuesta.
+            narrative_beat: Dina compara con calma cuál respuesta ganó y cuál casi nadie eligió en su encuesta.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 7
+        slug: cambio-mi-idea-con-lo-que-aprendi
+        title_es: Cambio mi idea con lo que aprendí
+        concept: Con los resultados de mi encuesta, puedo decidir cambiar algo de mi idea o producto para que le guste más a la gente.
+        learning_objective: Al final, el niño puede proponer un cambio a su idea basado en los resultados de una encuesta.
+        key_vocabulary:
+          - cambiar
+          - basado en resultados
+          - decidir
+          - gustar más
+        prior_knowledge: Sabe comparar los resultados más y menos repetidos (tema anterior).
+        fact_refs: []
+        parent_check: Pregúntale a {{name}} si los resultados de su encuesta le dan ganas de cambiar algo de su producto.
+        lessons:
+          - position: 1
+            slug: zara-decide-hacer-mas-fresa
+            micro_objective: Reconoce en la historia cómo un personaje cambia su producto usando los resultados de una encuesta.
+            narrative_beat: Zara decide preparar más limonada de fresa, justo como mostraron los resultados de su encuesta.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: cambio-basado-en-datos-o-en-corazonada
+            micro_objective: Distingue, entre 2 decisiones, cuál está basada en los resultados de la encuesta y cuál solo en una corazonada.
+            narrative_beat: Rho compara decidir con los datos de la encuesta contra decidir solo porque "a mí me gusta más".
+            difficulty: 1
+            suggested_families:
+              - choice
+          - position: 3
+            slug: conecto-resultados-con-cambios
+            micro_objective: Empareja 3 resultados de encuesta con el cambio de producto que les correspondería.
+            narrative_beat: Liruf conecta cada resultado de su encuesta con el cambio que podría hacer en su carrito.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 4
+            slug: cambio-mi-idea-con-los-resultados
+            micro_objective: Propone, sin ayuda, un cambio a su propia idea basado en los resultados de una encuesta.
+            narrative_beat: Dina propone un cambio a su producto, apoyada en lo que su propia encuesta le mostró.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 8
+        slug: la-ciudad-del-cliente-repaso-final
+        title_es: "La Ciudad del Cliente: repaso final"
+        concept: "Repasamos todo el viaje: quién es mi cliente, escuchar necesidades, promesas y confianza, y encuestas."
+        learning_objective: Al final, el niño puede recordar y aplicar juntos los conceptos clave de la aventura de la ciudad del cliente.
+        key_vocabulary:
+          - repaso
+          - recuerdo
+          - aventura completa
+          - encuesta
+        prior_knowledge: Domina todos los temas previos de la aventura de la ciudad del cliente.
+        fact_refs: []
+        parent_check: Al terminar el viaje, pídele a {{name}} que narre cómo pasamos de imaginar a un cliente a encuestarlo de verdad.
+        lessons:
+          - position: 1
+            slug: recuerdo-a-mi-primer-cliente
+            micro_objective: Recuerda y nombra un cliente, una necesidad y una encuesta de toda la aventura.
+            narrative_beat: Rho reúne a la tripulación en la plaza para recordar juntos todo lo vivido en la ciudad.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: reconozco-todo-el-camino-del-cliente
+            micro_objective: Identifica correctamente los pasos para pasar de imaginar un cliente a mejorar el producto con una encuesta.
+            narrative_beat: "Zara organiza un último repaso: recordar todos los pasos del camino del cliente sin equivocarse."
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: armo-mi-encuesta-final
+            micro_objective: Arma, sin ayuda, una encuesta final usando lo aprendido en toda la aventura.
+            narrative_beat: Liruf organiza su encuesta final poniendo en práctica todo lo que aprendió en la ciudad.
+            difficulty: 3
+            suggested_families:
+              - input
+              - choice
+          - position: 4
+            slug: zarpo-hacia-el-valle-del-precio-justo
+            micro_objective: Explica en una frase qué aprendió sobre los clientes antes de zarpar hacia la próxima aventura.
+            narrative_beat: "Dina cierra la plaza de la ciudad: conoce bien a sus clientes, y el Valle del Precio Justo espera para aprender a cobrarles con justicia."
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice
+      - position: 9
+        slug: cofre-del-repaso-de-mis-primeras-encuestas
+        kind: review_spaced
+        review_of:
+          - la-ciudad-del-cliente/mis-primeras-encuestas/que-es-una-encuesta
+          - la-ciudad-del-cliente/mis-primeras-encuestas/hago-una-pregunta-clara
+          - la-ciudad-del-cliente/mis-primeras-encuestas/una-pregunta-a-la-vez
+          - la-ciudad-del-cliente/mis-primeras-encuestas/cuento-las-respuestas
+          - la-ciudad-del-cliente/mis-primeras-encuestas/las-respuestas-me-dan-pistas
+          - la-ciudad-del-cliente/mis-primeras-encuestas/comparo-lo-que-mas-y-menos-se-repitio
+          - la-ciudad-del-cliente/mis-primeras-encuestas/cambio-mi-idea-con-lo-que-aprendi
+          - la-ciudad-del-cliente/mis-primeras-encuestas/la-ciudad-del-cliente-repaso-final
+        title_es: El Cofre del Repaso de Mis Primeras Encuestas
+        concept: Repasamos desde el cofre de recuerdos cómo preguntar con claridad, contar respuestas y usarlas para mejorar.
+        learning_objective: Al final, el niño recuerda y usa, sin nueva enseñanza, los conceptos de esta saga sobre encuestas.
+        key_vocabulary:
+          - encuesta
+          - contar
+          - resultados
+          - cambiar
+        prior_knowledge: Completó los 8 temas de Mis Primeras Encuestas.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: abro-el-cofre-de-encuestas
+            micro_objective: Recuerda y nombra, sin ayuda, una pregunta clara de encuesta hecha durante esta saga.
+            narrative_beat: Rho abre un cofre lleno de hojas de encuesta llenas de marcas de toda la ciudad.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: recuerdo-un-resultado-de-encuesta
+            micro_objective: Recuerda, sin ayuda, un resultado de encuesta visto en esta saga.
+            narrative_beat: Zara saca del cofre el recuerdo de la encuesta donde fresa ganó por mucho.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 3
+            slug: elijo-el-cambio-mejor-basado-en-datos
+            micro_objective: Elige, entre 2 cambios recordados, cuál se basó mejor en los resultados de una encuesta.
+            narrative_beat: Liruf compara dos cambios guardados en el cofre y decide cuál se apoyó mejor en los datos.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: cierro-el-cofre-con-una-encuesta-nueva
+            micro_objective: "Aplica sin ayuda lo recordado: hace una encuesta clara para una situación nueva."
+            narrative_beat: Dina cierra el cofre de encuestas, lista para la Gran Misión de la ciudad.
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - input
+      - position: 10
+        slug: reto-entrelazado-de-mis-primeras-encuestas
+        kind: review_interleaved
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente/dibujo-a-mi-cliente-ideal
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/un-cliente-contento-regresa
+          - la-ciudad-del-cliente/mis-primeras-encuestas/cuento-las-respuestas
+          - la-ciudad-del-cliente/mis-primeras-encuestas/cambio-mi-idea-con-lo-que-aprendi
+        title_es: Reto Entrelazado de Mis Primeras Encuestas
+        concept: "Mezclamos todo lo aprendido en la ciudad: identificar clientes, escuchar necesidades, promesas y encuestas."
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, ideas de al menos dos sagas anteriores con lo aprendido sobre encuestas.
+        key_vocabulary:
+          - cliente
+          - necesidad
+          - confianza
+          - encuesta
+        prior_knowledge: Completó El Cofre del Repaso de Mis Primeras Encuestas (tema anterior) y las tres sagas previas de la ciudad.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: encuesto-a-mi-cliente-ideal
+            micro_objective: Combina el retrato del cliente ideal con la idea de encuestarlo para conocerlo mejor.
+            narrative_beat: Rho recuerda el retrato de su cliente ideal y ahora piensa cómo encuestarlo para conocerlo mejor.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: la-confianza-y-los-resultados-de-la-encuesta
+            micro_objective: Combina la confianza ganada de un cliente contento con los resultados de una encuesta reciente.
+            narrative_beat: Zara combina la confianza de sus clientes frecuentes con los nuevos resultados de su última encuesta.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: ordeno-del-cliente-a-la-encuesta-y-el-cambio
+            micro_objective: Ordena, mezclando varias sagas, los pasos desde describir a un cliente hasta cambiar la idea con una encuesta.
+            narrative_beat: "Liruf ordena en su mente todo el camino: desde el cliente imaginado hasta el cambio hecho con la encuesta."
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - story
+          - position: 4
+            slug: mejoro-la-confianza-de-un-cliente-con-una-encuesta
+            micro_objective: Mejora, sin ayuda, la relación con un cliente anterior usando un cambio basado en una encuesta.
+            narrative_beat: Dina mejora la confianza de un cliente anterior aplicando un cambio que salió de su encuesta.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+  - position: 5
+    slug: la-gran-mision-de-la-ciudad-del-cliente
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: The City of Customers' Great Quest
+      es-MX: La Gran Misión de la Ciudad del Cliente
+      pt-BR: A Grande Missão da Cidade do Cliente
+    description:
+      en-US: A final challenge tests everything learned about customers, listening, promises and surveys, before the whole city celebrates.
+      es-MX: Un último reto pone a prueba todo lo aprendido sobre clientes, escucha, promesas y encuestas, antes de que toda la ciudad celebre.
+      pt-BR: Um último desafio coloca à prova tudo o que foi aprendido sobre clientes, escuta, promessas e pesquisas, antes que toda a cidade celebre.
+    topics:
+      - position: 1
+        slug: el-directorio-de-clientes-de-la-ciudad
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan
+        title_es: El Directorio de Clientes de la Ciudad
+        concept: La ciudad guarda un directorio olvidado de clientes y sus necesidades que la tripulación debe recordar y completar.
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo identificar a un cliente y escuchar su necesidad.
+        key_vocabulary:
+          - cliente
+          - necesidad
+          - directorio
+          - recordar
+        prior_knowledge: Completó ¿Quién es mi Cliente? y Escucho lo que Necesitan.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: encontramos-el-directorio-olvidado
+            micro_objective: Recuerda, sin ayuda, cómo se arma el retrato de un cliente ideal.
+            narrative_beat: La tripulación encuentra en el ayuntamiento un viejo directorio de clientes de la ciudad, a medio llenar.
+            difficulty: 1
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: completamos-los-retratos-del-directorio
+            micro_objective: Completa, sin ayuda, los datos faltantes del retrato de 2 clientes del directorio.
+            narrative_beat: Rho completa los datos que faltan en los retratos de clientes del viejo directorio.
+            difficulty: 2
+            suggested_families:
+              - arrange
+              - choice
+          - position: 3
+            slug: conectamos-clientes-con-sus-necesidades
+            micro_objective: Empareja, sin ayuda, cada cliente del directorio con la necesidad que anotó hace tiempo.
+            narrative_beat: Zara conecta cada cliente del directorio con la necesidad que había anotado junto a su nombre.
+            difficulty: 2
+            suggested_families:
+              - arrange
+          - position: 4
+            slug: aceptamos-el-reto-del-directorio
+            micro_objective: Completa, sin ayuda, la aceptación del reto explicando por qué conocer al cliente y su necesidad importa.
+            narrative_beat: "Liruf y Dina aceptan el reto del directorio: la ciudad tiene más secretos que descubrir."
+            difficulty: 2
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 2
+        slug: la-plaza-de-la-confianza
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/promesas-que-se-cumplen
+        title_es: La Plaza de la Confianza
+        concept: La ciudad reta a la tripulación a recordar cómo prometer solo lo que se puede cumplir y cuidar su reputación.
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo cumplir promesas y construir confianza.
+        key_vocabulary:
+          - promesa
+          - confianza
+          - reputación
+          - plaza
+        prior_knowledge: Completó Promesas que se Cumplen.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: la-plaza-pide-una-promesa
+            micro_objective: Recuerda, sin ayuda, por qué prometer solo lo que se puede cumplir importa.
+            narrative_beat: En el centro de la plaza, una estatua antigua solo deja pasar a quien promete algo que sí puede cumplir.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: elegimos-la-promesa-cumplible
+            micro_objective: Elige, sin ayuda, entre varias promesas, la que de verdad se puede cumplir para avanzar en la prueba.
+            narrative_beat: Rho revisa varias promesas posibles y elige la que de verdad se puede cumplir.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 3
+            slug: cumplimos-a-tiempo-en-la-plaza
+            micro_objective: Reconoce, sin ayuda, una entrega a tiempo dentro del reto de la plaza de la confianza.
+            narrative_beat: Zara entrega justo a tiempo lo prometido, y la plaza reconoce su palabra cumplida.
+            difficulty: 2
+            suggested_families:
+              - choice
+              - story
+          - position: 4
+            slug: superamos-la-prueba-de-confianza
+            micro_objective: Completa, sin ayuda, la prueba explicando cómo se construye la confianza poquito a poquito.
+            narrative_beat: Liruf y Dina superan la prueba de la plaza, explicando cómo la confianza se construye con cada promesa.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 3
+        slug: el-gran-sondeo-de-la-ciudad
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/mis-primeras-encuestas
+        title_es: El Gran Sondeo de la Ciudad
+        concept: Toda la ciudad participa en un gran sondeo que la tripulación debe organizar, contar e interpretar.
+        learning_objective: Al final, el niño recuerda y aplica, sin nueva enseñanza, cómo hacer una encuesta clara y usar sus resultados.
+        key_vocabulary:
+          - encuesta
+          - sondeo
+          - resultados
+          - usar
+        prior_knowledge: Completó Mis Primeras Encuestas.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: organizamos-el-gran-sondeo
+            micro_objective: Formula, sin ayuda, una pregunta clara para el gran sondeo de la ciudad.
+            narrative_beat: La tripulación organiza un gran sondeo con una sola pregunta clara para toda la ciudad.
+            difficulty: 2
+            suggested_families:
+              - input
+              - choice
+          - position: 2
+            slug: contamos-las-respuestas-del-sondeo
+            micro_objective: Cuenta, sin ayuda, las respuestas del gran sondeo de la ciudad.
+            narrative_beat: Rho cuenta con cuidado cada respuesta del gran sondeo, sin perder ni una marca.
+            difficulty: 2
+            suggested_families:
+              - input
+              - money
+          - position: 3
+            slug: comparamos-los-resultados-del-sondeo
+            micro_objective: Compara, sin ayuda, la respuesta más y menos repetida del gran sondeo.
+            narrative_beat: Zara compara los resultados del sondeo y encuentra cuál opción ganó por mucho.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: superamos-el-gran-sondeo
+            micro_objective: Completa, sin ayuda, el reto proponiendo un cambio basado en los resultados del gran sondeo.
+            narrative_beat: Liruf y Dina superan el gran sondeo proponiendo un cambio que refleja lo que la ciudad entera respondió.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 4
+        slug: construimos-el-puesto-de-escucha
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente/cierro-el-retrato-de-mi-cliente
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan/anoto-las-necesidades-que-escucho
+          - la-ciudad-del-cliente/promesas-que-se-cumplen/cuido-mi-palabra-como-mi-mejor-herramienta
+        title_es: Construimos el Puesto de Escucha
+        concept: La ciudad decide construir un puesto donde cualquiera pueda contar lo que necesita y lo que opina.
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, identificar al cliente, escuchar necesidades y cuidar promesas en un proyecto compartido.
+        key_vocabulary:
+          - proyecto
+          - puesto de escucha
+          - compartir
+          - ciudad
+        prior_knowledge: Completó ¿Quién es mi Cliente?, Escucho lo que Necesitan y Promesas que se Cumplen.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: elegimos-el-lugar-del-puesto-de-escucha
+            micro_objective: Reconoce, sin ayuda, por qué toda la ciudad se beneficia de un lugar dedicado a escuchar a los clientes.
+            narrative_beat: Rho elige, junto a los isleños, la esquina más visitada para construir el Puesto de Escucha.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: anotamos-necesidades-en-el-puesto
+            micro_objective: Anota, sin ayuda, las necesidades escuchadas de varios visitantes del puesto.
+            narrative_beat: Zara anota con cuidado cada necesidad que los visitantes comparten en el nuevo puesto.
+            difficulty: 2
+            suggested_families:
+              - input
+              - choice
+          - position: 3
+            slug: prometemos-solo-lo-que-podemos-cumplir-en-el-puesto
+            micro_objective: Elige, sin ayuda, la promesa que el puesto de escucha sí puede cumplir a la ciudad.
+            narrative_beat: Liruf elige con cuidado qué promesas puede cumplir el puesto de escucha a toda la ciudad.
+            difficulty: 2
+            suggested_families:
+              - choice
+          - position: 4
+            slug: inauguramos-el-puesto-de-escucha
+            micro_objective: Completa, sin ayuda, la inauguración del puesto combinando cliente, necesidad y promesa cumplible.
+            narrative_beat: Dina corta la cinta del Puesto de Escucha ante toda la ciudad reunida.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 5
+        slug: el-cliente-perfecto-encontrado
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan
+          - la-ciudad-del-cliente/promesas-que-se-cumplen
+          - la-ciudad-del-cliente/mis-primeras-encuestas
+        title_es: El Cliente Perfecto Encontrado
+        concept: "La ciudad lleva a la tripulación al reto final: encontrar, escuchar y ganarse la confianza de un cliente perfecto usando una encuesta."
+        learning_objective: Al final, el niño combina, sin nueva enseñanza, escuchar necesidades, cumplir promesas y usar encuestas en un solo reto final.
+        key_vocabulary:
+          - necesidad
+          - confianza
+          - encuesta
+          - cliente final
+        prior_knowledge: Completó Escucho lo que Necesitan, Promesas que se Cumplen y Mis Primeras Encuestas.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: escuchamos-al-cliente-perfecto
+            micro_objective: Escucha, sin ayuda, la necesidad completa del cliente perfecto de la ciudad.
+            narrative_beat: Rho escucha con calma la necesidad completa de quien podría ser el cliente perfecto de la ciudad.
+            difficulty: 2
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: encuestamos-para-confirmar
+            micro_objective: Aplica, sin ayuda, una encuesta corta para confirmar lo que el cliente perfecto necesita.
+            narrative_beat: Zara aplica una encuesta corta para confirmar exactamente lo que el cliente perfecto busca.
+            difficulty: 3
+            suggested_families:
+              - input
+              - choice
+          - position: 3
+            slug: prometemos-y-cumplimos-al-cliente-perfecto
+            micro_objective: Cumple, sin ayuda, una promesa hecha al cliente perfecto de la ciudad.
+            narrative_beat: Liruf cumple, justo a tiempo, la promesa que le hizo al cliente perfecto de la ciudad.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+          - position: 4
+            slug: encontramos-al-cliente-perfecto
+            micro_objective: Completa, sin ayuda, el reto combinando necesidad, encuesta y promesa cumplida para el cliente perfecto.
+            narrative_beat: Dina y toda la tripulación encuentran al cliente perfecto, combinando todo lo aprendido en la ciudad.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+      - position: 6
+        slug: la-gran-fiesta-de-la-ciudad-del-cliente
+        kind: review_quest
+        review_of:
+          - la-ciudad-del-cliente/quien-es-mi-cliente
+          - la-ciudad-del-cliente/escucho-lo-que-necesitan
+          - la-ciudad-del-cliente/promesas-que-se-cumplen
+          - la-ciudad-del-cliente/mis-primeras-encuestas
+        title_es: La Gran Fiesta de la Ciudad del Cliente
+        concept: "Toda la ciudad celebra, recordando el viaje completo: clientes, necesidades, promesas y encuestas."
+        learning_objective: Al final, el niño recuerda y aplica juntos, sin nueva enseñanza, los conceptos clave de toda la aventura de la ciudad del cliente.
+        key_vocabulary:
+          - celebrar
+          - fiesta
+          - recordar
+          - aventura completa
+        prior_knowledge: Domina todas las sagas de La Ciudad del Cliente.
+        fact_refs: []
+        lessons:
+          - position: 1
+            slug: contamos-toda-la-aventura-de-la-ciudad
+            micro_objective: "Recuerda y narra, sin ayuda, los momentos clave de la aventura: cliente, necesidad, promesa y encuesta."
+            narrative_beat: Toda la tripulación se sienta en la plaza a contar, paso a paso, la aventura completa de la ciudad.
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice
+          - position: 2
+            slug: presentamos-nuestros-clientes-en-la-fiesta
+            micro_objective: Presenta, sin ayuda, el retrato del cliente ideal de la tripulación frente a la ciudad reunida.
+            narrative_beat: Rho presenta ante toda la ciudad el retrato del cliente ideal que la tripulación construyó.
+            difficulty: 3
+            suggested_families:
+              - storyplay
+              - choice
+          - position: 3
+            slug: celebramos-la-confianza-ganada
+            micro_objective: Reconoce, sin ayuda, otros ejemplos de confianza ganada durante la fiesta de la ciudad.
+            narrative_beat: Zara recorre la fiesta reconociendo cómo cada vendedor de la ciudad ganó la confianza de su gente.
+            difficulty: 3
+            suggested_families:
+              - choice
+              - story
+          - position: 4
+            slug: zarpamos-hacia-el-valle-con-nuestros-clientes
+            micro_objective: Explica en una frase, combinando toda la aventura, qué fue lo que más le enorgulleció aprender sobre sus clientes.
+            narrative_beat: "Dina cierra la Gran Fiesta: la Ciudad del Cliente queda atrás, y el Valle del Precio Justo espera para aprender a cobrar con justicia."
+            difficulty: 3
+            suggested_families:
+              - story
+              - choice

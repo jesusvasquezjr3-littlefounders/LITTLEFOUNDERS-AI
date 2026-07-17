@@ -1,0 +1,2720 @@
+schema_version: 1
+adventure:
+  position: 3
+  slug: el-archipielago-de-los-riesgos
+  theme: archipelago
+  age_tier: tier2
+  title:
+    en-US: The Archipelago of Risks
+    es-MX: El Archipiélago de los Riesgos
+    pt-BR: O Arquipélago dos Riscos
+  description:
+    en-US: Dina and Liruf sail with Zara Vex among islands where different paths offer different possible
+      rewards -- and different risks.
+    es-MX: Dina y Liruf navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
+      posibles -y distintos riesgos.
+    pt-BR: Dina e Liruf navegam com Zara Vex entre ilhas onde caminhos diferentes oferecem prêmios possíveis
+      -e riscos- diferentes.
+  narrative_arc: 'Dina y Liruf zarpan del valle hacia un archipiélago donde Zara Vex, estratega experta
+    en decisiones difíciles, los reta a comparar una laguna tranquila y previsible con un estrecho agitado
+    e incierto. Ahí descubren qué es un riesgo, por qué un premio posible más grande casi siempre trae
+    más riesgo, y por qué repartir las monedas entre varias canoas protege mejor que cargarlas todas en
+    una. Aprenden a informarse -preguntar, observar, escuchar a quien ya fue- antes de decidir, y a aceptar
+    que, incluso decidiendo bien, perder también pasa: lo importante es aprender, ajustar y volver a intentarlo.
+    Al despedirse del archipiélago, están listos para llegar a una ciudad donde las metas se vuelven más
+    grandes y los precios cambian con el paso del tiempo.'
+sagas:
+- position: 1
+  slug: caminos-seguros-y-arriesgados
+  icon: explore
+  title:
+    en-US: Safe Paths and Risky Paths
+    es-MX: Caminos Seguros y Caminos Arriesgados
+    pt-BR: Caminhos Seguros e Caminhos Arriscados
+  description:
+    en-US: Meet a calm lagoon and a restless strait, and discover what the word 'risk' really means.
+    es-MX: Conoce una laguna tranquila y un estrecho agitado, y descubre qué significa de verdad la palabra
+      'riesgo'.
+    pt-BR: Conheça uma lagoa tranquila e um estreito agitado, e descubra o que a palavra 'risco' realmente
+      significa.
+  topics:
+  - position: 1
+    slug: dos-caminos-uno-tranquilo-y-uno-agitado
+    title_es: 'Dos caminos: uno tranquilo y uno agitado'
+    concept: El archipiélago tiene una laguna tranquila donde siempre se pesca un poco, y un estrecho
+      agitado donde a veces se pesca mucho más y a veces casi nada.
+    learning_objective: Al final, el niño puede describir la diferencia entre una opción tranquila y previsible
+      y una opción agitada e incierta.
+    key_vocabulary:
+    - tranquilo
+    - agitado
+    - previsible
+    - incierto
+    prior_knowledge: Ha aprendido a guardar con premio en la aldea del valle (aventura 2).
+    parent_check: ¿{{name}} puede describir la diferencia entre algo tranquilo y previsible, y algo agitado
+      e incierto?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-laguna-y-el-estrecho
+      micro_objective: Observar la diferencia entre una laguna tranquila y previsible y un estrecho agitado
+        e incierto.
+      narrative_beat: Zara Vex lleva a Dina y Liruf en canoa hasta el archipiélago, donde señala una laguna
+        tranquila y, más allá, un estrecho de aguas agitadas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: pescar-en-cada-lugar
+      micro_objective: Comparar lo que se obtiene pescando en la laguna tranquila contra el estrecho agitado.
+      narrative_beat: Dr. Rho muestra que en la laguna casi siempre se pesca la misma cantidad, mientras
+        que en el estrecho a veces se pesca mucho y a veces casi nada.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-hay-dos-caminos
+      micro_objective: Explicar por qué el archipiélago ofrece dos caminos tan distintos entre sí.
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que el archipiélago tiene un camino tan tranquilo
+        y otro tan agitado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: elegir-mi-primer-camino
+      micro_objective: Aplicar la observación de ambos caminos para elegir uno, explicando la razón de
+        la elección.
+      narrative_beat: Frente a los dos caminos por primera vez, Dina elige cuál explorar hoy y explica
+        su razón a Zara Vex.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: que-es-un-riesgo
+    title_es: Qué es un riesgo
+    concept: Un riesgo es la posibilidad de que algo no salga como se espera, ya sea mejor o peor de lo
+      previsto.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué significa 'riesgo'.
+    key_vocabulary:
+    - riesgo
+    - posibilidad
+    - esperar
+    - incierto
+    prior_knowledge: Sabe distinguir un camino tranquilo de uno agitado (tema anterior).
+    parent_check: ¿{{name}} puede explicar, con sus palabras, qué significa la palabra 'riesgo'?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-red-que-podria-o-no-podria
+      micro_objective: Reconocer que un riesgo es la posibilidad de que algo salga distinto a lo esperado.
+      narrative_beat: Zara Vex lanza una red al estrecho agitado y explica que esta vez podría salir llena
+        de peces, o casi vacía.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: riesgo-en-varias-escenas
+      micro_objective: Identificar situaciones del archipiélago donde existe un riesgo real.
+      narrative_beat: Dr. Rho muestra varias escenas del archipiélago y pide a Dina identificar en cuáles
+        existe un riesgo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: riesgo-no-es-siempre-malo
+      micro_objective: Explicar que un riesgo puede terminar mejor o peor de lo esperado, no siempre mal.
+      narrative_beat: Zara Vex explica a Liruf que un riesgo puede terminar mejor de lo esperado, no solo
+        peor.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: nombrar-el-riesgo-de-una-escena-nueva
+      micro_objective: Aplicar la definición de riesgo nombrando el riesgo presente en una escena nueva.
+      narrative_beat: Frente a una escena nueva del archipiélago, Dina nombra con sus palabras cuál es
+        el riesgo presente.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: mas-premio-posible-mas-riesgo-posible
+    title_es: Más premio posible, más riesgo posible
+    concept: Casi siempre, un camino que ofrece un premio posible más grande también trae más riesgo de
+      que salga mal.
+    learning_objective: Al final, el niño puede explicar la relación general entre un premio posible más
+      grande y un riesgo posible más grande.
+    key_vocabulary:
+    - premio
+    - riesgo
+    - relación
+    - grande
+    prior_knowledge: Sabe qué significa la palabra 'riesgo' (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué un premio posible más grande casi siempre viene con
+      más riesgo?
+    prerequisites:
+    - path: la-aldea-del-interes/premio-por-guardar/el-premio-que-aparece-solo
+      strength: soft
+      reason: Ya haber visto que guardar con calma da un premio seguro ayuda a notar, por contraste, que
+        un premio más grande y rápido casi siempre trae más riesgo.
+    fact_refs:
+    - risk.reward_tradeoff_pairs
+    lessons:
+    - position: 1
+      slug: la-laguna-segura-y-el-estrecho-generoso
+      micro_objective: Observar que el estrecho, más riesgoso, también ofrece la posibilidad de un premio
+        más grande que la laguna.
+      narrative_beat: Dr. Rho recuerda que la laguna casi siempre da un premio chico y seguro, mientras
+        que el estrecho a veces da un premio enorme.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-premio-posible-y-riesgo
+      micro_objective: Comparar el premio posible y el riesgo posible de la laguna contra el estrecho.
+      narrative_beat: Zara Vex pide a Liruf comparar, lado a lado, el premio posible y el riesgo posible
+        de cada camino del archipiélago.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-van-juntos
+      micro_objective: Explicar por qué un premio posible más grande casi siempre viene acompañado de
+        más riesgo.
+      narrative_beat: Dr. Rho pregunta a Dina por qué cree que un premio más grande casi siempre trae
+        más riesgo de por medio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: aplicar-la-relacion-a-un-camino-nuevo
+      micro_objective: Aplicar la relación entre premio posible y riesgo a un camino nuevo del archipiélago.
+      narrative_beat: Frente a un tercer camino nuevo del archipiélago, Dina predice si su riesgo es alto
+        o bajo según el premio que promete.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: no-todo-riesgo-es-igual-de-grande
+    title_es: No todo riesgo es igual de grande
+    concept: Existen riesgos pequeños, medianos y grandes; no todos merecen la misma precaución.
+    learning_objective: 'Al final, el niño puede clasificar distintos riesgos según su tamaño: pequeño,
+      mediano o grande.'
+    key_vocabulary:
+    - pequeño
+    - mediano
+    - grande
+    - precaución
+    prior_knowledge: Sabe que más premio posible casi siempre trae más riesgo (tema anterior).
+    parent_check: ¿{{name}} puede dar un ejemplo de un riesgo pequeño y uno de un riesgo grande?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: tres-islas-tres-tamanos-de-riesgo
+      micro_objective: 'Observar que existen riesgos de distinto tamaño: pequeños, medianos y grandes.'
+      narrative_beat: Zara Vex presenta tres islas del archipiélago, cada una con un riesgo de tamaño
+        distinto para explorarla.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: clasificar-los-riesgos-de-las-islas
+      micro_objective: Clasificar distintos riesgos según si son pequeños, medianos o grandes.
+      narrative_beat: Dr. Rho pide a Liruf clasificar el riesgo de cada isla en pequeño, mediano o grande.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 3
+      slug: por-que-no-todos-merecen-la-misma-precaucion
+      micro_objective: Explicar por qué un riesgo pequeño no necesita la misma precaución que uno grande.
+      narrative_beat: Dr. Rho pregunta a Dina por qué cree que un riesgo pequeño no necesita la misma
+        precaución que uno grande.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: clasificar-un-riesgo-nuevo
+      micro_objective: Aplicar la clasificación de tamaño de riesgo a una situación nueva del archipiélago.
+      narrative_beat: Frente a una nueva isla del archipiélago, Dina clasifica su riesgo y decide cuánta
+        precaución merece.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: como-se-siente-arriesgarse
+    title_es: Cómo se siente arriesgarse
+    concept: Arriesgarse puede sentirse emocionante y también un poco nervioso al mismo tiempo, y reconocer
+      esa mezcla ayuda a decidir con más calma.
+    learning_objective: Al final, el niño puede reconocer y nombrar la mezcla de emociones que aparece
+      al arriesgarse.
+    key_vocabulary:
+    - emoción
+    - nervios
+    - arriesgarse
+    - sentir
+    prior_knowledge: Sabe clasificar riesgos según su tamaño (tema anterior).
+    parent_check: ¿{{name}} puede nombrar cómo se siente cuando está por tomar un riesgo (emoción, nervios,
+      ambos)?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-corazon-acelerado-de-liruf
+      micro_objective: Reconocer la mezcla de emoción y nervios que aparece al estar por tomar un riesgo.
+      narrative_beat: A Liruf se le acelera el corazón antes de lanzar la red al estrecho agitado, mezcla
+        de emoción y nervios.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: nombrar-lo-que-se-siente
+      micro_objective: Nombrar con palabras propias la mezcla de emociones que aparece al arriesgarse.
+      narrative_beat: Dr. Rho pregunta a Dina qué palabras usaría para describir lo que siente antes de
+        arriesgarse.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: hasta-zara-lo-siente
+      micro_objective: Reconocer que sentir nervios frente al riesgo es normal, incluso en alguien con
+        experiencia.
+      narrative_beat: Zara Vex comparte que, incluso siendo estratega, todavía siente nervios antes de
+        decisiones importantes.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: decidir-con-calma-a-pesar-de-los-nervios
+      micro_objective: Aplicar el reconocimiento de la mezcla de emociones para decidir con más calma
+        frente a un riesgo nuevo.
+      narrative_beat: Frente a un nuevo riesgo del archipiélago, Liruf nombra lo que siente y decide con
+        más calma qué hacer.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: elegir-un-camino-con-informacion
+    title_es: Elegir un camino con información
+    concept: Buscar información antes de decidir -preguntar, observar, comparar- ayuda a elegir un camino
+      con más confianza.
+    learning_objective: Al final, el niño puede aplicar la búsqueda de información antes de decidir entre
+      dos caminos con riesgo distinto.
+    key_vocabulary:
+    - información
+    - preguntar
+    - observar
+    - confianza
+    prior_knowledge: Reconoce la mezcla de emociones al arriesgarse (tema anterior).
+    parent_check: ¿{{name}} busca información (preguntar, observar) antes de decidir algo importante?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: preguntar-a-los-pescadores
+      micro_objective: Observar cómo buscar información (preguntar a otros) ayuda antes de elegir un camino.
+      narrative_beat: Antes de elegir un camino, Dr. Rho le sugiere a Dina preguntar a los pescadores
+        del archipiélago qué han visto últimamente.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: observar-antes-de-elegir
+      micro_objective: Aplicar la observación cuidadosa como una forma de reunir información antes de
+        decidir.
+      narrative_beat: Zara Vex enseña a Liruf a observar el color del agua y el viento antes de elegir
+        qué camino tomar.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: comparar-lo-que-escucho
+      micro_objective: Comparar información de varias fuentes antes de tomar una decisión.
+      narrative_beat: Dr. Rho pregunta a Dina qué hace si dos pescadores le dan información distinta sobre
+        el mismo camino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: elegir-con-toda-mi-informacion
+      micro_objective: Aplicar toda la información reunida para elegir un camino con más confianza.
+      narrative_beat: Con toda la información reunida, Dina elige su camino en el archipiélago y explica
+        en qué se basó.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: lo-que-no-puedo-saber-antes-de-elegir
+    title_es: Lo que no puedo saber antes de elegir
+    concept: Por más información que se reúna, siempre queda algo que no se puede saber con certeza antes
+      de decidir; eso también es parte del riesgo.
+    learning_objective: Al final, el niño puede reconocer que, incluso con información, algo del resultado
+      sigue siendo incierto.
+    key_vocabulary:
+    - incierto
+    - certeza
+    - información
+    - límite
+    prior_knowledge: Sabe buscar información antes de elegir un camino (tema anterior).
+    parent_check: ¿{{name}} entiende que, aunque se informe bien, algunas cosas no se pueden saber con
+      total certeza?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: ni-los-pescadores-mas-sabios-lo-saben-todo
+      micro_objective: Reconocer que incluso con mucha información, el resultado final sigue siendo incierto.
+      narrative_beat: Un pescador muy experimentado le confiesa a Dina que, ni con toda su experiencia,
+        puede saber con certeza qué traerá el estrecho hoy.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: lo-que-si-se-y-lo-que-no-se
+      micro_objective: Distinguir, en una decisión, qué información sí se tiene y qué queda incierto.
+      narrative_beat: Dr. Rho ayuda a Liruf a separar, en su decisión, lo que sí sabe de lo que sigue siendo
+        incierto.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: eso-tambien-es-parte-del-riesgo
+      micro_objective: Explicar por qué lo que no se puede saber también forma parte de lo que hace riesgosa
+        una decisión.
+      narrative_beat: Zara Vex explica a Liruf que esa parte incierta, la que nadie puede saber de antemano,
+        es justamente parte de lo que hace riesgosa una decisión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: decidir-aceptando-la-incertidumbre
+      micro_objective: Aplicar la decisión de avanzar aceptando que una parte del resultado seguirá siendo
+        incierta.
+      narrative_beat: Frente a un nuevo camino, Dina decide avanzar aceptando que, aunque se informó bien,
+        una parte seguirá siendo incierta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 8
+    slug: mi-primera-decision-con-riesgo
+    title_es: Mi primera decisión con riesgo
+    concept: Tomar una primera decisión propia frente a un riesgo real, usando información, calma y aceptando
+      la incertidumbre, cierra el aprendizaje de esta saga.
+    learning_objective: Al final, el niño puede tomar una decisión propia frente a un riesgo, explicando
+      su proceso completo.
+    key_vocabulary:
+    - decisión
+    - riesgo
+    - proceso
+    - propia
+    prior_knowledge: Ha aprendido a informarse, sentir con calma y aceptar la incertidumbre frente a un
+      riesgo (temas anteriores).
+    parent_check: ¿{{name}} puede contarte una decisión propia donde consideró un riesgo antes de actuar?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-momento-de-decidir
+      micro_objective: Reconocer, dentro de una historia, el momento de tomar una primera decisión propia
+        frente a un riesgo real.
+      narrative_beat: Dr. Rho invita a Dina a tomar su primera decisión real frente a los dos caminos
+        del archipiélago, sin que nadie decida por ella.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-pasos-de-mi-decision
+      micro_objective: 'Ordenar los pasos de un buen proceso de decisión frente a un riesgo: informarse,
+        sentir con calma, decidir.'
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos que seguirá para tomar su propia decisión:
+        informarse, sentir con calma, decidir.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: explicar-mi-decision-en-voz-alta
+      micro_objective: Explicar en voz alta el proceso completo detrás de una decisión propia frente a
+        un riesgo.
+      narrative_beat: Dina practica explicar en voz alta todo su proceso antes de tomar su decisión final
+        en el archipiélago.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: tomar-mi-decision
+      micro_objective: Aplicar con seguridad el proceso completo de decisión frente a un riesgo real propio.
+      narrative_beat: Con su proceso completo aplicado, Dina toma su primera decisión real frente al riesgo
+        del archipiélago.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga Caminos Seguros y Caminos Arriesgados.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Caminos Seguros y Caminos Arriesgados.
+    key_vocabulary:
+    - riesgo
+    - premio
+    - información
+    - decidir
+    prior_knowledge: Ha completado los ocho temas de la saga Caminos Seguros y Caminos Arriesgados (aventura
+      3, saga 1).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/dos-caminos-uno-tranquilo-y-uno-agitado
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/que-es-un-riesgo
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mas-premio-posible-mas-riesgo-posible
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/no-todo-riesgo-es-igual-de-grande
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/como-se-siente-arriesgarse
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/elegir-un-camino-con-informacion
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/lo-que-no-puedo-saber-antes-de-elegir
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mi-primera-decision-con-riesgo
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, la diferencia entre un camino tranquilo y uno agitado,
+        y qué significa 'riesgo'.
+      narrative_beat: Zara Vex abre un cofre de conchas de recuerdo del archipiélago y reta a Dina a recordar
+        lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo la relación entre premio y riesgo, y cómo clasificar
+        riesgos de distinto tamaño.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cómo buscar información y aceptar la
+        incertidumbre antes de decidir.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, cómo buscar información antes de decidir.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo tomar una decisión
+        propia frente a un riesgo real.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla las primeras ideas de Caminos Seguros y Caminos Arriesgados en un solo reto
+      para practicar cómo se conectan entre sí.
+    learning_objective: Al final, el niño puede recordar y combinar dos ideas distintas de la saga Caminos
+      Seguros y Caminos Arriesgados en una sola situación.
+    key_vocabulary:
+    - combinar
+    - recordar
+    - aplicar
+    - riesgo
+    prior_knowledge: Conoce las primeras lecciones de Caminos Seguros y Caminos Arriesgados citadas en
+      este reto (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/que-es-un-riesgo
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mas-premio-posible-mas-riesgo-posible
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/no-todo-riesgo-es-igual-de-grande
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/elegir-un-camino-con-informacion
+    lessons:
+    - position: 1
+      slug: un-recuerdo-del-cofre
+      micro_objective: Recordar, tal como se aprendió antes, qué significa la palabra 'riesgo'.
+      narrative_beat: Zara Vex trae dos conchas de recuerdo del cofre y pide a Liruf unirlas en una sola
+        idea, sin ayuda nueva.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-premio-riesgo-y-tamano
+      micro_objective: Combinar la relación entre premio y riesgo con la idea de que no todo riesgo es
+        igual de grande.
+      narrative_beat: Dr. Rho muestra cómo la relación entre premio y riesgo se conecta con la idea de
+        que los riesgos tienen distinto tamaño.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la relación premio-riesgo y la búsqueda de
+        información.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas ideas en una
+        situación final.
+      narrative_beat: Frente a una última escena del archipiélago, Dina combina lo aprendido sobre riesgo
+        y sobre informarse para resolverla sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: no-todo-en-una-sola-canoa
+  icon: kayaking
+  title:
+    en-US: Not Everything in One Canoe
+    es-MX: No Todo en una Sola Canoa
+    pt-BR: Nem Tudo em uma Só Canoa
+  description:
+    en-US: Discover why spreading your coins across several canoes protects you better than loading them
+      all into one.
+    es-MX: Descubre por qué repartir tus monedas en varias canoas te protege mejor que cargarlas todas
+      en una sola.
+    pt-BR: Descubra por que distribuir suas moedas em várias canoas protege melhor do que carregar tudo
+      em uma só.
+  topics:
+  - position: 1
+    slug: una-canoa-que-se-voltea
+    title_es: Una canoa que se voltea
+    concept: Cuando una canoa cargada con todas las monedas se voltea en el estrecho, se pierde todo de
+      una sola vez.
+    learning_objective: Al final, el niño puede describir qué pasa cuando todo lo valioso se coloca en
+      un solo lugar y ese lugar falla.
+    key_vocabulary:
+    - canoa
+    - voltear
+    - perder
+    - todo
+    prior_knowledge: Ha tomado su primera decisión propia frente a un riesgo (aventura 3, saga 1).
+    parent_check: ¿{{name}} puede explicar qué pasa si se pone todo lo valioso en un solo lugar y ese
+      lugar falla?
+    prerequisites:
+    - path: el-jardin-del-tiempo/jardin-que-nadie-toca/dos-jardines-uno-tocado-y-uno-no
+      strength: soft
+      reason: Comparar dos jardines cuidados de forma distinta entrena la misma comparación visual que
+        ayuda a entender por qué repartir en varias canoas protege mejor que una sola.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-carga-todo-en-una-canoa
+      micro_objective: Observar qué pasa cuando todas las monedas se cargan en una sola canoa que se voltea.
+      narrative_beat: Liruf carga todas sus monedas en una sola canoa para cruzar el estrecho, y una ola
+        inesperada la voltea, perdiéndolo todo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-sintio-liruf
+      micro_objective: Reconocer la sensación de perder todo de una sola vez por haberlo puesto en un
+        solo lugar.
+      narrative_beat: Dr. Rho pregunta a Liruf qué sintió al ver que perdió absolutamente todo en un solo
+        momento.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: pudo-haber-sido-distinto
+      micro_objective: Reflexionar sobre qué habría pasado si Liruf hubiera repartido sus monedas en más
+        de una canoa.
+      narrative_beat: Zara Vex pregunta a Dina qué habría pasado si Liruf hubiera repartido sus monedas
+        en dos canoas en vez de una.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: reconocer-el-mismo-error-en-otra-escena
+      micro_objective: Aplicar el reconocimiento del riesgo de poner todo en un solo lugar frente a una
+        escena nueva.
+      narrative_beat: Frente a una escena nueva del archipiélago, Dina reconoce cuándo alguien está por
+        cometer el mismo error de Liruf.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: que-pasa-si-todo-va-en-una-canoa
+    title_es: Qué pasa si todo va en una canoa
+    concept: Poner todas las monedas en un solo lugar significa que, si ese lugar falla, se pierde el
+      cien por ciento; repartir reduce esa posibilidad.
+    learning_objective: Al final, el niño puede explicar por qué poner todo en un solo lugar aumenta lo
+      que se puede perder de una sola vez.
+    key_vocabulary:
+    - todo
+    - un-lugar
+    - perder
+    - repartir
+    prior_knowledge: Vio qué pasa cuando una canoa cargada con todo se voltea (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué es más riesgoso poner todo en un solo lugar que repartirlo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-diferencia-entre-perder-un-poco-y-perderlo-todo
+      micro_objective: Reconocer la diferencia entre perder una parte y perder el cien por ciento de lo
+        guardado.
+      narrative_beat: Dr. Rho compara el caso de Liruf, que lo perdió todo, con el de un pescador que solo
+        llevaba la mitad en cada canoa.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: calcular-cuanto-se-pierde-en-cada-caso
+      micro_objective: Calcular cuánto se pierde si todo va en un lugar contra si se reparte en dos.
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto habría perdido si hubiera repartido sus monedas
+        en dos canoas en vez de una.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: por-que-repartir-reduce-el-riesgo
+      micro_objective: Explicar por qué repartir en más de un lugar reduce lo que se puede perder de una
+        sola vez.
+      narrative_beat: Dr. Rho pregunta a Dina por qué repartir las monedas en varias canoas reduce el
+        riesgo de perderlo todo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: aplicar-el-calculo-a-una-situacion-nueva
+      micro_objective: Aplicar el cálculo de pérdida posible a una nueva situación con distintas cantidades.
+      narrative_beat: Frente a una nueva situación del archipiélago, Dina calcula cuánto se arriesga a
+        perder según cómo reparta sus monedas.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 3
+    slug: repartir-entre-varias-canoas
+    title_es: Repartir entre varias canoas
+    concept: Repartir las monedas entre varias canoas distintas es una forma concreta de proteger lo guardado
+      frente al riesgo del estrecho.
+    learning_objective: Al final, el niño puede aplicar la estrategia de repartir entre varias canoas
+      para proteger lo guardado.
+    key_vocabulary:
+    - repartir
+    - varias
+    - proteger
+    - estrategia
+    prior_knowledge: Sabe por qué poner todo en un solo lugar aumenta lo que se puede perder (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo repartir algo valioso en varias partes ayuda a protegerlo?
+    fact_refs:
+    - risk.diversification_metaphor
+    lessons:
+    - position: 1
+      slug: zara-reparte-sus-monedas
+      micro_objective: Observar la estrategia de Zara Vex de repartir sus monedas en varias canoas antes
+        de cruzar el estrecho.
+      narrative_beat: Zara Vex reparte sus monedas en tres canoas distintas antes de cruzar el estrecho,
+        en vez de cargarlas todas en una.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: practicar-repartir-una-cantidad
+      micro_objective: Practicar repartir una cantidad de monedas entre varias canoas de forma equilibrada.
+      narrative_beat: Dr. Rho ayuda a Liruf a repartir sus propias monedas entre tres canoas antes de cruzar
+        el estrecho por primera vez.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: que-pasa-si-una-canoa-se-voltea-ahora
+      micro_objective: Comparar el resultado de perder una sola canoa cuando las monedas están repartidas
+        contra cuando están todas juntas.
+      narrative_beat: Una ola voltea una de las tres canoas de Zara, y Dr. Rho pregunta a Dina cuánto
+        se perdió esta vez comparado con lo de Liruf.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: repartir-mis-propias-monedas
+      micro_objective: Aplicar la estrategia de repartir monedas en varias canoas para una travesía propia.
+      narrative_beat: Frente a su propia travesía por el estrecho, Dina reparte sus monedas en varias
+        canoas antes de partir.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: comparar-una-canoa-y-varias-canoas
+    title_es: Comparar una canoa y varias canoas
+    concept: Comparar el resultado de cargar todo en una sola canoa contra repartirlo en varias muestra
+      con claridad la ventaja de repartir.
+    learning_objective: Al final, el niño puede comparar el resultado esperado de una sola canoa contra
+      varias canoas repartidas.
+    key_vocabulary:
+    - comparar
+    - una
+    - varias
+    - resultado
+    prior_knowledge: Ha practicado repartir monedas entre varias canoas (tema anterior).
+    parent_check: ¿{{name}} puede comparar, con un ejemplo, el resultado de guardar todo junto contra
+      repartirlo en varias partes?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-travesias-del-mismo-dia
+      micro_objective: 'Observar dos travesías del mismo día: una con una sola canoa y otra con varias
+        repartidas.'
+      narrative_beat: 'Dr. Rho muestra dos travesías del mismo día: la de Liruf, con una sola canoa, y
+        la de Zara, con varias repartidas.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-lo-que-quedo-al-final
+      micro_objective: Comparar lo que quedó al final del día entre la travesía de una canoa y la de varias.
+      narrative_beat: Zara Vex pide a Liruf comparar cuánto le quedó a cada quien al final del día, después
+        de la ola que volteó una canoa.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: la-ventaja-no-siempre-se-nota-el-mismo-dia
+      micro_objective: Reconocer que la ventaja de repartir puede no notarse cada día, pero protege a
+        largo plazo.
+      narrative_beat: Dr. Rho explica que en un día tranquilo ambas estrategias se ven parecidas, pero
+        la ventaja de repartir se nota en los días difíciles.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-el-resultado-de-una-nueva-travesia
+      micro_objective: Aplicar la comparación entre una canoa y varias para predecir el resultado de una
+        nueva travesía riesgosa.
+      narrative_beat: Frente a una nueva travesía riesgosa, Dina predice qué estrategia -una canoa o varias-
+        protegerá mejor el resultado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: no-siempre-hay-que-repartir-igual
+    title_es: No siempre hay que repartir igual
+    concept: Repartir no siempre significa dividir todo en partes exactamente iguales; a veces conviene
+      poner un poco más en el camino más seguro.
+    learning_objective: Al final, el niño puede explicar que repartir no siempre significa partes iguales,
+      según cuánto riesgo se quiera asumir.
+    key_vocabulary:
+    - repartir
+    - igual
+    - seguro
+    - proporción
+    prior_knowledge: Ha comparado el resultado de una canoa contra varias canoas (tema anterior).
+    parent_check: ¿{{name}} entiende que repartir algo no siempre significa dividirlo en partes exactamente
+      iguales?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mas-en-la-laguna-un-poco-en-el-estrecho
+      micro_objective: Observar una forma de repartir donde se pone más en el camino seguro y menos en
+        el riesgoso.
+      narrative_beat: Dr. Rho reparte sus monedas poniendo la mayor parte en la laguna tranquila y solo
+        un poco en el estrecho agitado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-dos-formas-de-repartir
+      micro_objective: Comparar una forma de repartir en partes iguales contra una forma que pone más
+        en lo seguro.
+      narrative_beat: 'Zara Vex compara con Liruf dos formas de repartir: una en partes iguales, y otra
+        con más peso en la laguna segura.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: quien-elegiria-cada-forma
+      micro_objective: Explicar qué tipo de persona elegiría repartir con más peso en lo seguro y quién
+        en partes iguales.
+      narrative_beat: Dr. Rho pregunta a Dina quién elegiría poner más en lo seguro, y quién repartiría
+        en partes exactamente iguales.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: elegir-mi-propia-forma-de-repartir
+      micro_objective: Aplicar la elección de una forma propia de repartir, según cuánto riesgo se quiere
+        asumir.
+      narrative_beat: Frente a su propia travesía, Dina elige cómo repartir sus monedas y explica por
+        qué eligió esa proporción.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 6
+    slug: cuantas-canoas-son-suficientes
+    title_es: Cuántas canoas son suficientes
+    concept: Repartir en demasiadas canoas puede volverse difícil de manejar; encontrar un número razonable
+      de canoas es parte de la estrategia.
+    learning_objective: Al final, el niño puede explicar que existe un número razonable de partes para
+      repartir, ni una sola ni demasiadas.
+    key_vocabulary:
+    - cuántas
+    - suficiente
+    - manejar
+    - razonable
+    prior_knowledge: Sabe que repartir no siempre significa partes iguales (tema anterior).
+    parent_check: ¿{{name}} entiende que repartir en demasiadas partes también puede complicar las cosas?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: diez-canoas-diminutas
+      micro_objective: Observar que repartir en demasiadas canoas pequeñas puede volverse difícil de manejar.
+      narrative_beat: Liruf intenta repartir sus monedas en diez canoas diminutas y termina confundido,
+        sin poder llevar el control de ninguna.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-una-diez-y-tres-canoas
+      micro_objective: Comparar los resultados de usar una canoa, diez canoas y un número intermedio como
+        tres.
+      narrative_beat: Dr. Rho compara con Dina los resultados de usar una sola canoa, diez canoas, y un
+        número intermedio como tres.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: un-numero-razonable
+      micro_objective: Explicar por qué un número razonable de canoas protege sin volverse difícil de
+        manejar.
+      narrative_beat: Zara Vex explica a Liruf por qué un número razonable de canoas -ni una, ni demasiadas-
+        suele ser la mejor estrategia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: elegir-cuantas-canoas-usar
+      micro_objective: Aplicar la elección de un número razonable de canoas para una travesía propia nueva.
+      narrative_beat: Frente a una nueva travesía, Dina elige un número razonable de canoas y explica
+        por qué no eligió una sola ni demasiadas.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 7
+    slug: mi-primera-reparticion
+    title_es: Mi primera repartición
+    concept: Diseñar la propia repartición de monedas entre varias canoas, con una proporción y un número
+      razonables, aplica todo lo aprendido en esta saga.
+    learning_objective: Al final, el niño puede diseñar su propia repartición de monedas entre varias
+      canoas, con proporción y número razonables.
+    key_vocabulary:
+    - repartición
+    - propia
+    - proporción
+    - diseñar
+    prior_knowledge: Ha aprendido a repartir, en qué proporción y con cuántas canoas (temas anteriores).
+    parent_check: ¿{{name}} puede contarte cómo repartiría algo valioso entre varios lugares distintos?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: disenar-mi-reparticion
+      micro_objective: Diseñar, dentro de una historia, una repartición propia de monedas entre varias
+        canoas.
+      narrative_beat: Dr. Rho invita a Dina a diseñar su propia repartición de monedas para su próxima
+        travesía por el archipiélago.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-numero-y-proporcion
+      micro_objective: Elegir el número de canoas y la proporción de reparto para una travesía propia.
+      narrative_beat: Zara Vex ayuda a Liruf a elegir cuántas canoas usar y qué proporción poner en cada
+        una.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: explicar-mi-reparticion-en-voz-alta
+      micro_objective: Explicar en voz alta una repartición propia, incluyendo el número de canoas y la
+        proporción elegida.
+      narrative_beat: Dina practica explicando en voz alta su repartición completa antes de zarpar hacia
+        el estrecho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: zarpar-con-mi-reparticion
+      micro_objective: Aplicar con seguridad la repartición completa diseñada, comprometiéndose a seguirla.
+      narrative_beat: Con su repartición ya diseñada, Dina zarpa hacia el archipiélago aplicando su propia
+        estrategia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: explicar-por-que-reparti-asi
+    title_es: Explicar por qué repartí así
+    concept: Poder explicar con claridad por qué se eligió repartir de cierta forma demuestra que la decisión
+      fue pensada, no solo copiada.
+    learning_objective: Al final, el niño puede explicar con claridad las razones detrás de su propia
+      forma de repartir.
+    key_vocabulary:
+    - explicar
+    - razones
+    - pensada
+    - claridad
+    prior_knowledge: Ha diseñado su propia repartición de monedas entre varias canoas (tema anterior).
+    parent_check: ¿{{name}} puede explicarte con sus propias palabras por qué repartió algo de una forma
+      y no de otra?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dr-rho-pregunta-por-que
+      micro_objective: Reconocer la importancia de poder explicar las razones detrás de una decisión de
+        repartir.
+      narrative_beat: Al terminar su travesía, Dr. Rho pregunta a Dina por qué eligió repartir sus monedas
+        de esa forma específica.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: las-partes-de-una-buena-explicacion
+      micro_objective: 'Ordenar las partes de una buena explicación: qué se repartió, en cuántas partes,
+        y por qué esa proporción.'
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las partes de una buena explicación sobre su forma
+        de repartir.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-mi-explicacion
+      micro_objective: Practicar decir en voz alta una explicación clara y completa sobre una decisión
+        de repartir.
+      narrative_beat: Dina practica decir en voz alta su explicación completa antes de contársela a un
+        nuevo navegante del archipiélago.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: explicarle-a-un-navegante-nuevo
+      micro_objective: Aplicar con seguridad una explicación clara y completa sobre una decisión propia
+        de repartir.
+      narrative_beat: Dina explica con claridad a un navegante nuevo del archipiélago por qué repartió
+        sus monedas de esa manera.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga No Todo en una Sola Canoa.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga No Todo en una Sola Canoa.
+    key_vocabulary:
+    - repartir
+    - canoa
+    - proteger
+    - proporción
+    prior_knowledge: Ha completado los ocho temas de la saga No Todo en una Sola Canoa (aventura 3, saga
+      2).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/una-canoa-que-se-voltea
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/que-pasa-si-todo-va-en-una-canoa
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/repartir-entre-varias-canoas
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/comparar-una-canoa-y-varias-canoas
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/no-siempre-hay-que-repartir-igual
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/cuantas-canoas-son-suficientes
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/mi-primera-reparticion
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/explicar-por-que-reparti-asi
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, qué pasa cuando una canoa cargada con todo se voltea.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos de las canoas repartidas,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué repartir reduce el riesgo y cómo repartir en
+        varias canoas.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cómo repartir sin partes iguales y cuántas
+        canoas son suficientes.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, cómo elegir un número razonable de canoas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo diseñar y explicar una repartición
+        propia, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en No Todo en una Sola Canoa con ideas de Caminos Seguros y
+      Caminos Arriesgados en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de No Todo en una Sola
+      Canoa con un concepto de Caminos Seguros y Caminos Arriesgados.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - repartir
+    prior_knowledge: Conoce No Todo en una Sola Canoa (saga 2) y las lecciones citadas de Caminos Seguros
+      y Caminos Arriesgados (saga 1).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mas-premio-posible-mas-riesgo-posible
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/elegir-un-camino-con-informacion
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/repartir-entre-varias-canoas
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/comparar-una-canoa-y-varias-canoas
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-primera-saga
+      micro_objective: Recordar, tal como se aprendió antes, la relación entre premio posible y riesgo
+        posible.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
+        antes de mezclarlo con las canoas repartidas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-informarse-con-repartir
+      micro_objective: Combinar la búsqueda de información antes de decidir con la estrategia de repartir
+        entre varias canoas.
+      narrative_beat: Dr. Rho muestra cómo buscar información antes de decidir se conecta con la estrategia
+        de repartir en varias canoas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la relación premio-riesgo y la estrategia
+        de repartir.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+- position: 3
+  slug: decidir-con-informacion
+  icon: search
+  title:
+    en-US: Deciding with Information
+    es-MX: Decidir con Información
+    pt-BR: Decidir com Informação
+  description:
+    en-US: Learn to ask the right questions, listen to those who've been there, and decide even when you
+      can't know everything.
+    es-MX: Aprende a hacer las preguntas correctas, a escuchar a quienes ya fueron, y a decidir aunque
+      no puedas saberlo todo.
+    pt-BR: Aprenda a fazer as perguntas certas, a escutar quem já foi, e a decidir mesmo sem saber tudo.
+  topics:
+  - position: 1
+    slug: preguntar-antes-de-elegir
+    title_es: Preguntar antes de elegir
+    concept: Hacer preguntas concretas antes de elegir una isla para explorar ayuda a decidir con más
+      información.
+    learning_objective: Al final, el niño puede formular preguntas concretas antes de tomar una decisión
+      con riesgo.
+    key_vocabulary:
+    - preguntar
+    - antes
+    - concreto
+    - decidir
+    prior_knowledge: Ha practicado elegir un camino con información (aventura 3, saga 1).
+    parent_check: ¿{{name}} hace preguntas concretas antes de tomar una decisión importante?
+    prerequisites:
+    - path: el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/elegir-un-camino-con-informacion
+      strength: hard
+      reason: Ya haber practicado elegir un camino usando información es la base directa para aprender
+        a formular las preguntas correctas antes de decidir.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: tres-preguntas-antes-de-elegir
+      micro_objective: Reconocer el valor de hacer preguntas concretas antes de elegir.
+      narrative_beat: Zara Vex reta a Liruf a hacer tres preguntas antes de elegir cuál isla nueva explorar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-las-preguntas-mas-utiles
+      micro_objective: Ordenar preguntas según cuál es más útil antes de decidir.
+      narrative_beat: Dr. Rho ayuda a Dina a ordenar qué preguntas son más útiles antes de una decisión
+        con riesgo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: preguntar-no-es-debilidad
+      micro_objective: Reconocer que preguntar antes de decidir es una fortaleza, no una debilidad.
+      narrative_beat: Liruf aprende que preguntar no muestra debilidad, sino que ayuda a decidir mejor.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mis-preguntas-para-una-isla-nueva
+      micro_objective: Aplicar la formulación de preguntas concretas frente a una decisión nueva.
+      narrative_beat: Frente a una isla nueva, Dina hace sus propias preguntas antes de decidir explorarla.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: una-isla-con-mas-pistas-que-otra
+    title_es: Una isla con más pistas que otra
+    concept: Algunas islas ofrecen más pistas (mapas, marcas, señales) que otras, y eso ayuda a decidir
+      con más confianza.
+    learning_objective: Al final, el niño puede comparar dos islas según la cantidad de pistas disponibles
+      antes de decidir.
+    key_vocabulary:
+    - pistas
+    - señales
+    - comparar
+    - confianza
+    prior_knowledge: Sabe formular preguntas antes de elegir (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué tener más pistas ayuda a decidir con más confianza?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-mapa-antiguo-y-la-isla-desconocida
+      micro_objective: Observar la diferencia entre una isla con muchas pistas y otra sin ninguna.
+      narrative_beat: 'Dr. Rho muestra dos islas: una con un mapa antiguo lleno de marcas, y otra completamente
+        desconocida.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuanta-informacion-ofrece-cada-isla
+      micro_objective: Comparar la cantidad de pistas disponibles entre dos islas distintas.
+      narrative_beat: Zara Vex pide a Liruf comparar cuánta información ofrece cada isla antes de decidir.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: menos-pistas-no-es-automaticamente-malo
+      micro_objective: Reconocer que menos pistas no significa automáticamente una mala opción, solo más
+        incertidumbre.
+      narrative_beat: Dr. Rho pregunta a Dina si eso significa que la isla desconocida siempre es mala
+        opción.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: ordenar-tres-islas-nuevas
+      micro_objective: Aplicar la comparación de pistas disponibles a un conjunto nuevo de islas.
+      narrative_beat: Frente a tres islas nuevas, Dina las ordena según cuánta información ofrece cada
+        una.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: lo-que-cuenta-alguien-que-ya-fue
+    title_es: Lo que cuenta alguien que ya fue
+    concept: Escuchar a alguien que ya visitó un lugar es una fuente valiosa de información, aunque no
+      sea la única.
+    learning_objective: Al final, el niño puede reconocer el valor de escuchar la experiencia de alguien
+      que ya tomó una decisión similar.
+    key_vocabulary:
+    - experiencia
+    - escuchar
+    - contar
+    - valioso
+    prior_knowledge: Sabe comparar islas según sus pistas disponibles (tema anterior).
+    parent_check: ¿{{name}} valora escuchar la experiencia de alguien que ya vivió algo parecido a lo
+      que está por decidir?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-viejo-navegante
+      micro_objective: Reconocer el valor de escuchar la experiencia de alguien que ya vivió una situación
+        parecida.
+      narrative_beat: Un viejo navegante del archipiélago le cuenta a Dina cómo le fue la última vez que
+        exploró una isla parecida.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-partes-son-mas-utiles
+      micro_objective: Identificar qué partes de una experiencia contada son más útiles para una decisión
+        propia.
+      narrative_beat: Zara Vex pregunta a Liruf qué partes del relato del navegante le parecen más útiles
+        para su propia decisión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cada-situacion-puede-ser-distinta
+      micro_objective: Reconocer que la experiencia de otros ayuda, aunque cada situación pueda ser distinta.
+      narrative_beat: Dr. Rho explica que la experiencia de otro ayuda, pero cada situación puede ser
+        un poco distinta.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: buscar-experiencia-antes-de-decidir
+      micro_objective: Aplicar la búsqueda de experiencia ajena como parte de informarse antes de decidir.
+      narrative_beat: Frente a una decisión nueva, Dina busca a alguien con experiencia antes de decidir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: comparar-dos-islas-con-la-misma-pista
+    title_es: Comparar dos islas con la misma pista
+    concept: Cuando dos islas ofrecen la misma pista, hay que buscar otra información adicional para poder
+      diferenciarlas.
+    learning_objective: Al final, el niño puede reconocer cuándo una sola pista no es suficiente para
+      diferenciar dos opciones.
+    key_vocabulary:
+    - misma-pista
+    - diferenciar
+    - adicional
+    - buscar
+    prior_knowledge: Reconoce el valor de escuchar la experiencia de otros (tema anterior).
+    parent_check: ¿{{name}} sabe que a veces necesita más de una pista para decidir entre dos opciones
+      parecidas?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-misma-marca-en-el-mapa
+      micro_objective: Reconocer que una sola pista puede no ser suficiente para diferenciar dos opciones
+        parecidas.
+      narrative_beat: Dos islas del archipiélago tienen la misma marca en el mapa antiguo, y Liruf no sabe
+        cuál elegir solo con esa pista.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: buscar-una-segunda-pista
+      micro_objective: Buscar información adicional cuando la primera pista no alcanza para diferenciar
+        opciones.
+      narrative_beat: Dr. Rho ayuda a Dina a buscar una segunda pista que sí diferencie ambas islas.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: y-si-siguen-pareciendo-iguales
+      micro_objective: Reflexionar sobre qué hacer cuando ni siquiera varias pistas logran diferenciar
+        dos opciones.
+      narrative_beat: Zara Vex pregunta a Liruf qué haría si, aun con dos pistas, las islas siguen pareciendo
+        iguales.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: buscar-mas-informacion-en-dos-opciones-nuevas
+      micro_objective: Aplicar la búsqueda de información adicional frente a dos opciones que parecen
+        iguales.
+      narrative_beat: Frente a dos opciones nuevas con la misma pista inicial, Dina busca información
+        adicional antes de decidir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: cuando-la-informacion-no-alcanza
+    title_es: Cuándo la información no alcanza
+    concept: A veces, por más que se busque, la información disponible no alcanza para eliminar toda la
+      incertidumbre antes de decidir.
+    learning_objective: Al final, el niño puede reconocer cuándo la información disponible no alcanza
+      para eliminar toda la incertidumbre.
+    key_vocabulary:
+    - alcanzar
+    - incertidumbre
+    - límite
+    - disponible
+    prior_knowledge: Sabe buscar información adicional cuando una pista no diferencia opciones (tema anterior).
+    parent_check: ¿{{name}} entiende que a veces, aunque busque bien, no va a tener toda la información
+      que quisiera?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-isla-que-sigue-siendo-un-misterio
+      micro_objective: Reconocer una situación donde la información disponible no alcanza para eliminar
+        toda la duda.
+      narrative_beat: Por más que Dina pregunta y observa, la isla más nueva del archipiélago sigue siendo
+        un misterio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-hacer-cuando-ya-no-hay-mas-informacion
+      micro_objective: Reflexionar sobre qué hacer cuando ya se agotaron las fuentes de información disponibles.
+      narrative_beat: Dr. Rho pregunta a Liruf qué se puede hacer cuando la información disponible ya no
+        alcanza para saber más.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: siempre-queda-algo-incierto
+      micro_objective: Relacionar esta situación con lo aprendido sobre la incertidumbre que siempre queda,
+        incluso informándose bien.
+      narrative_beat: 'Zara Vex recuerda que esto se conecta con lo aprendido antes: siempre queda algo
+        incierto, aunque uno se informe bien.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: avanzar-reconociendo-el-limite
+      micro_objective: Aplicar la decisión de avanzar reconociendo el límite de la información disponible.
+      narrative_beat: Frente a una decisión con información limitada, Dina decide avanzar reconociendo
+        el límite de lo que sabe.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: decidir-aunque-no-sepa-todo
+    title_es: Decidir aunque no sepa todo
+    concept: Decidir con la mejor información disponible, aunque no sea toda la información posible, es
+      una habilidad necesaria.
+    learning_objective: Al final, el niño puede aplicar la decisión de actuar con la mejor información
+      disponible, sin esperar saberlo todo.
+    key_vocabulary:
+    - decidir
+    - disponible
+    - actuar
+    - suficiente
+    prior_knowledge: Reconoce cuándo la información disponible no alcanza (tema anterior).
+    parent_check: ¿{{name}} puede decidir con la mejor información que tiene, sin quedarse esperando saberlo
+      absolutamente todo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-se-queda-paralizado
+      micro_objective: Reconocer que esperar saberlo todo antes de decidir también tiene un costo.
+      narrative_beat: Liruf se queda paralizado esperando saberlo todo antes de decidir, y Dr. Rho le explica
+        que eso también tiene un costo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: distinto-a-decidir-sin-pensar
+      micro_objective: Distinguir entre decidir con la mejor información disponible y decidir sin pensar
+        en absoluto.
+      narrative_beat: Zara Vex explica a Dina que decidir con la mejor información disponible es distinto
+        a decidir sin pensar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: una-decision-de-dr-rho
+      micro_objective: Conocer un ejemplo donde decidir con información parcial, pero suficiente, funcionó
+        bien.
+      narrative_beat: Dr. Rho comparte una decisión suya donde tuvo que actuar sin saberlo todo, y cómo
+        le resultó.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: decidir-sin-quedarme-paralizado
+      micro_objective: Aplicar la decisión de actuar con la mejor información disponible frente a una
+        situación nueva.
+      narrative_beat: Frente a una nueva decisión con información parcial, Liruf decide actuar con lo que
+        sabe, sin quedarse paralizado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: mi-lista-de-preguntas-antes-de-arriesgar
+    title_es: Mi lista de preguntas antes de arriesgar
+    concept: Armar una lista propia de preguntas para hacer antes de cualquier decisión con riesgo organiza
+      todo lo aprendido en esta saga.
+    learning_objective: Al final, el niño puede armar una lista propia de preguntas útiles para hacer
+      antes de tomar una decisión con riesgo.
+    key_vocabulary:
+    - lista
+    - preguntas
+    - organizar
+    - riesgo
+    prior_knowledge: Ha aprendido a decidir con la mejor información disponible (tema anterior).
+    parent_check: ¿{{name}} puede compartir su propia lista de preguntas para hacer antes de decidir algo
+      con riesgo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: armar-mi-lista-de-preguntas
+      micro_objective: Reconocer el valor de tener una lista propia de preguntas antes de decidir con
+        riesgo.
+      narrative_beat: Dr. Rho invita a Dina a armar su propia lista de preguntas para usar antes de cualquier
+        decisión futura con riesgo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-mi-lista-por-importancia
+      micro_objective: Ordenar una lista de preguntas según su importancia para una decisión con riesgo.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar su lista de preguntas de la más importante a la
+        menos importante.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-mi-lista-en-voz-alta
+      micro_objective: Practicar el uso de una lista propia de preguntas frente a una decisión imaginaria.
+      narrative_beat: Dina practica usar su lista de preguntas en voz alta frente a una decisión imaginaria.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comprometerme-a-usar-mi-lista
+      micro_objective: Aplicar con seguridad el compromiso de usar una lista propia de preguntas antes
+        de decidir.
+      narrative_beat: Con su lista ya armada, Dina se compromete a usarla antes de cualquier decisión
+        importante en el archipiélago.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: aplicar-mi-lista-en-una-isla-nueva
+    title_es: Aplicar mi lista en una isla nueva
+    concept: Usar la lista propia de preguntas frente a una isla completamente nueva demuestra que la
+      herramienta funciona en la práctica.
+    learning_objective: Al final, el niño puede aplicar su lista propia de preguntas frente a una decisión
+      de riesgo completamente nueva.
+    key_vocabulary:
+    - aplicar
+    - práctica
+    - nueva
+    - herramienta
+    prior_knowledge: Ha armado su propia lista de preguntas antes de arriesgar (tema anterior).
+    parent_check: ¿{{name}} ha usado alguna vez su propia lista de preguntas antes de decidir algo con
+      riesgo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-isla-desconocida-en-el-horizonte
+      micro_objective: Reconocer el momento de aplicar por primera vez una lista propia de preguntas frente
+        a una isla nueva.
+      narrative_beat: Una isla nueva y desconocida aparece en el horizonte, y Dr. Rho invita a Dina a
+        usar su lista de preguntas por primera vez.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: aplicar-pregunta-por-pregunta
+      micro_objective: Aplicar, pregunta por pregunta, una lista propia antes de tomar una decisión con
+        riesgo.
+      narrative_beat: Zara Vex observa a Liruf aplicar su lista, pregunta por pregunta, antes de decidir
+        explorar la isla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: explicar-como-me-ayudo-cada-pregunta
+      micro_objective: Explicar cómo cada pregunta de una lista propia ayudó a tomar una decisión con
+        más confianza.
+      narrative_beat: Dina explica en voz alta cómo cada pregunta de su lista la ayudó a decidir con más
+        confianza.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-decision-final-con-toda-la-lista
+      micro_objective: Aplicar con seguridad el proceso completo de la lista de preguntas en una decisión
+        final.
+      narrative_beat: Con su lista aplicada por completo, Dina toma su decisión final sobre la isla nueva
+        y se siente segura de su proceso.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga Decidir con Información.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Decidir con Información.
+    key_vocabulary:
+    - preguntar
+    - pistas
+    - experiencia
+    - decidir
+    prior_knowledge: Ha completado los ocho temas de la saga Decidir con Información (aventura 3, saga
+      3).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/preguntar-antes-de-elegir
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/una-isla-con-mas-pistas-que-otra
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/lo-que-cuenta-alguien-que-ya-fue
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/comparar-dos-islas-con-la-misma-pista
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/cuando-la-informacion-no-alcanza
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/decidir-aunque-no-sepa-todo
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/mi-lista-de-preguntas-antes-de-arriesgar
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/aplicar-mi-lista-en-una-isla-nueva
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, por qué preguntar antes de elegir ayuda, y cómo comparar
+        islas según sus pistas.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos de decidir con información,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo el valor de escuchar experiencia ajena y de buscar
+        información adicional.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cuándo la información no alcanza y cómo
+        decidir sin saberlo todo.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, cómo decidir sin saberlo todo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo armar y usar una lista propia
+        de preguntas, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Decidir con Información con ideas de No Todo en una Sola
+      Canoa en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Decidir con Información
+      con un concepto de No Todo en una Sola Canoa.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - información
+    prior_knowledge: Conoce Decidir con Información (saga 3) y las lecciones citadas de No Todo en una
+      Sola Canoa (saga 2).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/no-siempre-hay-que-repartir-igual
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/mi-primera-reparticion
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/preguntar-antes-de-elegir
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/mi-lista-de-preguntas-antes-de-arriesgar
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-segunda-saga
+      micro_objective: Recordar, tal como se aprendió antes, que repartir no siempre significa partes
+        iguales.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las canoas repartidas y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con las preguntas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-preguntar-con-repartir
+      micro_objective: Combinar la formulación de preguntas antes de decidir con la elección de una repartición
+        propia.
+      narrative_beat: Dr. Rho muestra cómo hacer las preguntas correctas ayuda a decidir mejor cómo repartir
+        las monedas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la repartición en varias canoas y la lista
+        de preguntas antes de decidir.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+- position: 4
+  slug: perder-tambien-pasa
+  icon: umbrella
+  title:
+    en-US: Losing Happens Too
+    es-MX: Perder También Pasa
+    pt-BR: Perder Também Acontece
+  description:
+    en-US: Learn that a well-made risky decision can still turn out badly, and how to learn, adjust and
+      try again.
+    es-MX: Aprende que una decisión de riesgo bien tomada a veces igual sale mal, y cómo aprender, ajustar
+      e intentar de nuevo.
+    pt-BR: Aprenda que uma decisão de risco bem tomada às vezes dá errado, e como aprender, ajustar e
+      tentar de novo.
+  topics:
+  - position: 1
+    slug: a-veces-el-camino-arriesgado-no-sale-bien
+    title_es: A veces el camino arriesgado no sale bien
+    concept: Elegir el camino arriesgado, incluso con buena información, a veces no sale bien; eso es
+      parte normal de asumir un riesgo.
+    learning_objective: Al final, el niño puede reconocer que un camino arriesgado, incluso bien decidido,
+      a veces no sale bien.
+    key_vocabulary:
+    - no-salir-bien
+    - normal
+    - riesgo
+    - parte
+    prior_knowledge: Ha aplicado su lista de preguntas frente a una isla nueva (aventura 3, saga 3).
+    parent_check: ¿{{name}} entiende que, incluso decidiendo bien, a veces las cosas no salen como se
+      esperaba?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-pesca-casi-nula-de-dina
+      micro_objective: Observar que un camino arriesgado, incluso bien decidido, a veces no sale bien.
+      narrative_beat: Dina eligió el estrecho con buena información, pero esta vez la pesca fue casi nula,
+        a pesar de haber decidido bien.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decidio-mal-o-el-riesgo-no-salio-a-favor
+      micro_objective: Distinguir entre una mala decisión y un riesgo que, por su naturaleza, no salió
+        a favor esta vez.
+      narrative_beat: Dr. Rho pregunta a Liruf si eso significa que Dina decidió mal, o que simplemente
+        el riesgo no salió a su favor esta vez.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: hasta-zara-lo-ha-vivido
+      micro_objective: Reconocer que incluso decisiones bien pensadas pueden no salir bien, sin que eso
+        las vuelva decisiones malas.
+      narrative_beat: Zara Vex explica que hasta ella, siendo estratega, ha tenido decisiones bien pensadas
+        que no salieron bien.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: reconocer-que-decidi-bien
+      micro_objective: Aplicar la distinción entre decidir bien y obtener el resultado esperado frente
+        a una situación nueva.
+      narrative_beat: Frente a un nuevo resultado desfavorable, Dina reconoce que decidió bien, aunque
+        el resultado no fue el esperado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: como-se-siente-perder-algo
+    title_es: Cómo se siente perder algo
+    concept: Perder algo valioso puede sentirse triste o frustrante, y reconocer esa emoción es un paso
+      sano antes de seguir adelante.
+    learning_objective: Al final, el niño puede reconocer y nombrar la emoción de tristeza o frustración
+      que aparece al perder algo valioso.
+    key_vocabulary:
+    - triste
+    - frustrado
+    - perder
+    - sentir
+    prior_knowledge: Sabe que un camino arriesgado, incluso bien decidido, a veces no sale bien (tema
+      anterior).
+    parent_check: ¿{{name}} puede nombrar cómo se siente cuando pierde algo que le importaba?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-tristeza-de-dina
+      micro_objective: Reconocer la tristeza como una emoción normal al perder algo que se esperaba con
+        ilusión.
+      narrative_beat: Dina se siente triste al ver que su pesca fue casi nula, después de haber esperado
+        tanto.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: nombrar-en-voz-alta-lo-que-siento
+      micro_objective: Practicar nombrar en voz alta la emoción que aparece al perder algo valioso.
+      narrative_beat: Dr. Rho anima a Dina a nombrar en voz alta lo que siente, en vez de guardárselo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: zara-tambien-sintio-frustracion
+      micro_objective: Reconocer que sentir frustración frente a una pérdida es normal, incluso en alguien
+        con experiencia.
+      narrative_beat: Zara Vex comparte que ella también sintió frustración la primera vez que un riesgo
+        no le salió bien.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: nombrar-antes-de-decidir-el-siguiente-paso
+      micro_objective: Aplicar el reconocer y nombrar la emoción de pérdida antes de decidir el siguiente
+        paso.
+      narrative_beat: Frente a una nueva pérdida pequeña, Liruf nombra lo que siente antes de decidir qué
+        hacer después.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: perder-no-es-lo-mismo-que-fallar-para-siempre
+    title_es: Perder no es lo mismo que fallar para siempre
+    concept: Perder en una ocasión no significa que siempre se va a perder; es un resultado de esa vez,
+      no una etiqueta permanente.
+    learning_objective: Al final, el niño puede explicar la diferencia entre perder en una ocasión y fallar
+      para siempre.
+    key_vocabulary:
+    - ocasión
+    - permanente
+    - etiqueta
+    - diferencia
+    prior_knowledge: Reconoce la emoción que aparece al perder algo valioso (tema anterior).
+    parent_check: ¿{{name}} entiende que perder una vez no significa que siempre va a perder?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-cree-que-siempre-le-ira-mal
+      micro_objective: Reconocer la diferencia entre perder en una ocasión y creer que siempre se va a
+        perder.
+      narrative_beat: Liruf cree que, por haber perdido una vez, siempre le va a ir mal en el estrecho,
+        y Dr. Rho lo corrige con cariño.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-historial-de-varios-navegantes
+      micro_objective: Observar, con ejemplos, que perder alguna vez no significa perder siempre.
+      narrative_beat: 'Zara Vex muestra el historial de varios navegantes: todos perdieron alguna vez,
+        pero no siempre.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: que-pasaria-si-dejo-de-intentar
+      micro_objective: Reflexionar sobre las consecuencias de dejar de intentar después de una sola pérdida.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría si dejara de intentar solo por haber perdido
+        una vez.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: intentarlo-de-nuevo-sin-etiquetarme
+      micro_objective: Aplicar la decisión de seguir intentando, sin dejarse etiquetar por una sola pérdida.
+      narrative_beat: Frente a un nuevo camino arriesgado, Liruf decide intentarlo de nuevo, recordando
+        que perder una vez no es fallar para siempre.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 4
+    slug: que-aprendo-cuando-pierdo
+    title_es: Qué aprendo cuando pierdo
+    concept: Cada vez que se pierde algo en un riesgo, queda un aprendizaje concreto que puede ayudar
+      la próxima vez.
+    learning_objective: Al final, el niño puede identificar un aprendizaje concreto después de una experiencia
+      de pérdida.
+    key_vocabulary:
+    - aprender
+    - próxima-vez
+    - concreto
+    - experiencia
+    prior_knowledge: Sabe que perder una vez no significa fallar para siempre (tema anterior).
+    parent_check: ¿{{name}} puede identificar algo que aprendió después de una vez que las cosas no salieron
+      como esperaba?
+    prerequisites:
+    - path: el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/comparar-una-canoa-y-varias-canoas
+      strength: soft
+      reason: Comparar el resultado de una sola canoa contra varias prepara para entender, más adelante,
+        qué se puede aprender cuando ese resultado sale mal.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: revisar-que-podria-hacer-distinto
+      micro_objective: Identificar, dentro de una historia, un aprendizaje concreto después de una pérdida.
+      narrative_beat: Dr. Rho ayuda a Dina a revisar su pérdida y encontrar qué podría hacer distinto
+        la próxima vez.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-antes-y-despues
+      micro_objective: Comparar una decisión anterior con el conocimiento nuevo obtenido después de perder.
+      narrative_beat: Zara Vex pide a Liruf comparar su decisión anterior con lo que ahora sabe, para ver
+        qué cambiaría.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: el-aprendizaje-tambien-vale
+      micro_objective: Reconocer que el aprendizaje obtenido de una pérdida también tiene valor, aunque
+        se sienta distinto a ganar.
+      narrative_beat: Dr. Rho explica que el aprendizaje de una pérdida vale tanto como el premio de un
+        acierto, aunque se sienta distinto.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: identificar-mi-propio-aprendizaje
+      micro_objective: Aplicar la identificación de un aprendizaje concreto frente a una nueva experiencia
+        de pérdida.
+      narrative_beat: Frente a una nueva pérdida pequeña, Dina identifica sin ayuda qué aprendizaje concreto
+        puede sacar de ella.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: volver-a-intentar-con-lo-aprendido
+    title_es: Volver a intentar con lo aprendido
+    concept: Volver a intentar un camino arriesgado, aplicando lo aprendido de una pérdida anterior, es
+      la forma sana de seguir adelante.
+    learning_objective: Al final, el niño puede aplicar lo aprendido de una pérdida anterior al intentar
+      de nuevo una decisión con riesgo.
+    key_vocabulary:
+    - volver-a-intentar
+    - aplicar
+    - aprendido
+    - seguir
+    prior_knowledge: Ha identificado un aprendizaje concreto después de perder (tema anterior).
+    parent_check: ¿{{name}} vuelve a intentar algo aplicando lo que aprendió la vez anterior, en vez de
+      rendirse?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: intentar-de-nuevo-con-un-ajuste
+      micro_objective: Reconocer el momento de volver a intentar un riesgo, aplicando un aprendizaje anterior.
+      narrative_beat: Con lo aprendido de su pérdida anterior, Dina decide intentar de nuevo el estrecho,
+        esta vez con un pequeño ajuste.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ajustar-mi-reparticion-de-monedas
+      micro_objective: Aplicar un ajuste concreto, basado en un aprendizaje anterior, a una nueva decisión
+        de riesgo.
+      narrative_beat: Zara Vex ayuda a Liruf a ajustar su repartición de monedas según lo que aprendió
+        la vez pasada.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: no-me-rendi-lo-mejore
+      micro_objective: Reconocer el valor de volver a intentar con una estrategia mejorada, en vez de
+        rendirse.
+      narrative_beat: Dr. Rho celebra que Dina no se rindió, sino que volvió a intentarlo con una estrategia
+        mejorada.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: aplicar-lo-aprendido-sin-ayuda
+      micro_objective: Aplicar con seguridad, sin ayuda, lo aprendido de una pérdida anterior en una nueva
+        oportunidad.
+      narrative_beat: Frente a una nueva oportunidad, Liruf aplica sin ayuda lo aprendido de su pérdida
+        anterior.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: comparar-quien-se-rinde-y-quien-lo-intenta-de-nuevo
+    title_es: Comparar quién se rinde y quién lo intenta de nuevo
+    concept: Comparar a alguien que se rinde después de perder con alguien que lo intenta de nuevo muestra
+      la diferencia real en el resultado a largo plazo.
+    learning_objective: Al final, el niño puede comparar el resultado a largo plazo de rendirse contra
+      volver a intentarlo después de perder.
+    key_vocabulary:
+    - rendirse
+    - intentar-de-nuevo
+    - largo-plazo
+    - comparar
+    prior_knowledge: Ha vuelto a intentar aplicando lo aprendido de una pérdida (tema anterior).
+    parent_check: ¿{{name}} puede comparar qué le pasa, con el tiempo, a alguien que se rinde y a alguien
+      que lo vuelve a intentar?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-navegantes-dos-reacciones
+      micro_objective: Conocer la historia de dos navegantes con reacciones distintas frente a una pérdida.
+      narrative_beat: 'Dr. Rho cuenta la historia de dos navegantes: uno que se rindió después de perder
+        una vez, y otro que lo siguió intentando.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-el-resultado-de-varios-meses
+      micro_objective: Ordenar el resultado de ambos navegantes a lo largo de varios meses.
+      narrative_beat: Zara Vex pide a Liruf ordenar, con el paso de los meses, el resultado de cada navegante.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: por-que-le-fue-mejor-al-que-siguio
+      micro_objective: Explicar por qué seguir intentando, aprendiendo de cada pérdida, produce mejores
+        resultados a largo plazo.
+      narrative_beat: Dr. Rho pregunta a Dina por qué cree que el navegante que siguió intentando terminó
+        mejor, a pesar de haber perdido igual al principio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-un-resultado-parecido
+      micro_objective: Aplicar la comparación entre rendirse y seguir intentando para predecir un resultado
+        nuevo.
+      narrative_beat: Frente a una nueva historia parecida, Dina predice qué navegante tendrá mejor resultado,
+        y por qué.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: mi-plan-despues-de-perder
+    title_es: Mi plan después de perder
+    concept: Armar un plan simple para después de perder -sentir la emoción, buscar el aprendizaje, ajustar,
+      volver a intentar- cierra el aprendizaje de esta saga.
+    learning_objective: Al final, el niño puede armar un plan propio simple para seguir adelante después
+      de una pérdida.
+    key_vocabulary:
+    - plan
+    - después
+    - ajustar
+    - seguir
+    prior_knowledge: Ha comparado el resultado de rendirse contra volver a intentarlo (tema anterior).
+    parent_check: ¿{{name}} tiene un plan propio, aunque sea sencillo, para lo que hace después de que
+      algo no le sale bien?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: sentir-aprender-ajustar-intentar
+      micro_objective: Reconocer, dentro de una historia, los pasos de un plan simple para después de
+        perder.
+      narrative_beat: 'Dr. Rho ayuda a Dina a armar un plan simple para cualquier futura pérdida: sentir,
+        aprender, ajustar, intentar de nuevo.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-los-cuatro-pasos
+      micro_objective: Ordenar los cuatro pasos correctos de un plan simple para después de una pérdida.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar los cuatro pasos de este plan en el orden correcto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: explicar-mi-plan-completo
+      micro_objective: Explicar en voz alta un plan propio para seguir adelante después de una pérdida.
+      narrative_beat: Dina practica explicando en voz alta su plan completo, como si se lo contara a un
+        navegante nuevo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comprometerme-a-usar-mi-plan
+      micro_objective: Aplicar con seguridad el compromiso de usar un plan propio después de una futura
+        pérdida.
+      narrative_beat: Con su plan ya armado, Dina se compromete a usarlo la próxima vez que algo no le
+        salga como esperaba.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: celebrar-el-intento-no-solo-el-resultado
+    title_es: Celebrar el intento, no solo el resultado
+    concept: Celebrar el esfuerzo y la valentía de haber intentado, no solo el resultado final, reconoce
+      el verdadero aprendizaje del riesgo.
+    learning_objective: Al final, el niño puede reconocer y celebrar el esfuerzo de haber intentado algo
+      con riesgo, más allá del resultado final.
+    key_vocabulary:
+    - celebrar
+    - esfuerzo
+    - valentía
+    - intento
+    prior_knowledge: Ha armado su propio plan para después de perder (tema anterior).
+    parent_check: ¿{{name}} celebra el esfuerzo de haber intentado algo, incluso cuando el resultado no
+      fue el esperado?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-archipielago-celebra-el-intento
+      micro_objective: Reconocer que se puede celebrar el esfuerzo y la valentía de intentar, más allá
+        del resultado.
+      narrative_beat: Todo el archipiélago celebra a Dina, no porque ganó esta vez, sino porque se atrevió
+        a intentarlo de nuevo con valentía.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-admiro-mas-ganar-o-intentar
+      micro_objective: 'Reflexionar sobre qué es lo más admirable de un navegante: solo ganar, o también
+        atreverse a intentarlo.'
+      narrative_beat: 'Dr. Rho pregunta a Liruf qué es lo que más admira de los navegantes: si solo ganar,
+        o también intentarlo con valentía.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: una-ceremonia-para-todos-los-que-lo-intentaron
+      micro_objective: Reconocer la importancia de celebrar el intento de todos, no solo el resultado
+        de quienes ganaron.
+      narrative_beat: Zara Vex organiza una pequeña ceremonia para reconocer a todos los que se atrevieron
+        a intentarlo, ganaran o no.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: celebrar-mi-camino-completo
+      micro_objective: Aplicar con seguridad la celebración del propio camino completo de intentos y aprendizajes.
+      narrative_beat: Dina celebra su propio camino completo -intentos, pérdidas y aprendizajes- frente
+        a todo el archipiélago.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga Perder También Pasa.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Perder También Pasa.
+    key_vocabulary:
+    - perder
+    - aprender
+    - intentar
+    - celebrar
+    prior_knowledge: Ha completado los ocho temas de la saga Perder También Pasa (aventura 3, saga 4).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/a-veces-el-camino-arriesgado-no-sale-bien
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/como-se-siente-perder-algo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/perder-no-es-lo-mismo-que-fallar-para-siempre
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/que-aprendo-cuando-pierdo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/volver-a-intentar-con-lo-aprendido
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/comparar-quien-se-rinde-y-quien-lo-intenta-de-nuevo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/mi-plan-despues-de-perder
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/celebrar-el-intento-no-solo-el-resultado
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, que un camino arriesgado a veces no sale bien y cómo
+        se siente perder algo.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos de perder también pasa,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué perder no es fallar para siempre y qué se aprende
+        al perder.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cómo volver a intentar con lo aprendido
+        y comparar rendirse con seguir intentando.
+      narrative_beat: Dr. Rho presenta una escena nueva del archipiélago y pregunta a Dina si recuerda,
+        sin repasar la lección, cómo volver a intentar con lo aprendido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo armar un plan después de perder
+        y celebrar el intento, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Perder También Pasa con ideas de Decidir con Información
+      en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Perder También Pasa
+      con un concepto de Decidir con Información.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - perder
+    prior_knowledge: Conoce Perder También Pasa (saga 4) y las lecciones citadas de Decidir con Información
+      (saga 3).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/decidir-aunque-no-sepa-todo
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/mi-lista-de-preguntas-antes-de-arriesgar
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/que-aprendo-cuando-pierdo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/volver-a-intentar-con-lo-aprendido
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-tercera-saga
+      micro_objective: Recordar, tal como se aprendió antes, cómo decidir con la mejor información disponible,
+        sin saberlo todo.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de decidir con información y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con perder también pasa.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-mi-lista-con-el-aprendizaje
+      micro_objective: Combinar la lista propia de preguntas con el aprendizaje que deja una pérdida.
+      narrative_beat: Dr. Rho muestra cómo la lista de preguntas de antes de decidir puede mejorar después
+        de aprender de una pérdida.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la decisión con información parcial y el volver
+        a intentar con lo aprendido.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del archipiélago usando a la vez
+        ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-archipielago
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Archipelago's Grand Mission
+    es-MX: La Gran Misión del Archipiélago
+    pt-BR: A Grande Missão do Arquipélago
+  description:
+    en-US: A final quest that replays every lesson of the archipelago -- risk, spreading out, information,
+      and trying again -- one last time.
+    es-MX: Una misión final que repasa todas las lecciones del archipiélago -- riesgo, repartir, información
+      y volver a intentar -- una última vez.
+    pt-BR: Uma missão final que revisita todas as lições do arquipélago -- risco, distribuir, informação
+      e tentar de novo -- uma última vez.
+  topics:
+  - position: 1
+    slug: la-gran-mision-de-los-caminos
+    kind: review_quest
+    title_es: La Gran Misión de los Caminos
+    concept: 'Dr. Rho anuncia la Gran Misión del archipiélago: un desafío final que reúne, sin enseñar
+      nada nuevo, todo lo aprendido sobre caminos seguros y arriesgados.'
+    learning_objective: Al final, el niño puede recordar y aplicar qué es un riesgo, la relación entre
+      premio y riesgo, y cómo elegir con información.
+    key_vocabulary:
+    - riesgo
+    - premio
+    - información
+    - caminos
+    prior_knowledge: Ha completado las cuatro sagas de El Archipiélago de los Riesgos.
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/que-es-un-riesgo
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mas-premio-posible-mas-riesgo-posible
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/elegir-un-camino-con-informacion
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mi-primera-decision-con-riesgo
+    lessons:
+    - position: 1
+      slug: recordar-que-es-un-riesgo
+      micro_objective: Recordar, sin ayuda nueva, qué significa la palabra 'riesgo'.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en la laguna tranquila y anuncia la Gran Misión: recorrer
+        una vez más todo lo aprendido en el archipiélago.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-la-relacion-premio-riesgo
+      micro_objective: Recordar por qué un premio posible más grande casi siempre trae más riesgo.
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, la relación
+        entre premio y riesgo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: recordar-elegir-con-informacion
+      micro_objective: Recordar cómo buscar información antes de elegir un camino con riesgo distinto.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda cómo buscar información antes de elegir entre
+        dos caminos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: una-decision-nueva-para-la-mision
+      micro_objective: Aplicar con seguridad todo lo recordado sobre riesgo frente a un reto nuevo.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, todo lo recordado sobre riesgo frente a una nueva
+        decisión de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: la-gran-mision-de-las-canoas
+    kind: review_quest
+    title_es: La Gran Misión de las Canoas
+    concept: Dina y Liruf recuerdan por qué no conviene poner todo en una sola canoa y cómo repartir entre
+      varias.
+    learning_objective: Al final, el niño puede recordar y aplicar por qué conviene repartir entre varias
+      canoas y en qué proporción.
+    key_vocabulary:
+    - repartir
+    - canoa
+    - proteger
+    - proporción
+    prior_knowledge: Ha repasado la saga de los caminos (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/una-canoa-que-se-voltea
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/repartir-entre-varias-canoas
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/no-siempre-hay-que-repartir-igual
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/mi-primera-reparticion
+    lessons:
+    - position: 1
+      slug: recordar-la-canoa-que-se-voltea
+      micro_objective: Recordar qué pasa cuando una canoa cargada con todo se voltea.
+      narrative_beat: Zara Vex pide a Dina recordar, sin ayuda, qué le pasó a Liruf cuando cargó todas
+        sus monedas en una sola canoa.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-repartir-entre-varias
+      micro_objective: Recordar la estrategia de repartir monedas entre varias canoas distintas.
+      narrative_beat: Dr. Rho pide a Liruf recordar, sin ayuda, cómo repartir monedas entre varias canoas
+        antes de cruzar el estrecho.
+      difficulty: 1
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: recordar-que-no-siempre-es-igual
+      micro_objective: Recordar que repartir no siempre significa partes exactamente iguales.
+      narrative_beat: Zara Vex pregunta a Dina si recuerda por qué a veces conviene poner más peso en
+        el camino más seguro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: repartir-de-nuevo-para-la-mision
+      micro_objective: Aplicar sin ayuda una repartición propia de monedas para una travesía nueva de
+        la Gran Misión.
+      narrative_beat: Dina diseña, sin ayuda, una nueva repartición de monedas para su travesía de la
+        Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+  - position: 3
+    slug: la-gran-mision-de-la-informacion
+    kind: review_quest
+    title_es: La Gran Misión de la Información
+    concept: Dina recuerda cómo hacer preguntas antes de decidir y cómo decidir incluso sin saberlo todo.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo informarse y decidir con la mejor
+      información disponible.
+    key_vocabulary:
+    - preguntar
+    - información
+    - decidir
+    - pistas
+    prior_knowledge: Ha repasado la saga de las canoas (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/preguntar-antes-de-elegir
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/una-isla-con-mas-pistas-que-otra
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/cuando-la-informacion-no-alcanza
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/mi-lista-de-preguntas-antes-de-arriesgar
+    lessons:
+    - position: 1
+      slug: recordar-preguntar-antes-de-elegir
+      micro_objective: Recordar por qué preguntar antes de elegir ayuda a decidir mejor.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda, sin ayuda, por qué conviene preguntar antes
+        de elegir una isla nueva.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-comparar-pistas
+      micro_objective: Recordar cómo comparar la cantidad de pistas disponibles entre dos islas.
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, cómo comparar cuánta información ofrece
+        cada isla.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: recordar-cuando-la-informacion-no-alcanza
+      micro_objective: Recordar qué hacer cuando la información disponible no alcanza para eliminar toda
+        la duda.
+      narrative_beat: Dr. Rho presenta una nueva situación incierta y pregunta a Dina si recuerda qué
+        hacer cuando la información no alcanza.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: aplicar-mi-lista-de-nuevo
+      micro_objective: Aplicar sin ayuda una lista propia de preguntas frente a un reto nuevo de la Gran
+        Misión.
+      narrative_beat: Dina aplica, sin ayuda, su lista de preguntas frente a un nuevo reto de la Gran
+        Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: la-gran-mision-de-perder-y-seguir
+    kind: review_quest
+    title_es: La Gran Misión de Perder y Seguir
+    concept: Dina recuerda que perder también pasa, que no es fallar para siempre, y cómo volver a intentar
+      con lo aprendido.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo reaccionar de forma sana frente
+      a una pérdida y volver a intentarlo.
+    key_vocabulary:
+    - perder
+    - aprender
+    - intentar
+    - seguir
+    prior_knowledge: Ha repasado la saga de la información (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/como-se-siente-perder-algo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/perder-no-es-lo-mismo-que-fallar-para-siempre
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/que-aprendo-cuando-pierdo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/mi-plan-despues-de-perder
+    lessons:
+    - position: 1
+      slug: recordar-como-se-siente-perder
+      micro_objective: Recordar la emoción que aparece al perder algo valioso.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda, sin ayuda, cómo se siente perder algo que se
+        esperaba con ilusión.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-que-no-es-fallar-para-siempre
+      micro_objective: Recordar por qué perder una vez no significa fallar para siempre.
+      narrative_beat: Zara Vex reta a Liruf a explicar de memoria por qué perder una vez no significa que
+        siempre va a perder.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: recordar-el-aprendizaje-de-perder
+      micro_objective: Recordar cómo identificar un aprendizaje concreto después de una pérdida.
+      narrative_beat: Dr. Rho presenta una nueva pérdida y pregunta a Dina si recuerda cómo encontrar
+        el aprendizaje que deja.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: renovar-mi-plan-despues-de-perder
+      micro_objective: Aplicar con seguridad, sin ayuda, un plan completo para después de una pérdida.
+      narrative_beat: Dina renueva, sin ayuda, su plan completo para después de perder, listo para la
+        Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: el-archipielago-completo
+    kind: review_quest
+    title_es: El Archipiélago Completo
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del archipiélago: caminos,
+      canoas, información y perder-y-seguir.'
+    learning_objective: 'Al final, el niño puede aplicar en un solo recorrido las cuatro ideas del archipiélago:
+      riesgo, repartir, informarse y seguir adelante.'
+    key_vocabulary:
+    - riesgo
+    - repartir
+    - información
+    - seguir
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/no-todo-riesgo-es-igual-de-grande
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/comparar-una-canoa-y-varias-canoas
+    - el-archipielago-de-los-riesgos/decidir-con-informacion/decidir-aunque-no-sepa-todo
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/comparar-quien-se-rinde-y-quien-lo-intenta-de-nuevo
+    lessons:
+    - position: 1
+      slug: las-cuatro-areas-del-archipielago
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del archipiélago: riesgo, repartir, informarse
+        y seguir adelante.'
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente al mapa completo del archipiélago y repasa las
+        cuatro áreas, una por una.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ayudar-a-un-navegante-nuevo
+      micro_objective: Aplicar las cuatro áreas del archipiélago para ayudar a un navegante nuevo.
+      narrative_beat: Zara Vex presenta a un navegante nuevo del archipiélago y reta a Liruf a guiarlo
+        por las cuatro áreas del riesgo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-desafio-combinado-del-archipielago
+      micro_objective: Aplicar con seguridad las cuatro áreas del archipiélago en un desafío único que
+        las combina todas.
+      narrative_beat: Dina resuelve un desafío del archipiélago que combina, de una sola vez, riesgo,
+        reparto, información y perseverancia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-completo-del-archipielago
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del archipiélago aplicadas
+        a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro áreas del archipiélago, de principio
+        a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: el-archipielago-de-los-riesgos-se-despide
+    kind: review_quest
+    title_es: El Archipiélago de los Riesgos se Despide
+    concept: El gran cierre de la aventura celebra todo lo aprendido en el archipiélago y prepara a Dina
+      y Liruf para la ciudad, donde las metas se vuelven más grandes y los precios cambian con el tiempo.
+    learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
+      en la Gran Misión del archipiélago.
+    key_vocabulary:
+    - celebrar
+    - archipiélago
+    - riesgo
+    - futuro
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del archipiélago (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-archipielago-de-los-riesgos/caminos-seguros-y-arriesgados/mi-primera-decision-con-riesgo
+    - el-archipielago-de-los-riesgos/no-todo-en-una-sola-canoa/explicar-por-que-reparti-asi
+    - el-archipielago-de-los-riesgos/perder-tambien-pasa/celebrar-el-intento-no-solo-el-resultado
+    lessons:
+    - position: 1
+      slug: recordar-mi-primera-decision
+      micro_objective: Recordar la primera decisión propia frente a un riesgo y cómo se conecta con todo
+        lo demás aprendido.
+      narrative_beat: Dr. Rho compara la primera decisión de Dina frente a los dos caminos con todo lo
+        que aprendió después en el archipiélago.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-cuatro-pasos-del-archipielago-unidos
+      micro_objective: Recordar en conjunto los cuatro pasos del archipiélago unidos en un solo aprendizaje.
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: reconocer el riesgo, repartir, informarse
+        y seguir adelante, ahora todos unidos.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: el-desafio-final-del-archipielago
+      micro_objective: Aplicar en un desafío final todo lo aprendido sobre riesgo, reparto, información
+        y perseverancia.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo lo que el archipiélago
+        le enseñó sobre el riesgo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-archipielago-celebra-y-se-despide
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
+        archipiélago.
+      narrative_beat: Con el mar brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf y Zara Vex
+        el cierre del archipiélago, lista para descubrir la ciudad donde las metas grandes y los precios
+        cambiantes la esperan.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

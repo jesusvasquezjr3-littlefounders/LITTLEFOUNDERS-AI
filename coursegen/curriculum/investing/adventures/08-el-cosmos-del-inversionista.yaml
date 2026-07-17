@@ -1,0 +1,2288 @@
+schema_version: 1
+adventure:
+  position: 8
+  slug: el-cosmos-del-inversionista
+  theme: cosmos
+  age_tier: tier3
+  title:
+    en-US: The Investor's Cosmos
+    es-MX: El Cosmos del Inversionista
+    pt-BR: O Cosmos do Investidor
+  description:
+    en-US: 'The final voyage: Dina and Liruf build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
+    es-MX: 'El viaje final: Dina y Liruf arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
+    pt-BR: 'A viagem final: Dina e Liruf montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
+  narrative_arc: Dina y Liruf llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
+sagas:
+- position: 1
+  slug: mi-meta-de-inversion
+  icon: flag
+  title:
+    en-US: My Investing Goal
+    es-MX: Mi Meta de Inversión
+    pt-BR: Minha Meta de Investimento
+  description:
+    en-US: Learn to set a clear, realistic investing goal with a timeframe.
+    es-MX: Aprende a fijar una meta de inversión clara y realista, con un plazo definido.
+    pt-BR: Aprenda a definir uma meta de investimento clara e realista, com um prazo definido.
+  topics:
+  - position: 1
+    slug: que-quiero-lograr-con-el-tiempo
+    title_es: Qué quiero lograr con el tiempo
+    concept: Una meta de inversión es algo grande y lejano que una persona quiere lograr, dejando que el tiempo y la constancia trabajen para conseguirlo.
+    learning_objective: Al final, el niño puede describir con sus palabras algo que le gustaría lograr con el tiempo.
+    key_vocabulary:
+    - meta
+    - lograr
+    - lejano
+    - tiempo
+    prior_knowledge: Conoce el Reino de las Canastas, el Bosque del Interés Compuesto y el Faro de los Fraudes (aventuras 5 a 7).
+    parent_check: "¿{{name}} puede contarte algo grande que le gustaría lograr con tiempo y constancia?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-observatorio-del-cosmos
+      micro_objective: Conocer el observatorio del cosmos, donde Dr. Rho ayuda a los viajeros a imaginar metas grandes y lejanas.
+      narrative_beat: Dr. Rho recibe a Dina y Liruf en un observatorio brillante del cosmos, donde ayuda a los viajeros a imaginar sus metas más grandes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: metas-grandes-y-lejanas
+      micro_objective: Reconocer que una meta de inversión suele ser algo grande, que toma tiempo en lograrse.
+      narrative_beat: Zara Vex muestra estrellas del cosmos, cada una representando una meta grande que alguien logró con tiempo y constancia.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: mi-propia-estrella
+      micro_objective: Imaginar una meta propia grande y lejana que le gustaría lograr con tiempo.
+      narrative_beat: Dr. Rho invita a Dina a imaginar su propia estrella en el observatorio, representando algo grande que le gustaría lograr.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-explicacion-de-que-es-una-meta
+      micro_objective: Explicar, con sus propias palabras, qué es una meta de inversión y por qué toma tiempo en lograrse.
+      narrative_beat: Dina le explica a un aprendiz nuevo del cosmos qué es una meta de inversión, señalando su propia estrella en el observatorio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: una-meta-necesita-un-plazo
+    title_es: Una meta necesita un plazo
+    concept: Una meta de inversión necesita un plazo claro, una idea de en cuánto tiempo se espera lograrla, para poder planear cómo llegar.
+    learning_objective: Al final, el niño puede explicar por qué una meta de inversión necesita un plazo.
+    key_vocabulary:
+    - plazo
+    - planear
+    - cuánto tiempo
+    - claro
+    prior_knowledge: Puede describir algo que le gustaría lograr con el tiempo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué una meta necesita un plazo, una idea de en cuánto tiempo espera lograrla?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-estrella-sin-fecha
+      micro_objective: Observar una estrella del cosmos sin ningún plazo definido, y notar que es difícil planear sin uno.
+      narrative_beat: Dr. Rho muestra una estrella del cosmos sin ningún plazo escrito, y pregunta a Liruf qué se le hace difícil de planear así.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-una-meta-con-plazo-y-sin-plazo
+      micro_objective: Comparar una meta con un plazo claro frente a una meta sin ningún plazo definido.
+      narrative_beat: Zara Vex compara dos estrellas del cosmos, una con plazo claro y otra sin ningún plazo, y pide a Dina notar la diferencia.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: elegir-un-plazo-para-mi-estrella
+      micro_objective: Elegir un plazo aproximado y realista para la meta propia imaginada en el observatorio.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir un plazo aproximado y realista para la estrella que imaginó en el observatorio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - input
+    - position: 4
+      slug: mi-explicacion-del-plazo
+      micro_objective: Explicar, con sus propias palabras, por qué el plazo elegido ayuda a planear mejor su meta.
+      narrative_beat: Dina le explica a Liruf por qué el plazo que eligió para su estrella le ayuda a planear con más claridad.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 3
+    slug: metas-cercanas-vs-metas-lejanas
+    title_es: Metas cercanas frente a metas lejanas
+    concept: Una meta cercana, como ahorrar para algo pronto, y una meta lejana, como invertir para algo en muchos años, se planean de forma distinta.
+    learning_objective: Al final, el niño puede comparar una meta cercana con una meta lejana y explicar la diferencia.
+    key_vocabulary:
+    - cercana
+    - lejana
+    - ahorrar
+    - invertir
+    prior_knowledge: Sabe por qué una meta necesita un plazo claro (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre una meta cercana, como ahorrar, y una meta lejana, como invertir?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-estrella-cercana-y-la-estrella-lejana
+      micro_objective: Observar dos estrellas del cosmos, una muy cercana y otra muy lejana, representando dos tipos de meta.
+      narrative_beat: Dr. Rho señala dos estrellas del cosmos, una muy cercana y brillante, otra muy lejana y apenas visible.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ahorrar-para-la-estrella-cercana
+      micro_objective: Recordar que ahorrar, como se aprendió en Educación Financiera, funciona bien para una meta cercana.
+      narrative_beat: Zara Vex recuerda a Liruf que ahorrar en un frasco, como aprendió hace tiempo, funciona bien para alcanzar la estrella más cercana.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: invertir-para-la-estrella-lejana
+      micro_objective: Reconocer que invertir, con canastas variadas y tiempo, funciona bien para una meta lejana.
+      narrative_beat: 'Dr. Rho explica que la estrella lejana necesita algo distinto al frasco de ahorro: una canasta variada y mucho tiempo.'
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-comparacion-de-metas
+      micro_objective: Explicar, con un ejemplo propio, cuándo conviene ahorrar y cuándo conviene invertir según la cercanía de la meta.
+      narrative_beat: Dina le explica a un aprendiz nuevo cuándo conviene ahorrar y cuándo conviene invertir, según qué tan cercana o lejana sea la meta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: escribir-mi-meta-con-claridad
+    title_es: Escribir mi meta con claridad
+    concept: Escribir una meta de inversión con claridad, incluyendo qué se quiere lograr y en cuánto tiempo, la hace más fácil de seguir.
+    learning_objective: Al final, el niño puede escribir, en un escenario simulado, una meta de inversión clara y concreta.
+    key_vocabulary:
+    - escribir
+    - claridad
+    - concreta
+    - seguir
+    prior_knowledge: Puede comparar una meta cercana con una meta lejana (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte cómo escribiría su meta de inversión de forma clara y concreta?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-pergamino-de-las-metas
+      micro_objective: Conocer el pergamino del observatorio donde los viajeros escriben sus metas con claridad.
+      narrative_beat: Dr. Rho muestra a Dina el pergamino del observatorio, donde los viajeros del cosmos escriben sus metas con toda claridad.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-partes-tiene-una-meta-clara
+      micro_objective: 'Identificar las partes que hacen clara una meta escrita: qué se quiere lograr y en cuánto tiempo.'
+      narrative_beat: 'Zara Vex señala las dos partes que hacen clara una meta escrita en el pergamino: qué se quiere y en cuánto tiempo.'
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-escribir-una-meta-de-ejemplo
+      micro_objective: 'Practicar escribir una meta de ejemplo con las dos partes claras: qué se quiere lograr y el plazo.'
+      narrative_beat: Liruf practica escribir una meta de ejemplo en el pergamino, con las dos partes claras que le enseñó Zara Vex.
+      difficulty: 3
+      suggested_families:
+      - input
+      - choice
+    - position: 4
+      slug: mi-meta-escrita-con-claridad
+      micro_objective: Aplicar con seguridad, sin ayuda, la escritura de una meta clara y concreta propia.
+      narrative_beat: Dina escribe su propia meta en el pergamino del observatorio, con toda la claridad que practicó en esta saga.
+      difficulty: 3
+      suggested_families:
+      - input
+      - storyplay
+  - position: 5
+    slug: cuanto-necesito-y-cuanto-tengo
+    title_es: Cuánto necesito y cuánto tengo
+    concept: Comparar cuánto se necesita para una meta con cuánto se tiene hoy ayuda a entender qué tan lejos está y qué camino falta por recorrer.
+    learning_objective: Al final, el niño puede comparar cuánto necesita para su meta con cuánto tiene hoy.
+    key_vocabulary:
+    - necesito
+    - tengo
+    - comparar
+    - camino
+    prior_knowledge: Puede escribir una meta de inversión clara y concreta (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/que-es-un-fondo
+      strength: soft
+      reason: "Saber que un fondo reparte el riesgo ayuda a estimar cuánto necesito para una meta de inversión."
+    parent_check: "¿{{name}} puede explicarte, con números simples, cuánto necesita para su meta y cuánto tiene hoy?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cuanto-vale-mi-estrella
+      micro_objective: Observar cuánto vale, en monedas simuladas, alcanzar la estrella elegida como meta.
+      narrative_beat: Dr. Rho muestra a Dina cuántas monedas simuladas del cosmos costaría alcanzar la estrella que eligió como meta.
+      difficulty: 2
+      suggested_families:
+      - money
+      - story
+    - position: 2
+      slug: cuanto-tengo-guardado-hoy
+      micro_objective: Contar cuántas monedas simuladas tiene guardadas hoy, como punto de partida hacia la meta.
+      narrative_beat: Zara Vex ayuda a Liruf a contar cuántas monedas simuladas tiene guardadas hoy, como punto de partida hacia su estrella.
+      difficulty: 2
+      suggested_families:
+      - money
+      - input
+    - position: 3
+      slug: cuanto-falta-por-recorrer
+      micro_objective: Calcular cuánto falta entre lo que se tiene hoy y lo que se necesita para la meta.
+      narrative_beat: Dr. Rho ayuda a Dina a calcular cuánto falta entre las monedas que tiene hoy y las que necesita para su estrella.
+      difficulty: 3
+      suggested_families:
+      - money
+      - input
+    - position: 4
+      slug: mi-comparacion-de-necesito-y-tengo
+      micro_objective: Explicar, con los números propios calculados, qué tan lejos está de su meta y qué camino le falta.
+      narrative_beat: Dina le explica a un aprendiz nuevo, con sus propios números, qué tan lejos está de su estrella y qué camino le falta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 6
+    slug: una-meta-realista-para-mi-edad
+    title_es: Una meta realista para practicar hoy
+    concept: Reconocer una meta realista y de tamaño adecuado para practicar hoy ayuda a empezar sin esperar a ser mayor.
+    learning_objective: Al final, el niño puede reconocer una meta simulada realista para practicar hoy, según su edad.
+    key_vocabulary:
+    - realista
+    - practicar
+    - adecuado
+    - hoy
+    prior_knowledge: Puede comparar cuánto necesita para su meta con cuánto tiene hoy (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué eligió una meta de tamaño realista para practicar desde hoy?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-estrella-demasiado-lejana
+      micro_objective: Observar una estrella tan lejana que sería difícil de practicar de forma simulada hoy.
+      narrative_beat: Dr. Rho muestra una estrella tan lejana en el cosmos que sería difícil practicar su plan de forma simulada hoy.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-estrella-de-tamano-adecuado
+      micro_objective: Comparar esa estrella demasiado lejana con una estrella de tamaño más adecuado para practicar hoy.
+      narrative_beat: Zara Vex compara la estrella demasiado lejana con una estrella más cercana, de tamaño adecuado para empezar a practicar hoy.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: ajustar-mi-meta-si-hace-falta
+      micro_objective: Practicar ajustar la meta propia a un tamaño más realista, si hacía falta, sin sentirlo como un fracaso.
+      narrative_beat: Dr. Rho ayuda a Dina a ajustar su meta a un tamaño más realista, explicando que ajustar no es fracasar, es planear mejor.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-meta-realista-elegida
+      micro_objective: Aplicar con seguridad, sin ayuda, la elección de una meta realista para practicar desde hoy.
+      narrative_beat: Dina elige, sin ayuda de Dr. Rho, una meta realista de tamaño adecuado para empezar a practicar desde hoy mismo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 7
+    slug: practicar-elegir-una-meta
+    title_es: Practicar elegir entre varias metas
+    concept: Elegir entre varias metas simuladas, decidiendo cuál conviene empezar primero, junta todo lo aprendido en la saga sobre metas de inversión.
+    learning_objective: Al final, el niño puede elegir, entre varias metas simuladas, cuál conviene empezar primero y explicar por qué.
+    key_vocabulary:
+    - elegir
+    - varias
+    - primero
+    - explicar
+    prior_knowledge: Puede reconocer una meta realista para practicar hoy (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo elegiría, entre varias metas, cuál empezar primero?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: tres-estrellas-para-elegir
+      micro_objective: Observar tres estrellas distintas del cosmos, cada una representando una meta diferente para elegir.
+      narrative_beat: Dr. Rho muestra a Dina tres estrellas distintas del cosmos, cada una representando una meta diferente que podría elegir.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-las-tres-estrellas
+      micro_objective: Comparar las tres estrellas según su plazo, su tamaño y qué tan realista es cada una.
+      narrative_beat: Zara Vex reta a Liruf a comparar las tres estrellas según su plazo, su tamaño y qué tan realista es cada una.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: elegir-cual-empezar-primero
+      micro_objective: Elegir, con razones propias, cuál de las tres estrellas conviene empezar a perseguir primero.
+      narrative_beat: Dina elige, con sus propias razones, cuál de las tres estrellas del cosmos conviene empezar a perseguir primero.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-eleccion-explicada
+      micro_objective: Explicar, con sus propias palabras, por qué eligió esa estrella para empezar primero.
+      narrative_beat: Dina le explica a un aprendiz nuevo del cosmos por qué eligió esa estrella en particular para empezar primero.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-meta-personal-de-inversion
+    title_es: Mi meta personal de inversión
+    concept: Escribir la propia meta de inversión simulada, con plazo y monto, junta todo lo aprendido en la saga y abre el camino hacia el plan completo.
+    learning_objective: Al final, el niño puede escribir su propia meta de inversión simulada, con plazo y monto claros.
+    key_vocabulary:
+    - personal
+    - plazo
+    - monto
+    - claro
+    prior_knowledge: Ha practicado elegir entre varias metas simuladas (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte su meta personal de inversión, con plazo y monto claros?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-estrella-elegida-para-siempre
+      micro_objective: Elegir, con seguridad y sin ayuda, la estrella final que representará su meta personal de inversión.
+      narrative_beat: Dina elige, sin ayuda de Dr. Rho, la estrella final que representará su propia meta de inversión en todo este viaje.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: escribir-el-plazo-y-el-monto
+      micro_objective: Escribir, en el pergamino del observatorio, el plazo y el monto de su meta personal.
+      narrative_beat: Dina escribe en el pergamino del observatorio el plazo y el monto simulado de su propia meta de inversión.
+      difficulty: 3
+      suggested_families:
+      - input
+      - choice
+    - position: 3
+      slug: revisar-mi-meta-con-dr-rho
+      micro_objective: Revisar la meta personal escrita junto a Dr. Rho, verificando que sea clara y realista.
+      narrative_beat: Dr. Rho revisa junto a Dina su meta escrita, confirmando que es clara, realista y tiene un plazo definido.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-meta-lista-para-el-plan
+      micro_objective: Aplicar con seguridad, sin ayuda, la meta personal completa como punto de partida para el plan de la siguiente saga.
+      narrative_beat: Con su meta personal ya escrita y revisada, Dina se prepara para armar el plan completo que la llevará hasta su estrella.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre del observatorio para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Mi Meta de Inversión.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Mi Meta de Inversión.
+    key_vocabulary:
+    - meta
+    - plazo
+    - realista
+    - escribir
+    prior_knowledge: Ha completado los ocho temas de la saga Mi Meta de Inversión (aventura 8, saga 1).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/que-quiero-lograr-con-el-tiempo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/una-meta-necesita-un-plazo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/metas-cercanas-vs-metas-lejanas
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/escribir-mi-meta-con-claridad
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/cuanto-necesito-y-cuanto-tengo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/una-meta-realista-para-mi-edad
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/practicar-elegir-una-meta
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/mi-meta-personal-de-inversion
+    lessons:
+    - position: 1
+      slug: el-cofre-del-observatorio-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es una meta de inversión y por qué necesita un plazo.
+      narrative_beat: Dr. Rho abre el cofre del observatorio y reta a Dina a recordar, estrella por estrella, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-la-meta
+      micro_objective: Recordar y ordenar de nuevo la diferencia entre una meta cercana y una lejana.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-de-la-meta
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre comparar cuánto necesita y cuánto tiene.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: cerrar-el-cofre-del-observatorio
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo escribir una meta personal, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Mi Meta de Inversión con la diversificación del Reino de las Canastas en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de diversificar con el concepto de fijar una meta clara.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - meta
+    prior_knowledge: Conoce Mi Meta de Inversión (aventura 8, saga 1) y El Reino de las Canastas (aventura 5).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/diversificar-reparte-el-riesgo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/una-meta-realista-para-mi-edad
+    lessons:
+    - position: 1
+      slug: un-recuerdo-del-reino-de-las-canastas-otra-vez
+      micro_objective: Recordar, tal como se aprendió antes, por qué diversificar reparte el riesgo entre cosas distintas.
+      narrative_beat: Zara Vex trae un recuerdo del Reino de las Canastas y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con las metas del cosmos.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-diversificar-y-mi-meta
+      micro_objective: Combinar la idea de diversificar con la idea de que una meta realista también reparte mejor el esfuerzo con el tiempo.
+      narrative_beat: Dr. Rho muestra cómo diversificar en canastas se conecta con elegir una meta de tamaño realista para practicar hoy.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-del-cosmos
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de diversificar y elegir una meta realista combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-del-cosmos
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del observatorio, Dina combina lo aprendido sobre diversificar y elegir metas para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: mi-plan-paso-a-paso
+  icon: checklist
+  title:
+    en-US: My Step-by-Step Plan
+    es-MX: Mi Plan Paso a Paso
+    pt-BR: Meu Plano Passo a Passo
+  description:
+    en-US: Build the five-step plan -- goal, saving, basket, time, review -- that turns a goal into a real path.
+    es-MX: Arma el plan de cinco pasos -- meta, ahorro, canasta, tiempo, revisar -- que convierte una meta en un camino real.
+    pt-BR: Monte o plano de cinco passos -- meta, poupança, cesta, tempo, revisão -- que transforma uma meta em um caminho real.
+  topics:
+  - position: 1
+    slug: el-primer-paso-es-la-meta
+    title_es: El primer paso es la meta
+    concept: Todo plan de inversión empieza con una meta clara, escrita con plazo y monto, como la que se armó en la saga anterior.
+    learning_objective: Al final, el niño puede explicar que todo plan de inversión empieza con una meta clara.
+    key_vocabulary:
+    - primer paso
+    - meta
+    - plan
+    - empezar
+    prior_knowledge: Escribió su propia meta personal de inversión (aventura 8, saga 1).
+    parent_check: "¿{{name}} puede explicarte por qué todo plan de inversión empieza con una meta clara?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-escalera-del-cosmos
+      micro_objective: Conocer la escalera del cosmos, una escalera de cinco escalones que representa el plan completo.
+      narrative_beat: Dr. Rho muestra a Dina una escalera brillante de cinco escalones flotando en el cosmos, cada uno representando un paso del plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-primer-escalon-es-mi-meta
+      micro_objective: Reconocer que el primer escalón de la escalera representa la meta ya escrita en la saga anterior.
+      narrative_beat: Zara Vex señala el primer escalón de la escalera, mostrando que ya lo completó al escribir su meta personal.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: por-que-la-meta-va-primero
+      micro_objective: Explicar por qué la meta siempre va primero, antes de cualquier otro paso del plan.
+      narrative_beat: Dr. Rho pregunta a Liruf por qué cree que la meta siempre va primero, antes de cualquier otro paso del plan.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-primer-escalon-confirmado
+      micro_objective: Confirmar, con seguridad, que el primer escalón de su propia escalera ya está completo.
+      narrative_beat: Dina confirma, subiendo el primer escalón de su propia escalera, que su meta personal ya está lista y clara.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-segundo-paso-es-ahorrar
+    title_es: El segundo paso es ahorrar
+    concept: El segundo paso del plan es ahorrar una parte del dinero antes de invertir cualquier cosa, como una base segura desde la cual empezar.
+    learning_objective: Al final, el niño puede explicar por qué ahorrar una parte va antes de invertir en el plan.
+    key_vocabulary:
+    - ahorrar
+    - segundo paso
+    - base
+    - antes
+    prior_knowledge: Sabe que el primer paso del plan es la meta (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué ahorrar una parte va antes de invertir en su plan?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-segundo-escalon-de-la-escalera
+      micro_objective: Observar el segundo escalón de la escalera del cosmos, representando ahorrar una parte del dinero.
+      narrative_beat: Dr. Rho señala el segundo escalón de la escalera, brillando con el mismo color que el frasco de ahorro que Dina conoció antes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ahorrar-como-base-segura
+      micro_objective: Reconocer que ahorrar una parte funciona como una base segura antes de arriesgar dinero en invertir.
+      narrative_beat: Zara Vex explica a Liruf que ahorrar una parte funciona como una base segura, un lugar al que volver si algo sale distinto.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cuanto-ahorrar-antes-de-invertir
+      micro_objective: Reconocer que no hace falta ahorrar todo el dinero, solo una parte razonable, antes de empezar a invertir.
+      narrative_beat: Dr. Rho explica a Dina que no hace falta ahorrar todo, solo una parte razonable, antes de subir al siguiente escalón.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-segundo-escalon-confirmado
+      micro_objective: Confirmar, con seguridad, que el segundo escalón de ahorro está listo antes de seguir con el plan.
+      narrative_beat: Dina confirma, subiendo el segundo escalón de su escalera, que ya tiene una base de ahorro lista antes de seguir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: el-tercer-paso-es-la-canasta
+    title_es: El tercer paso es la canasta
+    concept: El tercer paso del plan es elegir una canasta variada, no una sola cosa, aplicando lo aprendido sobre diversificar en el Reino de las Canastas.
+    learning_objective: Al final, el niño puede explicar por qué el tercer paso del plan es elegir una canasta variada.
+    key_vocabulary:
+    - canasta
+    - variada
+    - tercer paso
+    - diversificar
+    prior_knowledge: Sabe que el segundo paso del plan es ahorrar una base segura (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/jugador-o-equipo-completo
+      strength: hard
+      reason: "Sin saber elegir entre un jugador y el equipo completo, no se puede elegir bien la canasta del plan."
+    parent_check: "¿{{name}} puede explicarte por qué el tercer paso del plan es elegir una canasta variada, no una sola cosa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-tercer-escalon-de-la-escalera
+      micro_objective: Observar el tercer escalón de la escalera del cosmos, brillando con los colores de la canasta variada del reino.
+      narrative_beat: Dr. Rho señala el tercer escalón de la escalera, brillando con los mismos colores de la canasta variada del Reino de las Canastas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-por-que-diversificar
+      micro_objective: Recordar, sin ayuda nueva, por qué diversificar reparte mejor el riesgo que apostar todo a una sola cosa.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, por qué diversificar reparte mejor el riesgo que apostar todo a una sola cosa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: elegir-mi-canasta-para-el-plan
+      micro_objective: Elegir, con razones propias, una canasta variada simulada para el tercer escalón de su plan.
+      narrative_beat: Dina elige, con sus propias razones, una canasta variada simulada para subir el tercer escalón de su plan.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: mi-tercer-escalon-confirmado
+      micro_objective: Confirmar, con seguridad, que el tercer escalón de canasta variada está listo antes de seguir con el plan.
+      narrative_beat: Dina confirma, subiendo el tercer escalón de su escalera, que su canasta variada ya está lista antes de seguir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: el-cuarto-paso-es-el-tiempo
+    title_es: El cuarto paso es el tiempo
+    concept: El cuarto paso del plan es dejar que el tiempo trabaje, con constancia automática, aplicando lo aprendido en el Bosque del Interés Compuesto.
+    learning_objective: Al final, el niño puede explicar por qué el cuarto paso del plan es dejar que el tiempo trabaje con constancia.
+    key_vocabulary:
+    - tiempo
+    - constancia
+    - cuarto paso
+    - trabajar
+    prior_knowledge: Sabe que el tercer paso del plan es elegir una canasta variada (tema anterior).
+    prerequisites:
+    - path: el-bosque-del-interes-compuesto/el-tiempo-el-superpoder/el-tiempo-es-un-superpoder
+      strength: hard
+      reason: "El cuarto paso del plan depende directamente de haber entendido que el tiempo es el superpoder del interés compuesto."
+    parent_check: "¿{{name}} puede explicarte por qué el cuarto paso del plan es dejar que el tiempo trabaje con constancia?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cuarto-escalon-de-la-escalera
+      micro_objective: Observar el cuarto escalón de la escalera del cosmos, brillando con la nieve del bosque del interés compuesto.
+      narrative_beat: Dr. Rho señala el cuarto escalón de la escalera, cubierto de la misma nieve mágica del Bosque del Interés Compuesto.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-el-superpoder-del-tiempo
+      micro_objective: Recordar, sin ayuda nueva, por qué el tiempo es el ingrediente más poderoso del interés compuesto.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, la capa mágica del Tiempo que conoció en el bosque nevado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: programar-mi-constancia-automatica
+      micro_objective: Programar, en un escenario simulado, la constancia automática para el cuarto escalón de su plan.
+      narrative_beat: Dina programa su propia siembra automática, tal como aprendió en el bosque, para el cuarto escalón de su plan.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-cuarto-escalon-confirmado
+      micro_objective: Confirmar, con seguridad, que el cuarto escalón de tiempo y constancia está listo antes de seguir con el plan.
+      narrative_beat: Dina confirma, subiendo el cuarto escalón de su escalera, que su plan de constancia automática ya está listo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: el-quinto-paso-es-revisar
+    title_es: El quinto paso es revisar
+    concept: El quinto paso del plan es revisarlo de vez en cuando, con calma, para ver si sigue teniendo sentido, sin cambiarlo por miedo o prisa.
+    learning_objective: Al final, el niño puede explicar por qué el quinto paso del plan es revisarlo de vez en cuando, con calma.
+    key_vocabulary:
+    - revisar
+    - calma
+    - quinto paso
+    - sentido
+    prior_knowledge: Sabe que el cuarto paso del plan es dejar que el tiempo trabaje con constancia (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué el quinto paso del plan es revisarlo de vez en cuando, con calma?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-quinto-escalon-de-la-escalera
+      micro_objective: Observar el quinto y último escalón de la escalera del cosmos, representando revisar el plan con calma.
+      narrative_beat: Dr. Rho señala el quinto y último escalón de la escalera, brillando con una luz tranquila y constante.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: revisar-no-es-cambiar-por-miedo
+      micro_objective: Reconocer que revisar el plan con calma es distinto a cambiarlo de golpe por miedo o prisa.
+      narrative_beat: Zara Vex explica a Liruf la diferencia entre revisar el plan con calma y cambiarlo de golpe por miedo o prisa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cada-cuanto-conviene-revisar
+      micro_objective: Reconocer que revisar el plan de vez en cuando, no todos los días, suele ser lo más sano.
+      narrative_beat: Dr. Rho explica a Dina que revisar el plan de vez en cuando, no todos los días, ayuda a mantener la calma necesaria.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-quinto-escalon-confirmado
+      micro_objective: Confirmar, con seguridad, que el quinto escalón de revisar con calma completa toda la escalera del plan.
+      narrative_beat: Dina confirma, subiendo el quinto y último escalón de su escalera, que su plan completo de cinco pasos ya está listo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: ordenar-los-cinco-pasos
+    title_es: Practicar ordenar los cinco pasos
+    concept: Ordenar los cinco pasos del plan en el orden correcto ayuda a entender por qué cada uno depende del anterior.
+    learning_objective: Al final, el niño puede ordenar, sin ayuda, los cinco pasos del plan en su orden correcto.
+    key_vocabulary:
+    - ordenar
+    - correcto
+    - depende
+    - anterior
+    prior_knowledge: Sabe que el quinto paso del plan es revisarlo de vez en cuando (tema anterior).
+    parent_check: "¿{{name}} puede ordenar, sin tu ayuda, los cinco pasos del plan: meta, ahorro, canasta, tiempo y revisar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-cinco-tarjetas-mezcladas
+      micro_objective: Observar las cinco tarjetas del plan mezcladas, cada una representando un paso distinto.
+      narrative_beat: Zara Vex mezcla cinco tarjetas del observatorio, cada una representando un paso distinto del plan, y las entrega a Liruf.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ordenar-las-cinco-tarjetas
+      micro_objective: Ordenar las cinco tarjetas mezcladas en el orden correcto del plan de inversión.
+      narrative_beat: Liruf ordena, con cuidado, las cinco tarjetas mezcladas en el orden correcto del plan de inversión.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: explicar-por-que-cada-paso-depende-del-anterior
+      micro_objective: Explicar, para al menos dos pasos, por qué dependen del paso anterior en el orden correcto.
+      narrative_beat: Dr. Rho pide a Dina explicar por qué el paso de la canasta depende de ya tener lista la base de ahorro.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-orden-completo-sin-ayuda
+      micro_objective: Aplicar con seguridad, sin ayuda, el ordenamiento completo de los cinco pasos frente a un aprendiz nuevo.
+      narrative_beat: Dina ordena, sin ayuda de Dr. Rho, los cinco pasos completos del plan frente a un aprendiz nuevo del cosmos.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 7
+    slug: seguir-el-plan-en-una-historia
+    title_es: Practicar seguir el plan dentro de una historia
+    concept: Practicar seguir el plan completo dentro de una historia simulada junta todo lo aprendido en la saga sobre los cinco pasos.
+    learning_objective: Al final, el niño puede seguir, dentro de una historia simulada, el plan completo de cinco pasos.
+    key_vocabulary:
+    - seguir
+    - historia
+    - simulada
+    - completo
+    prior_knowledge: Puede ordenar los cinco pasos del plan sin ayuda (tema anterior).
+    parent_check: "¿{{name}} puede contarte una pequeña historia de cómo seguiría su plan completo de cinco pasos?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-historia-nueva-del-cosmos
+      micro_objective: Conocer una historia nueva del cosmos donde un viajero necesita seguir el plan completo para alcanzar su estrella.
+      narrative_beat: Zara Vex presenta una historia nueva del cosmos, donde un viajero necesita seguir el plan completo para alcanzar su estrella.
+      difficulty: 2
+      suggested_families:
+      - story
+      - storyplay
+    - position: 2
+      slug: aplicar-cada-paso-en-la-historia
+      micro_objective: Aplicar, uno por uno, cada uno de los cinco pasos del plan dentro de la historia del viajero.
+      narrative_beat: Liruf ayuda al viajero de la historia a aplicar, uno por uno, cada uno de los cinco pasos del plan.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: que-pasa-si-me-salto-un-paso
+      micro_objective: Observar qué pasa en la historia si el viajero se salta uno de los cinco pasos del plan.
+      narrative_beat: Dr. Rho muestra qué le pasó a otro viajero de la historia que se saltó uno de los cinco pasos del plan.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-historia-completa-del-plan
+      micro_objective: Aplicar con seguridad, sin ayuda, el plan completo de cinco pasos dentro de una historia final.
+      narrative_beat: Dina completa, sin ayuda de Dr. Rho, una historia final aplicando el plan completo de cinco pasos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 8
+    slug: mi-plan-completo-de-cinco-pasos
+    title_es: Mi plan completo de cinco pasos
+    concept: Aplicar los cinco pasos completos a la propia meta de inversión junta todo lo aprendido en la saga y prepara el camino hacia mantener la calma.
+    learning_objective: Al final, el niño puede aplicar los cinco pasos completos del plan a su propia meta de inversión.
+    key_vocabulary:
+    - completo
+    - aplicar
+    - propia
+    - camino
+    prior_knowledge: Ha practicado seguir el plan completo dentro de una historia simulada (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte su plan completo de cinco pasos aplicado a su propia meta?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: revisar-mi-escalera-completa
+      micro_objective: Revisar, escalón por escalón, que la escalera completa de su propio plan esté lista.
+      narrative_beat: Dina revisa, escalón por escalón, su propia escalera del cosmos, confirmando que los cinco pasos están listos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: explicar-mi-plan-completo-a-liruf
+      micro_objective: Explicar a Liruf, paso por paso, el plan completo aplicado a su propia meta de inversión.
+      narrative_beat: Dina le explica a Liruf, paso por paso, cómo aplicó los cinco pasos del plan a su propia meta de inversión.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: zara-vex-pone-a-prueba-mi-plan
+      micro_objective: Responder a las preguntas de Zara Vex sobre cada paso del plan completo, sin ayuda de Dr. Rho.
+      narrative_beat: Zara Vex pone a prueba el plan completo de Dina con preguntas rápidas sobre cada uno de los cinco pasos.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-plan-de-cinco-pasos-terminado
+      micro_objective: Aplicar con seguridad, sin ayuda, el plan completo de cinco pasos como base para el resto del viaje.
+      narrative_beat: Con su plan completo de cinco pasos terminado, Dina se prepara para aprender a mantener la calma cuando algo cambie.
+      difficulty: 4
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre del observatorio para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Mi Plan Paso a Paso.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Mi Plan Paso a Paso.
+    key_vocabulary:
+    - plan
+    - pasos
+    - ahorro
+    - canasta
+    prior_knowledge: Ha completado los ocho temas de la saga Mi Plan Paso a Paso (aventura 8, saga 2).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-primer-paso-es-la-meta
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-segundo-paso-es-ahorrar
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-tercer-paso-es-la-canasta
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-cuarto-paso-es-el-tiempo
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-quinto-paso-es-revisar
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/ordenar-los-cinco-pasos
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/seguir-el-plan-en-una-historia
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/mi-plan-completo-de-cinco-pasos
+    lessons:
+    - position: 1
+      slug: el-cofre-de-la-escalera-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cuál es el primer paso del plan y por qué la meta va primero.
+      narrative_beat: Dr. Rho abre el cofre del observatorio y reta a Dina a recordar, escalón por escalón, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-el-plan
+      micro_objective: Recordar y ordenar de nuevo los cinco pasos completos del plan de inversión.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-del-plan
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre por qué revisar con calma es el quinto paso.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-de-la-escalera
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo aplicar el plan completo a su propia meta, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Mi Plan Paso a Paso con la constancia automática del bosque en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de constancia automática con el concepto del plan de cinco pasos.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - constancia
+    prior_knowledge: Conoce Mi Plan Paso a Paso (aventura 8, saga 2) y La Constancia Automática (aventura 6).
+    fact_refs: []
+    review_of:
+    - el-bosque-del-interes-compuesto/la-constancia-automatica/automatizar-es-plantar-sin-olvidar
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-cuarto-paso-es-el-tiempo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-automatizar
+      micro_objective: Recordar, tal como se aprendió antes, qué significa automatizar una siembra sin depender de la memoria.
+      narrative_beat: Zara Vex trae un recuerdo del bosque nevado y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el plan del cosmos.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-automatizar-y-el-cuarto-paso
+      micro_objective: Combinar la idea de automatizar con el cuarto paso del plan, que también depende de la constancia con el tiempo.
+      narrative_beat: Dr. Rho muestra cómo automatizar la siembra del bosque se conecta directamente con el cuarto paso del plan del cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-del-plan
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de automatizar y el cuarto paso del plan combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-del-plan
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del observatorio, Dina combina lo aprendido sobre automatizar y el plan de cinco pasos para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: ajustar-sin-panico
+  icon: self_improvement
+  title:
+    en-US: Adjusting Without Panic
+    es-MX: Ajustar sin Pánico
+    pt-BR: Ajustar sem Pânico
+  description:
+    en-US: Learn to stay calm when the basket dips, and adjust the plan with a clear head, not with fear.
+    es-MX: Aprende a mantener la calma cuando la canasta baja, y a ajustar el plan con cabeza fría, no con miedo.
+    pt-BR: Aprenda a manter a calma quando a cesta cai, e a ajustar o plano com a cabeça fria, não com medo.
+  topics:
+  - position: 1
+    slug: a-veces-la-canasta-baja
+    title_es: A veces la canasta baja
+    concept: A veces el valor de la canasta baja, y eso es una parte normal de invertir, no una señal de que el plan esté roto.
+    learning_objective: Al final, el niño puede explicar que una bajada del valor de la canasta es normal al invertir.
+    key_vocabulary:
+    - bajar
+    - normal
+    - invertir
+    - roto
+    prior_knowledge: Armó su propio plan completo de cinco pasos (aventura 8, saga 2).
+    parent_check: "¿{{name}} puede explicarte por qué una bajada del valor de la canasta es normal al invertir, no algo roto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-nube-oscura-del-cosmos
+      micro_objective: Observar una nube oscura pasajera del cosmos que representa una bajada temporal en el valor de una canasta.
+      narrative_beat: Dr. Rho muestra a Dina una nube oscura pasajera del cosmos, representando una bajada temporal en el valor de su canasta.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-que-el-fondo-tambien-baja
+      micro_objective: Recordar, sin ayuda nueva, que hasta un fondo diversificado puede bajar de valor algún año.
+      narrative_beat: Zara Vex reta a Liruf a recordar, sin ayuda, la lección del Reino de las Canastas sobre por qué hasta un fondo puede bajar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: bajar-no-es-lo-mismo-que-romperse
+      micro_objective: Explicar la diferencia entre que el valor de una canasta baje temporalmente y que el plan esté roto.
+      narrative_beat: Dr. Rho explica a Dina la diferencia entre que su canasta baje temporalmente y que su plan completo esté roto.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-explicacion-de-por-que-bajar-es-normal
+      micro_objective: Explicar, con sus propias palabras, por qué una bajada es una parte normal de invertir.
+      narrative_beat: Dina le explica a un aprendiz nuevo del cosmos por qué una bajada de la canasta es una parte normal de invertir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-panico-no-ayuda-a-decidir
+    title_es: El pánico no ayuda a decidir bien
+    concept: Decidir con pánico, de golpe y sin pensar, casi nunca lleva a una buena decisión, aunque la situación se sienta urgente.
+    learning_objective: Al final, el niño puede explicar por qué el pánico no ayuda a tomar una buena decisión.
+    key_vocabulary:
+    - pánico
+    - decidir
+    - golpe
+    - pensar
+    prior_knowledge: Sabe que una bajada del valor de la canasta es normal al invertir (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué decidir con pánico casi nunca lleva a una buena decisión?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-quiere-vender-todo-de-golpe
+      micro_objective: Observar que, al ver la nube oscura, Liruf siente ganas de vender toda su canasta de golpe.
+      narrative_beat: Al ver la nube oscura sobre su canasta, Liruf siente el impulso de vender todo de golpe, sin pensarlo dos veces.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-pasaria-si-liruf-vende-con-panico
+      micro_objective: Observar qué pasaría con la canasta de Liruf si vendiera todo justo en el momento más bajo, con pánico.
+      narrative_beat: Zara Vex muestra a Liruf qué le pasaría a su canasta si la vendiera justo en el momento más bajo, con pánico.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: comparar-decidir-con-panico-y-con-calma
+      micro_objective: Comparar el resultado de decidir con pánico frente al resultado de decidir con calma, en la misma situación.
+      narrative_beat: Dr. Rho compara el resultado de Liruf, que vendió con pánico, con el de Dina, que decidió esperar con calma.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-de-por-que-el-panico-no-ayuda
+      micro_objective: Explicar, con el ejemplo de Liruf, por qué decidir con pánico casi nunca ayuda a tomar una buena decisión.
+      narrative_beat: Dina le explica a Liruf, con calma, por qué decidir con pánico casi nunca lleva a una buena decisión.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 3
+    slug: respirar-y-revisar-el-plan-otra-vez
+    title_es: Respirar y revisar el plan otra vez
+    concept: Respirar y revisar el plan otra vez, en vez de reaccionar de golpe, ayuda a recordar por qué se armó el plan en primer lugar.
+    learning_objective: Al final, el niño puede aplicar el hábito de respirar y revisar el plan otra vez frente a una bajada.
+    key_vocabulary:
+    - respirar
+    - revisar
+    - reaccionar
+    - recordar
+    prior_knowledge: Sabe por qué el pánico no ayuda a tomar una buena decisión (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte cómo respiraría y revisaría su plan si viera que su canasta bajó?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-respiracion-del-cosmos
+      micro_objective: Aprender el hábito de respirar profundo antes de reaccionar a una bajada de la canasta.
+      narrative_beat: Dr. Rho enseña a Dina a respirar profundo, mirando las estrellas, antes de reaccionar a cualquier bajada de su canasta.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: volver-a-leer-mi-meta
+      micro_objective: Practicar volver a leer la meta escrita en el pergamino como parte de revisar el plan con calma.
+      narrative_beat: Zara Vex reta a Liruf a volver a leer su meta escrita en el pergamino, recordando por qué armó su plan en primer lugar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: revisar-si-cambio-algo-importante
+      micro_objective: Revisar si algo importante realmente cambió en su meta, o si solo cambió el valor temporal de la canasta.
+      narrative_beat: Dr. Rho ayuda a Dina a revisar si algo importante realmente cambió en su meta, o si solo bajó el valor temporal de su canasta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-respiracion-y-revision-aplicada
+      micro_objective: Aplicar con seguridad, sin ayuda, el hábito completo de respirar y revisar frente a una nueva bajada simulada.
+      narrative_beat: Frente a una nueva nube oscura del cosmos, Dina respira y revisa su plan sin ayuda de Dr. Rho.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: comparar-vender-con-panico-vs-esperar-con-calma
+    title_es: Comparar vender con pánico y esperar con calma
+    concept: Comparar directamente el resultado de vender con pánico frente al de esperar con calma el plan original ayuda a ver cuál conviene más.
+    learning_objective: Al final, el niño puede comparar el resultado de vender con pánico con el de esperar con calma el plan original.
+    key_vocabulary:
+    - vender
+    - esperar
+    - calma
+    - resultado
+    prior_knowledge: Puede aplicar el hábito de respirar y revisar el plan (tema anterior).
+    parent_check: "¿{{name}} puede compararte, con un ejemplo, qué pasa si se vende con pánico frente a esperar con calma?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-viajeros-la-misma-nube-oscura
+      micro_objective: Observar a dos viajeros del cosmos frente a la misma nube oscura, uno decide vender y otro decide esperar.
+      narrative_beat: 'Dr. Rho muestra a dos viajeros del cosmos frente a la misma nube oscura: uno decide vender de inmediato, el otro decide esperar.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: la-nube-se-va-con-el-tiempo
+      micro_objective: Observar que, con el tiempo, la nube oscura del cosmos suele pasar y el valor de la canasta suele recuperarse.
+      narrative_beat: Zara Vex muestra que, con el tiempo, la nube oscura del cosmos pasó, y el valor de la canasta del viajero paciente se recuperó.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: comparar-el-resultado-final-de-los-dos
+      micro_objective: Comparar el resultado final de ambos viajeros, uno que vendió con pánico y otro que esperó con calma.
+      narrative_beat: 'Dr. Rho compara el resultado final de ambos viajeros: el que vendió con pánico y el que esperó con calma su plan original.'
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-de-vender-o-esperar
+      micro_objective: Explicar, con el ejemplo de los dos viajeros, por qué suele convenir más esperar con calma que vender con pánico.
+      narrative_beat: Dina le explica a un aprendiz nuevo, con el ejemplo de los dos viajeros, por qué suele convenir esperar con calma.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 5
+    slug: el-tiempo-ayuda-a-recuperarse
+    title_es: Con tiempo, una canasta variada suele recuperarse
+    concept: Con tiempo, una canasta variada suele recuperarse de una bajada, aplicando la misma constancia aprendida en el Bosque del Interés Compuesto.
+    learning_objective: Al final, el niño puede explicar que, con tiempo, una canasta variada suele recuperarse de una bajada.
+    key_vocabulary:
+    - recuperarse
+    - tiempo
+    - variada
+    - constancia
+    prior_knowledge: Puede comparar el resultado de vender con pánico frente a esperar con calma (tema anterior).
+    prerequisites:
+    - path: el-bosque-del-interes-compuesto/la-constancia-automatica/la-constancia-vence-al-monto
+      strength: soft
+      reason: "Saber que la constancia vence al monto ayuda a mantener la calma esperando que el tiempo ayude a recuperarse."
+    parent_check: "¿{{name}} puede explicarte por qué, con tiempo, una canasta variada suele recuperarse de una bajada?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-jardin-que-vuelve-a-florecer
+      micro_objective: Observar un jardín del cosmos que, después de una tormenta, vuelve a florecer con el tiempo.
+      narrative_beat: Dr. Rho muestra a Dina un jardín del cosmos que, después de una tormenta, poco a poco vuelve a florecer con el tiempo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-la-canasta-variada-con-la-tormenta
+      micro_objective: Comparar cómo una canasta variada resiste y se recupera mejor de una tormenta que una canasta de un solo tipo.
+      narrative_beat: Dr. Rho compara cómo la canasta variada de Dina resiste mejor la tormenta que una canasta de un solo tipo de negocio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: no-todas-las-canastas-se-recuperan-igual-de-rapido
+      micro_objective: Reconocer que no todas las canastas se recuperan a la misma velocidad, y que la paciencia sigue siendo necesaria.
+      narrative_beat: Zara Vex aclara que no todas las canastas se recuperan a la misma velocidad, y que la paciencia sigue siendo necesaria.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-explicacion-de-la-recuperacion-con-tiempo
+      micro_objective: Explicar, con sus propias palabras, por qué el tiempo ayuda a que una canasta variada se recupere de una bajada.
+      narrative_beat: Dina le explica a un aprendiz nuevo por qué confía en que el tiempo ayudará a que su canasta variada se recupere.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: practicar-la-calma-frente-a-una-bajada
+    title_es: Practicar la calma frente a una bajada
+    concept: Practicar mantener la calma en un escenario simulado de bajada junta todo lo aprendido en la saga sobre ajustar sin pánico.
+    learning_objective: Al final, el niño puede practicar, en un escenario simulado, mantener la calma frente a una bajada de su canasta.
+    key_vocabulary:
+    - practicar
+    - calma
+    - bajada
+    - simulado
+    prior_knowledge: Sabe que con tiempo, una canasta variada suele recuperarse (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte, con un ejemplo simulado, cómo practicaría la calma frente a una bajada?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-tormenta-mas-grande-del-cosmos
+      micro_objective: Observar la tormenta más grande simulada hasta ahora en el cosmos, afectando la canasta de Liruf.
+      narrative_beat: Zara Vex presenta la tormenta simulada más grande hasta ahora, afectando de lleno la canasta de Liruf en el observatorio.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: aplicar-la-respiracion-primero
+      micro_objective: Aplicar primero el hábito de respirar antes de tomar cualquier decisión frente a la tormenta simulada.
+      narrative_beat: Liruf aplica primero su hábito de respirar, mirando las estrellas, antes de decidir qué hacer con la tormenta simulada.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: revisar-si-mi-meta-sigue-igual
+      micro_objective: Revisar si la meta original de Liruf sigue siendo la misma, a pesar de la tormenta simulada.
+      narrative_beat: Liruf revisa su meta escrita en el pergamino, confirmando que sigue siendo la misma a pesar de la tormenta simulada.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-decision-con-calma-frente-a-la-tormenta
+      micro_objective: Aplicar con seguridad, sin ayuda, una decisión con calma frente a la tormenta simulada más grande.
+      narrative_beat: Liruf decide, sin ayuda de Dr. Rho, esperar con calma su plan original frente a la tormenta simulada más grande.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 7
+    slug: cuando-si-conviene-revisar-el-plan
+    title_es: Cuándo sí conviene revisar el plan
+    concept: A veces sí conviene revisar el plan de verdad, no por miedo ni pánico, sino porque algo importante en la meta realmente cambió.
+    learning_objective: Al final, el niño puede reconocer un motivo real para revisar el plan, distinto del miedo o el pánico.
+    key_vocabulary:
+    - motivo
+    - revisar
+    - real
+    - cambiar
+    prior_knowledge: Ha practicado la calma frente a una bajada simulada (tema anterior).
+    parent_check: "¿{{name}} puede darte un ejemplo de un motivo real para revisar su plan, distinto del miedo o el pánico?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-meta-de-dina-cambia-de-verdad
+      micro_objective: Observar una situación donde la meta real de Dina cambió de verdad, no solo el valor temporal de su canasta.
+      narrative_beat: Dr. Rho presenta una situación donde la meta real de Dina cambió de verdad, algo distinto a una simple bajada temporal.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: distinguir-un-motivo-real-de-un-susto
+      micro_objective: Distinguir un motivo real para revisar el plan de un simple susto pasajero causado por una bajada.
+      narrative_beat: Zara Vex ayuda a Liruf a distinguir un motivo real para revisar el plan de un simple susto pasajero causado por una bajada.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: revisar-el-plan-con-calma-cuando-si-toca
+      micro_objective: Practicar revisar el plan con calma cuando de verdad hay un motivo real para hacerlo.
+      narrative_beat: Dina practica revisar su plan con calma junto a Dr. Rho, ahora que su meta real cambió de verdad.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-explicacion-de-cuando-si-revisar
+      micro_objective: Explicar, con sus propias palabras, la diferencia entre un motivo real para revisar el plan y un simple susto.
+      narrative_beat: Dina le explica a un aprendiz nuevo la diferencia entre un motivo real para revisar el plan y un simple susto pasajero.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-respuesta-tranquila-a-una-bajada
+    title_es: Mi respuesta tranquila a una bajada
+    concept: Aplicar una respuesta tranquila y pensada frente a una bajada simulada junta todo lo aprendido en la saga sobre ajustar sin pánico.
+    learning_objective: Al final, el niño puede aplicar, con seguridad, una respuesta tranquila y pensada frente a una bajada simulada nueva.
+    key_vocabulary:
+    - respuesta
+    - tranquila
+    - pensada
+    - aplicar
+    prior_knowledge: Puede reconocer un motivo real para revisar el plan, distinto del pánico (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte, sin tu ayuda, su respuesta tranquila y pensada frente a una nueva bajada simulada?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-ultima-tormenta-de-la-saga
+      micro_objective: Observar la última tormenta simulada de la saga, presentada sin previo aviso a Dina.
+      narrative_beat: Zara Vex presenta a Dina, sin previo aviso, la última tormenta simulada de esta saga, para poner a prueba todo lo aprendido.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: aplicar-mi-respuesta-completa
+      micro_objective: Aplicar, sin ayuda de nadie, la respuesta completa de respirar, revisar la meta y decidir con calma.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, su respuesta completa de respirar, revisar su meta y decidir con calma.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 3
+      slug: explicar-mi-decision-final-de-la-saga
+      micro_objective: Explicar, con las razones aprendidas en toda la saga, la decisión final tomada frente a la última tormenta.
+      narrative_beat: Dina explica a Dr. Rho, con las razones aprendidas en toda la saga, por qué decidió esperar con calma su plan original.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-compromiso-de-calma-para-siempre
+      micro_objective: Comprometerse, con sus propias palabras, a responder siempre con calma frente a una bajada futura.
+      narrative_beat: Dina promete a Dr. Rho y Zara Vex que siempre responderá con calma frente a cualquier bajada futura de su canasta.
+      difficulty: 4
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre del observatorio para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Ajustar sin Pánico.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Ajustar sin Pánico.
+    key_vocabulary:
+    - pánico
+    - calma
+    - respirar
+    - recuperarse
+    prior_knowledge: Ha completado los ocho temas de la saga Ajustar sin Pánico (aventura 8, saga 3).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/ajustar-sin-panico/a-veces-la-canasta-baja
+    - el-cosmos-del-inversionista/ajustar-sin-panico/el-panico-no-ayuda-a-decidir
+    - el-cosmos-del-inversionista/ajustar-sin-panico/respirar-y-revisar-el-plan-otra-vez
+    - el-cosmos-del-inversionista/ajustar-sin-panico/comparar-vender-con-panico-vs-esperar-con-calma
+    - el-cosmos-del-inversionista/ajustar-sin-panico/el-tiempo-ayuda-a-recuperarse
+    - el-cosmos-del-inversionista/ajustar-sin-panico/practicar-la-calma-frente-a-una-bajada
+    - el-cosmos-del-inversionista/ajustar-sin-panico/cuando-si-conviene-revisar-el-plan
+    - el-cosmos-del-inversionista/ajustar-sin-panico/mi-respuesta-tranquila-a-una-bajada
+    lessons:
+    - position: 1
+      slug: el-cofre-de-la-calma-se-abre
+      micro_objective: Recordar, sin ayuda nueva, por qué una bajada es normal y por qué el pánico no ayuda a decidir.
+      narrative_beat: Dr. Rho abre el cofre del observatorio y reta a Dina a recordar, nube por nube, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-la-calma
+      micro_objective: Recordar y ordenar de nuevo el hábito de respirar y revisar el plan frente a una bajada.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-de-la-calma
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre cuándo sí conviene revisar el plan de verdad.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-de-la-calma
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo responder con calma a una bajada simulada, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Ajustar sin Pánico con las señales de fraude del faro en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de resistir la prisa del fraude con el concepto de mantener la calma frente a una bajada.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - calma
+    prior_knowledge: Conoce Ajustar sin Pánico (aventura 8, saga 3) y El Faro de los Fraudes (aventura 7).
+    fact_refs: []
+    review_of:
+    - el-faro-de-los-fraudes/la-prisa-que-enganya/la-urgencia-como-trampa
+    - el-cosmos-del-inversionista/ajustar-sin-panico/el-panico-no-ayuda-a-decidir
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-urgencia
+      micro_objective: Recordar, tal como se aprendió antes, por qué la urgencia es una herramienta común del fraude.
+      narrative_beat: Zara Vex trae un recuerdo del faro y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la calma del cosmos.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-urgencia-y-panico
+      micro_objective: Combinar la idea de la urgencia del fraude con la idea de que el pánico tampoco ayuda a decidir bien frente a una bajada.
+      narrative_beat: 'Dr. Rho muestra cómo la urgencia de un fraude y el pánico frente a una bajada comparten la misma raíz: decidir sin pensar.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-de-la-calma
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de resistir la urgencia y mantener la calma combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-de-la-calma
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del observatorio, Dina combina lo aprendido sobre resistir la urgencia y mantener la calma para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: compartir-lo-aprendido
+  icon: diversity_3
+  title:
+    en-US: Sharing What I Learned
+    es-MX: Compartir lo Aprendido
+    pt-BR: Compartilhar o que Aprendi
+  description:
+    en-US: Learn to teach the family everything discovered across the whole investing journey.
+    es-MX: Aprende a enseñarle a la familia todo lo descubierto a lo largo de todo el viaje de inversión.
+    pt-BR: Aprenda a ensinar à família tudo o que foi descoberto ao longo de toda a jornada de investimento.
+  topics:
+  - position: 1
+    slug: explicarle-a-mi-familia-que-es-una-accion
+    title_es: Explicarle a mi familia qué es una acción
+    concept: Practicar explicarle a la familia qué es una acción, con palabras propias, ayuda a comprobar cuánto se entendió de verdad.
+    learning_objective: Al final, el niño puede explicarle a alguien de su familia qué es una acción, con sus propias palabras.
+    key_vocabulary:
+    - explicar
+    - familia
+    - acción
+    - palabras propias
+    prior_knowledge: Aprendió qué es una acción en el Reino de las Canastas (aventura 5).
+    parent_check: "¿{{name}} puede explicarte, con sus propias palabras, qué es una acción?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-salon-de-los-maestros-del-cosmos
+      micro_objective: Conocer el salón de los maestros del observatorio, donde los viajeros practican explicar lo aprendido a otros.
+      narrative_beat: Dr. Rho lleva a Dina a un salón especial del observatorio, donde los viajeros practican explicar lo aprendido a otras personas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: practicar-explicar-la-accion-a-liruf
+      micro_objective: Practicar explicarle a Liruf qué es una acción, usando el ejemplo de la limonadería.
+      narrative_beat: Dina practica, con Liruf como público, explicar qué es una acción usando otra vez el ejemplo de la limonadería.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: liruf-hace-preguntas-dificiles
+      micro_objective: Responder a una pregunta difícil de Liruf sobre qué es una acción, sin perder la calma.
+      narrative_beat: Liruf hace una pregunta difícil sobre las acciones, y Dina responde con calma, usando lo que aprendió en el reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-explicacion-lista-para-mi-familia
+      micro_objective: Aplicar con seguridad, sin ayuda, una explicación completa y clara de qué es una acción para su familia.
+      narrative_beat: Dina prepara, sin ayuda de Dr. Rho, su explicación completa sobre qué es una acción para compartir con su familia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: explicarle-a-mi-familia-que-es-diversificar
+    title_es: Explicarle a mi familia por qué diversificar
+    concept: Practicar explicar por qué diversificar reparte el riesgo ayuda a comprobar que se comprendió el concepto, no solo se memorizó.
+    learning_objective: Al final, el niño puede explicarle a alguien de su familia por qué diversificar reparte el riesgo.
+    key_vocabulary:
+    - explicar
+    - diversificar
+    - repartir
+    - comprender
+    prior_knowledge: Puede explicarle a su familia qué es una acción (tema anterior).
+    parent_check: "¿{{name}} puede explicarte, con sus propias palabras, por qué diversificar reparte el riesgo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: practicar-con-la-canasta-de-huevos
+      micro_objective: Practicar explicar la idea de diversificar usando el ejemplo de no poner todos los huevos en una sola canasta.
+      narrative_beat: Dina practica, con Zara Vex como público, explicar la idea de diversificar usando el ejemplo de la canasta de huevos.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 2
+      slug: usar-un-ejemplo-propio-nuevo
+      micro_objective: Inventar un ejemplo propio, distinto al de los huevos, para explicar por qué diversificar ayuda.
+      narrative_beat: Dr. Rho reta a Dina a inventar un ejemplo propio, distinto al de los huevos, para explicar la misma idea de diversificar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-explicarselo-a-liruf-con-mi-ejemplo
+      micro_objective: Practicar explicarle a Liruf la idea de diversificar usando el ejemplo propio inventado.
+      narrative_beat: Dina practica con Liruf, usando su propio ejemplo nuevo, explicar por qué diversificar reparte el riesgo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-explicacion-de-diversificar-lista
+      micro_objective: Aplicar con seguridad, sin ayuda, una explicación completa de por qué diversificar reparte el riesgo.
+      narrative_beat: Dina prepara, sin ayuda de Dr. Rho, su explicación completa sobre diversificar para compartir con su familia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: explicarle-a-mi-familia-el-interes-compuesto
+    title_es: Explicarle a mi familia el interés compuesto
+    concept: Practicar explicar el interés compuesto con el ejemplo de la bola de nieve ayuda a comprobar que se entendió por qué el tiempo importa tanto.
+    learning_objective: Al final, el niño puede explicarle a alguien de su familia el interés compuesto usando el ejemplo de la bola de nieve.
+    key_vocabulary:
+    - explicar
+    - interés compuesto
+    - bola de nieve
+    - tiempo
+    prior_knowledge: Puede explicarle a su familia por qué diversificar reparte el riesgo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte el interés compuesto usando el ejemplo de la bola de nieve?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: practicar-con-la-bola-de-nieve
+      micro_objective: Practicar explicar el interés compuesto usando el ejemplo de la bola de nieve que crece cada vez más rápido.
+      narrative_beat: Dina practica, con Zara Vex como público, explicar el interés compuesto usando la bola de nieve del bosque.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - money
+    - position: 2
+      slug: usar-los-numeros-de-cien-a-ciento-treinta-y-tres
+      micro_objective: Usar los números de cien a ciento treinta y tres monedas para hacer la explicación más concreta.
+      narrative_beat: Dr. Rho ayuda a Dina a incluir los números de cien a ciento treinta y tres monedas, para hacer su explicación más concreta.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: explicar-por-que-el-tiempo-importa-tanto
+      micro_objective: Explicar, dentro de la misma práctica, por qué el tiempo es el ingrediente más importante del interés compuesto.
+      narrative_beat: Dina explica a Liruf, dentro de su práctica, por qué el tiempo es el ingrediente más importante de toda esta idea.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-explicacion-de-interes-compuesto-lista
+      micro_objective: Aplicar con seguridad, sin ayuda, una explicación completa del interés compuesto para su familia.
+      narrative_beat: Dina prepara, sin ayuda de Dr. Rho, su explicación completa sobre el interés compuesto para compartir con su familia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 4
+    slug: explicarle-a-mi-familia-como-reconocer-un-fraude
+    title_es: Explicarle a mi familia cómo reconocer un fraude
+    concept: Practicar explicar una señal de fraude a alguien de la familia ayuda a proteger a todos, no solo al niño que aprendió la señal.
+    learning_objective: Al final, el niño puede explicarle a alguien de su familia al menos una señal para reconocer un fraude de inversión.
+    key_vocabulary:
+    - explicar
+    - fraude
+    - señal
+    - proteger
+    prior_knowledge: Puede explicarle a su familia el interés compuesto usando la bola de nieve (tema anterior).
+    prerequisites:
+    - path: el-faro-de-los-fraudes/las-piramides-el-peligro-disfrazado/senales-de-una-piramide
+      strength: hard
+      reason: "Sin recordar las señales de una pirámide, no se puede explicar a la familia cómo reconocer un fraude."
+    parent_check: "¿{{name}} puede explicarte al menos una señal para reconocer un fraude de inversión?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: practicar-con-la-senal-de-demasiado-bueno
+      micro_objective: Practicar explicar el dicho 'si suena demasiado bueno para ser verdad' a alguien de la familia.
+      narrative_beat: Dina practica, con Liruf como público, explicar el dicho del faro sobre lo que suena demasiado bueno para ser verdad.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - analyze
+    - position: 2
+      slug: practicar-con-la-senal-de-la-piramide
+      micro_objective: Practicar explicar, con un ejemplo simple, cómo reconocer una pirámide de dinero.
+      narrative_beat: Zara Vex ayuda a Dina a practicar explicar, con un ejemplo simple, cómo reconocer una pirámide de dinero.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: practicar-con-la-senal-de-la-prisa
+      micro_objective: Practicar explicar por qué la prisa de una oferta es una señal de alerta importante.
+      narrative_beat: Dina practica explicar a Liruf por qué la prisa de una oferta de inversión es una señal de alerta importante.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-explicacion-de-fraude-lista
+      micro_objective: Aplicar con seguridad, sin ayuda, una explicación completa de al menos dos señales de fraude para su familia.
+      narrative_beat: Dina prepara, sin ayuda de Zara Vex, su explicación completa sobre cómo reconocer un fraude para compartir con su familia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: celebrar-la-constancia-no-solo-el-resultado
+    title_es: Celebrar la constancia, no solo el resultado
+    concept: Celebrar la constancia del plan, seguirlo con disciplina, importa tanto o más que si el resultado final subió o bajó ese día en particular.
+    learning_objective: Al final, el niño puede explicar por qué celebrar la constancia importa tanto como celebrar un buen resultado.
+    key_vocabulary:
+    - celebrar
+    - constancia
+    - resultado
+    - disciplina
+    prior_knowledge: Puede explicarle a su familia cómo reconocer un fraude (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué celebrar la constancia de su plan importa tanto como el resultado de un día?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-medalla-de-la-constancia
+      micro_objective: Conocer la medalla especial del observatorio, que se entrega por seguir el plan con constancia, no por un buen resultado de un solo día.
+      narrative_beat: Dr. Rho muestra a Dina la medalla especial del observatorio, entregada por seguir el plan con constancia, no por un buen día.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-buen-dia-no-es-lo-mismo-que-un-buen-plan
+      micro_objective: Reconocer que un buen resultado de un solo día no es lo mismo que haber seguido bien el plan completo.
+      narrative_beat: Zara Vex explica a Liruf que un buen resultado de un solo día no es lo mismo que haber seguido bien el plan completo con constancia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: celebrar-mi-propia-constancia
+      micro_objective: Reconocer y celebrar, con sus propias palabras, la constancia con la que siguió su propio plan hasta ahora.
+      narrative_beat: Dina se reconoce, con sus propias palabras, la constancia con la que siguió su propio plan de inversión hasta ahora.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-explicacion-de-por-que-celebrar-la-constancia
+      micro_objective: Explicar, con sus propias palabras, por qué celebrar la constancia importa tanto como el resultado de un día.
+      narrative_beat: Dina le explica a un aprendiz nuevo por qué prefiere celebrar su constancia en vez de preocuparse por el resultado de un solo día.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: ensenar-es-la-mejor-forma-de-aprender
+    title_es: Enseñar es la mejor forma de aprender
+    concept: Enseñarle algo a otra persona ayuda a entenderlo mejor uno mismo, porque obliga a explicarlo con claridad y responder preguntas nuevas.
+    learning_objective: Al final, el niño puede explicar por qué enseñar algo a otra persona ayuda a entenderlo mejor.
+    key_vocabulary:
+    - enseñar
+    - aprender
+    - entender
+    - claridad
+    prior_knowledge: Puede explicar por qué celebrar la constancia importa tanto como el resultado (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué enseñarte algo a ti le ayuda a entenderlo mejor a él o ella también?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dr-rho-tambien-aprendio-ensenando
+      micro_objective: Escuchar a Dr. Rho contar que él también aprendió mucho enseñando a otros viajeros del cosmos.
+      narrative_beat: Dr. Rho cuenta a Dina que él también aprendió mucho de lo que sabe hoy enseñando a otros viajeros del cosmos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: las-preguntas-que-me-ensenan-a-mi
+      micro_objective: Reconocer que responder preguntas nuevas de quien escucha ayuda a entender mejor lo que se explica.
+      narrative_beat: Zara Vex hace una pregunta nueva a Dina sobre su explicación, y Dina se da cuenta de que también aprendió algo respondiendo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-explicar-algo-nuevo
+      micro_objective: Practicar explicar un concepto nuevo del curso a alguien más, notando qué tan claro queda al explicarlo.
+      narrative_beat: Dina practica explicarle a Liruf un concepto nuevo del curso, notando qué tan claro le queda a ella misma al explicarlo.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-explicacion-de-por-que-ensenar-ayuda
+      micro_objective: Explicar, con sus propias palabras, por qué enseñarle algo a su familia también le ayuda a ella misma.
+      narrative_beat: Dina le explica a un aprendiz nuevo por qué enseñarle a su familia todo lo aprendido también le ayuda a ella misma.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 7
+    slug: practicar-una-presentacion-corta
+    title_es: Practicar una presentación corta
+    concept: Armar una explicación corta de todo lo aprendido en el curso junta todo lo practicado en la saga y prepara la graduación final.
+    learning_objective: Al final, el niño puede armar una presentación corta que resuma lo más importante aprendido en el curso.
+    key_vocabulary:
+    - presentación
+    - corta
+    - resumir
+    - importante
+    prior_knowledge: Puede explicar por qué enseñar algo ayuda a entenderlo mejor (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte una presentación corta con lo más importante que aprendió en todo el curso?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: elegir-lo-mas-importante
+      micro_objective: Elegir, entre todo lo aprendido en el curso, las cuatro ideas más importantes para una presentación corta.
+      narrative_beat: Dr. Rho ayuda a Dina a elegir, entre todo lo aprendido en el curso, las cuatro ideas más importantes para su presentación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 2
+      slug: ordenar-mi-presentacion
+      micro_objective: Ordenar las cuatro ideas elegidas en una secuencia clara para la presentación corta.
+      narrative_beat: Dina ordena, con ayuda de Zara Vex, las cuatro ideas elegidas en una secuencia clara para su presentación.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: practicar-mi-presentacion-con-liruf
+      micro_objective: Practicar la presentación corta completa frente a Liruf, ajustando lo que no quede claro.
+      narrative_beat: Dina practica su presentación corta completa frente a Liruf, ajustando las partes que no le quedaron claras a él.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-presentacion-lista-para-mi-familia
+      micro_objective: Aplicar con seguridad, sin ayuda, la presentación corta completa lista para compartir con su familia.
+      narrative_beat: Dina termina, sin ayuda de Dr. Rho, su presentación corta completa, lista para compartir con su familia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: mi-graduacion-del-cosmos
+    title_es: Mi graduación del cosmos
+    concept: Celebrar la graduación aplicando todo lo aprendido en una presentación final simulada cierra el viaje completo de inversión.
+    learning_objective: Al final, el niño puede aplicar, en una presentación final simulada, todo lo aprendido en el curso completo.
+    key_vocabulary:
+    - graduación
+    - celebrar
+    - final
+    - completo
+    prior_knowledge: Ha practicado armar una presentación corta de lo aprendido (tema anterior).
+    parent_check: "¿{{name}} puede mostrarte su presentación final, celebrando todo lo aprendido en el curso completo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-observatorio-se-llena-de-estrellas
+      micro_objective: Observar el observatorio del cosmos lleno de estrellas para la ceremonia de graduación simulada.
+      narrative_beat: El observatorio del cosmos se llena de estrellas brillantes para la ceremonia de graduación simulada de Dina y Liruf.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-presentacion-final-completa
+      micro_objective: Aplicar, sin ayuda de nadie, la presentación final completa frente a Dr. Rho y Zara Vex.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, su presentación final completa frente a todos los reunidos en la ceremonia.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 3
+      slug: dr-rho-entrega-la-medalla-de-constancia
+      micro_objective: Recibir la medalla de constancia del observatorio, celebrando el viaje completo recorrido con disciplina.
+      narrative_beat: Dr. Rho entrega a Dina la medalla de constancia del observatorio, celebrando todo el viaje que recorrió con disciplina.
+      difficulty: 3
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-graduacion-completa-del-cosmos
+      micro_objective: Celebrar, con sus propias palabras, la graduación completa aplicando todo lo aprendido en el curso.
+      narrative_beat: Bajo las estrellas del observatorio, Dina celebra su graduación completa junto a Dr. Rho, Liruf y Zara Vex.
+      difficulty: 4
+      suggested_families:
+      - storyplay
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre del observatorio para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Compartir lo Aprendido.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Compartir lo Aprendido.
+    key_vocabulary:
+    - explicar
+    - familia
+    - constancia
+    - enseñar
+    prior_knowledge: Ha completado los ocho temas de la saga Compartir lo Aprendido (aventura 8, saga 4).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-que-es-una-accion
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-que-es-diversificar
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-el-interes-compuesto
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-como-reconocer-un-fraude
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/celebrar-la-constancia-no-solo-el-resultado
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/ensenar-es-la-mejor-forma-de-aprender
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/practicar-una-presentacion-corta
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/mi-graduacion-del-cosmos
+    lessons:
+    - position: 1
+      slug: el-cofre-de-ensenar-se-abre
+      micro_objective: Recordar, sin ayuda nueva, cómo explicarle a la familia qué es una acción y por qué diversificar.
+      narrative_beat: Dr. Rho abre el cofre del observatorio y reta a Dina a recordar, estrella por estrella, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-ensenar
+      micro_objective: Recordar y ordenar de nuevo cómo explicar el interés compuesto y cómo reconocer un fraude a la familia.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-de-ensenar
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre celebrar la constancia, no solo el resultado.
+      narrative_beat: Dr. Rho presenta una escena nueva del cosmos y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-de-ensenar
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo armar una presentación corta de lo aprendido, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Compartir lo Aprendido con la calma de la saga anterior en un reto que combina ambas ideas.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de mantener la calma con el concepto de enseñar a la familia.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - enseñar
+    prior_knowledge: Conoce Compartir lo Aprendido (aventura 8, saga 4) y Ajustar sin Pánico (saga 3).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/ajustar-sin-panico/mi-respuesta-tranquila-a-una-bajada
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/ensenar-es-la-mejor-forma-de-aprender
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-respuesta-tranquila
+      micro_objective: Recordar, tal como se aprendió antes, cómo responder con calma frente a una bajada de la canasta.
+      narrative_beat: Zara Vex trae un recuerdo de la saga anterior y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con enseñar a la familia.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-la-calma-y-ensenar
+      micro_objective: Combinar la idea de responder con calma con la idea de que enseñarle esa calma a la familia también ayuda a protegerla.
+      narrative_beat: Dr. Rho muestra cómo responder con calma frente a una bajada se conecta con enseñarle esa misma calma a la familia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-de-ensenar
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de calma y enseñar a la familia combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del cosmos usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-de-ensenar
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del observatorio, Dina combina lo aprendido sobre calma y enseñar a la familia para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-cosmos-del-inversionista
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Investor's Cosmos' Grand Mission -- Course Finale
+    es-MX: La Gran Misión del Cosmos del Inversionista -- Final del Curso
+    pt-BR: A Grande Missão do Cosmos do Investidor -- Final do Curso
+  description:
+    en-US: 'The course finale: a grand quest that replays the entire investing journey -- goals, baskets, compound interest, fraud alerts, and the plan -- one last time under the stars.'
+    es-MX: 'El final del curso: una misión grande que repasa todo el viaje de inversión -- metas, canastas, interés compuesto, alertas de fraude y el plan -- una última vez bajo las estrellas.'
+    pt-BR: 'O final do curso: uma missão grande que revisita toda a jornada de investimento -- metas, cestas, juros compostos, alertas de fraude e o plano -- uma última vez sob as estrelas.'
+  topics:
+  - position: 1
+    slug: el-desafio-del-cosmos
+    kind: review_quest
+    title_es: El Desafío del Cosmos
+    concept: 'Dr. Rho anuncia la Gran Misión del cosmos: un desafío final que reúne, sin enseñar nada nuevo, todo lo aprendido sobre fijar una meta de inversión.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo fijar una meta de inversión clara, con plazo y tamaño realista.
+    key_vocabulary:
+    - meta
+    - plazo
+    - realista
+    prior_knowledge: Ha completado las cuatro sagas de El Cosmos del Inversionista.
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/que-quiero-lograr-con-el-tiempo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/una-meta-necesita-un-plazo
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/metas-cercanas-vs-metas-lejanas
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/una-meta-realista-para-mi-edad
+    lessons:
+    - position: 1
+      slug: el-cosmos-vuelve-a-brillar
+      micro_objective: Recordar qué es una meta de inversión y por qué necesita un plazo claro.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el observatorio y anuncia la Gran Misión: recorrer una vez más todo el viaje de inversión.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-plazo-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, por qué una meta necesita un plazo claro.
+      narrative_beat: Zara Vex reta a Dina a recordar, sin repasar la lección, por qué su estrella necesitaba un plazo definido.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: cercana-o-lejana-otra-vez
+      micro_objective: Recordar la diferencia entre una meta cercana, para ahorrar, y una lejana, para invertir.
+      narrative_beat: Liruf recuerda, sin ayuda, la diferencia entre la estrella cercana y la estrella lejana de esta saga.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: realista-otra-vez
+      micro_objective: Aplicar con seguridad la elección de una meta realista para practicar hoy.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, la elección de una meta realista frente a un aprendiz nuevo del cosmos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-plan-de-la-gran-mision
+    kind: review_quest
+    title_es: El Plan de la Gran Misión
+    concept: Dina y Liruf recuerdan los cinco pasos del plan de inversión, de la meta a revisar con calma.
+    learning_objective: Al final, el niño puede recordar y aplicar los cinco pasos completos del plan de inversión en orden.
+    key_vocabulary:
+    - plan
+    - pasos
+    - orden
+    prior_knowledge: Ha repasado la saga de la meta de inversión (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-segundo-paso-es-ahorrar
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-tercer-paso-es-la-canasta
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-cuarto-paso-es-el-tiempo
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-quinto-paso-es-revisar
+    lessons:
+    - position: 1
+      slug: ahorrar-otra-vez
+      micro_objective: Recordar por qué ahorrar una base segura va antes de invertir en el plan.
+      narrative_beat: Dina recuerda, de memoria, por qué su segundo escalón representaba ahorrar una base segura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-canasta-del-plan-otra-vez
+      micro_objective: Recordar por qué el tercer paso del plan es elegir una canasta variada.
+      narrative_beat: Liruf ordena, de memoria, por qué el tercer escalón de la escalera representaba una canasta variada.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: el-tiempo-del-plan-otra-vez
+      micro_objective: Recordar por qué el cuarto paso del plan es dejar que el tiempo trabaje con constancia.
+      narrative_beat: 'Dr. Rho pregunta a Dina si recuerda: ¿qué representaba el cuarto escalón de su escalera?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: revisar-el-plan-otra-vez
+      micro_objective: Aplicar con seguridad el quinto paso de revisar el plan con calma.
+      narrative_beat: Dina aplica, sin ayuda, el quinto paso de revisar su plan con calma frente a una escena nueva del cosmos.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: la-calma-de-la-gran-mision
+    kind: review_quest
+    title_es: La Calma de la Gran Misión
+    concept: Dina y Liruf recuerdan por qué una bajada es normal y cómo responder con calma en vez de pánico.
+    learning_objective: Al final, el niño puede recordar y aplicar una respuesta con calma frente a una bajada simulada de su canasta.
+    key_vocabulary:
+    - calma
+    - bajada
+    - pánico
+    prior_knowledge: Ha repasado la saga del plan paso a paso (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/ajustar-sin-panico/a-veces-la-canasta-baja
+    - el-cosmos-del-inversionista/ajustar-sin-panico/el-panico-no-ayuda-a-decidir
+    - el-cosmos-del-inversionista/ajustar-sin-panico/respirar-y-revisar-el-plan-otra-vez
+    - el-cosmos-del-inversionista/ajustar-sin-panico/el-tiempo-ayuda-a-recuperarse
+    lessons:
+    - position: 1
+      slug: la-nube-oscura-otra-vez
+      micro_objective: Recordar por qué una bajada del valor de la canasta es normal al invertir.
+      narrative_beat: Zara Vex muestra de nuevo la nube oscura del cosmos y reta a Liruf a recordar, sin ayuda, por qué eso es normal.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-panico-otra-vez
+      micro_objective: Recordar por qué decidir con pánico no ayuda a tomar una buena decisión.
+      narrative_beat: Dina recuerda, de memoria, qué le pasó a Liruf cuando quiso vender toda su canasta de golpe.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: respirar-otra-vez
+      micro_objective: Recordar el hábito de respirar y revisar el plan antes de reaccionar a una bajada.
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿qué hace antes de reaccionar a una bajada de su canasta?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: recuperarse-otra-vez
+      micro_objective: Aplicar con seguridad la confianza de que, con tiempo, una canasta variada suele recuperarse.
+      narrative_beat: Dina aplica, sin ayuda, su confianza en que el tiempo ayuda a recuperarse frente a una nueva bajada simulada.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: ensenar-en-la-gran-mision
+    kind: review_quest
+    title_es: Enseñar en la Gran Misión
+    concept: Dina y Liruf recuerdan cómo explicar lo aprendido a la familia y por qué celebrar la constancia importa tanto.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo explicar al menos dos ideas del curso a su familia.
+    key_vocabulary:
+    - explicar
+    - familia
+    - constancia
+    prior_knowledge: Ha repasado la saga de ajustar sin pánico (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-que-es-una-accion
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/explicarle-a-mi-familia-como-reconocer-un-fraude
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/celebrar-la-constancia-no-solo-el-resultado
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/ensenar-es-la-mejor-forma-de-aprender
+    lessons:
+    - position: 1
+      slug: explicar-la-accion-otra-vez
+      micro_objective: Recordar cómo explicarle a la familia qué es una acción, con palabras propias.
+      narrative_beat: Dina recuerda, de memoria, cómo le explicó a Liruf qué es una acción usando el ejemplo de la limonadería.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: explicar-el-fraude-otra-vez
+      micro_objective: Recordar al menos una señal de fraude para explicarle a la familia.
+      narrative_beat: Liruf ordena, de memoria, las señales de fraude que practicó explicar en esta saga.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: la-constancia-otra-vez
+      micro_objective: Recordar por qué celebrar la constancia importa tanto como el resultado de un día.
+      narrative_beat: 'Dr. Rho pregunta a Dina si recuerda: ¿por qué celebra su constancia y no solo un buen resultado?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: ensenar-ayuda-otra-vez
+      micro_objective: Aplicar con seguridad la idea de que enseñar algo a otra persona ayuda a entenderlo mejor.
+      narrative_beat: Dina aplica, sin ayuda, la idea de enseñar frente a un aprendiz nuevo del cosmos, notando que ella también aprende.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: las-cinco-estrellas-del-cosmos
+    kind: review_quest
+    title_es: Las Cinco Estrellas del Cosmos
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del cosmos: meta, plan, calma y enseñar.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido lo aprendido sobre meta, plan, calma y enseñar lo aprendido.
+    key_vocabulary:
+    - meta
+    - plan
+    - calma
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-cosmos-del-inversionista/mi-meta-de-inversion/mi-meta-personal-de-inversion
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/mi-plan-completo-de-cinco-pasos
+    - el-cosmos-del-inversionista/ajustar-sin-panico/mi-respuesta-tranquila-a-una-bajada
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/practicar-una-presentacion-corta
+    lessons:
+    - position: 1
+      slug: las-cuatro-luces-del-cosmos
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del cosmos: meta, plan, calma y enseñar.'
+      narrative_beat: Dr. Rho enciende cuatro estrellas guía del observatorio, una por cada área aprendida en esta aventura final.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-viajero-nuevo-necesita-guia
+      micro_objective: Aplicar las cuatro áreas para ayudar a un viajero nuevo del cosmos a armar su propio camino.
+      narrative_beat: Zara Vex presenta a un viajero nuevo del cosmos y reta a Liruf a guiarlo por las cuatro áreas aprendidas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cinco-estrellas
+      micro_objective: Aplicar con seguridad las cuatro áreas en un desafío único que las combina todas.
+      narrative_beat: Dina resuelve un desafío del cosmos que combina, de una sola vez, meta, plan, calma y enseñar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-recorrido-completo-del-cosmos
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del cosmos aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro estrellas guía del cosmos, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: la-gran-mision-del-cosmos-del-inversionista
+    kind: review_quest
+    title_es: La Gran Misión del Cosmos del Inversionista
+    concept: 'El gran cierre del curso completo de Inversiones combina las cuatro sagas del cosmos con recuerdos de El Reino de las Canastas, El Bosque del Interés Compuesto y El Faro de los Fraudes, celebrando todo el viaje del inversionista.'
+    learning_objective: Al final, el niño puede aplicar, en un desafío final, ideas de las cuatro aventuras del curso de Inversiones para armar su propio recorrido completo.
+    key_vocabulary:
+    - meta
+    - tiempo
+    - alerta
+    - plan
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del cosmos (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/mi-primer-pedacito-de-empresa
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/repartir-gana-a-adivinar
+    - el-bosque-del-interes-compuesto/el-tiempo-el-superpoder/el-tiempo-es-un-superpoder
+    - el-faro-de-los-fraudes/promesas-de-dinero-rapido/si-suena-demasiado-bueno
+    - el-cosmos-del-inversionista/mi-plan-paso-a-paso/el-quinto-paso-es-revisar
+    - el-cosmos-del-inversionista/compartir-lo-aprendido/ensenar-es-la-mejor-forma-de-aprender
+    lessons:
+    - position: 1
+      slug: el-viaje-completo-del-inversionista
+      micro_objective: 'Recordar, en conjunto, el viaje completo del curso: desde el jardín del tiempo hasta el cosmos del inversionista.'
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf bajo las estrellas y recuerda con ellos el viaje completo: el Jardín del Tiempo, la Aldea del Interés, el Archipiélago de los Riesgos, la Ciudad de las Metas, el Reino de las Canastas, el Bosque del Interés Compuesto, el Faro de los Fraudes, y ahora el Cosmos del Inversionista.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-cosmos-y-los-mundos-anteriores
+      micro_objective: 'Recordar tres ideas de aventuras anteriores: repartir gana a adivinar, el tiempo es un superpoder, y una promesa demasiado buena merece sospecha.'
+      narrative_beat: Zara Vex recuerda con Liruf la canasta variada del reino, la bola de nieve del bosque nevado y las alertas del faro, mostrando cómo las tres ideas viven dentro de su plan del cosmos.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: la-gran-mision-bajo-las-estrellas
+      micro_objective: Aplicar en un desafío final todo lo recordado del curso completo, uniendo meta, canasta, tiempo, alerta y plan.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo lo que recuerda de las ocho aventuras del curso de Inversiones.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-cosmos-sigue-brillando-para-siempre
+      micro_objective: Celebrar la graduación final del curso completo, resumiendo con una frase propia todo lo logrado desde el primer jardín hasta el cosmos.
+      narrative_beat: Bajo las estrellas del observatorio, Dr. Rho declara a Dina y Liruf graduados de todo el viaje de Inversiones, y ambos celebran junto a Liruf y Zara Vex, listos para enseñarle a su familia lo aprendido.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

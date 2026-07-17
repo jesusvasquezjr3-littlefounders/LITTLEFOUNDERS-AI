@@ -1,63 +1,33 @@
-name: Backend CI
+name: backend CI
+
 on:
   push:
-    branches: [main]
+    branches: [main, littlefounders_v2]
     paths:
-      - "backend/**"
-      - "!backend/**/*.md"   # cambios solo-docs no gatillan CI/CD del backend
-      - ".github/workflows/backend-ci.yml"
+      - 'backend/**'
+      - 'database/types/**'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
-      - "backend/**"
-      - "!backend/**/*.md"
-      - ".github/workflows/backend-ci.yml"
+      - 'backend/**'
+      - 'database/types/**'
+      - '.github/workflows/backend-ci.yml'
 
 jobs:
-  test:
-    name: lint + test
+  ci:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: littlefounders_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    defaults:
+      run:
+        working-directory: backend
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: backend/requirements.txt
-      - name: Install dependencies
-        working-directory: ./backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-      - name: Lint (ruff)
-        working-directory: ./backend
-        run: python -m ruff check .
-      - name: Test
-        working-directory: ./backend
-        env:
-          DATABASE_HOSTNAME: localhost
-          DATABASE_PORT: 5432
-          DATABASE_USERNAME: postgres
-          DATABASE_PASSWORD: postgres
-          DATABASE_NAME: littlefounders_test
-          SECRET_KEY: ci-secret-key-at-least-32-characters-long
-        run: |
-          pytest -v --tb=short || code=$?
-          code=${code:-0}
-          # exit 5 = "no se recolectaron tests" → tolerar; cualquier otro fallo real → romper CI
-          if [ "$code" -eq 5 ]; then echo "::warning::No tests collected — skipping"; exit 0; fi
-          exit "$code"
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test

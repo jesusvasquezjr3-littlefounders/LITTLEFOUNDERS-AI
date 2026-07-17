@@ -1,0 +1,2277 @@
+schema_version: 1
+adventure:
+  position: 5
+  slug: el-reino-de-las-canastas
+  theme: kingdom
+  age_tier: tier3
+  title:
+    en-US: The Kingdom of Baskets
+    es-MX: El Reino de las Canastas
+    pt-BR: O Reino das Cestas
+  description:
+    en-US: In a kingdom ruled by baskets, Dina and Liruf learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
+    es-MX: En un reino gobernado por canastas, Dina y Liruf aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
+    pt-BR: Em um reino governado por cestas, Dina e Liruf aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
+  narrative_arc: 'Dina y Liruf llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
+sagas:
+- position: 1
+  slug: un-pedacito-de-una-empresa
+  icon: storefront
+  title:
+    en-US: A Little Piece of a Company
+    es-MX: Un Pedacito de una Empresa
+    pt-BR: Um Pedacinho de uma Empresa
+  description:
+    en-US: Discover what a company is, why it needs money to grow, and what it really means to own a stock.
+    es-MX: Descubre qué es una empresa, por qué necesita dinero para crecer, y qué significa de verdad tener una acción.
+    pt-BR: Descubra o que é uma empresa, por que ela precisa de dinheiro para crescer, e o que realmente significa ter uma ação.
+  topics:
+  - position: 1
+    slug: que-es-una-empresa
+    title_es: Qué es una empresa
+    concept: Una empresa es un negocio que vende algo -- productos o servicios -- y necesita dinero para crecer más allá de donde empezó.
+    learning_objective: Al final, el niño puede explicar con sus palabras qué es una empresa y por qué necesita dinero para crecer.
+    key_vocabulary:
+    - empresa
+    - negocio
+    - vender
+    - crecer
+    prior_knowledge: Recuerda cómo funcionaba el negocio de limonada que conoció en Emprendimiento.
+    parent_check: "¿{{name}} puede explicarte con sus palabras qué es una empresa y por qué necesita dinero para crecer?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-limonaderia-que-crecio
+      micro_objective: Recordar que un negocio, como la limonadería, es una empresa que vende algo a cambio de dinero.
+      narrative_beat: Dr. Rho recibe a Dina y Liruf en el Reino de las Canastas y les muestra que la limonadería que conocieron en Emprendimiento ahora es una empresa mucho más grande.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: para-que-necesita-dinero-una-empresa
+      micro_objective: Identificar por qué una empresa necesita dinero para crecer, como comprar más limones o contratar ayuda.
+      narrative_beat: Zara Vex pregunta a Liruf qué necesitaría la limonadería para vender en todo el reino y no solo en una esquina del mercado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: quien-le-da-dinero-a-una-empresa
+      micro_objective: Reconocer que las personas del reino pueden dar dinero a una empresa a cambio de un pedacito de ella.
+      narrative_beat: Dr. Rho explica que, en vez de pedir prestado, una empresa puede ofrecer pedacitos de sí misma a quien quiera ayudarla a crecer.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-empresa-del-reino
+      micro_objective: Aplicar el concepto de empresa a un negocio nuevo imaginado dentro del reino.
+      narrative_beat: Dina imagina un nuevo negocio del reino y explica, con sus propias palabras, por qué se considera una empresa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: que-es-una-accion
+    title_es: Qué es una acción
+    concept: Una acción es un pedacito real de una empresa; quien la tiene es dueño de esa parte, por pequeña que sea.
+    learning_objective: Al final, el niño puede explicar que una acción es un pedacito real de una empresa.
+    key_vocabulary:
+    - acción
+    - pedacito
+    - dueño
+    - empresa
+    prior_knowledge: Sabe qué es una empresa y por qué necesita dinero para crecer (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué es una acción usando la palabra 'pedacito de una empresa'?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-pedacito-de-la-limonaderia
+      micro_objective: Reconocer que una acción es un pedacito real de una empresa, como un pedacito de la limonadería.
+      narrative_beat: Dr. Rho corta un pastel de limón en pedacitos frente a Dina y compara cada pedacito con una acción de la limonadería.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: tener-una-accion-es-tener-un-pedacito
+      micro_objective: Distinguir entre 'tener una acción' y simplemente 'querer una empresa', usando el pedacito como evidencia.
+      narrative_beat: Zara Vex pregunta a Liruf si admirar la limonadería es lo mismo que tener un pedacito real de ella.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cuantos-pedacitos-tiene-una-empresa
+      micro_objective: Reconocer que una empresa se puede dividir en muchos pedacitos pequeños, no solo uno grande.
+      narrative_beat: Dr. Rho muestra el pastel cortado en diez pedacitos iguales y explica que una empresa puede repartirse así entre muchas personas.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 4
+      slug: mi-primer-pedacito
+      micro_objective: Aplicar la idea de acción como pedacito a una empresa nueva del reino.
+      narrative_beat: Frente a una empresa nueva del mercado real, Dina decide qué significaría tener un pedacito de ella.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: si-la-empresa-gana-si-la-empresa-pierde
+    title_es: Si la empresa gana, si la empresa pierde
+    concept: Si una empresa vende bien y gana dinero, su pedacito suele valer más; si le va mal, su pedacito suele valer menos.
+    learning_objective: Al final, el niño puede explicar que el valor de una acción cambia según le vaya bien o mal a la empresa.
+    key_vocabulary:
+    - ganar
+    - perder
+    - valor
+    - cambiar
+    prior_knowledge: Sabe que una acción es un pedacito real de una empresa (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué el pedacito de una empresa vale más cuando a la empresa le va bien?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-limonaderia-vende-mucho
+      micro_objective: Observar que cuando la limonadería vende mucho, su pedacito empieza a valer más.
+      narrative_beat: Un día caluroso, la limonadería del reino vende más que nunca, y Liruf nota que su pedacito ahora vale un poco más.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: la-limonaderia-vende-poco
+      micro_objective: Observar que cuando la limonadería vende poco, su pedacito puede valer menos.
+      narrative_beat: Una semana de lluvia hace que casi nadie compre limonada, y Dina nota que su pedacito vale un poco menos que antes.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: comparar-dos-empresas
+      micro_objective: Comparar dos empresas del reino y decidir a cuál le fue mejor esta temporada.
+      narrative_beat: Zara Vex muestra los resultados de dos negocios del mercado y reta a Liruf a decidir cuál tuvo mejor temporada.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-del-cambio-de-valor
+      micro_objective: Explicar, con un ejemplo propio, por qué el valor de un pedacito puede subir o bajar.
+      narrative_beat: Dina explica a Liruf, con el ejemplo de la limonadería, por qué su pedacito no siempre vale lo mismo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: comprar-una-accion-es-volverme-mini-dueno
+    title_es: Comprar una acción me vuelve mini-dueño
+    concept: Comprar una acción convierte a la persona en un mini-dueño de la empresa, con un pedacito de lo que la empresa gana o pierde.
+    learning_objective: Al final, el niño puede explicar qué significa volverse mini-dueño de una empresa al comprar una acción.
+    key_vocabulary:
+    - comprar
+    - mini-dueño
+    - dueño
+    - pertenecer
+    prior_knowledge: Sabe que el valor de una acción cambia según le vaya bien o mal a la empresa (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué significa ser 'mini-dueño' de una empresa al tener una acción?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-mini-dueno-de-la-limonaderia
+      micro_objective: Reconocer que comprar un pedacito de la limonadería convierte a alguien en mini-dueño de ese negocio.
+      narrative_beat: Dr. Rho entrega a Dina un pequeño pergamino que dice que ahora es mini-dueña de un pedacito de la limonadería.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuantos-mini-duenos-puede-tener-una-empresa
+      micro_objective: Reconocer que una empresa puede tener muchos mini-dueños distintos al mismo tiempo.
+      narrative_beat: Liruf cuenta en el mercado a varias personas que también tienen pedacitos de la misma limonadería.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: que-gana-un-mini-dueno
+      micro_objective: Explicar qué puede ganar un mini-dueño cuando a la empresa le va bien.
+      narrative_beat: Zara Vex pregunta a Dina qué gana ella, como mini-dueña, cuando la limonadería vende mucho en un día caluroso.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-decision-de-volverme-mini-dueno
+      micro_objective: Decidir, en un escenario simulado, si conviene volverse mini-dueño de una empresa nueva.
+      narrative_beat: Frente a un nuevo puesto del mercado, Dina decide si le gustaría volverse mini-dueña de ese negocio.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: muchas-personas-un-mismo-pedacito
+    title_es: Muchas personas, un mismo pedacito de historia
+    concept: Muchas personas distintas pueden tener pedacitos de la misma empresa al mismo tiempo, cada una con su propio interés en que le vaya bien.
+    learning_objective: Al final, el niño puede explicar que varias personas pueden ser mini-dueñas de la misma empresa a la vez.
+    key_vocabulary:
+    - varios
+    - compartir
+    - interés
+    - juntos
+    prior_knowledge: Sabe qué significa volverse mini-dueño al comprar una acción (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué muchas personas distintas pueden ser dueñas de la misma empresa?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-libro-de-los-mini-duenos
+      micro_objective: Observar que la limonadería tiene un libro con los nombres de todos sus mini-dueños.
+      narrative_beat: Dr. Rho muestra a Liruf un libro grueso con los nombres de todas las personas que tienen un pedacito de la limonadería.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: todos-quieren-que-le-vaya-bien
+      micro_objective: Reconocer que todos los mini-dueños de una empresa comparten el interés de que le vaya bien.
+      narrative_beat: Zara Vex pregunta a Dina por qué todos los mini-dueños del libro celebran juntos cuando la limonadería vende mucho.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: un-pedacito-pequeno-tambien-cuenta
+      micro_objective: Reconocer que un pedacito pequeño de una empresa vale y cuenta igual que uno más grande, en su proporción.
+      narrative_beat: Liruf se preocupa porque su pedacito es más pequeño que el de Dina, pero Dr. Rho le explica que igual cuenta.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-lugar-entre-los-mini-duenos
+      micro_objective: Explicar, con un ejemplo propio, cómo se sentiría formar parte del grupo de mini-dueños de una empresa.
+      narrative_beat: Dina imagina su nombre escrito en el libro de mini-dueños junto a otras personas del reino.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: el-precio-de-una-accion-sube-y-baja
+    title_es: El precio de una acción sube y baja
+    concept: El precio de una acción cambia todos los días según lo que las personas creen que vale la empresa, y puede leerse en un gráfico simple.
+    learning_objective: Al final, el niño puede leer un gráfico simple y decir si el precio de una acción subió o bajó.
+    key_vocabulary:
+    - precio
+    - gráfico
+    - subir
+    - bajar
+    prior_knowledge: Sabe que varias personas pueden ser mini-dueñas de la misma empresa (tema anterior).
+    parent_check: "¿{{name}} puede mirar un gráfico simple y decirte si el precio de una acción subió o bajó?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-linea-que-sube-y-baja
+      micro_objective: Observar que el precio de una acción se puede dibujar como una línea que sube y baja con los días.
+      narrative_beat: Dr. Rho muestra a Dina un pergamino con una línea que sube y baja, cada punto representando un día de la limonadería.
+      difficulty: 2
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: leer-un-punto-del-grafico
+      micro_objective: Leer un punto específico del gráfico y decir si ese día el precio era mayor o menor que el día anterior.
+      narrative_beat: Zara Vex señala dos puntos del gráfico y reta a Liruf a decir cuál de los dos días valía más el pedacito.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: por-que-cambia-el-precio-cada-dia
+      micro_objective: Explicar, con un ejemplo, por qué el precio de una acción puede cambiar de un día a otro.
+      narrative_beat: Dr. Rho explica que el precio cambia según cuánta gente quiere comprar o vender su pedacito ese día.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-lectura-del-grafico
+      micro_objective: Aplicar la lectura de un gráfico nuevo para describir la semana completa de una empresa.
+      narrative_beat: Frente a un gráfico nuevo del mercado, Dina describe si la semana fue buena o difícil para esa empresa.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 7
+    slug: una-accion-no-es-una-promesa
+    title_es: Una acción no es una promesa de ganar siempre
+    concept: Tener una acción no garantiza ganar dinero siempre; el valor puede subir, bajar, o quedarse igual, y eso es parte normal de invertir.
+    learning_objective: Al final, el niño puede explicar que una acción no promete ganancias seguras.
+    key_vocabulary:
+    - promesa
+    - garantizar
+    - riesgo
+    - normal
+    prior_knowledge: Sabe leer un gráfico simple de subidas y bajadas (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué una acción nunca es una promesa segura de ganar dinero?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: nadie-le-promete-nada-a-la-limonaderia
+      micro_objective: Reconocer que ni siquiera Dr. Rho puede prometer que el precio de una acción solo va a subir.
+      narrative_beat: Liruf le pregunta a Dr. Rho si su pedacito siempre va a valer más, y Dr. Rho responde con honestidad que nadie puede prometer eso.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-una-promesa-real-con-una-falsa
+      micro_objective: Comparar una explicación honesta ('puede subir o bajar') con una promesa poco creíble ('siempre va a ganar').
+      narrative_beat: Zara Vex presenta dos vendedores del mercado, uno que promete ganancias seguras y otro que explica el riesgo con honestidad.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: subir-bajar-o-quedarse-igual-es-normal
+      micro_objective: Reconocer que subir, bajar o quedarse igual son resultados normales al tener una acción.
+      narrative_beat: 'Dr. Rho muestra tres pedacitos distintos del mercado: uno subió, uno bajó y uno se quedó casi igual, y explica que los tres son normales.'
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 4
+      slug: mi-explicacion-sin-promesas
+      micro_objective: Explicar, sin usar promesas exageradas, cómo funciona el valor de una acción.
+      narrative_beat: Dina le explica a un aprendiz nuevo del reino cómo funciona una acción, con cuidado de no prometer nada que no pueda cumplir.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: mi-primer-pedacito-de-empresa
+    title_es: Practicar mi primer pedacito de empresa
+    concept: Reconocer una acción como pedacito real de un negocio real, en escenarios nuevos, junta todo lo aprendido en la saga.
+    learning_objective: Al final, el niño puede reconocer y explicar una acción como un pedacito real de una empresa real en una situación nueva.
+    key_vocabulary:
+    - reconocer
+    - pedacito
+    - empresa
+    - explicar
+    prior_knowledge: Ha completado los seis temas anteriores sobre qué es una acción (temas anteriores).
+    parent_check: "¿{{name}} puede reconocer, en un ejemplo nuevo, que una acción es un pedacito real de una empresa real?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: una-empresa-nueva-en-el-mercado
+      micro_objective: Reconocer los elementos básicos de una empresa nueva presentada en el mercado del reino.
+      narrative_beat: Un nuevo puesto de pan aparece en el mercado del reino, y Dina identifica que es una empresa como la limonadería.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: decidir-si-quiero-un-pedacito
+      micro_objective: Aplicar lo aprendido para decidir, con razones propias, si le gustaría tener un pedacito de la nueva empresa.
+      narrative_beat: Zara Vex reta a Liruf a explicar por qué le gustaría, o no, tener un pedacito del nuevo puesto de pan.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: explicar-el-riesgo-sin-miedo
+      micro_objective: Explicar con calma que el pedacito de la nueva empresa puede subir o bajar, sin exagerar el miedo ni la promesa.
+      narrative_beat: Dr. Rho pide a Dina que le explique el riesgo del nuevo puesto de pan, sin asustarse ni prometer de más.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-pedacito-explicado-completo
+      micro_objective: Aplicar con seguridad todo lo aprendido sobre acciones para explicar un pedacito de empresa a un personaje nuevo.
+      narrative_beat: Dina le explica a un aprendiz nuevo del reino, de principio a fin, qué es un pedacito real de una empresa real.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre real de las canastas para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Un Pedacito de una Empresa.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Un Pedacito de una Empresa.
+    key_vocabulary:
+    - empresa
+    - acción
+    - pedacito
+    - valor
+    prior_knowledge: Ha completado los ocho temas de la saga Un Pedacito de una Empresa (aventura 5, saga 1).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/que-es-una-empresa
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/que-es-una-accion
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/si-la-empresa-gana-si-la-empresa-pierde
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/comprar-una-accion-es-volverme-mini-dueno
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/muchas-personas-un-mismo-pedacito
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/el-precio-de-una-accion-sube-y-baja
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/una-accion-no-es-una-promesa
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/mi-primer-pedacito-de-empresa
+    lessons:
+    - position: 1
+      slug: el-cofre-real-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es una empresa y qué es una acción.
+      narrative_beat: Dr. Rho abre el cofre real del reino y reta a Dina a recordar, pedacito por pedacito, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué cambia el valor de una acción y qué significa ser mini-dueño.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre leer un gráfico simple de precios.
+      narrative_beat: Dr. Rho presenta una escena nueva del mercado y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-real
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo que una acción no es una promesa, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Un Pedacito de una Empresa con la limonadería de Emprendimiento en un reto que combina ambos mundos.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de empresa con el concepto de acción como pedacito de esa empresa.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - empresa
+    prior_knowledge: Conoce Un Pedacito de una Empresa (aventura 5, saga 1) y la limonadería de Emprendimiento.
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/que-es-una-empresa
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/mi-primer-pedacito-de-empresa
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-limonaderia
+      micro_objective: Recordar, tal como se aprendió antes, qué hace que un negocio sea una empresa de verdad.
+      narrative_beat: Zara Vex trae un recuerdo de la limonadería de Emprendimiento y pide a Liruf recordarlo sin ayuda antes de mezclarlo con el reino.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-empresa-y-accion
+      micro_objective: Combinar el concepto de empresa recordado con lo aprendido sobre acciones como pedacitos reales.
+      narrative_beat: Dr. Rho muestra cómo la limonadería que crece se conecta directamente con la idea de repartirla en pedacitos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-del-reino
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de empresa y acción combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-del-reino
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del mercado, Dina combina lo aprendido sobre empresas y acciones para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: la-canasta-de-cosas-distintas
+  icon: shopping_basket
+  title:
+    en-US: The Basket of Different Things
+    es-MX: La Canasta de Cosas Distintas
+    pt-BR: A Cesta de Coisas Diferentes
+  description:
+    en-US: Learn why spreading money across different things protects better than putting it all in one place.
+    es-MX: Aprende por qué repartir el dinero entre cosas distintas protege mejor que ponerlo todo en un solo lugar.
+    pt-BR: Aprenda por que espalhar o dinheiro entre coisas diferentes protege melhor do que colocar tudo em um só lugar.
+  topics:
+  - position: 1
+    slug: que-es-una-canasta
+    title_es: Qué es una canasta
+    concept: Una canasta es un contenedor que puede guardar muchas cosas distintas a la vez, en vez de una sola cosa repetida.
+    learning_objective: Al final, el niño puede explicar qué es una canasta con cosas distintas dentro.
+    key_vocabulary:
+    - canasta
+    - contenedor
+    - distinto
+    - guardar
+    prior_knowledge: Conoce Un Pedacito de una Empresa (aventura 5, saga 1).
+    parent_check: "¿{{name}} puede explicarte qué significa que una canasta tenga cosas distintas adentro, en vez de una sola?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-canasta-del-mercado-real
+      micro_objective: Observar una canasta del mercado real que tiene frutas, pan y velas distintas adentro.
+      narrative_beat: Dr. Rho muestra a Dina una canasta del mercado real llena de cosas distintas, no solo de un tipo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: canasta-de-una-sola-cosa
+      micro_objective: Comparar una canasta con cosas distintas con una canasta llena de una sola cosa repetida.
+      narrative_beat: 'Zara Vex muestra dos canastas: una solo con manzanas y otra con manzanas, pan y velas juntos.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: para-que-sirve-mezclar-la-canasta
+      micro_objective: Explicar, con un ejemplo, para qué sirve tener cosas distintas dentro de la misma canasta.
+      narrative_beat: Dr. Rho pregunta a Liruf qué pasaría si se le cayera la canasta de una sola cosa comparado con la canasta mezclada.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-canasta-de-cosas-distintas
+      micro_objective: Armar, en un escenario simulado, una canasta propia con al menos tres cosas distintas.
+      narrative_beat: Dina arma su propia canasta del mercado, eligiendo con cuidado varias cosas distintas para llenarla.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 2
+    slug: no-todos-los-huevos-en-una-canasta
+    title_es: No pongas todos los huevos en una sola canasta
+    concept: El dicho 'no pongas todos los huevos en una sola canasta' significa que arriesgar todo en una sola cosa es peligroso si esa cosa se rompe.
+    learning_objective: Al final, el niño puede explicar con sus palabras el dicho 'no pongas todos los huevos en una sola canasta'.
+    key_vocabulary:
+    - huevos
+    - arriesgar
+    - romperse
+    - peligroso
+    prior_knowledge: Sabe qué es una canasta con cosas distintas dentro (tema anterior).
+    parent_check: "¿{{name}} puede explicarte con sus palabras qué significa 'no pongas todos los huevos en una sola canasta'?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-canasta-de-huevos-se-cae
+      micro_objective: Observar qué pasa cuando todos los huevos de una sola canasta se caen al mismo tiempo.
+      narrative_beat: En el mercado, una canasta llena solo de huevos se resbala de las manos de un vendedor y todos se rompen a la vez.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: si-los-huevos-estuvieran-repartidos
+      micro_objective: Comparar qué habría pasado si los huevos hubieran estado repartidos en varias canastas distintas.
+      narrative_beat: Zara Vex pregunta a Dina qué habría pasado si el vendedor hubiera llevado los huevos en tres canastas distintas en vez de una.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: el-dicho-del-reino
+      micro_objective: Explicar el dicho 'no pongas todos los huevos en una sola canasta' con un ejemplo propio del mercado.
+      narrative_beat: Dr. Rho enseña a Liruf el dicho del reino sobre los huevos y le pide inventar otro ejemplo parecido con velas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-canasta-repartida
+      micro_objective: Aplicar el dicho de los huevos para decidir cómo repartir algo valioso en un escenario nuevo.
+      narrative_beat: Frente a un cargamento nuevo de frutas, Dina decide repartirlas en varias canastas, recordando el dicho del reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: si-una-baja-otra-puede-subir
+    title_es: Si una baja, otra puede subir
+    concept: Cuando una canasta tiene cosas distintas, es posible que una baje de valor mientras otra sube, y eso equilibra el resultado total.
+    learning_objective: Al final, el niño puede explicar cómo una canasta variada equilibra sus resultados cuando una cosa baja y otra sube.
+    key_vocabulary:
+    - equilibrar
+    - subir
+    - bajar
+    - resultado
+    prior_knowledge: Conoce el dicho 'no pongas todos los huevos en una sola canasta' (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué en una canasta variada, si algo baja, otra cosa puede subir y equilibrar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-lluvia-y-el-sol-del-mercado
+      micro_objective: Observar que un día lluvioso baja las ventas de limonada pero sube las ventas de paraguas.
+      narrative_beat: Un día de lluvia, la limonadería vende poco, pero el puesto de paraguas del mercado vende más que nunca.
+      difficulty: 2
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: dos-empresas-distintas-un-mismo-dia
+      micro_objective: Comparar cómo dos empresas distintas pueden tener resultados opuestos el mismo día.
+      narrative_beat: Zara Vex muestra los resultados del mismo día para la limonadería y para el puesto de paraguas, y pide compararlos.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: la-canasta-que-no-se-hunde-del-todo
+      micro_objective: Explicar por qué una canasta con ambos negocios no pierde todo su valor en un día de lluvia.
+      narrative_beat: Dr. Rho muestra que quien tenía pedacitos de ambos negocios no perdió todo su valor ese día lluvioso.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-canasta-equilibrada
+      micro_objective: Aplicar la idea de equilibrio para armar una canasta con negocios que reaccionen distinto ante el mismo evento.
+      narrative_beat: Dina arma una canasta con un negocio de lluvia y uno de sol, pensando en cómo se equilibran entre sí.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 4
+    slug: canasta-de-un-tipo-vs-canasta-variada
+    title_es: Canasta de un solo tipo vs. canasta variada
+    concept: Comparar una canasta llena de un solo tipo de empresa con una canasta variada ayuda a ver la diferencia de riesgo entre ambas.
+    learning_objective: Al final, el niño puede comparar una canasta de un solo tipo con una variada y explicar la diferencia de riesgo.
+    key_vocabulary:
+    - comparar
+    - riesgo
+    - variada
+    - tipo
+    prior_knowledge: Sabe que si una cosa de la canasta baja, otra puede subir (tema anterior).
+    parent_check: "¿{{name}} puede explicarte qué diferencia de riesgo hay entre una canasta de un solo tipo y una canasta variada?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-canasta-de-solo-limonaderias
+      micro_objective: Observar una canasta con pedacitos de cinco limonaderías distintas, pero todas del mismo tipo de negocio.
+      narrative_beat: Dr. Rho muestra una canasta llena solo de pedacitos de distintas limonaderías del reino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-pasa-si-baja-el-calor
+      micro_objective: Reconocer que una canasta de solo limonaderías baja completa si baja el calor en todo el reino.
+      narrative_beat: Zara Vex pregunta a Liruf qué pasaría con la canasta de solo limonaderías si llegara un invierno frío al reino entero.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: la-canasta-variada-resiste-mejor
+      micro_objective: Comparar cómo resistiría un invierno frío una canasta variada frente a una canasta de solo limonaderías.
+      narrative_beat: Dr. Rho compara la misma canasta variada de siempre con la canasta de solo limonaderías durante ese mismo invierno frío.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-comparacion-de-canastas
+      micro_objective: Explicar, con un ejemplo propio, por qué elegiría una canasta variada en vez de una de un solo tipo.
+      narrative_beat: Dina explica a un aprendiz nuevo por qué prefiere armar su canasta con negocios de distintos tipos.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: diversificar-reparte-el-riesgo
+    title_es: Diversificar reparte el riesgo
+    concept: Diversificar significa tener cosas distintas para repartir el riesgo, así ningún problema solo puede hundir toda la canasta.
+    learning_objective: Al final, el niño puede explicar que diversificar significa repartir el riesgo entre cosas distintas.
+    key_vocabulary:
+    - diversificar
+    - repartir
+    - riesgo
+    - proteger
+    prior_knowledge: Puede comparar una canasta de un solo tipo con una variada (tema anterior).
+    parent_check: "¿{{name}} puede explicarte, con la palabra 'diversificar', por qué conviene repartir entre cosas distintas?"
+    prerequisites:
+    - path: el-reino-de-las-canastas/un-pedacito-de-una-empresa/una-accion-no-es-una-promesa
+      strength: soft
+      reason: "Entender que una sola acción puede subir o bajar prepara para entender por qué conviene repartir entre varias."
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-palabra-diversificar
+      micro_objective: Reconocer la palabra 'diversificar' como el nombre de la práctica de repartir entre cosas distintas.
+      narrative_beat: Dr. Rho enseña a Dina la palabra 'diversificar' y la conecta directamente con la canasta variada que armaron juntos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: diversificar-no-elimina-todo-el-riesgo
+      micro_objective: Reconocer que diversificar reparte el riesgo, pero no lo elimina por completo.
+      narrative_beat: Zara Vex aclara a Liruf que diversificar no vuelve mágica la canasta, solo reparte mejor lo que puede pasar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: comparar-riesgo-repartido-y-riesgo-junto
+      micro_objective: Comparar el riesgo de tener todo en una sola empresa con el riesgo de tenerlo repartido en varias.
+      narrative_beat: 'Dr. Rho compara dos historias del reino: una persona con todo en una empresa y otra con todo repartido.'
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-plan-de-diversificar
+      micro_objective: Aplicar la idea de diversificar para decidir cómo repartir un tesoro simulado entre varias empresas.
+      narrative_beat: Con un pequeño tesoro simulado, Dina decide repartirlo entre varias empresas distintas del reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: una-canasta-con-negocios-distintos
+    title_es: Una canasta con negocios muy distintos
+    concept: Una canasta bien diversificada puede tener negocios de tipos muy distintos, como limonada, pan y juguetes, no solo variedad dentro del mismo tipo.
+    learning_objective: Al final, el niño puede armar, en un ejemplo, una canasta con negocios de tipos muy distintos.
+    key_vocabulary:
+    - tipo
+    - distinto
+    - negocio
+    - variedad
+    prior_knowledge: Sabe que diversificar reparte el riesgo entre cosas distintas (tema anterior).
+    parent_check: "¿{{name}} puede nombrar tres tipos de negocios muy distintos que podrían ir juntos en una misma canasta?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: limonada-pan-y-juguetes
+      micro_objective: Observar una canasta que combina una limonadería, una panadería y una juguetería, tres tipos de negocio muy distintos.
+      narrative_beat: Dr. Rho arma frente a Dina una canasta con pedacitos de una limonadería, una panadería y una juguetería.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-tan-distintos-es-mejor
+      micro_objective: Explicar por qué negocios muy distintos entre sí ayudan más a repartir el riesgo que negocios parecidos.
+      narrative_beat: Zara Vex pregunta a Liruf por qué una canasta con negocios tan distintos protege mejor que una con negocios parecidos.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: eventos-que-afectan-distinto-a-cada-negocio
+      micro_objective: Identificar un evento del reino que afecte de forma distinta a cada uno de los tres negocios de la canasta.
+      narrative_beat: Dr. Rho propone una fiesta del reino y pide a Dina imaginar cómo afecta distinto a la limonadería, la panadería y la juguetería.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 4
+      slug: mi-canasta-de-tres-negocios
+      micro_objective: Armar, en un escenario simulado, una canasta propia con al menos tres tipos de negocio muy distintos.
+      narrative_beat: Dina arma su propia canasta con tres negocios muy distintos, explicando por qué eligió cada uno.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 7
+    slug: armar-mi-canasta-variada
+    title_es: Practicar armar una canasta variada
+    concept: Armar una canasta variada en un escenario simulado junta todo lo aprendido sobre repartir el riesgo entre cosas distintas.
+    learning_objective: Al final, el niño puede armar una canasta variada simulada aplicando lo aprendido sobre diversificar.
+    key_vocabulary:
+    - armar
+    - variada
+    - simulado
+    - practicar
+    prior_knowledge: Sabe combinar negocios muy distintos en una misma canasta (tema anterior).
+    parent_check: "¿{{name}} puede armar, con tus preguntas, una canasta variada explicando por qué eligió cada negocio?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-reto-de-la-canasta-vacia
+      micro_objective: Reconocer que una canasta vacía necesita elegir con cuidado qué negocios incluir.
+      narrative_beat: Zara Vex entrega a Liruf una canasta vacía y una lista de diez negocios distintos del mercado para elegir.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-sin-repetir-tipo
+      micro_objective: Elegir negocios para la canasta evitando repetir siempre el mismo tipo de negocio.
+      narrative_beat: Liruf revisa la lista y elige negocios distintos, cuidando de no llenar la canasta solo con limonaderías.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: revisar-mi-canasta-antes-de-cerrarla
+      micro_objective: Revisar la canasta armada y explicar por qué está bien repartida entre cosas distintas.
+      narrative_beat: Antes de cerrar la canasta, Dr. Rho pide a Liruf explicar por qué cada negocio elegido ayuda a repartir el riesgo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-canasta-final-armada
+      micro_objective: Aplicar con seguridad, sin ayuda, el proceso completo de armar una canasta variada.
+      narrative_beat: Dina arma su propia canasta final, sin ayuda de Dr. Rho, aplicando todo lo practicado en la saga.
+      difficulty: 3
+      suggested_families:
+      - arrange
+      - choice
+  - position: 8
+    slug: repartir-gana-a-adivinar
+    title_es: Por qué repartir gana a adivinar
+    concept: Repartir entre varias empresas suele funcionar mejor a largo plazo que intentar adivinar una sola ganadora, porque nadie puede saberlo con certeza de antemano.
+    learning_objective: Al final, el niño puede explicar por qué repartir entre varias empresas suele ganarle a adivinar una sola.
+    key_vocabulary:
+    - repartir
+    - adivinar
+    - certeza
+    - largo plazo
+    prior_knowledge: Ha practicado armar una canasta variada simulada (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué repartir entre varias empresas suele ser mejor que intentar adivinar cuál va a ganar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-juego-de-adivinar-al-ganador
+      micro_objective: Observar un juego donde varios niños del reino intentan adivinar cuál empresa será la ganadora del año.
+      narrative_beat: En la plaza del reino, varios niños juegan a adivinar cuál empresa tendrá el mejor año, y casi todos fallan.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quien-reparto-le-fue-mejor
+      micro_objective: Comparar el resultado de quien adivinó una sola empresa con el resultado de quien repartió entre varias.
+      narrative_beat: 'Zara Vex revela los resultados del año: quien repartió entre varias empresas tuvo un resultado más parejo que casi todos los que adivinaron.'
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-nadie-sabe-con-certeza
+      micro_objective: Explicar por qué nadie puede saber con certeza, de antemano, cuál empresa será la ganadora del año.
+      narrative_beat: Dr. Rho explica a Dina que ni el guardián más sabio del reino puede saber con certeza qué empresa ganará este año.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-decision-de-repartir
+      micro_objective: Aplicar con seguridad la decisión de repartir en vez de adivinar, frente a una situación nueva del reino.
+      narrative_beat: Frente a un nuevo juego de adivinar ganadores, Dina decide repartir su tesoro entre varias empresas en vez de arriesgarlo todo a una sola.
+      difficulty: 4
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre real de las canastas para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga La Canasta de Cosas Distintas.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga La Canasta de Cosas Distintas.
+    key_vocabulary:
+    - canasta
+    - diversificar
+    - repartir
+    - riesgo
+    prior_knowledge: Ha completado los ocho temas de la saga La Canasta de Cosas Distintas (aventura 5, saga 2).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/que-es-una-canasta
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/no-todos-los-huevos-en-una-canasta
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/si-una-baja-otra-puede-subir
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/canasta-de-un-tipo-vs-canasta-variada
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/diversificar-reparte-el-riesgo
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/una-canasta-con-negocios-distintos
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/armar-mi-canasta-variada
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/repartir-gana-a-adivinar
+    lessons:
+    - position: 1
+      slug: el-cofre-de-la-canasta-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es una canasta variada y por qué no poner todo en una sola.
+      narrative_beat: Dr. Rho abre el cofre real y reta a Dina a recordar, canasta por canasta, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-la-canasta
+      micro_objective: Recordar y ordenar de nuevo cómo una canasta variada se equilibra y por qué diversificar reparte el riesgo.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-de-la-canasta
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre armar una canasta con negocios muy distintos.
+      narrative_beat: Dr. Rho presenta una escena nueva del mercado y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-de-la-canasta
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo por qué repartir gana a adivinar, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en La Canasta de Cosas Distintas con la saga anterior sobre pedacitos de empresa en un reto que combina ambas ideas.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de acción como pedacito con el concepto de diversificar entre varias.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - diversificar
+    prior_knowledge: Conoce La Canasta de Cosas Distintas (aventura 5, saga 2) y Un Pedacito de una Empresa (saga 1).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/que-es-una-accion
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/diversificar-reparte-el-riesgo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-del-primer-pedacito
+      micro_objective: Recordar, tal como se aprendió antes, que una acción es un pedacito real de una empresa.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga del reino y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con la canasta.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-pedacito-y-canasta
+      micro_objective: Combinar el concepto de acción como pedacito con la idea de repartir varios pedacitos en una canasta.
+      narrative_beat: Dr. Rho muestra cómo cada pedacito de empresa que aprendieron se conecta directamente con armar una canasta diversificada.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-de-la-canasta
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de pedacito y diversificar combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-de-la-canasta
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del mercado, Dina combina lo aprendido sobre pedacitos y canastas para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: un-fondo-es-una-canasta-compartida
+  icon: savings
+  title:
+    en-US: A Fund Is a Shared Basket
+    es-MX: Un Fondo es una Canasta Compartida
+    pt-BR: Um Fundo é uma Cesta Compartilhada
+  description:
+    en-US: Discover how many people can pool their money into one shared basket, so no one has to choose every piece alone.
+    es-MX: Descubre cómo muchas personas pueden juntar su dinero en una sola canasta compartida, sin tener que elegir cada pedacito solas.
+    pt-BR: Descubra como muitas pessoas podem juntar seu dinheiro em uma única cesta compartilhada, sem precisar escolher cada pedacinho sozinhas.
+  topics:
+  - position: 1
+    slug: que-es-un-fondo
+    title_es: Qué es un fondo
+    concept: Un fondo es cuando muchas personas juntan su dinero para formar una canasta compartida, más grande de lo que cualquiera armaría sola.
+    learning_objective: Al final, el niño puede explicar qué es un fondo y por qué varias personas juntan su dinero en él.
+    key_vocabulary:
+    - fondo
+    - juntar
+    - compartido
+    - dinero
+    prior_knowledge: Sabe armar una canasta variada con negocios distintos (aventura 5, saga 2).
+    parent_check: "¿{{name}} puede explicarte qué es un fondo y por qué varias personas juntan su dinero en él?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-canasta-gigante-del-reino
+      micro_objective: Observar una canasta gigante del reino formada por el dinero de muchas familias distintas juntas.
+      narrative_beat: Dr. Rho lleva a Dina a ver una canasta gigante en el centro del reino, formada con el dinero de cientos de familias juntas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cada-quien-pone-un-poco
+      micro_objective: Reconocer que cada persona del fondo pone solo una pequeña parte, y juntas forman algo grande.
+      narrative_beat: Zara Vex explica a Liruf que nadie puso todo el dinero de la canasta gigante; cada familia solo puso un poco.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: por-que-juntarse-en-un-fondo
+      micro_objective: Explicar una ventaja de juntarse en un fondo en vez de armar la canasta completamente solo.
+      narrative_beat: Dr. Rho pregunta a Dina por qué le convendría juntarse con otras familias en vez de armar su propia canasta gigante sola.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-primer-fondo-imaginado
+      micro_objective: Explicar, con un ejemplo propio, cómo funcionaría un fondo pequeño entre varios amigos del reino.
+      narrative_beat: Dina imagina un fondo pequeño entre ella, Liruf y dos amigos del mercado, juntando un poco cada uno.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-fondo-compra-una-canasta-grande
+    title_es: El fondo compra una canasta grande de una vez
+    concept: Con el dinero junto de muchas personas, el fondo compra pedacitos de muchas empresas distintas a la vez, formando una canasta grande y variada.
+    learning_objective: Al final, el niño puede explicar que un fondo usa el dinero junto para comprar muchas empresas distintas a la vez.
+    key_vocabulary:
+    - comprar
+    - variada
+    - a-la-vez
+    - grande
+    prior_knowledge: Sabe qué es un fondo y por qué varias personas juntan su dinero en él (tema anterior).
+    parent_check: "¿{{name}} puede explicarte que un fondo compra pedacitos de muchas empresas distintas a la vez?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-lista-larga-de-empresas-del-fondo
+      micro_objective: Observar la lista larga de empresas distintas que el fondo del reino compró con el dinero junto.
+      narrative_beat: Dr. Rho muestra a Liruf un pergamino larguísimo con los nombres de todas las empresas que el fondo del reino compró.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comprar-todo-junto-de-una-vez
+      micro_objective: Reconocer que el fondo compra muchas empresas de una sola vez, en vez de una por una a lo largo del tiempo.
+      narrative_beat: Zara Vex explica a Dina que el fondo no espera a comprar una empresa a la vez; compra toda la canasta de golpe.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: comparar-armar-solo-vs-el-fondo
+      micro_objective: Comparar cuánto tiempo tomaría armar sola una canasta tan grande frente a usar un fondo que ya la compró.
+      narrative_beat: Dr. Rho pregunta a Liruf cuánto tardaría en comprar, él solo, todas las empresas de la lista del fondo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-canasta-grande-del-fondo
+      micro_objective: Explicar, con un ejemplo propio, cómo se vería la canasta grande y variada que compra un fondo.
+      narrative_beat: Dina dibuja su propia versión de la canasta grande que un fondo compraría con el dinero de muchas familias.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 3
+    slug: no-tengo-que-elegir-solo
+    title_es: No tengo que elegir cada acción yo solo
+    concept: Al entrar a un fondo, la persona no tiene que elegir cada empresa una por una; el fondo ya trae la canasta armada.
+    learning_objective: Al final, el niño puede explicar una ventaja de no tener que elegir cada empresa uno mismo al usar un fondo.
+    key_vocabulary:
+    - elegir
+    - ventaja
+    - solo
+    - armada
+    prior_knowledge: Sabe que un fondo compra muchas empresas distintas a la vez (tema anterior).
+    parent_check: "¿{{name}} puede explicarte una ventaja de no tener que elegir cada empresa uno mismo al entrar a un fondo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: elegir-entre-cien-empresas
+      micro_objective: Reconocer lo difícil que sería elegir, uno mismo, entre cien empresas distintas del reino.
+      narrative_beat: Dr. Rho muestra a Dina una lista de cien empresas del reino y le pregunta cómo elegiría entre todas ellas sola.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-fondo-ya-elige-la-canasta
+      micro_objective: Reconocer que el fondo ya trae armada la canasta con muchas de esas empresas, sin que la persona tenga que elegir cada una.
+      narrative_beat: Zara Vex compara la lista de cien empresas con la canasta ya armada que ofrece el fondo del reino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cuando-si-conviene-elegir-yo-mismo
+      micro_objective: Reconocer que a veces una persona sí prefiere elegir empresas una por una, y eso también es válido.
+      narrative_beat: Dr. Rho explica que algunas personas prefieren elegir sus propios pedacitos, y eso también está bien según lo que cada quien prefiera.
+      difficulty: 3
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-decision-fondo-o-elegir-solo
+      micro_objective: Decidir, con razones propias, si preferiría usar un fondo o elegir cada empresa por sí mismo.
+      narrative_beat: Dina decide, con sus propias razones, si prefiere el fondo ya armado o elegir sus propios pedacitos uno por uno.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: mi-pedacito-del-fondo-completo
+    title_es: Mi pedacito del fondo completo
+    concept: Cada persona que entra a un fondo tiene un pedacito de todo el fondo completo, no solo de una empresa dentro de él.
+    learning_objective: Al final, el niño puede explicar que tener un pedacito de un fondo significa tener un pedacito de todas sus empresas juntas.
+    key_vocabulary:
+    - pedacito
+    - completo
+    - fondo
+    - juntas
+    prior_knowledge: Sabe una ventaja de no tener que elegir cada empresa uno mismo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué tener un pedacito de un fondo es tener un pedacito de muchas empresas a la vez?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-pergamino-del-fondo
+      micro_objective: Observar el pergamino que muestra que el pedacito de una persona representa una parte de todo el fondo.
+      narrative_beat: Dr. Rho entrega a Dina un pergamino que muestra su pedacito, representando una pequeña parte de todo el fondo completo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-pedacito-muchas-empresas
+      micro_objective: Reconocer que ese único pedacito del fondo en realidad representa partes de muchas empresas distintas a la vez.
+      narrative_beat: Zara Vex explica a Liruf que su único pedacito del fondo en realidad lo conecta con decenas de empresas distintas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: comparar-mi-pedacito-de-fondo-con-una-accion-sola
+      micro_objective: Comparar tener un pedacito de un fondo con tener una sola acción de una sola empresa.
+      narrative_beat: Dr. Rho compara el pergamino del fondo de Dina con el pergamino de una sola acción que tiene Liruf, y pide notar la diferencia.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-del-pedacito-de-fondo
+      micro_objective: Explicar, con sus propias palabras, qué representa tener un pedacito de un fondo completo.
+      narrative_beat: Dina le explica a un aprendiz nuevo del reino qué significa tener un pedacito de un fondo completo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 5
+    slug: una-accion-vs-un-fondo
+    title_es: Comparar una acción sola con un fondo
+    concept: Comparar comprar una sola acción con comprar un fondo ayuda a ver la diferencia entre concentrar y repartir el riesgo.
+    learning_objective: Al final, el niño puede comparar comprar una sola acción con comprar un fondo y explicar la diferencia de riesgo.
+    key_vocabulary:
+    - comparar
+    - concentrar
+    - repartir
+    - riesgo
+    prior_knowledge: Sabe que tener un pedacito de un fondo es tener un pedacito de muchas empresas a la vez (tema anterior).
+    prerequisites:
+    - path: el-reino-de-las-canastas/la-canasta-de-cosas-distintas/diversificar-reparte-el-riesgo
+      strength: hard
+      reason: "Comprender que diversificar reparte el riesgo es necesario antes de entender por qué un fondo ya viene diversificado."
+    parent_check: "¿{{name}} puede explicarte una diferencia de riesgo entre comprar una sola acción y comprar un fondo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-apuesta-de-una-sola-empresa
+      micro_objective: Observar el resultado de una persona que puso todo su tesoro en una sola empresa del reino.
+      narrative_beat: Dr. Rho cuenta la historia de un mercader que puso todo su tesoro en una sola empresa, y le fue muy mal ese año.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-mismo-tesoro-en-un-fondo
+      micro_objective: Comparar el mismo tesoro puesto en un fondo diversificado en vez de en una sola empresa.
+      narrative_beat: Zara Vex cuenta la historia de otra mercader que puso el mismo tesoro en un fondo, y su resultado fue mucho más parejo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: cuando-una-sola-accion-tiene-sentido
+      micro_objective: Reconocer que elegir una sola acción también puede tener sentido para alguien que entiende bien ese riesgo.
+      narrative_beat: Dr. Rho explica que algunas personas eligen una sola empresa a propósito, sabiendo bien el riesgo que toman.
+      difficulty: 3
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-comparacion-final-accion-o-fondo
+      micro_objective: Decidir, con razones propias, entre una sola acción y un fondo para un escenario simulado nuevo.
+      narrative_beat: Frente a un nuevo tesoro simulado, Dina decide entre una sola acción y un fondo, explicando sus razones.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: el-fondo-tambien-puede-bajar
+    title_es: El fondo también puede subir o bajar
+    concept: Un fondo reparte el riesgo, pero no lo elimina; su valor también puede subir o bajar según le vaya a las empresas que contiene.
+    learning_objective: Al final, el niño puede explicar que un fondo también puede subir o bajar, no garantiza ganar siempre.
+    key_vocabulary:
+    - garantizar
+    - subir
+    - bajar
+    - fondo
+    prior_knowledge: Puede comparar el riesgo de una sola acción con el de un fondo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué un fondo también puede bajar de valor, aunque esté diversificado?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-mal-ano-para-todo-el-reino
+      micro_objective: Observar un año donde a casi todas las empresas del reino les fue mal a la vez.
+      narrative_beat: Dr. Rho cuenta que hubo un año en que casi todas las empresas del reino vendieron menos, incluso las del fondo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-fondo-tambien-bajo-ese-ano
+      micro_objective: Reconocer que ese año, incluso el fondo diversificado bajó de valor junto con la mayoría de las empresas.
+      narrative_beat: Zara Vex muestra el gráfico del fondo ese año difícil, y Liruf nota que también bajó, aunque menos que una sola empresa.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: menos-que-una-sola-empresa-no-es-cero
+      micro_objective: Comparar cuánto bajó el fondo diversificado frente a cuánto habría bajado una sola empresa mal elegida ese mismo año.
+      narrative_beat: Dr. Rho compara el fondo con una sola empresa que casi desapareció ese año, mostrando que diversificar amortiguó la caída.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-honesta-del-fondo
+      micro_objective: Explicar, sin exagerar ni prometer de más, que un fondo también puede bajar de valor.
+      narrative_beat: Dina le explica a un aprendiz nuevo, con honestidad, que hasta un fondo diversificado puede bajar en un mal año.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 7
+    slug: quien-cuida-el-fondo
+    title_es: Quién cuida el fondo
+    concept: Un equipo de personas se encarga de decidir qué empresas entran y salen del fondo, cuidándolo en nombre de todos los que pusieron su dinero.
+    learning_objective: Al final, el niño puede explicar que un equipo cuida el fondo en nombre de todas las personas que pusieron su dinero.
+    key_vocabulary:
+    - cuidar
+    - equipo
+    - administrar
+    - responsable
+    prior_knowledge: Sabe que un fondo también puede subir o bajar de valor (tema anterior).
+    parent_check: "¿{{name}} puede explicarte quién decide qué empresas entran y salen de un fondo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-torre-de-los-guardianes-del-fondo
+      micro_objective: Conocer a un equipo del reino que se dedica a cuidar y revisar el fondo compartido todos los días.
+      narrative_beat: Dr. Rho lleva a Dina a una torre donde un equipo de guardianes revisa todos los días las empresas del fondo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-hacen-los-guardianes-del-fondo
+      micro_objective: 'Explicar, en términos simples, qué hace ese equipo: decidir qué empresas entran o salen del fondo.'
+      narrative_beat: Zara Vex pregunta a Liruf qué cree que hacen los guardianes de la torre todo el día con el fondo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: cuidar-para-todos-no-solo-para-uno
+      micro_objective: Reconocer que los guardianes del fondo trabajan para todas las personas que pusieron dinero, no solo para una.
+      narrative_beat: Dr. Rho explica que los guardianes de la torre responden por todas las familias del fondo, no solo por una persona.
+      difficulty: 3
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-pregunta-a-los-guardianes
+      micro_objective: Formular una pregunta que le gustaría hacerle al equipo que cuida un fondo antes de entrar a él.
+      narrative_beat: Dina imagina qué le preguntaría a los guardianes de la torre antes de decidir entrar al fondo del reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: elegir-un-fondo-diversificado
+    title_es: Practicar elegir un fondo diversificado
+    concept: Elegir un fondo diversificado en un escenario simulado junta todo lo aprendido sobre canastas compartidas.
+    learning_objective: Al final, el niño puede elegir, en un escenario simulado, el fondo más diversificado entre varias opciones.
+    key_vocabulary:
+    - elegir
+    - diversificado
+    - opciones
+    - comparar
+    prior_knowledge: Sabe quién cuida y decide qué entra en un fondo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo elegiría, entre dos fondos, cuál está más diversificado?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-fondos-del-reino
+      micro_objective: Observar dos fondos distintos del reino, uno con muchas empresas de tipos distintos y otro con pocas parecidas.
+      narrative_beat: 'Dr. Rho presenta a Dina dos fondos del reino: uno con empresas muy distintas y otro con empresas casi todas parecidas.'
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-que-tan-variados-son
+      micro_objective: Comparar qué tan variadas son las empresas dentro de cada uno de los dos fondos presentados.
+      narrative_beat: Zara Vex reta a Liruf a contar cuántos tipos distintos de negocio tiene cada uno de los dos fondos.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: elegir-el-fondo-mas-diversificado
+      micro_objective: Elegir, con razones propias, cuál de los dos fondos está mejor diversificado.
+      narrative_beat: Dr. Rho pide a Dina elegir, con sus propias razones, cuál de los dos fondos le parece mejor diversificado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mi-fondo-elegido-con-razones
+      micro_objective: Aplicar con seguridad, sin ayuda, el proceso completo de comparar y elegir un fondo diversificado.
+      narrative_beat: Frente a un tercer fondo nuevo, Dina decide sola si está bien diversificado, sin ayuda de Dr. Rho.
+      difficulty: 4
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre real de las canastas para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga Un Fondo es una Canasta Compartida.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga Un Fondo es una Canasta Compartida.
+    key_vocabulary:
+    - fondo
+    - juntar
+    - pedacito
+    - guardianes
+    prior_knowledge: Ha completado los ocho temas de la saga Un Fondo es una Canasta Compartida (aventura 5, saga 3).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/que-es-un-fondo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/el-fondo-compra-una-canasta-grande
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/no-tengo-que-elegir-solo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/mi-pedacito-del-fondo-completo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/una-accion-vs-un-fondo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/el-fondo-tambien-puede-bajar
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/quien-cuida-el-fondo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/elegir-un-fondo-diversificado
+    lessons:
+    - position: 1
+      slug: el-cofre-del-fondo-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es un fondo y por qué varias personas juntan su dinero en él.
+      narrative_beat: Dr. Rho abre el cofre real y reta a Dina a recordar, pedacito por pedacito, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-el-fondo
+      micro_objective: Recordar y ordenar de nuevo por qué no hay que elegir cada empresa solo y qué es el pedacito de un fondo completo.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-del-fondo
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre quién cuida el fondo en nombre de todos.
+      narrative_beat: Dr. Rho presenta una escena nueva del reino y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-del-fondo
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo cómo elegir un fondo diversificado, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Un Fondo es una Canasta Compartida con la saga anterior sobre diversificar en un reto que combina ambas ideas.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de diversificar con el concepto de un fondo compartido.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - fondo
+    prior_knowledge: Conoce Un Fondo es una Canasta Compartida (aventura 5, saga 3) y La Canasta de Cosas Distintas (saga 2).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/repartir-gana-a-adivinar
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/que-es-un-fondo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-repartir-y-adivinar
+      micro_objective: Recordar, tal como se aprendió antes, por qué repartir gana a adivinar una sola ganadora.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la canasta y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el fondo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-repartir-y-el-fondo
+      micro_objective: Combinar la idea de repartir entre varias empresas con la idea de que un fondo ya viene repartido.
+      narrative_beat: Dr. Rho muestra cómo repartir entre varias empresas, que ya conocían, es justo lo que hace un fondo automáticamente.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-del-fondo
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de repartir y de fondo combinados.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-del-fondo
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre repartir y fondos para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: el-indice-el-equipo-completo-del-reino
+  icon: leaderboard
+  title:
+    en-US: The Index -- the Kingdom's Whole Team
+    es-MX: 'El Índice: el Equipo Completo del Reino'
+    pt-BR: 'O Índice: o Time Completo do Reino'
+  description:
+    en-US: Discover how an index tracks the kingdom's whole team of companies at once, instead of betting on a single player.
+    es-MX: Descubre cómo un índice sigue al equipo completo de empresas del reino a la vez, en vez de apostar a un solo jugador.
+    pt-BR: Descubra como um índice acompanha o time completo de empresas do reino de uma vez, em vez de apostar em um único jogador.
+  topics:
+  - position: 1
+    slug: que-es-un-indice
+    title_es: Qué es un índice
+    concept: Un índice es una lista de las empresas más importantes del reino juntas, que muestra cómo les va a todas en conjunto.
+    learning_objective: Al final, el niño puede explicar qué es un índice y qué muestra en conjunto.
+    key_vocabulary:
+    - índice
+    - lista
+    - conjunto
+    - importantes
+    prior_knowledge: Sabe qué es un fondo y cómo compra muchas empresas a la vez (aventura 5, saga 3).
+    parent_check: "¿{{name}} puede explicarte qué es un índice y qué muestra sobre el reino en conjunto?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-lista-real-de-empresas
+      micro_objective: Observar una lista real con los nombres de las cincuenta empresas más grandes e importantes del reino.
+      narrative_beat: Dr. Rho muestra a Dina un pergamino oficial con la lista de las cincuenta empresas más importantes del reino.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: la-lista-muestra-el-conjunto
+      micro_objective: Reconocer que el índice no habla de una sola empresa, sino de cómo les va a todas juntas.
+      narrative_beat: Zara Vex explica a Liruf que la lista real no dice cómo le fue a una sola empresa, sino a todas juntas ese día.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: quien-decide-quien-entra-a-la-lista
+      micro_objective: Reconocer que solo las empresas más importantes y conocidas entran a la lista oficial del reino.
+      narrative_beat: Dr. Rho explica que no cualquier puesto pequeño del mercado entra a la lista; solo las empresas más grandes y conocidas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-explicacion-del-indice
+      micro_objective: Explicar, con sus propias palabras, qué es un índice usando el ejemplo de la lista real del reino.
+      narrative_beat: Dina le explica a un aprendiz nuevo qué es la lista real del reino y por qué se parece a un índice.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 2
+    slug: el-equipo-completo-del-reino
+    title_es: El índice es el equipo completo, no un solo jugador
+    concept: Seguir un índice es como apoyar al equipo completo del reino, en vez de apostar a que un solo jugador va a ganar el torneo.
+    learning_objective: Al final, el niño puede explicar la diferencia entre apostar a un jugador y apoyar al equipo completo.
+    key_vocabulary:
+    - equipo
+    - jugador
+    - apoyar
+    - completo
+    prior_knowledge: Sabe qué es un índice y qué muestra en conjunto (tema anterior).
+    parent_check: "¿{{name}} puede explicarte la diferencia entre apostar a un solo jugador y apoyar al equipo completo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-torneo-del-reino
+      micro_objective: Observar un torneo del reino donde cada niño puede apostar a un solo jugador o apoyar al equipo completo.
+      narrative_beat: En el gran torneo del reino, Zara Vex pregunta a Liruf si prefiere apostar a un solo jugador favorito o apoyar al equipo completo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: si-el-jugador-favorito-se-lastima
+      micro_objective: Reconocer qué pasa con la apuesta si el jugador favorito elegido se lastima antes de terminar el torneo.
+      narrative_beat: El jugador favorito de Liruf se lastima a mitad del torneo, y su apuesta a un solo jugador queda en problemas.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: el-equipo-sigue-jugando
+      micro_objective: Comparar lo que pasa con el equipo completo cuando un jugador se lastima, frente a lo que pasa con una sola apuesta.
+      narrative_beat: Dr. Rho muestra que, aunque un jugador se lastimó, el equipo completo del reino sigue jugando con los demás.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-decision-jugador-o-equipo
+      micro_objective: Decidir, con razones propias, entre apostar a un jugador o apoyar al equipo completo en un nuevo torneo.
+      narrative_beat: Frente a un nuevo torneo del reino, Dina decide, con sus propias razones, apoyar al equipo completo esta vez.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: apostar-a-un-jugador-vs-al-equipo
+    title_es: Comparar apostar a un jugador con apostar al equipo
+    concept: Comparar directamente los resultados de apostar a un jugador con los de apoyar al equipo completo ayuda a ver el riesgo de cada camino.
+    learning_objective: Al final, el niño puede comparar los resultados de apostar a un jugador con los de apoyar al equipo completo.
+    key_vocabulary:
+    - comparar
+    - resultado
+    - camino
+    - riesgo
+    prior_knowledge: Sabe la diferencia entre apostar a un jugador y apoyar al equipo completo (tema anterior).
+    parent_check: "¿{{name}} puede comparar, con un ejemplo, el riesgo de apostar a un jugador con el de apoyar al equipo completo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: los-resultados-de-cinco-torneos
+      micro_objective: Observar los resultados de cinco torneos pasados del reino, comparando jugadores individuales con el equipo completo.
+      narrative_beat: Dr. Rho muestra un pergamino con los resultados de cinco torneos pasados, comparando jugadores solos con el equipo completo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: cuando-gano-el-jugador-solo
+      micro_objective: Identificar en qué torneo pasado ganó más apostar a un solo jugador que apoyar al equipo completo.
+      narrative_beat: Zara Vex señala el único torneo donde apostar a un jugador solo hubiera ganado más que apoyar al equipo.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: cuando-gano-el-equipo-completo
+      micro_objective: Identificar en qué torneos pasados apoyar al equipo completo resultó más parejo que apostar a un jugador solo.
+      narrative_beat: Liruf revisa los otros cuatro torneos y nota que apoyar al equipo completo dio resultados más parejos casi siempre.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 4
+      slug: mi-comparacion-de-cinco-torneos
+      micro_objective: Explicar, con los cinco torneos como ejemplo, por qué el equipo completo suele ser más parejo que un jugador solo.
+      narrative_beat: Dina explica a un aprendiz nuevo, usando los cinco torneos, por qué el equipo completo suele ser una elección más pareja.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 4
+    slug: un-fondo-indice-sigue-al-equipo
+    title_es: Un fondo índice sigue al equipo completo automáticamente
+    concept: Un fondo índice está diseñado para seguir automáticamente al equipo completo de la lista, sin que nadie tenga que elegir jugador por jugador.
+    learning_objective: Al final, el niño puede explicar que un fondo índice sigue automáticamente al equipo completo de la lista.
+    key_vocabulary:
+    - automáticamente
+    - fondo índice
+    - seguir
+    - lista
+    prior_knowledge: Sabe qué es un fondo y qué es un índice (temas de esta y la saga anterior).
+    prerequisites:
+    - path: el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/que-es-un-fondo
+      strength: hard
+      reason: "Sin entender qué es un fondo compartido, no se puede entender cómo un fondo índice sigue al equipo completo."
+    parent_check: "¿{{name}} puede explicarte cómo un fondo índice sigue automáticamente al equipo completo de una lista?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-fondo-que-copia-la-lista
+      micro_objective: Observar un fondo especial del reino que copia automáticamente la lista completa del índice.
+      narrative_beat: Dr. Rho muestra a Dina un fondo especial que copia, sin intervención de nadie, toda la lista oficial de empresas del reino.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: nadie-elige-jugador-por-jugador
+      micro_objective: Reconocer que nadie del equipo de guardianes elige jugador por jugador en un fondo índice; solo copia la lista.
+      narrative_beat: Zara Vex explica a Liruf que los guardianes de este fondo no eligen nada, solo copian automáticamente la lista completa.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: si-la-lista-cambia-el-fondo-cambia
+      micro_objective: Reconocer que si una empresa entra o sale de la lista oficial, el fondo índice se actualiza automáticamente igual.
+      narrative_beat: Dr. Rho muestra que cuando una nueva empresa entra a la lista oficial, el fondo índice la agrega automáticamente también.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-del-fondo-indice
+      micro_objective: Explicar, con sus propias palabras, cómo un fondo índice sigue automáticamente al equipo completo.
+      narrative_beat: Dina le explica a un aprendiz nuevo cómo el fondo índice copia automáticamente la lista completa sin que nadie elija cada jugador.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 5
+    slug: por-que-el-equipo-es-mas-parejo
+    title_es: Por qué el equipo completo es más parejo
+    concept: El resultado del equipo completo suele ser más parejo que el de un solo jugador porque las subidas y bajadas de cada empresa se equilibran entre sí.
+    learning_objective: Al final, el niño puede explicar por qué el resultado del equipo completo suele ser más parejo que el de un solo jugador.
+    key_vocabulary:
+    - parejo
+    - equilibrar
+    - resultado
+    - conjunto
+    prior_knowledge: Sabe que un fondo índice sigue automáticamente al equipo completo (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué el resultado del equipo completo del índice suele ser más parejo que el de un jugador solo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: unos-suben-otros-bajan-el-mismo-dia
+      micro_objective: Observar que, en la lista completa, algunas empresas suben mientras otras bajan el mismo día.
+      narrative_beat: Dr. Rho muestra la lista de un día cualquiera donde unas empresas subieron y otras bajaron al mismo tiempo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: el-promedio-se-equilibra
+      micro_objective: Reconocer que el resultado del índice completo es como un promedio de todas esas subidas y bajadas juntas.
+      narrative_beat: Zara Vex explica a Liruf que el resultado del índice es un poco como el promedio de todo lo que subió y bajó ese día.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: comparar-el-dia-mas-parejo-con-el-dia-de-un-jugador
+      micro_objective: Comparar qué tan parejo fue el resultado del índice completo frente al resultado de un solo jugador ese mismo día.
+      narrative_beat: Dr. Rho compara el resultado parejo del índice completo con el resultado de una sola empresa que bajó mucho ese día.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-de-por-que-es-mas-parejo
+      micro_objective: Explicar, con un ejemplo propio, por qué el equipo completo suele dar un resultado más parejo que un jugador solo.
+      narrative_beat: Dina explica a Liruf, con el ejemplo del torneo, por qué prefiere un resultado más parejo antes que uno arriesgado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 6
+    slug: leer-un-indice-simple
+    title_es: Practicar leer un índice simple
+    concept: Leer un índice simple significa poder decir si, en conjunto, el reino tuvo un buen día o un mal día para sus empresas.
+    learning_objective: Al final, el niño puede leer un índice simple y decir si el reino tuvo un buen día o un mal día en conjunto.
+    key_vocabulary:
+    - leer
+    - conjunto
+    - buen día
+    - mal día
+    prior_knowledge: Sabe por qué el resultado del equipo completo suele ser más parejo (tema anterior).
+    parent_check: "¿{{name}} puede mirar un índice simple y decirte si, en conjunto, fue un buen día o un mal día para el reino?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-numero-grande-del-indice
+      micro_objective: Observar que el índice se resume en un número grande que sube o baja cada día.
+      narrative_beat: Dr. Rho muestra a Dina el número grande del índice del reino, pintado en la torre principal cada mañana.
+      difficulty: 2
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: el-numero-subio-hoy
+      micro_objective: Leer que el número del índice subió hoy y explicar qué significa eso para el conjunto de empresas.
+      narrative_beat: Zara Vex señala que el número de hoy subió respecto a ayer, y pregunta a Liruf qué cree que significa eso.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: el-numero-bajo-la-semana-pasada
+      micro_objective: Leer una serie de números del índice de una semana pasada y decir si, en conjunto, fue una buena o mala semana.
+      narrative_beat: Dr. Rho muestra los números de toda una semana pasada y pide a Dina decidir si fue una buena o mala semana para el reino.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 4
+      slug: mi-lectura-del-indice-de-hoy
+      micro_objective: Aplicar la lectura del índice a un número nuevo, explicando qué significa para el reino en conjunto.
+      narrative_beat: Frente al número de hoy pintado en la torre, Dina explica sola qué significa para el reino en conjunto.
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+  - position: 7
+    slug: el-indice-no-promete-ganar-siempre
+    title_es: El índice reparte el riesgo, pero no promete ganar siempre
+    concept: Seguir al equipo completo reparte mejor el riesgo que apostar a un jugador, pero tampoco promete que el reino gane siempre.
+    learning_objective: Al final, el niño puede explicar que un índice reparte el riesgo, pero no garantiza ganar siempre.
+    key_vocabulary:
+    - garantizar
+    - reparte
+    - riesgo
+    - honesto
+    prior_knowledge: Sabe leer un índice simple y decir si fue un buen o mal día (tema anterior).
+    parent_check: "¿{{name}} puede explicarte por qué un índice no promete que el reino siempre va a ganar?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-mal-ano-para-el-equipo-completo
+      micro_objective: Observar un año donde el equipo completo del reino, en conjunto, tuvo un resultado difícil.
+      narrative_beat: Dr. Rho cuenta que hubo un año en que hasta el equipo completo del reino tuvo un resultado difícil en conjunto.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-la-promesa-falsa-con-la-explicacion-honesta
+      micro_objective: Comparar una promesa exagerada sobre el índice con una explicación honesta de su riesgo.
+      narrative_beat: 'Zara Vex presenta dos vendedores: uno promete que el índice siempre gana y otro explica con honestidad que también puede bajar.'
+      difficulty: 3
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-igual-conviene-el-equipo-completo
+      micro_objective: Explicar por qué, aunque no garantiza ganar siempre, el equipo completo sigue siendo una opción más pareja que un jugador solo.
+      narrative_beat: Dr. Rho explica a Dina por qué, incluso en un mal año, el equipo completo sigue siendo más parejo que un solo jugador.
+      difficulty: 3
+      suggested_families:
+      - story
+      - analyze
+    - position: 4
+      slug: mi-explicacion-honesta-del-indice
+      micro_objective: Explicar, sin promesas exageradas, cómo funciona un índice y qué riesgo tiene.
+      narrative_beat: Dina le explica a un aprendiz nuevo, con cuidado de no prometer de más, cómo funciona el índice del reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 8
+    slug: jugador-o-equipo-completo
+    title_es: Practicar decidir entre un jugador o el equipo completo
+    concept: Decidir entre un jugador (una acción) o el equipo completo (un índice) en escenarios nuevos junta todo lo aprendido en la saga.
+    learning_objective: Al final, el niño puede decidir, en un escenario simulado, entre invertir en un jugador o en el equipo completo.
+    key_vocabulary:
+    - decidir
+    - jugador
+    - equipo
+    - simulado
+    prior_knowledge: Sabe que un índice reparte el riesgo pero no promete ganar siempre (tema anterior).
+    parent_check: "¿{{name}} puede explicarte cómo decidiría, en un ejemplo nuevo, entre un jugador solo y el equipo completo?"
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-torneo-final-del-reino
+      micro_objective: Observar el torneo final del reino, con la opción de apostar a un jugador o apoyar al equipo completo una vez más.
+      narrative_beat: En el torneo final del reino, Dr. Rho pregunta a Dina si recuerda todo lo aprendido sobre jugadores y equipos.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: revisar-las-razones-antes-de-decidir
+      micro_objective: Revisar, antes de decidir, las razones de riesgo y resultado parejo aprendidas en la saga.
+      narrative_beat: Zara Vex reta a Liruf a nombrar dos razones para elegir el equipo completo antes de tomar su decisión final.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: mi-decision-final-del-torneo
+      micro_objective: Decidir, con razones propias, entre un jugador o el equipo completo para el torneo final.
+      narrative_beat: Dina decide, con sus propias razones, apoyar al equipo completo en el torneo final del reino.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-explicacion-completa-de-la-decision
+      micro_objective: Aplicar con seguridad, sin ayuda, todo lo aprendido para explicar la decisión tomada.
+      narrative_beat: Frente a Dr. Rho y Zara Vex, Dina explica de principio a fin por qué decidió apoyar al equipo completo del reino.
+      difficulty: 4
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Dr. Rho abre el cofre real de las canastas para poner a prueba, sin enseñar nada nuevo, todo lo aprendido en la saga El Índice, el Equipo Completo del Reino.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales de la saga El Índice, el Equipo Completo del Reino.
+    key_vocabulary:
+    - índice
+    - equipo
+    - lista
+    - parejo
+    prior_knowledge: Ha completado los ocho temas de la saga El Índice, el Equipo Completo del Reino (aventura 5, saga 4).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/que-es-un-indice
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/el-equipo-completo-del-reino
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/apostar-a-un-jugador-vs-al-equipo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/un-fondo-indice-sigue-al-equipo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/por-que-el-equipo-es-mas-parejo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/leer-un-indice-simple
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/el-indice-no-promete-ganar-siempre
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/jugador-o-equipo-completo
+    lessons:
+    - position: 1
+      slug: el-cofre-del-indice-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es un índice y por qué es como el equipo completo del reino.
+      narrative_beat: Dr. Rho abre el cofre real y reta a Dina a recordar, jugador por jugador, lo primero que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden-el-indice
+      micro_objective: Recordar y ordenar de nuevo cómo un fondo índice sigue al equipo completo y por qué es más parejo.
+      narrative_beat: Liruf saca del cofre las tarjetas mezcladas de la saga y las ordena de memoria, sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado-del-indice
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre leer un índice simple.
+      narrative_beat: Dr. Rho presenta una escena nueva del reino y pregunta a Dina si recuerda, sin repasar la lección, qué haría en ese caso.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre-del-indice
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo decidir entre un jugador y el equipo completo, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada tarjeta con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Índice con la saga anterior sobre fondos en un reto que combina ambas ideas.
+    learning_objective: Al final, el niño puede recordar y combinar el concepto de fondo compartido con el concepto de índice como equipo completo.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - índice
+    prior_knowledge: Conoce El Índice, el Equipo Completo del Reino (aventura 5, saga 4) y Un Fondo es una Canasta Compartida (saga 3).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/quien-cuida-el-fondo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/un-fondo-indice-sigue-al-equipo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-los-guardianes-del-fondo
+      micro_objective: Recordar, tal como se aprendió antes, quién cuida un fondo en nombre de todos.
+      narrative_beat: Zara Vex trae un recuerdo de la torre de los guardianes del fondo y pide a Liruf recordarlo sin ayuda, antes de mezclarlo con el índice.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-guardianes-y-fondo-indice
+      micro_objective: Combinar la idea de guardianes que eligen empresas con la idea de un fondo índice que solo copia la lista.
+      narrative_beat: Dr. Rho muestra la diferencia entre los guardianes que eligen y el fondo índice que solo copia automáticamente la lista.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado-del-indice
+      micro_objective: Aplicar juntos, en una escena nueva, los conceptos de fondo cuidado por guardianes y fondo índice automático.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del reino usando a la vez ambas ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado-del-indice
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambos conceptos en una situación final.
+      narrative_beat: Frente a una última escena del reino, Dina combina lo aprendido sobre fondos e índices para resolverla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-reino-de-las-canastas
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Kingdom of Baskets' Grand Mission
+    es-MX: La Gran Misión del Reino de las Canastas
+    pt-BR: A Grande Missão do Reino das Cestas
+  description:
+    en-US: A final quest that replays every basket of the kingdom -- companies, diversified baskets, funds, and the index -- one last time.
+    es-MX: Una misión final que repasa todas las canastas del reino -- empresas, canastas variadas, fondos e índice -- una última vez.
+    pt-BR: Uma missão final que revisita todas as cestas do reino -- empresas, cestas variadas, fundos e índice -- uma última vez.
+  topics:
+  - position: 1
+    slug: el-desafio-del-reino
+    kind: review_quest
+    title_es: El Desafío del Reino
+    concept: 'Dr. Rho anuncia la Gran Misión del reino: un desafío final que reúne, sin enseñar nada nuevo, todo lo aprendido sobre pedacitos de empresa.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo reconocer una acción, cómo cambia su valor y por qué no es una promesa.
+    key_vocabulary:
+    - acción
+    - valor
+    - promesa
+    prior_knowledge: Ha completado las cuatro sagas de El Reino de las Canastas.
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/que-es-una-accion
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/si-la-empresa-gana-si-la-empresa-pierde
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/el-precio-de-una-accion-sube-y-baja
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/una-accion-no-es-una-promesa
+    lessons:
+    - position: 1
+      slug: el-reino-vuelve-a-abrir-sus-puertas
+      micro_objective: Recordar que una acción es un pedacito real de una empresa, sin ayuda nueva.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf en el centro del reino y anuncia la Gran Misión: recorrer una vez más todo lo aprendido sobre canastas.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: gana-o-pierde-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo cambia el valor de una acción según le vaya bien o mal a la empresa.
+      narrative_beat: Zara Vex presenta una empresa nueva del mercado y reta a Dina a recordar, sin repasar la lección, por qué su valor cambia.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: leer-el-grafico-otra-vez
+      micro_objective: Recordar cómo leer un gráfico simple de subidas y bajadas de una acción.
+      narrative_beat: Liruf recuerda, sin ayuda, cómo leer el gráfico que le mostró Dr. Rho al principio de la aventura.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 4
+      slug: mi-explicacion-sin-promesas-otra-vez
+      micro_objective: Aplicar con seguridad la explicación honesta de que una acción no es una promesa de ganar siempre.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, la explicación honesta sobre el riesgo de una acción frente a un aprendiz nuevo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: la-canasta-de-la-gran-mision
+    kind: review_quest
+    title_es: La Canasta de la Gran Misión
+    concept: Dina y Liruf recuerdan por qué no poner todo en una sola canasta y cómo una canasta variada reparte el riesgo.
+    learning_objective: Al final, el niño puede recordar y aplicar por qué diversificar reparte el riesgo mejor que concentrar todo en una sola cosa.
+    key_vocabulary:
+    - canasta
+    - diversificar
+    - repartir
+    prior_knowledge: Ha repasado la saga de pedacitos de empresa (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/no-todos-los-huevos-en-una-canasta
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/si-una-baja-otra-puede-subir
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/diversificar-reparte-el-riesgo
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/repartir-gana-a-adivinar
+    lessons:
+    - position: 1
+      slug: los-huevos-otra-vez
+      micro_objective: Recordar por qué no conviene poner todos los huevos en una sola canasta.
+      narrative_beat: Zara Vex deja caer una canasta de un solo tipo en la plaza y reta a Liruf a recordar, sin ayuda, por qué eso es un riesgo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: si-una-baja-otra-sube-otra-vez
+      micro_objective: Recordar cómo una canasta variada se equilibra cuando una cosa baja y otra sube.
+      narrative_beat: Dina ordena, de memoria, un ejemplo de la lluvia y los paraguas que aprendió en esta saga.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: diversificar-otra-vez
+      micro_objective: Recordar y aplicar por qué diversificar reparte el riesgo entre cosas distintas.
+      narrative_beat: 'Dr. Rho presenta una situación nueva y pregunta a Dina si recuerda: ¿por qué conviene diversificar?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: repartir-gana-otra-vez
+      micro_objective: Aplicar con seguridad, sin ayuda, por qué repartir entre varias empresas gana a adivinar una sola.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, la idea de repartir en vez de adivinar frente a un nuevo juego del reino.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: el-fondo-de-la-gran-mision
+    kind: review_quest
+    title_es: El Fondo de la Gran Misión
+    concept: Dina y Liruf recuerdan qué es un fondo, por qué no hay que elegir cada empresa solo y quién lo cuida.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo funciona un fondo compartido y quién lo cuida.
+    key_vocabulary:
+    - fondo
+    - juntar
+    - guardianes
+    prior_knowledge: Ha repasado la saga de la canasta de cosas distintas (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/que-es-un-fondo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/no-tengo-que-elegir-solo
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/el-fondo-tambien-puede-bajar
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/quien-cuida-el-fondo
+    lessons:
+    - position: 1
+      slug: la-canasta-gigante-otra-vez
+      micro_objective: Recordar qué es un fondo y por qué varias personas juntan su dinero en él.
+      narrative_beat: Dina recuerda, sin ayuda, por qué el fondo del reino junta el dinero de tantas familias distintas.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: no-elegir-solo-otra-vez
+      micro_objective: Recordar una ventaja de no tener que elegir cada empresa uno mismo al usar un fondo.
+      narrative_beat: Liruf ordena, de memoria, las razones por las que prefiere que el fondo ya venga armado.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: el-fondo-tambien-baja-otra-vez
+      micro_objective: Recordar que un fondo también puede bajar de valor, sin garantizar ganar siempre.
+      narrative_beat: 'Dr. Rho pregunta a Dina si recuerda: ¿un fondo garantiza que siempre se gana?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: los-guardianes-otra-vez
+      micro_objective: Aplicar con seguridad, sin ayuda, quién cuida un fondo en nombre de todas las personas.
+      narrative_beat: Dina explica, sin ayuda de Dr. Rho, quién cuida el fondo del reino a un aprendiz nuevo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 4
+    slug: el-indice-de-la-gran-mision
+    kind: review_quest
+    title_es: El Índice de la Gran Misión
+    concept: Dina y Liruf recuerdan qué es un índice, por qué es como el equipo completo, y cómo un fondo índice lo sigue automáticamente.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo un índice representa al equipo completo del reino.
+    key_vocabulary:
+    - índice
+    - equipo
+    - automáticamente
+    prior_knowledge: Ha repasado la saga del fondo compartido (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/que-es-un-indice
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/el-equipo-completo-del-reino
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/un-fondo-indice-sigue-al-equipo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/por-que-el-equipo-es-mas-parejo
+    lessons:
+    - position: 1
+      slug: la-lista-real-otra-vez
+      micro_objective: Recordar qué es un índice y qué muestra sobre el reino en conjunto.
+      narrative_beat: Zara Vex muestra de nuevo la lista real del reino y reta a Liruf a recordar qué es un índice.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-equipo-completo-otra-vez
+      micro_objective: Recordar la diferencia entre apostar a un jugador y apoyar al equipo completo.
+      narrative_beat: Dina recuerda, de memoria, el torneo del reino y por qué prefirió apoyar al equipo completo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: el-fondo-indice-otra-vez
+      micro_objective: Recordar cómo un fondo índice sigue automáticamente al equipo completo de la lista.
+      narrative_beat: 'Dr. Rho pregunta a Liruf si recuerda: ¿cómo sabe un fondo índice qué empresas incluir?'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: mas-parejo-otra-vez
+      micro_objective: Aplicar con seguridad por qué el resultado del equipo completo suele ser más parejo.
+      narrative_beat: Dina aplica, sin ayuda, la explicación de por qué el equipo completo es más parejo frente a un aprendiz nuevo.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: las-cuatro-canastas-del-reino
+    kind: review_quest
+    title_es: Las Cuatro Canastas del Reino
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del reino: empresas, canastas, fondos e índices.'
+    learning_objective: Al final, el niño puede aplicar en un solo recorrido lo aprendido sobre acciones, canastas variadas, fondos e índices.
+    key_vocabulary:
+    - acción
+    - canasta
+    - fondo
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/mi-primer-pedacito-de-empresa
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/armar-mi-canasta-variada
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/elegir-un-fondo-diversificado
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/leer-un-indice-simple
+    lessons:
+    - position: 1
+      slug: las-cuatro-canastas-reales
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del reino: acciones, canastas, fondos e índices.'
+      narrative_beat: Dr. Rho reúne las cuatro canastas reales del reino, una por cada área aprendida en la aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-aprendiz-nuevo-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas para ayudar a un aprendiz nuevo del reino a armar su primera canasta.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del reino y reta a Liruf a guiarlo por las cuatro áreas del reino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-canastas
+      micro_objective: Aplicar con seguridad las cuatro áreas en un desafío único que las combina todas.
+      narrative_beat: Dina resuelve un desafío del reino que combina, de una sola vez, acciones, canastas, fondos e índices.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-recorrido-completo-del-reino
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del reino aplicadas a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro canastas del reino, de principio a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 6
+    slug: la-gran-mision-del-reino-de-las-canastas
+    kind: review_quest
+    title_es: La Gran Misión del Reino de las Canastas
+    concept: El gran cierre de la aventura combina las canastas del reino con la limonadería de Emprendimiento, celebrando cómo repartir protege mejor que adivinar.
+    learning_objective: Al final, el niño puede aplicar las señales del reino conectándolas con lo aprendido sobre negocios reales, como la limonadería.
+    key_vocabulary:
+    - canasta
+    - repartir
+    - empresa
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del reino (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-reino-de-las-canastas/un-pedacito-de-una-empresa/comprar-una-accion-es-volverme-mini-dueno
+    - el-reino-de-las-canastas/la-canasta-de-cosas-distintas/una-canasta-con-negocios-distintos
+    - el-reino-de-las-canastas/un-fondo-es-una-canasta-compartida/quien-cuida-el-fondo
+    - el-reino-de-las-canastas/el-indice-el-equipo-completo-del-reino/por-que-el-equipo-es-mas-parejo
+    lessons:
+    - position: 1
+      slug: el-reino-y-la-limonaderia
+      micro_objective: Recordar por qué la limonadería de Emprendimiento fue el primer ejemplo real de una empresa en este reino.
+      narrative_beat: Dr. Rho compara la limonadería de Emprendimiento con las grandes empresas del reino, cerrando el círculo de la aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-reino-y-mi-canasta-propia
+      micro_objective: Recordar por qué armar una canasta variada protege mejor que apostar todo a un solo negocio.
+      narrative_beat: Zara Vex recuerda a Liruf la canasta con la limonadería, la panadería y la juguetería que armó en esta aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: la-gran-mision-en-una-sola-tarde
+      micro_objective: Aplicar en un desafío final lo recordado sobre acciones, canastas, fondos e índices en conjunto.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo lo que recuerda sobre las canastas del reino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: el-reino-sigue-repartiendo-para-siempre
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del reino.
+      narrative_beat: Con las canastas del reino brillando en la plaza, Dina celebra junto a Dr. Rho, Liruf y Zara Vex el cierre de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

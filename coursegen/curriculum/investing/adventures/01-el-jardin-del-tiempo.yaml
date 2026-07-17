@@ -1,0 +1,2727 @@
+schema_version: 1
+adventure:
+  position: 1
+  slug: el-jardin-del-tiempo
+  theme: forest
+  age_tier: tier2
+  title:
+    en-US: The Garden of Time
+    es-MX: El Jardín del Tiempo
+    pt-BR: O Jardim do Tempo
+  description:
+    en-US: Dina and Liruf enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
+      that time itself -- not just effort -- is what makes what's saved grow big.
+    es-MX: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
+      el tiempo -y no solo el esfuerzo- es lo que hace crecer grande lo que se guarda.
+    pt-BR: Dina e Liruf entram numa floresta antiga onde Dr. Rho, seu paciente jardineiro, ensina que o
+      tempo -e não só o esforço- é o que faz crescer grande o que se guarda.
+  narrative_arc: 'Dina y Liruf se internan en un bosque antiguo donde Dr. Rho ha cuidado el mismo jardín
+    durante décadas. Él les revela el secreto que abre este viaje: el tiempo mismo es una herramienta
+    -sembrar una semilla y dejarla crecer sin tocarla produce algo mucho más grande que comerse la fruta
+    de inmediato. Zara Vex reta a ambos con acertijos del bosque sobre paciencia, protección y constancia,
+    mientras Liruf aprende a domar sus ganas de tenerlo todo ya. Al final del bosque, Dina y Liruf están
+    listos para descubrir que ese mismo tiempo, aplicado a las monedas guardadas en la aldea del valle,
+    también hace crecer un premio.'
+sagas:
+- position: 1
+  slug: semilla-que-espera
+  icon: eco
+  title:
+    en-US: The Seed That Waits
+    es-MX: La Semilla que Espera
+    pt-BR: A Semente que Espera
+  description:
+    en-US: Plant something today and discover why it only becomes big after time passes.
+    es-MX: Planta algo hoy y descubre por qué solo se hace grande después de que pasa el tiempo.
+    pt-BR: Plante algo hoje e descubra por que só fica grande depois que o tempo passa.
+  topics:
+  - position: 1
+    slug: que-es-sembrar-para-el-futuro
+    title_es: Qué es sembrar para el futuro
+    concept: Sembrar una semilla hoy significa guardar algo pequeño ahora para tener algo grande después;
+      guardar dinero funciona igual.
+    learning_objective: Al final, el niño puede explicar que sembrar hoy es guardar algo pequeño para
+      tener algo más grande en el futuro.
+    key_vocabulary:
+    - sembrar
+    - semilla
+    - futuro
+    - guardar
+    prior_knowledge: Ha ganado, ahorrado y gastado dinero en aventuras anteriores (educación financiera
+      y emprendimiento).
+    parent_check: ¿{{name}} puede explicarte, con sus palabras, qué significa 'sembrar hoy para el futuro'?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-manos-llenas-de-tierra-de-dr-rho
+      micro_objective: Reconocer que una semilla pequeña plantada hoy se convierte en algo grande después
+        de un tiempo.
+      narrative_beat: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, con las manos llenas de tierra,
+        planta una semilla diminuta y les promete que un día será un árbol enorme.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-semilla-y-una-moneda
+      micro_objective: Comparar sembrar una semilla con guardar una moneda como la misma idea de 'algo
+        pequeño ahora, algo grande después'.
+      narrative_beat: Dr. Rho muestra una canasta con una semilla y una moneda guardada, y pregunta a
+        Dina en qué se parecen.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: por-que-no-hay-arbol-de-inmediato
+      micro_objective: Explicar con palabras propias por qué sembrar hoy no produce un resultado grande
+        de inmediato.
+      narrative_beat: Zara Vex reta a Liruf a explicar, con sus propias palabras, por qué sembrar hoy no
+        da un árbol de inmediato.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: quien-siembra-para-el-futuro
+      micro_objective: Aplicar el concepto de sembrar para el futuro identificándolo en una escena nueva.
+      narrative_beat: Frente a una nueva escena del bosque, Dina identifica sin ayuda cuál de dos personajes
+        está 'sembrando para el futuro' y cuál solo quiere todo ya.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: lo-que-crece-solo-con-el-tiempo
+    title_es: Lo que crece solo con el tiempo
+    concept: Algunas cosas no se hacen más grandes por más esfuerzo, sino porque pasa el tiempo; una semilla
+      necesita días y semanas, no solo cuidado.
+    learning_objective: Al final, el niño puede reconocer que ciertas cosas crecen porque pasa el tiempo,
+      no solo porque se les pone más esfuerzo.
+    key_vocabulary:
+    - tiempo
+    - crecer
+    - esperar
+    - paso a paso
+    prior_knowledge: Sabe que sembrar hoy da algo grande en el futuro (tema anterior).
+    parent_check: ¿{{name}} puede dar un ejemplo de algo que crece solo porque pasa el tiempo, no porque
+      se le ponga más esfuerzo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: regar-tres-veces-en-un-dia
+      micro_objective: Reconocer que regar más no acelera el paso del tiempo que una semilla necesita
+        para crecer.
+      narrative_beat: Liruf riega la semilla tres veces en un mismo día, esperando verla convertida en
+        árbol al instante, pero Dr. Rho le explica que el tiempo no se puede apurar con más agua.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: una-semilla-de-hoy-y-una-de-hace-un-mes
+      micro_objective: Identificar que la semilla plantada hace más tiempo está más crecida, sin que nadie
+        le haya puesto más esfuerzo.
+      narrative_beat: Dr. Rho muestra dos semillas idénticas, una plantada hace un día y otra hace un
+        mes, y pide a Dina identificar cuál está más crecida.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: otras-cosas-que-tardan-en-crecer
+      micro_objective: Nombrar otro ejemplo, distinto a la semilla, de algo que crece solo porque pasa
+        el tiempo.
+      narrative_beat: Zara Vex pregunta a Liruf qué otras cosas del bosque tardan en crecer aunque nadie
+        las apure.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: dos-brotes-nuevos
+      micro_objective: Explicar, en una escena nueva, por qué un brote más grande no significa que recibió
+        más esfuerzo, sino más tiempo.
+      narrative_beat: Ante dos brotes nuevos del bosque, Dina explica por qué uno se ve más grande sin
+        que haya recibido más cuidado que el otro.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: plantar-hoy-comer-manana
+    title_es: Plantar hoy, comer mañana
+    concept: Elegir plantar una semilla en vez de comerla de inmediato es elegir tener más fruta después,
+      aunque signifique esperar.
+    learning_objective: Al final, el niño puede decidir entre comer una fruta ahora o plantar su semilla
+      para tener más fruta después.
+    key_vocabulary:
+    - plantar
+    - esperar
+    - elegir
+    - después
+    prior_knowledge: Sabe que las cosas crecen con el tiempo, no con prisa (tema anterior).
+    parent_check: ¿{{name}} puede explicar la diferencia entre comerse algo ahora y guardar su 'semilla'
+      para tener más después?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-fruta-jugosa-de-liruf
+      micro_objective: Reconocer que una fruta contiene semillas que podrían convertirse en más fruta
+        en el futuro.
+      narrative_beat: Liruf encuentra una fruta jugosa y está a punto de comérsela entera, hasta que Dr.
+        Rho le muestra que dentro tiene semillas que podrían convertirse en un árbol nuevo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comer-hoy-o-plantar
+      micro_objective: Comparar el resultado de comer una fruta ahora contra plantar su semilla para el
+        futuro.
+      narrative_beat: 'Dr. Rho compara dos caminos con Dina: comerse la fruta hoy, o plantar la semilla
+        y esperar un árbol con muchas frutas.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: si-solo-tuviera-una-fruta
+      micro_objective: Decidir, en un caso concreto, entre comer una fruta única ahora o plantar su semilla.
+      narrative_beat: Zara Vex pregunta a Liruf qué elegiría si tuviera solo una fruta y ninguna otra en
+        el bosque.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: la-canasta-de-frutas-nuevas
+      micro_objective: Aplicar la decisión de plantar hoy para comer mañana repartiendo varias frutas
+        nuevas.
+      narrative_beat: Frente a una canasta con varias frutas nuevas, Dina decide cuántas comer hoy y cuántas
+        plantar para el futuro.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: regar-un-poco-cada-dia
+    title_es: Regar un poco cada día
+    concept: Poner un poco de agua cada día ayuda más a una semilla que echarle toda el agua de golpe
+      una sola vez.
+    learning_objective: Al final, el niño puede explicar por qué regar poco a poco cada día ayuda más
+      que regar todo de una vez.
+    key_vocabulary:
+    - regar
+    - poco a poco
+    - cada día
+    - cuidar
+    prior_knowledge: Sabe elegir entre comer una fruta hoy o plantar su semilla (tema anterior).
+    parent_check: ¿{{name}} entiende por qué es mejor cuidar algo poquito cada día que hacerlo todo de
+      una sola vez?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-cubeta-enorme-de-liruf
+      micro_objective: Observar que echarle toda el agua de golpe a una semilla nueva puede hacerle daño
+        en vez de ayudar.
+      narrative_beat: Liruf carga una cubeta enorme de agua y la vacía toda sobre una semilla nueva, pero
+        Dr. Rho corre a detenerlo antes de que la ahogue.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: dos-formas-de-regar
+      micro_objective: Comparar el resultado de regar poco cada día contra regar todo de una sola vez.
+      narrative_beat: 'Dr. Rho muestra dos semillas: una regada un poquito cada día, otra regada toda
+        de golpe una sola vez, y pide a Dina comparar cómo están.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-poquito-funciona-mejor
+      micro_objective: Explicar con sus palabras por qué regar poco a poco ayuda más que regar todo junto.
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que un poquito cada día funciona mejor que
+        mucho de una sola vez.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: mi-plan-de-riego-de-la-semana
+      micro_objective: Aplicar el hábito de cuidar poco a poco cada día armando un plan propio para una
+        semilla nueva.
+      narrative_beat: Con una semilla nueva del bosque, Dina arma su propio plan de riego poco a poco
+        para toda la semana.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: la-semilla-que-no-se-toca
+    title_es: La semilla que no se toca
+    concept: Una semilla enterrada necesita quedarse quieta bajo la tierra para poder crecer; desenterrarla
+      para revisarla la puede dañar.
+    learning_objective: Al final, el niño puede explicar por qué una semilla enterrada debe dejarse quieta
+      para que pueda crecer.
+    key_vocabulary:
+    - enterrar
+    - quieto
+    - tocar
+    - dañar
+    prior_knowledge: Sabe que regar poco a poco cada día ayuda a una semilla a crecer (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué desenterrar una semilla para revisarla todos los días
+      le hace daño?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-desentierra-cada-manana
+      micro_objective: Reconocer que desenterrar una semilla todos los días para revisarla puede impedir
+        que crezca.
+      narrative_beat: Liruf, curioso, desentierra la semilla cada mañana para ver si ya es un árbol, hasta
+        que Dr. Rho le explica que así nunca podrá crecer.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quieta-o-desenterrada-varias-veces
+      micro_objective: Comparar el crecimiento de una semilla que se dejó quieta contra una que se desenterró
+        varias veces.
+      narrative_beat: 'Dr. Rho muestra dos semillas: una que se dejó quieta bajo la tierra, y otra que
+        se desenterró varias veces, y pide a Dina comparar cuál creció mejor.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: solo-para-ver-como-va
+      micro_objective: Explicar por qué conviene resistir las ganas de desenterrar la semilla solo para
+        revisarla.
+      narrative_beat: Zara Vex pregunta a Liruf qué le diría a alguien que quiere desenterrar su semilla
+        'solo para ver cómo va'.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: dejarla-enterrada-a-pesar-de-la-curiosidad
+      micro_objective: Aplicar la decisión de dejar una semilla enterrada aunque exista curiosidad por
+        revisarla.
+      narrative_beat: Frente a una semilla nueva, Dina decide dejarla enterrada aunque sienta curiosidad,
+        y explica por qué eligió esperar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: una-fruta-hoy-o-un-arbol-manana
+    title_es: Una fruta hoy o un árbol mañana
+    concept: Comparar el tamaño de lo que se obtiene comiendo una fruta hoy contra lo que se obtiene esperando
+      el árbol completo ayuda a decidir mejor.
+    learning_objective: Al final, el niño puede comparar el tamaño de una fruta hoy contra el de un árbol
+      completo de frutas mañana.
+    key_vocabulary:
+    - comparar
+    - tamaño
+    - hoy
+    - mañana
+    prior_knowledge: Sabe que una semilla enterrada debe dejarse quieta para crecer (tema anterior).
+    parent_check: ¿{{name}} puede comparar, con un ejemplo propio, lo que se gana comiendo algo hoy contra
+      esperar por algo más grande mañana?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-arbol-viejo-cargado-de-frutas
+      micro_objective: Observar la diferencia de tamaño entre una fruta sola y un árbol completo lleno
+        de frutas.
+      narrative_beat: Dr. Rho muestra a Dina un árbol viejo cargado de decenas de frutas y le recuerda
+        que, hace años, ese árbol era solo una fruta que alguien decidió no comerse.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: fruta-hoy-o-arbol-manana
+      micro_objective: Clasificar distintos resultados según pertenezcan a 'una fruta hoy' o 'un árbol
+        mañana'.
+      narrative_beat: 'Zara Vex dibuja dos columnas: ''una fruta hoy'' y ''un árbol mañana'', y pide a
+        Liruf ordenar imágenes en la columna correcta.'
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: cuando-si-prefiero-la-fruta-de-hoy
+      micro_objective: Reconocer que a veces sí conviene elegir la fruta de hoy, cuando de verdad se necesita
+        en ese momento.
+      narrative_beat: Liruf admite que a veces sí prefiere una fruta hoy, y Dr. Rho le explica que eso
+        también está bien si de verdad la necesita ahora.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: decidir-con-calma-fruta-o-arbol
+      micro_objective: Decidir, en una situación nueva, entre la fruta de hoy o el árbol de mañana, explicando
+        la razón.
+      narrative_beat: Frente a una situación nueva, Dina decide con calma si conviene más la fruta de
+        hoy o esperar el árbol de mañana, explicando su razón.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: cuidar-la-semilla-cuando-nadie-mira
+    title_es: Cuidar la semilla cuando nadie mira
+    concept: Cuidar una semilla aunque nadie esté mirando ni lo esté premiando en ese momento es parte
+      de aprender a ser constante.
+    learning_objective: Al final, el niño puede explicar por qué vale la pena cuidar una semilla aunque
+      nadie lo esté viendo.
+    key_vocabulary:
+    - constancia
+    - cuidar
+    - solo
+    - disciplina
+    prior_knowledge: Sabe comparar una fruta hoy con un árbol mañana (tema anterior).
+    parent_check: ¿{{name}} sigue cuidando algo (una tarea, un ahorro) aunque nadie se lo esté recordando
+      en ese momento?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-deja-de-regar-varios-dias
+      micro_objective: Observar que una semilla descuidada cuando nadie mira crece menos que una cuidada
+        con constancia.
+      narrative_beat: Liruf deja de regar la semilla varios días porque cree que, si Dr. Rho no lo ve,
+        no importa, hasta que nota que la semilla ha crecido menos que la de Dina.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-dina-siguio-regando
+      micro_objective: Explicar por qué conviene seguir cuidando algo aunque nadie lo esté recordando
+        en ese momento.
+      narrative_beat: Dr. Rho pregunta a Dina por qué ella siguió regando su semilla incluso los días
+        en que nadie se lo recordó.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: regar-en-secreto
+      micro_objective: Practicar el hábito de cuidar algo de forma constante sin esperar que alguien lo
+        note de inmediato.
+      narrative_beat: Zara Vex reta a Liruf a regar su semilla en secreto, sin que nadie lo vea ni lo felicite,
+        durante varios días seguidos.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: la-semilla-crecida-de-liruf
+      micro_objective: Aplicar con seguridad el hábito de cuidar algo de forma constante, incluso sin
+        que nadie lo esté viendo.
+      narrative_beat: Al final de la semana, Liruf muestra su semilla crecida y explica que la cuidó incluso
+        los días en que nadie miraba.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-primer-arbol-plantado
+    title_es: Mi primer árbol plantado
+    concept: Planear qué se quiere sembrar, con qué constancia se va a cuidar y cuánto tiempo tomará,
+      es aplicar todo lo aprendido sobre sembrar para el futuro.
+    learning_objective: Al final, el niño puede armar un plan propio para sembrar algo, incluyendo qué
+      cuidará y por cuánto tiempo.
+    key_vocabulary:
+    - plan
+    - sembrar
+    - cuidar
+    - tiempo
+    prior_knowledge: Ha aprendido a sembrar para el futuro, esperar con paciencia y cuidar con constancia
+      (temas anteriores).
+    parent_check: ¿{{name}} puede contarte un plan propio de algo que quiere 'sembrar' y cuidar con el
+      tiempo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: elegir-mi-propia-semilla
+      micro_objective: Elegir, dentro de una historia, qué sembrar como primer proyecto propio de largo
+        plazo.
+      narrative_beat: Dr. Rho invita a Dina y Liruf a elegir su propia semilla del bosque para plantarla
+        y cuidarla como su primer árbol.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-pasos-de-mi-plan
+      micro_objective: Ordenar los pasos correctos de un plan simple para sembrar y cuidar algo propio.
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos de su plan: elegir la semilla, plantarla,
+        regarla poco a poco, y dejarla quieta.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: explicar-mi-plan-en-voz-alta
+      micro_objective: Explicar en voz alta un plan propio de siembra, incluyendo cuidado y tiempo de
+        espera.
+      narrative_beat: Dina practica explicando en voz alta su plan completo antes de plantar su semilla
+        frente a Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: la-promesa-de-cuidar-mi-arbol
+      micro_objective: Aplicar con seguridad el plan completo de sembrar, cuidar y esperar, comprometiéndose
+        a seguirlo.
+      narrative_beat: Con su semilla ya plantada, Dina y Liruf prometen frente a Dr. Rho cuidarla con constancia
+        hasta que se convierta en árbol.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre un cofre de semillas de recuerdo para poner a prueba, sin enseñar nada nuevo,
+      todo lo aprendido en la saga La Semilla que Espera.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga La Semilla que Espera.
+    key_vocabulary:
+    - sembrar
+    - esperar
+    - cuidar
+    - constancia
+    prior_knowledge: Ha completado los ocho temas de la saga La Semilla que Espera (aventura 1, saga 1).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/que-es-sembrar-para-el-futuro
+    - el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+    - el-jardin-del-tiempo/semilla-que-espera/plantar-hoy-comer-manana
+    - el-jardin-del-tiempo/semilla-que-espera/regar-un-poco-cada-dia
+    - el-jardin-del-tiempo/semilla-que-espera/la-semilla-que-no-se-toca
+    - el-jardin-del-tiempo/semilla-que-espera/una-fruta-hoy-o-un-arbol-manana
+    - el-jardin-del-tiempo/semilla-que-espera/cuidar-la-semilla-cuando-nadie-mira
+    - el-jardin-del-tiempo/semilla-que-espera/mi-primer-arbol-plantado
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, por qué sembrar hoy da algo grande en el futuro y por
+        qué las cosas crecen con el tiempo, no con prisa.
+      narrative_beat: Zara Vex abre un cofre lleno de semillas de recuerdo y reta a Dina a recordar, semilla
+        por semilla, lo primero que aprendió en este bosque.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo decidir entre comer una fruta hoy o plantar su
+        semilla, y por qué regar poco a poco ayuda más.
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de la saga y las ordena de memoria, sin
+        que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre dejar una semilla
+        quieta y comparar una fruta hoy con un árbol mañana.
+      narrative_beat: Dr. Rho presenta una escena nueva del bosque y pregunta a Dina si recuerda, sin
+        repasar la lección, qué haría con una semilla que le da curiosidad desenterrar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo por qué cuidar una
+        semilla cuando nadie mira, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        semilla de recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla las primeras ideas de La Semilla que Espera en un solo reto para practicar
+      cómo se conectan entre sí.
+    learning_objective: Al final, el niño puede recordar y combinar dos ideas distintas de la saga La
+      Semilla que Espera en una sola situación.
+    key_vocabulary:
+    - combinar
+    - recordar
+    - aplicar
+    - semilla
+    prior_knowledge: Conoce las primeras lecciones de La Semilla que Espera citadas en este reto (tema
+      anterior).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/que-es-sembrar-para-el-futuro
+    - el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+    - el-jardin-del-tiempo/semilla-que-espera/plantar-hoy-comer-manana
+    - el-jardin-del-tiempo/semilla-que-espera/regar-un-poco-cada-dia
+    lessons:
+    - position: 1
+      slug: un-recuerdo-del-cofre
+      micro_objective: Recordar, tal como se aprendió antes, por qué sembrar hoy da algo grande en el
+        futuro.
+      narrative_beat: Zara Vex trae dos semillas de recuerdo del cofre y pide a Liruf unirlas en una sola
+        idea, sin ayuda nueva.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: crecer-con-tiempo-y-regar-poco-a-poco
+      micro_objective: Combinar la idea de que las cosas crecen con el tiempo con la de regar un poco
+        cada día.
+      narrative_beat: Dr. Rho muestra cómo la idea de 'crecer con el tiempo' se conecta directamente con
+        la de 'regar poco a poco cada día'.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, las ideas de crecer con el tiempo y de cuidar
+        poco a poco.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas ideas en una
+        situación final.
+      narrative_beat: Frente a una última escena del bosque, Dina combina lo aprendido sobre sembrar hoy
+        y sobre regar con calma para resolverla sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 2
+  slug: prisa-del-conejo
+  icon: directions_run
+  title:
+    en-US: The Rabbit's Rush
+    es-MX: La Prisa del Conejo
+    pt-BR: A Pressa do Coelho
+  description:
+    en-US: Meet the impulse to grab everything right now, and practice choosing to wait for something
+      bigger.
+    es-MX: Conoce las ganas de tomarlo todo ya, y practica elegir esperar por algo más grande.
+    pt-BR: Conheça a vontade de pegar tudo agora e pratique escolher esperar por algo maior.
+  topics:
+  - position: 1
+    slug: la-fruta-verde-y-la-fruta-madura
+    title_es: La fruta verde y la fruta madura
+    concept: Una fruta verde, arrancada antes de tiempo, sabe peor y es más pequeña que la misma fruta
+      madura que se dejó terminar de crecer.
+    learning_objective: Al final, el niño puede explicar por qué una fruta arrancada antes de tiempo es
+      peor que la misma fruta madura.
+    key_vocabulary:
+    - madura
+    - verde
+    - esperar
+    - arrancar
+    prior_knowledge: Ha plantado y cuidado su propia semilla (aventura 1, saga 1).
+    parent_check: ¿{{name}} puede explicar qué le pasa a una fruta si se arranca antes de estar madura?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-arranca-una-fruta-verde
+      micro_objective: Observar que una fruta arrancada antes de tiempo es más pequeña y sabe peor que
+        una madura.
+      narrative_beat: Liruf arranca una fruta verde del árbol, ansioso por probarla, y descubre que sabe
+        agria y es pequeña comparada con las maduras del árbol de al lado.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: verde-y-madura-lado-a-lado
+      micro_objective: Comparar las diferencias visibles entre una fruta arrancada antes de tiempo y una
+        fruta madura.
+      narrative_beat: Dr. Rho pone lado a lado una fruta verde y una madura y pide a Dina describir las
+        diferencias que ve.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: la-prisa-de-liruf
+      micro_objective: Reconocer la sensación de prisa que llevó a arrancar la fruta antes de que madurara.
+      narrative_beat: Zara Vex pregunta a Liruf qué sintió al ver apenas apareció la fruta, y por qué no
+        pudo aguantar hasta que madurara.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: cuales-ya-estan-listas
+      micro_objective: Aplicar el criterio de madurez para decidir qué frutas tomar ya y cuáles dejar
+        esperando.
+      narrative_beat: Frente a un árbol nuevo con frutas de distintos tamaños, Dina decide cuáles ya están
+        listas para tomar y cuáles conviene dejar madurar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: dos-caminos-el-corto-y-el-largo
+    title_es: 'Dos caminos: el corto y el largo'
+    concept: El bosque tiene un camino corto que da una recompensa pequeña de inmediato y un camino largo
+      que da una recompensa más grande después de esperar.
+    learning_objective: Al final, el niño puede comparar un camino corto con recompensa pequeña inmediata
+      contra un camino largo con recompensa más grande después.
+    key_vocabulary:
+    - camino
+    - corto
+    - largo
+    - recompensa
+    prior_knowledge: Sabe que una fruta madura es mejor que una verde arrancada con prisa (tema anterior).
+    parent_check: ¿{{name}} puede explicar la diferencia entre elegir algo pequeño ahora o algo más grande
+      esperando un poco más?
+    prerequisites:
+    - path: el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+      strength: soft
+      reason: Entender que algo grande necesita tiempo para crecer ayuda a comprender por qué el camino
+        largo a veces da más que el camino rápido.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-cruce-del-bosque
+      micro_objective: Reconocer que un camino corto y uno largo pueden llevar a recompensas de tamaño
+        distinto.
+      narrative_beat: 'En un cruce del bosque, un letrero ofrece dos caminos: uno corto con una fruta
+        chica al final, y uno largo con un árbol cargado de frutas.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: marcar-cual-da-mas
+      micro_objective: Comparar la recompensa del camino corto contra la del camino largo.
+      narrative_beat: Dr. Rho dibuja los dos caminos en el suelo y pide a Dina marcar cuál da más y cuál
+        da menos.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-alguien-elegiria-el-corto
+      micro_objective: Explicar una razón válida por la que alguien podría elegir el camino corto de todos
+        modos.
+      narrative_beat: Zara Vex pregunta a Liruf por qué alguien elegiría el camino corto aunque dé menos.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: un-cruce-nuevo
+      micro_objective: Decidir con calma, en una situación nueva, entre el camino corto y el largo, explicando
+        la razón.
+      narrative_beat: Frente a un cruce nuevo del bosque, Dina elige con calma entre el camino corto y
+        el largo, explicando su decisión.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: por-que-cuesta-tanto-esperar
+    title_es: Por qué cuesta tanto esperar
+    concept: Esperar puede sentirse difícil porque las ganas de tener algo ya son fuertes, y reconocer
+      esa sensación es el primer paso para manejarla.
+    learning_objective: Al final, el niño puede reconocer y nombrar la sensación de que cuesta esperar
+      por algo.
+    key_vocabulary:
+    - esperar
+    - sentir
+    - ganas
+    - difícil
+    prior_knowledge: Sabe comparar un camino corto y uno largo según su recompensa (tema anterior).
+    parent_check: ¿{{name}} puede nombrar cómo se siente cuando le cuesta esperar por algo que quiere?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-ganas-enormes-de-liruf
+      micro_objective: Reconocer la sensación de impaciencia que aparece cuando cuesta esperar por algo.
+      narrative_beat: Liruf se retuerce de impaciencia esperando que su semilla crezca, y le confiesa a
+        Dina que sus ganas de verla ya crecida son enormes.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: donde-se-siente-la-impaciencia
+      micro_objective: Nombrar cómo se siente físicamente la impaciencia de querer algo ya.
+      narrative_beat: Dr. Rho pregunta a Dina en qué parte del cuerpo siente las ganas de apurar las cosas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: hasta-zara-lo-siente
+      micro_objective: Reconocer que sentir impaciencia es normal, incluso en alguien con experiencia.
+      narrative_beat: Zara Vex comparte que hasta ella, siendo estratega, a veces siente esas mismas ganas
+        de apurar las cosas.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: nombrar-antes-de-actuar
+      micro_objective: Aplicar el reconocer y nombrar la sensación de impaciencia antes de actuar frente
+        a ella.
+      narrative_beat: Frente a una nueva espera del bosque, Liruf nombra en voz alta lo que siente antes
+        de decidir qué hacer con esa sensación.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 4
+    slug: un-truco-para-esperar-mejor
+    title_es: Un truco para esperar mejor
+    concept: Distraerse con una actividad concreta (contar hojas, ayudar en el jardín) hace que esperar
+      se sienta más fácil.
+    learning_objective: Al final, el niño puede aplicar una estrategia concreta para hacer que esperar
+      se sienta más fácil.
+    key_vocabulary:
+    - truco
+    - distraer
+    - esperar
+    - estrategia
+    prior_knowledge: Reconoce la sensación de que cuesta esperar (tema anterior).
+    parent_check: ¿{{name}} conoce algún truco propio para hacer que esperar se sienta más fácil?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: contar-las-hojas-cercanas
+      micro_objective: Conocer un truco concreto (contar hojas) para hacer que la espera se sienta más
+        fácil.
+      narrative_beat: 'Dr. Rho le enseña a Liruf un truco: mientras espera que su semilla crezca, puede
+        contar las hojas de los árboles cercanos.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: varios-trucos-del-bosque
+      micro_objective: Reconocer varias estrategias distintas que ayudan a que esperar se sienta más fácil.
+      narrative_beat: Zara Vex reúne varios trucos del bosque (contar, cantar, ayudar a Dr. Rho) y pide
+        a Dina ordenarlos según cuáles le gustarían más.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: ayudar-a-dr-rho-mientras-espera
+      micro_objective: Practicar la aplicación de un truco propio para hacer más fácil una espera concreta.
+      narrative_beat: Liruf practica su propio truco (ayudar a Dr. Rho a recoger hojas) mientras espera
+        que pase el tiempo de su semilla.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-truco-sin-que-nadie-lo-recuerde
+      micro_objective: Aplicar con seguridad un truco propio elegido para hacer más fácil una nueva espera.
+      narrative_beat: Frente a una nueva espera larga, Dina elige y aplica su propio truco sin que nadie
+        se lo recuerde.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: cuando-si-conviene-esperar
+    title_es: Cuándo sí conviene esperar
+    concept: No toda espera vale la pena; conviene esperar cuando la recompensa de esperar es claramente
+      mejor que la de no esperar.
+    learning_objective: Al final, el niño puede decidir cuándo sí conviene esperar y cuándo no hace falta.
+    key_vocabulary:
+    - conviene
+    - decidir
+    - comparar
+    - vale-la-pena
+    prior_knowledge: Conoce trucos para hacer que esperar se sienta más fácil (tema anterior).
+    parent_check: ¿{{name}} puede dar un ejemplo de cuándo SÍ conviene esperar y uno de cuándo no hace
+      falta esperar?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-arbol-cargado-y-el-pan-horneado
+      micro_objective: Reconocer una situación donde esperar vale la pena y otra donde no hace falta esperar.
+      narrative_beat: 'Dr. Rho le muestra a Dina dos situaciones: esperar el árbol cargado de frutas (vale
+        la pena) y esperar innecesariamente para comer un pan ya horneado (no hace falta).'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: clasificar-situaciones-del-bosque
+      micro_objective: Clasificar distintas situaciones según si conviene esperar o no.
+      narrative_beat: Zara Vex presenta varias situaciones del bosque y pide a Liruf clasificar cuáles
+        merecen espera y cuáles no.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: esperar-siempre-no-es-sabio
+      micro_objective: Explicar por qué esperar siempre, incluso cuando no hace falta, no es lo más sabio.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría si esperara siempre, incluso cuando no hace
+        falta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: decidir-con-seguridad
+      micro_objective: Decidir con seguridad, en una situación nueva, si conviene esperar o no.
+      narrative_beat: Frente a una situación nueva, Dina decide con seguridad si conviene esperar o no,
+        y explica su razón.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: el-caracol-que-le-gano-al-conejo
+    title_es: El caracol que le ganó al conejo
+    concept: Un caracol lento pero constante puede llegar más lejos que un conejo veloz que se detiene
+      a mitad de camino.
+    learning_objective: Al final, el niño puede explicar por qué la constancia lenta puede ganarle a la
+      velocidad que no dura.
+    key_vocabulary:
+    - constante
+    - lento
+    - veloz
+    - llegar
+    prior_knowledge: Sabe decidir cuándo conviene esperar (tema anterior).
+    parent_check: ¿{{name}} conoce la historia del caracol y el conejo, y puede explicar por qué gana
+      el caracol?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-carrera-del-bosque
+      micro_objective: Conocer la historia del caracol constante y el conejo veloz que se distrae.
+      narrative_beat: 'Zara Vex organiza una carrera del bosque: un conejo veloz que se detiene a descansar,
+        y un caracol lento que nunca se detiene.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-los-momentos-de-la-carrera
+      micro_objective: Ordenar los momentos clave de la carrera para entender cómo el caracol llegó primero.
+      narrative_beat: Dr. Rho pide a Dina ordenar los momentos de la carrera para ver en qué momento el
+        caracol alcanza al conejo dormido.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: el-error-del-conejo
+      micro_objective: 'Identificar el error del conejo: confiar tanto en su velocidad que dejó de ser
+        constante.'
+      narrative_beat: Zara Vex pregunta a Liruf qué error cometió el conejo, aunque era mucho más veloz
+        que el caracol.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: aplicar-la-leccion-del-caracol
+      micro_objective: Aplicar la lección de la constancia del caracol a una meta propia nueva.
+      narrative_beat: Frente a un nuevo reto del bosque, Dina explica cómo aplicaría la lección del caracol
+        para lograr su propia meta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: mi-plan-para-esperar
+    title_es: Mi plan para esperar
+    concept: Armar un plan simple (qué esperar, con qué truco, por cuánto tiempo) ayuda a sostener la
+      paciencia hasta el final.
+    learning_objective: Al final, el niño puede armar un plan propio simple para sostener la espera de
+      algo que quiere.
+    key_vocabulary:
+    - plan
+    - esperar
+    - sostener
+    - meta
+    prior_knowledge: Conoce la lección del caracol constante (tema anterior).
+    parent_check: ¿{{name}} tiene un plan propio (aunque sea sencillo) para sostener una espera hasta
+      el final?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: elegir-algo-que-vale-la-pena-esperar
+      micro_objective: Elegir, dentro de una historia, algo concreto que vale la pena esperar.
+      narrative_beat: Dr. Rho ayuda a Liruf a elegir algo que de verdad quiere esperar, y juntos anotan
+        cuánto tiempo tomará.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-pasos-de-mi-plan-de-espera
+      micro_objective: Ordenar los pasos correctos de un plan simple para sostener una espera.
+      narrative_beat: 'Zara Vex ayuda a Dina a ordenar los pasos de su plan de espera: qué espera, qué
+        truco usará, y cuándo terminará.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-mi-plan-en-voz-alta
+      micro_objective: Practicar explicar en voz alta un plan propio para sostener una espera.
+      narrative_beat: Liruf practica en voz alta su plan de espera completo antes de comenzar a esperar
+        de verdad.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comprometerme-con-mi-plan
+      micro_objective: Aplicar con seguridad el plan completo, comprometiéndose a sostenerlo hasta el
+        final.
+      narrative_beat: Con su plan ya armado, Dina se compromete frente a Dr. Rho y Liruf a sostenerlo hasta
+        el final.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: celebrar-cuando-la-espera-termina
+    title_es: Celebrar cuando la espera termina
+    concept: Cuando una espera termina y la recompensa llega, celebrarla ayuda a recordar que valió la
+      pena ser paciente.
+    learning_objective: Al final, el niño puede reconocer y celebrar el momento en que una espera termina
+      con una recompensa más grande.
+    key_vocabulary:
+    - celebrar
+    - recompensa
+    - terminar
+    - valió-la-pena
+    prior_knowledge: Armó su propio plan para sostener una espera (tema anterior).
+    parent_check: ¿{{name}} celebra cuando una espera suya termina y logra lo que quería?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-primera-fruta-grande-de-liruf
+      micro_objective: Reconocer el momento en que una espera termina y llega la recompensa esperada.
+      narrative_beat: Después de varias semanas, el árbol de Liruf por fin da su primera fruta grande y
+        madura, y todo el bosque lo celebra junto a él.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-fue-diferente-esta-vez
+      micro_objective: Comparar la recompensa final de la espera con lo que se habría obtenido sin esperar.
+      narrative_beat: Dr. Rho pregunta a Dina qué fue diferente entre esta fruta grande y la fruta verde
+        que Liruf arrancó con prisa al inicio de la saga.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: una-celebracion-por-la-paciencia
+      micro_objective: Reconocer la importancia de celebrar la paciencia, no solo el resultado final.
+      narrative_beat: Zara Vex organiza una pequeña celebración en el bosque para reconocer la paciencia
+        de Liruf durante toda la espera.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: explicarle-a-otro-por-que-valio-la-pena
+      micro_objective: Aplicar con seguridad el celebrar una espera cumplida, explicando por qué valió
+        la pena.
+      narrative_beat: Dina celebra el fin de su propia espera y explica a un nuevo personaje del bosque
+        por qué valió la pena ser paciente.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex vuelve a abrir el cofre de recuerdos, esta vez con las semillas de la saga La Prisa
+      del Conejo.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga La Prisa del Conejo.
+    key_vocabulary:
+    - esperar
+    - paciencia
+    - constancia
+    - camino
+    prior_knowledge: Ha completado los ocho temas de la saga La Prisa del Conejo (aventura 1, saga 2).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/prisa-del-conejo/la-fruta-verde-y-la-fruta-madura
+    - el-jardin-del-tiempo/prisa-del-conejo/dos-caminos-el-corto-y-el-largo
+    - el-jardin-del-tiempo/prisa-del-conejo/por-que-cuesta-tanto-esperar
+    - el-jardin-del-tiempo/prisa-del-conejo/un-truco-para-esperar-mejor
+    - el-jardin-del-tiempo/prisa-del-conejo/cuando-si-conviene-esperar
+    - el-jardin-del-tiempo/prisa-del-conejo/el-caracol-que-le-gano-al-conejo
+    - el-jardin-del-tiempo/prisa-del-conejo/mi-plan-para-esperar
+    - el-jardin-del-tiempo/prisa-del-conejo/celebrar-cuando-la-espera-termina
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, por qué una fruta madura es mejor que una arrancada
+        con prisa, y cómo comparar un camino corto y uno largo.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con las semillas de recuerdo de la prisa
+        del conejo, y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué cuesta esperar y qué trucos ayudan a que la
+        espera se sienta más fácil.
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cuándo conviene esperar y la lección
+        del caracol constante.
+      narrative_beat: Dr. Rho presenta una escena nueva del bosque y pregunta a Dina si recuerda, sin
+        repasar la lección, cuándo conviene esperar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo armar un plan de espera y celebrar
+        cuando termina, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        semilla de recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en La Prisa del Conejo con ideas de La Semilla que Espera en
+      un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de La Prisa del Conejo
+      con un concepto de La Semilla que Espera.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - esperar
+    prior_knowledge: Conoce La Prisa del Conejo (saga 2) y las lecciones citadas de La Semilla que Espera
+      (saga 1).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/la-semilla-que-no-se-toca
+    - el-jardin-del-tiempo/semilla-que-espera/mi-primer-arbol-plantado
+    - el-jardin-del-tiempo/prisa-del-conejo/dos-caminos-el-corto-y-el-largo
+    - el-jardin-del-tiempo/prisa-del-conejo/el-caracol-que-le-gano-al-conejo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-primera-saga
+      micro_objective: Recordar, tal como se aprendió antes, por qué una semilla enterrada debe dejarse
+        quieta para crecer.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
+        antes de mezclarlo con la prisa del conejo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-el-plan-con-el-camino-largo
+      micro_objective: Combinar el plan de sembrar para el futuro con la idea de elegir el camino largo
+        por su mejor recompensa.
+      narrative_beat: Dr. Rho muestra cómo el plan de sembrar de la primera saga se conecta con el camino
+        largo de esta saga.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la idea de sembrar para el futuro y la de
+        la constancia del caracol.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 3
+  slug: jardin-que-nadie-toca
+  icon: park
+  title:
+    en-US: The Garden Nobody Touches
+    es-MX: El Jardín que Nadie Toca
+    pt-BR: O Jardim que Ninguém Toca
+  description:
+    en-US: Discover why a protected, undisturbed garden grows bigger than one that keeps getting dug up.
+    es-MX: Descubre por qué un jardín protegido y sin tocar crece más que uno que se desentierra todo
+      el tiempo.
+    pt-BR: Descubra por que um jardim protegido cresce mais que um que é sempre remexido.
+  topics:
+  - position: 1
+    slug: un-lugar-seguro-para-la-semilla
+    title_es: Un lugar seguro para la semilla
+    concept: Un lugar seguro para una semilla es uno donde nadie la pisa, ni la moja de más, ni la desentierra
+      sin razón.
+    learning_objective: Al final, el niño puede describir las características de un lugar seguro para
+      dejar crecer una semilla.
+    key_vocabulary:
+    - seguro
+    - lugar
+    - proteger
+    - cuidado
+    prior_knowledge: Ha aprendido a sembrar, esperar y cuidar con constancia (aventura 1, sagas 1-2).
+    parent_check: ¿{{name}} puede describir qué hace que un lugar sea seguro para guardar o dejar crecer
+      algo importante?
+    prerequisites:
+    - path: el-jardin-del-tiempo/semilla-que-espera/la-semilla-que-no-se-toca
+      strength: hard
+      reason: Saber que una semilla no se debe desenterrar es la base directa para aprender a construir
+        un lugar seguro donde protegerla.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-rincon-elegido-por-dr-rho
+      micro_objective: Observar las características que hacen seguro un lugar para dejar crecer una semilla.
+      narrative_beat: Dr. Rho elige con cuidado un rincón del bosque, lejos del camino donde pasan los
+        pies apurados, para plantar la nueva semilla de Dina.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: tres-rincones-del-bosque
+      micro_objective: Identificar, entre varios lugares, cuál es el más seguro para dejar crecer algo.
+      narrative_beat: Zara Vex muestra tres rincones del bosque y pide a Liruf identificar cuál es el más
+        seguro para una semilla.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: que-podria-salir-mal-junto-al-camino
+      micro_objective: Explicar qué riesgos corre una semilla plantada en un lugar poco seguro.
+      narrative_beat: Dr. Rho pregunta a Dina qué podría salir mal si la semilla se plantara junto al
+        camino donde todos pasan.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: elegir-el-mejor-rincon
+      micro_objective: Aplicar el criterio de seguridad para elegir un buen lugar para una semilla nueva.
+      narrative_beat: Frente a un terreno nuevo del bosque, Dina elige el mejor rincón para su siguiente
+        semilla y explica por qué.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: lo-que-pasa-si-la-desentierro-antes-de-tiempo
+    title_es: Lo que pasa si la desentierro antes de tiempo
+    concept: Desenterrar una semilla antes de tiempo, aunque sea 'solo para revisarla', interrumpe su
+      crecimiento y puede arruinarlo.
+    learning_objective: Al final, el niño puede explicar qué le pasa a una semilla si se desentierra antes
+      de tiempo.
+    key_vocabulary:
+    - antes-de-tiempo
+    - interrumpir
+    - revisar
+    - arruinar
+    prior_knowledge: Sabe qué hace seguro a un lugar para una semilla (tema anterior).
+    parent_check: ¿{{name}} puede explicar qué pasa si algo que estaba creciendo se interrumpe antes de
+      tiempo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-no-aguanta-la-curiosidad
+      micro_objective: Observar que desenterrar una semilla a medio crecer interrumpe su desarrollo.
+      narrative_beat: Liruf no aguanta la curiosidad y desentierra su semilla a la mitad de su crecimiento;
+        al volver a enterrarla, ya no crece igual de bien.
+      difficulty: 1
+      suggested_families:
+      - story
+      - analyze
+    - position: 2
+      slug: la-semilla-interrumpida-y-la-de-dina
+      micro_objective: Comparar el crecimiento de una semilla interrumpida contra una que nunca se tocó.
+      narrative_beat: Dr. Rho compara la semilla interrumpida de Liruf con la semilla de Dina, que nunca
+        se tocó, y pide a Liruf notar la diferencia.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: lo-mismo-pasa-con-cualquier-plan
+      micro_objective: Relacionar la interrupción de una semilla con la interrupción de cualquier plan
+        de largo plazo.
+      narrative_beat: 'Zara Vex explica que lo mismo pasa con cualquier plan de largo plazo: interrumpirlo
+        antes de tiempo casi siempre cuesta más de lo que parece.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: resistir-una-nueva-tentacion
+      micro_objective: Aplicar la decisión de resistir la tentación de interrumpir algo antes de tiempo.
+      narrative_beat: Frente a una nueva tentación de revisar antes de tiempo, Liruf decide resistir y
+        explica qué habría pasado si no lo hiciera.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: dos-jardines-uno-tocado-y-uno-no
+    title_es: 'Dos jardines: uno tocado y uno no'
+    concept: Comparar un jardín que se dejó crecer sin tocar contra uno que se estuvo tocando todo el
+      tiempo muestra con claridad la diferencia.
+    learning_objective: Al final, el niño puede comparar el resultado de un jardín protegido contra uno
+      que se tocó constantemente.
+    key_vocabulary:
+    - comparar
+    - proteger
+    - resultado
+    - diferencia
+    prior_knowledge: Sabe qué le pasa a una semilla desenterrada antes de tiempo (tema anterior).
+    parent_check: ¿{{name}} puede comparar, con un ejemplo, el resultado de cuidar algo sin tocarlo contra
+      tocarlo todo el tiempo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-parcelas-del-bosque
+      micro_objective: Observar la diferencia visible entre un jardín protegido y uno que se tocó constantemente.
+      narrative_beat: 'Dr. Rho lleva a Dina a ver dos parcelas del bosque: una que nadie tocó en meses,
+        y otra que un curioso estuvo removiendo cada semana.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-fotos-de-ambos-jardines
+      micro_objective: Ordenar el crecimiento de ambos jardines para notar cuál avanzó más.
+      narrative_beat: Zara Vex pide a Liruf ordenar fotos de ambos jardines desde el más pequeño hasta
+        el más grande.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: misma-agua-distinto-resultado
+      micro_objective: Explicar por qué tocar constantemente un jardín afecta su crecimiento aunque reciba
+        el mismo cuidado básico.
+      narrative_beat: Dr. Rho pregunta a Dina por qué cree que el jardín tocado creció menos, aunque recibió
+        la misma cantidad de agua.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-cual-crecera-mas
+      micro_objective: Aplicar lo aprendido para predecir, en una situación nueva, cuál de dos jardines
+        crecerá más.
+      narrative_beat: Frente a dos jardines nuevos, Dina predice cuál crecerá más y explica su predicción
+        con lo aprendido.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: mientras-mas-tiempo-mas-grande
+    title_es: Mientras más tiempo, más grande
+    concept: Mientras más tiempo pasa sin tocar un jardín protegido, más grande se vuelve; el tamaño y
+      el tiempo van de la mano.
+    learning_objective: Al final, el niño puede explicar que, mientras más tiempo pasa sin tocar un jardín
+      protegido, más grande se vuelve.
+    key_vocabulary:
+    - más-tiempo
+    - más-grande
+    - relación
+    - protegido
+    prior_knowledge: Ha comparado un jardín protegido con uno tocado constantemente (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué, mientras más tiempo pasa, más grande se vuelve algo
+      que se cuida sin tocar?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: tres-fotos-del-mismo-arbol
+      micro_objective: Observar que un mismo árbol se ve cada vez más grande mientras más tiempo ha pasado
+        sin tocarlo.
+      narrative_beat: 'Dr. Rho muestra a Dina tres fotos del mismo árbol: recién plantado, después de
+        un mes, y después de un año.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-las-tres-fotos
+      micro_objective: Ordenar imágenes de crecimiento y relacionarlas con la cantidad de tiempo que ha
+        pasado.
+      narrative_beat: Zara Vex pide a Liruf ordenar las tres fotos del árbol de menor a mayor tamaño, y
+        relacionarlas con el tiempo transcurrido.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: que-pasaria-en-diez-anos
+      micro_objective: Predecir qué pasaría con un jardín protegido si se le da aún más tiempo sin tocarlo.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría si dejara su jardín protegido diez años en vez
+        de uno.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: identificar-cual-lleva-mas-tiempo
+      micro_objective: Aplicar la relación entre tiempo y tamaño para identificar cuál de dos jardines
+        lleva más tiempo protegido.
+      narrative_beat: Frente a dos jardines de distinta edad, Dina identifica cuál lleva más tiempo protegido
+        solo mirando su tamaño.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: el-jardinero-que-no-se-rinde
+    title_es: El jardinero que no se rinde
+    concept: Un buen jardinero sigue cuidando su jardín protegido incluso en los días en que no se nota
+      ningún cambio.
+    learning_objective: Al final, el niño puede explicar por qué un jardinero sigue cuidando su jardín
+      aunque no vea cambios todos los días.
+    key_vocabulary:
+    - rendirse
+    - seguir
+    - cambio
+    - jardinero
+    prior_knowledge: Sabe que mientras más tiempo pasa, más grande se vuelve un jardín protegido (tema
+      anterior).
+    parent_check: ¿{{name}} sigue cuidando algo importante aunque no vea resultados todos los días?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-jardin-se-ve-igual-que-ayer
+      micro_objective: Reconocer el desánimo de no ver cambios de un día para otro en un jardín protegido.
+      narrative_beat: Liruf se desanima porque su jardín se ve exactamente igual que ayer, y piensa en
+        dejar de cuidarlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-registro-de-fotos-diarias
+      micro_objective: Comparar el cambio diario (casi nulo) contra el cambio total después de muchos
+        días.
+      narrative_beat: Dr. Rho muestra a Liruf un registro de fotos diarias donde casi no hay cambio, pero
+        al comparar la primera y la última sí se nota un gran cambio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: los-cambios-pequenos-se-acumulan
+      micro_objective: Explicar por qué los cambios pequeños de cada día se acumulan en un resultado grande
+        con el tiempo.
+      narrative_beat: Zara Vex anima a Liruf a seguir cuidando su jardín, recordándole que los cambios
+        pequeños se acumulan aunque no se vean cada día.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: no-rendirse-hoy
+      micro_objective: Aplicar la decisión de seguir cuidando algo, incluso en un día sin cambios visibles.
+      narrative_beat: Liruf decide no rendirse y sigue cuidando su jardín incluso en un día donde no se
+        nota ningún cambio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: contar-las-hojas-nuevas
+    title_es: Contar las hojas nuevas
+    concept: Contar cuántas hojas nuevas aparecen cada semana es una forma concreta de ver el crecimiento
+      que a veces es difícil notar a simple vista.
+    learning_objective: Al final, el niño puede usar el conteo de hojas nuevas como una forma concreta
+      de ver el crecimiento de un jardín protegido.
+    key_vocabulary:
+    - contar
+    - hojas
+    - registrar
+    - crecimiento
+    prior_knowledge: Sabe que un buen jardinero sigue cuidando su jardín aunque no vea cambios todos los
+      días (tema anterior).
+    parent_check: ¿{{name}} puede explicar una forma de contar o registrar el crecimiento de algo, para
+      notarlo más fácil?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-libretita-de-hojas
+      micro_objective: Conocer el conteo semanal de hojas nuevas como forma de registrar el crecimiento.
+      narrative_beat: Dr. Rho le enseña a Dina a contar las hojas nuevas de su árbol cada semana y anotarlas
+        en una libretita.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-dos-semanas-de-registro
+      micro_objective: Comparar dos registros de conteo para identificar en cuál semana hubo más crecimiento.
+      narrative_beat: Zara Vex compara con Liruf dos semanas del registro de hojas y pide identificar en
+        cuál creció más el árbol.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-contar-ayuda-a-notar
+      micro_objective: Explicar por qué contar y registrar ayuda a notar un crecimiento que es difícil
+        de ver día a día.
+      narrative_beat: Dr. Rho pregunta a Dina por qué contar las hojas ayuda a notar un crecimiento que,
+        día a día, parece invisible.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-registro-de-varias-semanas
+      micro_objective: Aplicar el registro de conteo propio para notar el crecimiento de un árbol a lo
+        largo de varias semanas.
+      narrative_beat: Con su propio árbol, Dina lleva su registro de hojas nuevas durante varias semanas
+        y explica lo que descubre.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: tocarlo-o-dejarlo-crecer
+    title_es: Tocarlo o dejarlo crecer
+    concept: Frente a la tentación de tocar algo que está creciendo bien, decidir dejarlo protegido suele
+      ser la mejor decisión.
+    learning_objective: Al final, el niño puede decidir, frente a una tentación concreta, entre tocar
+      algo o dejarlo protegido para que siga creciendo.
+    key_vocabulary:
+    - tentación
+    - decidir
+    - proteger
+    - dejar-crecer
+    prior_knowledge: Sabe registrar el crecimiento de un jardín contando hojas nuevas (tema anterior).
+    parent_check: ¿{{name}} puede reconocer cuándo la mejor decisión es 'dejarlo crecer' en vez de tocarlo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-consejo-de-un-amigo
+      micro_objective: Reconocer una tentación concreta de tocar un jardín que está creciendo bien.
+      narrative_beat: Un amigo del bosque le sugiere a Liruf remover la tierra de su jardín 'para ayudarlo
+        a crecer más rápido', y Liruf duda si hacerlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-antes-de-aconsejar
+      micro_objective: Aplicar lo aprendido sobre jardines protegidos para aconsejar frente a una tentación
+        concreta.
+      narrative_beat: Dr. Rho pide a Dina recordar lo aprendido sobre jardines tocados y no tocados antes
+        de aconsejar a Liruf.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: varias-tentaciones-del-bosque
+      micro_objective: Practicar la decisión de proteger en varias situaciones distintas de tentación.
+      narrative_beat: Zara Vex pone a prueba a Liruf con varias tentaciones distintas del bosque para ver
+        si elige proteger o tocar.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: decidir-con-seguridad-proteger
+      micro_objective: Aplicar con seguridad la decisión de proteger un jardín frente a una nueva tentación.
+      narrative_beat: Frente a una última tentación, Liruf decide con seguridad dejar su jardín protegido
+        y explica por qué.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-jardin-protegido
+    title_es: Mi jardín protegido
+    concept: Diseñar un plan propio de protección (dónde, con qué límites, por cuánto tiempo) aplica todo
+      lo aprendido sobre jardines que nadie toca.
+    learning_objective: Al final, el niño puede diseñar un plan propio para proteger algo que está creciendo,
+      incluyendo dónde y por cuánto tiempo.
+    key_vocabulary:
+    - proteger
+    - plan
+    - límite
+    - tiempo
+    prior_knowledge: Ha aprendido a elegir un lugar seguro, resistir la tentación de tocar y registrar
+      el crecimiento (temas anteriores).
+    parent_check: ¿{{name}} puede contarte su propio plan para proteger algo que está guardando o cuidando?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: disenar-mi-jardin-protegido
+      micro_objective: Diseñar, dentro de una historia, un plan simple para proteger algo que está creciendo.
+      narrative_beat: 'Dr. Rho invita a Dina a diseñar su propio ''jardín protegido'': un lugar seguro,
+        sin tocar, para su próxima siembra.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: las-reglas-de-mi-jardin
+      micro_objective: Ordenar las reglas correctas de un plan de protección para algo que está creciendo.
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar las reglas de su jardín protegido: elegir lugar
+        seguro, no desenterrar, registrar cada semana.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: explicar-mis-reglas-en-voz-alta
+      micro_objective: Explicar en voz alta un plan propio de protección, incluyendo sus reglas principales.
+      narrative_beat: Dina practica explicando en voz alta las reglas de su jardín protegido antes de
+        comenzar a aplicarlas.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comprometerme-con-mi-jardin
+      micro_objective: Aplicar con seguridad el plan completo de protección, comprometiéndose a seguirlo.
+      narrative_beat: Con su jardín protegido ya definido, Dina se compromete frente a Dr. Rho a seguir
+        sus reglas hasta el final.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con las semillas de recuerdo de El Jardín que Nadie Toca.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga El Jardín que Nadie Toca.
+    key_vocabulary:
+    - proteger
+    - seguro
+    - crecimiento
+    - constancia
+    prior_knowledge: Ha completado los ocho temas de la saga El Jardín que Nadie Toca (aventura 1, saga
+      3).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/un-lugar-seguro-para-la-semilla
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/lo-que-pasa-si-la-desentierro-antes-de-tiempo
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/dos-jardines-uno-tocado-y-uno-no
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mientras-mas-tiempo-mas-grande
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/el-jardinero-que-no-se-rinde
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/contar-las-hojas-nuevas
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/tocarlo-o-dejarlo-crecer
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mi-jardin-protegido
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, qué hace seguro a un lugar para una semilla y qué pasa
+        si se desentierra antes de tiempo.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con las semillas de recuerdo del jardín protegido,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo la comparación entre un jardín tocado y uno protegido,
+        y la relación entre más tiempo y más tamaño.
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, por qué un jardinero no se rinde y cómo
+        contar hojas ayuda a notar el crecimiento.
+      narrative_beat: Dr. Rho presenta una escena nueva del bosque y pregunta a Dina si recuerda, sin
+        repasar la lección, por qué un jardinero no se rinde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo decidir frente a una tentación
+        y diseñar un jardín protegido propio.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        semilla de recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Jardín que Nadie Toca con ideas de La Prisa del Conejo
+      en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Jardín que Nadie
+      Toca con un concepto de La Prisa del Conejo.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - proteger
+    prior_knowledge: Conoce El Jardín que Nadie Toca (saga 3) y las lecciones citadas de La Prisa del
+      Conejo (saga 2).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/prisa-del-conejo/cuando-si-conviene-esperar
+    - el-jardin-del-tiempo/prisa-del-conejo/mi-plan-para-esperar
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/un-lugar-seguro-para-la-semilla
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/dos-jardines-uno-tocado-y-uno-no
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-segunda-saga
+      micro_objective: Recordar, tal como se aprendió antes, cuándo sí conviene esperar y cómo armar un
+        plan de espera.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la prisa del conejo y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con el jardín protegido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-el-plan-de-espera-con-el-lugar-seguro
+      micro_objective: Combinar la idea de armar un plan de espera con la de elegir un lugar seguro para
+        proteger algo.
+      narrative_beat: Dr. Rho muestra cómo el plan de espera de la saga anterior se conecta con la elección
+        de un lugar seguro para una semilla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la idea de esperar con un plan y la de proteger
+        un jardín sin tocarlo.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: constancia-del-jardinero
+  icon: local_florist
+  title:
+    en-US: The Gardener's Constancy
+    es-MX: La Constancia del Jardinero
+    pt-BR: A Constância do Jardineiro
+  description:
+    en-US: Show up a little bit every week and discover what time adds to small, steady effort.
+    es-MX: Aparece un poco cada semana y descubre lo que el tiempo le suma a un esfuerzo pequeño y constante.
+    pt-BR: Apareça um pouco a cada semana e descubra o que o tempo soma a um esforço pequeno e constante.
+  topics:
+  - position: 1
+    slug: un-poco-cada-semana
+    title_es: Un poco cada semana
+    concept: Dedicar un poquito de tiempo cada semana a cuidar el jardín, en vez de mucho de golpe una
+      sola vez, es la base de la constancia.
+    learning_objective: Al final, el niño puede explicar por qué dedicar un poco cada semana ayuda más
+      que hacer mucho de golpe una sola vez.
+    key_vocabulary:
+    - semana
+    - poco
+    - constancia
+    - hábito
+    prior_knowledge: Ha aprendido a proteger su jardín sin tocarlo (aventura 1, saga 3).
+    parent_check: ¿{{name}} tiene algún hábito que hace un poquito cada semana, en vez de todo de golpe?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-calendario-de-dr-rho
+      micro_objective: Observar el hábito de Dr. Rho de dedicar un poco de tiempo cada semana a su jardín.
+      narrative_beat: 'Dr. Rho muestra a Dina su calendario del jardín: cada semana, sin falta, dedica
+        un ratito a revisarlo y cuidarlo un poco.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cada-semana-o-una-vez-al-mes
+      micro_objective: Comparar el resultado de dedicar un poco cada semana contra hacer mucho de golpe
+        una sola vez al mes.
+      narrative_beat: Zara Vex compara el jardín de alguien que dedica un poco cada semana con el de alguien
+        que solo va una vez al mes por mucho tiempo.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: por-que-suma-mas-el-poquito
+      micro_objective: Explicar por qué un poco de esfuerzo cada semana suma más, con el tiempo, que un
+        esfuerzo enorme aislado.
+      narrative_beat: Dr. Rho pregunta a Liruf por qué cree que un poquito cada semana suma más, con el
+        tiempo, que un esfuerzo enorme una sola vez.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-primer-habito-semanal
+      micro_objective: Aplicar el hábito de dedicar un poco de tiempo cada semana a algo que se quiere
+        cuidar.
+      narrative_beat: Dina arma su propio hábito semanal de cuidado para su jardín y lo pone en práctica
+        por primera vez.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: el-jardinero-que-olvida-un-dia
+    title_es: El jardinero que olvida un día
+    concept: Olvidar un día no arruina la constancia; lo importante es retomar el hábito, no ser perfecto
+      todos los días.
+    learning_objective: Al final, el niño puede explicar por qué olvidar un día no arruina un hábito de
+      constancia, siempre que se retome.
+    key_vocabulary:
+    - olvidar
+    - retomar
+    - perfecto
+    - hábito
+    prior_knowledge: Sabe que dedicar un poco cada semana ayuda más que hacer mucho de golpe (tema anterior).
+    parent_check: ¿{{name}} sabe que está bien retomar un hábito después de olvidarlo un día, sin sentir
+      que 'ya lo arruinó'?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: liruf-olvida-por-jugar
+      micro_objective: Reconocer la sensación de haber olvidado un día un hábito de constancia.
+      narrative_beat: Liruf olvida cuidar su jardín un día por estar jugando, y al día siguiente se siente
+        mal, pensando que arruinó todo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-registro-de-dr-rho-tambien-tiene-huecos
+      micro_objective: Observar que olvidar algunos días no impide que un hábito siga funcionando con
+        el tiempo.
+      narrative_beat: 'Dr. Rho muestra a Liruf su propio registro: hay algunos días que él también olvidó,
+        pero su jardín igual creció bien con el tiempo.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: retomar-en-vez-de-rendirse
+      micro_objective: Explicar por qué retomar un hábito después de olvidarlo es mejor que rendirse por
+        completo.
+      narrative_beat: Zara Vex anima a Liruf a retomar su cuidado al día siguiente, en vez de rendirse
+        por completo.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: retomar-sin-sentirme-mal
+      micro_objective: Aplicar la decisión de retomar un hábito, sin abandonarlo, después de haberlo olvidado
+        un día.
+      narrative_beat: Liruf retoma su cuidado del jardín al día siguiente de haberlo olvidado, sin sentirse
+        mal por eso.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: el-constante-y-el-que-va-a-veces
+    title_es: El constante y el que va a veces
+    concept: Comparar a alguien que cuida su jardín de forma constante con alguien que lo cuida solo a
+      veces muestra el efecto real de la constancia.
+    learning_objective: Al final, el niño puede comparar el resultado de cuidar algo de forma constante
+      contra hacerlo solo a veces.
+    key_vocabulary:
+    - constante
+    - a-veces
+    - comparar
+    - resultado
+    prior_knowledge: Sabe que olvidar un día no arruina un hábito, si se retoma (tema anterior).
+    parent_check: ¿{{name}} puede comparar, con un ejemplo, el resultado de hacer algo de forma constante
+      contra hacerlo solo a veces?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-jardin-de-dina-y-el-del-vecino
+      micro_objective: Observar la diferencia entre un jardín cuidado de forma constante y uno cuidado
+        solo a veces.
+      narrative_beat: 'Dr. Rho presenta dos jardines del bosque: el de Dina, cuidado cada semana sin falta,
+        y el de un vecino que solo lo visita cuando se acuerda.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-ambos-jardines-por-tamano
+      micro_objective: Ordenar el resultado de ambos jardines para notar el efecto de la constancia con
+        el tiempo.
+      narrative_beat: Zara Vex pide a Liruf ordenar ambos jardines de menor a mayor tamaño después de varios
+        meses.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: casi-el-mismo-cuidado-total
+      micro_objective: Explicar por qué la constancia, y no solo la cantidad total de cuidado, hace la
+        diferencia en el resultado.
+      narrative_beat: Dr. Rho pregunta a Dina por qué el jardín cuidado a veces creció mucho menos, aunque
+        en total recibió casi el mismo cuidado.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-segun-la-constancia
+      micro_objective: Aplicar la relación entre constancia y resultado para predecir el tamaño de un
+        jardín nuevo.
+      narrative_beat: Frente a dos jardines nuevos, Dina predice cuál será más grande según qué tan constante
+        fue su cuidado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 4
+    slug: mi-calendario-de-riego
+    title_es: Mi calendario de riego
+    concept: Un calendario simple, con un día fijo para cuidar el jardín cada semana, ayuda a sostener
+      la constancia sin depender solo de la memoria.
+    learning_objective: Al final, el niño puede usar un calendario simple para sostener un hábito de cuidado
+      constante.
+    key_vocabulary:
+    - calendario
+    - fijo
+    - recordar
+    - hábito
+    prior_knowledge: Sabe comparar el resultado de la constancia contra hacer algo solo a veces (tema
+      anterior).
+    parent_check: ¿{{name}} usa algún calendario o recordatorio simple para sostener un hábito?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-calendario-de-madera
+      micro_objective: Conocer un calendario simple como herramienta para sostener un hábito de cuidado
+        semanal.
+      narrative_beat: Dr. Rho le regala a Dina un calendario de madera con un espacio para marcar cada
+        semana que cuidó su jardín.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: armar-mi-propio-calendario
+      micro_objective: Armar un calendario simple con un día fijo para sostener un hábito de cuidado.
+      narrative_beat: Zara Vex ayuda a Liruf a armar su propio calendario, marcando el mismo día de cada
+        semana para cuidar su jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: marcar-varias-semanas-seguidas
+      micro_objective: Practicar el uso de un calendario simple para sostener un hábito durante varias
+        semanas.
+      narrative_beat: Liruf usa su calendario durante varias semanas seguidas y marca cada vez que cumple
+        su cuidado semanal.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: mi-calendario-lleno-de-marcas
+      micro_objective: Aplicar y explicar cómo un calendario simple ayudó a sostener un hábito de constancia.
+      narrative_beat: Al revisar su calendario lleno de marcas, Dina explica cómo esta herramienta la
+        ayudó a mantener la constancia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 5
+    slug: lo-que-el-tiempo-le-suma-a-mi-esfuerzo
+    title_es: Lo que el tiempo le suma a mi esfuerzo
+    concept: Con el tiempo, el mismo pequeño esfuerzo constante se convierte en un resultado mucho más
+      grande de lo que parecía al inicio.
+    learning_objective: Al final, el niño puede explicar cómo el tiempo suma valor a un esfuerzo pequeño
+      y constante.
+    key_vocabulary:
+    - tiempo
+    - esfuerzo
+    - sumar
+    - resultado
+    prior_knowledge: Usa un calendario simple para sostener su hábito de cuidado (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo un esfuerzo pequeño, repetido muchas veces, se vuelve
+      algo grande con el tiempo?
+    prerequisites:
+    - path: el-jardin-del-tiempo/prisa-del-conejo/el-caracol-que-le-gano-al-conejo
+      strength: soft
+      reason: 'La lección de la carrera del caracol muestra de forma narrativa la misma idea que aquí
+        se vuelve un hábito: la constancia paga más que la prisa.'
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: recordar-al-caracol-constante
+      micro_objective: Recordar cómo la constancia lenta puede sumar un resultado grande con el tiempo.
+      narrative_beat: Zara Vex le recuerda a Liruf la carrera del caracol constante para explicarle que
+        su pequeño esfuerzo semanal se está sumando, aunque no lo note cada día.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: el-jardin-al-inicio-y-al-final
+      micro_objective: Comparar el resultado inicial, intermedio y final de un esfuerzo pequeño y constante.
+      narrative_beat: Dr. Rho muestra el jardín de Dina al inicio, a la mitad y al final de la aventura,
+        y pide a Liruf notar cuánto sumó cada semana pequeña.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: que-se-pierde-al-abandonar-a-la-mitad
+      micro_objective: Explicar qué se pierde si se abandona un esfuerzo constante antes de que el tiempo
+        termine de sumar su efecto.
+      narrative_beat: Dr. Rho pregunta a Dina qué habría pasado si hubiera dejado de cuidar su jardín
+        a la mitad del camino.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: contar-cuanto-he-sumado
+      micro_objective: Aplicar el conteo de semanas constantes para reconocer cuánto ha sumado un esfuerzo
+        propio.
+      narrative_beat: Frente a su propio esfuerzo semanal, Dina calcula, contando semanas, cuánto ha sumado
+        su constancia hasta ahora.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: el-jardin-mas-viejo-del-pueblo
+    title_es: El jardín más viejo del pueblo
+    concept: El jardín más viejo del pueblo, cuidado por Dr. Rho durante muchos años, es la prueba viva
+      de lo que la constancia de largo plazo puede lograr.
+    learning_objective: Al final, el niño puede usar el ejemplo del jardín más viejo del pueblo para explicar
+      el poder de la constancia de largo plazo.
+    key_vocabulary:
+    - años
+    - prueba
+    - largo-plazo
+    - ejemplo
+    prior_knowledge: Sabe que el tiempo suma valor a un esfuerzo pequeño y constante (tema anterior).
+    parent_check: ¿{{name}} conoce algún ejemplo real (una persona, un árbol, un hábito) que muestre el
+      poder de la constancia de muchos años?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-jardin-mas-viejo
+      micro_objective: Conocer el jardín más viejo del pueblo como ejemplo vivo de constancia de largo
+        plazo.
+      narrative_beat: Dr. Rho lleva a Dina y Liruf al jardín más viejo del pueblo, que ha cuidado sin faltar
+        una sola semana durante muchísimos años.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuantas-semanas-seran
+      micro_objective: Relacionar la cantidad de semanas de cuidado constante con el tamaño final del
+        jardín más viejo del pueblo.
+      narrative_beat: Zara Vex pregunta a Liruf cuántas semanas cree que ha cuidado Dr. Rho ese jardín,
+        y compara la cifra con el tamaño del jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: tambien-empezo-siendo-pequeno
+      micro_objective: Reconocer que incluso el resultado más grande e impresionante comenzó igual de
+        pequeño que cualquier otro.
+      narrative_beat: Dr. Rho cuenta que, al principio, ese jardín también era una semilla pequeña, igual
+        que las de Dina y Liruf.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: imaginar-mi-jardin-en-el-futuro
+      micro_objective: Aplicar el ejemplo del jardín más viejo para imaginar el resultado futuro de la
+        propia constancia.
+      narrative_beat: Inspirada por el jardín más viejo, Dina imagina cómo se verá su propio jardín dentro
+        de muchos años si mantiene la constancia.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 7
+    slug: lo-que-quiero-que-crezca-este-ano
+    title_es: Lo que quiero que crezca este año
+    concept: Elegir algo concreto que se quiere ver crecido dentro de un año ayuda a enfocar la constancia
+      en una meta real.
+    learning_objective: Al final, el niño puede elegir una meta concreta de un año y explicar qué constancia
+      necesitará para lograrla.
+    key_vocabulary:
+    - meta
+    - año
+    - enfocar
+    - concreto
+    prior_knowledge: Conoce el ejemplo del jardín más viejo del pueblo (tema anterior).
+    parent_check: ¿{{name}} tiene una meta concreta que le gustaría ver 'crecida' dentro de un año?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: elegir-algo-para-un-ano-completo
+      micro_objective: Elegir, dentro de una historia, una meta concreta de un año.
+      narrative_beat: Dr. Rho invita a Dina a elegir algo concreto -un árbol, un ahorro, una habilidad-
+        que le gustaría ver crecido dentro de un año completo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuanta-constancia-semanal-necesito
+      micro_objective: Relacionar una meta de un año con la constancia semanal necesaria para lograrla.
+      narrative_beat: Zara Vex ayuda a Liruf a pensar qué constancia semanal necesitaría para lograr su
+        meta de un año.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-explicar-mi-meta
+      micro_objective: Explicar en voz alta una meta de un año junto con el plan de constancia para lograrla.
+      narrative_beat: Dina practica explicando en voz alta su meta de un año y el plan de constancia que
+        la sostendrá.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: compartir-mi-meta-de-un-ano
+      micro_objective: Aplicar con seguridad la elección de una meta de un año, comprometiéndose frente
+        a otros a sostenerla.
+      narrative_beat: Con su meta de un año ya elegida, Dina la comparte con Dr. Rho y Liruf, comprometiéndose
+        a sostenerla.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-promesa-de-constancia
+    title_es: Mi promesa de constancia
+    concept: Hacer una promesa personal de constancia -con un calendario, una meta y un plan- cierra el
+      aprendizaje de esta saga.
+    learning_objective: Al final, el niño puede formular una promesa personal de constancia que incluya
+      calendario, meta y plan.
+    key_vocabulary:
+    - promesa
+    - constancia
+    - calendario
+    - meta
+    prior_knowledge: Ha elegido una meta concreta de un año y ha aprendido a sostener la constancia (temas
+      anteriores).
+    parent_check: ¿{{name}} puede compartir su propia 'promesa de constancia' para algo que quiere lograr?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: reunidos-frente-al-jardin-mas-viejo
+      micro_objective: Reconocer el momento de formular una promesa personal de constancia frente a un
+        ejemplo inspirador.
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente al jardín más viejo del pueblo para hacer, cada
+        uno, su propia promesa de constancia.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: las-tres-partes-de-mi-promesa
+      micro_objective: 'Ordenar las tres partes necesarias de una promesa de constancia: meta, calendario
+        y plan.'
+      narrative_beat: 'Zara Vex ayuda a Dina a ordenar las tres partes de su promesa: la meta, el calendario,
+        y el plan de cuidado.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-mi-promesa-completa
+      micro_objective: Practicar decir en voz alta una promesa de constancia completa, con sus tres partes.
+      narrative_beat: Liruf practica decir en voz alta su promesa completa antes de comprometerse frente
+        a Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: sellar-mi-promesa
+      micro_objective: Aplicar con seguridad la promesa completa de constancia, comprometiéndose frente
+        a otros a sostenerla.
+      narrative_beat: Dina y Liruf sellan juntos su promesa de constancia frente a Dr. Rho, listos para
+        sostenerla durante todo un año.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con las semillas de recuerdo de La Constancia del Jardinero.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga La Constancia del Jardinero.
+    key_vocabulary:
+    - constancia
+    - hábito
+    - calendario
+    - meta
+    prior_knowledge: Ha completado los ocho temas de la saga La Constancia del Jardinero (aventura 1,
+      saga 4).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/constancia-del-jardinero/un-poco-cada-semana
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-jardinero-que-olvida-un-dia
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-constante-y-el-que-va-a-veces
+    - el-jardin-del-tiempo/constancia-del-jardinero/mi-calendario-de-riego
+    - el-jardin-del-tiempo/constancia-del-jardinero/lo-que-el-tiempo-le-suma-a-mi-esfuerzo
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-jardin-mas-viejo-del-pueblo
+    - el-jardin-del-tiempo/constancia-del-jardinero/lo-que-quiero-que-crezca-este-ano
+    - el-jardin-del-tiempo/constancia-del-jardinero/mi-promesa-de-constancia
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, por qué un poco cada semana ayuda más que mucho de golpe,
+        y por qué olvidar un día no arruina un hábito.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con las semillas de recuerdo de la constancia,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo la comparación entre cuidar algo constante y a veces,
+        y cómo un calendario ayuda a sostenerlo.
+      narrative_beat: Liruf saca del cofre las semillas mezcladas de esta saga y las ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, lo aprendido sobre lo que el tiempo suma
+        al esfuerzo y el ejemplo del jardín más viejo.
+      narrative_beat: Dr. Rho presenta una escena nueva del bosque y pregunta a Dina si recuerda, sin
+        repasar la lección, qué le suma el tiempo a un esfuerzo pequeño.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo elegir una meta de un año y formular
+        una promesa de constancia.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        semilla de recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en La Constancia del Jardinero con ideas de El Jardín que Nadie
+      Toca en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de La Constancia del Jardinero
+      con un concepto de El Jardín que Nadie Toca.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - constancia
+    prior_knowledge: Conoce La Constancia del Jardinero (saga 4) y las lecciones citadas de El Jardín
+      que Nadie Toca (saga 3).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mientras-mas-tiempo-mas-grande
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mi-jardin-protegido
+    - el-jardin-del-tiempo/constancia-del-jardinero/un-poco-cada-semana
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-jardin-mas-viejo-del-pueblo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-tercera-saga
+      micro_objective: Recordar, tal como se aprendió antes, la relación entre más tiempo y más tamaño
+        de un jardín protegido.
+      narrative_beat: Zara Vex trae un recuerdo de la saga del jardín protegido y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con la constancia.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-el-habito-semanal-con-la-proteccion
+      micro_objective: Combinar el hábito de cuidar un poco cada semana con la regla de no tocar un jardín
+        protegido.
+      narrative_beat: Dr. Rho muestra cómo el hábito de cuidar un poco cada semana se conecta con la regla
+        de no tocar un jardín protegido.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la constancia semanal y la protección de un
+        jardín sin tocar.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva del bosque usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina el ejemplo del jardín más viejo con la
+        idea de un jardín protegido para resolverla sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-del-jardin
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Garden's Grand Mission
+    es-MX: La Gran Misión del Jardín
+    pt-BR: A Grande Missão do Jardim
+  description:
+    en-US: A final quest that replays every lesson of the garden -- seeds, patience, protection, and constancy
+      -- one last time.
+    es-MX: Una misión final que repasa todas las lecciones del jardín -- semillas, paciencia, protección
+      y constancia -- una última vez.
+    pt-BR: Uma missão final que revisita todas as lições do jardim -- sementes, paciência, proteção e
+      constância -- uma última vez.
+  topics:
+  - position: 1
+    slug: la-gran-mision-de-la-semilla
+    kind: review_quest
+    title_es: La Gran Misión de la Semilla
+    concept: 'Dr. Rho anuncia la Gran Misión del jardín: un desafío final que reúne, sin enseñar nada
+      nuevo, todo lo aprendido sobre sembrar para el futuro.'
+    learning_objective: Al final, el niño puede recordar y aplicar cómo sembrar para el futuro, cómo crece
+      algo con el tiempo, y por qué una semilla no se toca.
+    key_vocabulary:
+    - sembrar
+    - crecer
+    - tiempo
+    - semilla
+    prior_knowledge: Ha completado las cuatro sagas de El Jardín del Tiempo.
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/que-es-sembrar-para-el-futuro
+    - el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+    - el-jardin-del-tiempo/semilla-que-espera/la-semilla-que-no-se-toca
+    - el-jardin-del-tiempo/semilla-que-espera/cuidar-la-semilla-cuando-nadie-mira
+    lessons:
+    - position: 1
+      slug: el-arbol-mas-grande-del-bosque
+      micro_objective: Recordar que sembrar hoy da algo grande en el futuro, y que las cosas crecen con
+        el tiempo, no con prisa.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente al árbol más grande del bosque y anuncia la
+        Gran Misión: recorrer una vez más todo lo aprendido en el jardín.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: por-que-no-se-desentierra
+      micro_objective: Recordar, sin ayuda nueva, por qué una semilla enterrada debe dejarse quieta para
+        crecer.
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, por qué
+        no conviene desenterrar una semilla antes de tiempo.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: cuidar-aunque-nadie-mire-otra-vez
+      micro_objective: Recordar por qué vale la pena cuidar algo aunque nadie esté mirando en ese momento.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda por qué cuidó su semilla incluso en los días
+        en que nadie la miraba.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: una-semilla-nueva-para-la-mision
+      micro_objective: Aplicar con seguridad todo lo recordado sobre sembrar para el futuro frente a un
+        reto nuevo.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, todo lo recordado sobre sembrar para el futuro
+        frente a una semilla nueva de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 2
+    slug: la-gran-mision-de-la-espera
+    kind: review_quest
+    title_es: La Gran Misión de la Espera
+    concept: Dina y Liruf recuerdan cómo elegir el camino largo, cómo usar un truco para esperar mejor,
+      y la lección del caracol constante.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo comparar caminos, usar un truco
+      para esperar, y aplicar la lección del caracol.
+    key_vocabulary:
+    - camino
+    - esperar
+    - truco
+    - constancia
+    prior_knowledge: Ha repasado la saga de la semilla que espera (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/prisa-del-conejo/dos-caminos-el-corto-y-el-largo
+    - el-jardin-del-tiempo/prisa-del-conejo/un-truco-para-esperar-mejor
+    - el-jardin-del-tiempo/prisa-del-conejo/el-caracol-que-le-gano-al-conejo
+    - el-jardin-del-tiempo/prisa-del-conejo/celebrar-cuando-la-espera-termina
+    lessons:
+    - position: 1
+      slug: el-cruce-vuelve-a-aparecer
+      micro_objective: Recordar cómo comparar un camino corto con recompensa pequeña contra uno largo
+        con recompensa más grande.
+      narrative_beat: Zara Vex presenta de nuevo el cruce del camino corto y el largo, y reta a Liruf a
+        elegir sin ayuda, recordando la lección.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-truco-de-siempre
+      micro_objective: Recordar y aplicar un truco propio para hacer que una espera se sienta más fácil.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda algún truco propio para hacer que esperar se
+        sienta más fácil.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: otra-carrera-del-caracol
+      micro_objective: Recordar por qué la constancia lenta puede ganarle a la velocidad que no dura.
+      narrative_beat: Zara Vex organiza una nueva carrera del caracol y el conejo, y pide a Liruf explicar
+        de memoria por qué gana el caracol.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: celebrar-sin-que-nadie-lo-recuerde
+      micro_objective: Aplicar con seguridad el celebrar una espera cumplida, sin que nadie lo recuerde.
+      narrative_beat: Al terminar una espera de la Gran Misión, Dina celebra sin que nadie se lo recuerde,
+        tal como aprendió en su saga.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: la-gran-mision-del-jardin-protegido
+    kind: review_quest
+    title_es: La Gran Misión del Jardín Protegido
+    concept: Dina recuerda qué hace seguro un lugar para una semilla, y por qué un jardín protegido crece
+      más que uno que se toca todo el tiempo.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo elegir un lugar seguro y por qué
+      proteger un jardín ayuda a que crezca más.
+    key_vocabulary:
+    - seguro
+    - proteger
+    - crecer
+    - jardín
+    prior_knowledge: Ha repasado la saga de la prisa del conejo (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/un-lugar-seguro-para-la-semilla
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/dos-jardines-uno-tocado-y-uno-no
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mientras-mas-tiempo-mas-grande
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mi-jardin-protegido
+    lessons:
+    - position: 1
+      slug: un-nuevo-rincon-del-bosque
+      micro_objective: Recordar las características que hacen seguro un lugar para dejar crecer una semilla.
+      narrative_beat: Dr. Rho lleva a Dina a un nuevo rincón del bosque y le pide recordar, sin ayuda,
+        qué hace seguro ese lugar para una semilla.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-dos-jardines-de-memoria
+      micro_objective: Recordar y ordenar de nuevo la comparación entre un jardín tocado y uno protegido.
+      narrative_beat: Zara Vex muestra de nuevo los dos jardines -tocado y protegido- y pide a Liruf ordenarlos
+        de memoria según su tamaño.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: mas-tiempo-otra-vez
+      micro_objective: Recordar la relación entre más tiempo protegido y más tamaño de un jardín.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda por qué mientras más tiempo pasa sin tocar un
+        jardín, más grande se vuelve.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: disenar-de-nuevo-mi-jardin
+      micro_objective: Aplicar con seguridad, sin ayuda, el diseño completo de un jardín protegido.
+      narrative_beat: Dina diseña, sin ayuda nueva, su propio jardín protegido para la Gran Misión, aplicando
+        todas las reglas aprendidas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 4
+    slug: la-gran-mision-de-la-constancia
+    kind: review_quest
+    title_es: La Gran Misión de la Constancia
+    concept: Dina recuerda por qué un poco cada semana suma más que mucho de golpe, y por qué olvidar
+      un día no arruina la constancia.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo sostener la constancia semanal
+      y qué le suma el tiempo a un esfuerzo pequeño.
+    key_vocabulary:
+    - constancia
+    - semana
+    - esfuerzo
+    - promesa
+    prior_knowledge: Ha repasado la saga del jardín protegido (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/constancia-del-jardinero/un-poco-cada-semana
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-jardinero-que-olvida-un-dia
+    - el-jardin-del-tiempo/constancia-del-jardinero/lo-que-el-tiempo-le-suma-a-mi-esfuerzo
+    - el-jardin-del-tiempo/constancia-del-jardinero/mi-promesa-de-constancia
+    lessons:
+    - position: 1
+      slug: un-poquito-cada-semana-otra-vez
+      micro_objective: Recordar por qué dedicar un poco cada semana ayuda más que hacer mucho de golpe
+        una sola vez.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda, sin ayuda, por qué un poco cada semana ayuda
+        más que hacer todo de golpe.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: olvidar-un-dia-no-arruina-nada
+      micro_objective: Recordar por qué olvidar un día no arruina un hábito, siempre que se retome.
+      narrative_beat: Zara Vex reta a Liruf a explicar de memoria por qué olvidar un día no arruina un
+        hábito de constancia.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: lo-que-suma-el-tiempo-otra-vez
+      micro_objective: Recordar cómo el tiempo suma valor a un esfuerzo pequeño y constante.
+      narrative_beat: Dr. Rho pide a Dina recordar, frente al jardín más viejo del pueblo, lo que el tiempo
+        le suma a un esfuerzo pequeño y constante.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: renovar-mi-promesa
+      micro_objective: Aplicar con seguridad, sin ayuda, una promesa completa de constancia.
+      narrative_beat: Dina renueva, sin ayuda, su promesa de constancia para la Gran Misión, con meta,
+        calendario y plan.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 5
+    slug: el-jardin-completo
+    kind: review_quest
+    title_es: El Jardín Completo
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas del jardín: sembrar, esperar,
+      proteger y ser constante.'
+    learning_objective: 'Al final, el niño puede aplicar en un solo recorrido las cuatro ideas del jardín:
+      sembrar, esperar, proteger y ser constante.'
+    key_vocabulary:
+    - sembrar
+    - esperar
+    - proteger
+    - constante
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/plantar-hoy-comer-manana
+    - el-jardin-del-tiempo/prisa-del-conejo/cuando-si-conviene-esperar
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/tocarlo-o-dejarlo-crecer
+    - el-jardin-del-tiempo/constancia-del-jardinero/el-constante-y-el-que-va-a-veces
+    lessons:
+    - position: 1
+      slug: las-cuatro-zonas-del-jardin
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas del jardín del tiempo: sembrar, esperar,
+        proteger y ser constante.'
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente a las cuatro zonas del jardín, una por cada lección
+        aprendida en la aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: un-aprendiz-nuevo-necesita-ayuda
+      micro_objective: Aplicar las cuatro áreas del jardín para ayudar a un personaje nuevo a entender
+        el bosque.
+      narrative_beat: Zara Vex presenta a un aprendiz nuevo del bosque y reta a Liruf a guiarlo por las
+        cuatro áreas del jardín.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-reto-de-las-cuatro-zonas
+      micro_objective: Aplicar con seguridad las cuatro áreas del jardín en un desafío único que las combina
+        todas.
+      narrative_beat: Dina resuelve un desafío del jardín que combina, de una sola vez, sembrar, esperar,
+        proteger y ser constante.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-recorrido-completo
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas del jardín aplicadas
+        a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro zonas del jardín, de principio
+        a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: el-jardin-del-tiempo-sigue-creciendo
+    kind: review_quest
+    title_es: El Jardín del Tiempo Sigue Creciendo
+    concept: El gran cierre de la aventura celebra todo lo aprendido en el jardín del tiempo y prepara
+      a Dina y Liruf para el siguiente destino, donde el ahorro también recibe un premio por esperar.
+    learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
+      en la Gran Misión del jardín del tiempo.
+    key_vocabulary:
+    - celebrar
+    - jardín
+    - tiempo
+    - futuro
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas del jardín (tema anterior).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/mi-primer-arbol-plantado
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mi-jardin-protegido
+    - el-jardin-del-tiempo/constancia-del-jardinero/mi-promesa-de-constancia
+    lessons:
+    - position: 1
+      slug: recordar-mi-primer-arbol
+      micro_objective: Recordar el primer árbol plantado y cómo se conecta con el jardín protegido y la
+        promesa de constancia.
+      narrative_beat: Dr. Rho compara el primer árbol plantado por Dina con el jardín protegido y la promesa
+        de constancia que sostuvo durante toda la aventura.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-cuatro-pasos-unidos
+      micro_objective: Recordar en conjunto los cuatro pasos del jardín del tiempo unidos en un solo resultado.
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: sembrar, esperar, proteger y ser
+        constante, ahora todos unidos en un solo árbol grande.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: el-desafio-final-del-jardin
+      micro_objective: Aplicar en un desafío final todo lo aprendido sobre sembrar, esperar, proteger
+        y ser constante.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo lo que el jardín
+        del tiempo le enseñó sobre sembrar, esperar y cuidar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: el-bosque-brilla-y-celebra
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión del
+        jardín del tiempo.
+      narrative_beat: Con el bosque brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf y Zara
+        Vex el cierre del jardín del tiempo, lista para descubrir qué premio guarda la aldea del valle
+        por guardar con paciencia.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

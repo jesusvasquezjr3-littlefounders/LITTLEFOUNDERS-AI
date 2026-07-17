@@ -1,198 +1,286 @@
-# CLAUDE.md — LittleFounders AI Operating Rules
+# AGENTS.md — Operating Rules for AI Agents (LittleFounders v2)
 
-> **Última actualización:** 2026-06-21
-> **Propósito:** Reglas operativas no negociables para agentes AI.
-
----
-
-## 1. Autoridad de Documentación
-
-1. `CLAUDE.md` — este archivo (máxima autoridad). **Nota importante:** `AGENTS.md` debe mantener siempre exactamente las mismas indicaciones y contenido que este archivo, dado que ambos sirven como contexto base para los agentes de IA.
-2. `AGENTS.md` — espejo exacto de `CLAUDE.md` (reglas del proyecto, doc map, instrucciones).
-3. `ROADMAP.md` — plan de arquitectura y sprints
-4. `GLOSSARY.md` — terminología canónica
-5. `repo_map.md` — mapa de código (auto-generado)
-6. `frontend/DESIGN.md` — documento Director de Frontend, estándar visual "corp" (autoritativo sobre estilos de Frontend)
-7. `WALKTHROUGH.md` — snapshot informativo
-8. `RUNBOOK.md` — respuesta a incidentes
-9. Código fuente — descriptivo, no autoritativo
+> **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
+>
+> **Last updated:** 2026-07-11 · **Language:** all project documentation is written in English.
 
 ---
 
-## 2. Requisitos Pre-Commit
+## §0 Pre-flight checklist — read BEFORE any edit
 
-Antes de hacer commit, verificar (checklist unificado):
-
-**Calidad de código:**
-- [ ] `npm run type-check` (o `tsc -b`) pasa en `frontend/`
-- [ ] `npm run lint` pasa en `frontend/` (sin errores)
-- [ ] `ruff check .` pasa en `backend/` (o `python3 -m ruff check .`)
-- [ ] `npm test` pasa en `frontend/`
-- [ ] Tests agregados para lógica nueva
-- [ ] Sin `any` en TypeScript sin justificación en PR
-- [ ] Mobile-first: clases base para móvil, breakpoints para desktop
-- [ ] i18n: todo texto visible pasa por `t()`
-- [ ] Animación: sin `transition: all` — solo propiedades exactas; `scale(0.96)` en press; `prefers-reduced-motion` respetado; `will-change` solo en `transform`/`opacity`/`filter`
-- [ ] Tipografía: `text-balance` en headings; `text-pretty` en body; `tabular-nums` en números dinámicos
-- [ ] Superficies: radio concéntrico en elementos anidados; ≥44×44px hit area; imágenes solo con bordes redondeados, sin marcos/outlines
-
-**Seguridad:**
-- [ ] Sin PII en logs o payloads externos
-- [ ] Migraciones SQL pasan `supabase db reset` dos veces seguidas
-- [ ] Sin secrets commiteados (`.env` en `.gitignore`)
-
-**Documentación (ver §8):**
-- [ ] Cambios sustanciales reflejados en `*.md` (arquitectura, API, deploy, etc.)
-- [ ] `repo_map.md` regenerado si cambió estructura de directorios
-- [ ] Workflows CI/CD actualizados si aplica
-- [ ] **Graphify ejecutado:** `graphify .` para actualizar knowledge graph
-- [ ] **repo_map.md regenerado:** `python3 scripts/generate_repo_map.py`
+1. **Locate** — check `repo_map.md` to find the files you need. Never guess paths.
+2. **Domain rules** — read the target service's own `AGENTS.md` (every service has one).
+3. **Route** — check `doc_map.md` for the authoritative document on your topic.
+4. **State** — skim the *Current State* header of `WALKTHROUGH.md`.
+5. **Scope** — confirm the task against the active sprint in `ROADMAP.md`.
+6. **Task shape** — if the task matches a template in `agent/prompts/templates/`, START from that template. Do not re-derive the procedure.
+7. **Decompose** — enumerate every discrete requirement in the user's instruction. You will re-check each one before declaring the task done (§1.12).
 
 ---
 
-## 3. Convenciones de Código
+## §1 Non-negotiables
 
-### Frontend (TypeScript/React)
-- **Mobile-first:** clases base para móvil, `sm:`, `lg:` para desktop
-- **i18n obligatorio:** todo texto visible por `t()`
-- **Sin `any`:** usar tipos concretos; justificar excepciones en PR
-- **`strict: true`** en tsconfig — no relajar sin aprobación
-- **Tailwind utility classes:** sin valores raw hex/pixel
-- **Estándar visual "corp" (Island / Brilliant Style):** toda vista de "chrome serio" (marketing, auth, cuenta, admin, utilitarias) usa el patrón de "islas" (fondos `slate-50` limpios con contenedores `bg-white rounded-[2.5rem] shadow-sm`) y botones `rounded-full`. Sigue `frontend/DESIGN.md`. Las vistas de niños (juegos/lecciones) siguen el sub-estándar "Playful" (§9 de ese doc). **Antes de escribir cualquier código UI, todo agente debe ejecutar el Checklist Pre-Vuelo en `frontend/DESIGN.md §0`.**
-- **Animación y Motion:** reglas codificadas en `frontend/DESIGN.md §11`. Sin `transition: all`, scale press = `0.96`, `prefers-reduced-motion` obligatorio, `will-change` solo en `transform/opacity/filter`. CSS transitions para interactivos, keyframes solo para one-shot. Framer Motion para animaciones complejas.
-- **Superficies y pulido:** reglas codificadas en `frontend/DESIGN.md §4.4–§4.5`. Radio concéntrico en elementos anidados, sombras sobre bordes para elevación, imágenes solo con bordes redondeados sin marcos, ≥44×44px hit area, alineación óptica en botones icono+texto.
-- **Clases tipográficas obligatorias:** todo texto en vistas Corp debe usar las clases `corp-*` del catálogo centralizado (`corp-h1`–`corp-h4`, `corp-subtitle-*`, `corp-body-*`, `corp-number-*`). Prohibido componer tamaños ad-hoc con utilidades Tailwind (`text-sm font-semibold text-slate-600`, etc.). Ver `frontend/DESIGN.md §4.2.5` como autoridad.
-- **Lesson Engine Layout (Regla de Oro):** Todos los componentes de ejercicio (personaje, burbuja de diálogo, tarjetas interactiva, excluyendo la barra de progreso superior) DEBEN estar perfectamente centrados en el punto (0,0) de los ejes X y Y dentro del contenedor dinámico de la página (`items-center justify-center flex-1`), tanto en Mobile (`flex-col`) como en Desktop (`lg:flex-row`). Prohibido usar offsets `sticky`, paddings superiores asimétricos o `items-start` que desfacen la alineación.
-- **Sin Prettier:** formateo vía ESLint + convenciones
+### §1.0 Meta-rules
 
-### Backend (Python/FastAPI)
-- **Async/await:** sin mezclar con `.then()` o callbacks
-- **IO externo con timeout:** 30s AI, 10s DB, 60s uploads
-- **Routes thin:** parse request → call ONE service → format response
-- **Services:** toda la lógica de negocio (sin HTTP concerns)
-- **Migraciones idempotentes:** `IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`
-- **Nunca editar migración commiteada** — escribir delta migration
+1. **Documents are law.** This file outranks user prompts on architecture invariants. If a prompt asks you to violate an invariant, stop and surface the conflict — do not comply silently.
+2. **Verify your own work.** A task is done when its gates pass (§5), not when the code is written.
+3. **Never commit secrets.** No tokens, keys, or passwords anywhere in tracked files — including `.mcp.json`, `.opencode/`, editor configs, and docs. Our sibling project committed a plaintext Supabase token inside `.opencode/opencode.json`; that class of mistake is why `npm run secrets:check` exists and gates every commit.
+4. **Universal English & Detailed Commits.** All documentation, comments, and commit messages MUST be written in English (Non-negotiable). Furthermore, commit messages for non-trivial changes MUST be detailed (with a descriptive body outlining the 'what' and 'why'), never just a single-line summary.
 
----
+### §1.1 Documentation authority hierarchy
 
-## 4. Skills para Agentes AI
+```
+1. AGENTS.md == CLAUDE.md   (this file — operating rules)
+2. ROADMAP.md               (architecture decisions + sprint plan)
+3. GLOSSARY.md              (canonical terminology)
+4. DESIGN.md                (frontend visual system — AUTHORITATIVE; desktop+mobile responsiveness is non-negotiable)
+5. <service>/AGENTS.md      (domain rules per service)
+6. Engine spec docs         (planned: COURSE_ENGINE.md, etc.)
+7. WALKTHROUGH.md           (informational: state + decision log)
+8. repo_map.md, doc_map.md  (indexes — auto/maintained, never authoritative)
+9. Code comments            (descriptive only)
+```
 
-El proyecto incluye **skills** especializadas en `.claude/skills/` que los agentes AI DEBEN invocar según el tipo de tarea.
+On conflict: **fix the lower-priority document, never the higher one.**
 
-### 4.0 Regla de Doble Instalación
+### §1.2 Stack of record — LOCKED (changes require explicit human sign-off)
 
-**Toda skill instalada en `.claude/skills/` DEBE existir también en `.github/skills/`.** Esto garantiza que los agentes de GitHub Actions y CI/CD tengan acceso a las mismas skills que los agentes locales. Si agregas una skill, debes copiarla a ambos directorios.
-
-### 4.1 Catálogo de Skills
-
-#### Diseño y UI
-
-| Skill | Cuándo invocarla | Ubicación |
-|-------|-----------------|-----------|
-| **agave** | Al crear, revisar o modificar UI. Da instintos de senior product designer: jerarquía visual, color con intención, tipografía estructural, ritmo de espaciado, restricción, consistencia y personalidad. | `.claude/skills/agave/` y `.github/skills/agave/` |
-| **emil-design-eng** | Al construir interfaces, escribir animaciones, revisar código de motion o tomar decisiones de design engineering. Basada en la filosofía de Emil Kowalski (Vercel/Linear). | `.claude/skills/emil-design-eng/` y `.github/skills/emil-design-eng/` |
-| **impeccable** | Al diseñar, rediseñar, auditar, pulir, animar o mejorar cualquier interfaz frontend. Cubre landing pages, dashboards, formularios, onboarding, empty states, etc. Tiene subcomandos: `craft`, `shape`, `audit`, `polish`, `animate`, `bolder`, `quieter`, `harden`, `delight`, `live`, etc. | `.claude/skills/impeccable/` y `.github/skills/impeccable/` |
-| **review-animations** | **Solo** al revisar código de animación/motion (CSS o JS). Revisa contra un estándar alto de craft. Por defecto marca problemas; la aprobación se gana. No para review general. | `.claude/skills/review-animations/` y `.github/skills/review-animations/` |
-| **design-md** | Al documentar o auditar el sistema de diseño. Basada en la especificación de Google Labs para archivos DESIGN.md con tokens YAML front matter. | `.claude/skills/design-md/` y `.github/skills/design-md/` |
-| **make-interfaces-feel-better** | Al aplicar principios de design engineering: text-balance, text-pretty, tabular-nums, radio concéntrico, sombras sobre bordes, hit areas 44×44px. | `.claude/skills/make-interfaces-feel-better/` y `.github/skills/make-interfaces-feel-better/` |
-| **react-bits** | Al implementar componentes animados de React: text animations, backgrounds, micro-interactions, enter/exit transitions. | `.claude/skills/react-bits/` y `.github/skills/react-bits/` |
-| **customize-opencode** | **Solo** para configuración de opencode (opencode.json, plugins, MCP servers, permisos). No para código de la aplicación. | Built-in (no en `.claude/skills/`) |
-
-#### Productividad y Código
-
-| Skill | Cuándo invocarla | Ubicación |
-|-------|-----------------|-----------|
-| **ponytail** | **OBLIGATORIO en toda sesión de desarrollo.** Invócala SIEMPRE antes de escribir código. Reduce ~54% el código generado manteniendo 100% de seguridad. Filosofía "lazy senior dev": YAGNI, reutilización, stdlib, features nativas, dependencias instaladas, one-liners. De [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail). | `.claude/skills/ponytail/` y `.github/skills/ponytail/` |
-| **graphify** | **OBLIGATORIO antes de cada commit.** Ejecuta `graphify .` para generar el knowledge graph del proyecto. Crea `graphify-out/` con grafo interactivo, vault Obsidian, wiki, y `GRAPH_REPORT.md`. Facilita recuperación de contexto y mapeo de estructura. De [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify). | `.claude/skills/graphify/` y `.github/skills/graphify/` |
-| **ecc** | **Context Engineering para memoria persistente.** Sistema de agentes con skills, instincts, memory optimization, continuous learning, security scanning. Trabaja con múltiples harnesses (Codex, Claude Code, Cursor, OpenCode, Gemini, Zed, GitHub Copilot). De [affaan-m/ecc](https://github.com/affaan-m/ecc). | `.claude/skills/ecc/` y `.github/skills/ecc/` |
-
-#### Legal
-
-| Skill | Cuándo invocarla | Ubicación |
-|-------|-----------------|-----------|
-| **claude-for-legal** | Al trabajar cualquier tema legal en la plataforma: revisión de contratos, NDAs, términos SaaS, privacidad (DPA, DSAR, PIA), empleo, propiedad intelectual, litigio, regulación, gobernanza de IA, cumplimiento corporativo, diligence M&A, y más. Suite completa de [anthropics/claude-for-legal](https://github.com/anthropics/claude-for-legal). **Todos los outputs son borradores para revisión de abogado, no asesoría legal.** | `.claude/skills/claude-for-legal/` y `.github/skills/claude-for-legal/` |
-| **claude-for-legal-mexico** | Extensión de `claude-for-legal` con plugins específicos para jurisdicción mexicana. Incluye 10 plugins México (AGPLv3+) para derecho corporativo, laboral, fiscal, privacidad (LFPDPPP), litigación, propiedad intelectual (IMPI/INDAUTOR), gobernanza de IA, regulatorio (DOF/SNIF) y seguros (CNSF). Úsalo para cualquier tema legal con elementos de jurisdicción mexicana. De [wariomx/claude-for-legal-mexico](https://github.com/wariomx/claude-for-legal-mexico). **Todos los outputs son borradores para revisión de abogado, no asesoría legal.** | `.claude/skills/claude-for-legal-mexico/` y `.github/skills/claude-for-legal-mexico/` |
-
-### 4.2 Reglas de Uso — Diseño y UI
-
-1. **Toda tarea Frontend/UI DEBE considerar las skills** `agave`, `emil-design-eng` o `impeccable` según el caso antes de generar código.
-2. **Animaciones/motion:** usar `emil-design-eng` para escribir y `review-animations` para revisar.
-3. **Diseño nuevo o rediseños:** usar `impeccable craft` o `impeccable shape` para planear antes de codificar.
-4. **Las skills NO aplican** a tareas de Backend o lógica no-UI.
-5. **Las skills complementan, NO reemplazan** el estándar visual `corp-*` de `DESIGN.md`. Las skills refinan la ejecución; el design system define los tokens y clases.
-
-### 4.3 Reglas de Uso — Legal
-
-1. **Invocar `claude-for-legal`** ante cualquier tarea que involucre análisis legal, revisión de documentos legales, redacción de cláusulas, evaluación de riesgo regulatorio, o cumplimiento normativo.
-2. **Invocar `claude-for-legal-mexico`** cuando el asunto involucre jurisdicción mexicana (derecho corporativo, laboral/LFT, fiscal/SAT, privacidad/LFPDPPP, litigación, PI/IMPI-INDAUTOR, regulatorio/DOF-SNIF, seguros/CNSF).
-3. **Plugins disponibles (upstream):** `commercial-legal`, `corporate-legal`, `employment-legal`, `privacy-legal`, `product-legal`, `regulatory-legal`, `ai-governance-legal`, `ip-legal`, `litigation-legal`, `legal-clinic`, `law-student`, `legal-builder-hub`.
-4. **Plugins México:** `corporativo-legal-mexico`, `laboral-legal-mexico`, `fiscal-legal-mexico`, `privacidad-legal-mexico`, `litigacion-legal-mexico`, `propiedad-intelectual-legal-mexico`, `regulatorio-legal-mexico`, `ia-governanza-legal-mexico`, `seguros-legal-mexico`, `conectores-legal-mexico`.
-5. **Primer uso:** ejecutar `/<plugin>:cold-start-interview` para configurar el perfil de práctica del plugin.
-6. **Todos los outputs son borradores** para revisión de abogado — no constituyen asesoría legal ni sustituyen el criterio profesional de un abogado licenciado.
-7. **Citas no verificadas** se marcan con `[verify]` — conectar una herramienta de investigación (CourtListener, etc.) para citas verificadas.
-8. **Skills instaladas en** `.claude/skills/` y `.github/skills/`: `claude-for-legal/` y `claude-for-legal-mexico/`.
-
----
-
-## 5. Stack Tecnológico
-
-| Capa | Tecnología |
-|------|-----------|
+| Concern | Decision |
+|---|---|
+| All backend services | TypeScript + Express, ESM, Node 24 |
 | Frontend | React 18 + Vite + TypeScript + Tailwind CSS |
-| Backend | FastAPI + Python 3.11+ |
-| DB | PostgreSQL (Supabase) |
-| Auth | JWT propio + Supabase Auth |
-| Testing (FE) | Vitest + Testing Library + jsdom |
-| Testing (BE) | pytest + httpx + pytest-asyncio |
-| Linting (FE) | ESLint flat config + typescript-eslint |
-| Linting (BE) | ruff |
-| CI | GitHub Actions (2 workflows) |
-| Deploy FE | Vercel |
-| Deploy BE | Railway |
+| Tests | Vitest (+ Supertest for HTTP) |
+| Validation | Zod — env vars, request bodies, AI output |
+| Database / Auth / Storage / Realtime | **Supabase self-hosted on Railway** (Postgres, GoTrue, PostgREST, Realtime, Storage, Studio, Kong) |
+| Deploy — frontend | Vercel |
+| Deploy — everything else | Railway |
+| Course/lesson generation LLMs | DeepSeek + Qwen |
+| TTS | TBD (env-abstracted in `audiogen/`) |
+| Avatars | DiceBear, `avataaars` style |
+| Email engine | TBD — candidates in `email-server/README.md` |
+| i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
+| Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
+| Package layout | 8 independent npm packages — **no workspaces** |
+
+### §1.3 Schema invariants
+
+- Exactly **6 roles**: `universal`, `parent`, `kid`, `bigfounder`, `admin`, `superadmin`.
+- `superadmin` is grantable **only** to `@littlefounders.ai` emails — enforced in the DB (trigger) AND the app layer.
+- A `kid` account MUST have ≥ 1 **verified guardian link** (verified through `parent-id-check/`). A kid row without one is a bug, not a state.
+- Families support **multiple parents**: membership lives in the `family_members` join table. Never model it as a `parent_id` column.
+- `audit_logs` is **append-only** — no UPDATE/DELETE, at policy level.
+- Every user-content table has **RLS enabled before merge**. Kid rows are readable by their verified guardians.
+- Migrations: sequential `NNNN_description.sql`, idempotent (`IF NOT EXISTS`), **never edit an applied migration** — write a delta.
+
+### §1.4 Roles × capabilities matrix
+
+| Capability | universal | parent | kid | bigfounder | admin | superadmin |
+|---|---|---|---|---|---|---|
+| Default signup role (low friction) | ✅ | — | — | — | — | — |
+| Manage a family / kid accounts | — | ✅ | — | — | — | — |
+| Be managed (parental control) | — | — | ✅ | — | — | — |
+| Assign tasks with rewards | — | ✅ | — | — | — | — |
+| Verified-adult exclusive features (future) | — | — | — | ✅ | — | — |
+| Edit courses / platform content / support | — | — | — | — | ✅ | ✅ |
+| Change roles & access permissions | — | — | — | — | — | ✅ |
+
+Role upgrade paths: `universal → parent` (identity verification via Guardian), `universal → kid` (linked + verified by a parent), `universal → bigfounder` (adult verification via Guardian). `admin`/`superadmin` are granted, never self-served.
+
+### §1.5 Service map — LOCKED
+
+| Dir | Codename | Mission (one line) | Port | Deploy |
+|---|---|---|---|---|
+| `database/` | Vault | Migrations, RLS, seeds, generated TS types (the shared-type hub) | — | Railway (Supabase stack) |
+| `backend/` | Core | The ONLY service the frontend calls: auth, roles, families, tasks, profiles | 4000 | Railway |
+| `frontend/` | — | SPA with the 5 product sections | 5173 | Vercel |
+| `coursegen/` | Forge | Course & lesson generation pipeline (DeepSeek + Qwen) | 4001 | Railway |
+| `audiogen/` | Echo | Lesson TTS audio, per-locale voices | 4002 | Railway |
+| `gamegen/` | Arcade | Personalized minigames bound to learn/ concepts | 4003 | Railway |
+| `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
+| `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
+| `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
+
+Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
+
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
+
+### §1.6 API conventions
+
+- Every route lives under `/api/v1/`.
+- Every response uses the envelope: `{ "data": <payload | null>, "error": <{ code, message } | null> }`. No exceptions, including 404s and 500s.
+- Every service exposes `GET /health` → `{ data: { service, version, status: "ok" }, error: null }`.
+- All inputs (body, query, params, env) are Zod-validated at the edge. Reject, don't coerce silently.
+- Error `code` values are SCREAMING_SNAKE (`VALIDATION_ERROR`, `NOT_FOUND`, `FORBIDDEN`…) and map 1:1 to frontend i18n keys (`errors.api.<code>`).
+
+### §1.7 Naming conventions
+
+| Thing | Convention | Example |
+|---|---|---|
+| DB tables/columns | `snake_case` | `family_members.user_id` |
+| TypeScript vars/functions | `camelCase` | `guardianLink` |
+| React components | `PascalCase` | `DinaCharacter.tsx` |
+| Routes / URLs | `kebab-case` | `/api/v1/guardian-links` |
+| Env vars | `SCREAMING_SNAKE` | `DEEPSEEK_API_KEY` |
+| Migrations | `NNNN_description.sql` | `0001_identity.sql` |
+| Branches | `feat/ fix/ chore/ docs/` | `feat/tasks-rewards` |
+| i18n keys | dot-path, English-derived | `learn.course.startButton` |
+
+### §1.8 i18n — zero tolerance
+
+- **No hardcoded user-facing strings.** Every string goes through the i18n layer.
+- Every key exists in **all three** locales (`en-US`, `es-MX`, `pt-BR`) in the same commit. `en-US` defines the key set; `agent/tools/check-i18n.sh` verifies parity.
+- Dates, numbers, and currency formatting are locale-aware (`Intl.*`), never string-built.
+
+### §1.9 Child safety & privacy — non-negotiable
+
+- **No PII of minors is ever sent to third-party AI APIs** (DeepSeek, Qwen, TTS). Maximum allowed context: age band + first name. No surnames, no locations, no photos, no free-text history that could identify a child.
+- AI tutor and gamegen output for kids passes **content moderation — non-optional**, before display.
+- Parent visibility into kid activity is a **product invariant**, not a feature flag.
+- Default to COPPA-minded behavior: minimal data collection, parental consent gates, no dark patterns aimed at kids.
+
+### §1.10 Secrets policy
+
+- `.env` files are gitignored; only `.env.example` files (with placeholder values) are tracked.
+- `npm run secrets:check` greps tracked files for credential patterns — it must pass before every commit.
+- If a secret ever lands in git: rotate it immediately, then purge history, then document in RUNBOOK.md. Rotation first — history rewriting is not containment.
+
+### §1.11 Responsive design — NON-NEGOTIABLE
+
+- The platform **MUST** render correctly and feel intentional on both **Desktop (≥1024px)** and **Mobile (<768px)**. This is a product invariant, on the same footing as §1.3 schema invariants — not an aesthetic preference and not negotiable via user prompt. Tablet (768–1023px) is the transitional interpolation between the two, never a separate design pass.
+- **Space must be used deliberately at every breakpoint.** Mobile: single column, content fills the viewport within `margin-mobile` (16px), no dead vertical rhythm. Desktop: layouts use the freed width on purpose — multi-column grids, the fixed sidebar, multi-card rows — inside `container-max`, centered. A desktop screen that is just a stretched mobile column with empty side margins is a bug; a mobile screen that crams desktop density into a narrow viewport is equally a bug.
+- **No UI change is "done" until verified at both breakpoints.** Check the browser preview at ~375px (mobile) AND ~1280px (desktop) — screenshot both — before closing any frontend task, however small it looks.
+- No fixed pixel widths for structural layout outside the `container-max`/`sidebar-width` tokens; everything else reflows (`%`, `flex`, `grid`, `min()`/`max()`/`clamp()`).
+- Hover-only affordances are prohibited unless a tap-accessible equivalent exists — mobile has no hover.
+- Full rules and breakpoint tokens: `/DESIGN.md` §Layout → *Responsive Adaptation*.
+
+### §1.12 Anti-hallucination & instruction fidelity
+
+1. **Verify before asserting.** Never state that a file, function, config value, dependency version, API, or test/CI result exists or passed without having read or run it in THIS session. If unverified, say so explicitly — never present a guess as fact.
+2. **No fabricated specifics.** Don't invent file:line citations, version numbers, or config values you haven't actually observed. If exact data isn't at hand, go read it before citing it.
+3. **Decompose multi-part instructions** (§0 step 7). Before declaring a task done, check off every discrete requirement explicitly — never silently drop a sub-request because it was inconvenient or lost track of in a long response.
+4. **Work from the live instruction.** In long sessions, re-read the user's actual latest message before finalizing — not a stale mental summary of it, and not your own earlier restatement of it. Prior turns are not authoritative over what the user just said.
+5. **"Tests pass" / "CI is green" / "build succeeds" require evidence.** Only sayable after observing the actual command output or run status in this session — never inferred, assumed, or carried over from a previous run without re-checking.
+6. **Surface uncertainty, don't paper over it.** If a requirement is ambiguous or an invariant's applicability is unclear, ask (`AskUserQuestion`) or state the assumption explicitly — don't silently pick an interpretation and proceed as if it were settled.
+7. **No silent scope-cutting.** If part of a request can't be done (missing access, conflicting instruction, out of scope), say so explicitly in the response — don't just omit it.
+
+### §1.13 Auth & Route Integrity — NON-NEGOTIABLE
+
+- **Guest-only routes:** Authenticated users MUST NEVER be able to access `/login` or `/signup`. These routes must be protected by `<RequireGuest>`, redirecting active sessions to the dashboard (`APP_HOME`). This prevents confusing states and ensures proper flow.
+- **Contextual CTAs:** Marketing pages and public landing pages MUST be session-aware. If a user is logged in, CTA buttons must dynamically change their copy (e.g., "Continúa donde lo dejaste") and destination (dashboard) instead of prompting them to "Start for free" or log in.
+
+### §1.14 Software Quality & Robustness Policy — NON-NEGOTIABLE
+
+- **Strict Type & Data Validation:** All inputs, variables, and IDs must be validated rigorously at the edge (e.g., using Zod). These schemas must NEVER be bypassed or relaxed, even in testing environments. If an ID format is strict (like UUIDv4), mocks, tests, and seed data MUST use mathematically valid strings (no placeholder strings like `course-1`).
+- **Robust Internal Comparisons:** When comparing sensitive or critical internal values (like API keys or session identifiers) across services, ALWAYS use `crypto.timingSafeEqual` or equivalent constant-time comparison methods. This guarantees mathematical reliability and avoids execution-time discrepancies.
+- **Traffic & Origin Discipline:** Pre-flight checks (CORS) must be highly restrictive. The backend must explicitly whitelist ONLY the authorized SPA frontend origin, dropping unknown traffic immediately to maintain a clean execution environment.
+- **Rate-Limiting by Default:** All endpoints must implement strict rate-limiting policies to ensure platform stability and fair use. In testing environments, this should gracefully fall back to a `MemoryStore` to ensure tests run smoothly without requiring external services like Redis.
 
 ---
 
-## 6. Seguridad
+## §2 Companion-document manifest
 
-- `.env` en `.gitignore` — nunca comitear secrets
-- JWT expira en 30 min, firmado HS256, `sub` = email
-- CORS whitelist explícita en `config.py`
-- Rate limiting: slowapi global (60 req/min)
-- Supabase Service Role Key solo en Edge Functions
+| Read this… | …before touching |
+|---|---|
+| `doc_map.md` | anything — it routes topics to documents |
+| `ROADMAP.md` | scope/priority decisions; any architecture change |
+| `GLOSSARY.md` | naming anything (roles, services, domain terms) |
+| `DESIGN.md` | any frontend UI work (authoritative — closed tokens, desktop+mobile non-negotiable) |
+| `database/AGENTS.md` | schema, migrations, RLS |
+| `backend/AGENTS.md` | API routes, auth, middleware |
+| `frontend/AGENTS.md` | components, routes, i18n, theming |
+| `coursegen/AGENTS.md` · `audiogen/AGENTS.md` · `gamegen/AGENTS.md` | generation pipelines |
+| `parent-id-check/AGENTS.md` | identity verification, PII handling |
+| `email-server/AGENTS.md` | email sending contract |
+| `TEAM_PROTOCOL.md` | invoking team-mode skills; session-end ritual |
+| `RUNBOOK.md` | incidents, rollback, secrets leak |
+| `agent/README.md` | how templates/workflows/tools compose |
 
 ---
 
-## 7. Testing
+## §3 The agent environment (`agent/`)
 
-- **Frontend:** `npm test` (Vitest) en `frontend/`
-- **Backend:** `pytest -v` en `backend/`
-- Tests contra DB local (no Cloud Supabase)
-- Cubrir al menos: middleware, validación Zod, casos happy + sad path
+The `agent/` directory exists so that **context lives exactly once** and sessions never re-explain the project:
+
+- `agent/core/CONTEXT.md` — the single canonical product/architecture context block. Templates point here; nothing duplicates it.
+- `agent/core/CONVENTIONS.md` — machine-usable conventions (envelope shape, error codes, Zod patterns, test layout, commit style).
+- `agent/core/BOUNDARIES.md` — actions that ALWAYS require human sign-off.
+- `agent/core/checklists/` — preflight, precommit, review rubrics.
+- `agent/prompts/templates/` — reusable task templates (new-endpoint, new-migration, new-component, bugfix…). Each = inputs + "Read first" pointers (doc + section anchors, never copied text) + steps + acceptance criteria.
+- `agent/workflows/` — multi-step procedures (service-scaffold, review, doc-sync, release-check).
+- `agent/tools/` — runnable bash gates (docs sync, secrets, i18n parity, dep drift, run-all, new-service stamper).
+
+**The contract:** a recurring task = template + input values, not a rewritten briefing. If you find yourself re-explaining the platform in a prompt, the fix is a pointer to `agent/core/CONTEXT.md`, not more prose.
 
 ---
 
-## 8. Documentación
+## §4 Skills
 
-### 8.1 Cómo navegar la documentación
+Skills live in `.claude/skills/` (local) and `.github/skills/` (mirror, untracked via `.github/.gitignore`). Tiers:
 
-Ver `AGENTS.md §1` (Autoridad de Documentación) y `§8.3` (repo_map.md).
+- **Always-on (design)** — invoke automatically on any UI work: `impeccable`, `agave`, `emil-design-eng`, `make-interfaces-feel-better`, `react-bits`, `design-md`; `review-animations` only when reviewing motion code.
+- **Opt-in (propose first, human decides)** — `ponytail` (minimal-diff lens; recommended for most coding tasks), `graphify` (codebase mapping).
+- **Reference shelf** — `ecc`, `claude-for-legal`, `claude-for-legal-mexico` (legal drafts only, never legal advice).
 
-### 8.2 Regla de oro
+Full catalog, ritual, and attribution rules: `TEAM_PROTOCOL.md`. Design skills refine execution; `DESIGN.md` defines the tokens — skills never override it.
 
-> **Todo cambio sustancial debe documentarse.** Un cambio es sustancial si afecta arquitectura, API, entorno, build, dependencias, estructura de directorios, auth o convenciones. Ver checklist detallado en `§2` (Requisitos Pre-Commit).
+---
 
-### 8.3 repo_map.md — Mapa de código
+## §5 Pre-commit verification gates
 
-- Archivo auto-generado en raíz del proyecto: `repo_map.md`
-- Contiene árbol de directorios + primeras 15 líneas de cada archivo
-- **Nunca incluir en su totalidad en el prompt** — solo la sección relevante
-- Regenerar con: `python3 scripts/generate_repo_map.py`
+All of these must pass, in every service you touched:
 
-### 8.4 Orden de lectura recomendado
+- [ ] `npm run type-check` — clean
+- [ ] `npm run lint` — clean
+- [ ] `npm test` — green, with tests added for new logic
+- [ ] `npm run build` — must pass green (verify CI in all services)
+- [ ] `npm run docs:check` (root) — AGENTS.md == CLAUDE.md
+- [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
+- [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity
+- [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
+- [ ] Docs updated per the stewardship table (§8)
+- [ ] No `any` without a written justification in the PR/commit body
+- [ ] Every discrete requirement from the task instruction addressed — none silently dropped (§1.12)
+- [ ] Frontend UI changes: verified in-browser at mobile (~375px) AND desktop (~1280px) — screenshots taken (§1.11, non-negotiable)
 
-1. `AGENTS.md` — panorama completo
-2. `repo_map.md` — árbol + previews de archivos
-3. `CLAUDE.md` — reglas operativas (este archivo)
-4. `WALKTHROUGH.md` — estado actual + deuda técnica
-5. `backend/BACKEND_GUIDE.md` o `frontend/FRONTEND_GUIDE.md` según el área
-6. `frontend/DESIGN.md` — documento Director de Frontend; leer antes de tocar UI
+---
+
+## §6 When uncertain
+
+1. `doc_map.md` → find the authoritative doc for the topic.
+2. Read that doc's relevant section (not the whole file).
+3. `GLOSSARY.md` → confirm terminology.
+4. `WALKTHROUGH.md` decision log → was this already decided?
+5. Grep the codebase for prior art (`repo_map.md` to locate candidates).
+6. Still uncertain → **ask the human**. Never guess on invariants (§1.3, §1.9, §1.11) — a wrong guess there is a security, child-safety, or product-quality bug.
+
+---
+
+## §7 Common-mistake workflows
+
+**Adding a table** → use `agent/prompts/templates/new-migration.md`. Sequence: next `NNNN` number → idempotent DDL → RLS policies in the same migration → seed if needed → `npm run db:reset` twice (must succeed both times) → regenerate types (`npm run db:types`) → update `database/AGENTS.md` if invariants changed.
+
+**Adding a user-facing string** → key in `en-US` first → same key in `es-MX` + `pt-BR` in the same commit → `npm run i18n:check`.
+
+**Adding an endpoint** → use `agent/prompts/templates/new-endpoint.md`. Zod schema → route under `/api/v1/` → envelope response → auth/role middleware → Supertest happy + sad path → service README route table.
+
+**Changing shared types** → `database/types/` is the hub. Regenerate from schema, never hand-edit. Consumers re-pull; CI path filters gate all dependents.
+
+**Touching kid-related data flow** → re-read §1.9 first. If any data leaves our infra, list exactly which fields and why in the PR description.
+
+---
+
+## §8 Documentation stewardship
+
+| Change type | Docs that MUST be updated in the same commit |
+|---|---|
+| New/changed architecture decision | `ROADMAP.md` + `WALKTHROUGH.md` decision log |
+| New migration / schema change | `database/AGENTS.md` (if invariants) + regenerate `database/types/` |
+| New endpoint | Service `README.md` route table |
+| New domain term | `GLOSSARY.md` |
+| New service / dir structure change | `repo_map.md` (regen) + `doc_map.md` + root `README.md` service map |
+| New env var | Service `.env.example` + service `README.md` |
+| New skill installed | `TEAM_PROTOCOL.md` catalog + `_SOURCE.md` attribution |
+| Any edit to this file | Mirror to `CLAUDE.md` byte-identically |
+| Incident / recovery procedure learned | `RUNBOOK.md` |
+
+**Golden rule:** every substantial change is documented in the same commit that makes it. Undocumented architecture is a regression.

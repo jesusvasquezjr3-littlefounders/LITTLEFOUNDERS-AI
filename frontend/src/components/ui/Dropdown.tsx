@@ -1,0 +1,115 @@
+import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — Dropdown: our own listbox, never a native
+ * <select>/browser-default picker. Pill trigger + frosted glass panel.
+ */
+
+export interface DropdownOption<T extends string> {
+  value: T;
+  label: string;
+  prefix?: ReactNode; // e.g. a flag emoji
+}
+
+interface DropdownProps<T extends string> {
+  value: T;
+  options: DropdownOption<T>[];
+  onChange: (value: T) => void;
+  ariaLabel: string;
+  className?: string;
+  /** Trigger shows only the prefix (e.g. a flag) — full label stays in the open panel. */
+  compact?: boolean;
+  /** Controls if the dropdown opens downwards (default) or upwards */
+  placement?: 'top' | 'bottom';
+  /** Controls horizontal alignment of the panel relative to the trigger. Defaults to right. */
+  align?: 'left' | 'right';
+}
+
+export function Dropdown<T extends string>({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+  className,
+  compact = false,
+  placement = 'bottom',
+  align = 'right',
+}: DropdownProps<T>) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const selected = options.find((o) => o.value === value) ?? options[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div ref={rootRef} className={cn('relative', className)}>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={selected ? `${ariaLabel}: ${selected.label}` : ariaLabel}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          'lf-label motion-safe-press flex items-center rounded-full bg-surface-sunken text-content transition-all duration-150 hover:bg-outline/60 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+          compact ? 'h-11 px-3 gap-1' : 'min-h-11 px-4 py-2 gap-1.5',
+        )}
+      >
+        {selected?.prefix}
+        {!compact && <span>{selected?.label}</span>}
+        <Icon name="expand_more" className={cn('text-[16px] transition-all', open && 'rotate-180')} />
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          aria-label={ariaLabel}
+          className={cn(
+            'lf-pop lf-glass absolute z-50 min-w-full max-h-60 overflow-y-auto rounded-md py-1 shadow-pop',
+            placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
+            align === 'left' ? 'left-0' : 'right-0'
+          )}
+        >
+          {options.map((option) => (
+            <li key={option.value} role="presentation">
+              <button
+                type="button"
+                role="option"
+                aria-selected={option.value === value}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                className={cn(
+                  'lf-label flex min-h-11 w-full items-center gap-2 whitespace-nowrap px-4 py-2 text-left transition-colors',
+                  option.value === value
+                    ? 'bg-primary-soft text-primary'
+                    : 'text-content hover:bg-surface-sunken',
+                )}
+              >
+                {option.prefix}
+                {option.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,263 @@
+schema_version: 1
+
+# Canonical numeric ground truth for the investing course (COURSE_ENGINE.md
+# §3). Every number Forge puts in a money exercise must either come from
+# here or be pure arithmetic the deterministic gate can re-verify.
+# `verified: true` = safe to state as fact (denominations, calendar math, OR
+# an internally-consistent pedagogical example whose arithmetic is 100%
+# re-derivable — financial-education/facts.yaml already established this
+# precedent, e.g. its `math.savings_goal_ceiling_tier1`: "Tope pedagógico,
+# no un hecho externo"). `verified: false` = a REFERENCE value for exercise
+# flavor only; `enforce: false` means the gate must NOT treat it as a
+# hard-pinned constant.
+#
+# NEVER-INVENTED, doubly strict for this course (COURSE_ENGINE.md §3.1b —
+# tier3 introduces inversión/riesgo, simulations only): NO real market
+# returns, NO real instrument prices, NO index/fund performance numbers, NO
+# regulatory numbers (interest-rate benchmarks, tax brackets, minimum ages
+# for financial products) anywhere below. Every interest/growth example is a
+# fixed, clearly-labeled DIDACTIC number chosen for clean mental arithmetic
+# (10% because it divides by 10), never a rate that resembles a real
+# financial product's actual return.
+
+facts:
+
+  # ---- MXN denominations (Banxico, currently circulating) — copied from
+  # financial-education/facts.yaml; this course's own facts.yaml must carry
+  # its own copy because fact_refs resolve per-course-directory (loader.ts
+  # only ever loads one course's facts.yaml at a time). ----
+  mxn.denominations.coins:
+    value: [0.5, 1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación"
+    verified: true
+    notes: "Banxico; $20 existe como moneda Y billete — evitar ambigüedad usando 'moneda de $20' vs 'billete de $20' explícitamente en el prompt."
+
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200, 500, 1000]
+    unit: MXN
+    label_es: "Billetes de México en circulación"
+    verified: true
+    notes: "Banxico; familia G de billetes vigente."
+
+  usd.denominations.coins:
+    value: [0.01, 0.05, 0.10, 0.25]
+    unit: USD
+    label_es: "Monedas de Estados Unidos (penny, nickel, dime, quarter)"
+    verified: true
+
+  usd.denominations.bills:
+    value: [1, 5, 10, 20, 50, 100]
+    unit: USD
+    label_es: "Billetes de Estados Unidos"
+    verified: true
+
+  brl.denominations.coins:
+    value: [0.05, 0.10, 0.25, 0.50, 1]
+    unit: BRL
+    label_es: "Moedas do Brasil"
+    verified: true
+
+  brl.denominations.bills:
+    value: [2, 5, 10, 20, 50, 100, 200]
+    unit: BRL
+    label_es: "Notas do Brasil"
+    verified: true
+
+  # ---- Calendar / counting anchors (goal + growth-over-time arithmetic) ----
+  calendar.days_per_week:
+    value: 7
+    unit: days
+    label_es: "Días en una semana"
+    verified: true
+
+  calendar.weeks_per_month_approx:
+    value: 4
+    unit: weeks
+    label_es: "Semanas por mes (aproximado, para cálculos simples de ahorro/metas)"
+    verified: true
+    notes: "Aproximación deliberada (4, no 4.33), igual que financial-education — mantiene la aritmética infantil en números enteros."
+
+  calendar.months_per_year:
+    value: 12
+    unit: months
+    label_es: "Meses en un año"
+    verified: true
+
+  calendar.years_for_long_term_goal_example:
+    value: [1, 2, 3]
+    unit: years
+    label_es: "Horizontes de tiempo usados en los ejemplos de metas de largo plazo y crecimiento (La Ciudad de las Metas)"
+    verified: true
+    notes: "Elegidos para que el ejemplo de interés compuesto verificable (100->110->121->133.1) tenga un punto de comparación año por año."
+
+  # ---- Simple/compound growth — FIXED DIDACTIC EXAMPLES, never a real rate.
+  # Every number below is pure, re-derivable arithmetic (COURSE_ENGINE.md §4
+  # gate 3: "every number... re-computes"). 10% chosen because it divides
+  # cleanly by 10 for 8-12-year-old mental math — it is NOT modeled on any
+  # real savings-account, fund, or investment product's actual rate. ----
+  money.example_growth_rate_pct:
+    value: 10
+    unit: percent
+    label_es: "Porcentaje de premio anual usado SOLO en los ejemplos didácticos de esta aventura (no es la tasa de ningún banco o producto real)"
+    verified: true
+    notes: "Elegido por facilidad de cálculo mental (10% = dividir entre 10). Reutilizar este mismo número en cualquier ejercicio nuevo de interés simple/compuesto para que el ejemplo siga siendo re-verificable con la misma aritmética."
+
+  money.simple_interest_100_year1:
+    value: [100, 10, 110]
+    unit: MXN
+    label_es: "Ejemplo verificable de interés simple: 100 guardados + 10 de premio anual (10%) = 110 al cabo de un año"
+    verified: true
+    notes: "principal=100, premio=10, total=110. Aritmética re-verificable: 100 + (100*0.10) = 110. Usado en La Aldea del Interés (aventura 2, tier2) — 'el banco te da un premio por guardar', nunca el término 'interés compuesto'."
+
+  money.compound_growth_100_3years:
+    value: [100, 110, 121, 133.1]
+    unit: MXN
+    label_es: "Ejemplo verificable de crecimiento compuesto: 100 -> 110 -> 121 -> 133.1 dejando el premio adentro cada año (10% anual, 3 años)"
+    verified: true
+    notes: "Aritmética re-verificable paso a paso: 100*1.10=110; 110*1.10=121; 121*1.10=133.1. Usado en El Bosque del Interés Compuesto (aventura 6, tier3, sibling-authored) y referenciado como anticipo visual en La Ciudad de las Metas (aventura 4). Nunca se nombra 'interés compuesto' antes de tier3."
+
+  money.growth_doubling_example:
+    value: [10, 20, 40, 80]
+    unit: MXN
+    label_es: "Ejemplo visual de una regla de crecimiento por duplicación (cada paso dobla el anterior) — patrón puramente aritmético, no una tasa real"
+    verified: true
+    notes: "10->20 (+10), 20->40 (+20), 40->80 (+40): cada incremento es más grande que el anterior aunque el 'paso' (doblar) sea el mismo — enseña de forma visual que el crecimiento se acelera con el tiempo, sin usar la palabra 'exponencial'."
+
+  money.small_growth_example_20_to_24:
+    value: [20, 2, 22]
+    unit: MXN
+    label_es: "Ejemplo pequeño verificable de interés simple para números iniciales del jardín/aldea: 20 guardados + 2 de premio (10%) = 22"
+    verified: true
+    notes: "Mismo 10% que money.example_growth_rate_pct pero con un principal menor, para las primeras lecciones de interest_peek antes de subir a 100."
+
+  # ---- Risk/reward — QUALITATIVE pairs only (COURSE_ENGINE.md §3.1b: no
+  # numeric risk/return figures for any real instrument, ever). ----
+  risk.reward_tradeoff_pairs:
+    value:
+      - "más premio posible casi siempre viene con más riesgo de perder"
+      - "menos riesgo casi siempre viene con un premio más modesto pero más seguro"
+    unit: n/a
+    label_es: "Par cualitativo riesgo-recompensa enseñado de forma conceptual (sin números de mercado)"
+    verified: false
+    enforce: false
+    notes: "Relación general enseñada como intuición, nunca como una fórmula o una tasa específica de ningún producto real. Base de El Archipiélago de los Riesgos (aventura 3)."
+
+  risk.diversification_metaphor:
+    value: "no pongas todas tus monedas en una sola canoa"
+    unit: n/a
+    label_es: "Metáfora concreta pre-formal de diversificación, usada antes de que 'diversificar' sea una palabra permitida (tier3+)"
+    verified: false
+    enforce: false
+    notes: "Metáfora narrativa, no un dato numérico — ancla el concepto de 'no todo en un solo lugar' de forma visual y concreta para tier2."
+
+  # ---- Kid-world reference prices (MXN) — APPROXIMATE, for exercise flavor,
+  # copied/extended from financial-education/facts.yaml where reused. ----
+  mxn.reference_prices.paleta:
+    value: 15
+    range: [10, 20]
+    unit: MXN
+    label_es: "Paleta de hielo (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.paleta_de_hace_algunos_anos:
+    value: 8
+    range: [5, 12]
+    unit: MXN
+    label_es: "Precio ilustrativo de una paleta 'hace algunos años', usado SOLO para mostrar de forma narrativa que los precios suben con el tiempo"
+    verified: false
+    enforce: false
+    notes: "Comparación puramente narrativa para el concepto concreto de inflación ('las cosas suben de precio') en La Ciudad de las Metas — NO es un dato real de inflación medida ni de ningún año específico."
+
+  mxn.reference_prices.juguete_pequeno:
+    value: 100
+    range: [80, 150]
+    unit: MXN
+    label_es: "Juguete pequeño (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.libro_infantil:
+    value: 120
+    range: [90, 180]
+    unit: MXN
+    label_es: "Libro infantil ilustrado (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.bicicleta_infantil:
+    value: 800
+    range: [600, 1200]
+    unit: MXN
+    label_es: "Bicicleta infantil (precio de referencia aproximado, usada como meta grande de largo plazo en La Ciudad de las Metas)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.entrada_cine_infantil:
+    value: 70
+    range: [50, 90]
+    unit: MXN
+    label_es: "Entrada de cine para niño (precio de referencia aproximado)"
+    verified: false
+    enforce: false
+
+  # ---- Savings/goal arithmetic anchors ----
+  math.savings_goal_ceiling_tier2:
+    value: 200
+    unit: MXN
+    label_es: "Meta de ahorro máxima usada en savings_goal/interest_peek durante La Aldea del Interés (aventura 2, tier2)"
+    verified: true
+    notes: "Tope pedagógico, no un hecho externo. Elegido para que goal/weekly_options produzca semanas enteras pequeñas con weekly_options de {10,15,20,25,30}."
+
+  math.savings_weekly_options_tier2:
+    value: [10, 15, 20, 25, 30]
+    unit: MXN
+    label_es: "Montos semanales de ahorro ofrecidos en savings_goal durante La Aldea del Interés (aventura 2)"
+    verified: true
+
+  math.savings_goal_ceiling_tier3:
+    value: 500
+    unit: MXN
+    label_es: "Meta de ahorro máxima usada en savings_goal durante La Ciudad de las Metas (aventura 4, tier3)"
+    verified: true
+    notes: "Tope pedagógico mayor que tier2 — metas de mediano plazo con montos semanales más grandes, apropiado para 10-12 años."
+
+  math.savings_weekly_options_tier3:
+    value: [20, 30, 40, 50, 75]
+    unit: MXN
+    label_es: "Montos semanales de ahorro ofrecidos en savings_goal durante La Ciudad de las Metas (aventura 4)"
+    verified: true
+
+  math.max_single_coin_count_tier2:
+    value: 100
+    unit: MXN
+    label_es: "Monto máximo objetivo en ejercicios coin_count/make_change de esta aventura tier2 (adventures 1-2)"
+    verified: true
+    notes: "Tope pedagógico — más alto que financial-education tier1 porque este curso asume dominio previo del conteo de monedas."
+
+  math.risk_choice_amounts_tier2:
+    value: [10, 20, 30]
+    unit: MXN
+    label_es: "Montos pequeños usados en decisiones cualitativas de riesgo (El Archipiélago de los Riesgos) — nunca implican una probabilidad numérica real"
+    verified: true
+    notes: "Usados solo para comparar 'canastas' de decisión de forma concreta, nunca como una probabilidad o tasa de retorno calculada."
+
+  # ---- Character canon anchors (narrative_beat authoring, not money math;
+  # copied from financial-education/facts.yaml for parity). ----
+  characters.canon_ids:
+    value: [dina, liruf, rho, zara]
+    unit: n/a
+    label_es: "IDs canónicos de personajes (LESSON_ENGINE.md §9) — únicos narradores permitidos"
+    verified: true
+
+  characters.roles:
+    value:
+      dina: mentora
+      liruf: juguetón
+      rho: sabio detective
+      zara: estratega
+    unit: n/a
+    label_es: "Rol narrativo de cada personaje. Aquí: Rho es el sabio del tiempo, Dina la mentora de metas, Zara la estratega de riesgo, Liruf el impaciente."
+    verified: true
+    notes: "Rho brilla como el sabio del tiempo (aventuras 1-2), Dina como mentora de metas (aventura 4), Zara como estratega de riesgo (aventura 3), Liruf como el impaciente que aprende paciencia a lo largo de todo el curso."

@@ -1,0 +1,23 @@
+{
+  "app": {
+    "name": "LittleFounders",
+    "tagline": "Learn, play, and build your future"
+  },
+  "theme": {
+    "toggle": "Theme",
+    "auto": "Match system",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "label": "Language",
+    "en-US": "English",
+    "es-MX": "Spanish",
+    "pt-BR": "Portuguese"
+  },
+  "characters": {
+    "liruf": {
+      "default_greeting": "Hi! I'm Liruf!"
+    }
+  }
+}

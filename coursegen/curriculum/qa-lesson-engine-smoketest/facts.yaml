@@ -1,0 +1,42 @@
+schema_version: 1
+facts:
+  mxn.denominations.coins:
+    value: [1, 2, 5, 10, 20]
+    unit: MXN
+    label_es: "Monedas de México en circulación (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas — no un curso real."
+  mxn.denominations.bills:
+    value: [20, 50, 100, 200]
+    unit: MXN
+    label_es: "Billetes de México (subconjunto QA)"
+    verified: true
+    notes: "Subconjunto reducido para pruebas."
+  qa.reference_price.toy:
+    value: 80
+    unit: MXN
+    label_es: "Precio de referencia de un juguete pequeño (aproximado)"
+    verified: false
+    enforce: false
+    notes: "Solo da contexto narrativo a lecciones de ejemplo — no es un precio verificado."
+  qa.reference_price.snack:
+    value: 15
+    unit: MXN
+    label_es: "Precio de referencia de una golosina (aproximado)"
+    verified: false
+    enforce: false
+    notes: "Contexto narrativo únicamente."
+  qa.reference_price.guitar:
+    value: 80
+    unit: MXN
+    label_es: "Precio de la guitarra de juguete que Liruf quiere (meta del curso)"
+    verified: false
+    enforce: false
+    notes: "Meta narrativa del mini-curso del puesto de limonada."
+  qa.reference_price.cup:
+    value: 5
+    unit: MXN
+    label_es: "Precio de un vaso de limonada en el puesto de Liruf"
+    verified: false
+    enforce: false
+    notes: "Precio narrativo central del mini-curso."

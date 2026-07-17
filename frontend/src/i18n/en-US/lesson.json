@@ -1,0 +1,225 @@
+{
+  "check": "Check",
+  "progress": "Lesson progress",
+  "checking": "Checking…",
+  "continue": "Continue",
+  "retry": "Try again",
+  "hint": "Hint",
+  "exit": "Exit lesson",
+  "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
+  "gradeError": "We couldn't check your answer right now. Give it another try!",
+  "chips": {
+    "hearts_one": "{{count}} heart left",
+    "hearts_other": "{{count}} hearts left"
+  },
+  "intro": {
+    "start": "Start lesson",
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes",
+    "exercises_one": "{{count}} challenge",
+    "exercises_other": "{{count}} challenges"
+  },
+  "feedback": {
+    "perfect": {
+      "v1": "Perfect!",
+      "v2": "Wow, flawless!",
+      "v3": "Nailed it!"
+    },
+    "great": {
+      "v1": "Great job!",
+      "v2": "You got it!",
+      "v3": "Well done!"
+    },
+    "almost": {
+      "v1": "So close!",
+      "v2": "Almost there!",
+      "v3": "Good thinking — one more push!"
+    },
+    "tryAgain": {
+      "v1": "Let's think it through!",
+      "v2": "Mistakes help us learn!",
+      "v3": "New clue unlocked — try again!"
+    }
+  },
+  "results": {
+    "passedTitle": "Lesson complete!",
+    "failedTitle": "Good effort!",
+    "score": "Score: {{score}} out of 100",
+    "xp": "XP earned",
+    "bestStreak": "Best streak",
+    "passedBody": "You're one step closer to being a great founder.",
+    "failedBody": "Every founder practices. Play it again and watch your score grow!",
+    "done": "Finish",
+    "time": "Time",
+    "dayStreak": "Day streak"
+  },
+  "flow": {
+    "start": "Start!",
+    "done": "Done"
+  },
+  "timer": {
+    "secondsLeft_one": "{{count}} second left",
+    "secondsLeft_other": "{{count}} seconds left"
+  },
+  "numberPad": {
+    "label": "Number pad",
+    "delete": "Delete"
+  },
+  "trueFalse": {
+    "true": "True",
+    "false": "False",
+    "why": "Why?"
+  },
+  "oddOneOut": {
+    "why": "Why doesn't it belong?"
+  },
+  "yesNoCases": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "confidence": {
+    "howSure": "How sure are you?"
+  },
+  "lab": {
+    "title": "Lesson Lab",
+    "subtitle": "{{types}} segment types · {{graded}} graded",
+    "heartsOn": "Hearts: on",
+    "heartsOff": "Hearts: off",
+    "showcase": "Play showcase",
+    "playFamily": "Play family"
+  },
+  "families": {
+    "analyze": {
+      "fact": "Fact",
+      "opinion": "Opinion",
+      "eventBank": "Event bank",
+      "tokenBank": "Answer bank"
+    },
+    "arrange": {
+      "bank": "Available pieces",
+      "slot": "Slot {{index}}",
+      "tapToRemove": "Tap a placed piece to send it back",
+      "matchPairs": {
+        "help": "Tap one on the left, then its match on the right. Tap a pair to undo it."
+      },
+      "memoryFlip": {
+        "flips": "Flips: {{count}}",
+        "hiddenCard": "Hidden card"
+      },
+      "sortBuckets": {
+        "placeHere": "Place here"
+      },
+      "groupSets": {
+        "both": "Both",
+        "none": "None"
+      },
+      "numberLine": {
+        "help": "Tap the line or use the slider"
+      },
+      "patternComplete": {
+        "emptySlot": "Empty slot {{index}}"
+      }
+    },
+    "input": {
+      "yourAnswer": "Your answer",
+      "charCounter": "{{used}}/{{max}}",
+      "correctAnswer": "Correct answer: {{value}}",
+      "fillBlank": {
+        "gapLabel": "Blank {{n}}",
+        "bankLabel": "Word bank"
+      },
+      "estimate": {
+        "moveToAnswer": "Move the slider to answer"
+      },
+      "countObjects": {
+        "howMany": "How many of these do you see?"
+      },
+      "equation": {
+        "target": "It must equal {{value}}",
+        "slotsLabel": "Your equation",
+        "bankLabel": "Number and symbol tiles"
+      }
+    },
+    "money": {
+      "target": "Pay exactly",
+      "total": "Total",
+      "price": "Price",
+      "paidWith": "Paid with",
+      "change": "Change",
+      "tray": "Money tray",
+      "trayEmpty": "Tap coins and bills to add them",
+      "remove": "Remove",
+      "income": "Income",
+      "remaining": "Remaining",
+      "less": "Less in",
+      "more": "More in",
+      "need": "Need",
+      "want": "Want",
+      "yourOffer": "Your pick: {{price}} per unit",
+      "bestOffer": "The best: {{price}} per unit",
+      "budget": "Budget",
+      "goal": "Goal",
+      "savingPerWeek": "Saving {{amount}} per week",
+      "weeks": "weeks",
+      "fair": "Fair",
+      "aWins": "A wins",
+      "bWins": "B wins",
+      "principal": "Start amount",
+      "rate": "Interest per period",
+      "periods": "Periods",
+      "predict": "I predict!",
+      "final": "Ends at {{amount}}",
+      "yourPrediction": "Your prediction: {{value}}"
+    },
+    "storyplay": {
+      "pathRecap": "Your path",
+      "bestChoice": "Best choice",
+      "bestReply": "Best reply",
+      "correctAnswer": "Correct answer",
+      "answeredStreak": "Streak x{{count}}!",
+      "matchHint": "Tap a card on the left, then its match on the right.",
+      "pairs": "Your pairs",
+      "undoPair": "Tap a pair to undo it.",
+      "correctPairs": "Correct pairs",
+      "yourAnswers": "Your answers",
+      "questionOf": "Question {{current}} of {{total}}",
+      "noAnswer": "No answer",
+      "valueLabel": "Value: {{score}}"
+    },
+    "maker": {
+      "run": "Run",
+      "reset": "Reset",
+      "forward": "Forward",
+      "turnLeft": "Turn left",
+      "turnRight": "Turn right",
+      "program": "Your program",
+      "programEmpty": "Tap the blocks to build your program",
+      "bank": "Blocks",
+      "commands": "Commands",
+      "grid": "Robot board",
+      "weights": "Weights",
+      "leftPan": "Left pan",
+      "rightPan": "Right pan",
+      "instrument": "Instrument"
+    },
+    "story": {
+      "continue": "Continue",
+      "tapToContinue": "Tap to continue the story",
+      "lineProgress": "Line {{current}} of {{total}}",
+      "flipHint_one": "Tap to flip — {{count}} card left",
+      "flipHint_other": "Tap to flip — {{count}} cards left",
+      "allFlipped": "You discovered them all!",
+      "gotIt": "I've got it!",
+      "review": "I want to review"
+    }
+  },
+  "streak": {
+    "title_one": "{{count}} day streak!",
+    "title_other": "{{count}} day streak!",
+    "body": "You learned today. Come back tomorrow to keep the flame alive!",
+    "continue": "Continue"
+  },
+  "audio": {
+    "replay": "Listen again"
+  }
+}

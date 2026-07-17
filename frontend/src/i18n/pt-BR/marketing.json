@@ -1,0 +1,107 @@
+{
+  "nav": {
+    "howItWorks": "Como funciona",
+    "families": "Famílias",
+    "faq": "Perguntas frequentes",
+    "cta": "Comece grátis",
+    "loginCta": "Já tenho conta"
+  },
+  "hero": {
+    "titleLead": "Educação financeira,",
+    "titleHighlight": "aprendida brincando",
+    "subtitle": "O LittleFounders transforma finanças e empreendedorismo em um jogo que seus filhos realmente querem jogar — seguro, guiado e em família.",
+    "ctaPrimary": "Comece grátis",
+    "ctaSecondary": "Como funciona",
+    "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
+    "logoAlt": "LittleFounders"
+  },
+  "problem": {
+    "title": "O problema é real. A solução também.",
+    "problemTitle": "O problema",
+    "problemBody": "Dinheiro é um dos assuntos mais importantes da vida — e um dos menos ensinados. A maioria das crianças cresce sem nunca praticar como poupar, planejar um orçamento ou construir algo próprio.",
+    "solutionTitle": "Nossa solução",
+    "solutionBody": "Lições curtas e altamente gamificadas, um tutor de IA que se adapta a cada criança, minijogos que fixam os conceitos e tarefas em família com recompensas reais — tudo sob controle parental verificado."
+  },
+  "fact": {
+    "stat": "1 em cada 3",
+    "title": "Apenas 1 em cada 3 adultos no mundo tem educação financeira",
+    "body": "É o que mostra a S&P Global FinLit Survey, um dos maiores estudos sobre alfabetização financeira já realizados. Dois em cada três adultos não conseguem responder perguntas básicas sobre poupança, juros e risco. Acreditamos que a solução começa na infância.",
+    "source": "Fonte: S&P Global FinLit Survey"
+  },
+  "motivation": {
+    "title": "As crianças já sonham grande. Nós as ajudamos a construir.",
+    "body1": "Toda criança que junta moedas em um pote já é uma pequena fundadora: tem uma meta, um plano e a paciência para chegar lá. O que falta é um guia que fale a língua dela.",
+    "body2": "O LittleFounders as encontra onde elas brincam: personagens que amam, missões que querem completar e uma família torcendo junto.",
+    "imageAlt": "Uma criança contando moedas ao lado do seu pote de economias"
+  },
+  "features": {
+    "title": "Aprendizado prático, em casa",
+    "subtitle": "Interaja diretamente com os conceitos de dinheiro. Nosso mundo tátil reduz a fricção de aprender e faz temas difíceis parecerem brincadeira.",
+    "f1": {
+      "title": "Gamificação",
+      "body": "Ganhe XP, mantenha sequências vivas e desbloqueie recompensas conforme os cursos avançam."
+    },
+    "f2": {
+      "title": "Tutor de IA",
+      "body": "Um tutor pessoal que se adapta a cada criança e dá dicas suaves — nunca só a resposta."
+    },
+    "f3": {
+      "title": "Lições interativas",
+      "body": "Sem aulas expositivas. Arraste, solte e construa seu caminho por cada conceito."
+    },
+    "f4": {
+      "title": "Jogos de aprendizado",
+      "body": "Minijogos ligados a cada lição para que os conceitos fiquem brincando."
+    },
+    "f5": {
+      "title": "Tarefas em família",
+      "body": "Os pais atribuem tarefas e definem recompensas gamificadas; vários responsáveis verificados por família."
+    },
+    "f6": {
+      "title": "Seguro por design",
+      "body": "Vínculos de responsáveis verificados, conteúdo moderado e dados das crianças que nunca são vendidos nem compartilhados."
+    }
+  },
+  "finalCta": {
+    "title": "Crie um pequeno founder",
+    "body": "Crie uma conta grátis em minutos. Sem cartão de crédito.",
+    "button": "Comece grátis",
+    "imageAlt": "Uma criança sorridente colocando uma moeda em um cofrinho com coroa"
+  },
+  "footer": {
+    "tagline": "Aprenda, jogue e construa seu futuro.",
+    "contactLabel": "Contato",
+    "legalTitle": "Legal",
+    "terms": "Termos e Condições",
+    "privacy": "Aviso de Privacidade",
+    "rights": "Todos os direitos reservados."
+  },
+  "comingSoon": {
+    "badge": "Em breve",
+    "body": "Estamos construindo esta página. Volte logo — vai valer a pena."
+  },
+  "pages": {
+    "howItWorks": {
+      "title": "Como funciona",
+      "description": "Cursos, tutor de IA, jogos e tarefas em família — como tudo se encaixa."
+    },
+    "families": {
+      "title": "Famílias",
+      "description": "Controle parental, vários responsáveis, tarefas e recompensas — tudo o que as famílias podem fazer juntas."
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "description": "Respostas sobre contas, segurança, preços e mais."
+    }
+  },
+  "legal": {
+    "badge": "Em construção",
+    "body": "Este documento está sendo redigido. Enquanto isso, para qualquer dúvida escreva para:",
+    "terms": {
+      "title": "Termos e Condições"
+    },
+    "privacy": {
+      "title": "Aviso de Privacidade"
+    }
+  }
+}

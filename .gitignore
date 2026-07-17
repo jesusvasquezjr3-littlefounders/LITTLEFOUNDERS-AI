@@ -1,85 +1,59 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-# G
-.idx
-
-node_modules
-dist
-dist-ssr
+# ── Dependencies & build output ─────────────────────────────
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
 *.local
 
+# ── Logs ────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.cursor/
-.cursorrules
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Cloudflare Tunnel
-cloudflare-config.yml
-.cloudflared/
+# ── Environment & secrets ───────────────────────────────────
+# Never commit secrets. Only .example files are tracked.
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
 *.pem
 *.p12
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.env
-*.env
+# ── Editors & OS ────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.cursor/
+.DS_Store
 
-# Database (except Supabase migrations)
+# ── AI-agent local config (never commit — may hold tokens) ──
+.claude/
+.mcp.json
+.opencode/
+
+# ── Legal working docs (root only — MUST stay anchored with
+#    the leading slash: an unanchored `LEGAL/` once ignored
+#    frontend/src/**/legal/ and broke the production build) ──
+/LEGAL/
+
+# ── Supabase upstream clone (pinned via database/SUPABASE_VERSION,
+#    materialized by database/scripts/sync-supabase.sh — never tracked) ──
+database/supabase/
+
+# ── Databases (local snapshots) ─────────────────────────────
 *.db
 *.sqlite
-*.sqlite3
-*.sql
-!supabase/migrations/
+!database/migrations/*.sql
 
-# Docker
-*.pid
+# ── tesseract.js language-data cache (downloaded at runtime) ──
+*.traineddata
 
-# Componentes para generar las lecciones mediante automatización
-littlefounders_lessons/
-backend/lesson_engine/littlefounders_lessons_v1_backup_20260416_144555
+# ── Forge (coursegen) generation run artifacts — checkpoints/ledgers,
+#    never tracked (COURSE_ENGINE.md §4, coursegen/README.md) ──
+coursegen/runs/
 
-*.backup
-
-# ts
-*.tsbuildinfo
-
-# agents
-.mcp.json
-.claude/
-# Backups de archivos de entorno (nunca commitear)
-.env.*
-*.env.bak*
-!.env.example
-!*.env.example
-!.env.test
-
-# Backups de la tabla lessons (artefactos de runtime del import seguro)
-backend/backups/
-
-# LEGAL — solo la carpeta de documentos legales en la RAÍZ del repo.
-# Anclada con "/" a propósito: sin ancla, "LEGAL/" también ignora
-# frontend/src/pages/legal/ y components/legal/ (macOS es case-insensitive),
-# lo que dejó sin commitear las páginas legales y rompió el build en CI/Vercel.
-/LEGAL/
+# ── Echo (audiogen) character voice reference samples — large binary audio,
+#    never tracked. Trimmed/registration output also stays local-only. ──
+audiogen/src/samples/

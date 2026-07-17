@@ -1,0 +1,33 @@
+name: filebase CI
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'filebase/**'
+      - 'database/types/**'
+      - '.github/workflows/filebase-ci.yml'
+  pull_request:
+    paths:
+      - 'filebase/**'
+      - 'database/types/**'
+      - '.github/workflows/filebase-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: filebase
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: filebase/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test

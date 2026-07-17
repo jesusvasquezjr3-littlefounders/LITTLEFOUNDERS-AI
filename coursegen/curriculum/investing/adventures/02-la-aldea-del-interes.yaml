@@ -1,0 +1,2719 @@
+schema_version: 1
+adventure:
+  position: 2
+  slug: la-aldea-del-interes
+  theme: valley
+  age_tier: tier2
+  title:
+    en-US: The Village of Interest
+    es-MX: La Aldea del Interés
+    pt-BR: A Aldeia do Juro
+  description:
+    en-US: Dina and Liruf reach a valley village where the local savings house gives a small prize for
+      coins left saved for a while.
+    es-MX: Dina y Liruf llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
+      las monedas que se dejan guardadas un tiempo.
+    pt-BR: Dina e Liruf chegam a uma aldeia do vale onde a casa de poupança dá um pequeno prêmio pelas
+      moedas guardadas por um tempo.
+  narrative_arc: 'Dina y Liruf bajan del bosque a una aldea de valle donde Dr. Rho administra la casa de
+    ahorros del pueblo: guardar monedas ahí y dejarlas un tiempo hace aparecer un pequeño premio extra,
+    la misma idea del jardín del tiempo aplicada ahora a las monedas. Aprenden a leer libretas, a plantear
+    metas con costo y plazo, a abrir su propia cuenta de ahorro infantil junto a un adulto de confianza,
+    y a comparar con calma sus opciones -incluyendo reconocer, con las herramientas del Faro de la Confianza,
+    una promesa de premio demasiado buena para ser verdad. Al despedirse de la aldea, Dina y Liruf están
+    listos para zarpar hacia un archipiélago donde no todo premio viene sin riesgo.'
+sagas:
+- position: 1
+  slug: premio-por-guardar
+  icon: savings
+  title:
+    en-US: The Prize for Saving
+    es-MX: El Premio por Guardar
+    pt-BR: O Prêmio por Guardar
+  description:
+    en-US: Discover the small extra prize that appears when you leave your coins saved for a while.
+    es-MX: Descubre el pequeño premio extra que aparece cuando dejas tus monedas guardadas un tiempo.
+    pt-BR: Descubra o pequeno prêmio extra que aparece quando você deixa suas moedas guardadas por um
+      tempo.
+  topics:
+  - position: 1
+    slug: una-casa-para-guardar-monedas
+    title_es: Una casa para guardar monedas
+    concept: En la aldea del valle hay una casa especial donde la gente guarda sus monedas para que estén
+      seguras y, además, reciban un premio con el tiempo.
+    learning_objective: Al final, el niño puede describir qué es la casa de ahorros de la aldea y para
+      qué sirve.
+    key_vocabulary:
+    - casa de ahorros
+    - guardar
+    - seguro
+    - aldea
+    prior_knowledge: Ha aprendido que el tiempo hace crecer lo que se guarda (aventura 1, El Jardín del
+      Tiempo).
+    parent_check: ¿{{name}} puede explicar qué es un lugar donde se guardan monedas de forma segura y
+      por qué conviene usarlo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-casa-de-piedra-del-valle
+      micro_objective: Conocer la casa de ahorros de la aldea como un lugar seguro para guardar monedas.
+      narrative_beat: 'Dina y Liruf bajan del bosque a un valle donde Dr. Rho los recibe en una pequeña
+        casa de piedra llena de libretas y cofres: la casa de ahorros de la aldea.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: colchon-o-casa-de-ahorros
+      micro_objective: Comparar guardar monedas en casa con guardarlas en la casa de ahorros de la aldea.
+      narrative_beat: Zara Vex compara guardar monedas debajo del colchón con guardarlas en la casa de
+        ahorros, y pide a Liruf notar las diferencias.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: ademas-de-guardar-un-premio
+      micro_objective: Reconocer que la casa de ahorros, además de guardar seguro, da un premio con el
+        tiempo.
+      narrative_beat: Dr. Rho explica a Dina que la casa de ahorros no solo guarda las monedas seguras,
+        sino que además les da un premio con el tiempo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: explicarle-a-un-vecino
+      micro_objective: Aplicar lo aprendido explicando a otro personaje por qué conviene usar la casa
+        de ahorros.
+      narrative_beat: Frente a una escena nueva de la aldea, Dina explica a un vecino por qué conviene
+        guardar sus monedas en la casa de ahorros.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: el-premio-que-aparece-solo
+    title_es: El premio que aparece solo
+    concept: Guardar monedas en la casa de ahorros y dejarlas un tiempo hace que aparezca un pequeño premio
+      extra, sin que nadie tenga que trabajar por él.
+    learning_objective: Al final, el niño puede explicar que guardar monedas por un tiempo hace aparecer
+      un pequeño premio extra.
+    key_vocabulary:
+    - premio
+    - extra
+    - aparecer
+    - guardar
+    prior_knowledge: Conoce la casa de ahorros de la aldea (tema anterior).
+    parent_check: ¿{{name}} puede explicar qué es el 'premio' que da un lugar de ahorro por guardar dinero
+      un tiempo?
+    prerequisites:
+    - path: el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+      strength: hard
+      reason: El premio del banco es la misma idea del jardín -algo crece solo con el paso del tiempo-
+        aplicada ahora a monedas guardadas.
+    fact_refs:
+    - money.simple_interest_100_year1
+    lessons:
+    - position: 1
+      slug: cien-monedas-se-vuelven-ciento-diez
+      micro_objective: Observar que guardar monedas por un tiempo hace aparecer un pequeño premio extra.
+      narrative_beat: 'Dina guarda 100 monedas en su libreta y, al volver un año después, Dr. Rho le muestra
+        que ahora tiene 110: diez monedas de premio aparecieron solas.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: de-donde-salio-el-premio
+      micro_objective: Explicar que el premio aparece por guardar el dinero con el tiempo, no por trabajo
+        adicional.
+      narrative_beat: Zara Vex pregunta a Liruf de dónde salió el premio, ya que nadie trabajó por esas
+        monedas extra.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: como-el-arbol-del-bosque
+      micro_objective: Relacionar el premio del ahorro con la idea de que las cosas crecen solas con el
+        tiempo (aventura 1).
+      narrative_beat: 'Dr. Rho compara el premio del ahorro con el árbol del bosque: ambos crecen solos
+        si se les da tiempo.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-el-premio-de-una-cantidad-nueva
+      micro_objective: Aplicar la idea del premio por guardar prediciendo el resultado con una cantidad
+        nueva.
+      narrative_beat: Con una nueva cantidad guardada, Dina predice cuántas monedas de premio aparecerán
+        después de un año.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 3
+    slug: cuanto-premio-por-cuanto-guardado
+    title_es: Cuánto premio por cuánto guardado
+    concept: 'El premio que da la casa de ahorros depende de cuántas monedas se guardaron: guardar más
+      da un premio más grande.'
+    learning_objective: Al final, el niño puede calcular cuánto premio corresponde a una cantidad guardada,
+      usando el mismo porcentaje de premio.
+    key_vocabulary:
+    - premio
+    - cantidad
+    - calcular
+    - guardado
+    prior_knowledge: Sabe que guardar monedas hace aparecer un premio extra (tema anterior).
+    parent_check: ¿{{name}} puede calcular, con ayuda, cuánto premio le tocaría a una cantidad guardada?
+    fact_refs:
+    - money.example_growth_rate_pct
+    - money.small_growth_example_20_to_24
+    lessons:
+    - position: 1
+      slug: diez-monedas-por-cada-cien
+      micro_objective: Conocer que el premio de la casa de ahorros es una cantidad fija por cada 100 monedas
+        guardadas.
+      narrative_beat: 'Dr. Rho muestra a Dina su libreta: por cada 100 monedas guardadas, la casa de ahorros
+        da 10 monedas de premio al año.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: calcular-el-premio-de-veinte-monedas
+      micro_objective: Calcular el premio correspondiente a una cantidad guardada menor, usando la misma
+        proporción.
+      narrative_beat: Zara Vex reta a Liruf a calcular el premio de una cantidad más pequeña guardada,
+        usando la misma proporción.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: que-pasa-si-guardo-el-doble
+      micro_objective: Predecir que guardar el doble de monedas produce un premio del doble de tamaño.
+      narrative_beat: Dr. Rho pregunta a Dina qué le pasará al premio si guarda el doble de monedas que
+        antes.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: el-premio-de-tres-vecinos
+      micro_objective: Aplicar el cálculo del premio a varias cantidades guardadas distintas.
+      narrative_beat: Frente a tres cantidades distintas guardadas por vecinos de la aldea, Dina calcula
+        el premio de cada una.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: guardar-en-casa-o-en-la-aldea
+    title_es: Guardar en casa o en la aldea
+    concept: Guardar en casa mantiene las monedas exactamente iguales; guardarlas en la casa de ahorros
+      de la aldea las deja crecer con el premio.
+    learning_objective: Al final, el niño puede comparar el resultado de guardar en casa contra guardar
+      en la casa de ahorros de la aldea.
+    key_vocabulary:
+    - comparar
+    - crecer
+    - igual
+    - premio
+    prior_knowledge: Sabe calcular cuánto premio corresponde a una cantidad guardada (tema anterior).
+    parent_check: ¿{{name}} puede comparar qué pasa con el dinero guardado en casa contra guardado en
+      un lugar que da premio?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-caja-bajo-la-cama-y-la-libreta
+      micro_objective: 'Observar dos formas distintas de guardar monedas: en casa y en la casa de ahorros.'
+      narrative_beat: Liruf guarda sus monedas en una caja bajo su cama, mientras Dina las lleva a la casa
+        de ahorros de la aldea.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: un-ano-despues
+      micro_objective: Comparar el resultado de un año guardando en casa contra guardando en la casa de
+        ahorros.
+      narrative_beat: Un año después, Dr. Rho muestra que las monedas de Liruf siguen siendo las mismas,
+        mientras que las de Dina crecieron con el premio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: por-que-no-cambiaron-mis-monedas
+      micro_objective: Explicar por qué guardar en casa no genera premio, mientras que la casa de ahorros
+        sí.
+      narrative_beat: Zara Vex pregunta a Liruf por qué cree que sus monedas no cambiaron, mientras que
+        las de Dina sí.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: liruf-decide-cambiar
+      micro_objective: Aplicar la decisión de guardar en la casa de ahorros en vez de en casa, explicando
+        la razón.
+      narrative_beat: Frente a una nueva decisión, Liruf elige guardar sus próximas monedas en la casa
+        de ahorros, explicando su razón.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: el-premio-crece-si-guardo-mas-tiempo
+    title_es: El premio crece si guardo más tiempo
+    concept: Mientras más tiempo se dejan las monedas guardadas en la casa de ahorros, más veces aparece
+      el premio y más grande se vuelve el total.
+    learning_objective: Al final, el niño puede explicar que, mientras más tiempo se guarda, más crece
+      el total con los premios acumulados.
+    key_vocabulary:
+    - más-tiempo
+    - acumular
+    - total
+    - crecer
+    prior_knowledge: Sabe comparar guardar en casa contra guardar en la casa de ahorros (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué guardar dinero por más tiempo hace que el premio acumulado
+      sea mayor?
+    prerequisites:
+    - path: el-jardin-del-tiempo/jardin-que-nadie-toca/mientras-mas-tiempo-mas-grande
+      strength: soft
+      reason: La idea de que algo protegido crece más mientras más tiempo pasa se traslada directamente
+        del jardín a la libreta de ahorros.
+    fact_refs:
+    - money.compound_growth_100_3years
+    lessons:
+    - position: 1
+      slug: ciento-diez-y-luego-ciento-veintiuno
+      micro_objective: Observar que dejar el dinero guardado más tiempo hace que el total crezca más de
+        un año a otro.
+      narrative_beat: 'Dr. Rho muestra la libreta de Dina después de un año (110 monedas) y después de
+        dos años (121 monedas): el premio también recibió su propio premio.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: calcular-el-tercer-ano
+      micro_objective: Calcular el total de un tercer año siguiendo el mismo patrón de crecimiento mostrado.
+      narrative_beat: Zara Vex pide a Liruf calcular el total después de un tercer año, siguiendo el mismo
+        patrón que Dr. Rho mostró.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: el-premio-del-premio
+      micro_objective: Reconocer que el premio de cada año se calcula sobre un total un poco más grande
+        que el anterior.
+      narrative_beat: Dr. Rho explica que el premio del segundo año fue un poco más grande que el del
+        primero, porque también se calculó sobre el premio anterior.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: el-patron-de-tres-anos
+      micro_objective: Aplicar la observación del patrón de crecimiento a una libreta nueva de varios
+        años.
+      narrative_beat: Frente a una nueva libreta con tres años de historia, Dina explica el patrón de
+        crecimiento que observa.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 6
+    slug: mi-primera-libreta-de-ahorros
+    title_es: Mi primera libreta de ahorros
+    concept: Una libreta de ahorros registra cuánto se guardó, cuánto premio se ganó, y cuánto hay en
+      total, para poder seguir el crecimiento con claridad.
+    learning_objective: Al final, el niño puede leer una libreta de ahorros simple e identificar cuánto
+      se guardó, cuánto premio ganó y cuánto hay en total.
+    key_vocabulary:
+    - libreta
+    - registrar
+    - total
+    - leer
+    prior_knowledge: Sabe que dejar el dinero más tiempo hace crecer más el total (tema anterior).
+    parent_check: ¿{{name}} sabe leer un registro simple de cuánto guardó, cuánto ganó y cuánto tiene
+      en total?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-libreta-propia
+      micro_objective: 'Conocer las partes de una libreta de ahorros: lo guardado, el premio y el total.'
+      narrative_beat: Dr. Rho entrega a Dina su primera libreta de ahorros propia, con espacios para anotar
+        lo guardado, el premio y el total.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: leer-una-libreta-llena
+      micro_objective: Leer una libreta de ahorros llena e identificar sus partes correctamente.
+      narrative_beat: Zara Vex muestra una libreta ya llena y pide a Liruf identificar cuánto se guardó
+        y cuánto fue premio.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: sumar-guardado-mas-premio
+      micro_objective: Calcular el total sumando lo guardado más el premio en una libreta propia.
+      narrative_beat: Dr. Rho pregunta a Dina cuánto hay en total sumando lo guardado más el premio de
+        su propia libreta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: la-libreta-de-otro-vecino
+      micro_objective: Aplicar la lectura completa de una libreta de ahorros nueva, sin ayuda.
+      narrative_beat: Frente a una libreta nueva de otro personaje de la aldea, Dina identifica sin ayuda
+        las tres partes y explica lo que significan.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: comparar-dos-libretas
+    title_es: Comparar dos libretas
+    concept: Comparar dos libretas de ahorros distintas ayuda a ver cómo cambia el resultado según cuánto
+      se guardó y por cuánto tiempo.
+    learning_objective: Al final, el niño puede comparar dos libretas de ahorros distintas y explicar
+      por qué sus resultados son diferentes.
+    key_vocabulary:
+    - comparar
+    - libreta
+    - resultado
+    - diferente
+    prior_knowledge: Sabe leer una libreta de ahorros simple (tema anterior).
+    parent_check: ¿{{name}} puede comparar dos registros de ahorro distintos y explicar por qué uno creció
+      más que el otro?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: dos-libretas-de-la-aldea
+      micro_objective: Observar dos libretas de ahorros distintas con resultados diferentes.
+      narrative_beat: 'Dr. Rho muestra dos libretas de la aldea: una con más monedas guardadas desde el
+        inicio, y otra con menos.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: calcular-y-comparar-el-premio
+      micro_objective: Calcular y comparar el premio de dos libretas distintas.
+      narrative_beat: Zara Vex pide a Liruf calcular el premio de cada libreta y comparar cuál ganó más.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: tambien-influye-el-tiempo
+      micro_objective: Reconocer que tanto la cantidad guardada como el tiempo influyen en el resultado
+        de una libreta.
+      narrative_beat: Dr. Rho pregunta a Dina si el tiempo también influyó en la diferencia entre ambas
+        libretas, no solo la cantidad guardada.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-cual-tendra-mas
+      micro_objective: Aplicar el análisis de cantidad y tiempo para predecir cuál de dos libretas nuevas
+        tendrá más premio.
+      narrative_beat: Frente a dos libretas nuevas, Dina predice cuál tendrá más premio, considerando
+        cantidad y tiempo.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 8
+    slug: mi-plan-con-premio
+    title_es: Mi plan con premio
+    concept: Armar un plan propio de ahorro con premio (cuánto guardar, por cuánto tiempo) aplica todo
+      lo aprendido sobre la casa de ahorros de la aldea.
+    learning_objective: Al final, el niño puede armar un plan propio de ahorro que incluya cuánto guardar
+      y por cuánto tiempo, aprovechando el premio.
+    key_vocabulary:
+    - plan
+    - ahorro
+    - premio
+    - tiempo
+    prior_knowledge: Ha aprendido a leer y comparar libretas de ahorro con premio (temas anteriores).
+    parent_check: ¿{{name}} puede contarte su propio plan de ahorro, incluyendo cuánto guardaría y por
+      cuánto tiempo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: abrir-mi-propia-libreta
+      micro_objective: Elegir, dentro de una historia, cuánto guardar para comenzar un plan propio de
+        ahorro con premio.
+      narrative_beat: Dr. Rho invita a Dina a abrir su propia libreta en la casa de ahorros y elegir cuánto
+        guardar para empezar su plan.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: calcular-mi-premio-futuro
+      micro_objective: Calcular el premio esperado de un plan propio después de uno y de dos años.
+      narrative_beat: Zara Vex ayuda a Liruf a calcular cuánto premio ganaría su plan después de uno y
+        de dos años.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: explicar-mi-plan-en-voz-alta
+      micro_objective: Explicar en voz alta un plan propio de ahorro con premio, incluyendo cantidad y
+        tiempo.
+      narrative_beat: Dina practica explicando en voz alta su plan completo antes de llevarlo a la casa
+        de ahorros.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comprometerme-con-mi-libreta
+      micro_objective: Aplicar con seguridad el plan completo de ahorro con premio, comprometiéndose a
+        mantenerlo.
+      narrative_beat: Con su plan ya armado, Dina abre su libreta en la casa de ahorros y se compromete
+        a mantenerla sin tocar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con las semillas de recuerdo de El Premio por Guardar.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga El Premio por Guardar.
+    key_vocabulary:
+    - premio
+    - libreta
+    - casa de ahorros
+    - crecer
+    prior_knowledge: Ha completado los ocho temas de la saga El Premio por Guardar (aventura 2, saga 1).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/premio-por-guardar/una-casa-para-guardar-monedas
+    - la-aldea-del-interes/premio-por-guardar/el-premio-que-aparece-solo
+    - la-aldea-del-interes/premio-por-guardar/cuanto-premio-por-cuanto-guardado
+    - la-aldea-del-interes/premio-por-guardar/guardar-en-casa-o-en-la-aldea
+    - la-aldea-del-interes/premio-por-guardar/el-premio-crece-si-guardo-mas-tiempo
+    - la-aldea-del-interes/premio-por-guardar/mi-primera-libreta-de-ahorros
+    - la-aldea-del-interes/premio-por-guardar/comparar-dos-libretas
+    - la-aldea-del-interes/premio-por-guardar/mi-plan-con-premio
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre
+      micro_objective: Recordar, sin ayuda nueva, qué es la casa de ahorros y por qué guardar monedas
+        hace aparecer un premio.
+      narrative_beat: Zara Vex abre un cofre lleno de recuerdos de la aldea y reta a Dina a recordar,
+        moneda por moneda, lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo calcular el premio de una cantidad guardada y
+        por qué guardar en casa no genera premio.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de la saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cómo el premio crece si se guarda más
+        tiempo y cómo leer una libreta.
+      narrative_beat: Dr. Rho presenta una escena nueva de la aldea y pregunta a Dina si recuerda, sin
+        repasar la lección, cómo crece el premio con más tiempo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado de la saga, incluyendo comparar libretas y
+        armar un plan con premio, para cerrar el cofre.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Premio por Guardar con ideas de El Jardín del Tiempo en
+      un reto que combina ambas aventuras.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Premio por Guardar
+      con un concepto de El Jardín del Tiempo.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - premio
+    prior_knowledge: Conoce El Premio por Guardar (saga 1) y las lecciones citadas de El Jardín del Tiempo
+      (aventura 1).
+    fact_refs: []
+    review_of:
+    - el-jardin-del-tiempo/semilla-que-espera/lo-que-crece-solo-con-el-tiempo
+    - el-jardin-del-tiempo/jardin-que-nadie-toca/mientras-mas-tiempo-mas-grande
+    - la-aldea-del-interes/premio-por-guardar/el-premio-que-aparece-solo
+    - la-aldea-del-interes/premio-por-guardar/el-premio-crece-si-guardo-mas-tiempo
+    lessons:
+    - position: 1
+      slug: un-recuerdo-del-bosque
+      micro_objective: Recordar, tal como se aprendió antes, que las cosas crecen porque pasa el tiempo,
+        no por más esfuerzo.
+      narrative_beat: Zara Vex trae un recuerdo del bosque y pide a Liruf recordarlo sin ayuda, antes de
+        mezclarlo con el premio de la aldea.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: el-jardin-protegido-y-la-libreta-protegida
+      micro_objective: Combinar la idea de un jardín protegido que crece más con el tiempo con la de una
+        libreta que crece más si no se toca.
+      narrative_beat: Dr. Rho muestra cómo la idea de un jardín protegido se conecta con la de una libreta
+        de ahorros que crece si se deja quieta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la idea del crecimiento con el tiempo del
+        bosque y el premio de la aldea.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas aventuras en
+        una situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en el bosque y en la aldea
+        para resolverla sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+- position: 2
+  slug: metas-con-premio
+  icon: flag
+  title:
+    en-US: Goals with a Prize
+    es-MX: Metas con Premio
+    pt-BR: Metas com Prêmio
+  description:
+    en-US: Pick a real goal, calculate how many weeks it takes, and see how the prize helps you get there
+      sooner.
+    es-MX: Elige una meta real, calcula cuántas semanas toma, y descubre cómo el premio ayuda a llegar
+      antes.
+    pt-BR: Escolha uma meta real, calcule quantas semanas leva, e descubra como o prêmio ajuda a chegar
+      antes.
+  topics:
+  - position: 1
+    slug: una-meta-que-quiero-lograr
+    title_es: Una meta que quiero lograr
+    concept: Elegir una meta concreta que se quiere lograr con ahorro es el primer paso para aprovechar
+      el premio de guardar.
+    learning_objective: Al final, el niño puede elegir una meta concreta de ahorro y decir cuánto cuesta.
+    key_vocabulary:
+    - meta
+    - lograr
+    - elegir
+    - costo
+    prior_knowledge: Ha abierto su propia libreta de ahorro con premio (aventura 2, saga 1).
+    parent_check: ¿{{name}} puede nombrar una meta concreta que le gustaría lograr ahorrando?
+    prerequisites:
+    - path: la-aldea-del-interes/premio-por-guardar/mi-primera-libreta-de-ahorros
+      strength: hard
+      reason: Plantear una meta con premio requiere ya saber leer y entender una libreta de ahorros.
+    fact_refs:
+    - mxn.reference_prices.juguete_pequeno
+    lessons:
+    - position: 1
+      slug: el-juguete-del-mercado
+      micro_objective: Elegir, dentro de una historia, una meta concreta de ahorro.
+      narrative_beat: Dina ve en el mercado de la aldea un juguete que le encanta y decide que esa será
+        su primera meta de ahorro.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuanto-cuesta-mi-meta
+      micro_objective: Identificar el costo exacto de una meta de ahorro elegida.
+      narrative_beat: Dr. Rho pregunta a Dina cuánto cuesta el juguete que eligió como meta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: por-que-esa-meta-y-no-otra
+      micro_objective: Explicar la razón detrás de la elección de una meta propia de ahorro.
+      narrative_beat: Zara Vex pregunta a Liruf qué meta elegiría él, y por qué esa y no otra.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: elegir-entre-varias-metas
+      micro_objective: Aplicar la elección de una meta propia de ahorro, registrando su costo.
+      narrative_beat: Frente a varias metas posibles, Dina elige la que más le importa y anota su costo
+        en su libreta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 2
+    slug: cuantas-semanas-me-faltan
+    title_es: Cuántas semanas me faltan
+    concept: Dividir el costo de la meta entre lo que se guarda cada semana permite calcular cuántas semanas
+      faltan para lograrla.
+    learning_objective: Al final, el niño puede calcular cuántas semanas le faltan para lograr una meta,
+      según cuánto guarda cada semana.
+    key_vocabulary:
+    - semanas
+    - dividir
+    - faltar
+    - calcular
+    prior_knowledge: Ha elegido una meta concreta y conoce su costo (tema anterior).
+    parent_check: ¿{{name}} puede calcular, con ayuda, cuántas semanas le faltan para una meta si guarda
+      una cantidad fija cada semana?
+    fact_refs:
+    - math.savings_goal_ceiling_tier2
+    - math.savings_weekly_options_tier2
+    lessons:
+    - position: 1
+      slug: veinte-monedas-por-semana
+      micro_objective: Calcular cuántas semanas se necesitan para llegar a una meta guardando una cantidad
+        fija cada semana.
+      narrative_beat: Dr. Rho ayuda a Dina a calcular cuántas semanas necesita guardar 20 monedas para
+        llegar a su meta de 100.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: otra-meta-otro-monto
+      micro_objective: Aplicar el mismo cálculo de semanas a una meta y un monto semanal distintos.
+      narrative_beat: Zara Vex reta a Liruf a calcular las semanas que le faltan para una meta distinta,
+        con otro monto semanal.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: que-pasa-si-guardo-menos
+      micro_objective: Predecir cómo cambia el número de semanas necesarias si se guarda una cantidad
+        menor cada semana.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría con las semanas necesarias si guardara menos
+        cada semana.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: calcular-mi-meta-nueva
+      micro_objective: Aplicar sin ayuda el cálculo de semanas faltantes para una meta nueva.
+      narrative_beat: Frente a una meta nueva, Dina calcula sin ayuda cuántas semanas le faltan para lograrla.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 3
+    slug: el-premio-me-ayuda-a-llegar-antes
+    title_es: El premio me ayuda a llegar antes
+    concept: El premio que da la casa de ahorros se suma a lo guardado cada semana, ayudando a llegar
+      a la meta un poco antes de lo esperado.
+    learning_objective: Al final, el niño puede explicar cómo el premio de la casa de ahorros ayuda a
+      llegar antes a una meta.
+    key_vocabulary:
+    - premio
+    - ayudar
+    - antes
+    - meta
+    prior_knowledge: Sabe calcular cuántas semanas le faltan para una meta (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo el premio de un ahorro puede ayudar a llegar antes a una
+      meta?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: menos-semanas-de-las-calculadas
+      micro_objective: Observar que el premio de la casa de ahorros ayuda a llegar antes a una meta de
+        lo calculado sin él.
+      narrative_beat: Dr. Rho le muestra a Dina que, gracias al premio acumulado, le faltaron menos semanas
+        de las que había calculado al principio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: con-premio-y-sin-premio
+      micro_objective: Comparar el tiempo necesario para una meta con y sin contar el premio acumulado.
+      narrative_beat: 'Zara Vex compara dos cálculos de Liruf: uno sin contar el premio, y otro contándolo,
+        para ver la diferencia.'
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: el-premio-no-reemplaza-el-ahorro
+      micro_objective: Explicar que el premio complementa el ahorro semanal, sin reemplazarlo.
+      narrative_beat: Dr. Rho explica que el premio no reemplaza el ahorro semanal, sino que lo ayuda
+        un poco extra.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: estimar-cuanto-antes-llego
+      micro_objective: Aplicar la estimación de cuánto antes se llega a una meta nueva gracias al premio.
+      narrative_beat: Frente a una nueva meta, Dina estima cuánto antes podría llegar gracias al premio
+        acumulado.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: elegir-cuanto-guardar-cada-semana
+    title_es: Elegir cuánto guardar cada semana
+    concept: Elegir cuánto guardar cada semana es una decisión que se puede ajustar según lo que se puede
+      aportar sin dejar de cubrir otras necesidades.
+    learning_objective: Al final, el niño puede elegir un monto semanal de ahorro razonable según su situación.
+    key_vocabulary:
+    - elegir
+    - semanal
+    - razonable
+    - ajustar
+    prior_knowledge: Sabe cómo el premio ayuda a llegar antes a una meta (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo elegiría cuánto ahorrar cada semana sin dejar de cubrir
+      lo que necesita?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cuanto-de-mi-domingo
+      micro_objective: Reconocer que el monto semanal de ahorro debe elegirse sin descuidar otras necesidades.
+      narrative_beat: Dr. Rho le pregunta a Liruf cuánto de su domingo semanal podría guardar sin dejar
+        de comprar lo que necesita.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: elegir-el-monto-mas-razonable
+      micro_objective: Elegir, entre varias opciones, un monto semanal de ahorro razonable.
+      narrative_beat: Zara Vex presenta varias opciones de monto semanal y pide a Dina elegir la que le
+        parece más razonable para su meta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: un-monto-demasiado-alto
+      micro_objective: Explicar el riesgo de elegir un monto semanal de ahorro demasiado alto para la
+        propia situación.
+      narrative_beat: Dr. Rho pregunta a Liruf qué pasaría si eligiera un monto semanal demasiado alto
+        para lo que puede aportar.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: mi-monto-razonable
+      micro_objective: Aplicar la elección de un monto semanal de ahorro razonable para una meta propia.
+      narrative_beat: Frente a su propia meta, Dina elige con cuidado su monto semanal y explica por qué
+        le parece razonable.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 5
+    slug: una-meta-grande-y-una-meta-chica
+    title_es: Una meta grande y una meta chica
+    concept: Comparar una meta grande con una meta chica muestra que ambas usan el mismo proceso, aunque
+      tomen tiempos distintos.
+    learning_objective: Al final, el niño puede comparar el proceso de ahorro de una meta grande contra
+      una meta chica.
+    key_vocabulary:
+    - grande
+    - chica
+    - proceso
+    - comparar
+    prior_knowledge: Sabe elegir un monto semanal de ahorro razonable (tema anterior).
+    parent_check: ¿{{name}} puede comparar cómo ahorraría para una meta chica y para una meta grande?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-dulce-y-una-bicicleta
+      micro_objective: Reconocer que una meta chica y una meta grande pueden ahorrarse con el mismo proceso.
+      narrative_beat: 'Dina tiene dos metas: un dulce chico para esta semana y una bicicleta grande para
+        dentro de varios meses.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-las-semanas-de-cada-meta
+      micro_objective: Comparar las semanas necesarias para una meta chica contra una meta grande.
+      narrative_beat: Dr. Rho calcula junto con Dina las semanas necesarias para cada meta, y compara
+        los resultados.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: el-proceso-no-cambia
+      micro_objective: Explicar que el proceso de ahorro es el mismo, sin importar el tamaño de la meta.
+      narrative_beat: Zara Vex pregunta a Liruf si el proceso para ahorrar cambia según el tamaño de la
+        meta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: un-plan-para-cada-meta
+      micro_objective: Aplicar el proceso de ahorro a una meta grande y a una meta chica al mismo tiempo.
+      narrative_beat: Frente a dos metas nuevas, una grande y una chica, Dina arma un plan de ahorro para
+        cada una.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 6
+    slug: que-pasa-si-guardo-mas-cada-semana
+    title_es: Qué pasa si guardo más cada semana
+    concept: Guardar más cada semana reduce el número de semanas necesarias para llegar a la meta.
+    learning_objective: Al final, el niño puede explicar y calcular cómo guardar más cada semana reduce
+      el tiempo para llegar a una meta.
+    key_vocabulary:
+    - más
+    - reducir
+    - tiempo
+    - semanal
+    prior_knowledge: Ha comparado el proceso de ahorro entre una meta grande y una chica (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué guardar más cada semana hace que una meta se logre
+      antes?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-doble-cada-semana
+      micro_objective: Observar que guardar más cada semana reduce el número de semanas necesarias para
+        una meta.
+      narrative_beat: Dr. Rho muestra a Liruf que, si duplica lo que guarda cada semana, le tomará la mitad
+        de semanas llegar a su meta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: calcular-las-nuevas-semanas
+      micro_objective: Calcular el nuevo número de semanas necesarias al aumentar el monto semanal de
+        ahorro.
+      narrative_beat: Zara Vex reta a Dina a calcular las nuevas semanas necesarias si aumenta su monto
+        semanal.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: que-tendria-que-ajustar
+      micro_objective: Reconocer qué ajustes serían necesarios para poder guardar más cada semana.
+      narrative_beat: Dr. Rho pregunta a Liruf qué tendría que ajustar en su vida para poder guardar más
+        cada semana.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: decidir-aumentar-mi-monto
+      micro_objective: Aplicar la decisión de ajustar el monto semanal y calcular su efecto en el tiempo
+        de la meta.
+      narrative_beat: Frente a su propia meta, Dina decide si aumentar su monto semanal y calcula el nuevo
+        tiempo que le tomará.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 7
+    slug: mi-meta-con-el-premio-de-la-aldea
+    title_es: Mi meta con el premio de la aldea
+    concept: Combinar un plan de ahorro semanal con el premio de la casa de ahorros permite calcular con
+      más precisión cuándo se logrará la meta.
+    learning_objective: Al final, el niño puede combinar su ahorro semanal con el premio de la casa de
+      ahorros para planear su meta con más precisión.
+    key_vocabulary:
+    - combinar
+    - precisión
+    - premio
+    - plan
+    prior_knowledge: Sabe cómo guardar más cada semana reduce el tiempo de una meta (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo combinaría su ahorro semanal con el premio del banco para
+      planear una meta?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-plan-completo-de-dina
+      micro_objective: Combinar, dentro de una historia, el ahorro semanal con el premio de la casa de
+        ahorros en un solo plan.
+      narrative_beat: 'Dr. Rho ayuda a Dina a armar un plan completo: su ahorro semanal, más el premio,
+        para llegar a su meta.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: calcular-el-avance-combinado
+      micro_objective: Calcular el avance de una meta combinando el ahorro semanal y el premio acumulado.
+      narrative_beat: 'Zara Vex reta a Liruf a calcular su meta combinando ambos elementos: lo que guarda
+        y lo que gana de premio.'
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: explicar-mi-plan-combinado
+      micro_objective: Explicar en voz alta un plan combinado de ahorro semanal y premio para una meta.
+      narrative_beat: Dina practica explicando en voz alta su plan combinado antes de llevarlo a la casa
+        de ahorros.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: calcular-mi-fecha-final
+      micro_objective: Aplicar el plan combinado completo para calcular la fecha final de una meta propia.
+      narrative_beat: Con su plan combinado ya armado, Dina calcula la fecha final en que logrará su meta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - money
+  - position: 8
+    slug: celebrar-la-meta-cumplida
+    title_es: Celebrar la meta cumplida
+    concept: Cuando una meta de ahorro se cumple, celebrarla reconoce el esfuerzo semanal y el premio
+      que ayudaron a lograrla.
+    learning_objective: Al final, el niño puede reconocer y celebrar el momento en que una meta de ahorro
+      se cumple.
+    key_vocabulary:
+    - celebrar
+    - cumplida
+    - esfuerzo
+    - meta
+    prior_knowledge: Ha combinado su ahorro semanal con el premio para planear su meta (tema anterior).
+    parent_check: ¿{{name}} celebra cuando cumple una meta de ahorro que se propuso?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-juguete-por-fin-es-mio
+      micro_objective: Reconocer el momento en que una meta de ahorro se cumple con éxito.
+      narrative_beat: Después de varias semanas, Dina por fin junta el dinero completo para su juguete
+        y toda la aldea la felicita en la casa de ahorros.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuanto-vino-del-ahorro-y-cuanto-del-premio
+      micro_objective: Distinguir cuánto de una meta cumplida vino del ahorro semanal y cuánto del premio.
+      narrative_beat: Dr. Rho pregunta a Dina cuánto de su meta vino de su ahorro semanal y cuánto vino
+        del premio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: una-fiesta-por-la-constancia
+      micro_objective: Reconocer la importancia de celebrar la constancia, no solo el resultado final.
+      narrative_beat: Zara Vex organiza una pequeña fiesta en la aldea para celebrar la constancia de
+        Dina durante todas las semanas de ahorro.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: animar-a-un-vecino-nuevo
+      micro_objective: Aplicar con seguridad la celebración de una meta cumplida, animando a otro a comenzar
+        su propio plan.
+      narrative_beat: Dina celebra su meta cumplida y anima a un vecino nuevo de la aldea a comenzar su
+        propio plan de ahorro con premio.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga Metas con Premio.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Metas con Premio.
+    key_vocabulary:
+    - meta
+    - semanas
+    - premio
+    - celebrar
+    prior_knowledge: Ha completado los ocho temas de la saga Metas con Premio (aventura 2, saga 2).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/metas-con-premio/una-meta-que-quiero-lograr
+    - la-aldea-del-interes/metas-con-premio/cuantas-semanas-me-faltan
+    - la-aldea-del-interes/metas-con-premio/el-premio-me-ayuda-a-llegar-antes
+    - la-aldea-del-interes/metas-con-premio/elegir-cuanto-guardar-cada-semana
+    - la-aldea-del-interes/metas-con-premio/una-meta-grande-y-una-meta-chica
+    - la-aldea-del-interes/metas-con-premio/que-pasa-si-guardo-mas-cada-semana
+    - la-aldea-del-interes/metas-con-premio/mi-meta-con-el-premio-de-la-aldea
+    - la-aldea-del-interes/metas-con-premio/celebrar-la-meta-cumplida
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, cómo elegir una meta y calcular cuántas semanas faltan
+        para lograrla.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos de las metas con premio,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo cómo el premio ayuda a llegar antes y cómo elegir un
+        monto semanal razonable.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, cómo comparar una meta grande y una chica,
+        y qué pasa si guardo más.
+      narrative_beat: Dr. Rho presenta una escena nueva de la aldea y pregunta a Dina si recuerda, sin
+        repasar la lección, cómo comparar metas de distinto tamaño.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo combinar el premio con el ahorro
+        y celebrar una meta cumplida.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Metas con Premio con ideas de El Premio por Guardar en un
+      reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Metas con Premio con
+      un concepto de El Premio por Guardar.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - meta
+    prior_knowledge: Conoce Metas con Premio (saga 2) y las lecciones citadas de El Premio por Guardar
+      (saga 1).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/premio-por-guardar/mi-primera-libreta-de-ahorros
+    - la-aldea-del-interes/premio-por-guardar/comparar-dos-libretas
+    - la-aldea-del-interes/metas-con-premio/una-meta-que-quiero-lograr
+    - la-aldea-del-interes/metas-con-premio/cuantas-semanas-me-faltan
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-primera-saga
+      micro_objective: Recordar, tal como se aprendió antes, cómo leer una libreta de ahorros.
+      narrative_beat: Zara Vex trae un recuerdo de la primera saga y pide a Liruf recordarlo sin ayuda,
+        antes de mezclarlo con las metas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-la-libreta-con-la-meta
+      micro_objective: Combinar la lectura de una libreta de ahorros con el cálculo de semanas para una
+        meta.
+      narrative_beat: Dr. Rho muestra cómo leer una libreta se conecta con calcular cuántas semanas faltan
+        para una meta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la lectura de una libreta y el cálculo de
+        una meta.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+- position: 3
+  slug: cuentas-de-ahorro-infantiles
+  icon: account_balance_wallet
+  title:
+    en-US: Kids' Savings Accounts
+    es-MX: Cuentas de Ahorro Infantiles
+    pt-BR: Contas de Poupança Infantis
+  description:
+    en-US: Learn what a kids' savings account is, who helps you open one, and how to care for it.
+    es-MX: Conoce qué es una cuenta de ahorro infantil, quién te ayuda a abrirla, y cómo cuidarla.
+    pt-BR: Conheça o que é uma conta de poupança infantil, quem ajuda a abri-la, e como cuidá-la.
+  topics:
+  - position: 1
+    slug: que-es-una-cuenta-de-ahorro-infantil
+    title_es: Qué es una cuenta de ahorro infantil
+    concept: Una cuenta de ahorro infantil es un espacio, pensado para niños, donde un adulto de confianza
+      ayuda a guardar y cuidar el dinero.
+    learning_objective: Al final, el niño puede describir qué es una cuenta de ahorro infantil y quién
+      ayuda a manejarla.
+    key_vocabulary:
+    - cuenta
+    - infantil
+    - adulto
+    - cuidar
+    prior_knowledge: Ha abierto su libreta y planeado metas con premio (aventura 2, sagas 1-2).
+    parent_check: ¿{{name}} sabe que una cuenta de ahorro infantil funciona con la ayuda de un adulto
+      de confianza?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: un-espacio-pensado-para-ninos
+      micro_objective: Conocer que una cuenta de ahorro infantil es un espacio especial cuidado junto
+        a un adulto de confianza.
+      narrative_beat: Dr. Rho explica a Dina que en la casa de ahorros existe un espacio especial, pensado
+        solo para niños, donde un adulto de confianza ayuda a cuidarlo.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: libreta-personal-o-cuenta-infantil
+      micro_objective: Comparar una libreta personal con una cuenta de ahorro infantil manejada junto
+        a un adulto.
+      narrative_beat: Zara Vex compara una libreta personal con una cuenta de ahorro infantil, y pide
+        a Liruf notar la diferencia principal.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: por-que-participa-un-adulto
+      micro_objective: Explicar por qué un adulto de confianza participa en las decisiones de una cuenta
+        infantil.
+      narrative_beat: Dr. Rho explica por qué es importante que un adulto de confianza participe en las
+        decisiones de la cuenta.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: explicarle-a-un-vecino-mas-pequeno
+      micro_objective: Aplicar lo aprendido explicando a otro personaje qué es una cuenta de ahorro infantil.
+      narrative_beat: Frente a una escena nueva, Dina explica a un vecino más pequeño qué es una cuenta
+        de ahorro infantil.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: quien-me-ayuda-a-abrir-una-cuenta
+    title_es: Quién me ayuda a abrir una cuenta
+    concept: Abrir una cuenta de ahorro infantil requiere la ayuda de un padre, madre o tutor, que acompaña
+      el proceso.
+    learning_objective: Al final, el niño puede identificar quién puede ayudarle a abrir una cuenta de
+      ahorro infantil.
+    key_vocabulary:
+    - abrir
+    - tutor
+    - acompañar
+    - ayuda
+    prior_knowledge: Sabe qué es una cuenta de ahorro infantil (tema anterior).
+    parent_check: ¿{{name}} sabe que necesita la ayuda de un padre, madre o tutor para abrir una cuenta
+      de ahorro?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: necesito-que-me-acompanen
+      micro_objective: Reconocer que abrir una cuenta de ahorro infantil requiere la compañía de un adulto
+        de la familia.
+      narrative_beat: Dina llega con Dr. Rho a la casa de ahorros, pero descubre que necesita que un adulto
+        de su familia la acompañe para abrir su cuenta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: quienes-podrian-acompanarme
+      micro_objective: Identificar qué adultos de confianza podrían acompañar a abrir una cuenta infantil.
+      narrative_beat: Zara Vex pregunta a Liruf quiénes podrían ser esos adultos que lo acompañarían a
+        abrir su cuenta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: el-adulto-decide-junto-conmigo
+      micro_objective: Explicar que el adulto acompaña y decide junto con el niño, no en su lugar.
+      narrative_beat: Dr. Rho explica que el adulto también firma y ayuda a decidir junto con el niño,
+        no decide solo por él.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: practicar-pedir-acompanamiento
+      micro_objective: Aplicar la práctica de pedir acompañamiento a un adulto de confianza para abrir
+        una cuenta.
+      narrative_beat: Dina practica cómo pedirle a su familia que la acompañe a abrir su propia cuenta
+        de ahorro.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 3
+    slug: mi-libreta-crece-poquito-a-poquito
+    title_es: Mi libreta crece poquito a poquito
+    concept: Una cuenta de ahorro infantil crece poco a poco, con cada depósito y cada premio, igual que
+      el jardín del tiempo.
+    learning_objective: Al final, el niño puede relacionar el crecimiento gradual de una cuenta infantil
+      con lo aprendido sobre crecimiento con el tiempo.
+    key_vocabulary:
+    - crecer
+    - poquito
+    - depósito
+    - gradual
+    prior_knowledge: Sabe quién le ayuda a abrir una cuenta (tema anterior).
+    parent_check: ¿{{name}} puede explicar por qué una cuenta de ahorro crece poquito a poquito, no de
+      golpe?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cada-deposito-pequeno-suma
+      micro_objective: Observar que una cuenta de ahorro infantil crece poco a poco con cada depósito.
+      narrative_beat: 'Dr. Rho muestra a Dina su cuenta después de varias semanas: cada depósito pequeño
+        hizo crecer el total poco a poco.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: como-el-arbol-del-bosque-otra-vez
+      micro_objective: Relacionar el crecimiento gradual de una cuenta con el crecimiento gradual de un
+        árbol (aventura 1).
+      narrative_beat: Zara Vex compara el crecimiento de la cuenta con el crecimiento del árbol del bosque,
+        y pide a Liruf notar el parecido.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - money
+    - position: 3
+      slug: esperar-para-depositar-todo-junto
+      micro_objective: Explicar por qué depositar poco a poco funciona igual de bien que esperar para
+        depositar todo junto.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría si esperara depositar todo de una sola vez,
+        en vez de poco a poco.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: registrar-varios-depositos
+      micro_objective: Aplicar el registro de depósitos pequeños para observar el crecimiento gradual
+        de una cuenta propia.
+      narrative_beat: Frente a su propia cuenta, Dina registra varios depósitos pequeños y observa cómo
+        crece el total.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: revisar-mi-libreta-cada-mes
+    title_es: Revisar mi libreta cada mes
+    concept: Revisar la cuenta de ahorro una vez al mes, junto a un adulto, ayuda a seguir el progreso
+      sin caer en la tentación de revisarla todo el tiempo.
+    learning_objective: Al final, el niño puede explicar por qué revisar la cuenta una vez al mes, y no
+      todo el tiempo, es una buena práctica.
+    key_vocabulary:
+    - revisar
+    - mes
+    - progreso
+    - tentación
+    prior_knowledge: Sabe que su cuenta crece poco a poco (tema anterior).
+    parent_check: ¿{{name}} revisa su ahorro de vez en cuando (por ejemplo, una vez al mes) en vez de
+      todo el tiempo?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: revisar-una-vez-al-mes
+      micro_objective: Conocer la práctica de revisar una cuenta de ahorro una vez al mes, junto a un
+        adulto.
+      narrative_beat: Dr. Rho le sugiere a Dina revisar su cuenta una vez al mes junto a su familia, en
+        vez de preguntar todos los días.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: como-la-semilla-que-no-se-toca
+      micro_objective: Relacionar revisar la cuenta con demasiada frecuencia con la lección de no desenterrar
+        una semilla antes de tiempo.
+      narrative_beat: Zara Vex recuerda a Liruf la lección de la semilla que no se toca (aventura 1) y
+        pregunta cómo se relaciona con revisar la cuenta todo el tiempo.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: suficiente-sin-ansiedad
+      micro_objective: Explicar por qué una revisión mensual es suficiente para seguir el progreso de
+        una cuenta.
+      narrative_beat: Dr. Rho explica que revisar una vez al mes es suficiente para ver el progreso sin
+        generar ansiedad.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: esperar-al-dia-acordado
+      micro_objective: Aplicar la práctica de esperar hasta un día acordado para revisar la cuenta de
+        ahorro.
+      narrative_beat: Dina practica esperar hasta el día acordado del mes para revisar su cuenta junto
+        a su familia.
+      difficulty: 3
+      suggested_families:
+      - storyplay
+      - choice
+  - position: 5
+    slug: una-cuenta-no-es-una-alcancia-comun
+    title_es: Una cuenta no es una alcancía común
+    concept: A diferencia de una alcancía común, una cuenta de ahorro infantil da un premio por el tiempo
+      guardado y la cuida un lugar seguro de la aldea.
+    learning_objective: Al final, el niño puede comparar una cuenta de ahorro infantil con una alcancía
+      común.
+    key_vocabulary:
+    - alcancía
+    - diferencia
+    - premio
+    - seguro
+    prior_knowledge: Sabe que conviene revisar la cuenta solo una vez al mes (tema anterior).
+    parent_check: ¿{{name}} puede explicar en qué se parece y en qué se diferencia una alcancía de una
+      cuenta de ahorro?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-alcancia-de-barro-y-la-cuenta
+      micro_objective: Observar la diferencia principal entre una alcancía común y una cuenta de ahorro
+        infantil.
+      narrative_beat: Liruf compara su alcancía de barro con la cuenta de ahorro de Dina, y nota que la
+        de Dina también recibe un premio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: parecidos-y-diferencias
+      micro_objective: Clasificar semejanzas y diferencias entre una alcancía común y una cuenta de ahorro
+        infantil.
+      narrative_beat: Dr. Rho pide a Dina hacer una lista de en qué se parecen y en qué se diferencian
+        ambas formas de guardar.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: la-alcancia-tambien-es-util
+      micro_objective: Reconocer que una alcancía también es útil, aunque no dé premio como una cuenta
+        de ahorro.
+      narrative_beat: Zara Vex pregunta a Liruf si una alcancía también es útil, aunque no dé premio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: usar-ambas-para-cosas-distintas
+      micro_objective: Aplicar la decisión de usar alcancía y cuenta de ahorro para propósitos distintos.
+      narrative_beat: 'Frente a una nueva decisión, Liruf elige usar ambas: alcancía para lo cercano y
+        cuenta de ahorro para metas más grandes.'
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: lo-que-no-debo-hacer-con-mi-cuenta
+    title_es: Lo que no debo hacer con mi cuenta
+    concept: Compartir la contraseña o los datos de la cuenta con desconocidos, o sacar dinero sin avisar
+      a un adulto, son cosas que no se deben hacer.
+    learning_objective: Al final, el niño puede reconocer comportamientos que no debe hacer con su cuenta
+      de ahorro infantil.
+    key_vocabulary:
+    - contraseña
+    - datos
+    - avisar
+    - cuidar
+    prior_knowledge: Sabe comparar una alcancía con una cuenta de ahorro (tema anterior).
+    parent_check: ¿{{name}} sabe que nunca debe compartir los datos de su cuenta con un desconocido, ni
+      sacar dinero sin avisar?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: cuidar-los-datos-como-en-el-faro
+      micro_objective: Relacionar el cuidado de la información privada con el cuidado de los datos de
+        una cuenta de ahorro.
+      narrative_beat: Dr. Rho recuerda a Dina lo aprendido en el faro sobre cuidar la información privada,
+        y lo aplica ahora a los datos de su cuenta.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: que-si-y-que-no
+      micro_objective: Clasificar comportamientos correctos e incorrectos respecto al manejo de una cuenta
+        de ahorro.
+      narrative_beat: Zara Vex ordena, junto con Liruf, una lista de qué sí y qué no se debe hacer con
+        una cuenta de ahorro infantil.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: avisar-antes-de-sacar-dinero
+      micro_objective: Explicar por qué es importante avisar a un adulto antes de sacar dinero de una
+        cuenta.
+      narrative_beat: Dr. Rho explica por qué sacar dinero sin avisar a un adulto rompe la confianza del
+        plan de ahorro.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: reconocer-un-comportamiento-incorrecto
+      micro_objective: Aplicar el reconocimiento de un comportamiento incorrecto frente a una situación
+        nueva con su cuenta.
+      narrative_beat: Frente a una situación nueva, Dina reconoce y evita un comportamiento incorrecto
+        con su cuenta.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: preguntas-que-puedo-hacer-antes-de-abrir-una-cuenta
+    title_es: Preguntas que puedo hacer antes de abrir una cuenta
+    concept: 'Antes de abrir una cuenta, es útil preguntar cosas concretas: cuánto premio da, cada cuánto
+      se revisa, y quién ayuda a manejarla.'
+    learning_objective: Al final, el niño puede formular preguntas concretas para hacer antes de abrir
+      una cuenta de ahorro infantil.
+    key_vocabulary:
+    - preguntar
+    - antes
+    - concreto
+    - informarse
+    prior_knowledge: Sabe qué no debe hacer con su cuenta (tema anterior).
+    parent_check: ¿{{name}} sabe qué preguntas haría antes de abrir una cuenta de ahorro?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: preguntar-antes-de-abrir
+      micro_objective: Reconocer la utilidad de hacer preguntas concretas antes de abrir una cuenta de
+        ahorro.
+      narrative_beat: 'Dr. Rho anima a Dina a hacer preguntas antes de abrir su cuenta: cuánto premio
+        da, y cada cuánto se puede revisar.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: mi-lista-de-preguntas
+      micro_objective: Ordenar una lista de preguntas concretas útiles antes de abrir una cuenta de ahorro.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar una lista de preguntas útiles para hacer antes de
+        abrir cualquier cuenta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-mis-preguntas
+      micro_objective: Practicar formular preguntas concretas en voz alta antes de tomar una decisión
+        de ahorro.
+      narrative_beat: Dina practica hacer sus preguntas en voz alta a Dr. Rho, como si fuera el encargado
+        de la casa de ahorros.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: aplicar-mi-lista-en-otra-aldea
+      micro_objective: Aplicar la lista de preguntas propia frente a una decisión nueva de abrir una cuenta.
+      narrative_beat: Frente a una nueva casa de ahorros de otra aldea, Dina aplica su lista de preguntas
+        antes de decidir abrir una cuenta ahí.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 8
+    slug: mi-primera-visita-a-la-casa-de-ahorros
+    title_es: Mi primera visita a la casa de ahorros
+    concept: Visitar la casa de ahorros junto a un adulto de confianza, con preguntas listas, cierra el
+      aprendizaje sobre cuentas de ahorro infantiles.
+    learning_objective: Al final, el niño puede aplicar todo lo aprendido preparándose para una primera
+      visita real a un lugar de ahorro junto a un adulto.
+    key_vocabulary:
+    - visita
+    - preparar
+    - adulto
+    - cuenta
+    prior_knowledge: Ha aprendido qué es una cuenta, quién ayuda, y qué preguntar (temas anteriores).
+    parent_check: ¿{{name}} está listo para acompañar a un adulto en una conversación sobre abrir una
+      cuenta de ahorro infantil?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mi-primera-visita-real
+      micro_objective: Vivir, dentro de una historia, una primera visita a la casa de ahorros junto a
+        la familia.
+      narrative_beat: Dr. Rho acompaña a Dina y a su familia en su primera visita real a la casa de ahorros
+        de la aldea.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-pasos-de-la-visita
+      micro_objective: Ordenar los pasos correctos de una visita a la casa de ahorros para abrir una cuenta.
+      narrative_beat: 'Zara Vex ayuda a Liruf a ordenar los pasos de la visita: llevar a un adulto, hacer
+        sus preguntas, y escuchar las respuestas.'
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: practicar-toda-la-conversacion
+      micro_objective: Practicar en voz alta la conversación completa de una visita para abrir una cuenta.
+      narrative_beat: Dina practica toda la conversación de su visita, desde el saludo hasta sus preguntas
+        finales.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: contarle-a-liruf-lo-aprendido
+      micro_objective: Aplicar con seguridad todo lo aprendido explicando el proceso completo de abrir
+        una cuenta.
+      narrative_beat: Al salir de su primera visita con su cuenta ya abierta, Dina explica a Liruf todo
+        lo que aprendió del proceso.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga Cuentas de Ahorro Infantiles.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga Cuentas de Ahorro Infantiles.
+    key_vocabulary:
+    - cuenta
+    - adulto
+    - cuidar
+    - crecer
+    prior_knowledge: Ha completado los ocho temas de la saga Cuentas de Ahorro Infantiles (aventura 2,
+      saga 3).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/que-es-una-cuenta-de-ahorro-infantil
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/quien-me-ayuda-a-abrir-una-cuenta
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/mi-libreta-crece-poquito-a-poquito
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/revisar-mi-libreta-cada-mes
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/una-cuenta-no-es-una-alcancia-comun
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/lo-que-no-debo-hacer-con-mi-cuenta
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/preguntas-que-puedo-hacer-antes-de-abrir-una-cuenta
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/mi-primera-visita-a-la-casa-de-ahorros
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, qué es una cuenta de ahorro infantil y quién ayuda a
+        abrirla.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos de las cuentas infantiles,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué la cuenta crece poco a poco y por qué revisarla
+        solo una vez al mes.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, la diferencia entre una alcancía y una
+        cuenta, y qué no se debe hacer con ella.
+      narrative_beat: Dr. Rho presenta una escena nueva de la aldea y pregunta a Dina si recuerda, sin
+        repasar la lección, qué no debe hacer con su cuenta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo formular preguntas y prepararse
+        para una primera visita real.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en Cuentas de Ahorro Infantiles con ideas de Metas con Premio
+      en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de Cuentas de Ahorro Infantiles
+      con un concepto de Metas con Premio.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - cuenta
+    prior_knowledge: Conoce Cuentas de Ahorro Infantiles (saga 3) y las lecciones citadas de Metas con
+      Premio (saga 2).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/metas-con-premio/una-meta-que-quiero-lograr
+    - la-aldea-del-interes/metas-con-premio/mi-meta-con-el-premio-de-la-aldea
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/que-es-una-cuenta-de-ahorro-infantil
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/mi-libreta-crece-poquito-a-poquito
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-segunda-saga
+      micro_objective: Recordar, tal como se aprendió antes, cómo elegir una meta concreta de ahorro.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de las metas y pide a Liruf recordarlo sin ayuda,
+        antes de mezclarlo con la cuenta infantil.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-mi-meta-con-mi-cuenta
+      micro_objective: Combinar la elección de una meta con la apertura de una cuenta de ahorro infantil
+        que la respalde.
+      narrative_beat: Dr. Rho muestra cómo elegir una meta se conecta con abrir una cuenta de ahorro infantil
+        que la respalde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, la elección de una meta y el cuidado de una
+        cuenta infantil.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 4
+  slug: el-valle-compara
+  icon: compare_arrows
+  title:
+    en-US: The Valley Compares
+    es-MX: El Valle Compara
+    pt-BR: O Vale Compara
+  description:
+    en-US: Compare ways to keep your coins and learn to spot a prize that sounds too good to be true.
+    es-MX: Compara formas de guardar tus monedas y aprende a reconocer un premio que suena demasiado bueno
+      para ser verdad.
+    pt-BR: Compare formas de guardar suas moedas e aprenda a reconhecer um prêmio bom demais para ser
+      verdade.
+  topics:
+  - position: 1
+    slug: dos-formas-de-guardar-en-el-valle
+    title_es: Dos formas de guardar en el valle
+    concept: 'El valle ofrece dos formas de guardar dinero: la alcancía de siempre y la cuenta de la casa
+      de ahorros, cada una con sus ventajas.'
+    learning_objective: Al final, el niño puede comparar, en conjunto, las dos formas de guardar dinero
+      que conoce hasta ahora.
+    key_vocabulary:
+    - comparar
+    - formas
+    - ventaja
+    - guardar
+    prior_knowledge: Ha aprendido sobre libretas, metas con premio y cuentas infantiles (aventura 2, sagas
+      1-3).
+    parent_check: ¿{{name}} puede nombrar dos formas distintas de guardar dinero y una ventaja de cada
+      una?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: frente-al-mercado-del-valle
+      micro_objective: Reconocer, en conjunto, las dos formas de guardar dinero conocidas hasta ahora.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente al mercado del valle para repasar las dos formas
+        de guardar que han conocido: alcancía y casa de ahorros.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ventajas-en-dos-columnas
+      micro_objective: Clasificar las ventajas de la alcancía y de la casa de ahorros en columnas separadas.
+      narrative_beat: Zara Vex pide a Liruf ordenar las ventajas de cada forma de guardar en dos columnas
+        distintas.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: una-meta-de-dos-dias-y-una-de-meses
+      micro_objective: Relacionar cada forma de guardar con el tipo de meta (corta o larga) para la que
+        conviene más.
+      narrative_beat: Dr. Rho pregunta a Dina cuál forma usaría para una meta que necesita en dos días,
+        y cuál para una meta de varios meses.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: elegir-la-forma-mas-adecuada
+      micro_objective: Aplicar la elección de la forma de guardar más adecuada según una meta nueva.
+      narrative_beat: Frente a una nueva meta, Dina elige la forma de guardar más adecuada y explica su
+        razón.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: cual-crece-mas-rapido
+    title_es: Cuál crece más rápido
+    concept: Comparar el crecimiento de una alcancía (que no cambia) con el de una cuenta con premio (que
+      crece con el tiempo) muestra una diferencia clara.
+    learning_objective: Al final, el niño puede comparar el crecimiento de una alcancía contra una cuenta
+      de ahorro con premio.
+    key_vocabulary:
+    - crecer
+    - rápido
+    - comparar
+    - premio
+    prior_knowledge: Sabe comparar las dos formas de guardar dinero del valle (tema anterior).
+    parent_check: ¿{{name}} puede explicar cuál de las dos formas de guardar 'crece' con el tiempo y cuál
+      se queda igual?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: la-alcancia-igual-y-la-cuenta-crecida
+      micro_objective: Observar la diferencia de crecimiento entre una alcancía y una cuenta con premio
+        después de un año.
+      narrative_beat: Dr. Rho pone lado a lado la alcancía de Liruf, con la misma cantidad desde hace un
+        año, y la cuenta de Dina, que creció con el premio.
+      difficulty: 1
+      suggested_families:
+      - story
+      - money
+    - position: 2
+      slug: calcular-cuanto-crecio
+      micro_objective: Calcular y comparar el crecimiento de una cuenta con premio contra una alcancía
+        sin premio.
+      narrative_beat: Zara Vex pide a Liruf calcular cuánto creció la cuenta de Dina, comparado con la
+        alcancía que se quedó igual.
+      difficulty: 2
+      suggested_families:
+      - money
+      - analyze
+    - position: 3
+      slug: la-alcancia-no-es-mala
+      micro_objective: Reconocer que la alcancía no es mala, solo cumple un propósito distinto al de una
+        cuenta con premio.
+      narrative_beat: Dr. Rho pregunta a Liruf si eso significa que la alcancía es mala, o simplemente
+        que sirve para otra cosa.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: predecir-el-resultado-de-un-ano
+      micro_objective: Aplicar la comparación de crecimiento para predecir el resultado de una nueva situación.
+      narrative_beat: Frente a una nueva comparación de un año, Dina predice cuál de las dos formas de
+        guardar tendrá más al final.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 3
+    slug: lo-que-no-cambia-aunque-pase-el-tiempo
+    title_es: Lo que no cambia aunque pase el tiempo
+    concept: La cantidad que se guardó al inicio (el principal) sigue siendo tuya siempre; el premio solo
+      se suma, nunca resta lo ya guardado.
+    learning_objective: Al final, el niño puede explicar que la cantidad guardada al inicio se mantiene
+      segura, y que el premio solo se suma a ella.
+    key_vocabulary:
+    - principal
+    - seguro
+    - sumar
+    - mantener
+    prior_knowledge: Sabe comparar el crecimiento de una alcancía contra una cuenta con premio (tema anterior).
+    parent_check: ¿{{name}} sabe que el dinero que guarda en una cuenta de ahorro sigue siendo suyo, y
+      que el premio solo se suma?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: mis-cien-monedas-nunca-desaparecen
+      micro_objective: Reconocer que la cantidad guardada al inicio se mantiene segura y solo se le suma
+        el premio.
+      narrative_beat: 'Dr. Rho tranquiliza a Liruf explicándole que sus 100 monedas guardadas nunca desaparecen:
+        siempre siguen ahí, y el premio solo se suma encima.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cual-parte-es-cual
+      micro_objective: Distinguir, en una libreta, la cantidad guardada original de la cantidad sumada
+        por premio.
+      narrative_beat: Zara Vex muestra la libreta de Dina y pide a Liruf identificar cuál parte es la que
+        guardó y cuál es el premio sumado.
+      difficulty: 2
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: tranquilizar-a-un-vecino-preocupado
+      micro_objective: Explicar con confianza por qué el dinero guardado en la casa de ahorros no desaparece.
+      narrative_beat: Dr. Rho pregunta a Dina qué le diría a un vecino preocupado de que su dinero guardado
+        pudiera desaparecer.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: identificar-principal-y-premio
+      micro_objective: Aplicar la distinción entre principal y premio a una libreta nueva sin ayuda.
+      narrative_beat: Frente a una nueva libreta con varios movimientos, Dina identifica sin ayuda qué
+        parte es principal y qué parte es premio.
+      difficulty: 3
+      suggested_families:
+      - money
+      - choice
+  - position: 4
+    slug: una-promesa-de-premio-enorme
+    title_es: Una promesa de premio enorme
+    concept: Cuando alguien promete un premio enorme y muy rápido por guardar dinero, conviene pausar
+      y comparar esa promesa con el premio normal de la casa de ahorros.
+    learning_objective: Al final, el niño puede reconocer una promesa de premio exageradamente alta y
+      sabe que conviene pausar antes de aceptarla.
+    key_vocabulary:
+    - promesa
+    - exagerada
+    - pausar
+    - comparar
+    prior_knowledge: Sabe cuánto premio es razonable esperar por guardar (aventura 2, saga 1).
+    parent_check: ¿{{name}} sabe que, si alguien promete un premio enorme y rápido, conviene pausar y
+      preguntar a un adulto antes de aceptar?
+    prerequisites:
+    - path: la-aldea-del-interes/premio-por-guardar/cuanto-premio-por-cuanto-guardado
+      strength: soft
+      reason: Saber cuánto premio es razonable esperar por guardar ayuda a reconocer cuándo una promesa
+        de premio suena exageradamente alta.
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: el-doble-de-tus-monedas-manana
+      micro_objective: Reconocer una promesa de premio exageradamente alta y rápida como una señal de
+        alerta.
+      narrative_beat: Un vendedor del mercado del valle le promete a Liruf 'el doble de tus monedas mañana
+        mismo' si se las entrega hoy, y Liruf siente la tentación de aceptar.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: comparar-con-el-premio-normal
+      micro_objective: Comparar una promesa exagerada de premio con el premio razonable y conocido de
+        la casa de ahorros.
+      narrative_beat: Dr. Rho compara la promesa del vendedor con el premio normal de la casa de ahorros,
+        mostrando lo distinto que suena.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - choice
+    - position: 3
+      slug: recordar-la-pausa-del-faro
+      micro_objective: Relacionar la pausa antes de decidir con lo ya aprendido sobre promesas demasiado
+        buenas para ser verdad.
+      narrative_beat: Zara Vex recuerda a Liruf la lección del faro sobre pausar y pensar antes de aceptar
+        algo que suena demasiado bueno.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: pausar-comparar-y-avisar
+      micro_objective: Aplicar la decisión de pausar, comparar y avisar a un adulto frente a una promesa
+        de premio exagerada.
+      narrative_beat: Frente a una nueva promesa exagerada, Liruf decide pausar, comparar y avisar a un
+        adulto antes de aceptar.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: comparar-con-calma-antes-de-decidir
+    title_es: Comparar con calma antes de decidir
+    concept: Comparar varias opciones con calma, sin apurarse, ayuda a elegir la mejor forma de guardar
+      dinero para cada meta.
+    learning_objective: Al final, el niño puede aplicar el hábito de comparar con calma varias opciones
+      antes de decidir dónde guardar su dinero.
+    key_vocabulary:
+    - comparar
+    - calma
+    - opciones
+    - decidir
+    prior_knowledge: Sabe reconocer una promesa de premio exagerada (tema anterior).
+    parent_check: ¿{{name}} compara con calma sus opciones antes de decidir qué hacer con su dinero?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: tres-opciones-del-valle
+      micro_objective: Reconocer la importancia de comparar varias opciones con calma antes de decidir.
+      narrative_beat: Dr. Rho le muestra a Dina tres opciones del valle para guardar sus monedas, y la
+        invita a comparar cada una con calma antes de elegir.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-segun-cual-conviene-mas
+      micro_objective: Ordenar varias opciones de ahorro según cuál conviene más para una meta concreta.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las tres opciones según cuál le conviene más para
+        su meta actual.
+      difficulty: 2
+      suggested_families:
+      - analyze
+      - arrange
+    - position: 3
+      slug: el-riesgo-de-decidir-con-prisa
+      micro_objective: Explicar el riesgo de decidir con prisa sin comparar todas las opciones disponibles.
+      narrative_beat: Dr. Rho pregunta a Dina qué pasaría si eligiera con prisa, sin comparar todas las
+        opciones.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: comparar-con-calma-mi-decision
+      micro_objective: Aplicar con seguridad la comparación calmada de opciones frente a una decisión
+        nueva.
+      narrative_beat: Frente a una decisión nueva, Dina compara con calma todas sus opciones antes de
+        elegir dónde guardar su dinero.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 6
+    slug: lo-que-aprendi-del-faro-aplicado-aqui
+    title_es: Lo que aprendí del Faro, aplicado aquí
+    concept: Las señales de alerta aprendidas en el Faro de la Confianza (prisa, promesas exageradas,
+      pedir datos) también sirven para cuidar el dinero guardado en la aldea.
+    learning_objective: Al final, el niño puede aplicar señales de alerta ya conocidas a situaciones nuevas
+      relacionadas con el ahorro.
+    key_vocabulary:
+    - señal
+    - alerta
+    - aplicar
+    - cuidar
+    prior_knowledge: Ha aprendido a comparar con calma antes de decidir (tema anterior).
+    parent_check: ¿{{name}} puede explicar cómo las señales de alerta que ya conoce también sirven para
+      cuidar su dinero guardado?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: las-senales-del-faro-en-el-valle
+      micro_objective: Recordar las señales de alerta ya conocidas y reconocer que también aplican a situaciones
+        de ahorro.
+      narrative_beat: Dr. Rho recuerda con Dina las señales de alerta del faro -prisa, promesas exageradas,
+        pedir datos- y le pregunta cómo se aplican aquí en el valle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: identificar-la-senal-en-el-valle
+      micro_objective: Identificar, en una situación nueva de ahorro, una señal de alerta ya conocida.
+      narrative_beat: Zara Vex presenta una situación nueva del valle y pide a Liruf identificar qué señal
+        de alerta del faro aparece.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: la-misma-habilidad-de-cuidar
+      micro_objective: Relacionar el cuidado del dinero guardado con el cuidado de la información privada
+        ya aprendido.
+      narrative_beat: Dr. Rho explica que cuidar el dinero guardado es, en el fondo, la misma habilidad
+        que cuidar la información privada.
+      difficulty: 2
+      suggested_families:
+      - story
+      - choice
+    - position: 4
+      slug: aplicar-las-senales-sin-ayuda
+      micro_objective: Aplicar sin ayuda las señales de alerta conocidas frente a una nueva situación
+        de ahorro.
+      narrative_beat: Frente a una nueva situación del valle, Dina aplica sin ayuda las señales de alerta
+        para decidir con seguridad.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 7
+    slug: mi-comparacion-completa
+    title_es: Mi comparación completa
+    concept: Armar una comparación completa (alcancía, cuenta con premio, y una promesa sospechosa) organiza
+      todo lo aprendido en esta saga.
+    learning_objective: Al final, el niño puede organizar una comparación completa de varias opciones
+      de guardar dinero, incluyendo una opción sospechosa.
+    key_vocabulary:
+    - comparación
+    - completa
+    - organizar
+    - opciones
+    prior_knowledge: Sabe aplicar señales de alerta del faro a situaciones de ahorro (tema anterior).
+    parent_check: ¿{{name}} puede organizar, con sus palabras, una comparación completa de opciones para
+      guardar dinero, incluyendo cuál evitaría?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: armar-la-tabla-completa
+      micro_objective: Organizar, dentro de una historia, una comparación completa de las opciones conocidas
+        de guardar dinero.
+      narrative_beat: Dr. Rho reta a Dina a armar, con todo lo aprendido, una tabla que compare la alcancía,
+        la cuenta con premio, y la promesa sospechosa del vendedor.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: ordenar-de-mejor-a-peor
+      micro_objective: Ordenar tres opciones de guardar dinero de mejor a peor, con una razón para cada
+        una.
+      narrative_beat: Zara Vex ayuda a Liruf a ordenar las tres opciones de mejor a peor, explicando el
+        porqué de cada lugar.
+      difficulty: 2
+      suggested_families:
+      - arrange
+      - analyze
+    - position: 3
+      slug: explicar-mi-comparacion
+      micro_objective: Explicar en voz alta una comparación completa de opciones de ahorro.
+      narrative_beat: Dina practica explicar en voz alta su comparación completa, como si se la contara
+        a un vecino nuevo del valle.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: comparar-tres-opciones-nuevas
+      micro_objective: Aplicar sin ayuda el proceso completo de comparación a un conjunto nuevo de opciones.
+      narrative_beat: Frente a una comparación nueva con otras tres opciones, Dina aplica el mismo proceso
+        sin ayuda.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - analyze
+  - position: 8
+    slug: elegir-con-toda-la-informacion
+    title_es: Elegir con toda la información
+    concept: Elegir dónde y cómo guardar el dinero, después de comparar con calma toda la información,
+      es la habilidad final de esta saga.
+    learning_objective: Al final, el niño puede aplicar la decisión final de dónde guardar su dinero,
+      habiendo comparado toda la información disponible.
+    key_vocabulary:
+    - elegir
+    - información
+    - decisión
+    - final
+    prior_knowledge: Ha organizado una comparación completa de opciones de ahorro (tema anterior).
+    parent_check: ¿{{name}} puede explicar su decisión final de dónde guardaría su dinero, y por qué?
+    fact_refs: []
+    lessons:
+    - position: 1
+      slug: sentarme-a-decidir
+      micro_objective: Reconocer el momento de tomar una decisión final después de comparar toda la información
+        disponible.
+      narrative_beat: Con toda la información comparada, Dina se sienta con Dr. Rho a tomar su decisión
+        final sobre dónde guardar sus próximos ahorros.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: cuanto-donde-y-por-cuanto-tiempo
+      micro_objective: Aplicar una decisión final de ahorro incluyendo cuánto, dónde y por cuánto tiempo.
+      narrative_beat: Zara Vex pide a Liruf explicar cuánto guardaría, dónde, y por cuánto tiempo, según
+        su decisión final.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: presentar-mi-decision-a-la-familia
+      micro_objective: Practicar presentar en voz alta una decisión de ahorro completa y razonada.
+      narrative_beat: Dina practica presentar su decisión completa frente a su familia, explicando cada
+        parte de su razonamiento.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - choice
+    - position: 4
+      slug: despedirme-del-valle
+      micro_objective: Aplicar con seguridad la decisión final completa, cerrando el aprendizaje de la
+        saga.
+      narrative_beat: Con su decisión final tomada, Dina se despide del valle lista para explorar nuevos
+        horizontes con su dinero bien guardado.
+      difficulty: 3
+      suggested_families:
+      - choice
+      - story
+  - position: 9
+    slug: el-cofre-del-repaso
+    kind: review_spaced
+    title_es: El Cofre del Repaso
+    concept: Zara Vex abre el cofre con los recuerdos de la saga El Valle Compara.
+    learning_objective: Al final, el niño puede recordar y aplicar, sin ayuda nueva, los conceptos principales
+      de la saga El Valle Compara.
+    key_vocabulary:
+    - comparar
+    - promesa
+    - premio
+    - decidir
+    prior_knowledge: Ha completado los ocho temas de la saga El Valle Compara (aventura 2, saga 4).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/el-valle-compara/dos-formas-de-guardar-en-el-valle
+    - la-aldea-del-interes/el-valle-compara/cual-crece-mas-rapido
+    - la-aldea-del-interes/el-valle-compara/lo-que-no-cambia-aunque-pase-el-tiempo
+    - la-aldea-del-interes/el-valle-compara/una-promesa-de-premio-enorme
+    - la-aldea-del-interes/el-valle-compara/comparar-con-calma-antes-de-decidir
+    - la-aldea-del-interes/el-valle-compara/lo-que-aprendi-del-faro-aplicado-aqui
+    - la-aldea-del-interes/el-valle-compara/mi-comparacion-completa
+    - la-aldea-del-interes/el-valle-compara/elegir-con-toda-la-informacion
+    lessons:
+    - position: 1
+      slug: el-cofre-se-abre-otra-vez
+      micro_objective: Recordar, sin ayuda nueva, las dos formas de guardar dinero conocidas y cuál crece
+        más rápido.
+      narrative_beat: Zara Vex abre de nuevo el cofre, ahora con los recuerdos del valle que compara,
+        y reta a Dina a recordar lo primero que aprendió.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-en-orden
+      micro_objective: Recordar y ordenar de nuevo por qué el principal nunca desaparece y cómo reconocer
+        una promesa exagerada.
+      narrative_beat: Liruf saca del cofre los recuerdos mezclados de esta saga y los ordena de memoria,
+        sin que Dr. Rho le dé ninguna pista nueva.
+      difficulty: 1
+      suggested_families:
+      - arrange
+      - choice
+    - position: 3
+      slug: aplicar-lo-guardado
+      micro_objective: Aplicar de nuevo, en una escena distinta, comparar con calma y aplicar las señales
+        de alerta del faro.
+      narrative_beat: Dr. Rho presenta una escena nueva de la aldea y pregunta a Dina si recuerda, sin
+        repasar la lección, cómo comparar con calma antes de decidir.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: cerrar-el-cofre
+      micro_objective: Aplicar en conjunto todo lo repasado, incluyendo armar una comparación completa
+        y decidir con toda la información.
+      narrative_beat: Antes de cerrar el cofre, Dina demuestra que recuerda toda la saga uniendo cada
+        recuerdo con la lección que le corresponde.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 10
+    slug: reto-entrelazado
+    kind: review_interleaved
+    title_es: Reto Entrelazado
+    concept: Zara Vex mezcla lo aprendido en El Valle Compara con ideas de Cuentas de Ahorro Infantiles
+      en un reto que combina ambas sagas.
+    learning_objective: Al final, el niño puede recordar y combinar un concepto de El Valle Compara con
+      un concepto de Cuentas de Ahorro Infantiles.
+    key_vocabulary:
+    - recordar
+    - combinar
+    - aplicar
+    - comparar
+    prior_knowledge: Conoce El Valle Compara (saga 4) y las lecciones citadas de Cuentas de Ahorro Infantiles
+      (saga 3).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/una-cuenta-no-es-una-alcancia-comun
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/preguntas-que-puedo-hacer-antes-de-abrir-una-cuenta
+    - la-aldea-del-interes/el-valle-compara/dos-formas-de-guardar-en-el-valle
+    - la-aldea-del-interes/el-valle-compara/comparar-con-calma-antes-de-decidir
+    lessons:
+    - position: 1
+      slug: un-recuerdo-de-la-tercera-saga
+      micro_objective: Recordar, tal como se aprendió antes, la diferencia entre una alcancía y una cuenta
+        de ahorro infantil.
+      narrative_beat: Zara Vex trae un recuerdo de la saga de la cuenta infantil y pide a Liruf recordarlo
+        sin ayuda, antes de mezclarlo con el valle que compara.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 2
+      slug: unir-las-preguntas-con-la-comparacion
+      micro_objective: Combinar la lista de preguntas antes de abrir una cuenta con el hábito de comparar
+        con calma.
+      narrative_beat: Dr. Rho muestra cómo la lista de preguntas antes de abrir una cuenta se conecta
+        con el hábito de comparar con calma.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 3
+      slug: practicar-el-entrelazado
+      micro_objective: Aplicar juntas, en una escena nueva, las preguntas antes de decidir y la comparación
+        calmada de opciones.
+      narrative_beat: Zara Vex reta a Liruf a resolver una escena nueva de la aldea usando a la vez ambas
+        ideas combinadas.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+    - position: 4
+      slug: mi-reto-entrelazado
+      micro_objective: Aplicar con seguridad, sin ayuda, la combinación completa de ambas sagas en una
+        situación final.
+      narrative_beat: Frente a una última escena, Dina combina lo aprendido en ambas sagas para resolverla
+        sin ayuda.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+- position: 5
+  slug: la-gran-mision-de-la-aldea
+  kind: review
+  icon: emoji_events
+  title:
+    en-US: The Village's Grand Mission
+    es-MX: La Gran Misión de la Aldea
+    pt-BR: A Grande Missão da Aldeia
+  description:
+    en-US: A final quest that replays every lesson of the village -- the prize, goals, the kids' account,
+      and comparing -- one last time.
+    es-MX: Una misión final que repasa todas las lecciones de la aldea -- el premio, las metas, la cuenta
+      y comparar -- una última vez.
+    pt-BR: Uma missão final que revisita todas as lições da aldeia -- o prêmio, as metas, a conta e comparar
+      -- uma última vez.
+  topics:
+  - position: 1
+    slug: la-gran-mision-del-premio
+    kind: review_quest
+    title_es: La Gran Misión del Premio
+    concept: 'Dr. Rho anuncia la Gran Misión de la aldea: un desafío final que reúne, sin enseñar nada
+      nuevo, todo lo aprendido sobre la casa de ahorros y su premio.'
+    learning_objective: Al final, el niño puede recordar y aplicar qué es la casa de ahorros, cómo aparece
+      el premio, y cómo leer una libreta.
+    key_vocabulary:
+    - premio
+    - casa de ahorros
+    - libreta
+    - crecer
+    prior_knowledge: Ha completado las cuatro sagas de La Aldea del Interés.
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/premio-por-guardar/una-casa-para-guardar-monedas
+    - la-aldea-del-interes/premio-por-guardar/el-premio-que-aparece-solo
+    - la-aldea-del-interes/premio-por-guardar/el-premio-crece-si-guardo-mas-tiempo
+    - la-aldea-del-interes/premio-por-guardar/mi-primera-libreta-de-ahorros
+    lessons:
+    - position: 1
+      slug: recordar-la-casa-de-ahorros
+      micro_objective: Recordar, sin ayuda nueva, qué es la casa de ahorros de la aldea y para qué sirve.
+      narrative_beat: 'Dr. Rho reúne a Dina y Liruf frente a la casa de ahorros y anuncia la Gran Misión:
+        recorrer una vez más todo lo aprendido en la aldea.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-el-premio-que-aparece
+      micro_objective: Recordar por qué guardar monedas por un tiempo hace aparecer un premio extra.
+      narrative_beat: Zara Vex presenta una escena nueva y reta a Liruf a recordar, sin ayuda, por qué
+        aparece un premio al guardar monedas.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - money
+    - position: 3
+      slug: recordar-el-premio-crece-otra-vez
+      micro_objective: Recordar por qué dejar el dinero guardado por más tiempo hace crecer más el total.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda por qué dejar el dinero guardado por más tiempo
+        hace crecer más el total.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: leer-una-libreta-nueva-de-la-mision
+      micro_objective: Aplicar sin ayuda la lectura completa de una libreta de ahorros nueva.
+      narrative_beat: Dina aplica, sin ayuda de Dr. Rho, la lectura completa de una nueva libreta de la
+        Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+  - position: 2
+    slug: la-gran-mision-de-las-metas
+    kind: review_quest
+    title_es: La Gran Misión de las Metas
+    concept: Dina y Liruf recuerdan cómo elegir una meta, calcular las semanas necesarias, y cómo el premio
+      ayuda a llegar antes.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo elegir una meta, calcular semanas,
+      y reconocer la ayuda del premio.
+    key_vocabulary:
+    - meta
+    - semanas
+    - premio
+    - celebrar
+    prior_knowledge: Ha repasado la saga del premio por guardar (tema anterior).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/metas-con-premio/una-meta-que-quiero-lograr
+    - la-aldea-del-interes/metas-con-premio/cuantas-semanas-me-faltan
+    - la-aldea-del-interes/metas-con-premio/el-premio-me-ayuda-a-llegar-antes
+    - la-aldea-del-interes/metas-con-premio/celebrar-la-meta-cumplida
+    lessons:
+    - position: 1
+      slug: elegir-una-meta-de-memoria
+      micro_objective: Recordar cómo elegir una meta concreta de ahorro y su costo.
+      narrative_beat: Zara Vex pide a Dina recordar, sin ayuda, cómo eligió su primera meta y cuánto costaba.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: calcular-semanas-de-memoria
+      micro_objective: Recordar cómo calcular cuántas semanas faltan para lograr una meta.
+      narrative_beat: Dr. Rho pide a Liruf calcular, sin ayuda, cuántas semanas le faltarían a una nueva
+        meta de la Gran Misión.
+      difficulty: 1
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: recordar-el-premio-que-ayuda
+      micro_objective: Recordar cómo el premio de la casa de ahorros ayuda a llegar antes a una meta.
+      narrative_beat: Zara Vex pregunta a Dina si recuerda cómo el premio de la casa de ahorros ayuda
+        a llegar antes a una meta.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: celebrar-una-meta-nueva
+      micro_objective: Aplicar con seguridad la celebración de una nueva meta de ahorro cumplida.
+      narrative_beat: Dina celebra, sin que nadie se lo recuerde, una nueva meta cumplida de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 3
+    slug: la-gran-mision-de-la-cuenta
+    kind: review_quest
+    title_es: La Gran Misión de la Cuenta
+    concept: Dina recuerda qué es una cuenta de ahorro infantil, quién ayuda a abrirla, y qué no se debe
+      hacer con ella.
+    learning_objective: Al final, el niño puede recordar y aplicar qué es una cuenta infantil, quién ayuda,
+      y qué cuidados requiere.
+    key_vocabulary:
+    - cuenta
+    - adulto
+    - cuidar
+    - crecer
+    prior_knowledge: Ha repasado la saga de las metas con premio (tema anterior).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/que-es-una-cuenta-de-ahorro-infantil
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/quien-me-ayuda-a-abrir-una-cuenta
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/mi-libreta-crece-poquito-a-poquito
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/lo-que-no-debo-hacer-con-mi-cuenta
+    lessons:
+    - position: 1
+      slug: recordar-que-es-la-cuenta
+      micro_objective: Recordar qué es una cuenta de ahorro infantil y para qué sirve.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda, sin ayuda, qué es una cuenta de ahorro infantil.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-quien-ayuda
+      micro_objective: Recordar quién puede ayudar a abrir una cuenta de ahorro infantil.
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, quién puede ayudarlo a abrir su propia
+        cuenta.
+      difficulty: 1
+      suggested_families:
+      - choice
+      - story
+    - position: 3
+      slug: recordar-el-crecimiento-poquito-a-poquito
+      micro_objective: Recordar por qué una cuenta de ahorro infantil crece poco a poco, no de golpe.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda por qué su cuenta crece poquito a poquito, y
+        no de golpe.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+    - position: 4
+      slug: aplicar-que-no-hacer
+      micro_objective: Aplicar sin ayuda el reconocimiento de comportamientos incorrectos con una cuenta
+        de ahorro.
+      narrative_beat: Dina reconoce, sin ayuda, un comportamiento incorrecto frente a una nueva situación
+        de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+  - position: 4
+    slug: la-gran-mision-de-comparar
+    kind: review_quest
+    title_es: La Gran Misión de Comparar
+    concept: Dina recuerda cómo comparar dos formas de guardar dinero y cómo reconocer una promesa de
+      premio exagerada.
+    learning_objective: Al final, el niño puede recordar y aplicar cómo comparar opciones de ahorro y
+      reconocer promesas exageradas.
+    key_vocabulary:
+    - comparar
+    - promesa
+    - exagerada
+    - opciones
+    prior_knowledge: Ha repasado la saga de la cuenta de ahorro infantil (tema anterior).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/el-valle-compara/dos-formas-de-guardar-en-el-valle
+    - la-aldea-del-interes/el-valle-compara/cual-crece-mas-rapido
+    - la-aldea-del-interes/el-valle-compara/una-promesa-de-premio-enorme
+    - la-aldea-del-interes/el-valle-compara/mi-comparacion-completa
+    lessons:
+    - position: 1
+      slug: recordar-las-dos-formas
+      micro_objective: Recordar las dos formas de guardar dinero conocidas en el valle.
+      narrative_beat: Dr. Rho pregunta a Dina si recuerda, sin ayuda, las dos formas de guardar dinero
+        conocidas en el valle.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: recordar-cual-crece-mas
+      micro_objective: Recordar por qué una cuenta con premio crece más rápido que una alcancía.
+      narrative_beat: Zara Vex reta a Liruf a recordar, de memoria, por qué una cuenta con premio crece
+        más rápido que una alcancía.
+      difficulty: 1
+      suggested_families:
+      - money
+      - choice
+    - position: 3
+      slug: recordar-la-promesa-exagerada
+      micro_objective: Recordar cómo reconocer una promesa de premio exageradamente alta y rápida.
+      narrative_beat: Dr. Rho presenta una nueva promesa exagerada y pregunta a Dina si recuerda cómo
+        reconocerla.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - story
+    - position: 4
+      slug: aplicar-mi-comparacion-de-nuevo
+      micro_objective: Aplicar sin ayuda una comparación completa a un conjunto nuevo de opciones de ahorro.
+      narrative_beat: Dina aplica, sin ayuda, una comparación completa a un conjunto nuevo de opciones
+        de la Gran Misión.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - analyze
+  - position: 5
+    slug: la-aldea-completa
+    kind: review_quest
+    title_es: La Aldea Completa
+    concept: 'Un desafío final combina, en un solo recorrido, las cuatro áreas de la aldea: el premio,
+      las metas, la cuenta infantil y comparar con calma.'
+    learning_objective: 'Al final, el niño puede aplicar en un solo recorrido las cuatro ideas de la aldea:
+      premio, metas, cuenta infantil y comparación.'
+    key_vocabulary:
+    - premio
+    - meta
+    - cuenta
+    - comparar
+    prior_knowledge: Ha repasado por separado las cuatro sagas de la Gran Misión (temas anteriores).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/premio-por-guardar/cuanto-premio-por-cuanto-guardado
+    - la-aldea-del-interes/metas-con-premio/una-meta-grande-y-una-meta-chica
+    - la-aldea-del-interes/cuentas-de-ahorro-infantiles/una-cuenta-no-es-una-alcancia-comun
+    - la-aldea-del-interes/el-valle-compara/lo-que-no-cambia-aunque-pase-el-tiempo
+    lessons:
+    - position: 1
+      slug: las-cuatro-areas-de-la-aldea
+      micro_objective: 'Recordar, en conjunto, las cuatro áreas de la aldea del interés: premio, metas,
+        cuenta y comparación.'
+      narrative_beat: Dr. Rho reúne a Dina y Liruf frente a la casa de ahorros y repasa las cuatro áreas
+        de la aldea, una por una.
+      difficulty: 1
+      suggested_families:
+      - story
+      - arrange
+    - position: 2
+      slug: ayudar-a-un-vecino-nuevo
+      micro_objective: Aplicar las cuatro áreas de la aldea para ayudar a un vecino nuevo a entender la
+        casa de ahorros.
+      narrative_beat: Zara Vex presenta a un vecino nuevo de la aldea y reta a Liruf a guiarlo por las
+        cuatro áreas del ahorro.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - arrange
+    - position: 3
+      slug: el-desafio-combinado
+      micro_objective: Aplicar con seguridad las cuatro áreas de la aldea en un desafío único que las
+        combina todas.
+      narrative_beat: Dina resuelve un desafío de la aldea que combina, de una sola vez, premio, metas,
+        cuenta y comparación.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: mi-recorrido-completo-de-la-aldea
+      micro_objective: Recorrer con seguridad, sin ayuda nueva, las cuatro áreas de la aldea aplicadas
+        a una situación propia.
+      narrative_beat: Dina completa su propio recorrido por las cuatro áreas de la aldea, de principio
+        a fin, sin ayuda de Dr. Rho.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - storyplay
+  - position: 6
+    slug: la-aldea-del-interes-se-despide
+    kind: review_quest
+    title_es: La Aldea del Interés se Despide
+    concept: El gran cierre de la aventura celebra todo lo aprendido en la aldea del interés y prepara
+      a Dina y Liruf para el archipiélago, donde descubrirán que no todo premio viene sin riesgo.
+    learning_objective: Al final, el niño puede celebrar y resumir con sus propias palabras todo lo logrado
+      en la Gran Misión de la aldea del interés.
+    key_vocabulary:
+    - celebrar
+    - aldea
+    - premio
+    - futuro
+    prior_knowledge: Ha completado el reto combinado de las cuatro sagas de la aldea (tema anterior).
+    fact_refs: []
+    review_of:
+    - la-aldea-del-interes/premio-por-guardar/mi-plan-con-premio
+    - la-aldea-del-interes/metas-con-premio/mi-meta-con-el-premio-de-la-aldea
+    - la-aldea-del-interes/el-valle-compara/elegir-con-toda-la-informacion
+    lessons:
+    - position: 1
+      slug: recordar-mi-plan-con-premio
+      micro_objective: Recordar el plan de ahorro con premio y cómo se conecta con las metas logradas
+        en la aldea.
+      narrative_beat: Dr. Rho compara el primer plan de ahorro de Dina con todas las metas que logró después
+        en la aldea.
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 2
+      slug: los-pasos-de-la-aldea-unidos
+      micro_objective: Recordar en conjunto los pasos de la aldea del interés unidos en un solo aprendizaje.
+      narrative_beat: 'Zara Vex recuerda a Liruf cada paso del camino: el premio, las metas, la cuenta
+        y comparar con calma, ahora todos unidos.'
+      difficulty: 1
+      suggested_families:
+      - story
+      - choice
+    - position: 3
+      slug: el-desafio-final-de-la-aldea
+      micro_objective: Aplicar en un desafío final todo lo aprendido sobre premio, metas, cuenta y comparación.
+      narrative_beat: Dina enfrenta el desafío final de la Gran Misión, combinando todo lo que la aldea
+        le enseñó sobre guardar con premio.
+      difficulty: 2
+      suggested_families:
+      - choice
+      - money
+    - position: 4
+      slug: la-aldea-celebra-y-se-despide
+      micro_objective: Celebrar, resumiendo con una frase propia, todo lo logrado en la Gran Misión de
+        la aldea del interés.
+      narrative_beat: Con la casa de ahorros brillando a su alrededor, Dina celebra junto a Dr. Rho, Liruf
+        y Zara Vex el cierre de la aldea, lista para descubrir qué riesgos y qué premios guarda el archipiélago.
+      difficulty: 2
+      suggested_families:
+      - storyplay
+      - story

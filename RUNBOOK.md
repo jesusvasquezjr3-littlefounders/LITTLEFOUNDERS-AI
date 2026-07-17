@@ -1,91 +1,48 @@
-# RUNBOOK.md — Respuesta a Incidentes
+# RUNBOOK.md — Incident Response
 
-> **Propósito:** Procedimientos documentados para diagnosticar y resolver incidentes comunes.
+## Rollback to v1
 
----
-
-## 1. Health Check
-
+v1 is fully intact on `main`. Emergency path:
 ```bash
-# URL directa de Railway (o api.littlefounders.ai si hay dominio custom):
-curl https://littlefounders-backend-production.up.railway.app/health
-# Expected: {"status": "ok", "database": "connected"}
+git checkout main            # local inspection
+# Production rollback = re-point Vercel/Railway to main (v1 deploy configs live there)
 ```
+The v2 wipe is a single revertable commit on `littlefounders_v2` (`git log --diff-filter=D` to find it).
 
-> **Nota App Sleeping:** el backend escala a cero en ocioso. La **primera**
-> petición tras un rato sin tráfico tarda ~1s (wake), no es un incidente.
+## Secrets leak (a credential landed in git)
 
-## 2. Backend Caído
+1. **ROTATE the credential immediately** — at the provider (Supabase, Railway, DeepSeek, Qwen…). Rotation is the containment; history rewriting is not.
+2. Purge from history (`git filter-repo`) only after rotation, coordinate force-push with the team (BOUNDARIES action).
+3. Verify `npm run secrets:check` catches the pattern; if it didn't, add the pattern to `agent/tools/check-secrets.sh`.
+4. Record the incident + fix here.
 
-```bash
-# 1. Verificar logs en Railway (dashboard o CLI desde backend/):
-railway logs              # logs de runtime
-railway logs -b           # logs del último build/deploy
-railway status            # estado del servicio + deployment ID
+## CI red on littlefounders_v2 / main
 
-# 2. Verificar health endpoint
-curl https://littlefounders-backend-production.up.railway.app/health
+1. `gh run list --branch <branch>` → `gh run view <id> --log-failed`.
+2. Reproduce locally: `cd <service> && npm ci && npm run type-check && npm run lint && npm test`.
+3. Fix forward if < 30 min; otherwise revert the breaking commit. Never merge over red.
 
-# 3. Verificar conectividad DB
-#    Revisar Supabase dashboard → Database → Connection pooling
+## Supabase self-hosted on Railway (placeholders — MUST be completed before real user data)
 
-# 4. Verificar variables de entorno en Railway
-#    Dashboard → servicio → Variables  (o `railway variables`)
-#    Especialmente: DATABASE_HOSTNAME, DATABASE_PASSWORD, SECRET_KEY
+- **Restart procedure:** TBD at deploy (Day 4–5).
+- **Backup:** TBD — scheduled `pg_dump` to external storage; REQUIRED before onboarding any real user.
+- **Restore drill:** TBD — must be executed once successfully before launch.
+- **Upgrade procedure:** TBD — component versions pinned in `database/DEPLOYMENT.md`.
 
-# 5. Re-desplegar si hace falta (CD: merge a main con cambios en backend/**;
-#    manual: `railway up` desde backend/ con sesión iniciada)
-```
+## Service down (Railway)
 
-## 3. Frontend Caído
+1. Check `/health` of the service; check Railway logs/deploy status.
+2. Redeploy last green build; if DB-related, check Vault components (Kong, GoTrue, Postgres) in order.
+3. Record cause + fix in this file.
 
-```bash
-# 1. Verificar Vercel dashboard → Deployments
-# 2. Verificar que el build no tenga errores
-cd frontend && npm run build
+## Published content invisible to users (RLS policy silently missing) — incident 2026-07-13
 
-# 3. Verificar variables VITE_ en Vercel
-#    Project Settings → Environment Variables
-```
+**Symptom:** a fully-published course (every row `status='published'`, all counts correct via service-role/psql) renders **zero lessons** for real logged-in users. No errors anywhere — the API returns `lessons: []`.
 
-## 4. Base de Datos Lenta
+**Cause:** a table with `ENABLE ROW LEVEL SECURITY` and **no** permissive SELECT policy denies every row to `authenticated`. On this instance, `lessons` lost its `lessons_select_published` policy because re-running `npm run db:migrate` replays `0002_content_skeleton.sql`, whose old policy references the since-removed `lessons.course_id` column — the replay aborts mid-way with `column "course_id" does not exist`, dropping the policy without recreating it. (Follow-up delta migration tracked separately.)
 
-```sql
--- Verificar conexiones activas
-SELECT pid, state, query_start, wait_event, query
-FROM pg_stat_activity
-WHERE state = 'active' AND query NOT LIKE '%pg_stat_activity%';
+**Diagnose:** `bash database/scripts/local-stack.sh psql -c '\d <table>'` → look at the `Policies` section. `(none)` + "row security enabled" on a user-readable table = this incident. Compare against the policy blocks in `database/migrations/0007_course_hierarchy.sql`.
 
--- Verificar consultas lentas
-SELECT query, calls, total_exec_time, mean_exec_time
-FROM pg_stat_statements
-ORDER BY mean_exec_time DESC
-LIMIT 10;
-```
+**Fix:** re-apply the exact `CREATE POLICY` block from the authoritative migration (0007 for the course hierarchy) via `local-stack.sh psql`. Then verify **as a real user in the browser** — service-role queries bypass RLS and prove nothing about visibility.
 
-## 5. Rate Limiting
-
-Si los usuarios reportan errores 429:
-```python
-# Verificar configuración en utils/limiter.py
-# Ajustar límite global o por endpoint
-```
-
-## 6. Rollback de Contenido (Admin)
-
-```bash
-# Usar el panel admin → History → Rollback
-# O vía API:
-curl -X POST https://api.littlefounders.ai/admin/history/{id}/rollback \
-  -H "Authorization: Bearer {token}"
-```
-
-## 7. Repositorio
-
-```bash
-# Revertir último commit
-git revert HEAD
-
-# Reset a commit específico
-git reset --hard <commit-hash>
-```
+**Prevention:** until the delta migration lands, do NOT re-run `db:migrate` on an instance that is already past 0007; after any publish/RLS/schema change, the acceptance check is a real login seeing the content, never a row count.

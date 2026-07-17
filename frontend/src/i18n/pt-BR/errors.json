@@ -1,0 +1,20 @@
+{
+  "api": {
+    "VALIDATION_ERROR": "Algo na solicitação não estava certo.",
+    "UNAUTHORIZED": "Você precisa entrar para isso.",
+    "FORBIDDEN": "Você não tem permissão para isso.",
+    "NOT_FOUND": "Não conseguimos encontrar isso.",
+    "CONFLICT": "Isso conflita com algo que já existe.",
+    "RATE_LIMITED": "Muitas tentativas — espere um momento.",
+    "INTERNAL": "Algo deu errado do nosso lado.",
+    "INVALID_CREDENTIALS": "Esse e-mail e senha não correspondem.",
+    "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",
+    "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
+    "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
+    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
+    "USERNAME_TAKEN": "Esse @usuário já está em uso — tente outro.",
+    "LESSON_LOCKED": "Esta lição ainda não está desbloqueada — termine as anteriores primeiro.",
+    "ATTEMPTS_EXHAUSTED": "Não há mais tentativas para esta pergunta.",
+    "UNSUPPORTED_SEGMENT": "Esta parte da lição não pode ser avaliada agora."
+  }
+}

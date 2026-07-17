@@ -32,7 +32,7 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
 
     const [currentExpression, setCurrentExpression] = useState(expression);
     const [isBlinking, setIsBlinking] = useState(false);
-    const [clickPulse, setClickPulse] = useState(0);
+    const [_clickPulse, setClickPulse] = useState(0);
     const [isSurprised, setIsSurprised] = useState(false);
 
     // ── Smooth mouse tracking (spring-like) ───────────────────────────────
@@ -319,26 +319,32 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
 
                 <g filter={`url(#dinaShadow-${uid})`}>
                 <g className="dina-breathe">
-                    {/* GRUPO COLA */}
+                    {/* GRUPO COLA — lf-rig-tail: Character Control hook (appearance untouched) */}
+                    <g className="lf-rig-tail">
                     <g className="dina-tail-anim">
                         <path d="M40 160 Q 30 130 50 145" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
                         <path d="M65 200 Q 55 170 80 185" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
                         <path d="M95 250 Q 85 220 115 240" fill={`url(#plateGrad-${uid})`} stroke="#eab308" strokeWidth="1" />
                         <path d="M140 310 Q 20 290 30 180 Q 35 130 65 130 Q 60 180 85 220 Q 110 280 150 300 Z" fill="#f97316" />
                     </g>
+                    </g>
 
-                    {/* PATAS FONDO */}
+                    {/* PATAS FONDO — lf-rig-leg-*: Character Control hooks */}
+                    <g className="lf-rig-leg-b">
                     <g transform="translate(150, 315)">
                         <rect x="0" y="0" width="42" height="80" rx="21" fill="#c2410c" />
                         <circle cx="10" cy="74" r="4" fill="#fdba74" opacity="0.6" />
                         <circle cx="21" cy="77" r="4" fill="#fdba74" opacity="0.6" />
                         <circle cx="32" cy="74" r="4" fill="#fdba74" opacity="0.6" />
                     </g>
+                    </g>
+                    <g className="lf-rig-leg-f">
                     <g transform="translate(290, 315)">
                         <rect x="0" y="0" width="40" height="80" rx="20" fill="#c2410c" />
                         <circle cx="10" cy="74" r="4" fill="#fdba74" opacity="0.6" />
                         <circle cx="20" cy="77" r="4" fill="#fdba74" opacity="0.6" />
                         <circle cx="30" cy="74" r="4" fill="#fdba74" opacity="0.6" />
+                    </g>
                     </g>
 
                     {/* CUERPO PRINCIPAL */}
@@ -354,18 +360,22 @@ export const DinaCharacter: React.FC<DinaCharacterProps> = ({
                     {/* PANZA */}
                     <ellipse cx="240" cy="340" rx="80" ry="60" fill="#ffedd5" opacity="0.4" />
 
-                    {/* PATAS FRENTE */}
+                    {/* PATAS FRENTE — lf-rig-arm-*: Character Control hooks */}
+                    <g className="lf-rig-arm-b">
                     <g transform="translate(170, 335)" filter={`url(#innerDropShadow-${uid})`}>
                         <rect x="0" y="0" width="55" height="90" rx="27.5" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="27" cy="85" r="6" fill="#ffedd5" />
                         <circle cx="41" cy="82" r="6" fill="#ffedd5" />
                     </g>
+                    </g>
+                    <g className="lf-rig-arm-f">
                     <g transform="translate(260, 335)" filter={`url(#innerDropShadow-${uid})`}>
                         <rect x="0" y="0" width="52" height="90" rx="26" fill="#fb923c" />
                         <circle cx="13" cy="82" r="6" fill="#ffedd5" />
                         <circle cx="26" cy="85" r="6" fill="#ffedd5" />
                         <circle cx="39" cy="82" r="6" fill="#ffedd5" />
+                    </g>
                     </g>
 
                     {/* CUELLO Y CABEZA */}

@@ -1,0 +1,26 @@
+schema_version: 1
+
+course:
+  slug: financial-education
+  subject: money
+  title:
+    en-US: "Financial Education"
+    es-MX: "Educación Financiera"
+    pt-BR: "Educação Financeira"
+  description:
+    en-US: "A two-year story adventure that teaches kids what money is, how to earn it, save it and spend it wisely."
+    es-MX: "Una aventura de dos años que enseña a los niños qué es el dinero, cómo ganarlo, ahorrarlo y gastarlo con inteligencia."
+    pt-BR: "Uma aventura de dois anos que ensina às crianças o que é o dinheiro, como ganhá-lo, poupá-lo e gastá-lo com inteligência."
+  authoring_locale: es-MX
+
+adventures:
+  - file: adventures/01-archipielago-del-trueque.yaml
+  - file: adventures/02-bosque-de-la-abundancia.yaml
+  - file: adventures/03-aldea-del-ahorro.yaml
+  - file: adventures/04-mercado-de-los-colores.yaml
+  # 05-08 authored by a sibling agent (COURSE_ENGINE.md §3 arc table) — listed
+  # here so the catalog is a complete coverage oracle even before they land.
+  - file: adventures/05-taller-de-los-inventores.yaml
+  - file: adventures/06-faro-de-la-confianza.yaml
+  - file: adventures/07-jardin-compartido.yaml
+  - file: adventures/08-cosmos-del-manana.yaml

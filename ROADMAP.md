@@ -1,47 +1,114 @@
-# ROADMAP.md — Plan de Arquitectura y Sprints
+# ROADMAP.md — Architecture & Sprint Plan
 
-> **Última actualización:** 2026-05-31
+> Authority: second only to /AGENTS.md. Architecture decisions recorded here; the running log lives in WALKTHROUGH.md.
 
----
+## Architecture summary (locked 2026-07-11)
 
-## Sprint Actual: Calidad y Testing
+8 independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
 
-**Objetivo:** Establecer infraestructura de calidad (testing, CI, linting, strict mode).
+## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
-### Completado ✓
-- [x] TypeScript strict mode activado
-- [x] ESLint con reglas más estrictas
-- [x] ruff para Python linting
-- [x] Vitest + Testing Library para frontend
-- [x] pytest + httpx para backend
-- [x] GitHub Actions CI (2 workflows)
-- [x] Environment files (.env.example, .env.test)
-- [x] Supabase CLI config local
+### Day 1 — Reset & agent environment ✅ DONE
+Wipe v1 (main intact) · root scaffold · AGENTS/CLAUDE + agent/ + all root docs · repo-map tooling.
+**DoD:** gates runnable (`docs:check`, `secrets:check`), docs complete, pushed. — met.
 
-### Próximo Sprint — Testing Real
-- [ ] Escribir tests para endpoints críticos (auth, health, lessons)
-- [ ] Escribir tests para componentes frontend clave
-- [ ] Configurar cobertura mínima (80%)
-- [ ] Migración Supabase: dump + versionar schema
+### Day 2 — Service scaffolds ✅ DONE
+Stamp the 6 Express services + database/ (migrations 0001 identity + 0002 provisional content) + frontend (Vite/React/Tailwind/i18n×3/dark/5 sections/characters).
+**DoD:** `npm install && npm run type-check && npm run lint && npm test` green in all 8; frontend `npm run build` passes. — met.
 
-### Futuro — Automatización
-- [ ] Pre-commit hooks (ruff + eslint + type-check)
-- [ ] E2E tests con Playwright o Cypress
-- [ ] Despliegue automatizado (CD)
-- [ ] Docker compose para dev local
+### Day 3 — CI + green pipeline ✅ DONE
+8 path-filtered workflows · push · all runs green · repo_map regenerated · doc-sync ritual executed once for real.
+**DoD:** `gh run list` fully green on littlefounders_v2. — met.
 
----
+### Day 3.5 — Design system ✅ DONE (landed ahead of schedule)
+`DESIGN.md` authoritative — **LittleFounders Arcade** (Brilliant.org-style gaming clarity + liquid glass; replaced the initial claymorphism system on 2026-07-12, `template/` deleted) · tokens implemented (Tailwind + CSS vars, light+dark) · reusable UI kit (`frontend/src/components/ui/`) · views re-skinned · i18n fragmented per route area per locale · agent rules hardened: responsive (desktop+mobile) made a non-negotiable product invariant (§1.11), anti-hallucination/instruction-fidelity rules added (§1.12).
+**DoD:** DESIGN.md authoritative, verified in browser light/dark + es-MX, CI green. — met.
 
-## API Contract (Backend → Frontend)
+### Day 4–5 — Vault deploy + auth (auth DONE locally; deploy deferred)
+**Stack source locked (2026-07-12): pinned `supabase/supabase` clone** (`database/SUPABASE_VERSION`, latest approved release — v1.26.07 today) drives local dev AND production; Railway services deploy the exact image tags from the release's docker-compose (pin table: `database/DEPLOYMENT.md`). ✅ Local stack running from the pin · ✅ migrations applied + reset-twice verified · ✅ signup bootstrap in DB (`0003`) · ✅ real generated types.
+**Auth shipped (2026-07-12, local E2E-verified):** Core `/api/v1/auth/*` (signup/login/refresh/logout/me over GoTrue; local HS256 JWT verify; social-provider flow reserved — Google first, later Discord/Facebook) · frontend `/login` + `/signup` (Tutor-intent field; everyone starts `universal`) + `/verify-parent` · **Guardian v1 = local OCR (tesseract.js)**: stateless verdict endpoint, ID photo in-memory only (NEVER stored), Core writes `parent_verifications` (0004, isolated, RLS) + grants `parent` + audit. Deploy remains deferred by decision (2026-07-12: development stays local; production designed-for but not executed) · RUNBOOK backup/restore BEFORE any real data.
+**DoD (deploy phase):** live signup → session → `/health` chain across deployed Core.
 
-| Endpoint | Método | Auth | Descripción |
-|----------|--------|------|-------------|
-| `/health` | GET | No | Health check |
-| `/auth/*` | * | * | Auth endpoints |
-| `/dashboard/*` | GET | Sí | Estadísticas |
-| `/lesson-engine/*` | * | Optional | Contenido educativo |
-| `/admin/*` | * | Admin | CRUD admin |
-| `/reports/*` | POST | Sí | Reportes/bugs |
-| `/social/*` | * | Sí | Red social |
-| `/notifications/*` | * | Sí | Notificaciones |
-| `/assets/*` | GET | Optional | Archivos multimedia |
+### Day 6–7 — First vertical slice + buffer
+Signup → universal user → profile section → DiceBear avatar customization persisted, using the DESIGN.md tokens + UI kit; app shell (sidebar/dashboard per mockup) built responsive from the start (mobile bottom nav + desktop sidebar).
+**DoD:** a real user can sign up, set an avatar, and see it persist — deployed, verified at mobile AND desktop.
+
+## Immediate next step
+
+**Lesson Engine v1 shipped 2026-07-12** (`/LESSON_ENGINE.md` authoritative):
+56 exercise types across 8 families in `frontend/src/lesson-engine/`, fullscreen
+player (cheer/arcade modes, streak/XP/hints, tiered growth-mindset feedback),
+Character Control rig over the 4 canonical characters, `/dev/lesson-lab` harness,
+229 frontend tests. Grading runs behind a pluggable boundary — the local grader
+is dev-only; production grading lands in Core with the content-schema session.
+**Course platform shipped on top of it (2026-07-12, same session, `/COURSE_ENGINE.md`
+authoritative):** real hierarchy in Vault (0007: courses→adventures→sagas→topics→
+lessons→lesson_documents; answer keys service-role-only), server-authoritative
+grading + progress/XP in Core (`/api/v1/learn/*`, unlock rule computed in one
+place), the gamified adventure-map course viewer (6 CSS-drawn world scenes,
+per-lesson path nodes, auto-scroll to current), the new **Depot** (`filebase/`,
+4006) media-storage service with CI, **Echo** implemented (qwen3-tts-flash →
+mono MP3 → Depot, operator-triggered batch), and **Forge** fully implemented
+(catalog → plan → write → 5 deterministic gates incl. Piaget vocabulary +
+arithmetic re-execution → independent Qwen judge → structure-frozen localization
+→ nanobanana images → publish-as-review) with the complete **Educación
+Financiera catalog: 1,312 lesson blueprints** — 864 teaching (tier2 sagas
+expanded to 8 topics) + 448 spaced-review (COURSE_ENGINE §3.1 ladder: per-saga
+Cofre del Repaso + Reto Entrelazado, per-adventure La Gran Misión review saga;
+34% consolidation, ~3.6 years at 1/day) + concept metadata (§3.2: 216
+parent_check mastery gut-checks, 43 hard/soft prerequisite edges with reasons —
+the future placement DAG) + adult register plumbing (§3.3: --register adult
+regenerates, never filters) + gate 6 anti-genericity + concreteness judge
+dimension + connect-to-prior prompt discipline, `catalog:check` green. E2E browser-verified:
+login → adventure map → real lesson → Core-graded verdicts → complete → XP/streak
+→ next lesson unlocked; both breakpoints, light+dark. 524 tests across services.
+
+**The lessons platform is COMPLETE (2026-07-13):** three full course catalogs —
+financial-education 1,312 · entrepreneurship 1,408 · investing 1,472 (tier3
+debut) = **4,192 blueprints, catalog:check 0/0** — plus migration 0008
+(tier1|2|3, `courses.requires`), multi-course catalog:check, and the 3-course
+sequence seeded (FE published, the other two draft until generated). Estimated
+full FE generation run: ~$225–320 USD all-in (text+TTS×3+images), ~5–6 GB in
+Depot, ~1.5–3 dedicated days; calibrate with a 1-saga pilot first.
+
+**Pipeline QA-ready, not yet executed (2026-07-13):** Forge gained
+`forced_types` (COURSE_ENGINE §4 addendum — pins a lesson's exact segment
+skeleton, skipping the plan-stage LLM call) and Echo gained the real
+per-character × per-locale **voice map** (`voiceFor()` — story/scene speaker →
+segment narrator → locale default, 12 optional override env vars). A 4th,
+non-shipping course — `qa-lesson-engine-smoketest` (62 lessons: one per each
+of the 56 LESSON_ENGINE types, 4 sequencing combos, a review-layer check) —
+exercises text, all gates, the judge, both localizations, images, and (once
+narrated) Echo end to end for a fraction of a real course's cost. GEMINI_API_KEY
+verified live against the real API (HTTP 200, `gemini-2.5-flash-image`
+confirmed available). Not yet run — `npm run generate -- --course
+qa-lesson-engine-smoketest` still costs real money and needs a go-ahead;
+character voice files are pending (owner to provide the location).
+
+Next, in Jesús's stated order of interest:
+- **Execute the Forge run for Educación Financiera** (operator-triggered:
+  `npm run generate -- --course financial-education`; needs GEMINI_API_KEY for
+  images, character voices for Echo; lessons land as `review` for human publish;
+  start with a 1-saga `--slots` pilot to calibrate cost/latency from the ledger).
+- **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
+  (Testing Tutor ↔ Testing Niño seed pair exists for this).
+
+## Next up (post-sprint backlog, unordered)
+
+- Guardian verification flow (provider decision: Stripe Identity / Persona / Veriff / manual)
+- tutor/ Oracle MVP with moderation + cite-or-refuse posture
+- tasks/ parent→kid assignment + rewards
+- Character voices for Echo (voice map ready; owner supplies voices pre-run)
+- Arcade first generated minigame bound to a learn concept
+- Courier engine decision (Postal / Maddy / Haraka / Stalwart) + templates
+- CD wiring (platform-native: Vercel Git integration, Railway watch-paths) — now incl. Depot volume
+
+## Open decisions
+
+| Decision | Status | Where documented |
+|---|---|---|
+| Email engine | OPEN | email-server/README.md candidates table |
+| ID-verification engine | **DECIDED 2026-07-12: local OCR (tesseract.js), photo never stored** | parent-id-check/AGENTS.md |
+| TTS provider | OPEN | audiogen/AGENTS.md |
+| gamegen approach (generated vs templated) | OPEN | gamegen/AGENTS.md |
+| License | OPEN (UNLICENSED placeholder) | README.md |

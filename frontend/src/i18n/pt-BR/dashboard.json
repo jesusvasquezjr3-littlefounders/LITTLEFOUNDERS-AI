@@ -1,0 +1,50 @@
+{
+  "navLabel": "Seções do app",
+  "openCta": "Meu painel",
+  "continueCta": "Continue de onde parou",
+  "logout": "Sair",
+  "tutorBadge": "Tutor",
+  "nav": {
+    "learn": "Aprenda",
+    "tutor": "Tutor IA",
+    "games": "Jogos",
+    "tasks": "Tarefas",
+    "lockedBadge": "Tutor",
+    "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
+    "profile": "Perfil"
+  },
+  "upgrade": {
+    "title": "Plano familiar",
+    "body": "Verifique sua identidade para se tornar um Tutor: administre sua família e atribua tarefas com recompensas.",
+    "cta": "Tornar-me Tutor"
+  },
+  "learn": {
+    "greeting": "Olá, {{name}}! Pronto para continuar construindo?",
+    "greetingAnon": "Olá! Pronto para continuar construindo?",
+    "title": "Seus cursos",
+    "lessonCount_one": "{{count}} lição",
+    "lessonCount_other": "{{count}} lições",
+    "progressLabel": "{{passed}}/{{total}} lições",
+    "emptyTitle": "Sua aventura está carregando",
+    "emptyBody": "Ainda não há cursos publicados. A Dina está preparando as primeiras missões — volte em breve!"
+  },
+  "sections": {
+    "soonBadge": "A caminho",
+    "tutor": {
+      "title": "Seu tutor pessoal com IA",
+      "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios — um tutor amigável que explica no seu ritmo chegará a este espaço."
+    },
+    "games": {
+      "title": "Jogos que ensinam de verdade",
+      "body": "Aqui vão morar minijogos conectados ao que você aprende nos seus cursos. Jogue, ganhe e suba de nível nas suas habilidades com dinheiro."
+    },
+    "tasks": {
+      "title": "Tarefas e recompensas",
+      "body": "Atribua tarefas do mundo real às suas crianças e recompense-as quando cumprirem. Este espaço está em construção."
+    }
+  },
+  "sidebar": {
+    "collapse": "Recolher menu",
+    "expand": "Expandir menu"
+  }
+}
