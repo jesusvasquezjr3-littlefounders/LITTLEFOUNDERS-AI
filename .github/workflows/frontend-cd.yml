@@ -1,0 +1,40 @@
+name: frontend CD
+
+on:
+  workflow_run:
+    workflows: ["frontend CI"]
+    types: [completed]
+    branches: [main]
+
+# Least privilege: read-only checkout. Authenticates to Vercel with
+# VERCEL_TOKEN — no native Git integration is configured on the Vercel
+# project (verified: "This Project is not connected to a Git repository").
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    name: Deploy frontend to Vercel
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      # Deploy the exact commit that passed frontend CI, not the HEAD of main.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # `vercel build` runs the Build Command configured on the Vercel
+      # project (cd frontend && npm install && npm run build), using the
+      # Production env vars (VITE_BACKEND_URL, etc.) pulled from Vercel.
+      - name: Pull Vercel environment (production)
+        run: npx vercel@latest pull --yes --environment=production --token=$VERCEL_TOKEN
+      - name: Build with Vercel
+        run: npx vercel@latest build --prod --token=$VERCEL_TOKEN
+      - name: Deploy prebuilt to production
+        run: npx vercel@latest deploy --prebuilt --prod --token=$VERCEL_TOKEN

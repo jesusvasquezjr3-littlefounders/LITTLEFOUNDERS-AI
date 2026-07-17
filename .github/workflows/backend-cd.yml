@@ -1,0 +1,30 @@
+name: backend CD
+
+on:
+  workflow_run:
+    workflows: ["backend CI"]
+    types: [completed]
+    branches: [main]
+
+# Least privilege: this job only needs to read the repo (checkout). It
+# authenticates to Railway with RAILWAY_TOKEN, never GITHUB_TOKEN. No
+# GitHub-App/native Git connection is used on the Railway side — the
+# service is deployed by uploading the built tree via the Railway CLI.
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    name: Deploy backend (Core) to Railway
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      - name: Deploy backend to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up backend --path-as-root --service littlefounders-backend --ci

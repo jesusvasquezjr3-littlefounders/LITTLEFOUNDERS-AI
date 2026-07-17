@@ -1,0 +1,26 @@
+name: filebase CD
+
+on:
+  workflow_run:
+    workflows: ["filebase CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    name: Deploy filebase (Depot) to Railway
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      - name: Deploy filebase to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up filebase --path-as-root --service filebase --ci
