@@ -2,7 +2,7 @@
 
 > Runbook for ROADMAP Day 4–5/8. Deploying/applying anything to production is a BOUNDARIES action — human sign-off first.
 >
-> **Status: DEPLOYED 2026-07-17** (Railway project `littlefounders-b2c`, public gateway `auth-b2c.littlefounders.ai`). 9 of the 11 components below are live — see "What's actually deployed" below for the two that were deliberately skipped and why. **Backups + restore drill are NOT done yet** (blocked on Railway billing) — RUNBOOK.md has the live status; do not onboard real users before that closes.
+> **Status: DEPLOYED 2026-07-17** (Railway project `littlefounders-b2c`, public gateway `auth-b2c.littlefounders.ai`). 9 of the 11 components below are live — see "What's actually deployed" below for the two that were deliberately skipped and why. **Backups + restore drill are DONE** (2026-07-17, daily automated + one drill performed) — see RUNBOOK.md; the mechanism is an interim shape (filebase's volume, not a dedicated one) worth revisiting once Railway billing allows it.
 
 ## Source of truth: the pinned upstream clone (NON-NEGOTIABLE)
 
@@ -56,7 +56,7 @@ released 2026-07-09). One version string reproduces the whole stack anywhere.
 
 **App services' `SUPABASE_URL`:** the public gateway, `https://auth-b2c.littlefounders.ai` (not Kong's private Railway domain) — matches `GOTRUE_JWT_ISSUER`/`API_EXTERNAL_URL` for consistency.
 
-**Before any real (non-test) user data:** backup schedule + one successful restore drill are **NOT DONE** — blocked on Railway's trial/billing (see RUNBOOK.md). This is the one open item from the original production plan.
+**Before any real (non-test) user data:** backup schedule + one successful restore drill are **DONE** (2026-07-17) — daily `pg_dump` via `.github/workflows/vault-backup.yml`, stored on filebase's Railway volume (a separate disk/service from `db`'s, since Railway wouldn't allow a dedicated backup volume/service at rollout time — see RUNBOOK.md for the full mechanism and the restore drill result).
 
 ## Costs & ops (accepted trade-off, WALKTHROUGH 2026-07-11)
 
