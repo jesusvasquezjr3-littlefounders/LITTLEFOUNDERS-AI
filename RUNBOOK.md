@@ -40,44 +40,52 @@ egress and volume are rounding errors at our scale. To diagnose cost: Project
 optimization game is "which services hold the most resident RAM, and do they
 need to."
 
-**Known finding (2026-07-17): Kong was ~63% of the entire memory bill.**
+**Known finding + fix APPLIED (2026-07-17): Kong was ~63% of the entire memory bill.**
 Kong (OpenResty) defaults `nginx worker_processes` to `auto` = one worker per
 **host** core; Railway hosts expose ~50 cores, so Kong spawned ~50 workers
 (each a full Lua VM + resident declarative config) → **~5.8 GB RSS, 52
 processes**, alone ~$34/mo of a ~$52/mo bill. Fix: `KONG_NGINX_WORKER_PROCESSES=2`
-(baked into `database/railway/kong/Dockerfile` ENV + set as a Railway variable)
-→ ~280 MB, 5 processes, ~$1.6/mo. Two workers × `worker_connections 16384` =
-~32k concurrent connections, far above our load; **this is right-sizing, not a
+(baked into `database/railway/kong/Dockerfile` ENV + set as a Railway variable).
+Applied + redeployed 2026-07-17 → **measured live: 192 MB RSS, 6 processes**
+(~97% less), ~$1.6/mo. Two workers × `worker_connections 16384` = ~32k
+concurrent connections, far above our load; **this is right-sizing, not a
 scalability cap** — raise the value (or set `auto`) via the ENV/variable the
-moment real traffic warrants. Verified safe locally before applying (Kong boots
-healthy, `worker_processes 2`).
+moment real traffic warrants. Verified after: full signup→/me→login chain
+through Kong returns 201/200/200.
 
-**General right-sizing levers, biggest-first (all reversible):**
-1. **Kong worker cap** (above) — the giant. Always keep this capped for low
-   traffic.
-2. **Node services auto-size their heap to host RAM.** On a big Railway host an
-   unbounded Node process lets its old-space grow well past what a small API
-   needs. Cap with `NODE_OPTIONS=--max-old-space-size=512` (safe for
-   backend/Core — it holds no large in-memory data; grading loads a lesson doc
-   at a time). Apply and watch it come up healthy.
-3. **Scale-to-zero the idle services** (Railway service → Settings →
-   Serverless). Safe candidates: `studio` (admin dashboard, operator-only),
-   `coursegen`/`audiogen`/`gamegen` (operator-triggered generation, zero
-   live-user traffic). They wake on first request; cold start is irrelevant for
-   these. NEVER sleep the hot path (frontend→backend→kong→auth→db).
-4. **`realtime`, `supavisor`, `storage-api` are deployed but currently unused**
-   by app code (no frontend realtime subscriptions; all services connect
-   straight to Postgres, not through supavisor's pooler; Depot/filebase is the
-   media path, not Supabase Storage). ~$5-6/mo combined. Product call: keep
-   running for when you scale into those features, scale-to-zero, or remove and
-   re-add later (removing a service leaves its DB schema intact, so it's
-   reversible).
+**Right-sizing levers, biggest-first (all reversible) — status 2026-07-17:**
+1. ✅ **Kong worker cap** (above) — APPLIED, the giant (~$32/mo saved). Always
+   keep capped for low traffic.
+2. ⏭️ **Node heap cap — SKIPPED, not warranted.** Measured backend/Core at
+   steady state = ~105 MB RSS (npm 28 + node ~74); the earlier high number was
+   inflated by repeated rollout redeploys, not real usage. A
+   `--max-old-space-size` cap would do nothing (app is well under any cap) and
+   only add OOM risk — measure before capping any Node service; only cap if
+   steady-state RSS is genuinely high (>~400 MB).
+3. ✅ **Scale-to-zero (Railway service → Settings → Serverless) — APPLIED** to
+   the 8 services with zero live-user traffic: `studio` (admin dashboard),
+   `meta` (studio-only), `storage`/`supavisor`/`realtime` (deployed but unused
+   by app code), `coursegen`/`audiogen`/`gamegen` (operator-triggered
+   generation). They sleep after ~10-15 min idle and wake on first request;
+   cold start is irrelevant for admin/generation and they receive no user
+   traffic. Combined ~$8/mo → near-$0 while asleep.
+   **NEVER sleep the hot path** — kept always-warm: `kong`, `auth` (GoTrue),
+   `rest` (PostgREST — Core reads/writes the DB through it), `db`,
+   `littlefounders-backend`, `Redis` (rate-limit store, hit every request),
+   `filebase` (Depot serves public media + holds the backups volume),
+   `parent-id-check` (user-triggered during Tutor verification — kept warm to
+   avoid cold-start latency on that flow). If you later wire realtime
+   subscriptions or route DB traffic through supavisor, disable Serverless on
+   those two then.
 
-**Applying these requires the Railway account to be active** — a suspended
-trial / unpaid state blocks *deploys and redeploys* (variable edits still work
-and stage for the next deploy). The Kong variable above is staged; it applies
-automatically on the next Kong deploy/restart after reactivation (or force it
-once with `railway redeploy --service kong`).
+Net effect: estimated bill **~$52.74/mo → ~$13-14/mo** (kong ~$32 + sleeping
+services ~$7-8), no capability removed, every change reversible as you scale.
+
+**Note:** these all require the Railway account active — a suspended
+trial/unpaid state blocks deploys/redeploys (variable edits still stage for the
+next deploy). To re-apply on a fresh environment: the Kong cap is version-
+controlled in its Dockerfile; the Serverless toggles are per-service dashboard
+settings (not in code) — re-enable them after any service re-create.
 
 ## Published content invisible to users (RLS policy silently missing) — incident 2026-07-13
 
