@@ -78,8 +78,9 @@ through Kong returns 201/200/200.
    subscriptions or route DB traffic through supavisor, disable Serverless on
    those two then.
 
-Net effect: estimated bill **~$52.74/mo → ~$13-14/mo** (kong ~$32 + sleeping
-services ~$7-8), no capability removed, every change reversible as you scale.
+Net effect: estimated bill **~$52.74/mo → ~$12/mo** (observed: the Railway estimate dropped to
+$11.98 right after applying — kong ~$32 + sleeping services ~$8), no
+capability removed, every change reversible as you scale.
 
 **Note:** these all require the Railway account active — a suspended
 trial/unpaid state blocks deploys/redeploys (variable edits still stage for the
