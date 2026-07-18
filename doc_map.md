@@ -15,6 +15,8 @@
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
 | Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
 | Architecture decisions & sprint | ROADMAP.md | all |
+| Deployment, isolation, security, scaling, cost (how services ship & run in prod) | DEPLOYMENT.md | all; §8 = new-service checklist |
+| Vault stack deploy specifics (pinned images, backups, upgrade) | database/DEPLOYMENT.md | all |
 | Terminology | GLOSSARY.md | all |
 | Visual design (authoritative tokens); desktop+mobile responsive rules | DESIGN.md | all, esp. §Layout → Responsive Adaptation |
 | Current repo state, past decisions | WALKTHROUGH.md | Current State / Decision Log |

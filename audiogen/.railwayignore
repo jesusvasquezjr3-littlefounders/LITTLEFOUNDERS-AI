@@ -1,0 +1,19 @@
+# Deployment isolation + upload hygiene for `railway up audiogen --path-as-root`.
+# See backend/.railwayignore for the rationale.
+#
+# src/samples/ is ~210 MB of character voice-clone REFERENCE audio, needed
+# only by the local `voices:register` / `trim:samples` tooling — never by the
+# deployed /health + narration service. Excluding it here is what fixes the
+# upload timeout hit during the first rollout (the repo-root .gitignore rule
+# `audiogen/src/samples/` did NOT apply once the archive was re-rooted to
+# audiogen/). If you ever run `voices:register` in CI, do it from a checkout,
+# not from a Railway deploy.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+src/samples/

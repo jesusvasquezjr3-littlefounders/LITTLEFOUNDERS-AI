@@ -1,0 +1,13 @@
+# Deployment isolation + upload hygiene for `railway up parent-id-check --path-as-root`.
+# See backend/.railwayignore for the rationale.
+#
+# KEEP *.traineddata — these are the Tesseract OCR language models (spa/eng/por)
+# required AT RUNTIME by the Guardian verification service. Do NOT exclude them.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store

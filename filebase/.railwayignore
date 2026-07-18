@@ -1,0 +1,15 @@
+# Deployment isolation + upload hygiene for `railway up filebase --path-as-root`.
+# See backend/.railwayignore for the rationale.
+#
+# data/ is the LOCAL dev object store (FILEBASE_ROOT=./data). In production
+# FILEBASE_ROOT=/data is a Railway volume mounted over the container path, so
+# uploading the dev data/ is both wasteful and pointless — exclude it.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+data/

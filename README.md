@@ -60,7 +60,8 @@ npm run secrets:check  # no committed secrets
 3. [`ROADMAP.md`](ROADMAP.md) — sprint plan and architecture decisions
 4. [`GLOSSARY.md`](GLOSSARY.md) — canonical terminology
 5. [`DESIGN.md`](DESIGN.md) — frontend design system (authoritative; desktop+mobile responsiveness is non-negotiable)
-6. [`agent/`](agent/) — prompt templates, workflows, and tools for AI-agent sessions
+6. [`DEPLOYMENT.md`](DEPLOYMENT.md) — how services ship & run in production: deployment isolation, security posture, scaling, cost right-sizing, and the **new-microservice checklist** (§8)
+7. [`agent/`](agent/) — prompt templates, workflows, and tools for AI-agent sessions
 
 ## License
 

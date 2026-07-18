@@ -1,0 +1,15 @@
+# Deployment isolation + upload hygiene for `railway up coursegen --path-as-root`.
+# See backend/.railwayignore for the rationale.
+#
+# KEEP curriculum/ — it's the lesson-blueprint catalog the Forge pipeline reads
+# at generation time; it is source data, not a build artifact. Only runs/ (the
+# per-run checkpoint/ledger output) is excluded.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+runs/
