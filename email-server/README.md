@@ -36,16 +36,15 @@ Both processes run in one container, supervised by [`src/index.ts`](src/index.ts
 
 See [`.env.example`](.env.example). Key vars: `EMAIL_ENGINE` (`noop`\|`haraka`), `INTERNAL_API_KEY`, `MAIL_FROM`, the `HARAKA_*` listener knobs, and (when `haraka`) the `SES_RELAY_HOST` / `SES_SMTP_USER` / `SES_SMTP_PASS` smarthost credentials. `SES_SMTP_USER`/`PASS` are region-scoped SES **SMTP** credentials, not AWS console/access keys. Boot crashes (never serves half-configured) if `EMAIL_ENGINE=haraka` without the `SES_*` set, or if `INTERNAL_API_KEY` is missing in production.
 
-## Going live — the wiring checklist
+## Live in production (2026-07-18)
 
-The service is **built, tested, and CD-ready**. What remains is connecting it. Owner-only steps are marked 🔑.
+Courier is **deployed and delivering real auth mail** — GoTrue → Courier (Haraka) → Amazon SES, verified in production (SES `250 Ok` on live signups). The wiring that was done, for the record:
 
-1. 🔑 **Amazon SES** — create the SES identity, verify the `littlefounders.ai` domain, request **production access** (transactional; ~24h), and generate **SMTP credentials**.
-2. 🔑 **DNS (Vercel zone)** — add the SES-provided DKIM CNAMEs, an SPF `include` for SES, a `_dmarc` TXT (`p=none`, ramping to `quarantine`), and a custom MAIL FROM subdomain.
-3. **Railway service** — `railway add --service email-server` in project `littlefounders-b2c`; set env: `EMAIL_ENGINE=haraka`, `INTERNAL_API_KEY` (32+ chars), `MAIL_FROM`, `SES_RELAY_HOST`, `SES_SMTP_USER`, `SES_SMTP_PASS`. No volume, no public domain. Keep it **always-warm** (do not scale-to-zero).
-4. **Deploy** — `railway up email-server --path-as-root --service email-server --ci`; confirm `/health` 200 and clean logs.
-5. **Point GoTrue at Courier** — on the Supabase `auth` service set `SMTP_HOST=email-server.railway.internal`, `SMTP_PORT=587`, `SMTP_USER=`/`SMTP_PASS=` (empty — internal IP-relay), `SMTP_ADMIN_EMAIL=noreply@littlefounders.ai`, `SMTP_SENDER_NAME=LittleFounders`, and flip `ENABLE_EMAIL_AUTOCONFIRM=false`. (Template block in `database/supabase/docker/.env.example`.)
-6. **Activate CD** — set the repo variable `EMAIL_SERVER_LIVE=true` so [`email-server-cd.yml`](../.github/workflows/email-server-cd.yml) begins auto-deploying.
-7. **Test** — real signup → confirmation email lands in the inbox; password-reset + magic-link likewise; check SES + Courier logs for `250`; confirm SES bounce/complaint feedback is wired.
+1. ✅ **Amazon SES** (us-east-1) — domain identity verified, Easy DKIM (RSA-2048), custom MAIL FROM (`mail.littlefounders.ai`), production access granted, SMTP credentials issued.
+2. ✅ **DNS (Vercel zone)** — SES DKIM (3 CNAMEs) + MAIL FROM SPF/MX + `_dmarc` TXT (`p=none`). The old **Resend** records (`resend._domainkey`, `send` TXT/MX) were removed — Courier uses `mail.*`, not `send.*`.
+3. ✅ **Railway service** — `email-server` in project `littlefounders-b2c`, `EMAIL_ENGINE=haraka` + `INTERNAL_API_KEY` + `MAIL_FROM` + `SES_RELAY_HOST`/`SES_SMTP_USER`/`SES_SMTP_PASS`. No volume, no public domain, kept always-warm (not scaled to zero).
+4. ✅ **Deploy** — live, `/health` 200, clean logs.
+5. ✅ **GoTrue → Courier** — `SMTP_HOST=email-server.railway.internal`, `SMTP_PORT=587`, `SMTP_USER`/`PASS` empty (internal IP-relay), `SMTP_ADMIN_EMAIL=noreply@littlefounders.ai`, `SMTP_SENDER_NAME=LittleFounders`, `GOTRUE_MAILER_AUTOCONFIRM=false`. Branded trilingual templates wired via `GOTRUE_MAILER_TEMPLATES_*`/`SUBJECTS_*` (`frontend/public/email-templates/`).
+6. ✅ **Tested** — real signup → branded confirmation email delivered (SES `250`, message-id returned); language follows the user's registration locale.
 
-Until step 1–2 are done, sending fails at the SES AUTH handshake — verified end-to-end locally: the full path (adapter → Haraka → TLS to real SES → SMTP AUTH) works and SES returns `550 Authentication Credentials Invalid` for placeholder creds. Real creds = delivered.
+**One optional owner step remains:** set the repo variable `EMAIL_SERVER_LIVE=true` (`gh variable set EMAIL_SERVER_LIVE --body true`) to activate the CD workflow ([`email-server-cd.yml`](../.github/workflows/email-server-cd.yml)) so future `email-server/` changes auto-deploy. Until then the service is live but redeploys are manual (`railway up email-server --path-as-root --service email-server --ci`).

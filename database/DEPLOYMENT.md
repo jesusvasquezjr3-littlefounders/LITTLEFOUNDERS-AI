@@ -50,9 +50,11 @@ released 2026-07-09). One version string reproduces the whole stack anywhere.
 
 **Secrets:** generated locally with `openssl` following `docker/utils/generate-keys.sh` semantics (JWT secret, anon/service-role keys, DB + dashboard passwords, Realtime/Supavisor encryption keys), set directly as Railway variables per service — never committed, never printed in full outside that one generation step.
 
-**GoTrue config, as actually set:** `GOTRUE_DISABLE_SIGNUP=false`, `GOTRUE_EXTERNAL_EMAIL_ENABLED=true`, **`GOTRUE_MAILER_AUTOCONFIRM=true`** (interim — email-server/Courier isn't deployed, so real confirmation isn't possible yet; flip to `false` once it ships, see RUNBOOK.md Known Issues), phone auth disabled, `SITE_URL=https://littlefounders.ai`, `API_EXTERNAL_URL=https://auth-b2c.littlefounders.ai/auth/v1`.
+**GoTrue config, as actually set:** `GOTRUE_DISABLE_SIGNUP=false`, `GOTRUE_EXTERNAL_EMAIL_ENABLED=true`, **`GOTRUE_MAILER_AUTOCONFIRM=false`** (since 2026-07-18 — Courier/email-server is live, so signups are verified against real mailbox ownership), phone auth disabled, `SITE_URL=https://littlefounders.ai`, `API_EXTERNAL_URL=https://auth-b2c.littlefounders.ai/auth/v1`.
 
-**Migrations:** `0001` through `0010` applied in order via `railway ssh --service db -- psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1`, no seeds.
+**GoTrue → Courier email wiring (2026-07-18):** `GOTRUE_SMTP_HOST=email-server.railway.internal`, `GOTRUE_SMTP_PORT=587`, `GOTRUE_SMTP_USER`/`PASS` empty (internal private-IP relay, not password auth), `GOTRUE_SMTP_ADMIN_EMAIL=noreply@littlefounders.ai`, `GOTRUE_SMTP_SENDER_NAME=LittleFounders`. Auth mail (confirmation / recovery / magic-link / invite / email-change) renders from **branded, trilingual** templates hosted at `https://littlefounders.ai/email-templates/*.html` (wired via `GOTRUE_MAILER_TEMPLATES_*` + `GOTRUE_MAILER_SUBJECTS_*`; language follows the user's registration locale — see `frontend/public/email-templates/README.md`). **Google social login** is code-complete with `GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI` pre-staged; enabling it is the owner's last step — set `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true` + `CLIENT_ID` + `SECRET`.
+
+**Migrations:** `0001` through `0011` applied in order via `railway ssh --service db -- psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1`, no seeds. (`0011_oauth_bootstrap` teaches `handle_new_user()` to derive `display_name` from an OAuth provider's `full_name`/`name` metadata — verified applied in prod.)
 
 **App services' `SUPABASE_URL`:** the public gateway, `https://auth-b2c.littlefounders.ai` (not Kong's private Railway domain) — matches `GOTRUE_JWT_ISSUER`/`API_EXTERNAL_URL` for consistency.
 

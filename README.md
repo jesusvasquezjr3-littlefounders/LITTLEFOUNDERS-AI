@@ -6,7 +6,7 @@
 >
 > **AI agents:** read [`AGENTS.md`](AGENTS.md) before touching anything.
 >
-> **Production status (2026-07-17):** deployed and live — see ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative, including two real bugs found and fixed post-deploy and the one open item (Postgres backups, blocked on billing).
+> **Production status (2026-07-18):** deployed and live — real email confirmation now sends through Courier (Haraka → Amazon SES) with branded trilingual templates, and Google social login is code-complete (pending only OAuth credentials). See ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative.
 
 ## Service map
 
@@ -19,7 +19,7 @@
 | [`audiogen/`](audiogen/) | Echo | TTS audio for lessons (3 locales) | 4002 | Railway | — (internal-only, no public domain) |
 | [`gamegen/`](gamegen/) | Arcade | Personalized educational minigame generation | 4003 | Railway | — (internal-only, no public domain) |
 | [`parent-id-check/`](parent-id-check/) | Guardian | Guardian identity verification (kid/bigfounder gating) | 4004 | Railway | — (internal-only, no public domain) |
-| [`email-server/`](email-server/) | Courier | Transactional email — Haraka SMTP → Amazon SES relay | 4005 | Railway (internal-only) | built + tested; deploy pending SES wiring |
+| [`email-server/`](email-server/) | Courier | Transactional email — Haraka SMTP → Amazon SES relay | 4005 | Railway (internal-only) | **live** — GoTrue auth mail via SES |
 | [`filebase/`](filebase/) | Depot | Media storage — lesson audio & generated images (Railway volume) | 4006 | Railway | `media-b2c.littlefounders.ai` |
 
 All Railway services live in one project (`littlefounders-b2c`). Internal services have no public domain by design (AGENTS.md §1.5) — only Core, Vault's Kong gateway, and Depot are reachable from outside Railway's private network.

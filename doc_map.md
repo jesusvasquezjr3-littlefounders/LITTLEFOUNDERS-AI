@@ -14,6 +14,9 @@
 | Naming | /AGENTS.md §1.7 + GLOSSARY.md | — |
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
 | Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
+| Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
+| Auth email templates + language selector | frontend/public/email-templates/README.md | all |
+| Social login (Google OAuth) | backend/README.md ("Social login") · backend/AGENTS.md | — |
 | Architecture decisions & sprint | ROADMAP.md | all |
 | Deployment, isolation, security, scaling, cost (how services ship & run in prod) | DEPLOYMENT.md | all; §8 = new-service checklist |
 | Vault stack deploy specifics (pinned images, backups, upgrade) | database/DEPLOYMENT.md | all |
@@ -42,5 +45,5 @@
 | audiogen (Echo) | audiogen/AGENTS.md |
 | gamegen (Arcade) | gamegen/AGENTS.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
-| email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + "Going live" wiring: email-server/README.md · haraka/README.md |
+| email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |
 | filebase (Depot) | filebase/AGENTS.md |

@@ -373,6 +373,7 @@ frontend/
   .vercel/
     node/
   public/
+    email-templates/
     lottie/
     marketing/
   src/
@@ -1034,13 +1035,13 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 > `database/DEPLOYMENT.md`. Any production change is a BOUNDARIES action
 > (`agent/core/BOUNDARIES.md`) — human sign-off first.
 >
-> **Last verified:** 2026-07-17 · production live, 16 services, est. ~$12/mo.
+> **Last verified:** 2026-07-18 · production live, 17 services (Courier/email-server
+> now live), est. ~$12/mo (Courier is a small always-warm service).
 
 ---
 
 ## §1 Topology (what runs where)
 
-| Tier | Platform | What | Public? |
 ```
 
 ### DESIGN.md
@@ -1134,7 +1135,7 @@ primary register.
 >
 > **AI agents:** read [`AGENTS.md`](AGENTS.md) before touching anything.
 >
-> **Production status (2026-07-17):** deployed and live — see ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative, including two real bugs found and fixed post-deploy and the one open item (Postgres backups, blocked on billing).
+> **Production status (2026-07-18):** deployed and live — real email confirmation now sends through Courier (Haraka → Amazon SES) with branded trilingual templates, and Google social login is code-complete (pending only OAuth credentials). See ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative.
 
 ## Service map
 
@@ -1210,17 +1211,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-18)
+## Current State (2026-07-18) — email LIVE + Google OAuth ready + Resend retired
 
-**Courier (email-server) engine built — Haraka → Amazon SES relay (2026-07-18).** The transactional-email engine (open since 2026-07-11) is decided after a deep 6-candidate comparison (Postal/Stalwart/Maddy/Haraka/Plunk/Cuttlefish) against 5 criteria — stable versioning, active community, reviews, stack fit, deliverability: **Haraka** (MIT, semver ≥1.0, Node), run as a send-only outbound relay to **Amazon SES**. The honest driver: no self-hosted engine solves "not spam" alone (Railway blocks outbound port 25, no PTR control), so the correct architecture is self-host the control plane + rent SES's warm IP reputation. Built in `email-server/`: a supervisor (`src/index.ts`) runs the Haraka engine — private SMTP listener on `[::]:587` (for GoTrue) + `127.0.0.1:2525` (for the co-located HTTP API), `nodes=1`, custom `relay_internal` plugin grants private-IP relaying, `smtp_forward` forwards to SES over TLS+AUTH — alongside the Express `POST /api/v1/send` API whose `SmtpAdapter` (nodemailer) submits into Haraka. SES creds + the internal TLS cert are rendered at boot from env, never committed. Verified end-to-end locally: full path adapter → Haraka → TLS to **real** SES → SMTP AUTH, SES returned `550 Authentication Credentials Invalid` for placeholder creds (real creds = delivered). 10 tests green; type-check/lint/build clean. CD workflow added, gated by the `EMAIL_SERVER_LIVE` repo variable. **NOT deployed yet** — remaining is owner wiring (SES account/DNS/creds), then deploy, point GoTrue at `email-server.railway.internal`, and flip `GOTRUE_MAILER_AUTOCONFIRM=false`. Full checklist: email-server/README.md "Going live".
+**Courier is deployed and delivering real auth mail in production.** email-server went live as the **17th Railway service** (project `littlefounders-b2c`, internal-only, always-warm): GoTrue → `email-server.railway.internal:587` (Haraka) → Amazon SES over TLS + SMTP AUTH, verified live (SES returns `250 Ok` with a message-id on real signups; the relay log shows `code=235` AUTH success to `email-smtp.us-east-1.amazonaws.com`). `GOTRUE_MAILER_AUTOCONFIRM` flipped to **`false`** — signups are now verified against real mailbox ownership. Amazon SES (us-east-1) has domain identity + Easy DKIM + custom MAIL FROM (`mail.littlefounders.ai`) + production access; DNS auth records live in Vercel's zone.
 
-## Current State (2026-07-17)
+**Branded, trilingual auth email.** Five email-safe templates (confirmation / recovery / magic-link / invite / email-change) in the LittleFounders Arcade brand (navy/papaya/Figtree, bulletproof MSO CTA) live at `https://littlefounders.ai/email-templates/*.html` (`frontend/public/email-templates/`, served static by Vercel), wired via `GOTRUE_MAILER_TEMPLATES_*`/`SUBJECTS_*`. Each is **English by default with es-MX/pt-BR** branches selected by `{{ .Data.locale }}` (the user's registration locale, threaded through `user_metadata`); unknown locale → English. Doc: `frontend/public/email-templates/README.md`.
 
-**Production deployment executed (2026-07-17):** `littlefounders_v2` squashed into one commit on `main` (branch kept intact; `main` is now the only branch that deploys). Live: `littlefounders.ai` (Vercel, frontend), `api-b2c.littlefounders.ai` (Railway, Core/backend), `auth-b2c.littlefounders.ai` (Railway, Vault/Kong gateway), `media-b2c.littlefounders.ai` (Railway, Depot/filebase) — one Railway project (`littlefounders-b2c`) holds all 16 services: the 9-service Vault stack (db, kong, auth, rest, realtime, storage, meta, supavisor, studio — imgproxy and edge-runtime intentionally not deployed, no app code uses them), Redis (new, for backend's production rate-limit store), and 6 app services (backend reuses the pre-existing Railway service; coursegen/audiogen/gamegen/parent-id-check are Railway-private-network-only, no public domain, per §1.5). Migrations 0001–0010 applied to production Postgres. CD is 7 GitHub Actions workflows (one per app-facing service + frontend), token-authenticated (`RAILWAY_TOKEN`/`VERCEL_TOKEN`), no native Git-App connection on either platform; all fired and succeeded on the first real push. Real signup verified end-to-end in a browser against the live stack. Postgres backups run daily (`.github/workflows/vault-backup.yml`, stored on filebase's volume since Railway's trial expired mid-rollout and blocked creating a dedicated one) and one restore drill was performed for real. Full narrative, the two real bugs found and fixed (Vercel Root Directory / `frontend/vercel.json` never read; `VITE_BACKEND_URL` accidentally marked Sensitive, baking a literal `"[SENSITIVE]"` into the build), and what's still open (domain/billing renewals — owner action; a dedicated backup volume once billing allows it): ROADMAP.md Day 8.
+**Google social login is code-complete, pending only credentials.** Core brokers the GoTrue provider flow (`GET /api/v1/auth/oauth/providers` + `GET /api/v1/auth/oauth/:provider` → 302 to GoTrue `/authorize`, browser never leaves Core per §1.5); frontend has the 4-color Google button (auto-hidden while no provider is enabled), `/auth/callback` token-fragment handler, and `AuthContext.completeOAuth`. Migration **0011** teaches `handle_new_user()` to derive `display_name` from a provider's `full_name`/`name` (applied in prod). The redirect URI is pre-staged; the owner's last step is the Google Cloud OAuth client → `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true` + `CLIENT_ID` + `SECRET`.
 
-## Current State (2026-07-12)
+**Resend fully retired + one security fix.** Resend is gone from the platform: code is clean (no live references), Railway env clean, and its 3 leftover DNS records (`resend._domainkey` TXT, `send` TXT/MX) were deleted from the Vercel zone — Courier authenticates under `mail.*`, so nothing broke. Security audit of the whole email/auth surface surfaced one real fix, now shipped: Core sets `trust proxy: 1` so express-rate-limit keys on the real client IP behind Railway's edge (was one shared bucket for all clients). Other findings were adversarially downgraded to documented tradeoffs (internal IP-trust relay hop) or flagged as owner-only (rotate the stale git-ignored Resend key in `.vercel/`).
 
-v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed. 8 per-service CI workflows in place. `DESIGN.md` is authoritative (**LittleFounders Arcade**) with tokens implemented and a reusable UI kit; i18n fragmented per route area. Agent rules hardened (§1.11 responsive invariant, §1.12 anti-hallucination).
+## Current State (2026-07-18) — Courier engine built
 ```
 
 ### agent/README.md
@@ -2935,7 +2936,7 @@ export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
-  app.use(helmet());
+  // Core runs behind exactly one reverse proxy (Railway's edge). Without this,
 ```
 
 ### backend/src/config.ts
@@ -3279,19 +3280,19 @@ if (!isTestOrDev) {
 ```
 import { Router } from 'express';
 import { z } from 'zod';
+import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
 import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
+/** Social providers Core is willing to broker (GoTrue must also have each enabled). */
+const OAUTH_PROVIDERS = ['google'] as const;
+type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
 /*
  * /api/v1/auth — email+password today; social providers (Google first, then
- * Discord/Facebook…) will add GET /auth/providers + the GoTrue /authorize
- * redirect flow here without changing existing shapes.
- *
- * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
- * trigger (migration 0003), not by anything the client sends. `parentIntent`
 ```
 
 ### backend/src/routes/learn.ts
@@ -6035,6 +6036,26 @@ BEGIN
         IF NOT EXISTS (
             SELECT 1 FROM public.guardian_links 
             WHERE kid_user_id = NEW.user_id 
+```
+
+### database/migrations/0011_oauth_bootstrap.sql
+
+```
+-- 0011_oauth_bootstrap.sql — social-login (Google) bootstrap.
+-- Delta over 0003 (never edit an applied migration). Idempotent.
+--
+-- OAuth users arrive via GoTrue's /authorize flow carrying provider metadata
+-- (full_name / name) instead of the email-signup 'display_name'. Extend
+-- handle_new_user() to derive a sensible display_name for BOTH paths so a
+-- Google sign-up lands with the person's name (not a blank). Role stays
+-- 'universal' (§1.4) exactly as before. CREATE OR REPLACE updates the function
+-- the existing trg_handle_new_user trigger (0003) already calls.
+--
+-- We deliberately do NOT import the provider avatar_url/picture: the platform
+-- uses DiceBear avataaars + gradient covers only (DESIGN.md), never external
+-- photo URLs.
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 ```
 
 ### database/package.json
@@ -25564,6 +25585,126 @@ export default {
 };
 ```
 
+### frontend/public/email-templates/README.md
+
+```
+# email-templates — branded, trilingual GoTrue auth mail
+
+> Source of the transactional **auth** emails LittleFounders sends. Rendered by
+> **GoTrue** (Supabase self-hosted), delivered by **Courier** (`email-server/`,
+> Haraka → Amazon SES). Delivery contract: `email-server/AGENTS.md`. Deploy wiring:
+> `database/DEPLOYMENT.md` → "GoTrue → Courier email wiring".
+
+## What these are
+
+Five email-safe HTML templates, styled in the LittleFounders **Arcade** brand
+(navy `#080f28`, papaya `#ff775c` CTA, blue `#456dff` links, Figtree, pill button,
+rounded card on a soft `#eef1fb` field). They live in `frontend/public/` so Vercel
+serves them as **static files** at `https://littlefounders.ai/email-templates/<name>.html`.
+
+| File | GoTrue event | Wired via |
+```
+
+### frontend/public/email-templates/confirmation.html
+
+```
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Confirm your email — LittleFounders</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
+```
+
+### frontend/public/email-templates/email_change.html
+
+```
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Confirm your new email — LittleFounders</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
+```
+
+### frontend/public/email-templates/invite.html
+
+```
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>You're invited to LittleFounders</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
+```
+
+### frontend/public/email-templates/magic_link.html
+
+```
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Your sign-in link — LittleFounders</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
+```
+
+### frontend/public/email-templates/recovery.html
+
+```
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Reset your password — LittleFounders</title>
+  <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    body,table,td,a{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+    table,td{mso-table-lspace:0;mso-table-rspace:0}
+    img{-ms-interpolation-mode:bicubic;border:0;height:auto;line-height:100%;outline:none;text-decoration:none}
+```
+
 ### frontend/public/lottie/README.md
 
 ```
@@ -25615,10 +25756,10 @@ import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
+import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
-import { CoursePage } from '@/routes/app/learn/CoursePage';
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -25715,6 +25856,26 @@ export function RequireRole({ role, children }: { role: string; children: ReactN
   if (!roles.includes(role)) return <Navigate to={APP_HOME} replace />;
   return <>{children}</>;
 }
+```
+
+### frontend/src/auth/oauth.ts
+
+```
+import { api } from '@/lib/api';
+
+/*
+ * Social login helpers. Core brokers everything (the frontend never talks to the
+ * auth host directly — /AGENTS.md §1.5): Core tells us which providers are live
+ * and hands back the GoTrue /authorize URL to redirect the browser to. GoTrue
+ * then returns to /auth/callback with the session in the URL fragment.
+ */
+
+export type OAuthProvider = 'google';
+
+/** Providers GoTrue has enabled server-side. Empty until credentials are added. */
+export async function fetchEnabledProviders(): Promise<OAuthProvider[]> {
+  const { data } = await api<{ providers: OAuthProvider[] }>('/auth/oauth/providers');
+  return data?.providers ?? [];
 ```
 
 ### frontend/src/components/Avatar.tsx
@@ -28821,6 +28982,26 @@ import { UserListItem, type ListedUser } from './UserListItem';
  */
 ```
 
+### frontend/src/routes/auth/AuthCallbackPage.tsx
+
+```
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
+import { AuthShell } from './AuthShell';
+
+/*
+ * OAuth landing. GoTrue redirects here after a social sign-in with the session in
+ * the URL fragment (#access_token=…&refresh_token=…&expires_in=…) — or an error.
+ * We hand the tokens to the shared session context (same as email login) and go
+ * to the app. Tokens are scrubbed from the URL/history immediately.
+ */
+export function AuthCallbackPage() {
+  const { completeOAuth } = useAuth();
+```
+
 ### frontend/src/routes/auth/AuthShell.tsx
 
 ```
@@ -28873,12 +29054,12 @@ import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
+import { SocialAuth } from './SocialAuth';
 
 export function LoginPage() {
   const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
 ```
 
 ### frontend/src/routes/auth/SignupPage.tsx
@@ -28895,10 +29076,30 @@ import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
+import { SocialAuth } from './SocialAuth';
 
 /*
  * Signup — every account starts as `universal` (server/DB enforced, zero
- * friction). The Tutor checkbox only records intent: the parent role itself
+```
+
+### frontend/src/routes/auth/SocialAuth.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { fetchEnabledProviders, startOAuth, type OAuthProvider } from '@/auth/oauth';
+
+/* Google's official 4-colour "G" brandmark (inline so it needs no network / theme). */
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.88 2.68-6.62z" />
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.02-3.7H.96v2.34A9 9 0 0 0 9 18z" />
+      <path fill="#FBBC05" d="M3.98 10.72a5.4 5.4 0 0 1 0-3.44V4.94H.96a9 9 0 0 0 0 8.12l3.02-2.34z" />
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.46 3.44 1.35l2.58-2.58C13.46.9 11.43 0 9 0A9 9 0 0 0 .96 4.94l3.02 2.34C4.68 5.16 6.66 3.58 9 3.58z" />
+    </svg>
+  );
+}
 ```
 
 ### frontend/src/routes/auth/VerifyParentPage.tsx

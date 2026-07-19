@@ -25,7 +25,7 @@ The engine is **[Haraka](https://haraka.github.io/)** (MIT, semver ≥1.0, Node/
 - **Always-warm.** GoTrue fires auth mail at random user times, so this service must NOT scale-to-zero.
 - No PII beyond what the email itself requires; no minor PII in email bodies to third parties (§1.9). SES is a data sub-processor — keep bodies minimal.
 - Kid-related emails go to the guardian, not the kid, unless a parent has opted otherwise.
-- Our own transactional templates will be i18n'd ×3 locales (§1.8). GoTrue renders its own auth-email templates.
+- Auth mail is rendered by **GoTrue** from **branded, trilingual** templates hosted at `https://littlefounders.ai/email-templates/*.html` (source: `frontend/public/email-templates/`, wired via `GOTRUE_MAILER_TEMPLATES_*`/`SUBJECTS_*`). Each template picks its language from the user's registration locale via a Go `text/template` conditional; en-US is the fallback. Any FUTURE Courier-originated templates (non-auth) are i18n'd ×3 the same way (§1.8).
 
 ## Hardening follow-up (documented, not blocking)
 
@@ -33,6 +33,6 @@ The internal hop (GoTrue/adapter → Haraka) is plaintext-with-IP-trust because 
 
 ## Read before touching
 
-- [`README.md`](README.md) — architecture, env, routes, and the **"Going live" wiring checklist**.
+- [`README.md`](README.md) — architecture, env, routes, and the **"Live in production" wiring record**.
 - [`haraka/README.md`](haraka/README.md) — the engine config dir.
 - `agent/core/CONVENTIONS.md` — app layout, envelope, test shape.

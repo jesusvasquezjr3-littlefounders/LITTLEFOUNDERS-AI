@@ -6,7 +6,8 @@
 > `database/DEPLOYMENT.md`. Any production change is a BOUNDARIES action
 > (`agent/core/BOUNDARIES.md`) — human sign-off first.
 >
-> **Last verified:** 2026-07-17 · production live, 16 services, est. ~$12/mo.
+> **Last verified:** 2026-07-18 · production live, 17 services (Courier/email-server
+> now live), est. ~$12/mo (Courier is a small always-warm service).
 
 ---
 
@@ -18,7 +19,7 @@
 | Core (backend) | **Railway** (project `littlefounders-b2c`) | the ONLY service the SPA calls | `api-b2c.littlefounders.ai` |
 | Vault gateway | **Railway** — Kong | Supabase self-hosted stack entrypoint | `auth-b2c.littlefounders.ai` |
 | Media (Depot) | **Railway** — filebase | PII-free media reads; internal writes | `media-b2c.littlefounders.ai` |
-| Internal services | **Railway** — coursegen, audiogen, gamegen, parent-id-check | service-to-service only | **no public domain (private networking only)** |
+| Internal services | **Railway** — coursegen, audiogen, gamegen, parent-id-check, email-server | service-to-service only | **no public domain (private networking only)** |
 | Vault internals | **Railway** — db, auth, rest, realtime, storage, meta, supavisor, studio | reached only via Kong / private net | no public domain |
 | Cache/limit | **Railway** — Redis | rate-limit store | no public domain |
 
@@ -92,14 +93,23 @@ prevented at two levels:
 - **Rate limiting:** every Core endpoint is rate-limited; prod uses the Redis
   store, tests fall back to `MemoryStore` (§1.14).
 
+- **Transactional email (Courier):** GoTrue → `email-server.railway.internal:587`
+  (Haraka) → Amazon SES over TLS + SMTP AUTH. The internal hop (GoTrue → Haraka)
+  is plaintext-with-private-IP-trust (`relay_internal` grants only Railway's
+  private net — it is NOT an open relay); the sensitive hop (Haraka → SES) is
+  always TLS + AUTH. `GOTRUE_MAILER_AUTOCONFIRM=false` — signups are verified
+  against real mailbox ownership. Domain auth in the Vercel DNS zone: SES DKIM
+  (3 CNAMEs) + custom MAIL FROM (`mail.littlefounders.ai`) SPF/MX + `_dmarc`
+  (`p=none`, ramping to `quarantine`).
+
 **Known hardening opportunities (not vulnerabilities, tracked):**
 - Core reaches PostgREST/GoTrue via the *public* Kong domain
   (`SUPABASE_URL=https://auth-b2c…`); could be switched to Kong's private domain
   to keep that traffic entirely inside Railway.
-- `GOTRUE_MAILER_AUTOCONFIRM=true` until `email-server`/Courier is wired — signups
-  aren't email-verified yet (abuse/squatting surface). Courier is built (Haraka →
-  Amazon SES relay) and CD-ready; flip to `false` once its SES credentials + DNS
-  are connected (see `email-server/README.md` "Going live").
+- Courier's internal hop is IP-trust plaintext (Haraka advertises SMTP AUTH only
+  after STARTTLS, and GoTrue doesn't reliably accept a self-signed internal cert);
+  move it to AUTH over a trusted internal cert once GoTrue's SMTP TLS handling is
+  verified (`email-server/AGENTS.md` "Hardening follow-up").
 
 ---
 
@@ -146,8 +156,11 @@ decision, every deploy is an **upload authenticated by a token secret**:
   --prod` with `VERCEL_TOKEN`/`ORG_ID`/`PROJECT_ID`.
 - Vault internals (db, kong, and the plain-image services) are **not** in CD —
   they change rarely and are deployed manually (`railway up database/railway/db …`
-  or `railway add --image …`). `email-server` (Courier) HAS a CD workflow, gated
-  by the `EMAIL_SERVER_LIVE` repo variable until its SES wiring lands.
+  or `railway add --image …`). `email-server` (Courier) is **live** (deployed
+  manually 2026-07-18, SES wiring complete) and HAS a CD workflow, but that
+  workflow stays gated by the `EMAIL_SERVER_LIVE` repo variable — set it to `true`
+  (`gh variable set EMAIL_SERVER_LIVE --body true`) to activate auto-deploy on
+  future pushes.
 - Repo secrets in use: `RAILWAY_TOKEN`, `RAILWAY_SSH_PRIVATE_KEY` (backups),
   `INTERNAL_API_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 

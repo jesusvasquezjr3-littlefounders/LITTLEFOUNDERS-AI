@@ -23,6 +23,8 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 | POST | /api/v1/auth/refresh | — | Exchange refresh token for a fresh session |
 | POST | /api/v1/auth/logout | Bearer | Best-effort GoTrue sign-out |
 | GET | /api/v1/auth/me | Bearer | User + profile + roles (RLS-scoped reads with the user's own token) |
+| GET | /api/v1/auth/oauth/providers | — | Enabled social providers (e.g. `["google"]`, `[]` if none) — drives which social buttons the frontend shows |
+| GET | /api/v1/auth/oauth/:provider | — | 302 → GoTrue `/authorize?provider=…&redirect_to=<FRONTEND_URL>/auth/callback` to start the OAuth flow. 400 `UNSUPPORTED_PROVIDER` for anything outside the allow-list |
 | GET | /api/v1/learn/courses | Bearer | Published courses + rollup progress for the caller (adventureCount, lessonCount, progress) |
 | GET | /api/v1/learn/courses/:slug/tree | Bearer | Full course tree (adventures → sagas → topics → lessons) with per-node unlock state + `nextLessonId` — the single source of truth (COURSE_ENGINE.md §2) |
 | GET | /api/v1/learn/lessons/:id | Bearer | Lesson meta + client-safe document + Echo's narration manifest (`audio`), locale-resolved (caller locale → es-MX → any). 403 `LESSON_LOCKED` if not yet unlocked |
@@ -44,7 +46,7 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 | DELETE | /api/v1/profiles/:username/block | Bearer | Unblock |
 | POST | /api/v1/verification/parent | Bearer | multipart form + ID photo → Guardian OCR verdict; on verified: `parent_verifications` row + `parent` role grant. Rate-limited 5/h/user |
 
-Social login (Google first, then Discord/Facebook…) will extend `/api/v1/auth` with the GoTrue provider flow — same envelope, no breaking changes planned.
+**Social login (Google) is code-complete** — Core brokers the GoTrue provider flow through the two `/oauth` routes above (the browser only ever talks to Core, §1.5); the frontend `/auth/callback` route consumes the returned token fragment. Going live needs only the OAuth credentials on GoTrue: `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true` + `CLIENT_ID` + `SECRET` (the redirect URI is pre-staged). `/oauth/providers` returns `[]` until then, so the button auto-hides. Adding Discord/Facebook later = extend the `OAUTH_PROVIDERS` allow-list; no shape changes.
 
 ## Notes
 
