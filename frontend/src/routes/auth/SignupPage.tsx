@@ -9,6 +9,7 @@ import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
+import { SocialAuth } from './SocialAuth';
 
 /*
  * Signup — every account starts as `universal` (server/DB enforced, zero
@@ -84,6 +85,7 @@ export function SignupPage() {
         </>
       }
     >
+      <SocialAuth />
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field

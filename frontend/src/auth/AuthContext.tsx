@@ -63,6 +63,8 @@ interface AuthContextValue {
   meLoaded: boolean;
   login(email: string, password: string): Promise<ApiError | null>;
   signup(input: SignupInput): Promise<{ error: ApiError | null; confirmationRequired: boolean }>;
+  /** Establish a session from OAuth tokens returned to /auth/callback (social login). */
+  completeOAuth(tokens: { accessToken: string; refreshToken: string; expiresIn: number }): Promise<ApiError | null>;
   logout(): Promise<void>;
   /** Re-fetch profile + roles (e.g. after the Tutor upgrade). */
   refreshMe(): Promise<void>;
@@ -90,6 +92,21 @@ function toStored(payload: SessionPayload): StoredSession | null {
     expiresAt: Date.now() + payload.expiresIn * 1000,
     user: payload.user,
   };
+}
+
+/** Read {id,email} from a GoTrue access-token JWT (claims only — Core verifies on every API call). */
+function jwtClaims(token: string): { sub?: string; email?: string } {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return {};
+    const claims = JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+    return {
+      sub: typeof claims.sub === 'string' ? claims.sub : undefined,
+      email: typeof claims.email === 'string' ? claims.email : undefined,
+    };
+  } catch {
+    return {};
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -188,6 +205,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [persist, loadMe],
   );
 
+  const completeOAuth = useCallback(
+    async (tokens: { accessToken: string; refreshToken: string; expiresIn: number }): Promise<ApiError | null> => {
+      const { sub, email } = jwtClaims(tokens.accessToken);
+      if (!sub) return { code: 'INTERNAL', message: 'Invalid session token' };
+      persist({
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresAt: Date.now() + tokens.expiresIn * 1000,
+        user: { id: sub, email: email ?? '' },
+      });
+      await loadMe();
+      return null;
+    },
+    [persist, loadMe],
+  );
+
   const logout = useCallback(async () => {
     const token = sessionRef.current?.accessToken;
     persist(null);
@@ -198,8 +231,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [persist]);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ session, profile, roles, avatarOptions, meLoaded, login, signup, logout, refreshMe: loadMe, getToken }),
-    [session, profile, roles, avatarOptions, meLoaded, login, signup, logout, loadMe, getToken],
+    () => ({ session, profile, roles, avatarOptions, meLoaded, login, signup, completeOAuth, logout, refreshMe: loadMe, getToken }),
+    [session, profile, roles, avatarOptions, meLoaded, login, signup, completeOAuth, logout, loadMe, getToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

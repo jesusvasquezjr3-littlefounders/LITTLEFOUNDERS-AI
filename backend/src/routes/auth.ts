@@ -1,10 +1,15 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
 import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+
+/** Social providers Core is willing to broker (GoTrue must also have each enabled). */
+const OAUTH_PROVIDERS = ['google'] as const;
+type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
 /*
  * /api/v1/auth — email+password today; social providers (Google first, then
@@ -85,6 +90,30 @@ export function authRouter(): Router {
   router.post('/logout', requireAuth, async (_req, res) => {
     await gotrue.signOut(authedUser(res).accessToken); // best-effort; token is dropped client-side regardless
     return ok(res, { signedOut: true });
+  });
+
+  // Which social providers are actually enabled server-side (GoTrue). The
+  // frontend shows a provider's button only when it appears here, so enabling
+  // Google is a pure server-side config step — no frontend redeploy needed.
+  // Cheap public reads (no credentials) → covered by the global limiter (§1.14),
+  // not the strict auth limiter reserved for credential attempts.
+  router.get('/oauth/providers', async (_req, res) => {
+    const { data } = await gotrue.getSettings();
+    const external = data?.external ?? {};
+    const providers = OAUTH_PROVIDERS.filter((p) => external[p] === true);
+    return ok(res, { providers });
+  });
+
+  // Hand the browser the GoTrue /authorize URL for a provider. Core owns the
+  // redirect_to (the frontend never needs the auth host — §1.5). The browser
+  // follows this to GoTrue → the provider → back to /auth/callback.
+  router.get('/oauth/:provider', (req, res) => {
+    const provider = String(req.params.provider);
+    if (!OAUTH_PROVIDERS.includes(provider as OAuthProvider)) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'Unsupported provider');
+    }
+    const { FRONTEND_URL } = getConfig();
+    return ok(res, { url: gotrue.authorizeUrl(provider, `${FRONTEND_URL}/auth/callback`) });
   });
 
   router.get('/me', requireAuth, async (_req, res) => {

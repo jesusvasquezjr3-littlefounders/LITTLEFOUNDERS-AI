@@ -111,3 +111,25 @@ export function signOut(accessToken: string): Promise<GotrueResult<Record<string
     headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
   });
 }
+
+export interface GotrueSettings {
+  /** Map of external (social) provider → enabled, e.g. { google: true }. */
+  external?: Record<string, boolean>;
+}
+
+/** Public GoTrue settings — tells us which social providers are enabled server-side. */
+export function getSettings(): Promise<GotrueResult<GotrueSettings>> {
+  return gotrue('/settings', { method: 'GET', headers: authHeaders() });
+}
+
+/**
+ * Build the GoTrue /authorize URL the browser is redirected to for social
+ * login. Uses the PUBLIC SUPABASE_URL (Kong gateway) since the browser — not
+ * Core — follows this redirect. `redirectTo` must be allow-listed in GoTrue's
+ * GOTRUE_URI_ALLOW_LIST.
+ */
+export function authorizeUrl(provider: string, redirectTo: string): string {
+  const { SUPABASE_URL } = getConfig();
+  const qs = new URLSearchParams({ provider, redirect_to: redirectTo });
+  return `${SUPABASE_URL}/auth/v1/authorize?${qs.toString()}`;
+}

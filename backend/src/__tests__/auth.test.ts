@@ -118,3 +118,39 @@ describe('GET /api/v1/auth/me', () => {
     expect(res.body.data.roles).toEqual(['universal', 'parent']);
   });
 });
+
+describe('GET /api/v1/auth/oauth', () => {
+  it('lists only the providers GoTrue has enabled', async () => {
+    stubFetch((url) => {
+      expect(url).toBe('http://supabase.test/auth/v1/settings');
+      return jsonResponse(200, { external: { google: true, github: false } });
+    });
+    const res = await request(createApp()).get('/api/v1/auth/oauth/providers');
+    expect(res.status).toBe(200);
+    expect(res.body.data.providers).toEqual(['google']);
+  });
+
+  it('lists no providers when none are enabled', async () => {
+    stubFetch(() => jsonResponse(200, { external: { google: false } }));
+    const res = await request(createApp()).get('/api/v1/auth/oauth/providers');
+    expect(res.body.data.providers).toEqual([]);
+  });
+
+  it('builds the GoTrue authorize URL for google with the /auth/callback redirect', async () => {
+    const res = await request(createApp()).get('/api/v1/auth/oauth/google');
+    expect(res.status).toBe(200);
+    const url = new URL(res.body.data.url);
+    expect(url.origin + url.pathname).toBe('http://supabase.test/auth/v1/authorize');
+    expect(url.searchParams.get('provider')).toBe('google');
+    expect(url.searchParams.get('redirect_to')).toContain('/auth/callback');
+  });
+
+  it('rejects an unsupported provider without touching GoTrue', async () => {
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp()).get('/api/v1/auth/oauth/facebook');
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+    expect(spy).not.toHaveBeenCalled();
+  });
+});

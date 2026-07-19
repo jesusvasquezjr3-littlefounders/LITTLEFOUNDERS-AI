@@ -7,6 +7,7 @@ import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { AuthShell } from './AuthShell';
 import { ErrorBanner } from './ErrorBanner';
+import { SocialAuth } from './SocialAuth';
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ export function LoginPage() {
         </>
       }
     >
+      <SocialAuth />
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field

@@ -9,6 +9,7 @@ import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
+import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
@@ -54,6 +55,8 @@ export function App() {
           <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
           <Route path="login" element={<RequireGuest><LoginPage /></RequireGuest>} />
           <Route path="signup" element={<RequireGuest><SignupPage /></RequireGuest>} />
+          {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}
+          <Route path="auth/callback" element={<AuthCallbackPage />} />
           <Route
             path="verify-parent"
             element={
