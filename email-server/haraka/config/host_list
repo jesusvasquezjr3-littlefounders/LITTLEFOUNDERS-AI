@@ -1,0 +1,4 @@
+# Local delivery domains — intentionally EMPTY.
+# Courier is a send-only outbound relay: it never accepts mail FOR a local
+# domain, it only forwards relaying (internal) mail out to Amazon SES.
+# rcpt_to.in_host_list accepts recipients on relaying connections regardless.

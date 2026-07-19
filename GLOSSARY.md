@@ -39,7 +39,7 @@
 | `audiogen/` | **Echo** | Lesson TTS audio, per-locale voices |
 | `gamegen/` | **Arcade** | Personalized educational minigames |
 | `parent-id-check/` | **Guardian** | Identity verification service |
-| `email-server/` | **Courier** | Transactional email (open-source Resend replacement) |
+| `email-server/` | **Courier** | Transactional email — Haraka SMTP engine relaying to Amazon SES (open-source Resend replacement) |
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
 
 The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed **Oracle**.

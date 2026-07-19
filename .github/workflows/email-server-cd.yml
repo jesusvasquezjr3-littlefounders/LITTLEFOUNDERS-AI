@@ -1,0 +1,37 @@
+name: email-server CD
+
+# Token-based deploy (no native GitHub↔Railway connection), mirroring the other
+# services. Fires after "email-server CI" succeeds on main.
+#
+# GATED: the deploy job only runs when the repository variable
+# EMAIL_SERVER_LIVE == 'true'. Until Courier's Railway service exists and its
+# Amazon SES credentials are set (the "wiring" step — see email-server/README.md
+# "Going live" and RUNBOOK.md), the job is SKIPPED (neutral, not failed), so this
+# workflow never red-flags main before the service is ready. Flip the variable to
+# 'true' as the last wiring step to activate continuous deploys.
+on:
+  workflow_run:
+    workflows: ["email-server CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      vars.EMAIL_SERVER_LIVE == 'true'
+    name: Deploy email-server (Courier) to Railway
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      - name: Deploy email-server to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up email-server --path-as-root --service email-server --ci

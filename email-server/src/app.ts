@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
 
 export const SERVICE = 'email-server';
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 
 const SendBody = z.object({
   to: z.string().email(),

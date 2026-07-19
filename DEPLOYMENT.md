@@ -96,9 +96,10 @@ prevented at two levels:
 - Core reaches PostgREST/GoTrue via the *public* Kong domain
   (`SUPABASE_URL=https://auth-b2c…`); could be switched to Kong's private domain
   to keep that traffic entirely inside Railway.
-- `GOTRUE_MAILER_AUTOCONFIRM=true` until `email-server`/Courier ships — signups
-  aren't email-verified yet (abuse/squatting surface). Flip to `false` with real
-  SMTP when Courier deploys.
+- `GOTRUE_MAILER_AUTOCONFIRM=true` until `email-server`/Courier is wired — signups
+  aren't email-verified yet (abuse/squatting surface). Courier is built (Haraka →
+  Amazon SES relay) and CD-ready; flip to `false` once its SES credentials + DNS
+  are connected (see `email-server/README.md` "Going live").
 
 ---
 
@@ -145,7 +146,8 @@ decision, every deploy is an **upload authenticated by a token secret**:
   --prod` with `VERCEL_TOKEN`/`ORG_ID`/`PROJECT_ID`.
 - Vault internals (db, kong, and the plain-image services) are **not** in CD —
   they change rarely and are deployed manually (`railway up database/railway/db …`
-  or `railway add --image …`). `email-server` is deferred (no CD yet).
+  or `railway add --image …`). `email-server` (Courier) HAS a CD workflow, gated
+  by the `EMAIL_SERVER_LIVE` repo variable until its SES wiring lands.
 - Repo secrets in use: `RAILWAY_TOKEN`, `RAILWAY_SSH_PRIVATE_KEY` (backups),
   `INTERNAL_API_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 

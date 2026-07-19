@@ -108,7 +108,7 @@ Next, in Jesús's stated order of interest:
 - tasks/ parent→kid assignment + rewards
 - Character voices for Echo (voice map ready; owner supplies voices pre-run)
 - Arcade first generated minigame bound to a learn concept
-- Courier engine decision (Postal / Maddy / Haraka / Stalwart) + templates, then deploy email-server + flip `GOTRUE_MAILER_AUTOCONFIRM` to `false` with real SMTP
+- Courier: engine **DECIDED + built 2026-07-18** (Haraka → Amazon SES relay; email-server/AGENTS.md), tested, CD-ready. Remaining = owner wires SES creds + DNS, then deploy email-server, point GoTrue at it, flip `GOTRUE_MAILER_AUTOCONFIRM` to `false` (email-server/README.md "Going live")
 - **Move Vault backups to a dedicated Railway volume** once billing allows creating one — today's mechanism (piggybacking on filebase's volume) works and is verified, but a purpose-built backup volume is the better long-term shape
 - Pay down the Vercel + Railway billing holds and renew the `littlefounders.ai` GoDaddy registration (owner action, not agent-doable)
 
@@ -116,7 +116,7 @@ Next, in Jesús's stated order of interest:
 
 | Decision | Status | Where documented |
 |---|---|---|
-| Email engine | OPEN | email-server/README.md candidates table |
+| Email engine | **DECIDED 2026-07-18: Haraka (self-hosted SMTP) → Amazon SES relay** — built + tested; deploy pending SES wiring | email-server/AGENTS.md · "Going live": email-server/README.md |
 | ID-verification engine | **DECIDED 2026-07-12: local OCR (tesseract.js), photo never stored** | parent-id-check/AGENTS.md |
 | TTS provider | OPEN (`TTS_API_KEY` in production is a placeholder — narration will fail until a real DashScope key is supplied) | audiogen/AGENTS.md |
 | gamegen approach (generated vs templated) | OPEN | gamegen/AGENTS.md |

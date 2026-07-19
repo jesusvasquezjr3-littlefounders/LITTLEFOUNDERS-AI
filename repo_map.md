@@ -103,6 +103,10 @@ database/
   seeds/
   types/
 email-server/
+  haraka/
+    config/
+    plugins/
+    queue/
   src/
     __tests__/
     services/
@@ -558,6 +562,26 @@ on:
 
 jobs:
   ci:
+```
+
+### .github/workflows/email-server-cd.yml
+
+```
+name: email-server CD
+
+# Token-based deploy (no native GitHub↔Railway connection), mirroring the other
+# services. Fires after "email-server CI" succeeds on main.
+#
+# GATED: the deploy job only runs when the repository variable
+# EMAIL_SERVER_LIVE == 'true'. Until Courier's Railway service exists and its
+# Amazon SES credentials are set (the "wiring" step — see email-server/README.md
+# "Going live" and RUNBOOK.md), the job is SKIPPED (neutral, not failed), so this
+# workflow never red-flags main before the service is ready. Flip the variable to
+# 'true' as the last wiring step to activate continuous deploys.
+on:
+  workflow_run:
+    workflows: ["email-server CI"]
+    types: [completed]
 ```
 
 ### .github/workflows/email-server-ci.yml
@@ -1186,6 +1210,10 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-18)
+
+**Courier (email-server) engine built — Haraka → Amazon SES relay (2026-07-18).** The transactional-email engine (open since 2026-07-11) is decided after a deep 6-candidate comparison (Postal/Stalwart/Maddy/Haraka/Plunk/Cuttlefish) against 5 criteria — stable versioning, active community, reviews, stack fit, deliverability: **Haraka** (MIT, semver ≥1.0, Node), run as a send-only outbound relay to **Amazon SES**. The honest driver: no self-hosted engine solves "not spam" alone (Railway blocks outbound port 25, no PTR control), so the correct architecture is self-host the control plane + rent SES's warm IP reputation. Built in `email-server/`: a supervisor (`src/index.ts`) runs the Haraka engine — private SMTP listener on `[::]:587` (for GoTrue) + `127.0.0.1:2525` (for the co-located HTTP API), `nodes=1`, custom `relay_internal` plugin grants private-IP relaying, `smtp_forward` forwards to SES over TLS+AUTH — alongside the Express `POST /api/v1/send` API whose `SmtpAdapter` (nodemailer) submits into Haraka. SES creds + the internal TLS cert are rendered at boot from env, never committed. Verified end-to-end locally: full path adapter → Haraka → TLS to **real** SES → SMTP AUTH, SES returned `550 Authentication Credentials Invalid` for placeholder creds (real creds = delivered). 10 tests green; type-check/lint/build clean. CD workflow added, gated by the `EMAIL_SERVER_LIVE` repo variable. **NOT deployed yet** — remaining is owner wiring (SES account/DNS/creds), then deploy, point GoTrue at `email-server.railway.internal`, and flip `GOTRUE_MAILER_AUTOCONFIRM=false`. Full checklist: email-server/README.md "Going live".
+
 ## Current State (2026-07-17)
 
 **Production deployment executed (2026-07-17):** `littlefounders_v2` squashed into one commit on `main` (branch kept intact; `main` is now the only branch that deploys). Live: `littlefounders.ai` (Vercel, frontend), `api-b2c.littlefounders.ai` (Railway, Core/backend), `auth-b2c.littlefounders.ai` (Railway, Vault/Kong gateway), `media-b2c.littlefounders.ai` (Railway, Depot/filebase) — one Railway project (`littlefounders-b2c`) holds all 16 services: the 9-service Vault stack (db, kong, auth, rest, realtime, storage, meta, supavisor, studio — imgproxy and edge-runtime intentionally not deployed, no app code uses them), Redis (new, for backend's production rate-limit store), and 6 app services (backend reuses the pre-existing Railway service; coursegen/audiogen/gamegen/parent-id-check are Railway-private-network-only, no public domain, per §1.5). Migrations 0001–0010 applied to production Postgres. CD is 7 GitHub Actions workflows (one per app-facing service + frontend), token-authenticated (`RAILWAY_TOKEN`/`VERCEL_TOKEN`), no native Git-App connection on either platform; all fired and succeeded on the first real push. Real signup verified end-to-end in a browser against the live stack. Postgres backups run daily (`.github/workflows/vault-backup.yml`, stored on filebase's volume since Railway's trial expired mid-rollout and blocked creating a dedicated one) and one restore drill was performed for real. Full narrative, the two real bugs found and fixed (Vercel Root Directory / `frontend/vercel.json` never read; `VITE_BACKEND_URL` accidentally marked Sensitive, baking a literal `"[SENSITIVE]"` into the build), and what's still open (domain/billing renewals — owner action; a dedicated backup volume once billing allows it): ROADMAP.md Day 8.
@@ -1193,10 +1221,6 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 ## Current State (2026-07-12)
 
 v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. **The full scaffold is green:** all 8 services pass type-check/lint/test locally; frontend production build passes; `/health` envelopes verified on live processes; browser smoke passed. 8 per-service CI workflows in place. `DESIGN.md` is authoritative (**LittleFounders Arcade**) with tokens implemented and a reusable UI kit; i18n fragmented per route area. Agent rules hardened (§1.11 responsive invariant, §1.12 anti-hallucination).
-
-**Vault is live locally:** the pinned `supabase/supabase@v1.26.07` self-hosted stack (11 containers, all healthy) runs from `database/supabase/` (gitignored clone; pin = `database/SUPABASE_VERSION`); migrations 0001–0004 applied and reset-from-zero verified; `types/database.ts` is real generated output (11 tables). Session pooler on host port **54322** (5432 is taken by a pre-existing local Postgres).
-
-**Auth + Tutor verification shipped (2026-07-12, E2E-verified locally):** Core `/api/v1/auth/*` (GoTrue proxy, local HS256 JWT verify, CORS pinned to the SPA) and `/api/v1/verification/parent`; Guardian v1 = **stateless local OCR** (tesseract.js `spa+eng+por`, ID photo in-memory only, NEVER stored, verdicts only — Core owns all writes: isolated `parent_verifications` (0004), `parent` grant, audit); frontend `/login`, `/signup` (Tutor-intent checkbox; every signup starts `universal`), `/verify-parent` (privacy-first form, per-check retry guidance), AuthContext + RequireAuth, `auth.json` i18n ×3, new UI-kit form primitives (Field/Checkbox/FileField) codified in DESIGN.md with a new Auth screen recipe. Verified: 47 service tests green; real browser E2E (signup→OCR verify→Tutor badge) at ~375px AND ~1280px, light + dark; impostor E2E rejected without role grant; failed attempts audited with boolean checks only (zero PII). **Development stays local by decision — nothing deploys to Railway/Vercel yet.**
 ```
 
 ### agent/README.md
@@ -6412,19 +6436,19 @@ export type Database = {
 ```
 # AGENTS.md — email-server (Courier)
 
-> Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+> Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md). Production/deploy: [/DEPLOYMENT.md](../DEPLOYMENT.md).
 
 ## Mission
 
-Transactional email for the platform — the open-source replacement for Resend. Internal service — `INTERNAL_API_KEY` only. Consumers code against the `POST /api/v1/send` contract; the engine behind it is swappable.
+Transactional email for the platform — the open-source replacement for Resend. Internal service — `INTERNAL_API_KEY` only. Consumers code against the stable `POST /api/v1/send` contract; the delivery engine behind it is swappable.
 
-## Open decision
+## Engine — DECIDED: Haraka → Amazon SES relay
 
-**Engine: OPEN** — candidates and criteria in [README.md](README.md). Until decided, `send` routes through a no-op adapter (`src/services/adapter.ts`) that logs and reports queued. **Sending real email is a BOUNDARIES action.**
+The engine is **[Haraka](https://haraka.github.io/)** (MIT, semver ≥1.0, Node/JS — same stack), run as a **send-only outbound SMTP relay** that forwards every message to **Amazon SES** over TLS + SMTP AUTH. We self-host the control plane (SMTP endpoint, queue, logs, provider-swappable); SES owns the warm IP reputation that keeps auth mail out of spam. Config lives in [`haraka/`](haraka/README.md).
 
-## Invariants that bite here
+**Why a relay, not direct send:** Railway blocks/does-not-provide outbound port 25 and you cannot set PTR on its IPs, so a self-hosted MTA cannot deliver direct-to-MX. Renting SES's last-mile reputation is the correct architecture, not a compromise — self-host what you should, rent the IP reputation.
 
-- The send **contract is stable** even while the engine is undecided — consumers never change when the engine lands.
+**Two processes, one container** (supervised by `src/index.ts`): the Haraka engine (the private SMTP endpoint GoTrue talks to + the SES relay) and the Express HTTP API (`/health`, `POST /api/v1/send`, whose `SmtpAdapter` submits into Haraka on localhost). If the engine dies the supervisor exits non-zero so Railway restarts.
 ```
 
 ### email-server/README.md
@@ -6432,19 +6456,19 @@ Transactional email for the platform — the open-source replacement for Resend.
 ```
 # email-server (Courier)
 
-> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md); production contract in [/DEPLOYMENT.md](../DEPLOYMENT.md).
 
 **Mission:** Open-source transactional email service replacing Resend.
-**Port (dev):** 4005 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
+**Port (dev):** 4005 · **Deploy:** Railway (internal-only) · **Access:** `INTERNAL_API_KEY`
 
 ```bash
 npm install
 cp .env.example .env
-npm run dev
+npm run dev        # EMAIL_ENGINE defaults to 'noop' — logs, no real SMTP
 npm test
 ```
 
-## Engine decision — OPEN
+## Engine — Haraka → Amazon SES relay
 ```
 
 ### email-server/eslint.config.js
@@ -6453,7 +6477,10 @@ npm test
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/'] },
+  // haraka/ is the Haraka engine's own config + plugins dir. Its plugins run in
+  // Haraka's CommonJS runtime (require() is the mandated plugin API), not our
+  // TS/ESM source, so it is out of scope for this service's linter.
+  { ignores: ['dist/', 'haraka/'] },
   ...tseslint.configs.recommended,
   {
     rules: {
@@ -6463,24 +6490,102 @@ export default tseslint.config(
 );
 ```
 
+### email-server/haraka/README.md
+
+```
+# Courier engine — Haraka config (`email-server/haraka/`)
+
+This is the [Haraka](https://haraka.github.io/) config directory that Courier's
+supervisor (`../src/index.ts`) boots with `haraka -c ./haraka`. Haraka is the
+**open-source SMTP engine** chosen for Courier (see [../AGENTS.md](../AGENTS.md)
+and [/DEPLOYMENT.md](../../DEPLOYMENT.md)); it runs as a **send-only outbound
+relay** that forwards every internal message to **Amazon SES** over TLS + SMTP
+AUTH. SES owns the warm IP reputation that keeps auth mail out of spam.
+
+## Flow
+
+```
+GoTrue (Supabase auth)  ─┐
+                         ├─(SMTP, Railway private net / localhost)─▶  Haraka  ─(TLS+AUTH)─▶  Amazon SES ─▶ inbox
+Courier HTTP API adapter ┘        relay_internal marks these                 smtp_forward
+```
+
+### email-server/haraka/plugins/relay_internal.js
+
+```
+'use strict'
+
+// Courier internal-relay policy.
+//
+// Marks connections from the Railway private network (IPv6 ULA, fc00::/7 — what
+// <service>.railway.internal resolves to) and localhost as `relaying`, so their
+// mail is forwarded outbound to the Amazon SES smarthost by queue/smtp_forward.
+//
+// Why IP-based and not SMTP AUTH: Haraka's auth_base only advertises AUTH after
+// STARTTLS (auth_base.js: `if (!connection.tls.enabled) return next()`), and a
+// self-signed internal cert is not reliably accepted by GoTrue's SMTP client.
+// The listener has NO public domain (internal-only service, /AGENTS.md §1.5), so
+// only our own Railway services can reach it — this is not an open relay to the
+// internet. The sensitive hop (Courier -> SES) stays TLS + SMTP AUTH.
+//
+```
+
 ### email-server/package.json
 
 ```
 {
   "name": "@littlefounders/email-server",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "license": "UNLICENSED",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+```
+
+### email-server/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npm run start",
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### email-server/src/__tests__/config.test.ts
+
+```
+import { beforeEach, describe, expect, it } from 'vitest';
+import { getConfig, resetConfigForTests } from '../config.js';
+
+describe('getConfig', () => {
+  beforeEach(() => {
+    resetConfigForTests();
+    delete process.env.EMAIL_ENGINE;
+    delete process.env.SES_RELAY_HOST;
+    delete process.env.SES_SMTP_USER;
+    delete process.env.SES_SMTP_PASS;
+    delete process.env.INTERNAL_API_KEY;
+    process.env.NODE_ENV = 'test';
+  });
+
+  it('defaults to the noop engine outside production', () => {
 ```
 
 ### email-server/src/__tests__/health.test.ts
@@ -6523,6 +6628,26 @@ describe('POST /api/v1/send', () => {
     expect(res.status).toBe(202);
 ```
 
+### email-server/src/__tests__/smtp-adapter.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { type Transporter } from 'nodemailer';
+import { SmtpAdapter } from '../services/smtp-adapter.js';
+
+describe('SmtpAdapter', () => {
+  it('submits via the transport and reports the message queued', async () => {
+    const sendMail = vi.fn().mockResolvedValue({ messageId: '<abc@courier>' });
+    const transport = { sendMail } as unknown as Transporter;
+    const adapter = new SmtpAdapter(
+      { host: '127.0.0.1', port: 2525, from: 'LittleFounders <noreply@littlefounders.ai>' },
+      transport,
+    );
+
+    const result = await adapter.send({
+      to: 'parent@example.com',
+```
+
 ### email-server/src/app.ts
 
 ```
@@ -6532,7 +6657,7 @@ import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
 
 export const SERVICE = 'email-server';
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 
 const SendBody = z.object({
   to: z.string().email(),
@@ -6543,15 +6668,44 @@ const SendBody = z.object({
 
 ```
 
+### email-server/src/config.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env is validated once at boot (agent/core/CONVENTIONS.md) — the service
+ * crashes on invalid config, never at request time.
+ *
+ * Courier runs one of two engines:
+ *   - 'noop'   — logs and reports queued; used in dev/test with no real SMTP.
+ *   - 'haraka' — boots the Haraka SMTP engine (email-server/haraka) which
+ *                relays outbound to Amazon SES. Requires the SES_* credentials.
+ *
+ * Default engine is 'haraka' in production, 'noop' otherwise, so `npm run dev`
+ * and `npm test` work without SES. INTERNAL_API_KEY has no default in
+ * production: a missing key must crash boot, not silently serve unauthenticated.
+ */
+```
+
 ### email-server/src/index.ts
 
 ```
+import type { ChildProcess } from 'node:child_process';
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './config.js';
+import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
+import { SmtpAdapter } from './services/smtp-adapter.js';
+import { renderHarakaConfig, startHaraka } from './services/haraka.js';
 
-const port = Number(process.env.PORT ?? 4005);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
-});
+/*
+ * Courier entrypoint / supervisor.
+ *
+ * With EMAIL_ENGINE=haraka it runs TWO cooperating processes in one container:
+ *   1. the Haraka SMTP engine (email-server/haraka) — the private SMTP endpoint
+ *      GoTrue talks to, and the outbound relay to Amazon SES;
+ *   2. this Express HTTP API — /health (Railway healthcheck) and POST
+ *      /api/v1/send, whose SmtpAdapter submits into Haraka on localhost.
 ```
 
 ### email-server/src/services/adapter.ts
@@ -6571,6 +6725,46 @@ export interface SendRequest {
 export interface SendResult {
   id: string;
   status: 'queued';
+}
+```
+
+### email-server/src/services/haraka.ts
+
+```
+import { spawn, type ChildProcess } from 'node:child_process';
+import { createRequire } from 'node:module';
+import fs from 'node:fs';
+import path from 'node:path';
+import { generate as generateCert } from 'selfsigned';
+import type { Config } from '../config.js';
+
+const require = createRequire(import.meta.url);
+
+/**
+ * Absolute path to the Haraka config directory (email-server/haraka), passed to
+ * `haraka -c`. Resolved relative to this compiled module (dist/services) so it
+ * works regardless of the process cwd.
+ */
+export function harakaDir(): string {
+```
+
+### email-server/src/services/smtp-adapter.ts
+
+```
+import nodemailer, { type Transporter } from 'nodemailer';
+import type { EmailAdapter, SendRequest, SendResult } from './adapter.js';
+
+/*
+ * SmtpAdapter — submits mail into the co-located Haraka engine over plain SMTP
+ * on localhost. Haraka (relay_internal) treats the localhost connection as
+ * relaying and forwards it to Amazon SES over TLS + SMTP AUTH. The internal hop
+ * is intentionally plaintext-on-loopback; the sensitive hop (Haraka -> SES) is
+ * encrypted. See email-server/haraka/README.md.
+ */
+export interface SmtpAdapterOptions {
+  host: string;
+  port: number;
+  from: string;
 }
 ```
 

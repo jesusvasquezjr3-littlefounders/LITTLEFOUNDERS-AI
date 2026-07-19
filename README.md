@@ -19,7 +19,7 @@
 | [`audiogen/`](audiogen/) | Echo | TTS audio for lessons (3 locales) | 4002 | Railway | — (internal-only, no public domain) |
 | [`gamegen/`](gamegen/) | Arcade | Personalized educational minigame generation | 4003 | Railway | — (internal-only, no public domain) |
 | [`parent-id-check/`](parent-id-check/) | Guardian | Guardian identity verification (kid/bigfounder gating) | 4004 | Railway | — (internal-only, no public domain) |
-| [`email-server/`](email-server/) | Courier | Open-source transactional email (Resend replacement) | 4005 | Railway | not yet deployed |
+| [`email-server/`](email-server/) | Courier | Transactional email — Haraka SMTP → Amazon SES relay | 4005 | Railway (internal-only) | built + tested; deploy pending SES wiring |
 | [`filebase/`](filebase/) | Depot | Media storage — lesson audio & generated images (Railway volume) | 4006 | Railway | `media-b2c.littlefounders.ai` |
 
 All Railway services live in one project (`littlefounders-b2c`). Internal services have no public domain by design (AGENTS.md §1.5) — only Core, Vault's Kong gateway, and Depot are reachable from outside Railway's private network.

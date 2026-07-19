@@ -42,5 +42,5 @@
 | audiogen (Echo) | audiogen/AGENTS.md |
 | gamegen (Arcade) | gamegen/AGENTS.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
-| email-server (Courier) | email-server/AGENTS.md · engine candidates: email-server/README.md |
+| email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + "Going live" wiring: email-server/README.md · haraka/README.md |
 | filebase (Depot) | filebase/AGENTS.md |

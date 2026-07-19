@@ -1,0 +1,18 @@
+# Courier engine — Haraka plugin list (order matters).
+# This is a SEND-ONLY outbound relay to Amazon SES; no inbound mail.
+# Docs: /DEPLOYMENT.md, email-server/AGENTS.md, email-server/haraka/README.md
+
+# CONNECT — mark connections from the Railway private network (and localhost)
+# as relaying, so their mail is forwarded outbound to the SES smarthost.
+# Custom plugin (email-server/haraka/plugins/relay_internal.js). No AUTH/TLS on
+# the internal hop by design — see auth_base.js TLS-before-AUTH gate + AGENTS.md.
+relay_internal
+
+# RCPT TO — required so recipients are accepted. For relaying connections this
+# returns OK; for non-relaying (untrusted) connections it rejects, which keeps
+# us from being an open relay even though the listener is private-only.
+rcpt_to.in_host_list
+
+# QUEUE — forward every relaying message to the Amazon SES smarthost over
+# TLS + SMTP AUTH. Config (secrets) rendered at boot into config/smtp_forward.ini.
+queue/smtp_forward

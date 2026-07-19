@@ -57,7 +57,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Course/lesson generation LLMs | DeepSeek + Qwen |
 | TTS | TBD (env-abstracted in `audiogen/`) |
 | Avatars | DiceBear, `avataaars` style |
-| Email engine | TBD — candidates in `email-server/README.md` |
+| Email engine | Haraka (self-hosted SMTP) → Amazon SES relay — see `email-server/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
 | Package layout | 8 independent npm packages — **no workspaces** |
