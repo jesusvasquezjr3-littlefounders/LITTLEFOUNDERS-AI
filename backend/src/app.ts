@@ -12,6 +12,10 @@ export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
+  // Core runs behind exactly one reverse proxy (Railway's edge). Without this,
+  // req.ip is the proxy address and EVERY client shares one rate-limit bucket —
+  // so trust one hop and key rate limits on the real client IP (X-Forwarded-For).
+  app.set('trust proxy', 1);
   app.use(helmet());
   app.use(globalRateLimiter);
   app.use(cors);
