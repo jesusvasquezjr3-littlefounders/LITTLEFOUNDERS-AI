@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{ $l := index .Data "locale" }}<!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="utf-8">
@@ -23,7 +23,7 @@
   </style>
 </head>
 <body style="margin:0;padding:0;background:#eef1fb;">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#eef1fb;">One tap to confirm your email and start your LittleFounders adventure.&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#eef1fb;">{{ if eq $l "es-MX" }}Un toque para confirmar tu correo y comenzar tu aventura en LittleFounders.{{ else if eq $l "pt-BR" }}Um toque para confirmar seu e-mail e começar sua aventura na LittleFounders.{{ else }}One tap to confirm your email and start your LittleFounders adventure.{{ end }}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1fb;">
     <tr>
       <td align="center" style="padding:32px 16px;">
@@ -39,9 +39,9 @@
           <!-- Body card -->
           <tr>
             <td class="lf-pad" style="background:#ffffff;padding:40px 44px 8px;font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-              <h1 style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-0.01em;color:#080f28;">Confirm your email</h1>
-              <p style="margin:0 0 12px;font-size:16px;line-height:25px;color:#55555f;font-weight:400;">Welcome to <strong style="color:#1e1e1e;">LittleFounders</strong>! You're one tap away from a gamified world of money &amp; entrepreneurship learning for the whole family.</p>
-              <p style="margin:0 0 28px;font-size:16px;line-height:25px;color:#55555f;font-weight:400;">Confirm this is your email to activate your account.</p>
+              <h1 style="margin:0 0 14px;font-size:26px;line-height:1.2;font-weight:800;letter-spacing:-0.01em;color:#080f28;">{{ if eq $l "es-MX" }}Confirma tu correo{{ else if eq $l "pt-BR" }}Confirme seu e-mail{{ else }}Confirm your email{{ end }}</h1>
+              <p style="margin:0 0 12px;font-size:16px;line-height:25px;color:#55555f;font-weight:400;">{{ if eq $l "es-MX" }}¡Bienvenido a <strong style="color:#1e1e1e;">LittleFounders</strong>! Estás a un toque de un mundo gamificado de aprendizaje sobre dinero y emprendimiento para toda la familia.{{ else if eq $l "pt-BR" }}Bem-vindo à <strong style="color:#1e1e1e;">LittleFounders</strong>! Você está a um toque de um mundo gamificado de aprendizado sobre dinheiro e empreendedorismo para toda a família.{{ else }}Welcome to <strong style="color:#1e1e1e;">LittleFounders</strong>! You're one tap away from a gamified world of money &amp; entrepreneurship learning for the whole family.{{ end }}</p>
+              <p style="margin:0 0 28px;font-size:16px;line-height:25px;color:#55555f;font-weight:400;">{{ if eq $l "es-MX" }}Confirma que este es tu correo para activar tu cuenta.{{ else if eq $l "pt-BR" }}Confirme que este é o seu e-mail para ativar sua conta.{{ else }}Confirm this is your email to activate your account.{{ end }}</p>
             </td>
           </tr>
 
@@ -50,8 +50,8 @@
             <td class="lf-pad" align="center" style="background:#ffffff;padding:0 44px 8px;">
               <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
                 <tr><td align="center" bgcolor="#ff775c" style="border-radius:9999px;">
-                  <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="{{ .ConfirmationURL }}" style="height:54px;v-text-anchor:middle;width:300px;" arcsize="50%" strokecolor="#ff775c" fillcolor="#ff775c"><w:anchorlock/><center style="color:#080f28;font-family:sans-serif;font-size:16px;font-weight:bold;">Confirm my email</center></v:roundrect><![endif]-->
-                  <!--[if !mso]><!--><a class="lf-btn" href="{{ .ConfirmationURL }}" style="background:#ff775c;border-radius:9999px;color:#080f28;display:inline-block;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:800;line-height:54px;text-align:center;text-decoration:none;width:300px;box-shadow:0 8px 20px rgba(255,119,92,.35);">Confirm my email&nbsp;&rarr;</a><!--<![endif]-->
+                  <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="{{ .ConfirmationURL }}" style="height:54px;v-text-anchor:middle;width:300px;" arcsize="50%" strokecolor="#ff775c" fillcolor="#ff775c"><w:anchorlock/><center style="color:#080f28;font-family:sans-serif;font-size:16px;font-weight:bold;">{{ if eq $l "es-MX" }}Confirmar mi correo{{ else if eq $l "pt-BR" }}Confirmar meu e-mail{{ else }}Confirm my email{{ end }}</center></v:roundrect><![endif]-->
+                  <!--[if !mso]><!--><a class="lf-btn" href="{{ .ConfirmationURL }}" style="background:#ff775c;border-radius:9999px;color:#080f28;display:inline-block;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:16px;font-weight:800;line-height:54px;text-align:center;text-decoration:none;width:300px;box-shadow:0 8px 20px rgba(255,119,92,.35);">{{ if eq $l "es-MX" }}Confirmar mi correo{{ else if eq $l "pt-BR" }}Confirmar meu e-mail{{ else }}Confirm my email{{ end }}&nbsp;&rarr;</a><!--<![endif]-->
                 </td></tr>
               </table>
             </td>
@@ -60,16 +60,16 @@
           <!-- Link fallback -->
           <tr>
             <td class="lf-pad" style="background:#ffffff;padding:22px 44px 8px;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-              <p style="margin:0 0 6px;font-size:12px;line-height:16px;color:#82828e;font-weight:500;">Button not working? Paste this link into your browser:</p>
+              <p style="margin:0 0 6px;font-size:12px;line-height:16px;color:#82828e;font-weight:500;">{{ if eq $l "es-MX" }}¿El botón no funciona? Pega este enlace en tu navegador:{{ else if eq $l "pt-BR" }}O botão não funciona? Cole este link no seu navegador:{{ else }}Button not working? Paste this link into your browser:{{ end }}</p>
               <p style="margin:0;font-size:12px;line-height:18px;word-break:break-all;"><a href="{{ .ConfirmationURL }}" style="color:#456dff;text-decoration:underline;">{{ .ConfirmationURL }}</a></p>
             </td>
           </tr>
 
           <!-- Divider + safety note -->
           <tr>
-            <td class="lf-pad" style="background:#ffffff;padding:24px 44px 36px;border-radius:0 0 0 0;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+            <td class="lf-pad" style="background:#ffffff;padding:24px 44px 36px;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
               <div style="height:1px;background:#e5e5e5;line-height:1px;font-size:0;margin:0 0 20px;">&nbsp;</div>
-              <p style="margin:0;font-size:13px;line-height:20px;color:#82828e;font-weight:400;">If you didn't create a LittleFounders account, you can safely ignore this email — no account will be activated.</p>
+              <p style="margin:0;font-size:13px;line-height:20px;color:#82828e;font-weight:400;">{{ if eq $l "es-MX" }}Si no creaste una cuenta en LittleFounders, puedes ignorar este correo con tranquilidad — no se activará ninguna cuenta.{{ else if eq $l "pt-BR" }}Se você não criou uma conta na LittleFounders, pode ignorar este e-mail com tranquilidade — nenhuma conta será ativada.{{ else }}If you didn't create a LittleFounders account, you can safely ignore this email — no account will be activated.{{ end }}</p>
             </td>
           </tr>
 
@@ -77,7 +77,7 @@
           <tr>
             <td align="center" style="background:#080f28;border-radius:0 0 24px 24px;padding:30px 40px 34px;font-family:'Figtree',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
               <p style="margin:0 0 10px;font-size:14px;line-height:21px;color:#ecf0ff;font-weight:700;">LittleFounders</p>
-              <p style="margin:0 0 16px;font-size:13px;line-height:20px;color:#949ec7;font-weight:400;">Where kids and families learn money &amp; entrepreneurship — the fun way.</p>
+              <p style="margin:0 0 16px;font-size:13px;line-height:20px;color:#949ec7;font-weight:400;">{{ if eq $l "es-MX" }}Donde niños y familias aprenden sobre dinero y emprendimiento — de forma divertida.{{ else if eq $l "pt-BR" }}Onde crianças e famílias aprendem sobre dinheiro e empreendedorismo — de um jeito divertido.{{ else }}Where kids and families learn money &amp; entrepreneurship — the fun way.{{ end }}</p>
               <p style="margin:0 0 4px;font-size:13px;line-height:20px;"><a href="https://littlefounders.ai" style="color:#7491ff;text-decoration:none;font-weight:700;">littlefounders.ai</a></p>
               <p style="margin:16px 0 0;font-size:11px;line-height:16px;color:#5b6796;font-weight:400;">© 2026 LittleFounders. All rights reserved.</p>
             </td>
