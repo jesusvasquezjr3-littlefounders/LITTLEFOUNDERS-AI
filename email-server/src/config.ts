@@ -14,7 +14,11 @@ import { z } from 'zod';
  * production: a missing key must crash boot, not silently serve unauthenticated.
  */
 const Env = z.object({
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  // Tolerate whatever the platform injects — Railway/Nixpacks can set NODE_ENV
+  // to a value outside our enum (or empty), and boot must never crash over it.
+  // We don't gate real behavior on it: EMAIL_ENGINE and INTERNAL_API_KEY are set
+  // explicitly in production. A valid 'production' is honored; anything else → 'development'.
+  NODE_ENV: z.enum(['development', 'test', 'production']).catch('development'),
   PORT: z.coerce.number().int().positive().default(4005),
   INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars').optional(),
 
