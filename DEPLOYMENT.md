@@ -156,11 +156,10 @@ decision, every deploy is an **upload authenticated by a token secret**:
   --prod` with `VERCEL_TOKEN`/`ORG_ID`/`PROJECT_ID`.
 - Vault internals (db, kong, and the plain-image services) are **not** in CD —
   they change rarely and are deployed manually (`railway up database/railway/db …`
-  or `railway add --image …`). `email-server` (Courier) is **live** (deployed
-  manually 2026-07-18, SES wiring complete) and HAS a CD workflow, but that
-  workflow stays gated by the `EMAIL_SERVER_LIVE` repo variable — set it to `true`
-  (`gh variable set EMAIL_SERVER_LIVE --body true`) to activate auto-deploy on
-  future pushes.
+  or `railway add --image …`). `email-server` (Courier) is **live** and its CD is
+  **active** — `EMAIL_SERVER_LIVE=true` was set 2026-07-20 and the gated workflow
+  ran its first successful deploy; email-server now auto-deploys like every other
+  app service.
 - Repo secrets in use: `RAILWAY_TOKEN`, `RAILWAY_SSH_PRIVATE_KEY` (backups),
   `INTERNAL_API_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 

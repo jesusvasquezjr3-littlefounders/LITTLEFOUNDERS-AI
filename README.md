@@ -6,7 +6,7 @@
 >
 > **AI agents:** read [`AGENTS.md`](AGENTS.md) before touching anything.
 >
-> **Production status (2026-07-18):** deployed and live — real email confirmation now sends through Courier (Haraka → Amazon SES) with branded trilingual templates, and Google social login is code-complete (pending only OAuth credentials). See ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative.
+> **Production status (2026-07-20):** deployed and live — real email confirmation sends through Courier (Haraka → Amazon SES) with branded trilingual templates, and **Google social login is LIVE** (verified end-to-end: Google → GoTrue → session → dashboard). See ROADMAP.md "Day 8" and WALKTHROUGH.md "Current State" for the full rollout narrative.
 
 ## Service map
 
