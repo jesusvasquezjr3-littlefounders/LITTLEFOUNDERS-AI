@@ -123,6 +123,19 @@ export function getSettings(): Promise<GotrueResult<GotrueSettings>> {
 }
 
 /**
+ * Provider-specific extra params forwarded verbatim by GoTrue to the
+ * provider's own OAuth authorize URL (verified live: GoTrue puts these
+ * straight onto the `location` redirect, unmodified — this is not a GoTrue
+ * feature we're guessing at). Google's `prompt=select_account` forces its
+ * account chooser even when the browser already holds a single Google
+ * session — without it Google silently re-uses that session and a user
+ * with multiple Google accounts never gets to pick.
+ */
+const PROVIDER_AUTHORIZE_PARAMS: Partial<Record<string, Record<string, string>>> = {
+  google: { prompt: 'select_account' },
+};
+
+/**
  * Build the GoTrue /authorize URL the browser is redirected to for social
  * login. Uses the PUBLIC SUPABASE_URL (Kong gateway) since the browser — not
  * Core — follows this redirect. `redirectTo` must be allow-listed in GoTrue's
@@ -130,6 +143,10 @@ export function getSettings(): Promise<GotrueResult<GotrueSettings>> {
  */
 export function authorizeUrl(provider: string, redirectTo: string): string {
   const { SUPABASE_URL } = getConfig();
-  const qs = new URLSearchParams({ provider, redirect_to: redirectTo });
+  const qs = new URLSearchParams({
+    provider,
+    redirect_to: redirectTo,
+    ...PROVIDER_AUTHORIZE_PARAMS[provider],
+  });
   return `${SUPABASE_URL}/auth/v1/authorize?${qs.toString()}`;
 }

@@ -145,6 +145,12 @@ describe('GET /api/v1/auth/oauth', () => {
     expect(url.searchParams.get('redirect_to')).toContain('/auth/callback');
   });
 
+  it('forces the Google account chooser (prompt=select_account) so multi-account browsers get to pick', async () => {
+    const res = await request(createApp()).get('/api/v1/auth/oauth/google');
+    const url = new URL(res.body.data.url);
+    expect(url.searchParams.get('prompt')).toBe('select_account');
+  });
+
   it('rejects an unsupported provider without touching GoTrue', async () => {
     const spy = vi.fn();
     stubFetch(spy as never);
