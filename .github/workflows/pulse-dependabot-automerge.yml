@@ -1,13 +1,15 @@
 name: Pulse Dependabot automerge
 
-# Patch-level image bumps for Pulse merge themselves once CI is green;
-# minor/major bumps stay open for human review (upstream majors have carried
-# data migrations — pulse/AGENTS.md § upgrade protocol). `--auto` respects
-# branch protection: the merge only fires after required checks (pulse CI)
-# pass. Repo prerequisites (allow auto-merge + required check) are described
-# in RUNBOOK.md § Pulse.
+# Merges Dependabot's PATCH-level Pulse image bumps only AFTER `pulse CI`
+# has succeeded on the PR — gated explicitly via workflow_run, so no
+# branch-protection/required-checks repo config is needed and non-pulse PRs
+# are unaffected. Minor/major bumps stay open for human review (upstream
+# majors have carried data migrations — pulse/AGENTS.md § upgrade protocol).
 
-on: pull_request
+on:
+  workflow_run:
+    workflows: ["pulse CI"]
+    types: [completed]
 
 permissions:
   contents: write
@@ -15,19 +17,35 @@ permissions:
 
 jobs:
   automerge:
-    if: github.actor == 'dependabot[bot]'
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      startsWith(github.event.workflow_run.head_branch, 'dependabot/docker/pulse/')
     runs-on: ubuntu-latest
     steps:
-      - name: Fetch Dependabot metadata
-        id: meta
-        uses: dependabot/fetch-metadata@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable automerge for Pulse patch bumps
-        if: |
-          steps.meta.outputs.update-type == 'version-update:semver-patch' &&
-          startsWith(steps.meta.outputs.directory, '/pulse/')
+      - name: Merge if this is a patch bump
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh pr merge --auto --squash "${{ github.event.pull_request.html_url }}"
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          PR=$(gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number,title,author \
+            --jq '.[] | select(.author.login == "dependabot[bot]") | @json' | head -1)
+          if [ -z "$PR" ]; then echo "No open Dependabot PR for $BRANCH"; exit 0; fi
+          NUMBER=$(echo "$PR" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['number'])")
+          TITLE=$(echo "$PR" | python3 -c "import json,sys; print(json.loads(sys.stdin.read())['title'])")
+          echo "PR #$NUMBER: $TITLE"
+          # Dependabot titles: "chore(pulse): bump IMAGE from X to Y".
+          # Patch = same major.minor, greater patch. Anything unparsable = no merge.
+          python3 - "$TITLE" <<'PY'
+          import re, sys
+          m = re.search(r'from v?(\d+)\.(\d+)\.(\d+)\S* to v?(\d+)\.(\d+)\.(\d+)', sys.argv[1])
+          if not m:
+              print('not a plain semver bump — leaving for human review'); sys.exit(1)
+          a = tuple(map(int, m.groups()[:3])); b = tuple(map(int, m.groups()[3:]))
+          if a[0] == b[0] and a[1] == b[1] and b[2] > a[2]:
+              print(f'patch bump {a} -> {b}: automerging'); sys.exit(0)
+          print(f'non-patch bump {a} -> {b} — leaving for human review'); sys.exit(1)
+          PY
+          gh pr merge --repo "$REPO" --squash "$NUMBER"
