@@ -6,7 +6,7 @@
 # IPv6 (must bind ::) and the default config assumes multi-GB hosts, so we
 # overlay our own config.d/users.d tuning (same approach as the official
 # railwayapp-templates/plausible ClickHouse package).
-FROM clickhouse/clickhouse-server:24.12-alpine
+FROM clickhouse/clickhouse-server:26.6-alpine
 
 # Same as CE's compose: skip the entrypoint's default-user password setup —
 # access is private-network-only and Plausible connects as `default`.
