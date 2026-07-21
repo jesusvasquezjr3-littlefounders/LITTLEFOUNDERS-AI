@@ -11,3 +11,8 @@ FROM louislam/uptime-kuma:2.4.0
 
 # State (monitors, history) is SQLite under /app/data — REQUIRES the Railway
 # volume mounted there, or every redeploy wipes the monitor config.
+#
+# PORT must be set as a Railway SERVICE VARIABLE (=3001): Kuma honours PORT,
+# but Railway injects its own default (8080) which wins over any image
+# default, so pin it explicitly or Core's KUMA_URL (:3001) can't reach it
+# (verified 2026-07-21).

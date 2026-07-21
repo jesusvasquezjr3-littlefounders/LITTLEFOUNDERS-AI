@@ -11,6 +11,10 @@ FROM ghcr.io/umami-software/umami:3.2.0
 # Railway private networking is IPv6 — Next.js standalone binds the HOSTNAME
 # env; :: makes it reachable at pulse-umami.railway.internal.
 ENV HOSTNAME="::"
-ENV PORT=3000
+
+# PORT must be set as a Railway SERVICE VARIABLE (=3000), NOT here: Railway
+# injects its own PORT (default 8080) at runtime and it wins over Dockerfile
+# ENV, so an ENV PORT is silently ignored — the app would bind 8080 while
+# Core/Kuma probe 3000 (verified 2026-07-21). See pulse/.env.example.
 
 # DATABASE_URL + APP_SECRET are Railway variables — see pulse/.env.example.
