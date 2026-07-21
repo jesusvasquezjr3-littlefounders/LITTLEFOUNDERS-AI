@@ -20,3 +20,10 @@ updates:
     labels:
       - "pulse"
       - "dependencies"
+    ignore:
+      # ClickHouse and Postgres move ONLY alongside the Plausible pin (the
+      # combination upstream tests — pulse/AGENTS.md #3). Majors are manual.
+      - dependency-name: "clickhouse/clickhouse-server"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "postgres"
+        update-types: ["version-update:semver-major"]
