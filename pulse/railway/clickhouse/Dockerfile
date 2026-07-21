@@ -8,5 +8,9 @@
 # railwayapp-templates/plausible ClickHouse package).
 FROM clickhouse/clickhouse-server:24.12-alpine
 
+# Same as CE's compose: skip the entrypoint's default-user password setup —
+# access is private-network-only and Plausible connects as `default`.
+ENV CLICKHOUSE_SKIP_USER_SETUP=1
+
 COPY config.d/ /etc/clickhouse-server/config.d/
 COPY users.d/ /etc/clickhouse-server/users.d/

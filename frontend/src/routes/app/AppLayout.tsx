@@ -128,6 +128,10 @@ export function AppLayout() {
   const email = session?.user.email ?? '';
   const displayName = profile?.display_name || email.split('@')[0] || '';
   const isParent = roles.includes('parent');
+  // Staff console entry — HIDDEN for non-staff, never locked (DESIGN.md
+  // Screen Recipes → Console): admin is not an aspirational upgrade, so the
+  // locked-chip grammar doesn't apply and the link simply doesn't exist.
+  const isStaff = roles.includes('admin') || roles.includes('superadmin');
   const userId = session?.user.id ?? 'littlefounder';
 
   // The DB locale is the user's language of record — the UI follows it.
@@ -200,6 +204,29 @@ export function AppLayout() {
           {NAV_ITEMS.map((item) => (
             <SidebarItem key={item.key} item={item} roles={roles} collapsed={collapsed} />
           ))}
+          {isStaff && (
+            <NavLink
+              to="/admin"
+              title={collapsed ? t('admin.console.title') : undefined}
+              className={({ isActive }) =>
+                cn(
+                  'motion-safe-press flex min-h-12 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                  collapsed ? 'justify-center px-0' : 'px-4',
+                  isActive
+                    ? 'bg-primary-soft font-bold text-primary'
+                    : 'text-content-muted hover:bg-surface-sunken hover:text-content',
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon name="monitoring" fill={isActive} />
+                  {!collapsed && <span className="lf-label">{t('admin.console.title')}</span>}
+                </>
+              )}
+            </NavLink>
+          )}
         </nav>
 
         <div className="mt-auto flex flex-col gap-4">

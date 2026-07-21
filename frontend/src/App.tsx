@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@/theme/useTheme';
 import { AuthProvider } from '@/auth/AuthContext';
+import { AnalyticsScripts } from '@/lib/analytics';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
 import { RequireRole } from '@/auth/RequireRole';
@@ -26,6 +27,8 @@ import { FollowingPage } from '@/routes/app/profile/FollowingPage';
 import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
 import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
+import { ConsoleLayout } from '@/routes/admin/ConsoleLayout';
+import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
 import { Suspense, lazy } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
@@ -36,6 +39,7 @@ export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
+        <AnalyticsScripts />
         <Routes>
           {import.meta.env.DEV ? (
             <Route
@@ -118,6 +122,22 @@ export function App() {
             <Route path=":handle/followers" element={<PublicFollowersPage />} />
             <Route path=":handle/following" element={<PublicFollowingPage />} />
             <Route path=":handle" element={<PublicProfilePage />} />
+          </Route>
+
+          {/* Staff console — HIDDEN for non-staff (redirect, no nav item), own
+              back-office chrome (DESIGN.md Screen Recipes → Console). Unlocks
+              for admin OR superadmin (§1.4 — both hold console capabilities). */}
+          <Route
+            path="admin"
+            element={
+              <RequireAuth>
+                <RequireRole role={['admin', 'superadmin']}>
+                  <ConsoleLayout />
+                </RequireRole>
+              </RequireAuth>
+            }
+          >
+            <Route index element={<AnalyticsHealthPage />} />
           </Route>
 
           {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md

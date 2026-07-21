@@ -1,0 +1,58 @@
+{
+  "console": {
+    "title": "Console",
+    "backToApp": "Back to the app",
+    "sections": {
+      "analytics": "Analytics & Health"
+    }
+  },
+  "analytics": {
+    "title": "Analytics & Health",
+    "subtitle": "Platform analytics and service health, straight from Pulse.",
+    "periodLabel": "Period",
+    "periods": {
+      "day": "Today",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "month": "This month",
+      "6mo": "Last 6 months",
+      "12mo": "Last 12 months"
+    },
+    "unavailableTitle": "Analytics unavailable",
+    "unavailableBody": "Pulse didn't answer. The product is unaffected — check the Pulse services on Railway.",
+    "web": {
+      "title": "Web analytics",
+      "visitors": "Visitors",
+      "pageviews": "Pageviews",
+      "bounceRate": "Bounce rate",
+      "visitDuration": "Visit duration",
+      "trend": "Daily visitors",
+      "trendAria": "Daily visitors over the selected period",
+      "trendEmpty": "No traffic recorded in this period yet."
+    },
+    "behavior": {
+      "title": "Behavioral (adult surfaces)",
+      "scopeNote": "Umami runs only on marketing and parent/admin surfaces — never on kid sessions (§1.9).",
+      "pageviews": "Pageviews",
+      "visitors": "Visitors",
+      "visits": "Visits",
+      "bounces": "Bounces"
+    }
+  },
+  "health": {
+    "title": "System health",
+    "allUp": "All systems up",
+    "someDown": "{{count}} down",
+    "loading": "Checking services…",
+    "unavailableTitle": "Health monitor unavailable",
+    "unavailableBody": "Uptime Kuma didn't answer. Check pulse-kuma on Railway.",
+    "up": "Up",
+    "down": "Down",
+    "columns": {
+      "service": "Service",
+      "status": "Status",
+      "latency": "Latency",
+      "uptime24h": "Uptime (24h)"
+    }
+  }
+}

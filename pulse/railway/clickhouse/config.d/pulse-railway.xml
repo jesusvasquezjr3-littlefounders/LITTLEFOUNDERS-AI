@@ -17,9 +17,13 @@
 <clickhouse>
     <listen_host>::</listen_host>
 
+    <!-- NOTE: do NOT cap max_concurrent_queries here. Plausible's connection
+         pool opens more simultaneous handles than a small cap allows — a cap
+         of 4 (tried 2026-07-20, borrowed from the Railway template) caused a
+         TOO_MANY_SIMULTANEOUS_QUERIES storm and the app never became healthy.
+         CE upstream leaves it at the ClickHouse default. -->
     <max_server_memory_usage>1610612736</max_server_memory_usage>
     <mark_cache_size>524288000</mark_cache_size>
-    <max_concurrent_queries>4</max_concurrent_queries>
 
     <asynchronous_metric_log remove="remove"/>
     <metric_log remove="remove"/>

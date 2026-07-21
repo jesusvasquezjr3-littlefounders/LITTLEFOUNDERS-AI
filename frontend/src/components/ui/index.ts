@@ -14,3 +14,7 @@ export { StatCard } from './StatCard';
 export { Field } from './Field';
 export { Checkbox } from './Checkbox';
 export { FileField } from './FileField';
+export { Table } from './Table';
+export type { TableColumn } from './Table';
+export { TrendChart } from './TrendChart';
+export type { TrendPoint } from './TrendChart';

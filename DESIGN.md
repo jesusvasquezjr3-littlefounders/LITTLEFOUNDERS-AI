@@ -193,10 +193,17 @@ pattern picks one, it doesn't invent a fourth:
 | **Stat row** | 2 cols | 3 cols | 6 cols | Profile/dashboard StatCard rows |
 | **Card grid** | 1 col | 2 cols | 3 cols | Course cards, feature grids |
 | **List rows** | single column, full width | — (same) | — (same, centered in a `max-w-xl`/`max-w-2xl` reading column) | Followers/following/blocked rows, settings sections |
+| **Data table** (staff console ONLY) | stacked card-per-row (each row renders as a compact `surface` card: primary line + caption pairs) | true `<table>` inside an `overflow-x-auto` container | — (same, full content width) | Console service-health rows, future users/audit tables |
 
 Stat rows and card grids ALWAYS use `gap-4` (or the section's established
 gap) at every breakpoint — no breakpoint-specific gap changes, which read as
-accidental rather than designed. A 4th, 5th, or odd-numbered stat/card count
+accidental rather than designed. The **Data table** category (added 2026-07-20
+with the staff console, owner-signed-off) is fenced to `/admin` surfaces: the
+mobile answer to a wide table is NEVER horizontal body scroll — rows collapse
+into stacked cards; on `md:`+ the real table scrolls inside its own
+`overflow-x-auto` container, header row in `lf-caption` bold `content-muted`,
+cells `lf-body-sm`, `lf-number` for figures, hairline `outline/60` row
+dividers, no zebra fills. A 4th, 5th, or odd-numbered stat/card count
 still uses these exact column tracks (the last row is intentionally
 incomplete, never re-flowed to "fill nicely") — a designed grid with a
 short last row beats an ad hoc one that's always full.
@@ -271,6 +278,15 @@ for containers. Sharp corners prohibited.
 - **FileField** — custom image picker (never the native control's look):
   dashed well on `surface-sunken`, `primary` hover/drag state, chosen-file
   summary with a replace affordance.
+- **Table** (console-only) — the Data table grid category as a component:
+  `<table>` on `md:`+ (own `overflow-x-auto` wrapper, `rounded-lg` `surface`
+  shell), stacked card-per-row below `md:`. Status renders as a Badge
+  (`success-soft`/`error-soft`), figures as `lf-number`. Never used on
+  kid/parent product surfaces.
+- **TrendChart** (console-only) — minimal inline SVG area/line chart for
+  timeseries: `primary` stroke, `primary/10` fill, no axes chrome beyond
+  first/last `lf-caption` labels; height ≤ 160px; renders from data, never a
+  third-party chart lib.
 - **Characters** — Dina, Liruf, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
 
@@ -356,6 +372,29 @@ types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 
 **Games hub** — poster-style `rounded-lg` media cards in a
 `md:grid-cols-2 lg:grid-cols-3` grid, hover lift, papaya "Play" pills.
+
+**Console (staff back-office, `/admin`)** — added 2026-07-20 (owner
+sign-off). The ONE surface that is HIDDEN, not locked: it never renders for
+non-staff (no nav item, direct URL redirects) — the locked-chip grammar is
+for aspirational upgrades, and admin is not one. Same token system, quieter
+voice: no upsell cards, no characters, no papaya except a true CTA. Anatomy:
+compact `.lf-glass` top bar (logo → `/learn` escape hatch, `lf-label`
+"Console" wordmark, section pills center [Analytics & Health first; Content /
+Support / Roles land here later], ThemeToggle + avatar right) over a `base`
+canvas; content in `container-max` with a `lf-display-lg` section title +
+muted caption. Analytics & Health composition: KPI **Stat row** (visitors,
+pageviews, bounce, visit duration — StatCard `dense`: numeral steps down the
+closed scale to `lf-headline lf-number` + md chip because `lf-display-lg`
+truncates in a 6-col track, and KPI figures use compact `Intl` notation — a
+rounded "2.1K" beats a truncated "2,…"), a **TrendChart** card for
+the daily series with the period Dropdown in the card header, a behavioral
+(Umami) stat strip, then the service-health **Data table** (service ·
+status Badge · latency `lf-number` · 24h uptime). Upstream-unavailable
+states render the standard empty-state grammar (icon + title + caption in a
+resting card) — never a blank pane. Responsive per §1.11: mobile stacks
+KPI 2-col → chart → health cards; desktop is the 6-col stat row + full-width
+cards. Superadmin-only sections (Roles & Access) simply don't render for
+plain admins — hidden, same rule as the console itself.
 
 **Assessment / Profile / Catalog** — same grammar: bands, cards, pills,
 IconChips; a profile hero may use a navy band with a glass-deep identity card.

@@ -402,6 +402,7 @@ frontend/
       player/
     lib/
     routes/
+      admin/
       app/
         learn/
           __tests__/
@@ -421,10 +422,40 @@ parent-id-check/
     __tests__/
     routes/
     services/
+pulse/
+  railway/
+    clickhouse/
+      config.d/
+      users.d/
+    db/
+      init-scripts/
+    kuma/
+    plausible/
+    umami/
 scripts/
 ```
 
 ## File previews (first 15 lines)
+
+### .github/dependabot.yml
+
+```
+# Auto-update for Pulse's pinned upstream images (pulse/AGENTS.md § upgrade
+# protocol). Dependabot (native, zero external infra — chosen over the hosted
+# Renovate app, see WALKTHROUGH.md decision log 2026-07-20) watches each
+# Dockerfile FROM pin and opens bump PRs; patch bumps automerge after CI via
+# .github/workflows/pulse-dependabot-automerge.yml, minor/major wait for
+# human review (they can carry schema migrations).
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directories:
+      - "/pulse/railway/plausible"
+      - "/pulse/railway/clickhouse"
+      - "/pulse/railway/db"
+      - "/pulse/railway/umami"
+      - "/pulse/railway/kuma"
+```
 
 ### .github/workflows/audiogen-cd.yml
 
@@ -763,6 +794,86 @@ on:
       - 'parent-id-check/**'
       - 'database/types/**'
       - '.github/workflows/parent-id-check-ci.yml'
+
+```
+
+### .github/workflows/pulse-backup.yml
+
+```
+name: Pulse backup
+
+# Daily pg_dump of pulse-db (Plausible app data + Umami data), stored on
+# filebase's (Depot) Railway volume next to the Vault dumps — same rationale
+# and mechanism as vault-backup.yml (separate disk & service from the live
+# volume; `railway ssh` writes straight to the container filesystem).
+# ClickHouse events are deliberately NOT dumped here: the raw analytics
+# store is loss-tolerant by decision (RUNBOOK.md § Pulse) and a ClickHouse
+# logical dump at this size isn't worth a daily cron.
+
+on:
+  schedule:
+    - cron: '30 8 * * *' # 08:30 UTC daily (after the 08:00 Vault dump)
+  workflow_dispatch: {}
+
+```
+
+### .github/workflows/pulse-cd.yml
+
+```
+name: pulse CD
+
+# Deploys all five Pulse services after pulse CI passes on main. Builds are
+# near-no-ops (FROM a pinned image + config COPYs), so redeploying the whole
+# stack on any pulse/ change is simpler and safer than diffing per-service.
+# Same gating pattern as every other *-cd.yml (workflow_run on CI success).
+
+on:
+  workflow_run:
+    workflows: ["pulse CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+```
+
+### .github/workflows/pulse-ci.yml
+
+```
+name: pulse CI
+
+# Pulse has no npm surface — CI validates what can actually break: the pins
+# resolve and the images build (catches a typo'd tag or a bad COPY), the
+# init script is sound shell, and no Dockerfile drifts to a floating tag
+# (pulse/AGENTS.md non-negotiable #1).
+
+on:
+  push:
+    branches: [main]
+    paths: ["pulse/**", ".github/workflows/pulse-ci.yml"]
+  pull_request:
+    paths: ["pulse/**", ".github/workflows/pulse-ci.yml"]
+
+permissions:
+```
+
+### .github/workflows/pulse-dependabot-automerge.yml
+
+```
+name: Pulse Dependabot automerge
+
+# Patch-level image bumps for Pulse merge themselves once CI is green;
+# minor/major bumps stay open for human review (upstream majors have carried
+# data migrations — pulse/AGENTS.md § upgrade protocol). `--auto` respects
+# branch protection: the merge only fires after required checks (pulse CI)
+# pass. Repo prerequisites (allow auto-merge + required check) are described
+# in RUNBOOK.md § Pulse.
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
 
 ```
 
@@ -1212,17 +1323,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-20) — Google account chooser + prod cleanup
+## Current State (2026-07-20) — Pulse (analytics + system health) + admin console groundwork
 
-**Google login now always shows the account chooser.** Without it, a browser holding a single existing Google session gets silently signed back in — a real problem for anyone with multiple Google accounts, who'd never get to pick. Verified live via the raw `location` redirect header (not assumed) that GoTrue forwards arbitrary extra query params on `/authorize` straight through to the provider's own OAuth URL: `GET .../authorize?provider=google&prompt=select_account` came back with `location: https://accounts.google.com/o/oauth2/v2/auth?...&prompt=select_account&...`. Core's `authorizeUrl()` now always adds it for Google via a small `PROVIDER_AUTHORIZE_PARAMS` map (`backend/src/services/gotrue.ts`), architected per-provider since the equivalent param differs across providers. New backend test asserts `prompt=select_account` on the built URL. 114 backend tests green.
+**New §1.5 domain: `pulse/` (codename Pulse)** — human-signed-off change to the LOCKED §1.2 stack and §1.5 service map (owner authorization in-session, 2026-07-20). Pulse is a *pinned third-party stack* (Vault pattern), not a TS service: **Plausible CE v3.2.1** (web analytics — cookieless/no-PII, ClickHouse + Postgres, Stats API v2, GA4 import), **Umami v3.2.0** (behavioral analytics — funnels/heatmaps/session replay, MIT, single-Postgres), and **Uptime Kuma 2.4.0** (continuous `/health` uptime + latency + alerting — fills the gap left by Railway's deploy-gate-only healthchecks). Five Railway services (`pulse-plausible`, `pulse-clickhouse`, `pulse-db`, `pulse-umami`, `pulse-kuma`) over IPv6 private networking; data reads reach the browser only through Core `/api/v1/admin/*`. Version pins live in the Dockerfile `FROM` lines; **Dependabot** watches them daily and patch bumps automerge after `pulse CI` (minor/major stay human-reviewed — upstream majors have carried data migrations). Research basis: 28 load-bearing claims adversarially verified against primary sources (25 confirmed) before adoption; v3.2.1 is the Plausible security floor (CVE-2026-8467 `/storybook` RCE removed) and the ghcr.io registry is mandatory (Docker Hub frozen at v2.1.4).
 
-**Production hygiene closed out.** Deleted the orphaned first Google OAuth client secret (`****n9h9`, created 2026-07-19, never copied/used — disabled then deleted per Google's own guidance, the live secret `****y-c-` untouched) and the two stale deploy-verification test users left over from the 2026-07-17 rollout (`cost-opt-verify-…`, `kong-cap-verify-…`) — verified zero orphaned `profiles` rows after.
+**§1.9 tracking boundary (non-negotiable):** Plausible may see every surface (it stores no PII by construction). Umami — including its rrweb replay/heatmap recorder — mounts ONLY on marketing + parent/admin surfaces and NEVER on kid-role sessions; enforcement lives in the frontend gate. Full rationale + the admin/superadmin console scope (admin = content/support; superadmin = + roles & access) recorded this session; GA4 historical import is the one remaining manual step (bring-your-own GCP OAuth app — runbook in pulse/README.md).
 
-## Current State (2026-07-20) — Google OAuth LIVE
+## Current State (2026-07-20) — Login/signup are a bare trust surface
 
-**Google social login is live in production (2026-07-20).** OAuth client "LittleFounders v2 (GoTrue)" created in Google Cloud project `littlefounders-auth` (consent screen: External, In production; redirect URI `https://auth-b2c.littlefounders.ai/auth/v1/callback`); owner set `GOTRUE_EXTERNAL_GOOGLE_SECRET`, agent set `CLIENT_ID`/`ENABLED=true`; auth redeployed clean. **Verified E2E in production:** `/oauth/providers` → `["google"]`, the login button renders, and the full loop (Google → GoTrue → `/auth/callback` → session → dashboard) completed — OAuth user `provider=google`, display_name "Jesus V." from Google metadata (migration 0011 working), `universal` role, email auto-confirmed. Also this session: the trust-proxy fix + docs shipped through CD, and `EMAIL_SERVER_LIVE=true` was set — Courier's CD ran its first gated deploy successfully, so email-server now auto-deploys like every other app service. Operational gotchas recorded: Google client secrets are one-time-view (recover via "Add secret" on the client page), and a Railway CLI `variables --set` clobbers changes still staged in the dashboard — never mix the two mid-flight.
+**`/login` and `/signup` no longer render inside `MarketingLayout`.** They were nested under the marketing shell, so every visit carried the full marketing nav (logo, How it works/Families/FAQ, language dropdown, theme toggle, CTA) and the navy footer band — noise on a page whose whole job is one focused task. DESIGN.md's Auth recipe already specified "trust surface: focused single centered column... ONE resting card" with no chrome; the routing just didn't match it. New `frontend/src/routes/auth/AuthLayout.tsx` gives `/login`/`/signup` a bare `min-h-screen` wrapper (background + the same scroll-reset/page-enter motion every top-level route gets) with no nav or footer — `AuthShell` (unchanged) still renders the title/subtitle + card exactly as before, now with nothing else on the page.
 
-## Current State (2026-07-18) — email LIVE + Google OAuth ready + Resend retired
+**Fixed a real bug this surfaced: theme only worked if `ThemeToggle` happened to be mounted.** `useTheme()` was a plain hook — each mounted `ThemeToggle` held its own independent `choice`/`isDark` state, and the `dark` class on `<html>` was only ever applied inside that hook's own effect. Auth pages render no `ThemeToggle` by design (chrome-free), so stripping the marketing header would have silently broken dark mode there (system-dark or a stored 'dark' preference would never reach `<html>` on load). Converted `frontend/src/theme/useTheme.tsx` (renamed from `.ts` — now contains JSX) to a `ThemeProvider` context mounted once at `App()`'s root, so theme applies on first paint regardless of route; `ThemeToggle` is now a consumer of the same shared state, not an independent instance. Verified live: `/login` with `lf-theme=dark` in localStorage (or system dark, via `auto`) correctly gets `<html class="dark">` with zero toggle UI on the page. 3 new tests (`AuthLayout.test.tsx`); 244 frontend tests green; verified in-browser at ~375px and ~1280px, light + dark.
 ```
 
 ### agent/README.md
@@ -2680,6 +2791,26 @@ export default tseslint.config(
 //     subset of the frontend original (the React/ComponentType registry
 ```
 
+### backend/src/__tests__/admin.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { resetPulseForTests } from '../services/pulse.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+/*
+ * /api/v1/admin — Supertest happy + sad paths (AGENTS.md §7 "Adding an
+ * endpoint"). Upstreams (PostgREST for roles, Plausible, Umami, Kuma) are
+ * stubbed at the fetch layer; Pulse env is stubbed per-test via vi.stubEnv
+ * (services/pulse.ts parses lazily, resetPulseForTests() drops its caches).
+ */
+
+const ADMIN_ID = '22222222-2222-4222-8222-222222222222';
+
+```
+
 ### backend/src/__tests__/auth.test.ts
 
 ```
@@ -2927,6 +3058,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
+import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -2937,7 +3069,6 @@ export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
   const app = express();
-  // Core runs behind exactly one reverse proxy (Railway's edge). Without this,
 ```
 
 ### backend/src/config.ts
@@ -3276,6 +3407,26 @@ if (!isTestOrDev) {
   redisClient.on('error', (err) => console.error('Redis Client Error', err));
 ```
 
+### backend/src/routes/admin.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { requireAuth, requireRole } from '../middleware/auth.js';
+import {
+  getKumaHealth,
+  getPlausibleOverview,
+  getPulseConfig,
+  getUmamiStats,
+  kumaConfigured,
+  plausibleConfigured,
+  umamiConfigured,
+} from '../services/pulse.js';
+
+/*
+```
+
 ### backend/src/routes/auth.ts
 
 ```
@@ -3414,6 +3565,26 @@ type Json = Record<string, unknown>;
 export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocale: string | null | undefined): LessonDocumentRow | null {
   if (rows.length === 0) return null;
   const byLocale = new Map(rows.map((r) => [r.locale, r]));
+```
+
+### backend/src/services/pulse.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Pulse (observability stack) clients — Plausible Stats API v2, Umami API,
+ * Uptime Kuma status page. Core is the ONLY thing that talks to these
+ * (pulse/AGENTS.md #5): tokens live here server-side, the browser sees only
+ * the /api/v1/admin envelope. Every reader is cached in-memory (60s TTL) so
+ * admin-panel refreshes stay far under Plausible's 600 req/h default limit.
+ *
+ * Unlike config.ts (validated at boot), Pulse env is parsed lazily and is
+ * OPTIONAL by design: Core must boot and serve the product even when the
+ * observability stack is absent (local dev, incidents) — routes answer 503
+ * PULSE_UNCONFIGURED instead. An outage here loses telemetry, never product
+ * (RUNBOOK.md § Pulse).
+ */
 ```
 
 ### backend/src/services/streak.ts
@@ -25749,6 +25920,7 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 import { Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@/theme/useTheme';
 import { AuthProvider } from '@/auth/AuthContext';
+import { AnalyticsScripts } from '@/lib/analytics';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
 import { RequireRole } from '@/auth/RequireRole';
@@ -25760,7 +25932,6 @@ import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
 import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
-import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 ```
 
 ### frontend/src/__tests__/App.test.tsx
@@ -25850,13 +26021,13 @@ import { APP_HOME } from '@/routes/app/navConfig';
 /*
  * Role gate for app routes (client-side UX only — real authorization lives
  * in RLS + Core; this just keeps locked sections out of reach in the UI).
+ * `role` accepts a single role or an any-of set — the staff console unlocks
+ * for admin OR superadmin (/AGENTS.md §1.4: both hold the console
+ * capabilities; only superadmin-exclusive panels gate on the single role).
  */
-export function RequireRole({ role, children }: { role: string; children: ReactNode }) {
+export function RequireRole({ role, children }: { role: string | string[]; children: ReactNode }) {
   const { session, roles, meLoaded } = useAuth();
   if (session === undefined || (session && !meLoaded)) return null; // roles still loading
-  if (!roles.includes(role)) return <Navigate to={APP_HOME} replace />;
-  return <>{children}</>;
-}
 ```
 
 ### frontend/src/auth/oauth.ts
@@ -26314,9 +26485,29 @@ interface StatCardProps {
   value: string;
   label: string;
   tone?: 'primary' | 'secondary' | 'accent';
-  className?: string;
-}
+  /**
+   * Console-density variant (/DESIGN.md §Screen Recipes → Console): the
+   * 6-col KPI track leaves ~70-100px for the numeral, where `lf-display-lg`
+```
 
+### frontend/src/components/ui/Table.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Card } from '@/components/ui/Card';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Table (console-only; Data table grid category).
+ * The §1.11 mobile answer to a wide table is NEVER horizontal body scroll:
+ * below `md:` each row renders as a stacked compact card (primary line +
+ * caption pairs); from `md:` up it is a real <table> inside its own
+ * overflow-x-auto container. Never used on kid/parent product surfaces.
+ */
+
+export interface TableColumn<Row> {
+  key: string;
+  header: string;
 ```
 
 ### frontend/src/components/ui/ThemeToggle.tsx
@@ -26339,6 +26530,26 @@ export function ThemeToggle({ className }: { className?: string }) {
   const { t } = useTranslation();
 ```
 
+### frontend/src/components/ui/TrendChart.tsx
+
+```
+/*
+ * /DESIGN.md §Components — TrendChart (console-only): minimal inline SVG
+ * area chart for timeseries. `primary` stroke over a `primary/10` fill, no
+ * axis chrome beyond first/last caption labels, never a third-party lib.
+ */
+
+export interface TrendPoint {
+  label: string;
+  value: number;
+}
+
+interface TrendChartProps {
+  points: TrendPoint[];
+  /** Accessible description of what the series measures. */
+  ariaLabel: string;
+```
+
 ### frontend/src/components/ui/index.ts
 
 ```
@@ -26357,6 +26568,26 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { StatCard } from './StatCard';
 export { Field } from './Field';
 export { Checkbox } from './Checkbox';
+```
+
+### frontend/src/i18n/en-US/admin.json
+
+```
+{
+  "console": {
+    "title": "Console",
+    "backToApp": "Back to the app",
+    "sections": {
+      "analytics": "Analytics & Health"
+    }
+  },
+  "analytics": {
+    "title": "Analytics & Health",
+    "subtitle": "Platform analytics and service health, straight from Pulse.",
+    "periodLabel": "Period",
+    "periods": {
+      "day": "Today",
+      "7d": "Last 7 days",
 ```
 
 ### frontend/src/i18n/en-US/auth.json
@@ -26517,6 +26748,26 @@ export { Checkbox } from './Checkbox';
     "sunset": "Sunset",
     "ocean": "Ocean",
     "forest": "Forest",
+```
+
+### frontend/src/i18n/es-MX/admin.json
+
+```
+{
+  "console": {
+    "title": "Consola",
+    "backToApp": "Volver a la app",
+    "sections": {
+      "analytics": "Analíticas y Salud"
+    }
+  },
+  "analytics": {
+    "title": "Analíticas y Salud",
+    "subtitle": "Analíticas de la plataforma y salud de los servicios, directo de Pulse.",
+    "periodLabel": "Periodo",
+    "periods": {
+      "day": "Hoy",
+      "7d": "Últimos 7 días",
 ```
 
 ### frontend/src/i18n/es-MX/auth.json
@@ -26697,6 +26948,26 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import enCommon from './en-US/common.json';
 import enMarketing from './en-US/marketing.json';
 import enErrors from './en-US/errors.json';
+```
+
+### frontend/src/i18n/pt-BR/admin.json
+
+```
+{
+  "console": {
+    "title": "Console",
+    "backToApp": "Voltar ao app",
+    "sections": {
+      "analytics": "Analytics e Saúde"
+    }
+  },
+  "analytics": {
+    "title": "Analytics e Saúde",
+    "subtitle": "Analytics da plataforma e saúde dos serviços, direto do Pulse.",
+    "periodLabel": "Período",
+    "periods": {
+      "day": "Hoje",
+      "7d": "Últimos 7 dias",
 ```
 
 ### frontend/src/i18n/pt-BR/auth.json
@@ -28192,6 +28463,26 @@ import { makerSchemas } from './families/maker/register'
 
 ```
 
+### frontend/src/lib/analytics.tsx
+
+```
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+
+/*
+ * Pulse tracker mounting — the §1.9 fence, enforced in ONE place.
+ *
+ * Plausible: cookieless, no PII, no persistent identifiers, raw IP/UA never
+ * stored (verified against its data policy before adoption — WALKTHROUGH.md
+ * 2026-07-20). Safe for every surface INCLUDING kid traffic, so it mounts
+ * unconditionally when configured.
+ *
+ * Umami: behavioral capture (events; heatmaps/replay ship with its recorder).
+ * NON-NEGOTIABLE (§1.9 + pulse/AGENTS.md #4): it must NEVER observe a
+ * kid-role session. Policy (WALKTHROUGH.md decision log 2026-07-20):
+```
+
 ### frontend/src/lib/api.ts
 
 ```
@@ -28284,6 +28575,46 @@ createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </StrictMode>,
 );
+```
+
+### frontend/src/routes/admin/AnalyticsHealthPage.tsx
+
+```
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import {
+  Badge,
+  Card,
+  Dropdown,
+  Icon,
+  StatCard,
+  Table,
+  TrendChart,
+  type DropdownOption,
+  type TableColumn,
+} from '@/components/ui';
+```
+
+### frontend/src/routes/admin/ConsoleLayout.tsx
+
+```
+import { NavLink, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { Avatar } from '@/components/Avatar';
+import { Icon, ThemeToggle } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+/*
+ * Staff console shell — /DESIGN.md §Screen Recipes → Console. The ONE
+ * surface that is HIDDEN, not locked: routing never renders it for
+ * non-staff (RequireRole redirects), and no navConfig entry exists — the
+ * locked-chip grammar is for aspirational upgrades, which admin is not.
+ * Same token system as the app, quieter voice: no upsell cards, no
+ * characters, papaya only for true CTAs.
+ */
 ```
 
 ### frontend/src/routes/app/AppLayout.tsx
@@ -29007,20 +29338,20 @@ export function AuthCallbackPage() {
 
 ```
 import { useLayoutEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { LOCALES, type Locale } from '@/i18n';
+import { Dropdown, ThemeToggle, type DropdownOption } from '@/components/ui';
 
-/*
- * Bare trust surface for /login and /signup — no marketing nav or footer
- * (DESIGN.md §Screen Recipes → Auth: "focused single centered column...
- * ONE resting card"). AuthShell renders the actual centered title + card;
- * this layout only owns the full-height background and the same
- * scroll-reset + page-enter motion every other top-level route gets.
- */
-export function AuthLayout() {
-  const location = useLocation();
+// Country flag paired with each locale (DESIGN.md exception: flags are content
+// labels for language identity, not functional UI icons — Material Symbols
+// has no equivalent). Mirrors MarketingLayout's own map (§Screen Recipes).
+const LOCALE_FLAGS: Record<Locale, string> = {
+  'en-US': '🇺🇸',
+  'es-MX': '🇲🇽',
+  'pt-BR': '🇧🇷',
+};
 
-  useLayoutEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 ```
 
 ### frontend/src/routes/auth/AuthShell.tsx
@@ -29147,7 +29478,7 @@ import { ErrorBanner } from './ErrorBanner';
 
 ```
 import { describe, expect, it, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import i18n from '@/i18n';
@@ -29861,6 +30192,170 @@ export default defineConfig({
     setupFiles: ['src/test-setup.ts'],
   },
 });
+```
+
+### pulse/AGENTS.md
+
+```
+# pulse/AGENTS.md — Domain rules for Pulse (observability stack)
+
+> **Codename:** Pulse · **Mission:** platform analytics + system health, fully
+> self-hosted. Like Vault, Pulse is a *pinned third-party stack*, not a TS
+> service — there is no `npm test` here; the gates are pins, configs, and docs.
+>
+> **Last updated:** 2026-07-20 · All documentation in English (/AGENTS.md §1.0.4).
+
+---
+
+## What Pulse is
+
+Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
+
+| Railway service | Upstream (pinned in the Dockerfile) | Role | Exposure |
+```
+
+### pulse/README.md
+
+```
+# Pulse — self-hosted analytics & system health
+
+**Codename:** Pulse · **Deploy:** Railway (`littlefounders-b2c`) · **Owner surface:** admin console (via Core)
+
+Pulse is LittleFounders' observability stack: privacy-first web analytics
+(Plausible CE), behavioral product analytics (Umami v3), and continuous
+system-health monitoring (Uptime Kuma) — fully self-hosted, pinned like
+Vault, auto-updated by Dependabot, private by default.
+
+**Stack source:** upstream images pinned in each `pulse/railway/*/Dockerfile`
+`FROM` line (the single source of truth for versions — upgrade protocol:
+[AGENTS.md](AGENTS.md)).
+
+## Services
+
+```
+
+### pulse/railway/clickhouse/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### pulse/railway/db/init-scripts/00-create-databases.sh
+
+```
+#!/bin/sh
+# Pulse Postgres first-boot provisioning. Runs ONCE against an empty volume
+# (docker-entrypoint-initdb.d contract). Creates one role + one database per
+# app so Plausible and Umami never share credentials — least privilege inside
+# the private network. Passwords come from Railway variables (never tracked).
+set -eu
+
+: "${PLAUSIBLE_DB_PASSWORD:?PLAUSIBLE_DB_PASSWORD is required}"
+: "${UMAMI_DB_PASSWORD:?UMAMI_DB_PASSWORD is required}"
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+    CREATE ROLE plausible LOGIN PASSWORD '${PLAUSIBLE_DB_PASSWORD}';
+    CREATE ROLE umami LOGIN PASSWORD '${UMAMI_DB_PASSWORD}';
+    CREATE DATABASE plausible OWNER plausible;
+    CREATE DATABASE umami OWNER umami;
+```
+
+### pulse/railway/db/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### pulse/railway/kuma/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### pulse/railway/plausible/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "healthcheckPath": "/api/health",
+    "healthcheckTimeout": 600,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### pulse/railway/plausible/seed-volume-entrypoint.sh
+
+```
+#!/bin/sh
+# Railway volume shim (same class of fix as Vault's fix-volume-entrypoint.sh).
+#
+# The CE image ships required runtime data inside /var/lib/plausible (e.g.
+# tzdata_data/ — the app crash-loops without it). docker-compose named volumes
+# copy that image content into the volume on first use; Railway bind-mounts do
+# NOT — they shadow it with an empty root-owned dir. This entrypoint restores
+# the copy-up semantics: seed anything missing from the /var/lib/plausible.dist
+# snapshot (taken at build time), ensure TMPDIR exists, then exec the normal
+# boot chain. Runs as root (RAILWAY_RUN_UID=0 on the service) so it can write
+# the mount — a documented Railway pattern for non-root images with volumes.
+set -eu
+
+DIST=/var/lib/plausible.dist
+DATA=/var/lib/plausible
+```
+
+### pulse/railway/umami/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "healthcheckPath": "/api/heartbeat",
+    "healthcheckTimeout": 300,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
 ```
 
 ### scripts/setup-dev.sh

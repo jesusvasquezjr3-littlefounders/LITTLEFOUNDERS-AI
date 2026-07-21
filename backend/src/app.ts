@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
+import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -30,6 +31,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/learn', learnRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
+  app.use('/api/v1/admin', adminRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });

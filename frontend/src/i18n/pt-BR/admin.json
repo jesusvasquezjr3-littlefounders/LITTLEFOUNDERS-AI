@@ -1,0 +1,58 @@
+{
+  "console": {
+    "title": "Console",
+    "backToApp": "Voltar ao app",
+    "sections": {
+      "analytics": "Analytics e Saúde"
+    }
+  },
+  "analytics": {
+    "title": "Analytics e Saúde",
+    "subtitle": "Analytics da plataforma e saúde dos serviços, direto do Pulse.",
+    "periodLabel": "Período",
+    "periods": {
+      "day": "Hoje",
+      "7d": "Últimos 7 dias",
+      "30d": "Últimos 30 dias",
+      "month": "Este mês",
+      "6mo": "Últimos 6 meses",
+      "12mo": "Últimos 12 meses"
+    },
+    "unavailableTitle": "Analytics indisponível",
+    "unavailableBody": "O Pulse não respondeu. O produto não é afetado — verifique os serviços do Pulse na Railway.",
+    "web": {
+      "title": "Analytics da web",
+      "visitors": "Visitantes",
+      "pageviews": "Visualizações",
+      "bounceRate": "Taxa de rejeição",
+      "visitDuration": "Duração da visita",
+      "trend": "Visitantes por dia",
+      "trendAria": "Visitantes diários no período selecionado",
+      "trendEmpty": "Ainda não há tráfego registrado neste período."
+    },
+    "behavior": {
+      "title": "Comportamento (superfícies adultas)",
+      "scopeNote": "O Umami roda apenas em marketing e superfícies de responsáveis/admin — nunca em sessões de crianças (§1.9).",
+      "pageviews": "Visualizações",
+      "visitors": "Visitantes",
+      "visits": "Visitas",
+      "bounces": "Rejeições"
+    }
+  },
+  "health": {
+    "title": "Saúde do sistema",
+    "allUp": "Tudo no ar",
+    "someDown": "{{count}} fora do ar",
+    "loading": "Verificando serviços…",
+    "unavailableTitle": "Monitor de saúde indisponível",
+    "unavailableBody": "O Uptime Kuma não respondeu. Verifique o pulse-kuma na Railway.",
+    "up": "No ar",
+    "down": "Fora do ar",
+    "columns": {
+      "service": "Serviço",
+      "status": "Status",
+      "latency": "Latência",
+      "uptime24h": "Uptime (24h)"
+    }
+  }
+}
