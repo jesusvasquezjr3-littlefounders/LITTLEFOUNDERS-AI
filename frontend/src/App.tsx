@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { ThemeProvider } from '@/theme/useTheme';
 import { AuthProvider } from '@/auth/AuthContext';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
@@ -7,6 +8,7 @@ import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
 import { LegalPage } from '@/routes/marketing/LegalPage';
+import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
 import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
@@ -32,84 +34,105 @@ const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
 
 export function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        {import.meta.env.DEV ? (
-          <Route
-            path="dev/lesson-lab"
-            element={
-              <Suspense fallback={null}>
-                <LessonLabPage />
-              </Suspense>
-            }
-          />
-        ) : null}
+    <ThemeProvider>
+      <AuthProvider>
+        <Routes>
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/lesson-lab"
+              element={
+                <Suspense fallback={null}>
+                  <LessonLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
 
-        {/* Marketing + auth (marketing chrome) */}
-        <Route element={<MarketingLayout />}>
-          <Route index element={<Landing />} />
-          <Route path="how-it-works" element={<ComingSoon page="howItWorks" />} />
-          <Route path="families" element={<ComingSoon page="families" />} />
-          <Route path="faq" element={<ComingSoon page="faq" />} />
-          <Route path="legal/terms" element={<LegalPage doc="terms" />} />
-          <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
-          <Route path="login" element={<RequireGuest><LoginPage /></RequireGuest>} />
-          <Route path="signup" element={<RequireGuest><SignupPage /></RequireGuest>} />
-          {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}
-          <Route path="auth/callback" element={<AuthCallbackPage />} />
+          {/* Marketing (marketing chrome) */}
+          <Route element={<MarketingLayout />}>
+            <Route index element={<Landing />} />
+            <Route path="how-it-works" element={<ComingSoon page="howItWorks" />} />
+            <Route path="families" element={<ComingSoon page="families" />} />
+            <Route path="faq" element={<ComingSoon page="faq" />} />
+            <Route path="legal/terms" element={<LegalPage doc="terms" />} />
+            <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
+            {/* OAuth landing — not guest-guarded: it completes the transition from guest to authed. */}
+            <Route path="auth/callback" element={<AuthCallbackPage />} />
+            <Route
+              path="verify-parent"
+              element={
+                <RequireAuth>
+                  <VerifyParentPage />
+                </RequireAuth>
+              }
+            />
+          </Route>
+
+          {/* Auth (login/signup) — bare trust surface, no marketing chrome
+              (DESIGN.md §Screen Recipes → Auth). */}
+          <Route element={<AuthLayout />}>
+            <Route
+              path="login"
+              element={
+                <RequireGuest>
+                  <LoginPage />
+                </RequireGuest>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <RequireGuest>
+                  <SignupPage />
+                </RequireGuest>
+              }
+            />
+          </Route>
+
+          {/* App (dashboard chrome — sections come from routes/app/navConfig) */}
           <Route
-            path="verify-parent"
             element={
               <RequireAuth>
-                <VerifyParentPage />
+                <AppLayout />
+              </RequireAuth>
+            }
+          >
+            <Route path="learn" element={<LearnPage />} />
+            <Route path="learn/:courseSlug" element={<CoursePage />} />
+            <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
+            <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
+            <Route
+              path="tasks"
+              element={
+                <RequireRole role="parent">
+                  <SectionComingSoon section="tasks" icon="checklist" />
+                </RequireRole>
+              }
+            />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="profile/avatar" element={<AvatarEditorPage />} />
+            <Route path="profile/settings" element={<SettingsPage />} />
+            <Route path="profile/followers" element={<FollowersPage />} />
+            <Route path="profile/following" element={<FollowingPage />} />
+            {/* /@username — public profiles (static routes above always win) */}
+            <Route path=":handle/followers" element={<PublicFollowersPage />} />
+            <Route path=":handle/following" element={<PublicFollowingPage />} />
+            <Route path=":handle" element={<PublicProfilePage />} />
+          </Route>
+
+          {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md
+              Screen Recipes → Lesson). RequireAuth only, deliberately outside
+              the AppLayout route group above. */}
+          <Route
+            path="learn/lesson/:lessonId"
+            element={
+              <RequireAuth>
+                <LessonRoute />
               </RequireAuth>
             }
           />
-        </Route>
-
-        {/* App (dashboard chrome — sections come from routes/app/navConfig) */}
-        <Route
-          element={
-            <RequireAuth>
-              <AppLayout />
-            </RequireAuth>
-          }
-        >
-          <Route path="learn" element={<LearnPage />} />
-          <Route path="learn/:courseSlug" element={<CoursePage />} />
-          <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
-          <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
-          <Route
-            path="tasks"
-            element={
-              <RequireRole role="parent">
-                <SectionComingSoon section="tasks" icon="checklist" />
-              </RequireRole>
-            }
-          />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="profile/avatar" element={<AvatarEditorPage />} />
-          <Route path="profile/settings" element={<SettingsPage />} />
-          <Route path="profile/followers" element={<FollowersPage />} />
-          <Route path="profile/following" element={<FollowingPage />} />
-          {/* /@username — public profiles (static routes above always win) */}
-          <Route path=":handle/followers" element={<PublicFollowersPage />} />
-          <Route path=":handle/following" element={<PublicFollowingPage />} />
-          <Route path=":handle" element={<PublicProfilePage />} />
-        </Route>
-
-        {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md
-            Screen Recipes → Lesson). RequireAuth only, deliberately outside
-            the AppLayout route group above. */}
-        <Route
-          path="learn/lesson/:lessonId"
-          element={
-            <RequireAuth>
-              <LessonRoute />
-            </RequireAuth>
-          }
-        />
-      </Routes>
-    </AuthProvider>
+        </Routes>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
