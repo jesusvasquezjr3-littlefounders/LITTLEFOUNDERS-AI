@@ -373,28 +373,34 @@ types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 **Games hub** — poster-style `rounded-lg` media cards in a
 `md:grid-cols-2 lg:grid-cols-3` grid, hover lift, papaya "Play" pills.
 
-**Console (staff back-office, `/admin`)** — added 2026-07-20 (owner
-sign-off). The ONE surface that is HIDDEN, not locked: it never renders for
-non-staff (no nav item, direct URL redirects) — the locked-chip grammar is
-for aspirational upgrades, and admin is not one. Same token system, quieter
-voice: no upsell cards, no characters, no papaya except a true CTA. Anatomy:
-compact `.lf-glass` top bar (logo → `/learn` escape hatch, `lf-label`
-"Console" wordmark, section pills center [Analytics & Health first; Content /
-Support / Roles land here later], ThemeToggle + avatar right) over a `base`
-canvas; content in `container-max` with a `lf-display-lg` section title +
-muted caption. Analytics & Health composition: KPI **Stat row** (visitors,
-pageviews, bounce, visit duration — StatCard `dense`: numeral steps down the
-closed scale to `lf-headline lf-number` + md chip because `lf-display-lg`
-truncates in a 6-col track, and KPI figures use compact `Intl` notation — a
-rounded "2.1K" beats a truncated "2,…"), a **TrendChart** card for
-the daily series with the period Dropdown in the card header, a behavioral
-(Umami) stat strip, then the service-health **Data table** (service ·
-status Badge · latency `lf-number` · 24h uptime). Upstream-unavailable
-states render the standard empty-state grammar (icon + title + caption in a
-resting card) — never a blank pane. Responsive per §1.11: mobile stacks
-KPI 2-col → chart → health cards; desktop is the 6-col stat row + full-width
-cards. Superadmin-only sections (Roles & Access) simply don't render for
-plain admins — hidden, same rule as the console itself.
+**Staff sections (admin console, `/admin/*`)** — added 2026-07-20, rebuilt
+2026-07-21 (owner sign-off). **INTEGRATED into the app shell, NOT a separate
+back-office**: the admin surfaces render inside the normal Dashboard chrome
+(same sidebar, top bar, bottom tabs as Learn/Profile). The sidebar grows a
+`admin.sidebarGroup` ("Staff") label followed by the section links
+(`routes/admin/adminNav.ts` registry); on mobile a `shield_person` button in
+the top bar opens `/admin` and every admin page carries a horizontal
+scrollable section sub-nav (`lg:hidden`). HIDDEN, not locked, for non-staff
+(no nav item + `RequireRole` redirect) — the locked-chip grammar is for
+aspirational upgrades, and admin is not one. Every page uses the shared
+`AdminPage` shell: `lf-display-lg` title + a **role chip** (`admin` primary /
+`superadmin` accent — the always-visible admin-vs-superadmin cue) + optional
+actions, then content. Sections: **Overview** (dense "todo de un vistazo" —
+KPI **Stat row** with `dense` StatCards, a course/lesson status **meter**,
+role distribution list, system-health chip strip), **Content** (courses
+**Data table** + publish/unpublish/archive `AdminAction`s), **Moderation**
+(the §1.9 human publish gate — lessons in `review` with approve/reject),
+**Users** (users **Data table** + role chips + search), **Analytics & Health**
+(Pulse — KPI stat row, **TrendChart**, service-health **Data table**),
+**Audit log** (append-only **Data table**), and **Roles & Access**
+(**superadmin-only** — grant form + role-holders table with per-role revoke).
+Voice is quieter than the kid product: dense tables over spacious cards, no
+characters, no upsell, papaya only for a true CTA. Empty/unavailable states
+use the standard empty-state grammar (icon + title + caption in a resting
+card), never a blank pane. Responsive per §1.11: KPI grids go 2-col mobile →
+6-col desktop, Data tables collapse to stacked cards below `md:` (Table
+component), the section sub-nav is the mobile section switcher. Roles &
+Access simply does not render (route + sidebar) for a plain admin.
 
 **Assessment / Profile / Catalog** — same grammar: bands, cards, pills,
 IconChips; a profile hero may use a navy band with a glass-deep identity card.

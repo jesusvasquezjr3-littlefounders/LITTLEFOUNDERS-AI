@@ -1,10 +1,105 @@
 {
-  "console": {
-    "title": "Console",
-    "backToApp": "Voltar ao app",
-    "sections": {
-      "analytics": "Analytics e Saúde"
-    }
+  "title": "Admin",
+  "loading": "Carregando…",
+  "sidebarGroup": "Staff",
+  "unavailable": {
+    "title": "Dados indisponíveis",
+    "body": "Não foi possível carregar isto. O resto do app não é afetado."
+  },
+  "status": {
+    "draft": "Rascunho",
+    "review": "Em revisão",
+    "published": "Publicado",
+    "archived": "Arquivado"
+  },
+  "nav": {
+    "overview": "Painel",
+    "content": "Conteúdo",
+    "moderation": "Moderação",
+    "users": "Usuários",
+    "analytics": "Analytics e Saúde",
+    "audit": "Auditoria",
+    "roles": "Papéis e acesso"
+  },
+  "overview": {
+    "title": "Painel de administração",
+    "subtitle": "Tudo num relance.",
+    "kpiUsers": "Usuários",
+    "kpiStaff": "Staff",
+    "kpiCoursesLive": "Cursos",
+    "kpiReview": "Revisão",
+    "kpiLessonsLive": "Lições",
+    "kpiAudit": "Auditoria",
+    "contentTitle": "Conteúdo",
+    "manage": "Gerenciar",
+    "courses": "Cursos",
+    "lessons": "Lições",
+    "reviewCta": "{{count}} lições aguardando revisão",
+    "rolesTitle": "Papéis",
+    "noRoles": "Ainda sem papéis",
+    "healthTitle": "Saúde do sistema",
+    "details": "Detalhes",
+    "healthUnavailable": "Monitor de saúde indisponível"
+  },
+  "content": {
+    "title": "Conteúdo",
+    "subtitle": "Publique, despublique e arquive cursos.",
+    "colTitle": "Curso",
+    "colSlug": "Slug",
+    "colSubject": "Matéria",
+    "colStatus": "Status",
+    "colActions": "Ações",
+    "publish": "Publicar",
+    "unpublish": "Despublicar",
+    "archive": "Arquivar",
+    "empty": "Ainda não há cursos."
+  },
+  "users": {
+    "title": "Usuários",
+    "subtitle": "Todos na plataforma e seus papéis.",
+    "colName": "Nome",
+    "colUsername": "Usuário",
+    "colRoles": "Papéis",
+    "colLocale": "Idioma",
+    "colJoined": "Cadastro",
+    "search": "Buscar nome ou @usuário",
+    "noMatch": "Nenhum usuário corresponde à sua busca.",
+    "empty": "Ainda não há usuários."
+  },
+  "moderation": {
+    "title": "Moderação",
+    "subtitle": "O portão humano de publicação para lições de crianças.",
+    "note": "Toda lição mostrada a crianças passa por esta revisão humana antes de ir ao ar (§1.9). Aprove para publicar, rejeite para voltar ao rascunho.",
+    "approve": "Aprovar",
+    "reject": "Rejeitar",
+    "empty": "Nada aguardando revisão. Tudo certo."
+  },
+  "audit": {
+    "title": "Auditoria",
+    "subtitle": "Registro append-only de ações privilegiadas.",
+    "colWhen": "Quando",
+    "colAction": "Ação",
+    "colActor": "Ator",
+    "colSubject": "Assunto",
+    "colDetail": "Detalhe",
+    "empty": "Ainda não há registros de auditoria."
+  },
+  "roles": {
+    "title": "Papéis e acesso",
+    "subtitle": "Conceda e revogue papéis. Apenas superadmin.",
+    "grantTitle": "Conceder um papel",
+    "userId": "ID do usuário",
+    "userIdHint": "O UUID do usuário — clique num ID na tabela abaixo para preencher.",
+    "role": "Papel",
+    "grant": "Conceder",
+    "granted": "{{role}} concedido.",
+    "grantFailed": "Não foi possível conceder esse papel.",
+    "holdersTitle": "Portadores de papéis",
+    "colName": "Nome",
+    "colUsername": "Usuário",
+    "colRoles": "Papéis",
+    "colActions": "Revogar",
+    "empty": "Ainda não há portadores de papéis."
   },
   "analytics": {
     "title": "Analytics e Saúde",

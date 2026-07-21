@@ -27,13 +27,21 @@ import { FollowingPage } from '@/routes/app/profile/FollowingPage';
 import { PublicProfilePage } from '@/routes/app/profile/PublicProfilePage';
 import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
-import { ConsoleLayout } from '@/routes/admin/ConsoleLayout';
+import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
+import { AdminContentPage } from '@/routes/admin/AdminContentPage';
+import { AdminModerationPage } from '@/routes/admin/AdminModerationPage';
+import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
+import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
+import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
 import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
 import { Suspense, lazy } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
+
+/** Both staff roles share the console; Roles & Access narrows to superadmin. */
+const STAFF = ['admin', 'superadmin'];
 
 export function App() {
   return (
@@ -118,26 +126,24 @@ export function App() {
             <Route path="profile/settings" element={<SettingsPage />} />
             <Route path="profile/followers" element={<FollowersPage />} />
             <Route path="profile/following" element={<FollowingPage />} />
+
+            {/* Staff console — INTEGRATED into the app shell (DESIGN.md Screen
+                Recipes → Staff sections). HIDDEN for non-staff (no nav item +
+                RequireRole redirect). Both admin & superadmin see the sections;
+                Roles & Access is superadmin-only (§1.4). Static paths above the
+                :handle catch-all, and static routes always outrank it. */}
+            <Route path="admin" element={<RequireRole role={STAFF}><AdminOverviewPage /></RequireRole>} />
+            <Route path="admin/content" element={<RequireRole role={STAFF}><AdminContentPage /></RequireRole>} />
+            <Route path="admin/moderation" element={<RequireRole role={STAFF}><AdminModerationPage /></RequireRole>} />
+            <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
+            <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
+            <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />
+            <Route path="admin/roles" element={<RequireRole role="superadmin"><AdminRolesPage /></RequireRole>} />
+
             {/* /@username — public profiles (static routes above always win) */}
             <Route path=":handle/followers" element={<PublicFollowersPage />} />
             <Route path=":handle/following" element={<PublicFollowingPage />} />
             <Route path=":handle" element={<PublicProfilePage />} />
-          </Route>
-
-          {/* Staff console — HIDDEN for non-staff (redirect, no nav item), own
-              back-office chrome (DESIGN.md Screen Recipes → Console). Unlocks
-              for admin OR superadmin (§1.4 — both hold console capabilities). */}
-          <Route
-            path="admin"
-            element={
-              <RequireAuth>
-                <RequireRole role={['admin', 'superadmin']}>
-                  <ConsoleLayout />
-                </RequireRole>
-              </RequireAuth>
-            }
-          >
-            <Route index element={<AnalyticsHealthPage />} />
           </Route>
 
           {/* Lesson Player — its own fullscreen layer, no app chrome (DESIGN.md

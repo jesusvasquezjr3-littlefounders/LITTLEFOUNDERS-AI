@@ -17,6 +17,8 @@
     "ATTEMPTS_EXHAUSTED": "Não há mais tentativas para esta pergunta.",
     "UNSUPPORTED_SEGMENT": "Esta parte da lição não pode ser avaliada agora.",
     "PULSE_UNCONFIGURED": "O analytics não está configurado nesta implantação.",
-    "UPSTREAM_FAILED": "Um serviço interno não respondeu."
+    "UPSTREAM_FAILED": "Um serviço interno não respondeu.",
+    "ROLE_REJECTED": "O banco rejeitou essa mudança de papel (invariantes de papel).",
+    "DATA_UNAVAILABLE": "Não foi possível carregar esses dados."
   }
 }

@@ -658,3 +658,24 @@ export async function insertAuditLog(actorId: string, action: string, subject: s
     body: JSON.stringify({ actor_id: actorId, action, subject, detail }),
   });
 }
+
+/**
+ * Service-role PostgREST access for the STAFF CONSOLE only (services/adminData.ts).
+ * Bypasses RLS, so it is gated at the route layer by requireRole(['admin',
+ * 'superadmin']) — never expose this to a user-scoped path. Reads across all
+ * users' rows (the console's whole job) and the review→published content gate
+ * both live behind it because the schema deliberately grants admins no RLS.
+ */
+export function serviceRest<T>(path: string, init: RestInit = {}): Promise<T | null> {
+  return rest<T>(path, serviceToken(), init);
+}
+
+/** Revoke a role (DELETE). The DB's audit_role_change trigger records it; the
+ * BEFORE DELETE guards (parent-cascade / last-guardian) still apply. */
+export async function revokeRole(userId: string, role: string): Promise<boolean> {
+  const res = await rest<unknown>(`/user_roles?user_id=eq.${eu(userId)}&role=eq.${es(role)}`, serviceToken(), {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' },
+  });
+  return res !== null;
+}

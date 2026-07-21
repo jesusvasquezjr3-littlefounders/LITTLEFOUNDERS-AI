@@ -17,6 +17,8 @@
     "ATTEMPTS_EXHAUSTED": "No attempts left for this question.",
     "UNSUPPORTED_SEGMENT": "This part of the lesson can't be graded right now.",
     "PULSE_UNCONFIGURED": "Analytics isn't configured on this deployment.",
-    "UPSTREAM_FAILED": "An internal service didn't answer."
+    "UPSTREAM_FAILED": "An internal service didn't answer.",
+    "ROLE_REJECTED": "The database rejected that role change (role invariants).",
+    "DATA_UNAVAILABLE": "Couldn't load that data."
   }
 }

@@ -8,6 +8,7 @@ import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from 
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
 import { NAV_ITEMS, isUnlocked, type NavItem } from './navConfig';
+import { visibleAdminSections } from '@/routes/admin/adminNav';
 
 /*
  * App shell — /DESIGN.md §Screen Recipes → Dashboard. Desktop sidebar is
@@ -205,27 +206,36 @@ export function AppLayout() {
             <SidebarItem key={item.key} item={item} roles={roles} collapsed={collapsed} />
           ))}
           {isStaff && (
-            <NavLink
-              to="/admin"
-              title={collapsed ? t('admin.console.title') : undefined}
-              className={({ isActive }) =>
-                cn(
-                  'motion-safe-press flex min-h-12 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                  collapsed ? 'justify-center px-0' : 'px-4',
-                  isActive
-                    ? 'bg-primary-soft font-bold text-primary'
-                    : 'text-content-muted hover:bg-surface-sunken hover:text-content',
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon name="monitoring" fill={isActive} />
-                  {!collapsed && <span className="lf-label">{t('admin.console.title')}</span>}
-                </>
+            <div className="mt-2 flex flex-col gap-1.5">
+              {collapsed ? (
+                <div className="mx-3 my-1 border-t border-outline/50" />
+              ) : (
+                <p className="lf-caption px-4 pt-1 font-bold text-content-faint">{t('admin.sidebarGroup')}</p>
               )}
-            </NavLink>
+              {visibleAdminSections(roles).map((s) => (
+                <NavLink
+                  key={s.key}
+                  to={s.path}
+                  end={s.path === '/admin'}
+                  title={collapsed ? t(`admin.nav.${s.key}`) : undefined}
+                  className={({ isActive }) =>
+                    cn(
+                      'motion-safe-press flex min-h-11 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                      collapsed ? 'justify-center px-0' : 'px-4',
+                      isActive ? 'bg-primary-soft font-bold text-primary' : 'text-content-muted hover:bg-surface-sunken hover:text-content',
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon name={s.icon} fill={isActive} className="!text-[20px]" />
+                      {!collapsed && <span className="lf-label">{t(`admin.nav.${s.key}`)}</span>}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           )}
         </nav>
 
@@ -299,6 +309,20 @@ export function AppLayout() {
           <img src="/logo-main-trimmed.png" alt={t('app.name')} className="h-8 w-auto" />
         </NavLink>
         <div className="flex items-center gap-2">
+          {isStaff && (
+            <NavLink
+              to="/admin"
+              aria-label={t('admin.sidebarGroup')}
+              className={({ isActive }) =>
+                cn(
+                  'flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                  isActive ? 'bg-primary-soft text-primary' : 'text-content-muted hover:text-primary',
+                )
+              }
+            >
+              {({ isActive }) => <Icon name="shield_person" fill={isActive} />}
+            </NavLink>
+          )}
           <Dropdown
             compact
             value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}

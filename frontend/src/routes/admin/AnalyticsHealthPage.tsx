@@ -13,6 +13,7 @@ import {
   type DropdownOption,
   type TableColumn,
 } from '@/components/ui';
+import { AdminPage } from './adminShared';
 
 /*
  * Analytics & Health — the console's first section (/DESIGN.md §Screen
@@ -124,25 +125,16 @@ export function AnalyticsHealthPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-8">
-      <header>
-        <h1 className="lf-display-lg">{t('admin.analytics.title')}</h1>
-        <p className="lf-body-sm mt-1 text-content-muted">{t('admin.analytics.subtitle')}</p>
-      </header>
-
+    <AdminPage
+      titleKey="admin.analytics.title"
+      subtitleKey="admin.analytics.subtitle"
+      actions={<Dropdown value={period} options={periodOptions} onChange={setPeriod} ariaLabel={t('admin.analytics.periodLabel') ?? 'Period'} />}
+    >
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <h2 id="admin-web-analytics" className="lf-display-sm">
-            {t('admin.analytics.web.title')}
-          </h2>
-          <Dropdown
-            value={period}
-            options={periodOptions}
-            onChange={setPeriod}
-            ariaLabel={t('admin.analytics.periodLabel') ?? 'Period'}
-          />
-        </div>
+        <h2 id="admin-web-analytics" className="lf-display-sm">
+          {t('admin.analytics.web.title')}
+        </h2>
 
         {overview.state === 'error' ? (
           <UnavailableCard
@@ -269,6 +261,6 @@ export function AnalyticsHealthPage() {
           </Card>
         )}
       </section>
-    </div>
+    </AdminPage>
   );
 }

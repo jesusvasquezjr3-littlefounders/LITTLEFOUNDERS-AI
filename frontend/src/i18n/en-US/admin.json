@@ -1,10 +1,105 @@
 {
-  "console": {
-    "title": "Console",
-    "backToApp": "Back to the app",
-    "sections": {
-      "analytics": "Analytics & Health"
-    }
+  "title": "Admin",
+  "loading": "Loading…",
+  "sidebarGroup": "Staff",
+  "unavailable": {
+    "title": "Data unavailable",
+    "body": "Couldn't load this. The rest of the app is unaffected."
+  },
+  "status": {
+    "draft": "Draft",
+    "review": "In review",
+    "published": "Published",
+    "archived": "Archived"
+  },
+  "nav": {
+    "overview": "Overview",
+    "content": "Content",
+    "moderation": "Moderation",
+    "users": "Users",
+    "analytics": "Analytics & Health",
+    "audit": "Audit log",
+    "roles": "Roles & Access"
+  },
+  "overview": {
+    "title": "Admin panel",
+    "subtitle": "Everything at a glance.",
+    "kpiUsers": "Users",
+    "kpiStaff": "Staff",
+    "kpiCoursesLive": "Courses",
+    "kpiReview": "Review",
+    "kpiLessonsLive": "Lessons",
+    "kpiAudit": "Audit",
+    "contentTitle": "Content",
+    "manage": "Manage",
+    "courses": "Courses",
+    "lessons": "Lessons",
+    "reviewCta": "{{count}} lessons awaiting review",
+    "rolesTitle": "Roles",
+    "noRoles": "No roles yet",
+    "healthTitle": "System health",
+    "details": "Details",
+    "healthUnavailable": "Health monitor unavailable"
+  },
+  "content": {
+    "title": "Content",
+    "subtitle": "Publish, unpublish and archive courses.",
+    "colTitle": "Course",
+    "colSlug": "Slug",
+    "colSubject": "Subject",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "archive": "Archive",
+    "empty": "No courses yet."
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Everyone on the platform and their roles.",
+    "colName": "Name",
+    "colUsername": "Username",
+    "colRoles": "Roles",
+    "colLocale": "Locale",
+    "colJoined": "Joined",
+    "search": "Search name or @username",
+    "noMatch": "No users match your search.",
+    "empty": "No users yet."
+  },
+  "moderation": {
+    "title": "Moderation",
+    "subtitle": "The human publish gate for kid-facing lessons.",
+    "note": "Every lesson shown to children passes this human review before it goes live (§1.9). Approve to publish, reject to send back to draft.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "empty": "Nothing awaiting review. All clear."
+  },
+  "audit": {
+    "title": "Audit log",
+    "subtitle": "Append-only record of privileged actions.",
+    "colWhen": "When",
+    "colAction": "Action",
+    "colActor": "Actor",
+    "colSubject": "Subject",
+    "colDetail": "Detail",
+    "empty": "No audit entries yet."
+  },
+  "roles": {
+    "title": "Roles & Access",
+    "subtitle": "Grant and revoke roles. Superadmin only.",
+    "grantTitle": "Grant a role",
+    "userId": "User ID",
+    "userIdHint": "The user's UUID — click an ID in the table below to fill this.",
+    "role": "Role",
+    "grant": "Grant",
+    "granted": "Granted {{role}}.",
+    "grantFailed": "Could not grant that role.",
+    "holdersTitle": "Role holders",
+    "colName": "Name",
+    "colUsername": "Username",
+    "colRoles": "Roles",
+    "colActions": "Revoke",
+    "empty": "No role holders yet."
   },
   "analytics": {
     "title": "Analytics & Health",

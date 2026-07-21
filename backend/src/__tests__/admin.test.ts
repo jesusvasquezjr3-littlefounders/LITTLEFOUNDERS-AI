@@ -177,3 +177,168 @@ describe('GET /api/v1/admin/health/services', () => {
     expect(res.body.error.code).toBe('PULSE_UNCONFIGURED');
   });
 });
+
+// ── Console data panels (service-role reads + mutations) ─────────────────────
+
+const PROFILE = { user_id: ADMIN_ID, display_name: 'Staff', username: 'staff', locale: 'en-US', created_at: '2026-07-12T00:00:00Z' };
+const COURSE = { id: '33333333-3333-4333-8333-333333333333', slug: 'money-basics', title: { 'en-US': 'Money Basics' }, subject: 'financial', status: 'draft', position: 1 };
+const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', slug: 'l1', title: { 'en-US': 'Lesson 1' }, status: 'review' };
+const AUDIT = { id: 7, actor_id: ADMIN_ID, action: 'admin.course.set_status', subject: COURSE.id, detail: { status: 'published' }, created_at: '2026-07-20T00:00:00Z' };
+
+/** fetch stub over the service-role PostgREST surface + the auth role check. */
+function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { calls: { url: string; method: string; body?: string }[] }) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = (init?.method ?? 'GET').toUpperCase();
+      capture?.calls.push({ url, method, body: init?.body as string | undefined });
+      if (url.includes('/rest/v1/user_roles')) {
+        if (method === 'POST' || method === 'DELETE') return Promise.resolve(new Response(null, { status: 204 }));
+        if (url.includes('user_id=eq.')) return Promise.resolve(jsonResponse(200, [{ role: callerRole }])); // auth check
+        if (url.includes('role=neq.universal')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
+        if (url.includes('user_id=in.(')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
+        return Promise.resolve(jsonResponse(200, [{ role: 'admin' }, { role: 'universal' }])); // overview select=role
+      }
+      if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [PROFILE]));
+      if (url.includes('/rest/v1/courses')) {
+        if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(jsonResponse(200, [COURSE]));
+      }
+      if (url.includes('/rest/v1/lessons')) {
+        if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(jsonResponse(200, [REVIEW_LESSON]));
+      }
+      if (url.includes('/rest/v1/audit_logs')) {
+        if (method === 'POST') return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(jsonResponse(200, [AUDIT]));
+      }
+      throw new Error(`admin.test data: unexpected fetch ${url}`);
+    }),
+  );
+}
+
+const staffAuth = (role: 'admin' | 'superadmin' | 'universal') =>
+  `Bearer ${mintToken({ sub: ADMIN_ID, email: role === 'superadmin' ? 'boss@littlefounders.ai' : 'staff@littlefounders.ai' })}`;
+
+describe('GET /api/v1/admin/overview', () => {
+  it('returns platform counts', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.users.total).toBe(1);
+    expect(res.body.data.content.reviewQueue).toBe(1); // the stubbed lesson is status='review'
+    expect(res.body.data.audit.recent).toBe(1);
+  });
+});
+
+describe('GET /api/v1/admin/users', () => {
+  it('lists users with their roles', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.users[0]).toMatchObject({ userId: ADMIN_ID, displayName: 'Staff', roles: ['admin'] });
+  });
+});
+
+describe('GET + POST /api/v1/admin/content', () => {
+  it('lists courses with status and picks a display title', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.courses[0]).toMatchObject({ slug: 'money-basics', title: 'Money Basics', status: 'draft' });
+  });
+
+  it('publishes a course (and audits it)', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toEqual({ id: COURSE.id, status: 'published' });
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(true);
+  });
+
+  it('400s on an invalid status', async () => {
+    stubData('admin');
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'launched' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('GET /api/v1/admin/moderation', () => {
+  it('lists lessons in review', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/moderation').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.lessons[0]).toMatchObject({ slug: 'l1', status: 'review' });
+  });
+});
+
+describe('GET /api/v1/admin/audit', () => {
+  it('returns audit entries newest-first', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/audit?limit=10').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.entries[0]).toMatchObject({ id: 7, action: 'admin.course.set_status' });
+  });
+});
+
+describe('Roles & Access (superadmin-only)', () => {
+  it('lists role holders for a superadmin', async () => {
+    stubData('superadmin');
+    const res = await request(createApp()).get('/api/v1/admin/roles').set('Authorization', staffAuth('superadmin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.holders[0]).toMatchObject({ userId: ADMIN_ID, roles: ['admin'] });
+  });
+
+  it('403s a plain admin from the roles list', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/roles').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(403);
+  });
+
+  it('grants a role for a superadmin', async () => {
+    stubData('superadmin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ granted: true, role: 'admin' });
+  });
+
+  it('403s a plain admin from granting', async () => {
+    stubData('admin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', staffAuth('admin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
+    expect(res.status).toBe(403);
+  });
+
+  it('400s on an unknown role', async () => {
+    stubData('superadmin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/grant')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'wizard' });
+    expect(res.status).toBe(400);
+  });
+
+  it('revokes a role for a superadmin', async () => {
+    stubData('superadmin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/revoke')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ revoked: true });
+  });
+});

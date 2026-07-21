@@ -1,10 +1,105 @@
 {
-  "console": {
-    "title": "Consola",
-    "backToApp": "Volver a la app",
-    "sections": {
-      "analytics": "Analíticas y Salud"
-    }
+  "title": "Admin",
+  "loading": "Cargando…",
+  "sidebarGroup": "Staff",
+  "unavailable": {
+    "title": "Datos no disponibles",
+    "body": "No se pudo cargar esto. El resto del app no se ve afectado."
+  },
+  "status": {
+    "draft": "Borrador",
+    "review": "En revisión",
+    "published": "Publicado",
+    "archived": "Archivado"
+  },
+  "nav": {
+    "overview": "Panel",
+    "content": "Contenido",
+    "moderation": "Moderación",
+    "users": "Usuarios",
+    "analytics": "Analíticas y Salud",
+    "audit": "Auditoría",
+    "roles": "Roles y acceso"
+  },
+  "overview": {
+    "title": "Panel de administración",
+    "subtitle": "Todo de un vistazo.",
+    "kpiUsers": "Usuarios",
+    "kpiStaff": "Staff",
+    "kpiCoursesLive": "Cursos",
+    "kpiReview": "Revisión",
+    "kpiLessonsLive": "Lecciones",
+    "kpiAudit": "Auditoría",
+    "contentTitle": "Contenido",
+    "manage": "Gestionar",
+    "courses": "Cursos",
+    "lessons": "Lecciones",
+    "reviewCta": "{{count}} lecciones esperando revisión",
+    "rolesTitle": "Roles",
+    "noRoles": "Aún sin roles",
+    "healthTitle": "Salud del sistema",
+    "details": "Detalles",
+    "healthUnavailable": "Monitor de salud no disponible"
+  },
+  "content": {
+    "title": "Contenido",
+    "subtitle": "Publica, despublica y archiva cursos.",
+    "colTitle": "Curso",
+    "colSlug": "Slug",
+    "colSubject": "Materia",
+    "colStatus": "Estado",
+    "colActions": "Acciones",
+    "publish": "Publicar",
+    "unpublish": "Despublicar",
+    "archive": "Archivar",
+    "empty": "Aún no hay cursos."
+  },
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Todos en la plataforma y sus roles.",
+    "colName": "Nombre",
+    "colUsername": "Usuario",
+    "colRoles": "Roles",
+    "colLocale": "Idioma",
+    "colJoined": "Registro",
+    "search": "Buscar nombre o @usuario",
+    "noMatch": "Ningún usuario coincide con tu búsqueda.",
+    "empty": "Aún no hay usuarios."
+  },
+  "moderation": {
+    "title": "Moderación",
+    "subtitle": "El gate humano de publicación para lecciones de niños.",
+    "note": "Toda lección que se muestra a niños pasa por esta revisión humana antes de salir en vivo (§1.9). Aprueba para publicar, rechaza para devolver a borrador.",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "empty": "Nada esperando revisión. Todo en orden."
+  },
+  "audit": {
+    "title": "Auditoría",
+    "subtitle": "Registro append-only de acciones privilegiadas.",
+    "colWhen": "Cuándo",
+    "colAction": "Acción",
+    "colActor": "Actor",
+    "colSubject": "Sujeto",
+    "colDetail": "Detalle",
+    "empty": "Aún no hay registros de auditoría."
+  },
+  "roles": {
+    "title": "Roles y acceso",
+    "subtitle": "Otorga y revoca roles. Solo superadmin.",
+    "grantTitle": "Otorgar un rol",
+    "userId": "ID de usuario",
+    "userIdHint": "El UUID del usuario — haz clic en un ID de la tabla de abajo para llenarlo.",
+    "role": "Rol",
+    "grant": "Otorgar",
+    "granted": "Se otorgó {{role}}.",
+    "grantFailed": "No se pudo otorgar ese rol.",
+    "holdersTitle": "Portadores de roles",
+    "colName": "Nombre",
+    "colUsername": "Usuario",
+    "colRoles": "Roles",
+    "colActions": "Revocar",
+    "empty": "Aún no hay portadores de roles."
   },
   "analytics": {
     "title": "Analíticas y Salud",

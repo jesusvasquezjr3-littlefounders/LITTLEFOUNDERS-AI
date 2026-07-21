@@ -19,5 +19,13 @@
     "liruf": {
       "default_greeting": "Hi! I'm Liruf!"
     }
+  },
+  "roles": {
+    "universal": "Universal",
+    "parent": "Parent",
+    "kid": "Kid",
+    "bigfounder": "Bigfounder",
+    "admin": "Admin",
+    "superadmin": "Superadmin"
   }
 }
