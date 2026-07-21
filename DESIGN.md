@@ -295,7 +295,10 @@ single centered column on `base` (max-w-md; verification forms max-w-2xl with
 `lf-display-lg` title + muted subtitle above the card, one papaya submit CTA,
 cross-links in `primary`. Status outcomes (success / retry guidance) replace
 the card, never stack on it. Privacy notes render as a `primary-soft` inline
-strip with a shield icon — before the form, not fine print.
+strip with a shield icon — before the form, not fine print. A minimal utility
+row sits above the column (logo → `/`, language Dropdown, ThemeToggle) — no
+nav links, no CTA button; it's an escape hatch and two settings, not a second
+header.
 
 **Dashboard (app)** — 280px fixed sidebar (desktop, COLLAPSIBLE to the
 `sidebar-sm` 88px token via a minimal edge chevron; collapsed = favicon

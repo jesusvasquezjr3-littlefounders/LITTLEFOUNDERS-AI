@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { App } from '@/App';
 import i18n from '@/i18n';
@@ -19,7 +19,7 @@ beforeEach(async () => {
 });
 
 describe('Auth pages (login/signup) — clean trust surface, no marketing chrome', () => {
-  it('/login shows only the welcome text and the form card — no marketing nav or footer', () => {
+  it('/login shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
     renderApp('/login');
 
     expect(screen.getByRole('heading', { name: 'Welcome back' })).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     expect(screen.queryByRole('link', { name: 'informame@littlefounders.ai' })).not.toBeInTheDocument();
   });
 
-  it('/signup shows only the welcome text and the form card — no marketing nav or footer', () => {
+  it('/signup shows only the welcome text, the form card, and the utility row — no marketing nav or footer', () => {
     renderApp('/signup');
 
     expect(screen.getByRole('heading', { name: 'Create your account' })).toBeInTheDocument();
@@ -47,11 +47,26 @@ describe('Auth pages (login/signup) — clean trust surface, no marketing chrome
     expect(screen.queryByRole('link', { name: 'Terms & Conditions' })).not.toBeInTheDocument();
   });
 
-  it('applies the stored theme on /login even though no ThemeToggle is rendered on the page', () => {
+  it('has a way back to home (the logo links to /)', () => {
+    renderApp('/login');
+    expect(screen.getByRole('link', { name: 'LittleFounders' })).toHaveAttribute('href', '/');
+  });
+
+  it('offers the language switcher and switches locale', async () => {
+    renderApp('/login');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Language: English' }));
+    fireEvent.click(await screen.findByRole('option', { name: 'Spanish' }));
+
+    expect(await screen.findByRole('heading', { name: 'Hola de nuevo' })).toBeInTheDocument();
+  });
+
+  it('offers the theme toggle and applies the stored theme on load', () => {
     localStorage.setItem('lf-theme', 'dark');
     renderApp('/login');
 
-    expect(screen.queryByRole('group', { name: 'Theme' })).not.toBeInTheDocument();
     expect(document.documentElement.classList.contains('dark')).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 });
