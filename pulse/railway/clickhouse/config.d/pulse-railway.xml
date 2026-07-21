@@ -1,0 +1,31 @@
+<!-- Pulse ClickHouse — Railway server tuning.
+
+     listen_host :: — Railway private networking is IPv6-only; the stock
+     image binds IPv4 and would be unreachable at
+     pulse-clickhouse.railway.internal (documented pitfall of running
+     ClickHouse on Railway; the official Plausible Railway template ships a
+     custom image for exactly this reason).
+
+     Memory: sized for a small dedicated instance. mark_cache_size follows
+     Plausible CE's own low-resources.xml (500 MB); max_server_memory_usage
+     caps the server well under the Railway service limit so the OOM killer
+     never fires first. Bump BOTH together if the instance is resized.
+
+     System logs: disabled the same way Plausible CE's shipped
+     clickhouse-config.xml does — they are the biggest silent disk-eater on
+     a small volume and Plausible never reads them. -->
+<clickhouse>
+    <listen_host>::</listen_host>
+
+    <max_server_memory_usage>1610612736</max_server_memory_usage>
+    <mark_cache_size>524288000</mark_cache_size>
+    <max_concurrent_queries>4</max_concurrent_queries>
+
+    <asynchronous_metric_log remove="remove"/>
+    <metric_log remove="remove"/>
+    <query_thread_log remove="remove"/>
+    <text_log remove="remove"/>
+    <trace_log remove="remove"/>
+    <session_log remove="remove"/>
+    <part_log remove="remove"/>
+</clickhouse>

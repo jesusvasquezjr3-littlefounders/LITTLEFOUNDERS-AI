@@ -58,6 +58,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | TTS | TBD (env-abstracted in `audiogen/`) |
 | Avatars | DiceBear, `avataaars` style |
 | Email engine | Haraka (self-hosted SMTP) → Amazon SES relay — see `email-server/AGENTS.md` |
+| Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
 | Package layout | 8 independent npm packages — **no workspaces** |
@@ -99,10 +100,11 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
+| `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
 
 ### §1.6 API conventions
 
@@ -191,6 +193,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `coursegen/AGENTS.md` · `audiogen/AGENTS.md` · `gamegen/AGENTS.md` | generation pipelines |
 | `parent-id-check/AGENTS.md` | identity verification, PII handling |
 | `email-server/AGENTS.md` | email sending contract |
+| `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |
 | `TEAM_PROTOCOL.md` | invoking team-mode skills; session-end ritual |
 | `RUNBOOK.md` | incidents, rollback, secrets leak |
 | `agent/README.md` | how templates/workflows/tools compose |

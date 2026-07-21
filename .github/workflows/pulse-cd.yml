@@ -1,0 +1,39 @@
+name: pulse CD
+
+# Deploys all five Pulse services after pulse CI passes on main. Builds are
+# near-no-ops (FROM a pinned image + config COPYs), so redeploying the whole
+# stack on any pulse/ change is simpler and safer than diffing per-service.
+# Same gating pattern as every other *-cd.yml (workflow_run on CI success).
+
+on:
+  workflow_run:
+    workflows: ["pulse CI"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    name: Deploy Pulse to Railway
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [plausible, clickhouse, db, umami, kuma]
+      # Deploy sequentially: databases and their dependents share a stack;
+      # parallel `railway up` calls have raced on project locks before.
+      max-parallel: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+      - name: Deploy pulse-${{ matrix.service }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway up pulse/railway/${{ matrix.service }} --path-as-root \
+            --service pulse-${{ matrix.service }} --ci

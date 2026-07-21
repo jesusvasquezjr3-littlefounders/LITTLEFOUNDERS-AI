@@ -15,6 +15,7 @@
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
 | Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
+| Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
 | Auth email templates + language selector | frontend/public/email-templates/README.md | all |
 | Social login (Google OAuth) | backend/README.md ("Social login") · backend/AGENTS.md | — |
 | Architecture decisions & sprint | ROADMAP.md | all |
@@ -47,3 +48,4 @@
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |
 | filebase (Depot) | filebase/AGENTS.md |
+| pulse (Pulse) | pulse/AGENTS.md · pulse/README.md |

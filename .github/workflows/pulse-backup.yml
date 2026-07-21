@@ -1,0 +1,72 @@
+name: Pulse backup
+
+# Daily pg_dump of pulse-db (Plausible app data + Umami data), stored on
+# filebase's (Depot) Railway volume next to the Vault dumps — same rationale
+# and mechanism as vault-backup.yml (separate disk & service from the live
+# volume; `railway ssh` writes straight to the container filesystem).
+# ClickHouse events are deliberately NOT dumped here: the raw analytics
+# store is loss-tolerant by decision (RUNBOOK.md § Pulse) and a ClickHouse
+# logical dump at this size isn't worth a daily cron.
+
+on:
+  schedule:
+    - cron: '30 8 * * *' # 08:30 UTC daily (after the 08:00 Vault dump)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_backup_key
+          chmod 600 ~/.ssh/railway_backup_key
+          # Railway's SSH proxy host is ephemeral per-session (see
+          # vault-backup.yml for why strict host checking can't work here).
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Dump Pulse Postgres and store on the Depot volume
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+          TS=$(date -u +%Y%m%d-%H%M%S)
+          FILE="pulse-${TS}.dump"
+
+          # -Fc of the whole cluster's two app DBs via pg_dumpall would lose
+          # -Fc benefits; dump each logical DB, concatenate as a tar.
+          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+            sh -c 'pg_dump -U postgres -d plausible -Fc -f /tmp/plausible.dump && pg_dump -U postgres -d umami -Fc -f /tmp/umami.dump && tar -C /tmp -cf /tmp/backup.tar plausible.dump umami.dump'
+
+          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+            cat /tmp/backup.tar > "$FILE"
+
+          test -s "$FILE"
+
+          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            sh -c "cat > /data/backups/$FILE"
+
+          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+            rm -f /tmp/backup.tar /tmp/plausible.dump /tmp/umami.dump
+
+          echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
+
+      - name: Prune backups older than 30 days
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            find /data/backups -name 'pulse-*.dump' -mtime +30 -delete

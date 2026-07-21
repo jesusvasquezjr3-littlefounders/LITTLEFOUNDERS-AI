@@ -1,0 +1,17 @@
+<!-- Pulse ClickHouse — per-query profile tuning for a small instance.
+     Mirrors Plausible CE's default-profile-low-resources-overrides.xml:
+     single-threaded queries with small blocks keep peak memory flat at the
+     cost of some latency on big range scans — the right trade for an
+     internal analytics dashboard. Revisit only if dashboard queries become
+     visibly slow AND the instance has been resized upward. -->
+<clickhouse>
+    <profiles>
+        <default>
+            <max_threads>1</max_threads>
+            <max_block_size>8192</max_block_size>
+            <max_download_threads>1</max_download_threads>
+            <input_format_parallel_parsing>0</input_format_parallel_parsing>
+            <output_format_parallel_formatting>0</output_format_parallel_formatting>
+        </default>
+    </profiles>
+</clickhouse>

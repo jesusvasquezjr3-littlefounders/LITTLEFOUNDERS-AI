@@ -21,8 +21,9 @@
 | [`parent-id-check/`](parent-id-check/) | Guardian | Guardian identity verification (kid/bigfounder gating) | 4004 | Railway | — (internal-only, no public domain) |
 | [`email-server/`](email-server/) | Courier | Transactional email — Haraka SMTP → Amazon SES relay | 4005 | Railway (internal-only) | **live** — GoTrue auth mail via SES |
 | [`filebase/`](filebase/) | Depot | Media storage — lesson audio & generated images (Railway volume) | 4006 | Railway | `media-b2c.littlefounders.ai` |
+| [`pulse/`](pulse/) | Pulse | Observability — analytics (Plausible CE + Umami) & health (Uptime Kuma), pinned stack | — | Railway (5 services) | trackers + Kuma only |
 
-All Railway services live in one project (`littlefounders-b2c`). Internal services have no public domain by design (AGENTS.md §1.5) — only Core, Vault's Kong gateway, and Depot are reachable from outside Railway's private network.
+All Railway services live in one project (`littlefounders-b2c`). Internal services have no public domain by design (AGENTS.md §1.5) — only Core, Vault's Kong gateway, Depot, and Pulse's browser-facing surfaces (the two tracker scripts, Plausible's GA OAuth callback, Kuma's own-auth UI) are reachable from outside Railway's private network; all analytics/health DATA is read through Core.
 
 ## Stack
 

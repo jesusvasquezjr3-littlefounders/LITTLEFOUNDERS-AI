@@ -1,0 +1,22 @@
+# Auto-update for Pulse's pinned upstream images (pulse/AGENTS.md § upgrade
+# protocol). Dependabot (native, zero external infra — chosen over the hosted
+# Renovate app, see WALKTHROUGH.md decision log 2026-07-20) watches each
+# Dockerfile FROM pin and opens bump PRs; patch bumps automerge after CI via
+# .github/workflows/pulse-dependabot-automerge.yml, minor/major wait for
+# human review (they can carry schema migrations).
+version: 2
+updates:
+  - package-ecosystem: "docker"
+    directories:
+      - "/pulse/railway/plausible"
+      - "/pulse/railway/clickhouse"
+      - "/pulse/railway/db"
+      - "/pulse/railway/umami"
+      - "/pulse/railway/kuma"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(pulse)"
+    labels:
+      - "pulse"
+      - "dependencies"

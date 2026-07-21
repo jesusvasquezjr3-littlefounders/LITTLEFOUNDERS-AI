@@ -2,6 +2,12 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-20) — Pulse (analytics + system health) + admin console groundwork
+
+**New §1.5 domain: `pulse/` (codename Pulse)** — human-signed-off change to the LOCKED §1.2 stack and §1.5 service map (owner authorization in-session, 2026-07-20). Pulse is a *pinned third-party stack* (Vault pattern), not a TS service: **Plausible CE v3.2.1** (web analytics — cookieless/no-PII, ClickHouse + Postgres, Stats API v2, GA4 import), **Umami v3.2.0** (behavioral analytics — funnels/heatmaps/session replay, MIT, single-Postgres), and **Uptime Kuma 2.4.0** (continuous `/health` uptime + latency + alerting — fills the gap left by Railway's deploy-gate-only healthchecks). Five Railway services (`pulse-plausible`, `pulse-clickhouse`, `pulse-db`, `pulse-umami`, `pulse-kuma`) over IPv6 private networking; data reads reach the browser only through Core `/api/v1/admin/*`. Version pins live in the Dockerfile `FROM` lines; **Dependabot** watches them daily and patch bumps automerge after `pulse CI` (minor/major stay human-reviewed — upstream majors have carried data migrations). Research basis: 28 load-bearing claims adversarially verified against primary sources (25 confirmed) before adoption; v3.2.1 is the Plausible security floor (CVE-2026-8467 `/storybook` RCE removed) and the ghcr.io registry is mandatory (Docker Hub frozen at v2.1.4).
+
+**§1.9 tracking boundary (non-negotiable):** Plausible may see every surface (it stores no PII by construction). Umami — including its rrweb replay/heatmap recorder — mounts ONLY on marketing + parent/admin surfaces and NEVER on kid-role sessions; enforcement lives in the frontend gate. Full rationale + the admin/superadmin console scope (admin = content/support; superadmin = + roles & access) recorded this session; GA4 historical import is the one remaining manual step (bring-your-own GCP OAuth app — runbook in pulse/README.md).
+
 ## Current State (2026-07-20) — Login/signup are a bare trust surface
 
 **`/login` and `/signup` no longer render inside `MarketingLayout`.** They were nested under the marketing shell, so every visit carried the full marketing nav (logo, How it works/Families/FAQ, language dropdown, theme toggle, CTA) and the navy footer band — noise on a page whose whole job is one focused task. DESIGN.md's Auth recipe already specified "trust surface: focused single centered column... ONE resting card" with no chrome; the routing just didn't match it. New `frontend/src/routes/auth/AuthLayout.tsx` gives `/login`/`/signup` a bare `min-h-screen` wrapper (background + the same scroll-reset/page-enter motion every top-level route gets) with no nav or footer — `AuthShell` (unchanged) still renders the title/subtitle + card exactly as before, now with nothing else on the page.
@@ -58,6 +64,10 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 | Date | Decision | Why |
 |---|---|---|
+| 2026-07-20 | **Pulse** (`pulse/`) added to LOCKED §1.2/§1.5: self-hosted Plausible CE + Umami v3 + Uptime Kuma on Railway | Owner sign-off in-session. Analytics + health for the admin console; COPPA-safe (self-hosted, Plausible = no PII); verified research (25/28 claims confirmed vs primary sources) |
+| 2026-07-20 | Umami behavioral capture (incl. replay/heatmaps) restricted to marketing + parent/admin surfaces; NEVER kid sessions | §1.9 outranks feature scope — rrweb replay records DOM/inputs (minor-PII risk). Plausible covers kid-traffic KPIs safely |
+| 2026-07-20 | Dependabot (native) over hosted Renovate app for Pulse image auto-bumps | Zero external install, PRs trigger CI, patch automerge via fetch-metadata; Renovate = revisit trigger if per-package rules outgrow Dependabot |
+| 2026-07-20 | Analytics/health data brokered by Core `/api/v1/admin/*`; no Plausible iframe/shared links | §1.5 browser-only-calls-Core invariant; tokens stay server-side; envelope + caching (600 req/h Stats API limit) |
 | 2026-07-11 | Total v2 rewrite on `littlefounders_v2`; v1 frozen on `main` | Radical platform change; main = rollback path |
 | 2026-07-11 | All services TypeScript + Express (dropped Python/FastAPI) | One toolchain, shared types, sibling-proven patterns |
 | 2026-07-11 | Supabase **self-hosted on Railway** (full stack) replaces Supabase Cloud | Control + one infra provider; accepted ops cost (~$20-40/mo, manual backups) |

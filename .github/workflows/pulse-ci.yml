@@ -1,0 +1,54 @@
+name: pulse CI
+
+# Pulse has no npm surface — CI validates what can actually break: the pins
+# resolve and the images build (catches a typo'd tag or a bad COPY), the
+# init script is sound shell, and no Dockerfile drifts to a floating tag
+# (pulse/AGENTS.md non-negotiable #1).
+
+on:
+  push:
+    branches: [main]
+    paths: ["pulse/**", ".github/workflows/pulse-ci.yml"]
+  pull_request:
+    paths: ["pulse/**", ".github/workflows/pulse-ci.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate pins & configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: No floating image tags
+        run: |
+          set -euo pipefail
+          bad=0
+          while read -r f; do
+            from=$(grep -E '^FROM ' "$f")
+            echo "$f -> $from"
+            # Reject: no tag, :latest, or a bare major (vN / N / N.M with no patch).
+            if ! echo "$from" | grep -qE '^FROM [^ ]+:(v?[0-9]+\.[0-9]+\.[0-9]+|[0-9]+\.[0-9]+-alpine|v?[0-9]+\.[0-9]+\.[0-9]+-[a-z0-9.-]+)'; then
+              echo "::error file=$f::FROM must pin an exact version tag"; bad=1
+            fi
+          done < <(find pulse/railway -name Dockerfile)
+          exit $bad
+
+      - name: Shellcheck init scripts
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q shellcheck
+          find pulse -name '*.sh' -print0 | xargs -0 shellcheck
+
+      - name: Validate railway.json syntax
+        run: |
+          find pulse -name railway.json -print0 | xargs -0 -n1 python3 -m json.tool > /dev/null
+
+      - name: Build all images
+        run: |
+          set -euo pipefail
+          for d in pulse/railway/*/; do
+            echo "── building $d"
+            docker build -q "$d"
+          done
