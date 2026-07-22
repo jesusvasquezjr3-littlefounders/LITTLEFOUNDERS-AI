@@ -163,25 +163,44 @@ export function getPlausibleBreakdown(
   const cfg = getPulseConfig();
   const key = `plausible:breakdown:${period}:${dimensionKey}:${limit}:${filterCacheKey(filters)}`;
   return cached(key, async () => {
-    const body: Record<string, unknown> = {
-      metrics: ['visitors', 'pageviews', 'bounce_rate', 'visit_duration'],
-      date_range: period,
-      dimensions: [PLAUSIBLE_DIMENSIONS[dimensionKey]],
-      order_by: [['visitors', 'desc']],
-      pagination: { limit },
+    const dimension = PLAUSIBLE_DIMENSIONS[dimensionKey];
+    const query = (metrics: string[]): Record<string, unknown> => {
+      const body: Record<string, unknown> = {
+        metrics,
+        date_range: period,
+        dimensions: [dimension],
+        order_by: [[metrics[0], 'desc']], // metrics[0] is always 'visitors' — always sortable
+        pagination: { limit },
+      };
+      if (filters?.length) body.filters = filters;
+      return body;
     };
-    if (filters?.length) body.filters = filters;
-    const raw = await plausibleQuery(cfg, body);
-    if (!raw) return null;
-    const parsed = PlausibleResults.safeParse(raw);
-    if (!parsed.success) return null;
-    return parsed.data.results.map((r) => ({
-      label: String(r.dimensions[0] ?? ''),
-      visitors: r.metrics[0] ?? 0,
-      pageviews: r.metrics[1] ?? 0,
-      bounceRate: r.metrics[2] ?? 0,
-      visitDuration: r.metrics[3] ?? 0,
-    }));
+    // Plausible Stats API v2 rejects some metric/dimension combos with a 400 — most
+    // notably the pageviews (event) metric against the session-level page dimensions
+    // visit:entry_page / visit:exit_page (which describe which page a *visit* started
+    // or ended on, not an event). Try the full metric set, then progressively drop the
+    // event/session metrics so an incompatible dimension still renders visitor counts
+    // instead of 502ing (found in prod 2026-07-22: entry/exit page cards were empty).
+    const metricSets = [
+      ['visitors', 'pageviews', 'bounce_rate', 'visit_duration'],
+      ['visitors', 'bounce_rate', 'visit_duration'],
+      ['visitors'],
+    ];
+    for (const metrics of metricSets) {
+      const raw = await plausibleQuery(cfg, query(metrics));
+      if (!raw) continue;
+      const parsed = PlausibleResults.safeParse(raw);
+      if (!parsed.success) continue;
+      const at = (name: string): number => metrics.indexOf(name);
+      return parsed.data.results.map((r) => ({
+        label: String(r.dimensions[0] ?? ''),
+        visitors: r.metrics[at('visitors')] ?? 0,
+        pageviews: at('pageviews') >= 0 ? (r.metrics[at('pageviews')] ?? 0) : 0,
+        bounceRate: at('bounce_rate') >= 0 ? (r.metrics[at('bounce_rate')] ?? 0) : 0,
+        visitDuration: at('visit_duration') >= 0 ? (r.metrics[at('visit_duration')] ?? 0) : 0,
+      }));
+    }
+    return null;
   });
 }
 

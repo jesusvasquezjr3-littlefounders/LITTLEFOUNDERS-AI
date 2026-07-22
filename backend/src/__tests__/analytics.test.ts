@@ -170,6 +170,38 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
     expect(res.status).toBe(502);
     expect(res.body.error.code).toBe('UPSTREAM_FAILED');
   });
+
+  it('falls back to fewer metrics when a dimension rejects pageviews (entry_page)', async () => {
+    stubPulseEnv();
+    const bodies: CapturedQuery[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        if (url.includes('plausible.test/api/v2/query')) {
+          const body = JSON.parse(String(init?.body ?? '{}')) as CapturedQuery;
+          bodies.push(body);
+          // Plausible v2 rejects the pageviews (event) metric with visit:entry_page.
+          if (body.dimensions?.[0] === 'visit:entry_page' && body.metrics?.includes('pageviews')) {
+            return Promise.resolve(jsonResponse(400, { error: 'pageviews unsupported with visit:entry_page' }));
+          }
+          return Promise.resolve(jsonResponse(200, { results: [{ dimensions: ['/learn'], metrics: [42, 3.1, 77] }] }));
+        }
+        throw new Error(`analytics.test: unexpected fetch ${url}`);
+      }),
+    );
+    const res = await request(createApp())
+      .get('/api/v1/admin/analytics/breakdown?dimension=entry_page&limit=8')
+      .set('Authorization', authed());
+    expect(res.status).toBe(200);
+    // Renders visitor counts (pageviews unavailable for this dimension → 0), not a 502.
+    expect(res.body.data.rows).toEqual([{ label: '/learn', visitors: 42, pageviews: 0, bounceRate: 3.1, visitDuration: 77 }]);
+    // The full-metric query was rejected, then retried without pageviews.
+    expect(bodies.length).toBeGreaterThanOrEqual(2);
+    expect(bodies[0].metrics).toContain('pageviews');
+    expect(bodies[1].metrics).not.toContain('pageviews');
+  });
 });
 
 describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
