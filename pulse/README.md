@@ -33,6 +33,10 @@ Browser ──▶ Core /api/v1/admin/analytics/*  ──▶ Plausible Stats API 
 
 The browser never calls Pulse for data (§1.5). API tokens live only in Core's
 Railway variables. Core caches responses (Plausible's default limit: 600 req/h).
+Core also serves per-dimension breakdowns, audience report bundles + a branded
+PDF export (`/api/v1/admin/analytics/{breakdown,report,report.pdf}`), and a
+read-only mirror of the analytics IP blocklist (`/analytics/exclusions` ←
+Core's `PLAUSIBLE_IP_BLOCKLIST`; enforced by `IP_BLOCKLIST` on pulse-plausible).
 
 ## Environment
 

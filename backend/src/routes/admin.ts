@@ -2,15 +2,22 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
+  getExcludedIps,
   getKumaHealth,
+  getPlausibleBreakdown,
   getPlausibleOverview,
+  getPlausibleReportData,
   getPulseConfig,
   getUmamiStats,
   kumaConfigured,
+  PLAUSIBLE_DIMENSION_KEYS,
   plausibleConfigured,
+  REPORT_AUDIENCES,
   umamiConfigured,
 } from '../services/pulse.js';
+import type { PlausibleFilter } from '../services/pulse.js';
 import {
   getAdminOverview,
   grantRoleChecked,
@@ -37,9 +44,39 @@ import {
  * requireRole here is the app-layer gate (§1.3 "DB AND app layer").
  */
 
+const PERIODS = ['day', '7d', '30d', 'month', '6mo', '12mo'] as const;
 const PeriodSchema = z.object({
-  period: z.enum(['day', '7d', '30d', 'month', '6mo', '12mo']).default('30d'),
+  period: z.enum(PERIODS).default('30d'),
 });
+
+const BreakdownQuerySchema = z.object({
+  period: z.enum(PERIODS).default('30d'),
+  dimension: z.enum(PLAUSIBLE_DIMENSION_KEYS),
+  limit: z.coerce.number().int().min(1).max(50).default(8),
+});
+
+const ReportQuerySchema = z.object({
+  period: z.enum(PERIODS).default('30d'),
+  audience: z.enum(REPORT_AUDIENCES).default('full'),
+});
+
+// Plausible v2 filter clause: [operator, dimension, clauses] — validated here,
+// passed through to Plausible verbatim (analytics-contract shape).
+const PlausibleFiltersSchema = z.array(z.tuple([z.string(), z.string(), z.array(z.union([z.string(), z.number()]))]));
+
+type ParsedFilters = { ok: true; filters?: PlausibleFilter[] } | { ok: false };
+
+/** `filters` arrives as an optional JSON string in the query — parse strictly. */
+function parseFilters(raw: unknown): ParsedFilters {
+  if (raw === undefined) return { ok: true };
+  if (typeof raw !== 'string') return { ok: false };
+  try {
+    const parsed = PlausibleFiltersSchema.safeParse(JSON.parse(raw));
+    return parsed.success ? { ok: true, filters: parsed.data } : { ok: false };
+  } catch {
+    return { ok: false }; // malformed JSON
+  }
+}
 
 const PULSE_UNCONFIGURED = 'PULSE_UNCONFIGURED';
 const UPSTREAM_FAILED = 'UPSTREAM_FAILED';
@@ -60,23 +97,119 @@ export function adminRouter(): Router {
 
   router.use(requireAuth, requireRole(['admin', 'superadmin']));
 
-  /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries. */
+  /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries, optionally filtered. */
   router.get('/analytics/overview', async (req, res) => {
     const parsed = PeriodSchema.safeParse(req.query);
     if (!parsed.success) {
       fail(res, 400, 'VALIDATION_ERROR', 'period must be one of day|7d|30d|month|6mo|12mo');
       return;
     }
+    const filters = parseFilters(req.query.filters);
+    if (!filters.ok) {
+      fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
+      return;
+    }
     if (!plausibleConfigured(getPulseConfig())) {
       fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
       return;
     }
-    const overview = await getPlausibleOverview(parsed.data.period);
+    const overview = await getPlausibleOverview(parsed.data.period, filters.filters);
     if (!overview) {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
       return;
     }
     ok(res, { period: parsed.data.period, ...overview });
+  });
+
+  /** Top-N breakdown by one dimension (Plausible), ordered by visitors desc. */
+  router.get('/analytics/breakdown', async (req, res) => {
+    const parsed = BreakdownQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, dimension one of the console dimension keys, limit 1-50');
+      return;
+    }
+    const filters = parseFilters(req.query.filters);
+    if (!filters.ok) {
+      fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
+      return;
+    }
+    if (!plausibleConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
+      return;
+    }
+    const rows = await getPlausibleBreakdown(parsed.data.period, parsed.data.dimension, parsed.data.limit, filters.filters);
+    if (!rows) {
+      fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
+      return;
+    }
+    ok(res, { period: parsed.data.period, dimension: parsed.data.dimension, rows });
+  });
+
+  /** Audience report bundle: aggregate + timeseries + the audience's top-10 breakdowns. */
+  router.get('/analytics/report', async (req, res) => {
+    const parsed = ReportQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, audience marketing|sales|frontend|full');
+      return;
+    }
+    const filters = parseFilters(req.query.filters);
+    if (!filters.ok) {
+      fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
+      return;
+    }
+    if (!plausibleConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
+      return;
+    }
+    const report = await getPlausibleReportData(parsed.data.period, parsed.data.audience, filters.filters);
+    if (!report) {
+      fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
+      return;
+    }
+    ok(res, report);
+  });
+
+  /**
+   * DOCUMENTED EXCEPTION to the §1.6 envelope (like Depot's public file
+   * route): the SUCCESS path streams raw PDF bytes — a download, not an API
+   * payload. Every error path still answers the normal {data,error} envelope.
+   */
+  router.get('/analytics/report.pdf', async (req, res) => {
+    const parsed = ReportQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, audience marketing|sales|frontend|full');
+      return;
+    }
+    const filters = parseFilters(req.query.filters);
+    if (!filters.ok) {
+      fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
+      return;
+    }
+    if (!plausibleConfigured(getPulseConfig())) {
+      fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
+      return;
+    }
+    const report = await getPlausibleReportData(parsed.data.period, parsed.data.audience, filters.filters);
+    if (!report) {
+      fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
+      return;
+    }
+    const pdf = await renderAnalyticsReportPdf(report);
+    const day = report.generatedAt.slice(0, 10); // YYYY-MM-DD
+    res
+      .status(200)
+      .setHeader('Content-Type', 'application/pdf')
+      .setHeader('Content-Disposition', `attachment; filename="littlefounders-analytics-${report.audience}-${report.period}-${day}.pdf"`)
+      .send(pdf);
+  });
+
+  /**
+   * Read-only mirror of the IPs excluded from analytics ingestion. Enforcement
+   * lives in pulse-plausible's IP_BLOCKLIST env — there is deliberately NO
+   * write endpoint here (changing it is an infra step in Railway variables).
+   */
+  router.get('/analytics/exclusions', (_req, res) => {
+    ok(res, { ips: getExcludedIps() });
   });
 
   /** Behavioral stats (Umami): adult-surfaces product analytics. */

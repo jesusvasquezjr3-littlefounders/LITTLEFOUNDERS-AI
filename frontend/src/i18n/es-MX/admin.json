@@ -132,6 +132,75 @@
       "visitors": "Visitantes",
       "visits": "Visitas",
       "bounces": "Rebotes"
+    },
+    "filters": {
+      "dimensionLabel": "Filtrar por",
+      "valueLabel": "Valor",
+      "valuePlaceholder": "p. ej. US, Google, Chrome, /learn",
+      "add": "Agregar filtro",
+      "remove": "Quitar filtro {{filter}}",
+      "active": "Filtros activos",
+      "hint": "Haz clic en cualquier fila de los desgloses para enfocar todo en ella."
+    },
+    "dimensions": {
+      "page": "Página",
+      "source": "Fuente",
+      "referrer": "Referencia",
+      "channel": "Canal",
+      "country": "País",
+      "region": "Región",
+      "device": "Dispositivo",
+      "browser": "Navegador",
+      "os": "Sistema operativo",
+      "entry_page": "Página de entrada",
+      "exit_page": "Página de salida",
+      "utm_source": "Fuente UTM",
+      "utm_medium": "Medio UTM",
+      "utm_campaign": "Campaña"
+    },
+    "breakdowns": {
+      "title": "Desgloses",
+      "empty": "Sin datos en este periodo.",
+      "filterBy": "Filtrar por {{value}}",
+      "cards": {
+        "page": "Páginas top",
+        "source": "Fuentes top",
+        "channel": "Canales",
+        "country": "Países",
+        "device": "Dispositivos",
+        "browser": "Navegadores",
+        "os": "Sistemas operativos",
+        "entry_page": "Páginas de entrada",
+        "exit_page": "Páginas de salida",
+        "utm_campaign": "Campañas"
+      }
+    },
+    "toolsTitle": "Exportaciones y controles",
+    "reports": {
+      "title": "Reportes por equipo (PDF)",
+      "caption": "Reportes PDF con marca y marca de agua para cada equipo — generados con el periodo y los filtros actuales.",
+      "failed": "No se pudo generar el reporte. Inténtalo de nuevo.",
+      "audiences": {
+        "marketing": "Marketing",
+        "sales": "Ventas",
+        "frontend": "Frontend",
+        "full": "Reporte completo"
+      }
+    },
+    "exclusions": {
+      "title": "IPs excluidas",
+      "caption": "El tráfico de estas IPs se descarta al ingresar a Plausible, para que las visitas del staff no ensucien los números.",
+      "empty": "Aún no hay IPs excluidas.",
+      "valueLabel": "IP o CIDR",
+      "valuePlaceholder": "p. ej. 203.0.113.7 o 10.0.0.0/8",
+      "add": "Agregar",
+      "invalid": "Eso no parece una IP o un bloque CIDR válido.",
+      "remove": "Quitar {{ip}}",
+      "commandLabel": "Aplícalo con",
+      "copy": "Copiar",
+      "copied": "Copiado",
+      "pending": "La lista editada aún no está aplicada — ejecuta el comando y redespliega pulse-plausible.",
+      "note": "Espejo de solo lectura: la aplicación vive en la variable de entorno IP_BLOCKLIST de pulse-plausible (se aplica al redesplegar) — esta pantalla nunca la escribe."
     }
   },
   "health": {

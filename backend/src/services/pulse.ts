@@ -18,6 +18,9 @@ const PulseEnv = z.object({
   PLAUSIBLE_URL: z.url().optional(),
   PLAUSIBLE_API_KEY: z.string().min(10).optional(),
   PLAUSIBLE_SITE_ID: z.string().min(1).optional(),
+  // Mirror of pulse-plausible's IP_BLOCKLIST (comma/whitespace separated).
+  // Read-only reflection for the console — enforcement lives in Plausible's env.
+  PLAUSIBLE_IP_BLOCKLIST: z.string().optional(),
   UMAMI_URL: z.url().optional(),
   UMAMI_USERNAME: z.string().min(1).optional(),
   UMAMI_PASSWORD: z.string().min(1).optional(),
@@ -59,13 +62,54 @@ async function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
 
 export type PlausiblePeriod = 'day' | '7d' | '30d' | 'month' | '6mo' | '12mo';
 
+/** Plausible v2 filter clause: [operator, dimension, clauses] — passed through verbatim. */
+export type PlausibleFilter = [string, string, (string | number)[]];
+
+/** Console dimension key → Plausible Stats API v2 dimension string. */
+export const PLAUSIBLE_DIMENSIONS = {
+  page: 'event:page',
+  source: 'visit:source',
+  referrer: 'visit:referrer',
+  channel: 'visit:channel',
+  country: 'visit:country',
+  region: 'visit:region',
+  device: 'visit:device',
+  browser: 'visit:browser',
+  os: 'visit:os',
+  entry_page: 'visit:entry_page',
+  exit_page: 'visit:exit_page',
+  utm_source: 'visit:utm_source',
+  utm_medium: 'visit:utm_medium',
+  utm_campaign: 'visit:utm_campaign',
+} as const;
+
+export type PlausibleDimensionKey = keyof typeof PLAUSIBLE_DIMENSIONS;
+
+export const PLAUSIBLE_DIMENSION_KEYS = Object.keys(PLAUSIBLE_DIMENSIONS) as [
+  PlausibleDimensionKey,
+  ...PlausibleDimensionKey[],
+];
+
 export interface PlausibleOverview {
   aggregate: { visitors: number; pageviews: number; bounce_rate: number; visit_duration: number };
   timeseries: { date: string; visitors: number; pageviews: number }[];
 }
 
+export interface PlausibleBreakdownRow {
+  label: string;
+  visitors: number;
+  pageviews: number;
+  bounceRate: number;
+  visitDuration: number;
+}
+
 export function plausibleConfigured(cfg: PulseConfig): boolean {
   return Boolean(cfg.PLAUSIBLE_URL && cfg.PLAUSIBLE_API_KEY && cfg.PLAUSIBLE_SITE_ID);
+}
+
+/** Filters participate in every cache key — same query + different filters = different entry. */
+function filterCacheKey(filters?: PlausibleFilter[]): string {
+  return filters?.length ? JSON.stringify(filters) : '-';
 }
 
 async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): Promise<unknown | null> {
@@ -82,14 +126,16 @@ const PlausibleResults = z.object({
   results: z.array(z.object({ dimensions: z.array(z.union([z.string(), z.number()])), metrics: z.array(z.number()) })),
 });
 
-/** Aggregate + per-day timeseries for the period. Null on any upstream failure. */
-export function getPlausibleOverview(period: PlausiblePeriod): Promise<PlausibleOverview | null> {
+/** Aggregate + per-day timeseries for the period (optionally filtered). Null on any upstream failure. */
+export function getPlausibleOverview(period: PlausiblePeriod, filters?: PlausibleFilter[]): Promise<PlausibleOverview | null> {
   const cfg = getPulseConfig();
-  return cached(`plausible:overview:${period}`, async () => {
+  const withFilters = (body: Record<string, unknown>): Record<string, unknown> =>
+    filters?.length ? { ...body, filters } : body;
+  return cached(`plausible:overview:${period}:${filterCacheKey(filters)}`, async () => {
     const metrics = ['visitors', 'pageviews', 'bounce_rate', 'visit_duration'];
     const [agg, series] = await Promise.all([
-      plausibleQuery(cfg, { metrics, date_range: period }),
-      plausibleQuery(cfg, { metrics: ['visitors', 'pageviews'], date_range: period, dimensions: ['time:day'] }),
+      plausibleQuery(cfg, withFilters({ metrics, date_range: period })),
+      plausibleQuery(cfg, withFilters({ metrics: ['visitors', 'pageviews'], date_range: period, dimensions: ['time:day'] })),
     ]);
     if (!agg || !series) return null;
     const aggParsed = PlausibleResults.safeParse(agg);
@@ -105,6 +151,115 @@ export function getPlausibleOverview(period: PlausiblePeriod): Promise<Plausible
       })),
     };
   });
+}
+
+/** Top-N rows for one dimension, ordered by visitors desc. Null on any upstream failure. */
+export function getPlausibleBreakdown(
+  period: PlausiblePeriod,
+  dimensionKey: PlausibleDimensionKey,
+  limit: number,
+  filters?: PlausibleFilter[],
+): Promise<PlausibleBreakdownRow[] | null> {
+  const cfg = getPulseConfig();
+  const key = `plausible:breakdown:${period}:${dimensionKey}:${limit}:${filterCacheKey(filters)}`;
+  return cached(key, async () => {
+    const body: Record<string, unknown> = {
+      metrics: ['visitors', 'pageviews', 'bounce_rate', 'visit_duration'],
+      date_range: period,
+      dimensions: [PLAUSIBLE_DIMENSIONS[dimensionKey]],
+      order_by: [['visitors', 'desc']],
+      pagination: { limit },
+    };
+    if (filters?.length) body.filters = filters;
+    const raw = await plausibleQuery(cfg, body);
+    if (!raw) return null;
+    const parsed = PlausibleResults.safeParse(raw);
+    if (!parsed.success) return null;
+    return parsed.data.results.map((r) => ({
+      label: String(r.dimensions[0] ?? ''),
+      visitors: r.metrics[0] ?? 0,
+      pageviews: r.metrics[1] ?? 0,
+      bounceRate: r.metrics[2] ?? 0,
+      visitDuration: r.metrics[3] ?? 0,
+    }));
+  });
+}
+
+// ── Analytics report (aggregate + breakdown bundle per audience) ───────────
+
+export type ReportAudience = 'marketing' | 'sales' | 'frontend' | 'full';
+
+export const REPORT_AUDIENCES = ['marketing', 'sales', 'frontend', 'full'] as const;
+
+const AUDIENCE_DIMENSIONS: Record<Exclude<ReportAudience, 'full'>, readonly PlausibleDimensionKey[]> = {
+  marketing: ['source', 'channel', 'utm_campaign', 'utm_source', 'country', 'referrer'],
+  sales: ['source', 'channel', 'entry_page', 'country', 'device'],
+  frontend: ['page', 'entry_page', 'exit_page', 'device', 'browser', 'os'],
+};
+
+/** Dimension set for an audience; `full` = deduped union in stable marketing→sales→frontend order. */
+export function audienceDimensions(audience: ReportAudience): PlausibleDimensionKey[] {
+  if (audience !== 'full') return [...AUDIENCE_DIMENSIONS[audience]];
+  return [...new Set([...AUDIENCE_DIMENSIONS.marketing, ...AUDIENCE_DIMENSIONS.sales, ...AUDIENCE_DIMENSIONS.frontend])];
+}
+
+export interface PlausibleReportData {
+  period: PlausiblePeriod;
+  audience: ReportAudience;
+  generatedAt: string;
+  aggregate: { visitors: number; pageviews: number; bounceRate: number; visitDuration: number };
+  timeseries: { date: string; visitors: number; pageviews: number }[];
+  breakdowns: Partial<Record<PlausibleDimensionKey, PlausibleBreakdownRow[]>>;
+}
+
+/**
+ * Full report payload: aggregate + timeseries + the audience's breakdowns
+ * (top 10 each). Null if ANY upstream read fails — a report with silently
+ * missing sections would misinform, so it's all-or-nothing.
+ */
+export async function getPlausibleReportData(
+  period: PlausiblePeriod,
+  audience: ReportAudience,
+  filters?: PlausibleFilter[],
+): Promise<PlausibleReportData | null> {
+  const dims = audienceDimensions(audience);
+  const [overview, breakdownLists] = await Promise.all([
+    getPlausibleOverview(period, filters),
+    Promise.all(dims.map((dim) => getPlausibleBreakdown(period, dim, 10, filters))),
+  ]);
+  if (!overview) return null;
+  const breakdowns: PlausibleReportData['breakdowns'] = {};
+  for (const [i, dim] of dims.entries()) {
+    const rows = breakdownLists[i];
+    if (!rows) return null;
+    breakdowns[dim] = rows;
+  }
+  return {
+    period,
+    audience,
+    generatedAt: new Date().toISOString(),
+    aggregate: {
+      visitors: overview.aggregate.visitors,
+      pageviews: overview.aggregate.pageviews,
+      bounceRate: overview.aggregate.bounce_rate,
+      visitDuration: overview.aggregate.visit_duration,
+    },
+    timeseries: overview.timeseries,
+    breakdowns,
+  };
+}
+
+/**
+ * IPs excluded from analytics ingestion — a read-only mirror of the
+ * IP_BLOCKLIST env enforced on pulse-plausible. Editing happens in Railway
+ * variables (infra step), never through Core.
+ */
+export function getExcludedIps(): string[] {
+  const raw = getPulseConfig().PLAUSIBLE_IP_BLOCKLIST ?? '';
+  return raw
+    .split(/[\s,]+/)
+    .map((ip) => ip.trim())
+    .filter(Boolean);
 }
 
 // ── Umami (behavioral analytics) ───────────────────────────────────────────

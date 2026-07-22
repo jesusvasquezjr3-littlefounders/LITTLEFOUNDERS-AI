@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
 import {
   Badge,
   Card,
@@ -13,37 +12,33 @@ import {
   type DropdownOption,
   type TableColumn,
 } from '@/components/ui';
-import { AdminPage } from './adminShared';
+import { cn } from '@/lib/utils';
+import { AdminPage, useAdminData } from './adminShared';
+import {
+  BREAKDOWN_CARDS,
+  PERIODS,
+  filtersToQuery,
+  type AnalyticsFilter,
+  type BehaviorData,
+  type DimensionKey,
+  type HealthData,
+  type OverviewData,
+  type Period,
+} from './analytics/analyticsShared';
+import { FilterBar } from './analytics/FilterBar';
+import { BreakdownCard } from './analytics/BreakdownCard';
+import { ReportExportCard } from './analytics/ReportExportCard';
+import { ExclusionsCard } from './analytics/ExclusionsCard';
 
 /*
- * Analytics & Health — the console's first section (/DESIGN.md §Screen
- * Recipes → Console). All data is Core-brokered from Pulse
+ * Analytics & Health — the console's observability section (/DESIGN.md
+ * §Screen Recipes → Console). All data is Core-brokered from Pulse
  * (/api/v1/admin/*): the browser never talks to Plausible/Umami/Kuma
- * (pulse/AGENTS.md #5). Upstream-unavailable renders the standard
+ * (pulse/AGENTS.md #5). Everything on this screen honors the shared period +
+ * segment filters (Plausible v2 tuples) except Umami behavior (period only)
+ * and Kuma health (live). Upstream-unavailable renders the standard
  * empty-state grammar, never a blank pane.
  */
-
-type Period = 'day' | '7d' | '30d' | 'month' | '6mo' | '12mo';
-
-interface Overview {
-  period: Period;
-  aggregate: { visitors: number; pageviews: number; bounce_rate: number; visit_duration: number };
-  timeseries: { date: string; visitors: number; pageviews: number }[];
-}
-interface Behavior {
-  period: Period;
-  pageviews: number;
-  visitors: number;
-  visits: number;
-  bounces: number;
-  totaltime: number;
-}
-interface Health {
-  summary: { total: number; down: number };
-  monitors: { id: number; name: string; status: number; pingMs: number | null; uptime24h: number | null }[];
-}
-
-type Loadable<T> = { state: 'loading' } | { state: 'error'; code: string } | { state: 'ready'; data: T };
 
 function UnavailableCard({ title, body }: { title: string; body: string }) {
   return (
@@ -57,35 +52,30 @@ function UnavailableCard({ title, body }: { title: string; body: string }) {
 
 export function AnalyticsHealthPage() {
   const { t, i18n } = useTranslation();
-  const { getToken } = useAuth();
+  const { roles } = useAuth();
+  const isSuperadmin = roles.includes('superadmin');
+
   const [period, setPeriod] = useState<Period>('30d');
-  const [overview, setOverview] = useState<Loadable<Overview>>({ state: 'loading' });
-  const [behavior, setBehavior] = useState<Loadable<Behavior>>({ state: 'loading' });
-  const [health, setHealth] = useState<Loadable<Health>>({ state: 'loading' });
+  const [filters, setFilters] = useState<AnalyticsFilter[]>([]);
+  const filterQuery = filtersToQuery(filters);
 
-  const load = useCallback(async () => {
-    const token = await getToken();
-    setOverview({ state: 'loading' });
-    setBehavior({ state: 'loading' });
-    void api<Overview>(`/admin/analytics/overview?period=${period}`, { token }).then((r) =>
-      setOverview(r.error ? { state: 'error', code: r.error.code } : { state: 'ready', data: r.data }),
+  const addFilter = useCallback((dimension: DimensionKey, value: string) => {
+    setFilters((fs) =>
+      fs.some((f) => f.dimension === dimension && f.value === value) ? fs : [...fs, { dimension, value }],
     );
-    void api<Behavior>(`/admin/analytics/behavior?period=${period}`, { token }).then((r) =>
-      setBehavior(r.error ? { state: 'error', code: r.error.code } : { state: 'ready', data: r.data }),
-    );
-    void api<Health>('/admin/health/services', { token }).then((r) =>
-      setHealth(r.error ? { state: 'error', code: r.error.code } : { state: 'ready', data: r.data }),
-    );
-  }, [getToken, period]);
+  }, []);
+  const removeFilter = useCallback((index: number) => {
+    setFilters((fs) => fs.filter((_, i) => i !== index));
+  }, []);
 
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const { data: overview } = useAdminData<OverviewData>(`/admin/analytics/overview?period=${period}${filterQuery}`);
+  const { data: behavior } = useAdminData<BehaviorData>(`/admin/analytics/behavior?period=${period}`);
+  const { data: health } = useAdminData<HealthData>('/admin/health/services');
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
-  // KPI numerals use compact notation ("2.1K") — display-lg in a 6-col track
-  // truncates full figures past 4 digits, and truncated numbers are worse
-  // than rounded ones on a dashboard. Tables keep full precision via `nf`.
+  // KPI numerals use compact notation ("2.1K") — display-type numerals in a
+  // 6-col track truncate full figures past 4 digits, and truncated numbers are
+  // worse than rounded ones on a dashboard. Tables keep full precision via `nf`.
   const nfCompact = new Intl.NumberFormat(i18n.resolvedLanguage, { notation: 'compact', maximumFractionDigits: 1 });
   const pct = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'percent', maximumFractionDigits: 1 });
   const secondsFmt = (s: number) => {
@@ -93,12 +83,12 @@ export function AnalyticsHealthPage() {
     return m > 0 ? `${m}m ${Math.round(s % 60)}s` : `${Math.round(s)}s`;
   };
 
-  const periodOptions: DropdownOption<Period>[] = (['day', '7d', '30d', 'month', '6mo', '12mo'] as const).map((p) => ({
+  const periodOptions: DropdownOption<Period>[] = PERIODS.map((p) => ({
     value: p,
     label: t(`admin.analytics.periods.${p}`),
   }));
 
-  const healthColumns: TableColumn<Health['monitors'][number]>[] = [
+  const healthColumns: TableColumn<HealthData['monitors'][number]>[] = [
     { key: 'name', header: t('admin.health.columns.service'), cell: (m) => m.name, primary: true },
     {
       key: 'status',
@@ -128,11 +118,21 @@ export function AnalyticsHealthPage() {
     <AdminPage
       titleKey="admin.analytics.title"
       subtitleKey="admin.analytics.subtitle"
-      actions={<Dropdown value={period} options={periodOptions} onChange={setPeriod} ariaLabel={t('admin.analytics.periodLabel') ?? 'Period'} />}
+      actions={
+        <Dropdown
+          value={period}
+          options={periodOptions}
+          onChange={setPeriod}
+          ariaLabel={t('admin.analytics.periodLabel') ?? 'Period'}
+        />
+      }
     >
+      {/* ── Segment filters (apply to overview + every breakdown + PDFs) ── */}
+      <FilterBar filters={filters} onAdd={addFilter} onRemove={removeFilter} />
+
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">
-        <h2 id="admin-web-analytics" className="lf-display-sm">
+        <h2 id="admin-web-analytics" className="lf-headline">
           {t('admin.analytics.web.title')}
         </h2>
 
@@ -189,7 +189,7 @@ export function AnalyticsHealthPage() {
 
       {/* ── Behavioral (Umami — adult surfaces only, §1.9) ── */}
       <section aria-labelledby="admin-behavior" className="flex flex-col gap-4">
-        <h2 id="admin-behavior" className="lf-display-sm">
+        <h2 id="admin-behavior" className="lf-headline">
           {t('admin.analytics.behavior.title')}
         </h2>
         <p className="lf-caption -mt-2 text-content-faint">{t('admin.analytics.behavior.scopeNote')}</p>
@@ -201,28 +201,28 @@ export function AnalyticsHealthPage() {
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             <StatCard
-                dense
+              dense
               icon={<Icon name="ads_click" />}
               value={behavior.state === 'ready' ? nfCompact.format(behavior.data.pageviews) : '…'}
               label={t('admin.analytics.behavior.pageviews')}
               tone="accent"
             />
             <StatCard
-                dense
+              dense
               icon={<Icon name="person" />}
               value={behavior.state === 'ready' ? nfCompact.format(behavior.data.visitors) : '…'}
               label={t('admin.analytics.behavior.visitors')}
               tone="accent"
             />
             <StatCard
-                dense
+              dense
               icon={<Icon name="route" />}
               value={behavior.state === 'ready' ? nfCompact.format(behavior.data.visits) : '…'}
               label={t('admin.analytics.behavior.visits')}
               tone="accent"
             />
             <StatCard
-                dense
+              dense
               icon={<Icon name="door_open" />}
               value={behavior.state === 'ready' ? nfCompact.format(behavior.data.bounces) : '…'}
               label={t('admin.analytics.behavior.bounces')}
@@ -233,10 +233,40 @@ export function AnalyticsHealthPage() {
         )}
       </section>
 
+      {/* ── Breakdowns (Plausible v2 top-N per dimension) ── */}
+      <section aria-labelledby="admin-breakdowns" className="flex flex-col gap-4">
+        <h2 id="admin-breakdowns" className="lf-headline">
+          {t('admin.analytics.breakdowns.title')}
+        </h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {BREAKDOWN_CARDS.map((c) => (
+            <BreakdownCard
+              key={c.dimension}
+              dimension={c.dimension}
+              icon={c.icon}
+              period={period}
+              filterQuery={filterQuery}
+              onFilter={addFilter}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ── Exports & controls (PDF reports; excluded IPs = superadmin) ── */}
+      <section aria-labelledby="admin-analytics-tools" className="flex flex-col gap-4">
+        <h2 id="admin-analytics-tools" className="lf-headline">
+          {t('admin.analytics.toolsTitle')}
+        </h2>
+        <div className={cn('grid gap-4', isSuperadmin && 'lg:grid-cols-2')}>
+          <ReportExportCard period={period} filterQuery={filterQuery} />
+          {isSuperadmin && <ExclusionsCard />}
+        </div>
+      </section>
+
       {/* ── System health (Uptime Kuma) ───────────────── */}
       <section aria-labelledby="admin-health" className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          <h2 id="admin-health" className="lf-display-sm">
+          <h2 id="admin-health" className="lf-headline">
             {t('admin.health.title')}
           </h2>
           {health.state === 'ready' &&

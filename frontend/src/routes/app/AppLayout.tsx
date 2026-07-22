@@ -190,7 +190,7 @@ export function AppLayout() {
         <NavLink
           to="/learn"
           className={cn(
-            'mb-8 flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+            'mb-8 flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
             collapsed ? 'justify-center' : 'px-2',
           )}
         >
@@ -201,7 +201,10 @@ export function AppLayout() {
           )}
         </NavLink>
 
-        <nav aria-label={t('dashboard.navLabel')} className="flex flex-col gap-1.5">
+        <nav
+          aria-label={t('dashboard.navLabel')}
+          className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-1 [scrollbar-width:thin]"
+        >
           {NAV_ITEMS.map((item) => (
             <SidebarItem key={item.key} item={item} roles={roles} collapsed={collapsed} />
           ))}
@@ -239,7 +242,7 @@ export function AppLayout() {
           )}
         </nav>
 
-        <div className="mt-auto flex flex-col gap-4">
+        <div className="mt-4 flex shrink-0 flex-col gap-4 pt-4">
           {!isParent && !collapsed && (
             <div className="rounded-lg bg-accent-soft/60 p-4">
               <div className="flex items-center gap-2 text-content">

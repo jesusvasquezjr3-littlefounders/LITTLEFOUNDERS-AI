@@ -98,6 +98,32 @@ next deploy). To re-apply on a fresh environment: the Kong cap is version-
 controlled in its Dockerfile; the Serverless toggles are per-service dashboard
 settings (not in code) — re-enable them after any service re-create.
 
+**Pulse-era update (2026-07-22): the analytics stack raised the estimate to ~$28.81.**
+Pulse's five services are **always-on by necessity** (they cannot scale-to-zero —
+analytics ingestion + Kuma monitoring must stay live), so adding them pushed the
+estimated bill from ~$12 back to ~$28.81 (Usage → Show Breakdown: memory = $8.62
+of $9.05 ≈ **95%**, the same memory-dominated shape as before). Measured per-service
+RSS (Service → Metrics → Memory, 7d): **`pulse-clickhouse` ~850 MB and climbing
+toward its cap** — the single biggest consumer — and `pulse-plausible` ~500 MB (BEAM).
+Applied conservative right-sizing, **no capability removed, reversible:**
+1. ✅ **ClickHouse cache trim** (version-controlled in `pulse/railway/clickhouse/`):
+   `max_server_memory_usage` 1.5 GiB→1 GiB + `mark_cache_size` 500 MB→256 MB
+   (`config.d/pulse-railway.xml`), plus a 512 MB per-query `max_memory_usage`
+   ceiling (`users.d/pulse-low-resources.xml` default profile). Our event volume is
+   tiny, so these ceilings stay far above need while pulling ClickHouse's resident
+   cache down. If `MEMORY_LIMIT_EXCEEDED` ever appears or the instance is resized,
+   raise them (server cap + caches together).
+2. ⏭️ **Node heap caps on `pulse-umami` / `pulse-kuma` — SKIPPED**, same measured
+   reasoning as Core (2026-07-17): they sit well under any cap, so a
+   `--max-old-space-size` cap saves nothing and only adds OOM risk.
+3. ⏭️ **Plausible BEAM tuning — SKIPPED**: it is the live analytics path; the risk
+   outweighs a ~100–200 MB theoretical trim.
+
+**Deferred (aggressive, opt-in — owner chose conservative 2026-07-22):** since the
+Pulse services can't sleep, the only larger cut is *consolidation* — e.g. pausing
+`pulse-umami` pre-launch (Plausible already covers the headline KPIs) would save
+~$3–4/mo but makes behavioral analytics dormant. Left running by choice.
+
 ## Published content invisible to users (RLS policy silently missing) — incident 2026-07-13
 
 **Symptom:** a fully-published course (every row `status='published'`, all counts correct via service-role/psql) renders **zero lessons** for real logged-in users. No errors anywhere — the API returns `lessons: []`.

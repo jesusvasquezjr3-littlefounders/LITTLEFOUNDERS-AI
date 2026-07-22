@@ -12,6 +12,11 @@
             <max_download_threads>1</max_download_threads>
             <input_format_parallel_parsing>0</input_format_parallel_parsing>
             <output_format_parallel_formatting>0</output_format_parallel_formatting>
+            <!-- Per-query memory ceiling (512 MB). Our tables are tiny, so this
+                 only ever trips on a runaway query — a bounded failure is far
+                 cheaper than an OOM-killed server. Stays under the 1 GiB
+                 server cap in config.d/pulse-railway.xml. -->
+            <max_memory_usage>536870912</max_memory_usage>
         </default>
     </profiles>
 </clickhouse>

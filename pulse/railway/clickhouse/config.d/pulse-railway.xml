@@ -6,10 +6,13 @@
      ClickHouse on Railway; the official Plausible Railway template ships a
      custom image for exactly this reason).
 
-     Memory: sized for a small dedicated instance. mark_cache_size follows
-     Plausible CE's own low-resources.xml (500 MB); max_server_memory_usage
-     caps the server well under the Railway service limit so the OOM killer
-     never fires first. Bump BOTH together if the instance is resized.
+     Memory: sized for a SMALL pre-launch instance and deliberately trimmed for
+     Railway cost (the bill is ~95% memory-GB-minutes — RUNBOOK.md § Pulse cost).
+     Our event volume is tiny, so a 1 GiB server cap and a 256 MB mark cache are
+     still far more than any dashboard query needs, while shaving steady-state
+     RAM. max_server_memory_usage stays well under the Railway service limit so
+     the OOM killer never fires first. Bump BOTH together if the instance is
+     resized or event volume grows (watch for MEMORY_LIMIT_EXCEEDED first).
 
      System logs: disabled the same way Plausible CE's shipped
      clickhouse-config.xml does — they are the biggest silent disk-eater on
@@ -22,8 +25,8 @@
          of 4 (tried 2026-07-20, borrowed from the Railway template) caused a
          TOO_MANY_SIMULTANEOUS_QUERIES storm and the app never became healthy.
          CE upstream leaves it at the ClickHouse default. -->
-    <max_server_memory_usage>1610612736</max_server_memory_usage>
-    <mark_cache_size>524288000</mark_cache_size>
+    <max_server_memory_usage>1073741824</max_server_memory_usage>
+    <mark_cache_size>268435456</mark_cache_size>
 
     <asynchronous_metric_log remove="remove"/>
     <metric_log remove="remove"/>

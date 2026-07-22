@@ -25,12 +25,26 @@ import { useAuth } from '@/auth/AuthContext';
  *   - kid role present, or any other role → never; eject if already mounted
  *     (script removal stops all future capture in the session).
  *
- * Both scripts self-track SPA navigations; env-unset (local dev) = no-op.
+ * GA4 (Google Analytics): DUAL-TRACKING, PUBLIC PAGES ONLY. Re-added alongside
+ * Plausible per an explicit product decision (2026-07-22). Unlike Plausible and
+ * Umami — both cookieless/no-PII — GA4 sets cookies and shares data with Google,
+ * so its scope is the NARROWEST of the three and enforced here:
+ *   - marketing/public paths ONLY — never the app, never the auth trust surfaces,
+ *   - never a kid-role session (§1.9),
+ *   - a hard `ga-disable-<id>` kill-switch is re-asserted on every route change and
+ *     page_views are fired MANUALLY (send_page_view:false), so GA4 can never
+ *     observe an app/kid pathname even if its script stays resident across an SPA
+ *     navigation out of the marketing area.
+ * COOKIE NOTE: GA4 uses cookies; a marketing-site consent banner (Consent Mode)
+ * is the correct follow-up for EU/UK visitors — tracked in WALKTHROUGH.md.
+ *
+ * Plausible/Umami self-track SPA navigations; env-unset (local dev) = no-op.
  */
 
 const PLAUSIBLE_SRC: string | undefined = import.meta.env.VITE_PLAUSIBLE_SRC;
 const UMAMI_SRC: string | undefined = import.meta.env.VITE_UMAMI_SRC;
 const UMAMI_WEBSITE_ID: string | undefined = import.meta.env.VITE_UMAMI_WEBSITE_ID;
+const GA4_ID: string | undefined = import.meta.env.VITE_GA4_MEASUREMENT_ID;
 
 interface Plausible {
   (...args: unknown[]): void;
@@ -41,6 +55,8 @@ interface Plausible {
 declare global {
   interface Window {
     plausible?: Plausible;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -88,6 +104,24 @@ function ejectScript(id: string): void {
   document.getElementById(id)?.remove();
 }
 
+/** GA4 gtag loader (public marketing surfaces only — see the module header). */
+function mountGa4(): void {
+  if (!GA4_ID || document.getElementById('lf-ga4')) return;
+  const dataLayer = (window.dataLayer = window.dataLayer ?? []);
+  window.gtag = (...args: unknown[]) => {
+    dataLayer.push(args);
+  };
+  const el = document.createElement('script');
+  el.id = 'lf-ga4';
+  el.async = true;
+  el.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+  document.head.appendChild(el);
+  window.gtag('js', new Date());
+  // send_page_view:false — pageviews are fired manually, only on marketing paths,
+  // so GA4 never records an app/kid pathname (module header §1.9 scope).
+  window.gtag('config', GA4_ID, { send_page_view: false });
+}
+
 export function AnalyticsScripts() {
   const { session, roles, meLoaded } = useAuth();
   const { pathname } = useLocation();
@@ -115,6 +149,18 @@ export function AnalyticsScripts() {
       ejectScript('lf-umami');
     }
   }, [session, roles, meLoaded, pathname]);
+
+  // GA4 — public marketing pages only, never app/kid (module header §1.9 scope).
+  useEffect(() => {
+    if (!GA4_ID) return;
+    const onMarketing = isMarketingPath(pathname) && !roles.includes('kid');
+    // Re-assert the hard kill-switch every route change: GA4 stays fully inert
+    // off marketing paths / for kids, even if its script is already resident.
+    (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = !onMarketing;
+    if (!onMarketing) return;
+    mountGa4();
+    window.gtag?.('event', 'page_view', { page_path: pathname });
+  }, [pathname, roles]);
 
   return null;
 }
