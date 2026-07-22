@@ -45,35 +45,54 @@ jobs:
           set -euo pipefail
           TS=$(date -u +%Y%m%d-%H%M%S)
           FILE="pulse-${TS}.dump"
+          KEY=~/.ssh/railway_backup_key
 
-          # -Fc of the whole cluster's two app DBs via pg_dumpall would lose
-          # -Fc benefits; dump each logical DB, concatenate as a tar.
-          #
+          # Railway's SSH key-verification service intermittently returns
+          # "verification service was unreachable" — a Railway-side blip (not our
+          # key) that fails every `railway ssh` account-wide while it lasts.
+          # Retry each call so a transient outage doesn't fail the daily backup.
+          retry() {
+            local n=1
+            until "$@"; do
+              if [ "$n" -ge 5 ]; then echo "giving up after $n attempts: $*" >&2; return 1; fi
+              echo "attempt $n failed, retrying in 20s: $*" >&2
+              n=$((n + 1)); sleep 20
+            done
+          }
+
           # Each step is a SEPARATE `railway ssh` call with the command passed as
           # distinct argv tokens (the vault-backup pattern). Do NOT collapse them
           # into one `railway ssh -- sh -c '<multi-flag script>'`: the SSH command
           # is space-joined and re-parsed on the remote, so a quoted multi-word
           # script gets word-split — `sh -c pg_dump …` then runs pg_dump with NO
-          # flags, connecting as OS user `root` (FATAL: role "root" does not
-          # exist). That is exactly why every prior run failed in ~9s.
-          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+          # flags, connecting as OS user `root` (FATAL: role "root" does not exist).
+          retry railway ssh --service pulse-db -i "$KEY" -- \
             pg_dump -U postgres -d plausible -Fc -f /tmp/plausible.dump
 
-          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+          retry railway ssh --service pulse-db -i "$KEY" -- \
             pg_dump -U postgres -d umami -Fc -f /tmp/umami.dump
 
-          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+          retry railway ssh --service pulse-db -i "$KEY" -- \
             tar -C /tmp -cf /tmp/backup.tar plausible.dump umami.dump
 
-          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
-            cat /tmp/backup.tar > "$FILE"
+          # Redirect lives INSIDE the loop so every retry re-truncates the file.
+          n=1
+          until railway ssh --service pulse-db -i "$KEY" -- cat /tmp/backup.tar > "$FILE"; do
+            if [ "$n" -ge 5 ]; then echo "giving up capturing the dump" >&2; exit 1; fi
+            echo "capture attempt $n failed, retrying in 20s" >&2
+            n=$((n + 1)); sleep 20
+          done
 
           test -s "$FILE"
 
-          cat "$FILE" | railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
-            sh -c "cat > /data/backups/$FILE"
+          n=1
+          until cat "$FILE" | railway ssh --service filebase -i "$KEY" -- sh -c "cat > /data/backups/$FILE"; do
+            if [ "$n" -ge 5 ]; then echo "giving up uploading to filebase" >&2; exit 1; fi
+            echo "upload attempt $n failed, retrying in 20s" >&2
+            n=$((n + 1)); sleep 20
+          done
 
-          railway ssh --service pulse-db -i ~/.ssh/railway_backup_key -- \
+          retry railway ssh --service pulse-db -i "$KEY" -- \
             rm -f /tmp/backup.tar /tmp/plausible.dump /tmp/umami.dump
 
           echo "Backed up $(wc -c < "$FILE") bytes to /data/backups/$FILE on filebase"
@@ -82,5 +101,11 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
-            find /data/backups -name 'pulse-*.dump' -mtime +30 -delete
+          set -euo pipefail
+          n=1
+          until railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
+            find /data/backups -name 'pulse-*.dump' -mtime +30 -delete; do
+            if [ "$n" -ge 5 ]; then echo "giving up pruning old backups" >&2; exit 1; fi
+            echo "prune attempt $n failed, retrying in 20s" >&2
+            n=$((n + 1)); sleep 20
+          done
