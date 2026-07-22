@@ -37,6 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, choice);
+    let transitionTimer: ReturnType<typeof setTimeout> | undefined;
     const apply = () => {
       const dark = resolveIsDark(choice);
 
@@ -46,8 +47,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       document.documentElement.classList.toggle('dark', dark);
       setIsDark(dark);
 
-      // Remove after duration matches the CSS (500ms)
-      setTimeout(() => {
+      // Remove after duration matches the CSS (500ms). Tracked + cleared in the
+      // effect cleanup: an un-cleared timer fires after test teardown and shows
+      // up as an unhandled error that fails the whole run (frontend CI 2026-07-22).
+      clearTimeout(transitionTimer);
+      transitionTimer = setTimeout(() => {
         document.documentElement.classList.remove('theme-transitioning');
       }, 500);
     };
@@ -56,8 +60,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (choice === 'auto' && typeof window.matchMedia === 'function') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.addEventListener('change', apply);
-      return () => mq.removeEventListener('change', apply);
+      return () => {
+        clearTimeout(transitionTimer);
+        mq.removeEventListener('change', apply);
+      };
     }
+    return () => clearTimeout(transitionTimer);
   }, [choice]);
 
   return <ThemeContext.Provider value={{ choice, setChoice, isDark }}>{children}</ThemeContext.Provider>;
