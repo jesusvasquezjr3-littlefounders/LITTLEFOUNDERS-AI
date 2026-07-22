@@ -116,7 +116,12 @@ async function plausibleQuery(cfg: PulseConfig, body: Record<string, unknown>): 
   const res = await fetch(`${cfg.PLAUSIBLE_URL}/api/v2/query`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${cfg.PLAUSIBLE_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ site_id: cfg.PLAUSIBLE_SITE_ID, ...body }),
+    // include.imports merges GA4-imported history into every result. The Stats
+    // API v2 EXCLUDES imported data by default (unlike Plausible's own dashboard),
+    // so without this the admin console shows ~zero for any range predating our
+    // native tracking even though the GA4 import populated Plausible (verified
+    // 2026-07-22). A body may override `include` if it ever needs to.
+    body: JSON.stringify({ site_id: cfg.PLAUSIBLE_SITE_ID, include: { imports: true }, ...body }),
   });
   if (!res.ok) return null;
   return res.json();

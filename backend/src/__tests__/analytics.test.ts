@@ -93,6 +93,7 @@ describe('GET /api/v1/admin/analytics/breakdown', () => {
       dimensions: ['visit:source'],
       order_by: [['visitors', 'desc']],
       pagination: { limit: 5 },
+      include: { imports: true }, // GA4-imported history is merged into every query
     });
     expect(capture[0]).not.toHaveProperty('filters');
   });
