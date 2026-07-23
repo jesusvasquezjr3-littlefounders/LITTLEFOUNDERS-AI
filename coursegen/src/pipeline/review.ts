@@ -12,11 +12,17 @@ import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import { runAllGates, type GateContext } from './gates.js';
+import { repairDocument, stripNullValues } from './write.js';
+import { CONTENT_PLAYBOOK, JUDGE_PLAYBOOK_ANCHORS } from './contentPlaybook.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 import { TYPE_TO_SCHEMA } from '../contract/registry.js';
 import { shapeExample } from './shapeExample.js';
 
-export const MAX_REVISE_CYCLES = 2;
+// 3 (was 2): the content-playbook judge is strict on engagement AND age-fit at
+// once, and a single revise often fixes one while regressing the other (e.g.
+// adding reasoning depth drops age_fit). A third cycle gives the author room to
+// converge on all dimensions before the slot fails.
+export const MAX_REVISE_CYCLES = 3;
 const MAX_JUDGE_ATTEMPTS = 2;
 const MAX_REVISE_ATTEMPTS = 3;
 
@@ -115,6 +121,11 @@ async function judgeDocument(
     '- cognitive_engagement: does solving REQUIRE genuine thinking? 1 = the answer is stated in the prompt/options or is trivially obvious; 5 = the kid must reason with the concept. Penalize answer leakage hard.',
     '- feedback_quality: does the wrong-answer feedback EXPLAIN why a wrong choice is wrong (per-option or targeted), not a generic "try again"? 1 = generic/absent; 5 = specific and instructive. Score 5 for ungraded content types.',
     '- distractor_quality: are the WRONG options plausible-but-wrong (a real misconception), not obviously silly throwaways? 1 = joke/impossible options; 5 = genuinely tempting distractors. Score 5 if the exercise has no multiple-choice options.',
+    '',
+    'FLUENCY/DRILL CALIBRATION: speed_tap, memory_flip, lightning_round, flash_match, count_objects, measure_read train FLUENCY/AUTOMATICITY — fast recognition/recall of an already-taught concept, which is legitimate learning science. For THESE types score cognitive_engagement on: every item still carries the money concept meaningfully, nothing leaks answers, and the drill is grounded in the story — NOT on multi-step reasoning (speed IS the challenge; do not fail a drill for being a drill). The ungraded `checkpoint` recap is a reflection beat — score its engagement on the quality of the recap/reflective hook, never demand a puzzle. A lesson whose only graded segment is one such drill is a DELIBERATE isolated-practice lesson (QA/practice catalogs use these) — judge it as a drill, not as a full teaching arc.',
+    'CONTENT-ONLY LESSON CALIBRATION: a lesson whose segments are ALL story-family types (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint — zero graded segments) is a DELIBERATE narrative teaching beat: it introduces/consolidates a concept the FOLLOWING lessons exercise. NEVER score cognitive_engagement low for "no exercise present" — that is its design. Score it instead on: does the story open a genuine curiosity gap, teach through a concrete worked instance inside the narrative, and set up the concept the next lesson will drill? A vivid, curiosity-opening, concretely-grounded story scores 4-5.',
+    '',
+    JUDGE_PLAYBOOK_ANCHORS,
     ...(priorLine ? ['', priorLine] : []),
     '',
     'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"cognitive_engagement":N,"feedback_quality":N,"distractor_quality":N,"notes":"..."}',
@@ -153,7 +164,13 @@ async function reviseDocument(
 ): Promise<unknown> {
   const system =
     'You are Forge, revising a children\'s lesson document based on independent judge feedback. ' +
-    'Preserve segment ids, order and count where possible; only change what the judge notes require. ' +
+    'Preserve every segment\'s id, type, order and count, and the lesson\'s learning objective. ' +
+    'For FORMAT/factual notes make the minimal fix. But when the judge flags ENGAGEMENT, PEDAGOGY, or ' +
+    'DISTRACTOR quality (a boring premise, a leaked/obvious answer, throwaway wrong options), you MUST ' +
+    'REDESIGN that segment\'s premise/scenario/options to the CONTENT PLAYBOOK bar below — a minimal patch ' +
+    'will fail again. CRITICAL: fix the flagged dimension WITHOUT regressing the others — keep it ' +
+    'age-appropriate (for a young tier, engagement comes from a relatable STAKE and ONE simple reasoning ' +
+    'step, NEVER from harder math or longer text), and keep the connection to the prior lesson. ' +
     'Output ONLY the full corrected JSON document — same shape as the input.';
 
   // Same fix as write.ts: without an exact shape reminder, revisions
@@ -172,7 +189,9 @@ async function reviseDocument(
     .join('\n\n');
 
   const user = [
-    `JUDGE NOTES (fix these):\n${judgeNotes}`,
+    CONTENT_PLAYBOOK,
+    '',
+    `JUDGE NOTES (fix these — if they are about engagement/pedagogy/distractors, REDESIGN to the playbook above, do not just patch):\n${judgeNotes}`,
     '',
     'CURRENT DOCUMENT:',
     JSON.stringify(document),
@@ -195,9 +214,13 @@ async function reviseDocument(
     parse: (raw) => {
       const json = safeJsonParse(raw);
       if (!json.ok) return { ok: false, issues: json.error };
+      // Strip null-valued optional fields the model stubbornly emits (same
+      // fix as write.ts) before any schema check, then apply deterministic
+      // constraint repairs (balance_scale subset-sum etc.).
+      const sanitized = repairDocument(stripNullValues(json.value));
       // Structural-only check here — the FULL gate cascade re-runs after this.
-      const shapeCheck = lessonDocumentSchema.safeParse(json.value);
-      if (!shapeCheck.success) return { ok: true, data: json.value }; // let runAllGates report the real issues
+      const shapeCheck = lessonDocumentSchema.safeParse(sanitized);
+      if (!shapeCheck.success) return { ok: true, data: sanitized }; // let runAllGates report the real issues
       return { ok: true, data: shapeCheck.data };
     },
   });

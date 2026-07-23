@@ -174,3 +174,40 @@ export async function localizeLesson(
 
   return { document: parsed.data, targetLocale };
 }
+
+export interface TranslateTitleDeps {
+  ledger?: UsageLedger;
+  translate?: typeof completeDeepSeek;
+}
+
+/**
+ * Short-string translator for topic titles. Adventures/sagas are authored
+ * trilingual by hand in the curriculum YAML (`title: {en-US, es-MX, pt-BR}`);
+ * topics are authored es-MX-only (`title_es`) — hand-translating every topic
+ * title across thousands of blueprints doesn't scale, so this fills in
+ * en-US/pt-BR at publish time instead. Without it, `title_es` was copied
+ * verbatim into all 3 locale slots and topic pills never changed language.
+ */
+export async function translateTitle(
+  titleEs: string,
+  targetLocale: 'en-US' | 'pt-BR',
+  deps: TranslateTitleDeps = {},
+): Promise<string> {
+  const translate = deps.translate ?? completeDeepSeek;
+  const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
+  const messages = [
+    {
+      role: 'system' as const,
+      content:
+        `Translate this short lesson-topic title from Mexican Spanish (es-MX) into ${localeName}, ` +
+        "for a children's financial-literacy app. Keep it short and warm — a section heading, not a sentence. " +
+        'Output ONLY the translated title: no quotes, no explanation, nothing else.',
+    },
+    { role: 'user' as const, content: titleEs },
+  ];
+  const result = await translate(
+    { messages, temperature: 0.3, maxTokens: 60 },
+    { operation: 'localize', ledger: deps.ledger },
+  );
+  return result.content.trim().replace(/^["']|["']$/g, '');
+}

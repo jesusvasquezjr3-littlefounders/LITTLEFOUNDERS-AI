@@ -253,6 +253,7 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     `Produce ${MIN_SEGMENTS}-${MAX_SEGMENTS} segments as {"segments":[{"type":"...","brief":"..."}]}.`,
     'The FIRST segment must be a `story` family type (story_dialogue, story_scene, key_ideas, concept_reveal or checkpoint).',
     'Teach before you test: introduce a concept with a story/content segment before any graded segment that exercises it.',
+    'PREMISE QUALITY STARTS HERE: each `brief` must name a CONCRETE, kid-real micro-situation with a decision and a stake — a named character (dina/liruf/rho/zara), a real thing with a price, a choice to make ("Zara debe decidir si sube el precio de la limonada con más clientela"). NEVER a generic "practica la suma" / "pregunta sobre el ahorro". A boring brief produces a boring exercise.',
     `Use at least ${MIN_DISTINCT_TYPES} DISTINCT segment types across the lesson.`,
     isMoneyRequired(ctx)
       ? 'This topic touches money — include AT LEAST ONE segment from the `money` family.'

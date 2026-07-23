@@ -206,7 +206,11 @@ plan      blueprint → segment skeleton    DeepSeek, temp 0.3, JSON mode
    ↓
 write     skeleton → full LessonDocument (es-MX first, the authoring locale)
           DeepSeek, temp 0.4, JSON mode, corrective retries (max 4) fed with
-          Zod issues; per-segment salvage before full regen
+          Zod issues; per-segment salvage before full regen. The prompt now
+          carries the CONTENT PLAYBOOK (§"Content quality" below) + the age-tier
+          reasoning ceiling as its CREATIVE brief — the hard rules enforce
+          FORMAT, the playbook enforces VALUE (a decision-driven, concrete,
+          non-boring premise).
    ↓
 gate      DETERMINISTIC, free, in order:
           1. LESSON_ENGINE Zod contract (composed 56-type schema)
@@ -265,6 +269,22 @@ publish   upsert lesson + 3 lesson_documents rows via service role;
 **Retries & backoff:** schema-corrective retries and transport retries are
 SEPARATE counters — 429/5xx get jittered exponential backoff (0.5s→8s) without
 consuming correction attempts (fixes the sibling's known weakness).
+**Outer slot attempts (`FORGE_SLOT_ATTEMPTS`, default 3):** a judge rejection
+or write exhaustion resets the slot and regenerates it FROM SCRATCH — a fresh
+draw converges far better than more revise cycles on a bad draft (measured
+2026-07-23). This is the mass-generation convergence guarantee: with 3
+independent draws each passing the strict judge ~70%+ of the time, per-slot
+failure drops to low single digits, and `--slots` re-runs mop up the rest.
+Budget kill-switches still abort the whole run — retries can never spend past
+them. **Deterministic output sanitizers** run before every schema check:
+`stripNullValues` (DeepSeek stubbornly emits `null` for optional fields) and
+`repairDocument` (balance_scale subset-sum repair — weight[0] becomes the
+exact left-pan total when no subset works). The write prompt now carries the
+FULL blessed icon whitelist (the "invented icon" failure class became a
+lookup), and the judge prompt carries a fluency/drill calibration so
+speed_tap/memory_flip/lightning_round/flash_match/count_objects/measure_read
+are scored as automaticity practice (no leakage, story-grounded, meaningful
+items) rather than failed for not demanding multi-step reasoning.
 **Budget:** `FORGE_MAX_TOKENS_PER_RUN` + `FORGE_MAX_USD_PER_RUN` kill-switches
 checked before every call; every call logged to `runs/<id>/ledger.jsonl`
 (provider, model, tokens, est. USD). **Concurrency:** small pool
@@ -290,6 +310,37 @@ exercise in-lesson sequencing) proves every stage — text generation, gates,
 judging, translation, image generation, audio narration, and every Core/
 frontend endpoint — end to end, for a fraction of a real course's cost,
 before trusting the model to plan on its own at scale.
+
+### §4b Content quality — the CREATIVE bar (`src/pipeline/contentPlaybook.ts`)
+
+The deterministic gates and the schema enforce *correctness*; the content
+playbook enforces *value* — the answer to the 2026-07-23 QA verdict that
+exercises were mechanically valid but boring ("estúpidas, no aportan valor").
+It is one shared module injected into BOTH the `write` author (as its creative
+brief + age-tier reasoning ceiling) and the `review` judge (as binary,
+checkable engagement signals), so the same Duolingo/Brilliant-level bar the
+author aims for is the bar the judge rejects against — a boring-but-correct
+lesson now fails `cognitive_engagement`/`pedagogy` and loops or fails, instead
+of shipping.
+
+Core principles (each is a scoreable judge signal): **application over
+definition-recall** (make the kid USE a concept in a decision, never recite
+it); **concrete-before-abstract, faded** (grounded object → icon → symbol; the
+number is the last rung); **guided discovery** (let them attempt/decide first,
+reveal the rule in feedback — Brilliant-style); **a decision with a stake +
+a curiosity gap** (SDT autonomy; Loewenstein info-gap); **distractors tagged to
+a specific misconception** (each wrong option diagnostic, its misconception in
+`rationale_md`); **elaborated, outcome-neutral feedback** (Shute — teach the
+WHY, shown right or wrong, short and concrete); and a **per-tier abstraction
+ceiling** (Piaget: no profit/interest/percent/future-value for tier1 6-7;
+change-making & needs-vs-wants for tier2 8-11; profit/buying-to-sell/interest
+for tier3 11-13). Sources: retrieval practice & testing effect (Roediger;
+Sana & Yan interleaving), desirable difficulties (Bjork), concreteness fading
+(Fyfe & Nathan), formative feedback (Shute 2008), self-determination theory
+(Deci & Ryan), curiosity info-gap (Loewenstein), children's economic cognition
+(U. Wisconsin / GoHenry age milestones), Duolingo & Brilliant published design
+philosophy. The playbook text is deliberately tight — it ships in every write
+and review prompt, so every line must change what the model produces.
 
 ## §5 Providers
 

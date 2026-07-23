@@ -19,7 +19,7 @@ validate (catalog/) → plan → write → gate → review → localize → imag
 - `src/catalog/` — Zod schemas + loader for `taxonomy.yaml` / `facts.yaml` / `catalog.yaml` / `adventures/*.yaml`. `npm run catalog:check [-- <path>]`.
 - `src/contract/` — a **copy** of `frontend/src/lesson-engine`'s Zod contract (schemaBase + the 8 families' `schema.ts` + the composed `schema.ts`). See "Contract-copy parity rule" below.
 - `src/providers/` — raw-`fetch` clients behind one chokepoint per provider (`deepseek.ts`, `qwen.ts`, `gemini.ts` for images), transport retry (`retry.ts`, jittered backoff, 429/5xx/network only), and the usage ledger (`usage.ts`, budget kill switches).
-- `src/pipeline/` — `plan.ts` (blueprint→skeleton + deterministic `planRepair`), `write.ts` (skeleton→document, corrective retries + per-segment salvage), `gates.ts` (the 7 deterministic gates — incl. gate 7 generation-quality: icon whitelist, quality-map scale, cell-key format), `review.ts` (Qwen judge + revise loop), `localize.ts` (string-freeze translation), `images.ts` (Gemini + filebase upload), `publish.ts` (split + Vault upsert), `checkpoint.ts` + `run.ts` + `../cli.ts` (orchestration).
+- `src/pipeline/` — `plan.ts` (blueprint→skeleton + deterministic `planRepair`), `write.ts` (skeleton→document, corrective retries + per-segment salvage + `stripNullValues`/`repairDocument` sanitizers + the FULL icon whitelist in-prompt), `gates.ts` (the 7 deterministic gates — incl. gate 7 generation-quality: icon whitelist, quality-map scale, cell-key format), `review.ts` (Qwen judge + revise loop, fluency/drill calibration), `localize.ts` (string-freeze translation), `images.ts` (Gemini + filebase upload), `publish.ts` (split + Vault upsert), `checkpoint.ts` + `run.ts` + `../cli.ts` (orchestration — incl. `FORGE_SLOT_ATTEMPTS` outer per-slot regen-from-scratch retries, the mass-generation convergence knob).
 - `src/vault/restClient.ts` — service-role PostgREST client for Vault writes, mirrors `backend/src/services/supabaseRest.ts`.
 
 ## Invariants that bite here
@@ -48,6 +48,10 @@ Catalog content (`curriculum/<course-slug>/*.yaml`) is **human-reviewed content 
 - Loads + cross-validates them (`src/catalog/loader.ts`): fact_refs resolve, slugs are unique per parent, themes/tiers/families are in `taxonomy.yaml`'s closed vocabulary, and quota deviations (4 sagas/adventure, 6 topics/saga, 4 lessons/topic) are **warnings**, not errors.
 
 Never hand-edit curriculum YAML from this package's code — if `catalog:check` reports a content problem, that's a finding to report to whoever is authoring that file, not something to patch programmatically.
+
+## Content quality — the CREATIVE bar (`src/pipeline/contentPlaybook.ts`)
+
+The gates + schema enforce CORRECTNESS; the playbook enforces VALUE. `contentPlaybook.ts` is ONE module injected into both `write.ts` (author creative brief + `tierReasoningGuidance`) and `review.ts` (judge binary engagement signals), so the author's bar and the judge's bar are identical. It exists because the 2026-07-23 manual QA found exercises mechanically valid but boring ("estúpidas, no aportan valor"). Core rules: application-not-recall, concrete-before-abstract (faded), guided discovery, a decision-with-a-stake premise, distractors tagged to a specific misconception, elaborated outcome-neutral feedback, and a per-tier abstraction ceiling (no profit/interest/percent for tier1). Research-grounded — see COURSE_ENGINE.md §4b for the source list. When you touch write/review prompts, keep the playbook injected; when you touch the playbook, it changes EVERY generation, so re-read §4b first.
 
 ## Lessons from the first real run (2026-07-13) — read before ANY pipeline change
 

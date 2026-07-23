@@ -24,6 +24,8 @@ import { TYPE_TO_SCHEMA, GRADED_TYPES } from '../contract/registry.js';
 import { shapeExample } from './shapeExample.js';
 import type { LessonLocale } from '../contract/core/types.js';
 import { runAllGates, type GateContext } from './gates.js';
+import { ICON_PALETTE } from './generationQuality.js';
+import { CONTENT_PLAYBOOK, tierReasoningGuidance } from './contentPlaybook.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExhaustedError } from './correctiveRetry.js';
 
 const MAX_WRITE_ATTEMPTS = 4;
@@ -88,19 +90,23 @@ const BASE_HARD_RULES = [
   'Whenever you write `explanation_md` (optional, but if present): at least 40 characters, AND it must contain a specific number, OR one of dina/liruf/rho/zara by name, OR a word/phrase that also appears in that same segment\'s `payload` — a generic "¡Muy bien! Elegiste la opción correcta." is REJECTED.',
   'explanation_md is OUTCOME-NEUTRAL: it is shown after both correct AND incorrect attempts, so it must TEACH the concept, never assume success. Never open it with "¡Exacto!", "¡Correcto!", "¡Muy bien!", "¡Así es!" or similar — state the fact/why directly (e.g. "El vaso cuesta 5 pesos porque…").',
   'NEVER leak the answer: the `prompt_md`, `hints`, and `meta.objectives` must NOT state or spell out the correct choice/number/word. Hints scaffold the thinking ("piensa en cuánto cuesta cada vaso"), they do not give the answer ("la respuesta es 5"). The kid must reason to the answer.',
-  'The engine is TAP-TO-PLACE everywhere. Never write "arrastra"/"arrastrar"/"drag" in any prompt or hint — say "toca" (tap). Do NOT rely on option ORDER either (the engine shuffles options/columns/token banks): never write "elige la primera opción" or author the correct option always first.',
+  'The engine is TAP-TO-PLACE for every placement type EXCEPT sort_buckets/group_sets (which also support real dragging). For sort_buckets/group_sets, "arrastra"/"drag" OR "toca"/"tap" are both fine. For EVERY OTHER type (order_steps, match_pairs, build_sentence, etc.) never write "arrastra"/"arrastrar"/"drag" — say "toca" (tap). Do NOT rely on option ORDER either (the engine shuffles options/columns/token banks): never write "elige la primera opción" or author the correct option always first.',
   'best_decision / would_you_rather / story_branch / dialogue_choice `qualities` are on a 0-100 scale (the BEST choice ≈ 90-100, a poor choice ≈ 0-30) — NEVER a 0-1 scale, and never all zeros. The correct answer must be able to reach a passing score.',
   'compare_table segments ONLY: `answer.cells` keys use the "<row_id>:<col_id>" COLON form (e.g. "proveedor-a:precio") — never an underscore or any other separator; the player only ever submits colon keys.',
-  'icon / art.icon / ask_icon values MUST be REAL Material Symbols Outlined names (e.g. savings, storefront, local_cafe, calculate, lightbulb, scale, emoji_events) — never invented names like "lemonade", "piggy_bank", "coin", "guitar" or "calendar" (they render as raw text). When unsure, prefer a plain, common glyph.',
+  'icon / art.icon / ask_icon / a_icon / b_icon values MUST come from the ALLOWED ICONS list included below — never any other name, never an invented one ("lemonade", "piggy_bank", "counter_1" all fail validation and kill the lesson). When unsure, prefer a plain, common glyph from the list.',
   'fill_blank segments ONLY: `payload.text_md` MUST contain a `{{1}}`, `{{2}}`… marker (matching each `answer.gaps[].gap` number, 1-indexed, in order) at the exact point each blank belongs — one marker per gap, no exceptions.',
   'savings_goal segments ONLY: OMIT `answer.correct` entirely — the grader computes it automatically from `payload.goal`/`payload.weekly_options`. If you do include it, every key must be the exact string form of one of the `weekly_options` numbers (e.g. "20"), never a label like "weeks".',
   'picture_choice segments ONLY: NEVER invent `payload.options[].image_url` (no "https://example.com/..." or any other placeholder) — OMIT it entirely so the real image-generation stage fills it in; `icon` is the only field you provide for the image.',
+  'order_steps segments ONLY: if EVERY entry in `payload.items` belongs in the sequence, OMIT `payload.slots` entirely. If you include a distractor item that should NOT be placed (e.g. an extra step that doesn\'t belong), you MUST set `payload.slots` to the exact count of items that DO belong — which must equal `answer.order.length` exactly. Getting this wrong makes the exercise unwinnable (every submission scores 0). rank_choices and timeline_order have NO distractor support — `answer.order` there must include EVERY item/event, no exceptions.',
+  'memory_flip segments ONLY: every pair needs `a_icon` AND `b_icon` (real Material Symbols, one per side) — NEVER invent `a_image_url`/`b_image_url` (OMIT them; the image stage fills them in). Each pair\'s a_md/b_md match must be UNIQUE within the segment: no other pair may share an equivalent value on either side, or two different pairs become interchangeably "correct" and the fixed-slot match breaks.',
   'equation_builder segments ONLY: each `answer.accepted` entry is a SPACE-SEPARATED SEQUENCE OF TOKEN IDS from `payload.tokens` (e.g. "t1 t3 t2" where t1.text="2", t3.text="+", t2.text="3") — NEVER the rendered equation text like "2+3=5". The token texts, concatenated in that order, must evaluate arithmetically to `payload.target_result` (it is re-executed). Do NOT include an "=" token: the sequence is only the left-hand expression.',
   'pattern_complete segments ONLY: `answer.correct` keys are the ZERO-BASED missing-slot indexes as digit strings ("0", and "1" when missing_slots=2) — never icon names, option ids, or labels like "slot1"; values are ids from `payload.options`.',
   'story_branch segments ONLY: EVERY node needs at least 1 entry in `choices` — an ending node uses a single choice with `next: null` (e.g. {"id":"fin","text_md":"Fin de la historia","next":null}); never an empty choices array.',
   '`emotion` fields (story_dialogue lines, story_scene, story_branch nodes) are OPTIONAL — if you write one it MUST be EXACTLY one of: neutral, happy, excited, thinking, surprised, encouraging, proud (never any other word, e.g. never "sad"/"confused"/"worried"/"curious"). If none of those fit, OMIT the field entirely rather than inventing one.',
+  'NEVER embed an acting/stage direction inside any SPOKEN text field (prompt_md, story dialogue text_md, story_scene body_md, explanation_md, recap_md, hints) — e.g. "¡Vamos! (con entusiasmo)", "(sonríe)", "(smiles)", "(pausa)". These get read aloud verbatim by the TTS and break the narration. Delivery/emotion goes in the STRUCTURED `emotion`/`action` fields only. A parenthetical in spoken text is allowed ONLY when it carries real content (a number, a clarifying example): "(5 pesos)", "(limones, vasos)" are fine; "(con voz suave)" is not.',
+  'Write math as words when it is meant to be READ ALOUD in prose ("cinco más cinco"), and as digits+symbols only inside dedicated math widgets (equation_builder tokens, number fields). In spoken text, "+", "=", "%", "×", "÷", "$" are auto-spoken in the lesson\'s language by the audio pipeline, but prefer words in narrative prose for a natural read.',
   'Never write `explanation_md` (or any *_md field) as an empty string `""` — if you have nothing real to add, OMIT the field entirely; an empty string always fails validation.',
-  'NEVER emit `audio_segment_id` or `narrator` set to null — OMIT these fields entirely if unused (audio_segment_id is stamped later by Echo; narrator is optional). `null` always fails validation.',
+  'NEVER emit ANY optional field as `null` — OMIT it entirely instead. This includes `rationale_md` (on a correct option, just leave it out — only WRONG options need it), `audio_segment_id`, `narrator`, `image_url`, `emotion`, `action`, `hints`, `title`. A literal `null` ALWAYS fails validation; the field being absent is how you say "not set".',
   '`tint` fields are ONE of EXACTLY: primary, accent, success, warning, delight — never a color word like "yellow"/"blue"/"green" or any other value.',
   'robot_path `payload.commands` entries are EXACTLY one of: forward, left, right — never "up"/"down"/"move" or any other token.',
   'interest_peek segments ONLY: if `prediction.kind` is "choice", the answer is `correct_option_id` alone — OMIT `value`/`tolerance` entirely. If `prediction.kind` is "slider", the answer is `value` + `tolerance`, and `tolerance` MUST be a positive number greater than 0 (never 0) — pick something proportional to the values in play, e.g. 1-5 units.',
@@ -131,7 +137,9 @@ function buildHardRules(ctx: PlanContext): string {
 function buildWriteMessages(input: WriteInput, factsBlock: string, issues: string | undefined) {
   const system =
     'You are Forge, the WRITE stage of a financial-literacy lesson generator for children (LittleFounders). ' +
-    'You expand an approved segment skeleton into a complete, gradeable lesson document.';
+    'You expand an approved segment skeleton into a complete, gradeable lesson document. ' +
+    'Your job is not just to satisfy the schema — it is to design exercises a child genuinely WANTS to do, at ' +
+    'Duolingo/Brilliant quality: concrete, relatable, decision-driven, never a dry recall drill. Follow the CONTENT PLAYBOOK.';
 
   const skeletonText = input.skeleton.segments
     .map((s, i) => `${i + 1}. type="${s.type}" — ${s.brief}`)
@@ -169,7 +177,11 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     : '';
 
   const user = [
-    'HARD RULES:',
+    CONTENT_PLAYBOOK,
+    '',
+    `AGE-TIER REASONING CEILING for THIS lesson — ${tierReasoningGuidance(input.ctx.tier)}`,
+    '',
+    'HARD RULES (mechanical constraints — the playbook above is the quality bar; these are the non-negotiable format rules):',
     buildHardRules(input.ctx),
     '',
     'LESSON CONTEXT:',
@@ -185,6 +197,11 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     '',
     'FACTS (the ONLY source of numbers, besides pure arithmetic):',
     factsBlock,
+    '',
+    // The model used to GUESS icon names from thin air (invented "counter_1",
+    // "lemonade", "piggy_bank" — each one kills the lesson at gate 7). Giving
+    // it the actual whitelist converts that failure class into a lookup.
+    `ALLOWED ICONS (the complete whitelist — every icon-valued field must use one of these): ${[...ICON_PALETTE].join(', ')}`,
     '',
     'SEGMENT SKELETON (expand each into a full segment, in order):',
     skeletonText,
@@ -209,6 +226,105 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
   }
 
   return messages;
+}
+
+/**
+ * Recursively drops object keys whose value is literally `null`. DeepSeek
+ * stubbornly emits `null` for optional fields it means to omit
+ * (`rationale_md` on a correct option, `audio_segment_id`, `narrator`,
+ * `emotion`…) — and does it AGAIN on every corrective retry even with the
+ * Zod error fed back and a hard rule forbidding it (observed live 2026-07-23:
+ * a quiz_mcq failed all 4 write attempts + salvage + last-resort on the same
+ * two nulls). Fighting the model is futile; sanitizing is deterministic. A
+ * `null` on an OPTIONAL field becomes "absent" → valid; a `null` on a REQUIRED
+ * field becomes "missing" → still a Zod error, correctly. Arrays keep their
+ * length (elements recurse). This runs BEFORE every schema check.
+ */
+/**
+ * Keys where `null` is SEMANTIC, not "model meant to omit": story_branch's
+ * `choices[].next` (null = ending node — the schema REQUIRES the explicit
+ * null; stripping it produced "expected string, received undefined" and
+ * exhausted every write retry on story_branch lessons before this list
+ * existed), and `hearts` (null = cheer mode). Never strip these.
+ */
+const SEMANTIC_NULL_KEYS = new Set(['next', 'hearts']);
+
+export function stripNullValues(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(stripNullValues);
+  if (node !== null && typeof node === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+      if (value === null && !SEMANTIC_NULL_KEYS.has(key)) continue;
+      out[key] = value === null ? null : stripNullValues(value);
+    }
+    return out;
+  }
+  return node;
+}
+
+/**
+ * Deterministic content repairs for constraints the model reliably fumbles
+ * even with the rule spelled out and the gate message fed back (same
+ * "sanitize, don't argue" philosophy as stripNullValues).
+ *
+ * balance_scale: the puzzle is only solvable when SOME subset of
+ * `payload.weights` sums exactly to the left pan's total. DeepSeek picks
+ * plausible-looking weights that miss the sum ~often enough to kill slots
+ * (observed live 2026-07-23: a whole lesson died on `no subset of weights
+ * sums to left_fixed total 8`). When no subset works we overwrite the FIRST
+ * weight's value with the exact left-pan total — a single-weight solution
+ * always exists after that, every other weight stays as an authored
+ * distractor, and the answer key is state-checked (recomputed), so nothing
+ * else needs patching.
+ */
+export function repairDocument(node: unknown): unknown {
+  const doc = node as { segments?: unknown } | null;
+  if (!doc || !Array.isArray(doc.segments)) return node;
+  for (const seg of doc.segments as Array<Record<string, unknown>>) {
+    if (seg?.type === 'balance_scale') repairBalanceScale(seg);
+    else if (seg?.type === 'interest_peek') repairInterestPeek(seg);
+  }
+  return node;
+}
+
+function repairBalanceScale(seg: Record<string, unknown>): void {
+  const payload = seg.payload as { left_fixed?: Array<{ value?: unknown }>; weights?: Array<{ value?: unknown }> } | undefined;
+  const left = Array.isArray(payload?.left_fixed) ? payload.left_fixed : [];
+  const weights = Array.isArray(payload?.weights) ? payload.weights : [];
+  const values = weights.map((w) => (typeof w?.value === 'number' ? w.value : NaN));
+  if (left.length === 0 || weights.length === 0 || values.some(Number.isNaN)) return;
+  const leftSum = left.reduce((acc, e) => acc + (typeof e?.value === 'number' ? e.value : 0), 0);
+  // subset-sum over ≤8 small weights — brute force is fine
+  let solvable = false;
+  for (let mask = 1; mask < 1 << values.length && !solvable; mask++) {
+    let sum = 0;
+    for (let i = 0; i < values.length; i++) if (mask & (1 << i)) sum += values[i]!;
+    if (Math.abs(sum - leftSum) < 1e-9) solvable = true;
+  }
+  if (!solvable && weights[0]) weights[0].value = leftSum;
+}
+
+/**
+ * interest_peek constraints the model fumbles even with the rule spelled out
+ * (observed live: `periods: 1` and `tolerance: 0`, both schema-fatal after
+ * every retry). periods < 2 → 2, with `answer.value` recomputed via the SAME
+ * compound formula gate 3 re-executes (principal·(1+rate/100)^periods) so the
+ * fact gate stays green; tolerance ≤ 0 → ~5% of the computed value (min 1).
+ */
+function repairInterestPeek(seg: Record<string, unknown>): void {
+  const payload = seg.payload as { principal?: unknown; rate_pct?: unknown; periods?: unknown } | undefined;
+  const answer = seg.answer as { value?: unknown; tolerance?: unknown } | undefined;
+  if (!payload || typeof payload.principal !== 'number' || typeof payload.rate_pct !== 'number') return;
+  if (typeof payload.periods === 'number' && payload.periods < 2) {
+    payload.periods = 2;
+    if (answer && typeof answer.value === 'number') {
+      answer.value = Math.round(payload.principal * (1 + payload.rate_pct / 100) ** 2 * 100) / 100;
+    }
+  }
+  if (answer && typeof answer.tolerance === 'number' && answer.tolerance <= 0) {
+    const base = typeof answer.value === 'number' ? Math.abs(answer.value) : payload.principal;
+    answer.tolerance = Math.max(1, Math.round(base * 0.05));
+  }
 }
 
 interface SalvageOutcome {
@@ -299,8 +415,8 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
           if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output (unparseable):', raw);
           return { ok: false, issues: lastIssues };
         }
-        lastRawJson = json.value;
-        const parsed = lessonDocumentSchema.safeParse(json.value);
+        lastRawJson = repairDocument(stripNullValues(json.value));
+        const parsed = lessonDocumentSchema.safeParse(lastRawJson);
         if (!parsed.success) {
           lastIssues = formatZodIssues(parsed.error.issues, WRITE_ISSUE_TRUNCATE);
           if (process.env.FORGE_DEBUG_WRITE) console.error('DEBUG raw write output:', JSON.stringify(json.value, null, 2));
@@ -341,7 +457,8 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
   );
   const json = safeJsonParse(result.content);
   if (json.ok) {
-    const parsed = lessonDocumentSchema.safeParse(json.value);
+    const sanitized = repairDocument(stripNullValues(json.value));
+    const parsed = lessonDocumentSchema.safeParse(sanitized);
     if (parsed.success) {
       return { document: parsed.data, attempts: MAX_WRITE_ATTEMPTS + 1, salvaged: false, droppedSegments: 0 };
     }

@@ -12,7 +12,7 @@ import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } 
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { reviewLesson } from './review.js';
-import { localizeLesson } from './localize.js';
+import { localizeLesson, translateTitle } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
 import { resolveRegister, type Register } from './register.js';
@@ -308,7 +308,11 @@ async function processSlot(
         topic: {
           slug: slot.topic.slug,
           position: slot.topic.position,
-          title: { 'en-US': slot.topic.title_es, 'es-MX': slot.topic.title_es, 'pt-BR': slot.topic.title_es },
+          title: {
+            'es-MX': slot.topic.title_es,
+            'en-US': await translateTitle(slot.topic.title_es, 'en-US', { ledger }),
+            'pt-BR': await translateTitle(slot.topic.title_es, 'pt-BR', { ledger }),
+          },
           conceptMd: slot.topic.concept,
           learningObjective: { 'en-US': slot.topic.learning_objective, 'es-MX': slot.topic.learning_objective, 'pt-BR': slot.topic.learning_objective },
           keyVocabulary: slot.topic.key_vocabulary,
@@ -374,7 +378,22 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
       if (stoppedOnBudget) return;
-      const outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+      // Outer per-slot attempts (FORGE_SLOT_ATTEMPTS): a judge rejection or
+      // write exhaustion resets the slot and regenerates it FROM SCRATCH — a
+      // fresh draw converges far better than more revise cycles on the same
+      // bad draft. BudgetExceededError still aborts the whole run (rethrown
+      // by processSlot), so retries can never blow past the kill-switches.
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+      let attempt = 1;
+      while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
+        attempt++;
+        console.warn(`[forge] slot ${slot.slotId} failed (attempt ${attempt - 1}/${config.FORGE_SLOT_ATTEMPTS}) — regenerating from scratch: ${outcome.error?.slice(0, 160)}`);
+        // setSlotState mutates the shared checkpoint object in place (the same
+        // object every worker holds) — no reassignment needed or allowed here.
+        setSlotState(checkpoint, slot.slotId, 'pending', { data: undefined });
+        await store.save(checkpoint);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+      }
       if (outcome.state === 'published') published.push(outcome.slotId);
       else if (outcome.state === 'failed') failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error' });
     });

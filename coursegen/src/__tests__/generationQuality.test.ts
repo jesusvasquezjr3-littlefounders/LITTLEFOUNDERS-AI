@@ -76,17 +76,156 @@ describe('gate 7: generation quality', () => {
     });
   });
 
-  describe('drag verbs (engine is tap-to-place)', () => {
-    it('flags a prompt that says "arrastra"', () => {
-      const d = docWith([{ id: 's1', type: 'sort_buckets', payload: {} }]);
-      (d.segments[0] as { prompt_md: string }).prompt_md = 'Arrastra cada ficha a su caja';
+  describe('drag verbs (tap-to-place types only)', () => {
+    it('flags a prompt that says "arrastra" on a tap-only type (order_steps)', () => {
+      const d = docWith([{ id: 's1', type: 'order_steps', payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b', 'c'] } }]);
+      (d.segments[0] as { prompt_md: string }).prompt_md = 'Arrastra cada ficha en orden';
       expect(runGenerationQualityGate(d).some((p) => p.message.includes('tap-to-place'))).toBe(true);
     });
 
     it('accepts a prompt that says "toca"', () => {
-      const d = docWith([{ id: 's1', type: 'sort_buckets', payload: {} }]);
-      (d.segments[0] as { prompt_md: string }).prompt_md = 'Toca cada ficha y su caja';
+      const d = docWith([{ id: 's1', type: 'order_steps', payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b', 'c'] } }]);
+      (d.segments[0] as { prompt_md: string }).prompt_md = 'Toca cada ficha en orden';
       expect(runGenerationQualityGate(d)).toHaveLength(0);
+    });
+
+    it('does NOT flag "arrastra" on sort_buckets / group_sets (they support real drag now)', () => {
+      const buckets = docWith([{ id: 's1', type: 'sort_buckets', payload: {} }]);
+      (buckets.segments[0] as { prompt_md: string }).prompt_md = 'Arrastra cada compra a su grupo';
+      expect(runGenerationQualityGate(buckets).some((p) => p.message.includes('tap-to-place'))).toBe(false);
+
+      const groups = docWith([{ id: 's1', type: 'group_sets', payload: {} }]);
+      (groups.segments[0] as { prompt_md: string }).prompt_md = 'Arrastra cada cosa a su conjunto';
+      expect(runGenerationQualityGate(groups).some((p) => p.message.includes('tap-to-place'))).toBe(false);
+    });
+  });
+
+  describe('memory_flip icon fields + duplicate pairs', () => {
+    it('recognizes a_icon/b_icon (not just "icon") for the whitelist check', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'memory_flip',
+          payload: { pairs: [{ a_md: 'Ahorrar', a_icon: 'not_a_real_icon', b_md: 'Guardar', b_icon: 'savings' }] },
+        }]),
+      );
+      expect(problems.some((p) => p.message.includes('"not_a_real_icon"'))).toBe(true);
+    });
+
+    it('flags two pairs that share an equivalent value (ambiguous match)', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'memory_flip',
+          payload: {
+            pairs: [
+              { a_md: 'Ahorrar', a_icon: 'savings', b_md: 'Guardar dinero', b_icon: 'savings' },
+              { a_md: 'Gastar', a_icon: 'payments', b_md: 'guardar DINERO', b_icon: 'payments' }, // accent/case-insensitive dupe of pair 0's b_md
+            ],
+          },
+        }]),
+      );
+      expect(problems.some((p) => p.message.includes('shares the value'))).toBe(true);
+    });
+
+    it('accepts a memory_flip segment where every card value is unique', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'memory_flip',
+          payload: {
+            pairs: [
+              { a_md: 'Ahorrar', a_icon: 'savings', b_md: 'Guardar dinero', b_icon: 'account_balance_wallet' },
+              { a_md: 'Gastar', a_icon: 'shopping_cart', b_md: 'Comprar algo', b_icon: 'payments' },
+              { a_md: 'Donar', a_icon: 'volunteer_activism', b_md: 'Regalar para ayudar', b_icon: 'handshake' },
+            ],
+          },
+        }]),
+      );
+      expect(problems).toHaveLength(0);
+    });
+  });
+
+  describe('order-family slot/answer length parity', () => {
+    it('flags order_steps with a distractor item but no `slots` (unwinnable — every submission is length-6 vs a length-5 key)', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'order_steps',
+          payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }, { id: 'd', text_md: 'd' }, { id: 'e', text_md: 'e' }, { id: 'distractor', text_md: 'x' }] },
+          answer: { order: ['a', 'b', 'c', 'd', 'e'] },
+        }]),
+      );
+      expect(problems.some((p) => p.message.includes('order_steps') && p.message.includes('every submission would score 0'))).toBe(true);
+    });
+
+    it('accepts order_steps with a distractor WHEN `slots` matches answer.order.length', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'order_steps',
+          payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }, { id: 'd', text_md: 'd' }, { id: 'e', text_md: 'e' }, { id: 'distractor', text_md: 'x' }], slots: 5 },
+          answer: { order: ['a', 'b', 'c', 'd', 'e'] },
+        }]),
+      );
+      expect(problems).toHaveLength(0);
+    });
+
+    it('accepts order_steps with no distractors and no `slots` field', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{
+          id: 's1',
+          type: 'order_steps',
+          payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] },
+          answer: { order: ['a', 'b', 'c'] },
+        }]),
+      );
+      expect(problems).toHaveLength(0);
+    });
+
+    it('flags rank_choices / timeline_order when answer.order omits an item (no distractor support there)', () => {
+      const rank = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'rank_choices', payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b'] } }]),
+      );
+      expect(rank.some((p) => p.message.includes('rank_choices'))).toBe(true);
+      const timeline = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'timeline_order', payload: { events: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b'] } }]),
+      );
+      expect(timeline.some((p) => p.message.includes('timeline_order'))).toBe(true);
+    });
+
+    it('flags build_sentence when `slots` does not match answer.order.length', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'build_sentence', payload: { tokens: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }], slots: 2 }, answer: { order: ['a'] } }]),
+      );
+      expect(problems.some((p) => p.message.includes('build_sentence'))).toBe(true);
+    });
+  });
+
+  describe('graded segments must carry an answer key', () => {
+    it('flags a graded type (quiz_mcq) with no answer', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] } }]),
+      );
+      expect(problems.some((p) => p.message.includes('NO answer key'))).toBe(true);
+    });
+
+    it('accepts keyless-by-design graded types (memory_flip, savings_goal) and content types', () => {
+      const memory = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'memory_flip', payload: { pairs: [{ a_md: 'a', a_icon: 'savings', b_md: 'b', b_icon: 'payments' }] } }]),
+      );
+      expect(memory.some((p) => p.message.includes('NO answer key'))).toBe(false);
+      const story = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: 'x' } }]),
+      );
+      expect(story.some((p) => p.message.includes('NO answer key'))).toBe(false);
+    });
+
+    it('accepts a graded type WITH an answer', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] }, answer: { correct_option_id: 'a' } }]),
+      );
+      expect(problems.some((p) => p.message.includes('NO answer key'))).toBe(false);
     });
   });
 

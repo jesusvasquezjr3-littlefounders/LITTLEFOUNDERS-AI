@@ -9,6 +9,7 @@
 // makes the correct answer unpassable, a cell key the player can never match).
 
 import type { LessonDocumentParsed } from '../contract/schema.js';
+import { GRADED_TYPES } from '../contract/registry.js';
 import type { GateProblem } from './gates.js';
 
 /**
@@ -75,7 +76,7 @@ function collectIcons(node: unknown, out: Set<string>): void {
   if (typeof node === 'object') {
     for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
       if (key === 'answer') continue; // answer keys never carry renderable icons
-      if ((key === 'icon' || key === 'ask_icon') && typeof value === 'string') out.add(value);
+      if ((key === 'icon' || key === 'ask_icon' || key.endsWith('_icon')) && typeof value === 'string') out.add(value);
       else collectIcons(value, out);
     }
   }
@@ -163,14 +164,112 @@ function cellKeyCheck(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * order_steps/rank_choices/timeline_order/build_sentence all grade by
+ * comparing the player's submitted order against `answer.order` with a
+ * scorer (kendall/footrule/positional) that returns 0 outright when the two
+ * arrays differ in LENGTH — and the player is forced (by canSubmit) to
+ * submit exactly the type's "required slot count", never more or less. If
+ * that slot count doesn't equal `answer.order.length`, EVERY submission
+ * scores 0: the exercise is unwinnable regardless of what the player does.
+ * This is a strict equality, not a >= : too few slots is just as broken.
+ */
+function requiredSlotCount(segment: { type: string; payload: unknown }): number | null {
+  const p = segment.payload as Record<string, unknown>;
+  if (segment.type === 'order_steps') {
+    const items = Array.isArray(p.items) ? p.items.length : null;
+    const slots = typeof p.slots === 'number' ? p.slots : items;
+    return slots;
+  }
+  if (segment.type === 'rank_choices') {
+    return Array.isArray(p.items) ? p.items.length : null;
+  }
+  if (segment.type === 'timeline_order') {
+    return Array.isArray(p.events) ? p.events.length : null;
+  }
+  if (segment.type === 'build_sentence') {
+    return typeof p.slots === 'number' ? p.slots : null;
+  }
+  return null;
+}
+
+function orderLengthCheck(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const required = requiredSlotCount(segment);
+    if (required === null) continue;
+    const order = (segment.answer as { order?: unknown } | undefined)?.order;
+    if (!Array.isArray(order)) continue;
+    if (order.length !== required) {
+      problems.push({
+        gate: 7,
+        segmentId: segment.id,
+        message: `${segment.type}: the player must submit exactly ${required} entries (items/slots), but answer.order has ${order.length} — every submission would score 0 regardless of correctness. Make answer.order's length match the required slot count exactly.`,
+      });
+    }
+  }
+  return problems;
+}
+
+/** Accent/case/whitespace-insensitive text key, for duplicate detection only. */
+function normalizeForDupeCheck(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * memory_flip is a classic 1:1 Concentration game: card A only ever matches
+ * the ONE card B authored in the same pair row. If two DIFFERENT pairs in the
+ * same segment share an equivalent value on either side, a card the player
+ * correctly matches to the "other" occurrence gets rejected — the QA-reported
+ * "found a valid pair, marked wrong" defect. Catch it at generation time.
+ */
+function memoryFlipDuplicatePairCheck(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'memory_flip') continue;
+    const pairs = (segment.payload as { pairs?: Array<{ a_md?: unknown; b_md?: unknown }> }).pairs;
+    if (!Array.isArray(pairs)) continue;
+    const seen = new Map<string, number>();
+    pairs.forEach((pair, i) => {
+      for (const side of [pair.a_md, pair.b_md]) {
+        if (typeof side !== 'string') continue;
+        const key = normalizeForDupeCheck(side);
+        if (!key) continue;
+        const firstIndex = seen.get(key);
+        if (firstIndex !== undefined && firstIndex !== i) {
+          problems.push({
+            gate: 7,
+            segmentId: segment.id,
+            message: `memory_flip pair ${i} shares the value "${side}" with pair ${firstIndex} — matching either card to the other's partner would be a valid-looking match the fixed-slot grader rejects. Make every card value unique within the segment.`,
+          });
+        } else {
+          seen.set(key, i);
+        }
+      }
+    });
+  }
+  return problems;
+}
+
 // Drag verbs across the three locales. The Lesson Engine is tap-to-place
-// EVERYWHERE (chips have draggable=false), so a prompt/hint that says "drag"
-// tells the kid to do something that gets no response.
+// EVERYWHERE (chips have draggable=false) EXCEPT the classification types
+// sort_buckets/group_sets, which added real pointer-drag (a chip can be
+// dragged into a bucket, tap still works as the fallback). For every OTHER
+// placement type a prompt/hint that says "drag" tells the kid to do something
+// that gets no response, so it's still flagged.
 const DRAG_STEMS = ['arrastr', 'arraste', 'arrastar', 'drag '];
+const DRAG_ENABLED_TYPES = new Set(['sort_buckets', 'group_sets']);
 
 function dragVerbCheck(document: LessonDocumentParsed): GateProblem[] {
   const problems: GateProblem[] = [];
   for (const segment of document.segments) {
+    if (DRAG_ENABLED_TYPES.has(segment.type)) continue; // drag is real here — the verb is accurate
     const texts: string[] = [segment.prompt_md, ...(segment.hints ?? [])];
     for (const text of texts) {
       const lower = (text ?? '').toLowerCase();
@@ -179,10 +278,38 @@ function dragVerbCheck(document: LessonDocumentParsed): GateProblem[] {
         problems.push({
           gate: 7,
           segmentId: segment.id,
-          message: `text says "${hit.trim()}" but the engine is tap-to-place — use "toca"/"tap"/"toque", never a drag verb`,
+          message: `text says "${hit.trim()}" but the engine is tap-to-place for ${segment.type} — use "toca"/"tap"/"toque", never a drag verb`,
         });
         break;
       }
+    }
+  }
+  return problems;
+}
+
+// Graded types that legitimately carry NO answer key. memory_flip derives its
+// score from flips; savings_goal's key is computed by the grader from payload.
+const KEYLESS_GRADED_TYPES = new Set(['memory_flip', 'savings_goal']);
+
+/**
+ * Every graded segment MUST carry an answer key — a keyed type without one is
+ * ungradeable at runtime (Core refuses to grade, the kid is stuck forever on
+ * a "Comprobar" that can never succeed). Found live 2026-07-23: a regenerated
+ * story-dialogue lesson shipped an extra quiz_mcq with no `answer` in all 3
+ * locales; Zod allows it (answer is contract-optional — client documents are
+ * served stripped), so only a gate can catch it.
+ */
+function gradedAnswerKeyCheck(document: LessonDocumentParsed, gradedTypes: readonly string[]): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (!gradedTypes.includes(segment.type) || KEYLESS_GRADED_TYPES.has(segment.type)) continue;
+    const answer = (segment as { answer?: unknown }).answer;
+    if (answer === undefined || answer === null || (typeof answer === 'object' && Object.keys(answer as object).length === 0)) {
+      problems.push({
+        gate: 7,
+        segmentId: segment.id,
+        message: `graded segment type "${segment.type}" has NO answer key — it can never be graded; author the \`answer\` object for it`,
+      });
     }
   }
   return problems;
@@ -195,5 +322,8 @@ export function runGenerationQualityGate(document: LessonDocumentParsed): GatePr
     ...qualityScaleCheck(document),
     ...cellKeyCheck(document),
     ...dragVerbCheck(document),
+    ...memoryFlipDuplicatePairCheck(document),
+    ...orderLengthCheck(document),
+    ...gradedAnswerKeyCheck(document, GRADED_TYPES),
   ];
 }

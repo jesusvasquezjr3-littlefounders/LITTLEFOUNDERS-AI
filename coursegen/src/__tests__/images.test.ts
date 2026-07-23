@@ -25,7 +25,54 @@ function docWithPictureChoice() {
   });
 }
 
+function docWithMemoryFlip() {
+  return buildDocument({
+    segments: [
+      ...buildDocument().segments,
+      {
+        id: 'mf1',
+        type: 'memory_flip',
+        prompt_md: 'Encuentra las parejas.',
+        difficulty: 1,
+        xp: 10,
+        payload: {
+          pairs: [
+            { a_md: 'Ahorrar', a_icon: 'savings', b_md: 'Guardar dinero', b_icon: 'account_balance_wallet' },
+            { a_md: 'Gastar', a_icon: 'shopping_cart', b_md: 'Comprar algo', b_icon: 'payments' },
+          ],
+        },
+      } as never,
+    ],
+  });
+}
+
 describe('illustrateSegments', () => {
+  it('generates and uploads an image per memory_flip card side missing image_url', async () => {
+    const doc = docWithMemoryFlip();
+    const generate = vi.fn().mockResolvedValue({ pngBuffer: Buffer.from('fake-png') });
+    const upload = vi.fn().mockResolvedValue({ id: 'x', url: 'https://filebase.example/files/card.png' });
+
+    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+
+    expect(result.generated).toBe(4); // 2 pairs × 2 sides
+    const memorySegment = result.document.segments.find((s) => s.type === 'memory_flip')!;
+    const pairs = (memorySegment.payload as { pairs: { a_image_url?: string; b_image_url?: string }[] }).pairs;
+    expect(pairs.every((p) => p.a_image_url?.startsWith('https://') && p.b_image_url?.startsWith('https://'))).toBe(true);
+  });
+
+  it('leaves memory_flip icons as the fallback when illustration fails, without failing the lesson', async () => {
+    const doc = docWithMemoryFlip();
+    const generate = vi.fn().mockRejectedValue(new Error('gemini-image HTTP 429: quota exceeded, limit: 0'));
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    const result = await illustrateSegments(doc, {}, { generate: generate as never });
+
+    expect(result.generated).toBe(0);
+    const pairs = (result.document.segments.find((s) => s.type === 'memory_flip')!.payload as { pairs: { a_image_url?: string }[] }).pairs;
+    expect(pairs.every((p) => p.a_image_url === undefined)).toBe(true);
+    warn.mockRestore();
+  });
+
   it('skips cleanly and returns the original document unmodified when --no-images is passed', async () => {
     const doc = docWithPictureChoice();
     const generate = vi.fn();

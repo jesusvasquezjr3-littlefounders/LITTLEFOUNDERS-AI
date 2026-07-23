@@ -1,6 +1,7 @@
 // images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Generates
 // illustrations for visual-option segments missing `image_url` (today:
-// `picture_choice`), uploads them to filebase, and patches the url back in.
+// `picture_choice`, `memory_flip`), uploads them to filebase, and patches
+// the url back in.
 // Skips CLEANLY (never fails the run, never fails the SLOT) on ANY
 // provider-level failure — `--no-images`, no API key, quota/billing
 // exhausted (429 with limit:0 is a real, non-transient case we hit live),
@@ -80,6 +81,13 @@ interface PictureChoiceOption {
   image_url?: string;
 }
 
+interface MemoryFlipPair {
+  a_md: string;
+  a_image_url?: string;
+  b_md: string;
+  b_image_url?: string;
+}
+
 export async function illustrateSegments(
   document: LessonDocumentParsed,
   options: IllustrateOptions = {},
@@ -93,32 +101,55 @@ export async function illustrateSegments(
   const cloned = structuredClone(document) as LessonDocumentParsed;
   let generated = 0;
 
-  for (const segment of cloned.segments) {
-    if (segment.type !== 'picture_choice') continue;
-    const payload = segment.payload as { options: PictureChoiceOption[] };
-    for (const option of payload.options) {
-      if (option.image_url) continue;
-      try {
-        const image = await generate({
-          prompt: `${option.label} — context: ${segment.prompt_md}`,
-          operation: 'image',
-          ledger: deps.ledger,
-        });
-        const uploaded = await upload(image.pngBuffer, `${segment.id}-${option.id}.png`);
-        option.image_url = uploaded.url;
-        generated++;
-      } catch (err) {
-        if (err instanceof ProviderNotConfiguredError) {
-          // No key at all — clean skip, return the UNMODIFIED original document
-          // (icons stay the fallback); no point trying the remaining options.
-          return { document, generated: 0, skippedReason: 'not-configured' };
+  // Returns the uploaded url, or undefined when this ONE illustration failed
+  // (its icon stays the fallback — never fails the segment). Rethrows
+  // ProviderNotConfiguredError so the caller can bail the whole document.
+  async function tryIllustrate(prompt: string, filename: string): Promise<string | undefined> {
+    try {
+      const image = await generate({ prompt, operation: 'image', ledger: deps.ledger });
+      const uploaded = await upload(image.pngBuffer, filename);
+      generated++;
+      return uploaded.url;
+    } catch (err) {
+      if (err instanceof ProviderNotConfiguredError) throw err;
+      // Any other provider failure (quota/billing, HTTP, network, timeout,
+      // or an unexpected shape from the API) is this ONE illustration's
+      // problem, not the lesson's — leave its icon as the fallback.
+      console.warn(`images: skipping illustration for ${filename} — ${err instanceof Error ? err.message : String(err)}`);
+      return undefined;
+    }
+  }
+
+  try {
+    for (const segment of cloned.segments) {
+      if (segment.type === 'picture_choice') {
+        const payload = segment.payload as { options: PictureChoiceOption[] };
+        for (const option of payload.options) {
+          if (option.image_url) continue;
+          const url = await tryIllustrate(`${option.label} — context: ${segment.prompt_md}`, `${segment.id}-${option.id}.png`);
+          if (url) option.image_url = url;
         }
-        // Any other provider failure (quota/billing, HTTP, network, timeout,
-        // or an unexpected shape from the API) is this ONE option's problem,
-        // not the lesson's — leave its icon as the fallback and keep going.
-        console.warn(`images: skipping illustration for ${segment.id}/${option.id} — ${err instanceof Error ? err.message : String(err)}`);
+      } else if (segment.type === 'memory_flip') {
+        const payload = segment.payload as { pairs: MemoryFlipPair[] };
+        for (const [i, pair] of payload.pairs.entries()) {
+          if (!pair.a_image_url) {
+            const url = await tryIllustrate(`${pair.a_md} — context: ${segment.prompt_md}`, `${segment.id}-${i}a.png`);
+            if (url) pair.a_image_url = url;
+          }
+          if (!pair.b_image_url) {
+            const url = await tryIllustrate(`${pair.b_md} — context: ${segment.prompt_md}`, `${segment.id}-${i}b.png`);
+            if (url) pair.b_image_url = url;
+          }
+        }
       }
     }
+  } catch (err) {
+    if (err instanceof ProviderNotConfiguredError) {
+      // No key at all — clean skip, return the UNMODIFIED original document
+      // (icons stay the fallback); no point trying the rest of the document.
+      return { document, generated: 0, skippedReason: 'not-configured' };
+    }
+    throw err;
   }
 
   return { document: cloned, generated };

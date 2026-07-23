@@ -59,3 +59,35 @@ export async function vaultUpsert<T>(table: string, rows: readonly unknown[], on
   }
   return res.body;
 }
+
+/**
+ * Service-role read. `pathWithQuery` is the full PostgREST path INCLUDING the
+ * leading `/table` and any `?select=…`/filter query string (mirrors
+ * backend/src/services/supabaseRest.ts, where every read composes the filter
+ * into the path). Returns `[]` on an empty result — never null.
+ */
+export async function vaultSelect<T>(pathWithQuery: string): Promise<T[]> {
+  const res = await vaultRest<T[]>(pathWithQuery);
+  if (!res.ok) {
+    throw new Error(`vault select "${pathWithQuery}" failed: HTTP ${res.status}`);
+  }
+  return res.body ?? [];
+}
+
+/**
+ * Service-role PATCH by filter. `pathWithFilter` MUST carry an `eq.`/`in.`
+ * filter (PostgREST refuses an unfiltered PATCH) — the caller composes it into
+ * the path. `patch` becomes the request body verbatim; only the columns it
+ * names are written (PostgREST leaves the rest untouched), which is what makes
+ * a document-only backfill safe for the sibling `audio`/`answer_keys` columns.
+ */
+export async function vaultPatch(pathWithFilter: string, patch: unknown): Promise<void> {
+  const res = await vaultRest<unknown>(pathWithFilter, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) {
+    throw new Error(`vault patch "${pathWithFilter}" failed: HTTP ${res.status}`);
+  }
+}

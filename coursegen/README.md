@@ -61,3 +61,13 @@ See `.env.example` for the full list with defaults. Groups: author/judge provide
 |---|---|
 | `npm run catalog:check [-- <path>]` | Validates `curriculum/<course>/*.yaml` against `src/catalog/schema.ts` + cross-references (fact_refs, slug uniqueness, taxonomy membership, quota warnings). No path = every course under `curriculum/`. |
 | `npm run contract:check` | Diffs `src/contract/**` against its `frontend/src/lesson-engine` originals (import-line + whitespace/semicolon normalized) — the no-workspaces parity gate. |
+
+### Image backfill (`npm run images:backfill -- --course <slug> [--dry-run]`)
+
+**Operator-triggered only.** Fills in missing illustrations on lessons that are **already published or in review**, without regenerating any content. For every `lesson_document` of a published-or-review lesson in the course, it runs the same images stage as generation (`illustrateSegments`) over the STORED `document` — adding `image_url` to `picture_choice` options and `memory_flip` card sides that lack one — and PATCHes **only** the `document` column back.
+
+- Starts from the stored `document` and only ADDS `image_url`; the `audio` column (and any per-segment audio stamps inside the document) and `answer_keys` are never read or written.
+- No `GEMINI_API_KEY` → a clean full skip (`GEMINI_API_KEY not configured`); per-option failures (429 `limit:0` quota, HTTP, network) are logged and skipped — icons stay the fallback (§8d).
+- A document that gains zero images is not patched (no-op write avoidance).
+- `--dry-run` runs the full illustration pass but performs no Vault writes.
+- Prints a per-document line plus a final total (documents scanned / patched / images generated / skipped). Exit 0 on any clean run (even all-skipped / quota-exhausted); exit 1 only on an unexpected error. Needs Vault (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) and, to actually generate, Gemini + filebase credentials.

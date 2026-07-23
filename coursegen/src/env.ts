@@ -40,6 +40,11 @@ const Env = z.object({
   FORGE_MAX_TOKENS_PER_RUN: z.coerce.number().int().positive().default(5_000_000),
   FORGE_MAX_USD_PER_RUN: z.coerce.number().positive().default(50),
   FORGE_CONCURRENCY: z.coerce.number().int().min(1).max(8).default(2),
+  // Outer per-slot attempts: on a judge rejection or write exhaustion the slot
+  // is reset and regenerated FROM SCRATCH (a fresh draw converges far better
+  // than revising a bad one — measured on the 2026-07-23 QA regen). Mass
+  // generation needs this to reach ~100% published without operator babysitting.
+  FORGE_SLOT_ATTEMPTS: z.coerce.number().int().min(1).max(5).default(3),
 
   // ---- cost table overrides (USD per 1K tokens / per image), env-overridable ----
   COST_DEEPSEEK_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.00027),
