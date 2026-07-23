@@ -74,6 +74,8 @@ const SYSTEM_PROMPT = [
   LF_VISUAL_IDENTITY,
   'Hard rules: never put readable text, letters, numbers, logos or watermarks in the image; never depict anything scary, violent, or unsafe for children; keep ONE clear subject.',
   'QUANTITIES ARE PICTORIAL: qwen-image loves rendering captions, so NEVER write an amount, price, or label as something to display ("10 pesos", "2 vasos"). Translate every quantity into visual composition instead — "two golden coins side by side", "a small stack of three coins". If the context mentions prices, show the OBJECTS, never the numbers.',
+  "NEVER NAME DENOMINATIONS: never write a currency amount or denomination anywhere in your prompt, not even inside quotation marks — \"'1 peso' coin\" WILL be engraved verbatim onto the coin. Distinguish coins ONLY by size, color, or finish: 'one small copper coin and two larger golden coins'.",
+  'NO TEXT-CARRYING PROPS: never mention signs, signboards, banners, price tags, labels, chalkboards, or menus. When a lemonade stand appears, describe only its awning, wooden table, and props, and state explicitly that the stand has no sign — otherwise the model invents one and fills it with a fake wordmark.',
   `Reply with STRICT JSON only, no prose, shaped exactly: {"prompt": string, "negative": string}. "prompt" <= ${MAX_PROMPT_CHARS} characters. "negative" lists things to avoid (e.g. "text, letters, watermark, logo, blurry, scary").`,
 ].join('\n');
 
@@ -96,7 +98,8 @@ function userMessage(input: JudgeInput): string {
  * judge's own negative can't be trusted to always include them.
  */
 export const BASE_NEGATIVE =
-  'text, letters, words, captions, typography, logo, brand name, wordmark, watermark, signature, signage, labels, numbers overlay';
+  'text, letters, words, captions, typography, logo, brand name, wordmark, watermark, signature, signage, labels, numbers overlay, ' +
+  'sign with writing, signboard text, price tag, chalkboard writing, coin inscriptions, engraved letters, engraved numbers';
 
 /**
  * Appended IN CODE to every final prompt (judge-crafted or fallback) — not

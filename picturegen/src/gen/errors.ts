@@ -6,7 +6,8 @@ export class ImageError extends Error {
       | 'IMAGE_RATE_LIMITED'
       | 'IMAGE_PROVIDER_ERROR'
       | 'IMAGE_BAD_RESPONSE'
-      | 'IMAGE_DOWNLOAD_FAILED',
+      | 'IMAGE_DOWNLOAD_FAILED'
+      | 'IMAGE_VERIFICATION_FAILED',
     message: string,
   ) {
     super(message);

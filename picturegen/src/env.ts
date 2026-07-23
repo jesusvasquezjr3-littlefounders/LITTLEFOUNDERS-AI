@@ -43,6 +43,14 @@ const Env = z.object({
   PICTUREGEN_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   // Max transport attempts per HTTP call (429/5xx retried with jittered backoff).
   PICTUREGEN_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(4),
+
+  // Pictorial verifier — a vision model (same DashScope account) inspects
+  // every freshly generated image for readable text/numerals and triggers a
+  // regeneration when it finds any (see verify/pictorialCheck.ts for why
+  // prompt engineering alone cannot guarantee this). Attempts include the
+  // first generation; 0 disables verification entirely.
+  VERIFY_MODEL: z.string().min(1).default('qwen-vl-plus'),
+  PICTUREGEN_VERIFY_ATTEMPTS: z.coerce.number().int().min(0).max(5).default(3),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

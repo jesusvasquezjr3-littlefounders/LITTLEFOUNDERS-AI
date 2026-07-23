@@ -1,7 +1,9 @@
 import { craftImagePrompt, type PicturePurpose } from '../judge/promptJudge.js';
 import { generateImage } from '../gen/qwenImageClient.js';
+import { verifyPictorial } from '../verify/pictorialCheck.js';
 import { findByHash, insertAsset, pictureAssetHash } from '../cache/pictureAssetsRepo.js';
 import { uploadFile } from '../filebase/client.js';
+import { ImageError } from '../gen/errors.js';
 import { getConfig, judgeApiKey } from '../env.js';
 
 /*
@@ -34,14 +36,23 @@ export interface GeneratePictureResult {
 export interface GeneratePictureDeps {
   craftImagePrompt: typeof craftImagePrompt;
   generateImage: typeof generateImage;
+  verifyPictorial: typeof verifyPictorial;
   findByHash: typeof findByHash;
   insertAsset: typeof insertAsset;
   uploadFile: typeof uploadFile;
 }
 
-const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, findByHash, insertAsset, uploadFile };
+const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, verifyPictorial, findByHash, insertAsset, uploadFile };
 
-/** Bump on any global style change (identity brief / negatives / pictorial clause). v3 = code-enforced PICTORIAL_CLAUSE on every prompt. */
+/**
+ * Bump on any change to the LOOK of generated art (identity brief, palette,
+ * composition rules) — it invalidates the whole cached catalog, which is a
+ * full paid regeneration. Failure-mode hardening (negatives/judge rules that
+ * only exclude defects, plus the pictorial verifier) does NOT bump: cached
+ * images that already conform stay valid, and only the offending rows are
+ * deleted surgically (consumption invariant — never re-pay for good art).
+ * v3 = code-enforced PICTORIAL_CLAUSE on every prompt.
+ */
 export const STYLE_VERSION = 'v3';
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -88,25 +99,49 @@ export async function generatePicture(
     return { url: hit.url, file_id: hit.file_id, prompt: hit.prompt, model: hit.model, cached: true };
   }
 
-  // 3. MISS — art-director judge crafts the prompt (never throws — falls back
-  //    deterministically), then generate.
-  const crafted = await deps.craftImagePrompt(
-    { label: req.label, context: req.context, purpose: req.purpose },
-    { apiBase: config.JUDGE_API_BASE, apiKey: judgeApiKey(config), model: config.JUDGE_MODEL },
-  );
+  // 3+4. MISS — judge → generate → VERIFY, in a loop. The verifier (a vision
+  // model looking at the actual pixels) is what makes the no-text guarantee
+  // mechanical: the first live v3 batch proved the positive prompt always
+  // wins over negatives ("lemonade stand" grew a signboard with a fake
+  // wordmark; quoted denominations got engraved onto coins). The judge runs
+  // INSIDE the loop — it is nondeterministic, so each retry is a genuinely
+  // new composition. Verifier outage ('unavailable') accepts the image
+  // unverified: never block generation on the inspector.
+  const maxTries = Math.max(1, config.PICTUREGEN_VERIFY_ATTEMPTS);
+  let crafted!: Awaited<ReturnType<typeof craftImagePrompt>>;
+  let image!: Awaited<ReturnType<typeof generateImage>>;
+  for (let attempt = 1; attempt <= maxTries; attempt += 1) {
+    crafted = await deps.craftImagePrompt(
+      { label: req.label, context: req.context, purpose: req.purpose },
+      { apiBase: config.JUDGE_API_BASE, apiKey: judgeApiKey(config), model: config.JUDGE_MODEL },
+    );
 
-  // 4. Generate, then ALWAYS download + re-upload (the provider URL is temporary).
-  const image = await deps.generateImage(
-    { prompt: crafted.prompt, negativePrompt: crafted.negative },
-    {
-      apiBase: config.IMAGE_API_BASE,
-      apiKey: config.IMAGE_API_KEY,
-      model: config.IMAGE_MODEL,
-      size: config.IMAGE_SIZE,
-      timeoutMs: config.PICTUREGEN_TIMEOUT_MS,
-      maxAttempts: config.PICTUREGEN_MAX_ATTEMPTS,
-    },
-  );
+    // Generate, then ALWAYS download + re-upload (the provider URL is temporary).
+    image = await deps.generateImage(
+      { prompt: crafted.prompt, negativePrompt: crafted.negative },
+      {
+        apiBase: config.IMAGE_API_BASE,
+        apiKey: config.IMAGE_API_KEY,
+        model: config.IMAGE_MODEL,
+        size: config.IMAGE_SIZE,
+        timeoutMs: config.PICTUREGEN_TIMEOUT_MS,
+        maxAttempts: config.PICTUREGEN_MAX_ATTEMPTS,
+      },
+    );
+
+    if (config.PICTUREGEN_VERIFY_ATTEMPTS === 0) break; // verification disabled
+    const verdict = await deps.verifyPictorial(image.bytes, image.contentType, {
+      apiBase: config.JUDGE_API_BASE,
+      apiKey: judgeApiKey(config),
+      model: config.VERIFY_MODEL,
+    });
+    if (verdict !== 'has_text') break; // clean, or verifier unavailable (accept unverified)
+    if (attempt === maxTries) {
+      // Every attempt rendered text. Fail the request WITHOUT caching — the
+      // caller falls back to its icon, and a later retry regenerates fresh.
+      throw new ImageError('IMAGE_VERIFICATION_FAILED', `image rendered readable text after ${maxTries} attempts`);
+    }
+  }
 
   const upload = await deps.uploadFile(image.bytes, `${hash}.${extFor(image.contentType)}`, image.contentType, 'lesson-images', 'public', {
     filebaseUrl: config.FILEBASE_URL,

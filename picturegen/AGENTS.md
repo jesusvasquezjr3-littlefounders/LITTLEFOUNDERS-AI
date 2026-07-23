@@ -22,12 +22,19 @@ only, constant-time compared.
 ## Cache-first — the core value (non-negotiable)
 
 An identical request must **NEVER** hit the paid image API twice. Every
-generation is keyed by `sha256(model size prompt)` in `picture_assets`
-(UNIQUE `prompt_hash`). The flow is judge → hash → lookup → **HIT returns the
-stored row with zero paid calls**; only a MISS generates. Insert uses
+generation is keyed by `sha256(model size "STYLE_VERSION | purpose | label |
+context")` in `picture_assets` (UNIQUE `prompt_hash`) — the key hashes the
+**REQUEST descriptor, computed BEFORE the judge**, never the judged prompt.
+(The judge is an LLM: two identical requests craft two slightly different
+prompts, so a prompt-keyed cache never hits — caught live on the first smoke
+test.) The flow is hash → lookup → **HIT returns the stored row with zero
+paid calls, judge included**; only a MISS judges + generates. Insert uses
 PostgREST `resolution=ignore-duplicates` + re-select, so two concurrent
-generations of the same prompt can't error or double-pay. This is the whole
+generations of the same request can't error or double-pay. This is the whole
 reason the service exists ("optimizar consumo, no llamar APIs a cada rato").
+`STYLE_VERSION` (service/pictures.ts) bumps ONLY on look changes (a bump =
+full paid catalog regeneration); failure-mode hardening instead deletes the
+offending cached rows surgically.
 
 ## Provider decision — RESOLVED
 
@@ -42,7 +49,8 @@ with header `X-DashScope-Async: enable` and body
 narrow `generateImage()` seam — swapping providers later means replacing that
 one module. Retries ONLY on 429/5xx (jittered backoff 0.5–8s); everything else
 fails fast as a typed `ImageError` (`IMAGE_RATE_LIMITED` / `IMAGE_PROVIDER_ERROR`
-/ `IMAGE_TIMEOUT` / `IMAGE_BAD_RESPONSE` / `IMAGE_DOWNLOAD_FAILED`).
+/ `IMAGE_TIMEOUT` / `IMAGE_BAD_RESPONSE` / `IMAGE_DOWNLOAD_FAILED` /
+`IMAGE_VERIFICATION_FAILED`).
 
 ## The art-director judge
 
@@ -54,6 +62,29 @@ for the app UI). The judge returns strict JSON `{ prompt (≤800 chars),
 negative? }`. It **never blocks generation**: on any failure (HTTP error, or
 unparseable JSON after 2 corrective attempts) it degrades to a deterministic
 fallback prompt `${label} — ${context.slice(0,160)}. ${LF_VISUAL_IDENTITY}`.
+Every final prompt (judged or fallback) exits through `finalizePrompt()`,
+which appends the code-enforced `PICTORIAL_CLAUSE` (no text/letters/numerals),
+and `mergeNegative()` always prefixes `BASE_NEGATIVE` — neither is trusted to
+the judge.
+
+## The pictorial verifier — the mechanical no-text guarantee
+
+Prompt engineering alone cannot make `qwen-image` text-free (its signature
+strength IS text rendering): the first live v3 batch grew a fake wordmark on
+a "lemonade stand" and engraved quoted denominations onto coins despite a
+prompt demanding "absolutely no text". So `src/verify/pictorialCheck.ts` has a
+vision model (`VERIFY_MODEL`, default `qwen-vl-plus`, same DashScope account)
+look at the ACTUAL PIXELS of every fresh generation and answer: any readable
+letters/words/numerals? (A bare `$` on a coin is acceptable iconography.)
+On `has_text` the whole judge → generate pass re-runs (the judge is
+nondeterministic, so each retry is a new composition), up to
+`PICTUREGEN_VERIFY_ATTEMPTS` (default 3, 0 disables); exhaustion throws
+`IMAGE_VERIFICATION_FAILED` and caches **nothing** (the consumer's icon
+fallback covers the slot; a later retry regenerates fresh). A verifier
+outage (`unavailable`) accepts the image unverified — never block generation
+on the inspector. Judge hard rules complement it: never name denominations
+(even quoted — they get engraved verbatim), never mention text-carrying props
+(signs, banners, price tags, chalkboards, menus).
 
 ## Invariants that bite here
 

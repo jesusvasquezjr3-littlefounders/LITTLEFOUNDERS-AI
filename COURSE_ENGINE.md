@@ -258,10 +258,15 @@ images    OPTIONAL per slot: visual segments (picture_choice options,
           into a detailed prompt carrying the LF illustration identity
           (flat kid-friendly vector style, papaya/navy palette, complete
           background scene — the frontend renders inside a rounded tile);
-          generation = official Qwen `qwen-image` on DashScope; the asset
-          lands in Depot and is indexed in Vault `picture_assets`
-          (sha256(model+size+prompt)) so an IDENTICAL request never hits the
-          paid API twice. Forge just embeds the returned public URL.
+          generation = official Qwen `qwen-image` on DashScope; a vision
+          verifier (qwen-vl) then inspects the ACTUAL pixels for readable
+          text/numerals and regenerates on a hit (qwen-image's text bias
+          cannot be prompted away — mechanical guarantee, up to 3 attempts);
+          the clean asset lands in Depot and is indexed in Vault
+          `picture_assets`, keyed on the REQUEST descriptor
+          (sha256(model+size+style_version+purpose+label+context), computed
+          BEFORE the judge) so an IDENTICAL request never hits the paid API
+          twice. Forge just embeds the returned public URL.
           Skippable (--no-images) / PICTUREGEN_URL unset = clean skip —
           icons remain the fallback, NEVER emojis. (Gemini discarded
           2026-07-23: quota-0 on every Google image model.)

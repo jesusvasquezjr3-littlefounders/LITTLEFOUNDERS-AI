@@ -64,6 +64,8 @@ it in the lesson. `purpose` ∈ `lesson_option | memory_card | scene | generic`
 | `FILEBASE_INTERNAL_KEY` | — | Required; sent as `x-internal-api-key` to Depot |
 | `PICTUREGEN_TIMEOUT_MS` | `120000` | Overall wall clock per image (submit + poll) |
 | `PICTUREGEN_MAX_ATTEMPTS` | `4` | Max transport attempts per HTTP call (429/5xx retried) |
+| `VERIFY_MODEL` | `qwen-vl-plus` | Vision model that inspects every fresh image for readable text/numerals |
+| `PICTUREGEN_VERIFY_ATTEMPTS` | `3` | Judge→generate→verify attempts before `IMAGE_VERIFICATION_FAILED`; `0` disables |
 
 ## Cost warning
 

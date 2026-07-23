@@ -95,14 +95,15 @@ describe('POST /api/v1/pictures — cache HIT', () => {
 });
 
 describe('POST /api/v1/pictures — cache MISS', () => {
-  it('runs the full judge → generate → upload → insert flow with the correct hash', async () => {
+  it('runs the full judge → generate → verify → upload → insert flow with the correct hash', async () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text, watermark' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([1, 2, 3]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValue('clean');
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
-    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, uploadFile, insertAsset } } });
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
     const res = await request(app)
       .post('/api/v1/pictures')
       .set('x-internal-api-key', KEY)
@@ -140,10 +141,11 @@ describe('POST /api/v1/pictures — cache MISS', () => {
 
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([7]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValue('clean');
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
-    const app = createApp({ pictures: { generatePicture: { findByHash, generateImage, uploadFile, insertAsset } } });
+    const app = createApp({ pictures: { generatePicture: { findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
     const res = await request(app)
       .post('/api/v1/pictures')
       .set('x-internal-api-key', KEY)
@@ -155,6 +157,64 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     expect(res.body.data.prompt).toContain(LF_VISUAL_IDENTITY.slice(0, 300));
     expect(findByHash).toHaveBeenCalledWith(fbHash);
     expect(generateImage).toHaveBeenCalled();
+  });
+
+  it('regenerates from a FRESH judge prompt when the verifier finds text, then succeeds', async () => {
+    const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
+    const findByHash = vi.fn().mockResolvedValue(null);
+    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValueOnce('has_text').mockResolvedValueOnce('clean');
+    const uploadFile = vi.fn().mockResolvedValue(uploadResult);
+    const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
+
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const res = await request(app).post('/api/v1/pictures').set('x-internal-api-key', KEY).send({ label: 'a jar of coins' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.cached).toBe(false);
+    // The judge re-runs each attempt (it is nondeterministic — a retry is a new composition).
+    expect(craftImagePrompt).toHaveBeenCalledTimes(2);
+    expect(generateImage).toHaveBeenCalledTimes(2);
+    expect(verifyPictorial).toHaveBeenCalledTimes(2);
+    // Only the CLEAN image is uploaded and cached.
+    expect(uploadFile).toHaveBeenCalledTimes(1);
+    expect(insertAsset).toHaveBeenCalledTimes(1);
+  });
+
+  it('fails with IMAGE_VERIFICATION_FAILED and caches NOTHING when every attempt renders text', async () => {
+    const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
+    const findByHash = vi.fn().mockResolvedValue(null);
+    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValue('has_text');
+    const uploadFile = vi.fn();
+    const insertAsset = vi.fn();
+
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const res = await request(app).post('/api/v1/pictures').set('x-internal-api-key', KEY).send({ label: 'a jar of coins' });
+
+    expect(res.status).toBe(502);
+    expect(res.body).toEqual({ data: null, error: { code: 'IMAGE_VERIFICATION_FAILED', message: expect.any(String) } });
+    // PICTUREGEN_VERIFY_ATTEMPTS default = 3 attempts, all verified, none stored.
+    expect(generateImage).toHaveBeenCalledTimes(3);
+    expect(verifyPictorial).toHaveBeenCalledTimes(3);
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(insertAsset).not.toHaveBeenCalled();
+  });
+
+  it('accepts the image unverified when the verifier is unavailable (never-block)', async () => {
+    const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
+    const findByHash = vi.fn().mockResolvedValue(null);
+    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValue('unavailable');
+    const uploadFile = vi.fn().mockResolvedValue(uploadResult);
+    const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
+
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const res = await request(app).post('/api/v1/pictures').set('x-internal-api-key', KEY).send({ label: 'a jar of coins' });
+
+    expect(res.status).toBe(200);
+    expect(generateImage).toHaveBeenCalledTimes(1);
+    expect(insertAsset).toHaveBeenCalledTimes(1);
   });
 
   it('returns a 502 IMAGE_PROVIDER_ERROR envelope when the provider hard-fails', async () => {
