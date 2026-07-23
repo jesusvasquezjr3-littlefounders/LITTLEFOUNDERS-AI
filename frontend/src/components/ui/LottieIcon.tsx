@@ -25,7 +25,12 @@ export function LottieIcon({ name, value = 0, activated = false, className }: Lo
   // Compute CSS filter based on states
   let filterClass = '';
   if (isZero) {
-    filterClass = 'brightness-0';
+    // A dimmed, desaturated icon — NOT brightness-0. Pure black turned the
+    // gold-coin into a solid black disc on the results screen (the single
+    // most-photographed defect in the QA course), because a zero XP delta is
+    // the normal state on any replay. Faded reads as "nothing gained", not
+    // "broken".
+    filterClass = 'grayscale opacity-40';
   } else if (isBlackAndWhite) {
     filterClass = 'grayscale';
   } else if (isBlueStreak) {
