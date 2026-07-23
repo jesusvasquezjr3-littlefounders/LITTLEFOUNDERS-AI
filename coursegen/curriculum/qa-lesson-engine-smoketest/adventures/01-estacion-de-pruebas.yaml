@@ -73,8 +73,8 @@ sagas:
             forced_types: [concept_reveal]
           - position: 5
             slug: checkpoint
-            micro_objective: "Respirar y repasar: ya tienes meta (80 pesos), producto (limonada a 5 pesos) y sabes qué es costo y ganancia. ¿Cómo te sientes para abrir el puesto?"
-            narrative_beat: "Dina pregunta a Liruf cómo se siente antes del gran día de apertura."
+            micro_objective: "Checkpoint de respiro, sin pregunta ni cuenta (no se califica): repasar juntos la Gran Idea — la guitarra de 80 pesos, la limonada a 5 el vaso, y que la ganancia es lo que sobra tras pagar el costo y va al frasco de la guitarra. Cerrar con un enganche: ¿ya se siente la guitarra más cerca?"
+            narrative_beat: "Es la noche antes de abrir. Dina se sienta junto a Liruf y su frasco vacío de la guitarra. En vez de un examen, señalan las tres cosas que ya tienen listas: la meta pegada en la pared (guitarra, 80 pesos), el cartel de la limonada (5 pesos el vaso) y el secreto que aprendieron — que de cada vaso, lo que sobra después del costo es la ganancia que empuja el frasco hacia los 80. Liruf respira: la idea ya no es solo un sueño, mañana se prueba de verdad. Dina sonríe y le pregunta qué tan cerca siente ya esa guitarra."
             difficulty: 1
             suggested_families: [story]
             forced_types: [checkpoint]
@@ -132,8 +132,8 @@ sagas:
             forced_types: [yes_no_cases]
           - position: 7
             slug: speed-tap
-            micro_objective: "Atrapar rápido solo las MONEDAS entre los objetos que pasan (monedas sí; botones y corcholatas no): reconocer el dinero de un vistazo."
-            narrative_beat: "¡Se volcó el frasco! Ayuda a Liruf a rescatar sus monedas antes de que rueden."
+            micro_objective: "Seguir la pregunta de ayer ('¿este gasto ayuda al puesto?') pero ahora contra el reloj: mientras Rho pasa volando tarjetas de compras, tocar solo las que hacen vender MÁS limonada (más limones, vasos, azúcar, hielo, un buen cartel) y dejar pasar los caprichos (calcomanía, dulce, juguete)."
+            narrative_beat: "El frasco de la caja solo tiene unos pesos sueltos, así que Liruf no puede comprarlo todo. Rho llega con un montón de tarjetas y las pasa volando frente a él: '¡Rápido, agarra solo lo que ayude a vender más limonada!' Vuelan más limones, una bolsa de vasos, azúcar, hielo y un cartel llamativo... revueltos con una calcomanía de dinosaurio, un dulce y un juguetito que a Liruf le encantan. Cada capricho que atrape gasta de más y aleja la guitarra de 80 pesos; cada limón que deje pasar es limonada que mañana no podrá vender."
             difficulty: 1
             suggested_families: [choice]
             forced_types: [speed_tap]
@@ -184,8 +184,8 @@ sagas:
             forced_types: [estimate_slider]
           - position: 5
             slug: count-objects
-            micro_objective: "Contar los limones que quedan en la canasta para saber si alcanzan para mañana."
-            narrative_beat: "Inventario nocturno: Liruf cuenta limones a la luz de una lamparita."
+            micro_objective: "Contar de un vistazo cuántas monedas cayeron del frasco volcado, sin recontar: cada moneda es un vaso de 5 pesos que Liruf ya vendió hoy. Ese número es la venta del día que se suma al frasco de la guitarra de 80. El niño cuenta las monedas; el total nunca aparece escrito en el texto."
+            narrative_beat: "Se volcó el frasco de las ventas: las monedas quedaron entre migas de galleta y Liruf necesita el número para cerrar la cuenta antes de dormir. Arma la escena SOLO con íconos reales del catálogo: monedas 'monetization_on' (lo que se cuenta), más galletas 'cookie' y un vaso 'local_drink' como distractores que NO se cuentan. Nunca inventes íconos ('limon', 'counter_1'). Ni el prompt ni las pistas dicen el total; el niño lo descubre contando. En la explicación liga el conteo al dinero: cada moneda fue un vaso de 5 pesos, así que ese número es lo que Liruf suma hoy hacia los 80 de la guitarra."
             difficulty: 1
             suggested_families: [input]
             forced_types: [count_objects]
@@ -215,8 +215,8 @@ sagas:
             forced_types: [match_pairs]
           - position: 2
             slug: memory-flip
-            micro_objective: "Encontrar los pares escondidos de monedas iguales (1 con 1, 5 con 5, 10 con 10): reconocer las monedas de México."
-            narrative_beat: "Zara inventa un juego de memoria con las monedas de la caja."
+            micro_objective: "Emparejar de memoria cada producto con las monedas que lo pagan, usando los precios del puesto: galleta = 3 (1+2), vaso chico = 5, jarra grande = 20 (10+10). Cada par une el producto con su pago exacto, para grabarse de memoria la lista de precios de la caja."
+            narrative_beat: "Antes de abrir, Zara reta a Liruf: '¿Ya te sabes los precios de ayer?'. Con las cartas de la caja bocabajo, quien empareje primero cada producto con las monedas que lo pagan será el cajero del primer cliente. El autor DEBE reutilizar los precios ya vistos (galleta 3, vaso chico 5, jarra 20) y armar 3-4 pares producto↔pago con íconos claros. Nada de emparejar una moneda con otra igual: cada par exige recordar CUÁNTO cuesta cada cosa, no que dos dibujos se parezcan. El premio por recordar rápido: cobrar sin equivocarte con la fila."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [memory_flip]
@@ -229,8 +229,8 @@ sagas:
             forced_types: [sort_buckets]
           - position: 4
             slug: order-steps
-            micro_objective: "Poner en orden los pasos de la limonada: exprimir limones → agregar agua → endulzar → probar → servir."
-            narrative_beat: "Receta revuelta: las tarjetas de pasos se cayeron y hay que reordenarlas."
+            micro_objective: "Ordenar las 4 compras del mercado por prioridad de venta, no por receta: primero lo que deja ganar dinero hoy (limones, luego vasos), después lo que mejora la venta (azúcar) y al final el lujo (calcomanías). Con solo 20 pesos, un orden malo deja a Liruf sin limones y sin abrir el puesto."
+            narrative_beat: "Segundo día del puesto: ayer Liruf abrió y juntó sus primeros pesos rumbo a la guitarra de 80. Hoy vuelve al mercado con solo 20 pesos y una lista revuelta de 4 compras: limones, vasos, azúcar y calcomanías. Zara lo frena: 'en mal orden, el dinero se acaba antes de lo importante.' Hay que acomodar las tarjetas de la MÁS necesaria para vender hoy a la que puede esperar. El orden NO se decide como receta, sino preguntando '¿esto me deja ganar dinero hoy?'. Si pone las calcomanías antes que los limones, se queda sin limonada que vender."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [order_steps]
@@ -243,8 +243,8 @@ sagas:
             forced_types: [rank_choices]
           - position: 6
             slug: build-sentence
-            micro_objective: "Armar, palabra por palabra, el letrero del puesto: 'Limonada fría a 5 pesos'."
-            narrative_beat: "Las palabras del cartel están sueltas sobre la mesa; hay que armarlo bonito."
+            micro_objective: "Liruf arma el letrero del combo \"2 vasos por ___ pesos\". Cada vaso cuesta 5, así que el niño DEDUCE el total (2×5=10) y solo con ese número queda fiel el cartel. El banco trae fichas trampa: 5 (olvidó que son dos), 15 (el gasto de Dina) y 20 (el billete). NO reveles el total en el enunciado."
+            narrative_beat: "Sigue la carrera por la guitarra de 80 pesos. Para vender más rápido, Liruf inventa un combo: \"2 vasos por un solo precio\", y Zara le recuerda que un letrero claro vende más... pero uno con el número equivocado regala pesos que le faltan para la meta o espanta clientes. Las fichas de palabras y de números están revueltas en la mesa —incluido un \"15\" que sobró del gasto de Dina— y Liruf no sabe cuánto poner. El ejercicio debe pedir al niño calcular el precio de los dos vasos y armar el cartel correcto; el feedback explica por qué ese número y qué pasaría con cada ficha equivocada."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [build_sentence]
@@ -257,8 +257,8 @@ sagas:
             forced_types: [timeline_order]
           - position: 8
             slug: pattern-complete
-            micro_objective: "Completar el patrón de la fila de vasos del mostrador (chico, grande, chico, grande…): descubrir qué sigue."
-            narrative_beat: "Zara acomoda los vasos con un patrón y deja huecos a propósito."
+            micro_objective: "Continuar la escalera de precios del mostrador —vaso chico $5, mediano $10, grande $15 y vuelta a empezar— descubriendo qué tamaño va en el hueco: el que sigue SUBIENDO de valor (más grande = más pesos), no el más barato ni un objeto que no sea vaso."
+            narrative_beat: "Mañana de apertura: los precios ya están puestos —chico $5, mediano $10, grande $15—. Zara forma los vasos como una escalerita (chico, mediano, grande, chico, mediano…) para que el cliente vea que más grande cuesta más, y deja UN hueco a propósito: '¿Qué vaso va aquí, Liruf, sin romper la escalera?'. Si pone el equivocado, los clientes se confunden con los precios y se van. El ejercicio DEBE usar los tres tamaños como piezas distintas y dar 3+ opciones: el que sigue más señuelos que enseñen (el vaso más barato 'por ahorrar', un limón que ni es vaso). No reveles la respuesta en la pista."
             difficulty: 1
             suggested_families: [arrange]
             forced_types: [pattern_complete]
@@ -295,8 +295,8 @@ sagas:
             forced_types: [coin_count]
           - position: 2
             slug: make-change
-            micro_objective: "Dar el cambio correcto: el vaso cuesta 5, pagan con billete de 20 → regresar 15 (10 + 5)."
-            narrative_beat: "La señora del perrito paga con 20 y espera sonriente su cambio."
+            micro_objective: "Aplicar el cambio, no definirlo: un cliente compra 1 vaso de 5 pesos y 1 galleta de 3, paga con billete de 20 y el niño arma el cambio con monedas. NO muestres la resta ni digas \"el cambio es lo que sobra\"; que lo descubra. Cada opción errónea nombra su desliz."
+            narrative_beat: "Segundo día del puesto: la caja ya guarda las primeras monedas rumbo a la guitarra de 80 pesos. Llega don Beto y pide un vaso de limonada y una galleta. Paga con un billete de 20 y estira la mano por su cambio. Liruf sabe el riesgo: dar de más regala monedas de la guitarra; dar de menos, y don Beto no vuelve. El ejercicio debe ocultar la resta y dejar que el niño arme el cambio con monedas; cada opción equivocada nombra el desliz (cobró solo un producto, devolvió el costo en vez del cambio, o juntó mal las monedas)."
             difficulty: 2
             suggested_families: [money]
             forced_types: [make_change]
@@ -323,15 +323,15 @@ sagas:
             forced_types: [price_compare]
           - position: 6
             slug: budget-fit
-            micro_objective: "Armar la compra del día sin pasarse del presupuesto de 20 pesos: elegir qué ingredientes caben."
-            narrative_beat: "Con un billete de 20 en la mano, Liruf recorre el mercado calculando."
+            micro_objective: "Con el único billete de 20 que ganó la caja, Liruf surte el mercado para mañana: DEBE llevar limones y azúcar (sin ellos no hay limonada) y decidir qué extra cabe en lo que sobra. El ejercicio NO puede decir cuáles caben ni dar la suma: el niño la calcula y ve qué le queda antes de pasarse de 20."
+            narrative_beat: "Seguimos en 'La Caja del Dinero': con lo único que dejó la caja de ayer, un billete de 20, Liruf y Dina van con el marchante a resurtir. Marca limones (8) y azúcar (6) como NEED; el resto son tentaciones con precio: hielo (5), popotes (3) y una jarra bonita (8). Stake real: si el carrito pasa de 20 el marchante le hace devolver algo y mañana abre sin lo necesario (adiós avance a la guitarra de 80); si compra la jarra bonita y deja el azúcar, la limonada sale amarga y nadie la compra. El explanation_md debe nombrar esas consecuencias, no solo '¡bien!'."
             difficulty: 3
             suggested_families: [money]
             forced_types: [budget_fit]
           - position: 7
             slug: savings-goal
-            micro_objective: "Calcular cuántas semanas faltan para la guitarra de 80 pesos si Liruf ahorra 20 pesos por semana (4 semanas)."
-            narrative_beat: "Rho saca su calendario: 'si guardas lo mismo cada semana, ¿cuándo llega la guitarra?'"
+            micro_objective: "Decidir qué plan de ahorro le consigue a Liruf la guitarra de 80 pesos a tiempo. De su ganancia puede apartar 10, 20 o 40 pesos por semana. El ejercicio debe pedir cuántas semanas tarda CADA plan (dividir 80, sin contar la respuesta en el enunciado) y compararlas con el concurso en 4 semanas."
+            narrative_beat: "Cierre de La Caja del Dinero: Liruf ya sabe cuánta ganancia le queda por semana tras pagar limones y azúcar. Rho abre su calendario y marca una fecha: el concurso de bandas del barrio es en 4 semanas y Liruf quiere tocar con guitarra propia. Rho ofrece tres planes —apartar 10, 20 o 40 pesos por semana— y pregunta: \"¿cuáles llegan a los 80 a tiempo?\". Autor: NO escribas semanas ni cuentes \"20, 40, 60...\" en el enunciado ni en las pistas; el niño divide 80 entre cada plan y decide. La retroalimentación explica que apartar más cada semana acorta la espera, con la guitarra como premio."
             difficulty: 3
             suggested_families: [money]
             forced_types: [savings_goal]
@@ -344,8 +344,8 @@ sagas:
             forced_types: [fair_trade]
           - position: 9
             slug: interest-peek
-            micro_objective: "Asomarse a un secreto del ahorro: si la alcancía del banco 'agradece' con moneditas extra por esperar, el dinero guardado crece solito con el tiempo."
-            narrative_beat: "La abuela le cuenta a Liruf por qué su dinero en el banco 'trabaja' mientras él duerme."
+            micro_objective: "Decidir si Liruf deja sus 20 pesos en la alcancía que 'da las gracias' con moneditas cada semana o los saca ya. Predecir cuánto tendrá el frasco tras esperar: ni se queda en 20 ni se vuelve enorme — el dinero paciente crece de a poquito rumbo a la guitarra de 80."
+            narrative_beat: "Sigue el hilo de la semana pasada: Rho ya le mostró a Liruf que ahorrando 20 por semana la guitarra de 80 llega en 4 semanas. Hoy le enseña una alcancía que 'agradece la paciencia' con moneditas extra cada semana. El ejercicio debe: (1) plantear la DECISIÓN con algo en juego — dejar los 20 y esperar, o sacarlos ya para un antojo; (2) NO revelar el total: el niño PREDICE y el frasco crece y lo muestra; (3) opciones: 'se queda en 20' (no suma), el total correcto (un poco más de 20) y 'casi el doble' (demasiado); (4) la explicación dice el PORQUÉ: la paciencia sumó moneditas rumbo a la guitarra."
             difficulty: 3
             suggested_families: [money]
             forced_types: [interest_peek]
@@ -420,8 +420,8 @@ sagas:
         lessons:
           - position: 1
             slug: story-branch
-            micro_objective: "Vivir el primer día del puesto eligiendo el camino: ¿precio de 5 o de 50?, ¿sonreír al cliente o ignorarlo? Cada rama enseña una consecuencia."
-            narrative_beat: "El primer día se juega: cada elección de Liruf abre un final distinto."
+            micro_objective: "Elegir el precio de la limonada de HOY pensando en cuánto GANAS de verdad, no solo en cuánto cobras: cada vaso te cuesta 2 pesos hacerlo. ¿Lo dejas en 5, lo bajas a 3 o lo subes a 10? Vive la consecuencia: ni el más caro ni el más barato te acercan más a la guitarra de 80."
+            narrative_beat: "Mediodía de calor: seis vecinos con sed hacen fila en el puesto de Liruf y todo el barrio mira. El ejercicio es UNA sola decisión de precio con tres ramas, y cada rama lleva a su PROPIO final que se cierra ahí mismo (nada de decisiones encadenadas). 5 pesos (el de siempre): los 6 compran, ganas 3 por vaso, buen avance hacia la guitarra. 3 pesos: se acaba volando pero solo ganas 1 por vaso, casi no subes. 10 pesos (el doble): los vecinos hacen mueca y se van a la nieve, te quedas con la jarra llena. El final revela POR QUÉ, conectando con la meta de 80 pesos."
             difficulty: 2
             suggested_families: [storyplay]
             forced_types: [story_branch]
@@ -441,8 +441,8 @@ sagas:
             forced_types: [flash_match]
           - position: 4
             slug: lightning-round
-            micro_objective: "Ronda relámpago de cuentas del puesto: sumas de vasos y cambios simples contra el reloj."
-            narrative_beat: "Hora pico: llegan clientes en fila y las cuentas deben salir al vuelo."
+            micro_objective: "Ronda relámpago en la hora pico: cada cliente pide 1–3 vasos de 5 pesos y paga con 10 o 20; Liruf saca el cambio de memoria antes de que suene el reloj. Es velocidad del cambio ya aprendido: si tarda, el cliente se va y no cae moneda al frasco de la guitarra."
+            narrative_beat: "Es el MISMO primer día: como Liruf vendió a 5 pesos y fue amable, la fila llega a la esquina. Zara canta los pedidos y Liruf cobra al vuelo. El ejercicio debe: (1) 4–6 preguntas rápidas, cada una con cliente nombrado y números reales ('Doña Rosa: 2 vasos, paga con 20'), SIN escribir la operación ni el resultado. (2) Cada opción mala = un error real de cambio: olvidó restar un vaso (sobran 5), devolvió el pago completo, sumó en vez de restar; nunca un número imposible. (3) explanation_md que enseñe el truco: primero suma los vasos, luego resta del pago. Cada acierto acerca la guitarra de 80."
             difficulty: 3
             suggested_families: [storyplay]
             forced_types: [lightning_round]
@@ -486,15 +486,15 @@ sagas:
             forced_types: [debug_hunt]
           - position: 4
             slug: balance-scale
-            micro_objective: "Equilibrar la balanza del trueque: cuántas galletas de 3 pesos igualan el valor de un vaso de 5 más una galleta — hasta que ambos lados valgan lo mismo."
-            narrative_beat: "El trato con el galletero se decide en la balanza de valores."
+            micro_objective: "Equilibrar la balanza del trueque para lograr un trato JUSTO: Liruf da 3 vasos de limonada (5 pesos c/u = 15) y el galletero quiere pagar con galletas de 3 pesos. El niño coloca galletas una por una hasta que ambos platos valgan lo mismo; descubre solo que 5 galletas (15) igualan los 3 vasos."
+            narrative_beat: "El galletero ya no quiere pagar con monedas: propone un trueque y saca su balanza de valores. Liruf recuerda de días pasados que su vaso vale 5 pesos y cada galleta 3. Pone 3 vasos (15) en un plato; el galletero llena el otro de galletas. Si acepta muy pocas, regala limonada y se aleja de su guitarra de 80; si exige de más, se rompe el trato. El ejercicio debe dejar que el niño ponga galletas UNA por una y vea la balanza inclinarse hasta nivelarse en 15 = 15. Ambos platos deben poder sumar lo mismo (subconjunto resoluble); la pista nunca dice el número, la balanza lo enseña."
             difficulty: 3
             suggested_families: [maker]
             forced_types: [balance_scale]
           - position: 5
             slug: measure-read
-            micro_objective: "Leer la marca de la jarra medidora para servir vasos parejos: cada vaso justo hasta la línea, ni de más ni de menos."
-            narrative_beat: "Vasos disparejos causan reclamos; la jarra medidora pone orden."
+            micro_objective: "Leer hasta qué línea subió el líquido en la jarra (200, 250 o 300 ml) para servir vasos parejos de 5 pesos. Como la balanza del trueque quedaba pareja de ambos lados, cada vaso debe llegar a la MISMA marca. El ejercicio NO dice el número: el niño lo lee de la jarra."
+            narrative_beat: "Ayer, en la balanza del trueque, Liruf aprendió que un trato justo queda PAREJO de los dos lados. Hoy un cliente reclama: pagó sus 5 pesos igual que todos, ¡pero su vaso quedó más bajo! Rho llega con la jarra medidora: 'Es la misma idea de la balanza —dice—, la línea decide cuánto es un vaso justo.' Cada vez que sirves hay que LEER hasta qué marca subió el líquido, para que todos los vasos de 5 pesos queden iguales. Vasos parejos, clientes felices; vasos disparejos, dinero y clientes perdidos."
             difficulty: 2
             suggested_families: [maker]
             forced_types: [measure_read]
@@ -543,15 +543,15 @@ sagas:
             forced_types: [story_dialogue, true_false, picture_choice]
           - position: 3
             slug: combo-dinero
-            micro_objective: "Cerrar la caja del día completo: contar las monedas, dar un cambio de 20 y calcular cuántas semanas faltan para los 80 de la guitarra."
-            narrative_beat: "Atardecer de domingo: el gran cierre de caja de la semana."
+            micro_objective: "Cerrar la caja del domingo tras atender todo el día a los clientes que escuchaste: contar las monedas que dejaron para saber cuánto entró, dar su cambio a la última clienta que pagó con billete de 20, y con ese total decidir cuántos domingos más faltan para los 80 de la guitarra."
+            narrative_beat: "Atardecer de domingo. Tras atender y escuchar a los clientes todo el día (los del reto anterior), Liruf y Dina cierran la caja. S1 coin_count: cuenta las monedas que dejaron los clientes hoy (de 1, 5 y 10, suman 20); no reveles el total, se cuenta. S2 make_change: la última clienta paga su vaso de 5 con billete de 20; da su cambio o se va sin volver —no escribas '20 menos 5'. S3 savings_goal: la guitarra cuesta 80 y la alcancía ya guarda 40; si cada domingo junta lo de hoy (20), ¿cuántos domingos más faltan? El niño saca cuánto falta y cuántos domingos caben; no regales el número ni la resta."
             difficulty: 3
             suggested_families: [money]
             forced_types: [coin_count, make_change, savings_goal]
           - position: 4
             slug: combo-arrange-largo
-            micro_objective: "Dejar el puesto listo para mañana: emparejar precios, ordenar la receta, clasificar compras y acomodar la línea del tiempo del día."
-            narrative_beat: "Gran limpieza nocturna: todo el puesto se reorganiza pieza por pieza."
+            micro_objective: "Cerrar el día del puesto RAZONANDO, no adivinando: emparejar cada pago con el cambio que hay que calcular, ordenar cómo se saca la ganancia (costo primero), separar lo que el puesto necesita de lo que puede esperar, y acomodar el día para que la caja nunca se quede sin cambio."
+            narrative_beat: "Atardecer: Liruf y Dina cierran el puesto y todo se revolvió. Vaso = 5 pesos; hoy quedaron 30 pesos en la caja y faltan 4 semanas para la guitarra de 80. (1) Empareja cada pago (10, 20, 6) con el cambio que TÚ calculas. (2) Ordena cómo se saca la ganancia: apartar el costo ANTES de contar lo ganado. (3) Con solo 20 pesos, separa lo que el puesto NECESITA para abrir (limones, vasos) de lo que puede esperar (hielo, calcomanía). (4) Acomoda los momentos del día para que la caja nunca se quede sin cambio: una venta debe entrar antes de cada gasto. Las pistas no revelan el orden ni la respuesta."
             difficulty: 2
             suggested_families: [arrange]
             forced_types: [match_pairs, order_steps, sort_buckets, timeline_order]
@@ -576,8 +576,8 @@ sagas:
             forced_types: [quiz_mcq]
           - position: 2
             slug: repaso-true-false
-            micro_objective: "Confirmar de memoria si es cierto que guardando 20 pesos por semana la guitarra de 80 llega en un mes."
-            narrative_beat: "Rho lanza la última frase del curso para atraparla como cierta o falsa."
+            micro_objective: "Atrapar si es VERDADERO o FALSO: 'Liruf vendió 10 vasos a 5 pesos, entonces ganó 50'. Correcto = FALSO: el niño recuerda del repaso que cada vaso cuesta 2 hacer, así gana 3 por vaso, 30 en total. 'Verdadero' confunde lo que entró (50) con la ganancia. El feedback debe nombrar la diferencia."
+            narrative_beat: "Último día del curso. Liruf ya cerró el puesto y cuenta lo que juntó para la guitarra de 80 pesos. Rho llega con sonrisa pícara: '¡Una última trampa antes de terminar!'. Levanta el letrero del día —10 vasos vendidos a 5 pesos— y suelta la frase para atraparlo: 'Entonces hoy GANASTE 50 pesos, ¿verdad?'. Suena perfecto... pero Rho sabe que cada vaso costó 2 pesos de limón y azúcar. Si Liruf dice que sí, creerá que la guitarra está más cerca de lo que de verdad está. La caja no miente: lo que entró no es lo mismo que lo que se ganó. ¿Verdadero o falso?"
             difficulty: 2
             suggested_families: [choice]
             forced_types: [true_false]
