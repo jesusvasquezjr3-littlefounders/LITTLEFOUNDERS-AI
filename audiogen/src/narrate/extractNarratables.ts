@@ -8,6 +8,7 @@ import type {
   StoryScenePayload,
 } from '../types/lessonDocument.js';
 import { stripMarkdown } from './stripMarkdown.js';
+import { normalizeForSpeech } from './normalizeForSpeech.js';
 import type { NarrationUnit } from './types.js';
 
 /*
@@ -30,7 +31,15 @@ export function extractNarratables(document: LessonDocument): NarrationUnit[] {
     if (segment.explanation_md) push(units, segment, 'explanation', segment.explanation_md);
   }
 
-  return units;
+  // Final speech-normalization pass (symbols → locale words, stage-direction
+  // parentheticals dropped). Done once here, with the document locale in hand,
+  // rather than threading locale through every push() call. A unit whose whole
+  // text was a stage direction normalizes to empty and is dropped — correct:
+  // it should produce no audio.
+  const locale = document.meta.locale;
+  return units
+    .map((unit) => ({ ...unit, text: normalizeForSpeech(unit.text, locale) }))
+    .filter((unit) => unit.text.length > 0);
 }
 
 function push(

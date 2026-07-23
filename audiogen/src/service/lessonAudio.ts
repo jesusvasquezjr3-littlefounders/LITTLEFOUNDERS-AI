@@ -94,8 +94,7 @@ export async function narrateLesson(
         { text: unit.text, voice, languageType },
         { apiUrl: config.TTS_API_URL, apiKey: config.TTS_API_KEY, model },
       );
-      const wavBuffer = await deps.downloadWav(audioUrl);
-      const decoded = parseWav(wavBuffer);
+      const decoded = parseWav(await deps.downloadWav(audioUrl));
       const mp3 = encodeMp3(decoded, config.AUDIOGEN_MP3_BITRATE_KBPS);
       const durationMs = decoded.samples.length > 0 ? Math.round((decoded.samples.length / decoded.sampleRate) * 1000) : null;
 
