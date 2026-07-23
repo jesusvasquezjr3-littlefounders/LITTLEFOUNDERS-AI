@@ -3,7 +3,7 @@
 // Core can reuse them server-side.
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types'
-import { fuzzyEquals, keywordCoverage, linearFalloff, ratio, toleranceBands } from '../../core/scoring'
+import { fuzzyEquals, keywordCoverage, linearFalloff, numericTextEquals, ratio, toleranceBands } from '../../core/scoring'
 
 type Dict = Record<string, unknown>
 
@@ -35,7 +35,9 @@ const gradeTypeAnswer: FamilyGrader = (segment, answer) => {
   if (text === null || !key || !accept) return MALFORMED
   const caseSensitive = key.case_sensitive === true
   const reveal = { accept }
-  if (accept.some((expected) => fuzzyEquals(text, expected, caseSensitive))) {
+  // Accept "5" for "cinco" and vice versa — a number typed as a digit or
+  // spelled out is the same correct answer, not a different one.
+  if (accept.some((expected) => fuzzyEquals(text, expected, caseSensitive) || numericTextEquals(text, expected))) {
     return { score: 100, reveal }
   }
   const keywords = strArray(key.keywords)
@@ -65,7 +67,7 @@ const gradeFillBlank: FamilyGrader = (segment, answer) => {
       if (str(g.bank_id) !== null && user === g.bank_id) hits++
     } else {
       const accept = strArray(g.accept)
-      if (accept && accept.some((expected) => fuzzyEquals(user, expected))) hits++
+      if (accept && accept.some((expected) => fuzzyEquals(user, expected) || numericTextEquals(user, expected))) hits++
     }
   }
   return { score: ratio(hits, keyGaps.length), reveal: { gaps: keyGaps } }

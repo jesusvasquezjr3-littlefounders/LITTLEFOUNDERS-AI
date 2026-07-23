@@ -22,11 +22,26 @@ export const matchPairs = segmentSchema(
   z.object({ pairs: z.array(z.tuple([idSchema, idSchema])).min(1) }),
 )
 
-/** Flow type — score is DERIVED from flips; there is NO answer key (payload only). */
+/** Flow type — score is DERIVED from flips; there is NO answer key (payload only).
+ *  Every card carries an icon (guaranteed visual, zero-cost) and MAY carry a
+ *  generated illustration (Forge image pipeline, preferred over the icon when
+ *  present) — plain text-only cards read as a flashcard drill, not a game. */
 export const memoryFlip = segmentSchema(
   'memory_flip',
   z.object({
-    pairs: z.array(z.object({ a_md: markdownLite, b_md: markdownLite })).min(3).max(6),
+    pairs: z
+      .array(
+        z.object({
+          a_md: markdownLite,
+          a_icon: iconName,
+          a_image_url: z.string().url().optional(),
+          b_md: markdownLite,
+          b_icon: iconName,
+          b_image_url: z.string().url().optional(),
+        }),
+      )
+      .min(3)
+      .max(6),
   }),
 )
 
@@ -39,9 +54,15 @@ export const sortBuckets = segmentSchema(
   z.object({ assignments: z.record(idSchema, idSchema) }),
 )
 
+/** `slots` — how many of `items` actually belong in the sequence (must equal
+ *  `answer.order.length`). OMIT it when every item belongs (slots defaults to
+ *  items.length); set it lower than items.length to include distractor steps
+ *  that stay in the bank, unplaced, forever (mirrors build_sentence). Without
+ *  this, a distractor item forces the player to submit items.length entries
+ *  while the answer key only has order.length — an unwinnable exercise. */
 export const orderSteps = segmentSchema(
   'order_steps',
-  z.object({ items: z.array(idText).min(3).max(8) }),
+  z.object({ items: z.array(idText).min(3).max(8), slots: z.number().int().min(3).max(8).optional() }),
   z.object({ order: z.array(idSchema).min(3) }),
 )
 

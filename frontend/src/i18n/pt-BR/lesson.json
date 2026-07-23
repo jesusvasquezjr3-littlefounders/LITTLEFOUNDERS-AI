@@ -100,6 +100,7 @@
       "bank": "Peças disponíveis",
       "slot": "Espaço {{index}}",
       "tapToRemove": "Toque uma peça colocada para devolvê-la",
+      "dragHint": "Arraste cada peça para o seu grupo — ou toque nela e depois no grupo.",
       "matchPairs": {
         "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo."
       },

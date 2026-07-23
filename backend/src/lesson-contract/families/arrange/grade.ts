@@ -63,12 +63,11 @@ const gradeMemoryFlip: FamilyGrader = (segment, answer) => {
   const payloadPairs = segment.payload.pairs
   const pairCount = Array.isArray(payloadPairs) ? payloadPairs.length : num(a?.pairs)
   if (flips === null || flips < 0 || !pairCount || pairCount <= 0) return MALFORMED
-  // Perfect recall: every pair found in one revisit budget (2·pairs + 2 flips).
-  const budget = 2 * pairCount + 2
-  const extraFlips = Math.max(0, flips - budget)
-  const extraFlipPairs = Math.ceil(extraFlips / 2)
-  // Completion always scores ≥ 40 — finishing the board is itself the win (P3).
-  return { score: Math.max(40, 100 - 10 * extraFlipPairs) }
+  // The component only ever calls onFinish once EVERY pair is matched (there is
+  // no partial-completion submission path) — so by the time this grader runs,
+  // the board is already fully solved. Finishing IS the win: always full credit,
+  // never gated behind a pass_threshold the flip count could fail to clear.
+  return { score: 100 }
 }
 
 // ---- sort_buckets ------------------------------------------------------------------

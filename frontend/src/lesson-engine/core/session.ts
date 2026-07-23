@@ -140,10 +140,14 @@ export function createSessionReducer(doc: LessonDocument) {
         if (s.done) return state
         // Bump retries so the player remounts the exercise (fresh timer/board/
         // keypad) and clears the previous draft — no stale co-submit (P3/E2).
+        // Also clear the stale verdict: several exercises (memory_flip, number_line,
+        // speed_tap, flash_match, lightning_round) gate interaction on `verdict`
+        // being null, so a leftover verdict from the failed attempt left the
+        // remounted component born disabled — no click could ever land.
         return {
           ...state,
           stepPhase: 'answer',
-          seg: { ...state.seg, [current.id]: { ...s, retries: s.retries + 1 } },
+          seg: { ...state.seg, [current.id]: { ...s, retries: s.retries + 1, verdict: null } },
         }
       }
 

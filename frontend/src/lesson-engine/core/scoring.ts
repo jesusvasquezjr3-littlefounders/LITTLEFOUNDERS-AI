@@ -231,3 +231,96 @@ export function keywordCoverage(input: string, keywords: string[], caseSensitive
   })
   return ratio(hits, keywords.length)
 }
+
+// ---- Numeric text equivalence (digits vs. spelled-out number words) ----------
+
+type WordMap = Record<string, number>
+
+const EN_ONES: WordMap = {
+  zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9,
+  ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+  sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+}
+const EN_TENS: WordMap = {
+  twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90,
+}
+const ES_ONES: WordMap = {
+  cero: 0, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9,
+  diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15,
+  dieciseis: 16, diecisiete: 17, dieciocho: 18, diecinueve: 19,
+  veintiuno: 21, veintidos: 22, veintitres: 23, veinticuatro: 24, veinticinco: 25,
+  veintiseis: 26, veintisiete: 27, veintiocho: 28, veintinueve: 29,
+}
+const ES_TENS: WordMap = {
+  veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50, sesenta: 60, setenta: 70, ochenta: 80, noventa: 90,
+}
+const PT_ONES: WordMap = {
+  zero: 0, um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9,
+  dez: 10, onze: 11, doze: 12, treze: 13, catorze: 14, quatorze: 14, quinze: 15,
+  dezesseis: 16, dezessete: 17, dezoito: 18, dezenove: 19,
+}
+const PT_TENS: WordMap = {
+  vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90,
+}
+const HUNDRED_WORDS = new Set(['hundred', 'cien', 'ciento', 'cem'])
+const ALL_ONES: WordMap = { ...EN_ONES, ...ES_ONES, ...PT_ONES }
+const ALL_TENS: WordMap = { ...EN_TENS, ...ES_TENS, ...PT_TENS }
+
+/**
+ * Parses a spelled-out number word/phrase (already accent-stripped + lowercased
+ * by normalizeText) in ANY of en-US/es-MX/pt-BR into its numeric value, 0-100.
+ * Content is always authored in one locale at a time, so cross-language word
+ * collisions aren't a practical concern; deliberately capped at 100 — larger
+ * amounts are always typed as digits in practice, both by authors and kids.
+ */
+function wordsToNumber(normalized: string): number | null {
+  const tokens = normalized.split(' ').filter(Boolean)
+  if (tokens.length === 1) {
+    const t = tokens[0] as string
+    if (t in ALL_ONES) return ALL_ONES[t] as number
+    if (t in ALL_TENS) return ALL_TENS[t] as number
+    if (HUNDRED_WORDS.has(t)) return 100
+    return null
+  }
+  if (tokens.length === 2) {
+    const [a, b] = tokens as [string, string]
+    if (a in ALL_TENS && b in ALL_ONES) {
+      const ones = ALL_ONES[b] as number
+      if (ones > 0 && ones < 10) return (ALL_TENS[a] as number) + ones
+    }
+    if (a === 'one' && b === 'hundred') return 100
+  }
+  if (tokens.length === 3) {
+    // Spanish "treinta y cinco" / Portuguese "trinta e cinco".
+    const [a, joiner, b] = tokens as [string, string, string]
+    if ((joiner === 'y' || joiner === 'e') && a in ALL_TENS && b in ALL_ONES) {
+      const ones = ALL_ONES[b] as number
+      if (ones > 0 && ones < 10) return (ALL_TENS[a] as number) + ones
+    }
+  }
+  return null
+}
+
+/** Digit literal: strips currency/percent symbols, treats a single comma OR period as the decimal mark. */
+function parseNumericLiteral(raw: string): number | null {
+  const trimmed = raw.trim()
+  if (trimmed === '') return null
+  const stripped = trimmed.replace(/[$€£%\s]/g, '')
+  if (!/^-?\d+([.,]\d+)?$/.test(stripped)) return null
+  const n = Number(stripped.replace(',', '.'))
+  return Number.isFinite(n) ? n : null
+}
+
+/** Digits or spelled-out words (any of the 3 course locales) → number, or null if neither parses. */
+export function parseNumericText(raw: string): number | null {
+  const literal = parseNumericLiteral(raw)
+  if (literal !== null) return literal
+  return wordsToNumber(normalizeText(raw))
+}
+
+/** True when both strings denote the same number, however each is written ("5" vs. "cinco" vs. "five"). */
+export function numericTextEquals(input: string, expected: string): boolean {
+  const a = parseNumericText(input)
+  const b = parseNumericText(expected)
+  return a !== null && b !== null && a === b
+}

@@ -103,6 +103,18 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
     expect(afterPerfect.seg.e1?.retries).toBe(0)
   })
 
+  it('RETRY clears the stale verdict — components that gate on verdict==null must be re-interactive', () => {
+    const d = doc()
+    const afterRetry = play(d, [
+      { type: 'BEGIN' },
+      { type: 'NEXT' },
+      { type: 'SUBMIT' },
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(50) },
+      { type: 'RETRY' },
+    ])
+    expect(afterRetry.seg.e1?.verdict).toBeNull()
+  })
+
   it('caps hints at the segment count and stores the server score verbatim (no client re-penalty)', () => {
     const d = doc()
     const withHints: LessonDocument = {

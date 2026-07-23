@@ -1,6 +1,9 @@
 // Shared interaction primitives — every exercise renderer builds from these so
-// look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first:
-// no drag-and-drop; ≥44px hit areas; keyboard/focus-visible on everything.
+// look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first
+// everywhere; ≥44px hit areas; keyboard/focus-visible on everything. The
+// classification types (sort_buckets/group_sets) layer an ADDITIVE pointer-drag
+// on top of tap (see arrange/components.tsx SortingBoard) — tap stays the
+// accessible fallback, so these primitives remain tap-only by themselves.
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'

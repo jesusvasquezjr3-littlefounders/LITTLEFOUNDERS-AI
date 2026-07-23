@@ -92,19 +92,15 @@ describe('memory_flip', () => {
     ],
   })
 
-  it('perfect recall (flips ≤ 2·pairs + 2) → 100', () => {
+  it('any completion → 100 — the component only submits once every pair is matched', () => {
     expect(grade(segment, { flips: 6, pairs: 3 })).toBe(100)
     expect(grade(segment, { flips: 8, pairs: 3 })).toBe(100)
   })
 
-  it('degrades 10 per extra flip-pair', () => {
-    expect(grade(segment, { flips: 10, pairs: 3 })).toBe(90) // 2 extra flips = 1 pair
-    expect(grade(segment, { flips: 9, pairs: 3 })).toBe(90) // 1 extra flip rounds up
-    expect(grade(segment, { flips: 14, pairs: 3 })).toBe(70) // 6 extra flips = 3 pairs
-  })
-
-  it('completion always floors at 40', () => {
-    expect(grade(segment, { flips: 100, pairs: 3 })).toBe(40)
+  it('extra flips never lower the score — finishing the board IS the win', () => {
+    expect(grade(segment, { flips: 10, pairs: 3 })).toBe(100)
+    expect(grade(segment, { flips: 14, pairs: 3 })).toBe(100)
+    expect(grade(segment, { flips: 100, pairs: 3 })).toBe(100)
   })
 
   it('malformed → 0, never throws', () => {

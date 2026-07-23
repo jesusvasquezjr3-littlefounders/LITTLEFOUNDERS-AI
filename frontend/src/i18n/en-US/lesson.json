@@ -100,6 +100,7 @@
       "bank": "Available pieces",
       "slot": "Slot {{index}}",
       "tapToRemove": "Tap a placed piece to send it back",
+      "dragHint": "Drag each piece into its group — or tap it, then tap the group.",
       "matchPairs": {
         "help": "Tap one on the left, then its match on the right. Tap a pair to undo it."
       },

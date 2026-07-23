@@ -68,6 +68,31 @@ describe('type_answer', () => {
   it('never throws on malformed answers', () => {
     expectMalformedSafe(segment)
   })
+
+  it('accepts a digit when the key is spelled out, and vice versa (es-MX)', () => {
+    const digitsKey = seg('type_answer', {}, { accept: ['5'] })
+    expect(grade(digitsKey, { text: 'cinco' }).score).toBe(100)
+    const wordsKey = seg('type_answer', {}, { accept: ['cinco'] })
+    expect(grade(wordsKey, { text: '5' }).score).toBe(100)
+  })
+
+  it('accepts spelled-out numbers in en-US and pt-BR too', () => {
+    const key = seg('type_answer', {}, { accept: ['12'] })
+    expect(grade(key, { text: 'twelve' }).score).toBe(100)
+    expect(grade(key, { text: 'doce' }).score).toBe(100) // es-MX and pt-BR share this word
+  })
+
+  it('handles compound tens (35) in all 3 locales', () => {
+    const key = seg('type_answer', {}, { accept: ['35'] })
+    expect(grade(key, { text: 'thirty-five' }).score).toBe(100)
+    expect(grade(key, { text: 'treinta y cinco' }).score).toBe(100)
+    expect(grade(key, { text: 'trinta e cinco' }).score).toBe(100)
+  })
+
+  it('still rejects an unrelated number word', () => {
+    const key = seg('type_answer', {}, { accept: ['5'] })
+    expect(grade(key, { text: 'seis' }).score).toBe(0)
+  })
 })
 
 // ---- fill_blank ----------------------------------------------------------------
@@ -112,6 +137,15 @@ describe('fill_blank', () => {
   it('never throws on malformed answers', () => {
     expectMalformedSafe(typed)
     expectMalformedSafe(bank)
+  })
+
+  it('typed gaps accept digit/word number equivalence too', () => {
+    const numeric = seg(
+      'fill_blank',
+      { text_md: 'Vendiste {{1}} vasos.', mode: 'typed' },
+      { gaps: [{ gap: 1, accept: ['8'] }] },
+    )
+    expect(grade(numeric, { gaps: { '1': 'ocho' } }).score).toBe(100)
   })
 })
 

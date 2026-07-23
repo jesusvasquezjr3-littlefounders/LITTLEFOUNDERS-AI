@@ -132,9 +132,12 @@ Every family owns: `schema.ts` (payload+answer Zod), `grade.ts` (pure validators
 `register.ts` (its registry slice). The central registry composes family slices; adding
 a family never edits another family's files.
 
-**Interaction rule:** all manipulation is **tap-first** (tap token → tap slot). No
-drag-and-drop library; drags may be added later as progressive enhancement only.
-Touch = desktop = same interaction. ≥44px hit areas.
+**Interaction rule:** all manipulation is **tap-first** (tap token → tap slot).
+The classification types `sort_buckets`/`group_sets` add a **progressive-enhancement
+drag** (press-and-drag a chip into a bucket) on top of tap — implemented with
+native Pointer Events (no drag-and-drop library) in `arrange/components.tsx`'s
+`SortingBoard`; tap remains the accessible/keyboard fallback, so drag is never
+the ONLY way to place. Touch = desktop = same interaction. ≥44px hit areas.
 
 ## §5 Taxonomy — 56 types
 
