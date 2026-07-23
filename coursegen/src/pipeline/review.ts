@@ -1,8 +1,10 @@
 // review stage — independent judge (Qwen, decorrelated provider),
-// COURSE_ENGINE.md §4. kid_safety < 5 or age_fit < 4 triggers a revise call
-// to DeepSeek with the judge's notes, then a full re-gate (the 5
-// deterministic gates must still pass after revision) and re-judge. Max 2
-// revise cycles — after that the slot fails, it never silently ships.
+// COURSE_ENGINE.md §4. A failing rubric gate (kid_safety/age_fit/concreteness/
+// pedagogy/cognitive_engagement/feedback_quality/distractor_quality — see
+// passesJudgeGate) triggers a revise call to DeepSeek with the judge's notes,
+// then a full re-gate (the 7 deterministic gates must still pass after
+// revision) and re-judge. Max 2 revise cycles — after that the slot fails, it
+// never silently ships.
 
 import { z } from 'zod';
 import { completeQwen } from '../providers/qwen.js';
@@ -32,6 +34,17 @@ export const reviewRubricSchema = z.object({
    * <4 gates the same way age_fit does — see `passesJudgeGate` below.
    */
   concreteness: z.number().min(1).max(5),
+  /**
+   * Dimensions the 2026-07-22 QA inspection found weakest (cognitive_engagement
+   * avg 2.05/5, feedback_quality 2.44, distractor_quality 2.52) — the judge now
+   * scores AND gates them so the generator can't ship an exercise whose answer
+   * is leaked/trivial, whose wrong-answer feedback teaches nothing, or whose
+   * distractors are obviously silly. Non-applicable (no distractors / ungraded
+   * content) scores 5. See `passesJudgeGate`.
+   */
+  cognitive_engagement: z.number().min(1).max(5),
+  feedback_quality: z.number().min(1).max(5),
+  distractor_quality: z.number().min(1).max(5),
   notes: z.string().min(1).max(2000),
 });
 export type ReviewRubric = z.infer<typeof reviewRubricSchema>;
@@ -42,8 +55,10 @@ export class ReviewFailedError extends Error {
 
   constructor(rubric: ReviewRubric, cycles: number) {
     super(
-      `review: kid_safety/age_fit/concreteness gate failed after ${cycles} revise cycle(s) ` +
-        `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}, concreteness=${rubric.concreteness}). Notes: ${rubric.notes}`,
+      `review: judge gate failed after ${cycles} revise cycle(s) ` +
+        `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}, concreteness=${rubric.concreteness}, ` +
+        `pedagogy=${rubric.pedagogy}, cognitive_engagement=${rubric.cognitive_engagement}, ` +
+        `feedback_quality=${rubric.feedback_quality}, distractor_quality=${rubric.distractor_quality}). Notes: ${rubric.notes}`,
     );
     this.name = 'ReviewFailedError';
     this.rubric = rubric;
@@ -52,7 +67,18 @@ export class ReviewFailedError extends Error {
 }
 
 function passesJudgeGate(rubric: ReviewRubric): boolean {
-  return rubric.kid_safety >= 5 && rubric.age_fit >= 4 && rubric.concreteness >= 4;
+  return (
+    rubric.kid_safety >= 5 &&
+    rubric.age_fit >= 4 &&
+    rubric.concreteness >= 4 &&
+    // Quality floor added after the QA inspection: an exercise must actually
+    // teach (pedagogy), make the kid think (engagement), explain wrong answers
+    // (feedback) and offer plausible distractors — all >= 3 (not below average).
+    rubric.pedagogy >= 3 &&
+    rubric.cognitive_engagement >= 3 &&
+    rubric.feedback_quality >= 3 &&
+    rubric.distractor_quality >= 3
+  );
 }
 
 async function judgeDocument(
@@ -86,9 +112,12 @@ async function judgeDocument(
     '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns?',
     '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)?',
     '- concreteness: does at least one segment contain a WORKED CONCRETE instance (a specific number, a named character, or a specific scenario — not purely abstract phrasing)? AND, unless this is the very first lesson of the course, does the lesson OPEN by connecting explicitly to the prior lesson\'s concept instead of restarting cold?',
+    '- cognitive_engagement: does solving REQUIRE genuine thinking? 1 = the answer is stated in the prompt/options or is trivially obvious; 5 = the kid must reason with the concept. Penalize answer leakage hard.',
+    '- feedback_quality: does the wrong-answer feedback EXPLAIN why a wrong choice is wrong (per-option or targeted), not a generic "try again"? 1 = generic/absent; 5 = specific and instructive. Score 5 for ungraded content types.',
+    '- distractor_quality: are the WRONG options plausible-but-wrong (a real misconception), not obviously silly throwaways? 1 = joke/impossible options; 5 = genuinely tempting distractors. Score 5 if the exercise has no multiple-choice options.',
     ...(priorLine ? ['', priorLine] : []),
     '',
-    'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"notes":"..."}',
+    'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"cognitive_engagement":N,"feedback_quality":N,"distractor_quality":N,"notes":"..."}',
     '`notes` must be actionable — if any score is low, say exactly what to fix.',
     '',
     'LESSON DOCUMENT:',

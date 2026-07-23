@@ -14,6 +14,9 @@ function rubricResponse(overrides: Partial<Record<string, number>> = {}, notes =
       kid_safety: 5,
       naturalness: 5,
       concreteness: 5,
+      cognitive_engagement: 5,
+      feedback_quality: 5,
+      distractor_quality: 5,
       notes,
       ...overrides,
     }),
@@ -79,6 +82,23 @@ describe('reviewLesson', () => {
     const result = await reviewLesson(buildDocument(), gateCtx, { judge: judge as never, author: author as never });
     expect(result.cycles).toBe(1);
   });
+
+  it.each(['cognitive_engagement', 'feedback_quality', 'distractor_quality', 'pedagogy'])(
+    'a low %s score triggers a revise cycle (new quality gate)',
+    async (dim) => {
+      const judge = vi
+        .fn()
+        .mockResolvedValueOnce(rubricResponse({ [dim]: 2 }, `fix ${dim}`))
+        .mockResolvedValueOnce(rubricResponse());
+      const author = vi.fn().mockResolvedValue({
+        content: JSON.stringify(buildDocument()),
+        promptTokens: 5,
+        completionTokens: 5,
+      });
+      const result = await reviewLesson(buildDocument(), gateCtx, { judge: judge as never, author: author as never });
+      expect(result.cycles).toBe(1);
+    },
+  );
 
   it('concreteness below 4 also triggers a revise cycle (like age_fit)', async () => {
     const judge = vi

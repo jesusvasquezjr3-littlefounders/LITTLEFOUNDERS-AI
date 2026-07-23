@@ -233,8 +233,14 @@ review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,
           concreteness (≥1 worked concrete instance; connects to the prior
           lesson's concept — the write prompt receives the previous blueprint's
-          micro-objective and MUST open by linking to it, never restarting cold).
-          kid_safety < 5 or age_fit < 4 → revise loop (max 2) → else fail slot.
+          micro-objective and MUST open by linking to it, never restarting cold),
+          and — added after the 2026-07-22 QA inspection — cognitive_engagement
+          (does solving require real thinking / is the answer leaked?),
+          feedback_quality (does wrong-answer feedback explain why?) and
+          distractor_quality (are wrong options plausible?). GATE: kid_safety ≥ 5,
+          age_fit ≥ 4, concreteness ≥ 4, and pedagogy / cognitive_engagement /
+          feedback_quality / distractor_quality ≥ 3 → else revise loop (max 2)
+          → else fail slot.
    ↓
 localize  es-MX → en-US and pt-BR: translation-with-contract call (structure
           is FROZEN — ids/answers/numbers copied programmatically, only
