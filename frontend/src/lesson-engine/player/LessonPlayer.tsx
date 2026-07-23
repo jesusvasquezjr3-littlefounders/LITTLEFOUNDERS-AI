@@ -484,6 +484,30 @@ function FeedbackBanner({
   }[verdict.tier]
   const variant = (segIndex % 3) + 1
 
+  // Teaching content reveal (E3): show it when the segment RESOLVES for the kid
+  // — on a pass, or once no retries remain — never success-worded copy under a
+  // failure banner. On a resolved fail prefer the server's outcome-accurate
+  // correction (spot_error's reveal.correction_md) over the authored
+  // explanation, which may be phrased as a success.
+  const narration = useNarration()
+  const reveal = verdict.reveal as { correction_md?: unknown } | undefined
+  const passed = verdict.correct
+  const showTeaching = passed || done
+  const correctionMd =
+    !passed && done && typeof reveal?.correction_md === 'string' ? reveal.correction_md : undefined
+  const teachingMd = correctionMd ?? (showTeaching ? segment.explanation_md : undefined)
+  const explanationUnit = narrationUnitId(segment.id, 'explanation')
+  // Auto-play the explanation narration whenever we show the authored
+  // explanation — the paid TTS that played in 0/62 lessons before this. Skip
+  // it for the server correction (no matching audio unit).
+  const explanationAudible =
+    showTeaching && !correctionMd && Boolean(segment.explanation_md) && narration.has(explanationUnit)
+  useEffect(() => {
+    if (!explanationAudible) return
+    narration.play(explanationUnit)
+    return () => narration.stop()
+  }, [explanationAudible, explanationUnit, narration])
+
   return (
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">
       <div className="mx-auto flex max-w-[720px] items-start gap-3 px-4 py-4 md:px-0">
@@ -506,8 +530,11 @@ function FeedbackBanner({
           {verdict.feedback_md ? (
             <MarkdownLite text={verdict.feedback_md} className="lf-body text-content" />
           ) : null}
-          {done && segment.explanation_md ? (
-            <MarkdownLite text={segment.explanation_md} className="lf-body text-content-muted" />
+          {teachingMd ? (
+            <div className="flex items-start gap-2">
+              <MarkdownLite text={teachingMd} className="lf-body min-w-0 flex-1 text-content-muted" />
+              {explanationAudible ? <NarrationReplayButton unitId={explanationUnit} /> : null}
+            </div>
           ) : null}
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
