@@ -48,6 +48,21 @@ export const ICON_PALETTE: ReadonlySet<string> = new Set([
   'arrow_forward', 'arrow_back', 'north_east', 'swap_horiz', 'sync', 'autorenew', 'bolt',
   'local_fire_department', 'home', 'palette', 'brush', 'extension', 'toys', 'sports_esports',
   'celebration', 'rocket_launch', 'map', 'flag_circle', 'lightbulb_circle',
+  // Expanded after the first hardened regeneration wrongly rejected these
+  // (they ARE real Material Symbols) — food/drink, objects, nature, tools.
+  'checkroom', 'table_restaurant', 'local_florist', 'bakery_dining', 'ac_unit',
+  'construction', 'cleaning_services', 'lunch_dining', 'dinner_dining', 'ramen_dining',
+  'local_pizza', 'local_dining', 'set_meal', 'rice_bowl', 'coffee', 'coffee_maker',
+  'egg', 'egg_alt', 'liquor', 'wine_bar', 'kitchen', 'blender', 'water_bottle',
+  'local_drink', 'no_drinks', 'fastfood', 'lunch_dining',
+  'yard', 'potted_plant', 'forest', 'deck', 'umbrella', 'beach_access', 'pool',
+  'sunny', 'cloud', 'thermostat', 'water',
+  'build', 'handyman', 'carpenter', 'plumbing', 'hardware', 'format_paint', 'roofing',
+  'key', 'lock', 'lock_open', 'backpack', 'luggage', 'watch', 'diamond', 'redeem',
+  'science', 'biotech', 'functions', 'percent', 'add', 'remove', 'add_circle_outline',
+  'done', 'close', 'chevron_right', 'expand_more', 'menu', 'apps', 'dashboard',
+  'shopping_cart_checkout', 'local_mall', 'receipt', 'discount', 'loyalty',
+  'volunteer_activism', 'savings_outlined', 'account_balance_wallet',
 ]);
 
 /** Recursively collect every `icon`/`ask_icon`/`art.icon` string value under a node. */
