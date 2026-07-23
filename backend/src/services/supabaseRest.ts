@@ -221,15 +221,16 @@ export interface LearningStatsRow {
   minutes_learned: number;
   lessons_completed: number;
   streak_days: number;
+  longest_streak: number;
   last_active_date?: string | null;
 }
 
-const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, last_active_date: null };
+const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null };
 
 /** Self or guardian, per RLS. Every user has a row (0006 trigger) — zeroed default is a defensive fallback only. */
 export async function getLearningStats(accessToken: string, userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     accessToken,
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -237,7 +238,7 @@ export async function getLearningStats(accessToken: string, userId: string): Pro
 
 export async function getLearningStatsByUserId(userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -251,7 +252,7 @@ export interface LearningStatsForUpdateRow extends LearningStatsRow {
 
 export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
@@ -551,10 +552,15 @@ export interface SegmentAttemptRow {
   score: number;
 }
 
-/** Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own token is enough. */
-export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string): Promise<SegmentAttemptRow[] | null> {
+/**
+ * Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own
+ * token is enough. When `runId` is given, only THIS run's attempts are returned
+ * so /complete scores the run the kid just played, not a lifetime best (0012).
+ */
+export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string, runId?: string): Promise<SegmentAttemptRow[] | null> {
+  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
   return rest<SegmentAttemptRow[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=segment_id,attempt_number,score`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}${runFilter}&select=segment_id,attempt_number,score`,
     accessToken,
   );
 }
@@ -623,7 +629,7 @@ export async function upsertLessonProgress(
 /** Learning stats are system-written only (0006) — Core applies the XP/lesson/minute/streak delta via service role. */
 export async function patchLearningStats(
   userId: string,
-  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; last_active_date?: string },
+  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; longest_streak?: number; last_active_date?: string },
 ): Promise<boolean> {
   const res = await restRaw(`/learning_stats?user_id=eq.${eu(userId)}`, serviceToken(), {
     method: 'PATCH',

@@ -13,7 +13,6 @@ import {
   createSessionReducer,
   earnedXp,
   initialSession,
-  isGraded,
   lessonScore,
   progressPct,
 } from '../core/session'
@@ -394,7 +393,10 @@ function IntroScreen({
   onExit: () => void
 }) {
   const { t } = useTranslation()
-  const gradedCount = doc.segments.filter(isGraded).length
+  // "Retos" counts INTERACTIVE segments, not xp>0: content types carry xp:0,
+  // and some graded segments were authored with xp:0 too, so the old xp>0 count
+  // read "0 retos" on 37/62 lessons that plainly have challenges.
+  const challengeCount = doc.segments.filter((s) => getRegistryEntry(s.type)?.kind !== 'content').length
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col px-5 md:px-0">
       <div className="flex justify-start py-4">
@@ -436,7 +438,7 @@ function IntroScreen({
           </span>
           <span className="flex items-center gap-1">
             <Icon name="stars" className="text-[16px]" />
-            {t('lesson.intro.exercises', { count: gradedCount })}
+            {t('lesson.intro.exercises', { count: challengeCount })}
           </span>
         </div>
         <Button variant="primary" onClick={onStart} className="px-10">
@@ -629,7 +631,9 @@ function ResultsScreen({
         <ResultStat
           icon="target"
           label={t('lesson.results.bestStreak')}
-          value={String(state.bestStreak)}
+          // All-time longest day streak (0013): always >= today's streak, so it
+          // never reads as the incoherent "Mejor racha 0" next to "Racha 1".
+          value={String(server?.longest_streak ?? streakDays)}
           tone="text-success-strong"
         />
       </div>

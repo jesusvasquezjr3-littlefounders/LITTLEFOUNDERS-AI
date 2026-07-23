@@ -88,6 +88,7 @@ export function LessonRoute() {
       token,
       body: {
         seconds_spent: Math.min(7200, Math.max(1, secondsSpent)),
+        run_id: runId, // score THIS run, not a lifetime best (0012)
         // The kid's LOCAL calendar day anchors the streak (v1 parity).
         // Constructed mathematically to guarantee YYYY-MM-DD universally,
         // since toLocaleDateString('sv') falls back to M/D/YYYY on some browsers.

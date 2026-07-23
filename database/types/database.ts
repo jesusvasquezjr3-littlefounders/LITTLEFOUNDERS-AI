@@ -331,6 +331,7 @@ export type Database = {
         Row: {
           last_active_date: string | null
           lessons_completed: number
+          longest_streak: number
           minutes_learned: number
           streak_days: number
           updated_at: string
@@ -340,6 +341,7 @@ export type Database = {
         Insert: {
           last_active_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           minutes_learned?: number
           streak_days?: number
           updated_at?: string
@@ -349,6 +351,7 @@ export type Database = {
         Update: {
           last_active_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           minutes_learned?: number
           streak_days?: number
           updated_at?: string

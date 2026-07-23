@@ -268,6 +268,10 @@ export function learnRouter(): Router {
       // (in Mexico UTC day-rollover lands at 6 pm local). Optional for
       // compatibility; defaults to the server's UTC date.
       local_date: z.string().refine(isCalendarDate, 'local_date must be YYYY-MM-DD').optional(),
+      // This play-through's id (0012): the results score/pass reflect THIS run,
+      // not a lifetime best, so replaying a passed lesson and failing shows the
+      // fail — not the historical "100" that made the results screen incoherent.
+      run_id: z.string().uuid().optional(),
     })
     .refine((b) => b.minutes_spent !== undefined || b.seconds_spent !== undefined, {
       message: 'seconds_spent (or legacy minutes_spent) is required',
@@ -297,7 +301,10 @@ export function learnRouter(): Router {
     const gradedIds = gradedSegmentIds(picked.answer_keys);
     const xpMap = xpBySegmentId(picked.document);
 
-    const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId);
+    // Score THIS run (0012): scoped to the run_id so a replay reflects the
+    // play-through the kid just did, not a lifetime best. Progress below still
+    // keeps the all-time best.
+    const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId, parsed.data.run_id);
     if (!attempts) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
     // Per-segment BEST raw score across every recorded attempt. Hint penalties
@@ -353,6 +360,10 @@ export function learnRouter(): Router {
     const firstToday = passedNow && isFirstActivityToday(stats.last_active_date, todayLocal);
     const newStreak = passedNow ? nextStreak(stats.last_active_date, stats.streak_days, todayLocal) : stats.streak_days;
     const streakExtended = newStreak > stats.streak_days;
+    // All-time high-water mark of the day streak (0013) — the results "Mejor
+    // racha" card reads this, so it's always >= the current streak (no more
+    // "Mejor racha 0" next to "Racha 1").
+    const newLongestStreak = Math.max(stats.longest_streak ?? 0, newStreak);
 
     const minutesDelta =
       parsed.data.seconds_spent !== undefined
@@ -364,6 +375,7 @@ export function learnRouter(): Router {
       minutes_learned: stats.minutes_learned + minutesDelta,
       lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
       streak_days: newStreak,
+      longest_streak: newLongestStreak,
       ...(passedNow ? { last_active_date: todayLocal } : {}),
     });
     if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
@@ -372,13 +384,19 @@ export function learnRouter(): Router {
     const refreshedTree = await loadCourseTree(user.accessToken, user.id, ctx.course);
 
     return ok(res, {
+      // THIS run's outcome (0012) — the results ring/title reflect the
+      // play-through the kid just did, never a historical best presented as
+      // the current result. `best_score` carries the persisted all-time best
+      // for a "Hoy vs Tu mejor" display.
       score: lessonScore,
-      passed: newPassed,
+      passed: passedNow,
+      best_score: newBestScore,
       xp_earned: newXpEarned,
       xp_delta: xpDelta,
       // Day-streak facts for the results/celebration screen (v1 parity —
       // completeLesson returned new_streak/streak_extended/was_first_today).
       streak_days: newStreak,
+      longest_streak: newLongestStreak,
       streak_extended: streakExtended,
       first_today: firstToday,
       minutes_learned: stats.minutes_learned + minutesDelta,

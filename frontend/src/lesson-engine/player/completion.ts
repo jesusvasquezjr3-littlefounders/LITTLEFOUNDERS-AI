@@ -6,11 +6,16 @@
 import { useEffect, useRef, useState } from 'react'
 
 export interface ServerCompletion {
+  /** THIS run's score/pass (0012) — not a lifetime best. */
   score: number
   passed: boolean
+  /** Persisted all-time best score for this lesson (for "Hoy vs Tu mejor"). */
+  best_score: number
   xp_earned: number
   xp_delta: number
   streak_days: number
+  /** All-time high-water mark of the day streak (0013). */
+  longest_streak: number
   streak_extended: boolean
   first_today: boolean
   minutes_learned: number

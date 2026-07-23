@@ -84,7 +84,7 @@ describe('LessonRoute', () => {
         expect.objectContaining({
           method: 'POST',
           token: 'token-123',
-          body: { seconds_spent: 42, local_date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) },
+          body: { seconds_spent: 42, run_id: expect.any(String), local_date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) },
         }),
       );
     });
