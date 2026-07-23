@@ -256,15 +256,19 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         <div key={segment.id} className="lf-pop space-y-5">
           {/* Narrator strip */}
           {segment.narrator ? (
-            <div className="flex items-end gap-3">
-              <CharacterActor
-                character={segment.narrator.character}
-                emotion={segment.narrator.emotion ?? 'neutral'}
-                size="sm"
-                className="shrink-0"
-              />
-              <div className="flex min-w-0 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
-                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 text-content" />
+            // Avatar shrinks on mobile (56px) so the speech bubble keeps a
+            // readable width at 375px instead of squeezing the prompt to
+            // 2-3 words per line (§1.11). Full 96px from sm: up.
+            <div className="flex items-end gap-2 sm:gap-3">
+              <div className="h-14 w-14 shrink-0 sm:h-24 sm:w-24">
+                <CharacterActor
+                  character={segment.narrator.character}
+                  emotion={segment.narrator.emotion ?? 'neutral'}
+                  size="fill"
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
                 <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
               </div>
             </div>
@@ -339,10 +343,18 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                 <span />
               )}
               {isContent ? (
-                <Button variant="primary" disabled={!segState?.done} onClick={handleNext}>
-                  {t('lesson.continue')}
-                  <Icon name="arrow_forward" className="ml-1 text-[18px]" />
-                </Button>
+                // Only show the footer Continuar once the content segment is
+                // done. While it's being consumed the content component owns
+                // its own advance affordance (e.g. story_dialogue's tap/CTA);
+                // a second, disabled "Continuar" here was a confusing duplicate.
+                segState?.done ? (
+                  <Button variant="primary" onClick={handleNext}>
+                    {t('lesson.continue')}
+                    <Icon name="arrow_forward" className="ml-1 text-[18px]" />
+                  </Button>
+                ) : (
+                  <span />
+                )
               ) : isFlow ? (
                 <span className="lf-caption text-content-faint">{checking ? t('lesson.checking') : ''}</span>
               ) : (
