@@ -240,6 +240,13 @@ async function processSlot(
     // ---- localize ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'reviewed') {
+      // Consumption discipline ("optimizar consumo"): illustrate the AUTHORING
+      // document BEFORE localizing. `image_url` is in NON_VISIBLE_KEYS, so the
+      // string-freeze translation copies it verbatim into en-US/pt-BR — the
+      // illustrations carry no text by design (Prism's identity brief), so one
+      // generated image serves all 3 locales. 3× fewer image calls per lesson.
+      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages });
+      documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
         const localized = await localizeLesson(documents[AUTHORING_LOCALE]!, locale as 'en-US' | 'pt-BR', gateCtx, {
@@ -253,11 +260,16 @@ async function processSlot(
       await store.save(checkpoint);
     }
 
-    // ---- images (optional) ----
+    // ---- images (optional; a no-op when the pre-localize pass covered everything) ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'localized') {
+      // Belt-and-braces sweep: anything still missing an image_url (a locale
+      // document restored from an older checkpoint, a per-locale regen) gets
+      // filled here. With the pre-localize illustration above this loop makes
+      // ZERO Prism calls on the happy path — and Prism's cache would dedupe
+      // identical prompts anyway.
       for (const locale of Object.keys(documents) as LessonLocale[]) {
-        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages }, { ledger });
+        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages });
         documents = { ...documents, [locale]: illustrated.document };
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'illustrated', { data: { skeleton, documents } });

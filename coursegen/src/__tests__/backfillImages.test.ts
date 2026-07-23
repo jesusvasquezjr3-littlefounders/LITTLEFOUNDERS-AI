@@ -114,7 +114,7 @@ describe('backfillImages orchestration', () => {
     expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, skipped: 2, notConfigured: false });
   });
 
-  it('short-circuits the whole pass (and never writes) when Gemini is NOT_CONFIGURED', async () => {
+  it('short-circuits the whole pass (and never writes) when Prism is NOT_CONFIGURED', async () => {
     const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
     const illustrate = vi
       .fn<BackfillDeps['illustrate']>()
@@ -135,7 +135,7 @@ describe('backfillImages orchestration', () => {
     expect(illustrate).toHaveBeenCalledTimes(1);
     expect(writeDocument).not.toHaveBeenCalled();
     expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, skipped: 0, notConfigured: true });
-    expect(log).toHaveBeenCalledWith(expect.stringContaining('GEMINI_API_KEY not configured'));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('Prism (PICTUREGEN_URL) not configured'));
   });
 
   it('handles an empty course (no documents) as a clean zero-summary', async () => {

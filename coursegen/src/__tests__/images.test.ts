@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { illustrateSegments } from '../pipeline/images.js';
-import { ProviderNotConfiguredError } from '../providers/errors.js';
+import { ProviderNotConfiguredError, ProviderHttpError } from '../providers/errors.js';
 import { buildDocument } from './fixtures.js';
 
 function docWithPictureChoice() {
@@ -46,96 +46,79 @@ function docWithMemoryFlip() {
   });
 }
 
-describe('illustrateSegments', () => {
-  it('generates and uploads an image per memory_flip card side missing image_url', async () => {
-    const doc = docWithMemoryFlip();
-    const generate = vi.fn().mockResolvedValue({ pngBuffer: Buffer.from('fake-png') });
-    const upload = vi.fn().mockResolvedValue({ id: 'x', url: 'https://filebase.example/files/card.png' });
+const okPicture = (url = 'http://localhost:4006/files/lesson-images/x.png') =>
+  vi.fn().mockResolvedValue({ url, fileId: 'lesson-images/x.png', cached: false });
 
-    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
-
-    expect(result.generated).toBe(4); // 2 pairs × 2 sides
-    const memorySegment = result.document.segments.find((s) => s.type === 'memory_flip')!;
-    const pairs = (memorySegment.payload as { pairs: { a_image_url?: string; b_image_url?: string }[] }).pairs;
-    expect(pairs.every((p) => p.a_image_url?.startsWith('https://') && p.b_image_url?.startsWith('https://'))).toBe(true);
-  });
-
-  it('leaves memory_flip icons as the fallback when illustration fails, without failing the lesson', async () => {
-    const doc = docWithMemoryFlip();
-    const generate = vi.fn().mockRejectedValue(new Error('gemini-image HTTP 429: quota exceeded, limit: 0'));
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-
-    const result = await illustrateSegments(doc, {}, { generate: generate as never });
-
-    expect(result.generated).toBe(0);
-    const pairs = (result.document.segments.find((s) => s.type === 'memory_flip')!.payload as { pairs: { a_image_url?: string }[] }).pairs;
-    expect(pairs.every((p) => p.a_image_url === undefined)).toBe(true);
-    warn.mockRestore();
-  });
-
+describe('illustrateSegments (via Prism/picturegen)', () => {
   it('skips cleanly and returns the original document unmodified when --no-images is passed', async () => {
     const doc = docWithPictureChoice();
-    const generate = vi.fn();
-    const result = await illustrateSegments(doc, { skip: true }, { generate: generate as never });
+    const request = vi.fn();
+    const result = await illustrateSegments(doc, { skip: true }, { request: request as never });
     expect(result.skippedReason).toBe('flag');
     expect(result.generated).toBe(0);
-    expect(generate).not.toHaveBeenCalled();
+    expect(request).not.toHaveBeenCalled();
     expect(result.document).toBe(doc);
   });
 
-  it('skips cleanly when Gemini is NOT_CONFIGURED, without throwing', async () => {
+  it('skips cleanly when Prism is NOT_CONFIGURED, without throwing', async () => {
     const doc = docWithPictureChoice();
-    const generate = vi.fn().mockRejectedValue(new ProviderNotConfiguredError('gemini-image'));
-    const upload = vi.fn();
-    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+    const request = vi.fn().mockRejectedValue(new ProviderNotConfiguredError('picturegen'));
+    const result = await illustrateSegments(doc, {}, { request: request as never });
     expect(result.skippedReason).toBe('not-configured');
     expect(result.generated).toBe(0);
-    expect(upload).not.toHaveBeenCalled();
+    expect(result.document).toBe(doc); // untouched original
   });
 
-  it('generates and uploads an image per option missing image_url', async () => {
+  it('requests one picture per option missing image_url and embeds the returned Depot URL', async () => {
     const doc = docWithPictureChoice();
-    const generate = vi.fn().mockResolvedValue({ pngBuffer: Buffer.from('fake-png') });
-    const upload = vi.fn().mockResolvedValue({ id: 'lesson-images/abc.png', url: 'https://filebase.example/files/lesson-images/abc.png' });
+    const request = okPicture();
 
-    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+    const result = await illustrateSegments(doc, {}, { request: request as never });
 
-    expect(result.generated).toBe(2); // two options in picture_choice
-    expect(generate).toHaveBeenCalledTimes(2);
-    expect(upload).toHaveBeenCalledTimes(2);
-    const pictureSegment = result.document.segments.find((s) => s.type === 'picture_choice')!;
-    const options = (pictureSegment.payload as { options: { image_url?: string }[] }).options;
-    expect(options.every((o) => o.image_url?.startsWith('https://'))).toBe(true);
+    expect(result.generated).toBe(2);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(request).toHaveBeenCalledWith({ label: 'Ahorro', context: 'Elige la moneda correcta.', purpose: 'lesson_option' });
+    const options = (result.document.segments.find((s) => s.type === 'picture_choice')!.payload as { options: { image_url?: string }[] }).options;
+    expect(options.every((o) => o.image_url?.startsWith('http'))).toBe(true);
   });
 
-  it('skips a single failing option (icon fallback) without failing the whole lesson — quota/HTTP/network errors are per-option, not fatal', async () => {
+  it('requests one picture per memory_flip card side, tagged memory_card', async () => {
+    const doc = docWithMemoryFlip();
+    const request = okPicture();
+
+    const result = await illustrateSegments(doc, {}, { request: request as never });
+
+    expect(result.generated).toBe(4); // 2 pairs × 2 sides
+    expect(request).toHaveBeenCalledWith({ label: 'Ahorrar', context: 'Encuentra las parejas.', purpose: 'memory_card' });
+    const pairs = (result.document.segments.find((s) => s.type === 'memory_flip')!.payload as { pairs: { a_image_url?: string; b_image_url?: string }[] }).pairs;
+    expect(pairs.every((p) => p.a_image_url && p.b_image_url)).toBe(true);
+  });
+
+  it('skips a single failing option (icon fallback) without failing the whole lesson', async () => {
     const doc = docWithPictureChoice();
-    const generate = vi.fn().mockRejectedValue(new Error('gemini-image HTTP 429: quota exceeded, limit: 0'));
-    const upload = vi.fn();
+    const request = vi.fn().mockRejectedValue(new ProviderHttpError('picturegen', 502, 'upstream quota'));
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
 
-    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+    const result = await illustrateSegments(doc, {}, { request: request as never });
 
     expect(result.generated).toBe(0);
     expect(result.skippedReason).toBeUndefined();
-    expect(upload).not.toHaveBeenCalled();
     const options = (result.document.segments.find((s) => s.type === 'picture_choice')!.payload as { options: { image_url?: string }[] }).options;
-    expect(options.every((o) => o.image_url === undefined)).toBe(true); // icons remain the fallback
+    expect(options.every((o) => o.image_url === undefined)).toBe(true);
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });
 
-  it('never touches segments that already have image_url set', async () => {
+  it('never re-requests options that already have image_url set (consumption discipline)', async () => {
     const doc = docWithPictureChoice();
     const pictureSegment = doc.segments.find((s) => s.type === 'picture_choice')! as { payload: { options: { image_url?: string }[] } };
-    pictureSegment.payload.options[0]!.image_url = 'https://filebase.example/files/existing.png';
+    pictureSegment.payload.options[0]!.image_url = 'http://localhost:4006/files/existing.png';
 
-    const generate = vi.fn().mockResolvedValue({ pngBuffer: Buffer.from('fake-png') });
-    const upload = vi.fn().mockResolvedValue({ id: 'x', url: 'https://filebase.example/files/new.png' });
-    const result = await illustrateSegments(doc, {}, { generate: generate as never, upload: upload as never });
+    const request = okPicture();
+    const result = await illustrateSegments(doc, {}, { request: request as never });
 
-    expect(generate).toHaveBeenCalledTimes(1); // only the option WITHOUT image_url
+    expect(request).toHaveBeenCalledTimes(1); // only the option WITHOUT image_url
     const options = (result.document.segments.find((s) => s.type === 'picture_choice')!.payload as { options: { image_url?: string }[] }).options;
-    expect(options[0]!.image_url).toBe('https://filebase.example/files/existing.png');
+    expect(options[0]!.image_url).toBe('http://localhost:4006/files/existing.png');
   });
 });

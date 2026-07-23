@@ -21,8 +21,11 @@ const Env = z.object({
   QWEN_JUDGE_MODEL: z.string().min(1).default('qwen3-max'),
 
   // ---- Images (optional — module returns NOT_CONFIGURED when key is absent) ----
-  GEMINI_API_KEY: z.string().min(8).optional(),
-  GEMINI_IMAGE_MODEL: z.string().min(1).default('gemini-2.5-flash-image'),
+  // Prism (picturegen/) — the only image source. Unset = images not
+  // configured (illustrate stage skips cleanly). Gemini was DISCARDED
+  // 2026-07-23: every Google image model returned quota-0 on the available key.
+  PICTUREGEN_URL: z.url().optional(),
+  PICTUREGEN_INTERNAL_KEY: z.string().min(16).optional(),
 
   // ---- Vault writes (publish stage) ----
   SUPABASE_URL: z.url().optional(),
@@ -51,7 +54,6 @@ const Env = z.object({
   COST_DEEPSEEK_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0011),
   COST_QWEN_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.0016),
   COST_QWEN_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0064),
-  COST_GEMINI_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.02),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

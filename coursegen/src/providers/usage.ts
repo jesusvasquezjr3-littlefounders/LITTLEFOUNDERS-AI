@@ -7,7 +7,7 @@ import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { getConfig } from '../env.js';
 
-export type UsageProvider = 'deepseek' | 'qwen' | 'gemini-image';
+export type UsageProvider = 'deepseek' | 'qwen';
 
 export interface UsageRecord {
   provider: UsageProvider;
@@ -27,8 +27,6 @@ export function estimateCostUsd(record: Pick<UsageRecord, 'provider' | 'promptTo
     case 'qwen':
       return (record.promptTokens / 1000) * c.COST_QWEN_INPUT_PER_1K +
         (record.completionTokens / 1000) * c.COST_QWEN_OUTPUT_PER_1K;
-    case 'gemini-image':
-      return c.COST_GEMINI_IMAGE_PER_IMAGE;
   }
 }
 

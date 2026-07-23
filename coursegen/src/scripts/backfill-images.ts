@@ -2,7 +2,7 @@
 // images:backfill — an operator CLI that fills in missing illustrations on
 // ALREADY-PUBLISHED (or in-review) lessons, without regenerating any content.
 //
-//   npm run images:backfill -- --course <slug> [--dry-run]
+//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--dry-run]
 //
 // For every lesson_document of a published-or-review lesson in the course, it
 // runs the EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
@@ -60,6 +60,11 @@ export interface BackfillDeps {
 
 export interface BackfillOptions {
   courseSlug: string;
+  /** Illustrate only this locale's documents. Consumption discipline: LF
+   *  illustrations carry no text, so one image serves every locale — generate
+   *  for es-MX only, then copy the URLs to the sibling locales (SQL or the
+   *  pipeline's pre-localize illustration for new runs). */
+  locale?: string;
   /** Run the full illustration pass but skip every Vault write. */
   dryRun?: boolean;
 }
@@ -86,7 +91,8 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     notConfigured: false,
   };
 
-  const rows = await deps.listDocuments(opts.courseSlug);
+  const allRows = await deps.listDocuments(opts.courseSlug);
+  const rows = opts.locale ? allRows.filter((r) => r.locale === opts.locale) : allRows;
 
   for (const row of rows) {
     const result = await deps.illustrate(row.document);
@@ -96,7 +102,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     // stop the whole pass here — cleanly, icons stay the fallback.
     if (result.skippedReason === 'not-configured') {
       summary.notConfigured = true;
-      log('GEMINI_API_KEY not configured — skipping images backfill (icons remain the fallback)');
+      log('Prism (PICTUREGEN_URL) not configured — skipping images backfill (icons remain the fallback)');
       break;
     }
 
@@ -205,6 +211,7 @@ async function patchLessonDocument(row: BackfillDocRow, body: BackfillWriteBody)
 
 interface CliOptions {
   course?: string;
+  locale?: string;
   dryRun?: boolean;
 }
 
@@ -213,6 +220,9 @@ function parseArgs(argv: string[]): CliOptions {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     switch (arg) {
+      case '--locale':
+        opts.locale = argv[++i];
+        break;
       case '--course':
         opts.course = argv[++i];
         break;
@@ -230,13 +240,13 @@ function parseArgs(argv: string[]): CliOptions {
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
-    console.error('Usage: npm run images:backfill -- --course <slug> [--dry-run]');
+    console.error('Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--dry-run]');
     process.exit(1);
   }
   const courseSlug = opts.course;
   const dryRun = opts.dryRun ?? false;
 
-  console.log(`images:backfill — course "${courseSlug}"${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
+  console.log(`images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
 
   const summary = await backfillImages(
     {
@@ -245,7 +255,7 @@ async function main(): Promise<void> {
       writeDocument: patchLessonDocument,
       log: (line) => console.log(line),
     },
-    { courseSlug, dryRun },
+    { courseSlug, locale: opts.locale, dryRun },
   );
 
   console.log('');
@@ -254,7 +264,7 @@ async function main(): Promise<void> {
   console.log(`  images generated:   ${summary.imagesGenerated}`);
   console.log(`  skipped (no image): ${summary.skipped}`);
   if (summary.notConfigured) {
-    console.log('  NOTE: GEMINI_API_KEY not configured — images stage skipped entirely (icons remain the fallback)');
+    console.log('  NOTE: Prism (PICTUREGEN_URL) not configured — images stage skipped entirely (icons remain the fallback)');
   }
 }
 
