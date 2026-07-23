@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { craftImagePrompt, fallbackPrompt, LF_VISUAL_IDENTITY } from '../judge/promptJudge.js';
+import { craftImagePrompt, fallbackPrompt, LF_VISUAL_IDENTITY, PICTORIAL_CLAUSE } from '../judge/promptJudge.js';
 
 const opts = { apiBase: 'https://judge.example/v1', apiKey: 'k', model: 'qwen-plus' };
 
@@ -13,8 +13,11 @@ describe('craftImagePrompt', () => {
       .fn()
       .mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: 'A sunny lemonade stand with a jar of coins', negative: 'text, watermark' })));
     const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'lesson_option' }, { ...opts, fetchImpl });
-    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins');
-    expect(crafted.negative).toBe('text, watermark');
+    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins' + PICTORIAL_CLAUSE);
+    // Judge negatives EXTEND the non-negotiable base list (no text/logos).
+    expect(crafted.negative).toContain('logo');
+    expect(crafted.negative).toContain('watermark');
+    expect(crafted.negative?.endsWith('text, watermark')).toBe(true);
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
@@ -22,7 +25,8 @@ describe('craftImagePrompt', () => {
     const long = 'lemon '.repeat(300); // ~1800 chars
     const fetchImpl = vi.fn().mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: long })));
     const crafted = await craftImagePrompt({ label: 'lemons' }, { ...opts, fetchImpl });
-    expect(crafted.prompt.length).toBe(800);
+    expect(crafted.prompt.endsWith(PICTORIAL_CLAUSE)).toBe(true);
+    expect(crafted.prompt.length).toBeLessThanOrEqual(800);
   });
 
   it('falls back deterministically on a judge HTTP error', async () => {
@@ -30,7 +34,7 @@ describe('craftImagePrompt', () => {
     const crafted = await craftImagePrompt({ label: 'a piggy bank', context: 'saving money for later' }, { ...opts, fetchImpl });
     expect(crafted).toEqual(fallbackPrompt({ label: 'a piggy bank', context: 'saving money for later' }));
     expect(crafted.prompt).toContain('a piggy bank');
-    expect(crafted.prompt).toContain(LF_VISUAL_IDENTITY);
+    expect(crafted.prompt).toContain(LF_VISUAL_IDENTITY.slice(0, 300));
     // HTTP error retried up to the 2-attempt ceiling before falling back.
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
@@ -39,7 +43,7 @@ describe('craftImagePrompt', () => {
     const fetchImpl = vi.fn().mockResolvedValue(chatResponse(200, 'not json at all'));
     const crafted = await craftImagePrompt({ label: 'a market stall' }, { ...opts, fetchImpl });
     expect(crafted.prompt).toContain('a market stall');
-    expect(crafted.prompt).toContain(LF_VISUAL_IDENTITY);
+    expect(crafted.prompt).toContain(LF_VISUAL_IDENTITY.slice(0, 300));
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 

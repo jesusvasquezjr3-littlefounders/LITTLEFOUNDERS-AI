@@ -73,6 +73,7 @@ const SYSTEM_PROMPT = [
   'The prompt MUST enforce this exact illustration identity:',
   LF_VISUAL_IDENTITY,
   'Hard rules: never put readable text, letters, numbers, logos or watermarks in the image; never depict anything scary, violent, or unsafe for children; keep ONE clear subject.',
+  'QUANTITIES ARE PICTORIAL: qwen-image loves rendering captions, so NEVER write an amount, price, or label as something to display ("10 pesos", "2 vasos"). Translate every quantity into visual composition instead — "two golden coins side by side", "a small stack of three coins". If the context mentions prices, show the OBJECTS, never the numbers.',
   `Reply with STRICT JSON only, no prose, shaped exactly: {"prompt": string, "negative": string}. "prompt" <= ${MAX_PROMPT_CHARS} characters. "negative" lists things to avoid (e.g. "text, letters, watermark, logo, blurry, scary").`,
 ].join('\n');
 
@@ -87,10 +88,46 @@ function userMessage(input: JudgeInput): string {
  * Deterministic fallback prompt — used whenever the judge is unreachable or
  * returns unusable JSON, so image generation is NEVER blocked on the judge.
  */
+/**
+ * ALWAYS sent to the image model, merged with whatever the judge adds. First
+ * live inspection (2026-07-23) caught qwen-image inventing a fake brand logo
+ * with lettering ("Founters") on an otherwise perfect illustration — text and
+ * logos are exactly what a children's lesson tile must never contain, and the
+ * judge's own negative can't be trusted to always include them.
+ */
+export const BASE_NEGATIVE =
+  'text, letters, words, captions, typography, logo, brand name, wordmark, watermark, signature, signage, labels, numbers overlay';
+
+/**
+ * Appended IN CODE to every final prompt (judge-crafted or fallback) — not
+ * trusted to the judge. qwen-image's signature strength is text rendering,
+ * which for kids' lesson tiles is exactly the failure mode: the v1 batch
+ * leaked a fake wordmark, and v2 (negative-only) still rendered a caption
+ * ("10 peces + 10 peces") when the judged prompt mentioned amounts. The
+ * positive prompt has the last word with this model, so the no-text clause
+ * must live there, always, verbatim.
+ */
+export const PICTORIAL_CLAUSE =
+  ' Purely pictorial illustration: absolutely no text, no letters, no numerals, no captions, no logos anywhere in the image.';
+
+/** Cap for the crafted body so the enforced clause always fits under MAX_PROMPT_CHARS. */
+const BODY_MAX = MAX_PROMPT_CHARS - PICTORIAL_CLAUSE.length;
+
+/** The single exit gate for prompts: clamp the body, then enforce the pictorial clause. */
+export function finalizePrompt(body: string): string {
+  return `${body.slice(0, BODY_MAX).trim()}${PICTORIAL_CLAUSE}`;
+}
+
+/** Merge the judge's negative (if any) with the non-negotiable base list. */
+export function mergeNegative(judgeNegative?: string): string {
+  const extra = (judgeNegative ?? '').trim();
+  return extra ? `${BASE_NEGATIVE}, ${extra}` : BASE_NEGATIVE;
+}
+
 export function fallbackPrompt(input: JudgeInput): CraftedPrompt {
   const context = (input.context ?? '').slice(0, 160).trim();
   const head = context ? `${input.label} — ${context}.` : `${input.label}.`;
-  return { prompt: `${head} ${LF_VISUAL_IDENTITY}`.slice(0, MAX_PROMPT_CHARS) };
+  return { prompt: finalizePrompt(`${head} ${LF_VISUAL_IDENTITY}`), negative: BASE_NEGATIVE };
 }
 
 interface ChatResponse {
@@ -108,8 +145,10 @@ function parseCrafted(content: string | null | undefined): CraftedPrompt | null 
   const parsed = CraftedPromptSchema.safeParse(raw);
   if (!parsed.success) return null;
   return {
-    prompt: parsed.data.prompt.slice(0, MAX_PROMPT_CHARS),
-    ...(parsed.data.negative ? { negative: parsed.data.negative } : {}),
+    prompt: finalizePrompt(parsed.data.prompt),
+    // The base no-text/no-logo list is non-negotiable — the judge's negative
+    // only ever EXTENDS it.
+    negative: mergeNegative(parsed.data.negative),
   };
 }
 

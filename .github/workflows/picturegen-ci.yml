@@ -1,0 +1,31 @@
+name: picturegen CI
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'picturegen/**'
+      - '.github/workflows/picturegen-ci.yml'
+  pull_request:
+    paths:
+      - 'picturegen/**'
+      - '.github/workflows/picturegen-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: picturegen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: picturegen/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      - run: npm test

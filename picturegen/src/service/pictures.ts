@@ -41,6 +41,9 @@ export interface GeneratePictureDeps {
 
 const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, findByHash, insertAsset, uploadFile };
 
+/** Bump on any global style change (identity brief / negatives / pictorial clause). v3 = code-enforced PICTORIAL_CLAUSE on every prompt. */
+export const STYLE_VERSION = 'v3';
+
 const EXT_BY_MIME: Record<string, string> = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
@@ -68,10 +71,15 @@ export async function generatePicture(
   //    the same request generated twice). Hashing the request is what makes
   //    "an identical request never hits a paid API twice" true, and a HIT now
   //    skips the judge call too.
+  // STYLE_VERSION folds the global illustration style (identity brief + base
+  // negative) into the cache key: bumping it invalidates every cached asset so
+  // a style change regenerates the catalog instead of serving stale art.
+  // v2 = enforced BASE_NEGATIVE (no text/logos — first live batch leaked a
+  // fake brand wordmark).
   const hash = pictureAssetHash(
     config.IMAGE_MODEL,
     config.IMAGE_SIZE,
-    `${req.purpose ?? 'generic'} | ${req.label} | ${req.context ?? ''}`,
+    `${STYLE_VERSION} | ${req.purpose ?? 'generic'} | ${req.label} | ${req.context ?? ''}`,
   );
 
   // 2. Cache-first: a hit returns the stored asset with ZERO paid API calls.

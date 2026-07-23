@@ -12,8 +12,8 @@ const CRAFTED_PROMPT = 'A cheerful jar of coins on a sunny lemonade stand';
 // Config defaults exercised by the service (env.ts): model qwen-image, size 1024*1024.
 // Cache key hashes the REQUEST descriptor (purpose | label | context), never the
 // judged prompt — the judge is nondeterministic, so a prompt-keyed cache never hits.
-const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'generic | a jar of coins | ');
-const MISS_HASH = pictureAssetHash('qwen-image', '1024*1024', 'lesson_option | a jar of coins | saving up');
+const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v3 | generic | a jar of coins | ');
+const MISS_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v3 | lesson_option | a jar of coins | saving up');
 
 const storedRow: PictureAssetRow = {
   id: '11111111-1111-4111-8111-111111111111',
@@ -136,7 +136,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('boom', { status: 500 })));
 
     const fbPrompt = fallbackPrompt({ label: 'a piggy bank', context: 'saving money', purpose: 'generic' }).prompt;
-    const fbHash = pictureAssetHash('qwen-image', '1024*1024', 'generic | a piggy bank | saving money');
+    const fbHash = pictureAssetHash('qwen-image', '1024*1024', 'v3 | generic | a piggy bank | saving money');
 
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([7]), contentType: 'image/png' });
@@ -152,7 +152,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.cached).toBe(false);
     expect(res.body.data.prompt).toBe(fbPrompt);
-    expect(res.body.data.prompt).toContain(LF_VISUAL_IDENTITY);
+    expect(res.body.data.prompt).toContain(LF_VISUAL_IDENTITY.slice(0, 300));
     expect(findByHash).toHaveBeenCalledWith(fbHash);
     expect(generateImage).toHaveBeenCalled();
   });
