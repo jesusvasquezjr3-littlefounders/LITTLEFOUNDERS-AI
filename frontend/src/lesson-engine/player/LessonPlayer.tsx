@@ -21,6 +21,7 @@ import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
 import { StreakCelebration } from './StreakCelebration'
+import { playSfx } from './sfx'
 import { formatDuration, useCountUp, type ServerCompletion } from './completion'
 
 export interface LessonPlayerProps {
@@ -149,6 +150,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         else if (v.tier === 'great') react('correct', preferred)
         else if (v.tier === 'almost') react('almost', preferred)
         else react('wrong', preferred)
+        // UI sound mirrors the character reaction — win chimes vs. a soft,
+        // kind retry tap (never a buzzer).
+        if (v.tier === 'perfect') playSfx('perfect')
+        else if (v.tier === 'great') playSfx('correct')
+        else playSfx('tryagain')
       } catch {
         // Grader unavailable: never punish the kid for our outage (§7).
         dispatch({ type: 'GRADE_FAILED' })
@@ -341,6 +347,7 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                     const hintIndex = segState?.hintsShown ?? 0
                     dispatch({ type: 'HINT', segmentId: segment.id })
                     react('hint', segment.narrator?.character)
+                    playSfx('hint')
                     // Voice the hint being revealed — the key scaffold for
                     // weaker readers, silent in 55/62 lessons before (B4).
                     narration.play(narrationUnitId(segment.id, `hint.${hintIndex}`))
@@ -624,6 +631,13 @@ function ResultsScreen({
   const circumference = 2 * Math.PI * 52
   const xpShown = useCountUp(xp, 1000)
   const streakShown = useCountUp(streakDays, 800)
+
+  // One celebratory fanfare as the summary reveals (after the streak overlay,
+  // which plays its own 'streak' sound). Passing only — a failed run exits quiet.
+  useEffect(() => {
+    if (passed) playSfx('celebration')
+    // mount-once by design: the fanfare fires as the summary first reveals
+  }, [])
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-6 px-5 py-10 text-center md:px-0">
