@@ -4848,6 +4848,26 @@ describe('gate 1: contract', () => {
     expect(result.ok).toBe(true);
 ```
 
+### coursegen/src/__tests__/generationQuality.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { runGenerationQualityGate, ICON_PALETTE } from '../pipeline/generationQuality.js';
+import type { LessonDocumentParsed } from '../contract/schema.js';
+
+/** Minimal doc wrapper — gate 7 only reads segments[].{type,payload,answer}. */
+function docWith(segments: Array<{ id: string; type: string; payload: unknown; answer?: unknown }>): LessonDocumentParsed {
+  return {
+    schema_version: 1,
+    meta: { cast: ['dina'] },
+    scoring: {},
+    segments: segments.map((s) => ({ id: s.id, type: s.type, prompt_md: 'x', difficulty: 1, xp: 10, payload: s.payload, answer: s.answer })),
+  } as unknown as LessonDocumentParsed;
+}
+
+function messages(doc: LessonDocumentParsed): string[] {
+```
+
 ### coursegen/src/__tests__/health.test.ts
 
 ```
@@ -5616,6 +5636,26 @@ import {
   evaluateInfixTokens,
   extractFirstNumber,
   approxEqual,
+```
+
+### coursegen/src/pipeline/generationQuality.ts
+
+```
+// Gate 7 — generation-quality checks (added after the 2026-07-22 QA inspection
+// found 62/62 lessons with content defects that the engine had to tolerate at
+// runtime). These deterministic checks stop mass generation from re-producing
+// the worst of them, so the runtime tolerance (icon fallback, quality-scale
+// normalization, cell-key normalization) is a safety net, not the only defence.
+//
+// Every check here is zero-false-positive by construction: it flags only things
+// that are unambiguously broken (an icon that can't render, a quality map that
+// makes the correct answer unpassable, a cell key the player can never match).
+
+import type { LessonDocumentParsed } from '../contract/schema.js';
+import type { GateProblem } from './gates.js';
+
+/**
+ * Blessed Material Symbols the generator is allowed to emit. Curated (not the
 ```
 
 ### coursegen/src/pipeline/images.ts

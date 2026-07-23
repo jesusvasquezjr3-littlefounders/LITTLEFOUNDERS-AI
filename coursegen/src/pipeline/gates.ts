@@ -14,8 +14,9 @@ import {
   extractFirstNumber,
   approxEqual,
 } from './arithmetic.js';
+import { runGenerationQualityGate } from './generationQuality.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6;
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -612,6 +613,7 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     ...runArithmeticGate(document),
     ...runRationaleAndCanonGate(document),
     ...runAntiGenericityGate(document, { topicTitle: ctx.topicTitle }),
+    ...runGenerationQualityGate(document),
   ];
   return { ok: problems.length === 0, problems, document };
 }

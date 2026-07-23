@@ -19,7 +19,7 @@ validate (catalog/) → plan → write → gate → review → localize → imag
 - `src/catalog/` — Zod schemas + loader for `taxonomy.yaml` / `facts.yaml` / `catalog.yaml` / `adventures/*.yaml`. `npm run catalog:check [-- <path>]`.
 - `src/contract/` — a **copy** of `frontend/src/lesson-engine`'s Zod contract (schemaBase + the 8 families' `schema.ts` + the composed `schema.ts`). See "Contract-copy parity rule" below.
 - `src/providers/` — raw-`fetch` clients behind one chokepoint per provider (`deepseek.ts`, `qwen.ts`, `gemini.ts` for images), transport retry (`retry.ts`, jittered backoff, 429/5xx/network only), and the usage ledger (`usage.ts`, budget kill switches).
-- `src/pipeline/` — `plan.ts` (blueprint→skeleton + deterministic `planRepair`), `write.ts` (skeleton→document, corrective retries + per-segment salvage), `gates.ts` (the 5 deterministic gates), `review.ts` (Qwen judge + revise loop), `localize.ts` (string-freeze translation), `images.ts` (Gemini + filebase upload), `publish.ts` (split + Vault upsert), `checkpoint.ts` + `run.ts` + `../cli.ts` (orchestration).
+- `src/pipeline/` — `plan.ts` (blueprint→skeleton + deterministic `planRepair`), `write.ts` (skeleton→document, corrective retries + per-segment salvage), `gates.ts` (the 7 deterministic gates — incl. gate 7 generation-quality: icon whitelist, quality-map scale, cell-key format), `review.ts` (Qwen judge + revise loop), `localize.ts` (string-freeze translation), `images.ts` (Gemini + filebase upload), `publish.ts` (split + Vault upsert), `checkpoint.ts` + `run.ts` + `../cli.ts` (orchestration).
 - `src/vault/restClient.ts` — service-role PostgREST client for Vault writes, mirrors `backend/src/services/supabaseRest.ts`.
 
 ## Invariants that bite here

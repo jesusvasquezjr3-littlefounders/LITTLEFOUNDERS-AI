@@ -222,6 +222,12 @@ gate      DETERMINISTIC, free, in order:
              explanation_md too short or with no concrete instance (no number,
              character or scenario), banned filler phrases per locale. Cheap
              garbage never reaches the judge (two-phase pattern).
+          7. Generation-quality gate (added after the 2026-07-22 QA
+             inspection) — icon names must be in the blessed palette (invented
+             names like 'lemonade'/'piggy_bank' render as raw text); decision
+             quality maps must grade on 0–100 (a 0–1 or all-zero map makes the
+             correct answer unpassable); compare_table cell keys must use the
+             `<row>:<col>` colon form the player submits.
    ↓
 review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,
