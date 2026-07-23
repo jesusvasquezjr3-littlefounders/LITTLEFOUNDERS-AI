@@ -251,13 +251,20 @@ localize  es-MX → en-US and pt-BR: translation-with-contract call (structure
           learner-visible strings translated), re-gated per locale (vocabulary
           lists are per-locale).
    ↓
-images    OPTIONAL per slot: visual options (picture_choice etc.) get
-          generated illustrations — Gemini image API ("nanobanana"), prompt
-          asks for a COMPLETE illustrated scene (full background, no cutout —
-          the frontend renders it inside a bordered rounded tile, so a full
-          background reads fine there); raw PNG uploaded as-is to filebase
-          `lesson-images` (content-addressed). Skippable (--no-images) —
-          icons remain the fallback, NEVER emojis.
+images    OPTIONAL per slot: visual segments (picture_choice options,
+          memory_flip card sides) get illustrations from PRISM (picturegen/,
+          port 4007) — the platform's ONLY image service. Prism's
+          art-director judge (Qwen chat) turns {label, context, purpose}
+          into a detailed prompt carrying the LF illustration identity
+          (flat kid-friendly vector style, papaya/navy palette, complete
+          background scene — the frontend renders inside a rounded tile);
+          generation = official Qwen `qwen-image` on DashScope; the asset
+          lands in Depot and is indexed in Vault `picture_assets`
+          (sha256(model+size+prompt)) so an IDENTICAL request never hits the
+          paid API twice. Forge just embeds the returned public URL.
+          Skippable (--no-images) / PICTUREGEN_URL unset = clean skip —
+          icons remain the fallback, NEVER emojis. (Gemini discarded
+          2026-07-23: quota-0 on every Google image model.)
    ↓
 publish   upsert lesson + 3 lesson_documents rows via service role;
           document/answer_keys split server-side; lesson lands as
@@ -348,7 +355,7 @@ and review prompt, so every line must change what the model produces.
 |---|---|---|
 | Author (plan/write/localize) | DeepSeek `deepseek-chat` (V3.x, JSON mode) | Cheapest capable JSON author; prompts do the heavy lifting |
 | Judge (review) | Qwen `qwen3-max` via DashScope compatible-mode (`qwen-plus` fallback env) | Independent provider decorrelates blind spots (LF-Brain pattern) |
-| Images | Gemini image API (nanobanana) — `GEMINI_API_KEY`, module ships ready, key pending | Visual options without emojis |
+| Images | Prism (`picturegen/`, HTTP `PICTUREGEN_URL`) → Qwen `qwen-image` on DashScope | Only image path; judge-crafted LF-identity prompts + Vault cache = never pay twice for the same request. Gemini discarded 2026-07-23 (quota-0) |
 | TTS | Echo (`audiogen/`) — qwen3-tts-flash | See its own service docs |
 
 All clients are raw `fetch` behind one `providers/` chokepoint with usage

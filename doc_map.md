@@ -44,6 +44,7 @@
 | frontend | frontend/AGENTS.md |
 | coursegen (Forge) | coursegen/AGENTS.md · lesson contract: /LESSON_ENGINE.md · pipeline spec: /COURSE_ENGINE.md |
 | audiogen (Echo) | audiogen/AGENTS.md |
+| picturegen (Prism) | picturegen/AGENTS.md |
 | gamegen (Arcade) | gamegen/AGENTS.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |

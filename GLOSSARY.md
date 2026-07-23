@@ -41,6 +41,7 @@
 | `parent-id-check/` | **Guardian** | Identity verification service |
 | `email-server/` | **Courier** | Transactional email — Haraka SMTP engine relaying to Amazon SES (open-source Resend replacement) |
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
+| `picturegen/` | **Prism** | The only image-generation service — art-director judge (LF illustration identity) + Qwen `qwen-image`, assets in Depot, request-cache in Vault (`picture_assets`) |
 | `pulse/` | **Pulse** | Observability — self-hosted analytics (Plausible CE + Umami v3) & system health (Uptime Kuma); pinned third-party stack, data read only through Core |
 
 The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed **Oracle**.

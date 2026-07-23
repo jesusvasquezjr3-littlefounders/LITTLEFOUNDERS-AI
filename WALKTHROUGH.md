@@ -2,6 +2,14 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-23) — Lesson Engine + Forge closed at 100%; Prism (picturegen/) born
+
+- Testing course (`qa-lesson-engine-smoketest`): **62/62 published under the strict content-playbook judge, 186/186 documents contract-valid, 0 gradable segments without keys, fully narrated (846 units)** — fixture re-exported (`db:import-course`-able by any dev).
+- Forge convergence hardening for mass generation: `FORGE_SLOT_ATTEMPTS` outer regen-from-scratch retries, `stripNullValues` (+ SEMANTIC_NULL_KEYS), `repairDocument` (balance_scale, interest_peek), icon whitelist in-prompt, graded-answer-key gate, judge calibrations (fluency drills + content-only story lessons).
+- **DECISION — Prism (`picturegen/`, port 4007), owner-directed:** the ONLY image-generation service (mirror of Echo for audio). Art-director judge (Qwen chat) turns a label+context into a detailed prompt carrying the LF illustration identity; generation = official Qwen `qwen-image` on DashScope (verified live); assets stored in Depot; `picture_assets` cache in Vault (migration 0014) so an identical request NEVER hits the paid API twice ("optimizar consumo"). **Gemini image gen DISCARDED** — every Google image model returned quota-0 on the available key. Forge now calls Prism over HTTP (`PICTUREGEN_URL`, internal key); `providers/gemini.ts` deleted.
+- **DECISION — ElevenLabs is SOUND-EFFECTS-ONLY** (TTS stays Qwen3-TTS): 9 kid-friendly player SFX generated ONCE and committed as static assets in `frontend/public/sfx/` — zero runtime generation calls, exactly the consumption-discipline rule Prism enforces for images.
+
+
 ## Current State (2026-07-22) — Analytics deepened + GA4 dual-tracking + sidebar scroll + Pulse cost trim
 
 **Verified analytics is live end-to-end (Task: "analytics working 100%").** Confirmed in prod, not assumed: the Plausible tracker fires (`/api/event` → 202) and Umami fires (`/api/send` → 200); the earlier no-auto-pageview scare was a measurement artifact — the automated tab loads `hidden`, and Plausible *correctly* defers the initial pageview until visible (the per-site `pa-<id>.js` self-inits with `autoCapturePageviews` via `plausible.o`). The Plausible dashboard shows real same-day traffic. Core holds every Pulse key (`PLAUSIBLE_URL/API_KEY/SITE_ID`, `UMAMI_URL/USERNAME/PASSWORD/WEBSITE_ID`, `KUMA_URL/STATUS_SLUG`), so the admin panel reads real data. Frontend `analytics.tsx` Plausible logic left as-is (it was already correct).

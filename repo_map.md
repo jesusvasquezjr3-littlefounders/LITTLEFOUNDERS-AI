@@ -380,6 +380,21 @@ filebase/
       fd/
       fe/
       ff/
+    lesson-images/
+      04/
+      09/
+      1c/
+      25/
+      29/
+      4e/
+      53/
+      73/
+      7d/
+      8e/
+      9f/
+      de/
+      e0/
+      ec/
   src/
     __tests__/
     lib/
@@ -439,6 +454,15 @@ parent-id-check/
     __tests__/
     routes/
     services/
+picturegen/
+  src/
+    __tests__/
+    cache/
+    filebase/
+    gen/
+    judge/
+    routes/
+    service/
 pulse/
   railway/
     clickhouse/
@@ -1282,7 +1306,7 @@ primary register.
 
 ## Architecture summary (locked 2026-07-11)
 
-8 independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
+Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
 
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
@@ -1340,17 +1364,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-23) — Lesson Engine + Forge closed at 100%; Prism (picturegen/) born
+
+- Testing course (`qa-lesson-engine-smoketest`): **62/62 published under the strict content-playbook judge, 186/186 documents contract-valid, 0 gradable segments without keys, fully narrated (846 units)** — fixture re-exported (`db:import-course`-able by any dev).
+- Forge convergence hardening for mass generation: `FORGE_SLOT_ATTEMPTS` outer regen-from-scratch retries, `stripNullValues` (+ SEMANTIC_NULL_KEYS), `repairDocument` (balance_scale, interest_peek), icon whitelist in-prompt, graded-answer-key gate, judge calibrations (fluency drills + content-only story lessons).
+- **DECISION — Prism (`picturegen/`, port 4007), owner-directed:** the ONLY image-generation service (mirror of Echo for audio). Art-director judge (Qwen chat) turns a label+context into a detailed prompt carrying the LF illustration identity; generation = official Qwen `qwen-image` on DashScope (verified live); assets stored in Depot; `picture_assets` cache in Vault (migration 0014) so an identical request NEVER hits the paid API twice ("optimizar consumo"). **Gemini image gen DISCARDED** — every Google image model returned quota-0 on the available key. Forge now calls Prism over HTTP (`PICTUREGEN_URL`, internal key); `providers/gemini.ts` deleted.
+- **DECISION — ElevenLabs is SOUND-EFFECTS-ONLY** (TTS stays Qwen3-TTS): 9 kid-friendly player SFX generated ONCE and committed as static assets in `frontend/public/sfx/` — zero runtime generation calls, exactly the consumption-discipline rule Prism enforces for images.
+
+
 ## Current State (2026-07-22) — Analytics deepened + GA4 dual-tracking + sidebar scroll + Pulse cost trim
 
 **Verified analytics is live end-to-end (Task: "analytics working 100%").** Confirmed in prod, not assumed: the Plausible tracker fires (`/api/event` → 202) and Umami fires (`/api/send` → 200); the earlier no-auto-pageview scare was a measurement artifact — the automated tab loads `hidden`, and Plausible *correctly* defers the initial pageview until visible (the per-site `pa-<id>.js` self-inits with `autoCapturePageviews` via `plausible.o`). The Plausible dashboard shows real same-day traffic. Core holds every Pulse key (`PLAUSIBLE_URL/API_KEY/SITE_ID`, `UMAMI_URL/USERNAME/PASSWORD/WEBSITE_ID`, `KUMA_URL/STATUS_SLUG`), so the admin panel reads real data. Frontend `analytics.tsx` Plausible logic left as-is (it was already correct).
-
-**Admin analytics deepened (the "muchos campos no aprovechados" ask).** Core gained Plausible Stats API v2 **breakdowns** (top pages/sources/channels/countries/devices/browsers/os/entry+exit/UTM campaigns), an audience-shaped `/analytics/report` aggregator, a **branded, watermarked PDF export** (`/analytics/report.pdf`, pdfkit — papaya/navy, per team: Marketing/Sales/Frontend/Full; raw-PDF is a documented envelope exception like Depot's file route), **display filters** on overview+breakdown, and a read-only `/analytics/exclusions` mirror. Frontend `AnalyticsHealthPage` rebuilt into a dense, filter-aware surface (KPIs+trend, 10 breakdown cards with row-click-to-filter, PDF export card, **superadmin-only Excluded-IPs** manager that generates the `railway variables --set IP_BLOCKLIST=…` command, health). ~60 i18n keys ×3 locales. IP exclusion is honestly ingestion-level (Plausible stores no IP, so a dashboard filter can't do it): the card computes the value; enforcement is Plausible's `IP_BLOCKLIST` env (documented in `pulse/.env.example` + mirrored to Core `PLAUSIBLE_IP_BLOCKLIST` for display).
-
-**GA4 dual-tracking re-added — PUBLIC PAGES ONLY (§1.9).** Google Analytics (`G-0XH7S80QG2`, property littlefounders.ai / stream 13256321210) runs alongside Plausible but scoped to the NARROWEST surface: marketing/public paths only, never app or kid sessions. Unlike cookieless Plausible/Umami, GA4 uses cookies, so `analytics.tsx` fires `page_view` manually (`send_page_view:false`) and re-asserts a hard `ga-disable-<id>` kill-switch on every route change — GA4 can't observe an app/kid path even if its script stays resident across an SPA nav. `VITE_GA4_MEASUREMENT_ID` (public, Production-only) set in Vercel. **Cookie-consent follow-up (Consent Mode banner for EU/UK) is the correct next step — not yet built.**
-
-**Sidebar scrolls now.** The desktop sidebar `<nav>` became `flex-1 min-h-0 overflow-y-auto`; brand + profile block stay pinned, so the Staff group's 7 sections no longer push the profile card off the bottom of the viewport.
-
-**Railway cost trimmed conservatively (owner chose "limit resources", not "consolidate").** The bill is ~95% memory; the Pulse stack (5 always-on services, cannot scale-to-zero) pushed the estimate ~$12 → ~$28.81. Measured per-service RSS: **pulse-clickhouse ~850 MB** (biggest, climbing toward its cap), pulse-plausible ~500 MB (BEAM). Trimmed ClickHouse ceilings (`max_server_memory_usage` 1.5G→1G, `mark_cache_size` 500M→256M, +512M per-query cap) — safe, our event volume is tiny. Node heap caps on Umami/Kuma **deliberately skipped** (measured low; a cap saves nothing + adds OOM risk — same conclusion as the 2026-07-17 Core finding). The larger lever (pausing Umami pre-launch) is the aggressive route the owner deferred. Full detail: RUNBOOK.md § Railway cost.
 ```
 
 ### agent/README.md
@@ -5169,7 +5193,7 @@ describe('GET /health', () => {
 ```
 import { describe, expect, it, vi } from 'vitest';
 import { illustrateSegments } from '../pipeline/images.js';
-import { ProviderNotConfiguredError } from '../providers/errors.js';
+import { ProviderNotConfiguredError, ProviderHttpError } from '../providers/errors.js';
 import { buildDocument } from './fixtures.js';
 
 function docWithPictureChoice() {
@@ -5957,21 +5981,21 @@ import type { GateProblem } from './gates.js';
 ### coursegen/src/pipeline/images.ts
 
 ```
-// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Generates
-// illustrations for visual-option segments missing `image_url` (today:
-// `picture_choice`, `memory_flip`), uploads them to filebase, and patches
-// the url back in.
-// Skips CLEANLY (never fails the run, never fails the SLOT) on ANY
-// provider-level failure — `--no-images`, no API key, quota/billing
-// exhausted (429 with limit:0 is a real, non-transient case we hit live),
-// network errors, timeouts. Each is a per-OPTION skip (icon stays the
-// fallback, never emojis — DESIGN.md / LESSON_ENGINE.md §5.2 #8); only
-// NOT_CONFIGURED short-circuits the whole document (no key = no point
-// trying the rest). A lesson must never be unpublishable just because an
-// illustration failed — that would make "images are optional" a lie.
+// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Fills `image_url`
+// on visual segments (`picture_choice` options, `memory_flip` card sides) by
+// asking Prism (picturegen/) for each illustration. Prism owns the whole
+// image concern: the art-director judge (LF visual identity), the qwen-image
+// generation, Depot storage, and the cache that guarantees an identical
+// request never hits the paid API twice — Forge only embeds the returned
+// public URL. Skips CLEANLY (never fails the run, never fails the SLOT) on
+// ANY failure — `--no-images`, Prism not configured, Prism down, provider
+// quota. Each is a per-OPTION skip (icon stays the fallback, never emojis —
+// DESIGN.md / LESSON_ENGINE.md §5.2 #8); only NOT_CONFIGURED short-circuits
+// the whole document (no Prism = no point trying the rest). A lesson must
+// never be unpublishable just because an illustration failed.
 
-import { getConfig } from '../env.js';
-import { generateImage } from '../providers/gemini.js';
+import { requestPicture } from '../providers/picturegen.js';
+import { ProviderNotConfiguredError } from '../providers/errors.js';
 ```
 
 ### coursegen/src/pipeline/localize.ts
@@ -6194,26 +6218,6 @@ export class ProviderHttpError extends Error {
     // a real failure and must NOT burn transport-retry budget.
 ```
 
-### coursegen/src/providers/gemini.ts
-
-```
-// Gemini image generation ("nanobanana") — COURSE_ENGINE.md §4/§5 images
-// stage. Optional: with no GEMINI_API_KEY the module throws a clear
-// ProviderNotConfiguredError that pipeline/images.ts treats as "skip
-// cleanly", never as a pipeline failure.
-
-import { getConfig } from '../env.js';
-import { ProviderHttpError, ProviderNetworkError, ProviderNotConfiguredError, ProviderTimeoutError } from './errors.js';
-import { withTransportRetry } from './retry.js';
-import type { UsageLedger } from './usage.js';
-
-export interface GenerateImageRequest {
-  /** Learner-visible image concept — kid-safe, no minor PII (§1.9). */
-  prompt: string;
-  operation: string;
-  ledger?: UsageLedger;
-```
-
 ### coursegen/src/providers/openaiChat.ts
 
 ```
@@ -6232,6 +6236,26 @@ export interface ChatMessage {
 
 export interface ChatCompleteRequest {
   messages: ChatMessage[];
+```
+
+### coursegen/src/providers/picturegen.ts
+
+```
+// Prism (picturegen/) client — the ONLY way Forge obtains illustrations.
+// Prism owns the whole image concern: an art-director judge crafts the final
+// prompt (LF visual identity), a cache guarantees an identical request never
+// hits the paid image API twice, and the asset is stored in Depot. Forge just
+// asks for a picture and embeds the returned public URL.
+
+import { getConfig } from '../env.js';
+import { ProviderHttpError, ProviderNotConfiguredError } from './errors.js';
+import { withTransportRetry } from './retry.js';
+
+export interface PictureRequest {
+  /** What the image depicts — an option label, a card side, a scene name. */
+  label: string;
+  /** Surrounding lesson text that grounds the subject (prompt_md etc.). */
+  context?: string;
 ```
 
 ### coursegen/src/providers/qwen.ts
@@ -6286,7 +6310,7 @@ import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { getConfig } from '../env.js';
 
-export type UsageProvider = 'deepseek' | 'qwen' | 'gemini-image';
+export type UsageProvider = 'deepseek' | 'qwen';
 
 export interface UsageRecord {
   provider: UsageProvider;
@@ -6301,7 +6325,7 @@ export interface UsageRecord {
 // images:backfill — an operator CLI that fills in missing illustrations on
 // ALREADY-PUBLISHED (or in-review) lessons, without regenerating any content.
 //
-//   npm run images:backfill -- --course <slug> [--dry-run]
+//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--dry-run]
 //
 // For every lesson_document of a published-or-review lesson in the course, it
 // runs the EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
@@ -6685,6 +6709,26 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 -- incoherent "best 0, current 1".
 --
 -- learning_stats stays system-written only (0006): no client policy changes.
+```
+
+### database/migrations/0014_picture_assets.sql
+
+```
+-- 0014_picture_assets.sql — Prism (picturegen/) generation cache.
+--
+-- The whole point of the picturegen service is that an identical image request
+-- NEVER hits the paid image API twice ("optimizar consumo" — owner directive
+-- 2026-07-23). This table is the request-level index: prompt_hash =
+-- sha256(model + size + final judged prompt) → the Depot file already
+-- generated for it. The image BYTES live in filebase (Depot, content-addressed,
+-- bucket lesson-images, public reads); this row only maps request → asset.
+--
+-- Service-role only, like lesson_documents: RLS enabled with NO client
+-- policies — browsers never read this table (they get plain public Depot URLs
+-- embedded in lesson documents), and only Prism writes it.
+
+create table if not exists picture_assets (
+  id          uuid primary key default gen_random_uuid(),
 ```
 
 ### database/package.json
@@ -51539,6 +51583,246 @@ npm test
   "createdAt": "2026-07-23T08:04:46.987Z"
 }```
 
+### filebase/data/lesson-images/04/0417640a4622b8d4d7aa88c2e1b7519e11eeb9ba15a7b9cf1b1d530777bd710a.json
+
+```
+{
+  "id": "lesson-images/0417640a4622b8d4d7aa88c2e1b7519e11eeb9ba15a7b9cf1b1d530777bd710a.png",
+  "bucket": "lesson-images",
+  "hash": "0417640a4622b8d4d7aa88c2e1b7519e11eeb9ba15a7b9cf1b1d530777bd710a",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1136380,
+  "originalName": "41f17d00b7186c51440afaf45171c45d56db081ad68b3b1ce128c7a053610a2a.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:55:03.312Z"
+}```
+
+### filebase/data/lesson-images/09/09c89ff6f890bf55db3c3f83f4b7c7f9c27d29f35aa17d02d1defb971532b839.json
+
+```
+{
+  "id": "lesson-images/09c89ff6f890bf55db3c3f83f4b7c7f9c27d29f35aa17d02d1defb971532b839.png",
+  "bucket": "lesson-images",
+  "hash": "09c89ff6f890bf55db3c3f83f4b7c7f9c27d29f35aa17d02d1defb971532b839",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1126904,
+  "originalName": "358832276d5896661bfc948e2bd801f13acbf876091a736b4e577e922c50f63e.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:59:22.319Z"
+}```
+
+### filebase/data/lesson-images/1c/1c2f12720a19a9c2f7ccba7e9295564f8aacf02582a3bd158d3296f16b4917a5.json
+
+```
+{
+  "id": "lesson-images/1c2f12720a19a9c2f7ccba7e9295564f8aacf02582a3bd158d3296f16b4917a5.png",
+  "bucket": "lesson-images",
+  "hash": "1c2f12720a19a9c2f7ccba7e9295564f8aacf02582a3bd158d3296f16b4917a5",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1184577,
+  "originalName": "8a077001b8831257aef47265eb86d56afa87a807c3e11f4b77423d0cd5633860.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:58:23.458Z"
+}```
+
+### filebase/data/lesson-images/25/253449547e9b97bbe78329b9f59845cfd5d35a4ec4402ebb4332c5ea80c66d62.json
+
+```
+{
+  "id": "lesson-images/253449547e9b97bbe78329b9f59845cfd5d35a4ec4402ebb4332c5ea80c66d62.png",
+  "bucket": "lesson-images",
+  "hash": "253449547e9b97bbe78329b9f59845cfd5d35a4ec4402ebb4332c5ea80c66d62",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1027522,
+  "originalName": "1e827ca3b38214a36d2a979a34255c9503d63ca9102a0d4636a5ec7dcb8f8064.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:59:52.012Z"
+}```
+
+### filebase/data/lesson-images/29/2969b61fbec94ad109916d68e261433cd0d3342295541c05684704a041353be2.json
+
+```
+{
+  "id": "lesson-images/2969b61fbec94ad109916d68e261433cd0d3342295541c05684704a041353be2.png",
+  "bucket": "lesson-images",
+  "hash": "2969b61fbec94ad109916d68e261433cd0d3342295541c05684704a041353be2",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1036227,
+  "originalName": "08bc143525f8e4b12e9e0fdee1d482c917fc0518d531e233656e9f5f19d056e7.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:59:07.572Z"
+}```
+
+### filebase/data/lesson-images/4e/4efaeae4d630ba1adccf8aa7d29873f80317404999543f7b0b52c223be5ca743.json
+
+```
+{
+  "id": "lesson-images/4efaeae4d630ba1adccf8aa7d29873f80317404999543f7b0b52c223be5ca743.png",
+  "bucket": "lesson-images",
+  "hash": "4efaeae4d630ba1adccf8aa7d29873f80317404999543f7b0b52c223be5ca743",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1109492,
+  "originalName": "c770ecf73d29a8fa773992e875a8f62c365600c8e65b66b2d8593160594997e3.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:58:09.354Z"
+}```
+
+### filebase/data/lesson-images/53/53540cfa6b1e3220e76461382027378b726f1f1ca122f6a7fcef5e2ec56bdd99.json
+
+```
+{
+  "id": "lesson-images/53540cfa6b1e3220e76461382027378b726f1f1ca122f6a7fcef5e2ec56bdd99.png",
+  "bucket": "lesson-images",
+  "hash": "53540cfa6b1e3220e76461382027378b726f1f1ca122f6a7fcef5e2ec56bdd99",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1102254,
+  "originalName": "b9abc0d8c8e66ed51f16250e567af5d71c9fba7f588c89578de6c7076a6c1003.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:52:12.230Z"
+}```
+
+### filebase/data/lesson-images/73/73ad84904052d7619bac592d5cfc8fecf22cf316ec93be17fc9d63aba61ed902.json
+
+```
+{
+  "id": "lesson-images/73ad84904052d7619bac592d5cfc8fecf22cf316ec93be17fc9d63aba61ed902.png",
+  "bucket": "lesson-images",
+  "hash": "73ad84904052d7619bac592d5cfc8fecf22cf316ec93be17fc9d63aba61ed902",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1164444,
+  "originalName": "608f1df2a23f628ed797a02168a934c5a72b34740b8f368897dc67e67d9c0960.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:51:41.020Z"
+}```
+
+### filebase/data/lesson-images/73/73ee053638af9a4018dd6e901ef9cedcc3a8fc44cace054b448769efffb6a1c5.json
+
+```
+{
+  "id": "lesson-images/73ee053638af9a4018dd6e901ef9cedcc3a8fc44cace054b448769efffb6a1c5.png",
+  "bucket": "lesson-images",
+  "hash": "73ee053638af9a4018dd6e901ef9cedcc3a8fc44cace054b448769efffb6a1c5",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1146440,
+  "originalName": "f538792c395b796f724ddc67c4d993e5884b93d07fe236a0809c72d9e53dd15c.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:57:41.326Z"
+}```
+
+### filebase/data/lesson-images/7d/7d452420cc2ea23e803b9aa74f38cc36d491450e1813acca4df0945772195f7d.json
+
+```
+{
+  "id": "lesson-images/7d452420cc2ea23e803b9aa74f38cc36d491450e1813acca4df0945772195f7d.png",
+  "bucket": "lesson-images",
+  "hash": "7d452420cc2ea23e803b9aa74f38cc36d491450e1813acca4df0945772195f7d",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1149761,
+  "originalName": "9b377a0b31129e2440debb973149cbeae96de0188c87e776f208b32d5edfb7fd.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:59:37.212Z"
+}```
+
+### filebase/data/lesson-images/8e/8efc32b38a8c2cbc7429e93f87aeb99f7e0792a8f78cad0687850bd44f53380e.json
+
+```
+{
+  "id": "lesson-images/8efc32b38a8c2cbc7429e93f87aeb99f7e0792a8f78cad0687850bd44f53380e.png",
+  "bucket": "lesson-images",
+  "hash": "8efc32b38a8c2cbc7429e93f87aeb99f7e0792a8f78cad0687850bd44f53380e",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 927426,
+  "originalName": "5dec0ae2bbb1b674464c2053d7ab5ee0c07cfa913077ce613a6210cfa766f94c.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:58:38.420Z"
+}```
+
+### filebase/data/lesson-images/9f/9ff2084e9bafc2053d4aeff920cff081a270cff3e8dd1fc54e2b2df3a54f912a.json
+
+```
+{
+  "id": "lesson-images/9ff2084e9bafc2053d4aeff920cff081a270cff3e8dd1fc54e2b2df3a54f912a.png",
+  "bucket": "lesson-images",
+  "hash": "9ff2084e9bafc2053d4aeff920cff081a270cff3e8dd1fc54e2b2df3a54f912a",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 857667,
+  "originalName": "62dbb0b11077de359de5b05d2aa02e1a02805b0ddf7159954267360550ea5d05.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:58:53.226Z"
+}```
+
+### filebase/data/lesson-images/de/de45629f5116357da7beebc9da74043d0cb95f50716dc42682cf09798e71d835.json
+
+```
+{
+  "id": "lesson-images/de45629f5116357da7beebc9da74043d0cb95f50716dc42682cf09798e71d835.png",
+  "bucket": "lesson-images",
+  "hash": "de45629f5116357da7beebc9da74043d0cb95f50716dc42682cf09798e71d835",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1046998,
+  "originalName": "3b1dd1fbef4e8cd3f023b29de54bbfb638a8f80e87bb01ea6f2005aa7c4abc71.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:57:26.018Z"
+}```
+
+### filebase/data/lesson-images/e0/e02ce34e2b3afd85f7cbc75e5bc7cde351dca1e07cea6f2d0587dc36ce0d0e7c.json
+
+```
+{
+  "id": "lesson-images/e02ce34e2b3afd85f7cbc75e5bc7cde351dca1e07cea6f2d0587dc36ce0d0e7c.png",
+  "bucket": "lesson-images",
+  "hash": "e02ce34e2b3afd85f7cbc75e5bc7cde351dca1e07cea6f2d0587dc36ce0d0e7c",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 981255,
+  "originalName": "2388cc632b110dec4978dc7a1a05eb4c0d3abf674973d6952c7b4197f52c30e8.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:57:11.491Z"
+}```
+
+### filebase/data/lesson-images/ec/ece7fc58d09bdd16ef289d24f7068928868b509a8176e146ef5392d2ef5fea24.json
+
+```
+{
+  "id": "lesson-images/ece7fc58d09bdd16ef289d24f7068928868b509a8176e146ef5392d2ef5fea24.png",
+  "bucket": "lesson-images",
+  "hash": "ece7fc58d09bdd16ef289d24f7068928868b509a8176e146ef5392d2ef5fea24",
+  "ext": "png",
+  "mime": "image/png",
+  "bytes": 1162675,
+  "originalName": "f0abd493b078575b779d05085838b695ec3101140f69797f29c6f8f9d6a4aa6a.png",
+  "visibility": "public",
+  "uploaderService": "unknown",
+  "createdAt": "2026-07-23T21:57:55.716Z"
+}```
+
 ### filebase/eslint.config.js
 
 ```
@@ -56794,6 +57078,459 @@ process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
 ```
 
 ### parent-id-check/vitest.config.ts
+
+```
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
+  },
+});
+```
+
+### picturegen/AGENTS.md
+
+```
+# AGENTS.md — picturegen (Prism)
+
+> Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+
+## Mission
+
+Prism is the platform's **ONLY** image-generation service — the visual sibling
+of Echo (audiogen). Every generated illustration on the platform is born here:
+consumers (coursegen/Forge today) POST a bare label + lesson context; Prism
+art-directs a prompt, generates the image once, stores it in Depot, indexes it
+in Vault, and hands back a stable URL. Internal service — `x-internal-api-key`
+only, constant-time compared.
+
+## Owns / does not own
+
+```
+
+### picturegen/README.md
+
+```
+# picturegen (Prism)
+
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+
+**Mission:** The platform's ONLY image-generation service (the visual sibling of Echo/audiogen). Consumers (coursegen/Forge today) POST a label; Prism art-directs a prompt, generates the illustration on DashScope (Qwen-Image), stores it in Depot, indexes it in Vault — and is **cache-first**: an identical request never pays the image API twice.
+**Port (dev):** 4007 · **Deploy:** Railway · **Access:** internal only (`x-internal-api-key`)
+
+```bash
+npm install
+cp .env.example .env   # fill in real DashScope/Supabase/Filebase values
+npm run dev
+npm test
+```
+
+## What it does
+```
+
+### picturegen/eslint.config.js
+
+```
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  { ignores: ['dist/'] },
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+);
+```
+
+### picturegen/package.json
+
+```
+{
+  "name": "@littlefounders/picturegen",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+```
+
+### picturegen/railway.json
+
+```
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "npm run start",
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+### picturegen/src/__tests__/health.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp, SERVICE } from '../app.js';
+
+describe('GET /health', () => {
+  it('returns the ok envelope', async () => {
+    const res = await request(createApp()).get('/health');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      data: { service: SERVICE, version: expect.any(String), status: 'ok' },
+      error: null,
+    });
+  });
+
+  it('unknown routes return the error envelope', async () => {
+```
+
+### picturegen/src/__tests__/pictureAssetsRepo.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { findByHash, insertAsset, pictureAssetHash, type PictureAssetRow } from '../cache/pictureAssetsRepo.js';
+
+const row: PictureAssetRow = {
+  id: '11111111-1111-4111-8111-111111111111',
+  prompt_hash: 'abc',
+  model: 'qwen-image',
+  prompt: 'a jar of coins',
+  url: 'https://depot.example/files/lesson-images/abc.png',
+  file_id: 'lesson-images/abc.png',
+  bytes: 12345,
+  created_at: '2026-07-23T00:00:00Z',
+};
+
+function jsonResponse(status: number, body: unknown): Response {
+```
+
+### picturegen/src/__tests__/pictureRoutes.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { ImageError } from '../gen/errors.js';
+import { fallbackPrompt, LF_VISUAL_IDENTITY } from '../judge/promptJudge.js';
+import { pictureAssetHash } from '../cache/pictureAssetsRepo.js';
+import type { PictureAssetRow } from '../cache/pictureAssetsRepo.js';
+
+const KEY = 'test-internal-key-0123456789'; // matches test-setup.ts INTERNAL_API_KEY
+const CRAFTED_PROMPT = 'A cheerful jar of coins on a sunny lemonade stand';
+
+// Config defaults exercised by the service (env.ts): model qwen-image, size 1024*1024.
+// Cache key hashes the REQUEST descriptor (purpose | label | context), never the
+// judged prompt — the judge is nondeterministic, so a prompt-keyed cache never hits.
+const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'generic | a jar of coins | ');
+```
+
+### picturegen/src/__tests__/promptJudge.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { craftImagePrompt, fallbackPrompt, LF_VISUAL_IDENTITY } from '../judge/promptJudge.js';
+
+const opts = { apiBase: 'https://judge.example/v1', apiKey: 'k', model: 'qwen-plus' };
+
+function chatResponse(status: number, content: string): Response {
+  return new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status });
+}
+
+describe('craftImagePrompt', () => {
+  it('returns the judge JSON {prompt, negative}', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: 'A sunny lemonade stand with a jar of coins', negative: 'text, watermark' })));
+    const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'lesson_option' }, { ...opts, fetchImpl });
+```
+
+### picturegen/src/__tests__/qwenImageClient.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { downloadImage, generateImage } from '../gen/qwenImageClient.js';
+import { ImageError } from '../gen/errors.js';
+
+const baseOpts = {
+  apiBase: 'https://dashscope-intl.example',
+  apiKey: 'k',
+  model: 'qwen-image',
+  size: '1024*1024',
+  sleep: async () => undefined,
+  rand: () => 0,
+  pollIntervalMs: 1,
+  timeoutMs: 120_000,
+};
+
+```
+
+### picturegen/src/app.ts
+
+```
+import crypto from 'crypto';
+import express from 'express';
+import { getConfig } from './env.js';
+import { picturesRouter, type PicturesRouterDeps } from './routes/pictures.js';
+
+export const SERVICE = 'picturegen';
+export const VERSION = '0.1.0';
+
+export interface AppDeps {
+  pictures?: PicturesRouterDeps;
+}
+
+export function createApp(deps: AppDeps = {}): express.Express {
+  const config = getConfig();
+  const app = express();
+```
+
+### picturegen/src/cache/pictureAssetsRepo.ts
+
+```
+import { createHash } from 'crypto';
+import { getConfig } from '../env.js';
+
+/*
+ * Service-role PostgREST access to `picture_assets` — the cache-first heart
+ * of Prism. Mirrors audiogen/src/db/lessonDocumentsRepo.ts's asServiceRole()
+ * pattern (writes reserved to the service role). An identical request must
+ * NEVER hit the paid image API twice: the (model, size, prompt) hash is a
+ * UNIQUE key, and generation is skipped whenever a row already exists.
+ *
+ * Schema (migration owned by another engineer — assumed present):
+ *   picture_assets(
+ *     id uuid default, prompt_hash text UNIQUE, model text, prompt text,
+ *     url text, file_id text, bytes int, created_at timestamptz)
+ */
+```
+
+### picturegen/src/env.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env validated once at boot (agent/core/CONVENTIONS.md). Services crash at
+ * boot on invalid env, never at request time. Tests set process.env in
+ * test-setup before the first getConfig() call.
+ *
+ * Prism (picturegen) is the platform's ONLY image-generation service — the
+ * visual sibling of Echo (audiogen). Two DashScope surfaces are configured:
+ *   1. the async text-to-image endpoint (IMAGE_*), and
+ *   2. an OpenAI-compatible chat endpoint (JUDGE_*) used by the art-director
+ *      judge to craft the illustration prompt.
+ */
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4007),
+```
+
+### picturegen/src/filebase/client.ts
+
+```
+/*
+ * Client for the filebase (Depot) internal upload contract:
+ *   POST {FILEBASE_URL}/api/v1/files  multipart(file, bucket, visibility)
+ *   header: x-internal-api-key: {FILEBASE_INTERNAL_KEY}
+ *   → { data: { id: '<bucket>/<sha256>.<ext>', url, bytes, mime, deduplicated } }
+ * Public GET at {FILEBASE_URL}/files/<id>.
+ *
+ * NOTE: filebase source is intentionally NOT read/modified here — this module
+ * codes strictly against the contract above (identical to audiogen's client,
+ * which uploads to the `lesson-audio` bucket; Prism uploads to `lesson-images`).
+ */
+
+export class FilebaseError extends Error {
+  constructor(message: string) {
+    super(message);
+```
+
+### picturegen/src/gen/backoff.ts
+
+```
+/** 429/5xx are transient — everything else (400s, network parse errors) is not. */
+export function isRetryableStatus(status: number): boolean {
+  return status === 429 || (status >= 500 && status < 600);
+}
+
+const MIN_MS = 500;
+const MAX_MS = 8000;
+
+/**
+ * Jittered exponential backoff, 0.5s–8s, for attempt 1..N (1-indexed).
+ * `rand` is injectable so tests can assert bounds deterministically.
+ */
+export function computeBackoffMs(attempt: number, rand: () => number = Math.random): number {
+  const exp = Math.min(MAX_MS, MIN_MS * 2 ** (attempt - 1));
+  const jitter = MIN_MS + rand() * (exp - MIN_MS || 1);
+```
+
+### picturegen/src/gen/errors.ts
+
+```
+/** Typed image-generation failures — never leak raw provider payloads to callers/logs. */
+export class ImageError extends Error {
+  constructor(
+    public readonly code:
+      | 'IMAGE_TIMEOUT'
+      | 'IMAGE_RATE_LIMITED'
+      | 'IMAGE_PROVIDER_ERROR'
+      | 'IMAGE_BAD_RESPONSE'
+      | 'IMAGE_DOWNLOAD_FAILED',
+    message: string,
+  ) {
+    super(message);
+    this.name = 'ImageError';
+  }
+}
+```
+
+### picturegen/src/gen/qwenImageClient.ts
+
+```
+import { computeBackoffMs, isRetryableStatus } from './backoff.js';
+import { ImageError } from './errors.js';
+
+/*
+ * DashScope (Qwen-Image) async text-to-image client — the ONE seam every
+ * paid image call goes through (swapping providers later = replacing this
+ * module, not the service above it). Three legs, all behind the same seam:
+ *
+ *   1. SUBMIT  POST {base}/api/v1/services/aigc/text2image/image-synthesis
+ *              header X-DashScope-Async: enable
+ *              body { model, input:{prompt, negative_prompt?}, parameters:{n:1, size} }
+ *              → { output:{ task_id, task_status } }
+ *   2. POLL    GET  {base}/api/v1/tasks/{task_id}  (every ~3s)
+ *              → { output:{ task_status, results:[{url}] } }  until SUCCEEDED
+ *   3. DOWNLOAD the result URL (DashScope's URL is TEMPORARY — we ALWAYS
+```
+
+### picturegen/src/index.ts
+
+```
+import { createApp, SERVICE } from './app.js';
+import { getConfig } from './env.js';
+
+const config = getConfig();
+
+createApp().listen(config.PORT, () => {
+  console.log(`[${SERVICE}] listening on :${config.PORT}`);
+});
+```
+
+### picturegen/src/judge/promptJudge.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * The ART-DIRECTOR JUDGE. Given a bare {label, context?, purpose?} it asks an
+ * OpenAI-compatible chat model (JSON mode) to author ONE detailed English
+ * image prompt that (a) depicts the label's subject clearly for a child,
+ * grounded in the lesson context, and (b) enforces the LittleFounders visual
+ * identity below. It NEVER blocks generation: on any judge failure (HTTP
+ * error, or unparseable JSON after 2 corrective attempts) it falls back to a
+ * deterministic prompt built from the label + context + identity brief.
+ *
+ * Child safety (/AGENTS.md §1.9): the judge only ever sees lesson content
+ * (label + context) — never child PII — and the identity brief itself forbids
+ * scary/violent imagery, faces close-up, logos and text.
+ */
+```
+
+### picturegen/src/routes/pictures.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { generatePicture, type GeneratePictureDeps } from '../service/pictures.js';
+import { PICTURE_PURPOSES } from '../judge/promptJudge.js';
+import { ImageError } from '../gen/errors.js';
+
+const CreatePictureBody = z.object({
+  label: z.string().min(1).max(120),
+  context: z.string().max(2000).optional(),
+  purpose: z.enum(PICTURE_PURPOSES).default('generic'),
+});
+
+export interface PicturesRouterDeps {
+  generatePicture?: Partial<GeneratePictureDeps>;
+}
+```
+
+### picturegen/src/service/pictures.ts
+
+```
+import { craftImagePrompt, type PicturePurpose } from '../judge/promptJudge.js';
+import { generateImage } from '../gen/qwenImageClient.js';
+import { findByHash, insertAsset, pictureAssetHash } from '../cache/pictureAssetsRepo.js';
+import { uploadFile } from '../filebase/client.js';
+import { getConfig, judgeApiKey } from '../env.js';
+
+/*
+ * Prism's one job (COURSE_ENGINE.md consumers call this): turn a label into a
+ * stored, Depot-hosted illustration — CACHE-FIRST. The flow is:
+ *
+ *   judge → hash(model,size,prompt) → cache lookup
+ *     HIT  → return the stored row, cached:true  (zero paid API calls)
+ *     MISS → generate → download → upload to Depot → index in Vault → cached:false
+ *
+ * An identical request must never pay the image API twice — that is the
+```
+
+### picturegen/src/test-setup.ts
+
+```
+// Test env — env.ts validates at the first getConfig() call.
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
+process.env.IMAGE_API_KEY ??= 'test-image-key';
+process.env.SUPABASE_URL ??= 'http://localhost:8000';
+process.env.SUPABASE_SERVICE_ROLE_KEY ??= 'test-service-role-key-0123456789';
+process.env.FILEBASE_URL ??= 'http://localhost:4006';
+process.env.FILEBASE_INTERNAL_KEY ??= 'test-filebase-key-0123456789';
+```
+
+### picturegen/tsconfig.json
+
+```
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["src/__tests__"]
+```
+
+### picturegen/vitest.config.ts
 
 ```
 import { defineConfig } from 'vitest/config';

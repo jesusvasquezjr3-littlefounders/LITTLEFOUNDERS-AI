@@ -55,7 +55,8 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Deploy — frontend | Vercel |
 | Deploy — everything else | Railway |
 | Course/lesson generation LLMs | DeepSeek + Qwen |
-| TTS | TBD (env-abstracted in `audiogen/`) |
+| Image generation | Qwen `qwen-image` (DashScope) via `picturegen/` — the only image path; Gemini discarded 2026-07-23 (quota-0) |
+| TTS | Qwen3-TTS (DashScope) in `audiogen/` — resolved; ElevenLabs is SOUND-EFFECTS-ONLY (one-off generated assets committed in `frontend/public/sfx/`, never called at runtime) |
 | Avatars | DiceBear, `avataaars` style |
 | Email engine | Haraka (self-hosted SMTP) → Amazon SES relay — see `email-server/AGENTS.md` |
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
@@ -100,6 +101,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
+| `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
