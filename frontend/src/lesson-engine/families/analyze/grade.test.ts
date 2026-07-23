@@ -140,6 +140,33 @@ describe('compare_table', () => {
     ).toBe(75)
   })
 
+  it('rescues legacy underscore-separated answer keys', () => {
+    const legacy = segment(
+      'compare_table',
+      { rows: [{ id: 'r1', label: 'A' }], cols: [{ id: 'c1', label: 'X' }], tokens: [{ id: 't1', text_md: '1' }] },
+      { cells: { r1_c1: 't1' } }, // `_` separator instead of the canonical `:`
+    )
+    // The player always submits `<row>:<col>` — this used to score 0/100.
+    expect(grade(legacy, { cells: { 'r1:c1': 't1' } }).score).toBe(100)
+  })
+
+  it('treats tokens with identical display text as interchangeable', () => {
+    const dup = segment(
+      'compare_table',
+      {
+        rows: [{ id: 'r1', label: 'A' }],
+        cols: [{ id: 'c1', label: 'X' }],
+        tokens: [
+          { id: 't1', text_md: '5 MXN' },
+          { id: 't2', text_md: '5 MXN' },
+        ],
+      },
+      { cells: { 'r1:c1': 't1' } },
+    )
+    // Placing the other "5 MXN" token is still correct — same visible value.
+    expect(grade(dup, { cells: { 'r1:c1': 't2' } }).score).toBe(100)
+  })
+
   it('malformed → 0, never throws', () => {
     expectMalformedZero(seg, [{ cells: 'nope' }, { cells: { 'r1:c1': 7 } }])
   })

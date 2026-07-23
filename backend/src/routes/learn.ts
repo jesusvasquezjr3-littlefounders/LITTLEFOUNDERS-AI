@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { GRADERS } from '../lesson-contract/registry.js';
+import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
@@ -200,7 +200,9 @@ export function learnRouter(): Router {
     if (!segment) return fail(res, 404, NOT_FOUND, 'No such segment');
 
     const grader = GRADERS[segment.type];
-    if (!grader || segment.answer === undefined) {
+    // Keyless graders (memory_flip) score from the submitted board alone and
+    // have no answer key — the answer-key requirement would 422 them forever.
+    if (!grader || (segment.answer === undefined && !KEYLESS_GRADERS.has(segment.type))) {
       return fail(res, 422, 'UNSUPPORTED_SEGMENT', 'This segment cannot be graded');
     }
 

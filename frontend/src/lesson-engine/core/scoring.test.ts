@@ -10,6 +10,7 @@ import {
   kendall,
   keywordCoverage,
   levenshtein,
+  qualityScaleFactor,
   linearFalloff,
   meanQuality,
   normalizeText,
@@ -89,6 +90,15 @@ describe('scoring helpers (LESSON_ENGINE.md §6)', () => {
   it('meanQuality', () => {
     expect(meanQuality([100, 50])).toBe(75)
     expect(meanQuality([])).toBe(0)
+  })
+
+  it('qualityScaleFactor: 0–1 maps rescale, 0–100 maps pass through', () => {
+    expect(qualityScaleFactor([1, 0.3])).toBe(100) // authored 0–1 → ×100
+    expect(qualityScaleFactor([0.8])).toBe(100)
+    expect(qualityScaleFactor([100, 20])).toBe(1) // already 0–100
+    expect(qualityScaleFactor([1])).toBe(100) // boundary: max exactly 1
+    expect(qualityScaleFactor([0, 0])).toBe(1) // degenerate: no rescale
+    expect(qualityScaleFactor([])).toBe(1)
   })
 
   it('text matching: accents, fuzz budget, keywords', () => {

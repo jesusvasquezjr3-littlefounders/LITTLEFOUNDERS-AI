@@ -186,6 +186,17 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     expect(res.body.error.code).toBe('UNSUPPORTED_SEGMENT');
   });
 
+  it('grades a keyless memory_flip segment (no answer key) instead of 422', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'memory-1',
+      answer: { flips: 6, pairs: 3 },
+      attempt_number: 1,
+    });
+    expect(res.status).toBe(200);
+    // Completing the board is the win — memory_flip floors at 40.
+    expect(res.body.data.verdict.score).toBeGreaterThanOrEqual(40);
+  });
+
   it('404s for a segment id that does not exist in the document', async () => {
     const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'nope',

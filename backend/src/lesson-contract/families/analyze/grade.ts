@@ -54,14 +54,35 @@ const gradeCompareTable: FamilyGrader = (segment, answer) => {
   const cells = a ? strRecord(a.cells) : null
   const correctCells = key ? strRecord(key.cells) : null
   if (!cells || !correctCells) return MALFORMED
-  const cellKeys = Object.keys(correctCells)
+  // Cell keys are canonically `<row>:<col>`, but some generated answer keys
+  // used `_` as the separator, so exact-key matching scored every placement 0.
+  // Normalize the separator on both sides. Cell VALUES are token ids — compare
+  // by the token's display text when available, so two tokens that show the
+  // same thing (e.g. "5 MXN") are interchangeable rather than one being "wrong".
+  const tokens = Array.isArray(segment.payload.tokens)
+    ? (segment.payload.tokens as Array<{ id?: unknown; text_md?: unknown }>)
+    : []
+  const textById = new Map<string, string>()
+  for (const tk of tokens) {
+    if (typeof tk?.id === 'string' && typeof tk?.text_md === 'string') textById.set(tk.id, tk.text_md)
+  }
+  const canonVal = (id: string) => textById.get(id) ?? id
+  const canonKey = (k: string) => k.replace(/_/g, ':')
+  const userByKey = new Map<string, string>()
+  for (const [k, v] of Object.entries(cells)) userByKey.set(canonKey(k), canonVal(v))
+  const correctByKey = new Map<string, string>()
+  const revealCells: Record<string, string> = {}
+  for (const [k, v] of Object.entries(correctCells)) {
+    correctByKey.set(canonKey(k), canonVal(v))
+    revealCells[canonKey(k)] = v
+  }
   let hits = 0
-  cellKeys.forEach((k) => {
-    if (cells[k] === correctCells[k]) hits++
+  correctByKey.forEach((v, k) => {
+    if (userByKey.get(k) === v) hits++
   })
   return {
-    score: ratio(hits, cellKeys.length),
-    reveal: { cells: correctCells },
+    score: ratio(hits, correctByKey.size),
+    reveal: { cells: revealCells },
   }
 }
 

@@ -291,9 +291,58 @@ describe('would_you_rather', () => {
     expect(grade(segment, { choice: 'a' }).reveal).toEqual({ qualities: { a: 60, b: 90 } })
   })
 
+  it('rescales 0–1 quality maps to 0–100 (Forge scale drift)', () => {
+    const zeroToOne = seg(
+      'would_you_rather',
+      { a: { text_md: 'x' }, b: { text_md: 'y' } },
+      { qualities: { a: 1, b: 0.3 } },
+    )
+    expect(grade(zeroToOne, { choice: 'a' }).score).toBe(100)
+    expect(grade(zeroToOne, { choice: 'b' }).score).toBe(30)
+  })
+
+  it('an all-zero map is a free-choice reflection: any valid pick passes', () => {
+    const degenerate = seg(
+      'would_you_rather',
+      { a: { text_md: 'x' }, b: { text_md: 'y' } },
+      { qualities: { a: 0, b: 0 } },
+    )
+    expect(grade(degenerate, { choice: 'a' }).score).toBe(100)
+    expect(grade(degenerate, { choice: 'b' }).score).toBe(100)
+  })
+
   it('malformed answers score 0 without throwing', () => {
     expectMalformedSafe(segment, { choice: 'a' })
     expect(grade(segment, { choice: 'c' }).score).toBe(0)
     expect(grade(segment, { choice: 1 }).score).toBe(0)
+  })
+})
+
+// ---- quality-scale normalization (best_decision / story_branch parity) -------------
+
+describe('quality-scale normalization', () => {
+  it('story_branch rescales a 0–1 quality map', () => {
+    const s = seg(
+      'story_branch',
+      { start_node: 'n1', nodes: [] },
+      {
+        qualities: [
+          { node_id: 'n1', choice_id: 'a', score: 1 },
+          { node_id: 'n1', choice_id: 'b', score: 0.2 },
+        ],
+      },
+    )
+    expect(grade(s, { path: [{ node_id: 'n1', choice_id: 'a' }] }).score).toBe(100)
+    expect(grade(s, { path: [{ node_id: 'n1', choice_id: 'b' }] }).score).toBe(20)
+  })
+
+  it('dialogue_choice rescales a 0–1 quality map', () => {
+    const s = seg(
+      'dialogue_choice',
+      { persona: { character: 'zara', role_md: 'x' }, opening_md: 'x', turns: [] },
+      { turns: [{ turn_id: 't1', qualities: { r1: 1, r2: 0.4 } }] },
+    )
+    expect(grade(s, { replies: [{ turn_id: 't1', reply_id: 'r1' }] }).score).toBe(100)
+    expect(grade(s, { replies: [{ turn_id: 't1', reply_id: 'r2' }] }).score).toBe(40)
   })
 })

@@ -169,6 +169,20 @@ export function meanQuality(qualities: number[]): number {
   return clampScore(qualities.reduce((a, b) => a + b, 0) / qualities.length)
 }
 
+/**
+ * Rescale authored decision qualities to the 0–100 grading scale. Forge has
+ * shipped quality maps on a 0–1 scale (e.g. best_decision `{a:1,b:0.3}`); read
+ * verbatim, the correct answer scored 1/100 and could never pass. When the
+ * largest authored quality is ≤ 1 (and positive) the whole map is read as 0–1
+ * and multiplied by 100; maps that already peak above 1 pass through
+ * unchanged. Returns the multiplier so an entire map rescales consistently.
+ */
+export function qualityScaleFactor(values: number[]): number {
+  let max = 0
+  for (const v of values) if (v > max) max = v
+  return max > 0 && max <= 1 ? 100 : 1
+}
+
 // ---- Text matching -----------------------------------------------------------
 
 export function normalizeText(input: string, caseSensitive = false): string {

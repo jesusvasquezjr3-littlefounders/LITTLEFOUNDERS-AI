@@ -3,7 +3,7 @@
 // content (per-distractor rationale); tier microcopy is the UI's job (i18n).
 
 import type { FamilyGrader, GradeOutcome, SegmentBase } from '../../core/types.js'
-import { binary, calibration, decisionAccuracy, signalDetection } from '../../core/scoring.js'
+import { binary, calibration, clampScore, decisionAccuracy, qualityScaleFactor, signalDetection } from '../../core/scoring.js'
 
 type Dict = Record<string, unknown>
 
@@ -77,8 +77,11 @@ const gradeBestDecision: FamilyGrader = (segment, answer) => {
   const qualities = key ? (obj(key.qualities) as Record<string, number> | null) : null
   if (!chosen || !qualities || typeof qualities[chosen] !== 'number') return MALFORMED
   const best = Object.entries(qualities).sort((x, y) => y[1] - x[1])[0]
+  // Rescale 0–1 quality maps to 0–100 (Forge has shipped both scales) so the
+  // best option can actually reach a passing score.
+  const factor = qualityScaleFactor(Object.values(qualities))
   return {
-    score: qualities[chosen],
+    score: clampScore(qualities[chosen] * factor),
     feedback_md: optionRationale(segment, chosen),
     reveal: { best_option_id: best?.[0] },
   }
