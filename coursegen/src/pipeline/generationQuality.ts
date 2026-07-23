@@ -148,7 +148,37 @@ function cellKeyCheck(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+// Drag verbs across the three locales. The Lesson Engine is tap-to-place
+// EVERYWHERE (chips have draggable=false), so a prompt/hint that says "drag"
+// tells the kid to do something that gets no response.
+const DRAG_STEMS = ['arrastr', 'arraste', 'arrastar', 'drag '];
+
+function dragVerbCheck(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const texts: string[] = [segment.prompt_md, ...(segment.hints ?? [])];
+    for (const text of texts) {
+      const lower = (text ?? '').toLowerCase();
+      const hit = DRAG_STEMS.find((stem) => lower.includes(stem));
+      if (hit) {
+        problems.push({
+          gate: 7,
+          segmentId: segment.id,
+          message: `text says "${hit.trim()}" but the engine is tap-to-place — use "toca"/"tap"/"toque", never a drag verb`,
+        });
+        break;
+      }
+    }
+  }
+  return problems;
+}
+
 /** Gate 7 — see the file header. Composes the deterministic generation-quality checks. */
 export function runGenerationQualityGate(document: LessonDocumentParsed): GateProblem[] {
-  return [...iconWhitelistCheck(document), ...qualityScaleCheck(document), ...cellKeyCheck(document)];
+  return [
+    ...iconWhitelistCheck(document),
+    ...qualityScaleCheck(document),
+    ...cellKeyCheck(document),
+    ...dragVerbCheck(document),
+  ];
 }

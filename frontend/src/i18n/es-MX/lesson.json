@@ -4,6 +4,7 @@
   "checking": "Revisando…",
   "continue": "Continuar",
   "retry": "Intentar de nuevo",
+  "skip": "Saltar por ahora",
   "hint": "Pista",
   "exit": "Salir de la lección",
   "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
@@ -210,7 +211,8 @@
       "flipHint_other": "Toca para voltear — faltan {{count}} tarjetas",
       "allFlipped": "¡Las descubriste todas!",
       "gotIt": "¡Ya lo tengo!",
-      "review": "Quiero repasar"
+      "review": "Quiero repasar",
+      "reviewHint": "Tómate tu tiempo: vuelve a leer y escuchar el repaso de arriba, y continúa cuando estés listo."
     }
   },
   "streak": {

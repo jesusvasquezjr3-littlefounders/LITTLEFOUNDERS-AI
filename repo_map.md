@@ -26840,6 +26840,7 @@ export { Checkbox } from './Checkbox';
   "checking": "Checking…",
   "continue": "Continue",
   "retry": "Try again",
+  "skip": "Skip for now",
   "hint": "Hint",
   "exit": "Exit lesson",
   "unsupported": "This exercise needs a newer version of the app. Skipping it won't affect your score.",
@@ -26848,7 +26849,6 @@ export { Checkbox } from './Checkbox';
     "hearts_one": "{{count}} heart left",
     "hearts_other": "{{count}} hearts left"
   },
-  "intro": {
 ```
 
 ### frontend/src/i18n/en-US/marketing.json
@@ -27020,6 +27020,7 @@ export { Checkbox } from './Checkbox';
   "checking": "Revisando…",
   "continue": "Continuar",
   "retry": "Intentar de nuevo",
+  "skip": "Saltar por ahora",
   "hint": "Pista",
   "exit": "Salir de la lección",
   "unsupported": "Este ejercicio necesita una versión más nueva de la app. Saltarlo no afecta tu puntaje.",
@@ -27028,7 +27029,6 @@ export { Checkbox } from './Checkbox';
     "hearts_one": "Queda {{count}} corazón",
     "hearts_other": "Quedan {{count}} corazones"
   },
-  "intro": {
 ```
 
 ### frontend/src/i18n/es-MX/marketing.json
@@ -27220,6 +27220,7 @@ import enErrors from './en-US/errors.json';
   "checking": "Verificando…",
   "continue": "Continuar",
   "retry": "Tentar de novo",
+  "skip": "Pular por agora",
   "hint": "Dica",
   "exit": "Sair da lição",
   "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
@@ -27228,7 +27229,6 @@ import enErrors from './en-US/errors.json';
     "hearts_one": "{{count}} coração restante",
     "hearts_other": "{{count}} corações restantes"
   },
-  "intro": {
 ```
 
 ### frontend/src/i18n/pt-BR/marketing.json

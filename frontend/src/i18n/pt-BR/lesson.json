@@ -4,6 +4,7 @@
   "checking": "Verificando…",
   "continue": "Continuar",
   "retry": "Tentar de novo",
+  "skip": "Pular por agora",
   "hint": "Dica",
   "exit": "Sair da lição",
   "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
@@ -210,7 +211,8 @@
       "flipHint_other": "Toque para virar — faltam {{count}} cartas",
       "allFlipped": "Você descobriu todas!",
       "gotIt": "Já entendi!",
-      "review": "Quero revisar"
+      "review": "Quero revisar",
+      "reviewHint": "Sem pressa: leia e ouça a revisão acima e continue quando estiver pronto."
     }
   },
   "streak": {

@@ -332,6 +332,10 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
   const choose = (signal: 'got_it' | 'review') => {
     if (disabled || choice !== null) return
     setChoice(signal)
+    // "I want to review" used to be a dead-end promise (E9). Replay the recap
+    // narration so the choice does something, and a hint below invites the kid
+    // to re-read the recap above before continuing when ready.
+    if (signal === 'review') narration.play(narrationUnitId(segment.id, 'recap'))
     markDone(signal)
   }
 
@@ -342,6 +346,12 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
       </SunkenWell>
       {payload.mood_prompt_md ? (
         <MarkdownLite text={payload.mood_prompt_md} className="lf-body text-content-muted" />
+      ) : null}
+      {choice === 'review' ? (
+        <div className="lf-pop flex items-start gap-2 rounded-md bg-primary-soft px-4 py-3">
+          <Icon name="menu_book" className="mt-0.5 text-[20px] text-primary" />
+          <p className="lf-body text-content">{t('lesson.families.story.reviewHint')}</p>
+        </div>
       ) : null}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <Button

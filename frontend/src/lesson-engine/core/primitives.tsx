@@ -278,18 +278,19 @@ export function GentleTimerBar({
   useEffect(() => {
     if (!running) return
     const id = setInterval(() => {
-      setLeft((prev) => {
-        const next = Math.max(0, prev - 1)
-        if (next === 0 && !expired.current) {
-          expired.current = true
-          clearInterval(id)
-          onExpire()
-        }
-        return next
-      })
+      setLeft((prev) => Math.max(0, prev - 1))
     }, 1000)
     return () => clearInterval(id)
-  }, [running, onExpire])
+  }, [running])
+  // Fire onExpire once, from an EFFECT after commit — never inside the setLeft
+  // updater, which runs during render and triggered React's "cannot update a
+  // component while rendering a different component" warning (E8).
+  useEffect(() => {
+    if (running && left === 0 && !expired.current) {
+      expired.current = true
+      onExpire()
+    }
+  }, [running, left, onExpire])
   const pct = Math.round((left / seconds) * 100)
   return (
     <div aria-label={t('lesson.timer.secondsLeft', { count: left })} className="space-y-1">

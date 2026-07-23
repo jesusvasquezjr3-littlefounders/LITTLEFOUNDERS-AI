@@ -544,7 +544,10 @@ function FeedbackBanner({
           <p className={cn('flex items-center gap-2 lf-title', tierText)}>
             <Icon name={tierIcon} fill className="text-[22px]" />
             {t(`lesson.feedback.${verdict.tier}.v${variant}`)}
-            <span className="lf-number lf-caption text-content-muted">{verdict.score}/100</span>
+            {/* Keep the exam-style number only on a pass; on a fail it reads as
+                harsh "0/100" chrome for an 8-year-old (E6) — the tier microcopy
+                and teaching carry the message. */}
+            {passed ? <span className="lf-number lf-caption text-content-muted">{verdict.score}/100</span> : null}
           </p>
           {verdict.feedback_md ? (
             <MarkdownLite text={verdict.feedback_md} className="lf-body text-content" />
@@ -556,15 +559,35 @@ function FeedbackBanner({
             </div>
           ) : null}
         </div>
-        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-          {verdict.allowRetry && !done ? (
-            <Button variant="secondary" onClick={onRetry}>
-              {t('lesson.retry')}
-            </Button>
-          ) : null}
-          <Button variant="primary" onClick={onNext}>
-            {t('lesson.continue')}
-          </Button>
+        <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+          {!passed && verdict.allowRetry && !done ? (
+            // Failed with tries left: make "Intentar de nuevo" the primary action
+            // and demote advancing to a quiet skip link, so the kid doesn't
+            // silently forfeit a retake by tapping a prominent Continuar (E5).
+            <>
+              <button
+                type="button"
+                onClick={onNext}
+                className="rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              >
+                {t('lesson.skip')}
+              </button>
+              <Button variant="primary" onClick={onRetry}>
+                {t('lesson.retry')}
+              </Button>
+            </>
+          ) : (
+            <>
+              {verdict.allowRetry && !done ? (
+                <Button variant="secondary" onClick={onRetry}>
+                  {t('lesson.retry')}
+                </Button>
+              ) : null}
+              <Button variant="primary" onClick={onNext}>
+                {t('lesson.continue')}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

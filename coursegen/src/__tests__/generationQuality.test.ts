@@ -76,6 +76,20 @@ describe('gate 7: generation quality', () => {
     });
   });
 
+  describe('drag verbs (engine is tap-to-place)', () => {
+    it('flags a prompt that says "arrastra"', () => {
+      const d = docWith([{ id: 's1', type: 'sort_buckets', payload: {} }]);
+      (d.segments[0] as { prompt_md: string }).prompt_md = 'Arrastra cada ficha a su caja';
+      expect(runGenerationQualityGate(d).some((p) => p.message.includes('tap-to-place'))).toBe(true);
+    });
+
+    it('accepts a prompt that says "toca"', () => {
+      const d = docWith([{ id: 's1', type: 'sort_buckets', payload: {} }]);
+      (d.segments[0] as { prompt_md: string }).prompt_md = 'Toca cada ficha y su caja';
+      expect(runGenerationQualityGate(d)).toHaveLength(0);
+    });
+  });
+
   describe('compare_table cell keys', () => {
     it('flags underscore-separated keys', () => {
       const problems = runGenerationQualityGate(
