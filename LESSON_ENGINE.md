@@ -467,6 +467,10 @@ types to production content NEVER breaks players that predate them.
   `rationale_md` is REQUIRED — a generated wrong option without a teaching rationale is
   invalid output. Difficulty/xp assignment rules and per-type generation prompt
   fragments live with Forge (`coursegen/AGENTS.md`), not here.
-- **Echo (audiogen):** narratable fields are `prompt_md`, `story` family bodies and
-  `explanation_md`; Echo stamps `audio_segment_id`. Voice = the segment's `narrator`
-  character (voice casting is Echo's decision, per-locale).
+- **Echo (audiogen):** narratable fields are `prompt_md`, `story` family bodies,
+  `explanation_md`, a `choices` roll-up (the choice-family option labels read in
+  order, so a pre-reader hears the whole exercise) and each `hint`
+  (`hint.<n>`); Echo stamps `audio_segment_id`. Unit ids follow
+  `${segment_id}.${field}`. Voice = the segment's `narrator` character (voice
+  casting is Echo's decision, per-locale). The player auto-plays prompt→choices
+  and voices a hint when the kid reveals it; any missing unit is a silent no-op.

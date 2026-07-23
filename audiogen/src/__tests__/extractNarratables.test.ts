@@ -169,6 +169,45 @@ describe('extractNarratables', () => {
   });
 });
 
+describe('extractNarratables — choices & hints (B4)', () => {
+  function doc(segment: Partial<LessonDocument['segments'][number]> & { id: string; type: string; payload: Record<string, unknown> }): LessonDocument {
+    return {
+      ...fixture,
+      segments: [{ prompt_md: 'Q', difficulty: 1, xp: 10, ...segment } as LessonDocument['segments'][number]],
+    };
+  }
+
+  it('emits a `choices` roll-up reading option labels in order for choice types', () => {
+    const units = extractNarratables(
+      doc({ id: 'q', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: '**5** pesos' }, { id: 'b', text_md: '20 pesos' }] } }),
+    );
+    const choices = units.find((u) => u.unit_id === 'q.choices');
+    expect(choices?.text).toBe('5 pesos. 20 pesos');
+  });
+
+  it('reads would_you_rather a/b sides', () => {
+    const units = extractNarratables(
+      doc({ id: 'w', type: 'would_you_rather', payload: { a: { text_md: 'Save it' }, b: { text_md: 'Spend it' } } }),
+    );
+    expect(units.find((u) => u.unit_id === 'w.choices')?.text).toBe('Save it. Spend it');
+  });
+
+  it('does NOT emit choices for non-choice types or single-option payloads', () => {
+    const arrange = extractNarratables(doc({ id: 'm', type: 'match_pairs', payload: { left: [{ id: 'l', text_md: 'x' }], right: [{ id: 'r', text_md: 'y' }] } }));
+    expect(arrange.some((u) => u.field === 'choices')).toBe(false);
+    const single = extractNarratables(doc({ id: 's', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: 'only' }] } }));
+    expect(single.some((u) => u.field === 'choices')).toBe(false);
+  });
+
+  it('emits one hint unit per hint, markdown-stripped', () => {
+    const units = extractNarratables(
+      doc({ id: 'h', type: 'quiz_mcq', hints: ['Think about *cost*', 'It ends in **5**'], payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] } }),
+    );
+    expect(units.find((u) => u.unit_id === 'h.hint.0')?.text).toBe('Think about cost');
+    expect(units.find((u) => u.unit_id === 'h.hint.1')?.text).toBe('It ends in 5');
+  });
+});
+
 describe('stripMarkdown', () => {
   it('strips bold, italic, code and list markers', () => {
     expect(stripMarkdown('**bold** and *italic* and `code`')).toBe('bold and italic and code');

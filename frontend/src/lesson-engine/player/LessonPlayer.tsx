@@ -97,7 +97,10 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
     if (getRegistryEntry(segment.type)?.kind === 'content') return
-    narration.play(narrationUnitId(segment.id, 'prompt'))
+    // Prompt then the choices roll-up (option labels read in order) so a
+    // pre-reader HEARS the whole exercise, not just the question. `choices` is
+    // a no-op when the manifest has no such unit (B4).
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'choices')])
     return () => narration.stop()
   }, [state.phase, segment, narration])
 
@@ -335,8 +338,12 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                 <Button
                   variant="secondary"
                   onClick={() => {
+                    const hintIndex = segState?.hintsShown ?? 0
                     dispatch({ type: 'HINT', segmentId: segment.id })
                     react('hint', segment.narrator?.character)
+                    // Voice the hint being revealed — the key scaffold for
+                    // weaker readers, silent in 55/62 lessons before (B4).
+                    narration.play(narrationUnitId(segment.id, `hint.${hintIndex}`))
                   }}
                 >
                   <Icon name="lightbulb" className="mr-1 text-[18px]" />
