@@ -54,7 +54,11 @@ export function LessonRoute() {
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? null;
-  const grader = useMemo(() => createCoreGrader(lessonId, getToken), [lessonId, getToken]);
+  // One run id per lesson entry (0012): the server scopes the attempt cap to it,
+  // so replaying a completed lesson starts every segment fresh instead of
+  // hitting the lifetime cap (which the player mis-rendered as a 0/100 fail).
+  const runId = useMemo(() => globalThis.crypto?.randomUUID?.() ?? `${lessonId}-${Date.now()}`, [lessonId]);
+  const grader = useMemo(() => createCoreGrader(lessonId, getToken, runId), [lessonId, getToken, runId]);
 
   useEffect(() => {
     let cancelled = false;

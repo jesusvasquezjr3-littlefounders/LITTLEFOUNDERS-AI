@@ -9,33 +9,34 @@ import type { GradeMeta, Grader, Verdict } from '@/lesson-engine/core/types';
  * Grader contract asks for (GradeMeta) — the server re-derives and caps it
  * independently.
  *
- * Error mapping (documented choice, per the task brief):
- *  - 409 ATTEMPTS_EXHAUSTED → mapped to a terminal Verdict (score 0,
- *    tier 'tryAgain', allowRetry false) so the player's normal feedback flow
- *    renders and closes out cleanly instead of falling into the generic
- *    lesson.gradeError path — the kid gets a real (if unhappy) verdict, not
- *    an error banner, for a state that isn't actually an outage.
- *  - Every other failure (network, 403 LESSON_LOCKED, 422
- *    UNSUPPORTED_SEGMENT, 5xx/INTERNAL) rejects the promise. That IS the
- *    correct signal for LessonPlayer.submit()'s catch block, which shows
- *    lesson.gradeError and lets the kid retry the request — never a
- *    fabricated verdict for a real outage.
+ * Error mapping: EVERY failure — 409 ATTEMPTS_EXHAUSTED included — rejects the
+ * promise so LessonPlayer.submit()'s catch shows the neutral gradeError state
+ * and never fabricates a verdict. The old code synthesized a score-0 "fail" for
+ * 409, which — combined with lifetime attempt counting — painted a 0/100 FAIL
+ * over a CORRECT answer on any replay. Attempts are now run-scoped (a fresh
+ * run_id per lesson entry, 0012), so a replay no longer 409s at all; the state
+ * is a genuine edge, and a neutral banner is the honest response to it.
+ *
+ * `runId` scopes the server's attempt cap to this lesson entry; `hints_used`
+ * (from the grade meta) lets the server apply the hint penalty authoritatively.
  */
-export function createCoreGrader(lessonId: string, getToken: () => Promise<string | null>): Grader {
+export function createCoreGrader(
+  lessonId: string,
+  getToken: () => Promise<string | null>,
+  runId?: string,
+): Grader {
   return {
     async grade(segmentId: string, answer: unknown, meta: GradeMeta): Promise<Verdict> {
       const token = await getToken();
+      const body: Record<string, unknown> = { segment_id: segmentId, answer, attempt_number: meta.attempt_number };
+      if (runId) body.run_id = runId;
+      if (typeof meta.hints_used === 'number') body.hints_used = meta.hints_used;
       const { data, error } = await api<{ verdict: Verdict }>(`/learn/lessons/${lessonId}/grade`, {
         method: 'POST',
         token,
-        body: { segment_id: segmentId, answer, attempt_number: meta.attempt_number },
+        body,
       });
-      if (error) {
-        if (error.code === 'ATTEMPTS_EXHAUSTED') {
-          return { correct: false, score: 0, tier: 'tryAgain', allowRetry: false };
-        }
-        throw new Error(error.code);
-      }
+      if (error) throw new Error(error.code);
       return data.verdict;
     },
   };

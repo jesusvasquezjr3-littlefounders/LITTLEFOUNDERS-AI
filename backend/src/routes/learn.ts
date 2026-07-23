@@ -175,6 +175,13 @@ export function learnRouter(): Router {
     segment_id: z.string().min(1),
     answer: z.unknown(),
     attempt_number: z.number().int().min(1),
+    // Per-lesson-entry id: the attempt cap counts only rows from this run so
+    // replays start fresh (0012). Optional for legacy clients (lifetime count).
+    run_id: z.string().uuid().optional(),
+    // Hints the kid revealed before submitting — the server applies the penalty
+    // (authoritative), so a hint actually lowers the score and a reload can't
+    // launder it (0012). Optional; defaults to 0.
+    hints_used: z.number().int().min(0).max(10).optional(),
   });
 
   router.post('/lessons/:id/grade', async (req, res) => {
@@ -206,21 +213,32 @@ export function learnRouter(): Router {
       return fail(res, 422, 'UNSUPPORTED_SEGMENT', 'This segment cannot be graded');
     }
 
-    const scoring = (picked.document as { scoring?: { pass_threshold?: number; max_attempts?: number } }).scoring ?? {};
+    const scoring = (picked.document as { scoring?: { pass_threshold?: number; max_attempts?: number; hint_penalty_pct?: number } }).scoring ?? {};
     const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
     const maxAttempts = typeof scoring.max_attempts === 'number' ? scoring.max_attempts : 2;
+    const hintPenaltyPct = typeof scoring.hint_penalty_pct === 'number' ? scoring.hint_penalty_pct : 0;
+    const runId = parsed.data.run_id;
+    const hintsUsed = parsed.data.hints_used ?? 0;
 
     // SERVER-AUTHORITATIVE: the client-declared `attempt_number` is validated
     // shape-wise but never trusted for the cap decision or the recorded row —
-    // the DB's own attempt count is the only source of truth.
-    const existingAttempts = await countSegmentAttempts(user.accessToken, user.id, lessonId, segmentId);
+    // the DB's own attempt count is the only source of truth. Scoped to the
+    // current run (0012) so a replay starts fresh.
+    const existingAttempts = await countSegmentAttempts(user.accessToken, user.id, lessonId, segmentId, runId);
     if (existingAttempts >= maxAttempts) {
       return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
     }
     const serverAttemptNumber = existingAttempts + 1;
 
     const outcome = grader(segment, answer);
-    const verdict = verdictFrom(outcome.score, passThreshold, outcome.feedback_md);
+    // Apply the hint penalty server-side (0012): each revealed hint compounds a
+    // (1 - hint_penalty_pct/100) factor. This is the ONLY place the penalty is
+    // applied — the recorded score, the verdict, and /complete's recompute all
+    // flow from it, so a hint truly lowers the score/XP and a reload can't
+    // launder it.
+    const penaltyFactor = Math.pow(1 - hintPenaltyPct / 100, hintsUsed);
+    const penalizedScore = Math.max(0, Math.min(100, Math.round(outcome.score * penaltyFactor)));
+    const verdict = verdictFrom(penalizedScore, passThreshold, outcome.feedback_md);
     const isFinalAttempt = serverAttemptNumber >= maxAttempts;
     verdict.allowRetry = verdict.score < 100 && !isFinalAttempt;
     // Reveal gating (LESSON_ENGINE.md §6): only on a perfect score or the last permitted try.
@@ -228,7 +246,7 @@ export function learnRouter(): Router {
       verdict.reveal = outcome.reveal;
     }
 
-    const recorded = await insertSegmentAttempt(user.id, lessonId, segmentId, serverAttemptNumber, verdict.score);
+    const recorded = await insertSegmentAttempt(user.id, lessonId, segmentId, serverAttemptNumber, verdict.score, runId, hintsUsed);
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
 
     return ok(res, { verdict });

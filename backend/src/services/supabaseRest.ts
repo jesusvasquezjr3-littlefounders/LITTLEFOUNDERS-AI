@@ -559,26 +559,49 @@ export function getSegmentAttempts(accessToken: string, userId: string, lessonId
   );
 }
 
-export async function countSegmentAttempts(accessToken: string, userId: string, lessonId: string, segmentId: string): Promise<number> {
+/**
+ * Count prior attempts for a segment. When `runId` is given (the client's
+ * per-lesson-entry id, 0012) only rows from THAT run count, so replaying a
+ * completed lesson starts each segment fresh instead of hitting the lifetime
+ * cap. Omitting it keeps the legacy lifetime count.
+ */
+export async function countSegmentAttempts(
+  accessToken: string,
+  userId: string,
+  lessonId: string,
+  segmentId: string,
+  runId?: string,
+): Promise<number> {
+  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
   const rows = await rest<unknown[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}&select=segment_id`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}${runFilter}&select=segment_id`,
     accessToken,
   );
   return rows?.length ?? 0;
 }
 
-/** No client INSERT policy (0007) — Core (service role) records every graded attempt. */
+/** No client INSERT policy (0007) — Core (service role) records every graded attempt. `score` is the hint-penalized, server-authoritative score (0012). */
 export async function insertSegmentAttempt(
   userId: string,
   lessonId: string,
   segmentId: string,
   attemptNumber: number,
   score: number,
+  runId?: string,
+  hintsUsed = 0,
 ): Promise<boolean> {
   const res = await rest<unknown>('/lesson_segment_attempts', serviceToken(), {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ user_id: userId, lesson_id: lessonId, segment_id: segmentId, attempt_number: attemptNumber, score }),
+    body: JSON.stringify({
+      user_id: userId,
+      lesson_id: lessonId,
+      segment_id: segmentId,
+      attempt_number: attemptNumber,
+      score,
+      ...(runId ? { run_id: runId } : {}),
+      hints_used: hintsUsed,
+    }),
   });
   return res !== null;
 }

@@ -103,7 +103,7 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
     expect(afterPerfect.seg.e1?.retries).toBe(0)
   })
 
-  it('hint penalty compounds per hint', () => {
+  it('caps hints at the segment count and stores the server score verbatim (no client re-penalty)', () => {
     const d = doc()
     const withHints: LessonDocument = {
       ...d,
@@ -116,10 +116,12 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
       { type: 'HINT', segmentId: 'e1' },
       { type: 'HINT', segmentId: 'e1' }, // beyond limit → ignored
       { type: 'SUBMIT' },
-      { type: 'VERDICT', segmentId: 'e1', verdict: v(100) },
+      // The server already applied the hint penalty (0012) and sends the
+      // penalized score as the verdict; the reducer stores it verbatim.
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(81) },
     ])
-    expect(state.seg.e1?.hintsShown).toBe(2)
-    expect(state.seg.e1?.best).toBe(81) // 100 × 0.9 × 0.9
+    expect(state.seg.e1?.hintsShown).toBe(2) // capped at the segment's hint count
+    expect(state.seg.e1?.best).toBe(81) // no client-side re-penalization
   })
 
   it('cheer mode (hearts null) never fails mid-lesson', () => {

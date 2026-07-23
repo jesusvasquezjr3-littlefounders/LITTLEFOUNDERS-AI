@@ -229,6 +229,77 @@ export type Database = {
         }
         Relationships: []
       }
+      game_intents: {
+        Row: {
+          accepted: boolean
+          action_id: string
+          applied_at: string
+          id: number
+          intent: Json
+          rejection_code: string | null
+          session_id: string
+        }
+        Insert: {
+          accepted: boolean
+          action_id: string
+          applied_at?: string
+          id?: never
+          intent: Json
+          rejection_code?: string | null
+          session_id: string
+        }
+        Update: {
+          accepted?: boolean
+          action_id?: string
+          applied_at?: string
+          id?: never
+          intent?: Json
+          rejection_code?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_intents_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          game_id: string
+          id: string
+          pack_id: string
+          pack_version: number
+          seed: number
+          state: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          game_id?: string
+          id?: string
+          pack_id: string
+          pack_version: number
+          seed: number
+          state: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          game_id?: string
+          id?: string
+          pack_id?: string
+          pack_version?: number
+          seed?: number
+          state?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       guardian_links: {
         Row: {
           created_at: string
@@ -369,8 +440,10 @@ export type Database = {
         Row: {
           attempt_number: number
           created_at: string
+          hints_used: number
           id: string
           lesson_id: string
+          run_id: string | null
           score: number
           segment_id: string
           user_id: string
@@ -378,8 +451,10 @@ export type Database = {
         Insert: {
           attempt_number: number
           created_at?: string
+          hints_used?: number
           id?: string
           lesson_id: string
+          run_id?: string | null
           score: number
           segment_id: string
           user_id: string
@@ -387,8 +462,10 @@ export type Database = {
         Update: {
           attempt_number?: number
           created_at?: string
+          hints_used?: number
           id?: string
           lesson_id?: string
+          run_id?: string | null
           score?: number
           segment_id?: string
           user_id?: string

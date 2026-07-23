@@ -29,13 +29,26 @@ describe('createCoreGrader', () => {
     });
   });
 
-  it('maps 409 ATTEMPTS_EXHAUSTED to a terminal, non-retryable verdict instead of throwing', async () => {
+  it('rejects on 409 ATTEMPTS_EXHAUSTED (never fabricates a 0/100 fail)', async () => {
     mockedApi.mockResolvedValueOnce({ data: null, error: { code: 'ATTEMPTS_EXHAUSTED', message: 'No attempts left' } });
 
     const grader = createCoreGrader('lesson-1', async () => 'token-123');
-    const result = await grader.grade('seg-1', { choice: 'a' }, { attempt_number: 3 });
 
-    expect(result).toEqual({ correct: false, score: 0, tier: 'tryAgain', allowRetry: false });
+    await expect(grader.grade('seg-1', { choice: 'a' }, { attempt_number: 3 })).rejects.toThrow('ATTEMPTS_EXHAUSTED');
+  });
+
+  it('includes run_id and hints_used in the grade body when provided', async () => {
+    const verdict: Verdict = { correct: true, score: 90, tier: 'great', allowRetry: false };
+    mockedApi.mockResolvedValueOnce({ data: { verdict }, error: null });
+
+    const grader = createCoreGrader('lesson-1', async () => 'token-123', 'run-abc');
+    await grader.grade('seg-1', { choice: 'a' }, { attempt_number: 2, hints_used: 1 });
+
+    expect(mockedApi).toHaveBeenCalledWith('/learn/lessons/lesson-1/grade', {
+      method: 'POST',
+      token: 'token-123',
+      body: { segment_id: 'seg-1', answer: { choice: 'a' }, attempt_number: 2, run_id: 'run-abc', hints_used: 1 },
+    });
   });
 
   it('rejects on every other error (e.g. LESSON_LOCKED) so the player shows its outage path, never a fabricated verdict', async () => {

@@ -135,6 +135,8 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         const v: Verdict = await grader.grade(segment.id, answer, {
           attempt_number: (segState?.attempts ?? 0) + 1,
           time_spent_seconds: Math.round((Date.now() - segStartRef.current) / 1000),
+          // Server applies the hint penalty authoritatively (0012).
+          hints_used: segState?.hintsShown ?? 0,
         })
         dispatch({ type: 'VERDICT', segmentId: segment.id, verdict: v })
         const preferred = segment.narrator?.character

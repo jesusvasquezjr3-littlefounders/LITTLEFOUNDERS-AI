@@ -79,6 +79,8 @@ export interface Verdict {
 export interface GradeMeta {
   attempt_number: number
   time_spent_seconds?: number
+  /** Hints the kid revealed before this submission — the server applies the penalty. */
+  hints_used?: number
 }
 
 /** Pluggable grading boundary. Production: Core endpoint. Dev harness: local grader. */

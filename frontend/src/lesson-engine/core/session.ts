@@ -72,7 +72,7 @@ function segState(state: SessionState, id: string): SegmentState {
 }
 
 export function createSessionReducer(doc: LessonDocument) {
-  const { pass_threshold, hint_penalty_pct, max_attempts } = doc.scoring
+  const { pass_threshold, max_attempts } = doc.scoring
 
   function finish(state: SessionState): SessionState {
     const score = lessonScore(doc, state)
@@ -98,9 +98,9 @@ export function createSessionReducer(doc: LessonDocument) {
       case 'VERDICT': {
         const prev = segState(state, action.segmentId)
         const attempts = prev.attempts + 1
-        const penalty = Math.pow(1 - hint_penalty_pct / 100, prev.hintsShown)
-        const penalized = Math.max(0, Math.min(100, Math.round(action.verdict.score * penalty)))
-        const best = Math.max(prev.best, penalized)
+        // The server already applied the hint penalty (0012) — verdict.score is
+        // the authoritative penalized score; the client never re-penalizes.
+        const best = Math.max(prev.best, action.verdict.score)
         const outOfAttempts = attempts >= max_attempts
         const done = action.verdict.score >= 100 || !action.verdict.allowRetry || outOfAttempts
         const firstTryCorrect = attempts === 1 && action.verdict.correct
