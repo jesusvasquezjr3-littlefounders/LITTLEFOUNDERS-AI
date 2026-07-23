@@ -10,6 +10,7 @@ import { Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { KidSlider, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+import { seededSort } from '../../core/shuffle'
 
 type Dict = Record<string, unknown>
 const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
@@ -21,12 +22,6 @@ interface IdTextItem {
 
 function revealOf(verdict: ExerciseProps['verdict']): Dict {
   return draftOf(verdict?.reveal)
-}
-
-function hashCode(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h
 }
 
 function textOf(items: IdTextItem[], id: string): string {
@@ -187,7 +182,12 @@ export function MatchPairs({ segment, value, onChange, disabled, verdict }: Exer
   const pairs = (draft.pairs as [string, string][] | undefined) ?? []
   const selectedLeft = draft.selected_left as string | undefined
   const left = segment.payload.left as IdTextItem[]
-  const right = segment.payload.right as IdTextItem[]
+  // Shuffle the right column (A7): rendered in payload order it sat parallel to
+  // the answer key, so "match straight across" scored 100 without reasoning.
+  const right = useMemo(
+    () => seededSort(segment.payload.right as IdTextItem[], segment.id + ':right', (r) => r.id),
+    [segment],
+  )
   const correctPairs = revealOf(verdict).pairs as [string, string][] | undefined
   const correctByLeft = correctPairs ? new Map(correctPairs) : null
 
@@ -288,7 +288,7 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
       { key: `b${i}`, pairIndex: i, text_md: p.b_md },
     ])
     // Deterministic shuffle by segment.id hash so retries keep the same board.
-    return [...all].sort((a, b) => hashCode(segment.id + a.key) - hashCode(segment.id + b.key))
+    return seededSort(all, segment.id, (a) => a.key)
   }, [pairs, segment.id])
 
   const [up, setUp] = useState<string[]>([])
@@ -465,7 +465,7 @@ export function OrderSteps({ segment, value, onChange, disabled, verdict }: Exer
   return (
     <div className="space-y-4">
       <OrderedSlots items={items} tapOrder={tapOrder} total={items.length} disabled={disabled} verdict={verdict} />
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
+      <TokenBank items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
       {!verdict && tapOrder.order.length > 0 ? (
         <p className="lf-caption text-content-muted">{t('lesson.families.arrange.tapToRemove')}</p>
       ) : null}
@@ -518,7 +518,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
           })}
         </div>
       </SunkenWell>
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
+      <TokenBank items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
     </div>
   )
 }
@@ -568,7 +568,7 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
           )
         })}
       </ol>
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
+      <TokenBank items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
     </div>
   )
 }

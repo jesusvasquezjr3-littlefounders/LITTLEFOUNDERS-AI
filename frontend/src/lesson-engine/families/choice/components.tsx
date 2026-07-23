@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   BigIconTile,
   GentleTimerBar,
@@ -43,12 +44,10 @@ export function QuizMcq({ segment, value, onChange, disabled, verdict }: Exercis
   const draft = draftOf(value)
   const selected = draft.option_id as string | undefined
   const options = useMemo(() => {
-    const list = [...(segment.payload.options as Array<{ id: string; text_md: string }>)]
-    if (segment.payload.shuffle) {
-      // Stable per-segment shuffle so retries don't reorder under the kid's feet.
-      list.sort((a, b) => hashCode(segment.id + a.id) - hashCode(segment.id + b.id))
-    }
-    return list
+    const list = segment.payload.options as Array<{ id: string; text_md: string }>
+    // Shuffle by default (A7): the correct option is often authored first, so a
+    // fixed order leaks the answer. Content can opt out with shuffle:false.
+    return segment.payload.shuffle === false ? [...list] : seededSort(list, segment.id, (o) => o.id)
   }, [segment])
   const correctId = revealOf(verdict).correct_option_id as string | undefined
   return (
@@ -74,7 +73,10 @@ export function BestDecision(props: ExerciseProps) {
   const correctId = revealOf(props.verdict).best_option_id as string | undefined
   const draft = draftOf(props.value)
   const selected = draft.option_id as string | undefined
-  const options = props.segment.payload.options as Array<{ id: string; text_md: string }>
+  const options = useMemo(
+    () => seededSort(props.segment.payload.options as Array<{ id: string; text_md: string }>, props.segment.id, (o) => o.id),
+    [props.segment],
+  )
   return (
     <div className="space-y-4">
       <SunkenWell>
@@ -173,12 +175,15 @@ export function PictureChoice({ segment, value, onChange, disabled, verdict }: E
   const draft = draftOf(value)
   const selected = draft.option_id as string | undefined
   const correctId = revealOf(verdict).correct_option_id as string | undefined
-  const options = segment.payload.options as Array<{
-    id: string
-    icon: string
-    image_url?: string
-    label: string
-  }>
+  const options = useMemo(
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; icon: string; image_url?: string; label: string }>,
+        segment.id,
+        (o) => o.id,
+      ),
+    [segment],
+  )
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
       {options.map((option) => (
@@ -201,8 +206,17 @@ export function PictureChoice({ segment, value, onChange, disabled, verdict }: E
 export function OddOneOut({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const draft = draftOf(value)
-  const items = segment.payload.items as Array<{ id: string; text_md: string }>
-  const reasons = segment.payload.reasons as Array<{ id: string; text_md: string }> | undefined
+  const items = useMemo(
+    () => seededSort(segment.payload.items as Array<{ id: string; text_md: string }>, segment.id, (i) => i.id),
+    [segment],
+  )
+  const reasons = useMemo(
+    () =>
+      segment.payload.reasons
+        ? seededSort(segment.payload.reasons as Array<{ id: string; text_md: string }>, segment.id + ':r', (r) => r.id)
+        : undefined,
+    [segment],
+  )
   const reveal = revealOf(verdict)
   return (
     <div className="space-y-4">
@@ -312,7 +326,10 @@ export function ConfidenceQuiz({ segment, value, onChange, disabled, verdict }: 
   const selected = draft.option_id as string | undefined
   const confidence = (draft.confidence as number | undefined) ?? 75
   const correctId = revealOf(verdict).correct_option_id as string | undefined
-  const options = segment.payload.options as Array<{ id: string; text_md: string }>
+  const options = useMemo(
+    () => seededSort(segment.payload.options as Array<{ id: string; text_md: string }>, segment.id, (o) => o.id),
+    [segment],
+  )
   return (
     <div className="space-y-4">
       <div className="space-y-3" role="radiogroup">
@@ -424,12 +441,6 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
       ) : null}
     </div>
   )
-}
-
-function hashCode(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h
 }
 
 export const choiceCanSubmit = {

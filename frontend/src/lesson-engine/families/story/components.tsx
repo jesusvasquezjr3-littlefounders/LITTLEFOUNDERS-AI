@@ -56,10 +56,15 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
   const narration = useNarration()
 
   // Voice each line as it appears (Echo narrates dialogue per line, in the
-  // line's own character voice — unit `<segment_id>.line.<n>`).
+  // line's own character voice — unit `<segment_id>.line.<n>`). The scene-setup
+  // prompt plays first, before line 0 (B3), then each line on advance.
   useEffect(() => {
     if (finished) return
-    narration.play(narrationUnitId(segment.id, `line.${index}`))
+    if (index === 0) {
+      narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'line.0')])
+    } else {
+      narration.play(narrationUnitId(segment.id, `line.${index}`))
+    }
   }, [narration, segment.id, index, finished])
 
   const line = lines[Math.min(index, lines.length - 1)]
@@ -158,6 +163,12 @@ const ART_TINT_CLASSES: Record<string, string> = {
 export function StoryScene({ segment, onContentDone }: ExerciseProps) {
   const payload = segment.payload as StorySceneSegment['payload']
   useDoneOnMount(onContentDone)
+  // Voice the scene: prompt (the setup) then the body — the body is the whole
+  // lesson's content and used to play in 0/62 story scenes (B2).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'body')])
+  }, [narration, segment.id])
   return (
     <div className={cn('rounded-xl p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
       <div className="flex flex-col items-center gap-4 text-center">
@@ -192,6 +203,15 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
 export function KeyIdeas({ segment, onContentDone }: ExerciseProps) {
   const { ideas } = segment.payload as KeyIdeasSegment['payload']
   useDoneOnMount(onContentDone)
+  // Voice the prompt then each idea card in reading order (B2 — the idea-card
+  // narration used to never play).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([
+      narrationUnitId(segment.id, 'prompt'),
+      ...ideas.map((_, i) => narrationUnitId(segment.id, `idea.${i}`)),
+    ])
+  }, [narration, segment.id, ideas])
   // Small CSS stagger (≤3×80ms). With prefers-reduced-motion the motion-safe:
   // hidden state never applies, so cards are simply visible from the start.
   const [revealed, setRevealed] = useState(false)
@@ -231,13 +251,20 @@ export function ConceptReveal({ segment, disabled, onContentDone }: ExerciseProp
   const { cards } = segment.payload as ConceptRevealSegment['payload']
   const [flipped, setFlipped] = useState<ReadonlySet<number>>(() => new Set())
   const markDone = useContentDoneOnce(onContentDone)
+  const narration = useNarration()
   const remaining = cards.length - flipped.size
+
+  // Voice the prompt on mount; each card's back narration plays when revealed (B2).
+  useEffect(() => {
+    narration.play(narrationUnitId(segment.id, 'prompt'))
+  }, [narration, segment.id])
 
   const flip = (i: number) => {
     if (disabled || flipped.has(i)) return
     const next = new Set(flipped)
     next.add(i)
     setFlipped(next)
+    narration.play(narrationUnitId(segment.id, `card.${i}.back`))
     if (next.size === cards.length) markDone()
   }
 
@@ -296,6 +323,11 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
   const payload = segment.payload as CheckpointSegment['payload']
   const [choice, setChoice] = useState<'got_it' | 'review' | null>(null)
   const markDone = useContentDoneOnce(onContentDone)
+  // Voice the prompt then the recap (B2 — the recap narration never played).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'recap')])
+  }, [narration, segment.id])
 
   const choose = (signal: 'got_it' | 'review') => {
     if (disabled || choice !== null) return

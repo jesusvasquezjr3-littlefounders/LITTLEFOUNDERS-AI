@@ -11,6 +11,7 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   GentleTimerBar,
   OptionCard,
@@ -262,7 +263,12 @@ interface MatchItem {
 export function FlashMatch({ segment, disabled, onFinish, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const left = segment.payload.left as MatchItem[]
-  const right = segment.payload.right as MatchItem[]
+  // Shuffle the right column (A7): in payload order it rendered parallel to the
+  // answer key, so matching straight across scored 100 with no reading.
+  const right = useMemo(
+    () => seededSort(segment.payload.right as MatchItem[], segment.id + ':right', (r) => r.id),
+    [segment],
+  )
   const seconds = segment.payload.seconds as number
   const [phase, setPhase] = useState<'ready' | 'running' | 'done'>('ready')
   const [pairs, setPairs] = useState<Array<[string, string]>>([])
@@ -517,7 +523,7 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
           <MarkdownLite text={question.prompt_md} className="lf-body-lg text-content" />
         </SunkenWell>
         <div className="space-y-3" role="group">
-          {question.options.map((option) => (
+          {seededSort(question.options, segment.id + question.id, (o) => o.id).map((option) => (
             <OptionCard
               key={option.id}
               state={locked === option.id ? 'selected' : 'idle'}

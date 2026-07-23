@@ -18,10 +18,12 @@ interface NarrationApi {
   has: (unitId: string) => boolean
   /** Fire-and-forget playback (stops whatever was playing). Autoplay refusals are swallowed — the replay button is the fallback. */
   play: (unitId: string) => void
+  /** Play several units back-to-back (e.g. a story scene's prompt then its body). Missing units are skipped. */
+  playSequence: (unitIds: string[]) => void
   stop: () => void
 }
 
-const noop: NarrationApi = { has: () => false, play: () => undefined, stop: () => undefined }
+const noop: NarrationApi = { has: () => false, play: () => undefined, playSequence: () => undefined, stop: () => undefined }
 
 const NarrationContext = createContext<NarrationApi>(noop)
 
@@ -41,6 +43,7 @@ export function NarrationProvider({ manifest, children }: { manifest: AudioManif
         if (!url) return
         if (!audioRef.current) audioRef.current = new Audio()
         const el = audioRef.current
+        el.onended = null // cancel any in-flight sequence
         el.pause()
         el.src = url
         el.currentTime = 0
@@ -49,7 +52,27 @@ export function NarrationProvider({ manifest, children }: { manifest: AudioManif
         // doesn't, the visible replay button covers it.
         void el.play().catch(() => undefined)
       },
+      playSequence: (unitIds) => {
+        const urls = unitIds.map((id) => units[id]?.url).filter((u): u is string => typeof u === 'string' && u.length > 0)
+        if (urls.length === 0) return
+        if (!audioRef.current) audioRef.current = new Audio()
+        const el = audioRef.current
+        let i = 0
+        const playNext = () => {
+          if (i >= urls.length) {
+            el.onended = null
+            return
+          }
+          el.src = urls[i++] as string
+          el.currentTime = 0
+          void el.play().catch(() => undefined)
+        }
+        el.onended = playNext
+        el.pause()
+        playNext()
+      },
       stop: () => {
+        if (audioRef.current) audioRef.current.onended = null
         audioRef.current?.pause()
       },
     }

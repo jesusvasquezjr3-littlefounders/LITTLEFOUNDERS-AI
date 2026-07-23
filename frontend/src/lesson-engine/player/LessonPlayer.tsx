@@ -88,12 +88,15 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
     segStartRef.current = Date.now()
   }, [state.index, retryCount])
 
-  // Auto-narrate each segment's prompt as it appears (story_dialogue voices
-  // its own lines instead — line 0 covers the beat, the prompt would talk
-  // over it). Segment changes are click-driven, so play() has activation.
+  // Auto-narrate each segment's prompt as it appears. Content-family components
+  // (story_scene, key_ideas, concept_reveal, checkpoint, story_dialogue) own
+  // their FULL narration — prompt plus body/idea/card/recap/line units — so the
+  // player must not also fire the prompt for them (it would talk over the
+  // sequence, and the body/card audio would otherwise never play at all, B2/B3).
+  // Segment changes are click-driven, so play() has activation.
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
-    if (segment.type === 'story_dialogue') return
+    if (getRegistryEntry(segment.type)?.kind === 'content') return
     narration.play(narrationUnitId(segment.id, 'prompt'))
     return () => narration.stop()
   }, [state.phase, segment, narration])

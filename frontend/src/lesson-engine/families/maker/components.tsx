@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   NumberPad,
   OptionCard,
@@ -50,7 +51,9 @@ export function CodeOrder({ segment, value, onChange, disabled, verdict }: Exerc
   const order = (draft.order as string[] | undefined) ?? []
   const blocks = segment.payload.blocks as Array<{ id: string; text_md: string }>
   const blockById = useMemo(() => new Map(blocks.map((b) => [b.id, b])), [blocks])
-  const bank = blocks.filter((b) => !order.includes(b.id))
+  // Shuffle the bank (A7): the blocks were authored in solution order, so the
+  // puzzle arrived pre-solved. Grading checks the assembled order by id.
+  const bank = seededSort(blocks.filter((b) => !order.includes(b.id)), segment.id, (b) => b.id)
   const correctOrder = revealOf(verdict).order as string[] | undefined
 
   const placedState = (id: string, index: number): OptionVisualState => {
