@@ -14,6 +14,8 @@ export interface SegmentState {
   verdict: Verdict | null
   /** true = correct on attempt 1; false = completed without first-try correct. */
   firstTry: boolean | null
+  /** Times "Intentar de nuevo" was pressed — drives a clean remount of the exercise component so timers/boards/keypads reset and stale drafts don't co-submit. */
+  retries: number
   selfMark?: 'got_it' | 'review'
 }
 
@@ -45,6 +47,7 @@ const EMPTY_SEG: SegmentState = {
   done: false,
   verdict: null,
   firstTry: null,
+  retries: 0,
 }
 
 export function isGraded(segment: SegmentBase): boolean {
@@ -135,7 +138,13 @@ export function createSessionReducer(doc: LessonDocument) {
         if (!current) return state
         const s = segState(state, current.id)
         if (s.done) return state
-        return { ...state, stepPhase: 'answer' }
+        // Bump retries so the player remounts the exercise (fresh timer/board/
+        // keypad) and clears the previous draft — no stale co-submit (P3/E2).
+        return {
+          ...state,
+          stepPhase: 'answer',
+          seg: { ...state.seg, [current.id]: { ...s, retries: s.retries + 1 } },
+        }
       }
 
       case 'HINT': {

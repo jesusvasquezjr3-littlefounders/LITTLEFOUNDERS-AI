@@ -79,11 +79,15 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
   const entry = segment ? getRegistryEntry(segment.type) : undefined
   const verdict = segState?.verdict ?? null
 
+  // Reset the draft, error and per-attempt timer on a new segment AND on every
+  // retry (retries bumps). Clearing the draft on retry is what stops the stale
+  // co-submit / keypad-append bugs and disables Comprobar until a fresh answer.
+  const retryCount = segState?.retries ?? 0
   useEffect(() => {
     setDraft(undefined)
     setGradeError(false)
     segStartRef.current = Date.now()
-  }, [state.index])
+  }, [state.index, retryCount])
 
   // Auto-narrate each segment's prompt as it appears (story_dialogue voices
   // its own lines instead — line 0 covers the beat, the prompt would talk
@@ -278,8 +282,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
             </div>
           ))}
 
-          {/* Exercise body */}
+          {/* Exercise body — keyed by segment + retry count so "Intentar de
+              nuevo" forces a clean remount (timers, boards and keypads reset;
+              no stale phase state survives into the new attempt). */}
           <entry.component
+            key={`${segment.id}:${retryCount}`}
             segment={segment}
             value={draft}
             onChange={setDraft}
