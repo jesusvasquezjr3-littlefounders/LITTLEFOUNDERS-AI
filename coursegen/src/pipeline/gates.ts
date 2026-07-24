@@ -740,15 +740,20 @@ function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
   for (const segment of document.segments) {
     const hints = (segment as { hints?: string[] }).hints;
     if (!hints || hints.length === 0) continue;
-    // Numbers visible on screen: prompt_md + every learner-visible payload string.
-    const visible: VisitedString[] = [];
-    collectLearnerVisibleStrings((segment as { payload: unknown }).payload, '', visible);
+    // Numbers the child actually SEES as facts: those written into the on-screen
+    // instruction (prompt_md) plus STRUCTURAL numeric values the engine renders
+    // (item.price, target, goal, paid_with…). A number embedded in an option/
+    // token/case STRING is a distractor or an answer choice, NOT a shown fact —
+    // counting it (the old bug) let "cada vaso cuesta 5" hide in a hint while a
+    // distractor token "5" masked it. So numeric payload VALUES count; strings don't.
     const onScreen = new Set<string>();
-    const harvest = (s: string) => {
-      for (const m of s.matchAll(/\d+/g)) onScreen.add(m[0]);
+    for (const m of ((segment as { prompt_md: string }).prompt_md ?? '').matchAll(/\d+/g)) onScreen.add(m[0]);
+    const walkNums = (n: unknown): void => {
+      if (typeof n === 'number') onScreen.add(String(Math.trunc(Math.abs(n))));
+      else if (Array.isArray(n)) n.forEach(walkNums);
+      else if (n && typeof n === 'object') Object.values(n).forEach(walkNums);
     };
-    harvest((segment as { prompt_md: string }).prompt_md ?? '');
-    visible.forEach((v) => harvest(v.value));
+    walkNums((segment as { payload: unknown }).payload);
 
     for (const hint of hints) {
       for (const m of hint.matchAll(PRICE_IN_HINT_RE)) {
