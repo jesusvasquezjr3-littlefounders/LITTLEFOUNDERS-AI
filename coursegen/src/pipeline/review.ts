@@ -98,12 +98,21 @@ const LOW_DECISION_TYPES = new Set([
 ]);
 
 function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed): boolean {
+  // A lesson made ENTIRELY of low-decision types (content beats, fluency
+  // drills, pure reading/recognition) is not a worked-numeric reasoning
+  // exercise, so the judge's concreteness ("a worked concrete instance") and
+  // cognitive_engagement ("must reason") dimensions are scored against a
+  // different bar — its value is a clear, curious, grounded concept, not a
+  // hard choice. Relax those two floors for such lessons (the judge's own
+  // calibration already says to judge these types on their own terms). Any
+  // lesson with a genuine reasoning exercise mixed in keeps the full floors.
   const allLowDecision = document.segments.every((s) => LOW_DECISION_TYPES.has(s.type));
+  const concretenessFloor = allLowDecision ? 3 : 4;
   const engagementFloor = allLowDecision ? 2 : 3;
   return (
     rubric.kid_safety >= 5 &&
     rubric.age_fit >= 4 &&
-    rubric.concreteness >= 4 &&
+    rubric.concreteness >= concretenessFloor &&
     // Quality floor added after the QA inspection: an exercise must actually
     // teach (pedagogy), make the kid think (engagement), explain wrong answers
     // (feedback) and offer plausible distractors — all >= 3 (not below average).
