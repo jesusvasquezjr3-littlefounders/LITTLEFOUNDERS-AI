@@ -39,6 +39,7 @@ import { Suspense, lazy } from 'react';
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
+const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
@@ -55,6 +56,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <LessonLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/lesson-view"
+              element={
+                <Suspense fallback={null}>
+                  <LessonViewPage />
                 </Suspense>
               }
             />
