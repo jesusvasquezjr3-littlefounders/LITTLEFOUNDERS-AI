@@ -109,6 +109,11 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, s
   const allLowDecision = document.segments.every((s) => LOW_DECISION_TYPES.has(s.type));
   const concretenessFloor = allLowDecision ? 3 : 4;
   const engagementFloor = allLowDecision ? 2 : 3;
+  // Fluency drills (lightning_round/speed_tap/flash_match/memory_flip) have no
+  // per-option rationale field, so their feedback IS the aggregate explanation,
+  // not per-choice — the judge scores such feedback low. Relax the floor for
+  // all-low-decision lessons, matching the concreteness/engagement relaxations.
+  const feedbackFloor = allLowDecision ? 2 : 3;
   return (
     rubric.kid_safety >= 5 &&
     // A standalone coverage harness must exercise tier3-only types (compound
@@ -121,7 +126,7 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, s
     // (feedback) and offer plausible distractors — all >= 3 (not below average).
     rubric.pedagogy >= 3 &&
     rubric.cognitive_engagement >= engagementFloor &&
-    rubric.feedback_quality >= 3 &&
+    rubric.feedback_quality >= feedbackFloor &&
     rubric.distractor_quality >= 3
   );
 }

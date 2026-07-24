@@ -2,6 +2,15 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-24b) — Render-truth pass: no people in images, local currency, fixed pattern/robot/type_answer
+
+- **Owner reviewed the RENDERED player (a screenshot), not JSON, and caught what the JSON-judges missed.** Fixes, each verified in the player via the new `/dev/lesson-view` (loads real DB docs into the production `LessonPlayer`):
+  - **No people in generated images.** Dina/Liruf/Rho/Zara are the app's own NON-HUMAN characters (Liruf has a tail), drawn by the character rig — so Prism now forbids any person/human/face/hands/character: identity brief + judge hard-rule + `BASE_NEGATIVE`, and the pictorial verifier now flags a depicted PERSON too (verdict `defect` = text OR person). `STYLE_VERSION` v3→v4 invalidated every human image; all regenerated as objects+setting scenes.
+  - **Local currency.** en-US renders "$"/"20-dollar bill", pt-BR reais — `localize` translator instruction + a deterministic `currency`/`unit` ENUM remap (the enum was in NON_VISIBLE_KEYS so it stayed MXN → Intl formatted pesos everywhere). NB: a blanket peso-word scrub was rejected — "pesos"=weights in balance_scale.
+  - **pattern_complete** was unsolvable (a SIZE/PRICE ladder drawn as identical icon+tint tiles, answer keyed to the wrong slot). Gate 8 now: 0-based slot-index keys, sequence must vary by icon/tint, and a period-detection check that the ANSWER continues the visible pattern. **robot_path** solvability gate (simulate the payload commands). **type_answer** must be applied-arithmetic, not word-recall.
+  - **answerable-from-screen** gate refined twice: a load-bearing price stated only in a hint fails — counting only prompt_md + STRUCTURAL numeric payload values (a distractor token string "5" no longer masks a hidden price).
+- **Re-review trend (Fable judges, 3 rounds):** overall ok 4 → 23 → **30/62**; clarity 3.1 → 3.92 → **4.24**; child_fit 2.95 → 3.79 → **4.26**; visual_first 2.03 → 3.61 → **3.77**; blockers 16 → 13 → **6** (residual: a few fact-in-hint + compare_table/debug_hunt mechanical, being closed). interest_peek remains its prior version (owner-confirmed hold-out — compound interest is tier3, mismatched to a tier2 course).
+
 ## Current State (2026-07-24) — Visual-first overhaul: AI images across every exercise type + terse prompts
 
 - **Owner 1x1 review verdict (Fable-judge workflow over the 62 GENERATED lessons, not dev fixtures):** the course was pedagogically planned but IMPLEMENTED wrong for young kids — `visual_first` scored **2.03/5**, with 55 Material-icon fields vs only 3 AI images across 70 segments, and 56/70 exercise prompts over 140 chars (text walls). 57/62 lessons "needs_work". Dev-lab fixtures (hand-written) are NOT the generated content — the review must read the DB documents.
