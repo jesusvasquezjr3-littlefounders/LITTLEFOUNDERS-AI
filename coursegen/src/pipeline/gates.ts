@@ -724,8 +724,56 @@ function clarityAnswerLeak(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * ANSWERABLE-FROM-SCREEN (the 2026-07-24 re-review's dominant new blocker):
+ * pushing story out of terse prompts made the author demote LOAD-BEARING facts
+ * (a price the answer depends on) into a HINT — "cada vaso cuesta 5 pesos"
+ * appears only in hints[0], so a child who never opens hints cannot solve. A
+ * price stated in a hint whose number is absent from the prompt AND the visible
+ * payload is a hidden required fact: flag it. Numbers already on screen (a hint
+ * merely restating them) are fine — that's real scaffolding.
+ */
+const PRICE_IN_HINT_RE = /(?:cuesta|vale|precio|paga(?:r|n)?|cada\s+\w+\s+(?:es|son)?)\D{0,12}?(\d+)|(\d+)\s*pesos?/gi;
+
+function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const hints = (segment as { hints?: string[] }).hints;
+    if (!hints || hints.length === 0) continue;
+    // Numbers visible on screen: prompt_md + every learner-visible payload string.
+    const visible: VisitedString[] = [];
+    collectLearnerVisibleStrings((segment as { payload: unknown }).payload, '', visible);
+    const onScreen = new Set<string>();
+    const harvest = (s: string) => {
+      for (const m of s.matchAll(/\d+/g)) onScreen.add(m[0]);
+    };
+    harvest((segment as { prompt_md: string }).prompt_md ?? '');
+    visible.forEach((v) => harvest(v.value));
+
+    for (const hint of hints) {
+      for (const m of hint.matchAll(PRICE_IN_HINT_RE)) {
+        const num = m[1] ?? m[2];
+        if (num && !onScreen.has(num)) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `a hint states a required fact ("${m[0].trim()}") whose number ${num} is NOT visible in the prompt or payload — the child cannot solve from the screen; move that price/quantity into prompt_md or the payload`,
+          });
+          break; // one finding per hint is enough
+        }
+      }
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
-  return [...clarityTextDensity(document), ...clarityFakeQuestion(document), ...clarityAnswerLeak(document)];
+  return [
+    ...clarityTextDensity(document),
+    ...clarityFakeQuestion(document),
+    ...clarityAnswerLeak(document),
+    ...clarityHintHiddenFact(document),
+  ];
 }
 
 // ---- Orchestration -----------------------------------------------------------
