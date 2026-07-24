@@ -49,10 +49,17 @@ function setAtPath(root: unknown, path: readonly PathSegment[], value: string): 
 
 // ISO currency enum (money schemas) mapped to the target locale's play currency.
 const ISO_CURRENCY = new Set(['MXN', 'USD', 'BRL']);
-const LOCALE_CURRENCY: Record<'en-US' | 'pt-BR', { code: string; word: string }> = {
-  'en-US': { code: 'USD', word: 'dollars' },
-  'pt-BR': { code: 'BRL', word: 'reais' },
+const LOCALE_CURRENCY: Record<'en-US' | 'pt-BR', { code: string; word: string; sing: string }> = {
+  'en-US': { code: 'USD', word: 'dollars', sing: 'dollar' },
+  'pt-BR': { code: 'BRL', word: 'reais', sing: 'real' },
 };
+
+/** Whole-word peso→local currency scrub for any "peso(s)" the LLM translator
+ *  missed in prose (the enum fields are handled structurally below). */
+function scrubPesoWord(s: string, target: 'en-US' | 'pt-BR'): string {
+  const c = LOCALE_CURRENCY[target];
+  return s.replace(/\bpesos\b/gi, c.word).replace(/\bpeso\b/gi, c.sing);
+}
 
 /**
  * Currency lives in fields that the string-freeze SKIPS (the `currency`/`unit`
@@ -75,6 +82,8 @@ function remapCurrency(node: unknown, target: 'en-US' | 'pt-BR'): void {
           obj[key] = c.code;
         } else if (key === 'unit' && typeof value === 'string' && /^pesos?$/i.test(value.trim())) {
           obj[key] = c.word;
+        } else if (typeof value === 'string' && key !== 'id' && key !== 'audio_segment_id') {
+          obj[key] = scrubPesoWord(value, target); // catch any "peso" the translator missed in prose
         } else {
           walk(value);
         }

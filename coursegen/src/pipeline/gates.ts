@@ -800,13 +800,48 @@ function clarityPatternComplete(document: LessonDocumentParsed): GateProblem[] {
     // Visible pattern: the sequence must vary by icon OR tint (a constant
     // icon+tint sequence carries no visible pattern — it was a size/price ladder).
     const seq = Array.isArray(payload.sequence) ? (payload.sequence as Array<{ icon?: string; tint?: string }>) : [];
-    const distinct = new Set(seq.map((s) => `${s.icon}|${s.tint}`));
+    const tileKey = (t: { icon?: string; tint?: string } | undefined) => `${t?.icon}|${t?.tint}`;
+    const distinct = new Set(seq.map(tileKey));
     if (seq.length >= 3 && distinct.size < 2) {
       problems.push({
         gate: 8,
         segmentId: segment.id,
         message: 'pattern_complete sequence tiles are all identical (same icon AND tint) — the pattern is invisible; vary the icon or tint so the child can SEE and continue it (never a size/price ladder)',
       });
+      continue;
+    }
+    // The ANSWER must actually CONTINUE the visible pattern. Find the smallest
+    // period P that the sequence repeats on; the tile filling slot k sits at
+    // position (seq.length + k) and must match seq[(seq.length + k) mod P]. If
+    // no clean period exists the pattern is ambiguous (a child can't infer it).
+    if (seq.length >= 3 && distinct.size >= 2) {
+      const period = (() => {
+        // Smallest p in [1, len-1] on which the sequence repeats. A period-3
+        // pattern shown as [A,B,C,A,B] (5 tiles, one full + partial repeat) is
+        // inferable, so the bound is len-1, not len/2.
+        for (let p = 1; p <= seq.length - 1; p++) {
+          let ok = true;
+          for (let i = p; i < seq.length; i++) if (tileKey(seq[i]) !== tileKey(seq[i - p])) { ok = false; break; }
+          if (ok) return p;
+        }
+        return 0; // not cleanly periodic
+      })();
+      const optById = new Map(options.map((o) => [o.id, o as { icon?: string; tint?: string }]));
+      if (period === 0) {
+        problems.push({ gate: 8, segmentId: segment.id, message: 'pattern_complete sequence has no clear repeating period — the pattern is ambiguous; use an obvious repeat like A,B,A,B or A,B,C,A,B,C' });
+      } else {
+        for (let k = 0; k < missing; k++) {
+          const expected = seq[(seq.length + k) % period];
+          const chosen = optById.get(correct[String(k)] ?? '');
+          if (expected && chosen && tileKey(expected) !== tileKey(chosen)) {
+            problems.push({
+              gate: 8,
+              segmentId: segment.id,
+              message: `pattern_complete answer for slot ${k} (option "${correct[String(k)]}", ${tileKey(chosen)}) does NOT continue the visible pattern — the pattern of period ${period} needs ${tileKey(expected)} there`,
+            });
+          }
+        }
+      }
     }
   }
   return problems;
