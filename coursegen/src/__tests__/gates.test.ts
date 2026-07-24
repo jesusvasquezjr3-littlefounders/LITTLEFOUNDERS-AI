@@ -5,9 +5,68 @@ import {
   runFactGate,
   runArithmeticGate,
   runRationaleAndCanonGate,
+  runClarityGate,
   runAllGates,
 } from '../pipeline/gates.js';
 import { buildDocument, buildTaxonomy, buildFacts } from './fixtures.js';
+
+describe('gate 8: clarity / visual-first', () => {
+  function docWithSegment(seg: Record<string, unknown>) {
+    const doc = buildDocument();
+    (doc.segments as unknown as Record<string, unknown>[])[0] = seg;
+    return doc;
+  }
+
+  const quizSeg = (over: Record<string, unknown> = {}) => ({
+    id: 's1',
+    type: 'quiz_mcq',
+    prompt_md: '¿Cuánto cuesta?',
+    difficulty: 1,
+    xp: 10,
+    payload: { options: [{ id: 'a', text_md: 'Cinco pesos' }, { id: 'b', text_md: 'Diez pesos' }] },
+    answer: { correct_option_id: 'a' },
+    explanation_md: 'El vaso cuesta cinco pesos porque ese es su precio marcado.',
+    ...over,
+  });
+
+  it('accepts a terse, self-contained prompt', () => {
+    expect(runClarityGate(docWithSegment(quizSeg())).length).toBe(0);
+  });
+
+  it('fails a prompt_md longer than the char cap (text wall)', () => {
+    const long = 'Liruf ganó diez pesos vendiendo limonada en su puesto y ahora tiene que decidir con mucho cuidado, pensando en el futuro, qué comprar primero para no quedarse sin dinero jamás. ¿Qué hace?';
+    const problems = runClarityGate(docWithSegment(quizSeg({ prompt_md: long })));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('text wall'))).toBe(true);
+  });
+
+  it('fails a prompt_md with too many sentences', () => {
+    const many = 'Uno. Dos. Tres. Cuatro.';
+    const problems = runClarityGate(docWithSegment(quizSeg({ prompt_md: many })));
+    expect(problems.some((p) => p.message.includes('sentences'))).toBe(true);
+  });
+
+  it('flags a non-graded content segment that ends on a direct question', () => {
+    const seg = { id: 's1', type: 'concept_reveal', prompt_md: '¿Qué es el ahorro?', difficulty: 1, xp: 0, payload: { cards: [{ front_md: 'Ahorro', back_md: 'Guardar dinero' }, { front_md: 'Gasto', back_md: 'Usar dinero' }] } };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('takes no answer'))).toBe(true);
+  });
+
+  it('flags a non-graded segment whose explanation congratulates a non-answer', () => {
+    const seg = { id: 's1', type: 'key_ideas', prompt_md: 'Lo que aprendimos hoy.', difficulty: 1, xp: 0, payload: { ideas: [{ icon: 'star', title: 'Ahorrar', body_md: 'Guardar un poco' }, { icon: 'paid', title: 'Gastar', body_md: 'Usar con cuidado' }] }, explanation_md: '¡Exacto! Ahorrar es guardar dinero para después.' };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('congratulates'))).toBe(true);
+  });
+
+  it('flags a prompt that leaks the correct answer verbatim', () => {
+    const seg = quizSeg({
+      prompt_md: 'La mejor idea es guardar el dinero en la alcancía.',
+      payload: { options: [{ id: 'a', text_md: 'Guardar el dinero en la alcancía' }, { id: 'b', text_md: 'Gastarlo todo' }] },
+      answer: { correct_option_id: 'a' },
+    });
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('correct answer verbatim'))).toBe(true);
+  });
+});
 
 describe('gate 1: contract', () => {
   it('accepts a valid document', () => {

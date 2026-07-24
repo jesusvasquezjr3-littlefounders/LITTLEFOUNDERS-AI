@@ -29,6 +29,10 @@ export const CONTENT_PLAYBOOK = [
   '7. DISTRACTORS THAT TEACH: every wrong option encodes ONE specific, common kid misconception (ignored the cost, added instead of subtracted, picked the biggest number, confused want vs. need, off-by-one coin, forgot the savings goal). Keep options parallel in length/format so the answer is not guessable by surface cues. A wrong choice must be tempting AND diagnostic — put its misconception in that option\'s `rationale_md` so the feedback names exactly the thinking that went wrong. Never joke or impossible options.',
   '8. FEEDBACK BUILDS THE MENTAL MODEL — elaborated, not verification. explanation_md is outcome-neutral (shown right OR wrong), 1-2 kid-sized sentences: state the fact and the WHY in concrete terms ("El vaso cuesta 5 pesos porque…"), address the misconception a wrong answer reveals ("te quedarías corto por 2 pesos para la feria"). Concrete beats general; short beats long. Never "¡Correcto!" alone; a wrong answer is a gentle teaching beat, never a punishment.',
   '9. VOICE: warm, playful peer-coach — a dina/liruf/rho/zara character with a bit of humor and heart the kid roots for. Short sentences, concrete nouns, real stakes. Never condescending, never empty praise ("¡bien hecho, campeón!"), never a lecture, never filler.',
+  '10. VISUAL-FIRST — THE PICTURE CARRIES THE MEANING, NOT THE TEXT. Every concrete object the child must recognize (a lemon, a coin, a cup, a comic, a jar) is shown as a real AI ILLUSTRATION, never described in a sentence and never left as a bare word. So: give each item/option a SHORT, literal object name as its label/text (the illustrator draws it, and a 6-year-old reads the picture) — "Limones", "Vaso de limonada", not "los limones que Liruf compró en el mercado". Design the exercise so it is solvable by LOOKING, with minimal reading. NEVER rely on a Material icon to stand in for an object.',
+  '11. TEXT DISCIPLINE (prompt_md is the on-screen INSTRUCTION, not the story): keep prompt_md to <=140 characters and at most 2 sentences — one situation line (only if the picture cannot show it) + one imperative/question. ALL backstory, character dialogue, stakes and prior-lesson recaps go into the NARRATION (narrator/story beats), which is spoken and exempt. Exactly ONE question per prompt. Never restate what an option/card/scene already shows. Every number in the prompt must be load-bearing for the answer (drop decorative numbers — they read as accidental distractors). No cross-lesson callbacks ("Al igual que la vez pasada…", "Ahora que ya sabes…") in prompt_md.',
+  '12. POSITIVE STAKES ONLY. The stake is something GOOD to gain or a smart choice to make — never a social punishment for a wrong answer. Never "si te equivocas la clienta se enojará / los niños se reirán / se quedará sin pasaje". A wrong answer is a gentle teaching beat, never a threat.',
+  '13. SELF-CONTAINED & FAIR: every fact the answer depends on must be visible in the prompt, the payload, or the picture BEFORE answering — never only in a hint or the after-the-fact explanation. The prompt/hints must never contain the correct answer itself. For a NON-GRADED content segment (story_scene, key_ideas, concept_reveal, checkpoint, story_dialogue) never pose a direct question it cannot answer, and never congratulate ("¡Exacto!") an answer the child never gave.',
   '',
   'FORBIDDEN (hallmarks of a boring, low-value exercise — a lesson with any of them is a FAIL):',
   '- Generic phrasing with no specific number, named object, or situation ("elige la respuesta correcta sobre el dinero").',
@@ -38,6 +42,10 @@ export const CONTENT_PLAYBOOK = [
   '- Contrived scenarios a child never meets ("reparte tu portafolio trimestral").',
   '- Throwaway distractors (obviously silly, or the right answer restated) that diagnose nothing.',
   '- Wall-of-text premise, or more than one concept crammed onto one screen.',
+  '- A concrete object left as a bare word or a Material icon instead of a real illustrated picture.',
+  '- prompt_md over 140 chars / more than 2 sentences / carrying story that belongs in narration.',
+  '- A fact needed to answer that appears only in a hint or the explanation, not on screen before answering.',
+  '- The correct answer visible in the prompt or a hint; or a negative/punishing stake for a wrong answer.',
 ].join('\n');
 
 /**
@@ -71,5 +79,8 @@ export const JUDGE_PLAYBOOK_ANCHORS = [
   '- Does each wrong option map to a specific, tempting misconception (not a throwaway)?',
   '- Is the explanation elaborated (states the WHY concretely) and outcome-neutral, not bare praise?',
   '- Is the abstraction level right for the age tier (no profit/interest/percentages/future-value for the youngest)?',
-  'Score LOW (1-2) any exercise that is generic, tests a definition, is stakes-free, is abstract where concrete fits, serves too-old concepts to a young tier, or has throwaway distractors. "Mechanically valid but boring / adds no real value" is a FAILING lesson, not a passing one — say exactly which signal failed in `notes`.',
+  '- VISUAL-FIRST: is every concrete object a real illustration (image_url), not a bare word or a Material icon? Is the exercise solvable mostly by LOOKING, with little reading?',
+  '- TEXT DISCIPLINE: is prompt_md <=140 chars / <=2 sentences, one question, story kept in narration, no decorative numbers, no cross-lesson callback?',
+  '- ANSWERABLE-FROM-SCREEN: can the child derive the answer from the prompt+payload+picture alone (not from a hint/explanation)? Re-derive it yourself and confirm it matches the answer key. No answer leaked in the prompt/hints. Positive (never punishing) stake.',
+  'Score LOW (1-2) any exercise that is generic, tests a definition, is stakes-free, is abstract where concrete fits, serves too-old concepts to a young tier, has throwaway distractors, is a text wall, leaves concrete objects unillustrated, hides a needed fact off-screen, leaks the answer, or punishes wrong answers. "Mechanically valid but boring / hard to read / adds no real value" is a FAILING lesson, not a passing one — say exactly which signal failed in `notes`.',
 ].join('\n');

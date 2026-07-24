@@ -15,8 +15,9 @@ import {
   approxEqual,
 } from './arithmetic.js';
 import { runGenerationQualityGate } from './generationQuality.js';
+import { CONTENT_TYPES } from '../contract/registry.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -589,6 +590,138 @@ export function runAntiGenericityGate(document: LessonDocumentParsed, opts: { to
   ];
 }
 
+// ---- Gate 8: clarity / visual-first (deterministic) -------------------------
+//
+// The QA synthesis (2026-07-23) found the generated course was pedagogically
+// planned but IMPLEMENTED wrong for young children: 56/70 exercise prompts were
+// text walls (backstory + recap + threat + the instruction buried last),
+// non-graded "content" segments posed fake gradeable questions, and prompts
+// leaked the keyed answer. These are the deterministic, low-false-positive
+// slices of S2/S4/S5 — the nuanced halves (key-derivation, positive framing)
+// live in the judge playbook. Story/backstory belongs in narration, not the
+// on-screen prompt, so the caps below are TIGHT on purpose.
+
+/** Hard ceiling — the prompt is the on-screen instruction, not the story.
+ *  Aim (playbook) is <=140; the gate fails only egregious walls to leave the
+ *  author a little slack while still forcing story out of the prompt. */
+const MAX_PROMPT_CHARS = 160;
+const MAX_PROMPT_SENTENCES = 3;
+/** Below this length a correct-option string is too short to be a reliable leak signal. */
+const MIN_LEAK_MATCH_LEN = 14;
+
+/** Terminal-punctuation sentence count (handles Spanish ¿¡ by counting closers). */
+function sentenceCount(s: string): number {
+  const matches = s.match(/[.!?]+/g);
+  return matches ? matches.length : s.trim() ? 1 : 0;
+}
+
+/** Answer-congratulation phrases a NON-graded segment must not use (it praises an
+ *  answer the child never gave). Per-locale, deliberately short. */
+const PRAISE_PHRASES_BY_LOCALE: Record<LessonLocale, string[]> = {
+  'es-MX': ['exacto', 'correcto', 'muy bien', 'bien hecho', 'asi es', 'excelente'],
+  'en-US': ['exactly', 'correct', 'well done', 'great job', 'that is right', "that's right"],
+  'pt-BR': ['exato', 'correto', 'muito bem', 'bom trabalho', 'isso mesmo', 'excelente'],
+};
+
+/** The plain text of the correct option/item for the choice-style types, when it
+ *  is a distinctive string (used for the leak check). Returns null otherwise. */
+function correctOptionText(segment: { type: string; answer?: unknown; payload: unknown }): string | null {
+  const answer = segment.answer as Record<string, unknown> | undefined;
+  const payload = segment.payload as Record<string, unknown>;
+  if (!answer) return null;
+  const findText = (arr: unknown, id: unknown, key = 'text_md'): string | null => {
+    if (!Array.isArray(arr) || typeof id !== 'string') return null;
+    const hit = arr.find((o) => (o as Record<string, unknown>).id === id) as Record<string, unknown> | undefined;
+    const v = hit?.[key] ?? hit?.label;
+    return typeof v === 'string' ? v : null;
+  };
+  switch (segment.type) {
+    case 'quiz_mcq':
+    case 'confidence_quiz':
+      return findText(payload.options, answer.correct_option_id);
+    case 'picture_choice':
+      return findText(payload.options, answer.correct_option_id, 'label');
+    case 'odd_one_out':
+      return findText(payload.items, answer.odd_item_id);
+    default:
+      return null;
+  }
+}
+
+function clarityTextDensity(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const prompt = (segment as { prompt_md: string }).prompt_md ?? '';
+    if (prompt.length > MAX_PROMPT_CHARS) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `prompt_md is ${prompt.length} chars (max ${MAX_PROMPT_CHARS}) — a text wall for young kids; move story/backstory into narration and keep the prompt to the instruction`,
+      });
+    }
+    if (sentenceCount(prompt) > MAX_PROMPT_SENTENCES) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `prompt_md has ${sentenceCount(prompt)} sentences (max ${MAX_PROMPT_SENTENCES}) — one situation line + one instruction/question is enough`,
+      });
+    }
+  }
+  return problems;
+}
+
+function clarityFakeQuestion(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  const praise = new Set(PRAISE_PHRASES_BY_LOCALE[document.meta.locale] ?? []);
+  for (const segment of document.segments) {
+    if (!CONTENT_TYPES.includes(segment.type)) continue; // non-graded types only
+    const prompt = ((segment as { prompt_md: string }).prompt_md ?? '').trim();
+    // A non-graded segment has no input — ending on a direct question reads as a
+    // gradeable question the child then can't answer.
+    if (prompt.endsWith('?')) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `non-graded ${segment.type} ends prompt_md with a direct question but takes no answer — rephrase as a statement or make it a graded type`,
+      });
+    }
+    const explanation = normalizeText((segment as { explanation_md?: string }).explanation_md ?? '');
+    for (const phrase of praise) {
+      if (explanation.includes(normalizeText(phrase))) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `non-graded ${segment.type} explanation congratulates ("${phrase}") an answer the child never gave — keep it outcome-neutral`,
+        });
+        break;
+      }
+    }
+  }
+  return problems;
+}
+
+function clarityAnswerLeak(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const answerText = correctOptionText(segment as never);
+    if (!answerText) continue;
+    const normAnswer = normalizeText(answerText).trim();
+    if (normAnswer.length < MIN_LEAK_MATCH_LEN) continue; // too short to be a reliable signal
+    const prompt = normalizeText((segment as { prompt_md: string }).prompt_md ?? '');
+    const hints = ((segment as { hints?: string[] }).hints ?? []).map((h) => normalizeText(h));
+    if (prompt.includes(normAnswer)) {
+      problems.push({ gate: 8, segmentId: segment.id, message: `prompt_md contains the correct answer verbatim ("${answerText}") — the exercise is given away` });
+    } else if (hints.some((h) => h.includes(normAnswer))) {
+      problems.push({ gate: 8, segmentId: segment.id, message: `a hint contains the correct answer verbatim ("${answerText}") — hints scaffold, never reveal` });
+    }
+  }
+  return problems;
+}
+
+export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
+  return [...clarityTextDensity(document), ...clarityFakeQuestion(document), ...clarityAnswerLeak(document)];
+}
+
 // ---- Orchestration -----------------------------------------------------------
 
 export interface GateContext {
@@ -614,6 +747,7 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     ...runRationaleAndCanonGate(document),
     ...runAntiGenericityGate(document, { topicTitle: ctx.topicTitle }),
     ...runGenerationQualityGate(document),
+    ...runClarityGate(document),
   ];
   return { ok: problems.length === 0, problems, document };
 }
