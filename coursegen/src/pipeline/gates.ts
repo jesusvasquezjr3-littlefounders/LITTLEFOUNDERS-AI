@@ -793,6 +793,21 @@ function clarityPatternComplete(document: LessonDocumentParsed): GateProblem[] {
     if (segment.type !== 'pattern_complete') continue;
     const payload = (segment as { payload: Record<string, unknown> }).payload;
     const answer = (segment as { answer?: { correct?: Record<string, string> } }).answer;
+    // INVISIBLE-PROPERTY framing: tiles render ONLY as an icon + a tint, so a pattern of
+    // SIZE, PRICE or AMOUNT is unshowable — the child sees identical glyphs and cannot tell
+    // chico from grande or $5 from $15. A prompt that frames the beat as price/size (the
+    // classic "chico $5, mediano $10, grande $15… para que los precios sigan subiendo") is
+    // unsolvable-as-framed even when the color cycle technically has a period. Keep the
+    // prompt to "¿Qué sigue en el patrón?" and carry the beat in distinct icons/tints.
+    const pcPrompt = ((segment as { prompt_md?: string }).prompt_md ?? '').toLowerCase();
+    const SIZE_PRICE = /\$\d|\bpesos?\b|\bprecio|\bchico\b|\bmediano\b|\bgrande\b|barat|\bcar[oa]\b|subiendo|suban|más peque|más grande/i;
+    if (SIZE_PRICE.test(pcPrompt)) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `pattern_complete "${segment.id}" frames the pattern by SIZE/PRICE ("${pcPrompt.slice(0, 60)}…") but the tiles are only an icon + a color tint — size and price are invisible, so the child cannot read the pattern the prompt describes. Keep prompt_md to "¿Qué sigue en el patrón?" and encode the beat in DISTINCT icons/tints.`,
+      });
+    }
     const missing = typeof payload.missing_slots === 'number' ? payload.missing_slots : 0;
     const options = Array.isArray(payload.options) ? (payload.options as Array<{ id?: string }>) : [];
     const optIds = new Set(options.map((o) => o.id));
@@ -930,8 +945,17 @@ function clarityCompareTable(document: LessonDocumentParsed): GateProblem[] {
   const problems: GateProblem[] = [];
   for (const segment of document.segments) {
     if (segment.type !== 'compare_table') continue;
-    const payload = (segment as { payload: { tokens?: { id?: string; text_md?: string }[] } }).payload;
+    const payload = (
+      segment as {
+        payload: {
+          tokens?: { id?: string; text_md?: string }[];
+          rows?: { id?: string; label?: string }[];
+          cols?: { id?: string; label?: string }[];
+        };
+      }
+    ).payload;
     const answer = (segment as { answer?: { cells?: Record<string, string> } }).answer;
+    const prompt = ((segment as { prompt_md?: string }).prompt_md ?? '').toLowerCase();
     const cells = answer?.cells ?? {};
     const usedIds = new Set(Object.values(cells));
     const textById = new Map((payload.tokens ?? []).map((t) => [t.id, (t.text_md ?? '').trim().toLowerCase()]));
@@ -950,6 +974,76 @@ function clarityCompareTable(document: LessonDocumentParsed): GateProblem[] {
       }
       usedText.set(txt, id);
     }
+
+    // SOLVABILITY GROUNDING: the table has no separate data panel — the ONLY place a
+    // child can read the source values is prompt_md. Every cell whose answer token is a
+    // DATA value (not a row-label reference = the "best choice" decision) must be fully
+    // recoverable from the prompt: both the value AND its row must be named there. If the
+    // author parks the prices in a hint/explanation (v4-pro's failure mode), the child is
+    // left guessing which stall costs what → a random fail. Force the binding on-screen.
+    const rowLabelById = new Map((payload.rows ?? []).map((r) => [r.id ?? '', (r.label ?? '').trim()]));
+    const rowLabelSet = new Set([...rowLabelById.values()].map((l) => l.toLowerCase()).filter(Boolean));
+    // Decision COLUMN: a column whose id/label reads as "pick the best" (elige / choose /
+    // best / mejor). Its cells are derived by comparison, not transcribed — never require
+    // their tokens in the prompt (guards against false-fails on Sí/No-per-row decisions).
+    const DECISION_COL = /elig|eleg|escoj|escog|choos|pick|best|mejor|winner|ganad/i;
+    const decisionColIds = new Set(
+      (payload.cols ?? [])
+        .filter((c) => DECISION_COL.test(c.id ?? '') || DECISION_COL.test(c.label ?? ''))
+        .map((c) => (c.id ?? '').toLowerCase()),
+    );
+    const promptNums = new Set((prompt.match(/\d+/g) ?? []));
+    for (const [cellKey, tokenId] of Object.entries(cells)) {
+      const txt = textById.get(tokenId);
+      if (!txt) continue;
+      const colId = (cellKey.split(':')[1] ?? '').toLowerCase();
+      if (decisionColIds.has(colId)) continue;
+      // Decision cell: the child PICKS a row (token text == a row label) — derived by
+      // comparison, not transcribed. That is the whole exercise; never require it in prompt.
+      if (rowLabelSet.has(txt)) continue;
+      const rowId = cellKey.split(':')[0] ?? '';
+      const rowLabel = (rowLabelById.get(rowId) ?? '').toLowerCase();
+      const tokenNums = txt.match(/\d+/g) ?? [];
+      const valueGrounded =
+        tokenNums.length > 0 ? tokenNums.every((n) => promptNums.has(n)) : prompt.includes(txt);
+      if (!valueGrounded) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `compare_table source cell "${cellKey}" needs value "${txt}" but it is NOT stated in prompt_md — the child cannot read it off any panel and would have to guess. State every row's value in the prompt (e.g. "Doña Lula vende los 10 limones por 5 pesos; Don Pepe por 6 pesos"), not in a hint.`,
+        });
+        continue;
+      }
+      if (rowLabel && !prompt.includes(rowLabel)) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `compare_table binds "${txt}" to row "${rowLabel}" but the prompt never names that row alongside its value — the value↔row binding is off-screen and unguessable. Name each row and its value together in prompt_md.`,
+        });
+      }
+    }
+  }
+  return problems;
+}
+
+function clarityCoinCount(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'coin_count') continue;
+    const prompt = ((segment as { prompt_md?: string }).prompt_md ?? '').toLowerCase();
+    // The coin_count engine renders ONLY a target + a denomination palette the child taps
+    // to ASSEMBLE coins summing to the target (grade = tray sum === target). It has NO
+    // yes/no control. A prompt that poses a sufficiency yes/no question ("¿tiene suficiente
+    // para el vaso de 5 pesos?") is unanswerable by the mechanic — the child can only build
+    // a sum, and the grader passes ANY combo that reaches the target. Force an assemble task.
+    const SUFFICIENCY = /suficient|te alcanza|le alcanza|\balcanza\b|\bbasta\b|le sobra|es bastante|enough/i;
+    if (SUFFICIENCY.test(prompt)) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `coin_count "${segment.id}" asks a yes/no SUFFICIENCY question ("${prompt.slice(0, 60)}…") but the player has no yes/no control — it only lets the child ASSEMBLE coins to reach the target. Ask the child to FORM/COUNT the exact amount instead (e.g. "Junta monedas para formar 5 pesos"), never "¿tiene suficiente?".`,
+      });
+    }
   }
   return problems;
 }
@@ -964,6 +1058,7 @@ export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
     ...robotPathSolvable(document),
     ...clarityBuildSentence(document),
     ...clarityCompareTable(document),
+    ...clarityCoinCount(document),
   ];
 }
 

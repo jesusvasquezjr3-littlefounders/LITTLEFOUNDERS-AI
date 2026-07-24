@@ -75,6 +75,12 @@ describe('gate 8: clarity / visual-first', () => {
     expect(problems.some((p) => p.message.includes('invisible'))).toBe(true);
   });
 
+  it('flags a pattern_complete framed by SIZE/PRICE (invisible in icon+tint tiles)', () => {
+    const seg = { id: 's1', type: 'pattern_complete', prompt_md: 'Dina vende vasos: chico $5, mediano $10, grande $15. ¿Cuál va para que los precios sigan subiendo?', difficulty: 2, xp: 15, payload: { sequence: [{ icon: 'local_cafe', tint: 'primary' }, { icon: 'local_cafe', tint: 'accent' }, { icon: 'local_cafe', tint: 'success' }, { icon: 'local_cafe', tint: 'primary' }], options: [{ id: 'o1', icon: 'local_cafe', tint: 'accent' }], missing_slots: 1 }, answer: { correct: { '0': 'o1' } } };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('SIZE/PRICE'))).toBe(true);
+  });
+
   it('flags a robot_path whose own commands never reach the goal', () => {
     const seg = { id: 's1', type: 'robot_path', prompt_md: 'Lleva el carrito.', difficulty: 2, xp: 15, payload: { grid: { w: 4, h: 4 }, start: { x: 0, y: 0, dir: 'right' }, goal: { x: 3, y: 3 }, commands: ['forward', 'forward'], max_commands: 6 } };
     const problems = runClarityGate(docWithSegment(seg));
@@ -96,6 +102,75 @@ describe('gate 8: clarity / visual-first', () => {
     });
     const problems = runClarityGate(docWithSegment(seg));
     expect(problems.some((p) => p.message.includes('correct answer verbatim'))).toBe(true);
+  });
+
+  // compare_table renders empty cells + a token bank with NO separate data panel, so the
+  // child's only source of truth is prompt_md. The grounding check forces every source
+  // value (and its row) on-screen — parking prices in a hint (v4-pro's failure mode) makes
+  // the table an unguessable coin-flip that the exact-cell grader then marks wrong.
+  const compareTableSeg = (over: Record<string, unknown> = {}) => ({
+    id: 's1',
+    type: 'compare_table',
+    prompt_md: 'Doña Lula: 10 limones por 5 pesos. Don Pepe: 10 limones por 6 pesos. Elige la mejor opción.',
+    difficulty: 1,
+    xp: 10,
+    payload: {
+      cols: [{ id: 'precio', label: 'Precio' }, { id: 'mejor', label: '¿Mejor?' }],
+      rows: [{ id: 'lula', label: 'Doña Lula' }, { id: 'pepe', label: 'Don Pepe' }],
+      tokens: [
+        { id: 't1', text_md: '5 pesos' },
+        { id: 't2', text_md: '6 pesos' },
+        { id: 'y', text_md: 'Sí' },
+        { id: 'n', text_md: 'No' },
+      ],
+    },
+    answer: { cells: { 'lula:precio': 't1', 'pepe:precio': 't2', 'lula:mejor': 'y', 'pepe:mejor': 'n' } },
+    ...over,
+  });
+
+  it('accepts a compare_table whose source values are all stated in the prompt', () => {
+    const problems = runClarityGate(docWithSegment(compareTableSeg())).filter((p) => p.message.includes('compare_table'));
+    expect(problems.length).toBe(0);
+  });
+
+  it('flags a compare_table that hides its source values off-screen (only in a hint)', () => {
+    const seg = compareTableSeg({
+      prompt_md: 'Dina necesita 10 limones. Elige la mejor opción.',
+      hints: ['Doña Lula cuesta 5 pesos; Don Pepe cuesta 6 pesos.'],
+    });
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('NOT stated in prompt_md'))).toBe(true);
+  });
+
+  it('does not false-fail a compare_table with a per-row Sí/No decision column', () => {
+    // the decision column ('mejor') holds Sí/No tokens (not row labels); those cells are
+    // derived by comparison and must NOT be required in the prompt.
+    const problems = runClarityGate(docWithSegment(compareTableSeg())).filter((p) => p.message.includes('compare_table'));
+    expect(problems.length).toBe(0);
+  });
+
+  // coin_count renders a target + a coin palette to ASSEMBLE (grade = tray sum === target);
+  // there is no yes/no control, so a sufficiency question is unanswerable by the mechanic.
+  const coinCountSeg = (prompt_md: string) => ({
+    id: 's1',
+    type: 'coin_count',
+    prompt_md,
+    difficulty: 1,
+    xp: 10,
+    payload: { target: 5, currency: 'MXN', denominations: [1, 2, 5] },
+  });
+
+  it('flags a coin_count that poses a yes/no sufficiency question (no such control)', () => {
+    const seg = coinCountSeg('El cliente te da una moneda de 2 y tres de 1. ¿Tiene suficiente para el vaso de 5 pesos?');
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('SUFFICIENCY'))).toBe(true);
+  });
+
+  it('accepts a coin_count that asks the child to assemble the target amount', () => {
+    const problems = runClarityGate(docWithSegment(coinCountSeg('Junta monedas para formar 5 pesos.'))).filter((p) =>
+      p.message.includes('coin_count'),
+    );
+    expect(problems.length).toBe(0);
   });
 });
 
