@@ -97,7 +97,7 @@ const LOW_DECISION_TYPES = new Set([
   'group_sets',
 ]);
 
-function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed): boolean {
+function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, standalone = false): boolean {
   // A lesson made ENTIRELY of low-decision types (content beats, fluency
   // drills, pure reading/recognition) is not a worked-numeric reasoning
   // exercise, so the judge's concreteness ("a worked concrete instance") and
@@ -111,7 +111,10 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed): 
   const engagementFloor = allLowDecision ? 2 : 3;
   return (
     rubric.kid_safety >= 5 &&
-    rubric.age_fit >= 4 &&
+    // A standalone coverage harness must exercise tier3-only types (compound
+    // growth, profit) even on a tier2 course, so age_fit is a coverage artifact
+    // here, not a real-learner signal. kid_safety (>=5) stays the hard guard.
+    rubric.age_fit >= (standalone ? 2 : 4) &&
     rubric.concreteness >= concretenessFloor &&
     // Quality floor added after the QA inspection: an exercise must actually
     // teach (pedagogy), make the kid think (engagement), explain wrong answers
@@ -269,6 +272,12 @@ export interface ReviewDeps {
   author?: typeof completeDeepSeek;
   /** null = this IS the course's first lesson (exempt from connect-to-prior); string = the actual prior micro-objective; undefined = unknown (legacy). */
   priorMicroObjective?: string | null;
+  /** A type-coverage / practice harness (catalog `standalone: true`): relaxes
+   *  the age_fit floor, because it exercises EVERY type on one fixed tier and a
+   *  type that's inherently a different tier (interest_peek/compound growth on a
+   *  tier2 course) is a coverage artifact, not a real age mismatch — the course
+   *  is explicitly "not for learners". Normal courses keep the full age_fit floor. */
+  standalone?: boolean;
 }
 
 export interface ReviewResult {
@@ -289,7 +298,7 @@ export async function reviewLesson(
   let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   let cycles = 0;
 
-  while (!passesJudgeGate(rubric, current) && cycles < MAX_REVISE_CYCLES) {
+  while (!passesJudgeGate(rubric, current, deps.standalone) && cycles < MAX_REVISE_CYCLES) {
     cycles++;
     const revised = await reviseDocument(current, rubric.notes, author, deps.ledger);
     const gateReport = runAllGates(revised, gateCtx);
@@ -302,7 +311,7 @@ export async function reviewLesson(
     rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   }
 
-  if (!passesJudgeGate(rubric, current)) {
+  if (!passesJudgeGate(rubric, current, deps.standalone)) {
     throw new ReviewFailedError(rubric, cycles);
   }
 

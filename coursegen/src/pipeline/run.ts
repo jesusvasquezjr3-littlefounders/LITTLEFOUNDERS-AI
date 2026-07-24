@@ -234,6 +234,7 @@ async function processSlot(
         // every lesson is exempt (null) — otherwise the continuity requirement
         // false-fails otherwise-excellent standalone lessons.
         priorMicroObjective: course.catalog.course.standalone ? null : (slot.priorMicroObjective ?? null),
+        standalone: course.catalog.course.standalone ?? false,
       });
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });

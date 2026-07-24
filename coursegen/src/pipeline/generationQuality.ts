@@ -301,6 +301,7 @@ const KEYLESS_GRADED_TYPES = new Set([
   'make_change',
   'budget_fit',
   'balance_scale',
+  'robot_path', // grader re-runs the submitted program against the payload
 ]);
 
 /**
