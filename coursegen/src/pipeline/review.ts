@@ -155,6 +155,14 @@ async function judgeDocument(
         : `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
 
   const user = [
+    // The single most important check: judge what a child SEES rendered, and
+    // PROVE the exercise is solvable from the screen. This is what a JSON-only
+    // read misses (2026-07-24 render-truth review).
+    'BEFORE scoring, do a SOLVABILITY PASS on every graded segment, using ONLY what renders on screen BEFORE answering:',
+    'RENDER FACTS: a child sees prompt_md (the instruction), the payload widget, and any image_url illustration. They do NOT see hints until they ask, and NEVER see explanation_md until AFTER answering. Numbers written in prompt_md or shown as structural payload values (a price, a target) are visible; a number that is ONLY inside a token/option/case string is an ANSWER CHOICE, not a given fact.',
+    'For each graded segment, RE-DERIVE the correct answer yourself using only the visible facts, then check it equals the answer key. If a fact you NEED (e.g. "each cup costs 5 pesos") appears only in a hint or explanation_md, the exercise is UNSOLVABLE from the screen → set fitness=1 and say so. If the payload cannot actually form the keyed answer (e.g. build_sentence with 2 slots but the answer is a single number "10", or tokens that cannot arrange into it), fitness=1. If two options/tokens render IDENTICAL text but the key binds them to different slots, it is a random-fail → fitness<=2. If the MECHANIC (arrange word tokens into a sentence, drag into a table) does not match the TASK the prompt asks (compute a price, pick the cheaper stand), clarity<=2.',
+    'PLATFORM: generated images must show objects+setting only — flag any depicted person/human/character. Currency is local (es-MX pesos here). Characters are dina/liruf/rho/zara only; do not fault the absence of others.',
+    '',
     'Rate this lesson document 1-5 on each dimension:',
     '- age_fit: is the language/complexity right for the stated age band?',
     '- pedagogy: does it teach the stated concept effectively (concrete-before-abstract, formative feedback)?',

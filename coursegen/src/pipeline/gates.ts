@@ -738,8 +738,12 @@ const PRICE_IN_HINT_RE = /(?:cuesta|vale|precio|paga(?:r|n)?|cada\s+\w+\s+(?:es|
 function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
   const problems: GateProblem[] = [];
   for (const segment of document.segments) {
-    const hints = (segment as { hints?: string[] }).hints;
-    if (!hints || hints.length === 0) continue;
+    // A load-bearing fact hidden in a hint OR in explanation_md (shown only
+    // AFTER answering) is off-screen — both make the exercise unsolvable.
+    const hints = [...((segment as { hints?: string[] }).hints ?? [])];
+    const expl = (segment as { explanation_md?: string }).explanation_md;
+    const offScreen = expl ? [...hints, expl] : hints;
+    if (offScreen.length === 0) continue;
     // Numbers the child actually SEES as facts: those written into the on-screen
     // instruction (prompt_md) plus STRUCTURAL numeric values the engine renders
     // (item.price, target, goal, paid_with…). A number embedded in an option/
@@ -755,18 +759,21 @@ function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
     };
     walkNums((segment as { payload: unknown }).payload);
 
-    for (const hint of hints) {
-      for (const m of hint.matchAll(PRICE_IN_HINT_RE)) {
+    for (const text of offScreen) {
+      let flagged = false;
+      for (const m of text.matchAll(PRICE_IN_HINT_RE)) {
         const num = m[1] ?? m[2];
         if (num && !onScreen.has(num)) {
           problems.push({
             gate: 8,
             segmentId: segment.id,
-            message: `a hint states a required fact ("${m[0].trim()}") whose number ${num} is NOT visible in the prompt or payload — the child cannot solve from the screen; move that price/quantity into prompt_md or the payload`,
+            message: `a required fact ("${m[0].trim()}") whose number ${num} is visible ONLY in a hint/explanation, not in the prompt or payload — the child cannot solve from the screen; move that price/quantity into prompt_md or the payload`,
           });
-          break; // one finding per hint is enough
+          flagged = true;
+          break;
         }
       }
+      if (flagged) break; // one finding per segment is enough
     }
   }
   return problems;
@@ -895,6 +902,58 @@ function robotPathSolvable(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/** build_sentence must build a SENTENCE, not be an arithmetic quiz in disguise
+ *  (2026-07-24: tokens ["5","10","15","20"], slots 2, answer "10 5" — nonsense).
+ *  If every token is a bare number/operator the child has no sentence to build;
+ *  it should be a number_input/quiz. */
+function clarityBuildSentence(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'build_sentence') continue;
+    const tokens = ((segment as { payload: { tokens?: { text_md?: string }[] } }).payload.tokens ?? []);
+    if (tokens.length === 0) continue;
+    const isWordless = (s: string) => !/[a-záéíóúñ]{2,}/i.test(s); // no real word
+    if (tokens.every((t) => typeof t.text_md === 'string' && isWordless(t.text_md))) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: 'build_sentence has only number/symbol tokens (no words) — there is no sentence to build; use number_input or quiz_mcq for an arithmetic answer, or add real word tokens ("Dos vasos cuestan ___ pesos")',
+      });
+    }
+  }
+  return problems;
+}
+
+/** compare_table cells that bind two IDENTICAL-text tokens to different cells
+ *  render as indistinguishable chips → a child can swap them and fail at random. */
+function clarityCompareTable(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'compare_table') continue;
+    const payload = (segment as { payload: { tokens?: { id?: string; text_md?: string }[] } }).payload;
+    const answer = (segment as { answer?: { cells?: Record<string, string> } }).answer;
+    const cells = answer?.cells ?? {};
+    const usedIds = new Set(Object.values(cells));
+    const textById = new Map((payload.tokens ?? []).map((t) => [t.id, (t.text_md ?? '').trim().toLowerCase()]));
+    const usedText = new Map<string, string>(); // normalized text -> first id
+    for (const id of usedIds) {
+      const txt = textById.get(id);
+      if (!txt) continue;
+      const prev = usedText.get(txt);
+      if (prev && prev !== id) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `compare_table binds two tokens with IDENTICAL text ("${txt}") to different cells — they render indistinguishable and can be swapped for a random fail; use one shared token or make the values distinct`,
+        });
+        break;
+      }
+      usedText.set(txt, id);
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...clarityTextDensity(document),
@@ -903,6 +962,8 @@ export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
     ...clarityHintHiddenFact(document),
     ...clarityPatternComplete(document),
     ...robotPathSolvable(document),
+    ...clarityBuildSentence(document),
+    ...clarityCompareTable(document),
   ];
 }
 
