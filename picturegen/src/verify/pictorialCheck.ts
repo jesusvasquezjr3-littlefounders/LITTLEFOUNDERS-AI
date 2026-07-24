@@ -9,20 +9,22 @@
  * verbatim — misspelled — onto the coins. The positive prompt always wins.
  *
  * So after every paid generation, a vision model (same DashScope account)
- * looks at the actual pixels and answers one question: is there readable
- * text — letters, words or numerals — anywhere in the image? Currency
+ * looks at the actual pixels and answers: does the image contain (a) readable
+ * text — letters, words or numerals — or (b) any PERSON/CHARACTER? Currency
  * symbols ($) alone are acceptable coin iconography; letters and digits are
- * not. Only images that pass get cached and returned; a failing image is
+ * not. People are never acceptable — the app draws its own non-human
+ * characters separately, so a generated human contradicts them. Only images
+ * that pass both checks get cached and returned; a failing image is
  * regenerated from a fresh judge prompt (the judge is nondeterministic, so
  * each retry is a genuinely new composition).
  *
  * Never-block principle: if the VERIFIER itself is unreachable or returns
  * garbage, the image is accepted unverified ('unavailable') — an outage of
  * the vision model must not take down illustration generation. Only a
- * confident "has_text" verdict triggers a retry.
+ * confident 'defect' verdict (text OR person) triggers a retry.
  */
 
-export type PictorialVerdict = 'clean' | 'has_text' | 'unavailable';
+export type PictorialVerdict = 'clean' | 'defect' | 'unavailable';
 
 export interface VerifyOptions {
   apiBase: string;
@@ -35,31 +37,38 @@ export interface VerifyOptions {
 const DEFAULT_TIMEOUT_MS = 60_000;
 
 const VERIFY_INSTRUCTION = [
-  'You are a strict QA inspector for a children\'s learning app.',
-  'Look at the image and decide if it contains READABLE TEXT of any kind:',
-  'words, brand names, signs or signboards with writing, captions, labels,',
-  'price tags with writing, or NUMERALS (digits) — including text or numbers',
-  'engraved on coins.',
-  'A bare currency symbol ($) with no letters or digits does NOT count as text.',
-  'Reply with STRICT JSON only, shaped exactly: {"has_text": boolean, "found": string}.',
-  '"found" briefly names what text you saw, or "" if none.',
+  'You are a strict QA inspector for a children\'s learning app. Inspect the image for TWO defects:',
+  '(1) READABLE TEXT of any kind — words, brand names, signs/signboards with writing, captions, labels,',
+  'price tags, or NUMERALS (digits), including text/numbers engraved on coins. A bare currency symbol',
+  '($) with no letters or digits does NOT count as text.',
+  '(2) ANY PERSON OR CHARACTER — a human, child, adult, face, hands, mascot, or cartoon character of any',
+  'kind. This app draws its own characters separately, so a generated image must show ONLY objects and',
+  'setting; any depicted person or character is a defect.',
+  'Reply with STRICT JSON only, shaped exactly: {"has_text": boolean, "has_person": boolean, "found": string}.',
+  '"found" briefly names the text and/or person you saw, or "" if none.',
 ].join(' ');
 
 interface ChatResponse {
   choices?: { message?: { content?: string } }[];
 }
 
-/** Defensive parse: strict JSON first, then a has_text-flag regex over prose. */
+/** Defensive parse: strict JSON first, then a flag regex over prose. A 'defect'
+ *  is readable text OR a depicted person/character. */
 export function parseVerdict(content: string | null | undefined): PictorialVerdict {
   if (!content) return 'unavailable';
   try {
-    const raw = JSON.parse(content) as { has_text?: unknown };
-    if (typeof raw.has_text === 'boolean') return raw.has_text ? 'has_text' : 'clean';
+    const raw = JSON.parse(content) as { has_text?: unknown; has_person?: unknown };
+    if (typeof raw.has_text === 'boolean' || typeof raw.has_person === 'boolean') {
+      return raw.has_text === true || raw.has_person === true ? 'defect' : 'clean';
+    }
   } catch {
     // Some vision models wrap JSON in prose or fences — fall through to regex.
   }
-  const m = content.match(/"has_text"\s*:\s*(true|false)/);
-  if (m) return m[1] === 'true' ? 'has_text' : 'clean';
+  const text = content.match(/"has_text"\s*:\s*(true|false)/);
+  const person = content.match(/"has_person"\s*:\s*(true|false)/);
+  if (text || person) {
+    return text?.[1] === 'true' || person?.[1] === 'true' ? 'defect' : 'clean';
+  }
   return 'unavailable';
 }
 

@@ -52,8 +52,10 @@ const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, veri
  * images that already conform stay valid, and only the offending rows are
  * deleted surgically (consumption invariant — never re-pay for good art).
  * v3 = code-enforced PICTORIAL_CLAUSE on every prompt.
+ * v4 = NO-PEOPLE rule (objects/setting only; the app's non-human characters are
+ * rendered separately) — invalidates every image that drew a human.
  */
-export const STYLE_VERSION = 'v3';
+export const STYLE_VERSION = 'v4';
 
 const EXT_BY_MIME: Record<string, string> = {
   'image/png': 'png',
@@ -135,11 +137,12 @@ export async function generatePicture(
       apiKey: judgeApiKey(config),
       model: config.VERIFY_MODEL,
     });
-    if (verdict !== 'has_text') break; // clean, or verifier unavailable (accept unverified)
+    if (verdict !== 'defect') break; // clean, or verifier unavailable (accept unverified)
     if (attempt === maxTries) {
-      // Every attempt rendered text. Fail the request WITHOUT caching — the
-      // caller falls back to its icon, and a later retry regenerates fresh.
-      throw new ImageError('IMAGE_VERIFICATION_FAILED', `image rendered readable text after ${maxTries} attempts`);
+      // Every attempt rendered a defect (readable text or a person). Fail the
+      // request WITHOUT caching — the caller falls back to its icon, and a
+      // later retry regenerates fresh.
+      throw new ImageError('IMAGE_VERIFICATION_FAILED', `image kept a defect (text/person) after ${maxTries} attempts`);
     }
   }
 

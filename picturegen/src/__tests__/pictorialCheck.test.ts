@@ -12,13 +12,14 @@ function chatResponse(content: string): Response {
 
 describe('parseVerdict', () => {
   it('parses strict JSON verdicts', () => {
-    expect(parseVerdict('{"has_text": true, "found": "Founters sign"}')).toBe('has_text');
-    expect(parseVerdict('{"has_text": false, "found": ""}')).toBe('clean');
+    expect(parseVerdict('{"has_text": true, "has_person": false, "found": "Founters sign"}')).toBe('defect');
+    expect(parseVerdict('{"has_text": false, "has_person": true, "found": "a smiling boy"}')).toBe('defect');
+    expect(parseVerdict('{"has_text": false, "has_person": false, "found": ""}')).toBe('clean');
   });
 
   it('recovers the flag from prose/fenced wrappers via regex', () => {
-    expect(parseVerdict('```json\n{"has_text": true, "found": "1 peso"}\n```')).toBe('has_text');
-    expect(parseVerdict('Sure! {"has_text": false, "found": ""}')).toBe('clean');
+    expect(parseVerdict('```json\n{"has_text": true, "has_person": false, "found": "1 peso"}\n```')).toBe('defect');
+    expect(parseVerdict('Sure! {"has_text": false, "has_person": false, "found": ""}')).toBe('clean');
   });
 
   it('returns unavailable for garbage or empty content', () => {
@@ -32,10 +33,10 @@ describe('parseVerdict', () => {
 
 describe('verifyPictorial', () => {
   it('sends the image as a base64 data URL and returns the parsed verdict', async () => {
-    const fetchImpl = vi.fn().mockResolvedValue(chatResponse('{"has_text": true, "found": "wordmark"}'));
+    const fetchImpl = vi.fn().mockResolvedValue(chatResponse('{"has_text": true, "has_person": false, "found": "wordmark"}'));
     const verdict = await verifyPictorial(Buffer.from([1, 2, 3]), 'image/png', { ...OPTS, fetchImpl });
 
-    expect(verdict).toBe('has_text');
+    expect(verdict).toBe('defect');
     expect(fetchImpl).toHaveBeenCalledWith('https://judge.example/v1/chat/completions', expect.any(Object));
     const body = JSON.parse((fetchImpl.mock.calls[0]![1] as { body: string }).body) as {
       model: string;

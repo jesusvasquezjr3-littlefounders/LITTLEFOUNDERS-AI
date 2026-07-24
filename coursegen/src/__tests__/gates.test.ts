@@ -57,6 +57,37 @@ describe('gate 8: clarity / visual-first', () => {
     expect(problems.some((p) => p.message.includes('congratulates'))).toBe(true);
   });
 
+  it('flags a hint that hides a required price not shown on screen', () => {
+    const seg = quizSeg({ prompt_md: '¿Alcanza el dinero?', hints: ['Recuerda: cada vaso cuesta 5 pesos.'] });
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('required fact'))).toBe(true);
+  });
+
+  it('flags a pattern_complete answer keyed by a sequence index instead of a slot index', () => {
+    const seg = { id: 's1', type: 'pattern_complete', prompt_md: '¿Qué sigue?', difficulty: 2, xp: 15, payload: { sequence: [{ icon: 'star', tint: 'primary' }, { icon: 'circle', tint: 'accent' }, { icon: 'star', tint: 'primary' }], options: [{ id: 'o1', icon: 'circle', tint: 'accent' }, { id: 'o2', icon: 'star', tint: 'primary' }], missing_slots: 1 }, answer: { correct: { '5': 'o1' } } };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('slot indexes'))).toBe(true);
+  });
+
+  it('flags a pattern_complete with an invisible (all-identical) sequence', () => {
+    const seg = { id: 's1', type: 'pattern_complete', prompt_md: '¿Qué sigue?', difficulty: 2, xp: 15, payload: { sequence: [{ icon: 'local_cafe', tint: 'primary' }, { icon: 'local_cafe', tint: 'primary' }, { icon: 'local_cafe', tint: 'primary' }], options: [{ id: 'o1', icon: 'local_cafe', tint: 'primary' }, { id: 'o2', icon: 'star', tint: 'accent' }], missing_slots: 1 }, answer: { correct: { '0': 'o1' } } };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('invisible'))).toBe(true);
+  });
+
+  it('flags a robot_path whose own commands never reach the goal', () => {
+    const seg = { id: 's1', type: 'robot_path', prompt_md: 'Lleva el carrito.', difficulty: 2, xp: 15, payload: { grid: { w: 4, h: 4 }, start: { x: 0, y: 0, dir: 'right' }, goal: { x: 3, y: 3 }, commands: ['forward', 'forward'], max_commands: 6 } };
+    const problems = runClarityGate(docWithSegment(seg));
+    expect(problems.some((p) => p.message.includes('unsolvable'))).toBe(true);
+  });
+
+  it('accepts a robot_path whose commands DO reach the goal', () => {
+    // start (0,0) facing right → forward→(1,0)→(2,0)→(3,0); right turn faces down; forward→(3,1)(3,2)(3,3)
+    const seg = { id: 's1', type: 'robot_path', prompt_md: 'Lleva el carrito.', difficulty: 2, xp: 15, payload: { grid: { w: 4, h: 4 }, start: { x: 0, y: 0, dir: 'right' }, goal: { x: 3, y: 3 }, commands: ['forward', 'forward', 'forward', 'right', 'forward', 'forward', 'forward'], max_commands: 8 } };
+    const problems = runClarityGate(docWithSegment(seg)).filter((p) => p.message.includes('robot_path'));
+    expect(problems.length).toBe(0);
+  });
+
   it('flags a prompt that leaks the correct answer verbatim', () => {
     const seg = quizSeg({
       prompt_md: 'La mejor idea es guardar el dinero en la alcancía.',

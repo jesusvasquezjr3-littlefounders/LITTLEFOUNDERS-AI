@@ -12,8 +12,8 @@ const CRAFTED_PROMPT = 'A cheerful jar of coins on a sunny lemonade stand';
 // Config defaults exercised by the service (env.ts): model qwen-image, size 1024*1024.
 // Cache key hashes the REQUEST descriptor (purpose | label | context), never the
 // judged prompt — the judge is nondeterministic, so a prompt-keyed cache never hits.
-const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v3 | generic | a jar of coins | ');
-const MISS_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v3 | lesson_option | a jar of coins | saving up');
+const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v4 | generic | a jar of coins | ');
+const MISS_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v4 | lesson_option | a jar of coins | saving up');
 
 const storedRow: PictureAssetRow = {
   id: '11111111-1111-4111-8111-111111111111',
@@ -137,7 +137,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('boom', { status: 500 })));
 
     const fbPrompt = fallbackPrompt({ label: 'a piggy bank', context: 'saving money', purpose: 'generic' }).prompt;
-    const fbHash = pictureAssetHash('qwen-image', '1024*1024', 'v3 | generic | a piggy bank | saving money');
+    const fbHash = pictureAssetHash('qwen-image', '1024*1024', 'v4 | generic | a piggy bank | saving money');
 
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([7]), contentType: 'image/png' });
@@ -163,7 +163,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValueOnce('has_text').mockResolvedValueOnce('clean');
+    const verifyPictorial = vi.fn().mockResolvedValueOnce('defect').mockResolvedValueOnce('clean');
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
@@ -185,7 +185,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('has_text');
+    const verifyPictorial = vi.fn().mockResolvedValue('defect');
     const uploadFile = vi.fn();
     const insertAsset = vi.fn();
 

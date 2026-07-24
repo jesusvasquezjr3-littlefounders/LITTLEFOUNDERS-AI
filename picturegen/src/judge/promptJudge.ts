@@ -21,7 +21,7 @@ import { z } from 'zod';
  * the deterministic fallback) so every asset shares one look.
  */
 export const LF_VISUAL_IDENTITY =
-  "Flat, modern children's illustration in the LittleFounders style: clean bold vector shapes with soft rounded corners, warm and friendly, zero text or letters in the image. Palette anchored on warm papaya/coral (#ff775c) accents, deep navy (#080f28) and soft blues, with sunny yellows and fresh greens — bright but never neon. Soft warm lighting, gentle shadows, simple uncluttered composition with ONE clear subject filling most of the frame, complete background scene (never a cutout or sticker on white). Cheerful lemonade-stand world: hand-made stands, jars of coins, lemons, sunny neighborhoods. No humans' faces close-up, no brand logos, no watermarks, no scary/violent elements — this is for children aged 6-13.";
+  "Flat, modern children's illustration in the LittleFounders style: clean bold vector shapes with soft rounded corners, warm and friendly, zero text or letters in the image. Palette anchored on warm papaya/coral (#ff775c) accents, deep navy (#080f28) and soft blues, with sunny yellows and fresh greens — bright but never neon. Soft warm lighting, gentle shadows, simple uncluttered composition with ONE clear subject filling most of the frame, complete background scene (never a cutout or sticker on white). Cheerful lemonade-stand world: hand-made stands, jars of coins, lemons, sunny neighborhoods. ABSOLUTELY NO PEOPLE: never draw a person, human, child, adult, face, hands, mascot or cartoon character of ANY kind — depict ONLY objects and the setting. (The app renders its own non-human characters separately; a drawn human would contradict them.) No brand logos, no watermarks, no scary/violent elements — this is for children aged 6-13.";
 
 export const PICTURE_PURPOSES = [
   'lesson_option',
@@ -55,11 +55,11 @@ const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
     'This is a memory/matching game card face: one bold central subject, symmetric friendly composition, simple background, still readable when small.',
   // A wide establishing illustration above the prompt that sets the SITUATION.
   scene_anchor:
-    'This is a wide ESTABLISHING scene shown above the exercise (roughly 16:9). Show the concrete situation — the character(s) at the lemonade stand, the objects and setting involved — with a complete background. It sets context and mood; it MUST NOT reveal or hint at the answer to the exercise.',
+    'This is a wide ESTABLISHING scene shown above the exercise (roughly 16:9). Show the concrete situation through OBJECTS and SETTING ONLY — the lemonade stand, the goods, coins, jars, the sunny neighborhood — with a complete background, and NO people/characters of any kind. It sets context and mood; it MUST NOT reveal or hint at the answer to the exercise.',
   scene:
-    'This is a wide story scene: show the subject acting within the lemonade-stand world with a complete background.',
+    'This is a wide story scene: show the objects and setting of the lemonade-stand world with a complete background, and NO people or characters.',
   outcome:
-    'This is an OUTCOME/consequence illustration for a story branch ending. Emotion-forward: show the character clearly feeling the result (proud, thoughtful, a gentle lesson learned — never scared or shamed), in the lemonade-stand world.',
+    'This is an OUTCOME/consequence illustration for a story branch ending. Convey the result through the SCENE and OBJECTS (e.g. a full coin jar for success, wilted lemonade for a setback) — never through a person or character, never anything scary or shaming.',
   generic: 'A clear, friendly illustration of the subject with a simple complete background.',
 };
 
@@ -99,6 +99,7 @@ const SYSTEM_PROMPT = [
   'The prompt MUST enforce this exact illustration identity:',
   LF_VISUAL_IDENTITY,
   'Hard rules: never put readable text, letters, numbers, logos or watermarks in the image; never depict anything scary, violent, or unsafe for children; keep ONE clear subject.',
+  'NEVER DRAW PEOPLE OR CHARACTERS: no person, human, child, adult, face, hands, mascot, or cartoon character of ANY kind — depict ONLY objects and the setting. If the label or context names a character (Dina, Liruf, Rho, Zara) or "a kid/customer/vendor", do NOT draw them — draw the OBJECTS and PLACE of the scene instead (the app draws its own non-human characters separately). A drawn human is a hard failure.',
   'CHILD-LEGIBILITY (this is a picture a 6-year-old must read at a glance): draw the ACTUAL, LITERAL object named — never a symbolic or abstract stand-in. A "cost" is drawn as coins/a lemon, never a receipt; a "savings goal" is the actual toy, never a trophy or a target; "ice" is ice cubes, not a snowflake symbol. One dominant subject, bold high-contrast silhouette, unmistakable as the named thing.',
   'QUANTITIES ARE PICTORIAL: qwen-image loves rendering captions, so NEVER write an amount, price, or label as something to display ("10 pesos", "2 vasos"). Translate every quantity into visual composition instead — "two golden coins side by side", "a small stack of three coins". If the context mentions prices, show the OBJECTS, never the numbers.',
   "NEVER NAME DENOMINATIONS: never write a currency amount or denomination anywhere in your prompt, not even inside quotation marks — \"'1 peso' coin\" WILL be engraved verbatim onto the coin. Distinguish coins ONLY by size, color, or finish: 'one small copper coin and two larger golden coins'.",
@@ -126,7 +127,8 @@ function userMessage(input: JudgeInput): string {
  */
 export const BASE_NEGATIVE =
   'text, letters, words, captions, typography, logo, brand name, wordmark, watermark, signature, signage, labels, numbers overlay, ' +
-  'sign with writing, signboard text, price tag, chalkboard writing, coin inscriptions, engraved letters, engraved numbers';
+  'sign with writing, signboard text, price tag, chalkboard writing, coin inscriptions, engraved letters, engraved numbers, ' +
+  'person, people, human, man, woman, child, kid, boy, girl, face, hands, character, mascot, cartoon character, humanoid figure';
 
 /**
  * Appended IN CODE to every final prompt (judge-crafted or fallback) — not

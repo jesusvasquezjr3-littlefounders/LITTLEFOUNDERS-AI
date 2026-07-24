@@ -47,6 +47,43 @@ function setAtPath(root: unknown, path: readonly PathSegment[], value: string): 
   cursor[path[path.length - 1]!] = value;
 }
 
+// ISO currency enum (money schemas) mapped to the target locale's play currency.
+const ISO_CURRENCY = new Set(['MXN', 'USD', 'BRL']);
+const LOCALE_CURRENCY: Record<'en-US' | 'pt-BR', { code: string; word: string }> = {
+  'en-US': { code: 'USD', word: 'dollars' },
+  'pt-BR': { code: 'BRL', word: 'reais' },
+};
+
+/**
+ * Currency lives in fields that the string-freeze SKIPS (the `currency`/`unit`
+ * enums are in NON_VISIBLE_KEYS, so they were copied verbatim → an en-US
+ * make_change segment stayed `currency: "MXN"` and formatted as pesos). Remap
+ * every currency code to the target locale's, and swap a free-word `unit`
+ * ("pesos") to the locale word. Amounts are play money — numbers are untouched.
+ */
+function remapCurrency(node: unknown, target: 'en-US' | 'pt-BR'): void {
+  const c = LOCALE_CURRENCY[target];
+  const walk = (n: unknown): void => {
+    if (Array.isArray(n)) {
+      n.forEach(walk);
+      return;
+    }
+    if (n && typeof n === 'object') {
+      const obj = n as Record<string, unknown>;
+      for (const [key, value] of Object.entries(obj)) {
+        if ((key === 'currency' || key === 'unit') && typeof value === 'string' && ISO_CURRENCY.has(value)) {
+          obj[key] = c.code;
+        } else if (key === 'unit' && typeof value === 'string' && /^pesos?$/i.test(value.trim())) {
+          obj[key] = c.word;
+        } else {
+          walk(value);
+        }
+      }
+    }
+  };
+  walk(node);
+}
+
 export class LocalizeVocabError extends Error {
   readonly locale: LessonLocale;
   readonly problems: GateProblem[];
@@ -71,9 +108,14 @@ function buildTranslateMessages(
   const audienceLine = toneDirectiveEs
     ? `This content targets ADULT learners, not children — preserve that register when translating. Source-language (es-MX) tone directive: ${toneDirectiveEs}`
     : "Keep the warm, encouraging, age-appropriate register (this is children's content).";
+  const currencyLine =
+    targetLocale === 'en-US'
+      ? 'CURRENCY: this is play money for kids — convert Mexican pesos to US DOLLARS. Replace "peso/pesos" with "dollar/dollars"; keep the "$" symbol and every NUMBER exactly the same (do NOT apply exchange rates — 20 pesos becomes 20 dollars).'
+      : 'CURRENCY: this is play money for kids — convert Mexican pesos to Brazilian REAIS. Replace "peso/pesos" with "real/reais" and the "$" symbol with "R$"; keep every NUMBER exactly the same (do NOT apply exchange rates — 20 pesos becomes 20 reais).';
   const system =
     `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine} ` +
     'Preserve MarkdownLite markup exactly (**bold**, *italic*, `code`, "- " lists, line breaks) and any {{n}} gap markers verbatim. ' +
+    `${currencyLine} ` +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.';
   const user = [
     'Translate every value in this JSON object. Return an object with EXACTLY the same keys.',
@@ -158,6 +200,7 @@ export async function localizeLesson(
   extracted.forEach((entry, i) => {
     setAtPath(cloned, entry.path, translatedMap[String(i)] ?? entry.value);
   });
+  remapCurrency(cloned, targetLocale);
   (cloned as { meta: { locale: string } }).meta.locale = targetLocale;
 
   const parsed = lessonDocumentSchema.safeParse(cloned);

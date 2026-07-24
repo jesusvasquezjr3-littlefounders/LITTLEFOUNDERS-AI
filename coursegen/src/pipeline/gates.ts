@@ -767,12 +767,102 @@ function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * pattern_complete render truth (the 2026-07-24 screenshot): the engine draws
+ * `missing_slots` EMPTY slots AFTER the visible `sequence` and only ever shows
+ * each tile's ICON + TINT. Two ways the author breaks it: (a) keying the answer
+ * by a sequence index ("5") instead of a slot index ("0"), so nothing grades;
+ * (b) an invisible pattern (all tiles the SAME icon+tint, the real pattern
+ * being an unrenderable size/price ladder). Both fail here.
+ */
+function clarityPatternComplete(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'pattern_complete') continue;
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: { correct?: Record<string, string> } }).answer;
+    const missing = typeof payload.missing_slots === 'number' ? payload.missing_slots : 0;
+    const options = Array.isArray(payload.options) ? (payload.options as Array<{ id?: string }>) : [];
+    const optIds = new Set(options.map((o) => o.id));
+    const correct = answer?.correct ?? {};
+    const keys = Object.keys(correct);
+    const expected = Array.from({ length: missing }, (_, i) => String(i));
+    if (keys.length !== missing || !expected.every((k) => k in correct)) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `pattern_complete answer.correct keys must be exactly the slot indexes ${JSON.stringify(expected)} (0-based), got ${JSON.stringify(keys)} — a sequence index like "5" grades nothing`,
+      });
+    }
+    for (const id of Object.values(correct)) {
+      if (!optIds.has(id)) problems.push({ gate: 8, segmentId: segment.id, message: `pattern_complete answer value "${id}" is not an option id` });
+    }
+    // Visible pattern: the sequence must vary by icon OR tint (a constant
+    // icon+tint sequence carries no visible pattern — it was a size/price ladder).
+    const seq = Array.isArray(payload.sequence) ? (payload.sequence as Array<{ icon?: string; tint?: string }>) : [];
+    const distinct = new Set(seq.map((s) => `${s.icon}|${s.tint}`));
+    if (seq.length >= 3 && distinct.size < 2) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: 'pattern_complete sequence tiles are all identical (same icon AND tint) — the pattern is invisible; vary the icon or tint so the child can SEE and continue it (never a size/price ladder)',
+      });
+    }
+  }
+  return problems;
+}
+
+/**
+ * robot_path SOLVABILITY (the 2026-07-24 re-review found an unsolvable maze):
+ * the puzzle's own `commands` (its intended solution) must actually walk the
+ * cart from `start` to `goal` without leaving the grid or crossing a wall.
+ * Grid is screen coords: (0,0) top-left, y grows DOWN; dirs up/right/down/left.
+ */
+const ROBOT_CW = ['up', 'right', 'down', 'left'] as const;
+const ROBOT_STEP: Record<string, [number, number]> = { up: [0, -1], right: [1, 0], down: [0, 1], left: [-1, 0] };
+
+function robotPathSolvable(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'robot_path') continue;
+    const p = (segment as { payload: Record<string, unknown> }).payload as {
+      grid?: { w: number; h: number };
+      start?: { x: number; y: number; dir: string };
+      goal?: { x: number; y: number };
+      walls?: { x: number; y: number }[];
+      commands?: string[];
+    };
+    if (!p.grid || !p.start || !p.goal || !Array.isArray(p.commands)) continue;
+    const wall = new Set((p.walls ?? []).map((w) => `${w.x},${w.y}`));
+    let x = p.start.x, y = p.start.y;
+    let dirIdx = ROBOT_CW.indexOf(p.start.dir as (typeof ROBOT_CW)[number]);
+    if (dirIdx < 0) dirIdx = 0;
+    // Mirror the frontend grader exactly: a forward into a wall/border makes the
+    // cart STAY in place (a blocked step, not an error); turns always rotate.
+    for (const cmd of p.commands) {
+      if (cmd === 'left') dirIdx = (dirIdx + 3) % 4;
+      else if (cmd === 'right') dirIdx = (dirIdx + 1) % 4;
+      else if (cmd === 'forward') {
+        const [dx, dy] = ROBOT_STEP[ROBOT_CW[dirIdx]!]!;
+        const nx = x + dx, ny = y + dy;
+        if (nx >= 0 && ny >= 0 && nx < p.grid.w && ny < p.grid.h && !wall.has(`${nx},${ny}`)) { x = nx; y = ny; }
+      }
+    }
+    if (x !== p.goal.x || y !== p.goal.y) {
+      problems.push({ gate: 8, segmentId: segment.id, message: `robot_path: the payload commands end at (${x},${y}) but the goal is (${p.goal.x},${p.goal.y}) — the intended solution does not reach the goal, so the puzzle is unsolvable as authored` });
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...clarityTextDensity(document),
     ...clarityFakeQuestion(document),
     ...clarityAnswerLeak(document),
     ...clarityHintHiddenFact(document),
+    ...clarityPatternComplete(document),
+    ...robotPathSolvable(document),
   ];
 }
 
