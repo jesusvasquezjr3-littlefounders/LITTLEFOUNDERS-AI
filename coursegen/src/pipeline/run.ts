@@ -229,8 +229,11 @@ async function processSlot(
         // "does it connect to the prior lesson, unless it's the first?" —
         // without telling it WHICH lesson came before (or that none did), it
         // guessed, and guessed against us (top false-rejection cause on the
-        // first real QA run).
-        priorMicroObjective: slot.priorMicroObjective ?? null,
+        // first real QA run). A `standalone` course (type-coverage / practice
+        // harness) has no narrative arc between arbitrary forced-type demos, so
+        // every lesson is exempt (null) — otherwise the continuity requirement
+        // false-fails otherwise-excellent standalone lessons.
+        priorMicroObjective: course.catalog.course.standalone ? null : (slot.priorMicroObjective ?? null),
       });
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });

@@ -123,6 +123,15 @@ export const catalogFileSchema = z.object({
      * directory under `coursegen/curriculum/` has been scanned.
      */
     requires: z.array(slugSchema).optional(),
+    /**
+     * Optional — set `true` for a course whose lessons are STANDALONE (a
+     * type-coverage / practice harness, e.g. qa-lesson-engine-smoketest),
+     * NOT a sequenced narrative arc. The review judge then does not penalize a
+     * lesson's concreteness for "not connecting to the prior lesson" — an
+     * artificial requirement between arbitrary forced-type demos. Absent =
+     * false = a normal sequenced course where inter-lesson continuity counts.
+     */
+    standalone: z.boolean().optional(),
   }),
   adventures: z.array(z.object({ file: z.string().min(1).max(200) })).min(1),
 });

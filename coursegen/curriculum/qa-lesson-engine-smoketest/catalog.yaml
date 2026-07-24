@@ -11,5 +11,9 @@ course:
     es-MX: "Contenido interno de QA — un ejercicio aislado por cada tipo del Motor de Lecciones, para validar el pipeline completo de generación (texto, gates, juez, localización, imágenes, audio, endpoints) antes de una corrida real. No es para alumnos."
     pt-BR: "Conteúdo interno de QA — um exercício isolado por tipo do Motor de Lições, para validar todo o pipeline de geração (texto, gates, juiz, localização, imagens, áudio, endpoints) antes de uma execução real. Não é para alunos."
   authoring_locale: es-MX
+  # Type-coverage harness: one isolated forced-type exercise per lesson, NOT a
+  # sequenced narrative arc. Exempts the review judge's inter-lesson continuity
+  # requirement (arbitrary forced-type demos have no story to connect).
+  standalone: true
 adventures:
   - file: adventures/01-estacion-de-pruebas.yaml

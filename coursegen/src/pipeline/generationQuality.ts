@@ -287,9 +287,21 @@ function dragVerbCheck(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
-// Graded types that legitimately carry NO answer key. memory_flip derives its
-// score from flips; savings_goal's key is computed by the grader from payload.
-const KEYLESS_GRADED_TYPES = new Set(['memory_flip', 'savings_goal']);
+// Graded types that legitimately carry NO answer key — their grader derives the
+// correct answer from the PAYLOAD alone (schema answer is `z.object({})`).
+// memory_flip scores from flips; savings_goal computes weeks = ceil(goal/weekly);
+// coin_count sums the tray against payload.target; make_change = paid_with−price;
+// budget_fit checks the cart against payload budget/needs; balance_scale solves
+// subset-sum against payload weights. Requiring an `answer` object for these is
+// wrong — it made the visual-first regen fail 5 otherwise-valid lessons.
+const KEYLESS_GRADED_TYPES = new Set([
+  'memory_flip',
+  'savings_goal',
+  'coin_count',
+  'make_change',
+  'budget_fit',
+  'balance_scale',
+]);
 
 /**
  * Every graded segment MUST carry an answer key — a keyed type without one is

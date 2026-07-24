@@ -148,12 +148,16 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
           t.push({ has: () => typeof offer.image_url === 'string', label: plainLabel(offer.label), purpose: 'option_card', apply: (u) => (offer.image_url = u) });
       }
       break;
-    case 'count_objects':
-      // Scene items carry an optional human label (the countable object).
-      eachItem(p.scene, (i) => (typeof i.label === 'string' ? i.label : undefined), 'item_card');
-      if (typeof p.ask_label === 'string')
-        t.push({ has: () => typeof p.ask_image_url === 'string', label: plainLabel(p.ask_label), purpose: 'item_card', apply: (u) => (p.ask_image_url = u) });
+    case 'count_objects': {
+      // Scene items carry an optional human label (the countable object); when
+      // the author omitted it, fall back to ask_label (usually the same object)
+      // so the countables still illustrate instead of dropping to a glyph.
+      const askLabel = typeof p.ask_label === 'string' ? p.ask_label : undefined;
+      eachItem(p.scene, (i) => (typeof i.label === 'string' ? i.label : askLabel), 'item_card');
+      if (askLabel)
+        t.push({ has: () => typeof p.ask_image_url === 'string', label: plainLabel(askLabel), purpose: 'item_card', apply: (u) => (p.ask_image_url = u) });
       break;
+    }
     case 'key_ideas':
       eachItem(p.ideas, (i) => (typeof i.title === 'string' ? i.title : undefined), 'item_card');
       break;
