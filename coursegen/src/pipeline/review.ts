@@ -72,7 +72,34 @@ export class ReviewFailedError extends Error {
   }
 }
 
-function passesJudgeGate(rubric: ReviewRubric): boolean {
+/**
+ * Types whose learning value is NOT a multi-step decision: ungraded narrative
+ * beats (content), fluency/automaticity drills (speed/recall IS the task), and
+ * pure reading/recognition. The judge's own calibration says to score these on
+ * clarity/curiosity/grounding, not on "did the kid make a hard choice" — so a
+ * lesson made ENTIRELY of them gets a lower cognitive_engagement floor. A
+ * normal reasoning exercise (even one such segment mixed in) keeps the full
+ * floor, so real answer-leakage / trivial exercises still fail.
+ */
+const LOW_DECISION_TYPES = new Set([
+  'story_dialogue',
+  'story_scene',
+  'key_ideas',
+  'concept_reveal',
+  'checkpoint',
+  'speed_tap',
+  'memory_flip',
+  'lightning_round',
+  'flash_match',
+  'count_objects',
+  'measure_read',
+  'read_chart',
+  'group_sets',
+]);
+
+function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed): boolean {
+  const allLowDecision = document.segments.every((s) => LOW_DECISION_TYPES.has(s.type));
+  const engagementFloor = allLowDecision ? 2 : 3;
   return (
     rubric.kid_safety >= 5 &&
     rubric.age_fit >= 4 &&
@@ -81,7 +108,7 @@ function passesJudgeGate(rubric: ReviewRubric): boolean {
     // teach (pedagogy), make the kid think (engagement), explain wrong answers
     // (feedback) and offer plausible distractors — all >= 3 (not below average).
     rubric.pedagogy >= 3 &&
-    rubric.cognitive_engagement >= 3 &&
+    rubric.cognitive_engagement >= engagementFloor &&
     rubric.feedback_quality >= 3 &&
     rubric.distractor_quality >= 3
   );
@@ -253,7 +280,7 @@ export async function reviewLesson(
   let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   let cycles = 0;
 
-  while (!passesJudgeGate(rubric) && cycles < MAX_REVISE_CYCLES) {
+  while (!passesJudgeGate(rubric, current) && cycles < MAX_REVISE_CYCLES) {
     cycles++;
     const revised = await reviseDocument(current, rubric.notes, author, deps.ledger);
     const gateReport = runAllGates(revised, gateCtx);
@@ -266,7 +293,7 @@ export async function reviewLesson(
     rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   }
 
-  if (!passesJudgeGate(rubric)) {
+  if (!passesJudgeGate(rubric, current)) {
     throw new ReviewFailedError(rubric, cycles);
   }
 
