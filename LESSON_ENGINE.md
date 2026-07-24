@@ -142,8 +142,20 @@ the ONLY way to place. Touch = desktop = same interaction. ≥44px hit areas.
 ## §5 Taxonomy — 56 types
 
 Notation per type: **`type_id`** — payload → answer → grading → mechanic.
-`IdText = {id, text_md}` · `IdLabel = {id, label}` · options carry `rationale_md`
-(REQUIRED on wrong options, optional on correct). Shared scoring helpers in §6.
+`IdText = {id, text_md}` · `IdVisual = {id, text_md, icon?, image_url?}` ·
+`IdLabel = {id, label}` · options carry `rationale_md` (REQUIRED on wrong
+options, optional on correct). Shared scoring helpers in §6.
+
+**Visuals (2026-07-24):** every concrete-object item across the families carries
+an optional `image_url` (an AI illustration from Prism/picturegen), and EVERY
+segment carries an optional segment-level `image_url` "scene anchor" shown above
+the prompt. Concrete-object item arrays use `IdVisual` (was `IdText`). The
+shared `VisualMark` primitive renders the AI image when present, falling back to
+the Material `icon`, then to text — the single home of the "image preferred over
+icon" rule (`picture_choice`/`memory_flip` were the original two; the coursegen
+images stage now fills every such slot). A 40px monochrome glyph is not
+recognizable to a young child; the illustration is. Icons/text remain the
+zero-cost fallback — never emojis.
 
 ### 5.1 `story` family (content, ungraded — 5)
 

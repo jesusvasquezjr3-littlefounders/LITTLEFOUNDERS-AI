@@ -109,7 +109,7 @@ const BASE_HARD_RULES = [
   'Never write `explanation_md` (or any *_md field) as an empty string `""` — if you have nothing real to add, OMIT the field entirely; an empty string always fails validation.',
   'NEVER emit ANY optional field as `null` — OMIT it entirely instead. This includes `rationale_md` (on a correct option, just leave it out — only WRONG options need it), `audio_segment_id`, `narrator`, `image_url`, `emotion`, `action`, `hints`, `title`. A literal `null` ALWAYS fails validation; the field being absent is how you say "not set".',
   '`tint` fields are ONE of EXACTLY: primary, accent, success, warning, delight — never a color word like "yellow"/"blue"/"green" or any other value.',
-  'robot_path `payload.commands` entries are EXACTLY one of: forward, left, right — never "up"/"down"/"move" or any other token.',
+  'robot_path `payload.commands` entries are EXACTLY one of: forward, left, right — never "up"/"down"/"move" or any other token. `payload.commands` MUST have AT MOST 3 entries — design a SHORT 2-3 move solution path (a longer maze fails validation). `payload.max_commands` is a SEPARATE field (the child\'s slot budget, may be larger); do not confuse the two.',
   'interest_peek segments ONLY: if `prediction.kind` is "choice", the answer is `correct_option_id` alone — OMIT `value`/`tolerance` entirely. If `prediction.kind` is "slider", the answer is `value` + `tolerance`, and `tolerance` MUST be a positive number greater than 0 (never 0) — pick something proportional to the values in play, e.g. 1-5 units.',
   'balance_scale segments ONLY: let leftSum = sum of every `left_fixed[].value`. `payload.weights` (3-8 entries) MUST contain SOME SUBSET of its `value`s that adds up to EXACTLY leftSum (it is re-checked programmatically) — e.g. if leftSum=8, weights could be [5,3,2,4] (5+3=8) or [2,2,4,6] (2+2+4=8); pick the weight values DELIBERATELY to satisfy this, never at random.',
   'Every number you use MUST come from the FACTS block below or be exact arithmetic the blueprint implies — never invent a fact. All arithmetic in `answer` fields must be EXACTLY correct (it is re-executed programmatically and will be rejected if wrong).',
@@ -284,8 +284,21 @@ export function repairDocument(node: unknown): unknown {
   for (const seg of doc.segments as Array<Record<string, unknown>>) {
     if (seg?.type === 'balance_scale') repairBalanceScale(seg);
     else if (seg?.type === 'interest_peek') repairInterestPeek(seg);
+    else if (seg?.type === 'savings_goal') repairSavingsGoal(seg);
   }
   return node;
+}
+
+/**
+ * savings_goal's answer is COMPUTED by the grader (weeks = ceil(goal/weekly)).
+ * The model keeps authoring `answer.correct` with wrong weeks (e.g. 2 instead
+ * of ceil(80/20)=4), which the arithmetic gate then rejects. The write rule
+ * says OMIT it; when the model includes it anyway, drop it — the grader is the
+ * source of truth, so a stale/wrong authored key is pure downside.
+ */
+function repairSavingsGoal(seg: Record<string, unknown>): void {
+  const answer = seg.answer as Record<string, unknown> | undefined;
+  if (answer && 'correct' in answer) delete answer.correct;
 }
 
 function repairBalanceScale(seg: Record<string, unknown>): void {
@@ -313,8 +326,13 @@ function repairBalanceScale(seg: Record<string, unknown>): void {
  * fact gate stays green; tolerance ≤ 0 → ~5% of the computed value (min 1).
  */
 function repairInterestPeek(seg: Record<string, unknown>): void {
-  const payload = seg.payload as { principal?: unknown; rate_pct?: unknown; periods?: unknown } | undefined;
-  const answer = seg.answer as { value?: unknown; tolerance?: unknown } | undefined;
+  const payload = seg.payload as {
+    principal?: unknown;
+    rate_pct?: unknown;
+    periods?: unknown;
+    prediction?: { kind?: string; options?: Array<{ id?: string; text_md?: string }> };
+  } | undefined;
+  const answer = seg.answer as { value?: unknown; tolerance?: unknown; correct_option_id?: unknown } | undefined;
   if (!payload || typeof payload.principal !== 'number' || typeof payload.rate_pct !== 'number') return;
   if (typeof payload.periods === 'number' && payload.periods < 2) {
     payload.periods = 2;
@@ -325,6 +343,24 @@ function repairInterestPeek(seg: Record<string, unknown>): void {
   if (answer && typeof answer.tolerance === 'number' && answer.tolerance <= 0) {
     const base = typeof answer.value === 'number' ? Math.abs(answer.value) : payload.principal;
     answer.tolerance = Math.max(1, Math.round(base * 0.05));
+  }
+  // CHOICE mode: the correct option must show ≈ the compound value (gate 4
+  // re-executes principal·(1+rate/100)^periods). The model routinely picks a
+  // wrong round number; snap the correct option's number to the computed value
+  // so the one option that must be right, is — distractors keep their numbers.
+  if (
+    payload.prediction?.kind === 'choice' &&
+    typeof payload.periods === 'number' &&
+    answer &&
+    typeof answer.correct_option_id === 'string' &&
+    Array.isArray(payload.prediction.options)
+  ) {
+    const computed = Math.round(payload.principal * (1 + payload.rate_pct / 100) ** payload.periods * 100) / 100;
+    const option = payload.prediction.options.find((o) => o?.id === answer.correct_option_id);
+    if (option && typeof option.text_md === 'string' && /\d/.test(option.text_md)) {
+      // Replace the first number token (int or decimal) with the computed value.
+      option.text_md = option.text_md.replace(/\d+(?:[.,]\d+)?/, String(computed));
+    }
   }
 }
 
