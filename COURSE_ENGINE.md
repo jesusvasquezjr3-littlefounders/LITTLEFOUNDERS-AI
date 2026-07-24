@@ -232,6 +232,22 @@ gate      DETERMINISTIC, free, in order:
              quality maps must grade on 0–100 (a 0–1 or all-zero map makes the
              correct answer unpassable); compare_table cell keys must use the
              `<row>:<col>` colon form the player submits.
+          8. Clarity / visual-first gate (added after the 2026-07-24 1x1
+             review) — prompt_md ≤160 chars AND ≤3 sentences (story belongs in
+             narration, not the on-screen instruction); a non-graded content
+             type may not pose a fake gradeable question or congratulate an
+             answer never given; a choice type's correct-option text may not
+             appear verbatim in the prompt or a hint (answer leak).
+   ↓
+images    Every concrete-object slot across ALL families (option/item/card
+          tiles, memory sides, would-you-rather/flash-match sides, count-objects
+          scene items) gets a real Prism illustration via a per-type plan, plus
+          a segment-level "scene anchor" for scene-worthy text-only types —
+          not just picture_choice/memory_flip. Illustrate es-MX pre-localize so
+          one image (text-free by design) serves all 3 locales. Icons/text stay
+          the zero-cost fallback; Prism's per-purpose art direction
+          (item_card / option_card / scene_anchor / outcome) + child-legibility
+          rule keep each asset recognizable to a 6-year-old.
    ↓
 review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,

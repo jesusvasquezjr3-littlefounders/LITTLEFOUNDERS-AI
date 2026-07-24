@@ -2,6 +2,15 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-24) — Visual-first overhaul: AI images across every exercise type + terse prompts
+
+- **Owner 1x1 review verdict (Fable-judge workflow over the 62 GENERATED lessons, not dev fixtures):** the course was pedagogically planned but IMPLEMENTED wrong for young kids — `visual_first` scored **2.03/5**, with 55 Material-icon fields vs only 3 AI images across 70 segments, and 56/70 exercise prompts over 140 chars (text walls). 57/62 lessons "needs_work". Dev-lab fixtures (hand-written) are NOT the generated content — the review must read the DB documents.
+- **Engine:** every concrete-object item type now carries optional `image_url` (a real Prism illustration) + a universal segment-level `image_url` "scene anchor"; text-only item arrays became `idVisual`. New shared `VisualMark` primitive renders the AI image, falling back to the Material icon, then text — the single home of the image-preferred rule. A 40px glyph is not recognizable to a 6-year-old; the illustration is.
+- **coursegen:** `illustrateSegments` rewritten to a per-type illustration PLAN covering every image slot (+ scene anchors); **Gate 8** (prompt ≤160/≤3 sentences, no fake question in non-graded types, no answer-leak); visual-first + text-discipline + positive-stakes playbook; deterministic repairs (interest_peek choice, savings_goal key drop); `standalone` course flag + type-appropriate judge floors (low-decision concreteness/engagement, standalone age_fit) so a type-coverage harness stops false-failing otherwise-excellent lessons. KEYLESS graded types extended to every self-contained grader (coin_count/make_change/budget_fit/balance_scale/robot_path).
+- **Prism strengthening:** per-purpose art direction (item_card / option_card visually-parallel-to-siblings / scene_anchor / outcome) + a child-legibility rule (draw the literal object, never a symbolic stand-in).
+- **Result — regenerated Testing course:** segments-with-AI-image **3 → 44 / 70**, prompts>140 chars **56 → 1**. **61/62 lessons regenerated to the (stricter) quality bar; interest_peek is the one hold-out** — its schema mandates percentage-compound interest (a tier3 concept) and the judge correctly rejects it as developmentally inappropriate for the kids' band on cognitive_engagement/distractor_quality; forcing it would mean gutting the quality gate. It keeps its prior (functional) version pending a tier/schema decision.
+- Verified: needs-wants lemon/ice/popsicle/comic and the price-compare lemonade-stand render as clean, text-free, on-palette illustrations (the pictorial verifier keeps signs blank).
+
 ## Current State (2026-07-23) — Lesson Engine + Forge closed at 100%; Prism (picturegen/) born
 
 - Testing course (`qa-lesson-engine-smoketest`): **62/62 published under the strict content-playbook judge, 186/186 documents contract-valid, 0 gradable segments without keys, fully narrated (846 units)** — fixture re-exported (`db:import-course`-able by any dev).
