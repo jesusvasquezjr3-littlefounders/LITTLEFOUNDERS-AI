@@ -14,6 +14,7 @@ import {
   OptionCard,
   SunkenWell,
   TokenChip,
+  VisualMark,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -44,7 +45,7 @@ export function QuizMcq({ segment, value, onChange, disabled, verdict }: Exercis
   const draft = draftOf(value)
   const selected = draft.option_id as string | undefined
   const options = useMemo(() => {
-    const list = segment.payload.options as Array<{ id: string; text_md: string }>
+    const list = segment.payload.options as Array<{ id: string; text_md: string; image_url?: string }>
     // Shuffle by default (A7): the correct option is often authored first, so a
     // fixed order leaks the answer. Content can opt out with shuffle:false.
     return segment.payload.shuffle === false ? [...list] : seededSort(list, segment.id, (o) => o.id)
@@ -61,7 +62,14 @@ export function QuizMcq({ segment, value, onChange, disabled, verdict }: Exercis
           disabled={disabled}
           onSelect={() => onChange({ option_id: option.id })}
         >
-          <MarkdownLite text={option.text_md} />
+          {option.image_url ? (
+            <span className="flex items-center gap-3">
+              <VisualMark imageUrl={option.image_url} imgClassName="h-12 w-12" />
+              <MarkdownLite text={option.text_md} />
+            </span>
+          ) : (
+            <MarkdownLite text={option.text_md} />
+          )}
         </OptionCard>
       ))}
     </div>
@@ -207,7 +215,12 @@ export function OddOneOut({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const draft = draftOf(value)
   const items = useMemo(
-    () => seededSort(segment.payload.items as Array<{ id: string; text_md: string }>, segment.id, (i) => i.id),
+    () =>
+      seededSort(
+        segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>,
+        segment.id,
+        (i) => i.id,
+      ),
     [segment],
   )
   const reasons = useMemo(
@@ -235,7 +248,14 @@ export function OddOneOut({ segment, value, onChange, disabled, verdict }: Exerc
             disabled={disabled}
             onSelect={() => onChange({ ...draft, item_id: item.id })}
           >
-            <MarkdownLite text={item.text_md} />
+            {item.image_url || item.icon ? (
+              <span className="flex flex-col items-center gap-2 text-center">
+                <VisualMark imageUrl={item.image_url} icon={item.icon} imgClassName="h-14 w-14" iconClassName="text-[40px]" />
+                <MarkdownLite text={item.text_md} />
+              </span>
+            ) : (
+              <MarkdownLite text={item.text_md} />
+            )}
           </OptionCard>
         ))}
       </div>
@@ -273,7 +293,7 @@ export function YesNoCases({ segment, value, onChange, disabled, verdict }: Exer
   const { t } = useTranslation()
   const draft = draftOf(value)
   const decisions = (draft.decisions as Record<string, boolean> | undefined) ?? {}
-  const cases = segment.payload.cases as Array<{ id: string; text_md: string }>
+  const cases = segment.payload.cases as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
   const correctIds = revealOf(verdict).applies_ids as string[] | undefined
   return (
     <div className="space-y-4">
@@ -286,7 +306,14 @@ export function YesNoCases({ segment, value, onChange, disabled, verdict }: Exer
           const shouldApply = correctIds?.includes(c.id)
           return (
             <li key={c.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
-              <MarkdownLite text={c.text_md} className="lf-body text-content" />
+              {c.image_url || c.icon ? (
+                <div className="flex items-center gap-3">
+                  <VisualMark imageUrl={c.image_url} icon={c.icon} imgClassName="h-12 w-12" iconClassName="text-[32px]" />
+                  <MarkdownLite text={c.text_md} className="lf-body text-content" />
+                </div>
+              ) : (
+                <MarkdownLite text={c.text_md} className="lf-body text-content" />
+              )}
               <div className="mt-2 flex gap-2">
                 {[true, false].map((yes) => {
                   let state: OptionVisualState = decided === yes ? 'selected' : 'idle'
@@ -327,7 +354,12 @@ export function ConfidenceQuiz({ segment, value, onChange, disabled, verdict }: 
   const confidence = (draft.confidence as number | undefined) ?? 75
   const correctId = revealOf(verdict).correct_option_id as string | undefined
   const options = useMemo(
-    () => seededSort(segment.payload.options as Array<{ id: string; text_md: string }>, segment.id, (o) => o.id),
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; text_md: string; image_url?: string }>,
+        segment.id,
+        (o) => o.id,
+      ),
     [segment],
   )
   return (
@@ -342,7 +374,14 @@ export function ConfidenceQuiz({ segment, value, onChange, disabled, verdict }: 
             disabled={disabled}
             onSelect={() => onChange({ ...draft, option_id: option.id, confidence })}
           >
-            <MarkdownLite text={option.text_md} />
+            {option.image_url ? (
+              <span className="flex items-center gap-3">
+                <VisualMark imageUrl={option.image_url} imgClassName="h-12 w-12" />
+                <MarkdownLite text={option.text_md} />
+              </span>
+            ) : (
+              <MarkdownLite text={option.text_md} />
+            )}
           </OptionCard>
         ))}
       </div>
@@ -371,7 +410,7 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
   const [phase, setPhase] = useState<'ready' | 'running' | 'done'>('ready')
   const [selected, setSelected] = useState<string[]>([])
   const [overtime, setOvertime] = useState(false)
-  const items = segment.payload.items as Array<{ id: string; text_md: string }>
+  const items = segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
   const seconds = segment.payload.seconds as number
   const targetIds = revealOf(verdict).target_ids as string[] | undefined
 
@@ -427,7 +466,14 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
                 )
               }
             >
-              <MarkdownLite text={item.text_md} />
+              {item.image_url || item.icon ? (
+                <span className="flex items-center gap-2">
+                  <VisualMark imageUrl={item.image_url} icon={item.icon} imgClassName="h-10 w-10" iconClassName="text-[28px]" />
+                  <MarkdownLite text={item.text_md} />
+                </span>
+              ) : (
+                <MarkdownLite text={item.text_md} />
+              )}
             </TokenChip>
           )
         })}

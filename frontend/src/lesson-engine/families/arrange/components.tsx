@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { KidSlider, SunkenWell, TokenChip, optionStateClasses, type OptionVisualState } from '../../core/primitives'
+import { KidSlider, SunkenWell, TokenChip, VisualMark, optionStateClasses, type OptionVisualState } from '../../core/primitives'
 import { seededSort } from '../../core/shuffle'
 import { playSfx } from '../../player/sfx'
 
@@ -32,12 +32,46 @@ interface IdTextItem {
   text_md: string
 }
 
+// A concrete item that MAY carry a visual (idVisual schema): an AI illustration
+// (`image_url`, preferred) or a Material `icon` fallback. Optional, so plain
+// text-only items (idText) stay assignable here.
+interface IdVisualItem extends IdTextItem {
+  icon?: string
+  image_url?: string
+}
+
 function revealOf(verdict: ExerciseProps['verdict']): Dict {
   return draftOf(verdict?.reveal)
 }
 
 function textOf(items: IdTextItem[], id: string): string {
   return items.find((i) => i.id === id)?.text_md ?? id
+}
+
+/** Chip/slot content for a concrete item: its picture (image preferred over the
+ *  icon) stacked above the text label. Falls back to text-only when the item
+ *  carries neither an image nor an icon (§ keep current text-only rendering). */
+function VisualLabel({
+  item,
+  imgClassName,
+  iconClassName,
+}: {
+  item: IdVisualItem
+  imgClassName?: string
+  iconClassName?: string
+}) {
+  if (!item.image_url && !item.icon) return <MarkdownLite text={item.text_md} />
+  return (
+    <span className="flex flex-col items-center gap-1">
+      <VisualMark
+        icon={item.icon}
+        imageUrl={item.image_url}
+        iconClassName={iconClassName}
+        imgClassName={imgClassName}
+      />
+      <MarkdownLite text={item.text_md} />
+    </span>
+  )
 }
 
 // ---- Shared tap-to-order helpers (order_steps / rank_choices / build_sentence /
@@ -81,7 +115,7 @@ function TokenBank({
   disabled,
   verdict,
 }: {
-  items: IdTextItem[]
+  items: IdVisualItem[]
   onPlace: (id: string) => void
   disabled: boolean
   verdict: ExerciseProps['verdict']
@@ -100,7 +134,7 @@ function TokenBank({
               disabled={disabled}
               onSelect={() => onPlace(item.id)}
             >
-              <MarkdownLite text={item.text_md} />
+              <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
             </TokenChip>
           ))}
         </div>
@@ -117,7 +151,7 @@ function OrderedSlots({
   disabled,
   verdict,
 }: {
-  items: IdTextItem[]
+  items: IdVisualItem[]
   tapOrder: TapOrder
   total: number
   disabled: boolean
@@ -129,6 +163,7 @@ function OrderedSlots({
     <ol className="space-y-2">
       {Array.from({ length: total }, (_, i) => {
         const id = tapOrder.order[i]
+        const item = id ? items.find((it) => it.id === id) : undefined
         return (
           <li key={i} className="flex items-center gap-3">
             <span
@@ -137,14 +172,14 @@ function OrderedSlots({
             >
               {i + 1}
             </span>
-            {id ? (
+            {id && item ? (
               <TokenChip
                 state={slotState(i, tapOrder.order, verdict, correctOrder)}
                 disabled={disabled}
                 onSelect={() => tapOrder.remove(id)}
                 className="flex-1 justify-start rounded-md text-left"
               >
-                <MarkdownLite text={textOf(items, id)} />
+                <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
               </TokenChip>
             ) : (
               <div
@@ -193,7 +228,7 @@ export function MatchPairs({ segment, value, onChange, disabled, verdict }: Exer
   const draft = draftOf(value)
   const pairs = (draft.pairs as [string, string][] | undefined) ?? []
   const selectedLeft = draft.selected_left as string | undefined
-  const left = segment.payload.left as IdTextItem[]
+  const left = segment.payload.left as IdVisualItem[]
   // Shuffle the right column (A7): rendered in payload order it sat parallel to
   // the answer key, so "match straight across" scored 100 without reasoning.
   const right = useMemo(
@@ -241,7 +276,19 @@ export function MatchPairs({ segment, value, onChange, disabled, verdict }: Exer
                   pairChipClass(paired, selectedLeft === item.id, verdictStateForPair(paired)),
                 )}
               >
-                <MarkdownLite text={item.text_md} />
+                {item.image_url || item.icon ? (
+                  <span className="flex items-center gap-2">
+                    <VisualMark
+                      icon={item.icon}
+                      imageUrl={item.image_url}
+                      iconClassName="text-[24px]"
+                      imgClassName="h-10 w-10"
+                    />
+                    <MarkdownLite text={item.text_md} />
+                  </span>
+                ) : (
+                  <MarkdownLite text={item.text_md} />
+                )}
               </button>
             )
           })}
@@ -562,7 +609,7 @@ function SortingBoard({
   onAssign,
   onUnassign,
 }: {
-  items: IdTextItem[]
+  items: IdVisualItem[]
   zones: SortZone[]
   assignments: Record<string, string>
   selected: string | undefined
@@ -595,7 +642,7 @@ function SortingBoard({
                   onPointerDown={onPointerDown(item.id)}
                   onClickCapture={onClickCapture}
                 >
-                  <MarkdownLite text={item.text_md} />
+                  <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
                 </SortChip>
               ))}
             </div>
@@ -650,7 +697,7 @@ function SortingBoard({
                       onPointerDown={onPointerDown(item.id)}
                       onClickCapture={onClickCapture}
                     >
-                      <MarkdownLite text={item.text_md} />
+                      <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
                     </SortChip>
                   )
                 })}
@@ -679,7 +726,7 @@ export function SortBuckets({ segment, value, onChange, disabled, verdict }: Exe
   const draft = draftOf(value)
   const assignments = (draft.assignments as Record<string, string> | undefined) ?? {}
   const buckets = segment.payload.buckets as Array<{ id: string; label: string }>
-  const items = segment.payload.items as IdTextItem[]
+  const items = segment.payload.items as IdVisualItem[]
   const correct = revealOf(verdict).assignments as Record<string, string> | undefined
 
   return (
@@ -708,7 +755,7 @@ export function SortBuckets({ segment, value, onChange, disabled, verdict }: Exe
 
 export function OrderSteps({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const items = segment.payload.items as IdTextItem[]
+  const items = segment.payload.items as IdVisualItem[]
   // `slots` may be fewer than items.length — the rest are distractors that
   // stay in the bank unplaced (mirrors build_sentence's tokens/slots split).
   const slots = (segment.payload.slots as number | undefined) ?? items.length
@@ -783,7 +830,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
 
 export function TimelineOrder({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const events = segment.payload.events as Array<IdTextItem & { icon?: string }>
+  const events = segment.payload.events as Array<IdVisualItem>
   const tapOrder = useTapOrder(events, value, onChange)
   const correctOrder = revealOf(verdict).order as string[] | undefined
   return (
@@ -808,9 +855,17 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
                   className="flex-1 rounded-md md:w-full"
                 >
                   <span className="flex items-center gap-1.5">
-                    {events.find((e) => e.id === id)?.icon ? (
-                      <Icon name={events.find((e) => e.id === id)?.icon as string} className="text-[20px]" />
-                    ) : null}
+                    {(() => {
+                      const ev = events.find((e) => e.id === id)
+                      return ev?.image_url || ev?.icon ? (
+                        <VisualMark
+                          icon={ev.icon}
+                          imageUrl={ev.image_url}
+                          iconClassName="text-[20px]"
+                          imgClassName="h-6 w-6"
+                        />
+                      ) : null
+                    })()}
                     <MarkdownLite text={textOf(events, id)} />
                   </span>
                 </TokenChip>
@@ -843,8 +898,8 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
   const { t } = useTranslation()
   const draft = draftOf(value)
   const placed = (draft.placed as Record<string, string> | undefined) ?? {}
-  const sequence = segment.payload.sequence as Array<{ icon: string; tint: string }>
-  const options = segment.payload.options as Array<{ id: string; icon: string; tint: string }>
+  const sequence = segment.payload.sequence as Array<{ icon: string; image_url?: string; tint: string }>
+  const options = segment.payload.options as Array<{ id: string; icon: string; image_url?: string; tint: string }>
   const missing = segment.payload.missing_slots as number
   const correct = revealOf(verdict).correct as Record<string, string> | undefined
   const usedOptionIds = new Set(Object.values(placed))
@@ -868,7 +923,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
       <div className="flex flex-wrap items-center justify-center gap-2">
         {sequence.map((s, i) => (
           <span key={`s${i}`} className={cn(tile, 'border-outline/50 bg-surface')}>
-            <Icon name={s.icon} className={cn('text-[32px]', TILE_TINTS[s.tint] ?? 'text-primary')} />
+            <VisualMark
+              icon={s.icon}
+              imageUrl={s.image_url}
+              iconClassName={cn('text-[32px]', TILE_TINTS[s.tint] ?? 'text-primary')}
+              imgClassName="h-12 w-12"
+            />
           </span>
         ))}
         {slotIndexes.map((slot) => {
@@ -902,7 +962,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
               )}
             >
               {option ? (
-                <Icon name={option.icon} className={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')} />
+                <VisualMark
+                  icon={option.icon}
+                  imageUrl={option.image_url}
+                  iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
+                  imgClassName="h-12 w-12"
+                />
               ) : (
                 <Icon name="add" className="text-[24px] text-primary" />
               )}
@@ -928,7 +993,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
                 used || verdict ? 'border-outline/50 bg-surface opacity-60' : 'border-outline/70 bg-surface hover:border-primary/60',
               )}
             >
-              <Icon name={option.icon} className={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')} />
+              <VisualMark
+                icon={option.icon}
+                imageUrl={option.image_url}
+                iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
+                imgClassName="h-12 w-12"
+              />
             </button>
           )
         })}
@@ -946,7 +1016,7 @@ export function GroupSets({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const draft = draftOf(value)
   const zoneMap = (draft.zones as Record<string, GroupZone> | undefined) ?? {}
-  const items = segment.payload.items as IdTextItem[]
+  const items = segment.payload.items as IdVisualItem[]
   const correct = revealOf(verdict).zones as Record<string, string> | undefined
 
   const zoneLabels: Record<GroupZone, string> = {

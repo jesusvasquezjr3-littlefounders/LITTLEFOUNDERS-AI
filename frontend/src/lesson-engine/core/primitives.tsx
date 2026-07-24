@@ -13,6 +13,44 @@ import MarkdownLite from './MarkdownLite'
 
 export type OptionVisualState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dimmed'
 
+/** Renders a concrete item's visual: the AI illustration (`imageUrl`) when
+ *  present, else the Material `icon` glyph as a fallback. The single place the
+ *  "image preferred over icon" rule lives, so every exercise renderer (options,
+ *  cards, tiles, scenes) treats generated art the same way. `iconClassName`
+ *  sizes/tints the fallback glyph; `imgClassName` sizes the image box. */
+export function VisualMark({
+  icon,
+  imageUrl,
+  iconClassName,
+  imgClassName = 'h-12 w-12',
+  alt = '',
+}: {
+  icon?: string
+  imageUrl?: string
+  iconClassName?: string
+  imgClassName?: string
+  alt?: string
+}) {
+  if (imageUrl) {
+    return <img src={imageUrl} alt={alt} loading="lazy" className={cn('rounded-md object-contain', imgClassName)} />
+  }
+  return <Icon name={icon ?? 'help'} className={iconClassName} />
+}
+
+/** Full-width "scene anchor" illustration shown above a segment's prompt (the
+ *  concrete situation the exercise is about). Rendered by the player shell from
+ *  `segment.image_url`; capped in height so it frames rather than dominates. */
+export function SceneAnchor({ imageUrl, className }: { imageUrl: string; className?: string }) {
+  return (
+    <img
+      src={imageUrl}
+      alt=""
+      loading="lazy"
+      className={cn('mx-auto max-h-52 w-full rounded-lg object-contain sm:max-h-64', className)}
+    />
+  )
+}
+
 export function optionStateClasses(state: OptionVisualState): string {
   switch (state) {
     case 'selected':

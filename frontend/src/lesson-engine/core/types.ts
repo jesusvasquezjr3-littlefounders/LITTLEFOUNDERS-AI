@@ -38,6 +38,8 @@ export interface SegmentBase {
   id: string
   type: string
   title?: string
+  /** Optional segment-level "scene anchor" illustration (Prism pipeline). */
+  image_url?: string
   prompt_md: string
   difficulty: 1 | 2 | 3 | 4 | 5
   xp: number

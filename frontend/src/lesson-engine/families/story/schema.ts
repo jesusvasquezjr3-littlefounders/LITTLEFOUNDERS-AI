@@ -8,6 +8,7 @@ import {
   characterEmotionSchema,
   characterIdSchema,
   iconName,
+  imageUrl,
   markdownLite,
   segmentSchema,
 } from '../../core/schemaBase'
@@ -40,7 +41,7 @@ export const storyScene = segmentSchema(
     emotion: characterEmotionSchema.optional(),
     action: characterActionSchema.optional(),
     body_md: markdownLite,
-    art: z.object({ icon: iconName, tint: artTint }).optional(),
+    art: z.object({ icon: iconName, image_url: imageUrl.optional(), tint: artTint }).optional(),
   }),
 )
 
@@ -51,6 +52,7 @@ export const keyIdeas = segmentSchema(
       .array(
         z.object({
           icon: iconName,
+          image_url: imageUrl.optional(),
           title: z.string().min(1).max(80),
           body_md: markdownLite,
         }),
@@ -69,6 +71,7 @@ export const conceptReveal = segmentSchema(
           front_md: markdownLite,
           back_md: markdownLite,
           icon: iconName.optional(),
+          image_url: imageUrl.optional(),
         }),
       )
       .min(2)

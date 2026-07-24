@@ -17,6 +17,7 @@ import {
   OptionCard,
   SunkenWell,
   TokenChip,
+  VisualMark,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -258,6 +259,27 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 interface MatchItem {
   id: string
   text_md: string
+  icon?: string
+  image_url?: string
+}
+
+// A concrete-object chip/option body: its AI illustration (image_url) above the
+// text when present, else the icon glyph; text-only when the item carries neither.
+function MatchCardBody({ item }: { item: MatchItem }) {
+  if (item.image_url || item.icon) {
+    return (
+      <span className="flex flex-col items-center gap-1">
+        <VisualMark
+          imageUrl={item.image_url}
+          icon={item.icon}
+          iconClassName="text-[24px] text-primary"
+          imgClassName="h-10 w-10"
+        />
+        <MarkdownLite text={item.text_md} />
+      </span>
+    )
+  }
+  return <MarkdownLite text={item.text_md} />
 }
 
 export function FlashMatch({ segment, disabled, onFinish, verdict }: ExerciseProps) {
@@ -344,7 +366,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
               onSelect={() => setLeftSel((prev) => (prev === item.id ? null : item.id))}
               className="w-full"
             >
-              <MarkdownLite text={item.text_md} />
+              <MatchCardBody item={item} />
             </TokenChip>
           ))}
         </div>
@@ -357,7 +379,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
               onSelect={() => lockPair(item.id)}
               className="w-full"
             >
-              <MarkdownLite text={item.text_md} />
+              <MatchCardBody item={item} />
             </TokenChip>
           ))}
         </div>
@@ -429,6 +451,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
 interface LightningQuestion {
   id: string
   prompt_md: string
+  image_url?: string
   options: MatchItem[]
 }
 
@@ -519,6 +542,14 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
           running={locked === null}
           onExpire={() => advance(null)}
         />
+        {question.image_url ? (
+          <img
+            src={question.image_url}
+            alt=""
+            loading="lazy"
+            className="mx-auto max-h-40 w-auto rounded-lg object-contain"
+          />
+        ) : null}
         <SunkenWell>
           <MarkdownLite text={question.prompt_md} className="lf-body-lg text-content" />
         </SunkenWell>
@@ -530,7 +561,19 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
               disabled={disabled || locked !== null}
               onSelect={() => advance(option.id)}
             >
-              <MarkdownLite text={option.text_md} />
+              {option.image_url || option.icon ? (
+                <span className="flex items-center gap-2">
+                  <VisualMark
+                    imageUrl={option.image_url}
+                    icon={option.icon}
+                    iconClassName="text-[24px] text-primary"
+                    imgClassName="h-10 w-10"
+                  />
+                  <MarkdownLite text={option.text_md} />
+                </span>
+              ) : (
+                <MarkdownLite text={option.text_md} />
+              )}
             </OptionCard>
           ))}
         </div>
@@ -592,6 +635,7 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
 interface RatherSide {
   text_md: string
   icon?: string
+  image_url?: string
 }
 
 export function WouldYouRather({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
@@ -614,7 +658,14 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
         onSelect={() => onChange({ choice: side })}
         className="flex min-h-40 flex-col items-center justify-center gap-3 text-center"
       >
-        {data.icon ? <Icon name={data.icon} className="text-[48px] text-primary" /> : null}
+        {data.image_url || data.icon ? (
+          <VisualMark
+            imageUrl={data.image_url}
+            icon={data.icon}
+            iconClassName="text-[48px] text-primary"
+            imgClassName="h-16 w-16"
+          />
+        ) : null}
         <MarkdownLite text={data.text_md} className="lf-body-lg" />
         {typeof q === 'number' ? (
           <span className="rounded-full bg-surface-sunken px-3 py-1 lf-caption text-content-muted">

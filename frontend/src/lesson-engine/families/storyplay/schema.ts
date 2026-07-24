@@ -7,6 +7,8 @@ import {
   iconName,
   idSchema,
   idText,
+  idVisual,
+  imageUrl,
   markdownLite,
   segmentSchema,
 } from '../../core/schemaBase'
@@ -22,6 +24,7 @@ export const storyBranch = segmentSchema(
         z.object({
           id: idSchema,
           text_md: markdownLite,
+          image_url: imageUrl.optional(),
           character: characterIdSchema.optional(),
           emotion: characterEmotionSchema.optional(),
           choices: z
@@ -78,8 +81,8 @@ export const dialogueChoice = segmentSchema(
 export const flashMatch = segmentSchema(
   'flash_match',
   z.object({
-    left: z.array(idText).min(3).max(8),
-    right: z.array(idText).min(3).max(8),
+    left: z.array(idVisual).min(3).max(8),
+    right: z.array(idVisual).min(3).max(8),
     seconds: z.number().int().min(20).max(90),
   }),
   z.object({ pairs: z.array(z.tuple([idSchema, idSchema])).min(1) }),
@@ -93,7 +96,8 @@ export const lightningRound = segmentSchema(
         z.object({
           id: idSchema,
           prompt_md: markdownLite,
-          options: z.array(idText).min(2).max(4),
+          image_url: imageUrl.optional(),
+          options: z.array(idVisual).min(2).max(4),
         }),
       )
       .min(3)
@@ -106,8 +110,8 @@ export const lightningRound = segmentSchema(
 export const wouldYouRather = segmentSchema(
   'would_you_rather',
   z.object({
-    a: z.object({ text_md: markdownLite, icon: iconName.optional() }),
-    b: z.object({ text_md: markdownLite, icon: iconName.optional() }),
+    a: z.object({ text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }),
+    b: z.object({ text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }),
     followup_md: markdownLite.optional(),
   }),
   z.object({

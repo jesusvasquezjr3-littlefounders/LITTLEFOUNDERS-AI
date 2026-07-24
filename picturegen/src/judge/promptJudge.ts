@@ -23,17 +23,43 @@ import { z } from 'zod';
 export const LF_VISUAL_IDENTITY =
   "Flat, modern children's illustration in the LittleFounders style: clean bold vector shapes with soft rounded corners, warm and friendly, zero text or letters in the image. Palette anchored on warm papaya/coral (#ff775c) accents, deep navy (#080f28) and soft blues, with sunny yellows and fresh greens — bright but never neon. Soft warm lighting, gentle shadows, simple uncluttered composition with ONE clear subject filling most of the frame, complete background scene (never a cutout or sticker on white). Cheerful lemonade-stand world: hand-made stands, jars of coins, lemons, sunny neighborhoods. No humans' faces close-up, no brand logos, no watermarks, no scary/violent elements — this is for children aged 6-13.";
 
-export const PICTURE_PURPOSES = ['lesson_option', 'memory_card', 'scene', 'generic'] as const;
+export const PICTURE_PURPOSES = [
+  'lesson_option',
+  'option_card',
+  'item_card',
+  'scene_anchor',
+  'memory_card',
+  'outcome',
+  'scene',
+  'generic',
+] as const;
 export type PicturePurpose = (typeof PICTURE_PURPOSES)[number];
 
-/** Per-purpose composition guidance handed to the judge. */
+/*
+ * Per-purpose ART DIRECTION handed to the judge. A children's lesson uses a
+ * picture in one of a few structural roles, and each role needs a DIFFERENT
+ * composition — a tiny answer-option thumbnail and a wide establishing scene
+ * are not the same picture. Getting the role right is what makes an image
+ * legible in its slot (COURSE_ENGINE.md §"Content quality", QA synthesis §5).
+ */
 const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
+  // A single tappable answer/item tile shown ~64-96px. ONE object, centered,
+  // simple/near-plain background, no scene clutter, unmistakable at thumbnail size.
+  item_card:
+    'This is a small answer/item TILE shown at ~64-96px. Depict ONE single object, centered, on a simple near-plain warm background, with a bold clear silhouette — instantly recognizable as the named object by a 6-year-old even when small. No scene clutter, no secondary objects.',
+  option_card:
+    'This is ONE option in a multiple-choice set shown at thumbnail size. Depict the single labeled object centered on a simple background. CRITICAL: it will sit beside sibling options — keep the SAME framing, scale, lighting and background as a neutral sibling; never make this tile look "nicer"/brighter/happier than the others (that would telegraph the answer). Just the object, clearly.',
   lesson_option:
-    'This image is ONE answer option in a multiple-choice question: depict the single labeled concept in isolation, instantly recognizable at thumbnail size.',
+    'This is ONE option in a multiple-choice set shown at thumbnail size. Depict the single labeled object centered on a simple background, instantly recognizable, visually parallel to sibling options (same framing/scale, never telegraph the answer).',
   memory_card:
-    'This image is a memory/matching game card face: one bold central subject, symmetric friendly composition, still readable when small.',
+    'This is a memory/matching game card face: one bold central subject, symmetric friendly composition, simple background, still readable when small.',
+  // A wide establishing illustration above the prompt that sets the SITUATION.
+  scene_anchor:
+    'This is a wide ESTABLISHING scene shown above the exercise (roughly 16:9). Show the concrete situation — the character(s) at the lemonade stand, the objects and setting involved — with a complete background. It sets context and mood; it MUST NOT reveal or hint at the answer to the exercise.',
   scene:
-    'This image is a wide story scene: show the subject acting within the lemonade-stand world with a complete background.',
+    'This is a wide story scene: show the subject acting within the lemonade-stand world with a complete background.',
+  outcome:
+    'This is an OUTCOME/consequence illustration for a story branch ending. Emotion-forward: show the character clearly feeling the result (proud, thoughtful, a gentle lesson learned — never scared or shamed), in the lemonade-stand world.',
   generic: 'A clear, friendly illustration of the subject with a simple complete background.',
 };
 
@@ -73,6 +99,7 @@ const SYSTEM_PROMPT = [
   'The prompt MUST enforce this exact illustration identity:',
   LF_VISUAL_IDENTITY,
   'Hard rules: never put readable text, letters, numbers, logos or watermarks in the image; never depict anything scary, violent, or unsafe for children; keep ONE clear subject.',
+  'CHILD-LEGIBILITY (this is a picture a 6-year-old must read at a glance): draw the ACTUAL, LITERAL object named — never a symbolic or abstract stand-in. A "cost" is drawn as coins/a lemon, never a receipt; a "savings goal" is the actual toy, never a trophy or a target; "ice" is ice cubes, not a snowflake symbol. One dominant subject, bold high-contrast silhouette, unmistakable as the named thing.',
   'QUANTITIES ARE PICTORIAL: qwen-image loves rendering captions, so NEVER write an amount, price, or label as something to display ("10 pesos", "2 vasos"). Translate every quantity into visual composition instead — "two golden coins side by side", "a small stack of three coins". If the context mentions prices, show the OBJECTS, never the numbers.',
   "NEVER NAME DENOMINATIONS: never write a currency amount or denomination anywhere in your prompt, not even inside quotation marks — \"'1 peso' coin\" WILL be engraved verbatim onto the coin. Distinguish coins ONLY by size, color, or finish: 'one small copper coin and two larger golden coins'.",
   'NO TEXT-CARRYING PROPS: never mention signs, signboards, banners, price tags, labels, chalkboards, or menus. When a lemonade stand appears, describe only its awning, wooden table, and props, and state explicitly that the stand has no sign — otherwise the model invents one and fills it with a fake wordmark.',

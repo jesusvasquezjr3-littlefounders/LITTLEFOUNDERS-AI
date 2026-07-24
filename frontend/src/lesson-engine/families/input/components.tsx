@@ -4,7 +4,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import { fuzzyEquals } from '../../core/scoring'
 import {
@@ -12,6 +11,7 @@ import {
   NumberPad,
   SunkenWell,
   TokenChip,
+  VisualMark,
   optionStateClasses,
   type OptionVisualState,
 } from '../../core/primitives'
@@ -372,14 +372,19 @@ export function CountObjects(props: ExerciseProps) {
   const { segment } = props
   const { t } = useTranslation()
   const askIcon = typeof segment.payload.ask_icon === 'string' ? segment.payload.ask_icon : ''
+  const askImageUrl =
+    typeof segment.payload.ask_image_url === 'string' ? segment.payload.ask_image_url : undefined
   // Shuffled-but-deterministic: hash by segment id + item key so the scene never
   // reorders between renders or retries (same trick as choice's stable shuffle).
   const items = useMemo(() => {
     const scene =
-      (segment.payload.scene as Array<{ icon: string; tint?: string; count: number }> | undefined) ?? []
-    const flat: Array<{ key: string; icon: string; tint?: string }> = []
+      (segment.payload.scene as
+        | Array<{ icon: string; image_url?: string; tint?: string; count: number }>
+        | undefined) ?? []
+    const flat: Array<{ key: string; icon: string; image_url?: string; tint?: string }> = []
     scene.forEach((s, si) => {
-      for (let i = 0; i < s.count; i++) flat.push({ key: `${si}-${i}`, icon: s.icon, tint: s.tint })
+      for (let i = 0; i < s.count; i++)
+        flat.push({ key: `${si}-${i}`, icon: s.icon, image_url: s.image_url, tint: s.tint })
     })
     flat.sort((a, b) => hashCode(segment.id + a.key) - hashCode(segment.id + b.key))
     return flat
@@ -388,17 +393,24 @@ export function CountObjects(props: ExerciseProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
         <span className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5">
-          <Icon name={askIcon} className="text-[24px] text-primary" />
+          <VisualMark
+            icon={askIcon}
+            imageUrl={askImageUrl}
+            iconClassName="text-[24px] text-primary"
+            imgClassName="h-8 w-8"
+          />
           <span className="lf-label text-content">{t('lesson.families.input.countObjects.howMany')}</span>
         </span>
       </div>
       <SunkenWell>
         <div className="flex flex-wrap items-center justify-center gap-3 p-1">
           {items.map((item) => (
-            <Icon
+            <VisualMark
               key={item.key}
-              name={item.icon}
-              className={cn('text-[36px]', TINT_CLASS[item.tint ?? 'primary'] ?? 'text-primary')}
+              icon={item.icon}
+              imageUrl={item.image_url}
+              iconClassName={cn('text-[36px]', TINT_CLASS[item.tint ?? 'primary'] ?? 'text-primary')}
+              imgClassName="h-12 w-12"
             />
           ))}
         </div>

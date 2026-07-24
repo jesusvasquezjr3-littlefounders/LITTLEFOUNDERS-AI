@@ -1,17 +1,23 @@
-// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Fills `image_url`
-// on visual segments (`picture_choice` options, `memory_flip` card sides) by
-// asking Prism (picturegen/) for each illustration. Prism owns the whole
-// image concern: the art-director judge (LF visual identity), the qwen-image
-// generation, Depot storage, and the cache that guarantees an identical
-// request never hits the paid API twice — Forge only embeds the returned
-// public URL. Skips CLEANLY (never fails the run, never fails the SLOT) on
-// ANY failure — `--no-images`, Prism not configured, Prism down, provider
-// quota. Each is a per-OPTION skip (icon stays the fallback, never emojis —
-// DESIGN.md / LESSON_ENGINE.md §5.2 #8); only NOT_CONFIGURED short-circuits
-// the whole document (no Prism = no point trying the rest). A lesson must
-// never be unpublishable just because an illustration failed.
+// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Fills the lesson's
+// AI illustrations by asking Prism (picturegen/) for each one. Prism owns the
+// whole image concern: the art-director judge (LF visual identity), the
+// qwen-image generation, the pictorial verifier, Depot storage, and the cache
+// that guarantees an identical request never hits the paid API twice — Forge
+// only embeds the returned public URL.
+//
+// Coverage (QA synthesis 2026-07-23): a young child recognizes a real
+// illustration, not a 40px Material glyph or a bare text chip. So this stage
+// illustrates EVERY concrete-object slot the schema now carries an image field
+// for — option/item/card tiles across all families — not just picture_choice
+// and memory_flip. The illustration PLAN per type lives in `planTargets`.
+//
+// Skips CLEANLY (never fails the run, never fails the SLOT) on ANY failure —
+// `--no-images`, Prism not configured, Prism down, provider quota, verifier
+// rejection. Each is a per-TARGET skip (the icon/text stays the fallback);
+// only NOT_CONFIGURED short-circuits the whole document. A lesson must never be
+// unpublishable just because an illustration failed.
 
-import { requestPicture } from '../providers/picturegen.js';
+import { requestPicture, type PicturePurpose } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
@@ -32,18 +38,167 @@ export interface IllustrateResult {
   skippedReason?: SkippedReason;
 }
 
-interface PictureChoiceOption {
-  id: string;
+/** One picture to fetch: what to draw, its role, and where the URL lands. */
+interface IllustrationTarget {
+  /** Skip if this slot already has an image (idempotent re-runs / backfill). */
+  has: () => boolean;
   label: string;
-  image_url?: string;
+  purpose: PicturePurpose;
+  apply: (url: string) => void;
 }
 
-interface MemoryFlipPair {
-  a_md: string;
-  a_image_url?: string;
-  b_md: string;
-  b_image_url?: string;
+/** Strip MarkdownLite emphasis so the judge sees a clean object name, not `**Limones**`. */
+function plainLabel(md: string): string {
+  return md
+    .replace(/[*_`~#>]/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
 }
+
+type AnyRecord = Record<string, unknown>;
+
+/**
+ * The per-type illustration PLAN: for a segment, list every concrete slot to
+ * illustrate. Adding image support for a new type = one case here. Types whose
+ * visuals must be engine-controlled (pattern_complete's size ladder) or whose
+ * items are inherently abstract (quiz statements) are intentionally absent.
+ */
+function planTargets(segment: { type: string; prompt_md: string; payload: AnyRecord }): IllustrationTarget[] {
+  const ctx = plainLabel(segment.prompt_md);
+  const p = segment.payload;
+  const t: IllustrationTarget[] = [];
+
+  // Helper: illustrate each entry of an item array under a text/label field.
+  const eachItem = (
+    arr: unknown,
+    labelOf: (item: AnyRecord) => string | undefined,
+    purpose: PicturePurpose,
+    imageKey = 'image_url',
+  ): void => {
+    if (!Array.isArray(arr)) return;
+    for (const raw of arr) {
+      const item = raw as AnyRecord;
+      const label = labelOf(item);
+      if (!label) continue;
+      t.push({
+        has: () => typeof item[imageKey] === 'string' && (item[imageKey] as string).length > 0,
+        label: plainLabel(label),
+        purpose,
+        apply: (url) => {
+          item[imageKey] = url;
+        },
+      });
+    }
+  };
+  const text = (i: AnyRecord) => (typeof i.text_md === 'string' ? i.text_md : undefined);
+  const label = (i: AnyRecord) => (typeof i.label === 'string' ? i.label : undefined);
+
+  switch (segment.type) {
+    case 'picture_choice':
+      eachItem(p.options, label, 'option_card');
+      break;
+    case 'memory_flip':
+      if (Array.isArray(p.pairs)) {
+        for (const raw of p.pairs) {
+          const pair = raw as AnyRecord;
+          if (typeof pair.a_md === 'string')
+            t.push({ has: () => typeof pair.a_image_url === 'string', label: plainLabel(pair.a_md), purpose: 'memory_card', apply: (u) => (pair.a_image_url = u) });
+          if (typeof pair.b_md === 'string')
+            t.push({ has: () => typeof pair.b_image_url === 'string', label: plainLabel(pair.b_md), purpose: 'memory_card', apply: (u) => (pair.b_image_url = u) });
+        }
+      }
+      break;
+    case 'needs_wants':
+      eachItem(p.items, text, 'item_card');
+      break;
+    case 'budget_fit':
+      eachItem(p.items, label, 'item_card');
+      break;
+    case 'sort_buckets':
+    case 'group_sets':
+    case 'order_steps':
+    case 'rank_choices':
+      eachItem(p.items, text, 'item_card');
+      break;
+    case 'match_pairs':
+      eachItem(p.left, text, 'item_card');
+      break;
+    case 'odd_one_out':
+    case 'speed_tap':
+      eachItem(p.items, text, 'item_card');
+      break;
+    case 'yes_no_cases':
+      eachItem(p.cases, text, 'item_card');
+      break;
+    case 'timeline_order':
+      eachItem(p.events, text, 'item_card');
+      break;
+    case 'price_compare':
+      eachItem(p.offers, label, 'option_card');
+      break;
+    case 'piggy_split':
+      eachItem(p.jars, label, 'item_card');
+      break;
+    case 'fair_trade':
+      for (const key of ['offer_a', 'offer_b'] as const) {
+        const offer = p[key] as AnyRecord | undefined;
+        if (offer && typeof offer.label === 'string')
+          t.push({ has: () => typeof offer.image_url === 'string', label: plainLabel(offer.label), purpose: 'option_card', apply: (u) => (offer.image_url = u) });
+      }
+      break;
+    case 'count_objects':
+      // Scene items carry an optional human label (the countable object).
+      eachItem(p.scene, (i) => (typeof i.label === 'string' ? i.label : undefined), 'item_card');
+      if (typeof p.ask_label === 'string')
+        t.push({ has: () => typeof p.ask_image_url === 'string', label: plainLabel(p.ask_label), purpose: 'item_card', apply: (u) => (p.ask_image_url = u) });
+      break;
+    case 'key_ideas':
+      eachItem(p.ideas, (i) => (typeof i.title === 'string' ? i.title : undefined), 'item_card');
+      break;
+    case 'concept_reveal':
+      eachItem(p.cards, (i) => (typeof i.front_md === 'string' ? i.front_md : undefined), 'item_card');
+      break;
+    case 'would_you_rather':
+      for (const key of ['a', 'b'] as const) {
+        const side = p[key] as AnyRecord | undefined;
+        if (side && typeof side.text_md === 'string')
+          t.push({ has: () => typeof side.image_url === 'string', label: plainLabel(side.text_md), purpose: 'option_card', apply: (u) => (side.image_url = u) });
+      }
+      break;
+    case 'flash_match':
+      eachItem(p.left, text, 'item_card');
+      break;
+    case 'story_scene': {
+      const art = p.art as AnyRecord | undefined;
+      if (art) t.push({ has: () => typeof art.image_url === 'string', label: ctx || 'lemonade stand scene', purpose: 'scene_anchor', apply: (u) => (art.image_url = u) });
+      break;
+    }
+    default:
+      break;
+  }
+  return t;
+}
+
+/** Types that get a segment-level "scene anchor" (one establishing illustration
+ *  above the prompt) — concrete single-situation exercises with no per-item art. */
+const SCENE_ANCHOR_TYPES = new Set([
+  'best_decision',
+  'make_change',
+  'spot_error',
+  'estimate_slider',
+  'number_input',
+  'coin_count',
+  'evidence_hunt',
+  'fact_opinion',
+  'red_flags',
+  'measure_read',
+  'compare_table',
+  'dialogue_choice',
+  'story_branch',
+  'story_dialogue',
+]);
 
 export async function illustrateSegments(
   document: LessonDocumentParsed,
@@ -53,58 +208,45 @@ export async function illustrateSegments(
   if (options.skip) return { document, generated: 0, skippedReason: 'flag' };
 
   const request = deps.request ?? requestPicture;
-
   const cloned = structuredClone(document) as LessonDocumentParsed;
   let generated = 0;
 
-  // Returns the asset url, or undefined when this ONE illustration failed
-  // (its icon stays the fallback — never fails the segment). Rethrows
-  // ProviderNotConfiguredError so the caller can bail the whole document.
-  async function tryIllustrate(
-    label: string,
-    context: string,
-    purpose: 'lesson_option' | 'memory_card',
-  ): Promise<string | undefined> {
+  // Fetch ONE target; returns the url or undefined (this single illustration
+  // failed — its icon/text stays the fallback). Rethrows NotConfigured so the
+  // caller can bail the whole document.
+  async function fetchOne(label: string, context: string, purpose: PicturePurpose): Promise<string | undefined> {
     try {
       const picture = await request({ label, context, purpose });
       generated++;
       return picture.url;
     } catch (err) {
       if (err instanceof ProviderNotConfiguredError) throw err;
-      // Any other failure (Prism down, upstream quota, timeout) is this ONE
-      // illustration's problem, not the lesson's — icon stays the fallback.
       console.warn(`images: skipping illustration for "${label}" — ${err instanceof Error ? err.message : String(err)}`);
       return undefined;
     }
   }
 
   try {
-    for (const segment of cloned.segments) {
-      if (segment.type === 'picture_choice') {
-        const payload = segment.payload as { options: PictureChoiceOption[] };
-        for (const option of payload.options) {
-          if (option.image_url) continue;
-          const url = await tryIllustrate(option.label, segment.prompt_md, 'lesson_option');
-          if (url) option.image_url = url;
-        }
-      } else if (segment.type === 'memory_flip') {
-        const payload = segment.payload as { pairs: MemoryFlipPair[] };
-        for (const pair of payload.pairs) {
-          if (!pair.a_image_url) {
-            const url = await tryIllustrate(pair.a_md, segment.prompt_md, 'memory_card');
-            if (url) pair.a_image_url = url;
-          }
-          if (!pair.b_image_url) {
-            const url = await tryIllustrate(pair.b_md, segment.prompt_md, 'memory_card');
-            if (url) pair.b_image_url = url;
-          }
-        }
+    for (const segment of cloned.segments as unknown as Array<{ type: string; prompt_md: string; payload: AnyRecord; image_url?: string }>) {
+      const ctx = plainLabel(segment.prompt_md);
+
+      // Per-item / per-slot targets from the plan.
+      for (const target of planTargets(segment)) {
+        if (target.has()) continue;
+        const url = await fetchOne(target.label, ctx, target.purpose);
+        if (url) target.apply(url);
+      }
+
+      // Segment-level scene anchor for scene-worthy types (skip if already set).
+      if (SCENE_ANCHOR_TYPES.has(segment.type) && !segment.image_url && ctx) {
+        const url = await fetchOne(ctx, ctx, 'scene_anchor');
+        if (url) segment.image_url = url;
       }
     }
   } catch (err) {
     if (err instanceof ProviderNotConfiguredError) {
       // Prism not configured — clean skip, return the UNMODIFIED original
-      // document (icons stay the fallback); no point trying the rest.
+      // document (icons/text stay the fallback); no point trying the rest.
       return { document, generated: 0, skippedReason: 'not-configured' };
     }
     throw err;

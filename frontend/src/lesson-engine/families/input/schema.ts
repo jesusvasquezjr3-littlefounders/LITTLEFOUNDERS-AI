@@ -1,7 +1,7 @@
 // `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
 
 import { z } from 'zod'
-import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase'
+import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase'
 
 const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
 
@@ -73,10 +73,21 @@ export const countObjects = segmentSchema(
   'count_objects',
   z.object({
     scene: z
-      .array(z.object({ icon: iconName, tint: sceneTint.optional(), count: z.number().int().min(1).max(12) }))
+      .array(
+        z.object({
+          icon: iconName,
+          /** Human-readable object name — drives the AI illustration + a11y label. */
+          label: z.string().min(1).max(40).optional(),
+          image_url: imageUrl.optional(),
+          tint: sceneTint.optional(),
+          count: z.number().int().min(1).max(12),
+        }),
+      )
       .min(1)
       .max(6),
     ask_icon: iconName,
+    ask_label: z.string().min(1).max(40).optional(),
+    ask_image_url: imageUrl.optional(),
   }),
   z.object({ value: z.number().int().min(0) }),
 )

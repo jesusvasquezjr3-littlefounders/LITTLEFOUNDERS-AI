@@ -4,10 +4,12 @@ import { z } from 'zod'
 import {
   idSchema,
   idText,
+  idVisual,
   idLabel,
   markdownLite,
   segmentSchema,
   iconName,
+  imageUrl,
 } from '../../core/schemaBase'
 
 /** Visual tint palette shared by icon tiles (matches BigIconTile tints). */
@@ -16,7 +18,8 @@ export const tileTint = z.enum(['primary', 'accent', 'success', 'warning', 'deli
 export const matchPairs = segmentSchema(
   'match_pairs',
   z.object({
-    left: z.array(idText).min(2).max(8),
+    // Left = the concrete things to match (coins, objects) — illustratable.
+    left: z.array(idVisual).min(2).max(8),
     right: z.array(idText).min(2).max(10), // may contain distractors
   }),
   z.object({ pairs: z.array(z.tuple([idSchema, idSchema])).min(1) }),
@@ -49,7 +52,7 @@ export const sortBuckets = segmentSchema(
   'sort_buckets',
   z.object({
     buckets: z.array(idLabel).min(2).max(5),
-    items: z.array(idText).min(4).max(16),
+    items: z.array(idVisual).min(4).max(16),
   }),
   z.object({ assignments: z.record(idSchema, idSchema) }),
 )
@@ -62,7 +65,7 @@ export const sortBuckets = segmentSchema(
  *  while the answer key only has order.length — an unwinnable exercise. */
 export const orderSteps = segmentSchema(
   'order_steps',
-  z.object({ items: z.array(idText).min(3).max(8), slots: z.number().int().min(3).max(8).optional() }),
+  z.object({ items: z.array(idVisual).min(3).max(8), slots: z.number().int().min(3).max(8).optional() }),
   z.object({ order: z.array(idSchema).min(3) }),
 )
 
@@ -70,7 +73,7 @@ export const rankChoices = segmentSchema(
   'rank_choices',
   z.object({
     criterion_md: markdownLite,
-    items: z.array(idText).min(3).max(7),
+    items: z.array(idVisual).min(3).max(7),
   }),
   z.object({ order: z.array(idSchema).min(3) }),
 )
@@ -88,7 +91,7 @@ export const timelineOrder = segmentSchema(
   'timeline_order',
   z.object({
     events: z
-      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional() }))
+      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }))
       .min(3)
       .max(7),
   }),
@@ -98,8 +101,8 @@ export const timelineOrder = segmentSchema(
 export const patternComplete = segmentSchema(
   'pattern_complete',
   z.object({
-    sequence: z.array(z.object({ icon: iconName, tint: tileTint })).min(3).max(10),
-    options: z.array(z.object({ id: idSchema, icon: iconName, tint: tileTint })).min(3).max(5),
+    sequence: z.array(z.object({ icon: iconName, image_url: imageUrl.optional(), tint: tileTint })).min(3).max(10),
+    options: z.array(z.object({ id: idSchema, icon: iconName, image_url: imageUrl.optional(), tint: tileTint })).min(3).max(5),
     missing_slots: z.number().int().min(1).max(2),
   }),
   z.object({ correct: z.record(z.string().regex(/^\d+$/), idSchema) }),
@@ -110,7 +113,7 @@ export const groupSets = segmentSchema(
   z.object({
     set_a: z.string().min(1).max(60),
     set_b: z.string().min(1).max(60),
-    items: z.array(idText).min(4).max(12),
+    items: z.array(idVisual).min(4).max(12),
   }),
   z.object({ zones: z.record(idSchema, z.enum(['a', 'b', 'both', 'none'])) }),
 )

@@ -13,7 +13,7 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { SunkenWell } from '../../core/primitives'
+import { SunkenWell, VisualMark } from '../../core/primitives'
 import type {
   CheckpointSegment,
   ConceptRevealSegment,
@@ -181,9 +181,11 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
           />
         ) : null}
         {payload.art ? (
-          <Icon
-            name={payload.art.icon}
-            className={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
+          <VisualMark
+            icon={payload.art.icon}
+            imageUrl={payload.art.image_url}
+            iconClassName={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
+            imgClassName="h-32 w-32 rounded-lg object-contain"
           />
         ) : null}
         <MarkdownLite
@@ -232,7 +234,12 @@ export function KeyIdeas({ segment, onContentDone }: ExerciseProps) {
           )}
         >
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary">
-            <Icon name={idea.icon} className="text-[24px]" />
+            <VisualMark
+              icon={idea.icon}
+              imageUrl={idea.image_url}
+              iconClassName="text-[24px]"
+              imgClassName="h-9 w-9 rounded object-contain"
+            />
           </span>
           <div className="space-y-1">
             <p className="lf-title text-content">{idea.title}</p>
@@ -296,8 +303,13 @@ export function ConceptReveal({ segment, disabled, onContentDone }: ExerciseProp
                 <MarkdownLite text={card.back_md} className="lf-body text-content" />
               ) : (
                 <span className="flex items-center gap-3">
-                  {card.icon ? (
-                    <Icon name={card.icon} className="shrink-0 text-[28px] text-primary" />
+                  {card.image_url || card.icon ? (
+                    <VisualMark
+                      icon={card.icon ?? ''}
+                      imageUrl={card.image_url}
+                      iconClassName="shrink-0 text-[28px] text-primary"
+                      imgClassName="h-10 w-10 shrink-0 rounded object-contain"
+                    />
                   ) : null}
                   <MarkdownLite text={card.front_md} className="lf-title text-content" />
                   <Icon name="touch_app" className="ml-auto shrink-0 text-[20px] text-content-faint" />

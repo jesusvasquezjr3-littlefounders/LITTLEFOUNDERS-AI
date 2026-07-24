@@ -8,12 +8,23 @@ import { getConfig } from '../env.js';
 import { ProviderHttpError, ProviderNotConfiguredError } from './errors.js';
 import { withTransportRetry } from './retry.js';
 
+/** Structural role the picture plays — steers Prism's per-purpose art direction. */
+export type PicturePurpose =
+  | 'item_card'
+  | 'option_card'
+  | 'scene_anchor'
+  | 'memory_card'
+  | 'outcome'
+  | 'lesson_option'
+  | 'scene'
+  | 'generic';
+
 export interface PictureRequest {
   /** What the image depicts — an option label, a card side, a scene name. */
   label: string;
   /** Surrounding lesson text that grounds the subject (prompt_md etc.). */
   context?: string;
-  purpose?: 'lesson_option' | 'memory_card' | 'scene' | 'generic';
+  purpose?: PicturePurpose;
 }
 
 export interface PictureResult {

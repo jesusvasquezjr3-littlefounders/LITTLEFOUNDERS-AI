@@ -1,7 +1,7 @@
 // `money` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.5, types 30–38).
 
 import { z } from 'zod'
-import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase'
+import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase'
 
 export const currencySchema = z.enum(['MXN', 'USD', 'BRL'])
 
@@ -43,6 +43,7 @@ export const piggySplit = segmentSchema(
           id: idSchema,
           label: z.string().min(1).max(60),
           icon: iconName,
+          image_url: imageUrl.optional(),
           hint_md: markdownLite.optional(),
         }),
       )
@@ -60,7 +61,7 @@ export const needsWants = segmentSchema(
   'needs_wants',
   z.object({
     items: z
-      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional() }))
+      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }))
       .min(4)
       .max(12),
   }),
@@ -78,6 +79,7 @@ export const priceCompare = segmentSchema(
           qty: z.number().positive(),
           unit: z.string().min(1).max(40),
           price: moneyAmount,
+          image_url: imageUrl.optional(),
         }),
       )
       .min(2)
@@ -98,6 +100,7 @@ export const budgetFit = segmentSchema(
           id: idSchema,
           label: z.string().min(1).max(80),
           icon: iconName,
+          image_url: imageUrl.optional(),
           price: moneyAmount,
           need: z.boolean().optional(),
         }),
@@ -124,8 +127,8 @@ export const savingsGoal = segmentSchema(
 export const fairTrade = segmentSchema(
   'fair_trade',
   z.object({
-    offer_a: z.object({ label: z.string().min(1).max(60), icon: iconName, qty: z.number().positive() }),
-    offer_b: z.object({ label: z.string().min(1).max(60), icon: iconName, qty: z.number().positive() }),
+    offer_a: z.object({ label: z.string().min(1).max(60), icon: iconName, image_url: imageUrl.optional(), qty: z.number().positive() }),
+    offer_b: z.object({ label: z.string().min(1).max(60), icon: iconName, image_url: imageUrl.optional(), qty: z.number().positive() }),
     rate_md: markdownLite,
   }),
   z.object({ verdict: z.enum(['fair', 'a_wins', 'b_wins']) }),

@@ -17,6 +17,7 @@ import {
   progressPct,
 } from '../core/session'
 import { createDirector, type CharacterReaction } from '../core/director'
+import { SceneAnchor } from '../core/primitives'
 import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
@@ -290,6 +291,10 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
               <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
             </div>
           )}
+
+          {/* Scene anchor — one concrete illustration setting up the situation,
+              shown for any segment the pipeline illustrated at the segment level. */}
+          {segment.image_url ? <SceneAnchor imageUrl={segment.image_url} /> : null}
 
           {/* Hints shown so far */}
           {segment.hints?.slice(0, segState?.hintsShown ?? 0).map((hint, i) => (

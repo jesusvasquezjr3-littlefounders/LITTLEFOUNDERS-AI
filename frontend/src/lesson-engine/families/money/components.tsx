@@ -15,6 +15,7 @@ import {
   OptionCard,
   SunkenWell,
   TokenChip,
+  VisualMark,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -265,7 +266,7 @@ export function PiggySplit({ segment, value, onChange, disabled, verdict }: Exer
   const { t } = useTranslation()
   const income = segment.payload.income as number
   const unit = segment.payload.unit as string
-  const jars = segment.payload.jars as Array<{ id: string; label: string; icon: string; hint_md?: string }>
+  const jars = segment.payload.jars as Array<{ id: string; label: string; icon: string; image_url?: string; hint_md?: string }>
   const step = (segment.payload.step as number | undefined) ?? income / 10
   const format = useMoneyFormat(unit)
   const draft = draftOf(value)
@@ -299,7 +300,12 @@ export function PiggySplit({ segment, value, onChange, disabled, verdict }: Exer
           const inRange = range ? amount >= range.min && amount <= range.max : undefined
           return (
             <div key={jar.id} className="flex items-center gap-3 rounded-md border-2 border-outline/70 bg-surface p-3">
-              <Icon name={jar.icon} className="text-[28px] text-primary" />
+              <VisualMark
+                imageUrl={jar.image_url}
+                icon={jar.icon}
+                iconClassName="text-[28px] text-primary"
+                imgClassName="h-10 w-10"
+              />
               <div className="min-w-0 flex-1">
                 <p className="lf-label text-content">{jar.label}</p>
                 {jar.hint_md ? (
@@ -343,7 +349,7 @@ export function PiggySplit({ segment, value, onChange, disabled, verdict }: Exer
 
 export function NeedsWants({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const items = segment.payload.items as Array<{ id: string; text_md: string; icon?: string }>
+  const items = segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
   const draft = draftOf(value)
   const decisions = (draft.decisions as Record<string, boolean> | undefined) ?? {}
   const correctNeeds = revealOf(verdict).needs_ids as string[] | undefined
@@ -355,7 +361,14 @@ export function NeedsWants({ segment, value, onChange, disabled, verdict }: Exer
         return (
           <li key={item.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
             <div className="flex items-center gap-2">
-              {item.icon ? <Icon name={item.icon} className="text-[24px] text-primary" /> : null}
+              {item.image_url || item.icon ? (
+                <VisualMark
+                  imageUrl={item.image_url}
+                  icon={item.icon}
+                  iconClassName="text-[24px] text-primary"
+                  imgClassName="h-9 w-9"
+                />
+              ) : null}
               <MarkdownLite text={item.text_md} className="lf-body text-content" />
             </div>
             <div className="mt-2 grid grid-cols-2 gap-2">
@@ -389,7 +402,7 @@ export function NeedsWants({ segment, value, onChange, disabled, verdict }: Exer
 
 export function PriceCompare({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const offers = segment.payload.offers as Array<{ id: string; label: string; qty: number; unit: string; price: number }>
+  const offers = segment.payload.offers as Array<{ id: string; label: string; qty: number; unit: string; price: number; image_url?: string }>
   const currency = segment.payload.currency as string
   const format = useMoneyFormat(currency)
   const formatNumber = useNumberFormat()
@@ -420,11 +433,14 @@ export function PriceCompare({ segment, value, onChange, disabled, verdict }: Ex
               onSelect={() => onChange({ offer_id: offer.id })}
             >
               <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="lf-label text-content">{offer.label}</p>
-                  <p className="lf-body text-content-muted">
-                    {formatNumber(offer.qty)} {offer.unit}
-                  </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  {offer.image_url ? <VisualMark imageUrl={offer.image_url} imgClassName="h-12 w-12" /> : null}
+                  <div className="min-w-0">
+                    <p className="lf-label text-content">{offer.label}</p>
+                    <p className="lf-body text-content-muted">
+                      {formatNumber(offer.qty)} {offer.unit}
+                    </p>
+                  </div>
                 </div>
                 <span className="lf-title lf-number">{format(offer.price)}</span>
               </div>
@@ -456,7 +472,7 @@ export function BudgetFit({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const budget = segment.payload.budget as number
   const currency = segment.payload.currency as string
-  const items = segment.payload.items as Array<{ id: string; label: string; icon: string; price: number; need?: boolean }>
+  const items = segment.payload.items as Array<{ id: string; label: string; icon: string; image_url?: string; price: number; need?: boolean }>
   const format = useMoneyFormat(currency)
   const draft = draftOf(value)
   const selectedIds = (draft.selected_ids as string[] | undefined) ?? []
@@ -506,7 +522,12 @@ export function BudgetFit({ segment, value, onChange, disabled, verdict }: Exerc
               onSelect={() => toggle(item.id)}
             >
               <div className="flex items-center gap-3">
-                <Icon name={item.icon} className="text-[28px] text-primary" />
+                <VisualMark
+                  imageUrl={item.image_url}
+                  icon={item.icon}
+                  iconClassName="text-[28px] text-primary"
+                  imgClassName="h-10 w-10"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="lf-label text-content">
                     {item.label}
@@ -604,8 +625,8 @@ type FairTradeVerdict = (typeof FAIR_TRADE_VERDICTS)[number]
 
 export function FairTrade({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const offerA = segment.payload.offer_a as { label: string; icon: string; qty: number }
-  const offerB = segment.payload.offer_b as { label: string; icon: string; qty: number }
+  const offerA = segment.payload.offer_a as { label: string; icon: string; image_url?: string; qty: number }
+  const offerB = segment.payload.offer_b as { label: string; icon: string; image_url?: string; qty: number }
   const rateMd = segment.payload.rate_md as string
   const formatNumber = useNumberFormat()
   const draft = draftOf(value)
@@ -627,7 +648,12 @@ export function FairTrade({ segment, value, onChange, disabled, verdict }: Exerc
         ].map(({ tag, offer }) => (
           <div key={tag} className="rounded-md border-2 border-outline/70 bg-surface p-4 text-center">
             <span className="inline-block rounded-full bg-primary-soft px-2.5 py-0.5 lf-caption text-primary">{tag}</span>
-            <Icon name={offer.icon} className="mt-1 block text-[40px] text-primary" />
+            <VisualMark
+              imageUrl={offer.image_url}
+              icon={offer.icon}
+              iconClassName="mt-1 block text-[40px] text-primary"
+              imgClassName="mt-1 mx-auto block h-14 w-14"
+            />
             <p className="lf-title lf-number text-content">{formatNumber(offer.qty)}</p>
             <p className="lf-label text-content-muted">{offer.label}</p>
           </div>

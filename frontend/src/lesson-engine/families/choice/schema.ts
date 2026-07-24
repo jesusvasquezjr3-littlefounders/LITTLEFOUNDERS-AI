@@ -4,6 +4,7 @@ import { z } from 'zod'
 import {
   idSchema,
   idText,
+  idVisual,
   markdownLite,
   optionWithRationale,
   segmentSchema,
@@ -51,7 +52,7 @@ export const pictureChoice = segmentSchema(
 export const oddOneOut = segmentSchema(
   'odd_one_out',
   z.object({
-    items: z.array(idText).min(3).max(6),
+    items: z.array(idVisual).min(3).max(6),
     reasons: z.array(idText).min(2).max(4).optional(),
   }),
   z.object({ odd_item_id: idSchema, correct_reason_id: idSchema.optional() }),
@@ -73,7 +74,7 @@ export const yesNoCases = segmentSchema(
   'yes_no_cases',
   z.object({
     rule_md: markdownLite,
-    cases: z.array(idText).min(3).max(8),
+    cases: z.array(idVisual).min(3).max(8),
   }),
   z.object({ applies_ids: z.array(idSchema) }),
 )
@@ -82,7 +83,7 @@ export const speedTap = segmentSchema(
   'speed_tap',
   z.object({
     instruction_md: markdownLite,
-    items: z.array(idText).min(6).max(14),
+    items: z.array(idVisual).min(6).max(14),
     seconds: z.number().int().min(10).max(45),
   }),
   z.object({ target_ids: z.array(idSchema).min(1) }),
