@@ -87,6 +87,12 @@ export const NON_VISIBLE_KEYS = new Set([
   'slug',
   'audio_segment_id',
   'image_url',
+  // Two-sided / prefixed image URLs (memory_flip card faces, count_objects ask
+  // target). Like image_url these are generated Depot URLs — never translate
+  // them; localize copies them verbatim so one image serves all 3 locales.
+  'a_image_url',
+  'b_image_url',
+  'ask_image_url',
   'icon',
   'ask_icon',
   'artifact_kind',
@@ -718,8 +724,40 @@ function clarityAnswerLeak(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/** count_objects illustrates each scene object from its `label` (and the ask
+ *  target from `ask_label`). Those are optional in the engine schema (a manual
+ *  author may lean on the icon) but MANDATORY for generated content — without
+ *  them the countable objects fall back to a Material glyph, the exact
+ *  visual-first defect this whole pass exists to kill. Forcing them here makes
+ *  the corrective-retry loop teach the author to supply them. */
+function clarityCountObjectsLabels(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'count_objects') continue;
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const scene = payload.scene;
+    if (Array.isArray(scene)) {
+      scene.forEach((raw, i) => {
+        const label = (raw as Record<string, unknown>).label;
+        if (typeof label !== 'string' || !label.trim()) {
+          problems.push({ gate: 8, segmentId: segment.id, message: `count_objects scene[${i}] needs a short object \`label\` (e.g. "moneda") so it renders as a real illustration, not a glyph` });
+        }
+      });
+    }
+    if (typeof payload.ask_label !== 'string' || !(payload.ask_label as string).trim()) {
+      problems.push({ gate: 8, segmentId: segment.id, message: 'count_objects needs `ask_label` naming the object to count so it renders as a real illustration' });
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
-  return [...clarityTextDensity(document), ...clarityFakeQuestion(document), ...clarityAnswerLeak(document)];
+  return [
+    ...clarityTextDensity(document),
+    ...clarityFakeQuestion(document),
+    ...clarityAnswerLeak(document),
+    ...clarityCountObjectsLabels(document),
+  ];
 }
 
 // ---- Orchestration -----------------------------------------------------------

@@ -79,7 +79,7 @@ export const JUDGE_PLAYBOOK_ANCHORS = [
   '- Does each wrong option map to a specific, tempting misconception (not a throwaway)?',
   '- Is the explanation elaborated (states the WHY concretely) and outcome-neutral, not bare praise?',
   '- Is the abstraction level right for the age tier (no profit/interest/percentages/future-value for the youngest)?',
-  '- VISUAL-FIRST: is every concrete object a real illustration (image_url), not a bare word or a Material icon? Is the exercise solvable mostly by LOOKING, with little reading?',
+  '- VISUAL-FIRST DESIGN: is the exercise BUILT to be solved by looking — each concrete object given a SHORT, LITERAL label ready to illustrate, minimal reading? A downstream stage adds the real AI image to every such slot, so do NOT penalize a missing `image_url` or a placeholder `icon` — judge the DESIGN and the labels, never the pixels.',
   '- TEXT DISCIPLINE: is prompt_md <=140 chars / <=2 sentences, one question, story kept in narration, no decorative numbers, no cross-lesson callback?',
   '- ANSWERABLE-FROM-SCREEN: can the child derive the answer from the prompt+payload+picture alone (not from a hint/explanation)? Re-derive it yourself and confirm it matches the answer key. No answer leaked in the prompt/hints. Positive (never punishing) stake.',
   'Score LOW (1-2) any exercise that is generic, tests a definition, is stakes-free, is abstract where concrete fits, serves too-old concepts to a young tier, has throwaway distractors, is a text wall, leaves concrete objects unillustrated, hides a needed fact off-screen, leaks the answer, or punishes wrong answers. "Mechanically valid but boring / hard to read / adds no real value" is a FAILING lesson, not a passing one — say exactly which signal failed in `notes`.',
