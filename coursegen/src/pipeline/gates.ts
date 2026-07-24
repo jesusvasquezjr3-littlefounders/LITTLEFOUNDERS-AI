@@ -738,11 +738,11 @@ const PRICE_IN_HINT_RE = /(?:cuesta|vale|precio|paga(?:r|n)?|cada\s+\w+\s+(?:es|
 function clarityHintHiddenFact(document: LessonDocumentParsed): GateProblem[] {
   const problems: GateProblem[] = [];
   for (const segment of document.segments) {
-    // A load-bearing fact hidden in a hint OR in explanation_md (shown only
-    // AFTER answering) is off-screen — both make the exercise unsolvable.
-    const hints = [...((segment as { hints?: string[] }).hints ?? [])];
-    const expl = (segment as { explanation_md?: string }).explanation_md;
-    const offScreen = expl ? [...hints, expl] : hints;
+    // A load-bearing INPUT fact hidden in a hint is off-screen — the child can't
+    // solve without opening hints. (explanation_md is NOT scanned: it renders
+    // after answering and legitimately states the ANSWER/result — a price there
+    // is usually the computed answer, not a hidden input.)
+    const offScreen = (segment as { hints?: string[] }).hints ?? [];
     if (offScreen.length === 0) continue;
     // Numbers the child actually SEES as facts: those written into the on-screen
     // instruction (prompt_md) plus STRUCTURAL numeric values the engine renders

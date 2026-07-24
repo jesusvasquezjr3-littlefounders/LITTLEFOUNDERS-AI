@@ -14,7 +14,7 @@ const Env = z.object({
   // ---- Author / judge providers ----
   DEEPSEEK_API_KEY: z.string().min(8).optional(),
   DEEPSEEK_BASE_URL: z.url().default('https://api.deepseek.com/v1'),
-  DEEPSEEK_MODEL: z.string().min(1).default('deepseek-chat'),
+  DEEPSEEK_MODEL: z.string().min(1).default('deepseek-v4-pro'),
 
   QWEN_API_KEY: z.string().min(8).optional(),
   QWEN_BASE_URL: z.url().default('https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
