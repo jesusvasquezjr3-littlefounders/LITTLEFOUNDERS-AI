@@ -787,3 +787,100 @@ describe('gate 8: trivial-strategy refusal', () => {
     expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('needs alone'))).toHaveLength(0);
   });
 });
+
+/*
+ * PROMPT-INTEGRITY gate (gate 8). Every case is a shape found PUBLISHED by the
+ * 2026-07-24 grader audit.
+ */
+describe('gate 8: prompt integrity', () => {
+  function doc(segment: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = segment;
+    return d;
+  }
+
+  it('flags a match_pairs whose prompt dictates the pairing (transcription, not reasoning)', () => {
+    const seg = {
+      id: 's1', type: 'match_pairs', difficulty: 1, xp: 10,
+      prompt_md: 'Ayuda a poner cada precio con su producto: vaso chico 5, jarra 20.',
+      payload: {
+        left: [{ id: 'vaso', text_md: 'Vaso chico' }, { id: 'jarra', text_md: 'Jarra' }],
+        right: [{ id: 'p5', text_md: '5 pesos' }, { id: 'p20', text_md: '20 pesos' }],
+      },
+      answer: { pairs: [['vaso', 'p5'], ['jarra', 'p20']] },
+    };
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('transcribe the prompt'))).toBe(true);
+  });
+
+  it('accepts a match_pairs whose prompt is only the instruction', () => {
+    const seg = {
+      id: 's1', type: 'match_pairs', difficulty: 1, xp: 10,
+      prompt_md: 'Une cada producto con su precio.',
+      payload: {
+        left: [{ id: 'vaso', text_md: 'Vaso chico' }, { id: 'jarra', text_md: 'Jarra' }],
+        right: [{ id: 'p5', text_md: '5 pesos' }, { id: 'p20', text_md: '20 pesos' }],
+      },
+      answer: { pairs: [['vaso', 'p5'], ['jarra', 'p20']] },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('transcribe the prompt'))).toHaveLength(0);
+  });
+
+  it('flags a debug_hunt that asks the child to CORRECT text it cannot type', () => {
+    const seg = {
+      id: 's1', type: 'debug_hunt', difficulty: 2, xp: 15,
+      prompt_md: 'Toca la parte del cartel que está mal y corrígela.',
+      payload: { intro_md: 'Liruf puso un cartel.', blocks: [{ id: 'a', text_md: '¡Gran oferta!' }, { id: 'b', text_md: 'Más caro que sueltos' }] },
+      answer: { bug_ids: ['b'], fix_md: 'Más barato que sueltos' },
+    };
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('no text input'))).toBe(true);
+  });
+
+  it('accepts a debug_hunt that asks the child to FIND the mistake', () => {
+    const seg = {
+      id: 's1', type: 'debug_hunt', difficulty: 2, xp: 15,
+      prompt_md: 'Toca la parte del cartel que está mal.',
+      payload: { intro_md: 'Liruf puso un cartel.', blocks: [{ id: 'a', text_md: '¡Gran oferta!' }, { id: 'b', text_md: 'Más caro que sueltos' }] },
+      answer: { bug_ids: ['b'], fix_md: 'Más barato que sueltos' },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('no text input'))).toHaveLength(0);
+  });
+
+  it('flags an artifact list whose stated total does not add up', () => {
+    // The published receipt: 15 + 8 + 12 = 35, but the line said "Total - 47".
+    const seg = {
+      id: 's1', type: 'evidence_hunt', difficulty: 2, xp: 15,
+      prompt_md: 'Toca la línea que muestra el precio real.',
+      payload: {
+        claim_md: 'Liruf dice que los limones costaron 8 pesos.',
+        sentences: [
+          { id: 's1', text_md: 'Vasos - 15 pesos' },
+          { id: 's2', text_md: 'Azúcar - 8 pesos' },
+          { id: 's3', text_md: 'Limones - 12 pesos' },
+          { id: 's4', text_md: 'Total - 47 pesos' },
+        ],
+      },
+      answer: { evidence_ids: ['s3'] },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.message.includes('does not add up'))).toBe(true);
+    expect(problems.find((p) => p.message.includes('does not add up'))?.message).toContain('sum to 35');
+  });
+
+  it('accepts an artifact list whose total is exact', () => {
+    const seg = {
+      id: 's1', type: 'evidence_hunt', difficulty: 2, xp: 15,
+      prompt_md: 'Toca la línea que muestra el precio real.',
+      payload: {
+        claim_md: 'Liruf dice que los limones costaron 8 pesos.',
+        sentences: [
+          { id: 's1', text_md: 'Vasos - 15 pesos' },
+          { id: 's2', text_md: 'Azúcar - 8 pesos' },
+          { id: 's3', text_md: 'Limones - 12 pesos' },
+          { id: 's4', text_md: 'Total - 35 pesos' },
+        ],
+      },
+      answer: { evidence_ids: ['s3'] },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('does not add up'))).toHaveLength(0);
+  });
+});

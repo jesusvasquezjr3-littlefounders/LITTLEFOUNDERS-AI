@@ -1195,9 +1195,101 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * Three more render-truth defects the grader audit found in published lessons.
+ * Each is a distinct class, so each gets its own deterministic check.
+ */
+function promptIntegrity(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: Record<string, unknown> }).answer;
+    const prompt = ((segment as { prompt_md?: string }).prompt_md ?? '').toLowerCase();
+
+    // ---- match_pairs: the prompt must not dictate the pairing ----------------
+    // A found example spelled the whole key out in words — "ayuda a poner cada
+    // precio con su producto: vaso chico 5, jarra 20, galleta 3" — turning the
+    // exercise into transcription. Flag when the prompt contains BOTH sides of a
+    // keyed pair, since that pair no longer has to be reasoned about.
+    if (segment.type === 'match_pairs' && Array.isArray(answer?.pairs)) {
+      const left = Array.isArray(payload.left) ? (payload.left as Array<{ id?: string; text_md?: string }>) : [];
+      const right = Array.isArray(payload.right) ? (payload.right as Array<{ id?: string; text_md?: string }>) : [];
+      const textById = new Map<string, string>();
+      for (const item of [...left, ...right]) {
+        if (item.id && typeof item.text_md === 'string') textById.set(item.id, item.text_md.toLowerCase().trim());
+      }
+      for (const pair of answer.pairs as unknown[]) {
+        if (!Array.isArray(pair) || pair.length !== 2) continue;
+        const l = textById.get(String(pair[0]));
+        const r = textById.get(String(pair[1]));
+        if (!l || !r) continue;
+        // Compare on the significant tokens so "Vaso chico" matches "vaso chico 5".
+        const lHit = l.length > 2 && prompt.includes(l);
+        const rNums = r.match(/\d+/g) ?? [];
+        const rHit = rNums.length > 0 ? rNums.every((n) => new RegExp(`\\b${n}\\b`).test(prompt)) : prompt.includes(r);
+        if (lHit && rHit) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `match_pairs "${segment.id}" states the pair "${l}" ↔ "${r}" in prompt_md, so the child only has to transcribe the prompt onto the board instead of reasoning about the match. Keep the prompt to the instruction and let the pairs be inferred.`,
+          });
+          break;
+        }
+      }
+    }
+
+    // ---- debug_hunt: the widget selects, it cannot rewrite -------------------
+    // The DebugHunt control only lets a child TAP the faulty block; `answer.fix_md`
+    // is revealed after grading. A prompt that says "corrígela" asks for something
+    // the mechanic cannot express (found published).
+    if (segment.type === 'debug_hunt') {
+      const CORRECT_VERB = /corr[íi]gel|corrige|arregl|reescrib|escribe la|fix it|rewrite|correct it|type the/i;
+      if (CORRECT_VERB.test(prompt)) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `debug_hunt "${segment.id}" asks the child to CORRECT the text ("${prompt.slice(0, 60)}…"), but the widget only lets them tap the faulty block — there is no text input, and the fix is only revealed after grading. Ask them to FIND/TAP the mistake; the correction is the feedback.`,
+        });
+      }
+    }
+
+    // ---- any artifact list: a stated total must actually add up --------------
+    // A published evidence_hunt receipt read "Vasos 15 / Azúcar 8 / Limones 12 /
+    // Total 47" — 15+8+12 is 35. A child who checks the arithmetic (exactly what a
+    // money course teaches) finds the app contradicting itself.
+    const listKeys = ['sentences', 'lines', 'rows', 'items', 'blocks'] as const;
+    for (const key of listKeys) {
+      const list = payload[key];
+      if (!Array.isArray(list)) continue;
+      const entries = (list as Array<{ text_md?: unknown; label?: unknown }>)
+        .map((e) => (typeof e.text_md === 'string' ? e.text_md : typeof e.label === 'string' ? e.label : ''))
+        .filter((t) => t.length > 0);
+      const TOTAL_WORD = /\b(total|suma|totale?s)\b/i;
+      const totals = entries.filter((t) => TOTAL_WORD.test(t));
+      if (totals.length !== 1) continue;
+      const numsOf = (t: string) => (t.match(/\d+(?:[.,]\d+)?/g) ?? []).map((n) => Number(n.replace(',', '.')));
+      const totalNums = numsOf(totals[0] ?? '');
+      if (totalNums.length !== 1) continue;
+      const parts = entries.filter((t) => !TOTAL_WORD.test(t)).flatMap(numsOf);
+      if (parts.length < 2) continue;
+      const sum = parts.reduce((a, b) => a + b, 0);
+      const stated = totalNums[0] ?? 0;
+      if (Math.abs(sum - stated) > 0.001) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `${segment.type} "${segment.id}" shows a total that does not add up: the listed values [${parts.join(', ')}] sum to ${sum}, but the line reads "${totals[0]}". A money lesson must never contradict its own arithmetic — fix the numbers so the total is exact.`,
+        });
+      }
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...trivialStrategy(document),
+    ...promptIntegrity(document),
     ...clarityTextDensity(document),
     ...clarityFakeQuestion(document),
     ...clarityAnswerLeak(document),
