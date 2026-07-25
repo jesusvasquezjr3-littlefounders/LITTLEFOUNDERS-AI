@@ -27,10 +27,14 @@ describe('normalizeForSpeech — symbols → locale words', () => {
     expect(normalizeForSpeech('20/4', 'es-MX')).toBe('20 entre 4');
   });
 
-  it('speaks a spaced minus between digits but never touches hyphens/ranges/words', () => {
-    expect(normalizeForSpeech('8 - 3', 'es-MX')).toBe('8 menos 3');
-    expect(normalizeForSpeech('e-mail', 'es-MX')).toBe('e-mail'); // hyphen untouched
-    expect(normalizeForSpeech('5-10 pesos', 'es-MX')).toBe('5-10 pesos'); // range untouched
+  it('distinguishes subtraction from a range by spacing, and never touches word hyphens', () => {
+    expect(normalizeForSpeech('8 - 3', 'es-MX')).toBe('8 menos 3'); // spaced → arithmetic
+    expect(normalizeForSpeech('e-mail', 'es-MX')).toBe('e-mail'); // word hyphen untouched
+    expect(normalizeForSpeech('bien-estar', 'es-MX')).toBe('bien-estar');
+    // CHANGED 2026-07-24 (deliberate): a tight digit-hyphen-digit used to be left
+    // alone, but qwen3-tts then read "5-10 pesos" as a dash or ran the numbers
+    // together. A human reads it "5 a 10 pesos", so we spell the range joiner out.
+    expect(normalizeForSpeech('5-10 pesos', 'es-MX')).toBe('5 a 10 pesos');
   });
 
   it('turns arrows into a natural pause, not the word "arrow"', () => {
@@ -58,5 +62,92 @@ describe('normalizeForSpeech — stage-direction parentheticals', () => {
 
   it('does not leave a dangling double space after dropping a cue', () => {
     expect(normalizeForSpeech('Hola (sonríe) socio', 'es-MX')).toBe('Hola socio');
+  });
+});
+
+/*
+ * Naturalness regressions reported by the owner after listening to real
+ * narration (2026-07-24). Each `it` below is a defect a child actually heard.
+ */
+describe('normalizeForSpeech — abbreviations must never be spelled letter by letter', () => {
+  it('expands "c/u" (was heard as "ce u")', () => {
+    expect(normalizeForSpeech('Cada vaso cuesta 5 pesos c/u', 'es-MX')).toBe('Cada vaso cuesta 5 pesos cada uno');
+    expect(normalizeForSpeech('5 reais c/u', 'pt-BR')).toBe('5 reais cada um');
+    expect(normalizeForSpeech('5 dollars ea.', 'en-US')).toBe('5 dollars each');
+  });
+
+  it('expands courtesy titles and common abbreviations', () => {
+    expect(normalizeForSpeech('El Sr. Beto y la Sra. Rosa', 'es-MX')).toBe('El señor Beto y la señora Rosa');
+    expect(normalizeForSpeech('aprox. 10 pesos', 'es-MX')).toBe('aproximadamente 10 pesos');
+    expect(normalizeForSpeech('limones, vasos, etc.', 'es-MX')).toBe('limones, vasos, etcétera');
+    expect(normalizeForSpeech('Mr. Beto', 'en-US')).toBe('Mister Beto');
+  });
+
+  it('expands units only after a number, agreeing in number', () => {
+    expect(normalizeForSpeech('250 ml de agua', 'es-MX')).toBe('250 mililitros de agua');
+    expect(normalizeForSpeech('1 kg de limones', 'es-MX')).toBe('un kilo de limones');
+    expect(normalizeForSpeech('espera 5 min', 'es-MX')).toBe('espera 5 minutos');
+  });
+});
+
+describe('normalizeForSpeech — number agreement (es/pt)', () => {
+  it('speaks "1" before a masculine noun as the apocopated article (the reported bug)', () => {
+    // Reported verbatim: "Don Beto compró 1 vaso" was narrated "compró UNO vaso".
+    expect(normalizeForSpeech('Don Beto compró 1 vaso', 'es-MX')).toBe('Don Beto compró un vaso');
+    expect(normalizeForSpeech('Liruf vendió 1 limón', 'es-MX')).toBe('Liruf vendió un limón');
+    expect(normalizeForSpeech('Beto comprou 1 copo', 'pt-BR')).toBe('Beto comprou um copo');
+  });
+
+  it('speaks "1" before a feminine noun as the feminine article', () => {
+    expect(normalizeForSpeech('Dina tiene 1 moneda', 'es-MX')).toBe('Dina tiene una moneda');
+    expect(normalizeForSpeech('falta 1 jarra', 'es-MX')).toBe('falta una jarra');
+    expect(normalizeForSpeech('Dina tem 1 moeda', 'pt-BR')).toBe('Dina tem uma moeda');
+  });
+
+  it('agrees currency in number so "$1" is never "un pesos"', () => {
+    expect(normalizeForSpeech('cuesta $1', 'es-MX')).toBe('cuesta un peso');
+    expect(normalizeForSpeech('costs $1', 'en-US')).toBe('costs 1 dollar');
+  });
+
+  it('handles numbers ending in 1 above twenty', () => {
+    expect(normalizeForSpeech('21 vasos', 'es-MX')).toBe('veintiún vasos');
+    expect(normalizeForSpeech('21 monedas', 'es-MX')).toBe('veintiuna monedas');
+    expect(normalizeForSpeech('31 copos', 'pt-BR')).toBe('trinta e um copos');
+  });
+
+  it('leaves other numbers as digits (a child follows "147 pesos" better than words)', () => {
+    expect(normalizeForSpeech('147 pesos', 'es-MX')).toBe('147 pesos');
+    expect(normalizeForSpeech('vendió 3 vasos', 'es-MX')).toBe('vendió 3 vasos');
+  });
+
+  it('does not corrupt arithmetic that happens to start with 1', () => {
+    expect(normalizeForSpeech('1+1=2', 'es-MX')).toBe('1 más 1 igual a 2');
+    expect(normalizeForSpeech('crece 1%', 'es-MX')).toBe('crece 1 por ciento');
+  });
+
+  it('leaves English alone (no grammatical gender)', () => {
+    expect(normalizeForSpeech('Beto bought 1 glass', 'en-US')).toBe('Beto bought 1 glass');
+  });
+});
+
+describe('normalizeForSpeech — ordinals and ranges', () => {
+  it('speaks Spanish ordinal digit forms with the right apocope', () => {
+    expect(normalizeForSpeech('el 1er día', 'es-MX')).toBe('el primer día');
+    expect(normalizeForSpeech('la 1a venta', 'es-MX')).toBe('la primera venta');
+    expect(normalizeForSpeech('el 2do vaso', 'es-MX')).toBe('el segundo vaso');
+  });
+
+  it('speaks English ordinals', () => {
+    expect(normalizeForSpeech('the 1st day', 'en-US')).toBe('the first day');
+    expect(normalizeForSpeech('the 3rd glass', 'en-US')).toBe('the third glass');
+  });
+
+  it('reads a numeric range with the locale joiner, not as a minus', () => {
+    expect(normalizeForSpeech('entre 3-5 pesos', 'es-MX')).toBe('entre 3 a 5 pesos');
+    expect(normalizeForSpeech('3-5 dollars', 'en-US')).toBe('3 to 5 dollars');
+  });
+
+  it('reads "2x5" as a product', () => {
+    expect(normalizeForSpeech('2x5 pesos', 'es-MX')).toBe('2 por 5 pesos');
   });
 });

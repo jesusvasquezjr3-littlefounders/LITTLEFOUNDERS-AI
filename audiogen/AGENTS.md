@@ -30,6 +30,20 @@ max 4 attempts; everything else fails fast without retry.
 
 `normalizeForSpeech` also drops **whole-parenthetical stage directions** (`"(con entusiasmo)"`, `"(smiles)"`) — a narrow, digit-free, curated-stem match, so meaningful asides (`"(5 pesos)"`, `"(limones, vasos)"`) are always kept. The real fix is author-side: a `write.ts` hard rule forbids stage directions in spoken text; this is the safety net.
 
+- **Expand abbreviations, or read grammatically.** The API reads the RAW STRING: it has no abbreviation dictionary and no grammar model. Found by listening to real narration (2026-07-24): `"5 pesos c/u"` was heard as **"cinco pesos CE U"**, and `"Don Beto compró 1 vaso"` as **"compró UNO vaso"** (the counting word instead of the apocopated article). So the transform now runs five ordered stages — stage directions → abbreviations → ordinals → symbols → number agreement — with the tables in `src/narrate/speechLexicon.ts`:
+  - **Abbreviations** per locale: `c/u` → `cada uno`/`cada um`/`each`, `aprox.`, `etc.`, `Sr./Sra./Dr.`, and units only when they follow a number and agreeing in number (`1 kg` → `1 kilo`, `5 kg` → `5 kilos`).
+  - **Number agreement (es/pt)**: a number ending in 1 before a noun becomes the article — `1 vaso` → `un vaso`, `1 moneda` → `una moneda`, `21 vasos` → `veintiún vasos`, `1 copo` → `um copo`. Gender comes from an exceptions lexicon plus suffix rules; a wrong guess is a small grammar slip, never unintelligible audio. Every OTHER number keeps its digits on purpose — a child follows `"147 pesos"` better than `"ciento cuarenta y siete pesos"`.
+  - **Currency agrees too**: `$1` → `1 peso`, never `1 pesos` (which the agreement stage would turn into the ungrammatical `un pesos`).
+  - **Range vs subtraction is decided by SPACING**, the same convention a human reader uses: tight `3-5 pesos` is a range → `3 a 5 pesos`; spaced `8 - 3` is arithmetic → `8 menos 3`. Word hyphens (`e-mail`) are never touched.
+
+## The regulator (`src/narrate/speechGuard.ts`) — nothing unspeakable reaches a paid call
+
+`auditSpeechText` runs on EVERY unit inside `narrateLesson`, immediately before `synthesizeSpeech`. Normalization *expands* what a human would say; the guard *proves* nothing unspeakable survived and refuses the call if something did — a `block` unit is reported as a failure in the batch summary and costs nothing.
+
+It is deliberately **deterministic, not an LLM**: a 1000-lesson course is ~15k units, so the regulator has to be free, instant and reproducible; an LLM at that volume would cost more than the TTS it guards. Every rule encodes a defect class we have actually heard, so a firing rule is a *normalization bug with a known fix* — extend `speechLexicon.ts`, never relax the rule. Blocking rules: slash abbreviations, residual `$ % + = × ÷`, digit glued to a word, unexpanded units/ordinals, missing number agreement, markdown residue, URLs. Warnings: vowel-less acronyms, stray acting cues, repeated punctuation.
+
+**Calibrate rules against the LIVE corpus, not intuition.** Two rules were written from intuition and both false-positived on real content: the agreement rule refused `"(1 + 2)"` (arithmetic, not a count — it now skips injected symbol words), and the acronym rule warned on every all-caps EMPHASIS word (`NO`, `CRECE`, `NOT`, `NÃO` — it now fires only on vowel-less tokens, which are the only ones a TTS must spell out). Note also that plain `\b` is ASCII-only and split `NÃO` into a spurious `ÃO`; accent-aware rules need the `u` flag with `\p{L}` lookarounds. Current state: **693 real narration units across 62 lessons × 3 locales → 0 blocks, 0 warnings**, and `speechGuard.test.ts` pins the normalizer↔guard contract (everything the normalizer emits must pass the guard) so a future gap surfaces in CI instead of in a mass run.
+
 ## Invariants that bite here
 
 - **Per-locale voices:** every audio asset exists for en-US, es-MX, pt-BR — same parity rule as text i18n (§1.8). `TTS_VOICE_EN_US`/`TTS_VOICE_ES_MX`/`TTS_VOICE_PT_BR` are the current defaults; a full `CharacterId × locale` voice map is a follow-up (README.md "Voice map").

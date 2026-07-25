@@ -8,6 +8,7 @@ import {
   type LessonAudioManifest,
 } from '../db/lessonDocumentsRepo.js';
 import { extractNarratables } from '../narrate/extractNarratables.js';
+import { auditSpeechText, describeIssues, isBlocked } from '../narrate/speechGuard.js';
 import { contentHash } from '../narrate/types.js';
 import { encodeMp3 } from '../tts/mp3.js';
 import { parseWav } from '../tts/wav.js';
@@ -87,6 +88,22 @@ export async function narrateLesson(
       finalUnits[unit.unit_id] = prior;
       reused += 1;
       return;
+    }
+
+    // REGULATOR (speechGuard): normalizeForSpeech has already expanded everything
+    // it knows how to say; if anything unspeakable survived — a slash
+    // abbreviation read letter by letter, a bare "1" before a noun, a residual
+    // "$"/"%" — that is a normalization bug, and synthesizing it would burn money
+    // to produce audio we already know a child cannot follow. Refuse the call and
+    // surface it as a failure so the batch summary makes it impossible to miss.
+    const issues = auditSpeechText(unit.text, locale);
+    if (isBlocked(issues)) {
+      failed.push({ unit_id: unit.unit_id, reason: `unspeakable text refused before TTS — ${describeIssues(issues)}` });
+      if (prior) finalUnits[unit.unit_id] = prior;
+      return;
+    }
+    if (issues.length > 0) {
+      console.warn(`[audiogen] speech warning lesson=${lessonId} unit=${unit.unit_id} ${describeIssues(issues)}`);
     }
 
     try {
