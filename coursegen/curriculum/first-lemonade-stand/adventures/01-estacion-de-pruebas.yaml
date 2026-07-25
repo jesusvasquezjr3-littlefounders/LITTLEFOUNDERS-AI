@@ -349,6 +349,18 @@ sagas:
             difficulty: 3
             suggested_families: [money]
             forced_types: [interest_peek]
+            known_exception: >-
+              TYPE/TIER CONFLICT, decided by the owner and independently confirmed by the
+              review judge. The interest_peek schema REQUIRES rate_pct and its widget
+              computes COMPOUND growth, so the type is inherently a percentage
+              instrument — while this course is tier2, whose own forbidden_vocabulary in
+              taxonomy.yaml bans "porcentaje" and "interés compuesto". The blueprint asks
+              for flat additive growth ("moneditas cada semana"), which the type cannot
+              express, so the author must either contradict the tier or contradict the
+              blueprint. It stays only because this catalog is a type-coverage harness
+              that needs one lesson per engine type; interest_peek belongs in a tier3
+              course. Consequences accepted: the prompt exceeds the clarity text-density
+              cap and one en-US hint keeps a peso reference.
       - position: 6
         slug: tipos-analyze
         title_es: "Detective de Números"

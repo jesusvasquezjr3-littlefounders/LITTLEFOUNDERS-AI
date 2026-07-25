@@ -161,6 +161,17 @@ export const lessonBlueprintSchema = z.object({
    * no contract import), same pattern as `review_of`/`prerequisites`.
    */
   forced_types: z.array(z.string().min(1).max(60)).min(1).max(14).optional(),
+  /**
+   * A DECLARED, REVIEWABLE exception: this lesson is known not to satisfy every gate,
+   * and the string says why. `verify:course` reports it separately instead of counting
+   * it as a failure, so the acceptance check can be green without lying.
+   *
+   * This exists so an exception lives in the CONTENT, next to the blueprint it excuses,
+   * where a content reviewer sees it — rather than as a slug hardcoded inside a
+   * checker, where it would quietly become permanent. Use it only for a genuine design
+   * conflict that has been decided, never to silence a fixable defect.
+   */
+  known_exception: z.string().min(20).max(1200).optional(),
 });
 
 // ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------
