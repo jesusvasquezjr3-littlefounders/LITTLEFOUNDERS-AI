@@ -62,6 +62,19 @@ See `.env.example` for the full list with defaults. Groups: author/judge provide
 | `npm run catalog:check [-- <path>]` | Validates `curriculum/<course>/*.yaml` against `src/catalog/schema.ts` + cross-references (fact_refs, slug uniqueness, taxonomy membership, quota warnings). No path = every course under `curriculum/`. |
 | `npm run contract:check` | Diffs `src/contract/**` against its `frontend/src/lesson-engine` originals (import-line + whitespace/semicolon normalized) — the no-workspaces parity gate. |
 
+### Image url map (`npm run images:apply-map -- <map.json> [--confirm]`)
+
+**Operator-triggered only.** Rewrites image urls embedded in lesson documents
+from an old-url → new-url JSON map — the Forge half of a storage migration
+whose Prism half is `picturegen`'s `backfill:webp` (which converts the Depot
+objects, updates `picture_assets` in place, and emits the map). Walks the four
+image keys (`image_url`, `a_image_url`, `b_image_url`, `ask_image_url`) at
+every depth including scene anchors; PATCHes only `document`; strict
+completeness — any `lesson-images` url not covered by the map fails the run
+(a silent partial rewrite would strand objects that the cleanup then deletes).
+Dry-run by default; first real run 2026-07-25 rewrote 334 urls across 120
+documents (the PNG→WebP migration: 1.5 GB → 51 MB on Depot).
+
 ### Image backfill (`npm run images:backfill -- --course <slug> [--dry-run]`)
 
 **Operator-triggered only.** Fills in missing illustrations on lessons that are **already published or in review**, without regenerating any content. For every `lesson_document` of a published-or-review lesson in the course, it runs the same images stage as generation (`illustrateSegments`) over the STORED `document` — adding `image_url` to `picture_choice` options and `memory_flip` card sides that lack one — and PATCHes **only** the `document` column back.

@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
+    "backfill:webp": "tsx --env-file-if-exists=.env src/backfillWebp.ts",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
