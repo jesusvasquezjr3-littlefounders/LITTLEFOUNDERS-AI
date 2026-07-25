@@ -16,7 +16,8 @@
     "generate": "tsx --env-file-if-exists=.env src/cli.ts",
     "images:backfill": "tsx --env-file-if-exists=.env src/scripts/backfill-images.ts",
     "catalog:check": "tsx src/catalog/check.ts",
-    "contract:check": "tsx src/contract/check.ts"
+    "contract:check": "tsx src/contract/check.ts",
+    "verify:course": "tsx --env-file-if-exists=.env src/verifyCourse.ts"
   },
   "dependencies": {
     "express": "^5.1.0",

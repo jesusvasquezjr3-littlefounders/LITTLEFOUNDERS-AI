@@ -231,7 +231,39 @@ export interface TranslateTitleDeps {
  * en-US/pt-BR at publish time instead. Without it, `title_es` was copied
  * verbatim into all 3 locale slots and topic pills never changed language.
  */
+/*
+ * Memoized per (title, locale) for the life of the process.
+ *
+ * run.ts calls this per SLOT, not per topic, and a topic holds ~4 lessons — so the
+ * same title was re-translated once per lesson (≈2000 calls for a 1000-slot run
+ * instead of ≈250). Worse than the waste: each call is nondeterministic, so sibling
+ * workers wrote DIFFERENT translations into the same shared `topics` row and the
+ * title drifted depending on which worker finished last. Caching fixes the cost, the
+ * drift and the concurrency race at once. In-memory is the right scope: a resumed
+ * invocation re-translates, which is correct — it may be running new code.
+ */
+const titleCache = new Map<string, Promise<string>>();
+
 export async function translateTitle(
+  titleEs: string,
+  targetLocale: 'en-US' | 'pt-BR',
+  deps: TranslateTitleDeps = {},
+): Promise<string> {
+  // Tests inject their own `translate`, so they must not share the cache.
+  if (!deps.translate) {
+    const key = `${targetLocale}::${titleEs}`;
+    const hit = titleCache.get(key);
+    if (hit) return hit;
+    const pending = translateTitleUncached(titleEs, targetLocale, deps);
+    titleCache.set(key, pending);
+    // A failure must not be cached — the slot retry has to be able to try again.
+    pending.catch(() => titleCache.delete(key));
+    return pending;
+  }
+  return translateTitleUncached(titleEs, targetLocale, deps);
+}
+
+async function translateTitleUncached(
   titleEs: string,
   targetLocale: 'en-US' | 'pt-BR',
   deps: TranslateTitleDeps = {},
@@ -252,5 +284,24 @@ export async function translateTitle(
     { messages, temperature: 0.3, maxTokens: 60 },
     { operation: 'localize', ledger: deps.ledger },
   );
-  return result.content.trim().replace(/^["']|["']$/g, '');
+  /*
+   * VALIDATE — never trust this straight into the database.
+   *
+   * `openAiCompatibleComplete` coerces a missing or blank completion to '' and
+   * returns it as SUCCESS (tokens still billed), and this function had no
+   * corrective retry, no schema and no emptiness check — so an empty reply was
+   * trimmed and upserted into `topics.title`, leaving a BLANK topic pill in that
+   * locale forever, with nothing logged and the lesson still counted as published.
+   *
+   * Not hypothetical: measured on the live course, 9 of 10 topics were blank in BOTH
+   * en-US and pt-BR. Throwing hands the failure to the slot's normal retry path,
+   * which is exactly where a transient provider hiccup belongs.
+   */
+  const title = result.content.trim().replace(/^["']|["']$/g, '');
+  if (title.length === 0) {
+    throw new Error(
+      `translateTitle(${targetLocale}) returned an EMPTY title for "${titleEs}" — refusing to publish a blank topic title`,
+    );
+  }
+  return title;
 }
