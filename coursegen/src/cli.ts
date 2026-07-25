@@ -155,7 +155,11 @@ async function main(): Promise<void> {
     console.warn(`  SALVAGED (published SHORTER than the blueprint): ${summary.salvagedSlots.length}`);
     for (const s of summary.salvagedSlots) console.warn(`    - ${s.slotId}: ${s.droppedSegments} segment(s) dropped`);
   }
-  console.log(`  tokens used: ${summary.tokensUsed}, est. USD: ${summary.usdUsed.toFixed(4)}`);
+  const cachePct = summary.tokensUsed > 0 ? ((summary.cachedTokens / summary.tokensUsed) * 100).toFixed(1) : '0.0';
+  console.log(
+    `  tokens used: ${summary.tokensUsed}, est. USD: ${summary.usdUsed.toFixed(4)} ` +
+      `(context-cache hits: ${summary.cachedTokens} tokens, ${cachePct}% — billed at the cached rate)`,
+  );
 
   // A run that did NOTHING is not a success. A --slots pattern that matched no
   // slot, or an enumeration that produced none, used to exit 0 with "published: 0".

@@ -550,6 +550,8 @@ export interface RunSummary {
   stoppedOnBudget: boolean;
   tokensUsed: number;
   usdUsed: number;
+  /** Prompt tokens served by provider context caches (subset of tokensUsed) — the prefix-stability scoreboard. */
+  cachedTokens: number;
 }
 
 export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Promise<RunSummary> {
@@ -710,6 +712,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     stoppedOnBudget,
     tokensUsed: ledger.tokens,
     usdUsed: ledger.usd,
+    cachedTokens: ledger.cachedTokens,
   };
   const tallied =
     published.length + failed.length + dryRun.length + skipped.length + alreadyDone.length + notAttempted.length;

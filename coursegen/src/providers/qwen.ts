@@ -38,6 +38,7 @@ export async function completeQwen(req: ChatCompleteRequest, opts: CompleteOptio
       operation: opts.operation,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
+      cachedPromptTokens: result.cachedPromptTokens,
     });
   }
 

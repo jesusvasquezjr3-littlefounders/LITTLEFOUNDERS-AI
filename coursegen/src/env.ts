@@ -70,19 +70,33 @@ const Env = z.object({
   FORGE_SLOT_ATTEMPTS: z.coerce.number().int().min(1).max(5).default(3),
 
   // ---- cost table overrides (USD per 1K tokens / per image), env-overridable ----
-  COST_DEEPSEEK_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.00027),
-  COST_DEEPSEEK_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0011),
+  // Defaults verified against the OFFICIAL price pages on 2026-07-25 for the
+  // models we actually call. DeepSeek: deepseek-v4-pro (DEEPSEEK_MODEL default)
+  // = $0.435/1M input miss, $0.003625/1M input CACHE HIT, $0.87/1M output.
+  // Note: the legacy names deepseek-chat/deepseek-reasoner were deprecated
+  // 2026-07-24 and now alias deepseek-v4-flash modes — the previous defaults
+  // here were that older model's prices. Cache-hit tokens are reported by the
+  // provider automatically (prompt_cache_hit_tokens) and priced separately —
+  // without the CACHED rate the ledger overstates real spend ~120x on hits.
+  COST_DEEPSEEK_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.000435),
+  COST_DEEPSEEK_INPUT_CACHED_PER_1K: z.coerce.number().nonnegative().default(0.0000036),
+  COST_DEEPSEEK_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.00087),
+  // Qwen (DashScope compatible-mode): implicit context cache bills hits at 20%
+  // of the input price (usage.prompt_tokens_details.cached_tokens).
   COST_QWEN_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.0016),
+  COST_QWEN_INPUT_CACHED_PER_1K: z.coerce.number().nonnegative().default(0.00032),
   COST_QWEN_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0064),
   /*
    * Per IMAGE actually generated (a Prism cache hit costs nothing and is not
    * billed here). Image spend used to sit entirely outside the ledger and outside
    * every kill switch, so a mass run could bill tens of thousands of paid
    * qwen-image generations with nothing metering or capping them — the single
-   * largest uncapped cost in the pipeline. Ballpark list price, env-overridable
-   * like the token costs.
+   * largest uncapped cost in the pipeline. Default = the official Model Studio
+   * list price for qwen-image ($0.035/image, verified 2026-07-25; the earlier
+   * 0.02 default UNDERSTATED image spend by 43%), env-overridable like the
+   * token costs.
    */
-  COST_QWEN_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.02),
+  COST_QWEN_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.035),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

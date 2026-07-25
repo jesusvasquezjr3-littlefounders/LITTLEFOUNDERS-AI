@@ -22,6 +22,14 @@ export interface ChatCompleteResult {
   content: string;
   promptTokens: number;
   completionTokens: number;
+  /**
+   * The SUBSET of promptTokens served from the provider's automatic context
+   * cache (DeepSeek: prompt_cache_hit_tokens; DashScope compatible-mode:
+   * prompt_tokens_details.cached_tokens). Billed ~10-20x cheaper than a miss —
+   * dropping this field made the ledger overstate real spend and made every
+   * prefix-stability improvement unmeasurable.
+   */
+  cachedPromptTokens: number;
 }
 
 export interface OpenAiCompatibleConfig {
@@ -41,6 +49,10 @@ interface OpenAiChatResponse {
     completion_tokens?: number;
     /** Reasoning models report how much of the budget went to thinking. */
     completion_tokens_details?: { reasoning_tokens?: number };
+    /** DeepSeek-native: input tokens served from the automatic prefix cache. */
+    prompt_cache_hit_tokens?: number;
+    /** OpenAI-compat shape (DashScope reports cache hits here). */
+    prompt_tokens_details?: { cached_tokens?: number };
   };
 }
 
@@ -110,10 +122,18 @@ export async function openAiCompatibleComplete(
             `This model reasons before answering — raise maxTokens for this call.`,
         );
       }
+      const promptTokens = json.usage?.prompt_tokens ?? 0;
       return {
         content,
-        promptTokens: json.usage?.prompt_tokens ?? 0,
+        promptTokens,
         completionTokens: json.usage?.completion_tokens ?? 0,
+        // Clamp to promptTokens: cached tokens are a SUBSET of the prompt on
+        // both providers, and the pricing subtraction in usage.ts relies on
+        // cached <= prompt holding.
+        cachedPromptTokens: Math.min(
+          json.usage?.prompt_cache_hit_tokens ?? json.usage?.prompt_tokens_details?.cached_tokens ?? 0,
+          promptTokens,
+        ),
       };
     } finally {
       clearTimeout(timer);

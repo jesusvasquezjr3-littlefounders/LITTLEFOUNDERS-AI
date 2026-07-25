@@ -36,6 +36,7 @@ export async function completeDeepSeek(req: ChatCompleteRequest, opts: CompleteO
       operation: opts.operation,
       promptTokens: result.promptTokens,
       completionTokens: result.completionTokens,
+      cachedPromptTokens: result.cachedPromptTokens,
     });
   }
 
