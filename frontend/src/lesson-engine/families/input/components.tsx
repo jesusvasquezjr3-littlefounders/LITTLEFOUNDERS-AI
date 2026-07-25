@@ -490,7 +490,18 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
           )
         })}
       </div>
-      <CorrectAnswerNote verdict={verdict} value={accepted?.[0]} />
+      {/* `accepted` entries are space-separated TOKEN IDS ("t1 t2 t3"), not display
+          text — rendering one raw showed the child "la respuesta correcta: t1 t2 t3
+          t4 t5" (found 2026-07-24). Map each id back through the token bank so the
+          reveal reads as the equation ("5 + 5 + 5"). */}
+      <CorrectAnswerNote
+        verdict={verdict}
+        value={accepted?.[0]
+          ?.trim()
+          .split(/\s+/)
+          .map((id) => textOf(id) || id)
+          .join(' ')}
+      />
     </div>
   )
 }
