@@ -3,7 +3,7 @@
 // switches (FORGE_MAX_TOKENS_PER_RUN / FORGE_MAX_USD_PER_RUN) check before
 // every call (COURSE_ENGINE.md §4 "Budget").
 
-import { appendFile, mkdir } from 'node:fs/promises';
+import { appendFile, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { getConfig } from '../env.js';
 
@@ -41,9 +41,64 @@ export class UsageLedger {
   private totalTokens = 0;
   private totalUsd = 0;
   private readonly filePath: string;
+  /**
+   * Effective per-RUN caps. Defaults come from config, but `hydrate()` accepts
+   * work-scaled limits from run.ts so a 1000-slot course is not held to the same
+   * absolute ceiling as a 3-slot smoke test (see run.ts#effectiveBudget).
+   */
+  private maxTokens: number | null = null;
+  private maxUsd: number | null = null;
 
   constructor(runDir: string) {
     this.filePath = path.join(runDir, 'ledger.jsonl');
+  }
+
+  /**
+   * Restores the running totals from `ledger.jsonl` and installs the run's caps.
+   *
+   * WHY: the totals used to start at ZERO in every process, so the "per-run"
+   * kill switches were really per-INVOCATION. A 1000-lesson course cannot be
+   * generated in one process (the token cap alone forces a dozen-plus resumes),
+   * which meant the $/token ceilings bounded nothing at all across the run that
+   * actually mattered — a mass-generation audit found this reported from seven
+   * different angles. The append-only ledger file was already the durable record;
+   * it simply was never read back. Replaying it makes the cap mean what it says.
+   *
+   * Tolerant by design: a truncated final line (killed mid-append) is skipped
+   * rather than fatal — losing one record's accounting is far better than
+   * refusing to resume a multi-day run.
+   */
+  async hydrate(limits?: { maxTokens?: number; maxUsd?: number }): Promise<void> {
+    this.maxTokens = limits?.maxTokens ?? null;
+    this.maxUsd = limits?.maxUsd ?? null;
+    let raw: string;
+    try {
+      raw = await readFile(this.filePath, 'utf8');
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') return;
+      throw err;
+    }
+    let tokens = 0;
+    let usd = 0;
+    let skipped = 0;
+    for (const line of raw.split('\n')) {
+      if (line.trim().length === 0) continue;
+      try {
+        const rec = JSON.parse(line) as { prompt_tokens?: number; completion_tokens?: number; est_usd?: number };
+        tokens += (rec.prompt_tokens ?? 0) + (rec.completion_tokens ?? 0);
+        usd += rec.est_usd ?? 0;
+      } catch {
+        skipped += 1;
+      }
+    }
+    this.totalTokens = tokens;
+    this.totalUsd = usd;
+    if (tokens > 0) {
+      console.log(
+        `[forge] ledger resumed: ${tokens.toLocaleString()} tokens, $${usd.toFixed(4)} already spent on this run` +
+          (skipped > 0 ? ` (${skipped} unparseable line(s) skipped)` : ''),
+      );
+    }
   }
 
   get tokens(): number {
@@ -57,11 +112,13 @@ export class UsageLedger {
   /** Throws BudgetExceededError if the run is already over budget — call BEFORE every provider call. */
   checkBudget(): void {
     const c = getConfig();
-    if (this.totalTokens >= c.FORGE_MAX_TOKENS_PER_RUN) {
-      throw new BudgetExceededError('tokens', this.totalTokens, c.FORGE_MAX_TOKENS_PER_RUN);
+    const maxTokens = this.maxTokens ?? c.FORGE_MAX_TOKENS_PER_RUN;
+    const maxUsd = this.maxUsd ?? c.FORGE_MAX_USD_PER_RUN;
+    if (this.totalTokens >= maxTokens) {
+      throw new BudgetExceededError('tokens', this.totalTokens, maxTokens);
     }
-    if (this.totalUsd >= c.FORGE_MAX_USD_PER_RUN) {
-      throw new BudgetExceededError('usd', this.totalUsd, c.FORGE_MAX_USD_PER_RUN);
+    if (this.totalUsd >= maxUsd) {
+      throw new BudgetExceededError('usd', this.totalUsd, maxUsd);
     }
   }
 

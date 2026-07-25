@@ -44,10 +44,14 @@ export async function requestPicture(req: PictureRequest): Promise<PictureResult
   if (!c.PICTUREGEN_URL || !c.PICTUREGEN_INTERNAL_KEY) throw new ProviderNotConfiguredError('picturegen');
 
   return withTransportRetry(async () => {
+    // AbortSignal.timeout: image generation is slow but not unbounded. Without it
+    // a half-open connection parked a pool worker indefinitely — with
+    // FORGE_CONCURRENCY workers, a long run could lose every lane and hang silently.
     const res = await fetch(`${c.PICTUREGEN_URL}/api/v1/pictures`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-internal-api-key': c.PICTUREGEN_INTERNAL_KEY as string },
       body: JSON.stringify(req),
+      signal: AbortSignal.timeout(c.FORGE_PICTUREGEN_TIMEOUT_MS),
     });
     const json = (await res.json().catch(() => null)) as PrismEnvelope | null;
     if (!res.ok || !json?.data) {

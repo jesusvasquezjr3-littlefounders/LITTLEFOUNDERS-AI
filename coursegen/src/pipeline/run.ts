@@ -6,8 +6,18 @@ import path from 'node:path';
 import { getConfig, requireGenerationKeys } from '../env.js';
 import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
+import { LESSON_LOCALES } from '../contract/core/types.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
-import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
+import {
+  CheckpointStore,
+  newRunCheckpoint,
+  getSlot,
+  setSlotState,
+  isSlotDone,
+  describeParamMismatch,
+  type RunCheckpoint,
+  type RunParams,
+} from './checkpoint.js';
 import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } from './plan.js';
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
@@ -148,7 +158,14 @@ function buildPlanContext(
 
 interface ProcessSlotOutcome {
   slotId: string;
-  state: 'published' | 'failed' | 'skipped';
+  state: 'published' | 'failed' | 'skipped' | 'dry-run';
+  /** How many Prism illustrations this slot actually produced. */
+  imagesGenerated?: number;
+  /** Why illustration was skipped, when it was (e.g. 'not-configured'). */
+  imageSkipReasons?: string[];
+  /** True when the write stage SALVAGED a partial document (segments were dropped). */
+  salvaged?: boolean;
+  droppedSegments?: number;
   error?: string;
 }
 
@@ -165,6 +182,11 @@ async function processSlot(
   if (!course.taxonomy || !course.facts || !course.catalog) {
     return { slotId: slot.slotId, state: 'skipped', error: 'course taxonomy/facts/catalog failed to load' };
   }
+  // Outcome telemetry that must survive to the summary (see ProcessSlotOutcome).
+  let imagesGenerated = 0;
+  const imageSkipReasons = new Set<string>();
+  let salvaged = false;
+  let droppedSegments = 0;
   const gateCtx: GateContext = {
     taxonomy: course.taxonomy,
     tier: slot.tier,
@@ -196,6 +218,8 @@ async function processSlot(
     current = getSlot(checkpoint, slot.slotId);
     let documents = (current.data?.documents as Partial<Record<LessonLocale, LessonDocumentParsed>>) ?? {};
     if (!documents[AUTHORING_LOCALE]) {
+      // `salvaged`/`droppedSegments` were returned by write and never read, so a
+      // lesson that lost up to 8 of 14 planned segments published as a clean success.
       const writeResult = await writeLessonDocument(
         {
           ctx: planCtx,
@@ -211,12 +235,22 @@ async function processSlot(
         },
         { ledger },
       );
+      salvaged = salvaged || writeResult.salvaged;
+      droppedSegments += writeResult.droppedSegments;
+      if (writeResult.salvaged) {
+        console.warn(
+          `[forge] slot ${slot.slotId}: write SALVAGED — ${writeResult.droppedSegments} planned segment(s) dropped. ` +
+            `The lesson is shorter than its blueprint.`,
+        );
+      }
       const gateReport = runAllGates(writeResult.document, gateCtx);
       if (!gateReport.ok || !gateReport.document) {
         throw new Error(`gate failure on es-MX write: ${gateReport.problems.slice(0, 5).map((p) => p.message).join('; ')}`);
       }
       documents = { ...documents, [AUTHORING_LOCALE]: gateReport.document };
-      checkpoint = setSlotState(checkpoint, slot.slotId, 'written', { data: { skeleton, documents } });
+      checkpoint = setSlotState(checkpoint, slot.slotId, 'written', {
+        data: { skeleton, documents, salvaged: writeResult.salvaged, droppedSegments: writeResult.droppedSegments },
+      });
       await store.save(checkpoint);
     }
 
@@ -251,6 +285,12 @@ async function processSlot(
       // generated image serves all 3 locales. 3× fewer image calls per lesson.
       const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages });
       documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
+      // Image outcomes must LEAVE this function. They used to be destructured away,
+      // so an unconfigured or down Prism published a visual-first curriculum with
+      // zero illustrations while the run reported complete success — and nothing
+      // downstream re-checks, since the judge runs BEFORE illustration.
+      imagesGenerated += illustratedSource.generated ?? 0;
+      if (illustratedSource.skippedReason) imageSkipReasons.add(illustratedSource.skippedReason);
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
         const localized = await localizeLesson(documents[AUTHORING_LOCALE]!, locale as 'en-US' | 'pt-BR', gateCtx, {
@@ -275,6 +315,8 @@ async function processSlot(
       for (const locale of Object.keys(documents) as LessonLocale[]) {
         const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages });
         documents = { ...documents, [locale]: illustrated.document };
+        imagesGenerated += illustrated.generated ?? 0;
+        if (illustrated.skippedReason) imageSkipReasons.add(illustrated.skippedReason);
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'illustrated', { data: { skeleton, documents } });
       await store.save(checkpoint);
@@ -284,9 +326,12 @@ async function processSlot(
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'illustrated') {
       if (options.dryRun) {
-        checkpoint = setSlotState(checkpoint, slot.slotId, 'published', { data: { skeleton, documents, dryRun: true } });
+        // 'dry-run', never 'published': marking it published made isSlotDone treat a
+        // validation pass as real work, so a dry run followed by the real run under
+        // the same --run-id published NOTHING while reporting every slot done.
+        checkpoint = setSlotState(checkpoint, slot.slotId, 'dry-run', { data: { skeleton, documents, dryRun: true } });
         await store.save(checkpoint);
-        return { slotId: slot.slotId, state: 'published' };
+        return { slotId: slot.slotId, state: 'dry-run', imagesGenerated, imageSkipReasons: [...imageSkipReasons] };
       }
       // COURSE_ENGINE.md §3.3 — adult register publishes as a PARALLEL course,
       // never overwriting the kid course: `<slug>-adultos`, title +" (Adultos)"
@@ -348,20 +393,83 @@ async function processSlot(
       await store.save(checkpoint);
     }
 
-    return { slotId: slot.slotId, state: 'published' };
+    /*
+     * NEVER claim success without proof. This return used to be unconditional at the
+     * end of the try block, so a slot whose state fell outside the expected lifecycle
+     * — a hand-edited or partially-written checkpoint, or any state added later —
+     * skipped every stage guard above and was reported published with NOTHING in
+     * Vault. Assert the state machine actually arrived.
+     */
+    const finalState = getSlot(checkpoint, slot.slotId).state;
+    if (finalState !== 'published') {
+      const message =
+        `slot finished the pipeline in state "${finalState}" instead of "published" — no stage claimed it, ` +
+        `so nothing was written to Vault. This usually means the checkpoint holds an unexpected state.`;
+      checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
+      await saveQuietly(store, checkpoint, slot.slotId);
+      return { slotId: slot.slotId, state: 'failed', error: message };
+    }
+    return {
+      slotId: slot.slotId,
+      state: 'published',
+      imagesGenerated,
+      imageSkipReasons: [...imageSkipReasons],
+      salvaged,
+      droppedSegments,
+    };
   } catch (err) {
     if (err instanceof BudgetExceededError) throw err; // stop the whole run, don't mark this slot failed
     const message = err instanceof Error ? err.message : String(err);
+    /*
+     * The failure bookkeeping must not itself be able to kill the run. `store.save`
+     * does disk I/O (ENOSPC, EACCES, a transient FS error on a multi-day run), and
+     * an exception thrown HERE escapes this catch, propagates through the pool and
+     * aborts every remaining slot — turning one lesson's failure into a dead run.
+     */
     checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
-    await store.save(checkpoint);
+    await saveQuietly(store, checkpoint, slot.slotId);
     return { slotId: slot.slotId, state: 'failed', error: message };
   }
 }
 
+/** Persists the checkpoint, downgrading a write failure to a warning (see the catch above). */
+async function saveQuietly(store: CheckpointStore, checkpoint: RunCheckpoint, slotId: string): Promise<void> {
+  try {
+    await store.save(checkpoint);
+  } catch (saveErr) {
+    console.error(
+      `[forge] WARNING: could not persist the checkpoint after slot ${slotId} failed ` +
+        `(${saveErr instanceof Error ? saveErr.message : String(saveErr)}). The run continues, but this slot ` +
+        `will be retried on resume.`,
+    );
+  }
+}
+
+/**
+ * Every enumerated slot lands in EXACTLY ONE bucket. The old summary carried only
+ * `published` and `failed`, so slots that were never attempted (budget stop, or
+ * already finished by an earlier invocation) vanished from the report and a run
+ * that touched 300 of 1000 slots printed a clean partial success.
+ */
 export interface RunSummary {
   runId: string;
   published: string[];
   failed: { slotId: string; error: string }[];
+  /** Validated by --dry-run; nothing was written or paid for. */
+  dryRun: string[];
+  /** Deliberately not processed (e.g. the course catalog failed to load). */
+  skipped: { slotId: string; reason: string }[];
+  /** Already 'published' in the checkpoint before this invocation started. */
+  alreadyDone: string[];
+  /** Enumerated but never reached — the honest name for what used to be invisible. */
+  notAttempted: string[];
+  slotsEnumerated: number;
+  /** Prism illustrations actually produced — zero on a visual-first course is a RED FLAG, not a success. */
+  imagesGenerated: number;
+  /** Distinct reasons illustration was skipped (e.g. 'not-configured'). */
+  imageSkipReasons: string[];
+  /** Lessons published SHORTER than their blueprint because write had to salvage. */
+  salvagedSlots: { slotId: string; droppedSegments: number }[];
   stoppedOnBudget: boolean;
   tokensUsed: number;
   usdUsed: number;
@@ -380,15 +488,69 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   const runId = options.runId ?? `${options.course}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
   const runDir = path.join(options.runsRoot, runId);
   const store = new CheckpointStore(path.join(runDir, 'checkpoint.json'));
-  const checkpoint = (await store.load()) ?? newRunCheckpoint(runId, options.course);
 
-  const ledger = deps.ledger ?? new UsageLedger(runDir);
+  /*
+   * A resume must be provably COMPATIBLE with what produced the existing slots.
+   * `isSlotDone` only reads the state string, so without this check a resume with
+   * different flags silently treats incompatible work as finished and reports
+   * success — the single worst failure mode found in the mass-generation audit,
+   * because a 1000-lesson course REQUIRES multiple invocations and every variation
+   * (fewer locales, --no-images, a different register) was reachable in normal use.
+   */
+  const runParams: RunParams = {
+    course: options.course,
+    locales: [...(options.locales ?? LESSON_LOCALES)],
+    noImages: options.noImages === true,
+    register: options.register ?? 'kid',
+  };
+  const loaded = await store.load();
+  if (loaded) {
+    const mismatch = describeParamMismatch(loaded.params, runParams);
+    const doneCount = Object.values(loaded.slots).filter((sl) => sl.state === 'published').length;
+    if (mismatch && doneCount > 0) {
+      throw new Error(
+        `refusing to resume run "${runId}": it was created with different parameters (${mismatch}), ` +
+          `and ${doneCount} slot(s) are already marked published. Those slots were produced under the OLD ` +
+          `parameters and would be silently skipped, so the run would report success without doing the work. ` +
+          `Use a fresh --run-id for the new parameters, or re-run with the original ones.`,
+      );
+    }
+    if (mismatch) loaded.params = runParams; // nothing published yet — safe to adopt
+  }
+  const checkpoint = loaded ?? newRunCheckpoint(runId, options.course, runParams);
+  if (!checkpoint.params) checkpoint.params = runParams;
+
   const allSlots = enumerateSlots(loadResult.course.adventures);
   const slots = filterSlots(allSlots, options.slots);
+
+  /*
+   * Budget scaled to the enumerated work, then hydrated from the run's own ledger.
+   *
+   * Two separate mass-generation failures live here. (1) The absolute 5M-token cap
+   * is sized for ~48 lessons, so a 1000+ lesson course was arithmetically
+   * guaranteed to abort partway through — the cap has to grow with the slot count
+   * or it is a bug, not a guard. (2) The totals restarted at zero in every process,
+   * so the "per-run" ceilings were per-invocation and bounded nothing across the
+   * resumes a long run requires. `hydrate()` replays ledger.jsonl to fix (2).
+   */
+  const ledger = deps.ledger ?? new UsageLedger(runDir);
+  const scaled = {
+    maxTokens: Math.max(config.FORGE_MAX_TOKENS_PER_RUN, slots.length * config.FORGE_MAX_TOKENS_PER_SLOT),
+    maxUsd: Math.max(config.FORGE_MAX_USD_PER_RUN, slots.length * config.FORGE_MAX_USD_PER_SLOT),
+  };
+  await ledger.hydrate(scaled);
+  console.log(
+    `[forge] budget for ${slots.length} slot(s): ${scaled.maxTokens.toLocaleString()} tokens, $${scaled.maxUsd.toFixed(2)}`,
+  );
   const register = resolveRegister(loadResult.course.taxonomy, options.register ?? 'kid');
 
   const published: string[] = [];
   const failed: { slotId: string; error: string }[] = [];
+  const dryRun: string[] = [];
+  const skipped: { slotId: string; reason: string }[] = [];
+  let imagesGenerated = 0;
+  const imageSkipReasons = new Set<string>();
+  const salvagedSlots: { slotId: string; droppedSegments: number }[] = [];
   let stoppedOnBudget = false;
 
   try {
@@ -410,20 +572,63 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
         await store.save(checkpoint);
         outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
       }
+      imagesGenerated += outcome.imagesGenerated ?? 0;
+      for (const r of outcome.imageSkipReasons ?? []) imageSkipReasons.add(r);
+      if (outcome.salvaged) salvagedSlots.push({ slotId: outcome.slotId, droppedSegments: outcome.droppedSegments ?? 0 });
       if (outcome.state === 'published') published.push(outcome.slotId);
       else if (outcome.state === 'failed') failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error' });
+      else if (outcome.state === 'dry-run') dryRun.push(outcome.slotId);
+      else skipped.push({ slotId: outcome.slotId, reason: outcome.error ?? 'skipped' });
     });
   } catch (err) {
     if (err instanceof BudgetExceededError) stoppedOnBudget = true;
     else throw err;
   }
 
-  return {
+  /*
+   * THE SUMMARY MUST ACCOUNT FOR EVERY SLOT. Previously a slot that was never
+   * attempted — because a budget stop made the pool return early, or because it
+   * was already published by an earlier invocation — appeared in NEITHER
+   * `published` NOR `failed`, so a run that touched 300 of 1000 slots printed a
+   * clean partial success and an operator had no way to see the other 700. Now
+   * every slot is in exactly one bucket and the totals are asserted to add up.
+   */
+  const accountedIds = new Set([
+    ...published,
+    ...failed.map((f) => f.slotId),
+    ...dryRun,
+    ...skipped.map((s) => s.slotId),
+  ]);
+  const alreadyDone: string[] = [];
+  const notAttempted: string[] = [];
+  for (const slot of slots) {
+    if (accountedIds.has(slot.slotId)) continue;
+    (isSlotDone(checkpoint, slot.slotId) ? alreadyDone : notAttempted).push(slot.slotId);
+  }
+
+  const summary: RunSummary = {
     runId,
     published,
     failed,
+    dryRun,
+    skipped,
+    alreadyDone,
+    notAttempted,
+    slotsEnumerated: slots.length,
+    imagesGenerated,
+    imageSkipReasons: [...imageSkipReasons],
+    salvagedSlots,
     stoppedOnBudget,
     tokensUsed: ledger.tokens,
     usdUsed: ledger.usd,
   };
+  const tallied =
+    published.length + failed.length + dryRun.length + skipped.length + alreadyDone.length + notAttempted.length;
+  if (tallied !== slots.length) {
+    // Never silently: an accounting hole here is exactly how lessons went missing.
+    console.warn(
+      `[forge] BUG: summary accounts for ${tallied} slot(s) but ${slots.length} were enumerated — please report this run id.`,
+    );
+  }
+  return summary;
 }

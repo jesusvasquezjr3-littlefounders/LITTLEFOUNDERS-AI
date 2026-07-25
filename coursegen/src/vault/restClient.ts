@@ -22,8 +22,12 @@ interface RestResult<T> {
 async function vaultRest<T>(path: string, init: RestInit = {}): Promise<RestResult<T>> {
   requirePublishKeys();
   const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = getConfig();
+  // Bounded: an untimed publish fetch could park a slot worker for as long as the
+  // OS keeps a half-open socket alive (~20 minutes observed), silently draining
+  // the pool during a multi-day run.
   const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
     ...init,
+    signal: AbortSignal.timeout(getConfig().FORGE_VAULT_TIMEOUT_MS),
     headers: {
       apikey: SUPABASE_SERVICE_ROLE_KEY!,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,

@@ -40,8 +40,28 @@ const Env = z.object({
   BACKEND_INTERNAL_URL: z.url().default('http://localhost:4000'),
 
   // ---- run budgets / concurrency (COURSE_ENGINE.md §4) ----
+  /*
+   * Budget kill switches. These are FLOORS, not the whole story: run.ts scales the
+   * effective cap with the amount of work enumerated (see `effectiveBudget`), because
+   * one absolute number cannot serve both a 3-slot smoke test and a 1472-lesson
+   * course. Measured on a real run: ~104k tokens and ~$0.07 per published lesson
+   * INCLUDING retries, so the 5M/$50 floors below cover ~48 lessons — a mass-
+   * generation audit found the old absolute-only cap killed a 1312-lesson run at
+   * lesson ~82, reported from five independent angles as run-fatal.
+   */
   FORGE_MAX_TOKENS_PER_RUN: z.coerce.number().int().positive().default(5_000_000),
   FORGE_MAX_USD_PER_RUN: z.coerce.number().positive().default(50),
+  /*
+   * Request timeouts. A fetch with NO timeout is a stall waiting to happen: a
+   * half-open connection parks a pool worker forever, and with FORGE_CONCURRENCY
+   * workers a long run can lose them all and hang indefinitely with no output.
+   * Prism generates images (slow by nature), Vault writes are fast.
+   */
+  FORGE_PICTUREGEN_TIMEOUT_MS: z.coerce.number().int().positive().default(180_000),
+  FORGE_VAULT_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+  /** Per-slot allowance used to scale the caps above with the enumerated work. */
+  FORGE_MAX_TOKENS_PER_SLOT: z.coerce.number().int().positive().default(150_000),
+  FORGE_MAX_USD_PER_SLOT: z.coerce.number().positive().default(0.25),
   FORGE_CONCURRENCY: z.coerce.number().int().min(1).max(8).default(2),
   // Outer per-slot attempts: on a judge rejection or write exhaustion the slot
   // is reset and regenerated FROM SCRATCH (a fresh draw converges far better
