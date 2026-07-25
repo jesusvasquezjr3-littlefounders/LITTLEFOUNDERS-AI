@@ -34,8 +34,14 @@ export interface OpenAiCompatibleConfig {
 }
 
 interface OpenAiChatResponse {
-  choices?: { message?: { content?: string } }[];
-  usage?: { prompt_tokens?: number; completion_tokens?: number };
+  /** `finish_reason` matters: 'length' with empty content means budget starvation, not an answer. */
+  choices?: { message?: { content?: string }; finish_reason?: string }[];
+  usage?: {
+    prompt_tokens?: number;
+    completion_tokens?: number;
+    /** Reasoning models report how much of the budget went to thinking. */
+    completion_tokens_details?: { reasoning_tokens?: number };
+  };
 }
 
 export async function openAiCompatibleComplete(
@@ -79,6 +85,31 @@ export async function openAiCompatibleComplete(
 
       const json = (await res.json()) as OpenAiChatResponse;
       const content = json.choices?.[0]?.message?.content ?? '';
+      /*
+       * EMPTY CONTENT + finish_reason 'length' IS ALWAYS A BUG, NEVER AN ANSWER.
+       *
+       * Measured 2026-07-25 against deepseek-v4-pro, which is a REASONING model: it
+       * spends its completion budget thinking before emitting anything, so a call
+       * capped too low returns `content: ''` with finish_reason 'length' and a 200 OK.
+       * translateTitle asked for 60 tokens; the model burned all 60 on reasoning
+       * (measured: 477 reasoning tokens are needed for a THREE-WORD title) and
+       * returned nothing. That empty string was then trimmed and written into
+       * `topics.title`, shipping NINE OF TEN topics with blank names in en-US and
+       * pt-BR — silently, because '' was reported as success.
+       *
+       * Failing here rather than at each call site protects every present and future
+       * caller, and names the actual cause so nobody debugs the prompt instead of the
+       * budget.
+       */
+      const finishReason = json.choices?.[0]?.finish_reason;
+      if (content.trim().length === 0 && finishReason === 'length') {
+        const reasoning = json.usage?.completion_tokens_details?.reasoning_tokens;
+        throw new Error(
+          `${cfg.providerName} returned NO content: the completion budget was exhausted before any output ` +
+            `(finish_reason=length${reasoning ? `, ${reasoning} reasoning tokens` : ''}). ` +
+            `This model reasons before answering — raise maxTokens for this call.`,
+        );
+      }
       return {
         content,
         promptTokens: json.usage?.prompt_tokens ?? 0,

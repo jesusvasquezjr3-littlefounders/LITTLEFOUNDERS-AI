@@ -75,6 +75,25 @@ It encodes the product promise — take a learner with ZERO prior knowledge to m
 
 **CALIBRATE AGAINST THE AUTHORED CURRICULUM, NOT INTUITION.** The first version of the spacing rule demanded a strictly increasing RAW review-citation sequence. It flagged all 32 teaching sagas of every large course — 96 false warnings — against a curriculum whose spacing is in fact textbook (measured distances 1, 2, 12, 33, 48, 176). The duplicates come from one review topic legitimately citing several topics of the same saga; only DISTINCT distances carry meaning. Current calibration over the real corpus: **4,254 blueprints across 4 courses → 0 errors, 1 warning** (a genuine 5-lesson monotony run in `investing`). If a new rule fires in bulk, measure before believing it — a rule that cries wolf trains people to ignore the gate.
 
+## The model REASONS: an empty completion is budget starvation, not an answer
+
+`DEEPSEEK_MODEL` is `deepseek-v4-pro`, a **reasoning** model. It spends its completion budget thinking before emitting a single character of content, so a call whose `maxTokens` is too low returns `content: ''` with `finish_reason: 'length'` — and HTTP 200. Measured on the real API, translating a THREE-WORD title:
+
+| `max_tokens` | `content` | `reasoning_tokens` | `finish_reason` |
+|---|---|---|---|
+| 60 | `''` | 60 | `length` |
+| 300 | `''` | 300 | `length` |
+| 800 | `"The Position's Accounts"` | 477 | `stop` |
+
+That is what shipped **nine of ten topic titles blank** in en-US and pt-BR: `translateTitle` asked for 60 tokens, got an empty string reported as success, trimmed it, and upserted it into `topics.title`. Nobody saw it because a blank title renders as an empty pill, not an error. It only surfaced when the acceptance check started asserting that titles are present and localized.
+
+Two defences, both in place:
+
+1. **`openAiCompatibleComplete` refuses a starved completion.** Empty content with `finish_reason: 'length'` now throws, naming the cause and the reasoning-token count, so a future caller debugs the BUDGET instead of the prompt. This protects every call site, present and future — the right layer, because the failure mode belongs to the model, not to any one prompt.
+2. **Every completion call needs headroom above the reasoning cost.** `translateTitle` is 1500 (measured need: 477 + variance). The document-level calls were already 8192 and are safe. Audited: that one call was the only starved site in the pipeline.
+
+When you add a completion call, do not size `maxTokens` by the length of the ANSWER — size it by reasoning + answer. A 3-word reply can legitimately need 500+ tokens.
+
 ## Image inheritance — illustration is the dominant cost, so never re-pay for the same drawing
 
 Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | label | context")`, so a cache hit needs the label AND the context byte-identical. A REGENERATION rewrites both, so every slot misses the cache and every image is billed again — even when the object is the same lemon. At ~5 images per lesson and ~$0.02 each, illustration is ~$100 for a 1000-lesson course, several times the entire text cost; one failed 62-slot run already billed 424 fresh generations (~$8.48) and published nothing.

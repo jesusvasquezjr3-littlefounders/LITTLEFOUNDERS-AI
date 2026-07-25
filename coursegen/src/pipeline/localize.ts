@@ -281,7 +281,16 @@ async function translateTitleUncached(
     { role: 'user' as const, content: titleEs },
   ];
   const result = await translate(
-    { messages, temperature: 0.3, maxTokens: 60 },
+    /*
+     * 1500, not 60. DEEPSEEK_MODEL is a REASONING model, so the completion budget is
+     * spent thinking before any content appears: measured on this exact prompt,
+     * translating a three-word title consumed 477 reasoning tokens, and budgets of 60
+     * AND 300 both returned an EMPTY string with finish_reason 'length'. That empty
+     * string is what shipped nine of ten topics with blank en-US/pt-BR names. The
+     * headroom above the measured cost absorbs the natural variance in reasoning
+     * length; openAiCompatibleComplete now also refuses a starved completion outright.
+     */
+    { messages, temperature: 0.3, maxTokens: 1500 },
     { operation: 'localize', ledger: deps.ledger },
   );
   /*
