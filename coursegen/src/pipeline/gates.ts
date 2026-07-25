@@ -1048,6 +1048,47 @@ function clarityCoinCount(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+function clarityBalanceScale(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'balance_scale') continue;
+    const payload = (
+      segment as { payload: { left_fixed?: { value?: unknown }[]; weights?: { value?: unknown }[] } }
+    ).payload;
+    const leftVals = (payload.left_fixed ?? []).map((i) => i.value).filter((v): v is number => typeof v === 'number');
+    const bankVals = (payload.weights ?? []).map((w) => w.value).filter((v): v is number => typeof v === 'number');
+    if (leftVals.length === 0 || bankVals.length === 0) continue;
+    const target = leftVals.reduce((a, b) => a + b, 0);
+    const bankSum = bankVals.reduce((a, b) => a + b, 0);
+    // The grader passes when the PLACED weights sum exactly to the fixed left plate.
+    // If the whole bank sums to exactly the target, "tap every token" is an always-correct
+    // strategy — the child passes with zero reasoning and no wrong choice exists. The bank
+    // must therefore offer MORE than the target so choosing which weights to place is the
+    // actual exercise.
+    if (bankSum === target) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `balance_scale "${segment.id}": the weight bank sums to exactly the target (${target}), so tapping EVERY token always balances — the child passes with zero reasoning and no wrong choice exists. Give the bank more total weight than the target (extra/distractor weights) so selecting the right subset is the exercise.`,
+      });
+      continue;
+    }
+    // Inverse failure: no subset of the bank can reach the target → unwinnable.
+    const reachable = new Set<number>([0]);
+    for (const v of bankVals) {
+      for (const sum of [...reachable]) reachable.add(sum + v);
+    }
+    if (!reachable.has(target)) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `balance_scale "${segment.id}": no combination of the bank weights [${bankVals.join(', ')}] can sum to the fixed left plate (${target}) — the exercise is unwinnable, every submission scores 0. Choose weights whose subset can hit the target exactly.`,
+      });
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...clarityTextDensity(document),
@@ -1059,6 +1100,7 @@ export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
     ...clarityBuildSentence(document),
     ...clarityCompareTable(document),
     ...clarityCoinCount(document),
+    ...clarityBalanceScale(document),
   ];
 }
 

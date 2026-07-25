@@ -172,6 +172,37 @@ describe('gate 8: clarity / visual-first', () => {
     );
     expect(problems.length).toBe(0);
   });
+
+  // balance_scale passes when the PLACED weights sum exactly to the fixed left plate.
+  const balanceSeg = (weights: number[], left: number[]) => ({
+    id: 's1',
+    type: 'balance_scale',
+    prompt_md: 'Equilibra la balanza.',
+    difficulty: 2,
+    xp: 15,
+    payload: {
+      weights: weights.map((v, i) => ({ id: `w${i}`, label: 'Galleta', value: v })),
+      left_fixed: left.map((v) => ({ label: 'Vaso', value: v })),
+      unknown_label: 'Galletas',
+    },
+  });
+
+  it('flags a balance_scale whose bank sums to exactly the target (tap-everything always wins)', () => {
+    const problems = runClarityGate(docWithSegment(balanceSeg([3, 3, 3, 3, 3], [5, 5, 5])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('tapping EVERY token'))).toBe(true);
+  });
+
+  it('flags a balance_scale where no subset of weights can reach the target (unwinnable)', () => {
+    const problems = runClarityGate(docWithSegment(balanceSeg([3, 3, 3, 3, 3, 3, 3], [8])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('unwinnable'))).toBe(true);
+  });
+
+  it('accepts a balance_scale with distractor weights and a reachable target', () => {
+    const problems = runClarityGate(docWithSegment(balanceSeg([3, 3, 3, 3, 3, 2, 2], [5, 5, 5]))).filter((p) =>
+      p.message.includes('balance_scale'),
+    );
+    expect(problems.length).toBe(0);
+  });
 });
 
 describe('gate 1: contract', () => {
