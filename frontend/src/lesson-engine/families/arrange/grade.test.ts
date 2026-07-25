@@ -180,6 +180,39 @@ describe('order_steps', () => {
   })
 })
 
+// ---- accept_orders (multi-order acceptance) ---------------------------------------------
+
+describe('order accepts a SET of valid orderings (accept_orders)', () => {
+  // Two genuinely-swappable first steps: [a,b,...] and [b,a,...] are both correct.
+  const segment = seg(
+    'order_steps',
+    { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] },
+    { order: ['a', 'b', 'c'], accept_orders: [['b', 'a', 'c']] },
+  )
+
+  it('the primary order → 100', () => {
+    expect(grade(segment, { order: ['a', 'b', 'c'] })).toBe(100)
+  })
+
+  it('the alternative accepted order → 100 (no longer marked wrong)', () => {
+    expect(grade(segment, { order: ['b', 'a', 'c'] })).toBe(100)
+  })
+
+  it('a genuinely-wrong order still scores below 100', () => {
+    expect(grade(segment, { order: ['c', 'b', 'a'] })).toBeLessThan(100)
+  })
+
+  it('build_sentence accepts an alternative phrasing', () => {
+    const bs = seg(
+      'build_sentence',
+      { tokens: [{ id: 't1', text_md: '2 vasos' }, { id: 't2', text_md: 'por' }, { id: 't3', text_md: '10 pesos' }], slots: 3 },
+      { order: ['t1', 't2', 't3'], accept_orders: [['t3', 't2', 't1']] },
+    )
+    expect(grade(bs, { order: ['t1', 't2', 't3'] })).toBe(100)
+    expect(grade(bs, { order: ['t3', 't2', 't1'] })).toBe(100)
+  })
+})
+
 // ---- rank_choices (footrule) ---------------------------------------------------------------
 
 describe('rank_choices', () => {

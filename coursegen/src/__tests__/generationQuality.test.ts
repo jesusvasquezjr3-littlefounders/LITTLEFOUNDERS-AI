@@ -200,6 +200,20 @@ describe('gate 7: generation quality', () => {
       );
       expect(problems.some((p) => p.message.includes('build_sentence'))).toBe(true);
     });
+
+    it('accepts a valid accept_orders (a genuine permutation of order)', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'order_steps', payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b', 'c'], accept_orders: [['b', 'a', 'c']] } }]),
+      );
+      expect(problems.filter((p) => p.message.includes('accept_orders'))).toHaveLength(0);
+    });
+
+    it('flags an accept_orders entry that is NOT a permutation of order (wrong ids / length)', () => {
+      const problems = runGenerationQualityGate(
+        docWith([{ id: 's1', type: 'order_steps', payload: { items: [{ id: 'a', text_md: 'a' }, { id: 'b', text_md: 'b' }, { id: 'c', text_md: 'c' }] }, answer: { order: ['a', 'b', 'c'], accept_orders: [['a', 'b', 'zz']] } }]),
+      );
+      expect(problems.some((p) => p.message.includes('accept_orders'))).toBe(true);
+    });
   });
 
   describe('graded segments must carry an answer key', () => {

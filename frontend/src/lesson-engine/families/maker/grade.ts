@@ -156,7 +156,21 @@ const gradeCodeOrder: FamilyGrader = (segment, answer) => {
   const key = obj(segment.answer)
   const correct = key ? strArray(key.order) : null
   if (!order || !correct) return MALFORMED
-  return { score: kendall(order, correct), reveal: { order: correct } }
+  // Accept a SET of equally-valid instruction orderings (genuinely swappable steps —
+  // e.g. verify price ↔ take payment). Score against `order` and every `accept_orders`
+  // entry, keep the best. Absent accept_orders, this is the single-order path.
+  const alts =
+    key && Array.isArray(key.accept_orders)
+      ? (key.accept_orders as unknown[])
+          .map(strArray)
+          .filter((o): o is string[] => o !== null && o.length === correct.length)
+      : []
+  let best = { score: kendall(order, correct), order: correct }
+  for (const cand of alts) {
+    const s = kendall(order, cand)
+    if (s > best.score) best = { score: s, order: cand }
+  }
+  return { score: best.score, reveal: { order: best.order } }
 }
 
 const gradeRobotPath: FamilyGrader = (segment, answer) => {

@@ -97,7 +97,23 @@ function gradeOrder(
     const user = a ? strArray(a.order) : null
     const correct = key ? strArray(key.order) : null
     if (!user || !correct || correct.length === 0) return MALFORMED
-    return { score: scorer(user, correct), reveal: { order: correct } }
+    // A segment may accept a SET of equally-valid orderings — genuinely swappable
+    // steps (verify price ↔ take payment) or alternative phrasings ("2 vasos por 10
+    // pesos" ↔ "10 pesos por 2 vasos"). Score against `order` and every entry in
+    // `accept_orders`, keep the best, and reveal the accepted ordering nearest the
+    // child's attempt. Absent accept_orders, this is exactly the single-order path.
+    const alts =
+      key && Array.isArray(key.accept_orders)
+        ? (key.accept_orders as unknown[])
+            .map(strArray)
+            .filter((o): o is string[] => o !== null && o.length === correct.length)
+        : []
+    let best = { score: scorer(user, correct), order: correct }
+    for (const cand of alts) {
+      const s = scorer(user, cand)
+      if (s > best.score) best = { score: s, order: cand }
+    }
+    return { score: best.score, reveal: { order: best.order } }
   }
 }
 

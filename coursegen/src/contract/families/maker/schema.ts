@@ -14,7 +14,7 @@ export const codeOrder = segmentSchema(
     blocks: z.array(idText).min(3).max(8),
     language_hint: z.string().min(1).max(40).optional(),
   }),
-  z.object({ order: z.array(idSchema).min(3).max(8) }),
+  z.object({ order: z.array(idSchema).min(3).max(8), accept_orders: z.array(z.array(idSchema)).optional() }),
 );
 
 export const robotPath = segmentSchema(

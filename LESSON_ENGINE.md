@@ -239,6 +239,16 @@ zero-cost fallback — never emojis.
     `{ order: id[] }` → positional ratio → arrange word tiles into the concept sentence.
 26. **`timeline_order`** — `{ events: [{id, text_md, icon?}] (3–7) }` → `{ order: id[] }` →
     positional ratio → place events on a visual left→right timeline.
+
+> **Multiple valid orderings (`accept_orders`).** All five fine-order graders
+> (`order_steps`, `rank_choices`, `build_sentence`, `timeline_order`, `code_order`)
+> accept an optional `answer.accept_orders: id[][]` — a list of additional full
+> orderings, each a permutation of `order`. The grader scores the child's answer
+> against `order` and every `accept_orders` entry and keeps the BEST, revealing the
+> accepted ordering nearest their attempt. This is how genuinely-swappable steps
+> ("verify price" ↔ "take payment") or alternative valid phrasings ("2 vasos por 10
+> pesos" ↔ "10 pesos por 2 vasos") avoid marking a defensible answer wrong. Each
+> entry must be a permutation of `order` (same ids) — enforced by gate 7.
 27. **`pattern_complete`** — `{ sequence: [{icon, tint}] shown, options: [{id, icon, tint}] (3–5), missing_slots (1–2) }` →
     `{ correct: {slot → option_id} }` → slot ratio → continue the visual pattern
     (pre-algebra pattern recognition).

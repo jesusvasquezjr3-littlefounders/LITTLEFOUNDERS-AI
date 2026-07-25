@@ -63,7 +63,7 @@ export const sortBuckets = segmentSchema(
 export const orderSteps = segmentSchema(
   'order_steps',
   z.object({ items: z.array(idText).min(3).max(8), slots: z.number().int().min(3).max(8).optional() }),
-  z.object({ order: z.array(idSchema).min(3) }),
+  z.object({ order: z.array(idSchema).min(3), accept_orders: z.array(z.array(idSchema)).optional() }),
 );
 
 export const rankChoices = segmentSchema(
@@ -72,7 +72,7 @@ export const rankChoices = segmentSchema(
     criterion_md: markdownLite,
     items: z.array(idText).min(3).max(7),
   }),
-  z.object({ order: z.array(idSchema).min(3) }),
+  z.object({ order: z.array(idSchema).min(3), accept_orders: z.array(z.array(idSchema)).optional() }),
 );
 
 export const buildSentence = segmentSchema(
@@ -81,7 +81,7 @@ export const buildSentence = segmentSchema(
     tokens: z.array(idText).min(3).max(12), // distractors ok
     slots: z.number().int().min(2).max(12),
   }),
-  z.object({ order: z.array(idSchema).min(2) }),
+  z.object({ order: z.array(idSchema).min(2), accept_orders: z.array(z.array(idSchema)).optional() }),
 );
 
 export const timelineOrder = segmentSchema(
@@ -92,7 +92,7 @@ export const timelineOrder = segmentSchema(
       .min(3)
       .max(7),
   }),
-  z.object({ order: z.array(idSchema).min(3) }),
+  z.object({ order: z.array(idSchema).min(3), accept_orders: z.array(z.array(idSchema)).optional() }),
 );
 
 export const patternComplete = segmentSchema(

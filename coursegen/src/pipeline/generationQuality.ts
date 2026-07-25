@@ -190,6 +190,9 @@ function requiredSlotCount(segment: { type: string; payload: unknown }): number 
   if (segment.type === 'build_sentence') {
     return typeof p.slots === 'number' ? p.slots : null;
   }
+  if (segment.type === 'code_order') {
+    return Array.isArray(p.blocks) ? p.blocks.length : null;
+  }
   return null;
 }
 
@@ -198,13 +201,34 @@ function orderLengthCheck(document: LessonDocumentParsed): GateProblem[] {
   for (const segment of document.segments) {
     const required = requiredSlotCount(segment);
     if (required === null) continue;
-    const order = (segment.answer as { order?: unknown } | undefined)?.order;
+    const answer = segment.answer as { order?: unknown; accept_orders?: unknown } | undefined;
+    const order = answer?.order;
     if (!Array.isArray(order)) continue;
     if (order.length !== required) {
       problems.push({
         gate: 7,
         segmentId: segment.id,
         message: `${segment.type}: the player must submit exactly ${required} entries (items/slots), but answer.order has ${order.length} — every submission would score 0 regardless of correctness. Make answer.order's length match the required slot count exactly.`,
+      });
+    }
+    // Each accept_orders entry (alternative valid ordering) must be a genuine
+    // PERMUTATION of answer.order — same length, same id multiset. A malformed
+    // alt silently accepts nothing (grader filters by length) or, worse, rewards
+    // an ordering that isn't actually valid. Enforce it up front.
+    if (Array.isArray(answer?.accept_orders)) {
+      const canonical = [...(order as string[])].sort().join('');
+      (answer.accept_orders as unknown[]).forEach((alt, i) => {
+        const ok =
+          Array.isArray(alt) &&
+          alt.length === order.length &&
+          [...(alt as unknown[])].map(String).sort().join('') === canonical;
+        if (!ok) {
+          problems.push({
+            gate: 7,
+            segmentId: segment.id,
+            message: `${segment.type}: answer.accept_orders[${i}] must be a re-ordering of the SAME ids as answer.order (same length, same items) — it isn't, so it can never be scored and the intended alternative answer is still marked wrong.`,
+          });
+        }
       });
     }
   }
