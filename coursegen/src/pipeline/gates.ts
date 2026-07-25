@@ -1163,30 +1163,54 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
       }
     }
 
-    // ---- budget_fit: needs alone must not be the whole answer ------------------
-    // gradeBudgetFit returns 100 when every need is bought and the total is within
-    // budget. If the needs alone fit, tapping just them scores 100 — and the widget
-    // no longer badges them, but the prompt usually names them, so the "what else
-    // fits" arithmetic the lesson is about is never exercised.
+    // ---- budget_fit: the discrimination and the ceiling must both be real -----
+    /*
+     * gradeBudgetFit passes when every `need` is bought AND the total is within
+     * budget. Nothing else. Three ways that degenerates, all found in real content:
+     *   • no `need` items at all → the grader only checks the ceiling, so tapping
+     *     ONE cheap item scores 100 (an author reached this by dropping needs to
+     *     dodge an earlier version of this gate);
+     *   • no NON-need items → nothing to discriminate, buying everything is right;
+     *   • every item together fits the budget → "tap everything" scores 100.
+     * The prompt naming the needs is handled by the answer-leak rules, and the
+     * on-screen NEED badge is reveal-only in the widget.
+     */
     if (segment.type === 'budget_fit') {
       const items = Array.isArray(payload.items)
-        ? (payload.items as Array<{ price?: unknown; need?: unknown }>)
+        ? (payload.items as Array<{ price?: unknown; need?: unknown; label?: unknown }>)
         : [];
       const budget = typeof payload.budget === 'number' ? payload.budget : null;
-      const mustBuyNeeds = payload.must_buy_needs !== false;
-      if (budget !== null && items.length > 0 && mustBuyNeeds) {
-        const needsTotal = items
-          .filter((i) => i.need === true)
-          .reduce((sum, i) => sum + (typeof i.price === 'number' ? i.price : 0), 0);
-        const cheapestExtra = Math.min(
-          ...items.filter((i) => i.need !== true && typeof i.price === 'number').map((i) => i.price as number),
-          Number.POSITIVE_INFINITY,
-        );
-        if (Number.isFinite(cheapestExtra) && needsTotal + cheapestExtra <= budget) {
+      if (budget !== null && items.length > 0) {
+        const needs = items.filter((i) => i.need === true);
+        const wants = items.filter((i) => i.need !== true);
+        const priceOf = (i: { price?: unknown }) => (typeof i.price === 'number' ? i.price : 0);
+        if (needs.length === 0) {
           problems.push({
             gate: 8,
             segmentId: segment.id,
-            message: `budget_fit "${segment.id}": the needs alone cost ${needsTotal} of a ${budget} budget, so buying ONLY the needs already scores 100 — the child never has to work out what else fits (${budget} − ${needsTotal}). Make the needs consume enough of the budget that the remaining choice is the exercise, or set must_buy_needs false and grade the fit itself.`,
+            message: `budget_fit "${segment.id}" marks NO item as a need, so the grader only checks the budget ceiling — buying one cheap item scores 100 and there is no needs-vs-wants decision at all. Mark the genuine needs with need: true.`,
+          });
+        } else if (wants.length === 0) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `budget_fit "${segment.id}" marks EVERY item as a need, so there is nothing to leave out and buying everything is correct. Include tempting non-needs.`,
+          });
+        }
+        const everythingTotal = items.reduce((sum, i) => sum + priceOf(i), 0);
+        if (everythingTotal <= budget) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `budget_fit "${segment.id}": all ${items.length} items together cost ${everythingTotal}, within the ${budget} budget — so "tap everything" scores 100 and the budget never bites. Price the items so the full basket EXCEEDS the budget.`,
+          });
+        }
+        const needsTotal = needs.reduce((sum, i) => sum + priceOf(i), 0);
+        if (needsTotal > budget) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `budget_fit "${segment.id}": the required needs alone cost ${needsTotal}, more than the ${budget} budget — the exercise is unwinnable because the grader demands every need AND a total within budget.`,
           });
         }
       }
@@ -1286,10 +1310,60 @@ function promptIntegrity(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * CLUSTERED ANSWERS — defence in depth behind the render-time shuffle.
+ *
+ * Every answer bank is shuffled at render time, so authored position is not what
+ * the child sees. But a leak this cheap deserves two locks: an engine-fairness
+ * audit (2026-07-24) found shipped content where every speed_tap target occupied
+ * the first five of eight slots and every true_false correct justification came
+ * first — because the author instruction wrongly promised shuffling for banks that
+ * were in fact rendered verbatim. If a renderer ever regresses, clustered content
+ * turns instantly into a free pass; unclustered content stays safe either way.
+ *
+ * The rule: the keyed targets must not occupy a contiguous PREFIX of the bank.
+ * That is the shape "tap top-to-bottom" exploits, and it is unambiguous to check.
+ */
+function clusteredAnswers(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  // bank key → answer key holding the winning ids, per type.
+  const BANKS: Record<string, { bank: string; key: string }> = {
+    speed_tap: { bank: 'items', key: 'target_ids' },
+    red_flags: { bank: 'flags', key: 'redflag_ids' },
+    evidence_hunt: { bank: 'sentences', key: 'evidence_ids' },
+    yes_no_cases: { bank: 'cases', key: 'applies_ids' },
+  };
+  for (const segment of document.segments) {
+    const spec = BANKS[segment.type];
+    if (!spec) continue;
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: Record<string, unknown> }).answer;
+    const bank = Array.isArray(payload[spec.bank]) ? (payload[spec.bank] as Array<{ id?: unknown }>) : [];
+    const targets = Array.isArray(answer?.[spec.key]) ? (answer[spec.key] as unknown[]).map(String) : [];
+    // A prefix is only a "cluster" if some of the bank is left over.
+    if (bank.length < 3 || targets.length === 0 || targets.length >= bank.length) continue;
+    const targetSet = new Set(targets);
+    const positions = bank
+      .map((item, i) => (item && targetSet.has(String(item.id)) ? i : -1))
+      .filter((i) => i >= 0);
+    if (positions.length !== targets.length) continue; // ids don't line up; other gates report that
+    const isPrefix = positions.every((pos, i) => pos === i);
+    if (isPrefix) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `${segment.type} "${segment.id}" authors all ${targets.length} correct items as the first ${targets.length} of ${bank.length} in \`${spec.bank}\` — a contiguous prefix, which is exactly the shape "tap top-to-bottom" exploits if any renderer shows the bank verbatim. Scatter the targets through the list.`,
+      });
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...trivialStrategy(document),
     ...promptIntegrity(document),
+    ...clusteredAnswers(document),
     ...clarityTextDensity(document),
     ...clarityFakeQuestion(document),
     ...clarityAnswerLeak(document),

@@ -232,3 +232,34 @@ describe('writeLessonDocument', () => {
     expect(result.document.segments.some((s) => s.id === 's7')).toBe(false);
   });
 });
+
+describe('repairDocument — schema_version is a constant, never a lost slot', () => {
+  /*
+   * Regression for a real mass-generation failure (2026-07-24): after a transient
+   * abort and a gate rejection, the last-resort regen returned a bad
+   * `schema_version` and the whole slot died on `Invalid input: expected 1`. The
+   * field has exactly one legal value, so losing a lesson to it is indefensible
+   * at 1000-lesson scale.
+   */
+  it('coerces a string schema_version', () => {
+    const doc: Record<string, unknown> = { schema_version: '1', segments: [] };
+    repairDocument(doc);
+    expect(doc.schema_version).toBe(1);
+  });
+
+  it('fills a missing schema_version', () => {
+    const doc: Record<string, unknown> = { segments: [] };
+    repairDocument(doc);
+    expect(doc.schema_version).toBe(1);
+  });
+
+  it('leaves a correct schema_version untouched and still needs segments to be an array', () => {
+    const good: Record<string, unknown> = { schema_version: 1, segments: [] };
+    repairDocument(good);
+    expect(good.schema_version).toBe(1);
+    // No segments array → the repair is a no-op by design (nothing to walk).
+    const noSegments: Record<string, unknown> = { schema_version: 99 };
+    repairDocument(noSegments);
+    expect(noSegments.schema_version).toBe(99);
+  });
+});

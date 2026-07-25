@@ -90,7 +90,7 @@ const BASE_HARD_RULES = [
   'Whenever you write `explanation_md` (optional, but if present): at least 40 characters, AND it must contain a specific number, OR one of dina/liruf/rho/zara by name, OR a word/phrase that also appears in that same segment\'s `payload` — a generic "¡Muy bien! Elegiste la opción correcta." is REJECTED.',
   'explanation_md is OUTCOME-NEUTRAL: it is shown after both correct AND incorrect attempts, so it must TEACH the concept, never assume success. Never open it with "¡Exacto!", "¡Correcto!", "¡Muy bien!", "¡Así es!" or similar — state the fact/why directly (e.g. "El vaso cuesta 5 pesos porque…").',
   'NEVER leak the answer: the `prompt_md`, `hints`, and `meta.objectives` must NOT state or spell out the correct choice/number/word. Hints scaffold the thinking ("piensa en cuánto cuesta cada vaso"), they do not give the answer ("la respuesta es 5"). The kid must reason to the answer.',
-  'The engine is TAP-TO-PLACE for every placement type EXCEPT sort_buckets/group_sets (which also support real dragging). For sort_buckets/group_sets, "arrastra"/"drag" OR "toca"/"tap" are both fine. For EVERY OTHER type (order_steps, match_pairs, build_sentence, etc.) never write "arrastra"/"arrastrar"/"drag" — say "toca" (tap). Do NOT rely on option ORDER either (the engine shuffles options/columns/token banks): never write "elige la primera opción" or author the correct option always first.',
+  'The engine is TAP-TO-PLACE for every placement type EXCEPT sort_buckets/group_sets (which also support real dragging). For sort_buckets/group_sets, "arrastra"/"drag" OR "toca"/"tap" are both fine. For EVERY OTHER type (order_steps, match_pairs, build_sentence, etc.) never write "arrastra"/"arrastrar"/"drag" — say "toca" (tap). Do NOT rely on option ORDER either — the engine shuffles every answer bank at render time, so the position you author is NOT the position the child sees: never write "elige la primera opción", and never assume your ordering survives. CRUCIALLY, this also means you must NOT CLUSTER THE ANSWERS: do not author all the correct/target items first (or contiguously) in `items`/`options`/`flags`/`justifications`/`sentences`. Scatter targets through the list. Clustering was found in shipped content — every speed_tap target sat in the first five slots and every true_false correct justification came first — which is a leak the moment any renderer displays a bank verbatim.',
   'best_decision / would_you_rather / story_branch / dialogue_choice `qualities` are on a 0-100 scale (the BEST choice ≈ 90-100, a poor choice ≈ 0-30) — NEVER a 0-1 scale, and never all zeros. The correct answer must be able to reach a passing score.',
   'compare_table segments ONLY: `answer.cells` keys use the "<row_id>:<col_id>" COLON form (e.g. "proveedor-a:precio") — never an underscore or any other separator; the player only ever submits colon keys. SOLVABILITY (HARD GATE): the table renders with EMPTY cells and a token bank — there is NO separate data panel, so the child\'s ONLY source of truth is prompt_md. You MUST name EACH row together with its value in prompt_md, e.g. "Doña Lula vende los 10 limones por 5 pesos; Don Pepe los vende por 6 pesos." — putting the prices in a hint, explanation, or nowhere leaves the child guessing which row is which and FAILS the gate. Never require the child to COMPUTE a cell (no price-per-unit division, no hidden totals): compare DIRECT values for the SAME quantity so the comparison is read, not calculated. The ONLY cell the child derives (never stated) is the "best choice" decision cell. Every token text must be DISTINCT — never two tokens with identical text bound to different cells (they render indistinguishable and fail at random); if two cells share a value, drop that column.',
   'icon / art.icon / ask_icon / a_icon / b_icon values MUST come from the ALLOWED ICONS list included below — never any other name, never an invented one ("lemonade", "piggy_bank", "counter_1" all fail validation and kill the lesson). When unsure, prefer a plain, common glyph from the list.',
@@ -291,8 +291,18 @@ export function stripNullValues(node: unknown): unknown {
  * else needs patching.
  */
 export function repairDocument(node: unknown): unknown {
-  const doc = node as { segments?: unknown } | null;
+  const doc = node as { segments?: unknown; schema_version?: unknown } | null;
   if (!doc || !Array.isArray(doc.segments)) return node;
+  /*
+   * `schema_version` is a CONSTANT (literal 1), not a judgement — the model has
+   * no information we lack. Yet a real 1000-lesson-scale failure died here: after
+   * a transient abort and a gate rejection, the last-resort regen returned
+   * `schema_version: "1"` (or omitted it) and the slot was lost to
+   * `Invalid input: expected 1`. Losing a lesson over a constant we can simply
+   * set is indefensible at scale, so set it. Anything genuinely model-authored
+   * still fails loudly; this only normalises a field with exactly one legal value.
+   */
+  if (doc.schema_version !== 1) doc.schema_version = 1;
   for (const seg of doc.segments as Array<Record<string, unknown>>) {
     if (seg?.type === 'balance_scale') repairBalanceScale(seg);
     else if (seg?.type === 'interest_peek') repairInterestPeek(seg);

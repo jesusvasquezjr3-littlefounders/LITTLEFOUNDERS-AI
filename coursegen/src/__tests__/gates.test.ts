@@ -754,37 +754,65 @@ describe('gate 8: trivial-strategy refusal', () => {
     expect(problems.filter((p) => p.message.includes('pass_threshold'))).toHaveLength(0);
   });
 
-  it('flags a budget_fit whose needs alone already fit the budget', () => {
+  it('flags a budget_fit with NO need items (grader then only checks the ceiling)', () => {
+    // A real author reached this shape while dodging an earlier version of the
+    // gate: with zero needs, tapping one 3-peso item scores 100.
     const seg = {
-      id: 's1', type: 'budget_fit', prompt_md: '¿Qué más cabe?', difficulty: 3, xp: 25,
-      payload: {
-        budget: 20, must_buy_needs: true,
-        items: [
-          { id: 'limones', label: 'Limones', price: 8, need: true },
-          { id: 'azucar', label: 'Azúcar', price: 6, need: true },
-          { id: 'hielo', label: 'Hielo', price: 5 },
-        ],
-      },
+      id: 's1', type: 'budget_fit', prompt_md: 'Elige lo que puedes comprar sin pasarte de 20.', difficulty: 3, xp: 25,
+      payload: { budget: 20, must_buy_needs: false, items: [
+        { id: 'a', label: 'Limones', price: 8 }, { id: 'b', label: 'Hielo', price: 3 }, { id: 'c', label: 'Jarra', price: 15 },
+      ] },
       answer: {},
     };
-    const problems = runClarityGate(doc(seg));
-    expect(problems.some((p) => p.gate === 8 && p.message.includes('needs alone'))).toBe(true);
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('NO item as a need'))).toBe(true);
   });
 
-  it('accepts a budget_fit where the needs consume enough that the fit is the exercise', () => {
+  it('flags a budget_fit where every item is a need (nothing to leave out)', () => {
     const seg = {
-      id: 's1', type: 'budget_fit', prompt_md: '¿Qué más cabe?', difficulty: 3, xp: 25,
-      payload: {
-        budget: 20, must_buy_needs: true,
-        items: [
-          { id: 'limones', label: 'Limones', price: 10, need: true },
-          { id: 'azucar', label: 'Azúcar', price: 8, need: true },
-          { id: 'hielo', label: 'Hielo', price: 5 },
-        ],
-      },
+      id: 's1', type: 'budget_fit', prompt_md: '¿Qué compras?', difficulty: 3, xp: 25,
+      payload: { budget: 20, must_buy_needs: true, items: [
+        { id: 'a', label: 'Limones', price: 8, need: true }, { id: 'b', label: 'Azúcar', price: 6, need: true },
+        { id: 'c', label: 'Vasos', price: 9, need: true },
+      ] },
       answer: {},
     };
-    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('needs alone'))).toHaveLength(0);
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('EVERY item as a need'))).toBe(true);
+  });
+
+  it('flags a budget_fit where the whole basket fits (tap-everything wins)', () => {
+    const seg = {
+      id: 's1', type: 'budget_fit', prompt_md: '¿Qué compras?', difficulty: 3, xp: 25,
+      payload: { budget: 20, must_buy_needs: true, items: [
+        { id: 'a', label: 'Limones', price: 5, need: true }, { id: 'b', label: 'Azúcar', price: 4, need: true },
+        { id: 'c', label: 'Hielo', price: 3 }, { id: 'd', label: 'Calcomanía', price: 2 },
+      ] },
+      answer: {},
+    };
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('tap everything'))).toBe(true);
+  });
+
+  it('flags a budget_fit whose required needs exceed the budget (unwinnable)', () => {
+    const seg = {
+      id: 's1', type: 'budget_fit', prompt_md: '¿Qué compras?', difficulty: 3, xp: 25,
+      payload: { budget: 10, must_buy_needs: true, items: [
+        { id: 'a', label: 'Limones', price: 8, need: true }, { id: 'b', label: 'Azúcar', price: 6, need: true },
+        { id: 'c', label: 'Hielo', price: 30 },
+      ] },
+      answer: {},
+    };
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('unwinnable'))).toBe(true);
+  });
+
+  it('accepts a budget_fit with real needs, real wants, and a basket that overflows', () => {
+    const seg = {
+      id: 's1', type: 'budget_fit', prompt_md: 'Surte el puesto sin pasarte de 20 pesos.', difficulty: 3, xp: 25,
+      payload: { budget: 20, must_buy_needs: true, items: [
+        { id: 'a', label: 'Limones', price: 8, need: true }, { id: 'b', label: 'Azúcar', price: 6, need: true },
+        { id: 'c', label: 'Hielo', price: 5 }, { id: 'd', label: 'Jarra', price: 9 }, { id: 'e', label: 'Calcomanía', price: 4 },
+      ] },
+      answer: {},
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('budget_fit'))).toHaveLength(0);
   });
 });
 
@@ -882,5 +910,43 @@ describe('gate 8: prompt integrity', () => {
       answer: { evidence_ids: ['s3'] },
     };
     expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('does not add up'))).toHaveLength(0);
+  });
+});
+
+describe('gate 8: clustered answers (defence in depth behind the render-time shuffle)', () => {
+  function doc(segment: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = segment;
+    return d;
+  }
+  const flags = (n: number) => Array.from({ length: n }, (_, i) => ({ id: `f${i + 1}`, text_md: `line ${i + 1}` }));
+
+  it('flags targets authored as a contiguous PREFIX (the shipped speed_tap/red_flags shape)', () => {
+    const seg = {
+      id: 's1', type: 'red_flags', prompt_md: '¿Cuáles son trampas?', difficulty: 2, xp: 15,
+      payload: { artifact_md: 'anuncio', artifact_kind: 'ad', flags: flags(5) },
+      answer: { redflag_ids: ['f1', 'f2', 'f3', 'f4'] },
+    };
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('contiguous prefix'))).toBe(true);
+  });
+
+  it('accepts targets scattered through the bank', () => {
+    const seg = {
+      id: 's1', type: 'red_flags', prompt_md: '¿Cuáles son trampas?', difficulty: 2, xp: 15,
+      payload: { artifact_md: 'anuncio', artifact_kind: 'ad', flags: flags(5) },
+      answer: { redflag_ids: ['f1', 'f3', 'f5'] },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('contiguous prefix'))).toHaveLength(0);
+  });
+
+  it('does not fire when every item is a target (a different gate owns that)', () => {
+    const seg = {
+      id: 's1', type: 'red_flags', prompt_md: '¿Cuáles son trampas?', difficulty: 2, xp: 15,
+      payload: { artifact_md: 'anuncio', artifact_kind: 'ad', flags: flags(4) },
+      answer: { redflag_ids: ['f1', 'f2', 'f3', 'f4'] },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.filter((p) => p.message.includes('contiguous prefix'))).toHaveLength(0);
+    expect(problems.some((p) => p.message.includes('nothing to reject'))).toBe(true);
   });
 });
