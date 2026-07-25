@@ -413,7 +413,7 @@ async function processSlot(
         `so nothing was written to Vault. This usually means the checkpoint holds an unexpected state.`;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
       await saveQuietly(store, checkpoint, slot.slotId);
-      return { slotId: slot.slotId, state: 'failed', error: message };
+      return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, salvaged, droppedSegments };
     }
     return {
       slotId: slot.slotId,
@@ -444,7 +444,14 @@ async function processSlot(
      */
     checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
     await saveQuietly(store, checkpoint, slot.slotId);
-    return { slotId: slot.slotId, state: 'failed', error: message };
+    /*
+     * Telemetry travels with a FAILURE too. Found on the 62-slot run that died on a
+     * provider balance error: the summary printed "images: 0 placed, 0 freshly
+     * generated" while the ledger had recorded 424 paid generations ($8.48) — because
+     * a failed slot returned no counts. Money spent before a failure is exactly the
+     * money an operator most needs to see.
+     */
+    return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, salvaged, droppedSegments };
   }
 }
 
