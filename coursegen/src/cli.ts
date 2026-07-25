@@ -145,7 +145,7 @@ async function main(): Promise<void> {
     console.error('  Nothing further could have succeeded. Fix the account, then resume with the SAME --run-id;');
     console.error('  everything already published stays published and only the remaining slots are regenerated.');
   }
-  console.log(`  images: ${summary.imagesGenerated} placed, ${summary.imagesBilled} freshly generated (billed; the rest were Prism cache hits)`);
+  console.log(`  images: ${summary.imagesGenerated} placed, ${summary.imagesBilled} freshly generated (billed), ${summary.imagesInherited} inherited from previous art (free)`);
   if (summary.imageSkipReasons.length > 0) {
     console.warn(`  IMAGES SKIPPED (${summary.imageSkipReasons.join(', ')}) — this curriculum is visual-first; lessons published without illustrations.`);
   } else if (summary.imagesGenerated === 0 && summary.published.length > 0) {

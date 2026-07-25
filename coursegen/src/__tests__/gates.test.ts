@@ -1547,3 +1547,39 @@ describe('gate 8: arrange mechanic fit', () => {
   // The build_sentence ORDER-CEILING mirror is pinned in the trivial-strategy block
   // above (the gate lives there), not duplicated here.
 });
+
+describe('gate 8: count_objects must be illustratable', () => {
+  function doc(segment: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = segment;
+    return d;
+  }
+
+  it('flags scene items with no label — the shipped shape that produced ZERO images', () => {
+    const seg = {
+      id: 's1', type: 'count_objects', prompt_md: '¿Cuántas monedas hay?', difficulty: 1, xp: 10,
+      payload: {
+        scene: [{ icon: 'monetization_on', tint: 'primary', count: 5 }, { icon: 'cookie', tint: 'accent', count: 3 }],
+        ask_icon: 'monetization_on',
+      },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.message.includes('no `label`'))).toBe(true);
+    expect(problems.some((p) => p.message.includes('no `ask_label`'))).toBe(true);
+  });
+
+  it('accepts a fully labelled scene', () => {
+    const seg = {
+      id: 's1', type: 'count_objects', prompt_md: '¿Cuántas monedas hay?', difficulty: 1, xp: 10,
+      payload: {
+        scene: [
+          { icon: 'monetization_on', tint: 'primary', count: 5, label: 'moneda' },
+          { icon: 'cookie', tint: 'accent', count: 3, label: 'galleta' },
+        ],
+        ask_icon: 'monetization_on',
+        ask_label: 'moneda',
+      },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('count_objects'))).toHaveLength(0);
+  });
+});

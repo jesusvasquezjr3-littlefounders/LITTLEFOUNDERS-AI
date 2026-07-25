@@ -2422,6 +2422,44 @@ function clusteredAnswers(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * count_objects must be ILLUSTRATABLE.
+ *
+ * `write.ts` has long told the author that omitting these labels "fails the gate" —
+ * and that gate did not exist. Found 2026-07-25 while building image inheritance: the
+ * published count-objects lesson has scene items carrying only {icon, tint, count},
+ * so `planTargets` found nothing to illustrate and the lesson shipped with ZERO
+ * pictures in a visual-first product, silently, in all three locales.
+ *
+ * The label is what the image stage draws AND what a screen reader announces, so a
+ * missing one costs both the picture and the accessibility text.
+ */
+function countObjectsLabels(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  for (const segment of document.segments) {
+    if (segment.type !== 'count_objects') continue;
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const scene = Array.isArray(payload.scene) ? (payload.scene as Array<Record<string, unknown>>) : [];
+    const unlabelled = scene.filter((item) => typeof item.label !== 'string' || (item.label as string).trim().length === 0);
+    if (scene.length > 0 && unlabelled.length > 0) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `count_objects "${segment.id}": ${unlabelled.length} of ${scene.length} scene item(s) have no \`label\`, so there is nothing for the image stage to draw and nothing for a screen reader to announce — the lesson ships as bare icons in a visual-first product. Give every scene item a short literal object name ("moneda", "galleta", "vaso de limonada").`,
+      });
+    }
+    const askLabel = payload.ask_label;
+    if (typeof askLabel !== 'string' || askLabel.trim().length === 0) {
+      problems.push({
+        gate: 8,
+        segmentId: segment.id,
+        message: `count_objects "${segment.id}" has no \`ask_label\`, so the object the child must COUNT is never named in words — only as an icon. Set it to the scene item being counted.`,
+      });
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
     ...trivialStrategy(document),
@@ -2438,6 +2476,7 @@ export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
     ...clarityCompareTable(document),
     ...clarityCoinCount(document),
     ...clarityBalanceScale(document),
+    ...countObjectsLabels(document),
     ...makerMechanicFit(document),
   ];
 }

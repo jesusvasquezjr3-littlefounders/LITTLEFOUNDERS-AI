@@ -9,6 +9,8 @@ import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema
 import { LESSON_LOCALES } from '../contract/core/types.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { isFatalProviderError } from '../providers/errors.js';
+import { vaultSelect } from '../vault/restClient.js';
+import { buildImageInheritance } from './imageInheritance.js';
 import {
   CheckpointStore,
   newRunCheckpoint,
@@ -164,12 +166,38 @@ interface ProcessSlotOutcome {
   imagesGenerated?: number;
   /** Of those, how many were FRESH — i.e. actually paid for. */
   imagesBilled?: number;
+  /** Slots filled from this lesson's PREVIOUS art — the money NOT spent. */
+  imagesInherited?: number;
   /** Why illustration was skipped, when it was (e.g. 'not-configured'). */
   imageSkipReasons?: string[];
   /** True when the write stage SALVAGED a partial document (segments were dropped). */
   salvaged?: boolean;
   droppedSegments?: number;
   error?: string;
+}
+
+
+/**
+ * The documents this lesson published LAST time, for image inheritance.
+ *
+ * Scoped to the course through the embedded-resource filter so a lesson slug that
+ * repeats in another course can never donate its art here. Failure is swallowed by
+ * design: inheritance is a cost optimisation, never a precondition — if Vault is
+ * unreachable we simply pay for the images, which is the old behaviour.
+ */
+async function previousArtDocuments(courseSlug: string, lessonSlug: string): Promise<LessonDocumentParsed[]> {
+  try {
+    const rows = await vaultSelect<{ locale: string; document: unknown }>(
+      `/lesson_documents?select=locale,document,lessons!inner(slug,topics!inner(sagas!inner(adventures!inner(courses!inner(slug)))))` +
+        `&lessons.slug=eq.${encodeURIComponent(lessonSlug)}` +
+        `&lessons.topics.sagas.adventures.courses.slug=eq.${encodeURIComponent(courseSlug)}`,
+    );
+    // Authoring locale first so `buildImageInheritance`'s first-wins rule is stable.
+    const ordered = [...rows].sort((a, b) => (a.locale === AUTHORING_LOCALE ? -1 : b.locale === AUTHORING_LOCALE ? 1 : 0));
+    return ordered.map((r) => r.document as LessonDocumentParsed);
+  } catch {
+    return [];
+  }
 }
 
 async function processSlot(
@@ -188,6 +216,7 @@ async function processSlot(
   // Outcome telemetry that must survive to the summary (see ProcessSlotOutcome).
   let imagesGenerated = 0;
   let imagesBilled = 0;
+  let imagesInherited = 0;
   const imageSkipReasons = new Set<string>();
   let salvaged = false;
   let droppedSegments = 0;
@@ -287,7 +316,17 @@ async function processSlot(
       // string-freeze translation copies it verbatim into en-US/pt-BR — the
       // illustrations carry no text by design (Prism's identity brief), so one
       // generated image serves all 3 locales. 3× fewer image calls per lesson.
-      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages, ledger });
+      /*
+       * Inherit the art this lesson already has before paying for any of it. A
+       * regeneration rewrites labels and contexts, so Prism's request-hash cache
+       * always misses even when the object is identical — and illustration is the
+       * dominant cost of mass generation (~$100 per 1000-lesson course). Object art
+       * is reused by normalized label; scene anchors are never inherited.
+       */
+      const inherit = options.noImages
+        ? undefined
+        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
+      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages, ledger, inherit });
       documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
       // Image outcomes must LEAVE this function. They used to be destructured away,
       // so an unconfigured or down Prism published a visual-first curriculum with
@@ -295,6 +334,7 @@ async function processSlot(
       // downstream re-checks, since the judge runs BEFORE illustration.
       imagesGenerated += illustratedSource.generated ?? 0;
       imagesBilled += illustratedSource.billed ?? 0;
+      imagesInherited += illustratedSource.inherited ?? 0;
       if (illustratedSource.skippedReason) imageSkipReasons.add(illustratedSource.skippedReason);
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
@@ -312,16 +352,23 @@ async function processSlot(
     // ---- images (optional; a no-op when the pre-localize pass covered everything) ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'localized') {
+      // Own index: this belt-and-braces sweep is a separate stage from the
+      // pre-localize illustrate above, so it cannot reuse that const — and on a
+      // RESUME this stage may run without the earlier one having run at all.
+      const localeInherit = options.noImages
+        ? undefined
+        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
       // Belt-and-braces sweep: anything still missing an image_url (a locale
       // document restored from an older checkpoint, a per-locale regen) gets
       // filled here. With the pre-localize illustration above this loop makes
       // ZERO Prism calls on the happy path — and Prism's cache would dedupe
       // identical prompts anyway.
       for (const locale of Object.keys(documents) as LessonLocale[]) {
-        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages, ledger });
+        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages, ledger, inherit: localeInherit });
         documents = { ...documents, [locale]: illustrated.document };
         imagesGenerated += illustrated.generated ?? 0;
         imagesBilled += illustrated.billed ?? 0;
+        imagesInherited += illustrated.inherited ?? 0;
         if (illustrated.skippedReason) imageSkipReasons.add(illustrated.skippedReason);
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'illustrated', { data: { skeleton, documents } });
@@ -337,7 +384,7 @@ async function processSlot(
         // the same --run-id published NOTHING while reporting every slot done.
         checkpoint = setSlotState(checkpoint, slot.slotId, 'dry-run', { data: { skeleton, documents, dryRun: true } });
         await store.save(checkpoint);
-        return { slotId: slot.slotId, state: 'dry-run', imagesGenerated, imagesBilled, imageSkipReasons: [...imageSkipReasons] };
+        return { slotId: slot.slotId, state: 'dry-run', imagesGenerated, imagesBilled, imagesInherited, imageSkipReasons: [...imageSkipReasons] };
       }
       // COURSE_ENGINE.md §3.3 — adult register publishes as a PARALLEL course,
       // never overwriting the kid course: `<slug>-adultos`, title +" (Adultos)"
@@ -413,13 +460,14 @@ async function processSlot(
         `so nothing was written to Vault. This usually means the checkpoint holds an unexpected state.`;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
       await saveQuietly(store, checkpoint, slot.slotId);
-      return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, salvaged, droppedSegments };
+      return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, imagesInherited, salvaged, droppedSegments };
     }
     return {
       slotId: slot.slotId,
       state: 'published',
       imagesGenerated,
       imagesBilled,
+      imagesInherited,
       imageSkipReasons: [...imageSkipReasons],
       salvaged,
       droppedSegments,
@@ -451,7 +499,7 @@ async function processSlot(
      * a failed slot returned no counts. Money spent before a failure is exactly the
      * money an operator most needs to see.
      */
-    return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, salvaged, droppedSegments };
+    return { slotId: slot.slotId, state: 'failed', error: message, imagesGenerated, imagesBilled, imagesInherited, salvaged, droppedSegments };
   }
 }
 
@@ -493,6 +541,8 @@ export interface RunSummary {
   imagesGenerated: number;
   /** Of those, FRESH generations — the ones that cost money (cache hits are free). */
   imagesBilled: number;
+  /** Slots filled from the lesson's PREVIOUS art — the money this run did NOT spend. */
+  imagesInherited: number;
   /** Distinct reasons illustration was skipped (e.g. 'not-configured'). */
   imageSkipReasons: string[];
   /** Lessons published SHORTER than their blueprint because write had to salvage. */
@@ -577,6 +627,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   const skipped: { slotId: string; reason: string }[] = [];
   let imagesGenerated = 0;
   let imagesBilled = 0;
+  let imagesInherited = 0;
   const imageSkipReasons = new Set<string>();
   const salvagedSlots: { slotId: string; droppedSegments: number }[] = [];
   let stoppedOnBudget = false;
@@ -603,6 +654,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       }
       imagesGenerated += outcome.imagesGenerated ?? 0;
       imagesBilled += outcome.imagesBilled ?? 0;
+      imagesInherited += outcome.imagesInherited ?? 0;
       for (const r of outcome.imageSkipReasons ?? []) imageSkipReasons.add(r);
       if (outcome.salvaged) salvagedSlots.push({ slotId: outcome.slotId, droppedSegments: outcome.droppedSegments ?? 0 });
       if (outcome.state === 'published') published.push(outcome.slotId);
@@ -652,6 +704,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     fatalProviderError,
     imagesGenerated,
     imagesBilled,
+    imagesInherited,
     imageSkipReasons: [...imageSkipReasons],
     salvagedSlots,
     stoppedOnBudget,

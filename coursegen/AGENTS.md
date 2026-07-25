@@ -75,6 +75,20 @@ It encodes the product promise — take a learner with ZERO prior knowledge to m
 
 **CALIBRATE AGAINST THE AUTHORED CURRICULUM, NOT INTUITION.** The first version of the spacing rule demanded a strictly increasing RAW review-citation sequence. It flagged all 32 teaching sagas of every large course — 96 false warnings — against a curriculum whose spacing is in fact textbook (measured distances 1, 2, 12, 33, 48, 176). The duplicates come from one review topic legitimately citing several topics of the same saga; only DISTINCT distances carry meaning. Current calibration over the real corpus: **4,254 blueprints across 4 courses → 0 errors, 1 warning** (a genuine 5-lesson monotony run in `investing`). If a new rule fires in bulk, measure before believing it — a rule that cries wolf trains people to ignore the gate.
 
+## Image inheritance — illustration is the dominant cost, so never re-pay for the same drawing
+
+Prism caches on `sha256(model + size + "STYLE_VERSION | purpose | label | context")`, so a cache hit needs the label AND the context byte-identical. A REGENERATION rewrites both, so every slot misses the cache and every image is billed again — even when the object is the same lemon. At ~5 images per lesson and ~$0.02 each, illustration is ~$100 for a 1000-lesson course, several times the entire text cost; one failed 62-slot run already billed 424 fresh generations (~$8.48) and published nothing.
+
+`src/pipeline/imageInheritance.ts` closes that: before asking Prism for "limones", `run.ts` reads the lesson's PREVIOUSLY published documents from Vault and reuses the URL already drawn for that normalized label. Free, no network, and it survives the label/context rewrite that defeats the cache. Points that matter when you touch it:
+
+- **Keyed on the normalized LABEL, not label+purpose** — a deliberate trade-off. Prism art-directs per purpose, so a reused image can carry the framing of the slot it was first drawn for: a small, on-brand cosmetic difference, and the right price for not re-billing an identical drawing.
+- **Scene anchors are NEVER inherited.** `buildImageInheritance` only indexes images that have a sibling label (an OBJECT); a segment-level `image_url` is a scene, where a stale picture would be *wrong*, not merely differently framed.
+- **Scoped to the course** through a PostgREST embedded-resource filter, so a lesson slug repeated in another course cannot donate its art.
+- **Failure is swallowed on purpose.** If Vault is unreachable the index is empty and images are paid for — the old behaviour. Inheritance is a cost optimisation, never a precondition.
+- The run summary reports `placed / freshly generated (billed) / inherited (free)`, so the saving is visible instead of assumed.
+
+**A claimed gate that does not exist is worse than no rule.** `write.ts` had told the author for weeks that omitting `count_objects` scene labels "fails the gate" — no such gate existed, so those lessons shipped as bare icons with ZERO pictures in a visual-first product, silently, in all three locales. Found while building inheritance (the lesson yielded 0 inheritable images, which is what exposed it). `countObjectsLabels` now enforces it. When you write "the gate rejects this" in an author instruction, go and confirm the gate.
+
 ## Mass generation: what makes a 1000-lesson run survivable (2026-07-25)
 
 An 8-dimension resilience audit asked one question — *what happens on the 900th slot that did not happen on the 6th* — and produced 62 confirmed risks. The rules below are the ones whose absence was going to cost a real, expensive run. `npm run verify:course [slug]` is the acceptance check that proves the OUTPUT; these are about surviving the PROCESS.
