@@ -17,7 +17,7 @@ export async function runBatchNarration(): Promise<void> {
       console.log(
         `[audiogen] narrated lesson=${row.lesson_id} locale=${row.locale} ` +
           `units=${summary?.units_total ?? 0} generated=${summary?.generated ?? 0} ` +
-          `reused=${summary?.reused ?? 0} failed=${summary?.failed.length ?? 0}`,
+          `reused=${summary?.reused ?? 0} cached=${summary?.cached ?? 0} failed=${summary?.failed.length ?? 0}`,
       );
     } catch (err) {
       console.error(`[audiogen] batch narration failed for lesson=${row.lesson_id} locale=${row.locale}:`, err);

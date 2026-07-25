@@ -53,6 +53,30 @@ It is deliberately **deterministic, not an LLM**: a 1000-lesson course is ~15k u
 - **Bulk paid-API runs are a BOUNDARIES action.** `AUDIOGEN_RUN_ON_START` defaults `false`; batch narration (`src/batch.ts`, `npm run narrate:all`) is operator-triggered, never automatic.
 - Idempotent by `(lesson, locale, segment, text-hash)` — `contentHash(text, voice, model)` in `src/narrate/types.ts` is the reuse key; changing the voice or model invalidates the whole manifest by design (the audio would sound different).
 
+## The global speech cache (`speech_assets`, migration 0015) — an identical request never pays twice
+
+The manifest above only deduplicates WITHIN one `(lesson, locale)` row. The
+`speech_assets` Vault table (mirror of Prism's `picture_assets`) deduplicates
+ACROSS everything: two lessons narrating the same sentence, a wiped manifest,
+a re-publish with new segment ids, reordered dialogue lines, and every
+`narrateSegment` ad-hoc call are all free hits. Key =
+`speechAssetHash(text, voice, model, language_type, mp3_bitrate_kbps)` —
+JSON-tuple-encoded (never space-joined; the concatenation-ambiguous manifest
+hash is fine as a per-lesson stamp but not as a table-wide unique key).
+`language_type` joins the key because it changes pronunciation;
+`mp3_bitrate_kbps` because the cache stores the ENCODED MP3 pointer and the
+source WAV is gone. Normalized text is hashed AFTER `normalizeForSpeech`, so a
+lexicon improvement that changes the audible output naturally misses the cache
+— and a no-op lexicon change correctly hits it. Rules that bite:
+
+- The lookup runs AFTER the speechGuard — unspeakable text is refused even if
+  a pre-guard run cached it.
+- Cache lookup and write-through are BEST-EFFORT (`.catch`): a Vault outage
+  degrades to a paid call, never to a failed unit; a failed write-through
+  costs a future re-synth, never the synthesis just paid for.
+- The manifest entry built from a hit keeps the MANIFEST-level `contentHash`
+  so per-lesson idempotency still works on top of the global cache.
+
 ## Dependency note
 
 `src/db/lessonDocumentsRepo.ts` targets `database/migrations/0007_course_hierarchy.sql`'s

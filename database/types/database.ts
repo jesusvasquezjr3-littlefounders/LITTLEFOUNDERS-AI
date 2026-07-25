@@ -578,6 +578,39 @@ export type Database = {
         }
         Relationships: []
       }
+      picture_assets: {
+        Row: {
+          bytes: number | null
+          created_at: string
+          file_id: string
+          id: string
+          model: string
+          prompt: string
+          prompt_hash: string
+          url: string
+        }
+        Insert: {
+          bytes?: number | null
+          created_at?: string
+          file_id: string
+          id?: string
+          model: string
+          prompt: string
+          prompt_hash: string
+          url: string
+        }
+        Update: {
+          bytes?: number | null
+          created_at?: string
+          file_id?: string
+          id?: string
+          model?: string
+          prompt?: string
+          prompt_hash?: string
+          url?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -657,6 +690,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      speech_assets: {
+        Row: {
+          bytes: number | null
+          created_at: string
+          duration_ms: number | null
+          file_id: string
+          id: string
+          language_type: string
+          model: string
+          mp3_bitrate_kbps: number
+          speech_hash: string
+          text: string
+          url: string
+          voice: string
+        }
+        Insert: {
+          bytes?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          file_id: string
+          id?: string
+          language_type: string
+          model: string
+          mp3_bitrate_kbps: number
+          speech_hash: string
+          text: string
+          url: string
+          voice: string
+        }
+        Update: {
+          bytes?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          file_id?: string
+          id?: string
+          language_type?: string
+          model?: string
+          mp3_bitrate_kbps?: number
+          speech_hash?: string
+          text?: string
+          url?: string
+          voice?: string
+        }
+        Relationships: []
       }
       tasks: {
         Row: {

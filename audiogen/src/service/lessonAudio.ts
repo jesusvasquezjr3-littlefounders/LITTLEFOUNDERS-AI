@@ -9,6 +9,7 @@ import {
 } from '../db/lessonDocumentsRepo.js';
 import { extractNarratables } from '../narrate/extractNarratables.js';
 import { auditSpeechText, describeIssues, isBlocked } from '../narrate/speechGuard.js';
+import { findSpeechAsset, insertSpeechAsset, speechAssetHash } from '../db/speechAssetsRepo.js';
 import { contentHash } from '../narrate/types.js';
 import { encodeMp3 } from '../tts/mp3.js';
 import { parseWav } from '../tts/wav.js';
@@ -24,6 +25,8 @@ export interface NarrateLessonSummary {
   units_total: number;
   generated: number;
   reused: number;
+  /** Served from the GLOBAL speech_assets cache — zero paid TTS calls. */
+  cached: number;
   failed: NarrateLessonFailure[];
 }
 
@@ -34,6 +37,8 @@ export interface NarrateLessonDeps {
   synthesizeSpeech: typeof synthesizeSpeech;
   downloadWav: typeof downloadWav;
   uploadFile: typeof uploadFile;
+  findSpeechAsset: typeof findSpeechAsset;
+  insertSpeechAsset: typeof insertSpeechAsset;
 }
 
 const defaultDeps: NarrateLessonDeps = {
@@ -42,6 +47,8 @@ const defaultDeps: NarrateLessonDeps = {
   synthesizeSpeech,
   downloadWav,
   uploadFile,
+  findSpeechAsset,
+  insertSpeechAsset,
 };
 
 /*
@@ -72,6 +79,7 @@ export async function narrateLesson(
   const failed: NarrateLessonFailure[] = [];
   let generated = 0;
   let reused = 0;
+  let cached = 0;
   const finalUnits: Record<string, AudioUnitEntry> = {};
 
   await runPool(units, config.AUDIOGEN_CONCURRENCY, async (unit) => {
@@ -106,6 +114,26 @@ export async function narrateLesson(
       console.warn(`[audiogen] speech warning lesson=${lessonId} unit=${unit.unit_id} ${describeIssues(issues)}`);
     }
 
+    // GLOBAL cache (speech_assets, 0015) — the same sentence synthesized for
+    // ANY lesson/locale/course before is a free hit. Runs after the guard on
+    // purpose: unspeakable text is refused even if a pre-guard run cached it.
+    // The lookup is best-effort — a Vault hiccup degrades to a paid call,
+    // never to a failed unit.
+    const globalHash = speechAssetHash(unit.text, voice, model, languageType, config.AUDIOGEN_MP3_BITRATE_KBPS);
+    const hit = await deps.findSpeechAsset(globalHash).catch(() => null);
+    if (hit) {
+      finalUnits[unit.unit_id] = {
+        file_id: hit.file_id,
+        url: hit.url,
+        hash,
+        bytes: hit.bytes ?? 0,
+        duration_ms: hit.duration_ms,
+        voice,
+      };
+      cached += 1;
+      return;
+    }
+
     try {
       const audioUrl = await deps.synthesizeSpeech(
         { text: unit.text, voice, languageType },
@@ -129,6 +157,25 @@ export async function narrateLesson(
         voice,
       };
       generated += 1;
+
+      // Write-through, best-effort: losing a cache row costs a future re-synth,
+      // failing the unit here would cost the one we JUST paid for.
+      await deps
+        .insertSpeechAsset({
+          speech_hash: globalHash,
+          model,
+          voice,
+          language_type: languageType,
+          text: unit.text,
+          url: upload.url,
+          file_id: upload.id,
+          bytes: upload.bytes,
+          duration_ms: durationMs,
+          mp3_bitrate_kbps: config.AUDIOGEN_MP3_BITRATE_KBPS,
+        })
+        .catch((err: unknown) => {
+          console.warn(`[audiogen] speech_assets write-through failed unit=${unit.unit_id}: ${err instanceof Error ? err.message : err}`);
+        });
     } catch (err) {
       failed.push({ unit_id: unit.unit_id, reason: err instanceof Error ? err.message : String(err) });
       // Leave a stale-but-present entry if we had one, so a transient
@@ -144,7 +191,7 @@ export async function narrateLesson(
   const manifest: LessonAudioManifest = { version: 1, voice_profile: defaultVoiceFor(locale, config), units: finalUnits };
   await deps.patchLessonDocumentAudio(row.lesson_id, row.locale, patchedDocument, manifest);
 
-  return { units_total: units.length, generated, reused, failed };
+  return { units_total: units.length, generated, reused, cached, failed };
 }
 
 function stampAudioSegmentIds(document: LessonDocument, units: Record<string, AudioUnitEntry>): LessonDocument {
