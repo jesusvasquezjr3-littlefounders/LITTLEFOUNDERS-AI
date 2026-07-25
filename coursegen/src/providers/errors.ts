@@ -43,6 +43,22 @@ export function parseRetryAfter(header: string | null): number | undefined {
   return undefined;
 }
 
+/**
+ * FATAL provider states: the credential or the account is the problem, so no amount
+ * of retrying, regenerating or waiting can succeed. 401 unauthorized, 402 payment
+ * required / insufficient balance, 403 forbidden.
+ *
+ * WHY THIS EXISTS (measured 2026-07-25): a real 62-lesson run hit DeepSeek
+ * "Insufficient Balance" partway through. 402 is correctly non-retryable per CALL,
+ * but the SLOT then failed, `FORGE_SLOT_ATTEMPTS` regenerated it from scratch three
+ * times, the pool moved on, and every remaining slot repeated the whole dance —
+ * 62/62 failed, 2.17M tokens and ~$10 spent, ZERO lessons published. The run should
+ * have stopped at the first 402. A dead credential is not a slot-level problem.
+ */
+export function isFatalProviderError(err: unknown): boolean {
+  return err instanceof ProviderHttpError && (err.status === 401 || err.status === 402 || err.status === 403);
+}
+
 /** True for a provider rate-limit reply, which gets its own (much longer) backoff ladder. */
 export function isRateLimitError(err: unknown): boolean {
   return err instanceof ProviderHttpError && err.isRateLimit;

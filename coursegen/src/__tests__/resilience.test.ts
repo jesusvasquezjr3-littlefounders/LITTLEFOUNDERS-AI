@@ -5,7 +5,7 @@ import path from 'node:path';
 import { describeParamMismatch, isSlotDone, newRunCheckpoint, setSlotState, type RunParams } from '../pipeline/checkpoint.js';
 import { UsageLedger } from '../providers/usage.js';
 import { withTransportRetry } from '../providers/retry.js';
-import { ProviderHttpError, parseRetryAfter } from '../providers/errors.js';
+import { ProviderHttpError, parseRetryAfter, isFatalProviderError } from '../providers/errors.js';
 
 /*
  * Mass-generation resilience. Every case here is a confirmed finding from the
@@ -220,5 +220,33 @@ describe('rate limits get their own ladder, and Retry-After wins', () => {
     const parsed = parseRetryAfter(future) ?? 0;
     expect(parsed).toBeGreaterThan(15_000);
     expect(parsed).toBeLessThanOrEqual(21_000);
+  });
+});
+
+describe('a dead credential must abort the run, not burn it slot by slot', () => {
+  it('classifies 401/402/403 as fatal and 429/5xx as merely transient', () => {
+    expect(isFatalProviderError(new ProviderHttpError('deepseek', 402, 'Insufficient Balance'))).toBe(true);
+    expect(isFatalProviderError(new ProviderHttpError('deepseek', 401, 'bad key'))).toBe(true);
+    expect(isFatalProviderError(new ProviderHttpError('qwen', 403, 'forbidden'))).toBe(true);
+    expect(isFatalProviderError(new ProviderHttpError('deepseek', 429, 'rate limited'))).toBe(false);
+    expect(isFatalProviderError(new ProviderHttpError('qwen', 503, 'unavailable'))).toBe(false);
+    expect(isFatalProviderError(new Error('something else'))).toBe(false);
+  });
+
+  it('never wastes retry budget on a fatal error', async () => {
+    /*
+     * Measured on a real run: DeepSeek returned 402 "Insufficient Balance" partway
+     * through, and because the failure was handled per-SLOT the pipeline burned
+     * 2.17M tokens / ~$10 failing all 62 slots three times each before exiting with
+     * zero lessons published. A fatal error must cost exactly one attempt.
+     */
+    let calls = 0;
+    await expect(
+      withTransportRetry(async () => {
+        calls++;
+        throw new ProviderHttpError('deepseek', 402, 'Insufficient Balance');
+      }, { sleep: async () => {}, random: () => 0.5 }),
+    ).rejects.toThrow(/402/);
+    expect(calls).toBe(1);
   });
 });

@@ -8,6 +8,7 @@ import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type Loade
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { LESSON_LOCALES } from '../contract/core/types.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
+import { isFatalProviderError } from '../providers/errors.js';
 import {
   CheckpointStore,
   newRunCheckpoint,
@@ -425,6 +426,15 @@ async function processSlot(
     };
   } catch (err) {
     if (err instanceof BudgetExceededError) throw err; // stop the whole run, don't mark this slot failed
+    /*
+     * A dead credential or an empty balance is not a slot-level problem, and every
+     * further call is guaranteed to fail while still costing an HTTP round trip and
+     * (for whatever already succeeded) discarding paid work. Measured: a real run hit
+     * DeepSeek "Insufficient Balance" and then burned 2.17M tokens / ~$10 failing all
+     * 62 slots three times each before exiting. Abort the run the way a budget stop
+     * does, so the operator sees ONE clear cause instead of 62 derived symptoms.
+     */
+    if (isFatalProviderError(err)) throw err;
     const message = err instanceof Error ? err.message : String(err);
     /*
      * The failure bookkeeping must not itself be able to kill the run. `store.save`
@@ -470,6 +480,8 @@ export interface RunSummary {
   /** Enumerated but never reached — the honest name for what used to be invisible. */
   notAttempted: string[];
   slotsEnumerated: number;
+  /** Set when a dead credential / empty balance aborted the run (401/402/403). */
+  fatalProviderError: string | null;
   /** Prism illustrations produced — zero on a visual-first course is a RED FLAG, not a success. */
   imagesGenerated: number;
   /** Of those, FRESH generations — the ones that cost money (cache hits are free). */
@@ -561,6 +573,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   const imageSkipReasons = new Set<string>();
   const salvagedSlots: { slotId: string; droppedSegments: number }[] = [];
   let stoppedOnBudget = false;
+  let fatalProviderError: string | null = null;
 
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
@@ -592,7 +605,11 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     });
   } catch (err) {
     if (err instanceof BudgetExceededError) stoppedOnBudget = true;
-    else throw err;
+    else if (isFatalProviderError(err)) {
+      // One clear cause, not 62 derived symptoms. Everything already published stays
+      // published; everything else stays resumable from the checkpoint.
+      fatalProviderError = err instanceof Error ? err.message : String(err);
+    } else throw err;
   }
 
   /*
@@ -625,6 +642,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     alreadyDone,
     notAttempted,
     slotsEnumerated: slots.length,
+    fatalProviderError,
     imagesGenerated,
     imagesBilled,
     imageSkipReasons: [...imageSkipReasons],

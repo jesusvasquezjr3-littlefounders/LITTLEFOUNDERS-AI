@@ -138,6 +138,13 @@ async function main(): Promise<void> {
   if (summary.stoppedOnBudget) {
     console.warn('  STOPPED: run budget exceeded (see the budget line printed at start)');
   }
+  if (summary.fatalProviderError) {
+    // The ONE cause, stated once, instead of leaving the operator to infer it from
+    // dozens of derived slot failures.
+    console.error(`\n  ABORTED — provider credential/balance failure:\n    ${summary.fatalProviderError}`);
+    console.error('  Nothing further could have succeeded. Fix the account, then resume with the SAME --run-id;');
+    console.error('  everything already published stays published and only the remaining slots are regenerated.');
+  }
   console.log(`  images: ${summary.imagesGenerated} placed, ${summary.imagesBilled} freshly generated (billed; the rest were Prism cache hits)`);
   if (summary.imageSkipReasons.length > 0) {
     console.warn(`  IMAGES SKIPPED (${summary.imageSkipReasons.join(', ')}) — this curriculum is visual-first; lessons published without illustrations.`);
@@ -156,7 +163,7 @@ async function main(): Promise<void> {
     console.error('generate: no slots matched — check --slots (a sharding pattern that matches nothing is not a successful run).');
     process.exitCode = 1;
   }
-  if (summary.failed.length > 0 || summary.stoppedOnBudget || summary.notAttempted.length > 0) process.exitCode = 1;
+  if (summary.failed.length > 0 || summary.stoppedOnBudget || summary.notAttempted.length > 0 || summary.fatalProviderError) process.exitCode = 1;
 }
 
 main().catch((err) => {
