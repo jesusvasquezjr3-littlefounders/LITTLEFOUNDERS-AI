@@ -137,24 +137,16 @@ async function judgeDocument(
   ledger: UsageLedger | undefined,
   priorMicroObjective?: string | null,
 ): Promise<ReviewRubric> {
-  const system =
+  // PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the judge's
+  // rubric/calibrations are ~66% of the prompt and byte-identical across the
+  // 345 judge calls of a full run — they live in the SYSTEM message so the
+  // provider's implicit context cache serves them as one stable prefix.
+  // Everything per-lesson (priorLine, the document, retry notes) stays in the
+  // user message, AFTER the prefix.
+  const system = [
     'You are an INDEPENDENT quality judge for a children\'s financial-literacy lesson platform (LittleFounders). ' +
-    'You did not write this lesson — review it critically. Output ONLY strict JSON, no prose outside the JSON.';
-
-  // Ground the "connect to prior lesson" half of concreteness in FACT instead
-  // of the judge's guess: undefined = caller didn't say (legacy behavior),
-  // null = this IS the course's first lesson (exempt), string = the actual
-  // prior micro-objective the opening should connect to. On the first real
-  // QA run the judge repeatedly wrote "assuming this isn't the first lesson"
-  // and failed lessons on that assumption.
-  const priorLine =
-    priorMicroObjective === undefined
-      ? null
-      : priorMicroObjective === null
-        ? 'PRIOR-LESSON FACT: this IS the very first lesson of the course — do NOT penalize concreteness for not referencing a previous lesson.'
-        : `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
-
-  const user = [
+      'You did not write this lesson — review it critically. Output ONLY strict JSON, no prose outside the JSON.',
+    '',
     // The single most important check: judge what a child SEES rendered, and
     // PROVE the exercise is solvable from the screen. This is what a JSON-only
     // read misses (2026-07-24 render-truth review).
@@ -179,11 +171,26 @@ async function judgeDocument(
     'CONTENT-ONLY LESSON CALIBRATION: a lesson whose segments are ALL story-family types (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint — zero graded segments) is a DELIBERATE narrative teaching beat: it introduces/consolidates a concept the FOLLOWING lessons exercise. NEVER score cognitive_engagement low for "no exercise present" — that is its design. Score it instead on: does the story open a genuine curiosity gap, teach through a concrete worked instance inside the narrative, and set up the concept the next lesson will drill? A vivid, curiosity-opening, concretely-grounded story scores 4-5.',
     '',
     JUDGE_PLAYBOOK_ANCHORS,
-    ...(priorLine ? ['', priorLine] : []),
     '',
     'Respond with EXACTLY: {"age_fit":N,"pedagogy":N,"narrative_quality":N,"kid_safety":N,"naturalness":N,"concreteness":N,"cognitive_engagement":N,"feedback_quality":N,"distractor_quality":N,"notes":"..."}',
     '`notes` must be actionable — if any score is low, say exactly what to fix.',
-    '',
+  ].join('\n');
+
+  // Ground the "connect to prior lesson" half of concreteness in FACT instead
+  // of the judge's guess: undefined = caller didn't say (legacy behavior),
+  // null = this IS the course's first lesson (exempt), string = the actual
+  // prior micro-objective the opening should connect to. On the first real
+  // QA run the judge repeatedly wrote "assuming this isn't the first lesson"
+  // and failed lessons on that assumption.
+  const priorLine =
+    priorMicroObjective === undefined
+      ? null
+      : priorMicroObjective === null
+        ? 'PRIOR-LESSON FACT: this IS the very first lesson of the course — do NOT penalize concreteness for not referencing a previous lesson.'
+        : `PRIOR-LESSON FACT: the previous lesson's micro-objective was: "${priorMicroObjective}". Judge the connect-to-prior half of concreteness against THIS, not a guess.`;
+
+  const user = [
+    ...(priorLine ? [priorLine, ''] : []),
     'LESSON DOCUMENT:',
     JSON.stringify(document),
   ].join('\n');

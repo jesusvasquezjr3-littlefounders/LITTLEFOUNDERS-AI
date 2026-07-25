@@ -144,18 +144,37 @@ const BASE_HARD_RULES = [
   'At least ONE segment MUST include a worked CONCRETE instance — a specific number, a named character, or a specific scenario. Never leave the whole lesson in purely abstract phrasing.',
 ];
 
-function buildHardRules(ctx: PlanContext): string {
-  const rules = [...BASE_HARD_RULES];
+/*
+ * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): DeepSeek's
+ * automatic context cache bills identical LEADING tokens ~120x cheaper, so the
+ * prompt is assembled static-first — playbook, tier guidance, base hard rules,
+ * icon whitelist and meta shape are byte-identical across every write call in
+ * a run and form one long cached prefix. Everything per-lesson (directives,
+ * context, facts, skeleton, shape examples) comes AFTER. That is also why the
+ * base rules are numbered ALONE: appending conditionals into the numbered list
+ * used to renumber nothing here (they went last) but the same splice pattern
+ * in plan.ts broke its prefix a few hundred tokens in — keep the shape.
+ */
+function renderBaseHardRules(): string {
+  return BASE_HARD_RULES.map((line, i) => `${i + 1}. ${line}`).join('\n');
+}
+
+/** Per-lesson directives — the conditional rules, now OUTSIDE the cached prefix. */
+function buildLessonDirectives(ctx: PlanContext): string {
+  const directives: string[] = [];
   if (ctx.review) {
-    rules.push(CONSOLIDATION_INSTRUCTION);
-    rules.push(`No segment.difficulty may exceed ${effectiveDifficulty(ctx)} in this review lesson.`);
+    directives.push(CONSOLIDATION_INSTRUCTION);
+    directives.push(`No segment.difficulty may exceed ${effectiveDifficulty(ctx)} in this review lesson.`);
     if (ctx.review.kind === 'review_interleaved' || ctx.review.kind === 'review_quest') {
-      rules.push(INTERLEAVE_INSTRUCTION);
+      directives.push(INTERLEAVE_INSTRUCTION);
     }
   }
-  if (ctx.prior) rules.push(connectToPriorInstruction(ctx.prior));
-  if (ctx.register?.toneDirectiveEs) rules.push(registerToneInstruction(ctx.register.toneDirectiveEs));
-  return rules.map((line, i) => `${i + 1}. ${line}`).join('\n');
+  if (ctx.prior) directives.push(connectToPriorInstruction(ctx.prior));
+  if (ctx.register?.toneDirectiveEs) directives.push(registerToneInstruction(ctx.register.toneDirectiveEs));
+  if (directives.length === 0) return '';
+  return ['', 'LESSON DIRECTIVES (non-negotiable for THIS lesson, same force as the hard rules):', ...directives.map((d) => `- ${d}`)].join(
+    '\n',
+  );
 }
 
 function buildWriteMessages(input: WriteInput, factsBlock: string, issues: string | undefined) {
@@ -200,13 +219,23 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
       ].join('\n')
     : '';
 
+  // Static-first assembly — see the prefix-cache note above renderBaseHardRules.
   const user = [
     CONTENT_PLAYBOOK,
     '',
     `AGE-TIER REASONING CEILING for THIS lesson — ${tierReasoningGuidance(input.ctx.tier)}`,
     '',
     'HARD RULES (mechanical constraints — the playbook above is the quality bar; these are the non-negotiable format rules):',
-    buildHardRules(input.ctx),
+    renderBaseHardRules(),
+    '',
+    // The model used to GUESS icon names from thin air (invented "counter_1",
+    // "lemonade", "piggy_bank" — each one kills the lesson at gate 7). Giving
+    // it the actual whitelist converts that failure class into a lookup.
+    `ALLOWED ICONS (the complete whitelist — every icon-valued field must use one of these): ${[...ICON_PALETTE].join(', ')}`,
+    '',
+    'EXACT top-level `meta`/`scoring` JSON SHAPE — ALL fields shown are REQUIRED (title, estimated_minutes, and objectives are easy to forget and the document is rejected without them):',
+    metaShapeText,
+    buildLessonDirectives(input.ctx),
     '',
     'LESSON CONTEXT:',
     `Age tier: ${input.ctx.tier}`,
@@ -222,16 +251,8 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     'FACTS (the ONLY source of numbers, besides pure arithmetic):',
     factsBlock,
     '',
-    // The model used to GUESS icon names from thin air (invented "counter_1",
-    // "lemonade", "piggy_bank" — each one kills the lesson at gate 7). Giving
-    // it the actual whitelist converts that failure class into a lookup.
-    `ALLOWED ICONS (the complete whitelist — every icon-valued field must use one of these): ${[...ICON_PALETTE].join(', ')}`,
-    '',
     'SEGMENT SKELETON (expand each into a full segment, in order):',
     skeletonText,
-    '',
-    'EXACT top-level `meta`/`scoring` JSON SHAPE — ALL fields shown are REQUIRED (title, estimated_minutes, and objectives are easy to forget and the document is rejected without them):',
-    metaShapeText,
     '',
     'EXACT JSON SHAPE per type used above (field names/nesting/enum options are LAW — never invent, rename, or move a field; `payload`/`answer` sit alongside `id`/`type`/`prompt_md`/`difficulty`/`xp`/`hints`/`narrator` at the segment\'s top level, never nested inside each other):',
     shapeExamplesText,
