@@ -136,6 +136,9 @@ const COMMAND_ICON: Record<RobotCommand, string> = {
   right: 'rotate_right',
 }
 
+/** The full command vocabulary, in a stable order the child can learn. */
+const ROBOT_COMMAND_PALETTE: readonly RobotCommand[] = ['forward', 'left', 'right']
+
 interface RobotDisplayState extends RobotState {
   /** Cumulative heading in degrees so turn animations rotate the short way. */
   deg: number
@@ -166,7 +169,30 @@ const TICK_MS = 400
 export function RobotPath({ segment, disabled, onFinish, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const parsed = useMemo(() => parseRobotPayload(segment.payload), [segment])
-  const palette = (segment.payload.commands as RobotCommand[] | undefined) ?? []
+   /*
+   * The command palette is the fixed VOCABULARY, not the authored solution.
+   *
+   * `payload.commands` is the intended solution PROGRAM — coursegen's Gate 8
+   * (`robotPathSolvable`) simulates exactly that array to prove the lesson is
+   * winnable, and the schema caps it at 3 entries over a 3-verb alphabet. Rendering
+   * it as the palette therefore handed the child the answer: tapping the chips
+   * left-to-right walked straight to the goal.
+   *
+   * Shuffling it was NOT enough, which is worth recording: seededSort ranks by
+   * DISTINCT key, so duplicate verbs tie and keep their authored relative order. A
+   * ≤3-entry program over 3 verbs has only one or two reachable display orders —
+   * measured, ["forward","forward"] has exactly ONE (the identity), and the shipped
+   * ["left","forward","forward"] returned the identity ~50% of the time. The leak
+   * survived the shuffle.
+   *
+   * Rendering the whole vocabulary in a stable order fixes it properly: the palette
+   * no longer encodes the solution, its verbs or even its length. Each chip appends
+   * to the queue, so repeats work by tapping twice (`max_commands` bounds it). It is
+   * also better for a child than a per-segment-randomised control row — block
+   * programming UIs keep a consistent layout so the buttons become familiar — and it
+   * removes a latent duplicate-React-key bug, since a solution program repeats verbs.
+   */
+  const palette = ROBOT_COMMAND_PALETTE
   const [queue, setQueue] = useState<RobotCommand[]>([])
   const [phase, setPhase] = useState<'edit' | 'running' | 'done'>('edit')
   const [marker, setMarker] = useState<RobotDisplayState | null>(null)
@@ -727,7 +753,15 @@ export function MachineIo({ segment, value, onChange, disabled, verdict }: Exerc
   const draft = draftOf(value)
   const examples = segment.payload.examples as Array<{ in: number | string; out: number | string }>
   const probeIn = segment.payload.probe_in as number | string
-  const options = segment.payload.options as Array<{ id: string; text_md: string }> | undefined
+  const authoredOptions = segment.payload.options as
+    | Array<{ id: string; text_md: string }>
+    | undefined
+  // Shuffle the options bank (A7): it was rendered in the authored order, which is
+  // parallel to the key (`correct_option_id`), so the rule could be "picked" by
+  // tapping the first card. Grading is by option id, so display order is free.
+  const options = authoredOptions
+    ? seededSort(authoredOptions, `${segment.id}:opt`, (o) => o.id)
+    : undefined
   const reveal = revealOf(verdict)
   const selected = draft.option_id as string | undefined
   const entered = (draft.value as string | undefined) ?? ''

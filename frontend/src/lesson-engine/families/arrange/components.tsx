@@ -726,7 +726,14 @@ export function SortBuckets({ segment, value, onChange, disabled, verdict }: Exe
   const draft = draftOf(value)
   const assignments = (draft.assignments as Record<string, string> | undefined) ?? {}
   const buckets = segment.payload.buckets as Array<{ id: string; label: string }>
-  const items = segment.payload.items as IdVisualItem[]
+  // Shuffle the item bank (A7): it was rendered in authored order, and authors
+  // group items by their target bucket, so the bank mirrored the answer key
+  // (first N → bucket 1, next N → bucket 2). Grading is by item id
+  // (`assignments[item.id]`), so display order is free.
+  const items = useMemo(
+    () => seededSort(segment.payload.items as IdVisualItem[], segment.id + ':items', (i) => i.id),
+    [segment],
+  )
   const correct = revealOf(verdict).assignments as Record<string, string> | undefined
 
   return (
@@ -898,8 +905,22 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
   const { t } = useTranslation()
   const draft = draftOf(value)
   const placed = (draft.placed as Record<string, string> | undefined) ?? {}
+  // `sequence` is NOT shuffled: it is the visible pattern the child reads, and it
+  // is rendered by index — its order IS the exercise.
   const sequence = segment.payload.sequence as Array<{ icon: string; image_url?: string; tint: string }>
-  const options = segment.payload.options as Array<{ id: string; icon: string; image_url?: string; tint: string }>
+  // Shuffle the options bank (A7): it was rendered in authored order, which puts
+  // the tiles that complete the pattern first, so tapping top-to-bottom filled
+  // the slots correctly with no reasoning. Grading is by option id
+  // (reveal.correct maps slot → option id), so display order is free.
+  const options = useMemo(
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; icon: string; image_url?: string; tint: string }>,
+        segment.id + ':options',
+        (o) => o.id,
+      ),
+    [segment],
+  )
   const missing = segment.payload.missing_slots as number
   const correct = revealOf(verdict).correct as Record<string, string> | undefined
   const usedOptionIds = new Set(Object.values(placed))
@@ -1016,7 +1037,15 @@ export function GroupSets({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const draft = draftOf(value)
   const zoneMap = (draft.zones as Record<string, GroupZone> | undefined) ?? {}
-  const items = segment.payload.items as IdVisualItem[]
+  // Shuffle the item bank (A7): it was rendered in authored order, and authors
+  // list items grouped by destination (all of set A, then B, then both, then
+  // none), so the bank mirrored the answer key. Grading is by item id
+  // (`zones[item.id]`), so display order is free. The four zones themselves are
+  // NOT shuffled — a/b/both/none is a fixed semantic order, not a bank.
+  const items = useMemo(
+    () => seededSort(segment.payload.items as IdVisualItem[], segment.id + ':items', (i) => i.id),
+    [segment],
+  )
   const correct = revealOf(verdict).zones as Record<string, string> | undefined
 
   const zoneLabels: Record<GroupZone, string> = {

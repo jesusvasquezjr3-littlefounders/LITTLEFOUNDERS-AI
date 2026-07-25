@@ -70,6 +70,10 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
   }, [ended, onFinish, path])
 
   if (!ended && current) {
+    // Shuffle this node's choices (A7): the bank was rendered in authored order,
+    // which put the "best" choice first, and grading is by choice_id — so display
+    // order is free. Sub-seeded per node so two nodes don't share a permutation.
+    const choices = seededSort(current.choices, segment.id + ':choices:' + current.id, (c) => c.id)
     return (
       <div className="space-y-4">
         {current.character ? (
@@ -81,7 +85,7 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
           <MarkdownLite text={current.text_md} className="lf-body-lg text-content" />
         </SunkenWell>
         <div className="space-y-3" role="group">
-          {current.choices.map((choice) => (
+          {choices.map((choice) => (
             <OptionCard
               key={choice.id}
               disabled={disabled}
@@ -191,6 +195,14 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 
   const best = revealOf(verdict).best as Record<string, string> | undefined
   const currentTurn = done ? undefined : turns[replies.length]
+  // Shuffle this turn's replies (A7): the bank was rendered in authored order,
+  // which listed the best reply first, and grading is by reply_id — so display
+  // order is free. Sub-seeded per turn so consecutive turns don't correlate.
+  // `turns` itself is NOT shuffled: it is the conversation sequence and is read
+  // positionally (turns[replies.length], replies[i]).
+  const replyOptions = currentTurn
+    ? seededSort(currentTurn.replies, segment.id + ':replies:' + currentTurn.id, (r) => r.id)
+    : []
 
   return (
     <div className="space-y-4">
@@ -233,7 +245,7 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 
       {currentTurn ? (
         <div className="space-y-3" role="group">
-          {currentTurn.replies.map((reply) => (
+          {replyOptions.map((reply) => (
             <OptionCard
               key={reply.id}
               disabled={disabled}

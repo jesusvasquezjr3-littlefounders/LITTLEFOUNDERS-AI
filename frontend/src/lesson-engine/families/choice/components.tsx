@@ -114,9 +114,15 @@ export function TrueFalse({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const draft = draftOf(value)
   const chosen = draft.is_true as boolean | undefined
-  const justifications = segment.payload.justifications as
-    | Array<{ id: string; text_md: string }>
-    | undefined
+  // The justification bank was rendered in authored order, which runs parallel to
+  // the answer key (authors write the right "why" first), so the second half of the
+  // exercise was answerable by tapping the top row. Grading is by
+  // `justification_id`, so display order is free. Distinct ':j' sub-seed keeps this
+  // bank uncorrelated with any other list in the segment.
+  const justifications = useMemo(() => {
+    const list = segment.payload.justifications as Array<{ id: string; text_md: string }> | undefined
+    return list ? seededSort(list, segment.id + ':j', (j) => j.id) : undefined
+  }, [segment])
   const reveal = revealOf(verdict)
   const correctBool = reveal.is_true as boolean | undefined
 
@@ -410,7 +416,18 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
   const [phase, setPhase] = useState<'ready' | 'running' | 'done'>('ready')
   const [selected, setSelected] = useState<string[]>([])
   const [overtime, setOvertime] = useState(false)
-  const items = segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
+  // The tappable bank was rendered in authored order, and authors list the targets
+  // first — so sweeping the leading chips scored full marks with no reasoning.
+  // Grading compares ids (`selected_ids` vs `target_ids`), so display order is free.
+  const items = useMemo(
+    () =>
+      seededSort(
+        segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>,
+        segment.id,
+        (i) => i.id,
+      ),
+    [segment],
+  )
   const seconds = segment.payload.seconds as number
   const targetIds = revealOf(verdict).target_ids as string[] | undefined
 

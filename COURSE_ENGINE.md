@@ -77,6 +77,16 @@ Lives in `coursegen/curriculum/<course-slug>/`, YAML, Zod-validated
 
 ### §3.1 Spaced-review layer (pedagogy: spacing effect + retrieval practice + interleaving)
 
+> **Enforced, not assumed.** `src/catalog/progression.ts` (run inside
+> `catalog:check`) proves a catalog describes a LEARNABLE path before any paid
+> call: it opens at difficulty 1 (`cold-start`), never jumps difficulty by more
+> than one step across the whole walk including saga seams (`ramp-cliff`), every
+> teaching saga is retrieved again at more than one distinct distance with the
+> first retrieval inside 12 topics (`retention-*`), no more than 4 consecutive
+> lessons share a shape (`monotony`), and one topic never piles on more than 6
+> facts or spans more than 2 difficulty steps. Measured over the authored corpus
+> — 4,254 blueprints, 4 courses — 0 errors, 1 warning.
+
 Review is DERIVED content — every review blueprint cites the teaching topics it
 consolidates (`review_of`), so Forge grounds it in already-validated concepts
 and the quality floor is inherited, not re-invented. Review share is capped by
@@ -232,12 +242,40 @@ gate      DETERMINISTIC, free, in order:
              quality maps must grade on 0–100 (a 0–1 or all-zero map makes the
              correct answer unpassable); compare_table cell keys must use the
              `<row>:<col>` colon form the player submits.
-          8. Clarity / visual-first gate (added after the 2026-07-24 1x1
-             review) — prompt_md ≤160 chars AND ≤3 sentences (story belongs in
-             narration, not the on-screen instruction); a non-graded content
-             type may not pose a fake gradeable question or congratulate an
-             answer never given; a choice type's correct-option text may not
-             appear verbatim in the prompt or a hint (answer leak).
+          8. Clarity / render-truth / fairness gate (grown through the
+             2026-07-24 reviews and a code-grounded grader audit) — three
+             groups, all deterministic:
+             a. CLARITY — prompt_md ≤160 chars AND ≤3 sentences (story belongs
+                in narration, not the on-screen instruction); a non-graded
+                content type may not pose a fake gradeable question or
+                congratulate an answer never given; a choice type's
+                correct-option text may not appear verbatim in the prompt or a
+                hint (answer leak).
+             b. RENDER TRUTH — the child must be able to reach the keyed answer
+                from what is ON SCREEN. compare_table source cells need their
+                value AND row named in prompt_md (the table has no data panel);
+                pattern_complete may not be framed by size/price (tiles are only
+                an icon + a tint, so those are invisible) and its answer must
+                continue the visible pattern; robot_path commands must actually
+                reach the goal; coin_count may not pose a yes/no sufficiency
+                question (the widget only assembles a tray); measure_read's
+                instrument must match what the prompt asks; a stated Total in any
+                artifact list must ADD UP; match_pairs may not state the pairing;
+                debug_hunt may not ask for a correction it has no input for.
+             c. FAIRNESS — no exercise may be passable by a mechanical strategy.
+                balance_scale must have slack (else "tap everything" balances)
+                and a reachable target; red_flags/speed_tap need items to
+                REJECT; equation_builder needs distractors; build_sentence with
+                distractors must be short enough that one wrong slot fails
+                (positional credit is (slots-1)/slots — 80 at 5 slots clears a
+                70 gate); budget_fit needs real needs AND real wants AND a
+                basket that exceeds the budget; and keyed targets may not sit as
+                a contiguous PREFIX of their bank (the shape "tap the first N"
+                exploits — found shipped in speed_tap and red_flags).
+             The engine side of the same class lives in the Lesson Engine:
+             `core/shuffle.ts` decorrelates every answer bank from the authored
+             order, and reveal-only affordances (budget_fit's NEED badge) never
+             label the answer before it is given.
    ↓
 images    Every concrete-object slot across ALL families (option/item/card
           tiles, memory sides, would-you-rather/flash-match sides, count-objects

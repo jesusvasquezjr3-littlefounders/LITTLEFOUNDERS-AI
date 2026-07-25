@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   KidSlider,
   NumberPad,
@@ -349,7 +350,19 @@ export function PiggySplit({ segment, value, onChange, disabled, verdict }: Exer
 
 export function NeedsWants({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const items = segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
+  // The item list was rendered in authored order, and authors group the needs
+  // first, so the sort was passable as "tap Need down the top block" with no
+  // needs-vs-wants thinking. Grading is by `needs_ids` (a set of item ids), so
+  // display order is free.
+  const items = useMemo(
+    () =>
+      seededSort(
+        segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>,
+        segment.id,
+        (i) => i.id,
+      ),
+    [segment],
+  )
   const draft = draftOf(value)
   const decisions = (draft.decisions as Record<string, boolean> | undefined) ?? {}
   const correctNeeds = revealOf(verdict).needs_ids as string[] | undefined
@@ -402,7 +415,26 @@ export function NeedsWants({ segment, value, onChange, disabled, verdict }: Exer
 
 export function PriceCompare({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const offers = segment.payload.offers as Array<{ id: string; label: string; qty: number; unit: string; price: number; image_url?: string }>
+  // The offer bank was rendered in authored order, which parallels the answer key
+  // (authors list the best-unit-price deal first), so the child could win by
+  // tapping the top card. Grading is by `offer_id`, so display order is free —
+  // each card carries its own qty/price, nothing here is read as a sequence.
+  const offers = useMemo(
+    () =>
+      seededSort(
+        segment.payload.offers as Array<{
+          id: string
+          label: string
+          qty: number
+          unit: string
+          price: number
+          image_url?: string
+        }>,
+        segment.id,
+        (o) => o.id,
+      ),
+    [segment],
+  )
   const currency = segment.payload.currency as string
   const format = useMoneyFormat(currency)
   const formatNumber = useNumberFormat()
@@ -704,6 +736,16 @@ export function InterestPeek({ segment, disabled, onFinish, verdict }: ExerciseP
     return (n: number) => fmt.format(n)
   }, [i18n.language])
 
+  // The prediction bank was rendered in authored order, which parallels the answer
+  // key (authors write the true grown amount first and the misconception
+  // distractors after it), so the prediction was winnable by tapping the top
+  // option. Grading is by `option_id`, so display order is free. Distinct ':p'
+  // sub-seed keeps this bank uncorrelated with any other list in the segment.
+  const predictionOptions = useMemo(
+    () => (prediction.kind === 'choice' ? seededSort(prediction.options, segment.id + ':p', (o) => o.id) : undefined),
+    [prediction, segment.id],
+  )
+
   const [phase, setPhase] = useState<'predict' | 'grow'>(verdict ? 'grow' : 'predict')
   const [choiceId, setChoiceId] = useState<string | undefined>(undefined)
   const [sliderValue, setSliderValue] = useState(prediction.kind === 'slider' ? prediction.min : 0)
@@ -750,7 +792,7 @@ export function InterestPeek({ segment, disabled, onFinish, verdict }: ExerciseP
         </div>
         {prediction.kind === 'choice' ? (
           <div className="space-y-3" role="radiogroup">
-            {prediction.options.map((option) => (
+            {(predictionOptions ?? prediction.options).map((option) => (
               <OptionCard
                 key={option.id}
                 role="radio"

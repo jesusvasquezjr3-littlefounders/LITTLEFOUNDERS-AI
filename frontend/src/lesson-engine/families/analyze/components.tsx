@@ -173,9 +173,18 @@ export function CompareTable({ segment, value, onChange, disabled, verdict }: Ex
   const draft = draftOf(value)
   const cells = (draft.cells as Record<string, string> | undefined) ?? {}
   const [focused, setFocused] = useState<string | null>(null)
+  // rows/cols are NOT shuffled: they define the table the child reads, and the
+  // cell keys are built from their ids. Only the token bank moves — it was
+  // rendered in the authored order, which authors write cell-by-cell (row-major)
+  // matching the key, so the bank could be emptied left-to-right without reading
+  // the table. Grading is by cell→token id, so display order is free.
   const rows = segment.payload.rows as Array<{ id: string; label: string }>
   const cols = segment.payload.cols as Array<{ id: string; label: string }>
-  const tokens = segment.payload.tokens as Array<{ id: string; text_md: string }>
+  const tokens = seededSort(
+    segment.payload.tokens as Array<{ id: string; text_md: string }>,
+    `${segment.id}:tk`,
+    (tk) => tk.id,
+  )
   const correctCells = revealOf(verdict).cells as Record<string, string> | undefined
   const usedTokenIds = new Set(Object.values(cells))
   const tokenText = (id: string) => tokens.find((tk) => tk.id === id)?.text_md ?? ''
@@ -516,7 +525,13 @@ export function ReadChart({ segment, value, onChange, disabled, verdict }: Exerc
         <div key={q.id} className="space-y-2">
           <MarkdownLite text={q.prompt_md} className="lf-body font-semibold text-content" />
           <div className="space-y-2" role="radiogroup">
-            {q.options.map((option) => {
+            {/* Each question's option bank was rendered in the authored order,
+                where the correct option is written first — tapping the top
+                option answered every question. Grading is by id (reveal.correct
+                keyed per question), so display order is free. The chart series
+                and points above are DATA and are never reordered; the sub-seed
+                is per question so two questions don't correlate. */}
+            {seededSort(q.options, `${segment.id}:q:${q.id}`, (o) => o.id).map((option) => {
               let state: OptionVisualState = answers[q.id] === option.id ? 'selected' : 'idle'
               if (verdict && correct) {
                 if (option.id === correct[q.id]) state = 'correct'
@@ -605,7 +620,15 @@ export function RedFlags({ segment, value, onChange, disabled, verdict }: Exerci
   const selected = (draft.selected as string[] | undefined) ?? []
   const artifact = segment.payload.artifact_md as string
   const kind = segment.payload.artifact_kind as string
-  const flags = segment.payload.flags as Array<{ id: string; text_md: string }>
+  // The flag bank was rendered in the authored order, and authors list the real
+  // red flags first, so ticking the top rows scored full marks without reading
+  // the artifact. Grading is by id (reveal.redflag_ids), so display order is
+  // free; seededSort keeps it stable per segment across renders and retries.
+  const flags = seededSort(
+    segment.payload.flags as Array<{ id: string; text_md: string }>,
+    `${segment.id}:fl`,
+    (f) => f.id,
+  )
   const redflagIds = revealOf(verdict).redflag_ids as string[] | undefined
   return (
     <div className="space-y-4">
@@ -644,7 +667,16 @@ export function FactOpinion({ segment, value, onChange, disabled, verdict }: Exe
   const { t } = useTranslation()
   const draft = draftOf(value)
   const decisions = (draft.decisions as Record<string, 'fact' | 'opinion'> | undefined) ?? {}
-  const statements = segment.payload.statements as Array<{ id: string; text_md: string }>
+  // The statement list was rendered in the authored order, and authors block the
+  // facts first (the key is `fact_ids`), so the run of "fact" taps at the top
+  // followed by "opinion" scored full marks without judging any statement.
+  // Grading is by id, so display order is free. The fact/opinion chip pair below
+  // is fixed UI, not an authored bank — it stays put.
+  const statements = seededSort(
+    segment.payload.statements as Array<{ id: string; text_md: string }>,
+    `${segment.id}:st`,
+    (s) => s.id,
+  )
   const factIds = revealOf(verdict).fact_ids as string[] | undefined
   return (
     <ul className="space-y-3">
