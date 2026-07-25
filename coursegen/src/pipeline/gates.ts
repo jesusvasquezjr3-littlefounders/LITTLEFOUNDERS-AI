@@ -1340,8 +1340,15 @@ function clusteredAnswers(document: LessonDocumentParsed): GateProblem[] {
     const answer = (segment as { answer?: Record<string, unknown> }).answer;
     const bank = Array.isArray(payload[spec.bank]) ? (payload[spec.bank] as Array<{ id?: unknown }>) : [];
     const targets = Array.isArray(answer?.[spec.key]) ? (answer[spec.key] as unknown[]).map(String) : [];
-    // A prefix is only a "cluster" if some of the bank is left over.
-    if (bank.length < 3 || targets.length === 0 || targets.length >= bank.length) continue;
+    /*
+     * A prefix is only a "cluster" when some of the bank is left over AND there
+     * are at least TWO targets: with a single target, "first in the list" is an
+     * arbitrary position the shuffle randomises anyway, and forbidding it would
+     * outlaw 1 of N placements for no gain. The exploit this gate exists for is
+     * "tap the first N and get N right", which needs N >= 2. (Caught as a false
+     * positive on a regenerated evidence_hunt with one keyed sentence.)
+     */
+    if (bank.length < 3 || targets.length < 2 || targets.length >= bank.length) continue;
     const targetSet = new Set(targets);
     const positions = bank
       .map((item, i) => (item && targetSet.has(String(item.id)) ? i : -1))

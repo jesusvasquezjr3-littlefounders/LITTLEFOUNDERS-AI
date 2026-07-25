@@ -950,3 +950,23 @@ describe('gate 8: clustered answers (defence in depth behind the render-time shu
     expect(problems.some((p) => p.message.includes('nothing to reject'))).toBe(true);
   });
 });
+
+describe('gate 8: clustered answers — single-target lists are not "clustered"', () => {
+  it('does not flag a one-target bank whose target happens to be first', () => {
+    // Regression: a regenerated evidence_hunt with ONE keyed sentence was flagged.
+    // "Tap the first N and get N right" needs N >= 2 to be a strategy at all.
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = {
+      id: 's1', type: 'evidence_hunt', prompt_md: 'Toca el renglón correcto.', difficulty: 2, xp: 15,
+      payload: {
+        claim_md: 'Los limones costaron 12 pesos.',
+        sentences: [
+          { id: 's1', text_md: 'Limones - 12 pesos' }, { id: 's2', text_md: 'Vasos - 15 pesos' },
+          { id: 's3', text_md: 'Azúcar - 8 pesos' }, { id: 's4', text_md: 'Total - 35 pesos' },
+        ],
+      },
+      answer: { evidence_ids: ['s1'] },
+    };
+    expect(runClarityGate(d).filter((p) => p.message.includes('contiguous prefix'))).toHaveLength(0);
+  });
+});
