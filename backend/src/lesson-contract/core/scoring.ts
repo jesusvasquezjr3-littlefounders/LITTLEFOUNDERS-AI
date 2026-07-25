@@ -85,17 +85,48 @@ export function decisionAccuracy(selected: string[], positives: string[], univer
   return ratio(good, universe.length)
 }
 
-/** max(0, hits − false alarms) / positives — punishes flag-everything strategies. */
-export function signalDetection(selected: string[], positives: string[]): number {
+/**
+ * Signal detection — rewards discrimination, not volume.
+ *
+ * Youden's J: hit rate minus false-alarm rate, scaled to 0-100. `total` is the
+ * number of SELECTABLE items, so negatives = total - positives.
+ *
+ * WHY THE FORMULA CHANGED (2026-07-24): this used to be
+ * `ratio(max(0, hits - falseAlarms), positives.length)`, which subtracts a flat 1
+ * per false alarm and therefore cannot punish "select everything" when there are
+ * few distractors. Measured on the live red-flags lesson (4 red flags, 1 innocent
+ * line): tapping every card scored ratio(4-1, 4) = 75, clearing the 70 pass
+ * threshold — so the anti-"flag-everything" design the type exists for was
+ * defeated by the scorer. With rates instead of counts, selecting everything
+ * always yields hitRate 1 - faRate 1 = 0, at any ratio of positives to negatives.
+ *
+ * The false-alarm rate is weighted 0.5 deliberately. At weight 1.0 (textbook
+ * Youden) a single slip is unrecoverable when there are few negatives — with 4
+ * targets and 2 innocents, one false alarm caps the score at 50% hit rate and the
+ * child cannot pass however well they discriminated. At 0.5 the two properties we
+ * need both hold: "select everything" scores at most 1 - 0.5 = 50 and so can NEVER
+ * clear the 70 threshold at ANY positive:negative ratio (the bug), while a child
+ * who found every target with one slip still earns 75 (fairness).
+ *
+ * A degenerate item set with NO negatives makes discrimination impossible
+ * (everything is a target, so faRate is always 0); coursegen's gate 7 rejects
+ * that at authoring time rather than silently scoring it 100 here.
+ */
+export function signalDetection(selected: string[], positives: string[], total: number): number {
   if (positives.length === 0) return 0
   const pos = new Set(positives)
+  const picked = new Set(selected)
   let hits = 0
   let falseAlarms = 0
-  new Set(selected).forEach((id) => {
+  picked.forEach((id) => {
     if (pos.has(id)) hits++
     else falseAlarms++
   })
-  return ratio(Math.max(0, hits - falseAlarms), positives.length)
+  const negatives = Math.max(0, total - pos.size)
+  const hitRate = hits / pos.size
+  const falseAlarmRate = negatives > 0 ? falseAlarms / negatives : 0
+  const FALSE_ALARM_WEIGHT = 0.5
+  return clampScore((hitRate - FALSE_ALARM_WEIGHT * falseAlarmRate) * 100)
 }
 
 /** 100 within tolerance, 50 within 2× tolerance, else 0. */

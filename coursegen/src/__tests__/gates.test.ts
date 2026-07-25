@@ -681,3 +681,109 @@ describe('runAllGates', () => {
     expect(report.problems.every((p) => p.gate === 1)).toBe(true);
   });
 });
+
+/*
+ * TRIVIAL-STRATEGY gate (gate 8). Every case below is a shape found PUBLISHED by
+ * the 2026-07-24 grader audit, where a mechanical strategy passed with no
+ * reasoning. The expected values mirror the real grader's arithmetic.
+ */
+describe('gate 8: trivial-strategy refusal', () => {
+  function doc(segment: Record<string, unknown>, scoring?: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = segment;
+    if (scoring) (d as unknown as Record<string, unknown>).scoring = { ...(d.scoring as object), ...scoring };
+    return d;
+  }
+
+  it('flags red_flags where EVERY item is a target (nothing to reject)', () => {
+    const seg = {
+      id: 's1', type: 'red_flags', prompt_md: '¿Cuáles son trampas?', difficulty: 2, xp: 15,
+      payload: { artifact_md: 'anuncio', artifact_kind: 'ad', flags: [{ id: 'f1', text_md: 'a' }, { id: 'f2', text_md: 'b' }, { id: 'f3', text_md: 'c' }, { id: 'f4', text_md: 'd' }] },
+      answer: { redflag_ids: ['f1', 'f2', 'f3', 'f4'] },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('nothing to reject'))).toBe(true);
+  });
+
+  it('accepts red_flags that includes innocent items', () => {
+    const seg = {
+      id: 's1', type: 'red_flags', prompt_md: '¿Cuáles son trampas?', difficulty: 2, xp: 15,
+      payload: { artifact_md: 'anuncio', artifact_kind: 'ad', flags: [{ id: 'f1', text_md: 'a' }, { id: 'f2', text_md: 'b' }, { id: 'f3', text_md: 'c' }, { id: 'f4', text_md: 'd' }] },
+      answer: { redflag_ids: ['f1', 'f2'] },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('nothing to reject'))).toHaveLength(0);
+  });
+
+  it('flags an equation_builder whose bank exactly fills the slots (no choice)', () => {
+    const seg = {
+      id: 's1', type: 'equation_builder', prompt_md: 'Arma la suma', difficulty: 2, xp: 15,
+      payload: { tokens: [{ id: 't1', text: '5' }, { id: 't2', text: '+' }, { id: 't3', text: '5' }], slots: 3, target_result: 10 },
+      answer: { accepted: ['t1 t2 t3'] },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('no decision to make'))).toBe(true);
+  });
+
+  it('accepts an equation_builder with distractor tokens', () => {
+    const seg = {
+      id: 's1', type: 'equation_builder', prompt_md: 'Arma la suma', difficulty: 2, xp: 15,
+      payload: { tokens: [{ id: 't1', text: '5' }, { id: 't2', text: '+' }, { id: 't3', text: '5' }, { id: 't4', text: '3' }, { id: 't5', text: '-' }], slots: 3, target_result: 10 },
+      answer: { accepted: ['t1 t2 t3'] },
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('no decision to make'))).toHaveLength(0);
+  });
+
+  it('flags a build_sentence where one wrong slot still clears the pass threshold', () => {
+    // 5 slots → one miss scores 80; with pass_threshold 70 the wrong price passes.
+    const seg = {
+      id: 's1', type: 'build_sentence', prompt_md: 'Arma el letrero', difficulty: 2, xp: 15,
+      payload: { tokens: [{ id: 't1', text_md: '2' }, { id: 't2', text_md: 'vasos' }, { id: 't3', text_md: 'por' }, { id: 't4', text_md: '10' }, { id: 't5', text_md: 'pesos' }, { id: 't6', text_md: '5' }], slots: 5 },
+      answer: { order: ['t1', 't2', 't3', 't4', 't5'] },
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('pass_threshold'))).toBe(true);
+  });
+
+  it('accepts the same build_sentence once the lesson raises its pass threshold', () => {
+    const seg = {
+      id: 's1', type: 'build_sentence', prompt_md: 'Arma el letrero', difficulty: 2, xp: 15,
+      payload: { tokens: [{ id: 't1', text_md: '2' }, { id: 't2', text_md: 'vasos' }, { id: 't3', text_md: 'por' }, { id: 't4', text_md: '10' }, { id: 't5', text_md: 'pesos' }, { id: 't6', text_md: '5' }], slots: 5 },
+      answer: { order: ['t1', 't2', 't3', 't4', 't5'] },
+    };
+    const problems = runClarityGate(doc(seg, { pass_threshold: 90 }));
+    expect(problems.filter((p) => p.message.includes('pass_threshold'))).toHaveLength(0);
+  });
+
+  it('flags a budget_fit whose needs alone already fit the budget', () => {
+    const seg = {
+      id: 's1', type: 'budget_fit', prompt_md: '¿Qué más cabe?', difficulty: 3, xp: 25,
+      payload: {
+        budget: 20, must_buy_needs: true,
+        items: [
+          { id: 'limones', label: 'Limones', price: 8, need: true },
+          { id: 'azucar', label: 'Azúcar', price: 6, need: true },
+          { id: 'hielo', label: 'Hielo', price: 5 },
+        ],
+      },
+      answer: {},
+    };
+    const problems = runClarityGate(doc(seg));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('needs alone'))).toBe(true);
+  });
+
+  it('accepts a budget_fit where the needs consume enough that the fit is the exercise', () => {
+    const seg = {
+      id: 's1', type: 'budget_fit', prompt_md: '¿Qué más cabe?', difficulty: 3, xp: 25,
+      payload: {
+        budget: 20, must_buy_needs: true,
+        items: [
+          { id: 'limones', label: 'Limones', price: 10, need: true },
+          { id: 'azucar', label: 'Azúcar', price: 8, need: true },
+          { id: 'hielo', label: 'Hielo', price: 5 },
+        ],
+      },
+      answer: {},
+    };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('needs alone'))).toHaveLength(0);
+  });
+});

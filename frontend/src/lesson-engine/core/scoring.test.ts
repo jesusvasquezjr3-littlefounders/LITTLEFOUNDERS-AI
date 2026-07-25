@@ -52,9 +52,36 @@ describe('scoring helpers (LESSON_ENGINE.md §6)', () => {
 
   it('decisionAccuracy counts true negatives; signalDetection punishes spam', () => {
     expect(decisionAccuracy(['a'], ['a', 'b'], ['a', 'b', 'c', 'd'])).toBe(75)
-    expect(signalDetection(['a', 'b'], ['a', 'b'])).toBe(100)
-    // flag-everything: 2 hits − 2 false alarms = 0
-    expect(signalDetection(['a', 'b', 'c', 'd'], ['a', 'b'])).toBe(0)
+    // perfect discrimination: every target, no false alarm
+    expect(signalDetection(['a', 'b'], ['a', 'b'], 4)).toBe(100)
+    // select-everything: hitRate 1 − 0.5 × falseAlarmRate 1 = 50, below any pass gate
+    expect(signalDetection(['a', 'b', 'c', 'd'], ['a', 'b'], 4)).toBe(50)
+  })
+
+  it('signalDetection: selecting EVERYTHING can never pass, at ANY positive:negative ratio', () => {
+    /*
+     * This is the property the old counting formula could not hold. It scored
+     * `ratio(hits - falseAlarms, positives)`, so on the live red-flags shape — 4
+     * targets, 1 innocent line — tapping every card scored ratio(4-1, 4) = 75 and
+     * CLEARED the 70 threshold, defeating the whole point of the type. With rates,
+     * select-all is pinned at 50 no matter how the items are split.
+     */
+    expect(signalDetection(['a', 'b', 'c', 'd', 'e'], ['a', 'b', 'c', 'd'], 5)).toBe(50); // 4:1 (the live shape)
+    expect(signalDetection(['a', 'b', 'c'], ['a', 'b'], 3)).toBe(50); // 2:1
+    expect(signalDetection(['a', 'b', 'c', 'd', 'e', 'f'], ['a', 'b', 'c'], 6)).toBe(50); // 3:3
+    expect(signalDetection(['a', 'b', 'c', 'd', 'e', 'f'], ['a'], 6)).toBe(50); // 1:5
+  })
+
+  it('signalDetection: partial credit still rewards real discrimination', () => {
+    // 3 of 4 targets, no false alarms → 75 (passes: genuine discrimination)
+    expect(signalDetection(['a', 'b', 'c'], ['a', 'b', 'c', 'd'], 8)).toBe(75)
+    // every target plus ONE slip out of 4 negatives → 100 − 0.5×25 = 88 (a slip is
+    // forgiven; this is why the false-alarm rate is weighted 0.5 and not 1.0)
+    expect(signalDetection(['a', 'b', 'c', 'd', 'x'], ['a', 'b', 'c', 'd'], 8)).toBe(88)
+    // half the targets plus a slip → 50 − 12.5 = 38 (fails, correctly)
+    expect(signalDetection(['a', 'b', 'x'], ['a', 'b', 'c', 'd'], 8)).toBe(38)
+    // selecting nothing → 0, never negative
+    expect(signalDetection([], ['a', 'b'], 4)).toBe(0)
   })
 
   it('toleranceBands / linearFalloff (incl. log scale)', () => {

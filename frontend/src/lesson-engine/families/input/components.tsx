@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import type { ExerciseProps } from '../../core/types'
 import { fuzzyEquals } from '../../core/scoring'
+import { seededSort } from '../../core/shuffle'
 import {
   KidSlider,
   NumberPad,
@@ -476,7 +477,10 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
         role="group"
         aria-label={t('lesson.families.input.equation.bankLabel')}
       >
-        {tokens.map((tok) => {
+        {/* Shuffled: authors write `tokens` in solution order, so rendering the
+            bank verbatim let a child tap left-to-right and build the equation with
+            no reasoning (found 2026-07-24). Grading is by token id. */}
+        {seededSort(tokens, segment.id, (tok) => tok.id).map((tok) => {
           const used = placed.has(tok.id)
           return (
             <TokenChip

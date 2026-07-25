@@ -1089,8 +1089,115 @@ function clarityBalanceScale(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/**
+ * TRIVIAL-STRATEGY gate: refuse exercises a child can pass with a mechanical
+ * strategy that involves no reasoning. Each rule mirrors the arithmetic of the
+ * REAL grader (backend/src/lesson-contract) for that type, so it is a
+ * deterministic proof, not a heuristic. Cut from a code-grounded grader audit
+ * (2026-07-24) that found several published lessons passable by rote.
+ */
+function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  const passThreshold =
+    typeof (document as { scoring?: { pass_threshold?: unknown } }).scoring?.pass_threshold === 'number'
+      ? ((document as { scoring: { pass_threshold: number } }).scoring.pass_threshold)
+      : 70;
+
+  for (const segment of document.segments) {
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: Record<string, unknown> }).answer;
+
+    // ---- red_flags / speed_tap: discrimination needs something to reject -------
+    // signalDetection scores hitRate − 0.5·falseAlarmRate. With NO non-targets the
+    // false-alarm rate is always 0, so "select everything" scores a clean 100.
+    if (segment.type === 'red_flags' || segment.type === 'speed_tap') {
+      const items = Array.isArray(payload.flags)
+        ? (payload.flags as unknown[])
+        : Array.isArray(payload.items)
+          ? (payload.items as unknown[])
+          : [];
+      const targetIds = segment.type === 'red_flags'
+        ? (answer?.redflag_ids as unknown[] | undefined)
+        : (answer?.target_ids as unknown[] | undefined);
+      const targets = Array.isArray(targetIds) ? targetIds.length : 0;
+      if (items.length > 0 && targets >= items.length) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `${segment.type} "${segment.id}" marks EVERY item as a target (${targets}/${items.length}), so there is nothing to reject and "tap everything" scores 100 with zero reasoning. Include clearly-innocent items the child must leave alone.`,
+        });
+      }
+    }
+
+    // ---- equation_builder: the bank must pose a choice ------------------------
+    if (segment.type === 'equation_builder') {
+      const tokens = Array.isArray(payload.tokens) ? (payload.tokens as unknown[]) : [];
+      const slots = typeof payload.slots === 'number' ? payload.slots : tokens.length;
+      if (tokens.length > 0 && tokens.length <= slots) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `equation_builder "${segment.id}" has ${tokens.length} tokens for ${slots} slots — every tile must be used, so there is no decision to make and the child cannot get the arithmetic wrong. Add distractor tokens (a wrong operand or operator) so choosing correctly IS the exercise.`,
+        });
+      }
+    }
+
+    // ---- build_sentence: partial credit must not mask the objective ------------
+    // gradeBuildSentence uses `positional`: score = correctPositions/slots × 100.
+    // With distractors present, choosing the RIGHT one is the objective — but a
+    // single wrong slot still scores (slots-1)/slots. At slots=5 that is 80, which
+    // clears a 70 gate, so the child passes with the wrong number in the sentence.
+    if (segment.type === 'build_sentence') {
+      const tokens = Array.isArray(payload.tokens) ? (payload.tokens as unknown[]) : [];
+      const slots = typeof payload.slots === 'number' ? payload.slots : 0;
+      const hasDistractors = tokens.length > slots;
+      if (hasDistractors && slots > 0) {
+        const oneWrong = Math.round(((slots - 1) / slots) * 100);
+        if (oneWrong >= passThreshold) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `build_sentence "${segment.id}" has distractor tokens, but one wrong slot still scores ${oneWrong} ≥ pass_threshold ${passThreshold} (positional credit over ${slots} slots) — so a child who picks the WRONG distractor still passes and never has to do the reasoning the distractors test. Use fewer slots (so one miss fails) or raise this lesson's pass_threshold above ${oneWrong}.`,
+          });
+        }
+      }
+    }
+
+    // ---- budget_fit: needs alone must not be the whole answer ------------------
+    // gradeBudgetFit returns 100 when every need is bought and the total is within
+    // budget. If the needs alone fit, tapping just them scores 100 — and the widget
+    // no longer badges them, but the prompt usually names them, so the "what else
+    // fits" arithmetic the lesson is about is never exercised.
+    if (segment.type === 'budget_fit') {
+      const items = Array.isArray(payload.items)
+        ? (payload.items as Array<{ price?: unknown; need?: unknown }>)
+        : [];
+      const budget = typeof payload.budget === 'number' ? payload.budget : null;
+      const mustBuyNeeds = payload.must_buy_needs !== false;
+      if (budget !== null && items.length > 0 && mustBuyNeeds) {
+        const needsTotal = items
+          .filter((i) => i.need === true)
+          .reduce((sum, i) => sum + (typeof i.price === 'number' ? i.price : 0), 0);
+        const cheapestExtra = Math.min(
+          ...items.filter((i) => i.need !== true && typeof i.price === 'number').map((i) => i.price as number),
+          Number.POSITIVE_INFINITY,
+        );
+        if (Number.isFinite(cheapestExtra) && needsTotal + cheapestExtra <= budget) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `budget_fit "${segment.id}": the needs alone cost ${needsTotal} of a ${budget} budget, so buying ONLY the needs already scores 100 — the child never has to work out what else fits (${budget} − ${needsTotal}). Make the needs consume enough of the budget that the remaining choice is the exercise, or set must_buy_needs false and grade the fit itself.`,
+          });
+        }
+      }
+    }
+  }
+  return problems;
+}
+
 export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
+    ...trivialStrategy(document),
     ...clarityTextDensity(document),
     ...clarityFakeQuestion(document),
     ...clarityAnswerLeak(document),

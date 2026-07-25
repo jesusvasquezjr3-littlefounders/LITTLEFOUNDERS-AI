@@ -9,6 +9,7 @@ import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { OptionCard, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+import { seededSort } from '../../core/shuffle'
 
 type Dict = Record<string, unknown>
 const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
@@ -96,7 +97,11 @@ export function CauseEffect({ segment, value, onChange, disabled, verdict }: Exe
   const events = segment.payload.events as Array<{ id: string; text_md: string }>
   const slots = segment.payload.slots as number
   const revealChain = revealOf(verdict).chain as string[] | undefined
-  const bank = events.filter((e) => !chain.includes(e.id))
+  // Shuffle the bank: authors naturally write `events` in causal order, so
+  // rendering it verbatim let a child build the whole chain by tapping
+  // top-to-bottom with no reasoning (found 2026-07-24). Grading is by id, so the
+  // display order is free to differ; seededSort keeps it stable per segment.
+  const bank = seededSort(events.filter((e) => !chain.includes(e.id)), segment.id, (e) => e.id)
   const textOf = (id: string) => events.find((e) => e.id === id)?.text_md ?? ''
 
   const place = (id: string) => {

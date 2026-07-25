@@ -531,7 +531,12 @@ export function BudgetFit({ segment, value, onChange, disabled, verdict }: Exerc
                 <div className="min-w-0 flex-1">
                   <p className="lf-label text-content">
                     {item.label}
-                    {item.need ? (
+                    {/* The NEED badge is REVEAL-ONLY. Showing it before answering
+                        labelled the exact items the grader requires, so tapping the
+                        badged ones scored 100 with no needs-vs-wants thinking at all
+                        (found 2026-07-24). After the verdict it is teaching feedback:
+                        the child sees which items were the real needs. */}
+                    {item.need && verdict ? (
                       <span className="ml-2 inline-block rounded-full bg-accent-soft px-2 py-0.5 lf-caption text-accent-strong">
                         {t('lesson.families.money.need')}
                       </span>

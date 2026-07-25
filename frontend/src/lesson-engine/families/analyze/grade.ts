@@ -121,9 +121,12 @@ const gradeRedFlags: FamilyGrader = (segment, answer) => {
   const selected = a ? strArray(a.selected) : null
   const redflagIds = key ? strArray(key.redflag_ids) : null
   if (!selected || !redflagIds) return MALFORMED
-  // Signal detection: flag-everything gets punished (§5.6 #44).
+  // Signal detection: flag-everything gets punished (§5.6 #44) — the scorer needs
+  // the TOTAL item count to compute a false-alarm RATE, otherwise "tap every card"
+  // can clear the threshold when there are few innocent lines.
+  const flags = Array.isArray(segment.payload.flags) ? (segment.payload.flags as unknown[]) : []
   return {
-    score: signalDetection(selected, redflagIds),
+    score: signalDetection(selected, redflagIds, flags.length),
     reveal: { redflag_ids: redflagIds },
   }
 }
