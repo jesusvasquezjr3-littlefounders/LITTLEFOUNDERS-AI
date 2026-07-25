@@ -17,7 +17,7 @@
 # way; only the illustration/audio playback itself is unavailable until that
 # developer regenerates it locally (cheap — a few cents, see audiogen/README).
 #
-# Usage: bash scripts/export-course-fixture.sh qa-lesson-engine-smoketest \
+# Usage: bash scripts/export-course-fixture.sh first-lemonade-stand \
 #          seeds/qa-course-fixture.sql
 
 set -euo pipefail

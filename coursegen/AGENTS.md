@@ -55,7 +55,7 @@ The gates + schema enforce CORRECTNESS; the playbook enforces VALUE. `contentPla
 
 ## Lessons from the first real run (2026-07-13) — read before ANY pipeline change
 
-The `qa-lesson-engine-smoketest` course was the first time this pipeline ever ran against real APIs. Every rule below exists because its absence cost a real failure that day. Do not relearn these the expensive way:
+The `first-lemonade-stand` course was the first time this pipeline ever ran against real APIs. Every rule below exists because its absence cost a real failure that day. Do not relearn these the expensive way:
 
 1. **The model cannot infer JSON shapes from type names — never remove the shape examples.** `write.ts`/`review.ts` inject an exact per-type JSON example derived live from the Zod schemas (`shapeExample.ts`). Before that existed, DeepSeek invented a different wrong shape on every retry (`story_scene` produced 4 distinct invalid shapes in 4 attempts). If you add a segment type, the example is derived automatically — but if a type has NON-OBVIOUS semantics the schema can't express (id-reference sequences, index-keyed records, sentinel values), it ALSO needs a targeted line in `BASE_HARD_RULES` (see `equation_builder`/`pattern_complete`/`story_branch`/`savings_goal`/`fill_blank`/`picture_choice` there for the pattern).
 2. **Gate failures are corrective feedback, not death sentences.** Gates run INSIDE `write.ts`'s corrective-retry loop (via `WriteInput.gateCtx`) so their actionable messages reach the model's next attempt. If you add a gate, write its `message` so a model can act on it — name the field, the expected value, and the observed value.

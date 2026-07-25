@@ -1,0 +1,25 @@
+schema_version: 1
+# INTERNAL NOTE (never user-visible): this is the Lesson-Engine QA / smoke-test
+# course — one isolated forced-type exercise per engine type, used to validate the
+# whole generation pipeline (text, gates, judge, localization, images, audio,
+# endpoints) before a real mass run. Its NAME, DESCRIPTION and SLUG are
+# deliberately learner-facing: nothing a user can see may reveal that this is test
+# content. Only comments like this one and the docs say so.
+course:
+  slug: first-lemonade-stand
+  subject: mixed
+  title:
+    en-US: "My First Lemonade Stand"
+    es-MX: "Mi Primer Puesto de Limonada"
+    pt-BR: "Minha Primeira Banca de Limonada"
+  description:
+    en-US: "Liruf opens a lemonade stand and you help: count coins, give exact change, set a fair price, tell needs from wants, and save what is left. One small money skill per lesson."
+    es-MX: "Liruf abre un puesto de limonada y tú lo ayudas: contar monedas, dar el cambio exacto, poner un precio justo, distinguir necesidades de deseos y ahorrar lo que sobra. Una habilidad de dinero por lección."
+    pt-BR: "Liruf abre uma banca de limonada e você ajuda: contar moedas, dar o troco exato, definir um preço justo, separar necessidades de desejos e poupar o que sobra. Uma habilidade de dinheiro por lição."
+  authoring_locale: es-MX
+  # Type-coverage harness: one isolated forced-type exercise per lesson, NOT a
+  # sequenced narrative arc. Exempts the review judge's inter-lesson continuity
+  # requirement (arbitrary forced-type demos have no story to connect).
+  standalone: true
+adventures:
+  - file: adventures/01-estacion-de-pruebas.yaml

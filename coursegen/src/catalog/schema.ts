@@ -125,7 +125,8 @@ export const catalogFileSchema = z.object({
     requires: z.array(slugSchema).optional(),
     /**
      * Optional — set `true` for a course whose lessons are STANDALONE (a
-     * type-coverage / practice harness, e.g. qa-lesson-engine-smoketest),
+     * type-coverage / practice harness — the QA smoke-test course, published
+     * under the learner-facing slug first-lemonade-stand),
      * NOT a sequenced narrative arc. The review judge then does not penalize a
      * lesson's concreteness for "not connecting to the prior lesson" — an
      * artificial requirement between arbitrary forced-type demos. Absent =

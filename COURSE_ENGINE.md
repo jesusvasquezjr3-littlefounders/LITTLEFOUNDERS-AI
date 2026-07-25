@@ -415,7 +415,7 @@ Encodes mono MP3 (small, quality-preserving), stores in filebase
 the lesson_documents row. Idempotent by (lesson, locale, segment, voice,
 text-hash) — a voice change alone re-narrates just that unit.
 
-## §8 QA catalog — `coursegen/curriculum/qa-lesson-engine-smoketest/`
+## §8 QA catalog — `coursegen/curriculum/first-lemonade-stand/`
 
 A deliberately tiny, non-shipping course (62 lessons, never appears in §3.1b's
 sequence) that exercises the ENTIRE pipeline end to end before trusting it
@@ -428,4 +428,4 @@ and — once narrated — Echo end to end, plus every Core/frontend endpoint a
 real course would hit. `catalog:check` reports 0 errors and ~19 shape-quota
 WARNINGS by design (a compact QA catalog doesn't match real-course grammar —
 warnings, never errors, are the expected and correct outcome here). Run it
-first: `npm run generate -- --course qa-lesson-engine-smoketest`.
+first: `npm run generate -- --course first-lemonade-stand`.

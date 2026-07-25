@@ -13,7 +13,7 @@
 # by slug, so a freshly-generated course can be reviewed and made visible in
 # one deliberate step instead of 5 hand-written cascading UPDATEs. Idempotent.
 #
-# Usage: bash scripts/publish-course.sh qa-lesson-engine-smoketest
+# Usage: bash scripts/publish-course.sh first-lemonade-stand
 
 set -euo pipefail
 
