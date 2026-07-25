@@ -1,9 +1,9 @@
 // `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
 
-import { z } from 'zod';
-import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase.js';
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase.js'
 
-const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight']);
+const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
 
 export const typeAnswer = segmentSchema(
   'type_answer',
@@ -16,7 +16,7 @@ export const typeAnswer = segmentSchema(
     keywords: z.array(z.string().min(1).max(40)).min(1).optional(),
     case_sensitive: z.boolean().optional(),
   }),
-);
+)
 
 export const fillBlank = segmentSchema(
   'fill_blank',
@@ -41,7 +41,7 @@ export const fillBlank = segmentSchema(
       )
       .min(1),
   }),
-);
+)
 
 export const numberInput = segmentSchema(
   'number_input',
@@ -51,7 +51,7 @@ export const numberInput = segmentSchema(
     decimals_hint: z.number().int().min(0).max(4).optional(),
   }),
   z.object({ value: z.number(), tolerance: z.number().min(0) }),
-);
+)
 
 export const estimateSlider = segmentSchema(
   'estimate_slider',
@@ -67,19 +67,39 @@ export const estimateSlider = segmentSchema(
     full_credit_delta: z.number().min(0),
     zero_credit_delta: z.number().positive(),
   }),
-);
+)
 
 export const countObjects = segmentSchema(
   'count_objects',
   z.object({
     scene: z
-      .array(z.object({ icon: iconName, tint: sceneTint.optional(), count: z.number().int().min(1).max(12) }))
+      .array(
+        z.object({
+          icon: iconName,
+          /**
+           * Human-readable object name — REQUIRED, because two separate systems have
+           * no fallback without it: the image stage illustrates by label (no label →
+           * no picture at all), and a screen reader announces it. It was `.optional()`
+           * until 2026-07-25, and prose in coursegen's author instructions could not
+           * override a schema that said otherwise — the published count-objects lesson
+           * carried only {icon, tint, count} and shipped as bare icons, with zero
+           * pictures, in all three locales.
+           */
+          label: z.string().min(1).max(40),
+          image_url: imageUrl.optional(),
+          tint: sceneTint.optional(),
+          count: z.number().int().min(1).max(12),
+        }),
+      )
       .min(1)
       .max(6),
     ask_icon: iconName,
+    /** REQUIRED for the same reason: the object being counted must be named in words. */
+    ask_label: z.string().min(1).max(40),
+    ask_image_url: imageUrl.optional(),
   }),
   z.object({ value: z.number().int().min(0) }),
-);
+)
 
 export const equationBuilder = segmentSchema(
   'equation_builder',
@@ -90,7 +110,7 @@ export const equationBuilder = segmentSchema(
     target_result: z.number(),
   }),
   z.object({ accepted: z.array(z.string().min(1).max(80)).min(1) }),
-);
+)
 
 export const inputSchemas = [
   typeAnswer,
@@ -99,11 +119,11 @@ export const inputSchemas = [
   estimateSlider,
   countObjects,
   equationBuilder,
-] as const;
+] as const
 
-export type TypeAnswerSegment = z.infer<typeof typeAnswer>;
-export type FillBlankSegment = z.infer<typeof fillBlank>;
-export type NumberInputSegment = z.infer<typeof numberInput>;
-export type EstimateSliderSegment = z.infer<typeof estimateSlider>;
-export type CountObjectsSegment = z.infer<typeof countObjects>;
-export type EquationBuilderSegment = z.infer<typeof equationBuilder>;
+export type TypeAnswerSegment = z.infer<typeof typeAnswer>
+export type FillBlankSegment = z.infer<typeof fillBlank>
+export type NumberInputSegment = z.infer<typeof numberInput>
+export type EstimateSliderSegment = z.infer<typeof estimateSlider>
+export type CountObjectsSegment = z.infer<typeof countObjects>
+export type EquationBuilderSegment = z.infer<typeof equationBuilder>

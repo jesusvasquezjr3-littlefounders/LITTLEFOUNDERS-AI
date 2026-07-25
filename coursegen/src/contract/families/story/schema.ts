@@ -2,18 +2,19 @@
 // Content types carry NO answer schema: they are ungraded, ship with `xp: 0`
 // and always count as complete on advance (§3).
 
-import { z } from 'zod';
+import { z } from 'zod'
 import {
   characterActionSchema,
   characterEmotionSchema,
   characterIdSchema,
   iconName,
+  imageUrl,
   markdownLite,
   segmentSchema,
-} from '../../core/schemaBase.js';
+} from '../../core/schemaBase.js'
 
 /** Icon tint vocabulary — mirrors BigIconTile's tint prop (core/primitives). */
-const artTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight']);
+const artTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
 
 export const storyDialogue = segmentSchema(
   'story_dialogue',
@@ -30,7 +31,7 @@ export const storyDialogue = segmentSchema(
       .min(1)
       .max(12),
   }),
-);
+)
 
 export const storyScene = segmentSchema(
   'story_scene',
@@ -40,9 +41,9 @@ export const storyScene = segmentSchema(
     emotion: characterEmotionSchema.optional(),
     action: characterActionSchema.optional(),
     body_md: markdownLite,
-    art: z.object({ icon: iconName, tint: artTint }).optional(),
+    art: z.object({ icon: iconName, image_url: imageUrl.optional(), tint: artTint }).optional(),
   }),
-);
+)
 
 export const keyIdeas = segmentSchema(
   'key_ideas',
@@ -51,6 +52,7 @@ export const keyIdeas = segmentSchema(
       .array(
         z.object({
           icon: iconName,
+          image_url: imageUrl.optional(),
           title: z.string().min(1).max(80),
           body_md: markdownLite,
         }),
@@ -58,7 +60,7 @@ export const keyIdeas = segmentSchema(
       .min(2)
       .max(5),
   }),
-);
+)
 
 export const conceptReveal = segmentSchema(
   'concept_reveal',
@@ -69,12 +71,13 @@ export const conceptReveal = segmentSchema(
           front_md: markdownLite,
           back_md: markdownLite,
           icon: iconName.optional(),
+          image_url: imageUrl.optional(),
         }),
       )
       .min(2)
       .max(6),
   }),
-);
+)
 
 export const checkpoint = segmentSchema(
   'checkpoint',
@@ -82,7 +85,7 @@ export const checkpoint = segmentSchema(
     recap_md: markdownLite,
     mood_prompt_md: markdownLite.optional(),
   }),
-);
+)
 
 export const storySchemas = [
   storyDialogue,
@@ -90,10 +93,10 @@ export const storySchemas = [
   keyIdeas,
   conceptReveal,
   checkpoint,
-] as const;
+] as const
 
-export type StoryDialogueSegment = z.infer<typeof storyDialogue>;
-export type StorySceneSegment = z.infer<typeof storyScene>;
-export type KeyIdeasSegment = z.infer<typeof keyIdeas>;
-export type ConceptRevealSegment = z.infer<typeof conceptReveal>;
-export type CheckpointSegment = z.infer<typeof checkpoint>;
+export type StoryDialogueSegment = z.infer<typeof storyDialogue>
+export type StorySceneSegment = z.infer<typeof storyScene>
+export type KeyIdeasSegment = z.infer<typeof keyIdeas>
+export type ConceptRevealSegment = z.infer<typeof conceptReveal>
+export type CheckpointSegment = z.infer<typeof checkpoint>

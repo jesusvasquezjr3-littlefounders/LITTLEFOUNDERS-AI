@@ -38,6 +38,12 @@ validate (catalog/) → plan → write → gate → review → localize → imag
 
 `npm run contract:check` is the gate: it normalizes each pair (strips `import` lines and all whitespace/semicolons — coursegen and frontend use different formatting conventions, that's not drift) and diffs. Run it after any frontend contract change and after touching anything in `src/contract/`.
 
+> **RUN THE RIGHT ONE.** `backend` has its OWN `contract:check` (backend/src/lesson-contract ↔ frontend). Running that one and seeing "OK" says NOTHING about coursegen's copies — a mistake made on 2026-07-25 that let real drift sit unnoticed for the whole session. From the repo root, both matter: `cd coursegen && npm run contract:check` AND `cd backend && npm run contract:check`.
+>
+> **WHY DRIFT IS SILENT AND EXPENSIVE.** Zod objects STRIP unknown keys by default. So when the frontend contract gained a field that coursegen's copy lacked, the author dutifully emitted it, gate 1 validated the document, and the field was DELETED — no error, no warning, nothing in the logs. Measured that day: 7 of 10 files had drifted, all of them missing exactly the visual-first fields added earlier in the branch (`image_url`, `icon`, `label`, `ask_label`, `ask_image_url`). `image_url` happened to be harmless because `illustrateSegments` writes it AFTER validation, but `count_objects`'s `label` was not: the author's labels were stripped, the image stage found nothing to draw, and the lesson shipped as bare icons with zero pictures in all three locales.
+>
+> The lesson generalizes: after ANY change to `frontend/src/lesson-engine/**/schema.ts`, re-copy and run coursegen's `contract:check` in the SAME commit. A stale copy does not fail loudly — it quietly deletes content.
+
 `src/contract/core/types.ts` is a deliberately **minimal subset** of the frontend original (just `LESSON_LOCALES`/`LESSON_SUBJECTS` — nothing that pulls in React) and is **not** part of the byte-diffed set. `src/contract/registry.ts` is Forge-only (derives type→family/schema maps from the copied schemas) and has no frontend counterpart.
 
 ## Curriculum catalog authoring
