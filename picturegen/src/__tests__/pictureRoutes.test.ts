@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
+import sharp from 'sharp';
 import { createApp } from '../app.js';
 import { ImageError } from '../gen/errors.js';
 import { fallbackPrompt, LF_VISUAL_IDENTITY } from '../judge/promptJudge.js';
@@ -95,10 +96,15 @@ describe('POST /api/v1/pictures — cache HIT', () => {
 });
 
 describe('POST /api/v1/pictures — cache MISS', () => {
-  it('runs the full judge → generate → verify → upload → insert flow with the correct hash', async () => {
+  it('runs the full judge → generate → verify → TRANSCODE → upload → insert flow with the correct hash', async () => {
+    // A structurally real PNG — the storage transcode (gen/transcode.ts) must
+    // turn it into WebP before the Depot upload.
+    const realPng = await sharp({ create: { width: 32, height: 32, channels: 3, background: { r: 250, g: 200, b: 40 } } })
+      .png()
+      .toBuffer();
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text, watermark' });
     const findByHash = vi.fn().mockResolvedValue(null);
-    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([1, 2, 3]), contentType: 'image/png' });
+    const generateImage = vi.fn().mockResolvedValue({ bytes: realPng, contentType: 'image/png' });
     const verifyPictorial = vi.fn().mockResolvedValue('clean');
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
@@ -120,16 +126,46 @@ describe('POST /api/v1/pictures — cache MISS', () => {
       { prompt: CRAFTED_PROMPT, negativePrompt: 'text, watermark' },
       expect.objectContaining({ model: 'qwen-image', size: '1024*1024' }),
     );
-    // Upload targets the lesson-images bucket, filename keyed on the cache hash.
+    // The verifier saw the ORIGINAL PNG bytes (webp support never has to be proven).
+    expect(verifyPictorial).toHaveBeenCalledWith(realPng, 'image/png', expect.any(Object));
+    // Upload targets the lesson-images bucket, filename keyed on the cache
+    // hash — and carries the TRANSCODED WebP, not the PNG.
     expect(uploadFile).toHaveBeenCalledWith(
       expect.any(Buffer),
+      `${MISS_HASH}.webp`,
+      'image/webp',
+      'lesson-images',
+      'public',
+      expect.any(Object),
+    );
+    const uploadedBytes = uploadFile.mock.calls[0]?.[0] as Buffer;
+    expect(uploadedBytes.subarray(8, 12).toString('ascii')).toBe('WEBP');
+    expect(insertAsset).toHaveBeenCalledWith(expect.objectContaining({ prompt_hash: MISS_HASH, model: 'qwen-image', prompt: CRAFTED_PROMPT }));
+  });
+
+  it('stores the ORIGINAL bytes when the transcode cannot decode them — a paid generation is never lost', async () => {
+    const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
+    const findByHash = vi.fn().mockResolvedValue(null);
+    const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([1, 2, 3]), contentType: 'image/png' });
+    const verifyPictorial = vi.fn().mockResolvedValue('clean');
+    const uploadFile = vi.fn().mockResolvedValue(uploadResult);
+    const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
+
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const res = await request(app)
+      .post('/api/v1/pictures')
+      .set('x-internal-api-key', KEY)
+      .send({ label: 'a jar of coins', context: 'saving up', purpose: 'lesson_option' });
+
+    expect(res.status).toBe(200);
+    expect(uploadFile).toHaveBeenCalledWith(
+      Buffer.from([1, 2, 3]),
       `${MISS_HASH}.png`,
       'image/png',
       'lesson-images',
       'public',
       expect.any(Object),
     );
-    expect(insertAsset).toHaveBeenCalledWith(expect.objectContaining({ prompt_hash: MISS_HASH, model: 'qwen-image', prompt: CRAFTED_PROMPT }));
   });
 
   it('still generates when the judge fails — using the deterministic fallback prompt', async () => {

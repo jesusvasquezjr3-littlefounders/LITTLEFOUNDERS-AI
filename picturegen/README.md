@@ -66,6 +66,7 @@ it in the lesson. `purpose` ∈ `lesson_option | memory_card | scene | generic`
 | `PICTUREGEN_MAX_ATTEMPTS` | `4` | Max transport attempts per HTTP call (429/5xx retried) |
 | `VERIFY_MODEL` | `qwen-vl-plus` | Vision model that inspects every fresh image for readable text/numerals |
 | `PICTUREGEN_VERIFY_ATTEMPTS` | `3` | Judge→generate→verify attempts before `IMAGE_VERIFICATION_FAILED`; `0` disables |
+| `IMAGE_WEBP_QUALITY` | `82` | WebP quality for the storage transcode (every image is stored as WebP; −96.9% vs PNG measured) |
 
 ## Cost warning
 

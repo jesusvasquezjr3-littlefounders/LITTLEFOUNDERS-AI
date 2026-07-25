@@ -86,6 +86,20 @@ on the inspector. Judge hard rules complement it: never name denominations
 (even quoted — they get engraved verbatim), never mention text-carrying props
 (signs, banners, price tags, chalkboards, menus).
 
+## Storage transcode — WebP before Depot
+
+`qwen-image` serves ~900 KB 1024×1024 PNGs; `src/gen/transcode.ts` re-encodes
+every fresh generation as **WebP** (`IMAGE_WEBP_QUALITY`, default 82) before
+the Depot upload — measured −96.9% on the live corpus (888 KB median → 15–99 KB),
+visually verified transparent at 1:1 on the most detailed image (2026-07-25).
+Ordering is deliberate: the transcode runs AFTER the pictorial verifier (qwen-vl
+always inspects the ORIGINAL PNG bytes, so WebP support in the vision model
+never has to be proven) and BEFORE the upload (the WebP is what gets
+content-addressed). On any encode failure the original bytes are stored
+untouched with a loud `console.warn` — a paid generation is never lost to a
+local encoder problem, and a systematic failure can't silently regress the
+catalog to PNG sizes.
+
 ## Invariants that bite here
 
 - **The provider URL is temporary — never persisted.** Prism ALWAYS downloads

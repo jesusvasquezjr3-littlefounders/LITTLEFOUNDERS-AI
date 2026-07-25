@@ -1,5 +1,6 @@
 import { craftImagePrompt, type PicturePurpose } from '../judge/promptJudge.js';
 import { generateImage } from '../gen/qwenImageClient.js';
+import { transcodeToWebp } from '../gen/transcode.js';
 import { verifyPictorial } from '../verify/pictorialCheck.js';
 import { findByHash, insertAsset, pictureAssetHash } from '../cache/pictureAssetsRepo.js';
 import { uploadFile } from '../filebase/client.js';
@@ -36,13 +37,14 @@ export interface GeneratePictureResult {
 export interface GeneratePictureDeps {
   craftImagePrompt: typeof craftImagePrompt;
   generateImage: typeof generateImage;
+  transcodeToWebp: typeof transcodeToWebp;
   verifyPictorial: typeof verifyPictorial;
   findByHash: typeof findByHash;
   insertAsset: typeof insertAsset;
   uploadFile: typeof uploadFile;
 }
 
-const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, verifyPictorial, findByHash, insertAsset, uploadFile };
+const defaultDeps: GeneratePictureDeps = { craftImagePrompt, generateImage, transcodeToWebp, verifyPictorial, findByHash, insertAsset, uploadFile };
 
 /**
  * Bump on any change to the LOOK of generated art (identity brief, palette,
@@ -146,7 +148,13 @@ export async function generatePicture(
     }
   }
 
-  const upload = await deps.uploadFile(image.bytes, `${hash}.${extFor(image.contentType)}`, image.contentType, 'lesson-images', 'public', {
+  // 4b. Storage transcode (PNG → WebP q~82, −96.9% measured) — AFTER the
+  // verifier saw the original pixels, BEFORE the bytes become the stored
+  // content address. Falls back to the original bytes on encode failure:
+  // the generation is already paid for.
+  const stored = await deps.transcodeToWebp(image.bytes, image.contentType, config.IMAGE_WEBP_QUALITY);
+
+  const upload = await deps.uploadFile(stored.bytes, `${hash}.${extFor(stored.contentType)}`, stored.contentType, 'lesson-images', 'public', {
     filebaseUrl: config.FILEBASE_URL,
     internalKey: config.FILEBASE_INTERNAL_KEY,
   });

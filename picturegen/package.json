@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "license": "UNLICENSED",
-  "engines": { "node": "24.x" },
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "tsc",
@@ -16,6 +18,7 @@
   },
   "dependencies": {
     "express": "^5.1.0",
+    "sharp": "^0.35.3",
     "zod": "^4.0.0"
   },
   "devDependencies": {

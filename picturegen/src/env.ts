@@ -44,6 +44,12 @@ const Env = z.object({
   // Max transport attempts per HTTP call (429/5xx retried with jittered backoff).
   PICTUREGEN_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(4),
 
+  // Storage transcode — every generated image is re-encoded WebP at this
+  // quality before the Depot upload (gen/transcode.ts: −96.9% vs the PNGs
+  // qwen-image serves, measured on the live corpus 2026-07-25). The verifier
+  // always inspects the ORIGINAL bytes, so this never affects verification.
+  IMAGE_WEBP_QUALITY: z.coerce.number().int().min(1).max(100).default(82),
+
   // Pictorial verifier — a vision model (same DashScope account) inspects
   // every freshly generated image for readable text/numerals and triggers a
   // regeneration when it finds any (see verify/pictorialCheck.ts for why
