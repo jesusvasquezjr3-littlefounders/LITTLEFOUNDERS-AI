@@ -53,6 +53,28 @@ Never hand-edit curriculum YAML from this package's code — if `catalog:check` 
 
 The gates + schema enforce CORRECTNESS; the playbook enforces VALUE. `contentPlaybook.ts` is ONE module injected into both `write.ts` (author creative brief + `tierReasoningGuidance`) and `review.ts` (judge binary engagement signals), so the author's bar and the judge's bar are identical. It exists because the 2026-07-23 manual QA found exercises mechanically valid but boring ("estúpidas, no aportan valor"). Core rules: application-not-recall, concrete-before-abstract (faded), guided discovery, a decision-with-a-stake premise, distractors tagged to a specific misconception, elaborated outcome-neutral feedback, and a per-tier abstraction ceiling (no profit/interest/percent for tier1). Research-grounded — see COURSE_ENGINE.md §4b for the source list. When you touch write/review prompts, keep the playbook injected; when you touch the playbook, it changes EVERY generation, so re-read §4b first.
 
+## Pedagogy is VALIDATED, not assumed (`src/catalog/progression.ts`)
+
+The catalog schema carries the pedagogy vocabulary (age tiers, per-lesson `difficulty`, `micro_objective`, the spaced-review layer's `review_of`, `prerequisites` with an earlier-only rule). `checkProgression` is what turns that vocabulary into a **guarantee**: it proves a catalog describes a learnable path before a single paid API call, and runs automatically inside `catalog:check`.
+
+It encodes the product promise — take a learner with ZERO prior knowledge to mastery, guiding them by the hand, with day-over-day retention, without boring or saturating them:
+
+| code | level | promise |
+|---|---|---|
+| `cold-start` | error | the course opens at difficulty 1, so a beginner has somewhere to stand |
+| `ramp-cliff` | error | difficulty never jumps more than +1 between consecutive lessons (drops are fine — consolidation eases off on purpose). Checked ACROSS topic/saga boundaries, not just inside a topic |
+| `retention-gap` | warning | every teaching saga is cited by some review topic — taught once and never retrieved does not stick |
+| `retention-single-shot` | warning | a saga is retrieved at more than one DISTINCT distance (one extra pass is not spaced practice) |
+| `first-review-too-far` | warning | the first retrieval lands within 12 topics, before the material decays into re-teaching |
+| `retention-backwards` | warning | reviews are positioned after the material they review, not before it |
+| `monotony` | warning | no more than 4 consecutive lessons share an identical family/type signature |
+| `cognitive-load` | warning | a topic introduces ≤ 6 facts |
+| `topic-difficulty-spread` | warning | one topic stays within 2 difficulty steps |
+
+`standalone: true` catalogs (type-coverage harnesses) are exempt from the retention checks — isolated demos have nothing to consolidate.
+
+**CALIBRATE AGAINST THE AUTHORED CURRICULUM, NOT INTUITION.** The first version of the spacing rule demanded a strictly increasing RAW review-citation sequence. It flagged all 32 teaching sagas of every large course — 96 false warnings — against a curriculum whose spacing is in fact textbook (measured distances 1, 2, 12, 33, 48, 176). The duplicates come from one review topic legitimately citing several topics of the same saga; only DISTINCT distances carry meaning. Current calibration over the real corpus: **4,254 blueprints across 4 courses → 0 errors, 1 warning** (a genuine 5-lesson monotony run in `investing`). If a new rule fires in bulk, measure before believing it — a rule that cries wolf trains people to ignore the gate.
+
 ## Lessons from the first real run (2026-07-13) — read before ANY pipeline change
 
 The `first-lemonade-stand` course was the first time this pipeline ever ran against real APIs. Every rule below exists because its absence cost a real failure that day. Do not relearn these the expensive way:

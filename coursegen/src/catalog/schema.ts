@@ -267,3 +267,6 @@ export const adventureFileSchema = z.object({
 });
 
 export type AdventureFile = z.infer<typeof adventureFileSchema>;
+/** Exported for the progression validator (src/catalog/progression.ts). */
+export type LessonBlueprint = z.infer<typeof lessonBlueprintSchema>;
+export type TopicBlueprint = z.infer<typeof topicBlueprintSchema>;
