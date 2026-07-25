@@ -308,7 +308,10 @@ zero-cost fallback — never emojis.
 ### 5.6 `analyze` family (7)
 
 39. **`spot_error`** — `{ context_md?, steps: IdText[] (3–10) }` →
-    `{ error_ids: id[], correction_md? }` → decision accuracy → find the flawed step(s).
+    `{ error_ids: id[], correction_md? }` → set F1 of the tapped set vs `error_ids`
+    (NOT decision accuracy: an untapped step is a default, not a decision, so
+    crediting it let "tap any one step" score 80 on a 10-step list) → find the
+    flawed step(s).
 40. **`cause_effect`** — `{ events: IdText[] (4–9, distractors ok), slots (3–6) }` →
     `{ chain: id[] }` → positional ratio → build the cause→effect chain.
 41. **`compare_table`** — `{ rows: IdLabel[] (2–4), cols: IdLabel[] (2–3), tokens: IdText[] }` →
@@ -328,8 +331,14 @@ zero-cost fallback — never emojis.
 ### 5.7 `storyplay` family (flows — 5)
 
 46. **`story_branch`** (flow) — `{ start_node, nodes: [{id, text_md, character?, emotion?, choices: [{id, text_md, next: id|null}]}] (2–12) }` →
-    `{ qualities: [{node_id, choice_id, score 0–100}] }` → mean quality of the chosen
-    path → branching decision story; wrong-ish paths still teach via consequences.
+    `{ qualities: [{node_id, choice_id, score 0–100}] }` → mean quality of the DECISIONS
+    on the chosen path → branching decision story; wrong-ish paths still teach via
+    consequences. A step taken at a node that offered only ONE choice (the authored
+    "continue"/ending beat) is **not** a decision and is not graded — crediting those
+    free steps let two keyed acknowledgements average a wrong decision up to a pass.
+    A tree with no multi-choice node keeps grading its forced steps (never unwinnable);
+    coursegen's gate 8 refuses to author that shape, an unkeyed choice at a real
+    decision node, an all-paths-pass key, or one no path can pass.
 47. **`dialogue_choice`** (flow) — `{ persona: {character, name?, role_md}, opening_md, turns: [{id, npc_md, replies: [{id, text_md, quality 0–100, react_md}]}] (2–6) }` →
     derived (qualities live in payload? NO — see note) → mean reply quality →
     scripted roleplay with an NPC character. **Note:** reply `quality`/`react_md` live
@@ -343,9 +352,13 @@ zero-cost fallback — never emojis.
     `{ correct: {question_id → option_id} }` → question ratio; in-round combo meter
     feeds the session streak → rapid-fire mini-quiz with momentum.
 50. **`would_you_rather`** — `{ a: {text_md, icon?}, b: {text_md, icon?}, followup_md? }` →
-    `{ qualities: {a: 0–100, b: 0–100}, reveal_md }` → chosen side's quality (both can
-    be 100 — genuine dilemmas allowed) → tradeoff pick; reveal explains what each choice
-    optimizes (opportunity cost made visceral).
+    `{ qualities: {a: 0–100, b: 0–100}, reveal_md }` → chosen side's quality → tradeoff
+    pick; reveal explains what each choice optimizes (opportunity cost made visceral).
+    The grader stays permissive (an all-zero map scores any valid pick 100, so no
+    published lesson is unwinnable) and reveals only WHICH side was rated higher, never
+    the raw numbers. Authoring is where the bar sits: it is ONE tap, so coursegen's
+    gate 8 refuses a key whose two sides BOTH clear `pass_threshold` — otherwise
+    "always tap the same card" is a complete strategy.
 
 ### 5.8 `maker` family (6)
 
@@ -392,7 +405,8 @@ interface Verdict {
 
 **Shared helpers** (`core/scoring.ts`, pure, unit-tested numerically): `binary`,
 `ratio`, `kendall`, `footrule`, `positional`, `jaccard`, `decisionAccuracy`,
-`signalDetection`, `toleranceBands`, `linearFalloff` (log-aware), `allocationRanges`,
+`setF1` (asserted-set precision/recall — for "find the targets" toggles where NOT
+tapping is the default), `signalDetection`, `toleranceBands`, `linearFalloff` (log-aware), `allocationRanges`,
 `pathQuality`, `calibration`, `sumEquals`, `fuzzyEquals` (NFD accent-strip +
 Levenshtein budget ⌊len/8⌋).
 

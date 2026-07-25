@@ -157,7 +157,11 @@ describe('gate 8: clarity / visual-first', () => {
     prompt_md,
     difficulty: 1,
     xp: 10,
-    payload: { target: 5, currency: 'MXN', denominations: [1, 2, 5] },
+    // Denominations were [1, 2, 5] here; the 5 was changed to a 10 on 2026-07-25
+    // because the target IS 5, and the trivial-strategy gate now refuses a
+    // coin_count whose target is one of its own denominations (one tap = 100).
+    // This fixture is about the SUFFICIENCY prompt rule, so it must be otherwise clean.
+    payload: { target: 5, currency: 'MXN', denominations: [1, 2, 10] },
   });
 
   it('flags a coin_count that poses a yes/no sufficiency question (no such control)', () => {
@@ -197,9 +201,83 @@ describe('gate 8: clarity / visual-first', () => {
     expect(problems.some((p) => p.gate === 8 && p.message.includes('unwinnable'))).toBe(true);
   });
 
+  // spot_error is graded with set-F1 over the tapped set vs answer.error_ids, so
+  // "tap every step" scores 2P/(N+P) — the gate evaluates exactly that expression.
+  const spotErrorSeg = (steps: number, errorIds: string[]) => ({
+    id: 's1',
+    type: 'spot_error',
+    prompt_md: 'Toca el paso equivocado.',
+    difficulty: 2,
+    xp: 15,
+    payload: { steps: Array.from({ length: steps }, (_, i) => ({ id: `p${i + 1}`, text_md: `Paso ${i + 1}` })) },
+    answer: { error_ids: errorIds, correction_md: 'La suma es 15, no 20.' },
+  });
+
+  it('flags a spot_error where most steps are flawed (tap-everything passes)', () => {
+    // 2 of 3 flawed → 2·2/(3+2) = 80 ≥ 70.
+    const problems = runClarityGate(docWithSegment(spotErrorSeg(3, ['p1', 'p2'])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('tap EVERY step'))).toBe(true);
+  });
+
+  it('flags a spot_error whose keyed error id is not a real step (unwinnable)', () => {
+    const problems = runClarityGate(docWithSegment(spotErrorSeg(4, ['p9'])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('unwinnable'))).toBe(true);
+  });
+
+  it('accepts the canonical spot_error shape: one flawed step among correct ones', () => {
+    // 1 of 4 flawed → tap-everything scores 2·1/5 = 40, well under the gate.
+    const problems = runClarityGate(docWithSegment(spotErrorSeg(4, ['p4']))).filter((p) =>
+      p.message.includes('spot_error'),
+    );
+    expect(problems.length).toBe(0);
+  });
+
   it('accepts a balance_scale with distractor weights and a reachable target', () => {
     const problems = runClarityGate(docWithSegment(balanceSeg([3, 3, 3, 3, 3, 2, 2], [5, 5, 5]))).filter((p) =>
       p.message.includes('balance_scale'),
+    );
+    expect(problems.length).toBe(0);
+  });
+
+  /*
+   * yes_no_cases is graded with balancedDecisionAccuracy — mean(sensitivity,
+   * specificity) — which pins both blanket answers at 50 on every MIXED key, so the
+   * engine needs no help there (naive_strategy_passes, closed in core/scoring.ts). What
+   * only authoring can prevent is a ONE-SIDED key: with `applies_ids` empty, "press NO
+   * on every case" IS the answer key and scores 100. The gate re-runs the real grader's
+   * arithmetic on both blanket strategies, so these tests are proofs, not heuristics.
+   */
+  const yesNoSeg = (cases: number, appliesIds: string[]) => ({
+    id: 's1',
+    type: 'yes_no_cases',
+    prompt_md: '¿La regla aplica?',
+    difficulty: 2,
+    xp: 15,
+    payload: {
+      rule_md: 'Una necesidad es algo sin lo que no puedes vivir bien.',
+      cases: Array.from({ length: cases }, (_, i) => ({ id: `c${i + 1}`, text_md: `Caso ${i + 1}` })),
+    },
+    answer: { applies_ids: appliesIds },
+  });
+
+  it('flags a yes_no_cases where the rule applies to NO case (press NO on everything = 100)', () => {
+    const problems = runClarityGate(docWithSegment(yesNoSeg(6, [])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('yes_no_cases') && p.message.includes('pressing NO'))).toBe(true);
+  });
+
+  it('flags a yes_no_cases where the rule applies to EVERY case (press YES on everything = 100)', () => {
+    const problems = runClarityGate(docWithSegment(yesNoSeg(4, ['c1', 'c2', 'c3', 'c4'])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('yes_no_cases') && p.message.includes('pressing YES'))).toBe(true);
+  });
+
+  it('flags a yes_no_cases whose keyed ids match no case (the grader ignores them, so NO wins)', () => {
+    const problems = runClarityGate(docWithSegment(yesNoSeg(5, ['zz'])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('yes_no_cases') && p.message.includes('match no payload.cases'))).toBe(true);
+  });
+
+  it('accepts a mixed yes_no_cases key: both blanket taps score 50, well under the gate', () => {
+    const problems = runClarityGate(docWithSegment(yesNoSeg(6, ['c1', 'c4']))).filter((p) =>
+      p.message.includes('yes_no_cases'),
     );
     expect(problems.length).toBe(0);
   });
@@ -733,15 +811,23 @@ describe('gate 8: trivial-strategy refusal', () => {
     expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('no decision to make'))).toHaveLength(0);
   });
 
-  it('flags a build_sentence where one wrong slot still clears the pass threshold', () => {
-    // 5 slots → one miss scores 80; with pass_threshold 70 the wrong price passes.
+  // EXPECTATION CHANGED (2026-07-25): this used to assert that a 5-slot
+  // build_sentence with distractors is REJECTED, because raw `positional` gave one
+  // wrong slot 80. The grader now caps any imperfect ordering at
+  // IMPERFECT_ORDER_CEILING (60), so one wrong slot cannot clear a 70 threshold at
+  // ANY slot count and the shape is legitimate. The gate mirrors that cap, and stays
+  // load-bearing only for a document that lowers its own pass mark to 60 or less —
+  // which is what this test now pins.
+  it('build_sentence: one wrong slot is only a free pass when the lesson pass mark is ≤ the order cap', () => {
     const seg = {
       id: 's1', type: 'build_sentence', prompt_md: 'Arma el letrero', difficulty: 2, xp: 15,
       payload: { tokens: [{ id: 't1', text_md: '2' }, { id: 't2', text_md: 'vasos' }, { id: 't3', text_md: 'por' }, { id: 't4', text_md: '10' }, { id: 't5', text_md: 'pesos' }, { id: 't6', text_md: '5' }], slots: 5 },
       answer: { order: ['t1', 't2', 't3', 't4', 't5'] },
     };
-    const problems = runClarityGate(doc(seg));
-    expect(problems.some((p) => p.gate === 8 && p.message.includes('pass_threshold'))).toBe(true);
+    // At the default 70 mark the capped score (60) fails, so nothing to flag.
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('pass_threshold'))).toBe(false);
+    // At a 60 mark the cap stops protecting the objective — flag it.
+    expect(runClarityGate(doc(seg, { pass_threshold: 60 })).some((p) => p.gate === 8 && p.message.includes('pass_threshold'))).toBe(true);
   });
 
   it('accepts the same build_sentence once the lesson raises its pass threshold', () => {
@@ -814,6 +900,200 @@ describe('gate 8: trivial-strategy refusal', () => {
     };
     expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('budget_fit'))).toHaveLength(0);
   });
+
+  /*
+   * money family, 2026-07-25. coin_count renders the target amount in a pill above
+   * a palette formatted with the SAME currency formatter, and the tray is graded on
+   * its sum — so a target that is itself a denomination is passable with one
+   * label-matching tap. piggy_split's only control is ±step per jar, and the grader
+   * pays 100 only when every jar is inside its range: an even split that satisfies
+   * every range is a label-blind win, and a step grid that cannot express the key
+   * makes the segment unwinnable.
+   */
+  const coinCount = (target: number, denominations: number[]) => ({
+    id: 's1', type: 'coin_count', prompt_md: 'Junta monedas para formar el total del día.', difficulty: 1, xp: 10,
+    payload: { target, currency: 'MXN', denominations },
+  });
+
+  it('flags a coin_count whose target is one of its own denominations (one tap = 100)', () => {
+    const problems = runClarityGate(doc(coinCount(5, [1, 2, 5, 10])));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('is itself one of the palette denominations'))).toBe(true);
+  });
+
+  it('accepts a coin_count whose target needs at least two coins', () => {
+    // 5 is not in [1, 2, 10], and the palette total (13) is not the target either.
+    expect(runClarityGate(doc(coinCount(5, [1, 2, 10]))).filter((p) => p.message.includes('coin_count'))).toHaveLength(0);
+  });
+
+  const piggySplit = (
+    payload: Record<string, unknown>,
+    targets: Record<string, { min: number; max: number }>,
+  ) => ({
+    id: 's1', type: 'piggy_split', prompt_md: 'Reparte lo que ganaste hoy.', difficulty: 2, xp: 15,
+    payload, answer: { targets },
+  });
+
+  it('flags a piggy_split where an even split lands inside every range', () => {
+    // income 10, step 1, 2 jars → tapping + in turn gives 5/5, inside both ranges.
+    const seg = piggySplit(
+      { income: 10, unit: 'MXN', step: 1, jars: [{ id: 'guitar', label: 'Guitarra', icon: 'savings' }, { id: 'ingredients', label: 'Ingredientes', icon: 'shopping_basket' }] },
+      { guitar: { min: 4, max: 6 }, ingredients: { min: 4, max: 6 } },
+    );
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('evenly across'))).toBe(true);
+  });
+
+  it('accepts the shipped piggy_split shape, where the even split misses a jar', () => {
+    // The published lesson: 10 in, exactly 6 for the guitar and 4 for ingredients.
+    const seg = piggySplit(
+      { income: 10, unit: 'MXN', step: 1, jars: [{ id: 'guitar', label: 'Guitarra', icon: 'savings' }, { id: 'ingredients', label: 'Ingredientes', icon: 'shopping_basket' }] },
+      { guitar: { min: 6, max: 6 }, ingredients: { min: 4, max: 4 } },
+    );
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('piggy_split'))).toHaveLength(0);
+  });
+
+  it('flags a piggy_split whose step cannot total the income (nothing submittable)', () => {
+    const seg = piggySplit(
+      { income: 10, unit: 'MXN', step: 3, jars: [{ id: 'a', label: 'A', icon: 'savings' }, { id: 'b', label: 'B', icon: 'savings' }] },
+      { a: { min: 6, max: 6 }, b: { min: 4, max: 4 } },
+    );
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('does not divide the income'))).toBe(true);
+  });
+
+  it('flags a piggy_split whose target range holds no multiple of the step', () => {
+    const seg = piggySplit(
+      { income: 10, unit: 'MXN', step: 1, jars: [{ id: 'a', label: 'A', icon: 'savings' }, { id: 'b', label: 'B', icon: 'savings' }] },
+      { a: { min: 6.2, max: 6.4 }, b: { min: 3.6, max: 3.8 } },
+    );
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('no multiple of the'))).toBe(true);
+  });
+
+  it('flags a piggy_split whose targets do not cover every jar (money uncounted → 0)', () => {
+    const seg = piggySplit(
+      { income: 10, unit: 'MXN', step: 1, jars: [{ id: 'a', label: 'A', icon: 'savings' }, { id: 'b', label: 'B', icon: 'savings' }] },
+      { a: { min: 6, max: 6 } },
+    );
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('does not cover exactly the payload.jars ids'))).toBe(true);
+  });
+
+  /*
+   * would_you_rather is ONE tap between two cards and the score is the authored
+   * quality of the side tapped, so two sides both keyed above the pass line make an
+   * unfailable exercise. The gate evaluates the grader's own expression.
+   */
+  const wouldYouRather = (qualities: Record<string, number>) => ({
+    id: 's1', type: 'would_you_rather', prompt_md: '¿Qué le conviene a Dina?', difficulty: 2, xp: 10,
+    payload: { a: { text_md: 'Gastar 10 en un dulce ahora', icon: 'cake' }, b: { text_md: 'Esperar y recibir 5 pesos', icon: 'savings' } },
+    answer: { qualities, reveal_md: 'Esperar junta 25 pesos: lo justo para el libro.' },
+  });
+
+  it('flags a would_you_rather whose BOTH sides clear the pass threshold (one tap cannot fail)', () => {
+    const problems = runClarityGate(doc(wouldYouRather({ a: 100, b: 80 })));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('cannot fail'))).toBe(true);
+  });
+
+  it('flags an all-zero would_you_rather map (the grader scores either tap 100)', () => {
+    const problems = runClarityGate(doc(wouldYouRather({ a: 0, b: 0 })));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('all-zero map'))).toBe(true);
+  });
+
+  it('flags a 0–1 scale would_you_rather once rescaled (0.9 → 90, 0.8 → 80)', () => {
+    const problems = runClarityGate(doc(wouldYouRather({ a: 0.9, b: 0.8 })));
+    expect(problems.some((p) => p.gate === 8 && p.message.includes('would_you_rather'))).toBe(true);
+  });
+
+  it('accepts the shipped would_you_rather shape: one clearly weaker side', () => {
+    // The published lesson keys { a: 0, b: 100 } — tapping a fails, so the tap decides.
+    expect(runClarityGate(doc(wouldYouRather({ a: 0, b: 100 }))).filter((p) => p.message.includes('would_you_rather'))).toHaveLength(0);
+  });
+
+  /*
+   * story_branch: the grader averages the qualities of the choices taken at nodes that
+   * offered >= 2 choices (one-choice "continue" nodes are not decisions and are not
+   * graded). These cases enumerate every root-to-end path with that arithmetic.
+   */
+  const storyBranch = (
+    nodes: Array<{ id: string; choices: Array<{ id: string; next: string | null }> }>,
+    qualities: Array<{ node_id: string; choice_id: string; score: number }>,
+  ) => ({
+    id: 's1', type: 'story_branch', prompt_md: '¿Qué precio eliges?', difficulty: 2, xp: 15,
+    payload: {
+      start_node: nodes[0]?.id,
+      nodes: nodes.map((n) => ({ id: n.id, text_md: `Escena ${n.id}`, choices: n.choices.map((c) => ({ ...c, text_md: `Opción ${c.id}` })) })),
+    },
+    answer: { qualities },
+  });
+  // The shipped lemonade shape: one 3-way decision, then a one-choice ending per branch.
+  const shippedNodes = [
+    { id: 'start', choices: [{ id: 'c3', next: 'p3' }, { id: 'c5', next: 'p5' }, { id: 'c10', next: 'p10' }] },
+    { id: 'p3', choices: [{ id: 'end3', next: null }] },
+    { id: 'p5', choices: [{ id: 'end5', next: null }] },
+    { id: 'p10', choices: [{ id: 'end10', next: null }] },
+  ];
+
+  it('accepts the shipped story_branch shape (25 / 95 / 10 across three paths)', () => {
+    const seg = storyBranch(shippedNodes, [
+      { node_id: 'start', choice_id: 'c3', score: 25 },
+      { node_id: 'start', choice_id: 'c5', score: 95 },
+      { node_id: 'start', choice_id: 'c10', score: 10 },
+    ]);
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('story_branch'))).toHaveLength(0);
+  });
+
+  it('flags a story_branch that keys only the best choice (the wrong turns are free)', () => {
+    const seg = storyBranch(shippedNodes, [{ node_id: 'start', choice_id: 'c5', score: 95 }]);
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('costs the child NOTHING'))).toBe(true);
+  });
+
+  it('flags a story_branch where every path already passes (no wrong turn to take)', () => {
+    const seg = storyBranch(shippedNodes, [
+      { node_id: 'start', choice_id: 'c3', score: 80 },
+      { node_id: 'start', choice_id: 'c5', score: 95 },
+      { node_id: 'start', choice_id: 'c10', score: 90 },
+    ]);
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('no wrong turn to take'))).toBe(true);
+  });
+
+  it('flags a story_branch whose best path cannot reach the pass threshold (unwinnable)', () => {
+    const seg = storyBranch(shippedNodes, [
+      { node_id: 'start', choice_id: 'c3', score: 25 },
+      { node_id: 'start', choice_id: 'c5', score: 60 },
+      { node_id: 'start', choice_id: 'c10', score: 10 },
+    ]);
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('unwinnable'))).toBe(true);
+  });
+
+  it('flags a story_branch with no multi-choice node at all (nothing is decided)', () => {
+    const seg = storyBranch(
+      [
+        { id: 'b1', choices: [{ id: 'ok1', next: 'b2' }] },
+        { id: 'b2', choices: [{ id: 'ok2', next: null }] },
+      ],
+      [
+        { node_id: 'b1', choice_id: 'ok1', score: 100 },
+        { node_id: 'b2', choice_id: 'ok2', score: 100 },
+      ],
+    );
+    expect(runClarityGate(doc(seg)).some((p) => p.gate === 8 && p.message.includes('no node that offers more than one choice'))).toBe(true);
+  });
+
+  it('does not count forced continue nodes as paths that pass (they are not decisions)', () => {
+    // Two forced continues keyed 100 after a 10-scored wrong turn: the OLD grader
+    // averaged them to exactly 70 and passed. The gate must still see a failing path.
+    const seg = storyBranch(
+      [
+        { id: 'd1', choices: [{ id: 'good', next: 'k1' }, { id: 'bad', next: 'k1' }] },
+        { id: 'k1', choices: [{ id: 'ok1', next: 'k2' }] },
+        { id: 'k2', choices: [{ id: 'ok2', next: null }] },
+      ],
+      [
+        { node_id: 'd1', choice_id: 'good', score: 100 },
+        { node_id: 'd1', choice_id: 'bad', score: 10 },
+        { node_id: 'k1', choice_id: 'ok1', score: 100 },
+        { node_id: 'k2', choice_id: 'ok2', score: 100 },
+      ],
+    );
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('story_branch'))).toHaveLength(0);
+  });
 });
 
 /*
@@ -870,6 +1150,39 @@ describe('gate 8: prompt integrity', () => {
       payload: { intro_md: 'Liruf puso un cartel.', blocks: [{ id: 'a', text_md: '¡Gran oferta!' }, { id: 'b', text_md: 'Más caro que sueltos' }] },
       answer: { bug_ids: ['b'], fix_md: 'Más barato que sueltos' },
     };
+    expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('no text input'))).toHaveLength(0);
+  });
+
+  // spot_error is debug_hunt's twin: checkbox step cards, and `answer.correction_md`
+  // shown only after grading. A prompt that asks for the corrected sum
+  // (prompt_mechanic_mismatch, 2026-07-25) is unanswerable with that control set.
+  const spotErrorPrompt = (prompt_md: string) => ({
+    id: 's1', type: 'spot_error', difficulty: 2, xp: 15,
+    prompt_md,
+    payload: {
+      context_md: 'Liruf anotó sus ventas.',
+      steps: [
+        { id: 'p1', text_md: 'Lunes: 1 vaso → 5 pesos.' },
+        { id: 'p2', text_md: 'Martes: 1 vaso → 5 pesos.' },
+        { id: 'p3', text_md: 'Miércoles: 1 vaso → 5 pesos.' },
+        { id: 'p4', text_md: 'Suma final: 5 + 5 + 5 = 20 pesos.' },
+      ],
+    },
+    answer: { error_ids: ['p4'], correction_md: 'La suma es 15, no 20.' },
+  });
+
+  it('flags a spot_error that asks the child to CORRECT arithmetic it cannot type', () => {
+    const seg = spotErrorPrompt('Toca el paso donde se equivocó y corrige la suma.');
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('no text input'))).toBe(true);
+  });
+
+  it('flags a spot_error that asks the child to WRITE the right total', () => {
+    const seg = spotErrorPrompt('Encuentra el paso mal y escribe la suma correcta.');
+    expect(runClarityGate(doc(seg)).some((p) => p.message.includes('no text input'))).toBe(true);
+  });
+
+  it('accepts a spot_error that only asks the child to FIND the flawed step', () => {
+    const seg = spotErrorPrompt('Liruf revisa su cuaderno. Toca el paso donde se equivocó.');
     expect(runClarityGate(doc(seg)).filter((p) => p.message.includes('no text input'))).toHaveLength(0);
   });
 
@@ -969,4 +1282,268 @@ describe('gate 8: clustered answers — single-target lists are not "clustered"'
     };
     expect(runClarityGate(d).filter((p) => p.message.includes('contiguous prefix'))).toHaveLength(0);
   });
+});
+
+// ---- gate 8: maker family — the mechanic must fit the answer -------------------
+// Each case below is the arithmetic of the real runtime, not a heuristic: the
+// engine's bank shuffle for code_order, signalDetection's need for negatives in
+// debug_hunt, toleranceBands + the tick grid for measure_read, and the
+// widget/grader branch for machine_io.
+describe('gate 8: maker mechanic fit', () => {
+  function makerDoc(seg: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = seg;
+    return d;
+  }
+  const messages = (seg: Record<string, unknown>) => runClarityGate(makerDoc(seg)).map((p) => p.message);
+  const flagged = (seg: Record<string, unknown>, needle: string) =>
+    messages(seg).some((m) => m.includes(needle));
+
+  const codeOrder = (ids: string[], over: Record<string, unknown> = {}) => ({
+    id: 's1',
+    type: 'code_order',
+    prompt_md: '¿Cuál es el orden correcto?',
+    difficulty: 2,
+    xp: 15,
+    payload: { blocks: ids.map((id, i) => ({ id, text_md: `paso ${i + 1}` })) },
+    answer: { order: ids },
+    explanation_md: 'La caja registradora de Rho cobra, verifica y luego anota la venta.',
+    ...over,
+  });
+
+  it('accepts the published s1-code-order shape (the engine bounds the rendered bank)', () => {
+    // Plain seededSort returned the SOLUTION order for this exact segment id +
+    // ids, so "tap top-to-bottom" scored kendall 100. seededSortMiddling moves it.
+    const seg = codeOrder(['recibir_pago', 'verificar_monto', 'dar_cambio', 'anotar_venta'], { id: 's1-code-order' });
+    expect(flagged(seg, 'the engine renders the block bank')).toBe(false);
+  });
+
+  it('never flags a code_order at any bank size — the display order is bounded by construction', () => {
+    for (let n = 3; n <= 8; n++) {
+      const ids = Array.from({ length: n }, (_, i) => `b${i + 1}`);
+      for (let s = 0; s < 25; s++) {
+        const seg = codeOrder(ids, { id: `seg-${n}-${s}` });
+        expect(flagged(seg, 'the engine renders the block bank')).toBe(false);
+      }
+    }
+  });
+
+  const debugHunt = (blockIds: string[], bugIds: string[]) => ({
+    id: 's1',
+    type: 'debug_hunt',
+    prompt_md: 'Toca el bloque con el error.',
+    difficulty: 1,
+    xp: 10,
+    payload: {
+      intro_md: 'Liruf revisa su cartel.',
+      blocks: blockIds.map((id, i) => ({ id, text_md: `linea ${i + 1}` })),
+    },
+    answer: { bug_ids: bugIds },
+    explanation_md: 'El bloque del precio está mal: dos vasos por ocho pesos sale más barato.',
+  });
+
+  it('flags a debug_hunt with every block keyed as a bug (nothing to leave alone)', () => {
+    expect(flagged(debugHunt(['b1', 'b2', 'b3'], ['b1', 'b2', 'b3']), 'keys EVERY one of its 3 blocks')).toBe(true);
+  });
+
+  it('flags a debug_hunt bug id that is not a real block (untappable → unwinnable)', () => {
+    expect(flagged(debugHunt(['b1', 'b2', 'b3'], ['b9']), 'do not exist in payload.blocks')).toBe(true);
+  });
+
+  it('accepts a debug_hunt with one bug among clean blocks', () => {
+    expect(messages(debugHunt(['b1', 'b2', 'b3', 'b4'], ['b3'])).filter((m) => m.includes('debug_hunt'))).toHaveLength(0);
+  });
+
+  const measureRead = (payload: Record<string, unknown>, answer: Record<string, unknown>) => ({
+    id: 's1',
+    type: 'measure_read',
+    prompt_md: '¿Cuántos mililitros marca la jarra?',
+    difficulty: 2,
+    xp: 15,
+    payload: { instrument: 'beaker', unit: 'ml', ...payload },
+    answer,
+    explanation_md: 'Cada vaso de la jarra debe llevar la misma cantidad para ser justo.',
+  });
+
+  it('flags the published beaker: 0-400 ml over 8 marks cannot be read to 250', () => {
+    const seg = measureRead({ min: 0, max: 400, ticks: 8, pointer_value: 250 }, { value: 250, tolerance: 0 });
+    const msg = messages(seg).find((m) => m.includes('cannot be read to 250ml'));
+    expect(msg).toBeTruthy();
+    expect(msg).toContain('9 (step 50)'); // the actionable fix, computed not guessed
+  });
+
+  it('accepts the same beaker once the marks line up with the pointer', () => {
+    const seg = measureRead({ min: 0, max: 400, ticks: 9, pointer_value: 250 }, { value: 250, tolerance: 0 });
+    expect(messages(seg).filter((m) => m.includes('measure_read'))).toHaveLength(0);
+  });
+
+  it('flags a key that grades a different value than the instrument draws (unwinnable)', () => {
+    const seg = measureRead({ min: 0, max: 40, ticks: 9, pointer_value: 25 }, { value: 30, tolerance: 1 });
+    expect(flagged(seg, 'reads the instrument EXACTLY RIGHT')).toBe(true);
+  });
+
+  it('flags a tolerance as wide as the step between marks (misread by a whole mark still passes)', () => {
+    const seg = measureRead({ min: 0, max: 40, ticks: 9, pointer_value: 25 }, { value: 25, tolerance: 5 });
+    expect(flagged(seg, 'another mark on the same dial')).toBe(true);
+  });
+
+  it('flags a pointer drawn off the scale (the renderer clamps it to the end)', () => {
+    const seg = measureRead({ min: 0, max: 40, ticks: 9, pointer_value: 45 }, { value: 45, tolerance: 0 });
+    expect(flagged(seg, 'outside the scale')).toBe(true);
+  });
+
+  const machineIo = (payload: Record<string, unknown>, answer: Record<string, unknown>) => ({
+    id: 's1',
+    type: 'machine_io',
+    prompt_md: '¿Qué sale si entra 4?',
+    difficulty: 1,
+    xp: 10,
+    payload: { examples: [{ in: 1, out: 2 }, { in: 2, out: 4 }], probe_in: 4, ...payload },
+    answer,
+    explanation_md: 'La máquina duplica: al meter cuatro monedas salen ocho.',
+  });
+
+  it('accepts the published machine_io (options + correct_option_id)', () => {
+    const seg = machineIo(
+      { options: [{ id: 'a', text_md: '6' }, { id: 'b', text_md: '8' }] },
+      { correct_option_id: 'b', value: 8 },
+    );
+    expect(messages(seg).filter((m) => m.includes('machine_io'))).toHaveLength(0);
+  });
+
+  it('flags option cards with no keyed option (the grader reads a number that never arrives)', () => {
+    const seg = machineIo({ options: [{ id: 'a', text_md: '6' }, { id: 'b', text_md: '8' }] }, { value: 8 });
+    expect(flagged(seg, 'scores 0 for EVERY answer')).toBe(true);
+  });
+
+  it('flags a number-pad machine with no numeric key', () => {
+    expect(flagged(machineIo({}, { correct_option_id: 'b' }), 'the grader needs a numeric answer.value')).toBe(true);
+  });
+
+  it('flags a word-output machine with no options (a number pad cannot type a word)', () => {
+    const seg = machineIo({ examples: [{ in: 1, out: 'grande' }, { in: 2, out: 'chico' }] }, { value: 8 });
+    expect(flagged(seg, 'only control is a number pad')).toBe(true);
+  });
+
+  it('flags a keyed option id that is not on screen', () => {
+    const seg = machineIo({ options: [{ id: 'a', text_md: '6' }] }, { correct_option_id: 'zz' });
+    expect(flagged(seg, 'not one of the payload.options ids')).toBe(true);
+  });
+
+  it('flags a probe that repeats an example input (the answer is already on screen)', () => {
+    const seg = machineIo({ probe_in: 2, options: [{ id: 'a', text_md: '4' }] }, { correct_option_id: 'a' });
+    expect(flagged(seg, 'already one of the example inputs')).toBe(true);
+  });
+});
+
+describe('gate 8: arrange mechanic fit', () => {
+  function arrangeDoc(seg: Record<string, unknown>) {
+    const d = buildDocument();
+    (d.segments as unknown as Record<string, unknown>[])[0] = seg;
+    return d;
+  }
+  const messages = (seg: Record<string, unknown>) => runClarityGate(arrangeDoc(seg)).map((p) => p.message);
+  const flagged = (seg: Record<string, unknown>, needle: string) =>
+    messages(seg).some((m) => m.includes(needle));
+
+  // ---- number_line: the child can only tap a mark on the snap grid -------------
+
+  const numberLine = (payload: Record<string, unknown>, answer: Record<string, unknown>) => ({
+    id: 's1',
+    type: 'number_line',
+    prompt_md: 'Toca dónde va el ahorro.',
+    difficulty: 1,
+    xp: 5,
+    payload,
+    answer,
+    explanation_md: 'Liruf ahorró veinte pesos, así que va en la segunda marca de la recta.',
+  });
+
+  it('flags the shipped number-line shape: ticks 11 makes the target 20 untappable', () => {
+    // step = 100/11 = 9.0909… → the child can only reach 0, 9.1, 18.2, 27.3 …
+    const seg = numberLine({ min: 0, max: 100, ticks: 11, labels: true }, { value: 20, full_credit_delta: 2, zero_credit_delta: 10 });
+    expect(flagged(seg, 'NOT a position the widget can express')).toBe(true);
+    expect(flagged(seg, 'Use ticks: 5')).toBe(true); // 100/5 = 20 lands on 20
+  });
+
+  it('accepts the same line authored on a grid that lands on the target', () => {
+    const seg = numberLine({ min: 0, max: 100, ticks: 10, labels: true }, { value: 20, full_credit_delta: 2, zero_credit_delta: 10 });
+    expect(messages(seg).filter((m) => m.includes('number_line'))).toHaveLength(0);
+  });
+
+  it('accepts an unticked line (step 1) whose target is a whole number', () => {
+    const seg = numberLine({ min: 0, max: 10 }, { value: 7, full_credit_delta: 0.5, zero_credit_delta: 2 });
+    expect(messages(seg).filter((m) => m.includes('number_line'))).toHaveLength(0);
+  });
+
+  it('flags an unticked line whose target falls between the integer marks', () => {
+    const seg = numberLine({ min: 0, max: 10 }, { value: 7.5, full_credit_delta: 0.2, zero_credit_delta: 1 });
+    expect(flagged(seg, 'NOT a position the widget can express')).toBe(true);
+  });
+
+  it('flags a tolerance so wide that tapping anywhere passes', () => {
+    // full_credit_delta 50 on a 0-100 line: every one of the 11 marks scores 100.
+    const seg = numberLine({ min: 0, max: 100, ticks: 10 }, { value: 50, full_credit_delta: 50, zero_credit_delta: 60 });
+    expect(flagged(seg, 'passes more often than not')).toBe(true);
+  });
+
+  it('does not flag a tolerance of about one tick', () => {
+    // step 10; full credit within 5 → only the target mark itself passes.
+    const seg = numberLine({ min: 0, max: 100, ticks: 10 }, { value: 30, full_credit_delta: 5, zero_credit_delta: 15 });
+    expect(flagged(seg, 'passes more often than not')).toBe(false);
+  });
+
+  // ---- pattern_complete: the option bank must not label the answer -------------
+
+  const patternComplete = (options: Array<Record<string, unknown>>, over: Record<string, unknown> = {}) => ({
+    id: 's1',
+    type: 'pattern_complete',
+    prompt_md: '¿Qué sigue en el patrón?',
+    difficulty: 2,
+    xp: 15,
+    payload: {
+      sequence: [
+        { icon: 'local_cafe', tint: 'primary' },
+        { icon: 'nutrition', tint: 'accent' },
+        { icon: 'local_cafe', tint: 'primary' },
+        { icon: 'nutrition', tint: 'accent' },
+      ],
+      options,
+      missing_slots: 1,
+      ...((over.payload as Record<string, unknown>) ?? {}),
+    },
+    answer: { correct: { '0': 'cup' } },
+    explanation_md: 'El patrón de Zara alterna vaso y limón, así que sigue el vaso.',
+  });
+
+  it('flags an option bank whose only familiar tile IS the answer', () => {
+    // "tap the one I have already seen" solves an A,B,A,B,? beat with no reasoning.
+    const seg = patternComplete([
+      { id: 'cup', icon: 'local_cafe', tint: 'primary' },
+      { id: 'star', icon: 'star', tint: 'success' },
+      { id: 'moon', icon: 'bedtime', tint: 'delight' },
+    ]);
+    expect(flagged(seg, 'is a tile that appears in the visible sequence')).toBe(true);
+  });
+
+  it('accepts a bank whose distractors are other tiles from the same pattern', () => {
+    const seg = patternComplete([
+      { id: 'cup', icon: 'local_cafe', tint: 'primary' },
+      { id: 'lemon', icon: 'nutrition', tint: 'accent' },
+      { id: 'star', icon: 'star', tint: 'success' },
+    ]);
+    expect(flagged(seg, 'is a tile that appears in the visible sequence')).toBe(false);
+  });
+
+  it('flags two options that render as the same tile (icon + tint)', () => {
+    const seg = patternComplete([
+      { id: 'cup', icon: 'local_cafe', tint: 'primary' },
+      { id: 'cup2', icon: 'local_cafe', tint: 'primary' },
+      { id: 'lemon', icon: 'nutrition', tint: 'accent' },
+    ]);
+    expect(flagged(seg, 'the SAME icon and tint')).toBe(true);
+  });
+
+  // The build_sentence ORDER-CEILING mirror is pinned in the trivial-strategy block
+  // above (the gate lives there), not duplicated here.
 });

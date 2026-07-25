@@ -21,7 +21,7 @@ import { Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
 import { KidSlider, SunkenWell, TokenChip, VisualMark, optionStateClasses, type OptionVisualState } from '../../core/primitives'
-import { seededSort } from '../../core/shuffle'
+import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import { playSfx } from '../../player/sfx'
 
 type Dict = Record<string, unknown>
@@ -771,7 +771,13 @@ export function OrderSteps({ segment, value, onChange, disabled, verdict }: Exer
     <div className="space-y-4">
       <OrderedSlots items={items} tapOrder={tapOrder} total={slots} disabled={disabled} verdict={verdict} />
       <TokenBank
-        items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)}
+        /* seededSortMiddling, not seededSort: for an ORDERING exercise the bank's
+           display order is the answer if it happens to match the key. A fair shuffle
+           lands on the authored order once every n! segments — 1 in 6 for a 3-item
+           list — and the published code_order lesson DID land there, handing "tap
+           straight down" a clean 100. Middling picks a permutation that is neither
+           near-identical nor a near-reversal of the authored order. */
+        items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)}
         onPlace={tapOrder.place}
         disabled={disabled || tapOrder.order.length >= slots}
         verdict={verdict}
@@ -828,7 +834,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
           })}
         </div>
       </SunkenWell>
-      <TokenBank items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
+      <TokenBank items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
     </div>
   )
 }
@@ -886,7 +892,7 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
           )
         })}
       </ol>
-      <TokenBank items={seededSort(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
+      <TokenBank items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
     </div>
   )
 }

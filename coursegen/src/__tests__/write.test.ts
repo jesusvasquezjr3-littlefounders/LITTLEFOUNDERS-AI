@@ -263,3 +263,34 @@ describe('repairDocument — schema_version is a constant, never a lost slot', (
     expect(noSegments.schema_version).toBe(99);
   });
 });
+
+describe('repairDocument — measure_read tick grid', () => {
+  function measureDoc(payload: Record<string, unknown>) {
+    return { segments: [{ id: 's1', type: 'measure_read', payload }] as Array<{ payload: Record<string, unknown> }> };
+  }
+
+  it('re-picks ticks so the pointer lands on a mark (the published 0-400 ml beaker)', () => {
+    // 8 marks over 0-400 is a step of 57.142857 and puts 250 ml at 4.375 marks:
+    // unreadable, and with tolerance 0 the reading task was unanswerable.
+    const doc = measureDoc({ min: 0, max: 400, ticks: 8, pointer_value: 250, unit: 'ml' });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(9); // step 50 → the pointer is mark 6
+  });
+
+  it('leaves a readable dial untouched', () => {
+    const doc = measureDoc({ min: 0, max: 40, ticks: 9, pointer_value: 25 });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(9);
+  });
+
+  it('leaves the payload alone when no tick count can rescue it (gate 8 reports instead)', () => {
+    const doc = measureDoc({ min: 0, max: 10, ticks: 5, pointer_value: 3.33 });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(5);
+  });
+
+  it('ignores malformed measure_read payloads without throwing', () => {
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'measure_read', payload: { min: 'a' } }] })).not.toThrow();
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'measure_read' }] })).not.toThrow();
+  });
+});

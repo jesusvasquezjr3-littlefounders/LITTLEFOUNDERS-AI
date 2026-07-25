@@ -54,9 +54,46 @@ describe('spot_error', () => {
     expect(out.reveal).toEqual({ error_ids: ['s3'], correction_md: 'La correcta es **$25**.' })
   })
 
-  it('partial: one hit + one false alarm over 4 steps → decisionAccuracy 75', () => {
-    // TP s3 + TN s1,s4 = 3 good of 4.
-    expect(grade(seg, { selected: ['s2', 's3'] }).score).toBe(75)
+  it('partial: one hit + one false alarm → setF1 2·1/(2+1) = 67', () => {
+    // EXPECTATION CHANGED (was 75, decisionAccuracy): decisionAccuracy paid for the
+    // two steps the child never touched, so flagging a correct step alongside the
+    // real error still passed a 70 gate. setF1 scores only the claimed set.
+    expect(grade(seg, { selected: ['s2', 's3'] }).score).toBe(67)
+  })
+
+  it('naive strategy: tapping one arbitrary step no longer passes a long list', () => {
+    // THE CONFIRMED DEFECT. 10 steps, 1 flawed: decisionAccuracy scored an
+    // arbitrary single tap (10−1−1)/10 = 80 — a mechanical pass with zero reasoning,
+    // and canSubmit only requires one selection. Now every wrong single tap is 0.
+    const long = segment(
+      'spot_error',
+      { steps: Array.from({ length: 10 }, (_, i) => ({ id: `s${i + 1}`, text_md: `${i}` })) },
+      { error_ids: ['s7'] },
+    )
+    for (const id of ['s1', 's2', 's3', 's4', 's5', 's6', 's8', 's9', 's10']) {
+      expect(grade(long, { selected: [id] }).score).toBe(0)
+    }
+    // Still winnable, and still exactly 100 for the intended answer.
+    expect(grade(long, { selected: ['s7'] }).score).toBe(100)
+    // Volume is dead too: tapping all ten scores 2·1/(10+1) = 18.
+    expect(grade(long, { selected: Array.from({ length: 10 }, (_, i) => `s${i + 1}`) }).score).toBe(18)
+  })
+
+  it('partial credit still rewards real work on a multi-error list', () => {
+    const multi = segment(
+      'spot_error',
+      { steps: Array.from({ length: 6 }, (_, i) => ({ id: `s${i + 1}`, text_md: `${i}` })) },
+      { error_ids: ['s2', 's5'] },
+    )
+    // Both flaws found + one slip → 2·2/(3+2) = 80: a single mis-tap is forgiven.
+    expect(grade(multi, { selected: ['s2', 's5', 's1'] }).score).toBe(80)
+    // Only ONE of the two flaws → 2·1/(1+2) = 67, i.e. fails. decisionAccuracy gave
+    // this 83 (1 TP + 4 TN of 6) even though a taught flaw went unnoticed.
+    expect(grade(multi, { selected: ['s2'] }).score).toBe(67)
+  })
+
+  it('duplicate taps cannot inflate the score', () => {
+    expect(grade(seg, { selected: ['s3', 's3', 's3'] }).score).toBe(100)
   })
 
   it('malformed → 0, never throws', () => {

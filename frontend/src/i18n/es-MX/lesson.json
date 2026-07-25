@@ -185,8 +185,7 @@
       "correctPairs": "Parejas correctas",
       "yourAnswers": "Tus respuestas",
       "questionOf": "Pregunta {{current}} de {{total}}",
-      "noAnswer": "Sin respuesta",
-      "valueLabel": "Valor: {{score}}"
+      "noAnswer": "Sin respuesta"
     },
     "maker": {
       "run": "Ejecutar",

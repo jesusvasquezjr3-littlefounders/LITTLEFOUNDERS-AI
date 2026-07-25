@@ -103,6 +103,91 @@ describe('story_branch', () => {
     expect(grade(segment, { path: [{ node_id: 'n1' }] }).score).toBe(0) // step missing choice_id
     expect(grade(segment, { path: 'nope' }).score).toBe(0)
   })
+
+  /*
+   * naive_strategy_passes / partial_credit_too_generous (2026-07-25): a node offering a
+   * SINGLE choice is a forced "continue", not a decision — the child had no alternative.
+   * Authors are told to end branches that way AND to key every choice in the tree, so
+   * those steps used to be averaged in as free 100s and diluted the one real decision
+   * below the pass line. Every case below is scored against the payload's real arity.
+   */
+  describe('forced single-choice nodes', () => {
+    const branching = seg(
+      'story_branch',
+      {
+        start_node: 'd1',
+        nodes: [
+          {
+            id: 'd1',
+            text_md: '¿Qué precio pones?',
+            choices: [
+              { id: 'good', text_md: '5', next: 'beat1' },
+              { id: 'bad', text_md: '10', next: 'beat1' },
+            ],
+          },
+          { id: 'beat1', text_md: 'Nadie compró.', choices: [{ id: 'ok1', text_md: 'Entendido', next: 'beat2' }] },
+          { id: 'beat2', text_md: 'Sigo lejos.', choices: [{ id: 'ok2', text_md: 'Entendido', next: null }] },
+        ],
+      },
+      {
+        qualities: [
+          { node_id: 'd1', choice_id: 'good', score: 100 },
+          { node_id: 'd1', choice_id: 'bad', score: 10 },
+          // The forced acknowledgements, keyed as the palette asks — nothing about
+          // pressing them can be wrong, so they are keyed high.
+          { node_id: 'beat1', choice_id: 'ok1', score: 100 },
+          { node_id: 'beat2', choice_id: 'ok2', score: 100 },
+        ],
+      },
+    )
+    const walk = (firstChoice: string) => ({
+      path: [
+        { node_id: 'd1', choice_id: firstChoice },
+        { node_id: 'beat1', choice_id: 'ok1' },
+        { node_id: 'beat2', choice_id: 'ok2' },
+      ],
+    })
+
+    it('earn no credit: the worst decision no longer averages up to a pass', () => {
+      // Was mean(10, 100, 100) = 70 = the default pass_threshold, with the only real
+      // decision in the lesson made wrong. Now it is the decision itself.
+      expect(grade(branching, walk('bad')).score).toBe(10)
+    })
+
+    it('cost nothing either: the intended best path is still exactly 100', () => {
+      expect(grade(branching, walk('good')).score).toBe(100)
+    })
+
+    it('are not marked as the "best choice" in the reveal', () => {
+      expect(grade(branching, walk('bad')).reveal).toEqual({ best: { d1: 'good' } })
+    })
+
+    it('still grade a decision-free story so it stays winnable (never unwinnable)', () => {
+      const linear = seg(
+        'story_branch',
+        {
+          start_node: 'b1',
+          nodes: [
+            { id: 'b1', text_md: 'Uno', choices: [{ id: 'ok1', text_md: 'Sigue', next: 'b2' }] },
+            { id: 'b2', text_md: 'Dos', choices: [{ id: 'ok2', text_md: 'Fin', next: null }] },
+          ],
+        },
+        {
+          qualities: [
+            { node_id: 'b1', choice_id: 'ok1', score: 100 },
+            { node_id: 'b2', choice_id: 'ok2', score: 100 },
+          ],
+        },
+      )
+      const out = grade(linear, {
+        path: [
+          { node_id: 'b1', choice_id: 'ok1' },
+          { node_id: 'b2', choice_id: 'ok2' },
+        ],
+      })
+      expect(out.score).toBe(100)
+    })
+  })
 })
 
 // ---- dialogue_choice ---------------------------------------------------------------
@@ -287,8 +372,32 @@ describe('would_you_rather', () => {
     expect(outB.feedback_md).toBe('Las dos valen: eso es **costo de oportunidad**.')
   })
 
-  it('reveals both qualities', () => {
-    expect(grade(segment, { choice: 'a' }).reveal).toEqual({ qualities: { a: 60, b: 90 } })
+  /*
+   * WHY THIS EXPECTATION CHANGED (reveal_leaks_internals, 2026-07-25): this test used
+   * to assert `reveal` === { qualities: { a: 60, b: 90 } }, i.e. it LOCKED IN the leak.
+   * The widget printed those raw answer-key numbers under each card ("Value: 0" /
+   * "Value: 100" — live content ships exactly that pair): an internal grading scale
+   * that means nothing to a 6–13yo, on the one type whose whole point is that both
+   * sides can be worth choosing. The grader now emits only WHICH side the author rated
+   * higher, so the numbers never leave the server. Scoring is untouched (the score
+   * assertions above still hold), so nothing a child answered correctly changed.
+   */
+  it('reveals which side the author rated higher — never the raw quality numbers', () => {
+    const out = grade(segment, { choice: 'a' })
+    expect(out.reveal).toEqual({ better_side: 'b' })
+    expect(JSON.stringify(out.reveal)).not.toContain('60')
+    expect(JSON.stringify(out.reveal)).not.toContain('90')
+  })
+
+  it('a genuine dilemma (tied qualities) reveals no better side at all', () => {
+    const tie = seg(
+      'would_you_rather',
+      { a: { text_md: 'x' }, b: { text_md: 'y' } },
+      { qualities: { a: 100, b: 100 }, reveal_md: 'Las dos valen.' },
+    )
+    expect(grade(tie, { choice: 'a' }).reveal).toEqual({ better_side: null })
+    expect(grade(tie, { choice: 'a' }).score).toBe(100)
+    expect(grade(tie, { choice: 'b' }).score).toBe(100)
   })
 
   it('rescales 0–1 quality maps to 0–100 (Forge scale drift)', () => {

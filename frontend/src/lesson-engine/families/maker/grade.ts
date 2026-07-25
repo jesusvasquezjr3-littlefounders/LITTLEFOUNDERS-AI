@@ -4,7 +4,7 @@
 // so what the kid watched IS what gets graded.
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types'
-import { binary, decisionAccuracy, kendall, sumEquals, toleranceBands } from '../../core/scoring'
+import { binary, kendall, signalDetection, sumEquals, toleranceBands } from '../../core/scoring'
 
 type Dict = Record<string, unknown>
 
@@ -197,8 +197,28 @@ const gradeDebugHunt: FamilyGrader = (segment, answer) => {
     return MALFORMED
   }
   const universe = blocks.map((b) => b.id as string)
+  /*
+   * DEFECT (naive_strategy_passes + partial_credit_too_generous), fixed at the
+   * SCORING layer because the formula itself was the problem — the widget, the
+   * blocks and the key are all fine.
+   *
+   * This used to score `decisionAccuracy(selected, bugIds, universe)` = (TP+TN)/N,
+   * which pays for every innocent block the child simply LEFT ALONE. The bug hunt
+   * has one or two targets among up to 8 blocks, so the true negatives dominate:
+   * with 8 blocks and 1 bug, tapping ONE ARBITRARY innocent block scored
+   * (8−2)/8 = 75 — a pass at the 70 threshold without ever finding the bug (and
+   * at 7 blocks it was still 71). Missing the bug entirely is precisely the
+   * learning-critical miss, so it cannot be a passing outcome.
+   *
+   * `signalDetection` (hitRate − 0.5·falseAlarmRate, already used by red_flags for
+   * the same reason) makes finding the bug the load-bearing term: miss it and the
+   * hit rate is 0 whatever else you tap, while a child who DID find it keeps
+   * generous credit for a single slip (1 bug + 1 false alarm of 4 innocents = 88).
+   * A degenerate item set where EVERY block is keyed as a bug has no negatives to
+   * discriminate against; coursegen's gate 8 rejects that at authoring time.
+   */
   return {
-    score: decisionAccuracy(selected, bugIds, universe),
+    score: signalDetection(selected, bugIds, universe.length),
     reveal: { bug_ids: bugIds, fix_md: key ? str(key.fix_md) ?? undefined : undefined },
   }
 }

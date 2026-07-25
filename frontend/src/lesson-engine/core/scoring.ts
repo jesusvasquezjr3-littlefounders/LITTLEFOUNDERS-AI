@@ -86,6 +86,110 @@ export function decisionAccuracy(selected: string[], positives: string[], univer
 }
 
 /**
+ * Class-balanced accuracy for a two-way, per-item labelling widget: the child
+ * makes an explicit A-or-B call on EVERY item (need/want), so both classes are
+ * decisions and both must be paid for equally.
+ *
+ * WHY IT EXISTS (naive_strategy_passes, 2026-07-25): `needs_wants` graded with
+ * plain `decisionAccuracy`, which pays for the MAJORITY class. Its answer builder
+ * turns "tap Want on every card" into an EMPTY `needs_ids`, so that blanket answer
+ * scored (N−P)/N — with 8 items and 2 needs that is 75, clearing the 70 pass
+ * threshold with zero needs-vs-wants thinking; "tap Need on everything" scored P/N
+ * and passed the mirror-image set. The schema allows 4–12 items with any number of
+ * needs, so no content shape prevented it.
+ *
+ * Averaging the two per-CLASS hit rates removes the majority payout: a blanket
+ * answer gets one rate perfect and the other 0, i.e. exactly 50, at ANY
+ * needs:wants ratio — it can never pass. Nothing a reasoning child earned is taken
+ * away: an all-correct answer is still exactly 100, and on a balanced set (as many
+ * needs as wants) the mean of the two rates IS (TP+TN)/N, so those lessons grade
+ * bit-for-bit as before.
+ *
+ * When one class is empty the mean is undefined AND there is nothing to
+ * discriminate, so this falls back to plain accuracy — that keeps such an item set
+ * WINNABLE (labelling every item "want" on an all-wants set still scores 100)
+ * instead of unwinnable; coursegen's gate 8 refuses to author that shape at all.
+ *
+ * SECOND CALL SITE — `yes_no_cases` (same defect class, same audit): its widget also
+ * refuses to submit until the child has pressed Yes or No on EVERY case, so "press NO
+ * on all of them" was an executable, thought-free strategy worth (N−P)/N under pooled
+ * accuracy — 75 on 8 cases with 2 applying, 83 on 6 with 1, both clear of the 70
+ * threshold without a single case being tested against the rule. The same per-class
+ * mean pins it at 50 there too, and on a skewed set it is usually MORE generous to a
+ * child who reasoned (the 1 applying case of 8 found, plus one slip → 93, where
+ * pooled accuracy gave 88). Deliberately NOT `setF1`: that helper ignores true
+ * negatives, and here rejecting the cases the rule does NOT cover is half of the
+ * skill being taught.
+ */
+export function balancedDecisionAccuracy(
+  selected: string[],
+  positives: string[],
+  universe: string[],
+): number {
+  if (universe.length === 0) return 0
+  const sel = new Set(selected)
+  const pos = new Set(positives)
+  let positiveTotal = 0
+  let positiveHits = 0
+  let negativeTotal = 0
+  let negativeHits = 0
+  universe.forEach((id) => {
+    const isPositive = pos.has(id)
+    const agrees = sel.has(id) === isPositive
+    if (isPositive) {
+      positiveTotal++
+      if (agrees) positiveHits++
+    } else {
+      negativeTotal++
+      if (agrees) negativeHits++
+    }
+  })
+  if (positiveTotal === 0 || negativeTotal === 0) {
+    return decisionAccuracy(selected, positives, universe)
+  }
+  return clampScore(((positiveHits / positiveTotal + negativeHits / negativeTotal) / 2) * 100)
+}
+
+/**
+ * Set F1 — harmonic mean of precision and recall over the items the child
+ * ACTUALLY claimed. Use this instead of `decisionAccuracy` whenever the widget is
+ * a "find the targets" multi-toggle where NOT tapping is the default state rather
+ * than a decision the child makes.
+ *
+ * WHY IT EXISTS (naive_strategy_passes, 2026-07-25): `spot_error` graded with
+ * `decisionAccuracy`, which counts every untouched step as a correct decision. On
+ * an N-step list with P flawed steps, tapping ONE arbitrary step scored
+ * (N−1−P)/N — 71 at N=7 and 80 at N=10 (the schema allows up to 10 steps) — and
+ * the type's canSubmit rule only requires a single selection, so "tap any step"
+ * cleared the 70 threshold with zero reasoning. The same formula also handed 80
+ * to a child who found only ONE of two flawed steps on a 10-step list, i.e. who
+ * missed a flaw the lesson exists to teach.
+ *
+ * F1 pays only for asserted items: precision = hits/|selected|,
+ * recall = hits/|positives|, score = 2·hits/(|selected| + |positives|).
+ *   • the exact error set still scores 100 — nothing that was right becomes wrong;
+ *   • volume collapses: select-all with 1 target of 10 → 2·1/11 = 18;
+ *   • full recall plus one slip still passes (2·2/(3+2) = 80), so genuine
+ *     reasoning is not punished for a single mis-tap.
+ *
+ * Residual degenerate shape: when MOST items are keyed as targets, "tap
+ * everything" reaches 2P/(N+P) ≥ 70 (e.g. 2 of 3). That is a content defect, not
+ * a formula one — coursegen's gate 8 rejects it at authoring time using this
+ * exact arithmetic, as it already does for red_flags/speed_tap.
+ */
+export function setF1(selected: string[], positives: string[]): number {
+  const sel = new Set(selected)
+  const pos = new Set(positives)
+  if (sel.size === 0 && pos.size === 0) return 100
+  if (sel.size === 0 || pos.size === 0) return 0
+  let hits = 0
+  sel.forEach((id) => {
+    if (pos.has(id)) hits++
+  })
+  return clampScore(((2 * hits) / (sel.size + pos.size)) * 100)
+}
+
+/**
  * Signal detection — rewards discrimination, not volume.
  *
  * Youden's J: hit rate minus false-alarm rate, scaled to 0-100. `total` is the
@@ -161,7 +265,24 @@ export function linearFalloff(
   return clampScore((1 - (delta - full) / (zero - full)) * 100)
 }
 
-/** % of allocations inside their [min,max] target; invalid unless the total matches (±0.5%). */
+/**
+ * A split is right only when EVERY jar lands inside its [min,max] target — 100;
+ * anything else keeps a proportional signal inside a sub-pass band. Invalid (0)
+ * unless the allocation totals the income (±0.5%).
+ *
+ * WHY THE PARTIAL BAND IS CAPPED (partial_credit_too_generous, 2026-07-25): this
+ * returned `ratio(inRange, keys)` outright, and `piggy_split` allows up to 4 jars —
+ * so three-of-four in range scored 75 and CLEARED the 70 pass threshold with one
+ * jar still wrong, including the case where that jar got a flat 0, which is exactly
+ * the "leave a jar empty" misconception the type exists to correct. A split is not
+ * partly right: either every jar is inside its range or the plan is wrong. Fixed at
+ * the formula because the fourth jar is not a "critical element" the author can
+ * mark — every jar is load-bearing, so no content gate could express this.
+ *
+ * The intended allocation still scores exactly 100 (never unwinnable), and the
+ * near-miss band matches the rest of the family's sub-pass idiom (`sumEquals` 40,
+ * `toleranceBands` 50), so the results screen still shows how close the child got.
+ */
 export function allocationRanges(
   allocation: Record<string, number>,
   targets: Record<string, { min: number; max: number }>,
@@ -177,7 +298,9 @@ export function allocationRanges(
     const t = targets[k]
     if (t && v >= t.min && v <= t.max) inRange++
   })
-  return ratio(inRange, keys.length)
+  if (inRange === keys.length) return 100
+  const NEAR_BAND_CEILING = 50
+  return clampScore((inRange / keys.length) * NEAR_BAND_CEILING)
 }
 
 /** Calibration payoff: right → confidence, wrong → 100 − confidence. */
@@ -252,13 +375,34 @@ export function fuzzyEquals(input: string, expected: string, caseSensitive = fal
   return levenshtein(a, b) <= budget
 }
 
-/** Keyword coverage %: how many expected keywords appear in the input. */
+/**
+ * Keyword coverage %: how many expected keywords appear in the input.
+ *
+ * A PURELY NUMERIC keyword must match as a WHOLE number, never as a digit
+ * substring. DEFECT — partial_credit_too_generous, proven on the shipped
+ * type_answer lesson keyed `accept: ["20"], keywords: ["20"]` with
+ * `max_chars: 3`: bare containment let "200" and "120" (both typeable, both
+ * plausible wrong sums for 12 + 8) fall through the accept path and then score
+ * a full 100 on the keyword path — the child got the arithmetic wrong and was
+ * told it was perfect. This is the right layer because the containment test IS
+ * the formula that rewards it; no authoring shape can be blamed for "20"
+ * living inside "200".
+ *
+ * Word keywords keep substring matching on purpose: authors rely on it for
+ * stems ("ahorr" covering "ahorrar"/"ahorro"), and tightening those could fail
+ * answers that pass today. "20" inside "200" is never a stem — it is a
+ * different quantity — so only numeric keywords change.
+ */
 export function keywordCoverage(input: string, keywords: string[], caseSensitive = false): number {
   if (keywords.length === 0) return 0
   const haystack = normalizeText(input, caseSensitive)
+  // normalizeText turns "1,50" into "1 50", so a numeric keyword can be several digit groups.
+  const padded = ` ${haystack} `
   let hits = 0
   keywords.forEach((k) => {
-    if (haystack.includes(normalizeText(k, caseSensitive))) hits++
+    const needle = normalizeText(k, caseSensitive)
+    const numeric = /^\d+(?: \d+)*$/.test(needle)
+    if (numeric ? padded.includes(` ${needle} `) : haystack.includes(needle)) hits++
   })
   return ratio(hits, keywords.length)
 }

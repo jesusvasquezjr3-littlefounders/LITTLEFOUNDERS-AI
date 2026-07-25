@@ -4,7 +4,7 @@
 // numbers and put them in `reveal` for the renderer to localize.
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
-import { binary, decisionAccuracy, ratio, sumEquals, toleranceBands, allocationRanges } from '../../core/scoring.js'
+import { balancedDecisionAccuracy, binary, ratio, sumEquals, toleranceBands, allocationRanges } from '../../core/scoring.js'
 
 type Dict = Record<string, unknown>
 
@@ -99,8 +99,15 @@ const gradeNeedsWants: FamilyGrader = (segment, answer) => {
   const positives = key ? strArray(key.needs_ids) : null
   const items = segment.payload.items as Array<{ id: string }> | undefined
   if (!selected || !positives || !Array.isArray(items)) return MALFORMED
+  /*
+   * naive_strategy_passes: the widget forces a Need/Want call on every item, and
+   * the answer builder encodes "Want" as absence — so under plain
+   * `decisionAccuracy` labelling EVERYTHING want scored (N−P)/N (75 at 8 items /
+   * 2 needs) and passed. Balanced accuracy pins either blanket answer at 50 at any
+   * ratio while leaving a fully-correct answer at 100 (see core/scoring.ts).
+   */
   return {
-    score: decisionAccuracy(selected, positives, items.map((i) => i.id)),
+    score: balancedDecisionAccuracy(selected, positives, items.map((i) => i.id)),
     reveal: { needs_ids: positives },
   }
 }

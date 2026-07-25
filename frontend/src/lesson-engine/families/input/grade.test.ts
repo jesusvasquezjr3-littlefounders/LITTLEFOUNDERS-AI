@@ -93,6 +93,19 @@ describe('type_answer', () => {
     const key = seg('type_answer', {}, { accept: ['5'] })
     expect(grade(key, { text: 'seis' }).score).toBe(0)
   })
+
+  it('a wrong number containing the numeric keyword no longer scores 100', () => {
+    // The shipped lesson's exact shape: "Rho vendió 12 y luego 8" → accept ["20"],
+    // keywords ["20"], max_chars 3. The keyword path used to substring-match, so
+    // "200" and "120" (typeable, plausible wrong sums) each scored a perfect 100
+    // — partial_credit_too_generous, fixed in keywordCoverage.
+    const shipped = seg('type_answer', { max_chars: 3 }, { accept: ['20'], keywords: ['20'] })
+    expect(grade(shipped, { text: '200' }).score).toBe(0)
+    expect(grade(shipped, { text: '120' }).score).toBe(0)
+    // The intended answer is untouched — still 100, digits or words.
+    expect(grade(shipped, { text: '20' }).score).toBe(100)
+    expect(grade(shipped, { text: 'veinte' }).score).toBe(100)
+  })
 })
 
 // ---- fill_blank ----------------------------------------------------------------

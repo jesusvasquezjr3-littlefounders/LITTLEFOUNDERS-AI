@@ -875,6 +875,235 @@ function clarityPatternComplete(document: LessonDocumentParsed): GateProblem[] {
 }
 
 /**
+ * ---- arrange family: two mirrors of the code that actually runs ---------------
+ *
+ * Both checks below re-implement the real runtime (the NumberLine widget's snap
+ * grid + `linearFalloff`; the PatternComplete option bank the child is shown), so
+ * each is a PROOF about what the child can actually do, not a heuristic. The
+ * ENGINE is right in both cases — what degenerates is a content SHAPE the schema
+ * happily allows — which is why this is an authoring gate and not a grader change.
+ */
+
+/**
+ * frontend/src/lesson-engine/families/arrange/components.tsx — NumberLine:
+ *   step = ticks ? (max - min) / ticks : 1
+ *   snap(raw) = clamp(min + round((raw - min) / step) * step, min, max)
+ * and the same `step` is handed to the KidSlider. So the child can ONLY submit
+ * these values — every other point on the line is unreachable by tap OR by drag.
+ */
+function numberLineLandableValues(min: number, max: number, ticks: number | undefined): number[] {
+  const span = max - min;
+  if (!(span > 0)) return [];
+  const divisions = ticks && ticks > 0 ? ticks : Math.max(1, Math.round(span));
+  // `ticks` is schema-capped at 40, but the step-1 fallback is not: a 0–1,000,000
+  // line would enumerate a million marks. Such a line is not a kid's number line —
+  // decline to reason about it rather than burn the authoring loop on it.
+  if (divisions > 1000) return [];
+  const step = ticks && ticks > 0 ? span / ticks : 1;
+  const out: number[] = [];
+  for (let k = 0; k <= divisions; k++) {
+    const v = Math.min(max, Math.max(min, min + k * step));
+    out.push(Number(v.toFixed(6)));
+  }
+  return [...new Set(out)];
+}
+
+function arrangeMechanicFit(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  const passThreshold = documentPassThreshold(document);
+
+  /** Where each ordering type keeps the items the child arranges. */
+  const ORDER_BANK: Record<string, string> = {
+    order_steps: 'items',
+    rank_choices: 'items',
+    build_sentence: 'tokens',
+    timeline_order: 'events',
+  };
+
+  for (const segment of document.segments) {
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: Record<string, unknown> }).answer;
+
+    /*
+     * ---- ordering types: the bank must not RENDER in an accepted order --------
+     *
+     * Same defect class as code_order, proved the same way — by re-running the REAL
+     * display function against the REAL key instead of assuming the shuffle is
+     * enough. A fair shuffle lands on the authored order once every n! segments (1
+     * in 6 for a 3-item rank_choices, the schema minimum), and the published
+     * code_order lesson DID land there, so "assume it is fine" is not available.
+     *
+     * The check is an EXACT comparison rather than scorer arithmetic because
+     * gradeOrder now caps every imperfect ordering at IMPERFECT_ORDER_CEILING (60):
+     * below the default 70 gate, only an EXACTLY accepted order can pass. So the
+     * question reduces to whether tapping the bank straight down — or straight up,
+     * since a reversed rail reads just as naturally to a child — reproduces an
+     * accepted ordering. Both directions are checked, and the display order is a
+     * pure function of the segment id and the item ids, so reordering the payload
+     * cannot dodge this.
+     */
+    const bankKey = ORDER_BANK[segment.type];
+    if (bankKey && passThreshold > IMPERFECT_ORDER_CEILING) {
+      const bank = Array.isArray(payload[bankKey]) ? (payload[bankKey] as Array<{ id?: unknown }>) : [];
+      const ids = bank.map((b) => b?.id).filter((id): id is string => typeof id === 'string');
+      const keyed = Array.isArray(answer?.order) ? (answer.order as unknown[]).map(String) : [];
+      const alts = Array.isArray(answer?.accept_orders)
+        ? (answer.accept_orders as unknown[])
+            .filter((o): o is unknown[] => Array.isArray(o))
+            .map((o) => o.map(String))
+        : [];
+      // Only meaningful when the bank IS the placed set (no distractors left over).
+      if (ids.length >= 3 && ids.length === keyed.length) {
+        const accepted = [keyed, ...alts.filter((o) => o.length === keyed.length)];
+        const shown = seededSortMiddlingIds(ids, segment.id);
+        const reversed = [...shown].reverse();
+        const same = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+        const leaks = accepted.some((key) => same(shown, key) || same(reversed, key));
+        if (leaks) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `${segment.type} "${segment.id}": the bank RENDERS in an accepted order (${shown.join(' → ')}), so tapping it straight down (or up) scores full marks with no reasoning. Rename or re-id the items so the seeded display order differs from the key.`,
+          });
+        }
+      }
+    }
+
+    /*
+     * ---- number_line: the instrument must be able to express the answer -------
+     *
+     * PROMPT_MECHANIC_MISMATCH (confirmed 2026-07-25 on the shipped
+     * `number-line` lesson): `{min:0, max:100, ticks:11}` makes step = 100/11 =
+     * 9.0909…, so the tappable positions are 0, 9.1, 18.2, 27.3 … — and the
+     * prompt asks the child to place 20, which the widget CANNOT express. Its own
+     * hints ("la recta va de 10 en 10", "la segunda marca es 20") describe an
+     * instrument that is not on screen: `ticks` is the number of DIVISIONS, not
+     * of labelled marks, so a by-tens 0–100 line is ticks:10. That lesson only
+     * scored 100 by luck — the nearest landable point, 18.18, happens to sit
+     * 1.82 from the target and `full_credit_delta` is 2. Author the same line
+     * with a tighter tolerance (full 1, zero 4 — an entirely natural choice) and
+     * NO tap can score 100: the exercise becomes unwinnable.
+     *
+     * Fixed here and not in the widget because both plausible engine fixes are
+     * worse: snapping the child's tap to `answer.value` would hand full credit to
+     * a near-miss, and re-reading `ticks` as MARKS instead of divisions would
+     * silently move the grid under every number_line already published (a line
+     * authored ticks:4 for quarters would lose 25 as a landable value). The
+     * content is what is wrong, so the content is what gets rejected.
+     */
+    if (segment.type === 'number_line') {
+      const min = typeof payload.min === 'number' ? payload.min : NaN;
+      const max = typeof payload.max === 'number' ? payload.max : NaN;
+      const ticks = typeof payload.ticks === 'number' ? payload.ticks : undefined;
+      const target = typeof answer?.value === 'number' ? answer.value : NaN;
+      const full = typeof answer?.full_credit_delta === 'number' ? answer.full_credit_delta : NaN;
+      const zero = typeof answer?.zero_credit_delta === 'number' ? answer.zero_credit_delta : NaN;
+      const landable = numberLineLandableValues(min, max, ticks);
+      if (landable.length > 0 && Number.isFinite(target) && Number.isFinite(full) && Number.isFinite(zero)) {
+        const lands = landable.some((v) => Math.abs(v - target) < 1e-6);
+        if (!lands) {
+          const nearest = landable.reduce((a, b) => (Math.abs(b - target) < Math.abs(a - target) ? b : a));
+          const nearestScore = linearFalloffScore(nearest, target, full, zero);
+          // The smallest `ticks` the schema allows (2–40) that DOES land on the value.
+          let suggestion = 0;
+          for (let t = 2; t <= 40; t++) {
+            const k = ((target - min) * t) / (max - min);
+            if (Math.abs(k - Math.round(k)) < 1e-9) { suggestion = t; break; }
+          }
+          const advice = suggestion > 0
+            ? `Use ticks: ${suggestion} so the grid lands exactly on ${target}.`
+            : `No ticks value in 2–40 lands on ${target} for a ${min}–${max} line — move min/max (or the target) so the step divides evenly.`;
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `number_line "${segment.id}" targets ${target}, but with min ${min}, max ${max} and ticks ${ticks ?? '(absent → step 1)'} the child can only tap ${landable.slice(0, 4).map((v) => Number(v.toFixed(2))).join(', ')}… — the step is ${Number(((max - min) / (ticks ?? Math.max(1, Math.round(max - min)))).toFixed(4))}, so ${target} is NOT a position the widget can express (nearest is ${Number(nearest.toFixed(2))}, which scores ${nearestScore}). ${advice}`,
+          });
+        }
+        /*
+         * NAIVE_STRATEGY_PASSES (same type, same mirror): `full_credit_delta` and
+         * `zero_credit_delta` are unbounded in the schema and the author prompt says
+         * nothing about them, so a generous pair turns the line into a free pass —
+         * `linearFalloff` clears the threshold for every |Δ| ≤ full + 0.3·(zero−full)
+         * at a 70 mark. Counted over the positions the child can ACTUALLY tap: if
+         * more than half of them already pass, "tap anywhere" wins more often than
+         * not and the exercise measures nothing.
+         */
+        const passing = landable.filter((v) => linearFalloffScore(v, target, full, zero) >= passThreshold).length;
+        if (passing * 2 > landable.length) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `number_line "${segment.id}" scores a pass (≥ ${passThreshold}) at ${passing} of the ${landable.length} positions the child can tap — "tap anywhere" passes more often than not, so the exercise measures luck. Tighten full_credit_delta (${full}) and zero_credit_delta (${zero}) relative to the ${min}–${max} range: full credit within about one tick, zero credit within a small multiple of it.`,
+          });
+        }
+      }
+    }
+
+    /*
+     * ---- pattern_complete: the bank must not label the answer ----------------
+     *
+     * NAIVE_STRATEGY_PASSES (confirmed 2026-07-25). The child only ever sees each
+     * tile's icon + tint, and `clarityPatternComplete` (above) already forces the
+     * keyed option to CONTINUE the visible period — which means the right tile is
+     * always a repeat of a tile already on screen. Nothing, however, constrains
+     * the DISTRACTORS. Author options as "the answer plus two unrelated things"
+     * (the default LLM shape: cup, star, moon for a cup→lemon→cup→lemon→? beat)
+     * and the whole task collapses into "tap the only tile I have seen before" —
+     * no beat, no period, no pre-algebra, and a flat 100 because with
+     * missing_slots = 1 the grader's ratio is binary.
+     *
+     * The rule: when ONE slot is missing, at least two options must be tiles that
+     * appear in the visible sequence, so familiarity alone cannot pick the answer
+     * and the child has to read the BEAT. Deliberately not applied at
+     * missing_slots = 2: there the familiar tiles must also be put in the right
+     * ORDER (swapping them scores 0), so familiarity is not by itself an answer —
+     * and a period-2 pattern only HAS two distinct tiles, so demanding three
+     * would ban a legitimate shape. Scoring cannot fix this: ratio over one slot
+     * is already all-or-nothing, and the component cannot invent a decoy it was
+     * not given.
+     */
+    if (segment.type === 'pattern_complete') {
+      const seq = Array.isArray(payload.sequence) ? (payload.sequence as Array<{ icon?: string; tint?: string }>) : [];
+      const options = Array.isArray(payload.options) ? (payload.options as Array<{ id?: string; icon?: string; tint?: string }>) : [];
+      const missing = typeof payload.missing_slots === 'number' ? payload.missing_slots : 0;
+      const tileKey = (t: { icon?: string; tint?: string } | undefined) => `${t?.icon}|${t?.tint}`;
+      if (missing === 1 && seq.length >= 3 && options.length >= 2) {
+        const seqKeys = new Set(seq.map(tileKey));
+        const inPattern = options.filter((o) => seqKeys.has(tileKey(o)));
+        if (inPattern.length <= 1) {
+          const strangers = options.filter((o) => !seqKeys.has(tileKey(o))).map((o) => tileKey(o));
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `pattern_complete "${segment.id}" gives ${options.length} options but only ${inPattern.length} of them is a tile that appears in the visible sequence (the others — ${strangers.join(', ')} — show up nowhere in the pattern). Tiles render as icon + tint only, so "tap the one I have already seen" answers it with zero pattern reasoning and scores 100. Make the distractors OTHER tiles from the same pattern, placed at the wrong beat (for an A,B,A,B,? sequence the options should include both A and B).`,
+          });
+        }
+      }
+      // The flip side of the same render truth: options are keyed by ID but drawn as
+      // icon + tint, so two options sharing both are indistinguishable on screen and
+      // the child's "right" tap is decided by which id the author happened to key.
+      if (options.length >= 2) {
+        const seen = new Map<string, string>();
+        for (const o of options) {
+          const key = tileKey(o);
+          const twin = seen.get(key);
+          if (twin !== undefined) {
+            problems.push({
+              gate: 8,
+              segmentId: segment.id,
+              message: `pattern_complete "${segment.id}" has two options ("${twin}" and "${o.id}") with the SAME icon and tint (${key}) — they render as identical tiles, so the child cannot choose between them and grading by option id makes it a coin flip. Give every option a distinct icon/tint pair.`,
+            });
+            break;
+          }
+          seen.set(key, String(o.id));
+        }
+      }
+    }
+  }
+  return problems;
+}
+
+/**
  * robot_path SOLVABILITY (the 2026-07-24 re-review found an unsolvable maze):
  * the puzzle's own `commands` (its intended solution) must actually walk the
  * cart from `start` to `goal` without leaving the grid or crossing a wall.
@@ -1089,6 +1318,338 @@ function clarityBalanceScale(document: LessonDocumentParsed): GateProblem[] {
   return problems;
 }
 
+/*
+ * ---- maker family: mirrors of the code that actually runs ---------------------
+ *
+ * The checks in `makerMechanicFit` back the maker-family fairness fixes
+ * (2026-07-25). Each one re-implements the arithmetic of the real runtime — the
+ * engine's bank shuffle, `kendall`, `toleranceBands`, the instrument's tick grid,
+ * the machine_io widget/grader branch — so each is a PROOF about what the child
+ * will actually be able to do, not a heuristic. The mirrors below are small and
+ * deliberately literal; if the engine changes, they must change with it.
+ */
+
+/** frontend/src/lesson-engine/core/shuffle.ts — `hashCode`. */
+function shuffleHash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return h;
+}
+
+/** …`mix32` (murmur3 finalizer). */
+function shuffleMix32(h: number): number {
+  let x = h;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x85ebca6b);
+  x ^= x >>> 13;
+  x = Math.imul(x, 0xc2b2ae35);
+  x ^= x >>> 16;
+  return x | 0;
+}
+
+/** …`seededSort`, specialised to a list of ids. */
+function seededSortIds(ids: readonly string[], seed: string): string[] {
+  const rank = new Map<string, number>();
+  for (const id of ids) if (!rank.has(id)) rank.set(id, shuffleMix32(shuffleHash(`${seed}:${id}`)));
+  return [...ids].sort((a, b) => {
+    const d = (rank.get(a) ?? 0) - (rank.get(b) ?? 0);
+    return d !== 0 ? d : a < b ? -1 : a > b ? 1 : 0;
+  });
+}
+
+/** core/scoring.ts — `kendall`: pairwise concordance, 0-100. */
+function kendallScore(user: readonly string[], correct: readonly string[]): number {
+  if (user.length !== correct.length || correct.length < 2) return 0;
+  if (new Set(user).size !== user.length) return 0;
+  const pos = new Map(correct.map((id, i) => [id, i] as const));
+  if (!user.every((id) => pos.has(id))) return 0;
+  let concordant = 0;
+  let total = 0;
+  for (let i = 0; i < user.length; i++) {
+    for (let j = i + 1; j < user.length; j++) {
+      total++;
+      if ((pos.get(user[i] as string) as number) < (pos.get(user[j] as string) as number)) concordant++;
+    }
+  }
+  return total <= 0 ? 0 : Math.round((concordant / total) * 100);
+}
+
+/** The engine's own pass mark, used by `seededSortMiddling`'s band (not the document's). */
+const ENGINE_PASS_MARK = 70;
+const MIDDLING_ATTEMPTS = 12;
+
+/** …`seededSortMiddling`: the bank order the child is ACTUALLY shown for an ordering bank. */
+function seededSortMiddlingIds(ids: readonly string[], seed: string): string[] {
+  if (ids.length < 3) return seededSortIds(ids, seed);
+  for (let attempt = 0; attempt < MIDDLING_ATTEMPTS; attempt++) {
+    const candidate = seededSortIds(ids, attempt === 0 ? seed : `${seed}#${attempt}`);
+    const concordance = kendallScore(candidate, ids);
+    if (concordance > 100 - ENGINE_PASS_MARK && concordance < ENGINE_PASS_MARK) return candidate;
+  }
+  const half = Math.floor(ids.length / 2);
+  return [...ids.slice(half), ...ids.slice(0, half)];
+}
+
+/** families/arrange/grade.ts — `IMPERFECT_ORDER_CEILING`: the cap gradeOrder puts on
+ *  ANY inexact ordering (order_steps / rank_choices / build_sentence / timeline_order).
+ *  Mirrored here so the ordering checks below stay proofs about the running grader. */
+const IMPERFECT_ORDER_CEILING = 60;
+
+/** core/scoring.ts — `linearFalloff` (linear scale): 100 at ≤ full, 0 at ≥ zero. */
+function linearFalloffScore(value: number, target: number, fullDelta: number, zeroDelta: number): number {
+  const delta = Math.abs(value - target);
+  const full = fullDelta;
+  const zero = zeroDelta <= fullDelta ? fullDelta + Number.EPSILON : zeroDelta;
+  if (delta <= full) return 100;
+  if (delta >= zero) return 0;
+  return Math.round((1 - (delta - full) / (zero - full)) * 100);
+}
+
+/** core/scoring.ts — `toleranceBands`: 100 within tolerance, 50 within 2×, else 0. */
+function toleranceBandScore(value: number, target: number, tolerance: number): number {
+  const delta = Math.abs(value - target);
+  const tol = Math.max(0, tolerance);
+  if (delta <= tol) return 100;
+  if (delta <= tol * 2) return 50;
+  return 0;
+}
+
+/** The document's own pass mark (trivialStrategy computes the same value inline). */
+function documentPassThreshold(document: LessonDocumentParsed): number {
+  const scoring = (document as { scoring?: { pass_threshold?: unknown } }).scoring;
+  return typeof scoring?.pass_threshold === 'number' ? scoring.pass_threshold : 70;
+}
+
+function makerMechanicFit(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+  const passThreshold = documentPassThreshold(document);
+  const isWhole = (v: number) => Math.abs(v - Math.round(v)) < 1e-6;
+
+  for (const segment of document.segments) {
+    const payload = (segment as { payload: Record<string, unknown> }).payload;
+    const answer = (segment as { answer?: Record<string, unknown> }).answer;
+
+    // ---- code_order: the bank must not RENDER in a passing order --------------
+    /*
+     * gradeCodeOrder scores `kendall` (best of `order` + `accept_orders`) over the
+     * assembled ids, and the child assembles by tapping the bank. The bank is
+     * shuffled at render time, so the only question that matters is what the
+     * shuffle actually outputs — and for the published `s1-code-order` the plain
+     * shuffle returned the authored solution order, making "tap straight down"
+     * worth 100. The engine now constrains that order (`seededSortMiddling`), and
+     * this gate re-runs the SAME function against the REAL key, in BOTH reading
+     * directions, so the no-free-pass claim is proved per segment instead of
+     * assumed. The display order is a pure function of the segment id and the
+     * BLOCK ids — reordering `payload.blocks` cannot change it.
+     */
+    if (segment.type === 'code_order') {
+      const blocks = Array.isArray(payload.blocks) ? (payload.blocks as Array<{ id?: unknown }>) : [];
+      const ids = blocks.map((b) => b?.id).filter((id): id is string => typeof id === 'string');
+      const keyed = Array.isArray(answer?.order) ? (answer.order as unknown[]).map(String) : [];
+      const alts = Array.isArray(answer?.accept_orders)
+        ? (answer.accept_orders as unknown[])
+            .filter((o): o is unknown[] => Array.isArray(o))
+            .map((o) => o.map(String))
+        : [];
+      if (ids.length >= 3 && ids.length === blocks.length && keyed.length === ids.length) {
+        const accepted = [keyed, ...alts.filter((o) => o.length === keyed.length)];
+        const bestOf = (order: readonly string[]) =>
+          accepted.reduce((best, key) => Math.max(best, kendallScore(order, key)), 0);
+        const shown = seededSortMiddlingIds(ids, segment.id);
+        const topDown = bestOf(shown);
+        const bottomUp = bestOf([...shown].reverse());
+        if (Math.max(topDown, bottomUp) >= passThreshold) {
+          const direction = topDown >= bottomUp ? 'top-to-bottom' : 'bottom-to-top';
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `code_order "${segment.id}": the engine renders the block bank as [${shown.join(', ')}], and tapping it ${direction} scores ${Math.max(topDown, bottomUp)} ≥ pass_threshold ${passThreshold} under the real kendall grader — a child passes without reading a single block. The rendered order is a pure function of the segment id and the BLOCK IDS (reordering payload.blocks does NOT change it), so rename the block ids (they are internal, e.g. add a word that describes the step) to move the shuffle.`,
+          });
+        }
+      }
+    }
+
+    // ---- debug_hunt: the hunt needs clean blocks to leave alone ---------------
+    /*
+     * gradeDebugHunt scores `signalDetection` (hitRate − 0.5·falseAlarmRate) since
+     * the 2026-07-25 fix. That formula needs NEGATIVES to discriminate against:
+     * with every block keyed as a bug the false-alarm rate is always 0 and "tap
+     * everything" scores a clean 100 — the same "there must be something to leave
+     * alone" rule red_flags/speed_tap already have. And a bug id that is not a real
+     * block can never be tapped, so its hit rate is capped below 100 — unwinnable.
+     */
+    if (segment.type === 'debug_hunt') {
+      const blocks = Array.isArray(payload.blocks) ? (payload.blocks as Array<{ id?: unknown }>) : [];
+      const blockIds = new Set(blocks.map((b) => String(b?.id)));
+      const bugIds = Array.isArray(answer?.bug_ids) ? (answer.bug_ids as unknown[]).map(String) : [];
+      const real = new Set(bugIds.filter((id) => blockIds.has(id)));
+      if (blocks.length > 0 && real.size >= blocks.length) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `debug_hunt "${segment.id}" keys EVERY one of its ${blocks.length} blocks as a bug, so there is nothing correct to leave alone and "tap every block" scores 100 with zero reasoning. Key ONE faulty block (two at most) and make the rest verifiably correct.`,
+        });
+      }
+      const dangling = [...new Set(bugIds.filter((id) => !blockIds.has(id)))];
+      if (blocks.length > 0 && dangling.length > 0) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `debug_hunt "${segment.id}" keys bug id(s) [${dangling.join(', ')}] that do not exist in payload.blocks — the child cannot tap a block that is not on screen, so the hit rate can never reach 100 and the exercise is unwinnable. Every answer.bug_ids entry must be one of the payload.blocks[].id values.`,
+        });
+      }
+    }
+
+    // ---- measure_read: the instrument must be READABLE to the graded value ----
+    /*
+     * The SVG instrument draws `ticks` evenly spaced marks and labels ONLY `min`
+     * and `max`; the child then types a number on a NumberPad and `toleranceBands`
+     * grades it. So the graded value has to be derivable by counting marks. The
+     * published beaker proved it can fail to be: 0-400 ml over 8 marks puts the
+     * step at 57.142857 and the pointer (250) at 4.375 marks — nothing a child can
+     * read, with tolerance 0, so the reading task was unanswerable except by
+     * guessing the round number. Rules, all mirroring the real grader/renderer:
+     * reading the DRAWN pointer must score 100; the pointer must sit on a whole or
+     * half mark with a countable step; and no OTHER landmark on the dial may score
+     * a pass (which is also what stops a huge tolerance turning "type anything"
+     * into a free 100).
+     */
+    if (segment.type === 'measure_read') {
+      const min = typeof payload.min === 'number' ? payload.min : null;
+      const max = typeof payload.max === 'number' ? payload.max : null;
+      const ticks = typeof payload.ticks === 'number' ? payload.ticks : null;
+      const pointer = typeof payload.pointer_value === 'number' ? payload.pointer_value : null;
+      const target = typeof answer?.value === 'number' ? answer.value : null;
+      const tolerance = typeof answer?.tolerance === 'number' ? answer.tolerance : null;
+      const unit = typeof payload.unit === 'string' ? payload.unit : '';
+      if (
+        min !== null && max !== null && ticks !== null && ticks >= 2 && max > min &&
+        pointer !== null && target !== null && tolerance !== null
+      ) {
+        const spacing = (max - min) / (ticks - 1);
+        if (pointer < min || pointer > max) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `measure_read "${segment.id}": pointer_value ${pointer}${unit} is outside the scale (${min}–${max}), and the renderer clamps the needle to the end of the dial — the child sees a pinned needle and cannot read the value. Put pointer_value inside [min, max].`,
+          });
+        } else if (toleranceBandScore(pointer, target, tolerance) !== 100) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `measure_read "${segment.id}": the instrument draws the pointer at ${pointer}${unit} but the key grades ${target}${unit} ±${tolerance} — a child who reads the instrument EXACTLY RIGHT scores ${toleranceBandScore(pointer, target, tolerance)}, so the exercise is unwinnable. answer.value must be payload.pointer_value.`,
+          });
+        }
+        const index = (pointer - min) / spacing;
+        const gridFaults: string[] = [];
+        if (!isWhole(index * 2)) {
+          gridFaults.push(
+            `the pointer sits ${index.toFixed(3)} marks from ${min} — between the marks rather than on one (only a whole or half mark is readable, and no mark carries a number)`,
+          );
+        }
+        if (!isWhole(spacing * 10)) {
+          gridFaults.push(
+            `the step between marks is ${Number(spacing.toFixed(4))} — not a round amount a child can count in`,
+          );
+        }
+        if (gridFaults.length > 0) {
+          const options: string[] = [];
+          for (let k = 3; k <= 20; k++) {
+            const step = (max - min) / (k - 1);
+            if (isWhole((pointer - min) / step) && isWhole(step * 10)) {
+              options.push(`${k} (step ${Number(step.toFixed(4))})`);
+            }
+          }
+          const advice = options.length
+            ? `Set payload.ticks to ${options.slice(0, 3).join(' or ')} so the pointer lands exactly on a mark.`
+            : `No tick count in 2–20 makes ${pointer} readable on a ${min}–${max} scale: move pointer_value (and answer.value with it) onto a round fraction of the range, e.g. its midpoint.`;
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `measure_read "${segment.id}" cannot be read to ${pointer}${unit}: with min ${min}, max ${max} and ${ticks} marks, ${gridFaults.join(' and ')}. ${advice}`,
+          });
+        }
+        const landmarks = [
+          ...Array.from({ length: ticks }, (_, i) => min + i * spacing),
+          (min + max) / 2,
+        ];
+        const freebie = landmarks.find(
+          (c) => Math.abs(c - target) > 1e-9 && toleranceBandScore(c, target, tolerance) >= passThreshold,
+        );
+        if (freebie !== undefined) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `measure_read "${segment.id}": answer.tolerance ${tolerance} is so wide that reading ${freebie}${unit} — another mark on the same dial — already scores ${toleranceBandScore(freebie, target, tolerance)} ≥ pass_threshold ${passThreshold}, so a child who misreads the instrument by a whole mark still passes. Keep tolerance well under the ${Number(spacing.toFixed(4))} step between marks (0 when the pointer is on a mark).`,
+          });
+        }
+      }
+    }
+
+    // ---- machine_io: the control the child gets must fit the key --------------
+    /*
+     * The widget branches on `payload.options` (radio cards when present, a
+     * NUMBER PAD when absent); gradeMachineIo branches on the KEY
+     * (`correct_option_id` first, else numeric `value`). When those two disagree
+     * the submission the child can make is not the one the grader reads, and EVERY
+     * answer scores 0 — a prompt/mechanic mismatch, not a hard exercise. The same
+     * applies to a word-answer machine (`out` values are allowed to be strings):
+     * with no options the only control is a number pad, so the child has no way to
+     * say "big" or "double". Finally, a probe that repeats one of the example
+     * inputs puts the answer on screen already — copy that row and score 100
+     * without inducing the rule.
+     */
+    if (segment.type === 'machine_io') {
+      const examples = Array.isArray(payload.examples)
+        ? (payload.examples as Array<{ in?: unknown; out?: unknown }>)
+        : [];
+      const options = Array.isArray(payload.options)
+        ? (payload.options as Array<{ id?: unknown }>)
+        : null;
+      const hasOptions = options !== null && options.length > 0;
+      const keyedOption = typeof answer?.correct_option_id === 'string' ? answer.correct_option_id : null;
+      const keyedValue = typeof answer?.value === 'number' ? answer.value : null;
+      if (hasOptions && keyedOption === null) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `machine_io "${segment.id}" renders ${options.length} option cards (payload.options), so the child can only submit the option they tapped — but the key has no answer.correct_option_id, so the grader takes its numeric branch, finds no number in the submission and scores 0 for EVERY answer. Key correct_option_id (the id of the right card), or drop payload.options and key a numeric answer.value for the number pad.`,
+        });
+      }
+      if (hasOptions && keyedOption !== null && !options.some((o) => o?.id === keyedOption)) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `machine_io "${segment.id}" keys correct_option_id "${keyedOption}", which is not one of the payload.options ids — the winning card is not on screen, so the exercise is unwinnable. Use one of the authored option ids.`,
+        });
+      }
+      if (!hasOptions && keyedValue === null) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `machine_io "${segment.id}" has no payload.options, so the child answers on a NUMBER PAD and the grader needs a numeric answer.value — with none, every submission scores 0. Add answer.value (a number), or give the segment options and key correct_option_id.`,
+        });
+      }
+      if (!hasOptions && examples.some((e) => typeof e?.out !== 'number')) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `machine_io "${segment.id}" is a machine whose OUTPUTS are words, but with no payload.options the only control is a number pad — the child cannot type a word answer at all. Add options (one per candidate output) so the answer is tappable, or make the machine numeric.`,
+        });
+      }
+      const probe = payload.probe_in;
+      if (probe !== undefined && examples.some((e) => e?.in !== undefined && String(e.in) === String(probe))) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `machine_io "${segment.id}" probes with ${String(probe)}, which is already one of the example inputs shown above it — the child copies that row's output and scores 100 without inducing the machine's rule. Probe an input the examples do NOT show.`,
+        });
+      }
+    }
+  }
+  return problems;
+}
+
 /**
  * TRIVIAL-STRATEGY gate: refuse exercises a child can pass with a mechanical
  * strategy that involves no reasoning. Each rule mirrors the arithmetic of the
@@ -1129,6 +1690,110 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
       }
     }
 
+    // ---- spot_error: most of the list must be RIGHT ---------------------------
+    /*
+     * gradeSpotError scores set-F1 over the tapped set vs `answer.error_ids`
+     * (naive_strategy_passes fix, 2026-07-25 — decisionAccuracy used to pay for
+     * untouched steps, so tapping one arbitrary step scored 80 on a 10-step list).
+     * set-F1 kills every volume strategy EXCEPT one content shape it cannot fix
+     * from the engine side: when most steps are keyed as flawed, "tap every step"
+     * has precision = recall = P/N and scores 2P/(N+P) — 80 at 2 of 3 steps. So the
+     * arithmetic below is the real grader's, evaluated for the tap-everything
+     * submission, which makes this a proof rather than a heuristic.
+     *
+     * Second rule: an `error_ids` entry that is not a real step id can never be
+     * tapped, which caps the best achievable score below 100 (0 when it is the only
+     * keyed error) — unwinnable, and now fatal in a way it was not under
+     * decisionAccuracy, so it is gated here rather than left to chance.
+     */
+    if (segment.type === 'spot_error') {
+      const steps = Array.isArray(payload.steps) ? (payload.steps as Array<{ id?: unknown }>) : [];
+      const stepIds = new Set(steps.map((s) => String(s?.id)));
+      const errorIds = Array.isArray(answer?.error_ids) ? (answer.error_ids as unknown[]).map(String) : [];
+      // Mirror of core/scoring.ts setF1 for "tap every step": hits = keyed steps
+      // that actually exist, |selected| = steps.length, |positives| = error ids.
+      const tapEverythingScore = (positives: number) =>
+        Math.round(((2 * positives) / (steps.length + positives)) * 100);
+      const positives = new Set(errorIds.filter((id) => stepIds.has(id))).size;
+      if (steps.length > 0 && positives > 0 && tapEverythingScore(positives) >= passThreshold) {
+        let maxFlawed = 0;
+        for (let p = 1; p < steps.length; p++) if (tapEverythingScore(p) < passThreshold) maxFlawed = p;
+        const advice =
+          maxFlawed > 0
+            ? `Key at most ${maxFlawed} of these ${steps.length} steps as flawed (and leave the rest verifiably correct).`
+            : `Add more correct steps: with only ${steps.length} steps no flaw count can survive a pass_threshold of ${passThreshold}.`;
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `spot_error "${segment.id}" keys ${positives} of its ${steps.length} steps as flawed, so "tap EVERY step" scores ${tapEverythingScore(positives)} ≥ pass_threshold ${passThreshold} (set-F1 of the tapped set vs answer.error_ids) — the child passes with zero reasoning and there is almost nothing correct to leave alone. ${advice}`,
+        });
+      }
+      const dangling = [...new Set(errorIds.filter((id) => !stepIds.has(id)))];
+      if (steps.length > 0 && dangling.length > 0) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `spot_error "${segment.id}" keys error id(s) [${dangling.join(', ')}] that do not exist in payload.steps — the child cannot tap a step that is not on screen, so the exercise is unwinnable (it can never reach 100). Every answer.error_ids entry must be one of the payload.steps[].id values.`,
+        });
+      }
+    }
+
+    // ---- yes_no_cases: the rule must both APPLY and NOT APPLY -----------------
+    /*
+     * gradeYesNoCases scores balancedDecisionAccuracy — mean(sensitivity,
+     * specificity) — which pins "press NO on every case" and "press YES on every
+     * case" at 50 on every split that has at least one applying case AND at least
+     * one non-applying case (naive_strategy_passes fix, 2026-07-25: pooled
+     * (TP+TN)/N accuracy used to pay all-NO 75 on 8 cases with 2 applying). What no
+     * formula can rescue is a ONE-SIDED key: with `applies_ids` empty, "press NO on
+     * every case" IS the answer key and scores 100; with every case keyed, "press
+     * YES" is. The schema permits both (`applies_ids` has no min or max). Both
+     * strategies are scored below with the real grader's arithmetic, so this is a
+     * proof and it tracks any future change to the formula.
+     */
+    if (segment.type === 'yes_no_cases') {
+      const cases = Array.isArray(payload.cases) ? (payload.cases as Array<{ id?: unknown }>) : [];
+      const caseIds = cases.map((c) => String(c?.id));
+      const keyed = new Set(
+        Array.isArray(answer?.applies_ids) ? (answer.applies_ids as unknown[]).map(String) : [],
+      );
+      // Mirror of core/scoring.ts balancedDecisionAccuracy (a vacuous class rates 1).
+      const balancedScore = (pressedYes: (id: string) => boolean) => {
+        let truePositives = 0;
+        let trueNegatives = 0;
+        let positives = 0;
+        let negatives = 0;
+        for (const id of caseIds) {
+          if (keyed.has(id)) {
+            positives++;
+            if (pressedYes(id)) truePositives++;
+          } else {
+            negatives++;
+            if (!pressedYes(id)) trueNegatives++;
+          }
+        }
+        const sensitivity = positives === 0 ? 1 : truePositives / positives;
+        const specificity = negatives === 0 ? 1 : trueNegatives / negatives;
+        return Math.round(((sensitivity + specificity) / 2) * 100);
+      };
+      const allNo = balancedScore(() => false);
+      const allYes = balancedScore(() => true);
+      if (caseIds.length > 0 && (allNo >= passThreshold || allYes >= passThreshold)) {
+        const applying = caseIds.filter((id) => keyed.has(id)).length;
+        const worst = allNo >= allYes ? { label: 'NO', score: allNo } : { label: 'YES', score: allYes };
+        const dangling = [...keyed].filter((id) => !caseIds.includes(id));
+        const note =
+          dangling.length > 0
+            ? ` (answer.applies_ids entries [${dangling.join(', ')}] match no payload.cases[].id, so the grader ignores them.)`
+            : '';
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `yes_no_cases "${segment.id}" keys ${applying} of its ${caseIds.length} cases as ones the rule applies to, so pressing ${worst.label} on every case scores ${worst.score} ≥ pass_threshold ${passThreshold} — a one-sided key turns one repeated tap into the answer itself and no case is ever tested against the rule.${note} Mix them: at least one case the rule DOES cover and at least one it clearly does NOT.`,
+        });
+      }
+    }
+
     // ---- equation_builder: the bank must pose a choice ------------------------
     if (segment.type === 'equation_builder') {
       const tokens = Array.isArray(payload.tokens) ? (payload.tokens as unknown[]) : [];
@@ -1143,21 +1808,34 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
     }
 
     // ---- build_sentence: partial credit must not mask the objective ------------
-    // gradeBuildSentence uses `positional`: score = correctPositions/slots × 100.
-    // With distractors present, choosing the RIGHT one is the objective — but a
-    // single wrong slot still scores (slots-1)/slots. At slots=5 that is 80, which
-    // clears a 70 gate, so the child passes with the wrong number in the sentence.
+    /*
+     * STALE MIRROR REPAIRED (partial_credit_too_generous, 2026-07-25). This check
+     * used to compute `(slots-1)/slots × 100` — raw `positional` — and reject any
+     * build_sentence with distractors and slots ≥ 4. That arithmetic is no longer the
+     * grader's: gradeOrder now caps EVERY imperfect ordering at
+     * IMPERFECT_ORDER_CEILING (60), so one wrong slot can never reach a 70 threshold
+     * however many slots there are. Left as it was, the gate would reject content the
+     * engine already grades correctly — a gate must mirror the code that runs, or it
+     * is a heuristic pretending to be a proof (§gate-8 contract).
+     *
+     * It is kept rather than deleted because it is still load-bearing for a document
+     * that lowers its own pass_threshold to 60 or less: there the cap stops being
+     * protective and one-wrong-slot passes again. Mirror BOTH steps of the real
+     * grader — the metric, then the ceiling.
+     */
     if (segment.type === 'build_sentence') {
       const tokens = Array.isArray(payload.tokens) ? (payload.tokens as unknown[]) : [];
       const slots = typeof payload.slots === 'number' ? payload.slots : 0;
       const hasDistractors = tokens.length > slots;
       if (hasDistractors && slots > 0) {
-        const oneWrong = Math.round(((slots - 1) / slots) * 100);
+        // frontend/src/lesson-engine/families/arrange/grade.ts — gradeOrder:
+        // an inexact ordering scores min(positional, IMPERFECT_ORDER_CEILING).
+        const oneWrong = Math.min(Math.round(((slots - 1) / slots) * 100), IMPERFECT_ORDER_CEILING);
         if (oneWrong >= passThreshold) {
           problems.push({
             gate: 8,
             segmentId: segment.id,
-            message: `build_sentence "${segment.id}" has distractor tokens, but one wrong slot still scores ${oneWrong} ≥ pass_threshold ${passThreshold} (positional credit over ${slots} slots) — so a child who picks the WRONG distractor still passes and never has to do the reasoning the distractors test. Use fewer slots (so one miss fails) or raise this lesson's pass_threshold above ${oneWrong}.`,
+            message: `build_sentence "${segment.id}" has distractor tokens, but one wrong slot still scores ${oneWrong} ≥ pass_threshold ${passThreshold} (positional credit over ${slots} slots, capped at ${IMPERFECT_ORDER_CEILING} for an imperfect order) — so a child who picks the WRONG distractor still passes and never has to do the reasoning the distractors test. Raise this lesson's pass_threshold above ${oneWrong}.`,
           });
         }
       }
@@ -1215,6 +1893,363 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
         }
       }
     }
+
+    // ---- needs_wants: both classes must exist for the balanced grader ---------
+    /*
+     * gradeNeedsWants uses `balancedDecisionAccuracy`, which pins either blanket
+     * answer ("Need" on everything / "Want" on everything) at 50 — but ONLY while
+     * both classes are non-empty. With one class empty the mean is undefined, so
+     * the scorer falls back to plain accuracy to keep the item set winnable, and
+     * then the matching blanket answer scores a clean 100. The engine cannot fix
+     * that without making such a lesson unwinnable, so it is gated here — the same
+     * "there must be something to reject" rule red_flags/speed_tap already have.
+     */
+    if (segment.type === 'needs_wants') {
+      const items = Array.isArray(payload.items) ? (payload.items as Array<{ id?: unknown }>) : [];
+      const itemIds = new Set(items.map((i) => String(i?.id)));
+      const keyed = Array.isArray(answer?.needs_ids) ? (answer.needs_ids as unknown[]).map(String) : [];
+      const needs = new Set(keyed.filter((id) => itemIds.has(id))).size;
+      const wants = items.length - needs;
+      if (items.length > 0 && (needs === 0 || wants === 0)) {
+        const blanket = needs === 0 ? 'tapping "Want" on every card' : 'tapping "Need" on every card';
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `needs_wants "${segment.id}" keys ${needs} of its ${items.length} items as needs — one side of the classification is empty, so ${blanket} scores 100 with zero needs-vs-wants thinking. Include BOTH real needs and real wants (roughly half and half), each unambiguous on its own.`,
+        });
+      }
+    }
+
+    // ---- piggy_split: the stepper must reach the key, and an even split must
+    //      not BE the key ------------------------------------------------------
+    /*
+     * Two proven defects in one shape. Both are checked with the arithmetic of the
+     * REAL pair — frontend PiggySplit (the only control is ±`step` per jar, and
+     * canSubmit refuses until the allocation totals the income EXACTLY) and
+     * core/scoring `allocationRanges` (100 iff EVERY jar sits inside its
+     * [min,max]; anything else is capped at 50, i.e. sub-pass).
+     *
+     * naive_strategy_passes — "press + on each jar in turn until the money runs
+     * out" is executable, deterministic (the jars render in payload order) and
+     * completely label-blind, and it always spends the income exactly, so it always
+     * submits. When that round-robin split happens to land inside every range it
+     * scores 100 and the child never reads a single jar. Loose ranges (or genuinely
+     * equal target proportions) are what make it win.
+     *
+     * prompt_mechanic_mismatch — jar amounts are only reachable as whole multiples
+     * of `step`, so a `step` that does not divide `income`, or a target range with
+     * no multiple of `step` inside it, describes an allocation the stepper cannot
+     * express: the child is either stuck with nothing submittable or capped below
+     * 100 forever. A targets/jar id mismatch is the same failure by another route —
+     * `allocationRanges` sums the allocation over the TARGET keys, so a jar that has
+     * no target never has its money counted and every submission scores 0.
+     *
+     * Gated at authoring time (not in the grader) because the engine is right for
+     * every shape an author is supposed to write: the fix belongs in the content.
+     */
+    if (segment.type === 'piggy_split') {
+      const jars = Array.isArray(payload.jars) ? (payload.jars as Array<{ id?: unknown }>) : [];
+      const income = typeof payload.income === 'number' ? payload.income : null;
+      const rawTargets = answer?.targets;
+      const targets =
+        typeof rawTargets === 'object' && rawTargets !== null
+          ? (rawTargets as Record<string, { min?: unknown; max?: unknown } | undefined>)
+          : null;
+      if (jars.length > 0 && income !== null && income > 0 && targets) {
+        const jarIds = jars.map((j) => String(j?.id));
+        const targetKeys = Object.keys(targets);
+        const missing = jarIds.filter((id) => !targetKeys.includes(id));
+        const unknownKeys = targetKeys.filter((k) => !jarIds.includes(k));
+        if (missing.length > 0 || unknownKeys.length > 0) {
+          const detail = [
+            missing.length > 0 ? `jars with no target: ${missing.join(', ')}` : '',
+            unknownKeys.length > 0 ? `targets for no jar: ${unknownKeys.join(', ')}` : '',
+          ]
+            .filter(Boolean)
+            .join('; ');
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `piggy_split "${segment.id}": answer.targets does not cover exactly the payload.jars ids (${detail}). The grader adds the child's allocation up over the TARGET keys, so a jar with no target has its money left out of the total and EVERY submission scores 0 — unwinnable. Give exactly one {min,max} range per jar id, and no extras.`,
+          });
+        } else {
+          // Mirror of the widget's grid: `step` defaults to income/10 (components.tsx).
+          const step = typeof payload.step === 'number' && payload.step > 0 ? payload.step : income / 10;
+          const stepCents = toCents(step);
+          const incomeCents = toCents(income);
+          const wholeSteps = stepCents > 0 && incomeCents % stepCents === 0;
+          const bounds = jarIds.map((id) => {
+            const range = targets[id];
+            const min = typeof range?.min === 'number' ? Math.max(0, toCents(range.min)) : 0;
+            const max = typeof range?.max === 'number' ? toCents(range.max) : incomeCents;
+            return { id, min, max };
+          });
+          const lo = bounds.map((b) => (stepCents > 0 ? Math.ceil(b.min / stepCents) : 0));
+          const hi = bounds.map((b) => (stepCents > 0 ? Math.floor(b.max / stepCents) : -1));
+          // Each jar's reachable step-counts form a contiguous integer interval, so the
+          // achievable totals do too: feasible ⟺ Σlo ≤ totalSteps ≤ Σhi.
+          const emptyRanges = bounds.filter((_, i) => (lo[i] as number) > (hi[i] as number));
+          const totalSteps = wholeSteps ? incomeCents / stepCents : 0;
+          const loSum = lo.reduce((a, b) => a + b, 0);
+          const hiSum = hi.reduce((a, b) => a + b, 0);
+          const feasible = wholeSteps && emptyRanges.length === 0 && loSum <= totalSteps && totalSteps <= hiSum;
+          if (!feasible) {
+            const reason = !wholeSteps
+              ? `step ${step} does not divide the income ${income} into whole increments, so the jars can never add up to exactly ${income} and the Check button never unlocks`
+              : emptyRanges.length > 0
+                ? `jar(s) ${emptyRanges.map((b) => b.id).join(', ')} have a target range that contains no multiple of the ${step} step, so the child cannot land inside it`
+                : `no combination of ${step}-sized steps puts every jar inside its range AND totals ${income} (the ranges allow between ${(loSum * stepCents) / 100} and ${(hiSum * stepCents) / 100})`;
+            problems.push({
+              gate: 8,
+              segmentId: segment.id,
+              message: `piggy_split "${segment.id}" is unwinnable as authored: the jars only move in ${step} increments and the grader wants every jar inside its range with the whole ${income} allocated, but ${reason}. Pick a step that divides the income and target ranges that sit on that grid.`,
+            });
+          } else {
+            // "+ on each jar in turn until the money runs out": the first `extra` jars
+            // (payload order — the order they render) get one more step than the rest.
+            const base = Math.floor(totalSteps / jarIds.length);
+            const extra = totalSteps % jarIds.length;
+            const evenSplitWins = bounds.every((b, i) => {
+              const amount = (base + (i < extra ? 1 : 0)) * stepCents;
+              return amount >= b.min && amount <= b.max;
+            });
+            if (evenSplitWins) {
+              const shares = bounds.map((_, i) => ((base + (i < extra ? 1 : 0)) * stepCents) / 100);
+              problems.push({
+                gate: 8,
+                segmentId: segment.id,
+                message: `piggy_split "${segment.id}": splitting the ${income} evenly across the ${jarIds.length} jars (${shares.join(' / ')}) lands inside EVERY target range, so a child who just taps + on each jar in turn until the money runs out scores 100 without reading a single jar label. Make the intended split genuinely uneven (the jars have different jobs — one needs more than the other) and tighten the ranges so the even split misses at least one jar.`,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    // ---- coin_count / make_change: "tap one of every coin" must not win -------
+    /*
+     * The money tray grades tray sum === target (`sumEquals`), and the palette can
+     * be tapped any number of times — so choosing WHICH coins to assemble is the
+     * whole exercise. When the palette's own denominations add up to exactly the
+     * target, tapping each button once scores 100 with no arithmetic at all: the
+     * mechanical "tap everything on screen" strategy the audit proved. Mirrors
+     * clarityBalanceScale's bank-sum rule, on the same arithmetic as the grader.
+     */
+    if (segment.type === 'coin_count' || segment.type === 'make_change') {
+      const denominations = Array.isArray(payload.denominations)
+        ? (payload.denominations as unknown[]).filter((v): v is number => typeof v === 'number')
+        : [];
+      const price = typeof payload.price === 'number' ? payload.price : null;
+      const paidWith = typeof payload.paid_with === 'number' ? payload.paid_with : null;
+      const target =
+        segment.type === 'coin_count'
+          ? typeof payload.target === 'number'
+            ? payload.target
+            : null
+          : price !== null && paidWith !== null
+            ? paidWith - price
+            : null;
+      if (denominations.length > 0 && target !== null) {
+        const paletteTotal = denominations.reduce((sum, v) => sum + v, 0);
+        if (Math.abs(paletteTotal - target) < 1e-9) {
+          const amount = segment.type === 'coin_count' ? `target ${target}` : `change due ${target}`;
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `${segment.type} "${segment.id}": the coin palette [${denominations.join(', ')}] adds up to exactly the ${amount}, so tapping ONE OF EVERY coin scores 100 (the grader passes any tray whose sum equals the target) and the child never does the arithmetic. Change a denomination or the amount so the palette total differs from it — the palette should be a set to choose from, not the answer laid out.`,
+          });
+        }
+        /*
+         * naive_strategy_passes (2026-07-25): the palette-total rule above only
+         * catches "tap one of EVERY coin". The cheaper mechanical win is ONE tap.
+         * CoinCount renders the target in a pill via `format(target)` directly above
+         * a palette whose buttons are labelled with the SAME Intl currency formatter,
+         * so when the target IS one of the denominations the child just taps the
+         * button whose label matches the pill — symbol matching, zero counting — and
+         * `sumEquals` scores that one-coin tray a clean 100.
+         *
+         * The right layer is authoring, not the grader: a tray that sums to the
+         * target is by definition a correct answer, so refusing it in scoring would
+         * fail a legitimate submission. make_change is deliberately exempt — it
+         * renders price and paid_with but never the change due, so there is no
+         * on-screen number to match a coin label against; that child must subtract
+         * before the palette means anything.
+         */
+        if (segment.type === 'coin_count' && denominations.some((d) => toCents(d) === toCents(target))) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `coin_count "${segment.id}": the target ${target} is itself one of the palette denominations [${denominations.join(', ')}], so tapping that ONE coin scores 100 — the child reads the number off the target pill, finds the coin with the same label, and counts nothing. Drop that denomination or change the target so the tray needs at least TWO coins (e.g. target 5 with [1, 2, 10], never target 5 with [1, 2, 5]).`,
+          });
+        }
+      }
+    }
+
+    // ---- would_you_rather: one tap must be able to be the wrong one -----------
+    /*
+     * naive_strategy_passes (2026-07-25). gradeWouldYouRather returns the authored
+     * quality of the side the child tapped (0-1 maps rescaled ×100), and an ALL-ZERO
+     * map is treated as a free-choice reflection worth 100 for either tap. The widget
+     * is ONE tap between two cards, so when both sides score >= pass_threshold the
+     * segment cannot be failed by anyone: "always tap the left card" is a complete,
+     * thought-free strategy, and this type is NOT one of review.ts's low-decision
+     * types — it is scored as a genuine reasoning exercise and carries real xp. The
+     * palette used to promise exactly that shape ("BOTH sides can score 100"); it now
+     * asks for a weaker side, and the arithmetic below is the grader's own, so this is
+     * a proof rather than a heuristic.
+     *
+     * NOT fixable in the scorer: the score IS the authored quality, so any formula
+     * that pushes the lower side under the threshold (normalizing to the spread, say)
+     * would fail a child who took the side an author scored 95 in a deliberate
+     * near-tie — a correct answer today. The engine keeps its all-zero → 100 branch as
+     * a runtime safety net so already-published lessons stay winnable (gate 7 tolerates
+     * that map for the same reason: it asks "can the best answer pass?"). This gate
+     * asks the opposite question — "can this be failed?" — and refuses the shape at
+     * authoring time, where write.ts has always said "never all zeros".
+     */
+    if (segment.type === 'would_you_rather') {
+      const qualities = answer?.qualities as Record<string, unknown> | undefined;
+      const qa = typeof qualities?.a === 'number' ? qualities.a : null;
+      const qb = typeof qualities?.b === 'number' ? qualities.b : null;
+      if (qa !== null && qb !== null) {
+        // Mirror of core/scoring.ts qualityScaleFactor + clampScore, plus the grader's
+        // "no better side at all → any valid pick scores 100" branch.
+        const maxQuality = Math.max(qa, qb);
+        const factor = maxQuality > 0 && maxQuality <= 1 ? 100 : 1;
+        const scoreOf = (q: number) =>
+          maxQuality === 0 ? 100 : Math.max(0, Math.min(100, Math.round(q * factor)));
+        const scoreA = scoreOf(qa);
+        const scoreB = scoreOf(qb);
+        if (Math.min(scoreA, scoreB) >= passThreshold) {
+          const allZero = maxQuality === 0 ? ' (an all-zero map scores 100 for either side)' : '';
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `would_you_rather "${segment.id}" grades side a ${scoreA} and side b ${scoreB}${allZero}, so BOTH taps clear pass_threshold ${passThreshold} — the child makes ONE tap and cannot fail, which makes "always tap the same card" a complete strategy with zero reasoning. Score the weaker trade-off well below ${passThreshold} (≈0-30) and teach the dilemma in \`reveal_md\`, which is shown either way.`,
+          });
+        }
+      }
+    }
+
+    // ---- story_branch: real decisions, all keyed, and at least one wrong turn ---
+    /*
+     * naive_strategy_passes / partial_credit_too_generous (2026-07-25).
+     * gradeStoryBranch averages the authored qualities of the choices the child took,
+     * counting ONLY nodes that offered >= 2 choices (forced one-choice "continue" nodes
+     * stopped being graded in the same audit — that part is the mechanic's, so it lives
+     * in the grader). Three content shapes still defeat it, each proved below with that
+     * exact arithmetic:
+     *   • no multi-choice node at all — a linear story authored as a branch. The grader
+     *     falls back to grading the forced steps so it is not unwinnable, and then
+     *     tapping "continue" through it scores whatever they were keyed;
+     *   • an UNKEYED choice at a real decision node is silently dropped from the mean,
+     *     so taking it costs NOTHING: key only {best: 100} and a path that hits one best
+     *     choice and every wrong turn after it still scores a clean 100;
+     *   • when EVERY root-to-end path scores >= pass_threshold there is no wrong turn to
+     *     take at all, so walking the story any way whatsoever passes.
+     * The mirror-image check (no path can pass ⇒ unwinnable) comes free from the same
+     * enumeration, so it is reported too.
+     */
+    if (segment.type === 'story_branch') {
+      const rawNodes = Array.isArray(payload.nodes) ? (payload.nodes as Array<Record<string, unknown>>) : [];
+      const choicesByNode = new Map<string, Array<{ id: string; next: string | null }>>();
+      for (const node of rawNodes) {
+        if (typeof node?.id !== 'string') continue;
+        const rawChoices = Array.isArray(node.choices) ? (node.choices as Array<Record<string, unknown>>) : [];
+        choicesByNode.set(
+          node.id,
+          rawChoices.map((c) => ({
+            id: String(c?.id),
+            next: typeof c?.next === 'string' ? c.next : null,
+          })),
+        );
+      }
+      const keyed = new Map<string, number>();
+      const rawQualities = Array.isArray(answer?.qualities)
+        ? (answer.qualities as Array<Record<string, unknown>>)
+        : [];
+      for (const q of rawQualities) {
+        if (typeof q?.node_id === 'string' && typeof q?.choice_id === 'string' && typeof q?.score === 'number') {
+          keyed.set(`${q.node_id} ${q.choice_id}`, q.score);
+        }
+      }
+      const decisionNodes = [...choicesByNode.entries()].filter(([, choices]) => choices.length >= 2);
+      const startNode = typeof payload.start_node === 'string' ? payload.start_node : null;
+      if (choicesByNode.size > 0 && decisionNodes.length === 0) {
+        problems.push({
+          gate: 8,
+          segmentId: segment.id,
+          message: `story_branch "${segment.id}" has no node that offers more than one choice, so the child never decides anything — they tap "continue" to the end and the grader has only forced steps left to score. Give at least one node 2-4 genuinely different choices (that branching decision IS the exercise).`,
+        });
+      } else if (decisionNodes.length > 0) {
+        const unkeyed = decisionNodes.flatMap(([nodeId, choices]) =>
+          choices.filter((c) => !keyed.has(`${nodeId} ${c.id}`)).map((c) => `${nodeId}/${c.id}`),
+        );
+        if (unkeyed.length > 0) {
+          problems.push({
+            gate: 8,
+            segmentId: segment.id,
+            message: `story_branch "${segment.id}" leaves choice(s) [${unkeyed.join(', ')}] out of \`answer.qualities\` even though their node offers a real decision. The grader averages only the steps it has a quality for, so an unkeyed choice costs the child NOTHING — taking it is free, and a path that hits one keyed best choice and unkeyed wrong turns after it still scores 100. Key EVERY choice of EVERY multi-choice node (a poor turn ≈ 0-30); the one-choice "continue"/ending nodes need no entry.`,
+          });
+        } else if (startNode !== null && choicesByNode.has(startNode)) {
+          // Mirror of families/storyplay/grade.ts: mean of the clamped qualities taken
+          // at DECISION nodes only, 0-1 maps rescaled, no keyed decision step → 0.
+          const maxQuality = [...keyed.values()].reduce((m, v) => (v > m ? v : m), 0);
+          const factor = maxQuality > 0 && maxQuality <= 1 ? 100 : 1;
+          const PATH_CAP = 400;
+          const pathScores: number[] = [];
+          let truncated = false;
+          const finalize = (taken: number[]) => {
+            const mean = taken.length === 0 ? 0 : taken.reduce((a, b) => a + b, 0) / taken.length;
+            pathScores.push(Math.max(0, Math.min(100, Math.round(mean))));
+          };
+          const walk = (nodeId: string, seen: Set<string>, taken: number[]) => {
+            if (pathScores.length >= PATH_CAP) {
+              truncated = true;
+              return;
+            }
+            const choices = choicesByNode.get(nodeId) ?? [];
+            if (choices.length === 0) {
+              finalize(taken);
+              return;
+            }
+            const isDecision = choices.length >= 2;
+            for (const choice of choices) {
+              const quality = keyed.get(`${nodeId} ${choice.id}`);
+              const next =
+                isDecision && typeof quality === 'number'
+                  ? [...taken, Math.max(0, Math.min(100, Math.round(quality * factor)))]
+                  : taken;
+              // A dangling/repeated `next` ends the story (the widget ends defensively too).
+              if (choice.next === null || !choicesByNode.has(choice.next) || seen.has(choice.next)) {
+                finalize(next);
+              } else {
+                walk(choice.next, new Set(seen).add(choice.next), next);
+              }
+            }
+          };
+          walk(startNode, new Set([startNode]), []);
+          if (!truncated && pathScores.length > 0) {
+            const worst = Math.min(...pathScores);
+            const best = Math.max(...pathScores);
+            if (worst >= passThreshold) {
+              problems.push({
+                gate: 8,
+                segmentId: segment.id,
+                message: `story_branch "${segment.id}": every one of its ${pathScores.length} possible paths scores ${worst}-${best}, all >= pass_threshold ${passThreshold} — there is no wrong turn to take, so walking the story at random passes with zero reasoning. Key the poor choices low (≈0-30) so at least one path genuinely fails.`,
+              });
+            }
+            if (best < passThreshold) {
+              problems.push({
+                gate: 8,
+                segmentId: segment.id,
+                message: `story_branch "${segment.id}" is unwinnable: the BEST of its ${pathScores.length} paths scores only ${best}, under pass_threshold ${passThreshold} (the grader averages the qualities of the choices taken at multi-choice nodes). Key the best choice at each decision ≈90-100.`,
+              });
+            }
+          }
+        }
+      }
+    }
   }
   return problems;
 }
@@ -1262,17 +2297,38 @@ function promptIntegrity(document: LessonDocumentParsed): GateProblem[] {
       }
     }
 
-    // ---- debug_hunt: the widget selects, it cannot rewrite -------------------
+    // ---- debug_hunt / spot_error: the widget selects, it cannot rewrite -------
     // The DebugHunt control only lets a child TAP the faulty block; `answer.fix_md`
     // is revealed after grading. A prompt that says "corrígela" asks for something
     // the mechanic cannot express (found published).
-    if (segment.type === 'debug_hunt') {
+    /*
+     * spot_error joined this check (prompt_mechanic_mismatch, 2026-07-25): it is the
+     * SAME mechanic under another name. `SpotError` renders `payload.steps` as
+     * checkbox OptionCards and nothing else — no text field, no number pad — and
+     * `answer.correction_md` is rendered only once a verdict exists, exactly like
+     * fix_md. So "corrige la suma" / "escribe la respuesta correcta" is
+     * unanswerable there too, and the author instruction actively invites the shape
+     * by telling writers to put the corrected arithmetic in `answer.correction_md`
+     * (write.ts) — an arithmetic-flaw type is the one most likely to be prompted
+     * with "and fix it".
+     *
+     * Authoring layer, not engine: tapping the flawed step IS the skill this type
+     * teaches, so the control set is right and grading is right; only a prompt that
+     * demands a second, untypeable answer is out of contract. The regex is
+     * deliberately the one already proven on published debug_hunt content, so
+     * debug_hunt's behaviour is unchanged by this widening.
+     */
+    if (segment.type === 'debug_hunt' || segment.type === 'spot_error') {
       const CORRECT_VERB = /corr[íi]gel|corrige|arregl|reescrib|escribe la|fix it|rewrite|correct it|type the/i;
       if (CORRECT_VERB.test(prompt)) {
+        const mechanic =
+          segment.type === 'debug_hunt'
+            ? { what: 'the text', tap: 'tap the faulty block', field: 'answer.fix_md' }
+            : { what: 'the arithmetic', tap: 'tap the flawed step', field: 'answer.correction_md' };
         problems.push({
           gate: 8,
           segmentId: segment.id,
-          message: `debug_hunt "${segment.id}" asks the child to CORRECT the text ("${prompt.slice(0, 60)}…"), but the widget only lets them tap the faulty block — there is no text input, and the fix is only revealed after grading. Ask them to FIND/TAP the mistake; the correction is the feedback.`,
+          message: `${segment.type} "${segment.id}" asks the child to CORRECT ${mechanic.what} ("${prompt.slice(0, 60)}…"), but the widget only lets them ${mechanic.tap} — there is no text input, and the fix is only revealed after grading (${mechanic.field}). Ask them to FIND/TAP the mistake; the correction is the feedback.`,
         });
       }
     }
@@ -1376,11 +2432,13 @@ export function runClarityGate(document: LessonDocumentParsed): GateProblem[] {
     ...clarityAnswerLeak(document),
     ...clarityHintHiddenFact(document),
     ...clarityPatternComplete(document),
+    ...arrangeMechanicFit(document),
     ...robotPathSolvable(document),
     ...clarityBuildSentence(document),
     ...clarityCompareTable(document),
     ...clarityCoinCount(document),
     ...clarityBalanceScale(document),
+    ...makerMechanicFit(document),
   ];
 }
 

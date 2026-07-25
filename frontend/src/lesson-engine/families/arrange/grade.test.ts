@@ -164,8 +164,32 @@ describe('order_steps', () => {
     expect(grade(segment, { order: ['a', 'b', 'c', 'd'] })).toBe(100)
   })
 
-  it('one adjacent swap → 83 (5 of 6 concordant pairs)', () => {
-    expect(grade(segment, { order: ['b', 'a', 'c', 'd'] })).toBe(83)
+  // EXPECTATION CHANGED (partial_credit_too_generous, 2026-07-25): kendall still
+  // reports 83 for one adjacent swap (5 of 6 concordant pairs), but gradeOrder now
+  // caps any IMPERFECT ordering at IMPERFECT_ORDER_CEILING — a near-miss order used
+  // to CERTIFY a wrong sequence at the default pass_threshold of 70.
+  it('one adjacent swap → 60 (kendall 83, capped: the order is still wrong)', () => {
+    expect(grade(segment, { order: ['b', 'a', 'c', 'd'] })).toBe(60)
+  })
+
+  it('no imperfect order can clear the default 70 pass threshold', () => {
+    // Every permutation except the keyed one must fail. This is the whole point of
+    // the cap: for an ordering exercise the order IS the objective.
+    const perms = [
+      ['b', 'a', 'c', 'd'],
+      ['a', 'c', 'b', 'd'],
+      ['a', 'b', 'd', 'c'],
+      ['b', 'c', 'd', 'a'],
+      ['d', 'a', 'b', 'c'],
+    ]
+    perms.forEach((order) => expect(grade(segment, { order })).toBeLessThan(70))
+  })
+
+  it('partial credit still ranks how close the child got (below the cap)', () => {
+    // The cap is a ceiling, not a flattening: worse orders still score worse.
+    const oneSwap = grade(segment, { order: ['b', 'a', 'c', 'd'] })
+    const scrambled = grade(segment, { order: ['c', 'd', 'a', 'b'] })
+    expect(scrambled).toBeLessThan(oneSwap)
   })
 
   it('full reversal → 0', () => {
@@ -202,6 +226,12 @@ describe('order accepts a SET of valid orderings (accept_orders)', () => {
     expect(grade(segment, { order: ['c', 'b', 'a'] })).toBeLessThan(100)
   })
 
+  it('the cap applies to the accept_orders path too (best alternative, still capped)', () => {
+    // Scoring against the NEAREST accepted ordering must not become a back door: an
+    // order that matches no accepted ordering exactly stays below the pass mark.
+    expect(grade(segment, { order: ['a', 'c', 'b'] })).toBeLessThan(70)
+  })
+
   it('build_sentence accepts an alternative phrasing', () => {
     const bs = seg(
       'build_sentence',
@@ -234,8 +264,24 @@ describe('rank_choices', () => {
     expect(grade(segment, { order: ['a', 'b', 'c', 'd'] })).toBe(100)
   })
 
-  it('one adjacent swap → 75 (displacement 2 of max 8)', () => {
-    expect(grade(segment, { order: ['b', 'a', 'c', 'd'] })).toBe(75)
+  // EXPECTATION CHANGED (partial_credit_too_generous, 2026-07-25): footrule still
+  // reports 75 for one adjacent swap (displacement 2 of max 8), but gradeOrder caps
+  // imperfect orderings at IMPERFECT_ORDER_CEILING. footrule is the most generous of
+  // the three metrics — over 7 items a single transposition scored 92 — so this cap
+  // is what stops a wrong ranking from being graded as mastery.
+  it('one adjacent swap → 60 (footrule 75, capped: the ranking is still wrong)', () => {
+    expect(grade(segment, { order: ['b', 'a', 'c', 'd'] })).toBe(60)
+  })
+
+  it('a 7-item ranking with one transposition also fails (footrule 92 → capped)', () => {
+    const ids = ['r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7']
+    const seven = seg(
+      'rank_choices',
+      { criterion_md: 'most urgent first', items: ids.map((id) => ({ id, text_md: id })) },
+      { order: ids },
+    )
+    expect(grade(seven, { order: ids })).toBe(100)
+    expect(grade(seven, { order: ['r2', 'r1', 'r3', 'r4', 'r5', 'r6', 'r7'] })).toBeLessThan(70)
   })
 
   it('malformed → 0, never throws', () => {
@@ -264,8 +310,24 @@ describe('build_sentence', () => {
     expect(grade(segment, { order: ['a', 'b', 'c'] })).toBe(100)
   })
 
-  it('distractor in one slot → 67 (2 of 3 positions)', () => {
-    expect(grade(segment, { order: ['a', 'x', 'c'] })).toBe(67)
+  // EXPECTATION CHANGED (partial_credit_too_generous, 2026-07-25): `positional` still
+  // reports 67 for 2 of 3 slots, but gradeOrder caps imperfect orderings at
+  // IMPERFECT_ORDER_CEILING. This is the defect's headline case: on a 5-slot sentence
+  // one wrong token scored 80, so a child who put the very price the lesson teaches in
+  // the wrong slot was told "correct".
+  it('distractor in one slot → 60 (positional 67, capped: the sentence is wrong)', () => {
+    expect(grade(segment, { order: ['a', 'x', 'c'] })).toBe(60)
+  })
+
+  it('a 5-slot sentence with ONE wrong token fails (positional 80 → capped)', () => {
+    const ids = ['w1', 'w2', 'w3', 'w4', 'w5']
+    const five = seg(
+      'build_sentence',
+      { tokens: [...ids, 'wx'].map((id) => ({ id, text_md: id })), slots: 5 },
+      { order: ids },
+    )
+    expect(grade(five, { order: ids })).toBe(100)
+    expect(grade(five, { order: ['w1', 'w2', 'w3', 'w4', 'wx'] })).toBeLessThan(70)
   })
 
   it('malformed → 0, never throws', () => {

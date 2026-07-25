@@ -655,11 +655,14 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
   const draft = draftOf(value)
   const chosen = draft.choice as 'a' | 'b' | undefined
   const followup = segment.payload.followup_md as string | undefined
-  const qualities = revealOf(verdict).qualities as { a?: number; b?: number } | undefined
+  // reveal_leaks_internals — this used to read `reveal.qualities` and print the raw
+  // answer-key number under each card ("Value: 0" / "Value: 100"). The grader no
+  // longer sends the numbers at all; it names the side the author rated higher, or
+  // null when the two tie (a genuine dilemma, which gets no marker by design).
+  const betterSide = revealOf(verdict).better_side as 'a' | 'b' | null | undefined
 
   const renderSide = (side: 'a' | 'b') => {
     const data = segment.payload[side] as RatherSide
-    const q = qualities?.[side]
     return (
       <OptionCard
         role="radio"
@@ -679,9 +682,9 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
           />
         ) : null}
         <MarkdownLite text={data.text_md} className="lf-body-lg" />
-        {typeof q === 'number' ? (
+        {betterSide === side ? (
           <span className="rounded-full bg-surface-sunken px-3 py-1 lf-caption text-content-muted">
-            {t('lesson.families.storyplay.valueLabel', { score: q })}
+            {t('lesson.families.storyplay.bestChoice')}
           </span>
         ) : null}
       </OptionCard>

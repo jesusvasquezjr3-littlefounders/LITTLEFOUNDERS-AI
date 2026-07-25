@@ -2,7 +2,7 @@
 // Malformed answers → score 0, never throw. Tier microcopy is the UI's job (i18n).
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
-import { decisionAccuracy, jaccard, positional, ratio, signalDetection } from '../../core/scoring.js'
+import { decisionAccuracy, jaccard, positional, ratio, setF1, signalDetection } from '../../core/scoring.js'
 
 type Dict = Record<string, unknown>
 
@@ -30,8 +30,15 @@ const gradeSpotError: FamilyGrader = (segment, answer) => {
   const errorIds = key ? strArray(key.error_ids) : null
   const steps = segment.payload.steps as Array<{ id: string }> | undefined
   if (!selected || !errorIds || !steps) return MALFORMED
+  // naive_strategy_passes — fixed in SCORING, not in the widget: the control set is
+  // right (tap the flawed step), the FORMULA was wrong. `decisionAccuracy` paid for
+  // every step the child never touched, so tapping ONE arbitrary step scored
+  // (N−1−P)/N = 71 at 7 steps and 80 at 10, and canSubmit only demands one tap.
+  // `setF1` scores the set the child actually claimed; the exact error set still
+  // scores 100. Full rationale + the numbers in core/scoring.ts → setF1.
+  // (`steps` is still required so a payload without them stays MALFORMED → 0.)
   return {
-    score: decisionAccuracy(selected, errorIds, steps.map((s) => s.id)),
+    score: setF1(selected, errorIds),
     reveal: { error_ids: errorIds, correction_md: key?.correction_md },
   }
 }

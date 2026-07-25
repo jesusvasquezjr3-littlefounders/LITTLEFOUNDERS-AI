@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { seededSort } from '../../core/shuffle'
+import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import {
   NumberPad,
   OptionCard,
@@ -51,9 +51,26 @@ export function CodeOrder({ segment, value, onChange, disabled, verdict }: Exerc
   const order = (draft.order as string[] | undefined) ?? []
   const blocks = segment.payload.blocks as Array<{ id: string; text_md: string }>
   const blockById = useMemo(() => new Map(blocks.map((b) => [b.id, b])), [blocks])
-  // Shuffle the bank (A7): the blocks were authored in solution order, so the
-  // puzzle arrived pre-solved. Grading checks the assembled order by id.
-  const bank = seededSort(blocks.filter((b) => !order.includes(b.id)), segment.id, (b) => b.id)
+  /*
+   * DEFECT (naive_strategy_passes), fixed at the COMPONENT layer: the bank — the
+   * control set — was encoding the solution, so no change to `kendall` could help
+   * and no content rule could either.
+   *
+   * The blocks are authored in solution order, so the bank was shuffled (A7) to
+   * stop the puzzle arriving pre-solved. But a fair shuffle still returns the
+   * authored order once every n! segments, and it DID: the published fixture's
+   * `s1-code-order` (4 blocks, all three locales) renders in exactly solution
+   * order, so tapping the bank straight down scored kendall 100 with zero
+   * reasoning. `seededSortMiddling` keeps the shuffle deterministic and stable but
+   * bounds it: the displayed order is always in the middle band against the
+   * authored order, so neither reading direction (top-down or bottom-up) can reach
+   * the pass mark. Display order never affects grading — the grader scores the
+   * assembled order by id — so this is cosmetic and cannot make a lesson
+   * unwinnable. Computed over ALL blocks and then filtered, so the remaining
+   * bank keeps a stable relative order as blocks are placed.
+   */
+  const scrambled = useMemo(() => seededSortMiddling(blocks, segment.id, (b) => b.id), [blocks, segment.id])
+  const bank = scrambled.filter((b) => !order.includes(b.id))
   const correctOrder = revealOf(verdict).order as string[] | undefined
 
   const placedState = (id: string, index: number): OptionVisualState => {

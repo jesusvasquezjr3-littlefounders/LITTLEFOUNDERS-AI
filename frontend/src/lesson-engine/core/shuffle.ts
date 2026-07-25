@@ -8,6 +8,8 @@
 // Grading is always id/order-based and never depends on display position, so
 // reordering the display is purely cosmetic and safe.
 
+import { kendall } from './scoring'
+
 /** Stable string hash (matches the per-family helpers this consolidates). */
 export function hashCode(s: string): number {
   let h = 0
@@ -58,4 +60,50 @@ export function seededSort<T>(items: readonly T[], seed: string, keyOf: (item: T
     const d = (rank.get(ka) ?? 0) - (rank.get(kb) ?? 0)
     return d !== 0 ? d : ka < kb ? -1 : ka > kb ? 1 : 0
   })
+}
+
+/** The pass mark every graded segment is measured against (LESSON_ENGINE.md §6 default). */
+export const PASS_MARK = 70
+/** Seeds tried before falling back to the rotation; each try succeeds ~2/3 of the time. */
+const MIDDLING_ATTEMPTS = 12
+
+/**
+ * `seededSort` with a PROVEN bound on how much the display can leak an ORDERING
+ * key: the returned order scores strictly inside (100 − PASS_MARK, PASS_MARK) by
+ * `kendall` against the authored order, so BOTH mechanical readings of the bank —
+ * top-to-bottom and bottom-to-top — score below the pass mark against it.
+ *
+ * WHY (real, measured): a plain `seededSort` is a fair shuffle, and a fair shuffle
+ * lands on the authored order once every n! segments. Ordering content is authored
+ * with `payload.blocks` IN SOLUTION ORDER (the published fixture's `s1-code-order`
+ * does exactly that in all three locales), and that segment's seed happens to
+ * return the identity permutation — so tapping the bank straight down scored
+ * kendall 100 with no reasoning at all. Shuffling harder does not fix a lottery;
+ * constraining the outcome does. Note the band must be TWO-SIDED: forcing the
+ * display far from the authored order would just move the free pass to
+ * "tap bottom-to-top" (kendall of the reverse is 100 − kendall).
+ *
+ * Deterministic and stable per segment, like `seededSort`. The fallback (rotate by
+ * ⌊n/2⌋) is itself always in-band for n = 3..8 — measured 33–43 — so the function
+ * cannot return a leaking order for any bank the schemas allow. Fewer than 3 items
+ * has no in-band order to find (kendall is 0 or 100), so it degrades to plain
+ * `seededSort`; ordering types all require ≥ 3.
+ *
+ * coursegen's gate 8 (`makerOrderDisplayLeak`) mirrors this function against the
+ * real answer key. If you change the arithmetic here, change it there too.
+ */
+export function seededSortMiddling<T>(
+  items: readonly T[],
+  seed: string,
+  keyOf: (item: T) => string,
+): T[] {
+  const authored = items.map(keyOf)
+  if (authored.length < 3) return seededSort(items, seed, keyOf)
+  for (let attempt = 0; attempt < MIDDLING_ATTEMPTS; attempt++) {
+    const candidate = seededSort(items, attempt === 0 ? seed : `${seed}#${attempt}`, keyOf)
+    const concordance = kendall(candidate.map(keyOf), authored)
+    if (concordance > 100 - PASS_MARK && concordance < PASS_MARK) return candidate
+  }
+  const half = Math.floor(authored.length / 2)
+  return [...items.slice(half), ...items.slice(0, half)]
 }

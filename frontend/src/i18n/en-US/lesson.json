@@ -185,8 +185,7 @@
       "correctPairs": "Correct pairs",
       "yourAnswers": "Your answers",
       "questionOf": "Question {{current}} of {{total}}",
-      "noAnswer": "No answer",
-      "valueLabel": "Value: {{score}}"
+      "noAnswer": "No answer"
     },
     "maker": {
       "run": "Run",
