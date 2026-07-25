@@ -174,6 +174,21 @@ zero-cost fallback — never emojis.
 
 ### 5.2 `choice` family (8)
 
+> **Display order never leaks the key (`core/shuffle.ts`).** Option lists, match
+> columns and token banks are rendered through `seededSort`, which orders items by
+> `mix32(hashCode(seed + key))` — seeded on the segment id so the order is stable
+> across re-renders and retries, but decorrelated from the authored order.
+> Grading is always id/order-based and never depends on display position, so
+> reordering is purely cosmetic. Content can opt out per segment with
+> `payload.shuffle: false`.
+>
+> The `mix32` avalanche is load-bearing, not decoration: sorting on the raw
+> polynomial hash was an identity permutation for every id convention the content
+> uses (`a/b/c/d`, `opt1..`, `t1..`), so from the engine's first release until
+> 2026-07-24 the shuffle silently did nothing and content that keyed the correct
+> answer as option "a" was passable by tapping the top item. Never "simplify"
+> `seededSort` back to a bare hash comparison — `core/shuffle.test.ts` pins this.
+
 6. **`quiz_mcq`** — `{ options: IdText&Rationale[] (2–6), shuffle?: boolean }` →
    `{ correct_option_id }` → binary; feedback = chosen option's `rationale_md` →
    classic single-choice.
