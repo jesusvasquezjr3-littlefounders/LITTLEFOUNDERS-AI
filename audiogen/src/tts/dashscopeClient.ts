@@ -1,4 +1,4 @@
-import { computeBackoffMs, isRetryableStatus } from './backoff.js';
+import { computeWaitMs, isRateLimitStatus, isRetryableStatus, parseRetryAfterMs, RATE_LIMIT_EXTRA_ATTEMPTS } from './backoff.js';
 import { TtsError } from './errors.js';
 
 export interface SynthesizeInput {
@@ -35,7 +35,12 @@ export async function synthesizeSpeech(input: SynthesizeInput, opts: DashscopeCl
 
   let lastError: TtsError | null = null;
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+  // Rate limits get extra attempts on top of the transient budget: quotas are
+  // per-minute, and with concurrent workers the short ladder alone burns every
+  // attempt inside the same window that rejected the call.
+  const rateLimitMaxAttempts = maxAttempts + RATE_LIMIT_EXTRA_ATTEMPTS;
+
+  for (let attempt = 1; attempt <= rateLimitMaxAttempts; attempt += 1) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -54,9 +59,13 @@ export async function synthesizeSpeech(input: SynthesizeInput, opts: DashscopeCl
       clearTimeout(timer);
 
       if (!res.ok) {
-        if (isRetryableStatus(res.status) && attempt < maxAttempts) {
+        const rateLimited = isRateLimitStatus(res.status);
+        const attemptLimit = rateLimited ? rateLimitMaxAttempts : maxAttempts;
+        if (isRetryableStatus(res.status) && attempt < attemptLimit) {
           lastError = new TtsError('TTS_RATE_LIMITED', `DashScope responded ${res.status}`);
-          await sleep(computeBackoffMs(attempt, opts.rand));
+          // The provider's own Retry-After (already capped) always wins over our guess.
+          const retryAfterMs = rateLimited ? parseRetryAfterMs(res.headers.get('retry-after')) : undefined;
+          await sleep(computeWaitMs(attempt, { rateLimited, retryAfterMs, rand: opts.rand }));
           continue;
         }
         throw new TtsError(
@@ -76,7 +85,7 @@ export async function synthesizeSpeech(input: SynthesizeInput, opts: DashscopeCl
       const ttsErr = new TtsError(isAbort ? 'TTS_TIMEOUT' : 'TTS_PROVIDER_ERROR', isAbort ? 'DashScope request timed out' : String(err));
       if (attempt < maxAttempts) {
         lastError = ttsErr;
-        await sleep(computeBackoffMs(attempt, opts.rand));
+        await sleep(computeWaitMs(attempt, { rand: opts.rand }));
         continue;
       }
       throw ttsErr;

@@ -1,4 +1,4 @@
-import { computeBackoffMs, isRetryableStatus } from './backoff.js';
+import { computeWaitMs, isRateLimitStatus, isRetryableStatus, parseRetryAfterMs, RATE_LIMIT_EXTRA_ATTEMPTS } from './backoff.js';
 import { ImageError } from './errors.js';
 
 /*
@@ -148,7 +148,12 @@ async function pollTask(taskId: string, o: ResolvedOptions): Promise<string> {
 async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions): Promise<T> {
   let lastError: ImageError | null = null;
 
-  for (let attempt = 1; attempt <= o.maxAttempts; attempt += 1) {
+  // Rate limits get extra attempts and their own longer ladder (backoff.ts):
+  // quotas are per-minute, so the transient ladder alone expires inside the
+  // same window that rejected the call. Everything stays bounded by o.deadline.
+  const rateLimitMaxAttempts = o.maxAttempts + RATE_LIMIT_EXTRA_ATTEMPTS;
+
+  for (let attempt = 1; attempt <= rateLimitMaxAttempts; attempt += 1) {
     if (Date.now() >= o.deadline) throw new ImageError('IMAGE_TIMEOUT', 'picturegen deadline exceeded before request');
 
     const controller = new AbortController();
@@ -159,9 +164,13 @@ async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions
       clearTimeout(timer);
 
       if (!res.ok) {
-        if (isRetryableStatus(res.status) && attempt < o.maxAttempts) {
+        const rateLimited = isRateLimitStatus(res.status);
+        const attemptLimit = rateLimited ? rateLimitMaxAttempts : o.maxAttempts;
+        if (isRetryableStatus(res.status) && attempt < attemptLimit) {
           lastError = new ImageError('IMAGE_RATE_LIMITED', `DashScope responded ${res.status}`);
-          await o.sleep(computeBackoffMs(attempt, o.rand));
+          // The provider's own Retry-After (already capped) always wins over our guess.
+          const retryAfterMs = rateLimited ? parseRetryAfterMs(res.headers.get('retry-after')) : undefined;
+          await o.sleep(computeWaitMs(attempt, { rateLimited, retryAfterMs, rand: o.rand }));
           continue;
         }
         throw new ImageError(
@@ -183,7 +192,7 @@ async function requestJson<T>(url: string, init: RequestInit, o: ResolvedOptions
       );
       if (attempt < o.maxAttempts) {
         lastError = imgErr;
-        await o.sleep(computeBackoffMs(attempt, o.rand));
+        await o.sleep(computeWaitMs(attempt, { rand: o.rand }));
         continue;
       }
       throw imgErr;
