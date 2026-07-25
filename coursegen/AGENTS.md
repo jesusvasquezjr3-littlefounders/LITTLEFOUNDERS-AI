@@ -129,7 +129,27 @@ An 8-dimension resilience audit asked one question — *what happens on the 900t
 9. **Validate at the CLI edge (§1.14).** An empty `--slots` meant "the whole course" (a 1000-lesson bill from a typo), an empty `--locales` meant "no locales", and a `--slots` pattern matching nothing exited 0 reporting a successful run of zero lessons. All rejected.
 10. **Never write unvalidated model output into a shared row.** `translateTitle` had no retry, no schema and no emptiness check, and `openAiCompatibleComplete` coerces a blank completion to `''` and returns SUCCESS — nine of ten topics shipped with BLANK titles in en-US and pt-BR. It also ran per LESSON, so sibling workers wrote different translations into the same `topics` row and the title drifted. Validated and memoized per (title, locale).
 11. **Surface what a stage actually did.** `salvaged`/`droppedSegments` were returned by write and never read, so lessons published up to 8 of 14 segments short in silence; image counts were destructured away, so an unconfigured Prism shipped a visual-first curriculum with zero illustrations and reported complete success. Both are in the summary now, and a run that publishes lessons while generating zero images warns.
-12. **Batching and chunking were MEASURED and rejected (2026-07-25) — do not re-derive.** A ledger audit over all 32 runs (6,107 calls): coalescing N lessons per write request would save ~$5 per 1000-lesson course but makes corrective retry batch-granular (write already averages 2+ attempts/lesson — one bad doc re-pays the whole batch), needs an array-Zod wrapper with per-doc salvage, and collides with the 8192 maxTokens cap at ~4 heavy docs. Judge calls must NEVER be merged: per-lesson independence is load-bearing (the rubric gates a per-lesson revise loop; merging couples verdicts and forces sibling re-judges). Chunking is unjustified — 1 truncation in 1,164 current-pipeline calls; if truncations rise, raise maxTokens first. Localize coalescing saves ~$0.006/run — skip. The lever that captures most of the same dollars with zero validation churn is DeepSeek's automatic prefix cache: keep prompts assembled static-first (see §"An identical prompt prefix is a 10x discount"), and read the cache-hit share in the run summary (ledger `cached_prompt_tokens`).
+12. **Batching and chunking were MEASURED and rejected (2026-07-25) — do not re-derive.** A ledger audit over all 32 runs (6,107 calls): coalescing N lessons per write request would save ~$5 per 1000-lesson course but makes corrective retry batch-granular (write already averages 2+ attempts/lesson — one bad doc re-pays the whole batch), needs an array-Zod wrapper with per-doc salvage, and collides with the 8192 maxTokens cap at ~4 heavy docs. Judge calls must NEVER be merged: per-lesson independence is load-bearing (the rubric gates a per-lesson revise loop; merging couples verdicts and forces sibling re-judges). Chunking is unjustified — 1 truncation in 1,164 current-pipeline calls; if truncations rise, raise maxTokens first. Localize coalescing saves ~$0.006/run — skip. The lever that captures most of the same dollars with zero validation churn is DeepSeek's automatic prefix cache: keep prompts assembled static-first (see "An identical prompt prefix is a 10x discount" below), and read the cache-hit share in the run summary (ledger `cached_prompt_tokens`).
+
+## An identical prompt prefix is a 10x discount (2026-07-25)
+
+DeepSeek's context cache is automatic and prefix-based: identical LEADING
+tokens across requests bill ~120x cheaper (v4-pro: $0.435/1M miss vs
+$0.003625/1M hit); DashScope's implicit cache bills hits at 20% of input.
+Three disciplines keep the discount real — hold them in every prompt change:
+
+1. **Static-first assembly.** Every call site (`write.ts`, `plan.ts`, the
+   judge in `review.ts`) puts byte-stable material first (playbook, base hard
+   rules, icon whitelist, meta shape, palette, judge rubric-in-system) and
+   per-lesson material last. Never splice a conditional into a numbered list
+   — renumbering changes every following byte and kills the prefix.
+2. **Retries append, never rebuild.** `withCorrectiveRetry` feedback goes
+   AFTER the original messages, so attempts 2..N re-send an identical leading
+   prompt (a full cache hit). Keep that convention.
+3. **Measure, don't assume.** The transport captures cache-hit tokens
+   (`cached_prompt_tokens` on every ledger line, `cachedTokens` in the run
+   summary, the share printed by the CLI). A prompt change that tanks the
+   cache-hit % is a cost regression even if quality holds.
 
 ## Lessons from the first real run (2026-07-13) — read before ANY pipeline change
 
