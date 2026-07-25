@@ -3,7 +3,7 @@
 // COURSE_ENGINE.md §5: "All clients are raw fetch behind one providers/
 // chokepoint with usage logging."
 
-import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError } from './errors.js';
+import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, parseRetryAfter } from './errors.js';
 import { withTransportRetry } from './retry.js';
 
 export interface ChatMessage {
@@ -72,7 +72,9 @@ export async function openAiCompatibleComplete(
 
       if (!res.ok) {
         const body = await res.text().catch(() => '');
-        throw new ProviderHttpError(cfg.providerName, res.status, body);
+        // Pass the provider's own Retry-After through: on a 429 it is the only
+        // authoritative answer to when the per-minute quota resets.
+        throw new ProviderHttpError(cfg.providerName, res.status, body, parseRetryAfter(res.headers.get('retry-after')));
       }
 
       const json = (await res.json()) as OpenAiChatResponse;

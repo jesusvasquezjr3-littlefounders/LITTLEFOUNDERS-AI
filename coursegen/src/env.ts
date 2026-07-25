@@ -74,6 +74,15 @@ const Env = z.object({
   COST_DEEPSEEK_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0011),
   COST_QWEN_INPUT_PER_1K: z.coerce.number().nonnegative().default(0.0016),
   COST_QWEN_OUTPUT_PER_1K: z.coerce.number().nonnegative().default(0.0064),
+  /*
+   * Per IMAGE actually generated (a Prism cache hit costs nothing and is not
+   * billed here). Image spend used to sit entirely outside the ledger and outside
+   * every kill switch, so a mass run could bill tens of thousands of paid
+   * qwen-image generations with nothing metering or capping them — the single
+   * largest uncapped cost in the pipeline. Ballpark list price, env-overridable
+   * like the token costs.
+   */
+  COST_QWEN_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.02),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;

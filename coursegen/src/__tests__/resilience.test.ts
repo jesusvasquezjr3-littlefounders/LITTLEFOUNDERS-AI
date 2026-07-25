@@ -4,6 +4,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { describeParamMismatch, isSlotDone, newRunCheckpoint, setSlotState, type RunParams } from '../pipeline/checkpoint.js';
 import { UsageLedger } from '../providers/usage.js';
+import { withTransportRetry } from '../providers/retry.js';
+import { ProviderHttpError, parseRetryAfter } from '../providers/errors.js';
 
 /*
  * Mass-generation resilience. Every case here is a confirmed finding from the
@@ -107,5 +109,116 @@ describe('ledger: the per-RUN budget survives the resumes a long run requires', 
     const roomy = new UsageLedger(dir);
     await roomy.hydrate({ maxTokens: 10_000, maxUsd: 999 });
     expect(() => roomy.checkBudget()).not.toThrow();
+  });
+});
+
+describe('image spend is metered and capped like every other paid call', () => {
+  it('bills only FRESH generations — a Prism cache hit is free', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
+    const ledger = new UsageLedger(dir);
+    await ledger.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
+    expect(ledger.images).toBe(2);
+    expect(ledger.usd).toBeGreaterThan(0);
+  });
+
+  it('image spend can trip the USD kill switch (it used to be invisible to it)', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
+    const ledger = new UsageLedger(dir);
+    await ledger.hydrate({ maxTokens: 1_000_000, maxUsd: 0.03 });
+    // Default price is $0.02/image, so two images exceed a $0.03 cap.
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:option_card', promptTokens: 0, completionTokens: 0, images: 2 });
+    expect(() => ledger.checkBudget()).toThrow(/usd/);
+  });
+
+  it('survives a resume: image counts and cost replay from the ledger file', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
+    const first = new UsageLedger(dir);
+    await first.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
+    await first.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:scene_anchor', promptTokens: 0, completionTokens: 0, images: 3 });
+    const resumed = new UsageLedger(dir);
+    await resumed.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
+    expect(resumed.images).toBe(3);
+    expect(resumed.usd).toBeCloseTo(first.usd, 6);
+  });
+});
+
+describe('rate limits get their own ladder, and Retry-After wins', () => {
+  it('honours a provider Retry-After instead of guessing', async () => {
+    const slept: number[] = [];
+    let calls = 0;
+    const result = await withTransportRetry(
+      async () => {
+        calls++;
+        if (calls === 1) throw new ProviderHttpError('deepseek', 429, 'slow down', 45_000);
+        return 'ok';
+      },
+      { sleep: async (ms) => { slept.push(ms); }, random: () => 0.5 },
+    );
+    expect(result).toBe('ok');
+    expect(slept).toEqual([45_000]);
+  });
+
+  it('caps a hostile Retry-After so a worker cannot be parked forever', async () => {
+    const slept: number[] = [];
+    let calls = 0;
+    await withTransportRetry(
+      async () => {
+        calls++;
+        if (calls === 1) throw new ProviderHttpError('qwen', 429, 'slow down', 9_999_999);
+        return 'ok';
+      },
+      { sleep: async (ms) => { slept.push(ms); }, random: () => 0.5, retryAfterCapMs: 120_000 },
+    );
+    expect(slept).toEqual([120_000]);
+  });
+
+  it('without Retry-After, a 429 uses the LONG ladder (per-minute quotas), not the 3.5s one', async () => {
+    const slept: number[] = [];
+    let calls = 0;
+    await withTransportRetry(
+      async () => {
+        calls++;
+        if (calls < 4) throw new ProviderHttpError('deepseek', 429, 'rate limited');
+        return 'ok';
+      },
+      { sleep: async (ms) => { slept.push(ms); }, random: () => 1 },
+    );
+    // 1s, 2s, 4s with full jitter — total already exceeds the old ENTIRE budget.
+    expect(slept).toEqual([1000, 2000, 4000]);
+    expect(slept.reduce((a, b) => a + b, 0)).toBeGreaterThan(3750);
+  });
+
+  it('a 5xx keeps the SHORT ladder — those clear in a second', async () => {
+    const slept: number[] = [];
+    let calls = 0;
+    await withTransportRetry(
+      async () => {
+        calls++;
+        if (calls < 3) throw new ProviderHttpError('qwen', 503, 'unavailable');
+        return 'ok';
+      },
+      { sleep: async (ms) => { slept.push(ms); }, random: () => 1 },
+    );
+    expect(slept).toEqual([500, 1000]);
+  });
+
+  it('gives a rate limit MORE attempts than a generic failure', async () => {
+    let calls = 0;
+    await expect(
+      withTransportRetry(async () => { calls++; throw new ProviderHttpError('deepseek', 429, 'nope'); }, { sleep: async () => {}, random: () => 0.5 }),
+    ).rejects.toThrow(/429/);
+    expect(calls).toBe(6); // rateLimitMaxAttempts, vs 4 for the generic ladder
+  });
+
+  it('parseRetryAfter reads both seconds and an HTTP date', () => {
+    expect(parseRetryAfter('30')).toBe(30_000);
+    expect(parseRetryAfter(null)).toBeUndefined();
+    expect(parseRetryAfter('not-a-date')).toBeUndefined();
+    const future = new Date(Date.now() + 20_000).toUTCString();
+    const parsed = parseRetryAfter(future) ?? 0;
+    expect(parsed).toBeGreaterThan(15_000);
+    expect(parsed).toBeLessThanOrEqual(21_000);
   });
 });

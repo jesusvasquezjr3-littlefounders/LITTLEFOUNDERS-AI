@@ -138,7 +138,7 @@ async function main(): Promise<void> {
   if (summary.stoppedOnBudget) {
     console.warn('  STOPPED: run budget exceeded (see the budget line printed at start)');
   }
-  console.log(`  images generated: ${summary.imagesGenerated}`);
+  console.log(`  images: ${summary.imagesGenerated} placed, ${summary.imagesBilled} freshly generated (billed; the rest were Prism cache hits)`);
   if (summary.imageSkipReasons.length > 0) {
     console.warn(`  IMAGES SKIPPED (${summary.imageSkipReasons.join(', ')}) — this curriculum is visual-first; lessons published without illustrations.`);
   } else if (summary.imagesGenerated === 0 && summary.published.length > 0) {

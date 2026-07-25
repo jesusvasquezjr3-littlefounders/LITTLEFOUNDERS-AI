@@ -5,7 +5,7 @@
 // asks for a picture and embeds the returned public URL.
 
 import { getConfig } from '../env.js';
-import { ProviderHttpError, ProviderNotConfiguredError } from './errors.js';
+import { ProviderHttpError, ProviderNotConfiguredError, parseRetryAfter } from './errors.js';
 import { withTransportRetry } from './retry.js';
 
 /** Structural role the picture plays — steers Prism's per-purpose art direction. */
@@ -57,7 +57,12 @@ export async function requestPicture(req: PictureRequest): Promise<PictureResult
     if (!res.ok || !json?.data) {
       // ProviderHttpError carries the retryable flag (429/5xx) the transport
       // retry recognizes — a transiently-down Prism is retried, a 4xx is not.
-      throw new ProviderHttpError('picturegen', res.status, json?.error?.message ?? 'malformed response');
+      throw new ProviderHttpError(
+        'picturegen',
+        res.status,
+        json?.error?.message ?? 'malformed response',
+        parseRetryAfter(res.headers.get('retry-after')),
+      );
     }
     return { url: json.data.url, fileId: json.data.file_id, cached: json.data.cached };
   });

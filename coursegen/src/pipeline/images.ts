@@ -17,6 +17,7 @@
 // only NOT_CONFIGURED short-circuits the whole document. A lesson must never be
 // unpublishable just because an illustration failed.
 
+import type { UsageLedger } from '../providers/usage.js';
 import { requestPicture, type PicturePurpose } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
@@ -24,6 +25,14 @@ import type { LessonDocumentParsed } from '../contract/schema.js';
 export interface IllustrateOptions {
   /** `--no-images` CLI flag. */
   skip?: boolean;
+  /**
+   * Meters image spend so the run's budget kill switches actually bind. Image
+   * generation used to be invisible to the ledger AND to FORGE_MAX_USD_PER_RUN,
+   * which made it the largest uncapped cost in the pipeline — a mass run could bill
+   * tens of thousands of paid qwen-image calls with nothing stopping it. Only FRESH
+   * generations are billed; a Prism cache hit is free and recorded as 0.
+   */
+  ledger?: UsageLedger;
 }
 
 export interface IllustrateDeps {
@@ -34,7 +43,10 @@ export type SkippedReason = 'flag' | 'not-configured';
 
 export interface IllustrateResult {
   document: LessonDocumentParsed;
+  /** Prism requests that returned an image (cached or fresh). */
   generated: number;
+  /** Of those, how many were FRESH — i.e. actually paid for. */
+  billed?: number;
   skippedReason?: SkippedReason;
 }
 
@@ -209,19 +221,34 @@ export async function illustrateSegments(
   options: IllustrateOptions = {},
   deps: IllustrateDeps = {},
 ): Promise<IllustrateResult> {
-  if (options.skip) return { document, generated: 0, skippedReason: 'flag' };
+  if (options.skip) return { document, generated: 0, billed: 0, skippedReason: 'flag' };
 
   const request = deps.request ?? requestPicture;
   const cloned = structuredClone(document) as LessonDocumentParsed;
   let generated = 0;
+  let billed = 0;
 
   // Fetch ONE target; returns the url or undefined (this single illustration
   // failed — its icon/text stays the fallback). Rethrows NotConfigured so the
   // caller can bail the whole document.
   async function fetchOne(label: string, context: string, purpose: PicturePurpose): Promise<string | undefined> {
     try {
+      // Budget FIRST: an image is a paid call, so it must respect the same kill
+      // switch as a token call rather than spending past it.
+      options.ledger?.checkBudget();
       const picture = await request({ label, context, purpose });
       generated++;
+      if (!picture.cached) {
+        billed++;
+        await options.ledger?.record({
+          provider: 'picturegen',
+          model: 'qwen-image',
+          operation: `image:${purpose}`,
+          promptTokens: 0,
+          completionTokens: 0,
+          images: 1,
+        });
+      }
       return picture.url;
     } catch (err) {
       if (err instanceof ProviderNotConfiguredError) throw err;
@@ -251,7 +278,7 @@ export async function illustrateSegments(
     if (err instanceof ProviderNotConfiguredError) {
       // Prism not configured — clean skip, return the UNMODIFIED original
       // document (icons/text stay the fallback); no point trying the rest.
-      return { document, generated: 0, skippedReason: 'not-configured' };
+      return { document, generated: 0, billed: 0, skippedReason: 'not-configured' };
     }
     throw err;
   }
