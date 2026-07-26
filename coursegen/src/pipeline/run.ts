@@ -28,6 +28,7 @@ import { reviewLesson } from './review.js';
 import { localizeLesson, translateTitle } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
+import { generateRecapLines, appendRecapSegment } from './recapDialogue.js';
 import { resolveRegister, type Register } from './register.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
@@ -276,7 +277,15 @@ async function processSlot(
             `The lesson is shorter than its blueprint.`,
         );
       }
-      const gateReport = runAllGates(writeResult.document, gateCtx);
+      // Opt-in dual-persona recap (blueprint `recap_dialogue: true`): a short
+      // teacher-student conversation appended as a story_dialogue segment,
+      // BEFORE the gates below so nothing ungated can ship (recapDialogue.ts).
+      let writtenDocument = writeResult.document;
+      if (slot.lesson.recap_dialogue) {
+        const recapLines = await generateRecapLines(writtenDocument, { ledger });
+        writtenDocument = appendRecapSegment(writtenDocument, recapLines);
+      }
+      const gateReport = runAllGates(writtenDocument, gateCtx);
       if (!gateReport.ok || !gateReport.document) {
         throw new Error(`gate failure on es-MX write: ${gateReport.problems.slice(0, 5).map((p) => p.message).join('; ')}`);
       }

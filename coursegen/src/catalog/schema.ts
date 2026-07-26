@@ -173,6 +173,13 @@ export const lessonBlueprintSchema = z.object({
    */
   forced_types: z.array(z.string().min(1).max(60)).min(1).max(14).optional(),
   /**
+   * Dual-persona recap (pipeline/recapDialogue.ts): after write, generate a
+   * short teacher-student conversation (the student persona is BLIND to the
+   * lesson — authentic naive questions) and append it as a story_dialogue
+   * segment before the closing checkpoint. Gates + judge run on the result.
+   */
+  recap_dialogue: z.boolean().optional(),
+  /**
    * A DECLARED, REVIEWABLE exception: this lesson is known not to satisfy every gate,
    * and the string says why. `verify:course` reports it separately instead of counting
    * it as a failure, so the acceptance check can be green without lying.
