@@ -45,5 +45,18 @@
       "streak": "Racha de días",
       "longestStreak": "Mejor racha"
     }
+  },
+  "tutor": {
+    "loading": "Preparando tus momentos…",
+    "title": "Money Moments",
+    "subtitle": "Elige un momento real con dinero y aprende qué decir y qué hacer.",
+    "back": "Todos los momentos",
+    "packLoading": "Abriendo este momento…",
+    "pendingTitle": "Este momento se está preparando",
+    "pendingBody": "Nuestro equipo está creando este pack. Vuelve pronto: los mejores momentos toman su tiempo.",
+    "termsTitle": "Palabras que ayudan",
+    "phrasesTitle": "Qué puedes decir o hacer",
+    "quickCheckTitle": "Reto rápido",
+    "tryAgain": "Intentar de nuevo"
   }
 }

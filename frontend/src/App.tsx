@@ -20,6 +20,7 @@ import { CoursePage } from '@/routes/app/learn/CoursePage';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
+import { MoneyMomentsPage } from '@/routes/app/tutor/MoneyMomentsPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -126,7 +127,7 @@ export function App() {
             <Route path="learn" element={<LearnPage />} />
             <Route path="learn/:courseSlug" element={<CoursePage />} />
             <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
-            <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
+            <Route path="tutor" element={<MoneyMomentsPage />} />
             <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
             <Route
               path="tasks"

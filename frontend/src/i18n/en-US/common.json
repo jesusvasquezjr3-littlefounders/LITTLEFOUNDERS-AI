@@ -45,5 +45,18 @@
       "streak": "Day streak",
       "longestStreak": "Best streak"
     }
+  },
+  "tutor": {
+    "loading": "Getting your moments ready…",
+    "title": "Money Moments",
+    "subtitle": "Pick a real money moment — learn exactly what to say and do.",
+    "back": "All moments",
+    "packLoading": "Opening this moment…",
+    "pendingTitle": "This moment is being prepared",
+    "pendingBody": "Our team is crafting this pack. Come back soon — the best moments take a little time.",
+    "termsTitle": "Words that help",
+    "phrasesTitle": "What you can say or do",
+    "quickCheckTitle": "Quick check",
+    "tryAgain": "Try again"
   }
 }

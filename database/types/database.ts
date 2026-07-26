@@ -833,6 +833,74 @@ export type Database = {
           },
         ]
       }
+      tutor_packs: {
+        Row: {
+          created_at: string
+          id: string
+          locale: string
+          pack: Json
+          situation_id: string
+          status: string
+          tier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          locale: string
+          pack: Json
+          situation_id: string
+          status?: string
+          tier: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          locale?: string
+          pack?: Json
+          situation_id?: string
+          status?: string
+          tier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutor_packs_situation_id_fkey"
+            columns: ["situation_id"]
+            isOneToOne: false
+            referencedRelation: "tutor_situations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutor_situations: {
+        Row: {
+          created_at: string
+          description: Json
+          icon: string
+          id: string
+          position: number
+          tiers: Json
+          title: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: Json
+          icon: string
+          id: string
+          position?: number
+          tiers?: Json
+          title?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: Json
+          icon?: string
+          id?: string
+          position?: number
+          tiers?: Json
+          title?: Json
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           granted_at: string

@@ -1,0 +1,111 @@
+# Money Moments — the curated situation taxonomy for Oracle v1 (tutor).
+#
+# CLOSED SET by design (§1.9): the kid picks from these — free text never
+# reaches a third-party API. Each situation must be genuinely LOCAL per
+# locale (a tianguis is not a garage sale is not a feira); titles and
+# descriptions are authored here, per locale, by a human — never translated
+# mechanically by the pipeline.
+#
+# tiers: which age tiers this situation makes sense for (tier1 6-7, tier2
+# 8-9, tier3 10-12). Packs are generated per situation × tier × locale by
+# `npm run tutor:packs` and published by a human (same blocking gate as
+# lessons).
+
+schema_version: 1
+situations:
+  - id: mesada
+    icon: savings
+    position: 1
+    tiers: [tier1, tier2, tier3]
+    title:
+      es-MX: "Día de mesada"
+      en-US: "Allowance day"
+      pt-BR: "Dia da mesada"
+    description:
+      es-MX: "Te dieron tu mesada. ¿Qué haces con ella?"
+      en-US: "You just got your allowance. What do you do with it?"
+      pt-BR: "Você recebeu sua mesada. O que fazer com ela?"
+  - id: tiendita
+    icon: storefront
+    position: 2
+    tiers: [tier1, tier2]
+    title:
+      es-MX: "En la tiendita"
+      en-US: "At the corner store"
+      pt-BR: "Na vendinha"
+    description:
+      es-MX: "Traes 20 pesos y hay demasiados antojos."
+      en-US: "You have a few dollars and too many cravings."
+      pt-BR: "Você tem alguns reais e muitas tentações."
+  - id: tianguis
+    icon: shopping_basket
+    position: 3
+    tiers: [tier2, tier3]
+    title:
+      es-MX: "Domingo de tianguis"
+      en-US: "Yard-sale morning"
+      pt-BR: "Manhã de feira"
+    description:
+      es-MX: "Hay puestos por todos lados y quieres comparar precios."
+      en-US: "Tables everywhere and prices to compare."
+      pt-BR: "Barracas por todo lado e preços para comparar."
+  - id: skin-del-juego
+    icon: sports_esports
+    position: 4
+    tiers: [tier2, tier3]
+    title:
+      es-MX: "El skin del juego"
+      en-US: "The game skin"
+      pt-BR: "A skin do jogo"
+    description:
+      es-MX: "Quieres un skin que cuesta más de lo que tienes hoy."
+      en-US: "You want a skin that costs more than you have today."
+      pt-BR: "Você quer uma skin que custa mais do que você tem hoje."
+  - id: intercambio-cartas
+    icon: style
+    position: 5
+    tiers: [tier1, tier2, tier3]
+    title:
+      es-MX: "Intercambio de cartas"
+      en-US: "Trading cards"
+      pt-BR: "Troca de cartinhas"
+    description:
+      es-MX: "Un amigo quiere cambiarte una carta. ¿Es un buen trato?"
+      en-US: "A friend wants to trade cards. Is it a fair deal?"
+      pt-BR: "Um amigo quer trocar cartinhas. É uma troca justa?"
+  - id: venta-escolar
+    icon: school
+    position: 6
+    tiers: [tier2, tier3]
+    title:
+      es-MX: "Venta escolar"
+      en-US: "School fundraiser"
+      pt-BR: "Feira da escola"
+    description:
+      es-MX: "Tu grupo vende algo para juntar dinero. ¿Cómo lo logran?"
+      en-US: "Your class is selling things to raise money. How do you pull it off?"
+      pt-BR: "Sua turma vende algo para juntar dinheiro. Como conseguir?"
+  - id: dinero-de-cumple
+    icon: cake
+    position: 7
+    tiers: [tier1, tier2, tier3]
+    title:
+      es-MX: "Dinero de cumpleaños"
+      en-US: "Birthday money"
+      pt-BR: "Dinheiro de aniversário"
+    description:
+      es-MX: "Te regalaron dinero en tu cumple. ¿Gastarlo, guardarlo o las dos?"
+      en-US: "You got birthday money. Spend it, save it, or both?"
+      pt-BR: "Você ganhou dinheiro no aniversário. Gastar, guardar ou os dois?"
+  - id: meta-de-ahorro
+    icon: flag
+    position: 8
+    tiers: [tier1, tier2, tier3]
+    title:
+      es-MX: "Mi meta de ahorro"
+      en-US: "My savings goal"
+      pt-BR: "Minha meta de poupança"
+    description:
+      es-MX: "Hay algo grande que quieres. ¿Cómo llegas peso a peso?"
+      en-US: "There's something big you want. How do you get there, dollar by dollar?"
+      pt-BR: "Tem algo grande que você quer. Como chegar lá, real por real?"
