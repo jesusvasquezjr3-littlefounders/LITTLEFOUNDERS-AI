@@ -2747,6 +2747,7 @@ if (config.AUDIOGEN_RUN_ON_START) {
 ```
 import type {
   CheckpointPayload,
+  EavesdropPayload,
   ConceptRevealPayload,
   KeyIdeasPayload,
   LessonDocument,
@@ -2759,7 +2760,6 @@ import { normalizeForSpeech } from './normalizeForSpeech.js';
 import type { NarrationUnit } from './types.js';
 
 /*
- * Walks a LessonDocument and returns the ORDERED narratable units
 ```
 
 ### audiogen/src/narrate/normalizeForSpeech.ts
@@ -6122,11 +6122,11 @@ import { ALL_TYPES } from '../contract/registry.js';
 import { buildTaxonomy } from './fixtures.js';
 
 describe('palette exhaustiveness', () => {
-  it('has exactly one PALETTE_GUIDE entry per type actually present in the Zod contract (56 total)', () => {
+  it('has exactly one PALETTE_GUIDE entry per type actually present in the Zod contract (57 total)', () => {
     const guideKeys = Object.keys(PALETTE_GUIDE).sort();
     const contractTypes = [...ALL_TYPES].sort();
     expect(guideKeys).toEqual(contractTypes);
-    expect(contractTypes).toHaveLength(56);
+    expect(contractTypes).toHaveLength(57);
   });
 
   it('every PALETTE_EXAMPLES key is a real type', () => {
@@ -6211,6 +6211,26 @@ function samplePublishInput(): PublishInput {
       position: 1,
       theme: 'archipelago',
       ageTier: 'tier1',
+```
+
+### coursegen/src/__tests__/readability.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { learnerText, readabilityScore, runReadabilityGate, syllableCount } from '../pipeline/readability.js';
+import type { LessonDocumentParsed } from '../contract/schema.js';
+
+/*
+ * Gate 9 contract: catch OUTLIERS (adult-paragraph text in a kids' lesson)
+ * deterministically, and NEVER fail judge-approved content — the bands were
+ * calibrated against the 186 published documents (0 problems, verified
+ * 2026-07-25 with the live corpus; the distribution facts are pinned in
+ * readability.ts). These tests pin the formulas and both sides of each band.
+ */
+
+function doc(locale: string, texts: string[]): LessonDocumentParsed {
+  return {
+    schema_version: 1,
 ```
 
 ### coursegen/src/__tests__/register.test.ts
@@ -6866,7 +6886,7 @@ export class CorrectiveRetryExhaustedError extends Error {
 ### coursegen/src/pipeline/gates.ts
 
 ```
-// The 5 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
+// The 9 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
 // network calls, run in order. Gate 1 (contract) gates the rest: if the raw
 // JSON doesn't parse against the Zod contract there is no typed document to
 // run gates 2-5 against.
@@ -6999,7 +7019,7 @@ import { ALL_TYPES, TYPE_TO_FAMILY, type FamilyName } from '../../contract/regis
 
 // prettier-ignore
 export type ExerciseTypeId =
-  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint'
+  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint' | 'eavesdrop'
   | 'quiz_mcq' | 'true_false' | 'picture_choice' | 'odd_one_out' | 'best_decision' | 'yes_no_cases' | 'speed_tap' | 'confidence_quiz'
 ```
 
@@ -7013,13 +7033,33 @@ export type ExerciseTypeId =
 // Lessons land as status='review' — publishing to 'published' is a human
 // action (blocking gate for kids' content, non-negotiable, §6).
 
-import { vaultUpsert } from '../vault/restClient.js';
+import { vaultPatch, vaultSelect, vaultUpsert } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 
 export interface ClientSafeSegment {
   [key: string]: unknown;
 }
+
+```
+
+### coursegen/src/pipeline/readability.ts
+
+```
+// Readability gate — grade-appropriate reading level as a MEASURED property,
+// not a prompt hope (Learn Your Way treats re-leveling as a first-class,
+// numeric pipeline stage; our judge enforces Piaget ceilings qualitatively,
+// this adds the deterministic number in front of it, before any paid call).
+//
+// One formula per locale — never share thresholds across languages:
+//   en-US  Flesch-Kincaid GRADE LEVEL (lower = easier, ~US school grade)
+//   es-MX  Fernández-Huerta EASE score (higher = easier, 0-100+)
+//   pt-BR  Flesch EASE adapted for Portuguese (Martins et al.; higher = easier)
+//
+// Syllable counting is heuristic (vowel groups with locale diphthong rules;
+// English silent-e). That is fine: the formulas were built on exactly this
+// kind of approximation, and the gate uses CALIBRATED bands with margin, not
+// razor thresholds — see the band table below for the measured corpus facts.
 
 ```
 
@@ -128014,7 +128054,7 @@ export const storyGraders: Record<string, FamilyGrader> = {}
 // `story` family registry slice — composed by lesson-engine/registry.ts.
 
 import type { Registry } from '../../core/types'
-import { Checkpoint, ConceptReveal, KeyIdeas, StoryDialogue, StoryScene } from './components'
+import { Checkpoint, ConceptReveal, Eavesdrop, KeyIdeas, StoryDialogue, StoryScene } from './components'
 
 export { storySchemas } from './schema'
 export { storyGraders } from './grade'
@@ -128037,6 +128077,7 @@ import { describe, expect, it } from 'vitest'
 import {
   checkpoint,
   conceptReveal,
+  eavesdrop,
   keyIdeas,
   storyDialogue,
   storyScene,
@@ -128045,7 +128086,6 @@ import {
 import { storyFixtures } from './fixtures'
 import { storyGraders } from './grade'
 import { storyRegistry } from './register'
-
 ```
 
 ### frontend/src/lesson-engine/families/story/schema.ts

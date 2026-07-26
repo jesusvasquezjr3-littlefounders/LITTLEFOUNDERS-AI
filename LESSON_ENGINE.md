@@ -90,7 +90,7 @@ interface LessonDocument {
 ```ts
 interface SegmentEnvelope {
   id: string
-  type: ExerciseType                  // one of the 56 type strings (§5)
+  type: ExerciseType                  // one of the 57 type strings (§5)
   title?: string
   prompt_md: string                   // MarkdownLite (§8). The kid-voiced instruction.
   difficulty: 1 | 2 | 3 | 4 | 5
@@ -139,7 +139,7 @@ native Pointer Events (no drag-and-drop library) in `arrange/components.tsx`'s
 `SortingBoard`; tap remains the accessible/keyboard fallback, so drag is never
 the ONLY way to place. Touch = desktop = same interaction. ≥44px hit areas.
 
-## §5 Taxonomy — 56 types
+## §5 Taxonomy — 57 types
 
 Notation per type: **`type_id`** — payload → answer → grading → mechanic.
 `IdText = {id, text_md}` · `IdVisual = {id, text_md, icon?, image_url?}` ·
@@ -157,7 +157,7 @@ images stage now fills every such slot). A 40px monochrome glyph is not
 recognizable to a young child; the illustration is. Icons/text remain the
 zero-cost fallback — never emojis.
 
-### 5.1 `story` family (content, ungraded — 5)
+### 5.1 `story` family (content, ungraded — 6)
 
 1. **`story_dialogue`** — `{ lines: [{character, emotion?, action?, text_md}] (1–12) }` →
    no answer → auto-complete → characters talk in sequence; tap advances line by line;
@@ -171,6 +171,16 @@ zero-cost fallback — never emojis.
 5. **`checkpoint`** — `{ recap_md, mood_prompt_md? }` → no answer → complete on
    self-mark (`got_it` | `review`) → mid-lesson recap + metacognitive self-check;
    the mark is session telemetry, never a grade (P6).
+57. **`eavesdrop`** — `{ context_md, lines: [{character, emotion?, text_md, notes?: string[]}] (2–10) }` →
+   no answer → complete when every line is revealed → an OVERHEARD money conversation
+   between canon characters, revealed turn by turn (the whole artifact is generated in
+   one pass and gated BEFORE display — the "live conversation" feel with zero ungated
+   runtime AI). Money terms/idioms are marked `==así==` INSIDE `text_md` and each
+   highlight carries exactly one tap-to-explain note, attached BY ORDER (the schema
+   rejects a count mismatch — keeping term and sentence in ONE string is what makes
+   localization unable to drift them apart). Narration (§12): `context` voices after
+   the prompt, each line in its own character's voice; notes are on-demand reading,
+   never narrated.
 
 ### 5.2 `choice` family (8)
 
@@ -382,7 +392,7 @@ zero-cost fallback — never emojis.
     `{ value? | correct_option_id? }` → binary/tolerance → induce the function machine's
     rule from examples, predict the next output (functions before notation).
 
-**Counts:** 56 total = 5 content + 51 graded. Interaction coverage: select, multi-select,
+**Counts:** 57 total = 6 content + 51 graded. Interaction coverage: select, multi-select,
 type, slide, order, map, grid, allocate, tag, branch, flow-timed, simulate.
 
 ## §6 Grading
@@ -491,7 +501,7 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
   time, Check/Continue footer bar (thumb-reachable on mobile), results screen.
   Props: `{ document (stripped), grader, onExit, onComplete }` — course lessons and
   future tutor/personal lessons share the identical player with different graders.
-- **`/dev/lesson-lab`** (dev harness, gated out of production builds) — grid of all 56
+- **`/dev/lesson-lab`** (dev harness, gated out of production builds) — grid of all 57
   fixtures by family; click → plays that single-segment lesson with the local grader;
   plus "Showcase" — one full lesson containing every type. This is the visual QA
   surface and the living authoring contract.

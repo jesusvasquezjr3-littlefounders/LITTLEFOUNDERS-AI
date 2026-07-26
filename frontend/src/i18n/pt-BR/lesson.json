@@ -240,7 +240,10 @@
       "allFlipped": "Você descobriu todas!",
       "gotIt": "Já entendi!",
       "review": "Quero revisar",
-      "reviewHint": "Sem pressa: leia e ouça a revisão acima e continue quando estiver pronto."
+      "reviewHint": "Sem pressa: leia e ouça a revisão acima e continue quando estiver pronto.",
+      "whatDoesItMean": "O que significa “{{term}}”?",
+      "noteTitle": "O que significa?",
+      "keepListening": "Continue ouvindo"
     }
   },
   "streak": {

@@ -17,10 +17,12 @@ import { SunkenWell, VisualMark } from '../../core/primitives'
 import type {
   CheckpointSegment,
   ConceptRevealSegment,
+  EavesdropSegment,
   KeyIdeasSegment,
   StoryDialogueSegment,
   StorySceneSegment,
 } from './schema'
+import { EAVESDROP_HIGHLIGHT } from './schema'
 
 type ContentDone = ExerciseProps['onContentDone']
 
@@ -389,6 +391,154 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
           {t('lesson.families.story.review')}
         </Button>
       </div>
+    </div>
+  )
+}
+
+// ---- eavesdrop --------------------------------------------------------------------
+
+/**
+ * Split a line's text_md into plain fragments and tappable ==highlight== terms.
+ * Notes attach by order: the nth highlight opens notes[n].
+ */
+function splitHighlights(text: string): Array<{ kind: 'text' | 'term'; value: string; termIndex?: number }> {
+  const parts: Array<{ kind: 'text' | 'term'; value: string; termIndex?: number }> = []
+  let last = 0
+  let termIndex = 0
+  for (const match of text.matchAll(EAVESDROP_HIGHLIGHT)) {
+    const start = match.index ?? 0
+    if (start > last) parts.push({ kind: 'text', value: text.slice(last, start) })
+    parts.push({ kind: 'term', value: match[1] ?? '', termIndex })
+    termIndex += 1
+    last = start + match[0].length
+  }
+  if (last < text.length) parts.push({ kind: 'text', value: text.slice(last) })
+  return parts
+}
+
+/**
+ * An overheard conversation revealed turn by turn; highlighted money terms are
+ * TAP targets (never hover-only, §1.11) that open the line's pre-generated
+ * note. The whole artifact passed gates+judge before the kid saw turn one.
+ */
+export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
+  const { t } = useTranslation()
+  const { context_md, lines } = segment.payload as EavesdropSegment['payload']
+  const [revealed, setRevealed] = useState(1)
+  const [finished, setFinished] = useState(false)
+  const [openNote, setOpenNote] = useState<{ line: number; term: number } | null>(null)
+  const markDone = useContentDoneOnce(onContentDone)
+  const narration = useNarration()
+
+  // Context narrates with the prompt before line 0; each new line voices on reveal.
+  useEffect(() => {
+    if (finished) return
+    if (revealed === 1) {
+      narration.playSequence([
+        narrationUnitId(segment.id, 'prompt'),
+        narrationUnitId(segment.id, 'context'),
+        narrationUnitId(segment.id, 'line.0'),
+      ])
+    } else {
+      narration.play(narrationUnitId(segment.id, `line.${revealed - 1}`))
+    }
+  }, [narration, segment.id, revealed, finished])
+
+  const advance = () => {
+    if (disabled || finished) return
+    setOpenNote(null)
+    if (revealed >= lines.length) {
+      setFinished(true)
+      markDone()
+    } else {
+      setRevealed((n) => n + 1)
+    }
+  }
+
+  const note = openNote ? lines[openNote.line]?.notes?.[openNote.term] : undefined
+
+  return (
+    <div className="space-y-4">
+      <SunkenWell className="text-center">
+        <MarkdownLite text={context_md} className="lf-body text-content-muted" />
+      </SunkenWell>
+
+      <ul className="space-y-3" aria-live="polite">
+        {lines.slice(0, revealed).map((line, lineIndex) => (
+          <li key={lineIndex} className="flex items-end gap-3">
+            <CharacterActor
+              character={line.character}
+              emotion={line.emotion ?? 'neutral'}
+              action="idle"
+              speaking={!finished && lineIndex === revealed - 1}
+              size="sm"
+              className="shrink-0"
+            />
+            <div className="min-h-11 flex-1 rounded-lg rounded-bl-sm border-2 border-outline/70 bg-surface p-3 shadow-glass-sm">
+              <p className="lf-body text-content">
+                {splitHighlights(line.text_md).map((part, i) =>
+                  part.kind === 'text' ? (
+                    <MarkdownLite key={i} text={part.value} as="span" />
+                  ) : (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() =>
+                        setOpenNote(
+                          openNote?.line === lineIndex && openNote.term === part.termIndex
+                            ? null
+                            : { line: lineIndex, term: part.termIndex ?? 0 },
+                        )
+                      }
+                      aria-expanded={openNote?.line === lineIndex && openNote.term === part.termIndex}
+                      aria-label={t('lesson.families.story.whatDoesItMean', { term: part.value })}
+                      className={cn(
+                        'mx-0.5 inline-flex min-h-6 items-center gap-0.5 rounded-md border-b-2 border-dashed border-primary/70 bg-primary-soft/60 px-1 font-semibold text-primary',
+                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                      )}
+                    >
+                      {part.value}
+                      <Icon name="help" className="text-[14px]" aria-hidden />
+                    </button>
+                  ),
+                )}
+              </p>
+              {openNote?.line === lineIndex && note ? (
+                <div className="mt-2 rounded-md bg-primary-soft/50 p-3">
+                  <p className="lf-caption font-bold text-primary">
+                    {t('lesson.families.story.noteTitle')}
+                  </p>
+                  <MarkdownLite text={note} className="lf-body-sm text-content" />
+                </div>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div
+        role="img"
+        aria-label={t('lesson.families.story.lineProgress', { current: revealed, total: lines.length })}
+        className="flex items-center justify-center gap-1.5"
+      >
+        {lines.map((_, i) => (
+          <span
+            key={i}
+            className={cn(
+              'h-2 w-2 rounded-full transition-colors duration-150',
+              i < revealed ? 'bg-primary' : 'bg-outline/40',
+            )}
+          />
+        ))}
+      </div>
+
+      {!finished ? (
+        <div className="text-center">
+          <Button variant="primary" onClick={advance} disabled={disabled}>
+            {t(revealed >= lines.length ? 'lesson.families.story.continue' : 'lesson.families.story.keepListening')}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

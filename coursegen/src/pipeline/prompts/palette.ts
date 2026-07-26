@@ -11,7 +11,7 @@ import { ALL_TYPES, TYPE_TO_FAMILY, type FamilyName } from '../../contract/regis
 
 // prettier-ignore
 export type ExerciseTypeId =
-  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint'
+  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint' | 'eavesdrop'
   | 'quiz_mcq' | 'true_false' | 'picture_choice' | 'odd_one_out' | 'best_decision' | 'yes_no_cases' | 'speed_tap' | 'confidence_quiz'
   | 'type_answer' | 'fill_blank' | 'number_input' | 'estimate_slider' | 'count_objects' | 'equation_builder'
   | 'match_pairs' | 'memory_flip' | 'sort_buckets' | 'order_steps' | 'rank_choices' | 'build_sentence' | 'timeline_order' | 'pattern_complete' | 'group_sets' | 'number_line'
@@ -28,6 +28,7 @@ export const PALETTE_GUIDE: Record<ExerciseTypeId, string> = {
   key_ideas: 'Takeaway cards. payload:{ideas:[{icon,title,body_md}] 2-5}. No answer.',
   concept_reveal: 'Curiosity-gap flip cards. payload:{cards:[{front_md,back_md,icon?}] 2-6}. No answer.',
   checkpoint: 'Mid-lesson self-check (metacognition, never graded). payload:{recap_md, mood_prompt_md?}. No answer.',
+  eavesdrop: 'Overheard money conversation between canon characters, revealed turn by turn; ==highlighted== terms carry tap-to-explain notes (real locale expressions only). payload:{context_md, lines:[{character,emotion?,text_md,notes?}] 2-10}. No answer. Follow with a graded segment exercising the highlighted idea.',
   // -- choice --
   quiz_mcq: 'Single-choice with per-wrong-option rationale. payload:{options:IdText&rationale_md 2-6, shuffle?}. answer:{correct_option_id}.',
   true_false: 'Judge a claim, optionally justify. payload:{statement_md, justifications?:IdText 2-4}. answer:{is_true, correct_justification_id?}.',

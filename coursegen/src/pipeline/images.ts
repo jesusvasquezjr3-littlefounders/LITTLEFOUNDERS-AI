@@ -225,6 +225,7 @@ const SCENE_ANCHOR_TYPES = new Set([
   'dialogue_choice',
   'story_branch',
   'story_dialogue',
+  'eavesdrop',
 ]);
 
 export async function illustrateSegments(

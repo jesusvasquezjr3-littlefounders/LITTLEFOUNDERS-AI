@@ -1,5 +1,6 @@
 import type {
   CheckpointPayload,
+  EavesdropPayload,
   ConceptRevealPayload,
   KeyIdeasPayload,
   LessonDocument,
@@ -128,6 +129,19 @@ function pushStoryBodies(units: NarrationUnit[], segment: LessonSegment): void {
     case 'checkpoint': {
       const payload = segment.payload as unknown as CheckpointPayload;
       push(units, segment, 'recap', payload.recap_md);
+      break;
+    }
+    case 'eavesdrop': {
+      // Overheard conversation (type 57): the scene-setting context narrates
+      // after the prompt, then each line in its own character's voice —
+      // exactly the story_dialogue treatment. ==highlight== markers are
+      // stripped by stripMarkdown; the tap-to-explain notes are deliberately
+      // NOT narrated (they are on-demand reading, like hints before the QA
+      // coverage fix — but notes open in-flow while audio plays, and voicing
+      // them would talk over the conversation).
+      const payload = segment.payload as unknown as EavesdropPayload;
+      push(units, segment, 'context', payload.context_md);
+      payload.lines?.forEach((line, i) => push(units, segment, `line.${i}`, line.text_md, line.character));
       break;
     }
     default:

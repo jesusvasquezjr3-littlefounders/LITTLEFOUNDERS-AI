@@ -240,7 +240,10 @@
       "allFlipped": "¡Las descubriste todas!",
       "gotIt": "¡Ya lo tengo!",
       "review": "Quiero repasar",
-      "reviewHint": "Tómate tu tiempo: vuelve a leer y escuchar el repaso de arriba, y continúa cuando estés listo."
+      "reviewHint": "Tómate tu tiempo: vuelve a leer y escuchar el repaso de arriba, y continúa cuando estés listo.",
+      "whatDoesItMean": "¿Qué significa “{{term}}”?",
+      "noteTitle": "¿Qué significa?",
+      "keepListening": "Sigue escuchando"
     }
   },
   "streak": {

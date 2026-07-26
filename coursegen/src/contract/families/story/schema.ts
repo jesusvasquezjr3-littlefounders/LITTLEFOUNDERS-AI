@@ -87,12 +87,64 @@ export const checkpoint = segmentSchema(
   }),
 )
 
+/** Highlight spans inside eavesdrop line text: `==término==`. */
+export const EAVESDROP_HIGHLIGHT = /==([^=\n]+)==/g
+
+/**
+ * `eavesdrop` — an overheard conversation between canon characters, revealed
+ * turn by turn, where highlighted money terms/idioms carry tap-to-explain
+ * notes (LESSON_ENGINE.md §5.1, type 57). The whole artifact is generated in
+ * ONE pass and gated BEFORE the kid sees turn one — the "live conversation"
+ * feel with zero ungated runtime AI (Little Language Lessons' progressive
+ * reveal, 2026-07-25 analysis).
+ *
+ * Highlights are `==término==` markers INSIDE text_md — one string, so
+ * localization can never drift a term apart from its sentence — and `notes`
+ * attach BY ORDER to the nth highlight of the line. The refinement pins
+ * that count invariant on every locale's document (gate 1 re-validates
+ * localized output).
+ */
+export const eavesdrop = segmentSchema(
+  'eavesdrop',
+  z
+    .object({
+      /** Scene setting ("Dina y Liruf cuentan la caja al cerrar…") — shown and narrated before line 1. */
+      context_md: markdownLite,
+      lines: z
+        .array(
+          z.object({
+            character: characterIdSchema,
+            emotion: characterEmotionSchema.optional(),
+            text_md: markdownLite,
+            /** Tap-to-explain note per ==highlight==, in order of appearance. */
+            notes: z.array(markdownLite).max(3).optional(),
+          }),
+        )
+        .min(2)
+        .max(10),
+    })
+    .superRefine((payload, ctx) => {
+      payload.lines.forEach((line, i) => {
+        const highlights = [...line.text_md.matchAll(EAVESDROP_HIGHLIGHT)].length
+        const notes = line.notes?.length ?? 0
+        if (highlights !== notes) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['lines', i, 'notes'],
+            message: `line has ${highlights} ==highlight== span(s) but ${notes} note(s) — every highlighted term needs exactly one tap-to-explain note, in order`,
+          })
+        }
+      })
+    }),
+)
+
 export const storySchemas = [
   storyDialogue,
   storyScene,
   keyIdeas,
   conceptReveal,
   checkpoint,
+  eavesdrop,
 ] as const
 
 export type StoryDialogueSegment = z.infer<typeof storyDialogue>
@@ -100,3 +152,4 @@ export type StorySceneSegment = z.infer<typeof storyScene>
 export type KeyIdeasSegment = z.infer<typeof keyIdeas>
 export type ConceptRevealSegment = z.infer<typeof conceptReveal>
 export type CheckpointSegment = z.infer<typeof checkpoint>
+export type EavesdropSegment = z.infer<typeof eavesdrop>

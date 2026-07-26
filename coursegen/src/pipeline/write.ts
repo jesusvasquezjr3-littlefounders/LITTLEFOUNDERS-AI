@@ -142,6 +142,7 @@ const BASE_HARD_RULES = [
   // LF-Brain finding (COURSE_ENGINE.md §4 "gate" stage 6 / judge concreteness):
   // generic, restated content never teaches — ground the lesson in reality.
   'At least ONE segment MUST include a worked CONCRETE instance — a specific number, a named character, or a specific scenario. Never leave the whole lesson in purely abstract phrasing.',
+  'eavesdrop (type 57): payload.context_md sets the scene; each line may mark 1-3 money terms/idioms as ==término== INSIDE text_md, and payload.lines[n].notes must carry EXACTLY one kid-words explanation per highlight, in order of appearance (the schema rejects any mismatch). Highlight only REAL expressions of the lesson locale — never invent slang. Follow an eavesdrop with a graded segment that exercises the highlighted idea.',
 ];
 
 /*

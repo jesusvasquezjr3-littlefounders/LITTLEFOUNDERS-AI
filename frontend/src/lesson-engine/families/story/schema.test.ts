@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import {
   checkpoint,
   conceptReveal,
+  eavesdrop,
   keyIdeas,
   storyDialogue,
   storyScene,
@@ -19,12 +20,13 @@ const schemaByType = {
   key_ideas: keyIdeas,
   concept_reveal: conceptReveal,
   checkpoint,
+  eavesdrop,
 } as const
 
 describe('story fixtures parse against their schemas', () => {
   it('covers every story type exactly once', () => {
     expect(storyFixtures.map((f) => f.type).sort()).toEqual(Object.keys(schemaByType).sort())
-    expect(storySchemas).toHaveLength(5)
+    expect(storySchemas).toHaveLength(6)
   })
 
   it('content types carry xp: 0 and no answer key', () => {
@@ -91,6 +93,39 @@ describe('malformed story segments are rejected', () => {
       checkpoint.safeParse({ ...base, type: 'checkpoint', payload: {} }).success,
     ).toBe(false)
   })
+
+  it('eavesdrop rejects a highlight/notes count mismatch — the tap-to-explain invariant', () => {
+    const bad = eavesdrop.safeParse({
+      ...base,
+      type: 'eavesdrop',
+      payload: {
+        context_md: 'En el mercado.',
+        lines: [
+          { character: 'zara', text_md: 'Hoy vamos a ==salir tablas== con la ==caja==.', notes: ['Solo una nota.'] },
+          { character: 'rho', text_md: 'Sin resaltados aquí.' },
+        ],
+      },
+    })
+    expect(bad.success).toBe(false)
+    if (!bad.success) {
+      expect(JSON.stringify(bad.error.issues)).toContain('==highlight== span')
+    }
+  })
+
+  it('eavesdrop accepts highlight-free lines with no notes', () => {
+    const good = eavesdrop.safeParse({
+      ...base,
+      type: 'eavesdrop',
+      payload: {
+        context_md: 'En el mercado.',
+        lines: [
+          { character: 'zara', text_md: 'Hola vecino.' },
+          { character: 'rho', text_md: 'Buen día de ventas.' },
+        ],
+      },
+    })
+    expect(good.success).toBe(true)
+  })
 })
 
 describe('family wiring', () => {
@@ -98,7 +133,7 @@ describe('family wiring', () => {
     expect(Object.keys(storyGraders)).toHaveLength(0)
   })
 
-  it('all 5 types are registered as content kind', () => {
+  it('all 6 types are registered as content kind', () => {
     const types = Object.keys(schemaByType)
     expect(Object.keys(storyRegistry).sort()).toEqual(types.sort())
     for (const type of types) {

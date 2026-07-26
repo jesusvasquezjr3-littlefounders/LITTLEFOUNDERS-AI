@@ -53,6 +53,11 @@ export interface ConceptRevealPayload {
   cards: ConceptCard[];
 }
 
+export interface EavesdropPayload {
+  context_md?: string;
+  lines?: { character?: string; text_md?: string; notes?: string[] }[];
+}
+
 export interface CheckpointPayload {
   recap_md: string;
   mood_prompt_md?: string;

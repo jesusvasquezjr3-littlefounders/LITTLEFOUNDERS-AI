@@ -218,3 +218,40 @@ describe('stripMarkdown', () => {
     expect(stripMarkdown('  hello  \n\n  world  ')).toBe('hello. world');
   });
 });
+
+describe('eavesdrop (type 57)', () => {
+  it('narrates context after the prompt, each line in its own character voice, highlights stripped, notes silent', () => {
+    const document = {
+      schema_version: 1,
+      meta: { slug: 'e', title: 'E', locale: 'es-MX', subject: 'money', estimated_minutes: 3, objectives: ['x'], cast: ['zara', 'rho'] },
+      scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
+      segments: [
+        {
+          id: 'e1',
+          type: 'eavesdrop',
+          prompt_md: 'Escucha a los vendedores.',
+          difficulty: 1,
+          xp: 0,
+          payload: {
+            context_md: 'Es sábado en el mercado.',
+            lines: [
+              { character: 'zara', text_md: 'Hoy vamos a ==salir tablas==.', notes: ['No ganar ni perder.'] },
+              { character: 'rho', text_md: 'Yo aparto mi fondo primero.' },
+            ],
+          },
+        },
+      ],
+    } as never;
+
+    const units = extractNarratables(document);
+    const ids = units.map((u) => u.unit_id);
+    expect(ids).toEqual(['e1.prompt', 'e1.context', 'e1.line.0', 'e1.line.1']);
+    // ==markers== never reach the TTS text
+    expect(units[2]?.text).toBe('Hoy vamos a salir tablas.');
+    // per-line character drives the voice map
+    expect(units[2]?.character).toBe('zara');
+    expect(units[3]?.character).toBe('rho');
+    // tap-to-explain notes are NOT narrated
+    expect(units.some((u) => u.text.includes('No ganar ni perder'))).toBe(false);
+  });
+});

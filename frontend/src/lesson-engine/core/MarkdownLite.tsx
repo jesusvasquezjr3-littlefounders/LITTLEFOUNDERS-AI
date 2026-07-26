@@ -30,7 +30,13 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
   return nodes
 }
 
-export function MarkdownLite({ text, className }: { text: string; className?: string }) {
+export function MarkdownLite({ text, className, as }: { text: string; className?: string; as?: 'div' | 'span' }) {
+  // Inline mode — for fragments composed INSIDE another element (eavesdrop
+  // splits a sentence around tappable highlight terms): no block wrappers,
+  // just the inline tokens, valid inside a <p>.
+  if (as === 'span') {
+    return <span className={className}>{renderInline(text, 'inline')}</span>
+  }
   const lines = text.split(/\r?\n/)
   const blocks: ReactNode[] = []
   let listItems: string[] = []
