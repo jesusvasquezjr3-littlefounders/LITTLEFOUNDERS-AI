@@ -17,6 +17,7 @@ import {
   progressPct,
 } from '../core/session'
 import { createDirector, type CharacterReaction } from '../core/director'
+import { glowsAndGrows } from '../core/glowsGrows'
 import { SceneAnchor } from '../core/primitives'
 import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
@@ -701,12 +702,54 @@ function ResultsScreen({
           tone="text-success-strong"
         />
       </div>
+      <GlowsGrowsBlock doc={doc} state={state} />
       <p className="lf-body text-content-muted">
         {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
       </p>
       <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="px-10">
         {t('lesson.results.done')}
       </Button>
+    </div>
+  )
+}
+
+/**
+ * Glows & Grows — two deterministic feedback lines from the session just
+ * played (core/glowsGrows.ts): a real strength, and one growth area framed as
+ * a quest. All-content lessons (no graded segments) render nothing.
+ */
+function GlowsGrowsBlock({ doc, state }: { doc: LessonDocument; state: ReturnType<typeof initialSession> }) {
+  const { t } = useTranslation()
+  const gg = useMemo(() => glowsAndGrows(doc, state), [doc, state])
+  if (!gg) return null
+
+  const glowText =
+    gg.glow.kind === 'family' ? t(`lesson.results.glow.family.${gg.glow.family}`) : t('lesson.results.glow.effort')
+  const growText =
+    gg.grow === null
+      ? null
+      : gg.grow.kind === 'family'
+        ? t(`lesson.results.grow.family.${gg.grow.family}`)
+        : t('lesson.results.grow.mastered')
+
+  return (
+    <div className="w-full max-w-xl rounded-lg border border-outline/70 bg-surface px-4 py-1 shadow-glass-sm text-left">
+      <div className="flex items-center gap-3 py-3">
+        <Icon name="star" className="shrink-0 text-[26px] text-warning-strong" aria-hidden />
+        <div>
+          <p className="lf-caption text-content-faint leading-tight">{t('lesson.results.glowTitle')}</p>
+          <p className="lf-body font-semibold text-content mt-0.5">{glowText}</p>
+        </div>
+      </div>
+      {growText ? (
+        <div className="flex items-center gap-3 border-t border-outline/50 py-3">
+          <Icon name="flag" className="shrink-0 text-[26px] text-primary" aria-hidden />
+          <div>
+            <p className="lf-caption text-content-faint leading-tight">{t('lesson.results.growTitle')}</p>
+            <p className="lf-body font-semibold text-content mt-0.5">{growText}</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

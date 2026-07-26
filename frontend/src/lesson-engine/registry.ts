@@ -48,6 +48,28 @@ export const FIXTURES_BY_FAMILY = {
 export const ALL_TYPES: string[] = Object.keys(REGISTRY)
 export const GRADED_TYPES: string[] = Object.keys(GRADERS)
 
+export type LessonFamily = keyof typeof FIXTURES_BY_FAMILY
+
+/** type id → family id, derived from the same slices that compose REGISTRY. */
+export const FAMILY_OF_TYPE: Record<string, LessonFamily> = Object.fromEntries(
+  (
+    [
+      ['story', storyRegistry],
+      ['choice', choiceRegistry],
+      ['input', inputRegistry],
+      ['arrange', arrangeRegistry],
+      ['money', moneyRegistry],
+      ['analyze', analyzeRegistry],
+      ['storyplay', storyplayRegistry],
+      ['maker', makerRegistry],
+    ] as const
+  ).flatMap(([family, slice]) => Object.keys(slice).map((type) => [type, family])),
+) as Record<string, LessonFamily>
+
+export function familyOfType(type: string): LessonFamily | undefined {
+  return FAMILY_OF_TYPE[type]
+}
+
 /** Unknown types return undefined — the player renders the "unsupported segment"
  *  card (forward compatibility, §6). */
 export function getRegistryEntry(type: string): RegistryEntry | undefined {

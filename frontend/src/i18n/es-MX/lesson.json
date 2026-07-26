@@ -52,7 +52,35 @@
     "failedBody": "Todo founder practica. ¡Juégala otra vez y mira crecer tu puntaje!",
     "done": "Terminar",
     "time": "Tiempo",
-    "dayStreak": "Racha de días"
+    "dayStreak": "Racha de días",
+    "glowTitle": "Tu superpoder de hoy",
+    "growTitle": "Tu próxima misión",
+    "glow": {
+      "effort": "Terminaste toda la lección: cada intento te hace más fuerte.",
+      "family": {
+        "story": "Las historias no tienen secretos para ti.",
+        "choice": "Tomas decisiones como todo un founder.",
+        "input": "Tus cuentas salieron perfectas.",
+        "arrange": "Poner las cosas en orden es lo tuyo.",
+        "money": "Manejas el dinero como experto.",
+        "analyze": "Tienes ojo de detective.",
+        "storyplay": "Vives cada aventura al máximo.",
+        "maker": "Eres constructor de primera."
+      }
+    },
+    "grow": {
+      "mastered": "¡Dominaste todo! La siguiente lección te espera.",
+      "family": {
+        "story": "Explora las historias con calma.",
+        "choice": "Piensa cada opción antes de elegir.",
+        "input": "Revisa tus números sin prisa.",
+        "arrange": "Encuentra el orden paso a paso.",
+        "money": "Cuenta el dinero con calma: tú puedes.",
+        "analyze": "Busca las pistas escondidas.",
+        "storyplay": "Elige tu camino con cuidado.",
+        "maker": "Arma tus inventos pieza por pieza."
+      }
+    }
   },
   "flow": {
     "start": "¡Empezar!",

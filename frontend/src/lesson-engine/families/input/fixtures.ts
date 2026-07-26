@@ -89,11 +89,12 @@ export const inputFixtures: SegmentBase[] = [
     narrator: { character: 'dina', emotion: 'encouraging' },
     payload: {
       scene: [
-        { icon: 'paid', tint: 'warning', count: 7 },
-        { icon: 'savings', tint: 'primary', count: 3 },
-        { icon: 'shopping_bag', tint: 'accent', count: 4 },
+        { icon: 'paid', tint: 'warning', count: 7, label: 'monedas' },
+        { icon: 'savings', tint: 'primary', count: 3, label: 'alcancías' },
+        { icon: 'shopping_bag', tint: 'accent', count: 4, label: 'bolsas' },
       ],
       ask_icon: 'paid',
+      ask_label: 'monedas',
     },
     answer: { value: 7 },
   },

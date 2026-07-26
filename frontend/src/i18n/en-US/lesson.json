@@ -52,7 +52,35 @@
     "failedBody": "Every founder practices. Play it again and watch your score grow!",
     "done": "Finish",
     "time": "Time",
-    "dayStreak": "Day streak"
+    "dayStreak": "Day streak",
+    "glowTitle": "Today's superpower",
+    "growTitle": "Your next quest",
+    "glow": {
+      "effort": "You finished the whole lesson — every try makes you stronger.",
+      "family": {
+        "story": "Stories hold no secrets from you.",
+        "choice": "You make decisions like a true founder.",
+        "input": "Your numbers came out spot on.",
+        "arrange": "Putting things in order is your thing.",
+        "money": "You handle money like a pro.",
+        "analyze": "You have a detective’s eye.",
+        "storyplay": "You live every adventure to the fullest.",
+        "maker": "A first-class builder."
+      }
+    },
+    "grow": {
+      "mastered": "You mastered it all — the next lesson awaits!",
+      "family": {
+        "story": "Take your time exploring the stories.",
+        "choice": "Think each option through before choosing.",
+        "input": "Double-check your numbers, no rush.",
+        "arrange": "Find the order one step at a time.",
+        "money": "Count the money calmly — you’ve got this.",
+        "analyze": "Hunt for the hidden clues.",
+        "storyplay": "Pick your path with care.",
+        "maker": "Build your inventions piece by piece."
+      }
+    }
   },
   "flow": {
     "start": "Start!",
