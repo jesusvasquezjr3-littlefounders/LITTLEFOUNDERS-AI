@@ -240,3 +240,56 @@ export async function revokeRoleChecked(userId: string, role: string): Promise<R
   const ok = await revokeRole(userId, role);
   return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
 }
+
+// ── Learning retention (0016) ───────────────────────────────────────────────
+
+export interface RetentionBucket {
+  bucket: string;
+  n: number;
+  avg_first_attempt_score: number;
+}
+
+export interface RetentionTopicRow {
+  source_topic_slug: string;
+  source_topic_title: Localized;
+  n: number;
+  avg_first_attempt_score: number;
+}
+
+export interface LearningRetention {
+  buckets: RetentionBucket[];
+  byTopic: { slug: string; title: string; n: number; avgFirstAttemptScore: number }[];
+}
+
+/**
+ * Always-on retention measurement: our spaced-review lessons ARE the delayed
+ * test (Learn Your Way analysis, 2026-07-25), so first-EVER-attempt scores on
+ * them, bucketed by days since the learner last practiced the cited source
+ * topics, are per-concept forgetting curves at zero extra assessment cost.
+ * Computation lives in Vault (admin_retention_* functions, migration 0016 —
+ * EXECUTE revoked from client roles); Core just brokers it to the console.
+ */
+export async function getLearningRetention(): Promise<LearningRetention | null> {
+  const [buckets, byTopic] = await Promise.all([
+    serviceRest<RetentionBucket[]>('/rpc/admin_retention_at_distance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    }),
+    serviceRest<RetentionTopicRow[]>('/rpc/admin_retention_by_topic', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    }),
+  ]);
+  if (!buckets || !byTopic) return null;
+  return {
+    buckets,
+    byTopic: byTopic.map((r) => ({
+      slug: r.source_topic_slug,
+      title: pickTitle(r.source_topic_title),
+      n: r.n,
+      avgFirstAttemptScore: r.avg_first_attempt_score,
+    })),
+  };
+}

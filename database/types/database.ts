@@ -783,9 +783,11 @@ export type Database = {
           created_at: string
           id: string
           key_vocabulary: Json
+          kind: string
           learning_objective: Json
           position: number
           prior_knowledge: string
+          review_of: Json
           saga_id: string
           slug: string
           status: string
@@ -796,9 +798,11 @@ export type Database = {
           created_at?: string
           id?: string
           key_vocabulary?: Json
+          kind?: string
           learning_objective?: Json
           position: number
           prior_knowledge?: string
+          review_of?: Json
           saga_id: string
           slug: string
           status?: string
@@ -809,9 +813,11 @@ export type Database = {
           created_at?: string
           id?: string
           key_vocabulary?: Json
+          kind?: string
           learning_objective?: Json
           position?: number
           prior_knowledge?: string
+          review_of?: Json
           saga_id?: string
           slug?: string
           status?: string
@@ -853,6 +859,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_retention_at_distance: {
+        Args: never
+        Returns: {
+          avg_first_attempt_score: number
+          bucket: string
+          n: number
+        }[]
+      }
+      admin_retention_by_topic: {
+        Args: never
+        Returns: {
+          avg_first_attempt_score: number
+          n: number
+          source_topic_slug: string
+          source_topic_title: Json
+        }[]
+      }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
     }

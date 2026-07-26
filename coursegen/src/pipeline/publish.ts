@@ -90,6 +90,10 @@ export interface PublishInput {
     learningObjective: LocalizedText;
     keyVocabulary: string[];
     priorKnowledge: string;
+    /** Blueprint pedagogy projection (0016): 'teaching' | review kinds. */
+    kind: string;
+    /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") — resolved at query time. */
+    reviewOf: string[];
   };
   lesson: {
     slug: string;
@@ -177,6 +181,11 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
         learning_objective: input.topic.learningObjective,
         key_vocabulary: input.topic.keyVocabulary,
         prior_knowledge: input.topic.priorKnowledge,
+        // Spaced-review projection (0016) — feeds the always-on retention
+        // metric (admin_retention_* functions); the catalog stays the source
+        // of truth, publish just keeps Vault's copy current.
+        kind: input.topic.kind,
+        review_of: input.topic.reviewOf,
       },
     ],
     'saga_id,slug',

@@ -39,7 +39,13 @@
     "noRoles": "No roles yet",
     "healthTitle": "System health",
     "details": "Details",
-    "healthUnavailable": "Health monitor unavailable"
+    "healthUnavailable": "Health monitor unavailable",
+    "retentionTitle": "Learning retention",
+    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced — the platform’s always-on delayed test.",
+    "retentionBucket": "{{bucket}} days",
+    "retentionAttempts": "{{count}} review answers",
+    "retentionWeakest": "Concepts that decay fastest",
+    "retentionEmpty": "No spaced reviews played yet — the curve draws itself as kids replay review lessons."
   },
   "content": {
     "title": "Content",

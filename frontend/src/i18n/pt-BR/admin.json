@@ -39,7 +39,13 @@
     "noRoles": "Ainda sem papéis",
     "healthTitle": "Saúde do sistema",
     "details": "Detalhes",
-    "healthUnavailable": "Monitor de saúde indisponível"
+    "healthUnavailable": "Monitor de saúde indisponível",
+    "retentionTitle": "Retenção de aprendizagem",
+    "retentionSubtitle": "Pontuação na primeira tentativa em revisões espaçadas, por dias desde a última prática do conceito: o teste adiado sempre-ativo da plataforma.",
+    "retentionBucket": "{{bucket}} dias",
+    "retentionAttempts": "{{count}} respostas de revisão",
+    "retentionWeakest": "Conceitos que se esquecem mais rápido",
+    "retentionEmpty": "Nenhuma revisão espaçada jogada ainda: a curva se desenha sozinha quando as crianças revisam."
   },
   "content": {
     "title": "Conteúdo",

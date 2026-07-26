@@ -14,6 +14,17 @@ interface Health {
   summary: { total: number; down: number };
   monitors: { id: number; name: string; status: number }[];
 }
+interface Retention {
+  buckets: { bucket: string; n: number; avg_first_attempt_score: number }[];
+  byTopic: { slug: string; title: string; n: number; avgFirstAttemptScore: number }[];
+}
+
+/** ≥80 sticks, 60–79 wobbles, <60 decays — same tone scale as content status. */
+function retentionTone(score: number): string {
+  if (score >= 80) return 'text-success-strong';
+  if (score >= 60) return 'text-warning-strong';
+  return 'text-error-strong';
+}
 
 const ROLE_ORDER = ['superadmin', 'admin', 'bigfounder', 'parent', 'kid', 'universal'];
 const STATUS_ORDER = ['published', 'review', 'draft', 'archived'];
@@ -52,6 +63,7 @@ export function AdminOverviewPage() {
   const isSuperadmin = roles.includes('superadmin');
   const { data } = useAdminData<Overview>('/admin/overview');
   const { data: health } = useAdminData<Health>('/admin/health/services');
+  const { data: retention } = useAdminData<Retention>('/admin/learning/retention');
 
   const nf = new Intl.NumberFormat();
   const o = data.state === 'ready' ? data.data : null;
@@ -126,6 +138,48 @@ export function AdminOverviewPage() {
               </ul>
             </Card>
           </div>
+
+          {/* Learning retention — always-on delayed test (spaced reviews, 0016) */}
+          <Card className="flex flex-col gap-3 p-5">
+            <div>
+              <h2 className="lf-title">{t('admin.overview.retentionTitle')}</h2>
+              <p className="lf-caption mt-1 text-content-muted">{t('admin.overview.retentionSubtitle')}</p>
+            </div>
+            {retention.state === 'ready' && retention.data.buckets.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <ul className="flex flex-col divide-y divide-outline/50">
+                  {retention.data.buckets.map((b) => (
+                    <li key={b.bucket} className="flex items-center justify-between py-2">
+                      <span className="lf-label text-content">{t('admin.overview.retentionBucket', { bucket: b.bucket })}</span>
+                      <span className="flex items-baseline gap-3">
+                        <span className="lf-caption text-content-faint">{t('admin.overview.retentionAttempts', { count: b.n })}</span>
+                        <span className={cn('lf-number lf-title', retentionTone(b.avg_first_attempt_score))}>
+                          {b.avg_first_attempt_score}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div>
+                  <p className="lf-caption mb-1.5 text-content-muted">{t('admin.overview.retentionWeakest')}</p>
+                  <ul className="flex flex-col divide-y divide-outline/50">
+                    {retention.data.byTopic.slice(0, 4).map((row) => (
+                      <li key={row.slug} className="flex items-center justify-between py-2">
+                        <span className="lf-label truncate pr-3 text-content">{row.title}</span>
+                        <span className={cn('lf-number lf-title shrink-0', retentionTone(row.avgFirstAttemptScore))}>
+                          {row.avgFirstAttemptScore}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <p className="lf-caption text-content-faint">
+                {retention.state === 'error' ? t('admin.overview.healthUnavailable') : t('admin.overview.retentionEmpty')}
+              </p>
+            )}
+          </Card>
 
           {/* Health strip */}
           <Card className="flex flex-col gap-3 p-5">

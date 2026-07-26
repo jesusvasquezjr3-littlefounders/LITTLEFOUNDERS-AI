@@ -68,8 +68,8 @@ SELECT format(
 ) FROM s
 UNION ALL
 SELECT format(
-  'INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES (%L, %L, %L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
-  id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status
+  'INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of) VALUES (%L, %L, %L, %L, %L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
+  id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of
 ) FROM t
 UNION ALL
 SELECT format(

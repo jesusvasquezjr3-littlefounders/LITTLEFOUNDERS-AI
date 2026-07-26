@@ -39,7 +39,13 @@
     "noRoles": "Aún sin roles",
     "healthTitle": "Salud del sistema",
     "details": "Detalles",
-    "healthUnavailable": "Monitor de salud no disponible"
+    "healthUnavailable": "Monitor de salud no disponible",
+    "retentionTitle": "Retención de aprendizaje",
+    "retentionSubtitle": "Puntaje al primer intento en repasos espaciados, por días desde la última práctica del concepto: el examen diferido siempre-activo de la plataforma.",
+    "retentionBucket": "{{bucket}} días",
+    "retentionAttempts": "{{count}} respuestas de repaso",
+    "retentionWeakest": "Conceptos que más rápido se olvidan",
+    "retentionEmpty": "Aún no se juegan repasos espaciados: la curva se dibuja sola cuando los niños repasan."
   },
   "content": {
     "title": "Contenido",

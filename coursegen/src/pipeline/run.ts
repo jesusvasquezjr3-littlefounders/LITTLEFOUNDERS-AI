@@ -431,6 +431,8 @@ async function processSlot(
           learningObjective: { 'en-US': slot.topic.learning_objective, 'es-MX': slot.topic.learning_objective, 'pt-BR': slot.topic.learning_objective },
           keyVocabulary: slot.topic.key_vocabulary,
           priorKnowledge: slot.topic.prior_knowledge,
+          kind: slot.topic.kind ?? 'teaching',
+          reviewOf: slot.topic.review_of ?? [],
         },
         lesson: {
           slug: slot.lesson.slug,

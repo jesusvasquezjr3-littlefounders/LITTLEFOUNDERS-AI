@@ -20,6 +20,7 @@ import {
 import type { PlausibleFilter } from '../services/pulse.js';
 import {
   getAdminOverview,
+  getLearningRetention,
   grantRoleChecked,
   isCourseStatus,
   isLessonStatus,
@@ -251,6 +252,13 @@ export function adminRouter(): Router {
     const overview = await getAdminOverview();
     if (!overview) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load platform overview');
     ok(res, overview);
+  });
+
+  // ── Learning retention (always-on, from spaced-review attempts — 0016) ─────
+  router.get('/learning/retention', async (_req, res) => {
+    const retention = await getLearningRetention();
+    if (!retention) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load retention data');
+    ok(res, retention);
   });
 
   // ── Users / Support ────────────────────────────────────────────────────────
