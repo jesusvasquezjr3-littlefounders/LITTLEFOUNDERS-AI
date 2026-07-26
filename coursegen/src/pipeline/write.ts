@@ -143,6 +143,7 @@ const BASE_HARD_RULES = [
   // generic, restated content never teaches — ground the lesson in reality.
   'At least ONE segment MUST include a worked CONCRETE instance — a specific number, a named character, or a specific scenario. Never leave the whole lesson in purely abstract phrasing.',
   'eavesdrop (type 57): payload.context_md sets the scene; each line may mark 1-3 money terms/idioms as ==término== INSIDE text_md, and payload.lines[n].notes must carry EXACTLY one kid-words explanation per highlight, in order of appearance (the schema rejects any mismatch). Highlight only REAL expressions of the lesson locale — never invent slang. Follow an eavesdrop with a graded segment that exercises the highlighted idea.',
+  'EMOJIS — a light garnish, tightly scoped (hard gate). ALLOWED only in: story-family narration text (story_dialogue line text_md, story_scene body_md, eavesdrop context/lines, key_ideas/concept_reveal body text, checkpoint recap_md) and a segment\'s explanation_md — at most ONE emoji per segment, in roughly 1 of every 3 segments, placed AFTER the words it decorates ("¡Lo lograste! 🎉"), from everyday positive emoji (🎉 ✨ 💡 🍋 🥤 💰 ⭐ 😀 😉 🤔). FORBIDDEN everywhere else: prompt_md, hints, meta fields, and ANY option/item/token/card/label/answer text (they clutter comparisons and distract from the task). The audio pipeline strips emojis before narration, so an emoji must NEVER carry meaning the listener needs — it decorates a sentence that already says everything.',
 ];
 
 /*

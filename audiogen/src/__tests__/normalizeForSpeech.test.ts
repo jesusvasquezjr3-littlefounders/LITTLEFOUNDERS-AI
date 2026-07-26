@@ -151,3 +151,42 @@ describe('normalizeForSpeech — ordinals and ranges', () => {
     expect(normalizeForSpeech('2x5 pesos', 'es-MX')).toBe('2 por 5 pesos');
   });
 });
+
+describe('normalizeForSpeech — emojis never reach the TTS', () => {
+  it('strips a sentence-final decorative emoji (the sanctioned garnish position)', () => {
+    expect(normalizeForSpeech('¡Lo lograste! 🎉', 'es-MX')).toBe('¡Lo lograste!');
+    expect(normalizeForSpeech('You did it! 🎉', 'en-US')).toBe('You did it!');
+    expect(normalizeForSpeech('Você conseguiu! 🎉', 'pt-BR')).toBe('Você conseguiu!');
+  });
+
+  it('strips a mid-sentence emoji without gluing words together', () => {
+    expect(normalizeForSpeech('Dina 💰 guarda sus monedas', 'es-MX')).toBe('Dina guarda sus monedas');
+  });
+
+  it('strips ZWJ family sequences, skin tones, variation selectors and flag pairs', () => {
+    expect(normalizeForSpeech('la familia 👨‍👩‍👧‍👦 ahorra', 'es-MX')).toBe('la familia ahorra');
+    expect(normalizeForSpeech('bien 👍🏽 hecho', 'es-MX')).toBe('bien hecho');
+    expect(normalizeForSpeech('listo ✔️ ya', 'es-MX')).toBe('listo ya');
+    expect(normalizeForSpeech('México 🇲🇽 lindo', 'es-MX')).toBe('México lindo');
+  });
+
+  it('an emoji-only text normalizes to empty (extractNarratables then drops the unit)', () => {
+    expect(normalizeForSpeech('🎉✨', 'es-MX')).toBe('');
+  });
+
+  it('emoji stripping does not break the arrow→pause conversion (➡ is itself pictographic)', () => {
+    expect(normalizeForSpeech('ahorro➡alcancía', 'es-MX')).toBe('ahorro, alcancía');
+  });
+
+  it('EXPANDS emoji math operators instead of deleting them — "2➕3" must never become "2 3"', () => {
+    expect(normalizeForSpeech('Dina gana 2➕3 pesos', 'es-MX')).toBe('Dina gana 2 más 3 pesos');
+    expect(normalizeForSpeech('2✖3 vasos', 'es-MX')).toBe('2 por 3 vasos');
+    expect(normalizeForSpeech('20➗4', 'es-MX')).toBe('20 entre 4');
+    expect(normalizeForSpeech('8 ➖ 3', 'es-MX')).toBe('8 menos 3');
+    expect(normalizeForSpeech('2➕3', 'en-US')).toBe('2 plus 3');
+  });
+
+  it('keeps symbol expansion working alongside emojis', () => {
+    expect(normalizeForSpeech('ganó $5 🎉', 'es-MX')).toBe('ganó 5 pesos');
+  });
+});

@@ -112,10 +112,15 @@ function buildTranslateMessages(
     targetLocale === 'en-US'
       ? 'CURRENCY: this is play money for kids — convert Mexican pesos to US DOLLARS. Replace "peso/pesos" with "dollar/dollars"; keep the "$" symbol and every NUMBER exactly the same (do NOT apply exchange rates — 20 pesos becomes 20 dollars).'
       : 'CURRENCY: this is play money for kids — convert Mexican pesos to Brazilian REAIS. Replace "peso/pesos" with "real/reais" and the "$" symbol with "R$"; keep every NUMBER exactly the same (do NOT apply exchange rates — 20 pesos becomes 20 reais).';
+  const colloquialLine =
+    targetLocale === 'en-US'
+      ? 'COLLOQUIAL TOUCHES: the source may carry an occasional light Mexican colloquialism ("¡órale!", "¡qué padre!", "¡ándale!"). NEVER translate these literally — render each as a natural, G-rated, everyday American English equivalent of the same weight ("awesome!", "no way!", "come on!", "sweet!"), and keep the dosage identical: if a sentence is neutral in the source, keep it neutral — never ADD slang the source does not have. Nothing rude, nothing with a double meaning.'
+      : 'COLLOQUIAL TOUCHES: the source may carry an occasional light Mexican colloquialism ("¡órale!", "¡qué padre!", "¡ándale!"). NEVER translate these literally — render each as a natural, G-rated, everyday Brazilian Portuguese equivalent of the same weight ("que legal!", "demais!", "beleza!", "caramba!"), and keep the dosage identical: if a sentence is neutral in the source, keep it neutral — never ADD slang the source does not have. Nothing rude, nothing with a double meaning.';
   const system =
     `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine} ` +
     'Preserve MarkdownLite markup exactly (**bold**, *italic*, `code`, "- " lists, line breaks) and any {{n}} gap markers verbatim. ' +
-    `${currencyLine} ` +
+    'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
+    `${currencyLine} ${colloquialLine} ` +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.';
   const user = [
     'Translate every value in this JSON object. Return an object with EXACTLY the same keys.',

@@ -102,4 +102,23 @@ describe('speechGuard — the normalizer and the guard agree (no false positives
       expect(blocking, `blocked: ${describeIssues(blocking)} for "${spoken}"`).toEqual([]);
     });
   }
+
+  it('emoji-decorated narration text normalizes to speakable output (the new garnish class)', () => {
+    const spoken = normalizeForSpeech('¡Lo lograste! 🎉 Dina juntó $5 el 1er día', 'es-MX');
+    const blocking = auditSpeechText(spoken, 'es-MX').filter((i) => i.severity === 'block');
+    expect(blocking, describeIssues(blocking)).toEqual([]);
+    expect(spoken).toBe('¡Lo lograste! Dina juntó 5 pesos el primer día');
+  });
+});
+
+describe('speechGuard — residual emojis are a blocking defect', () => {
+  it('blocks a raw emoji that somehow bypassed normalization', () => {
+    const issues = auditSpeechText('¡Muy bien! 🎉', 'es-MX');
+    expect(issues.some((i) => i.code === 'residual-emoji' && i.severity === 'block')).toBe(true);
+  });
+
+  it('does not flag plain punctuation-only prose', () => {
+    const issues = auditSpeechText('¡Muy bien! Dina juntó 5 pesos.', 'es-MX');
+    expect(issues.filter((i) => i.code === 'residual-emoji')).toEqual([]);
+  });
 });

@@ -40,21 +40,31 @@ interface Check {
   );
 
   // ---- Vault: hierarchy + every published document ----------------------------
-  const course: any[] = await q(`courses?select=id,slug,title,status&slug=eq.${COURSE}`);
+  interface DocRow {
+    locale: string;
+    document: { segments?: Array<{ id: string } & Record<string, unknown>> } & Record<string, unknown>;
+    answer_keys: Record<string, unknown> | null;
+    audio: { version?: unknown } | null;
+    lesson_id: string;
+  }
+  const course = (await q(`courses?select=id,slug,title,status&slug=eq.${COURSE}`)) as { id: string; slug: string }[];
   if (course.length === 0) {
     console.error(`verify: course "${COURSE}" is not in Vault`);
     process.exit(1);
   }
-  const adv: any[] = await q(`adventures?select=id&course_id=eq.${course[0].id}`);
-  const sagas: any[] = await q(`sagas?select=id&adventure_id=in.(${adv.map((a) => a.id).join(',')})`);
-  const topics: any[] = await q(`topics?select=id,title&saga_id=in.(${sagas.map((s) => s.id).join(',')})`);
-  const lessons: any[] = await q(
+  const adv = (await q(`adventures?select=id&course_id=eq.${course[0]!.id}`)) as { id: string }[];
+  const sagas = (await q(`sagas?select=id&adventure_id=in.(${adv.map((a) => a.id).join(',')})`)) as { id: string }[];
+  const topics = (await q(`topics?select=id,title&saga_id=in.(${sagas.map((s) => s.id).join(',')})`)) as {
+    id: string;
+    title: unknown;
+  }[];
+  const lessons = (await q(
     `lessons?select=id,slug,status&topic_id=in.(${topics.map((t) => t.id).join(',')})`,
-  );
+  )) as { id: string; slug: string; status: string }[];
   const publishedLessons = lessons.filter((l) => l.status === 'published');
-  const docs: any[] = await q(
+  const docs = (await q(
     `lesson_documents?select=locale,document,answer_keys,audio,lesson_id&lesson_id=in.(${publishedLessons.map((l) => l.id).join(',')})`,
-  );
+  )) as DocRow[];
   const bySlug = new Map(publishedLessons.map((l) => [l.id, l.slug]));
 
   // Expected blueprint count from the catalog, so a MISSING lesson is caught.
@@ -100,14 +110,14 @@ interface Check {
     const keys = d.answer_keys || {};
     const merged = {
       ...d.document,
-      segments: (d.document.segments || []).map((s: any) => (keys[s.id] ? { ...s, answer: keys[s.id] } : s)),
+      segments: (d.document.segments || []).map((s) => (keys[s.id] ? { ...s, answer: keys[s.id] } : s)),
     };
     const contract = runContractGate(merged);
     const problems: string[] = [];
-    if (!contract.ok || !contract.document) problems.push(...contract.problems.map((p: any) => `contract: ${p.message}`));
+    if (!contract.ok || !contract.document) problems.push(...contract.problems.map((p) => `contract: ${p.message}`));
     else {
-      problems.push(...runClarityGate(contract.document).map((p: any) => `clarity: ${p.message}`));
-      problems.push(...runGenerationQualityGate(contract.document).map((p: any) => `quality: ${p.message}`));
+      problems.push(...runClarityGate(contract.document).map((p) => `clarity: ${p.message}`));
+      problems.push(...runGenerationQualityGate(contract.document).map((p) => `quality: ${p.message}`));
     }
     if (problems.length === 0) cleanDocs++;
     else if (exceptions.has(slug)) excepted.add(slug);
@@ -134,9 +144,9 @@ interface Check {
   const orphans = lessons.filter((l) => !catalogLessonSlugs.has(l.slug));
   let orphansWithProgress: string[] = [];
   if (orphans.length > 0) {
-    const attempts: any[] = await q(
+    const attempts = (await q(
       `lesson_segment_attempts?select=lesson_id&lesson_id=in.(${orphans.map((l) => l.id).join(',')})&limit=1000`,
-    );
+    )) as { lesson_id: string }[];
     const touched = new Set(attempts.map((a) => a.lesson_id));
     orphansWithProgress = orphans.filter((l) => touched.has(l.id)).map((l) => l.slug);
   }
@@ -149,11 +159,6 @@ interface Check {
   );
 
   // ---- currency really is local (a silent localization failure is invisible) ---
-  const CURRENCY: Record<string, RegExp> = {
-    'es-MX': /\bpesos?\b/i,
-    'en-US': /\bdollars?\b/i,
-    'pt-BR': /\breais\b|\breal\b/i,
-  };
   const WRONG: Record<string, RegExp> = {
     'es-MX': /\bdollars?\b|\breais\b/i,
     'en-US': /\bpesos?\b|\breais\b/i,

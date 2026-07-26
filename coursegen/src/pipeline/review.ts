@@ -2,9 +2,13 @@
 // COURSE_ENGINE.md §4. A failing rubric gate (kid_safety/age_fit/concreteness/
 // pedagogy/cognitive_engagement/feedback_quality/distractor_quality — see
 // passesJudgeGate) triggers a revise call to DeepSeek with the judge's notes,
-// then a full re-gate (the 7 deterministic gates must still pass after
-// revision) and re-judge. Max 2 revise cycles — after that the slot fails, it
-// never silently ships.
+// then a full re-gate (the 9 deterministic gates must still pass after
+// revision) and re-judge. Max 3 revise cycles (MAX_REVISE_CYCLES), with an
+// EARLY STOP: when a re-judged rubric improves NO currently-failing dimension
+// over the previous judged rubric, the loop breaks immediately — the outer
+// from-scratch retry is the measured-better use of those tokens (on the real
+// QA regen, 14 of 62 slots burned all 3 cycles before failing anyway). After
+// the loop the slot fails; it never silently ships.
 
 import { z } from 'zod';
 import { completeQwen } from '../providers/qwen.js';
@@ -58,10 +62,12 @@ export type ReviewRubric = z.infer<typeof reviewRubricSchema>;
 export class ReviewFailedError extends Error {
   readonly rubric: ReviewRubric;
   readonly cycles: number;
+  /** True when the loop broke early because a revise improved no failing dimension. */
+  readonly earlyStopped: boolean;
 
-  constructor(rubric: ReviewRubric, cycles: number) {
+  constructor(rubric: ReviewRubric, cycles: number, earlyStopped = false) {
     super(
-      `review: judge gate failed after ${cycles} revise cycle(s) ` +
+      `review: judge gate failed after ${cycles} revise cycle(s)${earlyStopped ? ' (early stop: no failing dimension improved)' : ''} ` +
         `(kid_safety=${rubric.kid_safety}, age_fit=${rubric.age_fit}, concreteness=${rubric.concreteness}, ` +
         `pedagogy=${rubric.pedagogy}, cognitive_engagement=${rubric.cognitive_engagement}, ` +
         `feedback_quality=${rubric.feedback_quality}, distractor_quality=${rubric.distractor_quality}). Notes: ${rubric.notes}`,
@@ -69,6 +75,7 @@ export class ReviewFailedError extends Error {
     this.name = 'ReviewFailedError';
     this.rubric = rubric;
     this.cycles = cycles;
+    this.earlyStopped = earlyStopped;
   }
 }
 
@@ -97,7 +104,19 @@ const LOW_DECISION_TYPES = new Set([
   'group_sets',
 ]);
 
-function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, standalone = false): boolean {
+/** The gated dimensions (narrative_quality/naturalness are scored but never floored). */
+const JUDGE_GATED_DIMENSIONS = [
+  'kid_safety',
+  'age_fit',
+  'concreteness',
+  'pedagogy',
+  'cognitive_engagement',
+  'feedback_quality',
+  'distractor_quality',
+] as const;
+type JudgeGatedDimension = (typeof JUDGE_GATED_DIMENSIONS)[number];
+
+function judgeFloors(document: LessonDocumentParsed, standalone: boolean): Record<JudgeGatedDimension, number> {
   // A lesson made ENTIRELY of low-decision types (content beats, fluency
   // drills, pure reading/recognition) is not a worked-numeric reasoning
   // exercise, so the judge's concreteness ("a worked concrete instance") and
@@ -106,29 +125,40 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, s
   // hard choice. Relax those two floors for such lessons (the judge's own
   // calibration already says to judge these types on their own terms). Any
   // lesson with a genuine reasoning exercise mixed in keeps the full floors.
-  const allLowDecision = document.segments.every((s) => LOW_DECISION_TYPES.has(s.type));
-  const concretenessFloor = allLowDecision ? 3 : 4;
-  const engagementFloor = allLowDecision ? 2 : 3;
   // Fluency drills (lightning_round/speed_tap/flash_match/memory_flip) have no
   // per-option rationale field, so their feedback IS the aggregate explanation,
-  // not per-choice — the judge scores such feedback low. Relax the floor for
-  // all-low-decision lessons, matching the concreteness/engagement relaxations.
-  const feedbackFloor = allLowDecision ? 2 : 3;
-  return (
-    rubric.kid_safety >= 5 &&
+  // not per-choice — the judge scores such feedback low. Relax that floor for
+  // all-low-decision lessons too, matching concreteness/engagement.
+  const allLowDecision = document.segments.every((s) => LOW_DECISION_TYPES.has(s.type));
+  return {
+    kid_safety: 5,
     // A standalone coverage harness must exercise tier3-only types (compound
     // growth, profit) even on a tier2 course, so age_fit is a coverage artifact
     // here, not a real-learner signal. kid_safety (>=5) stays the hard guard.
-    rubric.age_fit >= (standalone ? 2 : 4) &&
-    rubric.concreteness >= concretenessFloor &&
-    // Quality floor added after the QA inspection: an exercise must actually
+    age_fit: standalone ? 2 : 4,
+    concreteness: allLowDecision ? 3 : 4,
+    // Quality floors added after the QA inspection: an exercise must actually
     // teach (pedagogy), make the kid think (engagement), explain wrong answers
     // (feedback) and offer plausible distractors — all >= 3 (not below average).
-    rubric.pedagogy >= 3 &&
-    rubric.cognitive_engagement >= engagementFloor &&
-    rubric.feedback_quality >= feedbackFloor &&
-    rubric.distractor_quality >= 3
-  );
+    pedagogy: 3,
+    cognitive_engagement: allLowDecision ? 2 : 3,
+    feedback_quality: allLowDecision ? 2 : 3,
+    distractor_quality: 3,
+  };
+}
+
+/** The gated dimensions this rubric fails, given the document's floors. Empty = passes. */
+export function failingDimensions(
+  rubric: ReviewRubric,
+  document: LessonDocumentParsed,
+  standalone = false,
+): JudgeGatedDimension[] {
+  const floors = judgeFloors(document, standalone);
+  return JUDGE_GATED_DIMENSIONS.filter((dim) => rubric[dim] < floors[dim]);
+}
+
+function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, standalone = false): boolean {
+  return failingDimensions(rubric, document, standalone).length === 0;
 }
 
 async function judgeDocument(
@@ -160,8 +190,8 @@ async function judgeDocument(
     '- age_fit: is the language/complexity right for the stated age band?',
     '- pedagogy: does it teach the stated concept effectively (concrete-before-abstract, formative feedback)?',
     '- narrative_quality: is the story engaging and coherent with the canon characters?',
-    '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns?',
-    '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)?',
+    '- kid_safety: is EVERY word appropriate for a young child — no scary, sexual, violent, or otherwise unsafe content, no dark patterns, no rude slang, and NO double-meaning expressions (albures — if a phrase has any second reading, it fails this dimension)?',
+    '- naturalness: does the es-MX text read as natural, warm, native Spanish (not machine-translated)? An OCCASIONAL light, G-rated Mexican colloquial touch in character dialogue/narration ("¡órale!", "¡qué padre!", "¡ándale!") is GOOD naturalness when it reads organic — never penalize it. DO penalize: colloquialism saturation (slang in nearly every segment), slang inside instructions/options/answer-critical text, or a colloquialism that reads forced/inserted. Likewise a SPARSE emoji at the end of a story/dialogue line or explanation (≤1 per segment) is fine decoration — never penalize it; penalize emoji clutter or emojis inside instructions/options.',
     '- concreteness: does at least one segment contain a WORKED CONCRETE instance (a specific number, a named character, or a specific scenario — not purely abstract phrasing)? AND, unless this is the very first lesson of the course, does the lesson OPEN by connecting explicitly to the prior lesson\'s concept instead of restarting cold?',
     '- cognitive_engagement: does solving REQUIRE genuine thinking? 1 = the answer is stated in the prompt/options or is trivially obvious; 5 = the kid must reason with the concept. Penalize answer leakage hard.',
     '- feedback_quality: does the wrong-answer feedback EXPLAIN why a wrong choice is wrong (per-option or targeted), not a generic "try again"? 1 = generic/absent; 5 = specific and instructive. Score 5 for ungraded content types. ALSO score 5 for SELF-CONTAINED graded types that have NO multiple-choice options (make_change, coin_count, balance_scale, budget_fit, count_objects, number_input, savings_goal, robot_path, memory_flip, number_line, estimate_slider): their feedback is the grader\'s tilt/tally outcome plus the outcome-neutral explanation_md, not per-option rationales — do NOT penalize them for lacking per-option feedback.',
@@ -319,6 +349,18 @@ export async function reviewLesson(
   let current = document;
   let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
   let cycles = 0;
+  let earlyStopped = false;
+  /*
+   * EARLY-STOP baseline: the last rubric the JUDGE emitted, with the document
+   * it scored. A revise cycle that breaks deterministic gates skips the
+   * re-judge and only appends a gate note to the same scores (below), so it
+   * NEVER produces a new judged rubric — comparing against such a copy would
+   * see "identical scores → no improvement" and kill the designed
+   * gate-feedback recovery path on its first firing. Only judge-emitted
+   * rubrics enter this comparison.
+   */
+  let lastJudged = rubric;
+  let lastJudgedDocument = current;
 
   while (!passesJudgeGate(rubric, current, deps.standalone) && cycles < MAX_REVISE_CYCLES) {
     cycles++;
@@ -331,10 +373,34 @@ export async function reviewLesson(
     }
     current = gateReport.document;
     rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
+    if (!passesJudgeGate(rubric, current, deps.standalone)) {
+      /*
+       * A revise that improved NO failing dimension is a doomed trajectory:
+       * revisions of the same draft are correlated, and the outer from-scratch
+       * retry converges better per token spent (env.ts FORGE_SLOT_ATTEMPTS
+       * rationale; on the 2026-07 QA regen, 14/62 slots burned all 3 cycles
+       * before failing anyway). Judge scores are noisy integers, so a spurious
+       * early stop is possible — its downside is bounded: the slot falls to
+       * the outer retry, whose fresh attempt costs about the same as the two
+       * revise+judge cycles this skips.
+       */
+      const previouslyFailing = failingDimensions(lastJudged, lastJudgedDocument, deps.standalone);
+      const improved = previouslyFailing.some((dim) => rubric[dim] > lastJudged[dim]);
+      if (!improved) {
+        earlyStopped = true;
+        console.warn(
+          `[forge] review early-stop after revise cycle ${cycles}: no failing dimension improved ` +
+            `(${previouslyFailing.join(', ')}) — failing fast to the outer from-scratch retry.`,
+        );
+        break;
+      }
+    }
+    lastJudged = rubric;
+    lastJudgedDocument = current;
   }
 
   if (!passesJudgeGate(rubric, current, deps.standalone)) {
-    throw new ReviewFailedError(rubric, cycles);
+    throw new ReviewFailedError(rubric, cycles, earlyStopped);
   }
 
   return { document: current, rubric, cycles };

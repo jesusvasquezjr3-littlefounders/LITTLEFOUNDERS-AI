@@ -120,6 +120,15 @@ const RULES: Rule[] = [
     hint: 'Markdown syntax reached the TTS and is read aloud as punctuation. stripMarkdown must remove it.',
   },
   {
+    // Lesson text may carry sparse decorative emojis; stripEmojis (stage 5 of
+    // normalizeForSpeech) must have removed every one before synthesis — a
+    // pictograph is read aloud ("cara sonriente") or glitches the audio.
+    code: 'residual-emoji',
+    severity: 'block',
+    pattern: /\p{Regional_Indicator}|[\u{1F3FB}-\u{1F3FF}]|\p{Extended_Pictographic}/u,
+    hint: 'An emoji reached the TTS. stripEmojis in normalizeForSpeech must remove it before synthesis.',
+  },
+  {
     code: 'url-or-email',
     severity: 'block',
     pattern: /https?:\/\/|\bwww\.|[\p{L}\d._%+-]+@[\p{L}\d.-]+\.[\p{L}]{2,}/u,

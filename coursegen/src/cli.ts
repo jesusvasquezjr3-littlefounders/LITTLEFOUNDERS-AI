@@ -26,13 +26,22 @@ interface CliOptions {
   register?: Register;
 }
 
+/** A value-taking flag must never swallow the NEXT flag as its value (§1.14) — `--run-id --dry-run` would silently create a run named "--dry-run". */
+function requireValue(flag: string, value: string | undefined): string {
+  if (value === undefined || value.startsWith('--')) {
+    console.error(`generate: ${flag} needs a value (got ${value === undefined ? 'nothing' : `"${value}"`})`);
+    process.exit(1);
+  }
+  return value;
+}
+
 function parseArgs(argv: string[]): CliOptions {
   const opts: CliOptions = {};
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     switch (arg) {
       case '--course':
-        opts.course = argv[++i];
+        opts.course = requireValue('--course', argv[++i]);
         break;
       // §1.14: validate at the edge, never coerce silently. Both of these used to
       // accept an empty value and turn it into a DIFFERENT run: an empty --slots
@@ -72,7 +81,7 @@ function parseArgs(argv: string[]): CliOptions {
         opts.dryRun = true;
         break;
       case '--run-id':
-        opts.runId = argv[++i];
+        opts.runId = requireValue('--run-id', argv[++i]);
         break;
       case '--register': {
         const value = argv[++i] ?? '';
@@ -127,7 +136,7 @@ async function main(): Promise<void> {
   console.log(`  failed: ${summary.failed.length}`);
   for (const failure of summary.failed) console.log(`    - ${failure.slotId}: ${failure.error}`);
   if (summary.alreadyDone.length > 0) console.log(`  already done before this run: ${summary.alreadyDone.length}`);
-  if (summary.dryRun.length > 0) console.log(`  dry-run validated (nothing written): ${summary.dryRun.length}`);
+  if (summary.dryRun.length > 0) console.log(`  dry-run validated (nothing written, nothing paid): ${summary.dryRun.length}`);
   if (summary.skipped.length > 0) {
     console.log(`  skipped: ${summary.skipped.length}`);
     for (const s of summary.skipped) console.log(`    - ${s.slotId}: ${s.reason}`);

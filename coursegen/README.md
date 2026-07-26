@@ -35,7 +35,7 @@ npm run generate -- --course financial-education \
 - `--slots <id,...>` — restrict to specific slots (`adventureSlug/sagaSlug/topicSlug/lessonSlug`, or a prefix of one, e.g. `archipelago-1/saga-1`). Omit to run the whole catalog.
 - `--locales` — defaults to all three (`es-MX,en-US,pt-BR`); es-MX is always generated first (the authoring locale) regardless of order given.
 - `--no-images` — skip the images stage; icons remain the fallback (never emojis).
-- `--dry-run` — run the full pipeline (plan→write→gate→review→localize→images) but skip the Vault `publish` write.
+- `--dry-run` — validate the catalog + slot enumeration and stop BEFORE every paid stage: zero LLM/image calls, zero tokens, no API keys required, and slots holding in-progress checkpoint data are left untouched (only pristine pending slots get the `dry-run` marker). (It used to run the whole pipeline and only skip publish — fixed 2026-07-26.)
 - `--run-id` — resume a specific run; omit to start a fresh run (or resume the latest matching checkpoint if one exists at the default id).
 
 ### Run lifecycle
@@ -47,9 +47,21 @@ pending → planned → written → reviewed → localized → illustrated → p
                                                               ↘ failed (retried on the next run)
 ```
 
-Re-running the same `--course`/`--slots` **resumes**: each stage no-ops once its slot has already reached or passed that state. Only `published` is terminal — a `failed` slot is retried from wherever it left off. A per-run cost/token ledger is appended to `runs/<run-id>/ledger.jsonl`; the CLI stops scheduling new slots once `FORGE_MAX_TOKENS_PER_RUN` / `FORGE_MAX_USD_PER_RUN` is hit (already-published slots are unaffected).
+Re-running the same `--course`/`--slots` **resumes**: each stage no-ops once its slot has already reached or passed that state. Only `published` is terminal. Retries are **stage-aware**: a slot that failed from `reviewed`/`localized`/`illustrated` (recorded as `failedFrom` in the checkpoint) resumes from that stage — its judge-approved document is still in the checkpoint data — while a plan/write/judge failure regenerates from scratch (a fresh draw converges better than revising a bad draft); the last outer attempt always resets fully. A per-run cost/token ledger is appended to `runs/<run-id>/ledger.jsonl`; the CLI stops scheduling new slots once `FORGE_MAX_TOKENS_PER_RUN` / `FORGE_MAX_USD_PER_RUN` is hit (already-published slots are unaffected).
 
 Lessons always land in Vault as `status='review'` — a human flips them to `published` (COURSE_ENGINE.md §6, non-negotiable for kids' content).
+
+### Mass runs (`npm run generate:track`)
+
+**Operator-triggered only.** Runs a WHOLE course sharded per adventure — sequential `runGeneration` invocations, one run-id/checkpoint per shard (`<track-id>--<adventure-slug>`):
+
+```bash
+npm run generate:track -- --course financial-education \
+  [--track-id fin-edu-2026-07] [--budget-usd 350] [--shard-passes 3] \
+  [--locales ...] [--no-images] [--dry-run] [--register kid|adult]
+```
+
+The track owns what a single run cannot: a **global cumulative budget** (per-run floors don't compose — the remaining track budget is passed down as a hard per-shard override), the **resume-vs-advance policy** (halt on fatal provider errors / all-slots failures; resume shards with unattempted work — work is never skipped; advance past stubborn slot failures into a mop-up list), and the **cross-shard report** at `runs/<track-id>/track-report.json` (per-shard outcomes, cost, prefix-cache hit %, failure heatmap by stage). Re-running with the same `--track-id` resumes the whole track. Exit 1 on any halt, mop-up deficit, or failure.
 
 ### Env vars
 

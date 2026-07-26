@@ -51,7 +51,34 @@ function lessonBrief(document: LessonDocumentParsed): string {
 
 const SHARED_STYLE =
   'Estás grabando un diálogo corto para niños (es-MX, cálido, natural, frases de máximo 2 oraciones). ' +
-  'Responde SOLO con la siguiente línea del diálogo — sin comillas, sin nombre de personaje, sin acotaciones.';
+  'Responde SOLO con la siguiente línea del diálogo — sin comillas, sin nombre de personaje, sin acotaciones. ' +
+  'Sin emojis (a lo sumo UNO en todo el diálogo, solo si de verdad suma). Nada de groserías ni dobles sentidos.';
+
+/*
+ * Deterministic emoji budget for the WHOLE recap dialogue. The appended
+ * segment is story_dialogue (an emoji-allowed surface), but gate 7 caps a
+ * segment's visible emojis — five warm kid-dialogue lines at temp 0.6 can
+ * easily exceed it, and a gate failure here discards the entire paid write
+ * (caught by the 2026-07-26 adversarial review). The prompt asks; this
+ * enforces: the first emoji sequence survives, the rest are stripped.
+ */
+const EMOJI_SEQ = /(?:\p{Regional_Indicator}{2}|[\u{1F3FB}-\u{1F3FF}\u{FE0F}\u{200D}\u{20E3}]|\p{Extended_Pictographic})+/gu;
+
+function stripExcessEmojis(text: string, budget: number): { text: string; used: number } {
+  let used = 0;
+  const out = text
+    .replace(EMOJI_SEQ, (match) => {
+      if (used < budget) {
+        used++;
+        return match;
+      }
+      return '';
+    })
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .trim();
+  return { text: out, used };
+}
 
 // Static-first message assembly (AGENTS.md "An identical prompt prefix is a
 // 10x discount"): persona + style lead; the moving dialogue tail comes last.
@@ -107,6 +134,7 @@ export async function generateRecapLines(
   const dialogue: string[] = [];
   const lines: RecapLine[] = [];
 
+  let emojiBudget = 1; // whole-dialogue budget — see stripExcessEmojis
   for (let i = 0; i < RECAP_LINES; i++) {
     const isTeacher = i % 2 === 0;
     const messages = isTeacher ? teacherMessages(teacher, student, brief, dialogue) : studentMessages(student, teacher, dialogue);
@@ -114,7 +142,9 @@ export async function generateRecapLines(
       { messages, temperature: 0.6, maxTokens: 400 },
       { operation: 'recap-dialogue', ledger: deps.ledger },
     );
-    const text = result.content.trim().replace(/^["“]|["”]$/g, '').slice(0, MAX_LINE_CHARS);
+    const raw = result.content.trim().replace(/^["“]|["”]$/g, '').slice(0, MAX_LINE_CHARS);
+    const { text, used } = stripExcessEmojis(raw, emojiBudget);
+    emojiBudget -= used;
     if (text.length === 0) throw new Error(`recap-dialogue: empty ${isTeacher ? 'teacher' : 'student'} line at turn ${i + 1}`);
     const character = isTeacher ? teacher : student;
     dialogue.push(`${character}: ${text}`);

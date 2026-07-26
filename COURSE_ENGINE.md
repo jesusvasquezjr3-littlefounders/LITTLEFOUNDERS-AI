@@ -297,8 +297,12 @@ review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           feedback_quality (does wrong-answer feedback explain why?) and
           distractor_quality (are wrong options plausible?). GATE: kid_safety ≥ 5,
           age_fit ≥ 4, concreteness ≥ 4, and pedagogy / cognitive_engagement /
-          feedback_quality / distractor_quality ≥ 3 → else revise loop (max 2)
-          → else fail slot.
+          feedback_quality / distractor_quality ≥ 3 → else revise loop (max 3,
+          with an EARLY STOP: a re-judge that improves NO currently-failing
+          dimension breaks immediately — revisions of the same draft are
+          correlated, and the outer from-scratch retry is the measured-better
+          spend; gate-breaking revise cycles produce no new judged rubric and
+          never trigger the comparison) → else fail slot.
    ↓
 localize  es-MX → en-US and pt-BR: translation-with-contract call (structure
           is FROZEN — ids/answers/numbers copied programmatically, only
@@ -335,10 +339,18 @@ publish   upsert lesson + 3 lesson_documents rows via service role;
 **Retries & backoff:** schema-corrective retries and transport retries are
 SEPARATE counters — 429/5xx get jittered exponential backoff (0.5s→8s) without
 consuming correction attempts (fixes the sibling's known weakness).
-**Outer slot attempts (`FORGE_SLOT_ATTEMPTS`, default 3):** a judge rejection
-or write exhaustion resets the slot and regenerates it FROM SCRATCH — a fresh
-draw converges far better than more revise cycles on a bad draft (measured
-2026-07-23). This is the mass-generation convergence guarantee: with 3
+**Outer slot attempts (`FORGE_SLOT_ATTEMPTS`, default 3), STAGE-AWARE:** a
+judge rejection or write exhaustion (failure from pending/planned/written)
+resets the slot and regenerates it FROM SCRATCH — a fresh draw converges far
+better than more revise cycles on a bad draft (measured 2026-07-23). But a
+LATE-stage failure (from reviewed/localized/illustrated — a vocabulary re-gate
+hit, an empty title translation, a transient Vault/publish error) RESUMES from
+the checkpoint instead: the judge-approved document is sitting in the slot's
+data, and re-paying plan+write+revise+judge (~$0.05-0.08 and many minutes) to
+redo a stage whose input was fine is pure waste (2026-07-26 orchestration
+review). The checkpoint records `failedFrom` per failure; the LAST attempt
+always resets fully, so a deterministic late-stage failure still gets one
+fresh draw. This is the mass-generation convergence guarantee: with 3
 independent draws each passing the strict judge ~70%+ of the time, per-slot
 failure drops to low single digits, and `--slots` re-runs mop up the rest.
 Budget kill-switches still abort the whole run — retries can never spend past
@@ -355,6 +367,30 @@ items) rather than failed for not demanding multi-step reasoning.
 checked before every call; every call logged to `runs/<id>/ledger.jsonl`
 (provider, model, tokens, est. USD). **Concurrency:** small pool
 (`FORGE_CONCURRENCY`, default 2).
+
+**`--dry-run` spends NOTHING and destroys NOTHING** — it stops before every
+paid stage (it used to only skip the final publish, so "validating" an
+enumeration paid the full generation bill; fixed 2026-07-26). A dry run
+validates the catalog + slot enumeration, marks each PRISTINE pending slot
+with the distinct `dry-run` checkpoint state (never `published` — a later real
+run under the same `--run-id` still does the work), leaves any slot with
+in-progress checkpoint data completely untouched (marking it would wipe paid,
+judge-approved work), and requires no API keys.
+
+**Mass runs — `npm run generate:track`** (`src/pipeline/track.ts`): the
+whole-course coordinator, bookkeeping only (never an LLM orchestrator). Shards
+the course PER ADVENTURE and executes the shards as sequential `runGeneration`
+invocations (one run-id/checkpoint per shard; concurrency stays inside each
+run). It owns what no single run can: (1) a GLOBAL cumulative budget — per-run
+budgets don't compose (every shard gets at least the $/run floor), so the
+track passes its REMAINING budget down as a hard per-invocation override; (2)
+the resume-vs-advance policy — HALT on a fatal provider error or an all-slots
+failure (systemic), RESUME a shard with unattempted work (never skip work),
+ADVANCE past stubborn slot-level failures into a mop-up list; (3) the
+cross-shard report (`runs/<track-id>/track-report.json`): per-shard outcomes,
+cost, prefix-cache hit % (the shard-1 canary), and a failure heatmap keyed by
+the stage each failure came from (`failedFrom`). The priorMicroObjective chain
+survives sharding by construction (enumeration precedes `--slots` filtering).
 
 ### §4 addendum — `forced_types` (QA/authoring override)
 
@@ -412,7 +448,7 @@ and review prompt, so every line must change what the model produces.
 
 | Role | Provider / model | Why |
 |---|---|---|
-| Author (plan/write/localize) | DeepSeek `deepseek-chat` (V3.x, JSON mode) | Cheapest capable JSON author; prompts do the heavy lifting |
+| Author (plan/write/localize) | DeepSeek `deepseek-v4-pro` (JSON mode; `DEEPSEEK_MODEL` — `deepseek-chat` deprecated 2026-07-24) | Cheapest capable JSON author; prompts do the heavy lifting |
 | Judge (review) | Qwen `qwen3-max` via DashScope compatible-mode (`qwen-plus` fallback env) | Independent provider decorrelates blind spots (LF-Brain pattern) |
 | Images | Prism (`picturegen/`, HTTP `PICTUREGEN_URL`) → Qwen `qwen-image` on DashScope | Only image path; judge-crafted LF-identity prompts + Vault cache = never pay twice for the same request. Gemini discarded 2026-07-23 (quota-0) |
 | TTS | Echo (`audiogen/`) — qwen3-tts-flash | See its own service docs |

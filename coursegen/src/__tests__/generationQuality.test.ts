@@ -259,4 +259,134 @@ describe('gate 7: generation quality', () => {
       expect(problems).toHaveLength(0);
     });
   });
+
+  describe('emoji discipline', () => {
+    /** Like docWith, but with control over prompt_md/hints/explanation_md. */
+    function emojiDoc(
+      segments: Array<{
+        id: string;
+        type: string;
+        payload: unknown;
+        answer?: unknown;
+        prompt_md?: string;
+        hints?: string[];
+        explanation_md?: string;
+      }>,
+      metaTitle = 'Título',
+    ): LessonDocumentParsed {
+      return {
+        schema_version: 1,
+        meta: { cast: ['dina'], title: metaTitle },
+        scoring: {},
+        segments: segments.map((s) => ({
+          id: s.id,
+          type: s.type,
+          prompt_md: s.prompt_md ?? 'x',
+          difficulty: 1,
+          xp: 10,
+          payload: s.payload,
+          answer: s.answer,
+          hints: s.hints,
+          explanation_md: s.explanation_md,
+        })),
+      } as unknown as LessonDocumentParsed;
+    }
+
+    it('allows a sparse emoji in story narration text and in explanation_md', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([
+          { id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: '¡Lo lograste! 🎉' } },
+          {
+            id: 's2',
+            type: 'quiz_mcq',
+            payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] },
+            answer: { correct_option_id: 'a' },
+            explanation_md: 'El vaso cuesta 5 pesos porque Dina lo decidió. 💡',
+          },
+        ]),
+      );
+      expect(problems).toHaveLength(0);
+    });
+
+    it('flags an emoji in prompt_md — prompts are instructions', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: 'x' }, prompt_md: 'Mira 🎉' }]),
+      );
+      expect(problems.some((p) => p.message.includes('prompt_md'))).toBe(true);
+    });
+
+    it('flags an emoji in a hint', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: 'x' }, hints: ['piensa 🤔'] }]),
+      );
+      expect(problems.some((p) => p.message.includes('hint'))).toBe(true);
+    });
+
+    it('flags an emoji inside a GRADED type payload (option text is answer-critical)', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([
+          {
+            id: 's1',
+            type: 'quiz_mcq',
+            payload: { options: [{ id: 'a', text_md: 'Moneda 💰' }, { id: 'b', text_md: 'Billete' }] },
+            answer: { correct_option_id: 'a' },
+          },
+        ]),
+      );
+      expect(problems.some((p) => p.message.includes('payload of graded type'))).toBe(true);
+    });
+
+    it('flags an emoji in meta fields', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: 'x' } }], 'Título 🎉'),
+      );
+      expect(problems.some((p) => p.message.includes('meta'))).toBe(true);
+    });
+
+    it('flags emoji clutter (more than the per-segment cap) even on allowed surfaces', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: '¡Sí! 🎉 ✨ 💡' } }]),
+      );
+      expect(problems.some((p) => p.message.includes('clutter'))).toBe(true);
+    });
+
+    it('counts a ZWJ family sequence and a flag as ONE emoji each (grapheme clusters, not codepoints)', () => {
+      // 👨‍👩‍👧‍👦 is 4 pictographic codepoints + 3 ZWJ; 🇲🇽 is 2 regional
+      // indicators — a child sees TWO symbols total, under the cap.
+      const problems = runGenerationQualityGate(
+        emojiDoc([{ id: 's1', type: 'story_scene', payload: { backdrop: 'base', body_md: 'La familia 👨‍👩‍👧‍👦 de México 🇲🇽 ahorra' } }]),
+      );
+      expect(problems).toHaveLength(0);
+    });
+
+    it('flags keycap sequences (no Extended_Pictographic codepoint) on forbidden surfaces', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([
+          {
+            id: 's1',
+            type: 'quiz_mcq',
+            payload: { options: [{ id: 'a', text_md: 'Opción 2️⃣' }, { id: 'b', text_md: 'B' }] },
+            answer: { correct_option_id: 'a' },
+            prompt_md: 'Elige 1️⃣',
+          },
+        ]),
+      );
+      expect(problems.some((p) => p.message.includes('prompt_md'))).toBe(true);
+      expect(problems.some((p) => p.message.includes('payload of graded type'))).toBe(true);
+    });
+
+    it('flags an emoji in answer-key text', () => {
+      const problems = runGenerationQualityGate(
+        emojiDoc([
+          {
+            id: 's1',
+            type: 'quiz_mcq',
+            payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] },
+            answer: { correct_option_id: 'a', fix_md: 'así se hace ⭐' },
+          },
+        ]),
+      );
+      expect(problems.some((p) => p.message.includes('answer-key'))).toBe(true);
+    });
+  });
 });

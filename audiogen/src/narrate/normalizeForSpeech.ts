@@ -14,12 +14,13 @@
  *   "1 moneda"     → "UNO moneda"                        (no feminine agreement)
  *   "5+5"          → "five plus five" inside a Spanish lesson
  *
- * The five stages, in order (order matters — later stages assume earlier ones ran):
+ * The six stages, in order (order matters — later stages assume earlier ones ran):
  *   1. stage directions  — drop "(con entusiasmo)" style acting cues
  *   2. abbreviations     — locale table: c/u → "cada uno", 5 ml → "5 mililitros"
  *   3. ordinals          — "1er día" → "primer día" (apocope-aware)
  *   4. symbols           — "$5" → "5 pesos", "+" → "más", "2x5" → "2 por 5"
- *   5. number agreement  — "1 vaso" → "un vaso", "1 moneda" → "una moneda"
+ *   5. emojis            — "¡Lo lograste! 🎉" → "¡Lo lograste!" (never spoken)
+ *   6. number agreement  — "1 vaso" → "un vaso", "1 moneda" → "una moneda"
  *
  * Pacing/emotion are intentionally NOT handled here: qwen3-tts-flash exposes no
  * speed/rate/pitch parameter and no per-call emotion field (emotion comes from
@@ -126,6 +127,15 @@ function expandOrdinals(text: string, locale: LessonLocale): string {
 function normalizeSymbols(text: string, w: SymbolWords): string {
   return (
     text
+      // Emoji math operators FIRST, mapped onto their plain forms so every rule
+      // below (and the spacing-based range/minus logic) applies to them too.
+      // Without this they are Extended_Pictographic and stage 5 would silently
+      // DELETE them — "2➕3" became "2 3", spoken "dos tres" (caught by the
+      // 2026-07-26 adversarial review).
+      .replace(/➕/g, '+')
+      .replace(/➖/g, '-')
+      .replace(/✖/g, '×')
+      .replace(/➗/g, '÷')
       // currency FIRST — "$5" → "5 pesos" (before "+"/"=" touch the digits), and
       // agreeing in number so "$1" reads "1 peso", not "1 pesos" (which the
       // agreement stage would then turn into the ungrammatical "un pesos").
@@ -155,6 +165,27 @@ function normalizeSymbols(text: string, w: SymbolWords): string {
       // arrows read as a natural pause, not "flecha"/"arrow"
       .replace(/\s*(?:→|➡|=>)\s*/g, ', ')
   );
+}
+
+/* ------------------------------------------------------------------------- emojis */
+
+/**
+ * Lesson text may garnish narration lines with a sparse emoji ("¡Lo lograste!
+ * 🎉" — coursegen's gate 7 caps the dosage). The TTS must never see one:
+ * qwen3-tts either reads a pictograph aloud ("cara sonriente") or produces a
+ * glitch, and both interrupt the narration. Stripped AFTER normalizeSymbols so
+ * the arrow-family conversions there (→/➡/=> → a pause comma) keep working —
+ * ➡ is itself Extended_Pictographic and would otherwise vanish before that
+ * rule saw it. Covers: pictographs, regional-indicator flag pairs, skin-tone
+ * modifiers, the ZWJ that welds family/profession sequences, variation
+ * selector-16, and the keycap combiner. A unit whose whole text was an emoji
+ * normalizes to empty and is dropped by extractNarratables — correct: it
+ * should produce no audio.
+ */
+const EMOJI_PATTERN = /\p{Regional_Indicator}|[\u{1F3FB}-\u{1F3FF}]|\u{FE0F}|\u{200D}|\u{20E3}|\p{Extended_Pictographic}/gu;
+
+function stripEmojis(text: string): string {
+  return text.replace(EMOJI_PATTERN, ' ');
 }
 
 /* -------------------------------------------------------------- number agreement */
@@ -280,6 +311,7 @@ export function normalizeForSpeech(text: string, locale: LessonLocale): string {
   out = expandAbbreviations(out, effective);
   out = expandOrdinals(out, effective);
   out = normalizeSymbols(out, words);
+  out = stripEmojis(out); // after symbols: ➡ must reach the arrow→comma rule first
   out = applyNumberAgreement(out, effective);
   return tidySpacing(out);
 }

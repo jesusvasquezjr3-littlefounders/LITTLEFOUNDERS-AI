@@ -352,6 +352,113 @@ function gradedAnswerKeyCheck(document: LessonDocumentParsed, gradedTypes: reado
   return problems;
 }
 
+/*
+ * Emoji discipline. Emojis are a permitted garnish in NARRATION surfaces only
+ * (story-family payload text, a segment's explanation_md) — sparse, decorative,
+ * always stripped before TTS. Everywhere else they are unambiguously wrong:
+ * prompt_md is an instruction, hints are scaffolding, meta is chrome, and any
+ * option/item/token/answer text is answer-critical (an emoji there clutters
+ * comparisons and can differ between otherwise-identical choices). The write
+ * prompt states the rule; this gate enforces it deterministically — the same
+ * "prompts hope, gates guarantee" split as every other hard rule.
+ */
+// Keycap sequences ("1️⃣" = digit + U+FE0F + U+20E3) contain NO
+// Extended_Pictographic codepoint, so FE0F/20E3 are matched explicitly —
+// audiogen's stripEmojis covers them too, and the two layers must agree on
+// what an emoji is.
+const EMOJI_PRESENCE = /\p{Extended_Pictographic}|\p{Regional_Indicator}|[\u{FE0F}\u{20E3}]/u;
+// One VISIBLE emoji = one grapheme cluster: a ZWJ family sequence is 4
+// pictographic codepoints and a flag is 2 regional indicators, but a child
+// sees ONE symbol — counting codepoints made a single 👨‍👩‍👧‍👦 trip the
+// clutter cap (caught by the 2026-07-26 adversarial review).
+const GRAPHEMES = new Intl.Segmenter('es', { granularity: 'grapheme' });
+/** The story family + eavesdrop — the segments whose payload text IS narration. */
+const EMOJI_ALLOWED_PAYLOAD_TYPES = new Set([
+  'story_dialogue',
+  'story_scene',
+  'key_ideas',
+  'concept_reveal',
+  'checkpoint',
+  'eavesdrop',
+]);
+/** Emojis a segment may carry across its allowed surfaces before it reads as clutter (the prompt asks for ≤1). */
+const EMOJI_SEGMENT_CAP = 2;
+
+function collectStrings(node: unknown, out: string[]): void {
+  if (typeof node === 'string') {
+    out.push(node);
+    return;
+  }
+  if (Array.isArray(node)) {
+    node.forEach((item) => collectStrings(item, out));
+    return;
+  }
+  if (node !== null && typeof node === 'object') {
+    for (const value of Object.values(node as Record<string, unknown>)) collectStrings(value, out);
+  }
+}
+
+function countEmojis(text: string): number {
+  if (!EMOJI_PRESENCE.test(text)) return 0; // fast path — most strings have none
+  let count = 0;
+  for (const { segment } of GRAPHEMES.segment(text)) {
+    if (EMOJI_PRESENCE.test(segment)) count++;
+  }
+  return count;
+}
+
+function emojiDisciplineCheck(document: LessonDocumentParsed): GateProblem[] {
+  const problems: GateProblem[] = [];
+
+  const metaStrings: string[] = [];
+  collectStrings(document.meta, metaStrings);
+  if (metaStrings.some((s) => EMOJI_PRESENCE.test(s))) {
+    problems.push({ gate: 7, message: 'meta fields carry an emoji — meta is chrome (title, objectives), never decorated' });
+  }
+
+  for (const segment of document.segments) {
+    if (segment.prompt_md && EMOJI_PRESENCE.test(segment.prompt_md)) {
+      problems.push({
+        gate: 7,
+        segmentId: segment.id,
+        message: 'prompt_md carries an emoji — prompts are instructions; emojis belong only in story narration text or explanation_md',
+      });
+    }
+    for (const hint of segment.hints ?? []) {
+      if (EMOJI_PRESENCE.test(hint)) {
+        problems.push({ gate: 7, segmentId: segment.id, message: 'a hint carries an emoji — hints are scaffolding, never decorated' });
+        break;
+      }
+    }
+    const answerStrings: string[] = [];
+    collectStrings((segment as { answer?: unknown }).answer, answerStrings);
+    if (answerStrings.some((s) => EMOJI_PRESENCE.test(s))) {
+      problems.push({ gate: 7, segmentId: segment.id, message: 'answer-key text carries an emoji — answer surfaces are never decorated' });
+    }
+    const payloadStrings: string[] = [];
+    collectStrings(segment.payload, payloadStrings);
+    const payloadAllowed = EMOJI_ALLOWED_PAYLOAD_TYPES.has(segment.type);
+    if (!payloadAllowed && payloadStrings.some((s) => EMOJI_PRESENCE.test(s))) {
+      problems.push({
+        gate: 7,
+        segmentId: segment.id,
+        message: `emoji in the payload of graded type "${segment.type}" — option/item/token/label text is answer-critical and never decorated; emojis belong only in story narration or explanation_md`,
+      });
+    }
+    // Clutter cap over the ALLOWED surfaces (story payload + explanation_md).
+    let allowedCount = segment.explanation_md ? countEmojis(segment.explanation_md) : 0;
+    if (payloadAllowed) for (const s of payloadStrings) allowedCount += countEmojis(s);
+    if (allowedCount > EMOJI_SEGMENT_CAP) {
+      problems.push({
+        gate: 7,
+        segmentId: segment.id,
+        message: `${allowedCount} emojis in one segment reads as clutter — keep at most one, placed after the words it decorates`,
+      });
+    }
+  }
+  return problems;
+}
+
 /** Gate 7 — see the file header. Composes the deterministic generation-quality checks. */
 export function runGenerationQualityGate(document: LessonDocumentParsed): GateProblem[] {
   return [
@@ -362,5 +469,6 @@ export function runGenerationQualityGate(document: LessonDocumentParsed): GatePr
     ...memoryFlipDuplicatePairCheck(document),
     ...orderLengthCheck(document),
     ...gradedAnswerKeyCheck(document, GRADED_TYPES),
+    ...emojiDisciplineCheck(document),
   ];
 }

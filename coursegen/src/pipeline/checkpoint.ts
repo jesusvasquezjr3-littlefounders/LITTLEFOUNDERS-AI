@@ -31,6 +31,16 @@ export interface SlotCheckpoint {
   state: SlotState;
   updatedAt: string;
   error?: string;
+  /**
+   * The stage state the slot held when it failed — set alongside `state:
+   * 'failed'`, cleared on any successful transition. This is what lets the
+   * outer retry distinguish "the judge rejected the draft" (failedFrom:
+   * written → regenerate from scratch, the measured-better path) from "a
+   * transient localize/publish error discarded judge-approved work"
+   * (failedFrom: reviewed/localized/illustrated → resume from the checkpoint,
+   * never re-pay plan+write+judge for a stage whose input was fine).
+   */
+  failedFrom?: SlotState;
   /** Opaque per-stage payload (skeleton, documents by locale, publish result…) — stage-defined shape. */
   data?: Record<string, unknown>;
 }
@@ -99,7 +109,7 @@ export function setSlotState(
   checkpoint: RunCheckpoint,
   slotId: string,
   state: SlotState,
-  patch: Partial<Pick<SlotCheckpoint, 'error' | 'data'>> = {},
+  patch: Partial<Pick<SlotCheckpoint, 'error' | 'data' | 'failedFrom'>> = {},
 ): RunCheckpoint {
   const now = new Date().toISOString();
   const existing = getSlot(checkpoint, slotId);
@@ -111,6 +121,8 @@ export function setSlotState(
     updatedAt: now,
     // A successful transition clears any stale error from a previous failed attempt.
     error: state === 'failed' ? patch.error : undefined,
+    // failedFrom lives and dies with the 'failed' state, exactly like error.
+    failedFrom: state === 'failed' ? patch.failedFrom : undefined,
   };
   checkpoint.updatedAt = now;
   return checkpoint;
