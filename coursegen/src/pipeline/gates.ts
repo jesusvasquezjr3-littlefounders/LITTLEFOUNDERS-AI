@@ -1,4 +1,4 @@
-// The 5 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
+// The 9 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
 // network calls, run in order. Gate 1 (contract) gates the rest: if the raw
 // JSON doesn't parse against the Zod contract there is no typed document to
 // run gates 2-5 against.
@@ -15,9 +15,10 @@ import {
   approxEqual,
 } from './arithmetic.js';
 import { runGenerationQualityGate } from './generationQuality.js';
+import { runReadabilityGate } from './readability.js';
 import { CONTENT_TYPES } from '../contract/registry.js';
 
-export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
 export interface GateProblem {
   gate: GateNumber;
@@ -2507,6 +2508,9 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     ...runAntiGenericityGate(document, { topicTitle: ctx.topicTitle }),
     ...runGenerationQualityGate(document),
     ...runClarityGate(document),
+    // Gate 9 — deterministic readability band per tier×locale (readability.ts);
+    // catches text that reads like an adult paragraph BEFORE a paid judge call.
+    ...runReadabilityGate(document, ctx.tier),
   ];
   return { ok: problems.length === 0, problems, document };
 }
