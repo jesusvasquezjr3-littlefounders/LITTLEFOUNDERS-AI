@@ -700,6 +700,7 @@ frontend/
       admin/
         analytics/
       app/
+        family/
         learn/
           __tests__/
           scenes/
@@ -3377,6 +3378,26 @@ function matchesFilters(row: FakeRow, params: URLSearchParams): boolean {
   for (const [key, value] of params.entries()) {
 ```
 
+### backend/src/__tests__/family.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { mintToken } from './helpers.js';
+import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+import { COURSE_SLUG, LESSON_1_ID, makeDb } from './learnFixtures.js';
+
+/*
+ * /api/v1/family — the guardian guard is the whole point: a parent reads a
+ * kid's territory ONLY through a VERIFIED guardian_links row, re-checked on
+ * every kid-scoped request. Content flows through the parent's own token;
+ * only the kid's progress/stats use the service role, post-guard.
+ */
+
+const PARENT_ID = '11111111-1111-4111-8111-111111111111';
+```
+
 ### backend/src/__tests__/health.test.ts
 
 ```
@@ -3565,6 +3586,7 @@ import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
+import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -3574,7 +3596,6 @@ export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
 
 export function createApp(): express.Express {
-  const app = express();
 ```
 
 ### backend/src/config.ts
@@ -3951,6 +3972,26 @@ type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
 /*
  * /api/v1/auth — email+password today; social providers (Google first, then
+```
+
+### backend/src/routes/family.ts
+
+```
+import { Router } from 'express';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import { assembleCourseTree } from '../services/courseTree.js';
+import {
+  getAdventuresByCourseIds,
+  getKidLearningStats,
+  getKidLessonProgress,
+  getKidProfiles,
+  getLessonsByTopicIds,
+  getPublishedCourseBySlug,
+  getSagasByAdventureIds,
+  getTopicsBySagaIds,
+  getVerifiedKidLinks,
+} from '../services/supabaseRest.js';
 ```
 
 ### backend/src/routes/learn.ts
@@ -126531,8 +126572,8 @@ export { Checkbox } from './Checkbox';
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
     "lockedHint": "Unlocks when your account becomes a verified Tutor",
-    "profile": "Profile"
-  },
+    "profile": "Profile",
+    "family": "Family"
 ```
 
 ### frontend/src/i18n/en-US/errors.json
@@ -126711,8 +126752,8 @@ export { Checkbox } from './Checkbox';
     "tasks": "Tareas",
     "lockedBadge": "Tutor",
     "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado",
-    "profile": "Perfil"
-  },
+    "profile": "Perfil",
+    "family": "Familia"
 ```
 
 ### frontend/src/i18n/es-MX/errors.json
@@ -126911,8 +126952,8 @@ import enErrors from './en-US/errors.json';
     "tasks": "Tarefas",
     "lockedBadge": "Tutor",
     "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
-    "profile": "Perfil"
-  },
+    "profile": "Perfil",
+    "family": "Família"
 ```
 
 ### frontend/src/i18n/pt-BR/errors.json
@@ -128960,6 +129001,46 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'games
       <h1 className="lf-display-lg text-content">{t(`dashboard.nav.${section}`)}</h1>
       <Card hero className="mt-8 flex flex-col items-center gap-4 py-14 text-center">
         <IconChip size="lg" tone="accent">
+```
+
+### frontend/src/routes/app/family/FamilyPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card, Icon, LoadingOverlay } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * /family — the parent dashboard's front door (parent-role gated in App.tsx;
+ * navConfig renders it LOCKED for everyone else). Lists the caller's VERIFIED
+ * kids (Core re-checks guardian_links on every request) and opens each kid's
+ * territory. Parent visibility is a product invariant (§1.9) — this is that
+ * invariant becoming a surface.
+ */
+```
+
+### frontend/src/routes/app/family/KidTerritoryPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card, Icon, LoadingOverlay } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { TerritoryProgressStrip, TerritoryView } from '@/routes/app/learn/TerritoryPage';
+import type { CourseTree } from '@/routes/app/learn/types';
+
+/*
+ * /family/:kidId/territory — a kid's territory through the parent's eyes:
+ * the SAME TerritoryView the kid sees (one renderer, zero drift), fed by
+ * Core's guardian-guarded family endpoint, plus a stats strip. Wording
+ * discipline: territory still to explore, never deficiency; kids are never
 ```
 
 ### frontend/src/routes/app/learn/AdventureBanner.tsx

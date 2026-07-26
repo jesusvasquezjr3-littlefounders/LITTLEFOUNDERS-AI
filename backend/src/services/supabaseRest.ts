@@ -712,3 +712,54 @@ export async function revokeRole(userId: string, role: string): Promise<boolean>
   });
   return res !== null;
 }
+
+// ── Family (guardian-brokered reads — routes/family.ts) ─────────────────────
+
+export interface GuardianLinkRow {
+  parent_user_id: string;
+  kid_user_id: string;
+  verification_status: string;
+}
+
+/** The caller's VERIFIED kid links. Service role: guardian_links has no parent SELECT policy; the route layer is the guard (§1.3 app-layer half). */
+export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkRow[] | null> {
+  return serviceRest<GuardianLinkRow[]>(
+    `/guardian_links?parent_user_id=eq.${eu(parentUserId)}&verification_status=eq.verified&select=parent_user_id,kid_user_id,verification_status`,
+  );
+}
+
+export interface KidProfileRow {
+  user_id: string;
+  display_name: string | null;
+  username: string | null;
+}
+
+/** WHITELISTED kid profile fields for the family dashboard — never the whole row (mirrors the /@username whitelist discipline). */
+export function getKidProfiles(kidIds: string[]): Promise<KidProfileRow[] | null> {
+  if (kidIds.length === 0) return Promise.resolve([]);
+  return serviceRest<KidProfileRow[]>(`/profiles?user_id=${inFilter(kidIds)}&select=user_id,display_name,username`);
+}
+
+export interface KidLearningStatsRow {
+  user_id: string;
+  xp_points: number;
+  lessons_completed: number;
+  streak_days: number;
+  longest_streak: number;
+  last_active_date: string | null;
+}
+
+/** A kid's learning_stats row, read AFTER the route verified the guardian link. */
+export function getKidLearningStats(kidId: string): Promise<KidLearningStatsRow[] | null> {
+  return serviceRest<KidLearningStatsRow[]>(
+    `/learning_stats?user_id=eq.${eu(kidId)}&select=user_id,xp_points,lessons_completed,streak_days,longest_streak,last_active_date`,
+  );
+}
+
+/** A kid's lesson_progress rows, read AFTER the route verified the guardian link (parent tokens can't pass lesson_progress_select_own). */
+export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
+  if (lessonIds.length === 0) return Promise.resolve([]);
+  return serviceRest<LessonProgressRow[]>(
+    `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+  );
+}

@@ -18,6 +18,8 @@ import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
+import { FamilyPage } from '@/routes/app/family/FamilyPage';
+import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -131,6 +133,22 @@ export function App() {
               element={
                 <RequireRole role="parent">
                   <SectionComingSoon section="tasks" icon="checklist" />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="family"
+              element={
+                <RequireRole role="parent">
+                  <FamilyPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="family/:kidId/territory"
+              element={
+                <RequireRole role="parent">
+                  <KidTerritoryPage />
                 </RequireRole>
               }
             />

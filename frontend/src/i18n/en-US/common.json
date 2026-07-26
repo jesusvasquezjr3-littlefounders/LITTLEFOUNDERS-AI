@@ -27,5 +27,23 @@
     "bigfounder": "Bigfounder",
     "admin": "Admin",
     "superadmin": "Superadmin"
+  },
+  "family": {
+    "title": "Your family",
+    "subtitle": "Watch each founder’s territory grow.",
+    "loading": "Gathering your family…",
+    "emptyTitle": "No kids linked yet",
+    "emptyBody": "When you link and verify a kid’s account, their learning territory appears here.",
+    "viewTerritory": "View territory",
+    "back": "Back to family",
+    "territoryTitle": "Their territory",
+    "territorySubtitle": "Everything the course teaches — and how much is already theirs.",
+    "territoryLoading": "Drawing their territory…",
+    "stats": {
+      "xp": "XP earned",
+      "lessons": "Lessons completed",
+      "streak": "Day streak",
+      "longestStreak": "Best streak"
+    }
   }
 }

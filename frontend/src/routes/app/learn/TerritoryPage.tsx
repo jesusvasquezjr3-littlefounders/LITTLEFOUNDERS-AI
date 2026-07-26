@@ -32,7 +32,7 @@ const STATE_META: Record<TopicState, { icon: string; tone: string; labelKey: str
   'not-started': { icon: 'circle', tone: 'text-content-faint', labelKey: 'learn.territory.state.notStarted' },
 };
 
-function TopicChip({ topic, locale, courseSlug }: { topic: TopicNode; locale: string; courseSlug: string }) {
+function TopicChip({ topic, locale, linkTo }: { topic: TopicNode; locale: string; linkTo: string }) {
   const { t } = useTranslation();
   const meta = STATE_META[topic.state];
   const passed = topic.lessons.filter((l) => l.state === 'passed').length;
@@ -41,7 +41,7 @@ function TopicChip({ topic, locale, courseSlug }: { topic: TopicNode; locale: st
   return (
     <li>
       <Link
-        to={`/learn/${courseSlug}`}
+        to={linkTo}
         className={cn(
           'flex min-h-11 items-center gap-2.5 rounded-lg border border-outline/60 bg-surface px-3 py-2.5 shadow-glass-sm',
           'transition-[border-color,transform] duration-150 hover:border-primary/60 active:translate-y-px',
@@ -93,11 +93,6 @@ export function TerritoryPage() {
   if (state.status === 'loading') return <LoadingOverlay label={t('learn.territory.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
-  const { tree } = state;
-  const reviewsDue = tree.adventures
-    .flatMap((a) => a.sagas.flatMap((s) => s.topics))
-    .filter((topic) => topic.state === 'review-due').length;
-
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 md:px-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -108,15 +103,35 @@ export function TerritoryPage() {
           <h1 className="lf-display mt-1 text-content">{t('learn.territory.title')}</h1>
           <p className="lf-body text-content-muted">{t('learn.territory.subtitle')}</p>
         </div>
-        <div className="w-full max-w-xs">
-          <ProgressBar value={tree.course.progress.pct} label={t('learn.territory.progress')} />
-          <p className="lf-caption mt-1 text-content-faint">
-            {t('learn.territory.progressLabel', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
-            {reviewsDue > 0 ? ` · ${t('learn.territory.reviewsDue', { count: reviewsDue })}` : ''}
-          </p>
-        </div>
+        <TerritoryProgressStrip tree={state.tree} />
       </header>
+      <TerritoryView tree={state.tree} locale={locale} chipLinkTo={`/learn/${courseSlug}`} />
+    </div>
+  );
+}
 
+/** Course progress + reviews-due rollup — shared by kid and parent views. */
+export function TerritoryProgressStrip({ tree }: { tree: CourseTree }) {
+  const { t } = useTranslation();
+  const reviewsDue = tree.adventures
+    .flatMap((a) => a.sagas.flatMap((s) => s.topics))
+    .filter((topic) => topic.state === 'review-due').length;
+  return (
+    <div className="w-full max-w-xs">
+      <ProgressBar value={tree.course.progress.pct} label={t('learn.territory.progress')} />
+      <p className="lf-caption mt-1 text-content-faint">
+        {t('learn.territory.progressLabel', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
+        {reviewsDue > 0 ? ` · ${t('learn.territory.reviewsDue', { count: reviewsDue })}` : ''}
+      </p>
+    </div>
+  );
+}
+
+/** The territory itself — adventure bands, saga columns, topic chips. Pure render of a CourseTree (kid AND parent surfaces). */
+export function TerritoryView({ tree, locale, chipLinkTo }: { tree: CourseTree; locale: string; chipLinkTo: string }) {
+  const { t } = useTranslation();
+  return (
+    <>
       {tree.adventures.map((adventure) =>
         adventure.state === 'locked' ? (
           /* Fog-of-war: name + lock only — territory you have not reached yet. */
@@ -144,7 +159,7 @@ export function TerritoryPage() {
                   </h3>
                   <ul className="flex flex-col gap-2">
                     {saga.topics.map((topic) => (
-                      <TopicChip key={topic.id} topic={topic} locale={locale} courseSlug={courseSlug} />
+                      <TopicChip key={topic.id} topic={topic} locale={locale} linkTo={chipLinkTo} />
                     ))}
                   </ul>
                 </section>
@@ -153,7 +168,7 @@ export function TerritoryPage() {
           </Card>
         ),
       )}
-    </div>
+    </>
   );
 }
 
