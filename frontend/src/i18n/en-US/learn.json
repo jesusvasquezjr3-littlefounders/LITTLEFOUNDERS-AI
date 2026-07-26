@@ -16,5 +16,25 @@
     "available": "available",
     "current": "start here",
     "passed": "completed"
+  },
+  "territory": {
+    "open": "Territory map",
+    "title": "Your territory",
+    "back": "Back to the path",
+    "subtitle": "Everything this course teaches — and how much of it is already yours.",
+    "loading": "Drawing your territory…",
+    "progress": "Course progress",
+    "progressLabel": "{{passed}} of {{total}} lessons",
+    "reviewsDue": "{{count}} review due",
+    "locked": "Territory still to unlock",
+    "reviewTopic": "Review quest",
+    "lessonCount": "{{passed}}/{{total}} lessons",
+    "reviewDueBadge": "Review!",
+    "state": {
+      "completed": "Completed",
+      "reviewDue": "Review due",
+      "inProgress": "In progress",
+      "notStarted": "Not started"
+    }
   }
 }

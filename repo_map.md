@@ -6233,6 +6233,26 @@ function doc(locale: string, texts: string[]): LessonDocumentParsed {
     schema_version: 1,
 ```
 
+### coursegen/src/__tests__/recapDialogue.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import { appendRecapSegment, generateRecapLines, pickPersonas } from '../pipeline/recapDialogue.js';
+import type { LessonDocumentParsed } from '../contract/schema.js';
+
+/*
+ * The dual-persona recap's whole value is the STUDENT's blindness: it never
+ * receives the lesson, so its questions are authentically naive. These tests
+ * pin that boundary, the alternation, the caps, and the placement rule.
+ */
+
+function doc(over: Partial<{ segments: unknown[]; cast: string[] }> = {}): LessonDocumentParsed {
+  return {
+    schema_version: 1,
+    meta: {
+      slug: 'r',
+```
+
 ### coursegen/src/__tests__/register.test.ts
 
 ```
@@ -7061,6 +7081,26 @@ export interface ClientSafeSegment {
 // kind of approximation, and the gate uses CALIBRATED bands with margin, not
 // razor thresholds — see the band table below for the measured corpus facts.
 
+```
+
+### coursegen/src/pipeline/recapDialogue.ts
+
+```
+// Dual-persona recap dialogue — Learn Your Way's audio-lesson trick
+// (2026-07-25 analysis), rebuilt on our stack: their best-rated representation
+// was a teacher-student conversation where the STUDENT persona never sees the
+// source material, so its questions are authentically naive instead of
+// scripted Socratic theater. Those naive questions are exactly the
+// misconception-surfacing the contentPlaybook chases.
+//
+// This is an AUTHORING technique, not a new engine type: the output is a
+// plain `story_dialogue` segment appended to the lesson (before its final
+// checkpoint, so the recap lands where a recap belongs). It then passes the
+// same gates + judge as everything else — nothing here ships ungated.
+//
+// Opt-in per lesson via the blueprint flag `recap_dialogue: true`.
+
+import { completeDeepSeek } from '../providers/deepseek.js';
 ```
 
 ### coursegen/src/pipeline/register.ts
@@ -128948,7 +128988,7 @@ interface AdventureBannerProps {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
@@ -129020,6 +129060,26 @@ import { localizedText, type SagaNode } from './types';
  * track drawn from the nodes' LIVE on-screen centers (getBoundingClientRect,
  * recomputed on resize/layout settle), with a dashed inner guide line and
  * canon characters decorating the wave peaks.
+```
+
+### frontend/src/routes/app/learn/TerritoryPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { localizedText, type CourseTree, type TopicNode, type TopicState } from './types';
+
+/*
+ * /learn/:courseSlug/territory — the skill-territory map (roadmap.sh's
+ * orientation insight, 2026-07-25 analysis: seeing the WHOLE territory plus
+ * "you are here" is itself the product). A pure projection of the same
+ * server-computed course tree the caminito uses — never a second source of
 ```
 
 ### frontend/src/routes/app/learn/__tests__/CoursePage.test.tsx

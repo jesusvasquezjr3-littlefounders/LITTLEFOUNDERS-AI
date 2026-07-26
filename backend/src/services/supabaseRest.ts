@@ -462,9 +462,13 @@ export interface TopicHierarchyRow {
   position: number;
   slug: string;
   title: Json;
+  /** Spaced-review projection (0016): 'teaching' | review kinds. */
+  kind: string;
+  /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") this review topic cites. */
+  review_of: string[];
 }
 
-const TOPIC_FIELDS = 'id,saga_id,position,slug,title';
+const TOPIC_FIELDS = 'id,saga_id,position,slug,title,kind,review_of';
 
 export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Promise<TopicHierarchyRow[] | null> {
   if (sagaIds.length === 0) return Promise.resolve([]);

@@ -92,3 +92,5 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **Character Control** | The unified emotion/action API over the four characters (`components/characters/control/`): `CharacterActor`, `lf-act-*` wrapper keyframes, `lf-rig-*` limb hooks. Appearance is NON-NEGOTIABLE — the rig never alters colors/shapes/composition. |
 | **director** | The engine layer mapping session events (correct, streak, hint…) to rotating character reactions. |
 | **lesson-lab** | Dev-only harness at `/dev/lesson-lab`: plays every fixture and the full showcase through the real player with the local grader. |
+
+**Territory map** — the whole-course skill map at `/learn/:courseSlug/territory`: a pure projection of Core's course tree where every topic carries a DATA-DERIVED state (`not-started` / `in-progress` / `completed` / `review-due`). `review-due` comes from the spaced-review layer (`topics.review_of`, migration 0016): a completed topic flips while a review topic citing it has unpassed lessons. Locked adventures render as fog-of-war silhouettes. Never a second source of truth — it renders the same `/learn/courses/:slug/tree` payload as the caminito.

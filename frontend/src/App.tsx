@@ -17,6 +17,7 @@ import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
+import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -122,6 +123,7 @@ export function App() {
           >
             <Route path="learn" element={<LearnPage />} />
             <Route path="learn/:courseSlug" element={<CoursePage />} />
+            <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
             <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
             <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
             <Route

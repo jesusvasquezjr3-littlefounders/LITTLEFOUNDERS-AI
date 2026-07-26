@@ -151,3 +151,26 @@ Pulse services can't sleep, the only larger cut is *consolidation* — e.g. paus
 **Fix:** delete the Sensitive variable and re-add it with the toggle OFF. `VITE_BACKEND_URL` is not actually a secret — Vite inlines it into the public JS bundle regardless, so marking it Sensitive only broke the build without adding any real protection. Reserve "Sensitive" for values that must never appear in the dashboard UI again (e.g. server-side API keys), never for `VITE_*`/public client config.
 
 **Prevention:** after any Vercel project settings change or new environment variable, do a real `vercel build && vercel deploy --prebuilt --prod` and click through at least one deep link and one API-calling flow (e.g. signup) in a browser before considering the deploy done — a green build does not prove routing or env vars are correct.
+
+## Incident — db:migrate replay silently DROPPED a live RLS policy (2026-07-25)
+
+**Symptom:** every learn surface showed `0/0` lessons for all users (tree
+endpoint returned empty lesson arrays); admin console still counted 62.
+
+**Cause:** `npm run db:migrate` replays EVERY migration with plain `psql`
+(no `ON_ERROR_STOP`) and keeps going after errors. A replay that dies
+mid-0007 can execute `DROP POLICY IF EXISTS lessons_select_published` and
+then abort before the matching `CREATE POLICY` — leaving authenticated
+users with NO SELECT policy on `lessons`. The replay is not just broken,
+it is DESTRUCTIVE.
+
+**Fix applied:** re-ran 0007's `lessons_select_published` block by hand via
+`bash scripts/local-stack.sh psql`, verified with
+`SELECT policyname FROM pg_policies WHERE tablename='lessons'`.
+
+**Rules until the migrate runner is fixed (open chip task_8fbe050a):**
+1. NEVER run `npm run db:migrate` on a database with data you care about —
+   apply NEW migrations individually: `local-stack.sh psql -v ON_ERROR_STOP=1 < migrations/NNNN_x.sql`.
+2. After ANY failed replay, AUDIT policies against the migrations:
+   `SELECT tablename, policyname FROM pg_policies ORDER BY 1,2;` vs
+   `grep -n "CREATE POLICY" database/migrations/*.sql`.
