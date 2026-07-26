@@ -216,7 +216,9 @@ function RunDetailSection({ runId }: { runId: string }) {
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
   const compact = new Intl.NumberFormat(i18n.resolvedLanguage, { notation: 'compact' });
-  const usd = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'currency', currency: 'USD' });
+  // narrowSymbol: "$2.96", never "USD 2.96" — the dense KPI track has no room
+  // for a currency code (verified truncating at 1280px with the sidebar open).
+  const usd = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'currency', currency: 'USD', currencyDisplay: 'narrowSymbol' });
 
   if (data.state === 'loading') {
     return (
@@ -231,6 +233,12 @@ function RunDetailSection({ runId }: { runId: string }) {
 
   const { run, slots } = data.data;
   const cachePct = run.tokensUsed > 0 ? (run.cachedTokens / run.tokensUsed) * 100 : 0;
+  // Outcome/image KPIs from the SLOT rows (cumulative across every pass and
+  // mop-up of this run-id) — the run row's summary reflects only the LATEST
+  // invocation, which after a `--slots` mop-up enumerates a subset.
+  const publishedCount = slots.filter((s) => s.state === 'published').length;
+  const failedCount = slots.filter((s) => s.state === 'failed').length;
+  const imagesBilled = slots.reduce((n, s) => n + s.imagesBilled, 0);
   const imagesInherited = slots.reduce((n, s) => n + s.imagesInherited, 0);
 
   // Failure heatmap by the stage each failure came from.
@@ -305,13 +313,14 @@ function RunDetailSection({ runId }: { runId: string }) {
         <h2 id="gen-kpis" className="lf-headline mb-3">
           {t('admin.generation.runTitle', { runId: run.runId })}
         </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          <StatCard dense icon={<Icon name="task_alt" />} tone="primary" value={`${nf.format(run.published)}/${nf.format(run.slotsEnumerated)}`} label={t('admin.generation.kpi.published')} />
-          <StatCard dense icon={<Icon name="error" />} tone="accent" value={nf.format(run.failed)} label={t('admin.generation.kpi.failed')} />
+        {/* 3 columns until 2xl: six KPI cells at lg truncate with the sidebar open (measured at 1280px). */}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 2xl:grid-cols-6">
+          <StatCard dense icon={<Icon name="task_alt" />} tone="primary" value={`${nf.format(publishedCount)}/${nf.format(slots.length)}`} label={t('admin.generation.kpi.published')} />
+          <StatCard dense icon={<Icon name="error" />} tone="accent" value={nf.format(failedCount)} label={t('admin.generation.kpi.failed')} />
           <StatCard dense icon={<Icon name="payments" />} tone="secondary" value={usd.format(run.usdUsed)} label={t('admin.generation.kpi.cost')} />
           <StatCard dense icon={<Icon name="numbers" />} tone="primary" value={compact.format(run.tokensUsed)} label={t('admin.generation.kpi.tokens')} />
           <StatCard dense icon={<Icon name="bolt" />} tone="secondary" value={`${cachePct.toFixed(1)}%`} label={t('admin.generation.kpi.cacheHit')} />
-          <StatCard dense icon={<Icon name="image" />} tone="accent" value={`${nf.format(run.imagesBilled)}+${nf.format(imagesInherited)}`} label={t('admin.generation.kpi.images')} />
+          <StatCard dense icon={<Icon name="image" />} tone="accent" value={`${nf.format(imagesBilled)}+${nf.format(imagesInherited)}`} label={t('admin.generation.kpi.images')} />
         </div>
       </section>
 

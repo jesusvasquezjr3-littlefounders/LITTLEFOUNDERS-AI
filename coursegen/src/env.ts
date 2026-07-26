@@ -59,6 +59,8 @@ const Env = z.object({
    */
   FORGE_PICTUREGEN_TIMEOUT_MS: z.coerce.number().int().positive().default(180_000),
   FORGE_VAULT_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
+  /** Per-LLM-call abort ceiling. Bump per-run for known-heavy lessons (a long ordering write exceeded 120s of reasoning on every attempt — measured 2026-07-26). */
+  FORGE_CHAT_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   /** Per-slot allowance used to scale the caps above with the enumerated work. */
   FORGE_MAX_TOKENS_PER_SLOT: z.coerce.number().int().positive().default(150_000),
   FORGE_MAX_USD_PER_SLOT: z.coerce.number().positive().default(0.25),

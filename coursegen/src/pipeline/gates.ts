@@ -96,6 +96,13 @@ export const NON_VISIBLE_KEYS = new Set([
   'ask_image_url',
   'icon',
   'ask_icon',
+  // Two-sided icon fields (memory_flip card faces). Caught LIVE on the first
+  // fire-and-forget track (2026-07-26): only `icon`/`ask_icon` were frozen, so
+  // the translator turned `b_icon: "cookie"` into pt-BR "biscoito" — an icon
+  // name that cannot render. Every `*_icon` key is a Material Symbols ligature,
+  // never prose; nonVisibleKeys.test pins all of them now.
+  'a_icon',
+  'b_icon',
   'artifact_kind',
   'next',
   'start_node',

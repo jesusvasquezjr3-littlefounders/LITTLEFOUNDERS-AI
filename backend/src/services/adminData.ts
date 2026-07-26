@@ -336,6 +336,7 @@ interface GenerationRunRow {
   register: string;
   summary: {
     published?: string[];
+    alreadyDone?: string[];
     failed?: { slotId: string; error: string; failedFrom?: string }[];
     slotsEnumerated?: number;
   } & Record<string, unknown>;
@@ -353,7 +354,9 @@ function mapRunRow(r: GenerationRunRow): GenerationRunListItem {
     trackId: r.track_id,
     courseSlug: r.course_slug,
     register: r.register,
-    published: r.summary.published?.length ?? 0,
+    // A resumed run's summary reports only NEW publishes; alreadyDone carries
+    // the earlier passes' — the run row shows the CUMULATIVE run state.
+    published: (r.summary.published?.length ?? 0) + (r.summary.alreadyDone?.length ?? 0),
     failed: r.summary.failed?.length ?? 0,
     slotsEnumerated: r.summary.slotsEnumerated ?? 0,
     tokensUsed: r.tokens_used,

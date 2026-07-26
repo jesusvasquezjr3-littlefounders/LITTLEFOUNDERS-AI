@@ -120,6 +120,7 @@ function buildTranslateMessages(
     `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine} ` +
     'Preserve MarkdownLite markup exactly (**bold**, *italic*, `code`, "- " lists, line breaks) and any {{n}} gap markers verbatim. ' +
     'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
+    'LENGTH: on-screen instructions are hard-capped — a translation must NEVER be meaningfully LONGER than its source string; when your language runs long, compress (drop filler words, use the shorter synonym) rather than exceed the source length. ' +
     `${currencyLine} ${colloquialLine} ` +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.';
   const user = [

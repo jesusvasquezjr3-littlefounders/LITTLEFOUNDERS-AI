@@ -3,6 +3,7 @@
 // COURSE_ENGINE.md §5: "All clients are raw fetch behind one providers/
 // chokepoint with usage logging."
 
+import { getConfig } from '../env.js';
 import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, parseRetryAfter } from './errors.js';
 import { withTransportRetry } from './retry.js';
 
@@ -60,7 +61,12 @@ export async function openAiCompatibleComplete(
   cfg: OpenAiCompatibleConfig,
   req: ChatCompleteRequest,
 ): Promise<ChatCompleteResult> {
-  const timeoutMs = cfg.timeoutMs ?? 120_000;
+  // FORGE_CHAT_TIMEOUT_MS (default 120s). Operator-tunable because the ceiling
+  // is REAL: the QA course's deliberately-long ordering lesson
+  // (combo-arrange-largo) exceeded 120s of reasoning-model write on every
+  // attempt of the first track run — a per-run env bump is the sanctioned
+  // mop-up move for known-heavy lessons, never a code edit.
+  const timeoutMs = cfg.timeoutMs ?? getConfig().FORGE_CHAT_TIMEOUT_MS;
 
   return withTransportRetry(async () => {
     const controller = new AbortController();

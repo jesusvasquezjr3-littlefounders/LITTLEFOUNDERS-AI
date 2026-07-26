@@ -168,7 +168,13 @@ export interface TrackDeps {
   generate?: typeof runGeneration;
 }
 
-function buildShardReport(shard: ShardPlan, runId: string, passes: number, summary: RunSummary): ShardReport {
+function buildShardReport(
+  shard: ShardPlan,
+  runId: string,
+  passes: number,
+  summary: RunSummary,
+  images: { generated: number; billed: number; inherited: number },
+): ShardReport {
   const cachePct = summary.tokensUsed > 0 ? (summary.cachedTokens / summary.tokensUsed) * 100 : 0;
   return {
     adventure: shard.adventureSlug,
@@ -181,9 +187,9 @@ function buildShardReport(shard: ShardPlan, runId: string, passes: number, summa
     failed: summary.failed,
     notAttempted: summary.notAttempted.length,
     salvaged: summary.salvagedSlots,
-    imagesGenerated: summary.imagesGenerated,
-    imagesBilled: summary.imagesBilled,
-    imagesInherited: summary.imagesInherited,
+    imagesGenerated: images.generated,
+    imagesBilled: images.billed,
+    imagesInherited: images.inherited,
     imageSkipReasons: summary.imageSkipReasons,
     stoppedOnBudget: summary.stoppedOnBudget,
     usd: summary.usdUsed,
@@ -229,6 +235,11 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
     let pass = 0;
     let summary: RunSummary;
     let verdict: ShardVerdict;
+    // Image counters are PER-INVOCATION (unlike tokens/usd, which hydrate from
+    // the ledger) — accumulate across passes or a resumed shard reports the
+    // LAST pass's zeros and misfires the zero-images warning (seen live on the
+    // first track run: 58 billed images reported as 0).
+    const images = { generated: 0, billed: 0, inherited: 0 };
     do {
       pass++;
       console.log(`[track] shard "${shard.adventureSlug}" (${shard.slotCount} slots) — pass ${pass}/${shardPasses}, run-id ${runId}`);
@@ -247,11 +258,14 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
         // TRACK has left, whatever its own per-run floor says.
         maxUsdOverride: Math.max(0, budgetUsd - spentUsd),
       });
+      images.generated += summary.imagesGenerated;
+      images.billed += summary.imagesBilled;
+      images.inherited += summary.imagesInherited;
       verdict = assessShardOutcome(summary, pass, shardPasses);
     } while (verdict.action === 'retry');
 
     spentUsd += summary.usdUsed;
-    shardReports.push(buildShardReport(shard, runId, pass, summary));
+    shardReports.push(buildShardReport(shard, runId, pass, summary, images));
     if (verdict.action === 'halt') {
       halted = `shard "${shard.adventureSlug}": ${verdict.reason}`;
       break;
