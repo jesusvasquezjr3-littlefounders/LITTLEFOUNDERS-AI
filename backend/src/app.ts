@@ -4,7 +4,6 @@ import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { familyRouter } from './routes/family.js';
-import { tutorRouter } from './routes/tutor.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -32,7 +31,6 @@ export function createApp(): express.Express {
   app.use('/api/v1/verification', verificationRouter());
   app.use('/api/v1/learn', learnRouter());
   app.use('/api/v1/family', familyRouter());
-  app.use('/api/v1/tutor', tutorRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
   app.use('/api/v1/admin', adminRouter());

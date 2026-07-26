@@ -71,7 +71,6 @@ coursegen/
       adventures/
     investing/
       adventures/
-    money-moments/
   runs/
     fix-3blockers/
     fix-balance/
@@ -123,7 +122,6 @@ coursegen/
       prompts/
     providers/
     scripts/
-    tutor/
     vault/
 database/
   migrations/
@@ -707,7 +705,6 @@ frontend/
           __tests__/
           scenes/
         profile/
-        tutor/
       auth/
         __tests__/
       marketing/
@@ -3541,26 +3538,6 @@ describe('nextStreak (calendar-date anchored, 0009)', () => {
   it('REGRESSION (2026-07-13 live bug): many lessons on the SAME day never grow the streak past that day', () => {
 ```
 
-### backend/src/__tests__/tutor.test.ts
-
-```
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import request from 'supertest';
-import { createApp } from '../app.js';
-import { mintToken } from './helpers.js';
-import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { pickPack, tierForBirthDate } from '../routes/tutor.js';
-
-/*
- * /api/v1/tutor — Money Moments. The safety property is structural (packs
- * are pre-gated, published-only, served from Vault), so the tests pin the
- * resolution logic: tier from age, locale from profile, published-only
- * visibility, and the fallback ladder.
- */
-
-const USER_ID = '11111111-1111-4111-8111-111111111111';
-```
-
 ### backend/src/__tests__/unlockRules.test.ts
 
 ```
@@ -3610,7 +3587,6 @@ import { cors } from './middleware/cors.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { familyRouter } from './routes/family.js';
-import { tutorRouter } from './routes/tutor.js';
 import { authRouter } from './routes/auth.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
@@ -3619,6 +3595,7 @@ import { verificationRouter } from './routes/verification.js';
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
 
+export function createApp(): express.Express {
 ```
 
 ### backend/src/config.ts
@@ -4055,26 +4032,6 @@ import {
   getLearningStatsByUserId,
   getOwnAvatar,
   hasRole,
-```
-
-### backend/src/routes/tutor.ts
-
-```
-import { Router } from 'express';
-import { fail, ok } from '../lib/http.js';
-import { authedUser, requireAuth } from '../middleware/auth.js';
-import {
-  getFullOwnProfile,
-  getPublishedTutorPackKeys,
-  getPublishedTutorPacks,
-  getTutorSituations,
-} from '../services/supabaseRest.js';
-
-/*
- * /api/v1/tutor — Oracle v1: Money Moments (Little Language Lessons' Tiny
- * Lesson pattern made §1.9-safe). The kid picks from a CURATED situation
- * taxonomy — free text never reaches a provider — and Core serves packs that
- * were generated offline, validated, and HUMAN-published. "On demand" is a
 ```
 
 ### backend/src/routes/verification.ts
@@ -5101,26 +5058,6 @@ schema_version: 1
 # ciudad-de-las-metas and the sibling-authored 5-8).
 
 themes: [archipelago, forest, city, valley, kingdom, cosmos]
-```
-
-### coursegen/curriculum/money-moments/situations.yaml
-
-```
-# Money Moments — the curated situation taxonomy for Oracle v1 (tutor).
-#
-# CLOSED SET by design (§1.9): the kid picks from these — free text never
-# reaches a third-party API. Each situation must be genuinely LOCAL per
-# locale (a tianguis is not a garage sale is not a feira); titles and
-# descriptions are authored here, per locale, by a human — never translated
-# mechanically by the pipeline.
-#
-# tiers: which age tiers this situation makes sense for (tier1 6-7, tier2
-# 8-9, tier3 10-12). Packs are generated per situation × tier × locale by
-# `npm run tutor:packs` and published by a human (same blocking gate as
-# lessons).
-
-schema_version: 1
-situations:
 ```
 
 ### coursegen/eslint.config.js
@@ -6195,26 +6132,6 @@ function makeIdentityTranslateMock() {
   });
 }
 
-```
-
-### coursegen/src/__tests__/moneyMoments.test.ts
-
-```
-import { describe, expect, it, vi } from 'vitest';
-import path from 'node:path';
-import { generatePack, loadSituations, packSchema, validatePack, type MoneyMomentPack } from '../tutor/moneyMoments.js';
-
-/*
- * Money Moments contract: the curated taxonomy loads and stays closed;
- * generation retries on bad JSON; deterministic validation catches the
- * defects a pack must never ship with (two corrects, tier-forbidden words,
- * adult-paragraph text).
- */
-
-const GOOD: MoneyMomentPack = {
-  terms: [
-    { term: 'mesada', kid_definition: 'El dinero que te dan cada semana. Es tuyo y tú decides.' },
-    { term: 'apartar', kid_definition: 'Guardar una parte antes de gastar para tu meta.' },
 ```
 
 ### coursegen/src/__tests__/nonVisibleKeys.test.ts
@@ -7507,46 +7424,6 @@ export interface UsageRecord {
 //    sibling `audio` column and any per-segment audio stamps inside the document
 ```
 
-### coursegen/src/scripts/tutor-packs.ts
-
-```
-#!/usr/bin/env node
-// tutor:packs — Money Moments operator CLI (Oracle v1).
-//
-//   npm run tutor:packs -- --sync-situations            (free: YAML → Vault)
-//   npm run tutor:packs -- --generate [--confirm]       (PAID: fill missing packs)
-//
-// Packs land as status='review' — publishing is a HUMAN flip (same blocking
-// kid-safety gate as lessons, /AGENTS.md §1.9). Generation is idempotent by
-// construction: an existing (situation, tier, locale) row is never re-paid.
-
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { readFileSync } from 'node:fs';
-import { parse as parseYaml } from 'yaml';
-import { loadSituations, generatePack, validatePack, type Situation } from '../tutor/moneyMoments.js';
-```
-
-### coursegen/src/tutor/moneyMoments.ts
-
-```
-// Money Moments — Oracle v1's pack generator (Little Language Lessons' Tiny
-// Lesson pattern, 2026-07-25 analysis, made §1.9-safe: the situation taxonomy
-// is a CLOSED, human-curated set — kid free text never reaches a provider —
-// and every pack is generated OFFLINE, validated, judged, and human-published
-// before any child sees it. Runtime "on demand" = a Vault read.
-
-import { readFileSync } from 'node:fs';
-import { z } from 'zod';
-import { parse as parseYaml } from 'yaml';
-import { completeDeepSeek } from '../providers/deepseek.js';
-import type { UsageLedger } from '../providers/usage.js';
-import { readabilityScore, type ReadabilityLocale } from '../pipeline/readability.js';
-import { safeJsonParse, withCorrectiveRetry, formatZodIssues } from '../pipeline/correctiveRetry.js';
-
-// ---- situations catalog ------------------------------------------------------
-```
-
 ### coursegen/src/vault/restClient.ts
 
 ```
@@ -7998,26 +7875,6 @@ create table if not exists picture_assets (
 --
 -- The two functions are the retention instrument (Learn Your Way analysis,
 -- 2026-07-25): our spaced reviews ARE the delayed test, so first-EVER-attempt
-```
-
-### database/migrations/0017_tutor_money_moments.sql
-
-```
--- 0017_tutor_money_moments.sql — Oracle v1: Money Moments (situation-driven
--- micro-lessons, Little Language Lessons' Tiny Lesson pattern made §1.9-safe).
---
--- The kid picks from a CURATED, locale-aware situation taxonomy (closed set —
--- no kid free text ever reaches a third-party API); packs are generated
--- OFFLINE by Forge per situation×tier×locale, pass validation + the judge,
--- land as status='review', and a human publishes. "On demand" at runtime is
--- really "served from this pre-gated pool" — zero ungated AI in front of a
--- child, zero latency.
---
--- Service-role only, like lesson_documents: RLS enabled with NO client
--- policies — Core brokers reads (locale/tier resolution + published filter),
--- and only Forge writes.
-
-create table if not exists tutor_situations (
 ```
 
 ### database/package.json
@@ -129841,26 +129698,6 @@ import { UserListItem, type ListedUser } from './UserListItem';
  * routes from one component. `allowUnfollow` only makes sense on the
  * viewer's OWN following list (these are edges the viewer controls).
  */
-```
-
-### frontend/src/routes/app/tutor/MoneyMomentsPage.tsx
-
-```
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
-import { Button, Card, Icon, LoadingOverlay } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { ErrorBanner } from '@/routes/auth/ErrorBanner';
-import MarkdownLite from '@/lesson-engine/core/MarkdownLite';
-import { localizedText, type Json } from '@/routes/app/learn/types';
-
-/*
- * /tutor — Oracle v1: Money Moments (Little Language Lessons' Tiny Lesson
- * pattern, §1.9-safe by construction): the kid picks a real money SITUATION
- * from a curated set — never free text — and gets a pre-generated,
- * human-published micro-pack: key words in kid language, what you could say
 ```
 
 ### frontend/src/routes/auth/AuthCallbackPage.tsx

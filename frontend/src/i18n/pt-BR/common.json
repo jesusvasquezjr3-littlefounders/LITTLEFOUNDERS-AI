@@ -45,18 +45,5 @@
       "streak": "Sequência de dias",
       "longestStreak": "Melhor sequência"
     }
-  },
-  "tutor": {
-    "loading": "Preparando seus momentos…",
-    "title": "Money Moments",
-    "subtitle": "Escolha um momento real com dinheiro e aprenda o que dizer e fazer.",
-    "back": "Todos os momentos",
-    "packLoading": "Abrindo este momento…",
-    "pendingTitle": "Este momento está sendo preparado",
-    "pendingBody": "Nossa equipe está criando este pack. Volte em breve: os melhores momentos levam um tempinho.",
-    "termsTitle": "Palavras que ajudam",
-    "phrasesTitle": "O que você pode dizer ou fazer",
-    "quickCheckTitle": "Desafio rápido",
-    "tryAgain": "Tentar de novo"
   }
 }
