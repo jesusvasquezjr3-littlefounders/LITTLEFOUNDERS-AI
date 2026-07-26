@@ -2630,17 +2630,17 @@ import { listPendingLessonDocuments } from './db/lessonDocumentsRepo.js';
 import { narrateLesson } from './service/lessonAudio.js';
 
 /*
- * Batch narration — OPERATOR-OPT-IN (AUDIOGEN_RUN_ON_START), a paid action
- * per /AGENTS.md BOUNDARIES. Narrates every published lesson_documents row
- * missing an audio manifest. Log-only failures: one lesson's failure never
- * aborts the batch.
+ * Batch narration — OPERATOR-OPT-IN (AUDIOGEN_RUN_ON_START / narrate:all), a
+ * paid action per /AGENTS.md BOUNDARIES. Narrates every published
+ * lesson_documents row whose audio manifest is missing OR incomplete
+ * (partial manifests are unversioned, so they re-enter this batch and only
+ * their missing units are retried — succeeded units reuse by content hash).
+ *
+ * One lesson's failure never aborts the batch, but failures are NEVER
+ * silent: the summary tallies them and callers turn a non-zero tally into a
+ * non-zero exit (narrate:all). `courseSlug` scopes the batch to one course.
  */
-export async function runBatchNarration(): Promise<void> {
-  const pending = await listPendingLessonDocuments();
-  console.log(`[audiogen] batch narration: ${pending.length} lesson_documents pending`);
 
-  for (const row of pending) {
-    try {
 ```
 
 ### audiogen/src/concurrency/pool.ts
@@ -2886,16 +2886,21 @@ export interface NarrationUnit {
 ### audiogen/src/narrateAll.ts
 
 ```
-// Manual trigger: `npm run narrate:all` — same batch as AUDIOGEN_RUN_ON_START,
-// runnable on demand without restarting the service. Operator-opt-in, paid.
+// Manual trigger: `npm run narrate:all [-- --course <slug>]` — same batch as
+// AUDIOGEN_RUN_ON_START, runnable on demand without restarting the service.
+// Operator-opt-in, paid. Exit codes are MEANINGFUL (2026-07-26 fire-and-forget
+// audit): 0 = every pending lesson fully narrated; 1 = any unit/lesson failure
+// (the failed lessons stay pending — re-running retries only their missing
+// units) or a Vault/batch error.
 import { runBatchNarration } from './batch.js';
 
-runBatchNarration()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error('[audiogen] narrate:all failed:', err);
+function parseCourse(argv: string[]): string | undefined {
+  const i = argv.indexOf('--course');
+  if (i === -1) return undefined;
+  const value = argv[i + 1];
+  if (!value || value.startsWith('--')) {
+    console.error('narrate:all: --course needs a value');
     process.exit(1);
-  });
 ```
 
 ### audiogen/src/routes/audio.ts
@@ -3296,6 +3301,26 @@ export default tseslint.config(
 //     use). Normalizing strips import lines + whitespace, then compares.
 //  2. Symbol parity (core/types.ts): that file is a DELIBERATELY TRIMMED
 //     subset of the frontend original (the React/ComponentType registry
+```
+
+### backend/src/__tests__/admin-generation.test.ts
+
+```
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { jsonResponse, mintToken } from './helpers.js';
+
+/*
+ * /api/v1/admin/generation — the Generation console's data plane over the
+ * 0017 telemetry tables (coursegen's durable scoreboard). Happy + sad paths
+ * per AGENTS.md §7; PostgREST is stubbed at the fetch layer like admin.test.
+ */
+
+const ADMIN_ID = '22222222-2222-4222-8222-222222222222';
+
+const RUN_ROW = {
+  run_id: 'trk--adv-one',
 ```
 
 ### backend/src/__tests__/admin.test.ts
@@ -5874,6 +5899,26 @@ let dir: string;
 beforeEach(() => {
 ```
 
+### coursegen/src/__tests__/coach.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { diagnose, groupErrors, renderMarkdown, type CoachInput } from '../pipeline/coach.js';
+import { newRunCheckpoint, setSlotState } from '../pipeline/checkpoint.js';
+import type { RubricLogEntry } from '../pipeline/rubricLog.js';
+
+/*
+ * forge:coach — the propose-only improvement loop. These tests pin the
+ * contract: diagnosis is deterministic, every action carries evidence, and
+ * the kid_safety escalation fires on ANY sub-5 verdict regardless of volume.
+ */
+
+function rubric(over: Partial<RubricLogEntry['rubric']> = {}): RubricLogEntry['rubric'] {
+  return {
+    age_fit: 5,
+    pedagogy: 5,
+```
+
 ### coursegen/src/__tests__/concept-metadata.test.ts
 
 ```
@@ -6654,6 +6699,26 @@ import { LESSON_LOCALES, type LessonLocale } from './contract/core/types.js';
 
 ```
 
+### coursegen/src/coachCli.ts
+
+```
+#!/usr/bin/env node
+// forge:coach CLI — `npm run coach -- --run <run-id> | --track <track-id>`.
+// Offline and FREE (zero LLM calls, zero Vault writes): reads
+// runs/<id>/{checkpoint.json, ledger.jsonl, rubrics.jsonl} (and, for a track,
+// runs/<track-id>/track-report.json + every shard run dir), writes
+// coach-report.md next to the inputs and prints it. See pipeline/coach.ts for
+// the propose-only philosophy.
+
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readFile, writeFile } from 'node:fs/promises';
+import { diagnose, renderMarkdown, type CoachInput, type LedgerLine } from './pipeline/coach.js';
+import { RubricLog, type RubricLogEntry } from './pipeline/rubricLog.js';
+import type { RunCheckpoint } from './pipeline/checkpoint.js';
+import type { TrackReport } from './pipeline/track.js';
+```
+
 ### coursegen/src/contract/check.ts
 
 ```
@@ -6984,6 +7049,26 @@ export type SlotState =
   | 'reviewed'
 ```
 
+### coursegen/src/pipeline/coach.ts
+
+```
+// forge:coach — the between-runs half of the improvement loop (Level 2 of the
+// self-improvement design, 2026-07-26). It reads what a run left behind — the
+// checkpoint, the usage ledger, the rubric log, optionally a track report —
+// and produces a DIAGNOSIS with PROPOSED actions, each tied to evidence.
+//
+// Deliberately: offline, free (zero LLM calls), deterministic, and
+// PROPOSE-ONLY. The apply step is a human editing the playbook/prompts/gates
+// in a normal commit — the system never grades its own homework into
+// kid-facing content (§1.9), and judge scores are treated as defect POINTERS,
+// never as an optimization target (their run-over-run noise floor is ±0.4
+// with binary flips on identical content — coursegen/AGENTS.md #15; a loop
+// that chases score deltas is Goodhart bait).
+
+import type { RunCheckpoint } from './checkpoint.js';
+import { RubricLog, type RubricLogEntry } from './rubricLog.js';
+```
+
 ### coursegen/src/pipeline/contentPlaybook.ts
 
 ```
@@ -7262,6 +7347,26 @@ import { completeDeepSeek } from '../providers/deepseek.js';
 import { z } from 'zod';
 import { completeQwen } from '../providers/qwen.js';
 import { completeDeepSeek } from '../providers/deepseek.js';
+```
+
+### coursegen/src/pipeline/rubricLog.ts
+
+```
+// Per-run judge-rubric log — runs/<run-id>/rubrics.jsonl (append-only, one
+// line per REVIEW OUTCOME). This is the raw material of the improvement loop
+// (forge:coach) and of the generation-telemetry dashboard: without it, the
+// judge's scores were ephemeral (the checkpoint drops the rubric at the
+// `localized` transition), so a run left no record of WHICH dimensions dragged,
+// how many revise cycles lessons burned, or why rejected drafts were rejected.
+//
+// Mirrors UsageLedger's mechanics: JSONL, append-only, tolerant reader (a
+// truncated final line — process killed mid-append — is skipped, never fatal).
+// Multiple invocations of the same run APPEND to the same file; consumers take
+// the LAST entry per slot as the final verdict.
+
+import { appendFile, mkdir, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import type { ReviewRubric } from './review.js';
 ```
 
 ### coursegen/src/pipeline/run.ts
@@ -7562,6 +7667,26 @@ interface RestInit {
   body?: string;
 }
 
+```
+
+### coursegen/src/vault/telemetry.ts
+
+```
+// Generation telemetry → Vault (migration 0017: generation_runs /
+// generation_slots / generation_tracks, service-role-only posture like
+// picture_assets 0014 / speech_assets 0015 — RLS enabled, ZERO client
+// policies; the ONLY reader is Core's staff console via /api/v1/admin/*).
+//
+// This is the durable "registro" of how the agentic pipeline behaved on every
+// run: per-slot outcomes, failure stages, judge rubrics, revise cycles, cost
+// and cache-hit — the raw material for the admin Generation dashboard and for
+// forge:coach's improvement loop. It is TELEMETRY, never control flow: every
+// ingest failure is swallowed to a warning (a run must never die because the
+// scoreboard was unreachable), and dry runs are never ingested (nothing was
+// spent, nothing to evaluate).
+
+import { getConfig } from '../env.js';
+import { vaultUpsert } from './restClient.js';
 ```
 
 ### coursegen/src/verifyCourse.ts
@@ -7995,6 +8120,26 @@ create table if not exists picture_assets (
 --
 -- The two functions are the retention instrument (Learn Your Way analysis,
 -- 2026-07-25): our spaced reviews ARE the delayed test, so first-EVER-attempt
+```
+
+### database/migrations/0017_generation_telemetry.sql
+
+```
+-- 0017_generation_telemetry.sql — the durable scoreboard of every coursegen
+-- generation run (COURSE_ENGINE.md §4 "telemetry"): per-run summaries,
+-- per-slot outcomes with judge rubrics and failure stages, and per-track
+-- reports from generate:track. This is what the admin Generation dashboard
+-- (Core /api/v1/admin/generation/*) and the forge:coach improvement loop read
+-- — the permanent "what happened, what failed, what did it cost" record the
+-- run dirs alone cannot provide (runs/ is a gitignored local directory on
+-- whatever machine ran the generation).
+--
+-- Service-role only, same posture as picture_assets (0014) / speech_assets
+-- (0015): RLS enabled with NO client policies. Browsers never read these
+-- tables — the staff console reads them exclusively through Core, which holds
+-- the service role and gates on admin/superadmin. coursegen writes them
+-- (telemetry ingest, swallow-on-failure) at the end of every non-dry run.
+
 ```
 
 ### database/package.json
@@ -128821,6 +128966,26 @@ interface Course {
 }
 
 export function AdminContentPage() {
+```
+
+### frontend/src/routes/admin/AdminGenerationPage.tsx
+
+```
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, Table, TrendChart, type DropdownOption, type TableColumn } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { AdminPage, AdminEmpty, Unavailable, useAdminData } from './adminShared';
+
+/*
+ * Generation — the console's window into coursegen's agentic pipeline
+ * (/DESIGN.md §Screen Recipes → Console). Everything here reads the 0017
+ * telemetry tables through Core (/api/v1/admin/generation*): per-track
+ * reports, per-run summaries, and per-slot outcomes with judge rubrics —
+ * the permanent record for "what failed, what can we optimize" evaluations.
+ * The browser never touches Vault; Core holds the service role.
+ */
+
 ```
 
 ### frontend/src/routes/admin/AdminModerationPage.tsx

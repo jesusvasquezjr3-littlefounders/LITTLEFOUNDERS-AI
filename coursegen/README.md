@@ -67,12 +67,29 @@ The track owns what a single run cannot: a **global cumulative budget** (per-run
 
 See `.env.example` for the full list with defaults. Groups: author/judge provider keys (DeepSeek, Qwen), image provider key (Gemini, optional), Vault service-role credentials (publish stage), filebase credentials (images stage), run budgets/concurrency, and cost-table overrides.
 
+### Improvement loop (`npm run coach -- --run <run-id> | --track <track-id>`)
+
+Offline, FREE, deterministic, **propose-only**. Reads what a run left behind
+(`checkpoint.json`, `ledger.jsonl`, `rubrics.jsonl`, `track-report.json`) and
+writes `coach-report.md`: outcomes + failure heatmap, recurring-error groups,
+judge dimension stats (±0.4 noise disclaimer built in), revise-cycle
+histogram, cost per published lesson, cache-hit per operation, and proposed
+playbook/gate actions **each tied to evidence**. Applying a proposal is a
+human editing the playbook/prompts/gates in a normal commit — never automatic
+(§1.9: the system must not grade its own homework into kid-facing content).
+
+Run artifacts, per `runs/<run-id>/`: `checkpoint.json` (slot state machine),
+`ledger.jsonl` (every paid call), `rubrics.jsonl` (every judge verdict —
+appended, last-per-slot wins), `coach-report.md`. Non-dry runs also upsert the
+Vault telemetry tables (0017) read by the `/admin/generation` dashboard.
+
 ### Other scripts
 
 | Script | What it checks |
 |---|---|
 | `npm run catalog:check [-- <path>]` | Validates `curriculum/<course>/*.yaml` against `src/catalog/schema.ts` + cross-references (fact_refs, slug uniqueness, taxonomy membership, quota warnings). No path = every course under `curriculum/`. |
 | `npm run contract:check` | Diffs `src/contract/**` against its `frontend/src/lesson-engine` originals (import-line + whitespace/semicolon normalized) — the no-workspaces parity gate. |
+| `npm run coach -- --run <id> \| --track <id>` | Free, offline diagnosis of a finished run/track with proposed (human-applied) improvements — see above. |
 
 ### Image url map (`npm run images:apply-map -- <map.json> [--confirm]`)
 

@@ -300,6 +300,146 @@ export type Database = {
         }
         Relationships: []
       }
+      generation_runs: {
+        Row: {
+          cached_tokens: number
+          course_slug: string
+          created_at: string
+          images_billed: number
+          images_generated: number
+          params: Json
+          register: string
+          run_id: string
+          summary: Json
+          tokens_used: number
+          track_id: string | null
+          updated_at: string
+          usd_used: number
+        }
+        Insert: {
+          cached_tokens?: number
+          course_slug: string
+          created_at?: string
+          images_billed?: number
+          images_generated?: number
+          params?: Json
+          register?: string
+          run_id: string
+          summary?: Json
+          tokens_used?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Update: {
+          cached_tokens?: number
+          course_slug?: string
+          created_at?: string
+          images_billed?: number
+          images_generated?: number
+          params?: Json
+          register?: string
+          run_id?: string
+          summary?: Json
+          tokens_used?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Relationships: []
+      }
+      generation_slots: {
+        Row: {
+          dropped_segments: number
+          duration_ms: number | null
+          early_stopped: boolean
+          error: string | null
+          failed_from: string | null
+          images_billed: number
+          images_generated: number
+          images_inherited: number
+          review_cycles: number | null
+          rubric: Json | null
+          run_id: string
+          salvaged: boolean
+          slot_id: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          dropped_segments?: number
+          duration_ms?: number | null
+          early_stopped?: boolean
+          error?: string | null
+          failed_from?: string | null
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          review_cycles?: number | null
+          rubric?: Json | null
+          run_id: string
+          salvaged?: boolean
+          slot_id: string
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          dropped_segments?: number
+          duration_ms?: number | null
+          early_stopped?: boolean
+          error?: string | null
+          failed_from?: string | null
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          review_cycles?: number | null
+          rubric?: Json | null
+          run_id?: string
+          salvaged?: boolean
+          slot_id?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_slots_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "generation_runs"
+            referencedColumns: ["run_id"]
+          },
+        ]
+      }
+      generation_tracks: {
+        Row: {
+          budget_usd: number | null
+          course_slug: string
+          created_at: string
+          halted: string | null
+          report: Json
+          track_id: string
+          updated_at: string
+        }
+        Insert: {
+          budget_usd?: number | null
+          course_slug: string
+          created_at?: string
+          halted?: string | null
+          report?: Json
+          track_id: string
+          updated_at?: string
+        }
+        Update: {
+          budget_usd?: number | null
+          course_slug?: string
+          created_at?: string
+          halted?: string | null
+          report?: Json
+          track_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       guardian_links: {
         Row: {
           created_at: string

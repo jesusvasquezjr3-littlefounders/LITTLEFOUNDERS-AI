@@ -18,6 +18,7 @@
     "moderation": "Moderação",
     "users": "Usuários",
     "analytics": "Analytics e Saúde",
+    "generation": "Geração",
     "audit": "Auditoria",
     "roles": "Papéis e acesso"
   },
@@ -223,6 +224,71 @@
       "status": "Status",
       "latency": "Latência",
       "uptime24h": "Uptime (24h)"
+    }
+  },
+  "generation": {
+    "title": "Geração",
+    "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso — resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
+    "loading": "Carregando telemetria de geração…",
+    "tracks": "Execuções em massa (tracks)",
+    "selectRun": "Selecione uma execução de geração",
+    "empty": "Ainda não há execuções registradas — a telemetria aparecerá aqui após a próxima geração.",
+    "runTitle": "Execução {{runId}}",
+    "salvaged": "reduzida",
+    "earlyStop": "parada antecipada",
+    "kpi": {
+      "published": "publicadas",
+      "failed": "falhas",
+      "cost": "custo",
+      "tokens": "tokens",
+      "cacheHit": "cache",
+      "images": "imagens cobradas+herdadas"
+    },
+    "track": {
+      "halted": "Interrompido",
+      "completed": "Concluído",
+      "shards": "{{count}} shard(s)",
+      "mopUp": "Pendências ({{count}})"
+    },
+    "heatmap": {
+      "title": "Falhas por etapa do pipeline",
+      "empty": "Sem falhas — todas as lições tentadas foram publicadas."
+    },
+    "judge": {
+      "title": "Dimensões do juiz ({{count}} avaliadas)",
+      "note": "O piso de ruído entre execuções é ±0.4 — leia como indícios de defeitos, não como pontuação a perseguir.",
+      "empty": "Não há rubricas do juiz registradas para esta execução."
+    },
+    "dims": {
+      "kid_safety": "Segurança infantil",
+      "age_fit": "Adequação à idade",
+      "concreteness": "Concretude",
+      "pedagogy": "Pedagogia",
+      "cognitive_engagement": "Desafio cognitivo",
+      "feedback_quality": "Qualidade do feedback",
+      "distractor_quality": "Qualidade dos distratores",
+      "narrative_quality": "Qualidade narrativa",
+      "naturalness": "Naturalidade"
+    },
+    "duration": {
+      "title": "Tempo real por lição (segundos)"
+    },
+    "slots": {
+      "title": "Lições ({{count}})",
+      "empty": "Não há registros por lição para esta execução.",
+      "slot": "Lição",
+      "state": "Resultado",
+      "stage": "Falhou em",
+      "cycles": "Ciclos de revisão",
+      "duration": "Duração",
+      "images": "Imagens g·c·h",
+      "error": "Erro"
+    },
+    "states": {
+      "published": "publicada",
+      "failed": "falha",
+      "dry-run": "simulação",
+      "skipped": "ignorada"
     }
   }
 }

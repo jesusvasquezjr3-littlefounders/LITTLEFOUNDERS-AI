@@ -33,6 +33,7 @@ import type { LessonLocale } from '../contract/core/types.js';
 import type { Register } from './register.js';
 import type { SlotState } from './checkpoint.js';
 import { enumerateSlots, runGeneration, type RunSummary } from './run.js';
+import { ingestTrackTelemetry } from '../vault/telemetry.js';
 
 export interface ShardPlan {
   adventureSlug: string;
@@ -239,6 +240,7 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
         dryRun: options.dryRun,
         register: options.register,
         runId,
+        trackId: options.trackId,
         curriculumRoot: options.curriculumRoot,
         runsRoot: options.runsRoot,
         // The whole point of the track: a shard may never spend past what the
@@ -302,5 +304,8 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
   const trackDir = path.join(options.runsRoot, options.trackId);
   await mkdir(trackDir, { recursive: true });
   await writeFile(path.join(trackDir, 'track-report.json'), JSON.stringify(report, null, 2), 'utf8');
+  // Durable scoreboard (0017) — the admin Generation dashboard reads this row.
+  // Swallows its own failures; dry runs are never ingested.
+  if (!options.dryRun) await ingestTrackTelemetry(report);
   return report;
 }

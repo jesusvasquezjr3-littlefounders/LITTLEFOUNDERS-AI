@@ -18,6 +18,7 @@
     "moderation": "Moderation",
     "users": "Users",
     "analytics": "Analytics & Health",
+    "generation": "Generation",
     "audit": "Audit log",
     "roles": "Roles & Access"
   },
@@ -223,6 +224,71 @@
       "status": "Status",
       "latency": "Latency",
       "uptime24h": "Uptime (24h)"
+    }
+  },
+  "generation": {
+    "title": "Generation",
+    "subtitle": "How the agentic pipeline behaved on every course generation — outcomes, judge verdicts, failure stages, cost and cache efficiency.",
+    "loading": "Loading generation telemetry…",
+    "tracks": "Mass runs (tracks)",
+    "selectRun": "Select a generation run",
+    "empty": "No generation runs recorded yet — telemetry appears here after the next coursegen run.",
+    "runTitle": "Run {{runId}}",
+    "salvaged": "salvaged",
+    "earlyStop": "early stop",
+    "kpi": {
+      "published": "published",
+      "failed": "failed",
+      "cost": "cost",
+      "tokens": "tokens",
+      "cacheHit": "cache hit",
+      "images": "images billed+inherited"
+    },
+    "track": {
+      "halted": "Halted",
+      "completed": "Completed",
+      "shards": "{{count}} shard(s)",
+      "mopUp": "Mop-up ({{count}})"
+    },
+    "heatmap": {
+      "title": "Failures by pipeline stage",
+      "empty": "No failures — every attempted lesson published."
+    },
+    "judge": {
+      "title": "Judge dimensions ({{count}} judged)",
+      "note": "Run-over-run noise floor is ±0.4 — read these as defect pointers, not as a score to chase.",
+      "empty": "No judge rubrics recorded for this run."
+    },
+    "dims": {
+      "kid_safety": "Kid safety",
+      "age_fit": "Age fit",
+      "concreteness": "Concreteness",
+      "pedagogy": "Pedagogy",
+      "cognitive_engagement": "Cognitive engagement",
+      "feedback_quality": "Feedback quality",
+      "distractor_quality": "Distractor quality",
+      "narrative_quality": "Narrative quality",
+      "naturalness": "Naturalness"
+    },
+    "duration": {
+      "title": "Wall-clock per lesson (seconds)"
+    },
+    "slots": {
+      "title": "Lessons ({{count}})",
+      "empty": "No per-lesson records for this run.",
+      "slot": "Lesson",
+      "state": "Outcome",
+      "stage": "Failed from",
+      "cycles": "Revise cycles",
+      "duration": "Duration",
+      "images": "Images g·b·i",
+      "error": "Error"
+    },
+    "states": {
+      "published": "published",
+      "failed": "failed",
+      "dry-run": "dry-run",
+      "skipped": "skipped"
     }
   }
 }

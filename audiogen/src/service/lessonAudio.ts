@@ -188,8 +188,25 @@ export async function narrateLesson(
   // voice_profile is a lesson-level SUMMARY label (the locale default); the
   // actual voice used per unit — which may differ per narrator character —
   // lives on each AudioUnitEntry.voice.
-  const manifest: LessonAudioManifest = { version: 1, voice_profile: defaultVoiceFor(locale, config), units: finalUnits };
-  await deps.patchLessonDocumentAudio(row.lesson_id, row.locale, patchedDocument, manifest);
+  //
+  // `version` is stamped ONLY on a COMPLETE narration. A partial manifest
+  // (failed units) keeps its entries — succeeded units reuse by hash on the
+  // retry — but stays UNVERSIONED so the batch selector picks the row up
+  // again. Stamping despite failures made partial failures permanent
+  // (2026-07-26 fire-and-forget audit).
+  const complete = failed.length === 0;
+  const manifest: LessonAudioManifest = {
+    ...(complete ? { version: 1 as const } : {}),
+    voice_profile: defaultVoiceFor(locale, config),
+    units: finalUnits,
+  };
+  const patched = await deps.patchLessonDocumentAudio(row.lesson_id, row.locale, patchedDocument, manifest);
+  if (!patched) {
+    // The paid clips are safe (speech_assets write-through makes the retry
+    // free), but the manifest is NOT in Vault — surface it as a failure so
+    // the batch summary and exit code reflect reality, never silence.
+    failed.push({ unit_id: '(manifest)', reason: 'lesson_documents audio PATCH failed — row stays pending, retry is free via speech_assets' });
+  }
 
   return { units_total: units.length, generated, reused, cached, failed };
 }

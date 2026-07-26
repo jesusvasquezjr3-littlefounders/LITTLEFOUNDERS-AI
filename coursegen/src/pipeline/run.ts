@@ -25,7 +25,9 @@ import {
 import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } from './plan.js';
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
-import { reviewLesson } from './review.js';
+import { reviewLesson, ReviewFailedError } from './review.js';
+import { RubricLog } from './rubricLog.js';
+import { ingestRunTelemetry } from '../vault/telemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
@@ -99,6 +101,8 @@ export interface RunOptions {
    * ~$2,750 of permitted spend on a course whose whole-run budget is ~$328.
    */
   maxUsdOverride?: number;
+  /** Set by generate:track — links this run's telemetry row to its track. */
+  trackId?: string;
 }
 
 export interface RunDeps {
@@ -169,7 +173,7 @@ function buildPlanContext(
   };
 }
 
-interface ProcessSlotOutcome {
+export interface ProcessSlotOutcome {
   slotId: string;
   /** 'already-published' = done by an EARLIER invocation (isSlotDone) — routed to the summary's alreadyDone bucket, never to `published`, so resume passes report only NEW work as progress. */
   state: 'published' | 'already-published' | 'failed' | 'skipped' | 'dry-run';
@@ -187,6 +191,8 @@ interface ProcessSlotOutcome {
   error?: string;
   /** The stage state the slot held when it failed (checkpoint `failedFrom`) — the per-stage failure heatmap datum. */
   failedFrom?: SlotState;
+  /** Wall-clock this invocation spent on the slot, ALL outer attempts included (set by the pool worker, telemetry-only). */
+  durationMs?: number;
 }
 
 
@@ -221,6 +227,7 @@ async function processSlot(
   options: RunOptions,
   ledger: UsageLedger,
   register: ReturnType<typeof resolveRegister>,
+  rubricLog?: RubricLog,
 ): Promise<ProcessSlotOutcome> {
   if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'already-published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
@@ -352,6 +359,10 @@ async function processSlot(
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });
       await store.save(checkpoint);
+      // Rubric telemetry (forge:coach raw material) — never able to kill a run.
+      await rubricLog
+        ?.record({ slotId: slot.slotId, outcome: 'passed', cycles: reviewResult.cycles, earlyStopped: false, rubric: reviewResult.rubric })
+        .catch((e: unknown) => console.warn(`[forge] rubric log write failed (run continues): ${e instanceof Error ? e.message : String(e)}`));
     }
 
     // ---- localize ----
@@ -528,6 +539,13 @@ async function processSlot(
      */
     if (isFatalProviderError(err)) throw err;
     const message = err instanceof Error ? err.message : String(err);
+    // A judge rejection is coach material too — the rubric explains WHY the
+    // draft died, which is exactly what the improvement loop mines.
+    if (err instanceof ReviewFailedError) {
+      await rubricLog
+        ?.record({ slotId: slot.slotId, outcome: 'failed', cycles: err.cycles, earlyStopped: err.earlyStopped, rubric: err.rubric })
+        .catch(() => undefined);
+    }
     /*
      * Record WHERE the failure happened (the last stage state the slot reached)
      * so the outer retry can decide between "regenerate from scratch" (the
@@ -740,6 +758,9 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     `[forge] budget for ${slots.length} slot(s): ${scaled.maxTokens.toLocaleString()} tokens, $${scaled.maxUsd.toFixed(2)}`,
   );
   const register = resolveRegister(loadResult.course.taxonomy, options.register ?? 'kid');
+  const rubricLog = new RubricLog(runDir);
+  /** Final outcome per slot THIS invocation — the per-slot telemetry ingested to Vault at the end. */
+  const slotOutcomes: ProcessSlotOutcome[] = [];
 
   const published: string[] = [];
   const failed: { slotId: string; error: string; failedFrom?: SlotState }[] = [];
@@ -782,7 +803,8 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // still get one fresh draw. BudgetExceededError still aborts the whole
       // run (rethrown by processSlot), so retries never blow past the
       // kill-switches.
-      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+      const slotStartedAt = Date.now();
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog);
       let attempt = 1;
       while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
         attempt++;
@@ -797,8 +819,10 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
             `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
         );
         await store.save(checkpoint);
-        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog);
       }
+      outcome.durationMs = Date.now() - slotStartedAt;
+      slotOutcomes.push(outcome);
       imagesGenerated += outcome.imagesGenerated ?? 0;
       imagesBilled += outcome.imagesBilled ?? 0;
       imagesInherited += outcome.imagesInherited ?? 0;
@@ -870,6 +894,22 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     console.warn(
       `[forge] BUG: summary accounts for ${tallied} slot(s) but ${slots.length} were enumerated — please report this run id.`,
     );
+  }
+
+  // Durable scoreboard (0017): per-run + per-slot outcomes, rubrics, cost —
+  // read by the admin Generation dashboard and forge:coach. Swallows its own
+  // failures; never ingested for dry runs (nothing spent, nothing to record).
+  if (!options.dryRun) {
+    await ingestRunTelemetry({
+      runId,
+      trackId: options.trackId,
+      courseSlug: options.course,
+      register: options.register ?? 'kid',
+      params: runParams,
+      summary,
+      outcomes: slotOutcomes,
+      runDir,
+    });
   }
   return summary;
 }

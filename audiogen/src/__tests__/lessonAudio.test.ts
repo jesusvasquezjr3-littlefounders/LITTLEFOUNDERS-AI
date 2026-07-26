@@ -312,4 +312,30 @@ describe('narrateLesson', () => {
       expect(deps.synthesizeSpeech).toHaveBeenCalledTimes(4);
     });
   });
+
+  describe('partial failures stay retryable (fire-and-forget contract, 2026-07-26)', () => {
+    it('writes the manifest WITHOUT version when any unit failed — the row stays in the pending set', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      // First synth call fails, the rest succeed — a classic partial failure.
+      deps.synthesizeSpeech.mockRejectedValueOnce(new Error('tts 500')).mockResolvedValue('https://tts/audio.wav');
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary?.failed).toHaveLength(1);
+      const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { version?: number; units: Record<string, unknown> };
+      expect(manifest.version).toBeUndefined(); // unversioned ⇒ audio->>version stays NULL ⇒ retried next batch
+      expect(Object.keys(manifest.units).length).toBeGreaterThan(0); // succeeded units kept for hash-reuse on retry
+    });
+
+    it('a failed manifest PATCH surfaces as a failure (never a silent success)', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      deps.patchLessonDocumentAudio.mockResolvedValue(false);
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary?.failed.some((f) => f.unit_id === '(manifest)')).toBe(true);
+    });
+  });
 });

@@ -48,8 +48,12 @@ async function vaultRest<T>(path: string, init: RestInit = {}): Promise<RestResu
 /**
  * Upsert-by-unique-key: POST with `Prefer: resolution=merge-duplicates`.
  * Columns NOT present in `rows` are left untouched on conflict (PostgREST
- * semantics) — Forge never includes `status`, so a re-run never clobbers an
- * operator's prior 'published' flip back to 'draft'.
+ * semantics). Status handling is DELIBERATELY asymmetric: courses/adventures/
+ * sagas/topics omit `status`, so a re-run never clobbers an operator's prior
+ * 'published' flip — but LESSONS explicitly include `status: 'review'`
+ * (publish.ts), so REGENERATING a published lesson downgrades it to review on
+ * purpose: new kid-facing content always re-enters the human publish gate
+ * (§1.9 / COURSE_ENGINE.md §6). Re-flip with db:publish-course after a regen.
  */
 export async function vaultUpsert<T>(table: string, rows: readonly unknown[], onConflict: string): Promise<T[]> {
   if (rows.length === 0) return [];

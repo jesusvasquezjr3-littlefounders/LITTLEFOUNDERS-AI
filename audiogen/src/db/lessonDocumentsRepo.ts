@@ -35,7 +35,16 @@ export interface AudioUnitEntry {
 }
 
 export interface LessonAudioManifest {
-  version: 1;
+  /**
+   * ABSENT while the lesson's narration is INCOMPLETE (some units failed) —
+   * the batch selector keys on `audio->>version is null`, so an unversioned
+   * manifest keeps the row in the pending set and the next narrate:all
+   * retries ONLY the missing units (succeeded ones reuse by content hash).
+   * Stamping `version: 1` despite failures made partial failures permanent:
+   * the row left the pending set and no re-run ever retried it (2026-07-26
+   * fire-and-forget audit).
+   */
+  version?: 1;
   voice_profile: string;
   units: Record<string, AudioUnitEntry>;
 }
@@ -107,12 +116,30 @@ export interface PendingLessonDocument {
 
 /**
  * Batch mode source query: `lesson_documents` rows belonging to a published
- * lesson whose audio manifest hasn't been generated yet (`audio` still the
- * DB default `{}`, so `audio->>version` reads NULL).
+ * lesson whose audio manifest hasn't been completed yet (`audio->>version`
+ * NULL — either never narrated, or narrated with failed units: partial
+ * manifests are written WITHOUT a version so they stay pending).
+ *
+ * `courseSlug` scopes the batch to ONE course (embedded-resource filter,
+ * same join chain as coursegen's previousArtDocuments) — without it the
+ * batch narrates EVERY pending published lesson in the Vault, which made
+ * cost scoping a human judgment call (2026-07-26 fire-and-forget audit).
+ *
+ * THROWS on a Vault failure. It used to swallow errors into `[]`, so a down
+ * Vault printed "0 pending" and exited 0 — indistinguishable from success.
  */
-export async function listPendingLessonDocuments(): Promise<PendingLessonDocument[]> {
+export async function listPendingLessonDocuments(courseSlug?: string): Promise<PendingLessonDocument[]> {
+  const select = courseSlug
+    ? `lesson_id,locale,lessons!inner(status,topics!inner(sagas!inner(adventures!inner(courses!inner(slug)))))`
+    : `lesson_id,locale,lessons!inner(status)`;
+  const courseFilter = courseSlug
+    ? `&lessons.topics.sagas.adventures.courses.slug=eq.${encodeURIComponent(courseSlug)}`
+    : '';
   const res = await rest<PendingLessonDocument[]>(
-    `/lesson_documents?select=lesson_id,locale,lessons!inner(status)&lessons.status=eq.published&audio->>version=is.null`,
+    `/lesson_documents?select=${select}&lessons.status=eq.published&audio->>version=is.null${courseFilter}`,
   );
-  return res.ok && res.body ? res.body : [];
+  if (!res.ok) {
+    throw new Error(`listPendingLessonDocuments: Vault query failed (HTTP ${res.status || 'network error'}) — refusing to report "0 pending" for a Vault that did not answer`);
+  }
+  return res.body ?? [];
 }

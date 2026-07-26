@@ -293,3 +293,188 @@ export async function getLearningRetention(): Promise<LearningRetention | null> 
     })),
   };
 }
+
+// ── Generation telemetry (0017) ─────────────────────────────────────────────
+
+export interface GenerationRunListItem {
+  runId: string;
+  trackId: string | null;
+  courseSlug: string;
+  register: string;
+  published: number;
+  failed: number;
+  slotsEnumerated: number;
+  tokensUsed: number;
+  usdUsed: number;
+  cachedTokens: number;
+  imagesGenerated: number;
+  imagesBilled: number;
+  updatedAt: string;
+}
+
+export interface GenerationTrackListItem {
+  trackId: string;
+  courseSlug: string;
+  budgetUsd: number | null;
+  halted: string | null;
+  totals: Record<string, number>;
+  failureHeatmap: Record<string, number>;
+  mopUp: string[];
+  shards: number;
+  updatedAt: string;
+}
+
+export interface GenerationOverview {
+  tracks: GenerationTrackListItem[];
+  runs: GenerationRunListItem[];
+}
+
+interface GenerationRunRow {
+  run_id: string;
+  track_id: string | null;
+  course_slug: string;
+  register: string;
+  summary: {
+    published?: string[];
+    failed?: { slotId: string; error: string; failedFrom?: string }[];
+    slotsEnumerated?: number;
+  } & Record<string, unknown>;
+  tokens_used: number;
+  usd_used: number | string;
+  cached_tokens: number;
+  images_generated: number;
+  images_billed: number;
+  updated_at: string;
+}
+
+function mapRunRow(r: GenerationRunRow): GenerationRunListItem {
+  return {
+    runId: r.run_id,
+    trackId: r.track_id,
+    courseSlug: r.course_slug,
+    register: r.register,
+    published: r.summary.published?.length ?? 0,
+    failed: r.summary.failed?.length ?? 0,
+    slotsEnumerated: r.summary.slotsEnumerated ?? 0,
+    tokensUsed: r.tokens_used,
+    // numeric columns arrive as strings through PostgREST — normalize once here.
+    usdUsed: Number(r.usd_used),
+    cachedTokens: r.cached_tokens,
+    imagesGenerated: r.images_generated,
+    imagesBilled: r.images_billed,
+    updatedAt: r.updated_at,
+  };
+}
+
+/**
+ * The Generation console's landing data: recent tracks + recent runs from the
+ * 0017 telemetry tables (written by coursegen at the end of every non-dry
+ * run; service-role-only — this console is their ONLY reader).
+ */
+export async function getGenerationOverview(): Promise<GenerationOverview | null> {
+  const [tracks, runs] = await Promise.all([
+    serviceRest<
+      {
+        track_id: string;
+        course_slug: string;
+        budget_usd: number | string | null;
+        halted: string | null;
+        report: {
+          totals?: Record<string, number>;
+          failureHeatmap?: Record<string, number>;
+          mopUp?: string[];
+          shards?: unknown[];
+        } & Record<string, unknown>;
+        updated_at: string;
+      }[]
+    >('/generation_tracks?select=track_id,course_slug,budget_usd,halted,report,updated_at&order=updated_at.desc&limit=10'),
+    serviceRest<GenerationRunRow[]>(
+      '/generation_runs?select=run_id,track_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at&order=updated_at.desc&limit=20',
+    ),
+  ]);
+  if (!tracks || !runs) return null;
+  return {
+    tracks: tracks.map((t) => ({
+      trackId: t.track_id,
+      courseSlug: t.course_slug,
+      budgetUsd: t.budget_usd === null ? null : Number(t.budget_usd),
+      halted: t.halted,
+      totals: t.report.totals ?? {},
+      failureHeatmap: t.report.failureHeatmap ?? {},
+      mopUp: t.report.mopUp ?? [],
+      shards: t.report.shards?.length ?? 0,
+      updatedAt: t.updated_at,
+    })),
+    runs: runs.map(mapRunRow),
+  };
+}
+
+export interface GenerationSlotItem {
+  slotId: string;
+  state: string;
+  failedFrom: string | null;
+  error: string | null;
+  salvaged: boolean;
+  droppedSegments: number;
+  imagesGenerated: number;
+  imagesBilled: number;
+  imagesInherited: number;
+  durationMs: number | null;
+  rubric: Record<string, number | string> | null;
+  reviewCycles: number | null;
+  earlyStopped: boolean;
+}
+
+export interface GenerationRunDetail {
+  run: GenerationRunListItem & { summary: Record<string, unknown>; params: Record<string, unknown> };
+  slots: GenerationSlotItem[];
+}
+
+export async function getGenerationRun(runId: string): Promise<GenerationRunDetail | null> {
+  const encoded = encodeURIComponent(runId);
+  const [runs, slots] = await Promise.all([
+    serviceRest<(GenerationRunRow & { params: Record<string, unknown> })[]>(
+      `/generation_runs?run_id=eq.${encoded}&select=run_id,track_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at`,
+    ),
+    serviceRest<
+      {
+        slot_id: string;
+        state: string;
+        failed_from: string | null;
+        error: string | null;
+        salvaged: boolean;
+        dropped_segments: number;
+        images_generated: number;
+        images_billed: number;
+        images_inherited: number;
+        duration_ms: number | null;
+        rubric: Record<string, number | string> | null;
+        review_cycles: number | null;
+        early_stopped: boolean;
+      }[]
+    >(
+      `/generation_slots?run_id=eq.${encoded}&select=slot_id,state,failed_from,error,salvaged,dropped_segments,images_generated,images_billed,images_inherited,duration_ms,rubric,review_cycles,early_stopped&order=slot_id.asc`,
+    ),
+  ]);
+  if (!runs || !slots) return null;
+  const runRow = runs[0];
+  if (!runRow) return null;
+  return {
+    run: { ...mapRunRow(runRow), summary: runRow.summary, params: runRow.params ?? {} },
+    slots: slots.map((s) => ({
+      slotId: s.slot_id,
+      state: s.state,
+      failedFrom: s.failed_from,
+      error: s.error,
+      salvaged: s.salvaged,
+      droppedSegments: s.dropped_segments,
+      imagesGenerated: s.images_generated,
+      imagesBilled: s.images_billed,
+      imagesInherited: s.images_inherited,
+      durationMs: s.duration_ms,
+      rubric: s.rubric,
+      reviewCycles: s.review_cycles,
+      earlyStopped: s.early_stopped,
+    })),
+  };
+}

@@ -205,6 +205,86 @@ file-checkpointed (`coursegen/runs/<run-id>/checkpoint.json` — per-slot state:
 `planned → written → reviewed → localized → illustrated → published |
 failed`), resumable, idempotent (publish = upsert by slug).
 
+### §4.0 Visual overview (mermaid)
+
+**Per-slot pipeline** — every lesson walks this graph; LLM stages are marked,
+everything else is deterministic:
+
+```mermaid
+flowchart TD
+    V[validate catalog+facts+taxonomy<br/><i>Zod, offline, free</i>] --> P
+    P["plan — skeleton<br/><i>DeepSeek (skipped for forced_types)</i>"] --> W
+    W["write es-MX<br/><i>DeepSeek, gates INSIDE the corrective loop, max 4</i>"] --> RC{recap_dialogue?}
+    RC -- yes --> RD["recap dialogue<br/><i>DeepSeek ×5 turns, student persona BLIND</i>"] --> G
+    RC -- no --> G
+    G[9 deterministic gates<br/><i>final authority re-run</i>] -->|pass| J
+    G -->|fail| FAIL
+    J["judge — 9-dim rubric<br/><i>Qwen, decorrelated provider</i>"] -->|floors pass| IL
+    J -->|fail| RV["revise<br/><i>DeepSeek, max 3 cycles</i>"]
+    RV --> RG[re-gate] -->|pass| RJ[re-judge] --> ES{improved a<br/>failing dim?}
+    RG -->|break| RV
+    ES -- yes --> J2{floors pass?}
+    ES -- "no — EARLY STOP" --> FAIL
+    J2 -- yes --> IL
+    J2 -- no --> RV
+    IL["illustrate es-MX<br/><i>Prism; INHERITANCE first — previous art is free</i>"] --> L
+    L["localize → en-US + pt-BR<br/><i>DeepSeek, structure FROZEN, currency remap, vocab re-gate</i>"] --> SW
+    SW[images sweep<br/><i>belt-and-braces, 0 calls on happy path</i>] --> PB
+    PB["publish → Vault<br/><i>status='review' — HUMAN gate §1.9; audio reset {}</i>"] --> DONE([published])
+    FAIL([slot failed]) -.->|"outer retry ×FORGE_SLOT_ATTEMPTS<br/>STAGE-AWARE: late failures resume from checkpoint,<br/>plan/write/judge failures redraw from scratch,<br/>last attempt always fresh"| P
+```
+
+**Slot state machine** (checkpoint; only `published` is terminal):
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending
+    pending --> planned : plan ok
+    planned --> written : write+gates ok
+    written --> reviewed : judge ok
+    reviewed --> localized : illustrate+localize ok
+    localized --> illustrated : sweep ok
+    illustrated --> published : publish ok
+    published --> [*]
+    pending --> dry_run : --dry-run (pristine slots only)
+    pending --> failed : error (failedFrom recorded)
+    planned --> failed : error
+    written --> failed : judge rejected / write exhausted
+    reviewed --> failed : localize error
+    localized --> failed : sweep error
+    illustrated --> failed : publish error
+    failed --> pending : retry (from scratch)
+    failed --> reviewed : retry (RESUME — failedFrom ∈ reviewed/localized/illustrated)
+    failed --> localized : retry (RESUME)
+    failed --> illustrated : retry (RESUME)
+```
+
+**Mass run (`generate:track`) + the fire-and-forget chain to market:**
+
+```mermaid
+flowchart TD
+    subgraph TRACK["generate:track — one command, unattended"]
+        E[enumerate catalog<br/>shard per adventure] --> S1
+        S1["shard N: runGeneration<br/><i>own run-id/checkpoint; remaining budget passed down</i>"] --> A{assess}
+        A -- "unattempted work + progress" --> S1
+        A -- "fatal / systemic / no-progress" --> H([HALT — resume with same track-id])
+        A -- "clean or stubborn-failures→mop-up" --> NX{more shards?}
+        NX -- yes --> S1
+        NX -- no --> R["track-report.json + Vault telemetry (0017)"]
+    end
+    R --> FLIP["db:publish-course<br/><b>HUMAN GATE (§1.9)</b> — review→published"]
+    FLIP --> VER["verify:course<br/><i>deterministic acceptance, free</i>"]
+    VER --> NAR["narrate:all --course slug<br/><i>Echo; speech_assets cache; partial failures stay pending; exit≠0 on any failure</i>"]
+    NAR --> VER2[verify:course again — narrated count]
+    VER2 --> COACH["forge:coach --track id<br/><i>free diagnosis + proposed deltas (human-applied)</i>"]
+    COACH --> MARKET([course live in all 3 locales])
+```
+
+The ONE human step in the chain is the publish flip — deliberate and
+non-negotiable (§1.9: kid-facing content is human-moderated before display).
+Everything else runs unattended and fails LOUDLY (non-zero exits, halts, and
+Vault telemetry) instead of silently.
+
 ```
 validate  catalog + facts + taxonomy (Zod, offline)
    ↓
@@ -391,6 +471,31 @@ cross-shard report (`runs/<track-id>/track-report.json`): per-shard outcomes,
 cost, prefix-cache hit % (the shard-1 canary), and a failure heatmap keyed by
 the stage each failure came from (`failedFrom`). The priorMicroObjective chain
 survives sharding by construction (enumeration precedes `--slots` filtering).
+
+**Telemetry — the durable scoreboard (Vault 0017).** At the end of every
+non-dry run, coursegen upserts `generation_runs` (params + full RunSummary +
+cost/cache/image totals), `generation_slots` (per-slot outcome, failure stage,
+salvage, wall-clock, judge rubric + revise cycles + early-stop) and — for
+tracks — `generation_tracks` (the full report). Service-role-only posture
+(RLS, zero client policies, like 0014/0015); the ONLY reader is the staff
+console (`/api/v1/admin/generation*` → `/admin/generation` dashboard: KPI
+cards, failure heatmap by stage, judge-dimension bars, per-lesson duration
+chart, full slot table). Ingest is swallow-on-failure — telemetry can never
+kill a run. Judge rubrics are also appended per run to
+`runs/<id>/rubrics.jsonl` (the coach's raw material).
+
+**The improvement loop — `npm run coach` (`src/pipeline/coach.ts`).** Level 2
+of the self-improvement design (2026-07-26): offline, FREE, deterministic and
+PROPOSE-ONLY. Reads checkpoint + ledger + rubrics (+ track report), emits
+`coach-report.md`: outcomes, failure heatmap, recurring-error groups, judge
+dimension means/mins (with the ±0.4 noise disclaimer — scores are defect
+POINTERS, never an optimization target), revise-cycle histogram, cost per
+published lesson, cache-hit per operation, and PROPOSED actions each tied to
+evidence (dragging dimension → the exact playbook section; localize-stage
+deaths → vocab lists; low write cache-hit → prefix drift; kid_safety < 5 →
+immediate escalation). Applying a proposal is ALWAYS a human editing
+playbook/prompts/gates in a normal commit — the system never grades its own
+homework into kid-facing content (§1.9).
 
 ### §4 addendum — `forced_types` (QA/authoring override)
 

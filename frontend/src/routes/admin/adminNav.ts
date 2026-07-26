@@ -20,6 +20,7 @@ export const ADMIN_SECTIONS: AdminSection[] = [
   { key: 'moderation', path: '/admin/moderation', icon: 'gpp_maybe' },
   { key: 'users', path: '/admin/users', icon: 'group' },
   { key: 'analytics', path: '/admin/analytics', icon: 'monitoring' },
+  { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing' },
   { key: 'audit', path: '/admin/audit', icon: 'history' },
   { key: 'roles', path: '/admin/roles', icon: 'admin_panel_settings', superadminOnly: true },
 ];

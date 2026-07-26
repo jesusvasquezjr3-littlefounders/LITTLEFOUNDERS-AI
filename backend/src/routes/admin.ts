@@ -20,6 +20,8 @@ import {
 import type { PlausibleFilter } from '../services/pulse.js';
 import {
   getAdminOverview,
+  getGenerationOverview,
+  getGenerationRun,
   getLearningRetention,
   grantRoleChecked,
   isCourseStatus,
@@ -91,6 +93,11 @@ const RoleMutationSchema = z.object({
 const AuditQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+});
+// Run ids are operator-chosen (`<track-id>--<adventure-slug>` or a default
+// timestamp id) — constrain to a safe charset, never interpolate raw.
+const GenerationRunParamSchema = z.object({
+  runId: z.string().min(1).max(200).regex(/^[A-Za-z0-9._-]+$/),
 });
 
 export function adminRouter(): Router {
@@ -259,6 +266,28 @@ export function adminRouter(): Router {
     const retention = await getLearningRetention();
     if (!retention) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load retention data');
     ok(res, retention);
+  });
+
+  // ── Generation telemetry (0017 — coursegen's durable scoreboard) ───────────
+  // The console is the ONLY reader of generation_runs/slots/tracks (service-
+  // role tables, zero client policies): how each agentic run behaved — per-slot
+  // outcomes, judge rubrics, failure stages, cost, cache-hit — the permanent
+  // record for "what failed / what can we optimize" evaluations.
+  router.get('/generation', async (_req, res) => {
+    const overview = await getGenerationOverview();
+    if (!overview) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load generation telemetry');
+    ok(res, overview);
+  });
+
+  router.get('/generation/runs/:runId', async (req, res) => {
+    const parsed = GenerationRunParamSchema.safeParse(req.params);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const detail = await getGenerationRun(parsed.data.runId);
+    if (!detail) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load that generation run (unknown id, or Vault unavailable)');
+    ok(res, detail);
   });
 
   // ── Users / Support ────────────────────────────────────────────────────────

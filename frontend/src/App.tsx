@@ -37,6 +37,7 @@ import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
 import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
 import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
+import { AdminGenerationPage } from '@/routes/admin/AdminGenerationPage';
 import { Suspense, lazy } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
@@ -168,6 +169,7 @@ export function App() {
             <Route path="admin/moderation" element={<RequireRole role={STAFF}><AdminModerationPage /></RequireRole>} />
             <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
+            <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />
             <Route path="admin/roles" element={<RequireRole role="superadmin"><AdminRolesPage /></RequireRole>} />
 

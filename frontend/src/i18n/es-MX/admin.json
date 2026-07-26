@@ -18,6 +18,7 @@
     "moderation": "Moderación",
     "users": "Usuarios",
     "analytics": "Analíticas y Salud",
+    "generation": "Generación",
     "audit": "Auditoría",
     "roles": "Roles y acceso"
   },
@@ -223,6 +224,71 @@
       "status": "Estado",
       "latency": "Latencia",
       "uptime24h": "Uptime (24h)"
+    }
+  },
+  "generation": {
+    "title": "Generación",
+    "subtitle": "Cómo se comportó el pipeline agéntico en cada generación de curso — resultados, veredictos del juez, etapas de fallo, costo y eficiencia de caché.",
+    "loading": "Cargando telemetría de generación…",
+    "tracks": "Corridas masivas (tracks)",
+    "selectRun": "Selecciona una corrida de generación",
+    "empty": "Aún no hay corridas registradas — la telemetría aparecerá aquí tras la próxima generación.",
+    "runTitle": "Corrida {{runId}}",
+    "salvaged": "recortada",
+    "earlyStop": "corte anticipado",
+    "kpi": {
+      "published": "publicadas",
+      "failed": "fallidas",
+      "cost": "costo",
+      "tokens": "tokens",
+      "cacheHit": "caché",
+      "images": "imágenes cobradas+heredadas"
+    },
+    "track": {
+      "halted": "Detenido",
+      "completed": "Completado",
+      "shards": "{{count}} shard(s)",
+      "mopUp": "Pendientes ({{count}})"
+    },
+    "heatmap": {
+      "title": "Fallos por etapa del pipeline",
+      "empty": "Sin fallos — todas las lecciones intentadas se publicaron."
+    },
+    "judge": {
+      "title": "Dimensiones del juez ({{count}} evaluadas)",
+      "note": "El piso de ruido entre corridas es ±0.4 — léelas como señales de defectos, no como una puntuación a perseguir.",
+      "empty": "No hay rúbricas del juez registradas para esta corrida."
+    },
+    "dims": {
+      "kid_safety": "Seguridad infantil",
+      "age_fit": "Ajuste de edad",
+      "concreteness": "Concreción",
+      "pedagogy": "Pedagogía",
+      "cognitive_engagement": "Reto cognitivo",
+      "feedback_quality": "Calidad del feedback",
+      "distractor_quality": "Calidad de distractores",
+      "narrative_quality": "Calidad narrativa",
+      "naturalness": "Naturalidad"
+    },
+    "duration": {
+      "title": "Tiempo real por lección (segundos)"
+    },
+    "slots": {
+      "title": "Lecciones ({{count}})",
+      "empty": "No hay registros por lección para esta corrida.",
+      "slot": "Lección",
+      "state": "Resultado",
+      "stage": "Falló desde",
+      "cycles": "Ciclos de revisión",
+      "duration": "Duración",
+      "images": "Imágenes g·c·h",
+      "error": "Error"
+    },
+    "states": {
+      "published": "publicada",
+      "failed": "fallida",
+      "dry-run": "simulación",
+      "skipped": "omitida"
     }
   }
 }
