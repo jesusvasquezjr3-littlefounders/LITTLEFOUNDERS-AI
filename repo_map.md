@@ -1563,6 +1563,26 @@ colors:
 
 ```
 
+### ORACLE.md
+
+```
+# ORACLE.md — Tutor IA (diseño aprobado, NO implementado)
+
+> **ESTADO: FUTURO.** El dueño decidió (2026-07-25) que la funcionalidad de
+> Tutor IA es demasiado compleja para desarrollarse de paso y requiere una
+> sesión dedicada. Este documento captura el diseño completo de la v1
+> ("Money Moments") tal como fue analizado, prototipado y luego REVERTIDO
+> (commit de revert sobre `67dfb6e` — ese commit contiene una implementación
+> de referencia completa y funcional si la sesión futura quiere partir de
+> ella con `git show`). Nada de lo aquí descrito existe en el código activo.
+
+## Fundamento (análisis edtech 2026-07-25)
+
+Patrón origen: Google Labs *Little Language Lessons* — "Tiny Lesson": la
+SITUACIÓN real del aprendiz, no un nodo de currículo, como unidad de
+aprendizaje (transfer-appropriate processing). Su colección demuestra que el
+```
+
 ### PRODUCT.md
 
 ```

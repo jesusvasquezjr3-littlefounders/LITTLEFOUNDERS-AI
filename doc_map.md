@@ -31,6 +31,7 @@
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
+| Tutor IA (Oracle) — diseño futuro, NO implementado | `ORACLE.md` |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |
