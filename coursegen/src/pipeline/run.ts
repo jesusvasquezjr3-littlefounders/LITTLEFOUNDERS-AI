@@ -405,6 +405,7 @@ async function processSlot(
         },
         adventure: {
           slug: slot.adventure.slug,
+          renamedFrom: slot.adventure.renamed_from,
           position: slot.adventure.position,
           theme: slot.adventure.theme,
           ageTier: slot.tier,
@@ -414,6 +415,7 @@ async function processSlot(
         },
         saga: {
           slug: slot.saga.slug,
+          renamedFrom: slot.saga.renamed_from,
           position: slot.saga.position,
           icon: slot.saga.icon,
           title: slot.saga.title,
@@ -421,6 +423,7 @@ async function processSlot(
         },
         topic: {
           slug: slot.topic.slug,
+          renamedFrom: slot.topic.renamed_from,
           position: slot.topic.position,
           title: {
             'es-MX': slot.topic.title_es,
@@ -436,6 +439,7 @@ async function processSlot(
         },
         lesson: {
           slug: slot.lesson.slug,
+          renamedFrom: slot.lesson.renamed_from,
           position: slot.lesson.position,
           difficulty: slot.lesson.difficulty,
           estimatedMinutes: documents[AUTHORING_LOCALE]!.meta.estimated_minutes,

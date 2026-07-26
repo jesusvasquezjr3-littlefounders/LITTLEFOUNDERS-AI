@@ -144,6 +144,17 @@ export type CatalogFile = z.infer<typeof catalogFileSchema>;
 export const lessonBlueprintSchema = z.object({
   position: z.number().int().min(1),
   slug: slugSchema,
+  /**
+   * IDENTITY MIGRATION (roadmap.sh migration-mapping pattern, 2026-07-25):
+   * when this node's slug CHANGES between publishes, declare the previous
+   * slug here. Publish then RENAMES the existing Vault row (same UUID)
+   * instead of inserting a new one — kid progress, streaks and map states
+   * key on those UUIDs, so an undeclared rename silently orphans them.
+   * verify:course enforces the other half: an orphaned lesson that has
+   * learner progress fails the acceptance check. Remove the declaration
+   * after the rename has shipped everywhere.
+   */
+  renamed_from: slugSchema.optional(),
   micro_objective: z.string().min(1).max(300),
   narrative_beat: z.string().min(1).max(600),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
@@ -226,6 +237,8 @@ export const topicBlueprintSchema = z
   .object({
     position: z.number().int().min(1),
     slug: slugSchema,
+    /** Identity migration — see lessonBlueprintSchema.renamed_from. */
+    renamed_from: slugSchema.optional(),
     kind: topicKindSchema.default('teaching'),
     review_of: z.array(reviewOfPathSchema).min(1).optional(),
     title_es: z.string().min(1).max(160),
@@ -254,6 +267,7 @@ export const topicBlueprintSchema = z
   });
 
 export const sagaBlueprintSchema = z.object({
+  renamed_from: slugSchema.optional(),
   position: z.number().int().min(1),
   slug: slugSchema,
   kind: sagaKindSchema.default('teaching'),
@@ -268,6 +282,8 @@ export const adventureFileSchema = z.object({
   adventure: z.object({
     position: z.number().int().min(1),
     slug: slugSchema,
+    /** Identity migration — see lessonBlueprintSchema.renamed_from. */
+    renamed_from: slugSchema.optional(),
     theme: z.string().min(1).max(40),
     age_tier: tierKeySchema,
     title: localized(160),

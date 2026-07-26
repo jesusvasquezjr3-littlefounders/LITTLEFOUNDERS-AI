@@ -119,6 +119,35 @@ interface Check {
     `${cleanDocs}/${docs.length} clean${excepted.size > 0 ? `, ${excepted.size} declared exception(s)` : ''}`,
   );
 
+  /*
+   * ---- identity migration contract (roadmap.sh pattern, 2026-07-25) ----------
+   * A Vault lesson that the catalog no longer names is an ORPHAN. Orphans with
+   * learner progress FAIL the acceptance check: a restructure that strands a
+   * kid's attempts/streaks must be declared (`renamed_from` in the blueprint —
+   * publish renames the row and keeps its UUID) instead of shipping silently.
+   * Orphans WITHOUT progress are reported informationally: clutter, not harm.
+   */
+  const catalogLessonSlugs = new Set<string>();
+  for (const a of load.course.adventures) {
+    for (const sg of a.data.sagas) for (const t of sg.topics) for (const l of t.lessons) catalogLessonSlugs.add(l.slug);
+  }
+  const orphans = lessons.filter((l) => !catalogLessonSlugs.has(l.slug));
+  let orphansWithProgress: string[] = [];
+  if (orphans.length > 0) {
+    const attempts: any[] = await q(
+      `lesson_segment_attempts?select=lesson_id&lesson_id=in.(${orphans.map((l) => l.id).join(',')})&limit=1000`,
+    );
+    const touched = new Set(attempts.map((a) => a.lesson_id));
+    orphansWithProgress = orphans.filter((l) => touched.has(l.id)).map((l) => l.slug);
+  }
+  add(
+    'no orphaned lessons carry learner progress (declare renames via renamed_from)',
+    orphansWithProgress.length === 0,
+    orphansWithProgress.length === 0
+      ? `${orphans.length} orphan(s), none with progress`
+      : `ORPHANED WITH PROGRESS: ${orphansWithProgress.join(', ')}`,
+  );
+
   // ---- currency really is local (a silent localization failure is invisible) ---
   const CURRENCY: Record<string, RegExp> = {
     'es-MX': /\bpesos?\b/i,

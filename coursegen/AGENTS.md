@@ -46,6 +46,23 @@ validate (catalog/) → plan → write → gate → review → localize → imag
 
 `src/contract/core/types.ts` is a deliberately **minimal subset** of the frontend original (just `LESSON_LOCALES`/`LESSON_SUBJECTS` — nothing that pulls in React) and is **not** part of the byte-diffed set. `src/contract/registry.ts` is Forge-only (derives type→family/schema maps from the copied schemas) and has no frontend counterpart.
 
+## Identity migration — kid progress must survive republishes (2026-07-25)
+
+Every publish upsert keys on `(parent_id, slug)`, so republishing UNCHANGED
+slugs already preserves row UUIDs — and all learner progress keys on those
+UUIDs. The danger is a RENAME or restructure: a changed slug inserts a
+brand-new row and silently orphans every kid's attempts/streaks/map states.
+The contract (roadmap.sh migration-mapping pattern):
+
+- Declare renames in the catalog: `renamed_from: <old-slug>` on the
+  adventure/saga/topic/lesson being renamed. Publish then RENAMES the
+  existing Vault row first (same UUID) and the upsert lands on it.
+  Idempotent — once the old slug is gone the rename is a no-op. Remove the
+  declaration after the rename has shipped everywhere.
+- `verify:course` enforces the other half: an orphaned lesson (in Vault,
+  absent from the catalog) that carries learner progress FAILS the
+  acceptance check. Orphans without progress are reported informationally.
+
 ## Curriculum catalog authoring
 
 Catalog content (`curriculum/<course-slug>/*.yaml`) is **human-reviewed content design**, authored separately from this pipeline code (`/COURSE_ENGINE.md` §3). This package only:
