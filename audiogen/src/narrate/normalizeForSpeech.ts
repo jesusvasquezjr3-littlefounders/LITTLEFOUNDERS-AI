@@ -76,6 +76,18 @@ function stripStageDirections(text: string): string {
   return text.replace(/\s*\(([^()]*)\)/g, (match, inner: string) => (isStageDirection(inner) ? '' : match));
 }
 
+/*
+ * Blank placeholders — "2 vasos por ___ pesos" (a sign the child completes).
+ * A human narrates a blank as a PAUSE, so underscore runs become an ellipsis
+ * (the one prosody lever qwen3-tts documents is punctuation). Without this the
+ * speechGuard's markdown-residue rule ("__" is also markdown bold) refused the
+ * unit — found live on the first full narration of the Testing course
+ * (2026-07-26): one build-the-sign lesson, all 3 locales, deterministic.
+ */
+function expandBlanks(text: string): string {
+  return text.replace(/_{2,}/g, '…');
+}
+
 /* ------------------------------------------------------------------ abbreviations */
 
 function expandAbbreviations(text: string, locale: LessonLocale): string {
@@ -308,6 +320,7 @@ export function normalizeForSpeech(text: string, locale: LessonLocale): string {
   const words = SYMBOL_WORDS[locale] ?? SYMBOL_WORDS['es-MX'];
   const effective: LessonLocale = SYMBOL_WORDS[locale] ? locale : 'es-MX';
   let out = stripStageDirections(text);
+  out = expandBlanks(out);
   out = expandAbbreviations(out, effective);
   out = expandOrdinals(out, effective);
   out = normalizeSymbols(out, words);

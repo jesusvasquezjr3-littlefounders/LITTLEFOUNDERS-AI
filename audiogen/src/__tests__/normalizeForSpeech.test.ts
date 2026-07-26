@@ -152,6 +152,19 @@ describe('normalizeForSpeech — ordinals and ranges', () => {
   });
 });
 
+describe('normalizeForSpeech — blank placeholders read as a pause', () => {
+  it('turns underscore runs into an ellipsis (a fill-in sign is narrated with a pause)', () => {
+    expect(normalizeForSpeech("Un letrero: '2 vasos por ___ pesos'", 'es-MX')).toBe("Un letrero: '2 vasos por … pesos'");
+    expect(normalizeForSpeech('2 cups for ___ dollars', 'en-US')).toBe('2 cups for … dollars');
+  });
+
+  it('never leaves "__" for the speechGuard markdown-residue rule to refuse', async () => {
+    const { auditSpeechText } = await import('../narrate/speechGuard.js');
+    const spoken = normalizeForSpeech("Quiere un letrero: '2 vasos por ___ pesos'. Arma el letrero.", 'es-MX');
+    expect(auditSpeechText(spoken, 'es-MX').filter((i) => i.severity === 'block')).toEqual([]);
+  });
+});
+
 describe('normalizeForSpeech — emojis never reach the TTS', () => {
   it('strips a sentence-final decorative emoji (the sanctioned garnish position)', () => {
     expect(normalizeForSpeech('¡Lo lograste! 🎉', 'es-MX')).toBe('¡Lo lograste!');
