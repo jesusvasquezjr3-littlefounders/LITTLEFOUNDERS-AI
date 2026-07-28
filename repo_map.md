@@ -8309,20 +8309,40 @@ create table if not exists generation_heartbeat_snapshots (
 
 ```
 -- 0021_email_logs.sql — transactional email audit trail.
--- email-server (Courier) writes one row per dispatched email so the admin
--- dashboard has a Resend-style delivery history. GoTrue-initiated auth mail
--- (which goes straight to Haraka over SMTP, bypassing the Courier HTTP API)
--- is NOT captured here — only emails that flow through POST /api/v1/send.
 --
--- Service-role-only posture like 0017/0018: RLS enabled, ZERO client policies.
--- Core reads this table through /api/v1/admin/emails (service role); email-server
--- writes via service-role API key. The browser never touches Vault directly.
+-- NOT YET WIRED. This migration creates the destination schema only; as of
+-- this commit NOTHING reads or writes it. Courier's delivery history is an
+-- in-process ring buffer (email-server/src/services/emailLog.ts, 1000 entries)
+-- which Core proxies through /api/v1/admin/emails/{logs,summary} — so the
+-- admin dashboard's history is lost on every redeploy or restart of
+-- email-server. This table is the durable replacement; the follow-up work is
+-- to make Courier write here on dispatch and Core read here instead of the
+-- buffer.
+--
+-- Even once wired, GoTrue-initiated auth mail (confirmation / recovery /
+-- magic-link / invite / email-change) will NOT appear: it goes straight to
+-- Haraka over SMTP and never touches the Courier HTTP API. Only mail that
+-- flows through POST /api/v1/send can be captured.
+```
 
-create table if not exists email_logs (
-  id            uuid primary key default gen_random_uuid(),
-  message_id    text,                         -- nodemailer/ses message-id
-  to_address    text not null,
-  subject       text not null,
+### database/migrations/0022_realtime_publication.sql
+
+```
+-- 0022_realtime_publication.sql — actually enable CDC for generation_runs_live.
+--
+-- 0019 granted admin/superadmin the SELECT policy that Realtime needs to
+-- authorize a subscription, but a policy alone emits nothing: Supabase
+-- Realtime reads Postgres LOGICAL REPLICATION, and a table only appears in
+-- that stream once it is a member of the `supabase_realtime` publication.
+-- Verified on the production Vault: the publication exists and had ZERO
+-- tables, so the admin Live Monitor's `postgres_changes` subscription
+-- (frontend/src/routes/admin/LiveStats.tsx) would have stayed silent
+-- forever — connected, authorized, and receiving no events.
+--
+-- REPLICA IDENTITY FULL is required, not optional, for two reasons:
+--   1. The subscription listens for `event: '*'`, which includes DELETE
+--      (coursegen deletes the row at run end, and the dashboard treats that
+--      as "run finished"). With the default REPLICA IDENTITY the DELETE
 ```
 
 ### database/package.json
@@ -8894,6 +8914,26 @@ describe('GET /health', () => {
   });
 
   it('unknown routes return the error envelope', async () => {
+```
+
+### email-server/src/__tests__/logs.test.ts
+
+```
+import { describe, expect, it, beforeAll } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+
+beforeAll(() => {
+  process.env.INTERNAL_API_KEY = 'test-key';
+});
+
+const auth = (app: ReturnType<typeof createApp>, path: string) =>
+  request(app).get(path).set('x-internal-api-key', 'test-key');
+
+describe('GET /api/v1/logs', () => {
+  it('defaults limit and offset when the query is empty', async () => {
+    const res = await auth(createApp(), '/api/v1/logs');
+    expect(res.status).toBe(200);
 ```
 
 ### email-server/src/__tests__/send.test.ts

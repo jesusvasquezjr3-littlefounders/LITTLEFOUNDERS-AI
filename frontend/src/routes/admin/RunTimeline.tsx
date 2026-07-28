@@ -65,7 +65,10 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
     );
   }
 
-  if (!data || data.snapshots.length < 2) {
+  // Guard the array itself, not just the envelope: this page has no error
+  // boundary above it, so an envelope without `snapshots` would white-screen
+  // the whole run inspector instead of degrading to the empty state.
+  if (!data?.snapshots?.length || data.snapshots.length < 2) {
     return (
       <Card className={cn('p-5', className)}>
         <p className="lf-body-sm text-content-muted">{t('admin.generation.timeline.insufficient')}</p>

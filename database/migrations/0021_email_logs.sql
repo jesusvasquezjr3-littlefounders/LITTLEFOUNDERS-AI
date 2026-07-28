@@ -1,12 +1,23 @@
 -- 0021_email_logs.sql — transactional email audit trail.
--- email-server (Courier) writes one row per dispatched email so the admin
--- dashboard has a Resend-style delivery history. GoTrue-initiated auth mail
--- (which goes straight to Haraka over SMTP, bypassing the Courier HTTP API)
--- is NOT captured here — only emails that flow through POST /api/v1/send.
+--
+-- NOT YET WIRED. This migration creates the destination schema only; as of
+-- this commit NOTHING reads or writes it. Courier's delivery history is an
+-- in-process ring buffer (email-server/src/services/emailLog.ts, 1000 entries)
+-- which Core proxies through /api/v1/admin/emails/{logs,summary} — so the
+-- admin dashboard's history is lost on every redeploy or restart of
+-- email-server. This table is the durable replacement; the follow-up work is
+-- to make Courier write here on dispatch and Core read here instead of the
+-- buffer.
+--
+-- Even once wired, GoTrue-initiated auth mail (confirmation / recovery /
+-- magic-link / invite / email-change) will NOT appear: it goes straight to
+-- Haraka over SMTP and never touches the Courier HTTP API. Only mail that
+-- flows through POST /api/v1/send can be captured.
 --
 -- Service-role-only posture like 0017/0018: RLS enabled, ZERO client policies.
--- Core reads this table through /api/v1/admin/emails (service role); email-server
--- writes via service-role API key. The browser never touches Vault directly.
+-- Core will read this table through /api/v1/admin/emails (service role) and
+-- email-server will write via service-role key. The browser never touches
+-- Vault directly.
 
 create table if not exists email_logs (
   id            uuid primary key default gen_random_uuid(),

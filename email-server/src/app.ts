@@ -17,6 +17,11 @@ const SendBody = z.object({
   userId: z.string().uuid().optional(),
 });
 
+const LogsQuery = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
 export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Express {
   const app = express();
   app.use(express.json());
@@ -54,9 +59,15 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
   });
 
   app.get('/api/v1/logs', (req, res) => {
-    const limit = z.coerce.number().int().min(1).max(200).default(50).parse(req.query.limit);
-    const offset = z.coerce.number().int().min(0).default(0).parse(req.query.offset);
-    res.json({ data: getEmailLogs({ limit, offset }), error: null });
+    const parsed = LogsQuery.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({
+        data: null,
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message ?? 'Invalid query' },
+      });
+      return;
+    }
+    res.json({ data: getEmailLogs(parsed.data), error: null });
   });
 
   app.get('/api/v1/logs/summary', (_req, res) => {
@@ -65,6 +76,21 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
 
   app.use((_req, res) => {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
+  });
+
+  // §1.6: every response uses the envelope, including 500s. Without this,
+  // Express's default handler answers with an HTML page carrying a stack
+  // trace — a malformed JSON body or a failed adapter.send() would both
+  // leak absolute paths to the caller.
+  // Express identifies error middleware by arity — the 4th param must exist.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const malformedBody = err instanceof SyntaxError && 'body' in err;
+    const status = malformedBody ? 400 : 500;
+    const code = malformedBody ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR';
+    const message = malformedBody ? 'Malformed JSON body' : 'Unexpected server error';
+    console.error(`[${SERVICE}] ${code}:`, err);
+    res.status(status).json({ data: null, error: { code, message } });
   });
 
   return app;

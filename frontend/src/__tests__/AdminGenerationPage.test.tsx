@@ -124,6 +124,11 @@ vi.mock('@/lib/api', () => ({
         error: null,
       });
     }
+    // RunTimeline reads data.snapshots — the generic fallback below has no
+    // such key, which used to throw inside render and fail the whole run.
+    if (path.startsWith('/admin/generation/snapshots/')) {
+      return Promise.resolve({ data: { runId: 'run-1', snapshots: [] }, error: null });
+    }
     return Promise.resolve({ data: { activeRuns: [] }, error: null });
   }),
 }));
