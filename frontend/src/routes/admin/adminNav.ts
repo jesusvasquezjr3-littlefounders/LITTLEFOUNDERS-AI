@@ -17,8 +17,8 @@ export interface AdminSection {
 export const ADMIN_SECTIONS: AdminSection[] = [
   { key: 'overview', path: '/admin', icon: 'space_dashboard' },
   { key: 'content', path: '/admin/content', icon: 'menu_book' },
-  { key: 'moderation', path: '/admin/moderation', icon: 'gpp_maybe' },
   { key: 'users', path: '/admin/users', icon: 'group' },
+  { key: 'emails', path: '/admin/emails', icon: 'mail' },
   { key: 'analytics', path: '/admin/analytics', icon: 'monitoring' },
   { key: 'generation', path: '/admin/generation', icon: 'precision_manufacturing' },
   { key: 'audit', path: '/admin/audit', icon: 'history' },

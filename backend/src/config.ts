@@ -17,6 +17,7 @@ const Env = z.object({
   // Service-to-service (/AGENTS.md §1.5).
   INTERNAL_API_KEY: z.string().min(16),
   PARENT_ID_CHECK_URL: z.url().default('http://localhost:4004'),
+  EMAIL_SERVER_URL: z.url().default('http://localhost:4005'),
 
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),

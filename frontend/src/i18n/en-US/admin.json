@@ -15,8 +15,8 @@
   "nav": {
     "overview": "Overview",
     "content": "Content",
-    "moderation": "Moderation",
     "users": "Users",
+    "emails": "Emails",
     "analytics": "Analytics & Health",
     "generation": "Generation",
     "audit": "Audit log",
@@ -50,7 +50,8 @@
   },
   "content": {
     "title": "Content",
-    "subtitle": "Publish, unpublish and archive courses.",
+    "subtitle": "Manage courses and review kid-facing lessons before they go live.",
+    "coursesHeading": "Courses",
     "colTitle": "Course",
     "colSlug": "Slug",
     "colSubject": "Subject",
@@ -64,6 +65,17 @@
   "users": {
     "title": "Users",
     "subtitle": "Everyone on the platform and their roles.",
+    "statsRoles": "Roles",
+    "statsLocales": "Locales",
+    "statsAges": "Age groups",
+    "statsAgesEmpty": "No birth dates recorded yet",
+    "timelineTitle": "New signups",
+    "timelineAria": "Signup timeline chart",
+    "timelinePeriods": {
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1y"
+    },
     "colName": "Name",
     "colUsername": "Username",
     "colRoles": "Roles",
@@ -74,8 +86,7 @@
     "empty": "No users yet."
   },
   "moderation": {
-    "title": "Moderation",
-    "subtitle": "The human publish gate for kid-facing lessons.",
+    "heading": "Review queue",
     "note": "Every lesson shown to children passes this human review before it goes live (§1.9). Approve to publish, reject to send back to draft.",
     "approve": "Approve",
     "reject": "Reject",
@@ -208,6 +219,25 @@
       "copied": "Copied",
       "pending": "Edited list not applied yet — run the command and redeploy pulse-plausible.",
       "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy) — this screen never writes it."
+    }
+  },
+  "emails": {
+    "title": "Emails",
+    "subtitle": "Transactional email delivery history — a Resend-style audit trail.",
+    "totalSent": "Total sent",
+    "colTo": "To",
+    "colSubject": "Subject",
+    "colType": "Type",
+    "colStatus": "Status",
+    "colDate": "Sent at",
+    "empty": "No emails sent yet.",
+    "showing": "{{from}}–{{to}} of {{total}}",
+    "prev": "Previous",
+    "next": "Next",
+    "status": {
+      "queued": "Queued",
+      "delivered": "Delivered",
+      "failed": "Failed"
     }
   },
   "health": {

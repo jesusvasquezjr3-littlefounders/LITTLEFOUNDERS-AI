@@ -15,8 +15,8 @@
   "nav": {
     "overview": "Painel",
     "content": "Conteúdo",
-    "moderation": "Moderação",
     "users": "Usuários",
+    "emails": "E-mails",
     "analytics": "Analytics e Saúde",
     "generation": "Geração",
     "audit": "Auditoria",
@@ -50,7 +50,8 @@
   },
   "content": {
     "title": "Conteúdo",
-    "subtitle": "Publique, despublique e arquive cursos.",
+    "subtitle": "Gerencie cursos e revise lições antes que cheguem às crianças.",
+    "coursesHeading": "Cursos",
     "colTitle": "Curso",
     "colSlug": "Slug",
     "colSubject": "Matéria",
@@ -64,6 +65,17 @@
   "users": {
     "title": "Usuários",
     "subtitle": "Todos na plataforma e seus papéis.",
+    "statsRoles": "Papéis",
+    "statsLocales": "Idiomas",
+    "statsAges": "Idades",
+    "statsAgesEmpty": "Ainda sem datas de nascimento",
+    "timelineTitle": "Novos cadastros",
+    "timelineAria": "Gráfico de cadastros ao longo do tempo",
+    "timelinePeriods": {
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1a"
+    },
     "colName": "Nome",
     "colUsername": "Usuário",
     "colRoles": "Papéis",
@@ -74,8 +86,7 @@
     "empty": "Ainda não há usuários."
   },
   "moderation": {
-    "title": "Moderação",
-    "subtitle": "O portão humano de publicação para lições de crianças.",
+    "heading": "Fila de revisão",
     "note": "Toda lição mostrada a crianças passa por esta revisão humana antes de ir ao ar (§1.9). Aprove para publicar, rejeite para voltar ao rascunho.",
     "approve": "Aprovar",
     "reject": "Rejeitar",
@@ -208,6 +219,25 @@
       "copied": "Copiado",
       "pending": "A lista editada ainda não foi aplicada — execute o comando e faça o redeploy do pulse-plausible.",
       "note": "Espelho somente leitura: a aplicação vive na variável de ambiente IP_BLOCKLIST do pulse-plausible (aplicada no redeploy) — esta tela nunca a escreve."
+    }
+  },
+  "emails": {
+    "title": "E-mails",
+    "subtitle": "Histórico de envio de e-mails transacionais — um registro estilo Resend.",
+    "totalSent": "Total enviados",
+    "colTo": "Para",
+    "colSubject": "Assunto",
+    "colType": "Tipo",
+    "colStatus": "Status",
+    "colDate": "Enviado em",
+    "empty": "Nenhum e-mail enviado ainda.",
+    "showing": "{{from}}–{{to}} de {{total}}",
+    "prev": "Anterior",
+    "next": "Próximo",
+    "status": {
+      "queued": "Na fila",
+      "delivered": "Entregue",
+      "failed": "Falhou"
     }
   },
   "health": {

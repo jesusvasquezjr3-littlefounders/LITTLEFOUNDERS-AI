@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, type TableColumn } from '@/components/ui';
+import { Card, Icon, Table, type TableColumn } from '@/components/ui';
 import { AdminAction, AdminEmpty, AdminPage, StatusBadge, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
 interface Course {
@@ -12,20 +12,35 @@ interface Course {
   position: number;
 }
 
+interface ReviewLesson {
+  id: string;
+  slug: string;
+  title: string;
+  status: string;
+}
+
 export function AdminContentPage() {
   const { t } = useTranslation();
-  const { data, reload } = useAdminData<{ courses: Course[] }>('/admin/content');
+  const coursesData = useAdminData<{ courses: Course[] }>('/admin/content');
+  const moderationData = useAdminData<{ lessons: ReviewLesson[] }>('/admin/moderation');
   const mutate = useAdminMutation();
   const [busy, setBusy] = useState<string | null>(null);
 
-  async function setStatus(id: string, status: string) {
+  async function setCourseStatus(id: string, status: string) {
     setBusy(id);
     await mutate(`/admin/content/${id}/status`, { status });
-    await reload();
+    await coursesData.reload();
     setBusy(null);
   }
 
-  const columns: TableColumn<Course>[] = [
+  async function decide(id: string, status: 'published' | 'draft') {
+    setBusy(id);
+    await mutate(`/admin/moderation/${id}/status`, { status });
+    await moderationData.reload();
+    setBusy(null);
+  }
+
+  const courseColumns: TableColumn<Course>[] = [
     { key: 'title', header: t('admin.content.colTitle'), primary: true, cell: (c) => c.title },
     { key: 'slug', header: t('admin.content.colSlug'), cell: (c) => <span className="lf-number text-content-muted">{c.slug}</span> },
     { key: 'subject', header: t('admin.content.colSubject'), cell: (c) => c.subject },
@@ -36,17 +51,17 @@ export function AdminContentPage() {
       cell: (c) => (
         <div className="flex flex-wrap gap-1.5">
           {c.status !== 'published' && (
-            <AdminAction tone="success" icon="publish" onClick={() => void setStatus(c.id, 'published')} disabled={busy === c.id}>
+            <AdminAction tone="success" icon="publish" onClick={() => void setCourseStatus(c.id, 'published')} disabled={busy === c.id}>
               {t('admin.content.publish')}
             </AdminAction>
           )}
           {c.status === 'published' && (
-            <AdminAction tone="neutral" icon="unpublished" onClick={() => void setStatus(c.id, 'draft')} disabled={busy === c.id}>
+            <AdminAction tone="neutral" icon="unpublished" onClick={() => void setCourseStatus(c.id, 'draft')} disabled={busy === c.id}>
               {t('admin.content.unpublish')}
             </AdminAction>
           )}
           {c.status !== 'archived' && (
-            <AdminAction tone="neutral" icon="archive" onClick={() => void setStatus(c.id, 'archived')} disabled={busy === c.id}>
+            <AdminAction tone="neutral" icon="archive" onClick={() => void setCourseStatus(c.id, 'archived')} disabled={busy === c.id}>
               {t('admin.content.archive')}
             </AdminAction>
           )}
@@ -57,17 +72,61 @@ export function AdminContentPage() {
 
   return (
     <AdminPage titleKey="admin.content.title" subtitleKey="admin.content.subtitle">
-      {data.state === 'error' ? (
-        <Unavailable code={data.code} />
-      ) : data.state === 'ready' ? (
-        data.data.courses.length === 0 ? (
-          <AdminEmpty icon="menu_book" message={t('admin.content.empty')} />
+      {/* ── Courses ── */}
+      <section className="flex flex-col gap-4">
+        <h2 className="lf-title">{t('admin.content.coursesHeading')}</h2>
+        {coursesData.data.state === 'error' ? (
+          <Unavailable code={coursesData.data.code} />
+        ) : coursesData.data.state === 'ready' ? (
+          coursesData.data.data.courses.length === 0 ? (
+            <AdminEmpty icon="menu_book" message={t('admin.content.empty')} />
+          ) : (
+            <Table columns={courseColumns} rows={coursesData.data.data.courses} rowKey={(c) => c.id} />
+          )
         ) : (
-          <Table columns={columns} rows={data.data.courses} rowKey={(c) => c.id} />
-        )
-      ) : (
-        <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
-      )}
+          <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
+        )}
+      </section>
+
+      {/* ── Review queue ── */}
+      <section className="flex flex-col gap-4">
+        <h2 className="lf-title">{t('admin.moderation.heading')}</h2>
+        <div className="flex items-start gap-2.5 rounded-lg bg-primary-soft px-4 py-3 text-primary">
+          <Icon name="shield" className="mt-0.5 shrink-0" />
+          <p className="lf-caption">{t('admin.moderation.note')}</p>
+        </div>
+
+        {moderationData.data.state === 'error' ? (
+          <Unavailable code={moderationData.data.code} />
+        ) : moderationData.data.state === 'ready' ? (
+          moderationData.data.data.lessons.length === 0 ? (
+            <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} />
+          ) : (
+            <ul className="flex flex-col gap-3">
+              {moderationData.data.data.lessons.map((l) => (
+                <li key={l.id}>
+                  <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+                    <div className="min-w-0">
+                      <p className="lf-label truncate text-content">{l.title}</p>
+                      <p className="lf-number lf-caption text-content-muted">{l.slug}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <AdminAction tone="success" icon="check" onClick={() => void decide(l.id, 'published')} disabled={busy === l.id}>
+                        {t('admin.moderation.approve')}
+                      </AdminAction>
+                      <AdminAction tone="danger" icon="undo" onClick={() => void decide(l.id, 'draft')} disabled={busy === l.id}>
+                        {t('admin.moderation.reject')}
+                      </AdminAction>
+                    </div>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          )
+        ) : (
+          <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
+        )}
+      </section>
     </AdminPage>
   );
 }

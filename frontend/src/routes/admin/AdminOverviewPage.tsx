@@ -104,7 +104,7 @@ export function AdminOverviewPage() {
               </div>
               {o && o.content.reviewQueue > 0 && (
                 <Link
-                  to="/admin/moderation"
+                  to="/admin/content"
                   className="motion-safe-press flex items-center justify-between rounded-lg bg-warning-soft px-4 py-3 text-warning-strong transition-colors hover:bg-warning-soft/70"
                 >
                   <span className="lf-label flex items-center gap-2">

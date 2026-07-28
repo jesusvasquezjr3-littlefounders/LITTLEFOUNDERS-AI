@@ -59,13 +59,14 @@ export interface AdminUser {
   username: string | null;
   locale: string;
   createdAt: string;
+  birthDate: string | null;
   roles: string[];
 }
 
 export async function listAdminUsers(limit = 100): Promise<AdminUser[] | null> {
   const profiles = await serviceRest<
-    { user_id: string; display_name: string; username: string | null; locale: string; created_at: string }[]
-  >(`/profiles?select=user_id,display_name,username,locale,created_at&order=created_at.desc&limit=${limit}`);
+    { user_id: string; display_name: string; username: string | null; locale: string; created_at: string; birth_date: string | null }[]
+  >(`/profiles?select=user_id,display_name,username,locale,created_at,birth_date&order=created_at.desc&limit=${limit}`);
   if (!profiles) return null;
   if (profiles.length === 0) return [];
   const ids = profiles.map((p) => p.user_id).join(',');
@@ -81,8 +82,31 @@ export async function listAdminUsers(limit = 100): Promise<AdminUser[] | null> {
     username: p.username,
     locale: p.locale,
     createdAt: p.created_at,
+    birthDate: p.birth_date,
     roles: byUser.get(p.user_id) ?? [],
   }));
+}
+
+export async function getSignupTimeline(days = 90): Promise<{ date: string; count: number }[]> {
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+  const profiles = await serviceRest<
+    { created_at?: string }[]
+  >(`/profiles?select=created_at&created_at=gte.${cutoff.toISOString().slice(0, 10)}&order=created_at.asc`);
+  if (!profiles) return [];
+  const byDay = new Map<string, number>();
+  for (const p of profiles) {
+    const d = (p.created_at ?? '').slice(0, 10);
+    if (d) byDay.set(d, (byDay.get(d) ?? 0) + 1);
+  }
+  const result: { date: string; count: number }[] = [];
+  const start = new Date(cutoff);
+  while (start <= new Date()) {
+    const key = start.toISOString().slice(0, 10);
+    result.push({ date: key, count: byDay.get(key) ?? 0 });
+    start.setDate(start.getDate() + 1);
+  }
+  return result;
 }
 
 // ── Content ──────────────────────────────────────────────────────────────────

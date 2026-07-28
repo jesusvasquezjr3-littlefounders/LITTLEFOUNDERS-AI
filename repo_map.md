@@ -1693,17 +1693,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-27f) — i18n fix + PipelineFlow particles + mobile optimization (Phase 6b)
+## Current State (2026-07-28) — Admin dashboard hardening + email tracking + cybersecurity audit
 
-- **i18n audit & fix (35 issues resolved):** Hardcoded Spanish cycles ("1 ciclo:", "2 ciclos:", "3+ ciclos:") → `coach.cycle1/2/3` keys. Hardcoded English "Realtime connection lost" → `live.connectionLost`. Raw `failedFrom` stage values ("written", "reviewed"…) → `failedFromLabels.*` i18n keys. Em dashes `'—'` → `noData` key. `toFixed()` → locale-aware `formatPct()`/`formatFixed()`. "s" seconds suffix → `secondsUnit` key. New shared module `generationI18n.ts` with `failedFromI18nKey()`, `formatPct()`, `formatFixed()`.
-- **PipelineFlow slot particles:** Edges now show slot count labels with accent-colored arrow markers when slots are flowing — stage nodes connect through visible, labeled edges with animated dashed flow. Active edges are papaya-colored, inactive edges are outline-gray. Node size auto-adjusts on mobile via inline CSS media query.
-- **Mobile optimization:** canvas height reduced on mobile (220px vs 280px), node sizes shrink via CSS media query, `fitView` handles zoom. Tab labels hidden on mobile (icon-only).
-- **New i18n keys:** `noData`, `secondsUnit`, `connectionLost`, `failedFromLabels.*`, `coach.cycle1/2/3`, `coach.minLabel`.
-- **Gates:** type-check, lint, tests (13/13), i18n parity — all green.
-
-## Current State (2026-07-27e) — Analytics + alertas: forecast, success rate, anomaly detection (Phase 6)
-
-- **AlertBanner:** top-of-page warning cards on all tabs. Live alerts: estimated cost overrun, cache-hit below 20%, failure rate >30%. Historical alerts: quality dimension drops >0.8 between runs, cost spike >2× baseline. Color-coded by severity (critical=red, warning=yellow) with detail text and badge.
+- **Admin Content+Moderation merged** (`/admin/content`): courses table + lesson review queue in a single unified view. Deleted `AdminModerationPage.tsx`. Removed `moderation` from admin nav (7 sections now → 8 with new Emails section). Overview page "awaiting review" CTA now points to `/admin/content`.
+- **Admin Users stats bar:** 3-card grid above the table — role distribution (top-role-first, stacked bar), locale distribution (per-locale colored bars: en-US=blue, es-MX=papaya, pt-BR=green), age groups (histogram from `profiles.birth_date`: <6, 6-8, 9-10, 11-12, 13-17, 18+).
+- **Signup timeline chart:** SVG bar chart with period selector (30d/90d/1y) at `/admin/users`. Backend `GET /admin/users/timeline?days=N` (Zod-validated 7-365). Groups `profiles.created_at` by day, fills zero-count days.
+- **Tutor upgrade hidden for staff:** `AppLayout.tsx` sidebar card now checks `!isStaff` so admin/superadmin never see "Verify your identity to become a Tutor".
+- **React Router v7 future flags:** `BrowserRouter` in `main.tsx` now carries `v7_startTransition: true` + `v7_relativeSplatPath: true` — silenced the console deprecation warnings in dev.
+- **New migration 0021 `email_logs`:** idempotent DDL, RLS enabled with zero client policies (service-role-only, same posture as 0017/0018). Columns: id, message_id, to_address, subject, template_type, locale, user_id, status, detail (jsonb), created_at. Indexes on created_at, status, to_address.
+- **email-server email tracking:** New `src/services/emailLog.ts` — ring buffer of 1000 entries logged on every `POST /api/v1/send`. New endpoints `GET /api/v1/logs?limit=&offset=` and `GET /api/v1/logs/summary` (Zod-validated query params, authenticated via `INTERNAL_API_KEY` middleware now scoped to `/api/v1/*`). `SendBody` schema extended with `templateType`, `locale`, `userId` optional fields.
+- **Backend email proxy:** `GET /admin/emails/logs` and `GET /admin/emails/summary` proxy email-server through Core (never direct browser access per §1.5). Zod-validated query params (`EmailLogsQuerySchema`), response shapes (`EmailLogsSchema`, `EmailSummarySchema`), `AbortSignal.timeout(10_000)` on fetch. New env var `EMAIL_SERVER_URL` (default `http://localhost:4005`).
+- **Admin Email Dashboard** (`/admin/emails`): KPI cards (total sent + status breakdown: queued/delivered/failed), paginated table (to, subject, type badge, status badge, sent-at), prev/next navigation. 3-locale i18n. New admin nav entry with `mail` icon.
 ```
 
 ### agent/README.md
@@ -3988,6 +3988,7 @@ if (!isTestOrDev) {
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
+import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
@@ -3999,7 +4000,6 @@ import {
   getPulseConfig,
   getUmamiStats,
   kumaConfigured,
-  PLAUSIBLE_DIMENSION_KEYS,
 ```
 
 ### backend/src/routes/auth.ts
@@ -8305,6 +8305,26 @@ create table if not exists generation_heartbeat_snapshots (
   failed_slots     integer not null default 0,
 ```
 
+### database/migrations/0021_email_logs.sql
+
+```
+-- 0021_email_logs.sql — transactional email audit trail.
+-- email-server (Courier) writes one row per dispatched email so the admin
+-- dashboard has a Resend-style delivery history. GoTrue-initiated auth mail
+-- (which goes straight to Haraka over SMTP, bypassing the Courier HTTP API)
+-- is NOT captured here — only emails that flow through POST /api/v1/send.
+--
+-- Service-role-only posture like 0017/0018: RLS enabled, ZERO client policies.
+-- Core reads this table through /api/v1/admin/emails (service role); email-server
+-- writes via service-role API key. The browser never touches Vault directly.
+
+create table if not exists email_logs (
+  id            uuid primary key default gen_random_uuid(),
+  message_id    text,                         -- nodemailer/ses message-id
+  to_address    text not null,
+  subject       text not null,
+```
+
 ### database/package.json
 
 ```
@@ -8923,6 +8943,7 @@ import crypto from 'crypto';
 import express from 'express';
 import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
+import { getEmailLogs, getEmailSummary, recordEmail } from './services/emailLog.js';
 
 export const SERVICE = 'email-server';
 export const VERSION = '0.2.0';
@@ -8932,8 +8953,7 @@ const SendBody = z.object({
   subject: z.string().min(1),
   html: z.string().optional(),
   text: z.string().optional(),
-});
-
+  templateType: z.string().optional(),
 ```
 
 ### email-server/src/config.ts
@@ -8994,6 +9014,26 @@ export interface SendResult {
   id: string;
   status: 'queued';
 }
+```
+
+### email-server/src/services/emailLog.ts
+
+```
+import type { SendRequest, SendResult } from './adapter.js';
+
+export interface EmailLogEntry {
+  id: string;
+  to: string;
+  subject: string;
+  status: string;
+  templateType: string;
+  locale?: string;
+  userId?: string;
+  detail: Record<string, unknown>;
+  createdAt: string;
+}
+
+const MAX_ENTRIES = 1000;
 ```
 
 ### email-server/src/services/haraka.ts
@@ -139796,11 +139836,12 @@ import '@/index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
       <App />
     </BrowserRouter>
   </StrictMode>,
-);
 ```
 
 ### frontend/src/routes/admin/AdminAuditPage.tsx
@@ -139828,7 +139869,7 @@ function shortId(id: string | null): string {
 ```
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, type TableColumn } from '@/components/ui';
+import { Card, Icon, Table, type TableColumn } from '@/components/ui';
 import { AdminAction, AdminEmpty, AdminPage, StatusBadge, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
 interface Course {
@@ -139840,7 +139881,27 @@ interface Course {
   position: number;
 }
 
-export function AdminContentPage() {
+interface ReviewLesson {
+```
+
+### frontend/src/routes/admin/AdminEmailDashboard.tsx
+
+```
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Badge, Card } from '@/components/ui';
+import { AdminAction, AdminEmpty, AdminPage, Unavailable } from './adminShared';
+
+interface EmailEntry {
+  id: string;
+  to: string;
+  subject: string;
+  status: string;
+  templateType: string;
+  locale?: string;
+  userId?: string;
 ```
 
 ### frontend/src/routes/admin/AdminGenerationPage.tsx
@@ -139861,26 +139922,6 @@ import { RunTimeline } from './RunTimeline';
 import { RunCompare } from './RunCompare';
 import type { GenerationOverview, LiveRunHeartbeat, RunDetail, SlotItem, TrackListItem } from './generationTypes';
 import { failedFromI18nKey, formatPct, formatFixed } from './generationI18n';
-```
-
-### frontend/src/routes/admin/AdminModerationPage.tsx
-
-```
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Card, Icon } from '@/components/ui';
-import { AdminAction, AdminEmpty, AdminPage, Unavailable, useAdminData, useAdminMutation } from './adminShared';
-
-interface ReviewLesson {
-  id: string;
-  slug: string;
-  title: string;
-  status: string;
-}
-
-export function AdminModerationPage() {
-  const { t } = useTranslation();
-  const { data, reload } = useAdminData<{ lessons: ReviewLesson[] }>('/admin/moderation');
 ```
 
 ### frontend/src/routes/admin/AdminOverviewPage.tsx
@@ -139928,8 +139969,10 @@ type Grantable = (typeof GRANTABLE)[number];
 ```
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Field, Table, type TableColumn } from '@/components/ui';
+import { Card, Field, Table, type TableColumn } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { SignupTimeline } from './SignupTimeline';
 
 interface User {
   userId: string;
@@ -139937,10 +139980,8 @@ interface User {
   username: string | null;
   locale: string;
   createdAt: string;
+  birthDate: string | null;
   roles: string[];
-}
-
-export function AdminUsersPage() {
 ```
 
 ### frontend/src/routes/admin/AlertBanner.tsx
@@ -140101,6 +140142,26 @@ import type { TrendPoint } from '@/components/ui';
  */
 
 interface SnapshotData {
+```
+
+### frontend/src/routes/admin/SignupTimeline.tsx
+
+```
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Card } from '@/components/ui';
+import { cn } from '@/lib/utils';
+
+interface Day {
+  date: string;
+  count: number;
+}
+
+const PERIODS = [
+  { days: 30, key: '30d' },
+  { days: 90, key: '90d' },
 ```
 
 ### frontend/src/routes/admin/SlotDetailModal.tsx

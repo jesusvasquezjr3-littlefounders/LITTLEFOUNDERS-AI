@@ -2,6 +2,29 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-28) — Admin dashboard hardening + email tracking + cybersecurity audit
+
+- **Admin Content+Moderation merged** (`/admin/content`): courses table + lesson review queue in a single unified view. Deleted `AdminModerationPage.tsx`. Removed `moderation` from admin nav (7 sections now → 8 with new Emails section). Overview page "awaiting review" CTA now points to `/admin/content`.
+- **Admin Users stats bar:** 3-card grid above the table — role distribution (top-role-first, stacked bar), locale distribution (per-locale colored bars: en-US=blue, es-MX=papaya, pt-BR=green), age groups (histogram from `profiles.birth_date`: <6, 6-8, 9-10, 11-12, 13-17, 18+).
+- **Signup timeline chart:** SVG bar chart with period selector (30d/90d/1y) at `/admin/users`. Backend `GET /admin/users/timeline?days=N` (Zod-validated 7-365). Groups `profiles.created_at` by day, fills zero-count days.
+- **Tutor upgrade hidden for staff:** `AppLayout.tsx` sidebar card now checks `!isStaff` so admin/superadmin never see "Verify your identity to become a Tutor".
+- **React Router v7 future flags:** `BrowserRouter` in `main.tsx` now carries `v7_startTransition: true` + `v7_relativeSplatPath: true` — silenced the console deprecation warnings in dev.
+- **New migration 0021 `email_logs`:** idempotent DDL, RLS enabled with zero client policies (service-role-only, same posture as 0017/0018). Columns: id, message_id, to_address, subject, template_type, locale, user_id, status, detail (jsonb), created_at. Indexes on created_at, status, to_address.
+- **email-server email tracking:** New `src/services/emailLog.ts` — ring buffer of 1000 entries logged on every `POST /api/v1/send`. New endpoints `GET /api/v1/logs?limit=&offset=` and `GET /api/v1/logs/summary` (Zod-validated query params, authenticated via `INTERNAL_API_KEY` middleware now scoped to `/api/v1/*`). `SendBody` schema extended with `templateType`, `locale`, `userId` optional fields.
+- **Backend email proxy:** `GET /admin/emails/logs` and `GET /admin/emails/summary` proxy email-server through Core (never direct browser access per §1.5). Zod-validated query params (`EmailLogsQuerySchema`), response shapes (`EmailLogsSchema`, `EmailSummarySchema`), `AbortSignal.timeout(10_000)` on fetch. New env var `EMAIL_SERVER_URL` (default `http://localhost:4005`).
+- **Admin Email Dashboard** (`/admin/emails`): KPI cards (total sent + status breakdown: queued/delivered/failed), paginated table (to, subject, type badge, status badge, sent-at), prev/next navigation. 3-locale i18n. New admin nav entry with `mail` icon.
+- **Cybersecurity audit — 6 vulnerabilities fixed:**
+  1. CRITICAL: `/admin/emails/logs` — unvalidated `limit`/`offset` query params → Zod `EmailLogsQuerySchema`
+  2. CRITICAL: email-server `/api/v1/logs` — same → Zod `.parse()` on query params
+  3. CRITICAL: `/admin/emails/*` — blind proxy (passthrough without response validation) → `EmailLogsSchema`/`EmailSummarySchema` validate email-server response shape before `ok()`
+  4. HIGH: `/admin/emails/*` — no fetch timeout → `AbortSignal.timeout(10_000)`
+  5. HIGH: `/admin/users/timeline` — unvalidated `days` param → Zod `TimelineQuerySchema` (min 7, max 365)
+  6. HIGH: `/admin/generation/{analytics,coach}` — unvalidated `course`/`track` → Zod `CoachQuerySchema` with regex
+  7. (Bug fix, non-security): `SignupTimeline.tsx` — dead `loading && 'opacity-0'` className (always false behind ternary gate) → removed
+  8. (Bug fix, non-security): `AdminUsersPage.tsx` — phantom i18n key `admin.users.ageRange` (didn't exist in any locale) → replaced with simple `{k}: {nf.format(v)}`
+- **i18n:** `admin.content.coursesHeading`, `admin.moderation.heading`, `admin.emails.*` (14 keys), `admin.users.timeline*` (4 keys), `admin.users.stats*` (4 keys) — all 3 locales in sync. `admin.nav.moderation` removed; `admin.nav.emails` added.
+- **Gates:** type-check, lint, tests (frontend 340/340, backend 183/183, email-server 10/10), i18n parity, docs:check — all green.
+
 ## Current State (2026-07-27f) — i18n fix + PipelineFlow particles + mobile optimization (Phase 6b)
 
 - **i18n audit & fix (35 issues resolved):** Hardcoded Spanish cycles ("1 ciclo:", "2 ciclos:", "3+ ciclos:") → `coach.cycle1/2/3` keys. Hardcoded English "Realtime connection lost" → `live.connectionLost`. Raw `failedFrom` stage values ("written", "reviewed"…) → `failedFromLabels.*` i18n keys. Em dashes `'—'` → `noData` key. `toFixed()` → locale-aware `formatPct()`/`formatFixed()`. "s" seconds suffix → `secondsUnit` key. New shared module `generationI18n.ts` with `failedFromI18nKey()`, `formatPct()`, `formatFixed()`.

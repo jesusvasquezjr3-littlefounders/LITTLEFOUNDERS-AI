@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
+import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
@@ -28,6 +29,7 @@ import {
   getHeartbeatSnapshots,
   getLearningRetention,
   getLiveGeneration,
+  getSignupTimeline,
   getSlotDetail,
   grantRoleChecked,
   isCourseStatus,
@@ -90,6 +92,43 @@ function parseFilters(raw: unknown): ParsedFilters {
 const PULSE_UNCONFIGURED = 'PULSE_UNCONFIGURED';
 const UPSTREAM_FAILED = 'UPSTREAM_FAILED';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
+
+interface EmailLogEntry {
+  id: string;
+  to: string;
+  subject: string;
+  status: string;
+  templateType: string;
+  locale?: string;
+  userId?: string;
+  detail: Record<string, unknown>;
+  createdAt: string;
+}
+
+const EmailLogsSchema = z.object({
+  entries: z.array(z.custom<EmailLogEntry>((v) => typeof (v as Record<string, unknown>)?.id === 'string')),
+  total: z.number().int().min(0),
+});
+
+const EmailLogsQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+const EmailSummarySchema = z.object({
+  total: z.number().int().min(0),
+  statuses: z.record(z.string(), z.number().int().min(0)),
+  templates: z.record(z.string(), z.number().int().min(0)),
+});
+
+const TimelineQuerySchema = z.object({
+  days: z.coerce.number().int().min(7).max(365).default(90),
+});
+
+const CoachQuerySchema = z.object({
+  course: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
+  track: z.string().min(1).max(200).regex(/^[A-Za-z0-9._-]+$/).optional(),
+});
 
 const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
 const RoleMutationSchema = z.object({
@@ -316,7 +355,11 @@ export function adminRouter(): Router {
    * Optional query param: ?course=financial-education
    */
   router.get('/generation/analytics', async (req, res) => {
-    const course = typeof req.query.course === 'string' ? req.query.course : undefined;
+    const q = CoachQuerySchema.safeParse(req.query);
+    const course = q.success ? q.data.course : undefined;
+    if (!q.success && 'course' in (req.query as Record<string, unknown>)) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a valid slug (1-100 chars, lowercase letters, digits, hyphens)');
+    }
     const analytics = await getGenerationAnalytics(course);
     if (!analytics) return fail(res, 502, DATA_UNAVAILABLE, 'No generation runs found for analysis');
     ok(res, analytics);
@@ -330,8 +373,12 @@ export function adminRouter(): Router {
    * Optional query: ?course=financial-education&track=trk-001
    */
   router.get('/generation/coach', async (req, res) => {
-    const course = typeof req.query.course === 'string' ? req.query.course : undefined;
-    const track = typeof req.query.track === 'string' ? req.query.track : undefined;
+    const q = CoachQuerySchema.safeParse(req.query);
+    const course = q.success ? q.data.course : undefined;
+    const track = q.success ? q.data.track : undefined;
+    if (!q.success && ('course' in (req.query as Record<string, unknown>) || 'track' in (req.query as Record<string, unknown>))) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a slug (1-100, a-z0-9-), track must be 1-200 safe chars');
+    }
     const report = await getCoachReport(course, track);
     if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'No generation data available for coach analysis');
     ok(res, report);
@@ -389,6 +436,13 @@ export function adminRouter(): Router {
     const users = await listAdminUsers();
     if (!users) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load users');
     ok(res, { users });
+  });
+
+  router.get('/users/timeline', async (req, res) => {
+    const q = TimelineQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 7 and 365');
+    const timeline = await getSignupTimeline(q.data.days);
+    ok(res, { timeline });
   });
 
   // ── Content (course publish gate) ──────────────────────────────────────────
@@ -461,6 +515,43 @@ export function adminRouter(): Router {
     const result = await revokeRoleChecked(parsed.data.userId, parsed.data.role);
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, revoked: true });
+  });
+
+  // ── Email (Courier proxy) ──────────────────────────────────────────────────
+  router.get('/emails/logs', async (req, res) => {
+    const q = EmailLogsQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0');
+    const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
+    try {
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs?limit=${q.data.limit}&offset=${q.data.offset}`, {
+        headers: { 'x-internal-api-key': INTERNAL_API_KEY },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) return fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unavailable');
+      const body = await r.json() as Record<string, unknown>;
+      const parsed = EmailLogsSchema.safeParse(body.data ?? body);
+      if (!parsed.success) return fail(res, 502, 'DATA_UNAVAILABLE', 'Invalid response from email server');
+      ok(res, parsed.data);
+    } catch {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unreachable');
+    }
+  });
+
+  router.get('/emails/summary', async (_req, res) => {
+    const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
+    try {
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs/summary`, {
+        headers: { 'x-internal-api-key': INTERNAL_API_KEY },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) return fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unavailable');
+      const body = await r.json() as Record<string, unknown>;
+      const parsed = EmailSummarySchema.safeParse(body.data ?? body);
+      if (!parsed.success) return fail(res, 502, 'DATA_UNAVAILABLE', 'Invalid response from email server');
+      ok(res, parsed.data);
+    } catch {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unreachable');
+    }
   });
 
   return router;

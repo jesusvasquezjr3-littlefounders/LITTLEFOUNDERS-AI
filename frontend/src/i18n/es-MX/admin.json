@@ -15,8 +15,8 @@
   "nav": {
     "overview": "Panel",
     "content": "Contenido",
-    "moderation": "Moderación",
     "users": "Usuarios",
+    "emails": "Correos",
     "analytics": "Analíticas y Salud",
     "generation": "Generación",
     "audit": "Auditoría",
@@ -50,7 +50,8 @@
   },
   "content": {
     "title": "Contenido",
-    "subtitle": "Publica, despublica y archiva cursos.",
+    "subtitle": "Gestiona cursos y revisa lecciones antes de que lleguen a los niños.",
+    "coursesHeading": "Cursos",
     "colTitle": "Curso",
     "colSlug": "Slug",
     "colSubject": "Materia",
@@ -64,6 +65,17 @@
   "users": {
     "title": "Usuarios",
     "subtitle": "Todos en la plataforma y sus roles.",
+    "statsRoles": "Roles",
+    "statsLocales": "Idiomas",
+    "statsAges": "Edades",
+    "statsAgesEmpty": "Aún sin fechas de nacimiento",
+    "timelineTitle": "Nuevos registros",
+    "timelineAria": "Gráfico de registros en el tiempo",
+    "timelinePeriods": {
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1a"
+    },
     "colName": "Nombre",
     "colUsername": "Usuario",
     "colRoles": "Roles",
@@ -74,8 +86,7 @@
     "empty": "Aún no hay usuarios."
   },
   "moderation": {
-    "title": "Moderación",
-    "subtitle": "El gate humano de publicación para lecciones de niños.",
+    "heading": "Cola de revisión",
     "note": "Toda lección que se muestra a niños pasa por esta revisión humana antes de salir en vivo (§1.9). Aprueba para publicar, rechaza para devolver a borrador.",
     "approve": "Aprobar",
     "reject": "Rechazar",
@@ -208,6 +219,25 @@
       "copied": "Copiado",
       "pending": "La lista editada aún no está aplicada — ejecuta el comando y redespliega pulse-plausible.",
       "note": "Espejo de solo lectura: la aplicación vive en la variable de entorno IP_BLOCKLIST de pulse-plausible (se aplica al redesplegar) — esta pantalla nunca la escribe."
+    }
+  },
+  "emails": {
+    "title": "Correos",
+    "subtitle": "Historial de envío de correos transaccionales — una bitácora estilo Resend.",
+    "totalSent": "Total enviados",
+    "colTo": "Para",
+    "colSubject": "Asunto",
+    "colType": "Tipo",
+    "colStatus": "Estado",
+    "colDate": "Enviado",
+    "empty": "Aún no se han enviado correos.",
+    "showing": "{{from}}–{{to}} de {{total}}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "status": {
+      "queued": "En cola",
+      "delivered": "Entregado",
+      "failed": "Fallido"
     }
   },
   "health": {

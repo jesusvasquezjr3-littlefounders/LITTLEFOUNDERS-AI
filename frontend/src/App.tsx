@@ -32,7 +32,8 @@ import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
 import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
 import { AdminContentPage } from '@/routes/admin/AdminContentPage';
-import { AdminModerationPage } from '@/routes/admin/AdminModerationPage';
+import { AdminEmailDashboard } from '@/routes/admin/AdminEmailDashboard';
+
 import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
 import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
@@ -166,8 +167,9 @@ export function App() {
                 :handle catch-all, and static routes always outrank it. */}
             <Route path="admin" element={<RequireRole role={STAFF}><AdminOverviewPage /></RequireRole>} />
             <Route path="admin/content" element={<RequireRole role={STAFF}><AdminContentPage /></RequireRole>} />
-            <Route path="admin/moderation" element={<RequireRole role={STAFF}><AdminModerationPage /></RequireRole>} />
+
             <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
+            <Route path="admin/emails" element={<RequireRole role={STAFF}><AdminEmailDashboard /></RequireRole>} />
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
             <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />
