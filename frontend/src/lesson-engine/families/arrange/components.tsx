@@ -1,15 +1,28 @@
 // `arrange` family renderers (LESSON_ENGINE.md §5.4). Tap-first everywhere:
 // tap a token → it fills the next slot; tap a placed token → it returns to the
 // bank. All input types are controlled; the shell owns the Check button.
-// memory_flip is the family's one flow and drives itself.
+// memory_flip is the family's one flow and drives itself. The classification
+// types (sort_buckets/group_sets) also support real pointer-drag via the shared
+// SortingBoard — additive over tap, which stays the accessible fallback.
 
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { KidSlider, SunkenWell, TokenChip, type OptionVisualState } from '../../core/primitives'
+import { KidSlider, SunkenWell, TokenChip, VisualMark, optionStateClasses, type OptionVisualState } from '../../core/primitives'
+import { seededSort, seededSortMiddling } from '../../core/shuffle'
+import { playSfx } from '../../player/sfx'
 
 type Dict = Record<string, unknown>
 const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v as Dict) : {})
@@ -19,18 +32,46 @@ interface IdTextItem {
   text_md: string
 }
 
+// A concrete item that MAY carry a visual (idVisual schema): an AI illustration
+// (`image_url`, preferred) or a Material `icon` fallback. Optional, so plain
+// text-only items (idText) stay assignable here.
+interface IdVisualItem extends IdTextItem {
+  icon?: string
+  image_url?: string
+}
+
 function revealOf(verdict: ExerciseProps['verdict']): Dict {
   return draftOf(verdict?.reveal)
 }
 
-function hashCode(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h
-}
-
 function textOf(items: IdTextItem[], id: string): string {
   return items.find((i) => i.id === id)?.text_md ?? id
+}
+
+/** Chip/slot content for a concrete item: its picture (image preferred over the
+ *  icon) stacked above the text label. Falls back to text-only when the item
+ *  carries neither an image nor an icon (§ keep current text-only rendering). */
+function VisualLabel({
+  item,
+  imgClassName,
+  iconClassName,
+}: {
+  item: IdVisualItem
+  imgClassName?: string
+  iconClassName?: string
+}) {
+  if (!item.image_url && !item.icon) return <MarkdownLite text={item.text_md} />
+  return (
+    <span className="flex flex-col items-center gap-1">
+      <VisualMark
+        icon={item.icon}
+        imageUrl={item.image_url}
+        iconClassName={iconClassName}
+        imgClassName={imgClassName}
+      />
+      <MarkdownLite text={item.text_md} />
+    </span>
+  )
 }
 
 // ---- Shared tap-to-order helpers (order_steps / rank_choices / build_sentence /
@@ -74,7 +115,7 @@ function TokenBank({
   disabled,
   verdict,
 }: {
-  items: IdTextItem[]
+  items: IdVisualItem[]
   onPlace: (id: string) => void
   disabled: boolean
   verdict: ExerciseProps['verdict']
@@ -93,7 +134,7 @@ function TokenBank({
               disabled={disabled}
               onSelect={() => onPlace(item.id)}
             >
-              <MarkdownLite text={item.text_md} />
+              <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
             </TokenChip>
           ))}
         </div>
@@ -110,7 +151,7 @@ function OrderedSlots({
   disabled,
   verdict,
 }: {
-  items: IdTextItem[]
+  items: IdVisualItem[]
   tapOrder: TapOrder
   total: number
   disabled: boolean
@@ -122,6 +163,7 @@ function OrderedSlots({
     <ol className="space-y-2">
       {Array.from({ length: total }, (_, i) => {
         const id = tapOrder.order[i]
+        const item = id ? items.find((it) => it.id === id) : undefined
         return (
           <li key={i} className="flex items-center gap-3">
             <span
@@ -130,14 +172,14 @@ function OrderedSlots({
             >
               {i + 1}
             </span>
-            {id ? (
+            {id && item ? (
               <TokenChip
                 state={slotState(i, tapOrder.order, verdict, correctOrder)}
                 disabled={disabled}
                 onSelect={() => tapOrder.remove(id)}
                 className="flex-1 justify-start rounded-md text-left"
               >
-                <MarkdownLite text={textOf(items, id)} />
+                <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
               </TokenChip>
             ) : (
               <div
@@ -186,8 +228,13 @@ export function MatchPairs({ segment, value, onChange, disabled, verdict }: Exer
   const draft = draftOf(value)
   const pairs = (draft.pairs as [string, string][] | undefined) ?? []
   const selectedLeft = draft.selected_left as string | undefined
-  const left = segment.payload.left as IdTextItem[]
-  const right = segment.payload.right as IdTextItem[]
+  const left = segment.payload.left as IdVisualItem[]
+  // Shuffle the right column (A7): rendered in payload order it sat parallel to
+  // the answer key, so "match straight across" scored 100 without reasoning.
+  const right = useMemo(
+    () => seededSort(segment.payload.right as IdTextItem[], segment.id + ':right', (r) => r.id),
+    [segment],
+  )
   const correctPairs = revealOf(verdict).pairs as [string, string][] | undefined
   const correctByLeft = correctPairs ? new Map(correctPairs) : null
 
@@ -229,7 +276,19 @@ export function MatchPairs({ segment, value, onChange, disabled, verdict }: Exer
                   pairChipClass(paired, selectedLeft === item.id, verdictStateForPair(paired)),
                 )}
               >
-                <MarkdownLite text={item.text_md} />
+                {item.image_url || item.icon ? (
+                  <span className="flex items-center gap-2">
+                    <VisualMark
+                      icon={item.icon}
+                      imageUrl={item.image_url}
+                      iconClassName="text-[24px]"
+                      imgClassName="h-10 w-10"
+                    />
+                    <MarkdownLite text={item.text_md} />
+                  </span>
+                ) : (
+                  <MarkdownLite text={item.text_md} />
+                )}
               </button>
             )
           })}
@@ -277,18 +336,29 @@ interface FlipCard {
   key: string
   pairIndex: number
   text_md: string
+  icon: string
+  image_url?: string
+}
+
+interface MemoryFlipPair {
+  a_md: string
+  a_icon: string
+  a_image_url?: string
+  b_md: string
+  b_icon: string
+  b_image_url?: string
 }
 
 export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const pairs = segment.payload.pairs as Array<{ a_md: string; b_md: string }>
+  const pairs = segment.payload.pairs as MemoryFlipPair[]
   const cards = useMemo<FlipCard[]>(() => {
     const all = pairs.flatMap((p, i) => [
-      { key: `a${i}`, pairIndex: i, text_md: p.a_md },
-      { key: `b${i}`, pairIndex: i, text_md: p.b_md },
+      { key: `a${i}`, pairIndex: i, text_md: p.a_md, icon: p.a_icon || 'help', image_url: p.a_image_url },
+      { key: `b${i}`, pairIndex: i, text_md: p.b_md, icon: p.b_icon || 'help', image_url: p.b_image_url },
     ])
     // Deterministic shuffle by segment.id hash so retries keep the same board.
-    return [...all].sort((a, b) => hashCode(segment.id + a.key) - hashCode(segment.id + b.key))
+    return seededSort(all, segment.id, (a) => a.key)
   }, [pairs, segment.id])
 
   const [up, setUp] = useState<string[]>([])
@@ -313,6 +383,7 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
   const tap = (card: FlipCard) => {
     if (disabled || verdict || finished.current) return
     if (up.length >= 2 || up.includes(card.key) || matched.includes(card.pairIndex)) return
+    playSfx('flip')
     setFlips((f) => f + 1)
     const nextUp = [...up, card.key]
     setUp(nextUp)
@@ -321,6 +392,7 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
       const c1 = cards.find((c) => c.key === k1)
       const c2 = cards.find((c) => c.key === k2)
       if (c1 && c2 && c1.pairIndex === c2.pairIndex) {
+        playSfx('match')
         setMatched((m) => [...m, c1.pairIndex])
         setUp([])
       } else {
@@ -343,7 +415,7 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
               disabled={disabled || isMatched || Boolean(verdict)}
               onClick={() => tap(card)}
               className={cn(
-                'flex min-h-16 items-center justify-center rounded-md border-2 p-2 text-center lf-label',
+                'flex min-h-24 flex-col items-center justify-center gap-1 rounded-lg border-2 p-2 text-center lf-label',
                 'transition-[border-color,background-color,transform] duration-150',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
                 'active:translate-y-px disabled:cursor-not-allowed',
@@ -355,7 +427,19 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
               )}
             >
               {isUp ? (
-                <MarkdownLite text={card.text_md} />
+                <>
+                  {card.image_url ? (
+                    <img
+                      src={card.image_url}
+                      alt=""
+                      loading="lazy"
+                      className="h-12 w-12 rounded-md object-contain"
+                    />
+                  ) : (
+                    <Icon name={card.icon} className="text-[28px]" />
+                  )}
+                  <MarkdownLite text={card.text_md} />
+                </>
               ) : (
                 <Icon name="question_mark" className="text-[28px]" />
               )}
@@ -370,89 +454,307 @@ export function MemoryFlip({ segment, disabled, onFinish, verdict }: ExercisePro
   )
 }
 
-// ---- sort_buckets -----------------------------------------------------------------
+// ---- sorting board (sort_buckets / group_sets) — TAP or DRAG to place --------------
 
-export function SortBuckets({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
+interface SortZone {
+  id: string
+  label: string
+}
+
+interface SortDragState {
+  itemId: string
+  x: number
+  y: number
+}
+
+/**
+ * Pointer-events drag for the classification types, ADDITIVE over tap-to-place:
+ * a quick tap still selects a chip, but a press-and-drag moves it straight into
+ * the drop zone under the pointer (the "arrástralo" feel the QA asked for).
+ * Dependency-free (no DnD library — keeps the frontend deps lean); keyboard and
+ * tap remain the accessible fallback since drag is a mouse/touch-only nicety
+ * (§1.11 — no affordance is drag-ONLY).
+ */
+function useSortingDrag(onDrop: (itemId: string, zoneId: string) => void, disabled: boolean) {
+  const [drag, setDrag] = useState<SortDragState | null>(null)
+  const [hoverZone, setHoverZone] = useState<string | null>(null)
+  const active = useRef<{ itemId: string; x0: number; y0: number; moved: boolean; pointerId: number } | null>(null)
+  const suppressClick = useRef(false)
+
+  const zoneAt = (x: number, y: number): string | null => {
+    const el = document.elementFromPoint(x, y) as HTMLElement | null
+    return el?.closest<HTMLElement>('[data-dropzone]')?.dataset.dropzone ?? null
+  }
+
+  const onMove = useCallback((e: globalThis.PointerEvent) => {
+    const a = active.current
+    if (!a || e.pointerId !== a.pointerId) return
+    if (!a.moved && Math.hypot(e.clientX - a.x0, e.clientY - a.y0) < 6) return
+    a.moved = true
+    e.preventDefault() // stop touch-scroll once a real drag starts
+    setDrag({ itemId: a.itemId, x: e.clientX, y: e.clientY })
+    setHoverZone(zoneAt(e.clientX, e.clientY))
+  }, [])
+
+  const onEnd = useCallback(
+    (e: globalThis.PointerEvent) => {
+      const a = active.current
+      if (!a || e.pointerId !== a.pointerId) return
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onEnd)
+      window.removeEventListener('pointercancel', onEnd)
+      if (a.moved) {
+        const zone = zoneAt(e.clientX, e.clientY)
+        if (zone) {
+          playSfx('drop')
+          onDrop(a.itemId, zone)
+        }
+        // Swallow ONLY the click the browser fires in this same gesture (when the
+        // drag ended on the origin chip). Auto-clear on the next tick so that a
+        // drag ending over a bucket (which fires NO click) doesn't leave the
+        // guard stuck and eat the user's next genuine tap.
+        suppressClick.current = true
+        window.setTimeout(() => {
+          suppressClick.current = false
+        }, 0)
+      }
+      active.current = null
+      setDrag(null)
+      setHoverZone(null)
+    },
+    [onDrop, onMove],
+  )
+
+  useEffect(
+    () => () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onEnd)
+      window.removeEventListener('pointercancel', onEnd)
+    },
+    [onMove, onEnd],
+  )
+
+  const onPointerDown = (itemId: string) => (e: PointerEvent) => {
+    if (disabled || e.button !== 0) return
+    active.current = { itemId, x0: e.clientX, y0: e.clientY, moved: false, pointerId: e.pointerId }
+    window.addEventListener('pointermove', onMove, { passive: false })
+    window.addEventListener('pointerup', onEnd)
+    window.addEventListener('pointercancel', onEnd)
+  }
+
+  const onClickCapture = (e: ReactMouseEvent) => {
+    if (suppressClick.current) {
+      // Don't reset here — the timer in onEnd owns the lifetime, so a drag that
+      // ends off-chip (no click) still clears the guard.
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
+  return { drag, hoverZone, onPointerDown, onClickCapture }
+}
+
+/** A classification chip: same look as TokenChip, plus drag handlers. */
+function SortChip({
+  state,
+  disabled,
+  dragging,
+  onSelect,
+  onPointerDown,
+  onClickCapture,
+  children,
+}: {
+  state: OptionVisualState
+  disabled: boolean
+  dragging: boolean
+  onSelect: () => void
+  onPointerDown: (e: PointerEvent) => void
+  onClickCapture: (e: ReactMouseEvent) => void
+  children: ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={state === 'selected'}
+      disabled={disabled}
+      onClick={onSelect}
+      onClickCapture={onClickCapture}
+      onPointerDown={onPointerDown}
+      style={{ touchAction: 'none' }}
+      className={cn(
+        'inline-flex min-h-11 items-center justify-center rounded-full border-2 px-4 py-2 lf-label',
+        'transition-[border-color,background-color,transform,opacity] duration-150',
+        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+        'active:translate-y-px disabled:cursor-not-allowed',
+        !disabled && 'cursor-grab',
+        optionStateClasses(state),
+        dragging && 'opacity-30',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+/** The shared board behind sort_buckets and group_sets — identical UX, one impl. */
+function SortingBoard({
+  items,
+  zones,
+  assignments,
+  selected,
+  disabled,
+  correct,
+  hasVerdict,
+  onSelect,
+  onAssign,
+  onUnassign,
+}: {
+  items: IdVisualItem[]
+  zones: SortZone[]
+  assignments: Record<string, string>
+  selected: string | undefined
+  disabled: boolean
+  correct: Record<string, string> | undefined
+  hasVerdict: boolean
+  onSelect: (itemId: string | undefined) => void
+  onAssign: (itemId: string, zoneId: string) => void
+  onUnassign: (itemId: string) => void
+}) {
   const { t } = useTranslation()
-  const draft = draftOf(value)
-  const assignments = (draft.assignments as Record<string, string> | undefined) ?? {}
-  const selected = draft.selected as string | undefined
-  const buckets = segment.payload.buckets as Array<{ id: string; label: string }>
-  const items = segment.payload.items as IdTextItem[]
-  const correct = revealOf(verdict).assignments as Record<string, string> | undefined
+  const { drag, hoverZone, onPointerDown, onClickCapture } = useSortingDrag(onAssign, disabled)
   const unassigned = items.filter((i) => !assignments[i.id])
-
-  const assign = (bucketId: string) => {
-    if (!selected) return
-    onChange({ ...draft, selected: undefined, assignments: { ...assignments, [selected]: bucketId } })
-  }
-  const unassign = (itemId: string) => {
-    const next = { ...assignments }
-    delete next[itemId]
-    onChange({ ...draft, selected: undefined, assignments: next })
-  }
+  const textById = (id: string) => items.find((i) => i.id === id)?.text_md ?? id
 
   return (
     <div className="space-y-4">
       {unassigned.length > 0 ? (
-        <SunkenWell>
-          <div className="flex flex-wrap gap-2">
-            {unassigned.map((item) => (
-              <TokenChip
-                key={item.id}
-                state={selected === item.id ? 'selected' : 'idle'}
-                disabled={disabled}
-                onSelect={() =>
-                  onChange({ ...draft, selected: selected === item.id ? undefined : item.id })
-                }
-              >
-                <MarkdownLite text={item.text_md} />
-              </TokenChip>
-            ))}
-          </div>
-        </SunkenWell>
+        <div className="space-y-2">
+          {!disabled ? <p className="lf-caption text-content-muted">{t('lesson.families.arrange.dragHint')}</p> : null}
+          <SunkenWell>
+            <div className="flex flex-wrap gap-2">
+              {unassigned.map((item) => (
+                <SortChip
+                  key={item.id}
+                  state={selected === item.id ? 'selected' : 'idle'}
+                  disabled={disabled}
+                  dragging={drag?.itemId === item.id}
+                  onSelect={() => onSelect(selected === item.id ? undefined : item.id)}
+                  onPointerDown={onPointerDown(item.id)}
+                  onClickCapture={onClickCapture}
+                >
+                  <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
+                </SortChip>
+              ))}
+            </div>
+          </SunkenWell>
+        </div>
       ) : null}
+
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {buckets.map((bucket) => (
-          <SunkenWell key={bucket.id} active={Boolean(selected)}>
-            <button
-              type="button"
-              disabled={disabled || !selected}
-              onClick={() => assign(bucket.id)}
+        {zones.map((zone) => {
+          const isHover = hoverZone === zone.id
+          const placed = items.filter((i) => assignments[i.id] === zone.id)
+          return (
+            <div
+              key={zone.id}
+              data-dropzone={zone.id}
               className={cn(
-                'min-h-11 w-full rounded-sm px-2 text-center transition-colors',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'disabled:cursor-not-allowed',
-                selected ? 'bg-primary-soft text-primary' : 'text-content',
+                'rounded-lg border-2 border-dashed bg-surface-sunken p-3 transition-colors',
+                isHover
+                  ? 'border-primary bg-primary-soft/40'
+                  : selected || drag
+                    ? 'border-primary/60'
+                    : 'border-outline/60',
               )}
             >
-              <span className="lf-title">{bucket.label}</span>
-              {selected ? (
-                <span className="block lf-caption">{t('lesson.families.arrange.sortBuckets.placeHere')}</span>
-              ) : null}
-            </button>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {items
-                .filter((i) => assignments[i.id] === bucket.id)
-                .map((item) => {
+              <button
+                type="button"
+                disabled={disabled || !selected}
+                onClick={() => selected && onAssign(selected, zone.id)}
+                className={cn(
+                  'min-h-11 w-full rounded-sm px-2 text-center transition-colors',
+                  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                  'disabled:cursor-default',
+                  selected ? 'bg-primary-soft text-primary' : 'text-content',
+                )}
+              >
+                <span className="lf-title">{zone.label}</span>
+                {selected || drag ? (
+                  <span className="block lf-caption">{t('lesson.families.arrange.sortBuckets.placeHere')}</span>
+                ) : null}
+              </button>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {placed.map((item) => {
                   let state: OptionVisualState = 'selected'
-                  if (verdict && correct) state = correct[item.id] === bucket.id ? 'correct' : 'wrong'
+                  if (hasVerdict && correct) state = correct[item.id] === zone.id ? 'correct' : 'wrong'
                   return (
-                    <TokenChip
+                    <SortChip
                       key={item.id}
                       state={state}
                       disabled={disabled}
-                      onSelect={() => unassign(item.id)}
+                      dragging={drag?.itemId === item.id}
+                      onSelect={() => onUnassign(item.id)}
+                      onPointerDown={onPointerDown(item.id)}
+                      onClickCapture={onClickCapture}
                     >
-                      <MarkdownLite text={item.text_md} />
-                    </TokenChip>
+                      <VisualLabel item={item} imgClassName="h-10 w-10" iconClassName="text-[24px]" />
+                    </SortChip>
                   )
                 })}
+              </div>
             </div>
-          </SunkenWell>
-        ))}
+          )
+        })}
       </div>
+
+      {drag ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed z-50 inline-flex items-center rounded-full border-2 border-primary bg-primary-soft px-4 py-2 lf-label text-content shadow-glass-md"
+          style={{ left: drag.x, top: drag.y, transform: 'translate(-50%, -150%)' }}
+        >
+          <MarkdownLite text={textById(drag.itemId)} />
+        </div>
+      ) : null}
     </div>
+  )
+}
+
+// ---- sort_buckets -----------------------------------------------------------------
+
+export function SortBuckets({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
+  const draft = draftOf(value)
+  const assignments = (draft.assignments as Record<string, string> | undefined) ?? {}
+  const buckets = segment.payload.buckets as Array<{ id: string; label: string }>
+  // Shuffle the item bank (A7): it was rendered in authored order, and authors
+  // group items by their target bucket, so the bank mirrored the answer key
+  // (first N → bucket 1, next N → bucket 2). Grading is by item id
+  // (`assignments[item.id]`), so display order is free.
+  const items = useMemo(
+    () => seededSort(segment.payload.items as IdVisualItem[], segment.id + ':items', (i) => i.id),
+    [segment],
+  )
+  const correct = revealOf(verdict).assignments as Record<string, string> | undefined
+
+  return (
+    <SortingBoard
+      items={items}
+      zones={buckets.map((b) => ({ id: b.id, label: b.label }))}
+      assignments={assignments}
+      selected={draft.selected as string | undefined}
+      disabled={disabled}
+      correct={correct}
+      hasVerdict={Boolean(verdict)}
+      onSelect={(itemId) => onChange({ ...draft, selected: itemId })}
+      onAssign={(itemId, zoneId) =>
+        onChange({ ...draft, selected: undefined, assignments: { ...assignments, [itemId]: zoneId } })
+      }
+      onUnassign={(itemId) => {
+        const next = { ...assignments }
+        delete next[itemId]
+        onChange({ ...draft, selected: undefined, assignments: next })
+      }}
+    />
   )
 }
 
@@ -460,12 +762,26 @@ export function SortBuckets({ segment, value, onChange, disabled, verdict }: Exe
 
 export function OrderSteps({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const items = segment.payload.items as IdTextItem[]
+  const items = segment.payload.items as IdVisualItem[]
+  // `slots` may be fewer than items.length — the rest are distractors that
+  // stay in the bank unplaced (mirrors build_sentence's tokens/slots split).
+  const slots = (segment.payload.slots as number | undefined) ?? items.length
   const tapOrder = useTapOrder(items, value, onChange)
   return (
     <div className="space-y-4">
-      <OrderedSlots items={items} tapOrder={tapOrder} total={items.length} disabled={disabled} verdict={verdict} />
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
+      <OrderedSlots items={items} tapOrder={tapOrder} total={slots} disabled={disabled} verdict={verdict} />
+      <TokenBank
+        /* seededSortMiddling, not seededSort: for an ORDERING exercise the bank's
+           display order is the answer if it happens to match the key. A fair shuffle
+           lands on the authored order once every n! segments — 1 in 6 for a 3-item
+           list — and the published code_order lesson DID land there, handing "tap
+           straight down" a clean 100. Middling picks a permutation that is neither
+           near-identical nor a near-reversal of the authored order. */
+        items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)}
+        onPlace={tapOrder.place}
+        disabled={disabled || tapOrder.order.length >= slots}
+        verdict={verdict}
+      />
       {!verdict && tapOrder.order.length > 0 ? (
         <p className="lf-caption text-content-muted">{t('lesson.families.arrange.tapToRemove')}</p>
       ) : null}
@@ -518,7 +834,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
           })}
         </div>
       </SunkenWell>
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
+      <TokenBank items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled || tapOrder.order.length >= slots} verdict={verdict} />
     </div>
   )
 }
@@ -527,7 +843,7 @@ export function BuildSentence({ segment, value, onChange, disabled, verdict }: E
 
 export function TimelineOrder({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
-  const events = segment.payload.events as Array<IdTextItem & { icon?: string }>
+  const events = segment.payload.events as Array<IdVisualItem>
   const tapOrder = useTapOrder(events, value, onChange)
   const correctOrder = revealOf(verdict).order as string[] | undefined
   return (
@@ -552,9 +868,17 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
                   className="flex-1 rounded-md md:w-full"
                 >
                   <span className="flex items-center gap-1.5">
-                    {events.find((e) => e.id === id)?.icon ? (
-                      <Icon name={events.find((e) => e.id === id)?.icon as string} className="text-[20px]" />
-                    ) : null}
+                    {(() => {
+                      const ev = events.find((e) => e.id === id)
+                      return ev?.image_url || ev?.icon ? (
+                        <VisualMark
+                          icon={ev.icon}
+                          imageUrl={ev.image_url}
+                          iconClassName="text-[20px]"
+                          imgClassName="h-6 w-6"
+                        />
+                      ) : null
+                    })()}
                     <MarkdownLite text={textOf(events, id)} />
                   </span>
                 </TokenChip>
@@ -568,7 +892,7 @@ export function TimelineOrder({ segment, value, onChange, disabled, verdict }: E
           )
         })}
       </ol>
-      <TokenBank items={tapOrder.remaining} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
+      <TokenBank items={seededSortMiddling(tapOrder.remaining, segment.id, (x) => x.id)} onPlace={tapOrder.place} disabled={disabled} verdict={verdict} />
     </div>
   )
 }
@@ -587,8 +911,22 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
   const { t } = useTranslation()
   const draft = draftOf(value)
   const placed = (draft.placed as Record<string, string> | undefined) ?? {}
-  const sequence = segment.payload.sequence as Array<{ icon: string; tint: string }>
-  const options = segment.payload.options as Array<{ id: string; icon: string; tint: string }>
+  // `sequence` is NOT shuffled: it is the visible pattern the child reads, and it
+  // is rendered by index — its order IS the exercise.
+  const sequence = segment.payload.sequence as Array<{ icon: string; image_url?: string; tint: string }>
+  // Shuffle the options bank (A7): it was rendered in authored order, which puts
+  // the tiles that complete the pattern first, so tapping top-to-bottom filled
+  // the slots correctly with no reasoning. Grading is by option id
+  // (reveal.correct maps slot → option id), so display order is free.
+  const options = useMemo(
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; icon: string; image_url?: string; tint: string }>,
+        segment.id + ':options',
+        (o) => o.id,
+      ),
+    [segment],
+  )
   const missing = segment.payload.missing_slots as number
   const correct = revealOf(verdict).correct as Record<string, string> | undefined
   const usedOptionIds = new Set(Object.values(placed))
@@ -612,7 +950,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
       <div className="flex flex-wrap items-center justify-center gap-2">
         {sequence.map((s, i) => (
           <span key={`s${i}`} className={cn(tile, 'border-outline/50 bg-surface')}>
-            <Icon name={s.icon} className={cn('text-[32px]', TILE_TINTS[s.tint] ?? 'text-primary')} />
+            <VisualMark
+              icon={s.icon}
+              imageUrl={s.image_url}
+              iconClassName={cn('text-[32px]', TILE_TINTS[s.tint] ?? 'text-primary')}
+              imgClassName="h-12 w-12"
+            />
           </span>
         ))}
         {slotIndexes.map((slot) => {
@@ -646,7 +989,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
               )}
             >
               {option ? (
-                <Icon name={option.icon} className={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')} />
+                <VisualMark
+                  icon={option.icon}
+                  imageUrl={option.image_url}
+                  iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
+                  imgClassName="h-12 w-12"
+                />
               ) : (
                 <Icon name="add" className="text-[24px] text-primary" />
               )}
@@ -672,7 +1020,12 @@ export function PatternComplete({ segment, value, onChange, disabled, verdict }:
                 used || verdict ? 'border-outline/50 bg-surface opacity-60' : 'border-outline/70 bg-surface hover:border-primary/60',
               )}
             >
-              <Icon name={option.icon} className={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')} />
+              <VisualMark
+                icon={option.icon}
+                imageUrl={option.image_url}
+                iconClassName={cn('text-[32px]', TILE_TINTS[option.tint] ?? 'text-primary')}
+                imgClassName="h-12 w-12"
+              />
             </button>
           )
         })}
@@ -689,11 +1042,17 @@ const GROUP_ZONE_IDS: GroupZone[] = ['a', 'b', 'both', 'none']
 export function GroupSets({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const draft = draftOf(value)
-  const zones = (draft.zones as Record<string, GroupZone> | undefined) ?? {}
-  const selected = draft.selected as string | undefined
-  const items = segment.payload.items as IdTextItem[]
+  const zoneMap = (draft.zones as Record<string, GroupZone> | undefined) ?? {}
+  // Shuffle the item bank (A7): it was rendered in authored order, and authors
+  // list items grouped by destination (all of set A, then B, then both, then
+  // none), so the bank mirrored the answer key. Grading is by item id
+  // (`zones[item.id]`), so display order is free. The four zones themselves are
+  // NOT shuffled — a/b/both/none is a fixed semantic order, not a bank.
+  const items = useMemo(
+    () => seededSort(segment.payload.items as IdVisualItem[], segment.id + ':items', (i) => i.id),
+    [segment],
+  )
   const correct = revealOf(verdict).zones as Record<string, string> | undefined
-  const unassigned = items.filter((i) => !zones[i.id])
 
   const zoneLabels: Record<GroupZone, string> = {
     a: segment.payload.set_a as string,
@@ -702,77 +1061,25 @@ export function GroupSets({ segment, value, onChange, disabled, verdict }: Exerc
     none: t('lesson.families.arrange.groupSets.none'),
   }
 
-  const assign = (zone: GroupZone) => {
-    if (!selected) return
-    onChange({ ...draft, selected: undefined, zones: { ...zones, [selected]: zone } })
-  }
-  const unassign = (itemId: string) => {
-    const next = { ...zones }
-    delete next[itemId]
-    onChange({ ...draft, selected: undefined, zones: next })
-  }
-
   return (
-    <div className="space-y-4">
-      {unassigned.length > 0 ? (
-        <SunkenWell>
-          <div className="flex flex-wrap gap-2">
-            {unassigned.map((item) => (
-              <TokenChip
-                key={item.id}
-                state={selected === item.id ? 'selected' : 'idle'}
-                disabled={disabled}
-                onSelect={() =>
-                  onChange({ ...draft, selected: selected === item.id ? undefined : item.id })
-                }
-              >
-                <MarkdownLite text={item.text_md} />
-              </TokenChip>
-            ))}
-          </div>
-        </SunkenWell>
-      ) : null}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {GROUP_ZONE_IDS.map((zone) => (
-          <SunkenWell key={zone} active={Boolean(selected)}>
-            <button
-              type="button"
-              disabled={disabled || !selected}
-              onClick={() => assign(zone)}
-              className={cn(
-                'min-h-11 w-full rounded-sm px-2 text-center transition-colors',
-                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-                'disabled:cursor-not-allowed',
-                selected ? 'bg-primary-soft text-primary' : 'text-content',
-              )}
-            >
-              <span className="lf-title">{zoneLabels[zone]}</span>
-              {selected ? (
-                <span className="block lf-caption">{t('lesson.families.arrange.sortBuckets.placeHere')}</span>
-              ) : null}
-            </button>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {items
-                .filter((i) => zones[i.id] === zone)
-                .map((item) => {
-                  let state: OptionVisualState = 'selected'
-                  if (verdict && correct) state = correct[item.id] === zone ? 'correct' : 'wrong'
-                  return (
-                    <TokenChip
-                      key={item.id}
-                      state={state}
-                      disabled={disabled}
-                      onSelect={() => unassign(item.id)}
-                    >
-                      <MarkdownLite text={item.text_md} />
-                    </TokenChip>
-                  )
-                })}
-            </div>
-          </SunkenWell>
-        ))}
-      </div>
-    </div>
+    <SortingBoard
+      items={items}
+      zones={GROUP_ZONE_IDS.map((z) => ({ id: z, label: zoneLabels[z] }))}
+      assignments={zoneMap}
+      selected={draft.selected as string | undefined}
+      disabled={disabled}
+      correct={correct}
+      hasVerdict={Boolean(verdict)}
+      onSelect={(itemId) => onChange({ ...draft, selected: itemId })}
+      onAssign={(itemId, zoneId) =>
+        onChange({ ...draft, selected: undefined, zones: { ...zoneMap, [itemId]: zoneId as GroupZone } })
+      }
+      onUnassign={(itemId) => {
+        const next = { ...zoneMap }
+        delete next[itemId]
+        onChange({ ...draft, selected: undefined, zones: next })
+      }}
+    />
   )
 }
 
@@ -888,7 +1195,8 @@ export const arrangeCanSubmit = {
   },
   order_steps: (draft: unknown, segment: SegmentBase) => {
     const order = (draftOf(draft).order as string[] | undefined) ?? []
-    return order.length === (segment.payload.items as IdTextItem[]).length
+    const slots = (segment.payload.slots as number | undefined) ?? (segment.payload.items as IdTextItem[]).length
+    return order.length === slots
   },
   rank_choices: (draft: unknown, segment: SegmentBase) => {
     const order = (draftOf(draft).order as string[] | undefined) ?? []

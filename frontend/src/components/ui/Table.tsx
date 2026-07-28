@@ -25,10 +25,11 @@ interface TableProps<Row> {
   columns: TableColumn<Row>[];
   rows: Row[];
   rowKey: (row: Row) => string | number;
+  onRowClick?: (row: Row) => void;
   className?: string;
 }
 
-export function Table<Row>({ columns, rows, rowKey, className }: TableProps<Row>) {
+export function Table<Row>({ columns, rows, rowKey, onRowClick, className }: TableProps<Row>) {
   const primary = columns.find((c) => c.primary) ?? columns[0];
   const rest = columns.filter((c) => c !== primary);
 
@@ -37,7 +38,7 @@ export function Table<Row>({ columns, rows, rowKey, className }: TableProps<Row>
       {/* Mobile: stacked card-per-row */}
       <ul className="flex flex-col gap-3 md:hidden" role="list">
         {rows.map((row) => (
-          <li key={rowKey(row)}>
+          <li key={rowKey(row)} className={cn(onRowClick && 'cursor-pointer')} onClick={() => onRowClick?.(row)}>
             <Card className="p-4">
               <div className="lf-label text-content">{primary?.cell(row)}</div>
               <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">
@@ -72,7 +73,11 @@ export function Table<Row>({ columns, rows, rowKey, className }: TableProps<Row>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={rowKey(row)} className="border-b border-outline/60 last:border-b-0">
+                <tr
+                  key={rowKey(row)}
+                  className={cn('border-b border-outline/60 last:border-b-0', onRowClick && 'cursor-pointer hover:bg-surface-sunken transition-colors')}
+                  onClick={() => onRowClick?.(row)}
+                >
                   {columns.map((col) => (
                     <td
                       key={col.key}

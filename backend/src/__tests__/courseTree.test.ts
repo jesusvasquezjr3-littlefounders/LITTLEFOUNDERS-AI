@@ -87,3 +87,55 @@ describe('findLessonNode', () => {
     expect(findLessonNode(tree, 'missing')).toBeNull();
   });
 });
+
+describe('territory topic states (0016)', () => {
+  const reviewTopics = [
+    { id: 't1', saga_id: 's1', position: 1, slug: 'topic-1', title: {}, kind: 'teaching', review_of: [] },
+    { id: 't2', saga_id: 's2', position: 1, slug: 'topic-2', title: {}, kind: 'review_spaced', review_of: ['adventure-1/saga-1/topic-1'] },
+  ];
+
+  it('derives completed / in-progress / not-started from server-graded passes', () => {
+    const tree = assembleCourseTree(course, adventures, sagas, reviewTopics, lessons, [
+      { lesson_id: 'l1', passed: true, best_score: 100 },
+    ]);
+    // t1 has l1 passed, l2 not → in-progress; t2 untouched → not-started.
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('in-progress');
+    expect(tree.adventures[1]?.sagas[0]?.topics[0]?.state).toBe('not-started');
+  });
+
+  it('flips a COMPLETED cited topic to review-due while its review topic has unpassed lessons', () => {
+    const tree = assembleCourseTree(course, adventures, sagas, reviewTopics, lessons, [
+      { lesson_id: 'l1', passed: true, best_score: 100 },
+      { lesson_id: 'l2', passed: true, best_score: 90 },
+    ]);
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('review-due');
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.kind).toBe('teaching');
+  });
+
+  it('review passed → the cited topic stays completed (nothing due)', () => {
+    const tree = assembleCourseTree(course, adventures, sagas, reviewTopics, lessons, [
+      { lesson_id: 'l1', passed: true, best_score: 100 },
+      { lesson_id: 'l2', passed: true, best_score: 90 },
+      { lesson_id: 'l3', passed: true, best_score: 80 },
+    ]);
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('completed');
+  });
+
+  it('a saga-level citation ("adv/saga") covers every topic of that saga', () => {
+    const sagaCite = [
+      { id: 't1', saga_id: 's1', position: 1, slug: 'topic-1', title: {}, kind: 'teaching', review_of: [] },
+      { id: 't2', saga_id: 's2', position: 1, slug: 'topic-2', title: {}, kind: 'review_quest', review_of: ['adventure-1/saga-1'] },
+    ];
+    const tree = assembleCourseTree(course, adventures, sagas, sagaCite, lessons, [
+      { lesson_id: 'l1', passed: true, best_score: 100 },
+      { lesson_id: 'l2', passed: true, best_score: 90 },
+    ]);
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('review-due');
+  });
+
+  it('pre-0016 rows (no kind/review_of) default to teaching with no effect', () => {
+    const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, []);
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.kind).toBe('teaching');
+    expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('not-started');
+  });
+});

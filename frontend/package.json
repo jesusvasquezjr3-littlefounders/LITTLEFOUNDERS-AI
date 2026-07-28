@@ -20,6 +20,8 @@
     "@dicebear/collection": "^9.4.2",
     "@dicebear/core": "^9.4.3",
     "@lottiefiles/dotlottie-react": "^0.19.9",
+    "@supabase/supabase-js": "^2.110.9",
+    "@xyflow/react": "^12.11.2",
     "dompurify": "^3.4.12",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.0",

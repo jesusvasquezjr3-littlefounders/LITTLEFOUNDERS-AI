@@ -21,7 +21,12 @@ DashScope (Qwen3-TTS), transcodes the returned WAV to a small mono MP3,
 uploads each clip to filebase (bucket `lesson-audio`, public), and PATCHes
 both the `audio` manifest and the `document`'s `audio_segment_id` stamps back
 onto the row. Idempotent by content hash — unchanged text/voice/model reuses
-the existing clip instead of re-paying for TTS.
+the existing clip instead of re-paying for TTS. On top of that, the GLOBAL
+`speech_assets` cache (Vault, migration 0015 — mirror of Prism's
+`picture_assets`) deduplicates across lessons/locales/courses/re-publishes:
+an identical (text, voice, model, language_type, bitrate) request anywhere on
+the platform is a free hit, and both lookup and write-through are best-effort
+(a Vault outage degrades to a paid call, never a failed unit).
 
 ## Routes
 
@@ -32,7 +37,7 @@ All routes below `/internal` require `x-internal-api-key: <INTERNAL_API_KEY>`
 | Method | Path | Body / Query | Description |
 |---|---|---|---|
 | GET | `/health` | — | Service health envelope |
-| POST | `/internal/v1/audio/lesson` | `{ lesson_id, locale }` | Narrate a lesson document; returns `{ units_total, generated, reused, failed[] }` |
+| POST | `/internal/v1/audio/lesson` | `{ lesson_id, locale }` | Narrate a lesson document; returns `{ units_total, generated, reused, cached, failed[] }` (`cached` = global speech_assets hits, zero paid calls) |
 | POST | `/internal/v1/audio/segment` | `{ text, locale, voice? }` | Ad-hoc: narrate arbitrary text, no persistence; returns `{ file_id, url }` |
 | GET | `/internal/v1/audio/lesson/:id` | `?locale=` | Current audio manifest for a lesson_documents row |
 

@@ -229,6 +229,217 @@ export type Database = {
         }
         Relationships: []
       }
+      game_intents: {
+        Row: {
+          accepted: boolean
+          action_id: string
+          applied_at: string
+          id: number
+          intent: Json
+          rejection_code: string | null
+          session_id: string
+        }
+        Insert: {
+          accepted: boolean
+          action_id: string
+          applied_at?: string
+          id?: never
+          intent: Json
+          rejection_code?: string | null
+          session_id: string
+        }
+        Update: {
+          accepted?: boolean
+          action_id?: string
+          applied_at?: string
+          id?: never
+          intent?: Json
+          rejection_code?: string | null
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_intents_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          game_id: string
+          id: string
+          pack_id: string
+          pack_version: number
+          seed: number
+          state: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          game_id?: string
+          id?: string
+          pack_id: string
+          pack_version: number
+          seed: number
+          state: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          game_id?: string
+          id?: string
+          pack_id?: string
+          pack_version?: number
+          seed?: number
+          state?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      generation_runs: {
+        Row: {
+          cached_tokens: number
+          course_slug: string
+          created_at: string
+          images_billed: number
+          images_generated: number
+          params: Json
+          register: string
+          run_id: string
+          summary: Json
+          tokens_used: number
+          track_id: string | null
+          updated_at: string
+          usd_used: number
+        }
+        Insert: {
+          cached_tokens?: number
+          course_slug: string
+          created_at?: string
+          images_billed?: number
+          images_generated?: number
+          params?: Json
+          register?: string
+          run_id: string
+          summary?: Json
+          tokens_used?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Update: {
+          cached_tokens?: number
+          course_slug?: string
+          created_at?: string
+          images_billed?: number
+          images_generated?: number
+          params?: Json
+          register?: string
+          run_id?: string
+          summary?: Json
+          tokens_used?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Relationships: []
+      }
+      generation_slots: {
+        Row: {
+          dropped_segments: number
+          duration_ms: number | null
+          early_stopped: boolean
+          error: string | null
+          failed_from: string | null
+          images_billed: number
+          images_generated: number
+          images_inherited: number
+          review_cycles: number | null
+          rubric: Json | null
+          run_id: string
+          salvaged: boolean
+          slot_id: string
+          state: string
+          updated_at: string
+        }
+        Insert: {
+          dropped_segments?: number
+          duration_ms?: number | null
+          early_stopped?: boolean
+          error?: string | null
+          failed_from?: string | null
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          review_cycles?: number | null
+          rubric?: Json | null
+          run_id: string
+          salvaged?: boolean
+          slot_id: string
+          state: string
+          updated_at?: string
+        }
+        Update: {
+          dropped_segments?: number
+          duration_ms?: number | null
+          early_stopped?: boolean
+          error?: string | null
+          failed_from?: string | null
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          review_cycles?: number | null
+          rubric?: Json | null
+          run_id?: string
+          salvaged?: boolean
+          slot_id?: string
+          state?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_slots_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "generation_runs"
+            referencedColumns: ["run_id"]
+          },
+        ]
+      }
+      generation_tracks: {
+        Row: {
+          budget_usd: number | null
+          course_slug: string
+          created_at: string
+          halted: string | null
+          report: Json
+          track_id: string
+          updated_at: string
+        }
+        Insert: {
+          budget_usd?: number | null
+          course_slug: string
+          created_at?: string
+          halted?: string | null
+          report?: Json
+          track_id: string
+          updated_at?: string
+        }
+        Update: {
+          budget_usd?: number | null
+          course_slug?: string
+          created_at?: string
+          halted?: string | null
+          report?: Json
+          track_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       guardian_links: {
         Row: {
           created_at: string
@@ -260,6 +471,7 @@ export type Database = {
         Row: {
           last_active_date: string | null
           lessons_completed: number
+          longest_streak: number
           minutes_learned: number
           streak_days: number
           updated_at: string
@@ -269,6 +481,7 @@ export type Database = {
         Insert: {
           last_active_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           minutes_learned?: number
           streak_days?: number
           updated_at?: string
@@ -278,6 +491,7 @@ export type Database = {
         Update: {
           last_active_date?: string | null
           lessons_completed?: number
+          longest_streak?: number
           minutes_learned?: number
           streak_days?: number
           updated_at?: string
@@ -369,8 +583,10 @@ export type Database = {
         Row: {
           attempt_number: number
           created_at: string
+          hints_used: number
           id: string
           lesson_id: string
+          run_id: string | null
           score: number
           segment_id: string
           user_id: string
@@ -378,8 +594,10 @@ export type Database = {
         Insert: {
           attempt_number: number
           created_at?: string
+          hints_used?: number
           id?: string
           lesson_id: string
+          run_id?: string | null
           score: number
           segment_id: string
           user_id: string
@@ -387,8 +605,10 @@ export type Database = {
         Update: {
           attempt_number?: number
           created_at?: string
+          hints_used?: number
           id?: string
           lesson_id?: string
+          run_id?: string | null
           score?: number
           segment_id?: string
           user_id?: string
@@ -498,6 +718,39 @@ export type Database = {
         }
         Relationships: []
       }
+      picture_assets: {
+        Row: {
+          bytes: number | null
+          created_at: string
+          file_id: string
+          id: string
+          model: string
+          prompt: string
+          prompt_hash: string
+          url: string
+        }
+        Insert: {
+          bytes?: number | null
+          created_at?: string
+          file_id: string
+          id?: string
+          model: string
+          prompt: string
+          prompt_hash: string
+          url: string
+        }
+        Update: {
+          bytes?: number | null
+          created_at?: string
+          file_id?: string
+          id?: string
+          model?: string
+          prompt?: string
+          prompt_hash?: string
+          url?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birth_date: string | null
@@ -578,6 +831,51 @@ export type Database = {
           },
         ]
       }
+      speech_assets: {
+        Row: {
+          bytes: number | null
+          created_at: string
+          duration_ms: number | null
+          file_id: string
+          id: string
+          language_type: string
+          model: string
+          mp3_bitrate_kbps: number
+          speech_hash: string
+          text: string
+          url: string
+          voice: string
+        }
+        Insert: {
+          bytes?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          file_id: string
+          id?: string
+          language_type: string
+          model: string
+          mp3_bitrate_kbps: number
+          speech_hash: string
+          text: string
+          url: string
+          voice: string
+        }
+        Update: {
+          bytes?: number | null
+          created_at?: string
+          duration_ms?: number | null
+          file_id?: string
+          id?: string
+          language_type?: string
+          model?: string
+          mp3_bitrate_kbps?: number
+          speech_hash?: string
+          text?: string
+          url?: string
+          voice?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_by: string
@@ -625,9 +923,11 @@ export type Database = {
           created_at: string
           id: string
           key_vocabulary: Json
+          kind: string
           learning_objective: Json
           position: number
           prior_knowledge: string
+          review_of: Json
           saga_id: string
           slug: string
           status: string
@@ -638,9 +938,11 @@ export type Database = {
           created_at?: string
           id?: string
           key_vocabulary?: Json
+          kind?: string
           learning_objective?: Json
           position: number
           prior_knowledge?: string
+          review_of?: Json
           saga_id: string
           slug: string
           status?: string
@@ -651,9 +953,11 @@ export type Database = {
           created_at?: string
           id?: string
           key_vocabulary?: Json
+          kind?: string
           learning_objective?: Json
           position?: number
           prior_knowledge?: string
+          review_of?: Json
           saga_id?: string
           slug?: string
           status?: string
@@ -695,6 +999,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_retention_at_distance: {
+        Args: never
+        Returns: {
+          avg_first_attempt_score: number
+          bucket: string
+          n: number
+        }[]
+      }
+      admin_retention_by_topic: {
+        Args: never
+        Returns: {
+          avg_first_attempt_score: number
+          n: number
+          source_topic_slug: string
+          source_topic_title: Json
+        }[]
+      }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
     }

@@ -14,6 +14,7 @@ export function stripMarkdown(text: string): string {
     const isListItem = trimmed.startsWith('- ');
     const body = isListItem ? trimmed.slice(2) : trimmed;
     const plain = body
+      .replace(/==([^=\n]+)==/g, '$1') // eavesdrop ==highlight== markers — visual, never spoken
       .replace(/\*\*([^*]+)\*\*/g, '$1')
       .replace(/\*([^*]+)\*/g, '$1')
       .replace(/`([^`]+)`/g, '$1')

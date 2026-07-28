@@ -176,6 +176,41 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     expect(db.lesson_segment_attempts).toHaveLength(2);
   });
 
+  it('applies the hint penalty server-side to the recorded score (hint_penalty_pct 10)', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'a' }, // correct → raw 100
+      attempt_number: 1,
+      hints_used: 1, // 100 × 0.9 = 90
+    });
+    expect(res.status).toBe(200);
+    expect(res.body.data.verdict.score).toBe(90);
+    expect(res.body.data.verdict.tier).toBe('great'); // penalized below 100 → not "perfect"
+    const row = db.lesson_segment_attempts.find((r) => r.segment_id === 'quiz-1');
+    expect(row?.score).toBe(90);
+    expect(row?.hints_used).toBe(1);
+  });
+
+  it('run-scopes the attempt cap: a fresh run_id starts every segment over', async () => {
+    const app = createApp();
+    const RUN_A = '11111111-1111-4111-8111-111111111111';
+    const RUN_B = '22222222-2222-4222-8222-222222222222';
+    for (let i = 0; i < 2; i++) {
+      await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+        segment_id: 'quiz-1', answer: { option_id: 'b' }, attempt_number: i + 1, run_id: RUN_A,
+      });
+    }
+    const exhausted = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 3, run_id: RUN_A,
+    });
+    expect(exhausted.status).toBe(409); // run A is spent
+    const freshRun = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1', answer: { option_id: 'a' }, attempt_number: 1, run_id: RUN_B,
+    });
+    expect(freshRun.status).toBe(200); // a new play-through starts fresh
+    expect(freshRun.body.data.verdict.score).toBe(100);
+  });
+
   it('422s UNSUPPORTED_SEGMENT for an ungraded (story) segment', async () => {
     const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
       segment_id: 'story-1',
@@ -184,6 +219,17 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     });
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('UNSUPPORTED_SEGMENT');
+  });
+
+  it('grades a keyless memory_flip segment (no answer key) instead of 422', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'memory-1',
+      answer: { flips: 6, pairs: 3 },
+      attempt_number: 1,
+    });
+    expect(res.status).toBe(200);
+    // Completing the board is the win — memory_flip floors at 40.
+    expect(res.body.data.verdict.score).toBeGreaterThanOrEqual(40);
   });
 
   it('404s for a segment id that does not exist in the document', async () => {

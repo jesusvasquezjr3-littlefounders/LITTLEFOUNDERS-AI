@@ -86,7 +86,7 @@ describe('POST /internal/v1/audio/lesson', () => {
 
     expect(res.status).toBe(200);
     // fixture has 1 story_scene segment: prompt_md + body_md = 2 narratable units
-    expect(res.body).toEqual({ data: { units_total: 2, generated: 2, reused: 0, failed: [] }, error: null });
+    expect(res.body).toEqual({ data: { units_total: 2, generated: 2, reused: 0, cached: 0, failed: [] }, error: null });
   });
 
   it('returns 404 envelope when no lesson_documents row matches', async () => {
@@ -144,6 +144,8 @@ describe('POST /internal/v1/audio/segment', () => {
             mime: 'audio/mpeg',
             deduplicated: false,
           }),
+          findSpeechAsset: vi.fn().mockResolvedValue(null),
+          insertSpeechAsset: vi.fn().mockImplementation(async (r: Record<string, unknown>) => ({ id: 'x', created_at: 'now', ...r })),
         },
       },
     });

@@ -4,11 +4,11 @@ import { ALL_TYPES } from '../contract/registry.js';
 import { buildTaxonomy } from './fixtures.js';
 
 describe('palette exhaustiveness', () => {
-  it('has exactly one PALETTE_GUIDE entry per type actually present in the Zod contract (56 total)', () => {
+  it('has exactly one PALETTE_GUIDE entry per type actually present in the Zod contract (57 total)', () => {
     const guideKeys = Object.keys(PALETTE_GUIDE).sort();
     const contractTypes = [...ALL_TYPES].sort();
     expect(guideKeys).toEqual(contractTypes);
-    expect(contractTypes).toHaveLength(56);
+    expect(contractTypes).toHaveLength(57);
   });
 
   it('every PALETTE_EXAMPLES key is a real type', () => {

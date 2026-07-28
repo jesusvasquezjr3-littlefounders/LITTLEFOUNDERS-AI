@@ -97,8 +97,42 @@ describe('piggy_split', () => {
     expect(grade('piggy_split', segment, { alloc: { save: 40, spend: 40, share: 20 } }).score).toBe(100)
   })
 
-  it('2 of 3 jars in range → 67 (allocationRanges partial)', () => {
-    expect(grade('piggy_split', segment, { alloc: { save: 70, spend: 20, share: 10 } }).score).toBe(67)
+  // EXPECTATION CHANGED (partial_credit_too_generous, 2026-07-25): allocationRanges
+  // no longer pays inRange/jars × 100 for an incomplete split — at 4 jars that gave
+  // 75 for a plan with one jar wrong, which passed the 70 gate. Partial credit is
+  // now capped inside a sub-pass band, so 2 of 3 reads 33 instead of 67. It failed
+  // before and still fails; only the reported closeness moved.
+  it('2 of 3 jars in range → 33 (partial credit, capped below any pass gate)', () => {
+    expect(grade('piggy_split', segment, { alloc: { save: 70, spend: 20, share: 10 } }).score).toBe(33)
+  })
+
+  it('one jar of FOUR out of range → 38, not a pass (was 75 under ratio credit)', () => {
+    const fourJars = seg(
+      'piggy_split',
+      {
+        income: 100,
+        unit: 'MXN',
+        jars: [
+          { id: 'save', label: 'Ahorrar', icon: 'savings' },
+          { id: 'spend', label: 'Gastar', icon: 'shopping_cart' },
+          { id: 'share', label: 'Compartir', icon: 'redeem' },
+          { id: 'grow', label: 'Hacer crecer', icon: 'trending_up' },
+        ],
+        step: 10,
+      },
+      {
+        targets: {
+          save: { min: 20, max: 40 },
+          spend: { min: 20, max: 40 },
+          share: { min: 5, max: 20 },
+          grow: { min: 5, max: 20 },
+        },
+      },
+    )
+    // Intended split still scores a clean 100 — never unwinnable.
+    expect(grade('piggy_split', fourJars, { alloc: { save: 30, spend: 30, share: 20, grow: 20 } }).score).toBe(100)
+    // `grow` left empty (the misconception the jars teach against) → below the gate.
+    expect(grade('piggy_split', fourJars, { alloc: { save: 40, spend: 40, share: 20, grow: 0 } }).score).toBe(38)
   })
 
   it('allocation does not sum to income → 0', () => {
@@ -137,6 +171,41 @@ describe('needs_wants', () => {
 
   it('everything inverted → 0', () => {
     expect(grade('needs_wants', segment, { needs_ids: ['game', 'candy'] }).score).toBe(0)
+  })
+
+  it('blanket "Want on everything" scores 50 even on a needs-poor set (was a pass)', () => {
+    /*
+     * naive_strategy_passes: buildNeedsWantsAnswer encodes "Want" as absence, so
+     * tapping Want on every card submits an EMPTY needs_ids. Under plain decision
+     * accuracy that scored (N−P)/N — 75 here (6 wants of 8) — and cleared the 70
+     * threshold with no needs-vs-wants thinking. Balanced accuracy pins it at 50.
+     */
+    const needsPoor = seg(
+      'needs_wants',
+      {
+        items: [
+          { id: 'water', text_md: 'Agua' },
+          { id: 'shoes', text_md: 'Zapatos' },
+          { id: 'game', text_md: 'Videojuego' },
+          { id: 'candy', text_md: 'Dulces' },
+          { id: 'sticker', text_md: 'Calcomanías' },
+          { id: 'toy', text_md: 'Juguete' },
+          { id: 'cap', text_md: 'Gorra' },
+          { id: 'soda', text_md: 'Refresco' },
+        ],
+      },
+      { needs_ids: ['water', 'shoes'] },
+    )
+    expect(grade('needs_wants', needsPoor, { needs_ids: [] }).score).toBe(50)
+    // Mirror strategy — "Need on everything" — is equally worthless.
+    expect(
+      grade('needs_wants', needsPoor, {
+        needs_ids: ['water', 'shoes', 'game', 'candy', 'sticker', 'toy', 'cap', 'soda'],
+      }).score,
+    ).toBe(50)
+    // The reasoned answer is still exactly 100, and one slip still passes on merit.
+    expect(grade('needs_wants', needsPoor, { needs_ids: ['water', 'shoes'] }).score).toBe(100)
+    expect(grade('needs_wants', needsPoor, { needs_ids: ['water', 'shoes', 'cap'] }).score).toBe(92)
   })
 
   it('malformed → 0, never throws', () => {

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
+import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
@@ -20,6 +21,16 @@ import {
 import type { PlausibleFilter } from '../services/pulse.js';
 import {
   getAdminOverview,
+  getCoachReport,
+  compareRuns,
+  getGenerationAnalytics,
+  getGenerationOverview,
+  getGenerationRun,
+  getHeartbeatSnapshots,
+  getLearningRetention,
+  getLiveGeneration,
+  getSignupTimeline,
+  getSlotDetail,
   grantRoleChecked,
   isCourseStatus,
   isLessonStatus,
@@ -82,6 +93,43 @@ const PULSE_UNCONFIGURED = 'PULSE_UNCONFIGURED';
 const UPSTREAM_FAILED = 'UPSTREAM_FAILED';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
 
+interface EmailLogEntry {
+  id: string;
+  to: string;
+  subject: string;
+  status: string;
+  templateType: string;
+  locale?: string;
+  userId?: string;
+  detail: Record<string, unknown>;
+  createdAt: string;
+}
+
+const EmailLogsSchema = z.object({
+  entries: z.array(z.custom<EmailLogEntry>((v) => typeof (v as Record<string, unknown>)?.id === 'string')),
+  total: z.number().int().min(0),
+});
+
+const EmailLogsQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+const EmailSummarySchema = z.object({
+  total: z.number().int().min(0),
+  statuses: z.record(z.string(), z.number().int().min(0)),
+  templates: z.record(z.string(), z.number().int().min(0)),
+});
+
+const TimelineQuerySchema = z.object({
+  days: z.coerce.number().int().min(7).max(365).default(90),
+});
+
+const CoachQuerySchema = z.object({
+  course: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
+  track: z.string().min(1).max(200).regex(/^[A-Za-z0-9._-]+$/).optional(),
+});
+
 const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
 const RoleMutationSchema = z.object({
   userId: z.string().uuid(),
@@ -90,6 +138,11 @@ const RoleMutationSchema = z.object({
 const AuditQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+});
+// Run ids are operator-chosen (`<track-id>--<adventure-slug>` or a default
+// timestamp id) — constrain to a safe charset, never interpolate raw.
+const GenerationRunParamSchema = z.object({
+  runId: z.string().min(1).max(200).regex(/^[A-Za-z0-9._-]+$/),
 });
 
 export function adminRouter(): Router {
@@ -253,11 +306,143 @@ export function adminRouter(): Router {
     ok(res, overview);
   });
 
+  // ── Learning retention (always-on, from spaced-review attempts — 0016) ─────
+  router.get('/learning/retention', async (_req, res) => {
+    const retention = await getLearningRetention();
+    if (!retention) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load retention data');
+    ok(res, retention);
+  });
+
+  // ── Generation telemetry (0017 — coursegen's durable scoreboard) ───────────
+  // The console is the ONLY reader of generation_runs/slots/tracks (service-
+  // role tables, zero client policies): how each agentic run behaved — per-slot
+  // outcomes, judge rubrics, failure stages, cost, cache-hit — the permanent
+  // record for "what failed / what can we optimize" evaluations.
+  router.get('/generation', async (_req, res) => {
+    const overview = await getGenerationOverview();
+    if (!overview) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load generation telemetry');
+    ok(res, overview);
+  });
+
+  router.get('/generation/runs/:runId', async (req, res) => {
+    const parsed = GenerationRunParamSchema.safeParse(req.params);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const detail = await getGenerationRun(parsed.data.runId);
+    if (!detail) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load that generation run (unknown id, or Vault unavailable)');
+    ok(res, detail);
+  });
+
+  /**
+   * Live heartbeat for currently-active generation runs (0018). The admin
+   * dashboard polls this every ~2s while a run is active to render the live
+   * flow visualization — it shows slot progress per stage, cost, and image
+   * counts as they happen, not just after the fact (0017's post-mortem view).
+   * Rows older than 2 minutes are stale (the run process died) and are
+   * excluded by the query.
+   */
+  router.get('/generation/live', async (_req, res) => {
+    const status = await getLiveGeneration();
+    if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load live generation status');
+    ok(res, status);
+  });
+
+  /**
+   * Cross-run analytics: cost, quality, and failure trends aggregated across
+   * all historic runs for a course (or platform-wide if no course is specified).
+   * Optional query param: ?course=financial-education
+   */
+  router.get('/generation/analytics', async (req, res) => {
+    const q = CoachQuerySchema.safeParse(req.query);
+    const course = q.success ? q.data.course : undefined;
+    if (!q.success && 'course' in (req.query as Record<string, unknown>)) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a valid slug (1-100 chars, lowercase letters, digits, hyphens)');
+    }
+    const analytics = await getGenerationAnalytics(course);
+    if (!analytics) return fail(res, 502, DATA_UNAVAILABLE, 'No generation runs found for analysis');
+    ok(res, analytics);
+  });
+
+  /**
+   * Coach report: offline, deterministic diagnosis of the agentic pipeline's
+   * behaviour across runs — failure patterns, judge quality trends, cost
+   * efficiency, and proposed improvements each tied to evidence. Surface of
+   * the forge:coach improvement loop (Level 2) in the admin dashboard.
+   * Optional query: ?course=financial-education&track=trk-001
+   */
+  router.get('/generation/coach', async (req, res) => {
+    const q = CoachQuerySchema.safeParse(req.query);
+    const course = q.success ? q.data.course : undefined;
+    const track = q.success ? q.data.track : undefined;
+    if (!q.success && ('course' in (req.query as Record<string, unknown>) || 'track' in (req.query as Record<string, unknown>))) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a slug (1-100, a-z0-9-), track must be 1-200 safe chars');
+    }
+    const report = await getCoachReport(course, track);
+    if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'No generation data available for coach analysis');
+    ok(res, report);
+  });
+
+  /**
+   * Heartbeat snapshots: the time-series record of a run's progression —
+   * every heartbeat update saved as a row (0020). Used by the admin dashboard
+   * to render the run's progress curve over time.
+   */
+  router.get('/generation/snapshots/:runId', async (req, res) => {
+    const parsed = GenerationRunParamSchema.safeParse(req.params);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const snapshots = await getHeartbeatSnapshots(parsed.data.runId);
+    if (!snapshots) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load heartbeat snapshots');
+    ok(res, { runId: parsed.data.runId, snapshots });
+  });
+
+  /**
+   * Full inspection of a single generated lesson slot: rubric, error, metrics,
+   * and the run it belongs to. Used by the slot detail modal in Run History.
+   */
+  router.get('/generation/slots/:runId/:slotId', async (req, res) => {
+    const runParsed = GenerationRunParamSchema.safeParse({ runId: req.params.runId });
+    if (!runParsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const detail = await getSlotDetail(runParsed.data.runId, req.params.slotId);
+    if (!detail) return fail(res, 404, 'NOT_FOUND', 'Slot not found in generation telemetry');
+    ok(res, detail);
+  });
+
+  /**
+   * Side-by-side comparison of two generation runs. Returns per-run
+   * stats + computed deltas for diff display.
+   */
+  router.get('/generation/compare', async (req, res) => {
+    const runA = typeof req.query.runA === 'string' ? req.query.runA : '';
+    const runB = typeof req.query.runB === 'string' ? req.query.runB : '';
+    if (!runA || !runB) {
+      fail(res, 400, 'VALIDATION_ERROR', 'Both runA and runB query params are required');
+      return;
+    }
+    const comparison = await compareRuns(runA, runB);
+    if (!comparison) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load comparison (both runs must exist in telemetry)');
+    ok(res, comparison);
+  });
+
   // ── Users / Support ────────────────────────────────────────────────────────
   router.get('/users', async (_req, res) => {
     const users = await listAdminUsers();
     if (!users) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load users');
     ok(res, { users });
+  });
+
+  router.get('/users/timeline', async (req, res) => {
+    const q = TimelineQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days must be an integer between 7 and 365');
+    const timeline = await getSignupTimeline(q.data.days);
+    ok(res, { timeline });
   });
 
   // ── Content (course publish gate) ──────────────────────────────────────────
@@ -330,6 +515,43 @@ export function adminRouter(): Router {
     const result = await revokeRoleChecked(parsed.data.userId, parsed.data.role);
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, revoked: true });
+  });
+
+  // ── Email (Courier proxy) ──────────────────────────────────────────────────
+  router.get('/emails/logs', async (req, res) => {
+    const q = EmailLogsQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0');
+    const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
+    try {
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs?limit=${q.data.limit}&offset=${q.data.offset}`, {
+        headers: { 'x-internal-api-key': INTERNAL_API_KEY },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) return fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unavailable');
+      const body = await r.json() as Record<string, unknown>;
+      const parsed = EmailLogsSchema.safeParse(body.data ?? body);
+      if (!parsed.success) return fail(res, 502, 'DATA_UNAVAILABLE', 'Invalid response from email server');
+      ok(res, parsed.data);
+    } catch {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unreachable');
+    }
+  });
+
+  router.get('/emails/summary', async (_req, res) => {
+    const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
+    try {
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs/summary`, {
+        headers: { 'x-internal-api-key': INTERNAL_API_KEY },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) return fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unavailable');
+      const body = await r.json() as Record<string, unknown>;
+      const parsed = EmailSummarySchema.safeParse(body.data ?? body);
+      if (!parsed.success) return fail(res, 502, 'DATA_UNAVAILABLE', 'Invalid response from email server');
+      ok(res, parsed.data);
+    } catch {
+      fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unreachable');
+    }
   });
 
   return router;

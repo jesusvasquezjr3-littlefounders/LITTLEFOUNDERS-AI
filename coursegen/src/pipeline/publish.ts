@@ -5,7 +5,7 @@
 // Lessons land as status='review' — publishing to 'published' is a human
 // action (blocking gate for kids' content, non-negotiable, §6).
 
-import { vaultUpsert } from '../vault/restClient.js';
+import { vaultPatch, vaultSelect, vaultUpsert } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 
@@ -60,6 +60,7 @@ export interface PublishInput {
   };
   adventure: {
     slug: string;
+    renamedFrom?: string;
     position: number;
     theme: string;
     /**
@@ -77,6 +78,7 @@ export interface PublishInput {
   };
   saga: {
     slug: string;
+    renamedFrom?: string;
     position: number;
     icon: string;
     title: LocalizedText;
@@ -84,15 +86,21 @@ export interface PublishInput {
   };
   topic: {
     slug: string;
+    renamedFrom?: string;
     position: number;
     title: LocalizedText;
     conceptMd: string;
     learningObjective: LocalizedText;
     keyVocabulary: string[];
     priorKnowledge: string;
+    /** Blueprint pedagogy projection (0016): 'teaching' | review kinds. */
+    kind: string;
+    /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") — resolved at query time. */
+    reviewOf: string[];
   };
   lesson: {
     slug: string;
+    renamedFrom?: string;
     position: number;
     difficulty: 1 | 2 | 3 | 4 | 5;
     estimatedMinutes: number;
@@ -116,6 +124,29 @@ export interface PublishResult {
   localesPublished: LessonLocale[];
 }
 
+/**
+ * IDENTITY MIGRATION (roadmap.sh migration-mapping pattern): every upsert
+ * below keys on (parent_id, slug), so a slug CHANGE would insert a brand-new
+ * row and silently orphan every learner's progress keyed on the old row's
+ * UUID. A declared `renamed_from` renames the EXISTING row first — same UUID,
+ * progress intact — and then the normal upsert lands on it. Idempotent: once
+ * the old slug no longer exists (rename already applied, or never existed),
+ * the PATCH matches zero rows and does nothing.
+ */
+async function migrateSlugIfRenamed(
+  table: 'adventures' | 'sagas' | 'topics' | 'lessons',
+  parentFilter: string,
+  renamedFrom: string | undefined,
+  newSlug: string,
+): Promise<void> {
+  if (!renamedFrom || renamedFrom === newSlug) return;
+  // If the NEW slug already exists under this parent, the rename has already
+  // happened (or the catalog is wrong) — never touch two rows.
+  const existing = await vaultSelect<RowWithId>(`/${table}?select=id&${parentFilter}&slug=eq.${encodeURIComponent(newSlug)}&limit=1`);
+  if (existing.length > 0) return;
+  await vaultPatch(`/${table}?${parentFilter}&slug=eq.${encodeURIComponent(renamedFrom)}`, { slug: newSlug });
+}
+
 export async function publishLessonSlot(input: PublishInput): Promise<PublishResult> {
   const localeEntries = Object.entries(input.documents).filter(
     (entry): entry is [LessonLocale, LessonDocumentParsed] => entry[1] !== undefined,
@@ -131,6 +162,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
   );
   if (!course) throw new Error('publish: course upsert returned no row');
 
+  await migrateSlugIfRenamed('adventures', `course_id=eq.${course.id}`, input.adventure.renamedFrom, input.adventure.slug);
   const [adventure] = await vaultUpsert<RowWithId>(
     'adventures',
     [
@@ -149,6 +181,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
   );
   if (!adventure) throw new Error('publish: adventure upsert returned no row');
 
+  await migrateSlugIfRenamed('sagas', `adventure_id=eq.${adventure.id}`, input.saga.renamedFrom, input.saga.slug);
   const [saga] = await vaultUpsert<RowWithId>(
     'sagas',
     [
@@ -165,6 +198,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
   );
   if (!saga) throw new Error('publish: saga upsert returned no row');
 
+  await migrateSlugIfRenamed('topics', `saga_id=eq.${saga.id}`, input.topic.renamedFrom, input.topic.slug);
   const [topic] = await vaultUpsert<RowWithId>(
     'topics',
     [
@@ -177,6 +211,11 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
         learning_objective: input.topic.learningObjective,
         key_vocabulary: input.topic.keyVocabulary,
         prior_knowledge: input.topic.priorKnowledge,
+        // Spaced-review projection (0016) — feeds the always-on retention
+        // metric (admin_retention_* functions); the catalog stays the source
+        // of truth, publish just keeps Vault's copy current.
+        kind: input.topic.kind,
+        review_of: input.topic.reviewOf,
       },
     ],
     'saga_id,slug',
@@ -188,6 +227,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
   // available document is authoritative.
   const xpTotal = computeXpTotal(localeEntries[0]![1]);
 
+  await migrateSlugIfRenamed('lessons', `topic_id=eq.${topic.id}`, input.lesson.renamedFrom, input.lesson.slug);
   const [lesson] = await vaultUpsert<RowWithId>(
     'lessons',
     [

@@ -51,13 +51,25 @@ function stubPulseEnv(): void {
 }
 
 /** fetch stub: PostgREST roles + the three Pulse upstreams. */
-function stubFetch(opts: { roles?: string[]; plausibleStatus?: number; umamiStatus?: number; kumaStatus?: number } = {}) {
+function stubFetch(opts: { roles?: string[]; plausibleStatus?: number; umamiStatus?: number; kumaStatus?: number; retentionStatus?: number } = {}) {
   const roles = (opts.roles ?? ['admin']).map((role) => ({ role }));
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, roles));
+      if (url.includes('/rest/v1/rpc/admin_retention_at_distance')) {
+        if (opts.retentionStatus) return Promise.resolve(jsonResponse(opts.retentionStatus, {}));
+        return Promise.resolve(jsonResponse(200, [{ bucket: '7-13', n: 4, avg_first_attempt_score: 82.5 }]));
+      }
+      if (url.includes('/rest/v1/rpc/admin_retention_by_topic')) {
+        if (opts.retentionStatus) return Promise.resolve(jsonResponse(opts.retentionStatus, {}));
+        return Promise.resolve(
+          jsonResponse(200, [
+            { source_topic_slug: 'tipos-money', source_topic_title: { 'en-US': 'The Money Box' }, n: 4, avg_first_attempt_score: 82.5 },
+          ]),
+        );
+      }
       if (url.includes('plausible.test/api/v2/query')) {
         if (opts.plausibleStatus) return Promise.resolve(jsonResponse(opts.plausibleStatus, {}));
         const body = JSON.parse(String(init?.body ?? '{}')) as { dimensions?: string[] };
@@ -340,5 +352,29 @@ describe('Roles & Access (superadmin-only)', () => {
       .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'admin' });
     expect(res.status).toBe(200);
     expect(res.body.data).toMatchObject({ revoked: true });
+  });
+});
+
+describe('GET /api/v1/admin/learning/retention', () => {
+  it('returns retention buckets + per-topic rows for an admin', async () => {
+    stubFetch();
+    const res = await request(createApp()).get('/api/v1/admin/learning/retention').set('Authorization', authed());
+    expect(res.status).toBe(200);
+    expect(res.body.error).toBeNull();
+    expect(res.body.data.buckets).toEqual([{ bucket: '7-13', n: 4, avg_first_attempt_score: 82.5 }]);
+    expect(res.body.data.byTopic).toEqual([{ slug: 'tipos-money', title: 'The Money Box', n: 4, avgFirstAttemptScore: 82.5 }]);
+  });
+
+  it('403s for a non-staff role', async () => {
+    stubFetch({ roles: ['universal'] });
+    const res = await request(createApp()).get('/api/v1/admin/learning/retention').set('Authorization', authed());
+    expect(res.status).toBe(403);
+  });
+
+  it('502s when Vault does not answer', async () => {
+    stubFetch({ retentionStatus: 500 });
+    const res = await request(createApp()).get('/api/v1/admin/learning/retention').set('Authorization', authed());
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 });

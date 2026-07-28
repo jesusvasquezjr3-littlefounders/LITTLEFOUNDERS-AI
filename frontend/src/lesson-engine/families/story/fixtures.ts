@@ -136,4 +136,34 @@ export const storyFixtures: SegmentBase[] = [
       mood_prompt_md: '¿Seguimos con la aventura o repasamos la parte de la limonada?',
     },
   },
+  {
+    id: 'fx-eavesdrop',
+    type: 'eavesdrop',
+    prompt_md: 'Escucha con atención: los vendedores del mercado están hablando de dinero.',
+    difficulty: 1,
+    xp: 0,
+    narrator: { character: 'rho', emotion: 'neutral' },
+    payload: {
+      context_md: 'Es sábado en el mercado. Dina y Liruf acomodan su puesto y escuchan a los vendedores de al lado.',
+      lines: [
+        {
+          character: 'zara',
+          emotion: 'happy',
+          text_md: 'Hoy sí vamos a ==salir tablas==: vendimos justo lo que gastamos.',
+          notes: ['**Salir tablas** significa no ganar ni perder dinero: lo que entró es igual a lo que salió.'],
+        },
+        {
+          character: 'rho',
+          text_md: 'Yo aparto mi ==fondo de emergencia== antes de contar ganancias.',
+          notes: ['Un **fondo de emergencia** es dinero guardado solo para sorpresas, como cuando se rompe algo.'],
+        },
+        {
+          character: 'zara',
+          emotion: 'thinking',
+          text_md: 'Buena idea. Mañana subo el precio un peso, a ver si el puesto lo ==aguanta==.',
+          notes: ['**Aguantar** un precio: que los clientes sigan comprando aunque cueste un poco más.'],
+        },
+      ],
+    },
+  },
 ]

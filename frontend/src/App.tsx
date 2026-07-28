@@ -17,6 +17,9 @@ import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
+import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
+import { FamilyPage } from '@/routes/app/family/FamilyPage';
+import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
 import { SectionComingSoon } from '@/routes/app/SectionComingSoon';
 import { ProfilePage } from '@/routes/app/profile/ProfilePage';
@@ -29,16 +32,19 @@ import { PublicFollowersPage } from '@/routes/app/profile/PublicFollowersPage';
 import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
 import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
 import { AdminContentPage } from '@/routes/admin/AdminContentPage';
-import { AdminModerationPage } from '@/routes/admin/AdminModerationPage';
+import { AdminEmailDashboard } from '@/routes/admin/AdminEmailDashboard';
+
 import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
 import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
 import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
+import { AdminGenerationPage } from '@/routes/admin/AdminGenerationPage';
 import { Suspense, lazy } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
+const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
@@ -55,6 +61,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <LessonLabPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/lesson-view"
+              element={
+                <Suspense fallback={null}>
+                  <LessonViewPage />
                 </Suspense>
               }
             />
@@ -111,6 +127,7 @@ export function App() {
           >
             <Route path="learn" element={<LearnPage />} />
             <Route path="learn/:courseSlug" element={<CoursePage />} />
+            <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
             <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
             <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
             <Route
@@ -118,6 +135,22 @@ export function App() {
               element={
                 <RequireRole role="parent">
                   <SectionComingSoon section="tasks" icon="checklist" />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="family"
+              element={
+                <RequireRole role="parent">
+                  <FamilyPage />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="family/:kidId/territory"
+              element={
+                <RequireRole role="parent">
+                  <KidTerritoryPage />
                 </RequireRole>
               }
             />
@@ -134,9 +167,11 @@ export function App() {
                 :handle catch-all, and static routes always outrank it. */}
             <Route path="admin" element={<RequireRole role={STAFF}><AdminOverviewPage /></RequireRole>} />
             <Route path="admin/content" element={<RequireRole role={STAFF}><AdminContentPage /></RequireRole>} />
-            <Route path="admin/moderation" element={<RequireRole role={STAFF}><AdminModerationPage /></RequireRole>} />
+
             <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
+            <Route path="admin/emails" element={<RequireRole role={STAFF}><AdminEmailDashboard /></RequireRole>} />
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
+            <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />
             <Route path="admin/roles" element={<RequireRole role="superadmin"><AdminRolesPage /></RequireRole>} />
 

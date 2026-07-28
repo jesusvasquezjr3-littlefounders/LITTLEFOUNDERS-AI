@@ -14,6 +14,8 @@ export interface SegmentState {
   verdict: Verdict | null
   /** true = correct on attempt 1; false = completed without first-try correct. */
   firstTry: boolean | null
+  /** Times "Intentar de nuevo" was pressed — drives a clean remount of the exercise component so timers/boards/keypads reset and stale drafts don't co-submit. */
+  retries: number
   selfMark?: 'got_it' | 'review'
 }
 
@@ -45,6 +47,7 @@ const EMPTY_SEG: SegmentState = {
   done: false,
   verdict: null,
   firstTry: null,
+  retries: 0,
 }
 
 export function isGraded(segment: SegmentBase): boolean {
@@ -69,7 +72,7 @@ function segState(state: SessionState, id: string): SegmentState {
 }
 
 export function createSessionReducer(doc: LessonDocument) {
-  const { pass_threshold, hint_penalty_pct, max_attempts } = doc.scoring
+  const { pass_threshold, max_attempts } = doc.scoring
 
   function finish(state: SessionState): SessionState {
     const score = lessonScore(doc, state)
@@ -95,9 +98,9 @@ export function createSessionReducer(doc: LessonDocument) {
       case 'VERDICT': {
         const prev = segState(state, action.segmentId)
         const attempts = prev.attempts + 1
-        const penalty = Math.pow(1 - hint_penalty_pct / 100, prev.hintsShown)
-        const penalized = Math.max(0, Math.min(100, Math.round(action.verdict.score * penalty)))
-        const best = Math.max(prev.best, penalized)
+        // The server already applied the hint penalty (0012) — verdict.score is
+        // the authoritative penalized score; the client never re-penalizes.
+        const best = Math.max(prev.best, action.verdict.score)
         const outOfAttempts = attempts >= max_attempts
         const done = action.verdict.score >= 100 || !action.verdict.allowRetry || outOfAttempts
         const firstTryCorrect = attempts === 1 && action.verdict.correct
@@ -135,7 +138,17 @@ export function createSessionReducer(doc: LessonDocument) {
         if (!current) return state
         const s = segState(state, current.id)
         if (s.done) return state
-        return { ...state, stepPhase: 'answer' }
+        // Bump retries so the player remounts the exercise (fresh timer/board/
+        // keypad) and clears the previous draft — no stale co-submit (P3/E2).
+        // Also clear the stale verdict: several exercises (memory_flip, number_line,
+        // speed_tap, flash_match, lightning_round) gate interaction on `verdict`
+        // being null, so a leftover verdict from the failed attempt left the
+        // remounted component born disabled — no click could ever land.
+        return {
+          ...state,
+          stepPhase: 'answer',
+          seg: { ...state.seg, [current.id]: { ...s, retries: s.retries + 1, verdict: null } },
+        }
       }
 
       case 'HINT': {

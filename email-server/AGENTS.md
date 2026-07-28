@@ -18,9 +18,12 @@ The engine is **[Haraka](https://haraka.github.io/)** (MIT, semver ≥1.0, Node/
 
 ## Invariants that bite here
 
-- The send **contract is stable** (`{ to, subject, html?, text? }` → `{ data: { id, status: "queued" }, error: null }`, 202) — consumers never change when the engine or provider changes.
+- The send **contract is stable** (`{ to, subject, html?, text?, templateType?, locale?, userId? }` → `{ data: { id, status: "queued" }, error: null }`, 202) — consumers never change when the engine or provider changes.
 - **Internal-only, never public.** No public Railway domain. The Haraka listener grants relaying by private-IP trust (Railway's IPv6 private net) — it is NOT an open relay (untrusted sources are rejected at RCPT) but it MUST never get a public domain.
 - **Secrets are rendered at boot, never committed.** `haraka/config/smtp_forward.ini` (SES creds), `haraka/config/me`, and the boot-generated `tls_*.pem` are git-ignored + `.railwayignore`d. Only static config + the `relay_internal` plugin are tracked.
+- **Email tracking is in-memory only.** Every `POST /api/v1/send` writes one entry to a ring buffer (`services/emailLog.ts`, max 1000). The buffer is exposed via `GET /api/v1/logs` and `GET /api/v1/logs/summary` — read by Core's admin proxy (`/admin/emails/*`). GoTrue-initiated auth mail (SMTP direct to Haraka, bypassing the HTTP API) is NOT captured. The `email_logs` DB table (migration 0021) exists for future durable persistence but is not yet wired.
+- All `/api/v1/*` routes require `INTERNAL_API_KEY` (middleware scope widened from `/api/v1/send` to `/api/v1` on 2026-07-28). `/health` is deliberately outside this scope.
+- Query params on `/logs` and `/logs/summary` are Zod-validated at the edge.
 - **One worker.** `haraka/config/smtp.ini` pins `nodes=1` — Haraka, like Kong's nginx, defaults to one worker per CPU, the pattern that ballooned the Railway memory bill.
 - **Always-warm.** GoTrue fires auth mail at random user times, so this service must NOT scale-to-zero.
 - No PII beyond what the email itself requires; no minor PII in email bodies to third parties (§1.9). SES is a data sub-processor — keep bodies minimal.

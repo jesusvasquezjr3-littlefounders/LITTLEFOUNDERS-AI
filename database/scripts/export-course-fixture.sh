@@ -17,7 +17,7 @@
 # way; only the illustration/audio playback itself is unavailable until that
 # developer regenerates it locally (cheap — a few cents, see audiogen/README).
 #
-# Usage: bash scripts/export-course-fixture.sh qa-lesson-engine-smoketest \
+# Usage: bash scripts/export-course-fixture.sh first-lemonade-stand \
 #          seeds/qa-course-fixture.sql
 
 set -euo pipefail
@@ -68,8 +68,8 @@ SELECT format(
 ) FROM s
 UNION ALL
 SELECT format(
-  'INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status) VALUES (%L, %L, %L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
-  id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status
+  'INSERT INTO topics (id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of) VALUES (%L, %L, %L, %L, %L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
+  id, saga_id, position, slug, title, concept_md, learning_objective, key_vocabulary, prior_knowledge, status, kind, review_of
 ) FROM t
 UNION ALL
 SELECT format(

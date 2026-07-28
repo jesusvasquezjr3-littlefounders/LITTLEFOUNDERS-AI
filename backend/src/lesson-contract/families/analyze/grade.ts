@@ -2,7 +2,7 @@
 // Malformed answers → score 0, never throw. Tier microcopy is the UI's job (i18n).
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
-import { decisionAccuracy, jaccard, positional, ratio, signalDetection } from '../../core/scoring.js'
+import { decisionAccuracy, jaccard, positional, ratio, setF1, signalDetection } from '../../core/scoring.js'
 
 type Dict = Record<string, unknown>
 
@@ -30,8 +30,15 @@ const gradeSpotError: FamilyGrader = (segment, answer) => {
   const errorIds = key ? strArray(key.error_ids) : null
   const steps = segment.payload.steps as Array<{ id: string }> | undefined
   if (!selected || !errorIds || !steps) return MALFORMED
+  // naive_strategy_passes — fixed in SCORING, not in the widget: the control set is
+  // right (tap the flawed step), the FORMULA was wrong. `decisionAccuracy` paid for
+  // every step the child never touched, so tapping ONE arbitrary step scored
+  // (N−1−P)/N = 71 at 7 steps and 80 at 10, and canSubmit only demands one tap.
+  // `setF1` scores the set the child actually claimed; the exact error set still
+  // scores 100. Full rationale + the numbers in core/scoring.ts → setF1.
+  // (`steps` is still required so a payload without them stays MALFORMED → 0.)
   return {
-    score: decisionAccuracy(selected, errorIds, steps.map((s) => s.id)),
+    score: setF1(selected, errorIds),
     reveal: { error_ids: errorIds, correction_md: key?.correction_md },
   }
 }
@@ -54,14 +61,35 @@ const gradeCompareTable: FamilyGrader = (segment, answer) => {
   const cells = a ? strRecord(a.cells) : null
   const correctCells = key ? strRecord(key.cells) : null
   if (!cells || !correctCells) return MALFORMED
-  const cellKeys = Object.keys(correctCells)
+  // Cell keys are canonically `<row>:<col>`, but some generated answer keys
+  // used `_` as the separator, so exact-key matching scored every placement 0.
+  // Normalize the separator on both sides. Cell VALUES are token ids — compare
+  // by the token's display text when available, so two tokens that show the
+  // same thing (e.g. "5 MXN") are interchangeable rather than one being "wrong".
+  const tokens = Array.isArray(segment.payload.tokens)
+    ? (segment.payload.tokens as Array<{ id?: unknown; text_md?: unknown }>)
+    : []
+  const textById = new Map<string, string>()
+  for (const tk of tokens) {
+    if (typeof tk?.id === 'string' && typeof tk?.text_md === 'string') textById.set(tk.id, tk.text_md)
+  }
+  const canonVal = (id: string) => textById.get(id) ?? id
+  const canonKey = (k: string) => k.replace(/_/g, ':')
+  const userByKey = new Map<string, string>()
+  for (const [k, v] of Object.entries(cells)) userByKey.set(canonKey(k), canonVal(v))
+  const correctByKey = new Map<string, string>()
+  const revealCells: Record<string, string> = {}
+  for (const [k, v] of Object.entries(correctCells)) {
+    correctByKey.set(canonKey(k), canonVal(v))
+    revealCells[canonKey(k)] = v
+  }
   let hits = 0
-  cellKeys.forEach((k) => {
-    if (cells[k] === correctCells[k]) hits++
+  correctByKey.forEach((v, k) => {
+    if (userByKey.get(k) === v) hits++
   })
   return {
-    score: ratio(hits, cellKeys.length),
-    reveal: { cells: correctCells },
+    score: ratio(hits, correctByKey.size),
+    reveal: { cells: revealCells },
   }
 }
 
@@ -100,9 +128,12 @@ const gradeRedFlags: FamilyGrader = (segment, answer) => {
   const selected = a ? strArray(a.selected) : null
   const redflagIds = key ? strArray(key.redflag_ids) : null
   if (!selected || !redflagIds) return MALFORMED
-  // Signal detection: flag-everything gets punished (§5.6 #44).
+  // Signal detection: flag-everything gets punished (§5.6 #44) — the scorer needs
+  // the TOTAL item count to compute a false-alarm RATE, otherwise "tap every card"
+  // can clear the threshold when there are few innocent lines.
+  const flags = Array.isArray(segment.payload.flags) ? (segment.payload.flags as unknown[]) : []
   return {
-    score: signalDetection(selected, redflagIds),
+    score: signalDetection(selected, redflagIds, flags.length),
     reveal: { redflag_ids: redflagIds },
   }
 }

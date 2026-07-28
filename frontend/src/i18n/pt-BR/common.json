@@ -27,5 +27,23 @@
     "bigfounder": "Bigfounder",
     "admin": "Admin",
     "superadmin": "Superadmin"
+  },
+  "family": {
+    "title": "Sua família",
+    "subtitle": "Veja o território de cada founder crescer.",
+    "loading": "Reunindo sua família…",
+    "emptyTitle": "Nenhuma criança vinculada ainda",
+    "emptyBody": "Quando você vincular e verificar a conta de uma criança, o território de aprendizagem dela aparecerá aqui.",
+    "viewTerritory": "Ver território",
+    "back": "Voltar à família",
+    "territoryTitle": "O território dela",
+    "territorySubtitle": "Tudo o que o curso ensina — e quanto já é dela.",
+    "territoryLoading": "Desenhando o território…",
+    "stats": {
+      "xp": "XP ganhos",
+      "lessons": "Lições concluídas",
+      "streak": "Sequência de dias",
+      "longestStreak": "Melhor sequência"
+    }
   }
 }

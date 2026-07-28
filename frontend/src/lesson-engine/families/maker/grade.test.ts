@@ -153,12 +153,50 @@ describe('debug_hunt', () => {
     })
   })
 
-  it('one false alarm over 5 blocks → decision accuracy 80', () => {
-    expect(grade(segment, { selected: ['b3', 'b4'] }).score).toBe(80)
+  // EXPECTATIONS CHANGED (fairness fix): debug_hunt scored `decisionAccuracy`
+  // ((TP+TN)/N), which paid for untapped innocent blocks — so at 8 blocks / 1 bug
+  // tapping ONE arbitrary innocent block scored 75 and PASSED without finding the
+  // bug. It now scores `signalDetection` (hitRate − 0.5·falseAlarmRate), so the
+  // hit is load-bearing: found-the-bug answers get MORE credit than before (88 vs
+  // 80 with one slip), missed-the-bug answers get 0 instead of a pass.
+  it('found the bug + one false alarm over 5 blocks → 88 (was 80 under decisionAccuracy)', () => {
+    // hitRate 1/1 = 1, falseAlarms 1 of 4 innocents → 1 − 0.5×0.25 = 0.875 → 88
+    expect(grade(segment, { selected: ['b3', 'b4'] }).score).toBe(88)
   })
 
-  it('missing the bug with two false alarms → 40 (2 of 5 correct decisions)', () => {
-    expect(grade(segment, { selected: ['b1', 'b2'] }).score).toBe(40)
+  it('missing the bug scores 0 however many innocent blocks were tapped (was 40)', () => {
+    // hitRate 0 ⇒ no amount of true negatives can rescue the score.
+    expect(grade(segment, { selected: ['b1', 'b2'] }).score).toBe(0)
+    expect(grade(segment, { selected: ['b1'] }).score).toBe(0)
+  })
+
+  it('tapping EVERY block can never pass (50), and tapping one innocent block over 8 never does either', () => {
+    expect(grade(segment, { selected: ['b1', 'b2', 'b3', 'b4', 'b5'] }).score).toBe(50)
+    // The proven exploit: 8 blocks with a single bug. Under decisionAccuracy a
+    // single arbitrary tap scored (8−2)/8 = 75 ≥ 70 with zero reasoning.
+    const eight = seg(
+      'debug_hunt',
+      {
+        intro_md: 'Encuentra el error.',
+        blocks: Array.from({ length: 8 }, (_, i) => ({ id: `k${i + 1}`, text_md: `linea ${i + 1}` })),
+      },
+      { bug_ids: ['k7'] },
+    )
+    expect(grade(eight, { selected: ['k1'] }).score).toBe(0)
+    expect(grade(eight, { selected: ['k7'] }).score).toBe(100)
+  })
+
+  it('with two bugs, finding only one fails (50) — the miss is the learning-critical element', () => {
+    const two = seg(
+      'debug_hunt',
+      {
+        intro_md: 'Encuentra los errores.',
+        blocks: Array.from({ length: 6 }, (_, i) => ({ id: `k${i + 1}`, text_md: `linea ${i + 1}` })),
+      },
+      { bug_ids: ['k2', 'k5'] },
+    )
+    expect(grade(two, { selected: ['k2'] }).score).toBe(50)
+    expect(grade(two, { selected: ['k2', 'k5'] }).score).toBe(100)
   })
 
   it('malformed → 0, never throws', () => {

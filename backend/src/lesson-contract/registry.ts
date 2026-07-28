@@ -21,3 +21,13 @@ export const GRADERS: Record<string, FamilyGrader> = {
   ...storyplayGraders,
   ...makerGraders,
 };
+
+/**
+ * Types whose grader derives the score from the submitted board/payload alone
+ * and carry NO server-side answer key (`segment.answer` is always undefined).
+ * `memory_flip` scores from the flip count vs the pair count — it never had an
+ * answer key, so the grade endpoint's blanket `segment.answer === undefined`
+ * rejection made the lesson impossible to complete (422 on every submission).
+ * The grade route must allow these types through without an answer key.
+ */
+export const KEYLESS_GRADERS = new Set<string>(['memory_flip']);

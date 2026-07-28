@@ -77,4 +77,19 @@ describe('NON_VISIBLE_KEYS coverage (localize enum-freeze contract)', () => {
       `enum-valued keys missing from NON_VISIBLE_KEYS (localize would let the translator corrupt them): ${uncovered.join(', ')}`,
     ).toEqual([]);
   });
+
+  it('covers EVERY icon-valued key (icons are Material Symbols ligatures, never prose)', () => {
+    // Icons are FREE STRINGS (not enums), so the enum walker above cannot see
+    // them — and exactly that gap shipped: `b_icon: "cookie"` came back from
+    // the pt-BR translator as "biscoito" on the first fire-and-forget track
+    // (2026-07-26), an icon name that cannot render. The list below is the
+    // full grep of `*_icon`-shaped keys across src/contract — extend it (and
+    // NON_VISIBLE_KEYS) in the same commit that adds a new icon field.
+    const iconKeys = ['icon', 'ask_icon', 'a_icon', 'b_icon'];
+    const uncovered = iconKeys.filter((key) => !NON_VISIBLE_KEYS.has(key)).sort();
+    expect(
+      uncovered,
+      `icon-valued keys missing from NON_VISIBLE_KEYS (the translator would "translate" a Material Symbols name): ${uncovered.join(', ')}`,
+    ).toEqual([]);
+  });
 });

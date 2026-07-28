@@ -68,3 +68,34 @@ describe('synthesizeSpeech', () => {
     });
   });
 });
+
+describe('rate-limit ladder + Retry-After (backoff parity with coursegen)', () => {
+  it('honors a provider Retry-After header on 429 — the wait is exactly the provider value', async () => {
+    const sleeps: number[] = [];
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('{}', { status: 429, headers: { 'retry-after': '7' } }))
+      .mockResolvedValueOnce(jsonResponse(200, { output: { audio: { url: 'https://x/1.wav' } } }));
+    const url = await synthesizeSpeech(input, {
+      ...baseOpts,
+      fetchImpl,
+      sleep: async (ms: number) => void sleeps.push(ms),
+    });
+    expect(url).toBe('https://x/1.wav');
+    expect(sleeps).toEqual([7000]);
+  });
+
+  it('a 429 storm gets EXTRA attempts beyond maxAttempts (per-minute quotas need a longer ladder)', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(429, {}))
+      .mockResolvedValueOnce(jsonResponse(429, {}))
+      .mockResolvedValueOnce(jsonResponse(429, {}))
+      .mockResolvedValueOnce(jsonResponse(429, {}))
+      .mockResolvedValueOnce(jsonResponse(200, { output: { audio: { url: 'https://x/1.wav' } } }));
+    // maxAttempts 3 would previously fail on the 3rd 429; the rate-limit budget (+2) survives it.
+    const url = await synthesizeSpeech(input, { ...baseOpts, fetchImpl, maxAttempts: 3 });
+    expect(url).toBe('https://x/1.wav');
+    expect(fetchImpl).toHaveBeenCalledTimes(5);
+  });
+});

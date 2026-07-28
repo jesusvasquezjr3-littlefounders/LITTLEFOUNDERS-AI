@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
-import { GRADERS } from '../lesson-contract/registry.js';
+import { GRADERS, KEYLESS_GRADERS } from '../lesson-contract/registry.js';
 import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
@@ -175,6 +175,13 @@ export function learnRouter(): Router {
     segment_id: z.string().min(1),
     answer: z.unknown(),
     attempt_number: z.number().int().min(1),
+    // Per-lesson-entry id: the attempt cap counts only rows from this run so
+    // replays start fresh (0012). Optional for legacy clients (lifetime count).
+    run_id: z.string().uuid().optional(),
+    // Hints the kid revealed before submitting — the server applies the penalty
+    // (authoritative), so a hint actually lowers the score and a reload can't
+    // launder it (0012). Optional; defaults to 0.
+    hints_used: z.number().int().min(0).max(10).optional(),
   });
 
   router.post('/lessons/:id/grade', async (req, res) => {
@@ -200,25 +207,38 @@ export function learnRouter(): Router {
     if (!segment) return fail(res, 404, NOT_FOUND, 'No such segment');
 
     const grader = GRADERS[segment.type];
-    if (!grader || segment.answer === undefined) {
+    // Keyless graders (memory_flip) score from the submitted board alone and
+    // have no answer key — the answer-key requirement would 422 them forever.
+    if (!grader || (segment.answer === undefined && !KEYLESS_GRADERS.has(segment.type))) {
       return fail(res, 422, 'UNSUPPORTED_SEGMENT', 'This segment cannot be graded');
     }
 
-    const scoring = (picked.document as { scoring?: { pass_threshold?: number; max_attempts?: number } }).scoring ?? {};
+    const scoring = (picked.document as { scoring?: { pass_threshold?: number; max_attempts?: number; hint_penalty_pct?: number } }).scoring ?? {};
     const passThreshold = typeof scoring.pass_threshold === 'number' ? scoring.pass_threshold : 70;
     const maxAttempts = typeof scoring.max_attempts === 'number' ? scoring.max_attempts : 2;
+    const hintPenaltyPct = typeof scoring.hint_penalty_pct === 'number' ? scoring.hint_penalty_pct : 0;
+    const runId = parsed.data.run_id;
+    const hintsUsed = parsed.data.hints_used ?? 0;
 
     // SERVER-AUTHORITATIVE: the client-declared `attempt_number` is validated
     // shape-wise but never trusted for the cap decision or the recorded row —
-    // the DB's own attempt count is the only source of truth.
-    const existingAttempts = await countSegmentAttempts(user.accessToken, user.id, lessonId, segmentId);
+    // the DB's own attempt count is the only source of truth. Scoped to the
+    // current run (0012) so a replay starts fresh.
+    const existingAttempts = await countSegmentAttempts(user.accessToken, user.id, lessonId, segmentId, runId);
     if (existingAttempts >= maxAttempts) {
       return fail(res, 409, 'ATTEMPTS_EXHAUSTED', 'No attempts remain for this segment');
     }
     const serverAttemptNumber = existingAttempts + 1;
 
     const outcome = grader(segment, answer);
-    const verdict = verdictFrom(outcome.score, passThreshold, outcome.feedback_md);
+    // Apply the hint penalty server-side (0012): each revealed hint compounds a
+    // (1 - hint_penalty_pct/100) factor. This is the ONLY place the penalty is
+    // applied — the recorded score, the verdict, and /complete's recompute all
+    // flow from it, so a hint truly lowers the score/XP and a reload can't
+    // launder it.
+    const penaltyFactor = Math.pow(1 - hintPenaltyPct / 100, hintsUsed);
+    const penalizedScore = Math.max(0, Math.min(100, Math.round(outcome.score * penaltyFactor)));
+    const verdict = verdictFrom(penalizedScore, passThreshold, outcome.feedback_md);
     const isFinalAttempt = serverAttemptNumber >= maxAttempts;
     verdict.allowRetry = verdict.score < 100 && !isFinalAttempt;
     // Reveal gating (LESSON_ENGINE.md §6): only on a perfect score or the last permitted try.
@@ -226,7 +246,7 @@ export function learnRouter(): Router {
       verdict.reveal = outcome.reveal;
     }
 
-    const recorded = await insertSegmentAttempt(user.id, lessonId, segmentId, serverAttemptNumber, verdict.score);
+    const recorded = await insertSegmentAttempt(user.id, lessonId, segmentId, serverAttemptNumber, verdict.score, runId, hintsUsed);
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
 
     return ok(res, { verdict });
@@ -248,6 +268,10 @@ export function learnRouter(): Router {
       // (in Mexico UTC day-rollover lands at 6 pm local). Optional for
       // compatibility; defaults to the server's UTC date.
       local_date: z.string().refine(isCalendarDate, 'local_date must be YYYY-MM-DD').optional(),
+      // This play-through's id (0012): the results score/pass reflect THIS run,
+      // not a lifetime best, so replaying a passed lesson and failing shows the
+      // fail — not the historical "100" that made the results screen incoherent.
+      run_id: z.string().uuid().optional(),
     })
     .refine((b) => b.minutes_spent !== undefined || b.seconds_spent !== undefined, {
       message: 'seconds_spent (or legacy minutes_spent) is required',
@@ -277,7 +301,10 @@ export function learnRouter(): Router {
     const gradedIds = gradedSegmentIds(picked.answer_keys);
     const xpMap = xpBySegmentId(picked.document);
 
-    const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId);
+    // Score THIS run (0012): scoped to the run_id so a replay reflects the
+    // play-through the kid just did, not a lifetime best. Progress below still
+    // keeps the all-time best.
+    const attempts = await getSegmentAttempts(user.accessToken, user.id, lessonId, parsed.data.run_id);
     if (!attempts) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
     // Per-segment BEST raw score across every recorded attempt. Hint penalties
@@ -333,6 +360,10 @@ export function learnRouter(): Router {
     const firstToday = passedNow && isFirstActivityToday(stats.last_active_date, todayLocal);
     const newStreak = passedNow ? nextStreak(stats.last_active_date, stats.streak_days, todayLocal) : stats.streak_days;
     const streakExtended = newStreak > stats.streak_days;
+    // All-time high-water mark of the day streak (0013) — the results "Mejor
+    // racha" card reads this, so it's always >= the current streak (no more
+    // "Mejor racha 0" next to "Racha 1").
+    const newLongestStreak = Math.max(stats.longest_streak ?? 0, newStreak);
 
     const minutesDelta =
       parsed.data.seconds_spent !== undefined
@@ -344,6 +375,7 @@ export function learnRouter(): Router {
       minutes_learned: stats.minutes_learned + minutesDelta,
       lessons_completed: stats.lessons_completed + (newlyPassed ? 1 : 0),
       streak_days: newStreak,
+      longest_streak: newLongestStreak,
       ...(passedNow ? { last_active_date: todayLocal } : {}),
     });
     if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
@@ -352,13 +384,19 @@ export function learnRouter(): Router {
     const refreshedTree = await loadCourseTree(user.accessToken, user.id, ctx.course);
 
     return ok(res, {
+      // THIS run's outcome (0012) — the results ring/title reflect the
+      // play-through the kid just did, never a historical best presented as
+      // the current result. `best_score` carries the persisted all-time best
+      // for a "Hoy vs Tu mejor" display.
       score: lessonScore,
-      passed: newPassed,
+      passed: passedNow,
+      best_score: newBestScore,
       xp_earned: newXpEarned,
       xp_delta: xpDelta,
       // Day-streak facts for the results/celebration screen (v1 parity —
       // completeLesson returned new_streak/streak_extended/was_first_today).
       streak_days: newStreak,
+      longest_streak: newLongestStreak,
       streak_extended: streakExtended,
       first_today: firstToday,
       minutes_learned: stats.minutes_learned + minutesDelta,

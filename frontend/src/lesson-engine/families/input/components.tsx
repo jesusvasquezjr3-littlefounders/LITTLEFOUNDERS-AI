@@ -4,14 +4,15 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { Icon } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import { fuzzyEquals } from '../../core/scoring'
+import { seededSort } from '../../core/shuffle'
 import {
   KidSlider,
   NumberPad,
   SunkenWell,
   TokenChip,
+  VisualMark,
   optionStateClasses,
   type OptionVisualState,
 } from '../../core/primitives'
@@ -21,12 +22,6 @@ const draftOf = (v: unknown): Dict => (typeof v === 'object' && v !== null ? (v 
 
 function revealOf(verdict: ExerciseProps['verdict']): Dict {
   return draftOf(verdict?.reveal)
-}
-
-function hashCode(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h
 }
 
 /** Whole-input verdict tint (single-value inputs have no per-option painting). */
@@ -174,6 +169,11 @@ export function FillBlank({ segment, value, onChange, disabled, verdict }: Exerc
   const bank = (segment.payload.bank as Array<{ id: string; text_md: string }> | undefined) ?? []
   const pieces = useMemo(() => parseBlanks(textMd), [textMd])
   const gapNumbers = useMemo(() => gapNumbersOf(textMd), [textMd])
+  // Shuffled: authors write `bank` in gap order (the chip for {{1}} first), so
+  // rendering it verbatim let a child tap the chips top-to-bottom into the gaps
+  // and score full marks with no reading. Grading is by bank id
+  // (`userValue === key.bank_id`), so display order is free.
+  const shuffledBank = useMemo(() => seededSort(bank, `${segment.id}:bank`, (b) => b.id), [bank, segment.id])
   const keyGaps = revealOf(verdict).gaps as KeyGap[] | undefined
   const [focusedGap, setFocusedGap] = useState<number | null>(null)
 
@@ -251,7 +251,7 @@ export function FillBlank({ segment, value, onChange, disabled, verdict }: Exerc
             role="group"
             aria-label={t('lesson.families.input.fillBlank.bankLabel')}
           >
-            {bank.map((b) => {
+            {shuffledBank.map((b) => {
               const used = usedBankIds.has(b.id)
               return (
                 <TokenChip
@@ -372,33 +372,48 @@ export function CountObjects(props: ExerciseProps) {
   const { segment } = props
   const { t } = useTranslation()
   const askIcon = typeof segment.payload.ask_icon === 'string' ? segment.payload.ask_icon : ''
-  // Shuffled-but-deterministic: hash by segment id + item key so the scene never
-  // reorders between renders or retries (same trick as choice's stable shuffle).
+  const askImageUrl =
+    typeof segment.payload.ask_image_url === 'string' ? segment.payload.ask_image_url : undefined
+  // Shuffled through the shared helper: the flattened scene was rendered in
+  // authored order, i.e. grouped per scene entry with the asked-about icon's
+  // group first, so the child could count the leading cluster without ever
+  // discriminating it from the distractor icons. (The old local sort on
+  // `hashCode(segment.id + key)` was a no-op for keys like "0-0"/"0-1" — see
+  // mix32 in core/shuffle.) Grading is the typed number, never display order.
   const items = useMemo(() => {
     const scene =
-      (segment.payload.scene as Array<{ icon: string; tint?: string; count: number }> | undefined) ?? []
-    const flat: Array<{ key: string; icon: string; tint?: string }> = []
+      (segment.payload.scene as
+        | Array<{ icon: string; image_url?: string; tint?: string; count: number }>
+        | undefined) ?? []
+    const flat: Array<{ key: string; icon: string; image_url?: string; tint?: string }> = []
     scene.forEach((s, si) => {
-      for (let i = 0; i < s.count; i++) flat.push({ key: `${si}-${i}`, icon: s.icon, tint: s.tint })
+      for (let i = 0; i < s.count; i++)
+        flat.push({ key: `${si}-${i}`, icon: s.icon, image_url: s.image_url, tint: s.tint })
     })
-    flat.sort((a, b) => hashCode(segment.id + a.key) - hashCode(segment.id + b.key))
-    return flat
+    return seededSort(flat, `${segment.id}:scene`, (item) => item.key)
   }, [segment])
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-center gap-2">
         <span className="inline-flex min-h-11 items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5">
-          <Icon name={askIcon} className="text-[24px] text-primary" />
+          <VisualMark
+            icon={askIcon}
+            imageUrl={askImageUrl}
+            iconClassName="text-[24px] text-primary"
+            imgClassName="h-8 w-8"
+          />
           <span className="lf-label text-content">{t('lesson.families.input.countObjects.howMany')}</span>
         </span>
       </div>
       <SunkenWell>
         <div className="flex flex-wrap items-center justify-center gap-3 p-1">
           {items.map((item) => (
-            <Icon
+            <VisualMark
               key={item.key}
-              name={item.icon}
-              className={cn('text-[36px]', TINT_CLASS[item.tint ?? 'primary'] ?? 'text-primary')}
+              icon={item.icon}
+              imageUrl={item.image_url}
+              iconClassName={cn('text-[36px]', TINT_CLASS[item.tint ?? 'primary'] ?? 'text-primary')}
+              imgClassName="h-12 w-12"
             />
           ))}
         </div>
@@ -464,7 +479,10 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
         role="group"
         aria-label={t('lesson.families.input.equation.bankLabel')}
       >
-        {tokens.map((tok) => {
+        {/* Shuffled: authors write `tokens` in solution order, so rendering the
+            bank verbatim let a child tap left-to-right and build the equation with
+            no reasoning (found 2026-07-24). Grading is by token id. */}
+        {seededSort(tokens, segment.id, (tok) => tok.id).map((tok) => {
           const used = placed.has(tok.id)
           return (
             <TokenChip
@@ -478,7 +496,18 @@ export function EquationBuilder({ segment, value, onChange, disabled, verdict }:
           )
         })}
       </div>
-      <CorrectAnswerNote verdict={verdict} value={accepted?.[0]} />
+      {/* `accepted` entries are space-separated TOKEN IDS ("t1 t2 t3"), not display
+          text — rendering one raw showed the child "la respuesta correcta: t1 t2 t3
+          t4 t5" (found 2026-07-24). Map each id back through the token bank so the
+          reveal reads as the equation ("5 + 5 + 5"). */}
+      <CorrectAnswerNote
+        verdict={verdict}
+        value={accepted?.[0]
+          ?.trim()
+          .split(/\s+/)
+          .map((id) => textOf(id) || id)
+          .join(' ')}
+      />
     </div>
   )
 }

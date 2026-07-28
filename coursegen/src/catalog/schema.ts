@@ -123,6 +123,16 @@ export const catalogFileSchema = z.object({
      * directory under `coursegen/curriculum/` has been scanned.
      */
     requires: z.array(slugSchema).optional(),
+    /**
+     * Optional — set `true` for a course whose lessons are STANDALONE (a
+     * type-coverage / practice harness — the QA smoke-test course, published
+     * under the learner-facing slug first-lemonade-stand),
+     * NOT a sequenced narrative arc. The review judge then does not penalize a
+     * lesson's concreteness for "not connecting to the prior lesson" — an
+     * artificial requirement between arbitrary forced-type demos. Absent =
+     * false = a normal sequenced course where inter-lesson continuity counts.
+     */
+    standalone: z.boolean().optional(),
   }),
   adventures: z.array(z.object({ file: z.string().min(1).max(200) })).min(1),
 });
@@ -134,6 +144,17 @@ export type CatalogFile = z.infer<typeof catalogFileSchema>;
 export const lessonBlueprintSchema = z.object({
   position: z.number().int().min(1),
   slug: slugSchema,
+  /**
+   * IDENTITY MIGRATION (roadmap.sh migration-mapping pattern, 2026-07-25):
+   * when this node's slug CHANGES between publishes, declare the previous
+   * slug here. Publish then RENAMES the existing Vault row (same UUID)
+   * instead of inserting a new one — kid progress, streaks and map states
+   * key on those UUIDs, so an undeclared rename silently orphans them.
+   * verify:course enforces the other half: an orphaned lesson that has
+   * learner progress fails the acceptance check. Remove the declaration
+   * after the rename has shipped everywhere.
+   */
+  renamed_from: slugSchema.optional(),
   micro_objective: z.string().min(1).max(300),
   narrative_beat: z.string().min(1).max(600),
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
@@ -151,6 +172,24 @@ export const lessonBlueprintSchema = z.object({
    * no contract import), same pattern as `review_of`/`prerequisites`.
    */
   forced_types: z.array(z.string().min(1).max(60)).min(1).max(14).optional(),
+  /**
+   * Dual-persona recap (pipeline/recapDialogue.ts): after write, generate a
+   * short teacher-student conversation (the student persona is BLIND to the
+   * lesson — authentic naive questions) and append it as a story_dialogue
+   * segment before the closing checkpoint. Gates + judge run on the result.
+   */
+  recap_dialogue: z.boolean().optional(),
+  /**
+   * A DECLARED, REVIEWABLE exception: this lesson is known not to satisfy every gate,
+   * and the string says why. `verify:course` reports it separately instead of counting
+   * it as a failure, so the acceptance check can be green without lying.
+   *
+   * This exists so an exception lives in the CONTENT, next to the blueprint it excuses,
+   * where a content reviewer sees it — rather than as a slug hardcoded inside a
+   * checker, where it would quietly become permanent. Use it only for a genuine design
+   * conflict that has been decided, never to silence a fixable defect.
+   */
+  known_exception: z.string().min(20).max(1200).optional(),
 });
 
 // ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------
@@ -205,6 +244,8 @@ export const topicBlueprintSchema = z
   .object({
     position: z.number().int().min(1),
     slug: slugSchema,
+    /** Identity migration — see lessonBlueprintSchema.renamed_from. */
+    renamed_from: slugSchema.optional(),
     kind: topicKindSchema.default('teaching'),
     review_of: z.array(reviewOfPathSchema).min(1).optional(),
     title_es: z.string().min(1).max(160),
@@ -233,6 +274,7 @@ export const topicBlueprintSchema = z
   });
 
 export const sagaBlueprintSchema = z.object({
+  renamed_from: slugSchema.optional(),
   position: z.number().int().min(1),
   slug: slugSchema,
   kind: sagaKindSchema.default('teaching'),
@@ -247,6 +289,8 @@ export const adventureFileSchema = z.object({
   adventure: z.object({
     position: z.number().int().min(1),
     slug: slugSchema,
+    /** Identity migration — see lessonBlueprintSchema.renamed_from. */
+    renamed_from: slugSchema.optional(),
     theme: z.string().min(1).max(40),
     age_tier: tierKeySchema,
     title: localized(160),
@@ -257,3 +301,6 @@ export const adventureFileSchema = z.object({
 });
 
 export type AdventureFile = z.infer<typeof adventureFileSchema>;
+/** Exported for the progression validator (src/catalog/progression.ts). */
+export type LessonBlueprint = z.infer<typeof lessonBlueprintSchema>;
+export type TopicBlueprint = z.infer<typeof topicBlueprintSchema>;

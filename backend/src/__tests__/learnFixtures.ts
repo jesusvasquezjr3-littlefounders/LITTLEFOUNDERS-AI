@@ -42,6 +42,15 @@ function lessonDocument(locale: string) {
           ],
         },
       },
+      {
+        // Keyless grader: memory_flip scores from the board (no answer key).
+        id: 'memory-1',
+        type: 'memory_flip',
+        prompt_md: 'Find the pairs',
+        difficulty: 1,
+        xp: 10,
+        payload: { pairs: [{ id: 'p1' }, { id: 'p2' }, { id: 'p3' }] },
+      },
     ],
   };
 }

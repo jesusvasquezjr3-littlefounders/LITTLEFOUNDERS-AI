@@ -1,12 +1,12 @@
 // `money` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.5, types 30–38).
 
-import { z } from 'zod';
-import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase.js';
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase.js'
 
-export const currencySchema = z.enum(['MXN', 'USD', 'BRL']);
+export const currencySchema = z.enum(['MXN', 'USD', 'BRL'])
 
-const moneyAmount = z.number().positive().max(1_000_000);
-const denomination = z.number().positive().max(10_000);
+const moneyAmount = z.number().positive().max(1_000_000)
+const denomination = z.number().positive().max(10_000)
 
 export const coinCount = segmentSchema(
   'coin_count',
@@ -17,7 +17,7 @@ export const coinCount = segmentSchema(
   }),
   // Self-contained: the grader checks the tray sum against payload.target.
   z.object({}),
-);
+)
 
 export const makeChange = segmentSchema(
   'make_change',
@@ -29,7 +29,7 @@ export const makeChange = segmentSchema(
   }),
   // Self-contained: correct sum = paid_with − price.
   z.object({}),
-);
+)
 
 export const piggySplit = segmentSchema(
   'piggy_split',
@@ -43,6 +43,7 @@ export const piggySplit = segmentSchema(
           id: idSchema,
           label: z.string().min(1).max(60),
           icon: iconName,
+          image_url: imageUrl.optional(),
           hint_md: markdownLite.optional(),
         }),
       )
@@ -54,18 +55,18 @@ export const piggySplit = segmentSchema(
     targets: z.record(idSchema, z.object({ min: z.number().min(0), max: z.number().min(0) })),
     rationale_md: markdownLite.optional(),
   }),
-);
+)
 
 export const needsWants = segmentSchema(
   'needs_wants',
   z.object({
     items: z
-      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional() }))
+      .array(z.object({ id: idSchema, text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }))
       .min(4)
       .max(12),
   }),
   z.object({ needs_ids: z.array(idSchema) }),
-);
+)
 
 export const priceCompare = segmentSchema(
   'price_compare',
@@ -78,6 +79,7 @@ export const priceCompare = segmentSchema(
           qty: z.number().positive(),
           unit: z.string().min(1).max(40),
           price: moneyAmount,
+          image_url: imageUrl.optional(),
         }),
       )
       .min(2)
@@ -85,7 +87,7 @@ export const priceCompare = segmentSchema(
     currency: currencySchema,
   }),
   z.object({ best_offer_id: idSchema }),
-);
+)
 
 export const budgetFit = segmentSchema(
   'budget_fit',
@@ -98,6 +100,7 @@ export const budgetFit = segmentSchema(
           id: idSchema,
           label: z.string().min(1).max(80),
           icon: iconName,
+          image_url: imageUrl.optional(),
           price: moneyAmount,
           need: z.boolean().optional(),
         }),
@@ -108,7 +111,7 @@ export const budgetFit = segmentSchema(
   }),
   // Self-contained: constraint check against payload budget/needs.
   z.object({}),
-);
+)
 
 export const savingsGoal = segmentSchema(
   'savings_goal',
@@ -119,17 +122,17 @@ export const savingsGoal = segmentSchema(
   }),
   // Authoring aid; the grader recomputes weeks = ceil(goal / weekly) itself.
   z.object({ correct: z.record(z.string(), z.number().int().positive()).optional() }),
-);
+)
 
 export const fairTrade = segmentSchema(
   'fair_trade',
   z.object({
-    offer_a: z.object({ label: z.string().min(1).max(60), icon: iconName, qty: z.number().positive() }),
-    offer_b: z.object({ label: z.string().min(1).max(60), icon: iconName, qty: z.number().positive() }),
+    offer_a: z.object({ label: z.string().min(1).max(60), icon: iconName, image_url: imageUrl.optional(), qty: z.number().positive() }),
+    offer_b: z.object({ label: z.string().min(1).max(60), icon: iconName, image_url: imageUrl.optional(), qty: z.number().positive() }),
     rate_md: markdownLite,
   }),
   z.object({ verdict: z.enum(['fair', 'a_wins', 'b_wins']) }),
-);
+)
 
 export const interestPeek = segmentSchema(
   'interest_peek',
@@ -148,7 +151,7 @@ export const interestPeek = segmentSchema(
     value: z.number().optional(),
     tolerance: z.number().positive().optional(),
   }),
-);
+)
 
 export const moneySchemas = [
   coinCount,
@@ -160,14 +163,14 @@ export const moneySchemas = [
   savingsGoal,
   fairTrade,
   interestPeek,
-] as const;
+] as const
 
-export type CoinCountSegment = z.infer<typeof coinCount>;
-export type MakeChangeSegment = z.infer<typeof makeChange>;
-export type PiggySplitSegment = z.infer<typeof piggySplit>;
-export type NeedsWantsSegment = z.infer<typeof needsWants>;
-export type PriceCompareSegment = z.infer<typeof priceCompare>;
-export type BudgetFitSegment = z.infer<typeof budgetFit>;
-export type SavingsGoalSegment = z.infer<typeof savingsGoal>;
-export type FairTradeSegment = z.infer<typeof fairTrade>;
-export type InterestPeekSegment = z.infer<typeof interestPeek>;
+export type CoinCountSegment = z.infer<typeof coinCount>
+export type MakeChangeSegment = z.infer<typeof makeChange>
+export type PiggySplitSegment = z.infer<typeof piggySplit>
+export type NeedsWantsSegment = z.infer<typeof needsWants>
+export type PriceCompareSegment = z.infer<typeof priceCompare>
+export type BudgetFitSegment = z.infer<typeof budgetFit>
+export type SavingsGoalSegment = z.infer<typeof savingsGoal>
+export type FairTradeSegment = z.infer<typeof fairTrade>
+export type InterestPeekSegment = z.infer<typeof interestPeek>

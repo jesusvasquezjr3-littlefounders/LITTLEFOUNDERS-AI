@@ -50,6 +50,9 @@ const fixtureTree: CourseTree = {
               slug: 'topic-1',
               title: { 'en-US': 'What is money' },
               position: 1,
+              kind: 'teaching',
+              reviewOf: [],
+              state: 'not-started',
               lessons: [
                 {
                   id: 'lesson-passed',
@@ -80,6 +83,9 @@ const fixtureTree: CourseTree = {
               slug: 'topic-2',
               title: { 'en-US': 'Saving basics' },
               position: 2,
+              kind: 'teaching',
+              reviewOf: [],
+              state: 'not-started',
               lessons: [
                 {
                   id: 'lesson-locked',

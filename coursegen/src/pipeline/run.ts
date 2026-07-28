@@ -6,15 +6,33 @@ import path from 'node:path';
 import { getConfig, requireGenerationKeys } from '../env.js';
 import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
+import { LESSON_LOCALES } from '../contract/core/types.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
-import { CheckpointStore, newRunCheckpoint, getSlot, setSlotState, isSlotDone, type RunCheckpoint } from './checkpoint.js';
+import { isFatalProviderError } from '../providers/errors.js';
+import { vaultSelect } from '../vault/restClient.js';
+import { buildImageInheritance } from './imageInheritance.js';
+import {
+  CheckpointStore,
+  newRunCheckpoint,
+  getSlot,
+  setSlotState,
+  isSlotDone,
+  describeParamMismatch,
+  type RunCheckpoint,
+  type RunParams,
+  type SlotState,
+} from './checkpoint.js';
 import { planLesson, buildForcedSkeleton, type PlanContext, type PlanSkeleton } from './plan.js';
 import { writeLessonDocument } from './write.js';
 import { runAllGates, type GateContext } from './gates.js';
-import { reviewLesson } from './review.js';
-import { localizeLesson } from './localize.js';
+import { reviewLesson, ReviewFailedError } from './review.js';
+import { RubricLog } from './rubricLog.js';
+import { ingestRunTelemetry } from '../vault/telemetry.js';
+import { LiveTelemetry } from './liveTelemetry.js';
+import { localizeLesson, translateTitle } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
+import { generateRecapLines, appendRecapSegment } from './recapDialogue.js';
 import { resolveRegister, type Register } from './register.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
@@ -76,6 +94,16 @@ export interface RunOptions {
   runsRoot: string;
   /** COURSE_ENGINE.md §3.3 — defaults to 'kid'. */
   register?: Register;
+  /**
+   * Hard USD ceiling override (only ever LOWERS the scaled budget, never raises
+   * it). generate:track passes the REMAINING track budget here: without it,
+   * per-shard budgets do not compose — every shard gets at least the
+   * FORGE_MAX_USD_PER_RUN floor, so ~55 saga-sized shards would aggregate to
+   * ~$2,750 of permitted spend on a course whose whole-run budget is ~$328.
+   */
+  maxUsdOverride?: number;
+  /** Set by generate:track — links this run's telemetry row to its track. */
+  trackId?: string;
 }
 
 export interface RunDeps {
@@ -146,10 +174,50 @@ function buildPlanContext(
   };
 }
 
-interface ProcessSlotOutcome {
+export interface ProcessSlotOutcome {
   slotId: string;
-  state: 'published' | 'failed' | 'skipped';
+  /** 'already-published' = done by an EARLIER invocation (isSlotDone) — routed to the summary's alreadyDone bucket, never to `published`, so resume passes report only NEW work as progress. */
+  state: 'published' | 'already-published' | 'failed' | 'skipped' | 'dry-run';
+  /** How many Prism illustrations this slot actually produced (cached + fresh). */
+  imagesGenerated?: number;
+  /** Of those, how many were FRESH — i.e. actually paid for. */
+  imagesBilled?: number;
+  /** Slots filled from this lesson's PREVIOUS art — the money NOT spent. */
+  imagesInherited?: number;
+  /** Why illustration was skipped, when it was (e.g. 'not-configured'). */
+  imageSkipReasons?: string[];
+  /** True when the write stage SALVAGED a partial document (segments were dropped). */
+  salvaged?: boolean;
+  droppedSegments?: number;
   error?: string;
+  /** The stage state the slot held when it failed (checkpoint `failedFrom`) — the per-stage failure heatmap datum. */
+  failedFrom?: SlotState;
+  /** Wall-clock this invocation spent on the slot, ALL outer attempts included (set by the pool worker, telemetry-only). */
+  durationMs?: number;
+}
+
+
+/**
+ * The documents this lesson published LAST time, for image inheritance.
+ *
+ * Scoped to the course through the embedded-resource filter so a lesson slug that
+ * repeats in another course can never donate its art here. Failure is swallowed by
+ * design: inheritance is a cost optimisation, never a precondition — if Vault is
+ * unreachable we simply pay for the images, which is the old behaviour.
+ */
+async function previousArtDocuments(courseSlug: string, lessonSlug: string): Promise<LessonDocumentParsed[]> {
+  try {
+    const rows = await vaultSelect<{ locale: string; document: unknown }>(
+      `/lesson_documents?select=locale,document,lessons!inner(slug,topics!inner(sagas!inner(adventures!inner(courses!inner(slug)))))` +
+        `&lessons.slug=eq.${encodeURIComponent(lessonSlug)}` +
+        `&lessons.topics.sagas.adventures.courses.slug=eq.${encodeURIComponent(courseSlug)}`,
+    );
+    // Authoring locale first so `buildImageInheritance`'s first-wins rule is stable.
+    const ordered = [...rows].sort((a, b) => (a.locale === AUTHORING_LOCALE ? -1 : b.locale === AUTHORING_LOCALE ? 1 : 0));
+    return ordered.map((r) => r.document as LessonDocumentParsed);
+  } catch {
+    return [];
+  }
 }
 
 async function processSlot(
@@ -160,11 +228,45 @@ async function processSlot(
   options: RunOptions,
   ledger: UsageLedger,
   register: ReturnType<typeof resolveRegister>,
+  rubricLog?: RubricLog,
+  live?: LiveTelemetry,
 ): Promise<ProcessSlotOutcome> {
-  if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'published' };
+  if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'already-published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
     return { slotId: slot.slotId, state: 'skipped', error: 'course taxonomy/facts/catalog failed to load' };
   }
+  /*
+   * --dry-run stops HERE, before any paid stage. It used to only skip the final
+   * publish: plan, write, judge, localize and images all ran and billed first,
+   * while the summary claimed "nothing was written or paid for" — an operator
+   * "validating" a 4,192-slot enumeration would have paid the full generation
+   * bill (~$300 text + ~$700 images) and published nothing. A dry run validates
+   * the catalog + enumeration (both already done by the time this executes) and
+   * marks the slot; it spends zero tokens by construction.
+   *
+   * A dry run must also never DESTROY work: setSlotState replaces `data`
+   * wholesale, so marking an in-progress slot (planned…illustrated, or a
+   * resumable 'failed') would wipe its skeleton/judge-approved documents and a
+   * later real run would silently re-pay them (caught by the 2026-07-26
+   * adversarial review — reproduced on a seeded checkpoint). Only a pristine
+   * pending slot gets the marker; anything with state or data is counted as
+   * validated WITHOUT touching the checkpoint.
+   */
+  if (options.dryRun) {
+    const current = getSlot(checkpoint, slot.slotId);
+    if (current.state === 'pending' && !current.data) {
+      checkpoint = setSlotState(checkpoint, slot.slotId, 'dry-run', { data: { dryRun: true } });
+      await store.save(checkpoint);
+    }
+    return { slotId: slot.slotId, state: 'dry-run' };
+  }
+  // Outcome telemetry that must survive to the summary (see ProcessSlotOutcome).
+  let imagesGenerated = 0;
+  let imagesBilled = 0;
+  let imagesInherited = 0;
+  const imageSkipReasons = new Set<string>();
+  let salvaged = false;
+  let droppedSegments = 0;
   const gateCtx: GateContext = {
     taxonomy: course.taxonomy,
     tier: slot.tier,
@@ -190,12 +292,15 @@ async function processSlot(
         : (await planLesson(planCtx, { ledger })).skeleton;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'planned', { data: { skeleton } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'planned');
     }
 
     // ---- write (es-MX) ----
     current = getSlot(checkpoint, slot.slotId);
     let documents = (current.data?.documents as Partial<Record<LessonLocale, LessonDocumentParsed>>) ?? {};
     if (!documents[AUTHORING_LOCALE]) {
+      // `salvaged`/`droppedSegments` were returned by write and never read, so a
+      // lesson that lost up to 8 of 14 planned segments published as a clean success.
       const writeResult = await writeLessonDocument(
         {
           ctx: planCtx,
@@ -211,13 +316,32 @@ async function processSlot(
         },
         { ledger },
       );
-      const gateReport = runAllGates(writeResult.document, gateCtx);
+      salvaged = salvaged || writeResult.salvaged;
+      droppedSegments += writeResult.droppedSegments;
+      if (writeResult.salvaged) {
+        console.warn(
+          `[forge] slot ${slot.slotId}: write SALVAGED — ${writeResult.droppedSegments} planned segment(s) dropped. ` +
+            `The lesson is shorter than its blueprint.`,
+        );
+      }
+      // Opt-in dual-persona recap (blueprint `recap_dialogue: true`): a short
+      // teacher-student conversation appended as a story_dialogue segment,
+      // BEFORE the gates below so nothing ungated can ship (recapDialogue.ts).
+      let writtenDocument = writeResult.document;
+      if (slot.lesson.recap_dialogue) {
+        const recapLines = await generateRecapLines(writtenDocument, { ledger });
+        writtenDocument = appendRecapSegment(writtenDocument, recapLines);
+      }
+      const gateReport = runAllGates(writtenDocument, gateCtx);
       if (!gateReport.ok || !gateReport.document) {
         throw new Error(`gate failure on es-MX write: ${gateReport.problems.slice(0, 5).map((p) => p.message).join('; ')}`);
       }
       documents = { ...documents, [AUTHORING_LOCALE]: gateReport.document };
-      checkpoint = setSlotState(checkpoint, slot.slotId, 'written', { data: { skeleton, documents } });
+      checkpoint = setSlotState(checkpoint, slot.slotId, 'written', {
+        data: { skeleton, documents, salvaged: writeResult.salvaged, droppedSegments: writeResult.droppedSegments },
+      });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'written');
     }
 
     // ---- review (Qwen judge, es-MX only) ----
@@ -229,17 +353,52 @@ async function processSlot(
         // "does it connect to the prior lesson, unless it's the first?" —
         // without telling it WHICH lesson came before (or that none did), it
         // guessed, and guessed against us (top false-rejection cause on the
-        // first real QA run).
-        priorMicroObjective: slot.priorMicroObjective ?? null,
+        // first real QA run). A `standalone` course (type-coverage / practice
+        // harness) has no narrative arc between arbitrary forced-type demos, so
+        // every lesson is exempt (null) — otherwise the continuity requirement
+        // false-fails otherwise-excellent standalone lessons.
+        priorMicroObjective: course.catalog.course.standalone ? null : (slot.priorMicroObjective ?? null),
+        standalone: course.catalog.course.standalone ?? false,
       });
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'reviewed');
+      // Rubric telemetry (forge:coach raw material) — never able to kill a run.
+      await rubricLog
+        ?.record({ slotId: slot.slotId, outcome: 'passed', cycles: reviewResult.cycles, earlyStopped: false, rubric: reviewResult.rubric })
+        .catch((e: unknown) => console.warn(`[forge] rubric log write failed (run continues): ${e instanceof Error ? e.message : String(e)}`));
     }
 
     // ---- localize ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'reviewed') {
+      // Consumption discipline ("optimizar consumo"): illustrate the AUTHORING
+      // document BEFORE localizing. `image_url` is in NON_VISIBLE_KEYS, so the
+      // string-freeze translation copies it verbatim into en-US/pt-BR — the
+      // illustrations carry no text by design (Prism's identity brief), so one
+      // generated image serves all 3 locales. 3× fewer image calls per lesson.
+      /*
+       * Inherit the art this lesson already has before paying for any of it. A
+       * regeneration rewrites labels and contexts, so Prism's request-hash cache
+       * always misses even when the object is identical — and illustration is the
+       * dominant cost of mass generation (~$100 per 1000-lesson course). Object art
+       * is reused by normalized label; scene anchors are never inherited.
+       */
+      const inherit = options.noImages
+        ? undefined
+        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
+      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages, ledger, inherit });
+      documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
+      // Image outcomes must LEAVE this function. They used to be destructured away,
+      // so an unconfigured or down Prism published a visual-first curriculum with
+      // zero illustrations while the run reported complete success — and nothing
+      // downstream re-checks, since the judge runs BEFORE illustration.
+      imagesGenerated += illustratedSource.generated ?? 0;
+      imagesBilled += illustratedSource.billed ?? 0;
+      imagesInherited += illustratedSource.inherited ?? 0;
+      live?.addImages(illustratedSource.generated ?? 0, illustratedSource.billed ?? 0, illustratedSource.inherited ?? 0);
+      if (illustratedSource.skippedReason) imageSkipReasons.add(illustratedSource.skippedReason);
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
         const localized = await localizeLesson(documents[AUTHORING_LOCALE]!, locale as 'en-US' | 'pt-BR', gateCtx, {
@@ -251,27 +410,40 @@ async function processSlot(
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'localized', { data: { skeleton, documents } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'localized');
     }
 
-    // ---- images (optional) ----
+    // ---- images (optional; a no-op when the pre-localize pass covered everything) ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'localized') {
+      // Own index: this belt-and-braces sweep is a separate stage from the
+      // pre-localize illustrate above, so it cannot reuse that const — and on a
+      // RESUME this stage may run without the earlier one having run at all.
+      const localeInherit = options.noImages
+        ? undefined
+        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
+      // Belt-and-braces sweep: anything still missing an image_url (a locale
+      // document restored from an older checkpoint, a per-locale regen) gets
+      // filled here. With the pre-localize illustration above this loop makes
+      // ZERO Prism calls on the happy path — and Prism's cache would dedupe
+      // identical prompts anyway.
       for (const locale of Object.keys(documents) as LessonLocale[]) {
-        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages }, { ledger });
+        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages, ledger, inherit: localeInherit });
         documents = { ...documents, [locale]: illustrated.document };
+        imagesGenerated += illustrated.generated ?? 0;
+        imagesBilled += illustrated.billed ?? 0;
+        imagesInherited += illustrated.inherited ?? 0;
+        live?.addImages(illustrated.generated ?? 0, illustrated.billed ?? 0, illustrated.inherited ?? 0);
+        if (illustrated.skippedReason) imageSkipReasons.add(illustrated.skippedReason);
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'illustrated', { data: { skeleton, documents } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'illustrated');
     }
 
     // ---- publish ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'illustrated') {
-      if (options.dryRun) {
-        checkpoint = setSlotState(checkpoint, slot.slotId, 'published', { data: { skeleton, documents, dryRun: true } });
-        await store.save(checkpoint);
-        return { slotId: slot.slotId, state: 'published' };
-      }
       // COURSE_ENGINE.md §3.3 — adult register publishes as a PARALLEL course,
       // never overwriting the kid course: `<slug>-adultos`, title +" (Adultos)"
       // in all 3 locales. Content itself was already regenerated end-to-end
@@ -291,6 +463,7 @@ async function processSlot(
         },
         adventure: {
           slug: slot.adventure.slug,
+          renamedFrom: slot.adventure.renamed_from,
           position: slot.adventure.position,
           theme: slot.adventure.theme,
           ageTier: slot.tier,
@@ -300,6 +473,7 @@ async function processSlot(
         },
         saga: {
           slug: slot.saga.slug,
+          renamedFrom: slot.saga.renamed_from,
           position: slot.saga.position,
           icon: slot.saga.icon,
           title: slot.saga.title,
@@ -307,15 +481,23 @@ async function processSlot(
         },
         topic: {
           slug: slot.topic.slug,
+          renamedFrom: slot.topic.renamed_from,
           position: slot.topic.position,
-          title: { 'en-US': slot.topic.title_es, 'es-MX': slot.topic.title_es, 'pt-BR': slot.topic.title_es },
+          title: {
+            'es-MX': slot.topic.title_es,
+            'en-US': await translateTitle(slot.topic.title_es, 'en-US', { ledger }),
+            'pt-BR': await translateTitle(slot.topic.title_es, 'pt-BR', { ledger }),
+          },
           conceptMd: slot.topic.concept,
           learningObjective: { 'en-US': slot.topic.learning_objective, 'es-MX': slot.topic.learning_objective, 'pt-BR': slot.topic.learning_objective },
           keyVocabulary: slot.topic.key_vocabulary,
           priorKnowledge: slot.topic.prior_knowledge,
+          kind: slot.topic.kind ?? 'teaching',
+          reviewOf: slot.topic.review_of ?? [],
         },
         lesson: {
           slug: slot.lesson.slug,
+          renamedFrom: slot.lesson.renamed_from,
           position: slot.lesson.position,
           difficulty: slot.lesson.difficulty,
           estimatedMinutes: documents[AUTHORING_LOCALE]!.meta.estimated_minutes,
@@ -326,29 +508,200 @@ async function processSlot(
       const publishResult = await publishLessonSlot(publishInput);
       checkpoint = setSlotState(checkpoint, slot.slotId, 'published', { data: { publishResult } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'published');
     }
 
-    return { slotId: slot.slotId, state: 'published' };
+    /*
+     * NEVER claim success without proof. This return used to be unconditional at the
+     * end of the try block, so a slot whose state fell outside the expected lifecycle
+     * — a hand-edited or partially-written checkpoint, or any state added later —
+     * skipped every stage guard above and was reported published with NOTHING in
+     * Vault. Assert the state machine actually arrived.
+     */
+    const finalState = getSlot(checkpoint, slot.slotId).state;
+    if (finalState !== 'published') {
+      const message =
+        `slot finished the pipeline in state "${finalState}" instead of "published" — no stage claimed it, ` +
+        `so nothing was written to Vault. This usually means the checkpoint holds an unexpected state.`;
+      checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message, failedFrom: finalState });
+      await saveQuietly(store, checkpoint, slot.slotId);
+      return { slotId: slot.slotId, state: 'failed', error: message, failedFrom: finalState, imagesGenerated, imagesBilled, imagesInherited, salvaged, droppedSegments };
+    }
+    return {
+      slotId: slot.slotId,
+      state: 'published',
+      imagesGenerated,
+      imagesBilled,
+      imagesInherited,
+      imageSkipReasons: [...imageSkipReasons],
+      salvaged,
+      droppedSegments,
+    };
   } catch (err) {
     if (err instanceof BudgetExceededError) throw err; // stop the whole run, don't mark this slot failed
+    /*
+     * A dead credential or an empty balance is not a slot-level problem, and every
+     * further call is guaranteed to fail while still costing an HTTP round trip and
+     * (for whatever already succeeded) discarding paid work. Measured: a real run hit
+     * DeepSeek "Insufficient Balance" and then burned 2.17M tokens / ~$10 failing all
+     * 62 slots three times each before exiting. Abort the run the way a budget stop
+     * does, so the operator sees ONE clear cause instead of 62 derived symptoms.
+     */
+    if (isFatalProviderError(err)) throw err;
     const message = err instanceof Error ? err.message : String(err);
-    checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', { error: message });
-    await store.save(checkpoint);
-    return { slotId: slot.slotId, state: 'failed', error: message };
+    // A judge rejection is coach material too — the rubric explains WHY the
+    // draft died, which is exactly what the improvement loop mines.
+    if (err instanceof ReviewFailedError) {
+      await rubricLog
+        ?.record({ slotId: slot.slotId, outcome: 'failed', cycles: err.cycles, earlyStopped: err.earlyStopped, rubric: err.rubric })
+        .catch(() => undefined);
+    }
+    /*
+     * Record WHERE the failure happened (the last stage state the slot reached)
+     * so the outer retry can decide between "regenerate from scratch" (the
+     * measured-better path for plan/write/judge failures) and "resume from the
+     * checkpoint" (a localize/images/publish failure whose judge-approved input
+     * is sitting right there in `data`). getSlot returns the last PERSISTED
+     * state — stages only persist on success, so this is exactly the last stage
+     * that completed before the throw.
+     */
+    const stateAtFailure = getSlot(checkpoint, slot.slotId).state;
+    /*
+     * The failure bookkeeping must not itself be able to kill the run. `store.save`
+     * does disk I/O (ENOSPC, EACCES, a transient FS error on a multi-day run), and
+     * an exception thrown HERE escapes this catch, propagates through the pool and
+     * aborts every remaining slot — turning one lesson's failure into a dead run.
+     */
+    checkpoint = setSlotState(checkpoint, slot.slotId, 'failed', {
+      error: message,
+      failedFrom: stateAtFailure === 'failed' ? getSlot(checkpoint, slot.slotId).failedFrom : stateAtFailure,
+    });
+    await saveQuietly(store, checkpoint, slot.slotId);
+    live?.onTransition(slot.slotId, 'failed');
+    /*
+     * Telemetry travels with a FAILURE too. Found on the 62-slot run that died on a
+     * provider balance error: the summary printed "images: 0 placed, 0 freshly
+     * generated" while the ledger had recorded 424 paid generations ($8.48) — because
+     * a failed slot returned no counts. Money spent before a failure is exactly the
+     * money an operator most needs to see.
+     */
+    return {
+      slotId: slot.slotId,
+      state: 'failed',
+      error: message,
+      failedFrom: getSlot(checkpoint, slot.slotId).failedFrom,
+      imagesGenerated,
+      imagesBilled,
+      imagesInherited,
+      salvaged,
+      droppedSegments,
+    };
   }
 }
 
+/**
+ * Stages whose failures do NOT discard judge-approved work. A slot that failed
+ * from one of these states holds a reviewed es-MX document (and possibly its
+ * translations) in `data` — re-running it resumes at the failed stage instead
+ * of re-paying plan + write + revise cycles + judge (~$0.05-0.08 and many
+ * minutes) to redo work whose input was fine. Failures from pending/planned/
+ * written keep the measured from-scratch behavior: a fresh draw converges far
+ * better than revising a bad draft (env.ts FORGE_SLOT_ATTEMPTS rationale).
+ */
+const RESUMABLE_FAILED_FROM: ReadonlySet<SlotState> = new Set(['reviewed', 'localized', 'illustrated']);
+
+export type RetryPreparation = 'resumed' | 'reset' | 'untouched';
+
+/**
+ * Normalizes a 'failed' slot before a (re-)attempt. Stage-aware:
+ *
+ * - failedFrom ∈ {reviewed, localized, illustrated} with data present → restore
+ *   that state so processSlot's stage guards skip everything already done and
+ *   the attempt resumes exactly at the failed stage.
+ * - anything else (plan/write/judge failures, missing data, or `forceFresh`) →
+ *   full reset to pending with data wiped: regenerate from scratch.
+ *
+ * `forceFresh` is the escalation valve: the LAST outer attempt always resets
+ * fully, so a DETERMINISTIC late-stage failure (e.g. a translation that trips
+ * the vocabulary gate every time) still gets one fresh draw — the only path
+ * that changes that stage's input — instead of retrying into the same wall.
+ */
+export function prepareSlotForAttempt(
+  checkpoint: RunCheckpoint,
+  slotId: string,
+  opts: { forceFresh: boolean },
+): RetryPreparation {
+  const slot = getSlot(checkpoint, slotId);
+  if (slot.state !== 'failed') return 'untouched';
+  if (!opts.forceFresh && slot.failedFrom && RESUMABLE_FAILED_FROM.has(slot.failedFrom) && slot.data) {
+    // setSlotState keeps `data` (spread) and clears error/failedFrom on a
+    // non-failed transition — the slot looks exactly like it did after the
+    // failed stage's predecessor succeeded.
+    setSlotState(checkpoint, slotId, slot.failedFrom, {});
+    return 'resumed';
+  }
+  setSlotState(checkpoint, slotId, 'pending', { data: undefined });
+  return 'reset';
+}
+
+/** Persists the checkpoint, downgrading a write failure to a warning (see the catch above). */
+async function saveQuietly(store: CheckpointStore, checkpoint: RunCheckpoint, slotId: string): Promise<void> {
+  try {
+    await store.save(checkpoint);
+  } catch (saveErr) {
+    console.error(
+      `[forge] WARNING: could not persist the checkpoint after slot ${slotId} failed ` +
+        `(${saveErr instanceof Error ? saveErr.message : String(saveErr)}). The run continues, but this slot ` +
+        `will be retried on resume.`,
+    );
+  }
+}
+
+/**
+ * Every enumerated slot lands in EXACTLY ONE bucket. The old summary carried only
+ * `published` and `failed`, so slots that were never attempted (budget stop, or
+ * already finished by an earlier invocation) vanished from the report and a run
+ * that touched 300 of 1000 slots printed a clean partial success.
+ */
 export interface RunSummary {
   runId: string;
   published: string[];
-  failed: { slotId: string; error: string }[];
+  /** `failedFrom` = the stage the slot failed from — feeds the per-stage failure heatmap in generate:track. */
+  failed: { slotId: string; error: string; failedFrom?: SlotState }[];
+  /** Validated by --dry-run; nothing was written or paid for (dry-run stops before every paid stage). */
+  dryRun: string[];
+  /** Deliberately not processed (e.g. the course catalog failed to load). */
+  skipped: { slotId: string; reason: string }[];
+  /** Already 'published' in the checkpoint before this invocation started. */
+  alreadyDone: string[];
+  /** Enumerated but never reached — the honest name for what used to be invisible. */
+  notAttempted: string[];
+  slotsEnumerated: number;
+  /** Set when a dead credential / empty balance aborted the run (401/402/403). */
+  fatalProviderError: string | null;
+  /** Prism illustrations produced — zero on a visual-first course is a RED FLAG, not a success. */
+  imagesGenerated: number;
+  /** Of those, FRESH generations — the ones that cost money (cache hits are free). */
+  imagesBilled: number;
+  /** Slots filled from the lesson's PREVIOUS art — the money this run did NOT spend. */
+  imagesInherited: number;
+  /** Distinct reasons illustration was skipped (e.g. 'not-configured'). */
+  imageSkipReasons: string[];
+  /** Lessons published SHORTER than their blueprint because write had to salvage. */
+  salvagedSlots: { slotId: string; droppedSegments: number }[];
   stoppedOnBudget: boolean;
   tokensUsed: number;
   usdUsed: number;
+  /** Prompt tokens served by provider context caches (subset of tokensUsed) — the prefix-stability scoreboard. */
+  cachedTokens: number;
 }
 
 export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Promise<RunSummary> {
-  requireGenerationKeys();
+  // A dry run makes zero provider calls by construction (processSlot stops
+  // before every paid stage), so it must not demand paid-API keys either —
+  // validating a catalog/enumeration is exactly the kind of thing an operator
+  // does on a machine without credentials.
+  if (!options.dryRun) requireGenerationKeys();
   const config = getConfig();
   const courseDir = path.join(options.curriculumRoot, options.course);
   const loadResult = loadCourseCatalog(courseDir);
@@ -360,35 +713,232 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   const runId = options.runId ?? `${options.course}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
   const runDir = path.join(options.runsRoot, runId);
   const store = new CheckpointStore(path.join(runDir, 'checkpoint.json'));
-  const checkpoint = (await store.load()) ?? newRunCheckpoint(runId, options.course);
 
-  const ledger = deps.ledger ?? new UsageLedger(runDir);
+  /*
+   * A resume must be provably COMPATIBLE with what produced the existing slots.
+   * `isSlotDone` only reads the state string, so without this check a resume with
+   * different flags silently treats incompatible work as finished and reports
+   * success — the single worst failure mode found in the mass-generation audit,
+   * because a 1000-lesson course REQUIRES multiple invocations and every variation
+   * (fewer locales, --no-images, a different register) was reachable in normal use.
+   */
+  const runParams: RunParams = {
+    course: options.course,
+    locales: [...(options.locales ?? LESSON_LOCALES)],
+    noImages: options.noImages === true,
+    register: options.register ?? 'kid',
+  };
+  const loaded = await store.load();
+  if (loaded) {
+    const mismatch = describeParamMismatch(loaded.params, runParams);
+    const doneCount = Object.values(loaded.slots).filter((sl) => sl.state === 'published').length;
+    if (mismatch && doneCount > 0) {
+      throw new Error(
+        `refusing to resume run "${runId}": it was created with different parameters (${mismatch}), ` +
+          `and ${doneCount} slot(s) are already marked published. Those slots were produced under the OLD ` +
+          `parameters and would be silently skipped, so the run would report success without doing the work. ` +
+          `Use a fresh --run-id for the new parameters, or re-run with the original ones.`,
+      );
+    }
+    if (mismatch) loaded.params = runParams; // nothing published yet — safe to adopt
+  }
+  const checkpoint = loaded ?? newRunCheckpoint(runId, options.course, runParams);
+  if (!checkpoint.params) checkpoint.params = runParams;
+
   const allSlots = enumerateSlots(loadResult.course.adventures);
   const slots = filterSlots(allSlots, options.slots);
+
+  /*
+   * Budget scaled to the enumerated work, then hydrated from the run's own ledger.
+   *
+   * Two separate mass-generation failures live here. (1) The absolute 5M-token cap
+   * is sized for ~48 lessons, so a 1000+ lesson course was arithmetically
+   * guaranteed to abort partway through — the cap has to grow with the slot count
+   * or it is a bug, not a guard. (2) The totals restarted at zero in every process,
+   * so the "per-run" ceilings were per-invocation and bounded nothing across the
+   * resumes a long run requires. `hydrate()` replays ledger.jsonl to fix (2).
+   */
+  const ledger = deps.ledger ?? new UsageLedger(runDir);
+  const scaled = {
+    maxTokens: Math.max(config.FORGE_MAX_TOKENS_PER_RUN, slots.length * config.FORGE_MAX_TOKENS_PER_SLOT),
+    maxUsd: Math.max(config.FORGE_MAX_USD_PER_RUN, slots.length * config.FORGE_MAX_USD_PER_SLOT),
+  };
+  if (options.maxUsdOverride !== undefined) scaled.maxUsd = Math.min(scaled.maxUsd, options.maxUsdOverride);
+  await ledger.hydrate(scaled);
+  console.log(
+    `[forge] budget for ${slots.length} slot(s): ${scaled.maxTokens.toLocaleString()} tokens, $${scaled.maxUsd.toFixed(2)}`,
+  );
   const register = resolveRegister(loadResult.course.taxonomy, options.register ?? 'kid');
+  const rubricLog = new RubricLog(runDir);
+  /** Final outcome per slot THIS invocation — the per-slot telemetry ingested to Vault at the end. */
+  const slotOutcomes: ProcessSlotOutcome[] = [];
 
   const published: string[] = [];
-  const failed: { slotId: string; error: string }[] = [];
+  const failed: { slotId: string; error: string; failedFrom?: SlotState }[] = [];
+  const dryRun: string[] = [];
+  const skipped: { slotId: string; reason: string }[] = [];
+  const alreadyDone: string[] = [];
+  let imagesGenerated = 0;
+  let imagesBilled = 0;
+  let imagesInherited = 0;
+  const imageSkipReasons = new Set<string>();
+  const salvagedSlots: { slotId: string; droppedSegments: number }[] = [];
   let stoppedOnBudget = false;
+  let fatalProviderError: string | null = null;
+
+  const live = new LiveTelemetry({
+    runId,
+    trackId: options.trackId,
+    courseSlug: options.course,
+    register: options.register ?? 'kid',
+    totalSlots: slots.length,
+  });
 
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
       if (stoppedOnBudget) return;
-      const outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register);
+      /*
+       * A slot left 'failed' by a PREVIOUS invocation gets the same stage-aware
+       * treatment as the in-run retries below: a late-stage failure (localize/
+       * images/publish) resumes from its judge-approved checkpoint data instead
+       * of silently re-planning from scratch (which is what the plan-stage
+       * guard's `state === 'failed'` branch would otherwise do). NEVER under
+       * --dry-run: no real attempt follows, and the restore/reset would mutate
+       * (and partially wipe) forensics a real run still needs.
+       */
+      if (!options.dryRun) {
+        const firstPrep = prepareSlotForAttempt(checkpoint, slot.slotId, { forceFresh: false });
+        if (firstPrep !== 'untouched') await store.save(checkpoint);
+      }
+      // Outer per-slot attempts (FORGE_SLOT_ATTEMPTS), stage-aware. A judge
+      // rejection or write exhaustion (failedFrom: pending/planned/written)
+      // resets the slot and regenerates FROM SCRATCH — a fresh draw converges
+      // far better than more revise cycles on the same bad draft. A LATE-stage
+      // failure (failedFrom: reviewed/localized/illustrated) resumes from the
+      // checkpoint instead: the judge-approved document is sitting in `data`,
+      // and re-paying plan+write+judge for a transient localize/publish error
+      // was pure waste (found by the 2026-07-26 orchestration review). The
+      // LAST attempt always resets fully, so deterministic late-stage failures
+      // still get one fresh draw. BudgetExceededError still aborts the whole
+      // run (rethrown by processSlot), so retries never blow past the
+      // kill-switches.
+      const slotStartedAt = Date.now();
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
+      let attempt = 1;
+      while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
+        attempt++;
+        // setSlotState (inside prepareSlotForAttempt) mutates the shared
+        // checkpoint object in place (the same object every worker holds) —
+        // no reassignment needed or allowed here.
+        const prep = prepareSlotForAttempt(checkpoint, slot.slotId, {
+          forceFresh: attempt === config.FORGE_SLOT_ATTEMPTS,
+        });
+        console.warn(
+          `[forge] slot ${slot.slotId} failed (attempt ${attempt - 1}/${config.FORGE_SLOT_ATTEMPTS}) — ` +
+            `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
+        );
+        await store.save(checkpoint);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
+      }
+      outcome.durationMs = Date.now() - slotStartedAt;
+      slotOutcomes.push(outcome);
+      imagesGenerated += outcome.imagesGenerated ?? 0;
+      imagesBilled += outcome.imagesBilled ?? 0;
+      imagesInherited += outcome.imagesInherited ?? 0;
+      for (const r of outcome.imageSkipReasons ?? []) imageSkipReasons.add(r);
+      if (outcome.salvaged) salvagedSlots.push({ slotId: outcome.slotId, droppedSegments: outcome.droppedSegments ?? 0 });
       if (outcome.state === 'published') published.push(outcome.slotId);
-      else if (outcome.state === 'failed') failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error' });
+      else if (outcome.state === 'already-published') alreadyDone.push(outcome.slotId);
+      else if (outcome.state === 'failed')
+        failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error', failedFrom: outcome.failedFrom });
+      else if (outcome.state === 'dry-run') dryRun.push(outcome.slotId);
+      else skipped.push({ slotId: outcome.slotId, reason: outcome.error ?? 'skipped' });
+      // Push latest cost data to the live heartbeat after each slot finishes.
+      live.setCost(ledger.tokens, ledger.usd, ledger.cachedTokens);
+      await live.flush();
     });
   } catch (err) {
     if (err instanceof BudgetExceededError) stoppedOnBudget = true;
-    else throw err;
+    else if (isFatalProviderError(err)) {
+      // One clear cause, not 62 derived symptoms. Everything already published stays
+      // published; everything else stays resumable from the checkpoint.
+      fatalProviderError = err instanceof Error ? err.message : String(err);
+    } else {
+      await live.finish().catch(() => {});
+      throw err;
+    }
   }
 
-  return {
+  /*
+   * THE SUMMARY MUST ACCOUNT FOR EVERY SLOT. Previously a slot that was never
+   * attempted — because a budget stop made the pool return early, or because it
+   * was already published by an earlier invocation — appeared in NEITHER
+   * `published` NOR `failed`, so a run that touched 300 of 1000 slots printed a
+   * clean partial success and an operator had no way to see the other 700. Now
+   * every slot is in exactly one bucket and the totals are asserted to add up.
+   */
+  const accountedIds = new Set([
+    ...published,
+    ...alreadyDone,
+    ...failed.map((f) => f.slotId),
+    ...dryRun,
+    ...skipped.map((s) => s.slotId),
+  ]);
+  const notAttempted: string[] = [];
+  for (const slot of slots) {
+    if (accountedIds.has(slot.slotId)) continue;
+    // Leftovers exist only when the pool returned early (budget stop): a done
+    // slot the pool never reached still counts as alreadyDone, not lost.
+    (isSlotDone(checkpoint, slot.slotId) ? alreadyDone : notAttempted).push(slot.slotId);
+  }
+
+  const summary: RunSummary = {
     runId,
     published,
     failed,
+    dryRun,
+    skipped,
+    alreadyDone,
+    notAttempted,
+    slotsEnumerated: slots.length,
+    fatalProviderError,
+    imagesGenerated,
+    imagesBilled,
+    imagesInherited,
+    imageSkipReasons: [...imageSkipReasons],
+    salvagedSlots,
     stoppedOnBudget,
     tokensUsed: ledger.tokens,
     usdUsed: ledger.usd,
+    cachedTokens: ledger.cachedTokens,
   };
+  const tallied =
+    published.length + failed.length + dryRun.length + skipped.length + alreadyDone.length + notAttempted.length;
+  if (tallied !== slots.length) {
+    // Never silently: an accounting hole here is exactly how lessons went missing.
+    console.warn(
+      `[forge] BUG: summary accounts for ${tallied} slot(s) but ${slots.length} were enumerated — please report this run id.`,
+    );
+  }
+
+  // Durable scoreboard (0017): per-run + per-slot outcomes, rubrics, cost —
+  // read by the admin Generation dashboard and forge:coach. Swallows its own
+  // failures; never ingested for dry runs (nothing spent, nothing to record).
+  if (!options.dryRun) {
+    await ingestRunTelemetry({
+      runId,
+      trackId: options.trackId,
+      courseSlug: options.course,
+      register: options.register ?? 'kid',
+      params: runParams,
+      summary,
+      outcomes: slotOutcomes,
+      runDir,
+    });
+  }
+  // Clean up the live heartbeat row — run is done, dashboard should stop polling.
+  if (!options.dryRun) {
+    await live.finish();
+  }
+  return summary;
 }

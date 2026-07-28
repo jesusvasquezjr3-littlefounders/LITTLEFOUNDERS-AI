@@ -13,15 +13,17 @@ import {
   createSessionReducer,
   earnedXp,
   initialSession,
-  isGraded,
   lessonScore,
   progressPct,
 } from '../core/session'
 import { createDirector, type CharacterReaction } from '../core/director'
+import { glowsAndGrows } from '../core/glowsGrows'
+import { SceneAnchor } from '../core/primitives'
 import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
 import { StreakCelebration } from './StreakCelebration'
+import { playSfx } from './sfx'
 import { formatDuration, useCountUp, type ServerCompletion } from './completion'
 
 export interface LessonPlayerProps {
@@ -79,19 +81,29 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
   const entry = segment ? getRegistryEntry(segment.type) : undefined
   const verdict = segState?.verdict ?? null
 
+  // Reset the draft, error and per-attempt timer on a new segment AND on every
+  // retry (retries bumps). Clearing the draft on retry is what stops the stale
+  // co-submit / keypad-append bugs and disables Comprobar until a fresh answer.
+  const retryCount = segState?.retries ?? 0
   useEffect(() => {
     setDraft(undefined)
     setGradeError(false)
     segStartRef.current = Date.now()
-  }, [state.index])
+  }, [state.index, retryCount])
 
-  // Auto-narrate each segment's prompt as it appears (story_dialogue voices
-  // its own lines instead — line 0 covers the beat, the prompt would talk
-  // over it). Segment changes are click-driven, so play() has activation.
+  // Auto-narrate each segment's prompt as it appears. Content-family components
+  // (story_scene, key_ideas, concept_reveal, checkpoint, story_dialogue) own
+  // their FULL narration — prompt plus body/idea/card/recap/line units — so the
+  // player must not also fire the prompt for them (it would talk over the
+  // sequence, and the body/card audio would otherwise never play at all, B2/B3).
+  // Segment changes are click-driven, so play() has activation.
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
-    if (segment.type === 'story_dialogue') return
-    narration.play(narrationUnitId(segment.id, 'prompt'))
+    if (getRegistryEntry(segment.type)?.kind === 'content') return
+    // Prompt then the choices roll-up (option labels read in order) so a
+    // pre-reader HEARS the whole exercise, not just the question. `choices` is
+    // a no-op when the manifest has no such unit (B4).
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'choices')])
     return () => narration.stop()
   }, [state.phase, segment, narration])
 
@@ -131,6 +143,8 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         const v: Verdict = await grader.grade(segment.id, answer, {
           attempt_number: (segState?.attempts ?? 0) + 1,
           time_spent_seconds: Math.round((Date.now() - segStartRef.current) / 1000),
+          // Server applies the hint penalty authoritatively (0012).
+          hints_used: segState?.hintsShown ?? 0,
         })
         dispatch({ type: 'VERDICT', segmentId: segment.id, verdict: v })
         const preferred = segment.narrator?.character
@@ -138,6 +152,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         else if (v.tier === 'great') react('correct', preferred)
         else if (v.tier === 'almost') react('almost', preferred)
         else react('wrong', preferred)
+        // UI sound mirrors the character reaction — win chimes vs. a soft,
+        // kind retry tap (never a buzzer).
+        if (v.tier === 'perfect') playSfx('perfect')
+        else if (v.tier === 'great') playSfx('correct')
+        else playSfx('tryagain')
       } catch {
         // Grader unavailable: never punish the kid for our outage (§7).
         dispatch({ type: 'GRADE_FAILED' })
@@ -251,15 +270,19 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
         <div key={segment.id} className="lf-pop space-y-5">
           {/* Narrator strip */}
           {segment.narrator ? (
-            <div className="flex items-end gap-3">
-              <CharacterActor
-                character={segment.narrator.character}
-                emotion={segment.narrator.emotion ?? 'neutral'}
-                size="sm"
-                className="shrink-0"
-              />
-              <div className="flex min-w-0 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
-                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 text-content" />
+            // Avatar shrinks on mobile (56px) so the speech bubble keeps a
+            // readable width at 375px instead of squeezing the prompt to
+            // 2-3 words per line (§1.11). Full 96px from sm: up.
+            <div className="flex items-end gap-2 sm:gap-3">
+              <div className="h-14 w-14 shrink-0 sm:h-24 sm:w-24">
+                <CharacterActor
+                  character={segment.narrator.character}
+                  emotion={segment.narrator.emotion ?? 'neutral'}
+                  size="fill"
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
+                <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
                 <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
               </div>
             </div>
@@ -270,6 +293,10 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
             </div>
           )}
 
+          {/* Scene anchor — one concrete illustration setting up the situation,
+              shown for any segment the pipeline illustrated at the segment level. */}
+          {segment.image_url ? <SceneAnchor imageUrl={segment.image_url} /> : null}
+
           {/* Hints shown so far */}
           {segment.hints?.slice(0, segState?.hintsShown ?? 0).map((hint, i) => (
             <div key={i} className="lf-pop flex items-start gap-2 rounded-md bg-delight-soft px-4 py-3">
@@ -278,8 +305,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
             </div>
           ))}
 
-          {/* Exercise body */}
+          {/* Exercise body — keyed by segment + retry count so "Intentar de
+              nuevo" forces a clean remount (timers, boards and keypads reset;
+              no stale phase state survives into the new attempt). */}
           <entry.component
+            key={`${segment.id}:${retryCount}`}
             segment={segment}
             value={draft}
             onChange={setDraft}
@@ -320,8 +350,13 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                 <Button
                   variant="secondary"
                   onClick={() => {
+                    const hintIndex = segState?.hintsShown ?? 0
                     dispatch({ type: 'HINT', segmentId: segment.id })
                     react('hint', segment.narrator?.character)
+                    playSfx('hint')
+                    // Voice the hint being revealed — the key scaffold for
+                    // weaker readers, silent in 55/62 lessons before (B4).
+                    narration.play(narrationUnitId(segment.id, `hint.${hintIndex}`))
                   }}
                 >
                   <Icon name="lightbulb" className="mr-1 text-[18px]" />
@@ -331,10 +366,18 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                 <span />
               )}
               {isContent ? (
-                <Button variant="primary" disabled={!segState?.done} onClick={handleNext}>
-                  {t('lesson.continue')}
-                  <Icon name="arrow_forward" className="ml-1 text-[18px]" />
-                </Button>
+                // Only show the footer Continuar once the content segment is
+                // done. While it's being consumed the content component owns
+                // its own advance affordance (e.g. story_dialogue's tap/CTA);
+                // a second, disabled "Continuar" here was a confusing duplicate.
+                segState?.done ? (
+                  <Button variant="primary" onClick={handleNext}>
+                    {t('lesson.continue')}
+                    <Icon name="arrow_forward" className="ml-1 text-[18px]" />
+                  </Button>
+                ) : (
+                  <span />
+                )
               ) : isFlow ? (
                 <span className="lf-caption text-content-faint">{checking ? t('lesson.checking') : ''}</span>
               ) : (
@@ -385,7 +428,10 @@ function IntroScreen({
   onExit: () => void
 }) {
   const { t } = useTranslation()
-  const gradedCount = doc.segments.filter(isGraded).length
+  // "Retos" counts INTERACTIVE segments, not xp>0: content types carry xp:0,
+  // and some graded segments were authored with xp:0 too, so the old xp>0 count
+  // read "0 retos" on 37/62 lessons that plainly have challenges.
+  const challengeCount = doc.segments.filter((s) => getRegistryEntry(s.type)?.kind !== 'content').length
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col px-5 md:px-0">
       <div className="flex justify-start py-4">
@@ -427,7 +473,7 @@ function IntroScreen({
           </span>
           <span className="flex items-center gap-1">
             <Icon name="stars" className="text-[16px]" />
-            {t('lesson.intro.exercises', { count: gradedCount })}
+            {t('lesson.intro.exercises', { count: challengeCount })}
           </span>
         </div>
         <Button variant="primary" onClick={onStart} className="px-10">
@@ -477,6 +523,30 @@ function FeedbackBanner({
   }[verdict.tier]
   const variant = (segIndex % 3) + 1
 
+  // Teaching content reveal (E3): show it when the segment RESOLVES for the kid
+  // — on a pass, or once no retries remain — never success-worded copy under a
+  // failure banner. On a resolved fail prefer the server's outcome-accurate
+  // correction (spot_error's reveal.correction_md) over the authored
+  // explanation, which may be phrased as a success.
+  const narration = useNarration()
+  const reveal = verdict.reveal as { correction_md?: unknown } | undefined
+  const passed = verdict.correct
+  const showTeaching = passed || done
+  const correctionMd =
+    !passed && done && typeof reveal?.correction_md === 'string' ? reveal.correction_md : undefined
+  const teachingMd = correctionMd ?? (showTeaching ? segment.explanation_md : undefined)
+  const explanationUnit = narrationUnitId(segment.id, 'explanation')
+  // Auto-play the explanation narration whenever we show the authored
+  // explanation — the paid TTS that played in 0/62 lessons before this. Skip
+  // it for the server correction (no matching audio unit).
+  const explanationAudible =
+    showTeaching && !correctionMd && Boolean(segment.explanation_md) && narration.has(explanationUnit)
+  useEffect(() => {
+    if (!explanationAudible) return
+    narration.play(explanationUnit)
+    return () => narration.stop()
+  }, [explanationAudible, explanationUnit, narration])
+
   return (
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">
       <div className="mx-auto flex max-w-[720px] items-start gap-3 px-4 py-4 md:px-0">
@@ -494,24 +564,50 @@ function FeedbackBanner({
           <p className={cn('flex items-center gap-2 lf-title', tierText)}>
             <Icon name={tierIcon} fill className="text-[22px]" />
             {t(`lesson.feedback.${verdict.tier}.v${variant}`)}
-            <span className="lf-number lf-caption text-content-muted">{verdict.score}/100</span>
+            {/* Keep the exam-style number only on a pass; on a fail it reads as
+                harsh "0/100" chrome for an 8-year-old (E6) — the tier microcopy
+                and teaching carry the message. */}
+            {passed ? <span className="lf-number lf-caption text-content-muted">{verdict.score}/100</span> : null}
           </p>
           {verdict.feedback_md ? (
             <MarkdownLite text={verdict.feedback_md} className="lf-body text-content" />
           ) : null}
-          {done && segment.explanation_md ? (
-            <MarkdownLite text={segment.explanation_md} className="lf-body text-content-muted" />
+          {teachingMd ? (
+            <div className="flex items-start gap-2">
+              <MarkdownLite text={teachingMd} className="lf-body min-w-0 flex-1 text-content-muted" />
+              {explanationAudible ? <NarrationReplayButton unitId={explanationUnit} /> : null}
+            </div>
           ) : null}
         </div>
-        <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-          {verdict.allowRetry && !done ? (
-            <Button variant="secondary" onClick={onRetry}>
-              {t('lesson.retry')}
-            </Button>
-          ) : null}
-          <Button variant="primary" onClick={onNext}>
-            {t('lesson.continue')}
-          </Button>
+        <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+          {!passed && verdict.allowRetry && !done ? (
+            // Failed with tries left: make "Intentar de nuevo" the primary action
+            // and demote advancing to a quiet skip link, so the kid doesn't
+            // silently forfeit a retake by tapping a prominent Continuar (E5).
+            <>
+              <button
+                type="button"
+                onClick={onNext}
+                className="rounded-full px-3 py-2 lf-caption text-content-muted underline underline-offset-2 transition-colors hover:text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+              >
+                {t('lesson.skip')}
+              </button>
+              <Button variant="primary" onClick={onRetry}>
+                {t('lesson.retry')}
+              </Button>
+            </>
+          ) : (
+            <>
+              {verdict.allowRetry && !done ? (
+                <Button variant="secondary" onClick={onRetry}>
+                  {t('lesson.retry')}
+                </Button>
+              ) : null}
+              <Button variant="primary" onClick={onNext}>
+                {t('lesson.continue')}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -541,6 +637,13 @@ function ResultsScreen({
   const circumference = 2 * Math.PI * 52
   const xpShown = useCountUp(xp, 1000)
   const streakShown = useCountUp(streakDays, 800)
+
+  // One celebratory fanfare as the summary reveals (after the streak overlay,
+  // which plays its own 'streak' sound). Passing only — a failed run exits quiet.
+  useEffect(() => {
+    if (passed) playSfx('celebration')
+    // mount-once by design: the fanfare fires as the summary first reveals
+  }, [])
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-1 flex-col items-center justify-center gap-6 px-5 py-10 text-center md:px-0">
@@ -593,16 +696,60 @@ function ResultsScreen({
         <ResultStat
           icon="target"
           label={t('lesson.results.bestStreak')}
-          value={String(state.bestStreak)}
+          // All-time longest day streak (0013): always >= today's streak, so it
+          // never reads as the incoherent "Mejor racha 0" next to "Racha 1".
+          value={String(server?.longest_streak ?? streakDays)}
           tone="text-success-strong"
         />
       </div>
+      <GlowsGrowsBlock doc={doc} state={state} />
       <p className="lf-body text-content-muted">
         {t(passed ? 'lesson.results.passedBody' : 'lesson.results.failedBody')}
       </p>
       <Button variant={passed ? 'success' : 'primary'} onClick={onExit} className="px-10">
         {t('lesson.results.done')}
       </Button>
+    </div>
+  )
+}
+
+/**
+ * Glows & Grows — two deterministic feedback lines from the session just
+ * played (core/glowsGrows.ts): a real strength, and one growth area framed as
+ * a quest. All-content lessons (no graded segments) render nothing.
+ */
+function GlowsGrowsBlock({ doc, state }: { doc: LessonDocument; state: ReturnType<typeof initialSession> }) {
+  const { t } = useTranslation()
+  const gg = useMemo(() => glowsAndGrows(doc, state), [doc, state])
+  if (!gg) return null
+
+  const glowText =
+    gg.glow.kind === 'family' ? t(`lesson.results.glow.family.${gg.glow.family}`) : t('lesson.results.glow.effort')
+  const growText =
+    gg.grow === null
+      ? null
+      : gg.grow.kind === 'family'
+        ? t(`lesson.results.grow.family.${gg.grow.family}`)
+        : t('lesson.results.grow.mastered')
+
+  return (
+    <div className="w-full max-w-xl rounded-lg border border-outline/70 bg-surface px-4 py-1 shadow-glass-sm text-left">
+      <div className="flex items-center gap-3 py-3">
+        <Icon name="star" className="shrink-0 text-[26px] text-warning-strong" aria-hidden />
+        <div>
+          <p className="lf-caption text-content-faint leading-tight">{t('lesson.results.glowTitle')}</p>
+          <p className="lf-body font-semibold text-content mt-0.5">{glowText}</p>
+        </div>
+      </div>
+      {growText ? (
+        <div className="flex items-center gap-3 border-t border-outline/50 py-3">
+          <Icon name="flag" className="shrink-0 text-[26px] text-primary" aria-hidden />
+          <div>
+            <p className="lf-caption text-content-faint leading-tight">{t('lesson.results.growTitle')}</p>
+            <p className="lf-body font-semibold text-content mt-0.5">{growText}</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

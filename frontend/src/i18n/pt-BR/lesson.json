@@ -4,6 +4,7 @@
   "checking": "Verificando…",
   "continue": "Continuar",
   "retry": "Tentar de novo",
+  "skip": "Pular por agora",
   "hint": "Dica",
   "exit": "Sair da lição",
   "unsupported": "Este exercício precisa de uma versão mais nova do app. Pular não afeta sua pontuação.",
@@ -51,7 +52,35 @@
     "failedBody": "Todo founder pratica. Jogue de novo e veja sua pontuação crescer!",
     "done": "Concluir",
     "time": "Tempo",
-    "dayStreak": "Sequência de dias"
+    "dayStreak": "Sequência de dias",
+    "glowTitle": "Seu superpoder de hoje",
+    "growTitle": "Sua próxima missão",
+    "glow": {
+      "effort": "Você terminou a lição inteira: cada tentativa te deixa mais forte.",
+      "family": {
+        "story": "As histórias não têm segredos para você.",
+        "choice": "Você toma decisões como um verdadeiro founder.",
+        "input": "Suas contas saíram perfeitas.",
+        "arrange": "Colocar as coisas em ordem é a sua praia.",
+        "money": "Você cuida do dinheiro como um especialista.",
+        "analyze": "Você tem olho de detetive.",
+        "storyplay": "Você vive cada aventura ao máximo.",
+        "maker": "Um construtor de primeira."
+      }
+    },
+    "grow": {
+      "mastered": "Você dominou tudo! A próxima lição te espera.",
+      "family": {
+        "story": "Explore as histórias com calma.",
+        "choice": "Pense em cada opção antes de escolher.",
+        "input": "Confira seus números sem pressa.",
+        "arrange": "Encontre a ordem passo a passo.",
+        "money": "Conte o dinheiro com calma: você consegue.",
+        "analyze": "Procure as pistas escondidas.",
+        "storyplay": "Escolha seu caminho com cuidado.",
+        "maker": "Monte suas invenções peça por peça."
+      }
+    }
   },
   "flow": {
     "start": "Começar!",
@@ -99,6 +128,7 @@
       "bank": "Peças disponíveis",
       "slot": "Espaço {{index}}",
       "tapToRemove": "Toque uma peça colocada para devolvê-la",
+      "dragHint": "Arraste cada peça para o seu grupo — ou toque nela e depois no grupo.",
       "matchPairs": {
         "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo."
       },
@@ -183,8 +213,7 @@
       "correctPairs": "Pares corretos",
       "yourAnswers": "Suas respostas",
       "questionOf": "Pergunta {{current}} de {{total}}",
-      "noAnswer": "Sem resposta",
-      "valueLabel": "Valor: {{score}}"
+      "noAnswer": "Sem resposta"
     },
     "maker": {
       "run": "Executar",
@@ -210,7 +239,11 @@
       "flipHint_other": "Toque para virar — faltam {{count}} cartas",
       "allFlipped": "Você descobriu todas!",
       "gotIt": "Já entendi!",
-      "review": "Quero revisar"
+      "review": "Quero revisar",
+      "reviewHint": "Sem pressa: leia e ouça a revisão acima e continue quando estiver pronto.",
+      "whatDoesItMean": "O que significa “{{term}}”?",
+      "noteTitle": "O que significa?",
+      "keepListening": "Continue ouvindo"
     }
   },
   "streak": {

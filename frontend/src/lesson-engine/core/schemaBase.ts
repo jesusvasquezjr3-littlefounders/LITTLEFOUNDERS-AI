@@ -9,14 +9,36 @@ export const idSchema = z.string().min(1).max(64)
 
 export const markdownLite = z.string().min(1).max(4000)
 
+/** Material Symbols icon name (content data may reference icons; rendered via <Icon>). */
+export const iconName = z.string().regex(/^[a-z0-9_]+$/)
+
 export const idText = z.object({ id: idSchema, text_md: markdownLite })
 export const idLabel = z.object({ id: idSchema, label: z.string().min(1).max(120) })
+
+/** A picture URL for a generated illustration (Prism/picturegen pipeline). */
+export const imageUrl = z.string().url()
+
+/** An item that represents a CONCRETE THING a child must recognize — carries a
+ *  short text label plus an optional Material icon (fallback) and an optional
+ *  AI illustration (preferred over the icon when present). Use this instead of
+ *  `idText` for any item array whose entries are physical objects (fruit,
+ *  coins, cups, toys…): a 40px monochrome glyph is not recognizable to a young
+ *  child; the AI image is. Render via `VisualMark` (core/primitives). */
+export const idVisual = z.object({
+  id: idSchema,
+  text_md: markdownLite,
+  icon: iconName.optional(),
+  image_url: imageUrl.optional(),
+})
 
 /** Option with the P7 rule: wrong options MUST carry a teaching rationale.
  *  Enforced at the document level where the correct id is known. */
 export const optionWithRationale = z.object({
   id: idSchema,
   text_md: markdownLite,
+  /** Optional AI illustration for the option (preferred over plain text when the
+   *  option is a concrete thing — a coin, a product, a scene). */
+  image_url: imageUrl.optional(),
   rationale_md: markdownLite.optional(),
 })
 
@@ -45,12 +67,14 @@ export const characterActionSchema = z.enum([
   'bow',
 ])
 
-/** Material Symbols icon name (content data may reference icons; rendered via <Icon>). */
-export const iconName = z.string().regex(/^[a-z0-9_]+$/)
-
 const envelopeShape = {
   id: idSchema,
   title: z.string().min(1).max(120).optional(),
+  /** Optional "scene anchor" — one AI illustration shown above the prompt that
+   *  sets the concrete situation (Liruf at the stand, the purchase, the jars).
+   *  Available on EVERY type so text-only exercises still get one clear visual;
+   *  filled by the Prism pipeline pre-localize (one image serves all locales). */
+  image_url: imageUrl.optional(),
   prompt_md: markdownLite,
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
   xp: z.number().int().min(0).max(50),

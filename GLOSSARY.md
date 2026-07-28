@@ -41,6 +41,7 @@
 | `parent-id-check/` | **Guardian** | Identity verification service |
 | `email-server/` | **Courier** | Transactional email — Haraka SMTP engine relaying to Amazon SES (open-source Resend replacement) |
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
+| `picturegen/` | **Prism** | The only image-generation service — art-director judge (LF illustration identity) + Qwen `qwen-image`, assets in Depot, request-cache in Vault (`picture_assets`) |
 | `pulse/` | **Pulse** | Observability — self-hosted analytics (Plausible CE + Umami v3) & system health (Uptime Kuma); pinned third-party stack, data read only through Core |
 
 The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed **Oracle**.
@@ -91,3 +92,5 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **Character Control** | The unified emotion/action API over the four characters (`components/characters/control/`): `CharacterActor`, `lf-act-*` wrapper keyframes, `lf-rig-*` limb hooks. Appearance is NON-NEGOTIABLE — the rig never alters colors/shapes/composition. |
 | **director** | The engine layer mapping session events (correct, streak, hint…) to rotating character reactions. |
 | **lesson-lab** | Dev-only harness at `/dev/lesson-lab`: plays every fixture and the full showcase through the real player with the local grader. |
+
+**Territory map** — the whole-course skill map at `/learn/:courseSlug/territory`: a pure projection of Core's course tree where every topic carries a DATA-DERIVED state (`not-started` / `in-progress` / `completed` / `review-due`). `review-due` comes from the spaced-review layer (`topics.review_of`, migration 0016): a completed topic flips while a review topic citing it has unpassed lessons. Locked adventures render as fog-of-war silhouettes. Never a second source of truth — it renders the same `/learn/courses/:slug/tree` payload as the caminito.

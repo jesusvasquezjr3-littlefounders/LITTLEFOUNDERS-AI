@@ -53,9 +53,25 @@ describe('estimateCostUsd', () => {
     expect(cost).toBeGreaterThan(0);
   });
 
-  it('gemini-image cost does not depend on token counts', () => {
-    const a = estimateCostUsd({ provider: 'gemini-image', promptTokens: 0, completionTokens: 0 });
-    const b = estimateCostUsd({ provider: 'gemini-image', promptTokens: 999, completionTokens: 999 });
+  it('picturegen cost depends only on the image count, never token counts', () => {
+    // Regression for a vacuous test: this used to pass 'gemini-image', a
+    // provider removed from the UsageProvider union — both sides evaluated to
+    // undefined and toBe() passed while asserting nothing.
+    const a = estimateCostUsd({ provider: 'picturegen', promptTokens: 0, completionTokens: 0, images: 2 });
+    const b = estimateCostUsd({ provider: 'picturegen', promptTokens: 999, completionTokens: 999, images: 2 });
     expect(a).toBe(b);
+    expect(a).toBeGreaterThan(0);
+  });
+
+  it('prices cached prompt tokens at the CACHED rate — subtracted from the full-rate pool, never double-charged', () => {
+    const fresh = estimateCostUsd({ provider: 'deepseek', promptTokens: 100_000, completionTokens: 0 });
+    const allCached = estimateCostUsd({ provider: 'deepseek', promptTokens: 100_000, completionTokens: 0, cachedPromptTokens: 100_000 });
+    const halfCached = estimateCostUsd({ provider: 'deepseek', promptTokens: 100_000, completionTokens: 0, cachedPromptTokens: 50_000 });
+    expect(allCached).toBeLessThan(fresh / 50); // v4-pro hit rate is ~1/120 of miss
+    expect(halfCached).toBeCloseTo((fresh + allCached) / 2, 10);
+    // Clamp: cached can never exceed prompt (a provider bug must not yield negative cost).
+    const clamped = estimateCostUsd({ provider: 'deepseek', promptTokens: 1000, completionTokens: 0, cachedPromptTokens: 5000 });
+    expect(clamped).toBeGreaterThanOrEqual(0);
+    expect(clamped).toBe(estimateCostUsd({ provider: 'deepseek', promptTokens: 1000, completionTokens: 0, cachedPromptTokens: 1000 }));
   });
 });

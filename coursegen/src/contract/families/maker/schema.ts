@@ -1,12 +1,12 @@
 // `maker` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.8, types 51–56).
 
-import { z } from 'zod';
-import { idSchema, idText, markdownLite, segmentSchema } from '../../core/schemaBase.js';
+import { z } from 'zod'
+import { idSchema, idText, markdownLite, segmentSchema } from '../../core/schemaBase.js'
 
-export const robotDirSchema = z.enum(['up', 'right', 'down', 'left']);
-export const robotCommandSchema = z.enum(['forward', 'left', 'right']);
+export const robotDirSchema = z.enum(['up', 'right', 'down', 'left'])
+export const robotCommandSchema = z.enum(['forward', 'left', 'right'])
 
-const gridCoord = z.number().int().min(0).max(5);
+const gridCoord = z.number().int().min(0).max(5)
 
 export const codeOrder = segmentSchema(
   'code_order',
@@ -14,8 +14,8 @@ export const codeOrder = segmentSchema(
     blocks: z.array(idText).min(3).max(8),
     language_hint: z.string().min(1).max(40).optional(),
   }),
-  z.object({ order: z.array(idSchema).min(3).max(8) }),
-);
+  z.object({ order: z.array(idSchema).min(3).max(8), accept_orders: z.array(z.array(idSchema)).optional() }),
+)
 
 export const robotPath = segmentSchema(
   'robot_path',
@@ -29,7 +29,7 @@ export const robotPath = segmentSchema(
   }),
   // Simulated: the grader re-runs the submitted program against the payload.
   z.object({}),
-);
+)
 
 export const debugHunt = segmentSchema(
   'debug_hunt',
@@ -38,7 +38,7 @@ export const debugHunt = segmentSchema(
     blocks: z.array(idText).min(3).max(8),
   }),
   z.object({ bug_ids: z.array(idSchema).min(1), fix_md: markdownLite.optional() }),
-);
+)
 
 export const balanceScale = segmentSchema(
   'balance_scale',
@@ -52,7 +52,7 @@ export const balanceScale = segmentSchema(
   }),
   // State check: the grader recomputes both pan sums from the payload.
   z.object({}),
-);
+)
 
 export const measureRead = segmentSchema(
   'measure_read',
@@ -65,9 +65,9 @@ export const measureRead = segmentSchema(
     pointer_value: z.number(),
   }),
   z.object({ value: z.number(), tolerance: z.number().min(0) }),
-);
+)
 
-const ioValue = z.union([z.number(), z.string().min(1).max(40)]);
+const ioValue = z.union([z.number(), z.string().min(1).max(40)])
 
 export const machineIo = segmentSchema(
   'machine_io',
@@ -77,7 +77,7 @@ export const machineIo = segmentSchema(
     options: z.array(idText).min(2).max(6).optional(),
   }),
   z.object({ value: z.number().optional(), correct_option_id: idSchema.optional() }),
-);
+)
 
 export const makerSchemas = [
   codeOrder,
@@ -86,11 +86,11 @@ export const makerSchemas = [
   balanceScale,
   measureRead,
   machineIo,
-] as const;
+] as const
 
-export type CodeOrderSegment = z.infer<typeof codeOrder>;
-export type RobotPathSegment = z.infer<typeof robotPath>;
-export type DebugHuntSegment = z.infer<typeof debugHunt>;
-export type BalanceScaleSegment = z.infer<typeof balanceScale>;
-export type MeasureReadSegment = z.infer<typeof measureRead>;
-export type MachineIoSegment = z.infer<typeof machineIo>;
+export type CodeOrderSegment = z.infer<typeof codeOrder>
+export type RobotPathSegment = z.infer<typeof robotPath>
+export type DebugHuntSegment = z.infer<typeof debugHunt>
+export type BalanceScaleSegment = z.infer<typeof balanceScale>
+export type MeasureReadSegment = z.infer<typeof measureRead>
+export type MachineIoSegment = z.infer<typeof machineIo>

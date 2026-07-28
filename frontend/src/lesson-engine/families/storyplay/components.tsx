@@ -11,11 +11,13 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import type { CharacterEmotion, CharacterId } from '@/components/characters/control/types'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   GentleTimerBar,
   OptionCard,
   SunkenWell,
   TokenChip,
+  VisualMark,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -68,6 +70,10 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
   }, [ended, onFinish, path])
 
   if (!ended && current) {
+    // Shuffle this node's choices (A7): the bank was rendered in authored order,
+    // which put the "best" choice first, and grading is by choice_id — so display
+    // order is free. Sub-seeded per node so two nodes don't share a permutation.
+    const choices = seededSort(current.choices, segment.id + ':choices:' + current.id, (c) => c.id)
     return (
       <div className="space-y-4">
         {current.character ? (
@@ -79,7 +85,7 @@ export function StoryBranch({ segment, disabled, onFinish, verdict }: ExercisePr
           <MarkdownLite text={current.text_md} className="lf-body-lg text-content" />
         </SunkenWell>
         <div className="space-y-3" role="group">
-          {current.choices.map((choice) => (
+          {choices.map((choice) => (
             <OptionCard
               key={choice.id}
               disabled={disabled}
@@ -189,6 +195,14 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 
   const best = revealOf(verdict).best as Record<string, string> | undefined
   const currentTurn = done ? undefined : turns[replies.length]
+  // Shuffle this turn's replies (A7): the bank was rendered in authored order,
+  // which listed the best reply first, and grading is by reply_id — so display
+  // order is free. Sub-seeded per turn so consecutive turns don't correlate.
+  // `turns` itself is NOT shuffled: it is the conversation sequence and is read
+  // positionally (turns[replies.length], replies[i]).
+  const replyOptions = currentTurn
+    ? seededSort(currentTurn.replies, segment.id + ':replies:' + currentTurn.id, (r) => r.id)
+    : []
 
   return (
     <div className="space-y-4">
@@ -231,7 +245,7 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 
       {currentTurn ? (
         <div className="space-y-3" role="group">
-          {currentTurn.replies.map((reply) => (
+          {replyOptions.map((reply) => (
             <OptionCard
               key={reply.id}
               disabled={disabled}
@@ -257,12 +271,38 @@ export function DialogueChoice({ segment, disabled, onFinish, verdict }: Exercis
 interface MatchItem {
   id: string
   text_md: string
+  icon?: string
+  image_url?: string
+}
+
+// A concrete-object chip/option body: its AI illustration (image_url) above the
+// text when present, else the icon glyph; text-only when the item carries neither.
+function MatchCardBody({ item }: { item: MatchItem }) {
+  if (item.image_url || item.icon) {
+    return (
+      <span className="flex flex-col items-center gap-1">
+        <VisualMark
+          imageUrl={item.image_url}
+          icon={item.icon}
+          iconClassName="text-[24px] text-primary"
+          imgClassName="h-10 w-10"
+        />
+        <MarkdownLite text={item.text_md} />
+      </span>
+    )
+  }
+  return <MarkdownLite text={item.text_md} />
 }
 
 export function FlashMatch({ segment, disabled, onFinish, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const left = segment.payload.left as MatchItem[]
-  const right = segment.payload.right as MatchItem[]
+  // Shuffle the right column (A7): in payload order it rendered parallel to the
+  // answer key, so matching straight across scored 100 with no reading.
+  const right = useMemo(
+    () => seededSort(segment.payload.right as MatchItem[], segment.id + ':right', (r) => r.id),
+    [segment],
+  )
   const seconds = segment.payload.seconds as number
   const [phase, setPhase] = useState<'ready' | 'running' | 'done'>('ready')
   const [pairs, setPairs] = useState<Array<[string, string]>>([])
@@ -338,7 +378,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
               onSelect={() => setLeftSel((prev) => (prev === item.id ? null : item.id))}
               className="w-full"
             >
-              <MarkdownLite text={item.text_md} />
+              <MatchCardBody item={item} />
             </TokenChip>
           ))}
         </div>
@@ -351,7 +391,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
               onSelect={() => lockPair(item.id)}
               className="w-full"
             >
-              <MarkdownLite text={item.text_md} />
+              <MatchCardBody item={item} />
             </TokenChip>
           ))}
         </div>
@@ -423,6 +463,7 @@ export function FlashMatch({ segment, disabled, onFinish, verdict }: ExercisePro
 interface LightningQuestion {
   id: string
   prompt_md: string
+  image_url?: string
   options: MatchItem[]
 }
 
@@ -513,18 +554,38 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
           running={locked === null}
           onExpire={() => advance(null)}
         />
+        {question.image_url ? (
+          <img
+            src={question.image_url}
+            alt=""
+            loading="lazy"
+            className="mx-auto max-h-40 w-auto rounded-lg object-contain"
+          />
+        ) : null}
         <SunkenWell>
           <MarkdownLite text={question.prompt_md} className="lf-body-lg text-content" />
         </SunkenWell>
         <div className="space-y-3" role="group">
-          {question.options.map((option) => (
+          {seededSort(question.options, segment.id + question.id, (o) => o.id).map((option) => (
             <OptionCard
               key={option.id}
               state={locked === option.id ? 'selected' : 'idle'}
               disabled={disabled || locked !== null}
               onSelect={() => advance(option.id)}
             >
-              <MarkdownLite text={option.text_md} />
+              {option.image_url || option.icon ? (
+                <span className="flex items-center gap-2">
+                  <VisualMark
+                    imageUrl={option.image_url}
+                    icon={option.icon}
+                    iconClassName="text-[24px] text-primary"
+                    imgClassName="h-10 w-10"
+                  />
+                  <MarkdownLite text={option.text_md} />
+                </span>
+              ) : (
+                <MarkdownLite text={option.text_md} />
+              )}
             </OptionCard>
           ))}
         </div>
@@ -586,6 +647,7 @@ export function LightningRound({ segment, disabled, onFinish, verdict }: Exercis
 interface RatherSide {
   text_md: string
   icon?: string
+  image_url?: string
 }
 
 export function WouldYouRather({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
@@ -593,11 +655,14 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
   const draft = draftOf(value)
   const chosen = draft.choice as 'a' | 'b' | undefined
   const followup = segment.payload.followup_md as string | undefined
-  const qualities = revealOf(verdict).qualities as { a?: number; b?: number } | undefined
+  // reveal_leaks_internals — this used to read `reveal.qualities` and print the raw
+  // answer-key number under each card ("Value: 0" / "Value: 100"). The grader no
+  // longer sends the numbers at all; it names the side the author rated higher, or
+  // null when the two tie (a genuine dilemma, which gets no marker by design).
+  const betterSide = revealOf(verdict).better_side as 'a' | 'b' | null | undefined
 
   const renderSide = (side: 'a' | 'b') => {
     const data = segment.payload[side] as RatherSide
-    const q = qualities?.[side]
     return (
       <OptionCard
         role="radio"
@@ -608,11 +673,18 @@ export function WouldYouRather({ segment, value, onChange, disabled, verdict }: 
         onSelect={() => onChange({ choice: side })}
         className="flex min-h-40 flex-col items-center justify-center gap-3 text-center"
       >
-        {data.icon ? <Icon name={data.icon} className="text-[48px] text-primary" /> : null}
+        {data.image_url || data.icon ? (
+          <VisualMark
+            imageUrl={data.image_url}
+            icon={data.icon}
+            iconClassName="text-[48px] text-primary"
+            imgClassName="h-16 w-16"
+          />
+        ) : null}
         <MarkdownLite text={data.text_md} className="lf-body-lg" />
-        {typeof q === 'number' ? (
+        {betterSide === side ? (
           <span className="rounded-full bg-surface-sunken px-3 py-1 lf-caption text-content-muted">
-            {t('lesson.families.storyplay.valueLabel', { score: q })}
+            {t('lesson.families.storyplay.bestChoice')}
           </span>
         ) : null}
       </OptionCard>

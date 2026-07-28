@@ -4,7 +4,7 @@
 // list to keep in sync). Root cause this fixes: write.ts's prompt gave the
 // model NO structural hint per segment type beyond its name, so DeepSeek
 // guessed field names — inconsistently, and usually wrong (discovered via
-// the qa-lesson-engine-smoketest run: story_scene alone produced 4 entirely
+// the QA smoke-test run (course slug first-lemonade-stand): story_scene alone produced 4 entirely
 // different, all-invalid shapes across 4 attempts). Values are placeholders
 // ("<field_name>"), not realistic content — content quality is already
 // covered by BASE_HARD_RULES; this only needs to teach field names/nesting/

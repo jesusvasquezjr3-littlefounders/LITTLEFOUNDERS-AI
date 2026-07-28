@@ -68,6 +68,44 @@ describe('type_answer', () => {
   it('never throws on malformed answers', () => {
     expectMalformedSafe(segment)
   })
+
+  it('accepts a digit when the key is spelled out, and vice versa (es-MX)', () => {
+    const digitsKey = seg('type_answer', {}, { accept: ['5'] })
+    expect(grade(digitsKey, { text: 'cinco' }).score).toBe(100)
+    const wordsKey = seg('type_answer', {}, { accept: ['cinco'] })
+    expect(grade(wordsKey, { text: '5' }).score).toBe(100)
+  })
+
+  it('accepts spelled-out numbers in en-US and pt-BR too', () => {
+    const key = seg('type_answer', {}, { accept: ['12'] })
+    expect(grade(key, { text: 'twelve' }).score).toBe(100)
+    expect(grade(key, { text: 'doce' }).score).toBe(100) // es-MX and pt-BR share this word
+  })
+
+  it('handles compound tens (35) in all 3 locales', () => {
+    const key = seg('type_answer', {}, { accept: ['35'] })
+    expect(grade(key, { text: 'thirty-five' }).score).toBe(100)
+    expect(grade(key, { text: 'treinta y cinco' }).score).toBe(100)
+    expect(grade(key, { text: 'trinta e cinco' }).score).toBe(100)
+  })
+
+  it('still rejects an unrelated number word', () => {
+    const key = seg('type_answer', {}, { accept: ['5'] })
+    expect(grade(key, { text: 'seis' }).score).toBe(0)
+  })
+
+  it('a wrong number containing the numeric keyword no longer scores 100', () => {
+    // The shipped lesson's exact shape: "Rho vendió 12 y luego 8" → accept ["20"],
+    // keywords ["20"], max_chars 3. The keyword path used to substring-match, so
+    // "200" and "120" (typeable, plausible wrong sums) each scored a perfect 100
+    // — partial_credit_too_generous, fixed in keywordCoverage.
+    const shipped = seg('type_answer', { max_chars: 3 }, { accept: ['20'], keywords: ['20'] })
+    expect(grade(shipped, { text: '200' }).score).toBe(0)
+    expect(grade(shipped, { text: '120' }).score).toBe(0)
+    // The intended answer is untouched — still 100, digits or words.
+    expect(grade(shipped, { text: '20' }).score).toBe(100)
+    expect(grade(shipped, { text: 'veinte' }).score).toBe(100)
+  })
 })
 
 // ---- fill_blank ----------------------------------------------------------------
@@ -112,6 +150,15 @@ describe('fill_blank', () => {
   it('never throws on malformed answers', () => {
     expectMalformedSafe(typed)
     expectMalformedSafe(bank)
+  })
+
+  it('typed gaps accept digit/word number equivalence too', () => {
+    const numeric = seg(
+      'fill_blank',
+      { text_md: 'Vendiste {{1}} vasos.', mode: 'typed' },
+      { gaps: [{ gap: 1, accept: ['8'] }] },
+    )
+    expect(grade(numeric, { gaps: { '1': 'ocho' } }).score).toBe(100)
   })
 })
 

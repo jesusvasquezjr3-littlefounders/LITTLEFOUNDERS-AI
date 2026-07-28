@@ -81,7 +81,41 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
     expect(state.bestStreak).toBe(1)
   })
 
-  it('hint penalty compounds per hint', () => {
+  it('RETRY bumps the per-segment retry counter (drives a clean remount)', () => {
+    const d = doc()
+    const afterRetry = play(d, [
+      { type: 'BEGIN' },
+      { type: 'NEXT' },
+      { type: 'SUBMIT' },
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(50) },
+      { type: 'RETRY' },
+    ])
+    expect(afterRetry.seg.e1?.retries).toBe(1)
+    expect(afterRetry.stepPhase).toBe('answer')
+    // A done segment (perfect) can't be retried → counter stays 0.
+    const afterPerfect = play(d, [
+      { type: 'BEGIN' },
+      { type: 'NEXT' },
+      { type: 'SUBMIT' },
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(100) },
+      { type: 'RETRY' },
+    ])
+    expect(afterPerfect.seg.e1?.retries).toBe(0)
+  })
+
+  it('RETRY clears the stale verdict — components that gate on verdict==null must be re-interactive', () => {
+    const d = doc()
+    const afterRetry = play(d, [
+      { type: 'BEGIN' },
+      { type: 'NEXT' },
+      { type: 'SUBMIT' },
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(50) },
+      { type: 'RETRY' },
+    ])
+    expect(afterRetry.seg.e1?.verdict).toBeNull()
+  })
+
+  it('caps hints at the segment count and stores the server score verbatim (no client re-penalty)', () => {
     const d = doc()
     const withHints: LessonDocument = {
       ...d,
@@ -94,10 +128,12 @@ describe('session reducer (LESSON_ENGINE.md §7)', () => {
       { type: 'HINT', segmentId: 'e1' },
       { type: 'HINT', segmentId: 'e1' }, // beyond limit → ignored
       { type: 'SUBMIT' },
-      { type: 'VERDICT', segmentId: 'e1', verdict: v(100) },
+      // The server already applied the hint penalty (0012) and sends the
+      // penalized score as the verdict; the reducer stores it verbatim.
+      { type: 'VERDICT', segmentId: 'e1', verdict: v(81) },
     ])
-    expect(state.seg.e1?.hintsShown).toBe(2)
-    expect(state.seg.e1?.best).toBe(81) // 100 × 0.9 × 0.9
+    expect(state.seg.e1?.hintsShown).toBe(2) // capped at the segment's hint count
+    expect(state.seg.e1?.best).toBe(81) // no client-side re-penalization
   })
 
   it('cheer mode (hearts null) never fails mid-lesson', () => {

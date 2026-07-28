@@ -15,9 +15,10 @@
   "nav": {
     "overview": "Panel",
     "content": "Contenido",
-    "moderation": "Moderación",
     "users": "Usuarios",
+    "emails": "Correos",
     "analytics": "Analíticas y Salud",
+    "generation": "Generación",
     "audit": "Auditoría",
     "roles": "Roles y acceso"
   },
@@ -39,11 +40,18 @@
     "noRoles": "Aún sin roles",
     "healthTitle": "Salud del sistema",
     "details": "Detalles",
-    "healthUnavailable": "Monitor de salud no disponible"
+    "healthUnavailable": "Monitor de salud no disponible",
+    "retentionTitle": "Retención de aprendizaje",
+    "retentionSubtitle": "Puntaje al primer intento en repasos espaciados, por días desde la última práctica del concepto: el examen diferido siempre-activo de la plataforma.",
+    "retentionBucket": "{{bucket}} días",
+    "retentionAttempts": "{{count}} respuestas de repaso",
+    "retentionWeakest": "Conceptos que más rápido se olvidan",
+    "retentionEmpty": "Aún no se juegan repasos espaciados: la curva se dibuja sola cuando los niños repasan."
   },
   "content": {
     "title": "Contenido",
-    "subtitle": "Publica, despublica y archiva cursos.",
+    "subtitle": "Gestiona cursos y revisa lecciones antes de que lleguen a los niños.",
+    "coursesHeading": "Cursos",
     "colTitle": "Curso",
     "colSlug": "Slug",
     "colSubject": "Materia",
@@ -57,6 +65,17 @@
   "users": {
     "title": "Usuarios",
     "subtitle": "Todos en la plataforma y sus roles.",
+    "statsRoles": "Roles",
+    "statsLocales": "Idiomas",
+    "statsAges": "Edades",
+    "statsAgesEmpty": "Aún sin fechas de nacimiento",
+    "timelineTitle": "Nuevos registros",
+    "timelineAria": "Gráfico de registros en el tiempo",
+    "timelinePeriods": {
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1a"
+    },
     "colName": "Nombre",
     "colUsername": "Usuario",
     "colRoles": "Roles",
@@ -67,8 +86,7 @@
     "empty": "Aún no hay usuarios."
   },
   "moderation": {
-    "title": "Moderación",
-    "subtitle": "El gate humano de publicación para lecciones de niños.",
+    "heading": "Cola de revisión",
     "note": "Toda lección que se muestra a niños pasa por esta revisión humana antes de salir en vivo (§1.9). Aprueba para publicar, rechaza para devolver a borrador.",
     "approve": "Aprobar",
     "reject": "Rechazar",
@@ -203,6 +221,25 @@
       "note": "Espejo de solo lectura: la aplicación vive en la variable de entorno IP_BLOCKLIST de pulse-plausible (se aplica al redesplegar) — esta pantalla nunca la escribe."
     }
   },
+  "emails": {
+    "title": "Correos",
+    "subtitle": "Historial de envío de correos transaccionales — una bitácora estilo Resend.",
+    "totalSent": "Total enviados",
+    "colTo": "Para",
+    "colSubject": "Asunto",
+    "colType": "Tipo",
+    "colStatus": "Estado",
+    "colDate": "Enviado",
+    "empty": "Aún no se han enviado correos.",
+    "showing": "{{from}}–{{to}} de {{total}}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "status": {
+      "queued": "En cola",
+      "delivered": "Entregado",
+      "failed": "Fallido"
+    }
+  },
   "health": {
     "title": "Salud del sistema",
     "allUp": "Todo en línea",
@@ -217,6 +254,203 @@
       "status": "Estado",
       "latency": "Latencia",
       "uptime24h": "Uptime (24h)"
+    }
+  },
+  "generation": {
+    "title": "Generación",
+    "subtitle": "Cómo se comportó el pipeline agéntico en cada generación de curso — resultados, veredictos del juez, etapas de fallo, costo y eficiencia de caché.",
+    "loading": "Cargando telemetría de generación…",
+    "noData": "—",
+    "secondsUnit": "s",
+    "tabs": {
+      "aria": "Vistas de generación",
+      "live": "Monitor en vivo",
+      "history": "Historial",
+      "analytics": "Analíticas",
+      "coach": "Diagnóstico"
+    },
+    "live": {
+      "badge": "En vivo",
+      "idle": "Sin ejecuciones activas",
+      "idleNote": "El dashboard se actualiza automáticamente cuando coursegen inicia un run.",
+      "since": "desde {{time}}",
+      "polling": "Conectando…",
+      "realtime": "En vivo (Realtime)",
+      "connectionLost": "Conexión en tiempo real perdida",
+      "progress": "{{completed}} / {{total}} lecciones procesadas",
+      "progressAria": "Progreso general del run"
+    },
+    "stages": {
+      "pending": "Pendiente",
+      "planning": "Planificando",
+      "writing": "Escribiendo",
+      "reviewing": "Juzgando",
+      "localizing": "Traduciendo",
+      "illustrating": "Imágenes",
+      "publishing": "Publicando",
+      "published": "Publicado"
+    },
+    "failedFromLabels": {
+      "pending": "Pendiente",
+      "planned": "Planificando",
+      "written": "Escribiendo",
+      "reviewed": "Juzgando",
+      "localized": "Traduciendo",
+      "illustrated": "Imágenes",
+      "unknown": "Desconocido"
+    },
+    "history": {
+      "runs": "Inspector de ejecuciones"
+    },
+    "tracks": "Corridas masivas (tracks)",
+    "selectRun": "Selecciona una ejecución de generación",
+    "empty": "Aún no hay ejecuciones registradas — la telemetría aparecerá aquí tras la próxima generación.",
+    "runTitle": "Corrida {{runId}}",
+    "salvaged": "recortada",
+    "earlyStop": "corte anticipado",
+    "kpi": {
+      "published": "publicadas",
+      "failed": "fallidas",
+      "cost": "costo",
+      "tokens": "tokens",
+      "cacheHit": "caché",
+      "images": "imágenes cobradas+heredadas"
+    },
+    "track": {
+      "halted": "Detenido",
+      "completed": "Completado",
+      "shards": "{{count}} shard(s)",
+      "mopUp": "Pendientes ({{count}})"
+    },
+    "heatmap": {
+      "title": "Fallos por etapa del pipeline",
+      "empty": "Sin fallos — todas las lecciones intentadas se publicaron."
+    },
+    "judge": {
+      "title": "Dimensiones del juez ({{count}} evaluadas)",
+      "note": "El piso de ruido entre ejecuciones es ±0.4 — léelas como señales de defectos, no como una puntuación a perseguir.",
+      "empty": "No hay rúbricas del juez registradas para esta ejecución."
+    },
+    "dims": {
+      "kid_safety": "Seguridad infantil",
+      "age_fit": "Ajuste de edad",
+      "concreteness": "Concreción",
+      "pedagogy": "Pedagogía",
+      "cognitive_engagement": "Reto cognitivo",
+      "feedback_quality": "Calidad del feedback",
+      "distractor_quality": "Calidad de distractores",
+      "narrative_quality": "Calidad narrativa",
+      "naturalness": "Naturalidad"
+    },
+    "duration": {
+      "title": "Tiempo real por lección (segundos)"
+    },
+    "slots": {
+      "title": "Lecciones ({{count}})",
+      "empty": "No hay registros por lección para esta ejecución.",
+      "slot": "Lección",
+      "state": "Resultado",
+      "stage": "Falló desde",
+      "cycles": "Ciclos de revisión",
+      "duration": "Duración",
+      "images": "Imágenes g·c·h",
+      "error": "Error"
+    },
+    "states": {
+      "published": "publicada",
+      "failed": "fallida",
+      "dry-run": "simulación",
+      "skipped": "omitida"
+    },
+    "analytics": {
+      "empty": "Aún no hay ejecuciones de generación para analizar.",
+      "avgCostPerLesson": "Costo prom. / lección",
+      "avgTokensPerLesson": "Tokens prom. / lección",
+      "avgCacheHit": "% caché prom.",
+      "costTrend": "Costo por lección publicada (USD)",
+      "cacheTrend": "% de caché en el tiempo",
+      "qualityTrend": "Dimensiones de calidad — última ejecución de {{runs}}",
+      "failureByStage": "Fallos por etapa del pipeline (todas las ejecuciones)",
+      "successRate": "Tasa de éxito general",
+      "successRateDetail": "{{passed}} / {{total}} lecciones publicadas",
+      "forecast": "Proyección de costo (~500 lecciones)",
+      "forecastPerLesson": "Por lección: {{cost}}",
+      "forecastPerCourse": "Curso estimado: {{cost}}",
+      "forecastBasedOn": "Basado en {{count}} lecciones publicadas.",
+      "summary": "Totales de plataforma",
+      "runsAnalyzed": "{{count}} ejecuciones analizadas."
+    },
+    "coach": {
+      "title": "Diagnóstico y mejora del pipeline",
+      "runsAnalyzed": "{{count}} ejecuciones analizadas",
+      "deterministic": "Determinista · Gratis",
+      "heatmap": "Desglose de fallos",
+      "topErrors": "Patrones de error recurrentes",
+      "noErrors": "No se detectaron patrones de error recurrentes.",
+      "judgeTitle": "Calidad del juez ({{count}} evaluadas)",
+      "cycle1": "1 ciclo: ",
+      "cycle2": "2 ciclos: ",
+      "cycle3": "3+ ciclos: ",
+      "minLabel": " / mín ",
+      "worstLessons": "Lecciones que necesitan atención",
+      "costTitle": "Costo y eficiencia",
+      "costTotal": "Costo total",
+      "tokensTotal": "Tokens totales",
+      "costPerLesson": "Costo por lección",
+      "imageEfficiency": "Reutilización de imágenes",
+      "inherited": "heredadas",
+      "billed": "facturadas",
+      "actionsTitle": "Acciones propuestas",
+      "actionsNote": "Cada sugerencia está respaldada por evidencia. Aplícalas editando el playbook, prompts o gates en un commit — el sistema nunca modifica automáticamente contenido infantil (§1.9).",
+      "allClear": "Sin problemas detectados — el pipeline está funcionando limpiamente.",
+      "empty": "Aún no hay datos de generación para el diagnóstico."
+    },
+    "slotDetail": {
+      "notFound": "Lección no encontrada en la telemetría de generación.",
+      "failedFrom": "Falló en",
+      "duration": "Duración",
+      "dropped": "Descartados",
+      "images": "Imágenes",
+      "error": "Detalles del error",
+      "runId": "Corrida"
+    },
+    "timeline": {
+      "insufficient": "No hay suficientes snapshots para construir una línea de tiempo (se necesitan al menos 2).",
+      "progress": "Progresión de slots en el tiempo",
+      "cost": "Acumulación de costo ($USD)",
+      "stages": "Actividad por etapa"
+    },
+    "compare": {
+      "title": "Comparación de ejecuciones",
+      "needTwo": "Se necesitan al menos 2 ejecuciones para comparar.",
+      "runA": "Corrida A (base)",
+      "runB": "Corrida B (comparar)",
+      "deltas": "Deltas (B − A)",
+      "judge": "Comparación de dimensiones del juez"
+    },
+    "alerts": {
+      "critical": "Crítico",
+      "warning": "Advertencia",
+      "liveCost": {
+        "title": "Costo total estimado: {{estimated}}",
+        "detail": "Gastado {{spent}} al {{progress}}% de avance. Proyectado desde la tasa de gasto actual."
+      },
+      "lowCache": {
+        "title": "Tasa de caché críticamente baja",
+        "detail": "{{pct}}% de caché — el prefijo de prompts puede haberse desplazado. El ensamblado estático-primero está roto o el playbook cambió."
+      },
+      "highFailRate": {
+        "title": "Tasa de fallos: {{rate}}%",
+        "detail": "{{failed}} de {{total}} slots intentados fallaron. Considera pausar e investigar la etapa de fallo."
+      },
+      "qualityDrop": {
+        "title": "{{dim}} bajó significativamente",
+        "detail": "Cayó de {{from}} a {{to}} entre las últimas dos ejecuciones (±0.4 es ruido; >0.8 puede ser real)."
+      },
+      "costSpike": {
+        "title": "Costo por lección se disparó 2× sobre la línea base",
+        "detail": "Último: {{latest}} vs promedio: {{avg}}. La generación de imágenes o el uso de tokens puede haber aumentado."
+      }
     }
   }
 }

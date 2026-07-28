@@ -249,27 +249,46 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     'You output ONLY strict JSON matching the requested shape — no prose, no markdown fences. ' +
     'Never invent numeric facts; the writer stage will ground numbers, you only plan segment TYPES and one-sentence BRIEFS.';
 
+  /*
+   * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the rules used
+   * to splice per-lesson conditionals MID-LIST and renumber everything, so
+   * even the always-true rules changed bytes between a money and a non-money
+   * lesson — the shared prefix died a few hundred tokens in, and the ~10KB
+   * palette sat at the very END where it could never be cached. Now the
+   * numbered list is FROZEN (always-true rules only, fixed numbering), the
+   * palette leads the user message (stable per tier within a run), and every
+   * conditional lives in an unnumbered LESSON DIRECTIVES block beside the
+   * per-lesson context.
+   */
   const rules = [
     `Produce ${MIN_SEGMENTS}-${MAX_SEGMENTS} segments as {"segments":[{"type":"...","brief":"..."}]}.`,
     'The FIRST segment must be a `story` family type (story_dialogue, story_scene, key_ideas, concept_reveal or checkpoint).',
     'Teach before you test: introduce a concept with a story/content segment before any graded segment that exercises it.',
+    'PREMISE QUALITY STARTS HERE: each `brief` must name a CONCRETE, kid-real micro-situation with a decision and a stake — a named character (dina/liruf/rho/zara), a real thing with a price, a choice to make ("Zara debe decidir si sube el precio de la limonada con más clientela"). NEVER a generic "practica la suma" / "pregunta sobre el ahorro". A boring brief produces a boring exercise.',
     `Use at least ${MIN_DISTINCT_TYPES} DISTINCT segment types across the lesson.`,
+    `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
+    'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
+    'Use ONLY the type ids listed in the PALETTE — nothing else.',
+  ]
+    .map((line, i) => `${i + 1}. ${line}`)
+    .join('\n');
+
+  const directives = [
     isMoneyRequired(ctx)
       ? 'This topic touches money — include AT LEAST ONE segment from the `money` family.'
       : undefined,
-    `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
-    'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
-    'Use ONLY the type ids listed in the palette below — nothing else.',
     ctx.review ? CONSOLIDATION_INSTRUCTION : undefined,
     ctx.review && (ctx.review.kind === 'review_interleaved' || ctx.review.kind === 'review_quest')
       ? INTERLEAVE_INSTRUCTION
       : undefined,
     ctx.prior ? connectToPriorInstruction(ctx.prior) : undefined,
     ctx.register?.toneDirectiveEs ? registerToneInstruction(ctx.register.toneDirectiveEs) : undefined,
-  ]
-    .filter((line): line is string => Boolean(line))
-    .map((line, i) => `${i + 1}. ${line}`)
-    .join('\n');
+  ].filter((line): line is string => Boolean(line));
+
+  const directivesBlock =
+    directives.length > 0
+      ? ['', 'LESSON DIRECTIVES (non-negotiable for THIS lesson, same force as the mix rules):', ...directives.map((d) => `- ${d}`)].join('\n')
+      : '';
 
   const context = [
     `Course: ${ctx.courseTitle}`,
@@ -293,16 +312,18 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
       ].join('\n')
     : '';
 
+  // Static-first: palette (stable per tier) → frozen mix rules → per-lesson tail.
   const user = [
+    'PALETTE (allowed types for this age tier only):',
+    paletteText,
+    '',
     'MIX RULES:',
     rules,
+    directivesBlock,
     '',
     'LESSON CONTEXT:',
     context,
     reviewBlock,
-    '',
-    'PALETTE (allowed types for this age tier only):',
-    paletteText,
   ].join('\n');
 
   const messages = [

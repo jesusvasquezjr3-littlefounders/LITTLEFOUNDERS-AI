@@ -13,14 +13,16 @@ import { CharacterActor } from '@/components/characters/control/CharacterActor'
 import { narrationUnitId, useNarration } from '../../player/narration'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
-import { SunkenWell } from '../../core/primitives'
+import { SunkenWell, VisualMark } from '../../core/primitives'
 import type {
   CheckpointSegment,
   ConceptRevealSegment,
+  EavesdropSegment,
   KeyIdeasSegment,
   StoryDialogueSegment,
   StorySceneSegment,
 } from './schema'
+import { EAVESDROP_HIGHLIGHT } from './schema'
 
 type ContentDone = ExerciseProps['onContentDone']
 
@@ -56,10 +58,15 @@ export function StoryDialogue({ segment, disabled, onContentDone }: ExerciseProp
   const narration = useNarration()
 
   // Voice each line as it appears (Echo narrates dialogue per line, in the
-  // line's own character voice — unit `<segment_id>.line.<n>`).
+  // line's own character voice — unit `<segment_id>.line.<n>`). The scene-setup
+  // prompt plays first, before line 0 (B3), then each line on advance.
   useEffect(() => {
     if (finished) return
-    narration.play(narrationUnitId(segment.id, `line.${index}`))
+    if (index === 0) {
+      narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'line.0')])
+    } else {
+      narration.play(narrationUnitId(segment.id, `line.${index}`))
+    }
   }, [narration, segment.id, index, finished])
 
   const line = lines[Math.min(index, lines.length - 1)]
@@ -158,6 +165,12 @@ const ART_TINT_CLASSES: Record<string, string> = {
 export function StoryScene({ segment, onContentDone }: ExerciseProps) {
   const payload = segment.payload as StorySceneSegment['payload']
   useDoneOnMount(onContentDone)
+  // Voice the scene: prompt (the setup) then the body — the body is the whole
+  // lesson's content and used to play in 0/62 story scenes (B2).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'body')])
+  }, [narration, segment.id])
   return (
     <div className={cn('rounded-xl p-6 md:p-8', BACKDROP_CLASSES[payload.backdrop])}>
       <div className="flex flex-col items-center gap-4 text-center">
@@ -170,9 +183,11 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
           />
         ) : null}
         {payload.art ? (
-          <Icon
-            name={payload.art.icon}
-            className={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
+          <VisualMark
+            icon={payload.art.icon}
+            imageUrl={payload.art.image_url}
+            iconClassName={cn('text-[64px]', ART_TINT_CLASSES[payload.art.tint] ?? 'text-primary')}
+            imgClassName="h-32 w-32 rounded-lg object-contain"
           />
         ) : null}
         <MarkdownLite
@@ -192,6 +207,15 @@ export function StoryScene({ segment, onContentDone }: ExerciseProps) {
 export function KeyIdeas({ segment, onContentDone }: ExerciseProps) {
   const { ideas } = segment.payload as KeyIdeasSegment['payload']
   useDoneOnMount(onContentDone)
+  // Voice the prompt then each idea card in reading order (B2 — the idea-card
+  // narration used to never play).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([
+      narrationUnitId(segment.id, 'prompt'),
+      ...ideas.map((_, i) => narrationUnitId(segment.id, `idea.${i}`)),
+    ])
+  }, [narration, segment.id, ideas])
   // Small CSS stagger (≤3×80ms). With prefers-reduced-motion the motion-safe:
   // hidden state never applies, so cards are simply visible from the start.
   const [revealed, setRevealed] = useState(false)
@@ -212,7 +236,12 @@ export function KeyIdeas({ segment, onContentDone }: ExerciseProps) {
           )}
         >
           <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary">
-            <Icon name={idea.icon} className="text-[24px]" />
+            <VisualMark
+              icon={idea.icon}
+              imageUrl={idea.image_url}
+              iconClassName="text-[24px]"
+              imgClassName="h-9 w-9 rounded object-contain"
+            />
           </span>
           <div className="space-y-1">
             <p className="lf-title text-content">{idea.title}</p>
@@ -231,13 +260,20 @@ export function ConceptReveal({ segment, disabled, onContentDone }: ExerciseProp
   const { cards } = segment.payload as ConceptRevealSegment['payload']
   const [flipped, setFlipped] = useState<ReadonlySet<number>>(() => new Set())
   const markDone = useContentDoneOnce(onContentDone)
+  const narration = useNarration()
   const remaining = cards.length - flipped.size
+
+  // Voice the prompt on mount; each card's back narration plays when revealed (B2).
+  useEffect(() => {
+    narration.play(narrationUnitId(segment.id, 'prompt'))
+  }, [narration, segment.id])
 
   const flip = (i: number) => {
     if (disabled || flipped.has(i)) return
     const next = new Set(flipped)
     next.add(i)
     setFlipped(next)
+    narration.play(narrationUnitId(segment.id, `card.${i}.back`))
     if (next.size === cards.length) markDone()
   }
 
@@ -269,8 +305,13 @@ export function ConceptReveal({ segment, disabled, onContentDone }: ExerciseProp
                 <MarkdownLite text={card.back_md} className="lf-body text-content" />
               ) : (
                 <span className="flex items-center gap-3">
-                  {card.icon ? (
-                    <Icon name={card.icon} className="shrink-0 text-[28px] text-primary" />
+                  {card.image_url || card.icon ? (
+                    <VisualMark
+                      icon={card.icon ?? ''}
+                      imageUrl={card.image_url}
+                      iconClassName="shrink-0 text-[28px] text-primary"
+                      imgClassName="h-10 w-10 shrink-0 rounded object-contain"
+                    />
                   ) : null}
                   <MarkdownLite text={card.front_md} className="lf-title text-content" />
                   <Icon name="touch_app" className="ml-auto shrink-0 text-[20px] text-content-faint" />
@@ -296,10 +337,19 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
   const payload = segment.payload as CheckpointSegment['payload']
   const [choice, setChoice] = useState<'got_it' | 'review' | null>(null)
   const markDone = useContentDoneOnce(onContentDone)
+  // Voice the prompt then the recap (B2 — the recap narration never played).
+  const narration = useNarration()
+  useEffect(() => {
+    narration.playSequence([narrationUnitId(segment.id, 'prompt'), narrationUnitId(segment.id, 'recap')])
+  }, [narration, segment.id])
 
   const choose = (signal: 'got_it' | 'review') => {
     if (disabled || choice !== null) return
     setChoice(signal)
+    // "I want to review" used to be a dead-end promise (E9). Replay the recap
+    // narration so the choice does something, and a hint below invites the kid
+    // to re-read the recap above before continuing when ready.
+    if (signal === 'review') narration.play(narrationUnitId(segment.id, 'recap'))
     markDone(signal)
   }
 
@@ -310,6 +360,12 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
       </SunkenWell>
       {payload.mood_prompt_md ? (
         <MarkdownLite text={payload.mood_prompt_md} className="lf-body text-content-muted" />
+      ) : null}
+      {choice === 'review' ? (
+        <div className="lf-pop flex items-start gap-2 rounded-md bg-primary-soft px-4 py-3">
+          <Icon name="menu_book" className="mt-0.5 text-[20px] text-primary" />
+          <p className="lf-body text-content">{t('lesson.families.story.reviewHint')}</p>
+        </div>
       ) : null}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <Button
@@ -335,6 +391,154 @@ export function Checkpoint({ segment, disabled, onContentDone }: ExerciseProps) 
           {t('lesson.families.story.review')}
         </Button>
       </div>
+    </div>
+  )
+}
+
+// ---- eavesdrop --------------------------------------------------------------------
+
+/**
+ * Split a line's text_md into plain fragments and tappable ==highlight== terms.
+ * Notes attach by order: the nth highlight opens notes[n].
+ */
+function splitHighlights(text: string): Array<{ kind: 'text' | 'term'; value: string; termIndex?: number }> {
+  const parts: Array<{ kind: 'text' | 'term'; value: string; termIndex?: number }> = []
+  let last = 0
+  let termIndex = 0
+  for (const match of text.matchAll(EAVESDROP_HIGHLIGHT)) {
+    const start = match.index ?? 0
+    if (start > last) parts.push({ kind: 'text', value: text.slice(last, start) })
+    parts.push({ kind: 'term', value: match[1] ?? '', termIndex })
+    termIndex += 1
+    last = start + match[0].length
+  }
+  if (last < text.length) parts.push({ kind: 'text', value: text.slice(last) })
+  return parts
+}
+
+/**
+ * An overheard conversation revealed turn by turn; highlighted money terms are
+ * TAP targets (never hover-only, §1.11) that open the line's pre-generated
+ * note. The whole artifact passed gates+judge before the kid saw turn one.
+ */
+export function Eavesdrop({ segment, disabled, onContentDone }: ExerciseProps) {
+  const { t } = useTranslation()
+  const { context_md, lines } = segment.payload as EavesdropSegment['payload']
+  const [revealed, setRevealed] = useState(1)
+  const [finished, setFinished] = useState(false)
+  const [openNote, setOpenNote] = useState<{ line: number; term: number } | null>(null)
+  const markDone = useContentDoneOnce(onContentDone)
+  const narration = useNarration()
+
+  // Context narrates with the prompt before line 0; each new line voices on reveal.
+  useEffect(() => {
+    if (finished) return
+    if (revealed === 1) {
+      narration.playSequence([
+        narrationUnitId(segment.id, 'prompt'),
+        narrationUnitId(segment.id, 'context'),
+        narrationUnitId(segment.id, 'line.0'),
+      ])
+    } else {
+      narration.play(narrationUnitId(segment.id, `line.${revealed - 1}`))
+    }
+  }, [narration, segment.id, revealed, finished])
+
+  const advance = () => {
+    if (disabled || finished) return
+    setOpenNote(null)
+    if (revealed >= lines.length) {
+      setFinished(true)
+      markDone()
+    } else {
+      setRevealed((n) => n + 1)
+    }
+  }
+
+  const note = openNote ? lines[openNote.line]?.notes?.[openNote.term] : undefined
+
+  return (
+    <div className="space-y-4">
+      <SunkenWell className="text-center">
+        <MarkdownLite text={context_md} className="lf-body text-content-muted" />
+      </SunkenWell>
+
+      <ul className="space-y-3" aria-live="polite">
+        {lines.slice(0, revealed).map((line, lineIndex) => (
+          <li key={lineIndex} className="flex items-end gap-3">
+            <CharacterActor
+              character={line.character}
+              emotion={line.emotion ?? 'neutral'}
+              action="idle"
+              speaking={!finished && lineIndex === revealed - 1}
+              size="sm"
+              className="shrink-0"
+            />
+            <div className="min-h-11 flex-1 rounded-lg rounded-bl-sm border-2 border-outline/70 bg-surface p-3 shadow-glass-sm">
+              <p className="lf-body text-content">
+                {splitHighlights(line.text_md).map((part, i) =>
+                  part.kind === 'text' ? (
+                    <MarkdownLite key={i} text={part.value} as="span" />
+                  ) : (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() =>
+                        setOpenNote(
+                          openNote?.line === lineIndex && openNote.term === part.termIndex
+                            ? null
+                            : { line: lineIndex, term: part.termIndex ?? 0 },
+                        )
+                      }
+                      aria-expanded={openNote?.line === lineIndex && openNote.term === part.termIndex}
+                      aria-label={t('lesson.families.story.whatDoesItMean', { term: part.value })}
+                      className={cn(
+                        'mx-0.5 inline-flex min-h-6 items-center gap-0.5 rounded-md border-b-2 border-dashed border-primary/70 bg-primary-soft/60 px-1 font-semibold text-primary',
+                        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+                      )}
+                    >
+                      {part.value}
+                      <Icon name="help" className="text-[14px]" aria-hidden />
+                    </button>
+                  ),
+                )}
+              </p>
+              {openNote?.line === lineIndex && note ? (
+                <div className="mt-2 rounded-md bg-primary-soft/50 p-3">
+                  <p className="lf-caption font-bold text-primary">
+                    {t('lesson.families.story.noteTitle')}
+                  </p>
+                  <MarkdownLite text={note} className="lf-body-sm text-content" />
+                </div>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div
+        role="img"
+        aria-label={t('lesson.families.story.lineProgress', { current: revealed, total: lines.length })}
+        className="flex items-center justify-center gap-1.5"
+      >
+        {lines.map((_, i) => (
+          <span
+            key={i}
+            className={cn(
+              'h-2 w-2 rounded-full transition-colors duration-150',
+              i < revealed ? 'bg-primary' : 'bg-outline/40',
+            )}
+          />
+        ))}
+      </div>
+
+      {!finished ? (
+        <div className="text-center">
+          <Button variant="primary" onClick={advance} disabled={disabled}>
+            {t(revealed >= lines.length ? 'lesson.families.story.continue' : 'lesson.families.story.keepListening')}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

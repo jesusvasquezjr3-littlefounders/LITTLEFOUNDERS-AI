@@ -1,6 +1,9 @@
 // Shared interaction primitives — every exercise renderer builds from these so
-// look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first:
-// no drag-and-drop; ≥44px hit areas; keyboard/focus-visible on everything.
+// look, feel and accessibility stay uniform (LESSON_ENGINE.md §4). Tap-first
+// everywhere; ≥44px hit areas; keyboard/focus-visible on everything. The
+// classification types (sort_buckets/group_sets) layer an ADDITIVE pointer-drag
+// on top of tap (see arrange/components.tsx SortingBoard) — tap stays the
+// accessible fallback, so these primitives remain tap-only by themselves.
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +12,44 @@ import { Icon } from '@/components/ui'
 import MarkdownLite from './MarkdownLite'
 
 export type OptionVisualState = 'idle' | 'selected' | 'correct' | 'wrong' | 'dimmed'
+
+/** Renders a concrete item's visual: the AI illustration (`imageUrl`) when
+ *  present, else the Material `icon` glyph as a fallback. The single place the
+ *  "image preferred over icon" rule lives, so every exercise renderer (options,
+ *  cards, tiles, scenes) treats generated art the same way. `iconClassName`
+ *  sizes/tints the fallback glyph; `imgClassName` sizes the image box. */
+export function VisualMark({
+  icon,
+  imageUrl,
+  iconClassName,
+  imgClassName = 'h-12 w-12',
+  alt = '',
+}: {
+  icon?: string
+  imageUrl?: string
+  iconClassName?: string
+  imgClassName?: string
+  alt?: string
+}) {
+  if (imageUrl) {
+    return <img src={imageUrl} alt={alt} loading="lazy" className={cn('rounded-md object-contain', imgClassName)} />
+  }
+  return <Icon name={icon ?? 'help'} className={iconClassName} />
+}
+
+/** Full-width "scene anchor" illustration shown above a segment's prompt (the
+ *  concrete situation the exercise is about). Rendered by the player shell from
+ *  `segment.image_url`; capped in height so it frames rather than dominates. */
+export function SceneAnchor({ imageUrl, className }: { imageUrl: string; className?: string }) {
+  return (
+    <img
+      src={imageUrl}
+      alt=""
+      loading="lazy"
+      className={cn('mx-auto max-h-52 w-full rounded-lg object-contain sm:max-h-64', className)}
+    />
+  )
+}
 
 export function optionStateClasses(state: OptionVisualState): string {
   switch (state) {
@@ -278,18 +319,19 @@ export function GentleTimerBar({
   useEffect(() => {
     if (!running) return
     const id = setInterval(() => {
-      setLeft((prev) => {
-        const next = Math.max(0, prev - 1)
-        if (next === 0 && !expired.current) {
-          expired.current = true
-          clearInterval(id)
-          onExpire()
-        }
-        return next
-      })
+      setLeft((prev) => Math.max(0, prev - 1))
     }, 1000)
     return () => clearInterval(id)
-  }, [running, onExpire])
+  }, [running])
+  // Fire onExpire once, from an EFFECT after commit — never inside the setLeft
+  // updater, which runs during render and triggered React's "cannot update a
+  // component while rendering a different component" warning (E8).
+  useEffect(() => {
+    if (running && left === 0 && !expired.current) {
+      expired.current = true
+      onExpire()
+    }
+  }, [running, left, onExpire])
   const pct = Math.round((left / seconds) * 100)
   return (
     <div aria-label={t('lesson.timer.secondsLeft', { count: left })} className="space-y-1">

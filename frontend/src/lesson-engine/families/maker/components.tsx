@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Button, Icon } from '@/components/ui'
 import type { ExerciseProps, SegmentBase } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort, seededSortMiddling } from '../../core/shuffle'
 import {
   NumberPad,
   OptionCard,
@@ -50,7 +51,26 @@ export function CodeOrder({ segment, value, onChange, disabled, verdict }: Exerc
   const order = (draft.order as string[] | undefined) ?? []
   const blocks = segment.payload.blocks as Array<{ id: string; text_md: string }>
   const blockById = useMemo(() => new Map(blocks.map((b) => [b.id, b])), [blocks])
-  const bank = blocks.filter((b) => !order.includes(b.id))
+  /*
+   * DEFECT (naive_strategy_passes), fixed at the COMPONENT layer: the bank — the
+   * control set — was encoding the solution, so no change to `kendall` could help
+   * and no content rule could either.
+   *
+   * The blocks are authored in solution order, so the bank was shuffled (A7) to
+   * stop the puzzle arriving pre-solved. But a fair shuffle still returns the
+   * authored order once every n! segments, and it DID: the published fixture's
+   * `s1-code-order` (4 blocks, all three locales) renders in exactly solution
+   * order, so tapping the bank straight down scored kendall 100 with zero
+   * reasoning. `seededSortMiddling` keeps the shuffle deterministic and stable but
+   * bounds it: the displayed order is always in the middle band against the
+   * authored order, so neither reading direction (top-down or bottom-up) can reach
+   * the pass mark. Display order never affects grading — the grader scores the
+   * assembled order by id — so this is cosmetic and cannot make a lesson
+   * unwinnable. Computed over ALL blocks and then filtered, so the remaining
+   * bank keeps a stable relative order as blocks are placed.
+   */
+  const scrambled = useMemo(() => seededSortMiddling(blocks, segment.id, (b) => b.id), [blocks, segment.id])
+  const bank = scrambled.filter((b) => !order.includes(b.id))
   const correctOrder = revealOf(verdict).order as string[] | undefined
 
   const placedState = (id: string, index: number): OptionVisualState => {
@@ -133,6 +153,9 @@ const COMMAND_ICON: Record<RobotCommand, string> = {
   right: 'rotate_right',
 }
 
+/** The full command vocabulary, in a stable order the child can learn. */
+const ROBOT_COMMAND_PALETTE: readonly RobotCommand[] = ['forward', 'left', 'right']
+
 interface RobotDisplayState extends RobotState {
   /** Cumulative heading in degrees so turn animations rotate the short way. */
   deg: number
@@ -163,7 +186,30 @@ const TICK_MS = 400
 export function RobotPath({ segment, disabled, onFinish, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const parsed = useMemo(() => parseRobotPayload(segment.payload), [segment])
-  const palette = (segment.payload.commands as RobotCommand[] | undefined) ?? []
+   /*
+   * The command palette is the fixed VOCABULARY, not the authored solution.
+   *
+   * `payload.commands` is the intended solution PROGRAM — coursegen's Gate 8
+   * (`robotPathSolvable`) simulates exactly that array to prove the lesson is
+   * winnable, and the schema caps it at 3 entries over a 3-verb alphabet. Rendering
+   * it as the palette therefore handed the child the answer: tapping the chips
+   * left-to-right walked straight to the goal.
+   *
+   * Shuffling it was NOT enough, which is worth recording: seededSort ranks by
+   * DISTINCT key, so duplicate verbs tie and keep their authored relative order. A
+   * ≤3-entry program over 3 verbs has only one or two reachable display orders —
+   * measured, ["forward","forward"] has exactly ONE (the identity), and the shipped
+   * ["left","forward","forward"] returned the identity ~50% of the time. The leak
+   * survived the shuffle.
+   *
+   * Rendering the whole vocabulary in a stable order fixes it properly: the palette
+   * no longer encodes the solution, its verbs or even its length. Each chip appends
+   * to the queue, so repeats work by tapping twice (`max_commands` bounds it). It is
+   * also better for a child than a per-segment-randomised control row — block
+   * programming UIs keep a consistent layout so the buttons become familiar — and it
+   * removes a latent duplicate-React-key bug, since a solution program repeats verbs.
+   */
+  const palette = ROBOT_COMMAND_PALETTE
   const [queue, setQueue] = useState<RobotCommand[]>([])
   const [phase, setPhase] = useState<'edit' | 'running' | 'done'>('edit')
   const [marker, setMarker] = useState<RobotDisplayState | null>(null)
@@ -724,7 +770,15 @@ export function MachineIo({ segment, value, onChange, disabled, verdict }: Exerc
   const draft = draftOf(value)
   const examples = segment.payload.examples as Array<{ in: number | string; out: number | string }>
   const probeIn = segment.payload.probe_in as number | string
-  const options = segment.payload.options as Array<{ id: string; text_md: string }> | undefined
+  const authoredOptions = segment.payload.options as
+    | Array<{ id: string; text_md: string }>
+    | undefined
+  // Shuffle the options bank (A7): it was rendered in the authored order, which is
+  // parallel to the key (`correct_option_id`), so the rule could be "picked" by
+  // tapping the first card. Grading is by option id, so display order is free.
+  const options = authoredOptions
+    ? seededSort(authoredOptions, `${segment.id}:opt`, (o) => o.id)
+    : undefined
   const reveal = revealOf(verdict)
   const selected = draft.option_id as string | undefined
   const entered = (draft.value as string | undefined) ?? ''

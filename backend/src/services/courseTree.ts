@@ -43,6 +43,9 @@ export interface TopicRowLite {
   position: number;
   slug: string;
   title: Json;
+  /** Spaced-review projection (0016). Defaults tolerate pre-0016 rows. */
+  kind?: string;
+  review_of?: string[];
 }
 
 export interface LessonRowLite {
@@ -80,11 +83,25 @@ export interface LessonNode {
   bestScore: number;
 }
 
+/**
+ * Territory-map state per topic — DATA-DERIVED, never self-reported (the
+ * roadmap.sh contrast: their 'done' is a checkbox; ours is server-graded
+ * passes plus the spaced-review layer).
+ *   completed    every lesson passed
+ *   review-due   completed, but a review topic citing it still has unpassed lessons
+ *   in-progress  some but not all lessons passed
+ *   not-started  nothing passed
+ */
+export type TopicState = 'not-started' | 'in-progress' | 'completed' | 'review-due';
+
 export interface TopicNode {
   id: string;
   slug: string;
   title: Json;
   position: number;
+  kind: string;
+  reviewOf: string[];
+  state: TopicState;
   lessons: LessonNode[];
 }
 
@@ -185,7 +202,19 @@ export function assembleCourseTree(
           state: lessonStates.get(lesson.id) ?? 'locked',
           bestScore: bestScoreByLesson.get(lesson.id) ?? 0,
         }));
-        return { id: topic.id, slug: topic.slug, title: topic.title, position: topic.position, lessons };
+        const passedCount = lessons.filter((l) => l.state === 'passed').length;
+        const state: TopicState =
+          lessons.length > 0 && passedCount === lessons.length ? 'completed' : passedCount > 0 ? 'in-progress' : 'not-started';
+        return {
+          id: topic.id,
+          slug: topic.slug,
+          title: topic.title,
+          position: topic.position,
+          kind: topic.kind ?? 'teaching',
+          reviewOf: topic.review_of ?? [],
+          state,
+          lessons,
+        };
       });
       const sagaLessonIds = topics.flatMap((t) => t.lessons.map((l) => l.id));
       return {
@@ -211,6 +240,36 @@ export function assembleCourseTree(
       sagas,
     };
   });
+
+  // ---- review-due pass (territory map, 0016) --------------------------------
+  // A COMPLETED topic flips to 'review-due' while a review topic that cites it
+  // still has unpassed lessons: the map tells the kid "this territory needs a
+  // revisit" from the spaced-review layer itself, not from a heuristic.
+  // review_of paths are "adv/saga" (every topic of the saga) or
+  // "adv/saga/topic", resolved against the assembled slugs.
+  const topicByPath = new Map<string, TopicNode>();
+  const topicsBySagaPath = new Map<string, TopicNode[]>();
+  for (const adventure of adventures) {
+    for (const saga of adventure.sagas) {
+      const sagaPath = `${adventure.slug}/${saga.slug}`;
+      topicsBySagaPath.set(sagaPath, saga.topics);
+      for (const topic of saga.topics) topicByPath.set(`${sagaPath}/${topic.slug}`, topic);
+    }
+  }
+  for (const adventure of adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) {
+        if (topic.kind === 'teaching' || topic.state === 'completed' || topic.reviewOf.length === 0) continue;
+        for (const path of topic.reviewOf) {
+          const cited = topicByPath.get(path) ?? null;
+          const citedList = cited ? [cited] : (topicsBySagaPath.get(path) ?? []);
+          for (const c of citedList) {
+            if (c.state === 'completed') c.state = 'review-due';
+          }
+        }
+      }
+    }
+  }
 
   return {
     course: {

@@ -32,6 +32,12 @@ const Env = z.object({
     .default('https://dashscope-intl.aliyuncs.com/api/v1/services/audio/tts/customization'),
   TTS_CLONE_MODEL: z.string().min(1).default('qwen3-tts-vc-2026-01-22'),
 
+  // ElevenLabs is used ONLY for sound-effect generation (owner decision
+  // 2026-07-23: "QWEN SE QUEDA PARA TTS, ELEVENLABS ES SOLO PARA EFECTOS DE
+  // SONIDO") — narration/TTS stays qwen3-tts. The key is read by the one-off
+  // SFX generation script, never by the narration path.
+  ELEVENLABS_API_KEY: z.string().optional(),
+
   // Per-locale default voices — used whenever a segment has no narrator, or
   // the narrator's character has no override below for that locale.
   TTS_VOICE_EN_US: z.string().min(1).default('Jennifer'),
@@ -148,3 +154,4 @@ export function voiceFor(character: string | undefined, locale: LessonLocale, co
   }
   return { voice: defaultVoiceFor(locale, config), model: config.TTS_MODEL };
 }
+

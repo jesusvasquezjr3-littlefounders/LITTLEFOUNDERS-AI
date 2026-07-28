@@ -15,9 +15,10 @@
   "nav": {
     "overview": "Overview",
     "content": "Content",
-    "moderation": "Moderation",
     "users": "Users",
+    "emails": "Emails",
     "analytics": "Analytics & Health",
+    "generation": "Generation",
     "audit": "Audit log",
     "roles": "Roles & Access"
   },
@@ -39,11 +40,18 @@
     "noRoles": "No roles yet",
     "healthTitle": "System health",
     "details": "Details",
-    "healthUnavailable": "Health monitor unavailable"
+    "healthUnavailable": "Health monitor unavailable",
+    "retentionTitle": "Learning retention",
+    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced — the platform’s always-on delayed test.",
+    "retentionBucket": "{{bucket}} days",
+    "retentionAttempts": "{{count}} review answers",
+    "retentionWeakest": "Concepts that decay fastest",
+    "retentionEmpty": "No spaced reviews played yet — the curve draws itself as kids replay review lessons."
   },
   "content": {
     "title": "Content",
-    "subtitle": "Publish, unpublish and archive courses.",
+    "subtitle": "Manage courses and review kid-facing lessons before they go live.",
+    "coursesHeading": "Courses",
     "colTitle": "Course",
     "colSlug": "Slug",
     "colSubject": "Subject",
@@ -57,6 +65,17 @@
   "users": {
     "title": "Users",
     "subtitle": "Everyone on the platform and their roles.",
+    "statsRoles": "Roles",
+    "statsLocales": "Locales",
+    "statsAges": "Age groups",
+    "statsAgesEmpty": "No birth dates recorded yet",
+    "timelineTitle": "New signups",
+    "timelineAria": "Signup timeline chart",
+    "timelinePeriods": {
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1y"
+    },
     "colName": "Name",
     "colUsername": "Username",
     "colRoles": "Roles",
@@ -67,8 +86,7 @@
     "empty": "No users yet."
   },
   "moderation": {
-    "title": "Moderation",
-    "subtitle": "The human publish gate for kid-facing lessons.",
+    "heading": "Review queue",
     "note": "Every lesson shown to children passes this human review before it goes live (§1.9). Approve to publish, reject to send back to draft.",
     "approve": "Approve",
     "reject": "Reject",
@@ -203,6 +221,25 @@
       "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy) — this screen never writes it."
     }
   },
+  "emails": {
+    "title": "Emails",
+    "subtitle": "Transactional email delivery history — a Resend-style audit trail.",
+    "totalSent": "Total sent",
+    "colTo": "To",
+    "colSubject": "Subject",
+    "colType": "Type",
+    "colStatus": "Status",
+    "colDate": "Sent at",
+    "empty": "No emails sent yet.",
+    "showing": "{{from}}–{{to}} of {{total}}",
+    "prev": "Previous",
+    "next": "Next",
+    "status": {
+      "queued": "Queued",
+      "delivered": "Delivered",
+      "failed": "Failed"
+    }
+  },
   "health": {
     "title": "System health",
     "allUp": "All systems up",
@@ -217,6 +254,203 @@
       "status": "Status",
       "latency": "Latency",
       "uptime24h": "Uptime (24h)"
+    }
+  },
+  "generation": {
+    "title": "Generation",
+    "subtitle": "How the agentic pipeline behaved on every course generation — outcomes, judge verdicts, failure stages, cost and cache efficiency.",
+    "loading": "Loading generation telemetry…",
+    "noData": "—",
+    "secondsUnit": "s",
+    "tabs": {
+      "aria": "Generation views",
+      "live": "Live Monitor",
+      "history": "Run History",
+      "analytics": "Analytics",
+      "coach": "Coach"
+    },
+    "live": {
+      "badge": "Live",
+      "idle": "No active generation run",
+      "idleNote": "The dashboard updates automatically when coursegen starts a run.",
+      "since": "since {{time}}",
+      "polling": "Connecting…",
+      "realtime": "Live (Realtime)",
+      "connectionLost": "Realtime connection lost",
+      "progress": "{{completed}} / {{total}} lessons processed",
+      "progressAria": "Overall run progress"
+    },
+    "stages": {
+      "pending": "Pending",
+      "planning": "Planning",
+      "writing": "Writing",
+      "reviewing": "Judging",
+      "localizing": "Localizing",
+      "illustrating": "Images",
+      "publishing": "Publishing",
+      "published": "Published"
+    },
+    "failedFromLabels": {
+      "pending": "Pending",
+      "planned": "Planning",
+      "written": "Writing",
+      "reviewed": "Judging",
+      "localized": "Localizing",
+      "illustrated": "Images",
+      "unknown": "Unknown"
+    },
+    "history": {
+      "runs": "Run inspector"
+    },
+    "tracks": "Mass runs (tracks)",
+    "selectRun": "Select a generation run",
+    "empty": "No generation runs recorded yet — telemetry appears here after the next coursegen run.",
+    "runTitle": "Run {{runId}}",
+    "salvaged": "salvaged",
+    "earlyStop": "early stop",
+    "kpi": {
+      "published": "published",
+      "failed": "failed",
+      "cost": "cost",
+      "tokens": "tokens",
+      "cacheHit": "cache hit",
+      "images": "images billed+inherited"
+    },
+    "track": {
+      "halted": "Halted",
+      "completed": "Completed",
+      "shards": "{{count}} shard(s)",
+      "mopUp": "Mop-up ({{count}})"
+    },
+    "heatmap": {
+      "title": "Failures by pipeline stage",
+      "empty": "No failures — every attempted lesson published."
+    },
+    "judge": {
+      "title": "Judge dimensions ({{count}} judged)",
+      "note": "Run-over-run noise floor is ±0.4 — read these as defect pointers, not as a score to chase.",
+      "empty": "No judge rubrics recorded for this run."
+    },
+    "dims": {
+      "kid_safety": "Kid safety",
+      "age_fit": "Age fit",
+      "concreteness": "Concreteness",
+      "pedagogy": "Pedagogy",
+      "cognitive_engagement": "Cognitive engagement",
+      "feedback_quality": "Feedback quality",
+      "distractor_quality": "Distractor quality",
+      "narrative_quality": "Narrative quality",
+      "naturalness": "Naturalness"
+    },
+    "duration": {
+      "title": "Wall-clock per lesson (seconds)"
+    },
+    "slots": {
+      "title": "Lessons ({{count}})",
+      "empty": "No per-lesson records for this run.",
+      "slot": "Lesson",
+      "state": "Outcome",
+      "stage": "Failed from",
+      "cycles": "Revise cycles",
+      "duration": "Duration",
+      "images": "Images g·b·i",
+      "error": "Error"
+    },
+    "states": {
+      "published": "published",
+      "failed": "failed",
+      "dry-run": "dry-run",
+      "skipped": "skipped"
+    },
+    "analytics": {
+      "empty": "No generation runs available for analysis yet.",
+      "avgCostPerLesson": "Avg cost / lesson",
+      "avgTokensPerLesson": "Avg tokens / lesson",
+      "avgCacheHit": "Avg cache hit",
+      "costTrend": "Cost per published lesson (USD)",
+      "cacheTrend": "Cache-hit % over time",
+      "qualityTrend": "Quality dimensions — latest run of {{runs}}",
+      "failureByStage": "Failures by pipeline stage (all runs)",
+      "successRate": "Overall success rate",
+      "successRateDetail": "{{passed}} / {{total}} lessons published",
+      "forecast": "Cost forecast (~500 lesson course)",
+      "forecastPerLesson": "Per lesson: {{cost}}",
+      "forecastPerCourse": "Estimated course: {{cost}}",
+      "forecastBasedOn": "Based on {{count}} published lessons.",
+      "summary": "Platform totals",
+      "runsAnalyzed": "{{count}} runs analyzed."
+    },
+    "coach": {
+      "title": "Pipeline diagnosis & improvement",
+      "runsAnalyzed": "{{count}} runs analyzed",
+      "deterministic": "Deterministic · Free",
+      "heatmap": "Failure breakdown",
+      "topErrors": "Recurring error patterns",
+      "noErrors": "No recurring error patterns detected.",
+      "judgeTitle": "Judge quality ({{count}} evaluated)",
+      "cycle1": "1 cycle: ",
+      "cycle2": "2 cycles: ",
+      "cycle3": "3+ cycles: ",
+      "minLabel": " / min ",
+      "worstLessons": "Lessons needing attention",
+      "costTitle": "Cost & efficiency",
+      "costTotal": "Total cost",
+      "tokensTotal": "Total tokens",
+      "costPerLesson": "Cost per lesson",
+      "imageEfficiency": "Image reuse",
+      "inherited": "inherited",
+      "billed": "billed",
+      "actionsTitle": "Proposed actions",
+      "actionsNote": "Each suggestion is tied to evidence. Apply them by editing the playbook, prompts, or gates in a commit — the system never auto-modifies kid-facing content (§1.9).",
+      "allClear": "No issues detected — the pipeline is running clean.",
+      "empty": "No generation data available for coach analysis yet."
+    },
+    "slotDetail": {
+      "notFound": "Slot not found in generation telemetry.",
+      "failedFrom": "Failed at",
+      "duration": "Duration",
+      "dropped": "Dropped",
+      "images": "Images",
+      "error": "Error details",
+      "runId": "Run"
+    },
+    "timeline": {
+      "insufficient": "Not enough snapshots to build a timeline (need at least 2).",
+      "progress": "Slot progression over time",
+      "cost": "Cost accumulation ($USD)",
+      "stages": "Per-stage activity"
+    },
+    "compare": {
+      "title": "Run comparison",
+      "needTwo": "Need at least 2 runs to compare.",
+      "runA": "Run A (baseline)",
+      "runB": "Run B (compare)",
+      "deltas": "Deltas (B − A)",
+      "judge": "Judge dimensions comparison"
+    },
+    "alerts": {
+      "critical": "Critical",
+      "warning": "Warning",
+      "liveCost": {
+        "title": "Estimated total cost: {{estimated}}",
+        "detail": "Spent {{spent}} at {{progress}}% progress. Projected from current spend rate."
+      },
+      "lowCache": {
+        "title": "Cache-hit rate critically low",
+        "detail": "{{pct}}% cache-hit — prompt prefix may have drifted. Static-first assembly is broken or the playbook changed."
+      },
+      "highFailRate": {
+        "title": "Failure rate: {{rate}}%",
+        "detail": "{{failed}} of {{total}} attempted slots failed. Consider pausing and investigating the failure stage."
+      },
+      "qualityDrop": {
+        "title": "{{dim}} dropped significantly",
+        "detail": "Fell from {{from}} to {{to}} between the last two runs (±0.4 is noise; >0.8 may be real)."
+      },
+      "costSpike": {
+        "title": "Cost per lesson spiked 2× above baseline",
+        "detail": "Latest: {{latest}} vs average: {{avg}}. Image generation or token usage may have increased."
+      }
     }
   }
 }

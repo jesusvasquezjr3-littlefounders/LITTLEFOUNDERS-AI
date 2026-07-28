@@ -243,7 +243,7 @@ export function AppLayout() {
         </nav>
 
         <div className="mt-4 flex shrink-0 flex-col gap-4 pt-4">
-          {!isParent && !collapsed && (
+          {!isParent && !isStaff && !collapsed && (
             <div className="rounded-lg bg-accent-soft/60 p-4">
               <div className="flex items-center gap-2 text-content">
                 <Icon name="family_restroom" className="text-accent-strong" />

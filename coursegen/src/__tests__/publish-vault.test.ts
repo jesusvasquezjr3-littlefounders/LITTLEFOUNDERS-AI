@@ -104,3 +104,62 @@ describe('publishLessonSlot', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe('identity migration (renamed_from)', () => {
+  it('renames the existing row (same UUID) BEFORE upserting when renamed_from is declared', async () => {
+    const calls: { method: string; url: string; body?: string }[] = [];
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      const method = init?.method ?? 'GET';
+      calls.push({ method, url, body: init?.body as string | undefined });
+      // Existence probe for the NEW slug: not there yet → rename must run.
+      if (method === 'GET') return new Response(JSON.stringify([]), { status: 200 });
+      if (method === 'PATCH') return new Response(null, { status: 204 });
+      const table = url.split('/rest/v1/')[1]!.split('?')[0]!;
+      return new Response(JSON.stringify([{ id: `fake-${table}-id` }]), { status: 201 });
+    });
+
+    const input = samplePublishInput();
+    input.lesson.renamedFrom = 'lesson-old-name';
+    await publishLessonSlot(input);
+
+    const patch = calls.find((c) => c.method === 'PATCH' && c.url.includes('/lessons?'));
+    expect(patch).toBeDefined();
+    expect(patch!.url).toContain('slug=eq.lesson-old-name');
+    expect(patch!.url).toContain('topic_id=eq.fake-topics-id');
+    expect(JSON.parse(patch!.body!)).toEqual({ slug: 'lesson-1' });
+    // ...and the rename lands BEFORE the lesson upsert.
+    const patchIdx = calls.indexOf(patch!);
+    const upsertIdx = calls.findIndex((c) => c.method === 'POST' && c.url.includes('/lessons?'));
+    expect(patchIdx).toBeLessThan(upsertIdx);
+  });
+
+  it('skips the rename when the NEW slug already exists (idempotent re-run) — never touches two rows', async () => {
+    const calls: { method: string; url: string }[] = [];
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      const method = init?.method ?? 'GET';
+      calls.push({ method, url });
+      // New slug ALREADY present → the earlier run renamed it.
+      if (method === 'GET') return new Response(JSON.stringify([{ id: 'already-there' }]), { status: 200 });
+      const table = url.split('/rest/v1/')[1]!.split('?')[0]!;
+      return new Response(JSON.stringify([{ id: `fake-${table}-id` }]), { status: 201 });
+    });
+
+    const input = samplePublishInput();
+    input.topic.renamedFrom = 'topic-old';
+    await publishLessonSlot(input);
+
+    expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
+  });
+
+  it('never probes or renames without a declaration (zero extra requests on the hot path)', async () => {
+    const calls: { method: string }[] = [];
+    fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+      calls.push({ method: init?.method ?? 'GET' });
+      const table = url.split('/rest/v1/')[1]!.split('?')[0]!;
+      return new Response(JSON.stringify([{ id: `fake-${table}-id` }]), { status: 201 });
+    });
+
+    await publishLessonSlot(samplePublishInput());
+    expect(calls.every((c) => c.method !== 'PATCH' && c.method !== 'GET')).toBe(true);
+  });
+});

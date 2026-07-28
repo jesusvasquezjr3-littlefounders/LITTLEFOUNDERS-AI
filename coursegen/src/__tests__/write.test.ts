@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { writeLessonDocument, type WriteInput } from '../pipeline/write.js';
+import { writeLessonDocument, stripNullValues, repairDocument, type WriteInput } from '../pipeline/write.js';
 import { buildFacts, buildTaxonomy, baseSegments } from './fixtures.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 
@@ -42,6 +42,119 @@ function validDocumentJson(extraBrokenSegment: boolean) {
     segments,
   };
 }
+
+describe('stripNullValues', () => {
+  it('drops null-valued object keys recursively but keeps everything else', () => {
+    const input = {
+      id: 's1',
+      title: null,
+      narrator: null,
+      payload: { options: [{ id: 'a', rationale_md: null, label: 'A' }, { id: 'b', rationale_md: 'because', label: 'B' }] },
+      hints: null,
+      keep: 0,
+      keepFalse: false,
+      keepEmpty: '',
+    };
+    const out = stripNullValues(input) as Record<string, unknown>;
+    expect('title' in out).toBe(false);
+    expect('narrator' in out).toBe(false);
+    expect('hints' in out).toBe(false);
+    expect(out.keep).toBe(0);
+    expect(out.keepFalse).toBe(false);
+    expect(out.keepEmpty).toBe('');
+    const opts = (out.payload as { options: Record<string, unknown>[] }).options;
+    expect('rationale_md' in opts[0]!).toBe(false); // null dropped
+    expect(opts[1]!.rationale_md).toBe('because'); // real value kept
+  });
+
+  it('preserves array length (recurses into elements, does not compact)', () => {
+    expect(stripNullValues([{ x: null, y: 1 }, { x: 2 }])).toEqual([{ y: 1 }, { x: 2 }]);
+  });
+
+  it('leaves primitives and top-level null untouched in shape', () => {
+    expect(stripNullValues('hi')).toBe('hi');
+    expect(stripNullValues(5)).toBe(5);
+  });
+});
+
+describe('repairDocument — balance_scale subset-sum', () => {
+  function balanceDoc(weights: number[], leftValues: number[]) {
+    return {
+      segments: [{
+        id: 's1',
+        type: 'balance_scale',
+        payload: {
+          left_fixed: leftValues.map((v, i) => ({ label: `L${i}`, value: v })),
+          weights: weights.map((v, i) => ({ id: `w${i}`, label: `W${i}`, value: v })),
+        },
+      }],
+    };
+  }
+
+  it('leaves a solvable board untouched', () => {
+    const doc = balanceDoc([5, 3, 2, 4], [8]); // 5+3=8 works
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.weights.map((w) => w.value)).toEqual([5, 3, 2, 4]);
+  });
+
+  it('repairs an unsolvable board by making weight[0] the exact left total', () => {
+    const doc = balanceDoc([5, 6, 7], [8]); // no subset sums to 8
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.weights[0]!.value).toBe(8);
+    // rest stay as distractors
+    expect(doc.segments[0]!.payload.weights.slice(1).map((w) => w.value)).toEqual([6, 7]);
+  });
+
+  it('ignores malformed payloads and non-balance segments without throwing', () => {
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'quiz_mcq', payload: {} }] })).not.toThrow();
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'balance_scale', payload: { weights: 'nope' } }] })).not.toThrow();
+    expect(() => repairDocument(null)).not.toThrow();
+  });
+});
+
+describe('stripNullValues — semantic nulls survive', () => {
+  it('keeps story_branch ending `next: null` and scoring `hearts: null` intact', () => {
+    const doc = {
+      scoring: { hearts: null },
+      segments: [{ type: 'story_branch', payload: { nodes: [{ id: 'fin', choices: [{ id: 'c1', text_md: 'Fin', next: null }] }] }, narrator: null }],
+    };
+    const out = stripNullValues(doc) as typeof doc;
+    expect(out.scoring.hearts).toBeNull();
+    expect(out.segments[0]!.payload.nodes[0]!.choices[0]!.next).toBeNull();
+    expect('narrator' in out.segments[0]!).toBe(false); // ordinary null still stripped
+  });
+});
+
+describe('repairDocument — interest_peek constraint repair', () => {
+  it('bumps periods<2 to 2 and recomputes answer.value with the gate formula', () => {
+    const doc = {
+      segments: [{
+        id: 's1', type: 'interest_peek',
+        payload: { principal: 100, rate_pct: 10, periods: 1, currency: 'MXN' },
+        answer: { value: 110, tolerance: 0 },
+      }],
+    };
+    repairDocument(doc);
+    const seg = doc.segments[0]!;
+    expect(seg.payload.periods).toBe(2);
+    expect(seg.answer.value).toBe(121); // 100·1.1²
+    expect(seg.answer.tolerance).toBeGreaterThan(0);
+  });
+
+  it('leaves a valid interest_peek untouched', () => {
+    const doc = {
+      segments: [{
+        id: 's1', type: 'interest_peek',
+        payload: { principal: 100, rate_pct: 10, periods: 5, currency: 'MXN' },
+        answer: { value: 161.05, tolerance: 5 },
+      }],
+    };
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.periods).toBe(5);
+    expect(doc.segments[0]!.answer.value).toBe(161.05);
+    expect(doc.segments[0]!.answer.tolerance).toBe(5);
+  });
+});
 
 describe('writeLessonDocument', () => {
   it('returns a valid document on the first attempt when the model gets it right', async () => {
@@ -117,5 +230,67 @@ describe('writeLessonDocument', () => {
     expect(result.droppedSegments).toBe(1);
     expect(result.document.segments.length).toBe(baseSegments().length + 1); // +1 valid (s8), -1 dropped (s7)
     expect(result.document.segments.some((s) => s.id === 's7')).toBe(false);
+  });
+});
+
+describe('repairDocument — schema_version is a constant, never a lost slot', () => {
+  /*
+   * Regression for a real mass-generation failure (2026-07-24): after a transient
+   * abort and a gate rejection, the last-resort regen returned a bad
+   * `schema_version` and the whole slot died on `Invalid input: expected 1`. The
+   * field has exactly one legal value, so losing a lesson to it is indefensible
+   * at 1000-lesson scale.
+   */
+  it('coerces a string schema_version', () => {
+    const doc: Record<string, unknown> = { schema_version: '1', segments: [] };
+    repairDocument(doc);
+    expect(doc.schema_version).toBe(1);
+  });
+
+  it('fills a missing schema_version', () => {
+    const doc: Record<string, unknown> = { segments: [] };
+    repairDocument(doc);
+    expect(doc.schema_version).toBe(1);
+  });
+
+  it('leaves a correct schema_version untouched and still needs segments to be an array', () => {
+    const good: Record<string, unknown> = { schema_version: 1, segments: [] };
+    repairDocument(good);
+    expect(good.schema_version).toBe(1);
+    // No segments array → the repair is a no-op by design (nothing to walk).
+    const noSegments: Record<string, unknown> = { schema_version: 99 };
+    repairDocument(noSegments);
+    expect(noSegments.schema_version).toBe(99);
+  });
+});
+
+describe('repairDocument — measure_read tick grid', () => {
+  function measureDoc(payload: Record<string, unknown>) {
+    return { segments: [{ id: 's1', type: 'measure_read', payload }] as Array<{ payload: Record<string, unknown> }> };
+  }
+
+  it('re-picks ticks so the pointer lands on a mark (the published 0-400 ml beaker)', () => {
+    // 8 marks over 0-400 is a step of 57.142857 and puts 250 ml at 4.375 marks:
+    // unreadable, and with tolerance 0 the reading task was unanswerable.
+    const doc = measureDoc({ min: 0, max: 400, ticks: 8, pointer_value: 250, unit: 'ml' });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(9); // step 50 → the pointer is mark 6
+  });
+
+  it('leaves a readable dial untouched', () => {
+    const doc = measureDoc({ min: 0, max: 40, ticks: 9, pointer_value: 25 });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(9);
+  });
+
+  it('leaves the payload alone when no tick count can rescue it (gate 8 reports instead)', () => {
+    const doc = measureDoc({ min: 0, max: 10, ticks: 5, pointer_value: 3.33 });
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.ticks).toBe(5);
+  });
+
+  it('ignores malformed measure_read payloads without throwing', () => {
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'measure_read', payload: { min: 'a' } }] })).not.toThrow();
+    expect(() => repairDocument({ segments: [{ id: 'x', type: 'measure_read' }] })).not.toThrow();
   });
 });

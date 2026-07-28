@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
@@ -123,7 +123,16 @@ export function CoursePage() {
   return (
     <div>
       <header>
-        <h1 className="lf-display-lg text-content">{localizedText(tree.course.title, locale, tree.course.slug)}</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="lf-display-lg text-content">{localizedText(tree.course.title, locale, tree.course.slug)}</h1>
+          <Link
+            to={`/learn/${tree.course.slug}/territory`}
+            className="lf-label flex min-h-11 items-center gap-1.5 rounded-full border border-outline/70 bg-surface px-4 font-bold text-primary shadow-glass-sm transition-colors hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Icon name="map" className="text-[18px]" aria-hidden />
+            {t('learn.territory.open')}
+          </Link>
+        </div>
         <div className="mt-3 flex items-center gap-3">
           <ProgressBar
             value={tree.course.progress.pct}

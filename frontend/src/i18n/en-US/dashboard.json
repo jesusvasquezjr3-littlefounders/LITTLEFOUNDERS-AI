@@ -11,7 +11,8 @@
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
     "lockedHint": "Unlocks when your account becomes a verified Tutor",
-    "profile": "Profile"
+    "profile": "Profile",
+    "family": "Family"
   },
   "upgrade": {
     "title": "Family plan",

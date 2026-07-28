@@ -73,7 +73,10 @@ function makeDeps(row: LessonDocumentRow) {
     mime: 'audio/mpeg',
     deduplicated: false,
   });
-  return { getLessonDocument, patchLessonDocumentAudio, synthesizeSpeech, downloadWav, uploadFile };
+  // Global speech_assets cache: default to all-miss + successful write-through.
+  const findSpeechAsset = vi.fn().mockResolvedValue(null);
+  const insertSpeechAsset = vi.fn().mockImplementation(async (r: Record<string, unknown>) => ({ id: 'x', created_at: 'now', ...r }));
+  return { getLessonDocument, patchLessonDocumentAudio, synthesizeSpeech, downloadWav, uploadFile, findSpeechAsset, insertSpeechAsset };
 }
 
 describe('narrateLesson', () => {
@@ -105,7 +108,7 @@ describe('narrateLesson', () => {
 
     const summary = await narrateLesson('lesson-1', 'en-US', deps);
 
-    expect(summary).toEqual({ units_total: 4, generated: 3, reused: 1, failed: [] });
+    expect(summary).toEqual({ units_total: 4, generated: 3, reused: 1, cached: 0, failed: [] });
     expect(deps.synthesizeSpeech).toHaveBeenCalledTimes(3); // everything except s1.prompt
     expect(deps.patchLessonDocumentAudio).toHaveBeenCalledTimes(1);
 
@@ -148,7 +151,7 @@ describe('narrateLesson', () => {
 
     const summary = await narrateLesson('lesson-1', 'en-US', deps);
 
-    expect(summary).toEqual({ units_total: 4, generated: 0, reused: 4, failed: [] });
+    expect(summary).toEqual({ units_total: 4, generated: 0, reused: 4, cached: 0, failed: [] });
     expect(deps.synthesizeSpeech).not.toHaveBeenCalled();
   });
 
@@ -174,7 +177,7 @@ describe('narrateLesson', () => {
 
     const summary = await narrateLesson('lesson-1', 'en-US', deps);
 
-    expect(summary).toEqual({ units_total: 4, generated: 1, reused: 3, failed: [] });
+    expect(summary).toEqual({ units_total: 4, generated: 1, reused: 3, cached: 0, failed: [] });
     expect(deps.synthesizeSpeech).toHaveBeenCalledTimes(1);
   });
 
@@ -239,5 +242,100 @@ describe('narrateLesson', () => {
       delete process.env.TTS_VOICE_LIRUF_EN_US;
       resetConfigCache();
     }
+  });
+
+  describe('global speech_assets cache', () => {
+    it('serves a global-cache hit with ZERO paid TTS calls and no write-through', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      deps.findSpeechAsset.mockResolvedValue({
+        id: 'cached-id',
+        speech_hash: 'h',
+        model: MODEL,
+        voice: VOICE,
+        language_type: 'English',
+        text: 'whatever',
+        url: 'https://filebase.example/files/lesson-audio/cached.mp3',
+        file_id: 'lesson-audio/cached.mp3',
+        bytes: 555,
+        duration_ms: 1200,
+        mp3_bitrate_kbps: 48,
+        created_at: 'now',
+      });
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary).toEqual({ units_total: 4, generated: 0, reused: 0, cached: 4, failed: [] });
+      expect(deps.synthesizeSpeech).not.toHaveBeenCalled();
+      expect(deps.uploadFile).not.toHaveBeenCalled();
+      expect(deps.insertSpeechAsset).not.toHaveBeenCalled();
+      // The manifest entry is built from the cached asset but keeps the
+      // MANIFEST-level content hash so per-lesson idempotency still works.
+      const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { units: Record<string, AudioUnitEntry> };
+      expect(manifest.units['s1.prompt']).toEqual({
+        file_id: 'lesson-audio/cached.mp3',
+        url: 'https://filebase.example/files/lesson-audio/cached.mp3',
+        hash: contentHash('Listen up', VOICE, MODEL),
+        bytes: 555,
+        duration_ms: 1200,
+        voice: VOICE,
+      });
+    });
+
+    it('writes through to the global cache after every paid synthesis', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+
+      await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(deps.insertSpeechAsset).toHaveBeenCalledTimes(4);
+      expect(deps.insertSpeechAsset).toHaveBeenCalledWith(
+        expect.objectContaining({
+          model: MODEL,
+          voice: VOICE,
+          text: 'Listen up',
+          file_id: 'lesson-audio/generated.mp3',
+          mp3_bitrate_kbps: 48,
+        }),
+      );
+    });
+
+    it('degrades a cache OUTAGE to paid calls — never to failed units', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      deps.findSpeechAsset.mockRejectedValue(new Error('vault down'));
+      deps.insertSpeechAsset.mockRejectedValue(new Error('vault down'));
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary).toEqual({ units_total: 4, generated: 4, reused: 0, cached: 0, failed: [] });
+      expect(deps.synthesizeSpeech).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  describe('partial failures stay retryable (fire-and-forget contract, 2026-07-26)', () => {
+    it('writes the manifest WITHOUT version when any unit failed — the row stays in the pending set', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      // First synth call fails, the rest succeed — a classic partial failure.
+      deps.synthesizeSpeech.mockRejectedValueOnce(new Error('tts 500')).mockResolvedValue('https://tts/audio.wav');
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary?.failed).toHaveLength(1);
+      const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { version?: number; units: Record<string, unknown> };
+      expect(manifest.version).toBeUndefined(); // unversioned ⇒ audio->>version stays NULL ⇒ retried next batch
+      expect(Object.keys(manifest.units).length).toBeGreaterThan(0); // succeeded units kept for hash-reuse on retry
+    });
+
+    it('a failed manifest PATCH surfaces as a failure (never a silent success)', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+      deps.patchLessonDocumentAudio.mockResolvedValue(false);
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps);
+
+      expect(summary?.failed.some((f) => f.unit_id === '(manifest)')).toBe(true);
+    });
   });
 });

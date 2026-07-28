@@ -28,7 +28,7 @@ describe('getConfig', () => {
 
   it('applies documented defaults', () => {
     const c = getConfig();
-    expect(c.DEEPSEEK_MODEL).toBe('deepseek-chat');
+    expect(c.DEEPSEEK_MODEL).toBe('deepseek-v4-pro');
     expect(c.QWEN_JUDGE_MODEL).toBe('qwen3-max');
     expect(c.FORGE_CONCURRENCY).toBe(2);
   });

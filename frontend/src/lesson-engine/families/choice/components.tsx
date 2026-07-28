@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui'
 import type { ExerciseProps } from '../../core/types'
 import MarkdownLite from '../../core/MarkdownLite'
+import { seededSort } from '../../core/shuffle'
 import {
   BigIconTile,
   GentleTimerBar,
@@ -13,6 +14,7 @@ import {
   OptionCard,
   SunkenWell,
   TokenChip,
+  VisualMark,
   type OptionVisualState,
 } from '../../core/primitives'
 
@@ -43,12 +45,10 @@ export function QuizMcq({ segment, value, onChange, disabled, verdict }: Exercis
   const draft = draftOf(value)
   const selected = draft.option_id as string | undefined
   const options = useMemo(() => {
-    const list = [...(segment.payload.options as Array<{ id: string; text_md: string }>)]
-    if (segment.payload.shuffle) {
-      // Stable per-segment shuffle so retries don't reorder under the kid's feet.
-      list.sort((a, b) => hashCode(segment.id + a.id) - hashCode(segment.id + b.id))
-    }
-    return list
+    const list = segment.payload.options as Array<{ id: string; text_md: string; image_url?: string }>
+    // Shuffle by default (A7): the correct option is often authored first, so a
+    // fixed order leaks the answer. Content can opt out with shuffle:false.
+    return segment.payload.shuffle === false ? [...list] : seededSort(list, segment.id, (o) => o.id)
   }, [segment])
   const correctId = revealOf(verdict).correct_option_id as string | undefined
   return (
@@ -62,7 +62,14 @@ export function QuizMcq({ segment, value, onChange, disabled, verdict }: Exercis
           disabled={disabled}
           onSelect={() => onChange({ option_id: option.id })}
         >
-          <MarkdownLite text={option.text_md} />
+          {option.image_url ? (
+            <span className="flex items-center gap-3">
+              <VisualMark imageUrl={option.image_url} imgClassName="h-12 w-12" />
+              <MarkdownLite text={option.text_md} />
+            </span>
+          ) : (
+            <MarkdownLite text={option.text_md} />
+          )}
         </OptionCard>
       ))}
     </div>
@@ -74,7 +81,10 @@ export function BestDecision(props: ExerciseProps) {
   const correctId = revealOf(props.verdict).best_option_id as string | undefined
   const draft = draftOf(props.value)
   const selected = draft.option_id as string | undefined
-  const options = props.segment.payload.options as Array<{ id: string; text_md: string }>
+  const options = useMemo(
+    () => seededSort(props.segment.payload.options as Array<{ id: string; text_md: string }>, props.segment.id, (o) => o.id),
+    [props.segment],
+  )
   return (
     <div className="space-y-4">
       <SunkenWell>
@@ -104,9 +114,15 @@ export function TrueFalse({ segment, value, onChange, disabled, verdict }: Exerc
   const { t } = useTranslation()
   const draft = draftOf(value)
   const chosen = draft.is_true as boolean | undefined
-  const justifications = segment.payload.justifications as
-    | Array<{ id: string; text_md: string }>
-    | undefined
+  // The justification bank was rendered in authored order, which runs parallel to
+  // the answer key (authors write the right "why" first), so the second half of the
+  // exercise was answerable by tapping the top row. Grading is by
+  // `justification_id`, so display order is free. Distinct ':j' sub-seed keeps this
+  // bank uncorrelated with any other list in the segment.
+  const justifications = useMemo(() => {
+    const list = segment.payload.justifications as Array<{ id: string; text_md: string }> | undefined
+    return list ? seededSort(list, segment.id + ':j', (j) => j.id) : undefined
+  }, [segment])
   const reveal = revealOf(verdict)
   const correctBool = reveal.is_true as boolean | undefined
 
@@ -173,12 +189,15 @@ export function PictureChoice({ segment, value, onChange, disabled, verdict }: E
   const draft = draftOf(value)
   const selected = draft.option_id as string | undefined
   const correctId = revealOf(verdict).correct_option_id as string | undefined
-  const options = segment.payload.options as Array<{
-    id: string
-    icon: string
-    image_url?: string
-    label: string
-  }>
+  const options = useMemo(
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; icon: string; image_url?: string; label: string }>,
+        segment.id,
+        (o) => o.id,
+      ),
+    [segment],
+  )
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
       {options.map((option) => (
@@ -201,8 +220,22 @@ export function PictureChoice({ segment, value, onChange, disabled, verdict }: E
 export function OddOneOut({ segment, value, onChange, disabled, verdict }: ExerciseProps) {
   const { t } = useTranslation()
   const draft = draftOf(value)
-  const items = segment.payload.items as Array<{ id: string; text_md: string }>
-  const reasons = segment.payload.reasons as Array<{ id: string; text_md: string }> | undefined
+  const items = useMemo(
+    () =>
+      seededSort(
+        segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>,
+        segment.id,
+        (i) => i.id,
+      ),
+    [segment],
+  )
+  const reasons = useMemo(
+    () =>
+      segment.payload.reasons
+        ? seededSort(segment.payload.reasons as Array<{ id: string; text_md: string }>, segment.id + ':r', (r) => r.id)
+        : undefined,
+    [segment],
+  )
   const reveal = revealOf(verdict)
   return (
     <div className="space-y-4">
@@ -221,7 +254,14 @@ export function OddOneOut({ segment, value, onChange, disabled, verdict }: Exerc
             disabled={disabled}
             onSelect={() => onChange({ ...draft, item_id: item.id })}
           >
-            <MarkdownLite text={item.text_md} />
+            {item.image_url || item.icon ? (
+              <span className="flex flex-col items-center gap-2 text-center">
+                <VisualMark imageUrl={item.image_url} icon={item.icon} imgClassName="h-14 w-14" iconClassName="text-[40px]" />
+                <MarkdownLite text={item.text_md} />
+              </span>
+            ) : (
+              <MarkdownLite text={item.text_md} />
+            )}
           </OptionCard>
         ))}
       </div>
@@ -259,7 +299,7 @@ export function YesNoCases({ segment, value, onChange, disabled, verdict }: Exer
   const { t } = useTranslation()
   const draft = draftOf(value)
   const decisions = (draft.decisions as Record<string, boolean> | undefined) ?? {}
-  const cases = segment.payload.cases as Array<{ id: string; text_md: string }>
+  const cases = segment.payload.cases as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>
   const correctIds = revealOf(verdict).applies_ids as string[] | undefined
   return (
     <div className="space-y-4">
@@ -272,7 +312,14 @@ export function YesNoCases({ segment, value, onChange, disabled, verdict }: Exer
           const shouldApply = correctIds?.includes(c.id)
           return (
             <li key={c.id} className="rounded-md border-2 border-outline/70 bg-surface p-3">
-              <MarkdownLite text={c.text_md} className="lf-body text-content" />
+              {c.image_url || c.icon ? (
+                <div className="flex items-center gap-3">
+                  <VisualMark imageUrl={c.image_url} icon={c.icon} imgClassName="h-12 w-12" iconClassName="text-[32px]" />
+                  <MarkdownLite text={c.text_md} className="lf-body text-content" />
+                </div>
+              ) : (
+                <MarkdownLite text={c.text_md} className="lf-body text-content" />
+              )}
               <div className="mt-2 flex gap-2">
                 {[true, false].map((yes) => {
                   let state: OptionVisualState = decided === yes ? 'selected' : 'idle'
@@ -312,7 +359,15 @@ export function ConfidenceQuiz({ segment, value, onChange, disabled, verdict }: 
   const selected = draft.option_id as string | undefined
   const confidence = (draft.confidence as number | undefined) ?? 75
   const correctId = revealOf(verdict).correct_option_id as string | undefined
-  const options = segment.payload.options as Array<{ id: string; text_md: string }>
+  const options = useMemo(
+    () =>
+      seededSort(
+        segment.payload.options as Array<{ id: string; text_md: string; image_url?: string }>,
+        segment.id,
+        (o) => o.id,
+      ),
+    [segment],
+  )
   return (
     <div className="space-y-4">
       <div className="space-y-3" role="radiogroup">
@@ -325,7 +380,14 @@ export function ConfidenceQuiz({ segment, value, onChange, disabled, verdict }: 
             disabled={disabled}
             onSelect={() => onChange({ ...draft, option_id: option.id, confidence })}
           >
-            <MarkdownLite text={option.text_md} />
+            {option.image_url ? (
+              <span className="flex items-center gap-3">
+                <VisualMark imageUrl={option.image_url} imgClassName="h-12 w-12" />
+                <MarkdownLite text={option.text_md} />
+              </span>
+            ) : (
+              <MarkdownLite text={option.text_md} />
+            )}
           </OptionCard>
         ))}
       </div>
@@ -354,7 +416,18 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
   const [phase, setPhase] = useState<'ready' | 'running' | 'done'>('ready')
   const [selected, setSelected] = useState<string[]>([])
   const [overtime, setOvertime] = useState(false)
-  const items = segment.payload.items as Array<{ id: string; text_md: string }>
+  // The tappable bank was rendered in authored order, and authors list the targets
+  // first — so sweeping the leading chips scored full marks with no reasoning.
+  // Grading compares ids (`selected_ids` vs `target_ids`), so display order is free.
+  const items = useMemo(
+    () =>
+      seededSort(
+        segment.payload.items as Array<{ id: string; text_md: string; icon?: string; image_url?: string }>,
+        segment.id,
+        (i) => i.id,
+      ),
+    [segment],
+  )
   const seconds = segment.payload.seconds as number
   const targetIds = revealOf(verdict).target_ids as string[] | undefined
 
@@ -410,7 +483,14 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
                 )
               }
             >
-              <MarkdownLite text={item.text_md} />
+              {item.image_url || item.icon ? (
+                <span className="flex items-center gap-2">
+                  <VisualMark imageUrl={item.image_url} icon={item.icon} imgClassName="h-10 w-10" iconClassName="text-[28px]" />
+                  <MarkdownLite text={item.text_md} />
+                </span>
+              ) : (
+                <MarkdownLite text={item.text_md} />
+              )}
             </TokenChip>
           )
         })}
@@ -424,12 +504,6 @@ export function SpeedTap({ segment, disabled, onFinish, verdict }: ExerciseProps
       ) : null}
     </div>
   )
-}
-
-function hashCode(s: string): number {
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
-  return h
 }
 
 export const choiceCanSubmit = {

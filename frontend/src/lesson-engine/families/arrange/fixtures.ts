@@ -38,9 +38,9 @@ export const arrangeFixtures: SegmentBase[] = [
     narrator: { character: 'liruf', emotion: 'excited' },
     payload: {
       pairs: [
-        { a_md: 'Ahorrar', b_md: 'Guardar dinero para después' },
-        { a_md: 'Gastar', b_md: 'Usar dinero para comprar' },
-        { a_md: 'Donar', b_md: 'Regalar para ayudar' },
+        { a_md: 'Ahorrar', a_icon: 'savings', b_md: 'Guardar dinero para después', b_icon: 'account_balance_wallet' },
+        { a_md: 'Gastar', a_icon: 'shopping_cart', b_md: 'Usar dinero para comprar', b_icon: 'payments' },
+        { a_md: 'Donar', a_icon: 'volunteer_activism', b_md: 'Regalar para ayudar', b_icon: 'handshake' },
       ],
     },
   },

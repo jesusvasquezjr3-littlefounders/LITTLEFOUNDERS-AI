@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button, LottieIcon } from '@/components/ui'
 import { useCountUp } from './completion'
+import { playSfx } from './sfx'
 
 const SPARKS = [
   { left: '18%', delay: '1.1s', duration: '1.6s' },
@@ -27,6 +28,7 @@ export function StreakCelebration({ streakDays, onContinue }: { streakDays: numb
   // Grayscale ember → full-color ignition at 700ms (v1 ignited at 1s).
   useEffect(() => {
     const id = setTimeout(() => setIgnited(true), 700)
+    playSfx('streak')
     return () => clearTimeout(id)
   }, [])
 

@@ -3,7 +3,7 @@
 // content (per-distractor rationale); tier microcopy is the UI's job (i18n).
 
 import type { FamilyGrader, GradeOutcome, SegmentBase } from '../../core/types.js'
-import { binary, calibration, decisionAccuracy, signalDetection } from '../../core/scoring.js'
+import { balancedDecisionAccuracy, binary, calibration, clampScore, qualityScaleFactor, signalDetection } from '../../core/scoring.js'
 
 type Dict = Record<string, unknown>
 
@@ -77,8 +77,11 @@ const gradeBestDecision: FamilyGrader = (segment, answer) => {
   const qualities = key ? (obj(key.qualities) as Record<string, number> | null) : null
   if (!chosen || !qualities || typeof qualities[chosen] !== 'number') return MALFORMED
   const best = Object.entries(qualities).sort((x, y) => y[1] - x[1])[0]
+  // Rescale 0–1 quality maps to 0–100 (Forge has shipped both scales) so the
+  // best option can actually reach a passing score.
+  const factor = qualityScaleFactor(Object.values(qualities))
   return {
-    score: qualities[chosen],
+    score: clampScore(qualities[chosen] * factor),
     feedback_md: optionRationale(segment, chosen),
     reveal: { best_option_id: best?.[0] },
   }
@@ -91,8 +94,18 @@ const gradeYesNoCases: FamilyGrader = (segment, answer) => {
   const positives = key ? strArray(key.applies_ids) : null
   const cases = segment.payload.cases as Array<{ id: string }> | undefined
   if (!selected || !positives || !cases) return MALFORMED
+  // naive_strategy_passes — fixed in SCORING, not in the widget: the control set is
+  // exactly right (an explicit Yes/No per case, which canSubmit already requires),
+  // it was the pooled (TP+TN)/N formula that paid for a thought-free strategy.
+  // "Press NO on every case" scored (N−P)/N — 75 at 8 cases with 2 applying, 83 at
+  // 6 with 1 — so the child cleared the 70 threshold without ever testing a case
+  // against the rule. `balancedDecisionAccuracy` splits the score between finding
+  // the applying cases and rejecting the rest, which pins BOTH all-NO and all-YES
+  // at 50 for every possible ratio while the exact key still scores 100 and a
+  // balanced set grades identically to before. Full numbers in core/scoring.ts.
+  // Gate 8 rejects the one-sided keys (P = 0 / P = N) no formula can rescue.
   return {
-    score: decisionAccuracy(selected, positives, cases.map((c) => c.id)),
+    score: balancedDecisionAccuracy(selected, positives, cases.map((c) => c.id)),
     reveal: { applies_ids: positives },
   }
 }
@@ -103,7 +116,8 @@ const gradeSpeedTap: FamilyGrader = (segment, answer) => {
   const selected = a ? strArray(a.selected_ids) : null
   const targets = key ? strArray(key.target_ids) : null
   if (!selected || !targets) return MALFORMED
-  const raw = signalDetection(selected, targets)
+  const items = Array.isArray(segment.payload.items) ? (segment.payload.items as unknown[]) : []
+  const raw = signalDetection(selected, targets, items.length)
   const overtime = a?.overtime === true
   return {
     score: overtime ? Math.round(raw * 0.8) : raw,

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { localizeLesson } from '../pipeline/localize.js';
+import { localizeLesson, translateTitle } from '../pipeline/localize.js';
 import { buildDocument, buildTaxonomy, buildFacts } from './fixtures.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 
@@ -64,5 +64,31 @@ describe('localizeLesson (string-freeze)', () => {
 
     const sentContent = translate.mock.calls[0]![0].messages.map((m) => m.content).join('\n');
     expect(sentContent).not.toContain('correct_option_id');
+  });
+});
+
+describe('translateTitle (topic titles — es-MX-only in curriculum YAML, filled in at publish time)', () => {
+  function makePlainTranslateMock(reply: string) {
+    return vi.fn(async (): Promise<ChatCompleteResult> => ({ content: reply, promptTokens: 3, completionTokens: 3 }));
+  }
+
+  it('returns the translated title, trimmed', async () => {
+    const translate = makePlainTranslateMock('  The Big Idea  ');
+    const result = await translateTitle('La Gran Idea', 'en-US', { translate: translate as never });
+    expect(result).toBe('The Big Idea');
+  });
+
+  it('strips wrapping quotes the model sometimes adds', async () => {
+    const translate = makePlainTranslateMock('"A Grande Ideia"');
+    const result = await translateTitle('La Gran Idea', 'pt-BR', { translate: translate as never });
+    expect(result).toBe('A Grande Ideia');
+  });
+
+  it('sends the source title as the only user content, and names the target locale', async () => {
+    const translate = makePlainTranslateMock('Vendor Decisions');
+    await translateTitle('Decisiones de Vendedor', 'en-US', { translate: translate as never });
+    const [req] = translate.mock.calls[0]!;
+    expect(req.messages.some((m) => m.content === 'Decisiones de Vendedor')).toBe(true);
+    expect(req.messages.some((m) => m.content.includes('English (US)'))).toBe(true);
   });
 });

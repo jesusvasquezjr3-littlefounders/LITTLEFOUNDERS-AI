@@ -10,7 +10,7 @@
 > `coursegen/`, first course catalog authored (`financial-education`).
 > Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
 > never started by CI or by any automatic process (/AGENTS.md sign-off rule).
-> **Last updated:** 2026-07-12 · Language: English (project rule).
+> **Last updated:** 2026-07-27 · Language: English (project rule).
 
 ---
 
@@ -76,6 +76,16 @@ Lives in `coursegen/curriculum/<course-slug>/`, YAML, Zod-validated
   when every slot has a published document ×3 locales, never before.
 
 ### §3.1 Spaced-review layer (pedagogy: spacing effect + retrieval practice + interleaving)
+
+> **Enforced, not assumed.** `src/catalog/progression.ts` (run inside
+> `catalog:check`) proves a catalog describes a LEARNABLE path before any paid
+> call: it opens at difficulty 1 (`cold-start`), never jumps difficulty by more
+> than one step across the whole walk including saga seams (`ramp-cliff`), every
+> teaching saga is retrieved again at more than one distinct distance with the
+> first retrieval inside 12 topics (`retention-*`), no more than 4 consecutive
+> lessons share a shape (`monotony`), and one topic never piles on more than 6
+> facts or spans more than 2 difficulty steps. Measured over the authored corpus
+> — 4,254 blueprints, 4 courses — 0 errors, 1 warning.
 
 Review is DERIVED content — every review blueprint cites the teaching topics it
 consolidates (`review_of`), so Forge grounds it in already-validated concepts
@@ -195,6 +205,86 @@ file-checkpointed (`coursegen/runs/<run-id>/checkpoint.json` — per-slot state:
 `planned → written → reviewed → localized → illustrated → published |
 failed`), resumable, idempotent (publish = upsert by slug).
 
+### §4.0 Visual overview (mermaid)
+
+**Per-slot pipeline** — every lesson walks this graph; LLM stages are marked,
+everything else is deterministic:
+
+```mermaid
+flowchart TD
+    V[validate catalog+facts+taxonomy<br/><i>Zod, offline, free</i>] --> P
+    P["plan — skeleton<br/><i>DeepSeek (skipped for forced_types)</i>"] --> W
+    W["write es-MX<br/><i>DeepSeek, gates INSIDE the corrective loop, max 4</i>"] --> RC{recap_dialogue?}
+    RC -- yes --> RD["recap dialogue<br/><i>DeepSeek ×5 turns, student persona BLIND</i>"] --> G
+    RC -- no --> G
+    G[9 deterministic gates<br/><i>final authority re-run</i>] -->|pass| J
+    G -->|fail| FAIL
+    J["judge — 9-dim rubric<br/><i>Qwen, decorrelated provider</i>"] -->|floors pass| IL
+    J -->|fail| RV["revise<br/><i>DeepSeek, max 3 cycles</i>"]
+    RV --> RG[re-gate] -->|pass| RJ[re-judge] --> ES{improved a<br/>failing dim?}
+    RG -->|break| RV
+    ES -- yes --> J2{floors pass?}
+    ES -- "no — EARLY STOP" --> FAIL
+    J2 -- yes --> IL
+    J2 -- no --> RV
+    IL["illustrate es-MX<br/><i>Prism; INHERITANCE first — previous art is free</i>"] --> L
+    L["localize → en-US + pt-BR<br/><i>DeepSeek, structure FROZEN, currency remap, vocab re-gate</i>"] --> SW
+    SW[images sweep<br/><i>belt-and-braces, 0 calls on happy path</i>] --> PB
+    PB["publish → Vault<br/><i>status='review' — HUMAN gate §1.9; audio reset {}</i>"] --> DONE([published])
+    FAIL([slot failed]) -.->|"outer retry ×FORGE_SLOT_ATTEMPTS<br/>STAGE-AWARE: late failures resume from checkpoint,<br/>plan/write/judge failures redraw from scratch,<br/>last attempt always fresh"| P
+```
+
+**Slot state machine** (checkpoint; only `published` is terminal):
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending
+    pending --> planned : plan ok
+    planned --> written : write+gates ok
+    written --> reviewed : judge ok
+    reviewed --> localized : illustrate+localize ok
+    localized --> illustrated : sweep ok
+    illustrated --> published : publish ok
+    published --> [*]
+    pending --> dry_run : --dry-run (pristine slots only)
+    pending --> failed : error (failedFrom recorded)
+    planned --> failed : error
+    written --> failed : judge rejected / write exhausted
+    reviewed --> failed : localize error
+    localized --> failed : sweep error
+    illustrated --> failed : publish error
+    failed --> pending : retry (from scratch)
+    failed --> reviewed : retry (RESUME — failedFrom ∈ reviewed/localized/illustrated)
+    failed --> localized : retry (RESUME)
+    failed --> illustrated : retry (RESUME)
+```
+
+**Mass run (`generate:track`) + the fire-and-forget chain to market:**
+
+```mermaid
+flowchart TD
+    subgraph TRACK["generate:track — one command, unattended"]
+        E[enumerate catalog<br/>shard per adventure] --> S1
+        S1["shard N: runGeneration<br/><i>own run-id/checkpoint; remaining budget passed down</i>"] --> A{assess}
+        A -- "unattempted work + progress" --> S1
+        A -- "fatal / systemic / no-progress" --> H([HALT — resume with same track-id])
+        A -- "clean or stubborn-failures→mop-up" --> NX{more shards?}
+        NX -- yes --> S1
+        NX -- no --> R["track-report.json + Vault telemetry (0017)"]
+    end
+    R --> FLIP["db:publish-course<br/><b>HUMAN GATE (§1.9)</b> — review→published"]
+    FLIP --> VER["verify:course<br/><i>deterministic acceptance, free</i>"]
+    VER --> NAR["narrate:all --course slug<br/><i>Echo; speech_assets cache; partial failures stay pending; exit≠0 on any failure</i>"]
+    NAR --> VER2[verify:course again — narrated count]
+    VER2 --> COACH["forge:coach --track id<br/><i>free diagnosis + proposed deltas (human-applied)</i>"]
+    COACH --> MARKET([course live in all 3 locales])
+```
+
+The ONE human step in the chain is the publish flip — deliberate and
+non-negotiable (§1.9: kid-facing content is human-moderated before display).
+Everything else runs unattended and fails LOUDLY (non-zero exits, halts, and
+Vault telemetry) instead of silently.
+
 ```
 validate  catalog + facts + taxonomy (Zod, offline)
    ↓
@@ -206,7 +296,11 @@ plan      blueprint → segment skeleton    DeepSeek, temp 0.3, JSON mode
    ↓
 write     skeleton → full LessonDocument (es-MX first, the authoring locale)
           DeepSeek, temp 0.4, JSON mode, corrective retries (max 4) fed with
-          Zod issues; per-segment salvage before full regen
+          Zod issues; per-segment salvage before full regen. The prompt now
+          carries the CONTENT PLAYBOOK (§"Content quality" below) + the age-tier
+          reasoning ceiling as its CREATIVE brief — the hard rules enforce
+          FORMAT, the playbook enforces VALUE (a decision-driven, concrete,
+          non-boring premise).
    ↓
 gate      DETERMINISTIC, free, in order:
           1. LESSON_ENGINE Zod contract (composed 56-type schema)
@@ -222,26 +316,98 @@ gate      DETERMINISTIC, free, in order:
              explanation_md too short or with no concrete instance (no number,
              character or scenario), banned filler phrases per locale. Cheap
              garbage never reaches the judge (two-phase pattern).
+          7. Generation-quality gate (added after the 2026-07-22 QA
+             inspection) — icon names must be in the blessed palette (invented
+             names like 'lemonade'/'piggy_bank' render as raw text); decision
+             quality maps must grade on 0–100 (a 0–1 or all-zero map makes the
+             correct answer unpassable); compare_table cell keys must use the
+             `<row>:<col>` colon form the player submits.
+          8. Clarity / render-truth / fairness gate (grown through the
+             2026-07-24 reviews and a code-grounded grader audit) — three
+             groups, all deterministic:
+             a. CLARITY — prompt_md ≤160 chars AND ≤3 sentences (story belongs
+                in narration, not the on-screen instruction); a non-graded
+                content type may not pose a fake gradeable question or
+                congratulate an answer never given; a choice type's
+                correct-option text may not appear verbatim in the prompt or a
+                hint (answer leak).
+             b. RENDER TRUTH — the child must be able to reach the keyed answer
+                from what is ON SCREEN. compare_table source cells need their
+                value AND row named in prompt_md (the table has no data panel);
+                pattern_complete may not be framed by size/price (tiles are only
+                an icon + a tint, so those are invisible) and its answer must
+                continue the visible pattern; robot_path commands must actually
+                reach the goal; coin_count may not pose a yes/no sufficiency
+                question (the widget only assembles a tray); measure_read's
+                instrument must match what the prompt asks; a stated Total in any
+                artifact list must ADD UP; match_pairs may not state the pairing;
+                debug_hunt may not ask for a correction it has no input for.
+             c. FAIRNESS — no exercise may be passable by a mechanical strategy.
+                balance_scale must have slack (else "tap everything" balances)
+                and a reachable target; red_flags/speed_tap need items to
+                REJECT; equation_builder needs distractors; build_sentence with
+                distractors must be short enough that one wrong slot fails
+                (positional credit is (slots-1)/slots — 80 at 5 slots clears a
+                70 gate); budget_fit needs real needs AND real wants AND a
+                basket that exceeds the budget; and keyed targets may not sit as
+                a contiguous PREFIX of their bank (the shape "tap the first N"
+                exploits — found shipped in speed_tap and red_flags).
+             The engine side of the same class lives in the Lesson Engine:
+             `core/shuffle.ts` decorrelates every answer bank from the authored
+             order, and reveal-only affordances (budget_fit's NEED badge) never
+             label the answer before it is given.
+   ↓
+images    Every concrete-object slot across ALL families (option/item/card
+          tiles, memory sides, would-you-rather/flash-match sides, count-objects
+          scene items) gets a real Prism illustration via a per-type plan, plus
+          a segment-level "scene anchor" for scene-worthy text-only types —
+          not just picture_choice/memory_flip. Illustrate es-MX pre-localize so
+          one image (text-free by design) serves all 3 locales. Icons/text stay
+          the zero-cost fallback; Prism's per-purpose art direction
+          (item_card / option_card / scene_anchor / outcome) + child-legibility
+          rule keep each asset recognizable to a 6-year-old.
    ↓
 review    INDEPENDENT judge = Qwen (decorrelated provider), rubric 1-5 on:
           age_fit, pedagogy, narrative_quality, kid_safety, es-MX naturalness,
           concreteness (≥1 worked concrete instance; connects to the prior
           lesson's concept — the write prompt receives the previous blueprint's
-          micro-objective and MUST open by linking to it, never restarting cold).
-          kid_safety < 5 or age_fit < 4 → revise loop (max 2) → else fail slot.
+          micro-objective and MUST open by linking to it, never restarting cold),
+          and — added after the 2026-07-22 QA inspection — cognitive_engagement
+          (does solving require real thinking / is the answer leaked?),
+          feedback_quality (does wrong-answer feedback explain why?) and
+          distractor_quality (are wrong options plausible?). GATE: kid_safety ≥ 5,
+          age_fit ≥ 4, concreteness ≥ 4, and pedagogy / cognitive_engagement /
+          feedback_quality / distractor_quality ≥ 3 → else revise loop (max 3,
+          with an EARLY STOP: a re-judge that improves NO currently-failing
+          dimension breaks immediately — revisions of the same draft are
+          correlated, and the outer from-scratch retry is the measured-better
+          spend; gate-breaking revise cycles produce no new judged rubric and
+          never trigger the comparison) → else fail slot.
    ↓
 localize  es-MX → en-US and pt-BR: translation-with-contract call (structure
           is FROZEN — ids/answers/numbers copied programmatically, only
           learner-visible strings translated), re-gated per locale (vocabulary
           lists are per-locale).
    ↓
-images    OPTIONAL per slot: visual options (picture_choice etc.) get
-          generated illustrations — Gemini image API ("nanobanana"), prompt
-          asks for a COMPLETE illustrated scene (full background, no cutout —
-          the frontend renders it inside a bordered rounded tile, so a full
-          background reads fine there); raw PNG uploaded as-is to filebase
-          `lesson-images` (content-addressed). Skippable (--no-images) —
-          icons remain the fallback, NEVER emojis.
+images    OPTIONAL per slot: visual segments (picture_choice options,
+          memory_flip card sides) get illustrations from PRISM (picturegen/,
+          port 4007) — the platform's ONLY image service. Prism's
+          art-director judge (Qwen chat) turns {label, context, purpose}
+          into a detailed prompt carrying the LF illustration identity
+          (flat kid-friendly vector style, papaya/navy palette, complete
+          background scene — the frontend renders inside a rounded tile);
+          generation = official Qwen `qwen-image` on DashScope; a vision
+          verifier (qwen-vl) then inspects the ACTUAL pixels for readable
+          text/numerals and regenerates on a hit (qwen-image's text bias
+          cannot be prompted away — mechanical guarantee, up to 3 attempts);
+          the clean asset lands in Depot and is indexed in Vault
+          `picture_assets`, keyed on the REQUEST descriptor
+          (sha256(model+size+style_version+purpose+label+context), computed
+          BEFORE the judge) so an IDENTICAL request never hits the paid API
+          twice. Forge just embeds the returned public URL.
+          Skippable (--no-images) / PICTUREGEN_URL unset = clean skip —
+          icons remain the fallback, NEVER emojis. (Gemini discarded
+          2026-07-23: quota-0 on every Google image model.)
    ↓
 publish   upsert lesson + 3 lesson_documents rows via service role;
           document/answer_keys split server-side; lesson lands as
@@ -253,10 +419,96 @@ publish   upsert lesson + 3 lesson_documents rows via service role;
 **Retries & backoff:** schema-corrective retries and transport retries are
 SEPARATE counters — 429/5xx get jittered exponential backoff (0.5s→8s) without
 consuming correction attempts (fixes the sibling's known weakness).
+**Outer slot attempts (`FORGE_SLOT_ATTEMPTS`, default 3), STAGE-AWARE:** a
+judge rejection or write exhaustion (failure from pending/planned/written)
+resets the slot and regenerates it FROM SCRATCH — a fresh draw converges far
+better than more revise cycles on a bad draft (measured 2026-07-23). But a
+LATE-stage failure (from reviewed/localized/illustrated — a vocabulary re-gate
+hit, an empty title translation, a transient Vault/publish error) RESUMES from
+the checkpoint instead: the judge-approved document is sitting in the slot's
+data, and re-paying plan+write+revise+judge (~$0.05-0.08 and many minutes) to
+redo a stage whose input was fine is pure waste (2026-07-26 orchestration
+review). The checkpoint records `failedFrom` per failure; the LAST attempt
+always resets fully, so a deterministic late-stage failure still gets one
+fresh draw. This is the mass-generation convergence guarantee: with 3
+independent draws each passing the strict judge ~70%+ of the time, per-slot
+failure drops to low single digits, and `--slots` re-runs mop up the rest.
+Budget kill-switches still abort the whole run — retries can never spend past
+them. **Deterministic output sanitizers** run before every schema check:
+`stripNullValues` (DeepSeek stubbornly emits `null` for optional fields) and
+`repairDocument` (balance_scale subset-sum repair — weight[0] becomes the
+exact left-pan total when no subset works). The write prompt now carries the
+FULL blessed icon whitelist (the "invented icon" failure class became a
+lookup), and the judge prompt carries a fluency/drill calibration so
+speed_tap/memory_flip/lightning_round/flash_match/count_objects/measure_read
+are scored as automaticity practice (no leakage, story-grounded, meaningful
+items) rather than failed for not demanding multi-step reasoning.
 **Budget:** `FORGE_MAX_TOKENS_PER_RUN` + `FORGE_MAX_USD_PER_RUN` kill-switches
 checked before every call; every call logged to `runs/<id>/ledger.jsonl`
 (provider, model, tokens, est. USD). **Concurrency:** small pool
 (`FORGE_CONCURRENCY`, default 2).
+
+**`--dry-run` spends NOTHING and destroys NOTHING** — it stops before every
+paid stage (it used to only skip the final publish, so "validating" an
+enumeration paid the full generation bill; fixed 2026-07-26). A dry run
+validates the catalog + slot enumeration, marks each PRISTINE pending slot
+with the distinct `dry-run` checkpoint state (never `published` — a later real
+run under the same `--run-id` still does the work), leaves any slot with
+in-progress checkpoint data completely untouched (marking it would wipe paid,
+judge-approved work), and requires no API keys.
+
+**Mass runs — `npm run generate:track`** (`src/pipeline/track.ts`): the
+whole-course coordinator, bookkeeping only (never an LLM orchestrator). Shards
+the course PER ADVENTURE and executes the shards as sequential `runGeneration`
+invocations (one run-id/checkpoint per shard; concurrency stays inside each
+run). It owns what no single run can: (1) a GLOBAL cumulative budget — per-run
+budgets don't compose (every shard gets at least the $/run floor), so the
+track passes its REMAINING budget down as a hard per-invocation override; (2)
+the resume-vs-advance policy — HALT on a fatal provider error or an all-slots
+failure (systemic), RESUME a shard with unattempted work (never skip work),
+ADVANCE past stubborn slot-level failures into a mop-up list; (3) the
+cross-shard report (`runs/<track-id>/track-report.json`): per-shard outcomes,
+cost, prefix-cache hit % (the shard-1 canary), and a failure heatmap keyed by
+the stage each failure came from (`failedFrom`). The priorMicroObjective chain
+survives sharding by construction (enumeration precedes `--slots` filtering).
+
+**Telemetry — the durable scoreboard (Vault 0017).** At the end of every
+non-dry run, coursegen upserts `generation_runs` (params + full RunSummary +
+cost/cache/image totals), `generation_slots` (per-slot outcome, failure stage,
+salvage, wall-clock, judge rubric + revise cycles + early-stop) and — for
+tracks — `generation_tracks` (the full report). Service-role-only posture
+(RLS, zero client policies, like 0014/0015); the ONLY reader is the staff
+console (`/api/v1/admin/generation*` → `/admin/generation` dashboard: KPI
+cards, failure heatmap by stage, judge-dimension bars, per-lesson duration
+chart, full slot table). Ingest is swallow-on-failure — telemetry can never
+kill a run. Judge rubrics are also appended per run to
+`runs/<id>/rubrics.jsonl` (the coach's raw material).
+
+**Live telemetry — the "what is happening RIGHT NOW" signal (Vault 0018).**
+Complementing 0017's post-mortem scoreboard, coursegen NOW upserts a
+`generation_runs_live` heartbeat row on EVERY slot stage transition during an
+active run (a new `liveTelemetry.ts` module called by `processSlot` after each
+stage's `store.save`). The heartbeat carries active/completed/failed slot
+counts, a per-stage breakdown, cost ledger totals, and image counts —
+aggregated locally by the `LiveTelemetry` class and flushed to Vault on each
+slot completion. The row is DELETED when the run finishes (or becomes stale
+>2 min if the process dies). Core reads it through `GET
+/api/v1/admin/generation/live` (polled by the admin dashboard every ~2s) and
+`GET /api/v1/admin/generation/analytics` aggregates cost, quality, and failure
+trends across all historic runs. Same service-role-only posture as 0017: RLS
+enabled, ZERO client policies; the browser never touches Vault directly.
+**The improvement loop — `npm run coach` (`src/pipeline/coach.ts`).** Level 2
+of the self-improvement design (2026-07-26): offline, FREE, deterministic and
+PROPOSE-ONLY. Reads checkpoint + ledger + rubrics (+ track report), emits
+`coach-report.md`: outcomes, failure heatmap, recurring-error groups, judge
+dimension means/mins (with the ±0.4 noise disclaimer — scores are defect
+POINTERS, never an optimization target), revise-cycle histogram, cost per
+published lesson, cache-hit per operation, and PROPOSED actions each tied to
+evidence (dragging dimension → the exact playbook section; localize-stage
+deaths → vocab lists; low write cache-hit → prefix drift; kid_safety < 5 →
+immediate escalation). Applying a proposal is ALWAYS a human editing
+playbook/prompts/gates in a normal commit — the system never grades its own
+homework into kid-facing content (§1.9).
 
 ### §4 addendum — `forced_types` (QA/authoring override)
 
@@ -279,13 +531,44 @@ judging, translation, image generation, audio narration, and every Core/
 frontend endpoint — end to end, for a fraction of a real course's cost,
 before trusting the model to plan on its own at scale.
 
+### §4b Content quality — the CREATIVE bar (`src/pipeline/contentPlaybook.ts`)
+
+The deterministic gates and the schema enforce *correctness*; the content
+playbook enforces *value* — the answer to the 2026-07-23 QA verdict that
+exercises were mechanically valid but boring ("estúpidas, no aportan valor").
+It is one shared module injected into BOTH the `write` author (as its creative
+brief + age-tier reasoning ceiling) and the `review` judge (as binary,
+checkable engagement signals), so the same Duolingo/Brilliant-level bar the
+author aims for is the bar the judge rejects against — a boring-but-correct
+lesson now fails `cognitive_engagement`/`pedagogy` and loops or fails, instead
+of shipping.
+
+Core principles (each is a scoreable judge signal): **application over
+definition-recall** (make the kid USE a concept in a decision, never recite
+it); **concrete-before-abstract, faded** (grounded object → icon → symbol; the
+number is the last rung); **guided discovery** (let them attempt/decide first,
+reveal the rule in feedback — Brilliant-style); **a decision with a stake +
+a curiosity gap** (SDT autonomy; Loewenstein info-gap); **distractors tagged to
+a specific misconception** (each wrong option diagnostic, its misconception in
+`rationale_md`); **elaborated, outcome-neutral feedback** (Shute — teach the
+WHY, shown right or wrong, short and concrete); and a **per-tier abstraction
+ceiling** (Piaget: no profit/interest/percent/future-value for tier1 6-7;
+change-making & needs-vs-wants for tier2 8-11; profit/buying-to-sell/interest
+for tier3 11-13). Sources: retrieval practice & testing effect (Roediger;
+Sana & Yan interleaving), desirable difficulties (Bjork), concreteness fading
+(Fyfe & Nathan), formative feedback (Shute 2008), self-determination theory
+(Deci & Ryan), curiosity info-gap (Loewenstein), children's economic cognition
+(U. Wisconsin / GoHenry age milestones), Duolingo & Brilliant published design
+philosophy. The playbook text is deliberately tight — it ships in every write
+and review prompt, so every line must change what the model produces.
+
 ## §5 Providers
 
 | Role | Provider / model | Why |
 |---|---|---|
-| Author (plan/write/localize) | DeepSeek `deepseek-chat` (V3.x, JSON mode) | Cheapest capable JSON author; prompts do the heavy lifting |
+| Author (plan/write/localize) | DeepSeek `deepseek-v4-pro` (JSON mode; `DEEPSEEK_MODEL` — `deepseek-chat` deprecated 2026-07-24) | Cheapest capable JSON author; prompts do the heavy lifting |
 | Judge (review) | Qwen `qwen3-max` via DashScope compatible-mode (`qwen-plus` fallback env) | Independent provider decorrelates blind spots (LF-Brain pattern) |
-| Images | Gemini image API (nanobanana) — `GEMINI_API_KEY`, module ships ready, key pending | Visual options without emojis |
+| Images | Prism (`picturegen/`, HTTP `PICTUREGEN_URL`) → Qwen `qwen-image` on DashScope | Only image path; judge-crafted LF-identity prompts + Vault cache = never pay twice for the same request. Gemini discarded 2026-07-23 (quota-0) |
 | TTS | Echo (`audiogen/`) — qwen3-tts-flash | See its own service docs |
 
 All clients are raw `fetch` behind one `providers/` chokepoint with usage
@@ -324,7 +607,7 @@ Encodes mono MP3 (small, quality-preserving), stores in filebase
 the lesson_documents row. Idempotent by (lesson, locale, segment, voice,
 text-hash) — a voice change alone re-narrates just that unit.
 
-## §8 QA catalog — `coursegen/curriculum/qa-lesson-engine-smoketest/`
+## §8 QA catalog — `coursegen/curriculum/first-lemonade-stand/`
 
 A deliberately tiny, non-shipping course (62 lessons, never appears in §3.1b's
 sequence) that exercises the ENTIRE pipeline end to end before trusting it
@@ -337,4 +620,4 @@ and — once narrated — Echo end to end, plus every Core/frontend endpoint a
 real course would hit. `catalog:check` reports 0 errors and ~19 shape-quota
 WARNINGS by design (a compact QA catalog doesn't match real-course grammar —
 warnings, never errors, are the expected and correct outcome here). Run it
-first: `npm run generate -- --course qa-lesson-engine-smoketest`.
+first: `npm run generate -- --course first-lemonade-stand`.

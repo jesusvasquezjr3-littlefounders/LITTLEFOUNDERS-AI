@@ -1,7 +1,7 @@
 // `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
 
 import { z } from 'zod'
-import { idSchema, idText, markdownLite, segmentSchema, iconName } from '../../core/schemaBase'
+import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase'
 
 const sceneTint = z.enum(['primary', 'accent', 'success', 'warning', 'delight'])
 
@@ -73,10 +73,30 @@ export const countObjects = segmentSchema(
   'count_objects',
   z.object({
     scene: z
-      .array(z.object({ icon: iconName, tint: sceneTint.optional(), count: z.number().int().min(1).max(12) }))
+      .array(
+        z.object({
+          icon: iconName,
+          /**
+           * Human-readable object name — REQUIRED, because two separate systems have
+           * no fallback without it: the image stage illustrates by label (no label →
+           * no picture at all), and a screen reader announces it. It was `.optional()`
+           * until 2026-07-25, and prose in coursegen's author instructions could not
+           * override a schema that said otherwise — the published count-objects lesson
+           * carried only {icon, tint, count} and shipped as bare icons, with zero
+           * pictures, in all three locales.
+           */
+          label: z.string().min(1).max(40),
+          image_url: imageUrl.optional(),
+          tint: sceneTint.optional(),
+          count: z.number().int().min(1).max(12),
+        }),
+      )
       .min(1)
       .max(6),
     ask_icon: iconName,
+    /** REQUIRED for the same reason: the object being counted must be named in words. */
+    ask_label: z.string().min(1).max(40),
+    ask_image_url: imageUrl.optional(),
   }),
   z.object({ value: z.number().int().min(0) }),
 )

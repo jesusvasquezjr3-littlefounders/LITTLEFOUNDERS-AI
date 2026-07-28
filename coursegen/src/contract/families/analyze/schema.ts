@@ -1,7 +1,7 @@
 // `analyze` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.6, types 39–45).
 
-import { z } from 'zod';
-import { idSchema, idText, idLabel, markdownLite, segmentSchema } from '../../core/schemaBase.js';
+import { z } from 'zod'
+import { idSchema, idText, idLabel, markdownLite, segmentSchema } from '../../core/schemaBase.js'
 
 export const spotError = segmentSchema(
   'spot_error',
@@ -10,7 +10,7 @@ export const spotError = segmentSchema(
     steps: z.array(idText).min(3).max(10),
   }),
   z.object({ error_ids: z.array(idSchema).min(1), correction_md: markdownLite.optional() }),
-);
+)
 
 export const causeEffect = segmentSchema(
   'cause_effect',
@@ -19,7 +19,7 @@ export const causeEffect = segmentSchema(
     slots: z.number().int().min(3).max(6),
   }),
   z.object({ chain: z.array(idSchema).min(3).max(6) }),
-);
+)
 
 export const compareTable = segmentSchema(
   'compare_table',
@@ -30,7 +30,7 @@ export const compareTable = segmentSchema(
   }),
   // Cell keys are `"rowId:colId"`.
   z.object({ cells: z.record(z.string().min(3), idSchema) }),
-);
+)
 
 export const readChart = segmentSchema(
   'read_chart',
@@ -57,7 +57,7 @@ export const readChart = segmentSchema(
       .max(3),
   }),
   z.object({ correct: z.record(idSchema, idSchema) }),
-);
+)
 
 export const evidenceHunt = segmentSchema(
   'evidence_hunt',
@@ -66,7 +66,7 @@ export const evidenceHunt = segmentSchema(
     sentences: z.array(idText).min(3).max(12),
   }),
   z.object({ evidence_ids: z.array(idSchema).min(1) }),
-);
+)
 
 export const redFlags = segmentSchema(
   'red_flags',
@@ -76,7 +76,7 @@ export const redFlags = segmentSchema(
     flags: z.array(idText).min(4).max(10),
   }),
   z.object({ redflag_ids: z.array(idSchema).min(1) }),
-);
+)
 
 export const factOpinion = segmentSchema(
   'fact_opinion',
@@ -85,7 +85,7 @@ export const factOpinion = segmentSchema(
   }),
   // Every statement NOT in fact_ids is an opinion.
   z.object({ fact_ids: z.array(idSchema) }),
-);
+)
 
 export const analyzeSchemas = [
   spotError,
@@ -95,12 +95,12 @@ export const analyzeSchemas = [
   evidenceHunt,
   redFlags,
   factOpinion,
-] as const;
+] as const
 
-export type SpotErrorSegment = z.infer<typeof spotError>;
-export type CauseEffectSegment = z.infer<typeof causeEffect>;
-export type CompareTableSegment = z.infer<typeof compareTable>;
-export type ReadChartSegment = z.infer<typeof readChart>;
-export type EvidenceHuntSegment = z.infer<typeof evidenceHunt>;
-export type RedFlagsSegment = z.infer<typeof redFlags>;
-export type FactOpinionSegment = z.infer<typeof factOpinion>;
+export type SpotErrorSegment = z.infer<typeof spotError>
+export type CauseEffectSegment = z.infer<typeof causeEffect>
+export type CompareTableSegment = z.infer<typeof compareTable>
+export type ReadChartSegment = z.infer<typeof readChart>
+export type EvidenceHuntSegment = z.infer<typeof evidenceHunt>
+export type RedFlagsSegment = z.infer<typeof redFlags>
+export type FactOpinionSegment = z.infer<typeof factOpinion>

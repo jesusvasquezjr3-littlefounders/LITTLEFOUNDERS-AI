@@ -1,17 +1,19 @@
 // `storyplay` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.7, types 46–50).
 
-import { z } from 'zod';
+import { z } from 'zod'
 import {
   characterEmotionSchema,
   characterIdSchema,
   iconName,
   idSchema,
   idText,
+  idVisual,
+  imageUrl,
   markdownLite,
   segmentSchema,
-} from '../../core/schemaBase.js';
+} from '../../core/schemaBase.js'
 
-const quality = z.number().min(0).max(100);
+const quality = z.number().min(0).max(100)
 
 export const storyBranch = segmentSchema(
   'story_branch',
@@ -22,6 +24,7 @@ export const storyBranch = segmentSchema(
         z.object({
           id: idSchema,
           text_md: markdownLite,
+          image_url: imageUrl.optional(),
           character: characterIdSchema.optional(),
           emotion: characterEmotionSchema.optional(),
           choices: z
@@ -38,7 +41,7 @@ export const storyBranch = segmentSchema(
       .array(z.object({ node_id: idSchema, choice_id: idSchema, score: quality }))
       .min(1),
   }),
-);
+)
 
 // Reply qualities/reactions live ONLY in the answer (server-side) — the client
 // must never be able to read scores off the payload (§5.7 #47, security §3).
@@ -73,17 +76,17 @@ export const dialogueChoice = segmentSchema(
       )
       .min(1),
   }),
-);
+)
 
 export const flashMatch = segmentSchema(
   'flash_match',
   z.object({
-    left: z.array(idText).min(3).max(8),
-    right: z.array(idText).min(3).max(8),
+    left: z.array(idVisual).min(3).max(8),
+    right: z.array(idVisual).min(3).max(8),
     seconds: z.number().int().min(20).max(90),
   }),
   z.object({ pairs: z.array(z.tuple([idSchema, idSchema])).min(1) }),
-);
+)
 
 export const lightningRound = segmentSchema(
   'lightning_round',
@@ -93,7 +96,8 @@ export const lightningRound = segmentSchema(
         z.object({
           id: idSchema,
           prompt_md: markdownLite,
-          options: z.array(idText).min(2).max(4),
+          image_url: imageUrl.optional(),
+          options: z.array(idVisual).min(2).max(4),
         }),
       )
       .min(3)
@@ -101,13 +105,13 @@ export const lightningRound = segmentSchema(
     seconds_per_q: z.number().int().min(5).max(15),
   }),
   z.object({ correct: z.record(idSchema, idSchema) }),
-);
+)
 
 export const wouldYouRather = segmentSchema(
   'would_you_rather',
   z.object({
-    a: z.object({ text_md: markdownLite, icon: iconName.optional() }),
-    b: z.object({ text_md: markdownLite, icon: iconName.optional() }),
+    a: z.object({ text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }),
+    b: z.object({ text_md: markdownLite, icon: iconName.optional(), image_url: imageUrl.optional() }),
     followup_md: markdownLite.optional(),
   }),
   z.object({
@@ -115,7 +119,7 @@ export const wouldYouRather = segmentSchema(
     // ALWAYS present: both sides can be valid — the reveal teaches opportunity cost.
     reveal_md: markdownLite,
   }),
-);
+)
 
 export const storyplaySchemas = [
   storyBranch,
@@ -123,10 +127,10 @@ export const storyplaySchemas = [
   flashMatch,
   lightningRound,
   wouldYouRather,
-] as const;
+] as const
 
-export type StoryBranchSegment = z.infer<typeof storyBranch>;
-export type DialogueChoiceSegment = z.infer<typeof dialogueChoice>;
-export type FlashMatchSegment = z.infer<typeof flashMatch>;
-export type LightningRoundSegment = z.infer<typeof lightningRound>;
-export type WouldYouRatherSegment = z.infer<typeof wouldYouRather>;
+export type StoryBranchSegment = z.infer<typeof storyBranch>
+export type DialogueChoiceSegment = z.infer<typeof dialogueChoice>
+export type FlashMatchSegment = z.infer<typeof flashMatch>
+export type LightningRoundSegment = z.infer<typeof lightningRound>
+export type WouldYouRatherSegment = z.infer<typeof wouldYouRather>

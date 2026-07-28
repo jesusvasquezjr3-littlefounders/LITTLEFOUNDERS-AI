@@ -16,5 +16,25 @@
     "available": "disponible",
     "current": "empieza aquí",
     "passed": "completado"
+  },
+  "territory": {
+    "open": "Mapa del territorio",
+    "title": "Tu territorio",
+    "back": "Volver al camino",
+    "subtitle": "Todo lo que enseña este curso — y cuánto ya es tuyo.",
+    "loading": "Dibujando tu territorio…",
+    "progress": "Progreso del curso",
+    "progressLabel": "{{passed}} de {{total}} lecciones",
+    "reviewsDue": "{{count}} repaso pendiente",
+    "locked": "Territorio por desbloquear",
+    "reviewTopic": "Misión de repaso",
+    "lessonCount": "{{passed}}/{{total}} lecciones",
+    "reviewDueBadge": "¡Repasa!",
+    "state": {
+      "completed": "Completado",
+      "reviewDue": "Repaso pendiente",
+      "inProgress": "En progreso",
+      "notStarted": "Sin empezar"
+    }
   }
 }

@@ -90,7 +90,7 @@ interface LessonDocument {
 ```ts
 interface SegmentEnvelope {
   id: string
-  type: ExerciseType                  // one of the 56 type strings (§5)
+  type: ExerciseType                  // one of the 57 type strings (§5)
   title?: string
   prompt_md: string                   // MarkdownLite (§8). The kid-voiced instruction.
   difficulty: 1 | 2 | 3 | 4 | 5
@@ -132,17 +132,32 @@ Every family owns: `schema.ts` (payload+answer Zod), `grade.ts` (pure validators
 `register.ts` (its registry slice). The central registry composes family slices; adding
 a family never edits another family's files.
 
-**Interaction rule:** all manipulation is **tap-first** (tap token → tap slot). No
-drag-and-drop library; drags may be added later as progressive enhancement only.
-Touch = desktop = same interaction. ≥44px hit areas.
+**Interaction rule:** all manipulation is **tap-first** (tap token → tap slot).
+The classification types `sort_buckets`/`group_sets` add a **progressive-enhancement
+drag** (press-and-drag a chip into a bucket) on top of tap — implemented with
+native Pointer Events (no drag-and-drop library) in `arrange/components.tsx`'s
+`SortingBoard`; tap remains the accessible/keyboard fallback, so drag is never
+the ONLY way to place. Touch = desktop = same interaction. ≥44px hit areas.
 
-## §5 Taxonomy — 56 types
+## §5 Taxonomy — 57 types
 
 Notation per type: **`type_id`** — payload → answer → grading → mechanic.
-`IdText = {id, text_md}` · `IdLabel = {id, label}` · options carry `rationale_md`
-(REQUIRED on wrong options, optional on correct). Shared scoring helpers in §6.
+`IdText = {id, text_md}` · `IdVisual = {id, text_md, icon?, image_url?}` ·
+`IdLabel = {id, label}` · options carry `rationale_md` (REQUIRED on wrong
+options, optional on correct). Shared scoring helpers in §6.
 
-### 5.1 `story` family (content, ungraded — 5)
+**Visuals (2026-07-24):** every concrete-object item across the families carries
+an optional `image_url` (an AI illustration from Prism/picturegen), and EVERY
+segment carries an optional segment-level `image_url` "scene anchor" shown above
+the prompt. Concrete-object item arrays use `IdVisual` (was `IdText`). The
+shared `VisualMark` primitive renders the AI image when present, falling back to
+the Material `icon`, then to text — the single home of the "image preferred over
+icon" rule (`picture_choice`/`memory_flip` were the original two; the coursegen
+images stage now fills every such slot). A 40px monochrome glyph is not
+recognizable to a young child; the illustration is. Icons/text remain the
+zero-cost fallback — never emojis.
+
+### 5.1 `story` family (content, ungraded — 6)
 
 1. **`story_dialogue`** — `{ lines: [{character, emotion?, action?, text_md}] (1–12) }` →
    no answer → auto-complete → characters talk in sequence; tap advances line by line;
@@ -156,8 +171,33 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
 5. **`checkpoint`** — `{ recap_md, mood_prompt_md? }` → no answer → complete on
    self-mark (`got_it` | `review`) → mid-lesson recap + metacognitive self-check;
    the mark is session telemetry, never a grade (P6).
+57. **`eavesdrop`** — `{ context_md, lines: [{character, emotion?, text_md, notes?: string[]}] (2–10) }` →
+   no answer → complete when every line is revealed → an OVERHEARD money conversation
+   between canon characters, revealed turn by turn (the whole artifact is generated in
+   one pass and gated BEFORE display — the "live conversation" feel with zero ungated
+   runtime AI). Money terms/idioms are marked `==así==` INSIDE `text_md` and each
+   highlight carries exactly one tap-to-explain note, attached BY ORDER (the schema
+   rejects a count mismatch — keeping term and sentence in ONE string is what makes
+   localization unable to drift them apart). Narration (§12): `context` voices after
+   the prompt, each line in its own character's voice; notes are on-demand reading,
+   never narrated.
 
 ### 5.2 `choice` family (8)
+
+> **Display order never leaks the key (`core/shuffle.ts`).** Option lists, match
+> columns and token banks are rendered through `seededSort`, which orders items by
+> `mix32(hashCode(seed + key))` — seeded on the segment id so the order is stable
+> across re-renders and retries, but decorrelated from the authored order.
+> Grading is always id/order-based and never depends on display position, so
+> reordering is purely cosmetic. Content can opt out per segment with
+> `payload.shuffle: false`.
+>
+> The `mix32` avalanche is load-bearing, not decoration: sorting on the raw
+> polynomial hash was an identity permutation for every id convention the content
+> uses (`a/b/c/d`, `opt1..`, `t1..`), so from the engine's first release until
+> 2026-07-24 the shuffle silently did nothing and content that keyed the correct
+> answer as option "a" was passable by tapping the top item. Never "simplify"
+> `seededSort` back to a bare hash comparison — `core/shuffle.test.ts` pins this.
 
 6. **`quiz_mcq`** — `{ options: IdText&Rationale[] (2–6), shuffle?: boolean }` →
    `{ correct_option_id }` → binary; feedback = chosen option's `rationale_md` →
@@ -224,6 +264,16 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
     `{ order: id[] }` → positional ratio → arrange word tiles into the concept sentence.
 26. **`timeline_order`** — `{ events: [{id, text_md, icon?}] (3–7) }` → `{ order: id[] }` →
     positional ratio → place events on a visual left→right timeline.
+
+> **Multiple valid orderings (`accept_orders`).** All five fine-order graders
+> (`order_steps`, `rank_choices`, `build_sentence`, `timeline_order`, `code_order`)
+> accept an optional `answer.accept_orders: id[][]` — a list of additional full
+> orderings, each a permutation of `order`. The grader scores the child's answer
+> against `order` and every `accept_orders` entry and keeps the BEST, revealing the
+> accepted ordering nearest their attempt. This is how genuinely-swappable steps
+> ("verify price" ↔ "take payment") or alternative valid phrasings ("2 vasos por 10
+> pesos" ↔ "10 pesos por 2 vasos") avoid marking a defensible answer wrong. Each
+> entry must be a permutation of `order` (same ids) — enforced by gate 7.
 27. **`pattern_complete`** — `{ sequence: [{icon, tint}] shown, options: [{id, icon, tint}] (3–5), missing_slots (1–2) }` →
     `{ correct: {slot → option_id} }` → slot ratio → continue the visual pattern
     (pre-algebra pattern recognition).
@@ -268,7 +318,10 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
 ### 5.6 `analyze` family (7)
 
 39. **`spot_error`** — `{ context_md?, steps: IdText[] (3–10) }` →
-    `{ error_ids: id[], correction_md? }` → decision accuracy → find the flawed step(s).
+    `{ error_ids: id[], correction_md? }` → set F1 of the tapped set vs `error_ids`
+    (NOT decision accuracy: an untapped step is a default, not a decision, so
+    crediting it let "tap any one step" score 80 on a 10-step list) → find the
+    flawed step(s).
 40. **`cause_effect`** — `{ events: IdText[] (4–9, distractors ok), slots (3–6) }` →
     `{ chain: id[] }` → positional ratio → build the cause→effect chain.
 41. **`compare_table`** — `{ rows: IdLabel[] (2–4), cols: IdLabel[] (2–3), tokens: IdText[] }` →
@@ -288,8 +341,14 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
 ### 5.7 `storyplay` family (flows — 5)
 
 46. **`story_branch`** (flow) — `{ start_node, nodes: [{id, text_md, character?, emotion?, choices: [{id, text_md, next: id|null}]}] (2–12) }` →
-    `{ qualities: [{node_id, choice_id, score 0–100}] }` → mean quality of the chosen
-    path → branching decision story; wrong-ish paths still teach via consequences.
+    `{ qualities: [{node_id, choice_id, score 0–100}] }` → mean quality of the DECISIONS
+    on the chosen path → branching decision story; wrong-ish paths still teach via
+    consequences. A step taken at a node that offered only ONE choice (the authored
+    "continue"/ending beat) is **not** a decision and is not graded — crediting those
+    free steps let two keyed acknowledgements average a wrong decision up to a pass.
+    A tree with no multi-choice node keeps grading its forced steps (never unwinnable);
+    coursegen's gate 8 refuses to author that shape, an unkeyed choice at a real
+    decision node, an all-paths-pass key, or one no path can pass.
 47. **`dialogue_choice`** (flow) — `{ persona: {character, name?, role_md}, opening_md, turns: [{id, npc_md, replies: [{id, text_md, quality 0–100, react_md}]}] (2–6) }` →
     derived (qualities live in payload? NO — see note) → mean reply quality →
     scripted roleplay with an NPC character. **Note:** reply `quality`/`react_md` live
@@ -303,9 +362,13 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
     `{ correct: {question_id → option_id} }` → question ratio; in-round combo meter
     feeds the session streak → rapid-fire mini-quiz with momentum.
 50. **`would_you_rather`** — `{ a: {text_md, icon?}, b: {text_md, icon?}, followup_md? }` →
-    `{ qualities: {a: 0–100, b: 0–100}, reveal_md }` → chosen side's quality (both can
-    be 100 — genuine dilemmas allowed) → tradeoff pick; reveal explains what each choice
-    optimizes (opportunity cost made visceral).
+    `{ qualities: {a: 0–100, b: 0–100}, reveal_md }` → chosen side's quality → tradeoff
+    pick; reveal explains what each choice optimizes (opportunity cost made visceral).
+    The grader stays permissive (an all-zero map scores any valid pick 100, so no
+    published lesson is unwinnable) and reveals only WHICH side was rated higher, never
+    the raw numbers. Authoring is where the bar sits: it is ONE tap, so coursegen's
+    gate 8 refuses a key whose two sides BOTH clear `pass_threshold` — otherwise
+    "always tap the same card" is a complete strategy.
 
 ### 5.8 `maker` family (6)
 
@@ -329,7 +392,7 @@ Notation per type: **`type_id`** — payload → answer → grading → mechanic
     `{ value? | correct_option_id? }` → binary/tolerance → induce the function machine's
     rule from examples, predict the next output (functions before notation).
 
-**Counts:** 56 total = 5 content + 51 graded. Interaction coverage: select, multi-select,
+**Counts:** 57 total = 6 content + 51 graded. Interaction coverage: select, multi-select,
 type, slide, order, map, grid, allocate, tag, branch, flow-timed, simulate.
 
 ## §6 Grading
@@ -352,7 +415,8 @@ interface Verdict {
 
 **Shared helpers** (`core/scoring.ts`, pure, unit-tested numerically): `binary`,
 `ratio`, `kendall`, `footrule`, `positional`, `jaccard`, `decisionAccuracy`,
-`signalDetection`, `toleranceBands`, `linearFalloff` (log-aware), `allocationRanges`,
+`setF1` (asserted-set precision/recall — for "find the targets" toggles where NOT
+tapping is the default), `signalDetection`, `toleranceBands`, `linearFalloff` (log-aware), `allocationRanges`,
 `pathQuality`, `calibration`, `sumEquals`, `fuzzyEquals` (NFD accent-strip +
 Levenshtein budget ⌊len/8⌋).
 
@@ -437,7 +501,7 @@ type CharacterAction  = 'idle' | 'jump' | 'hop' | 'wave' | 'point' | 'celebrate'
   time, Check/Continue footer bar (thumb-reachable on mobile), results screen.
   Props: `{ document (stripped), grader, onExit, onComplete }` — course lessons and
   future tutor/personal lessons share the identical player with different graders.
-- **`/dev/lesson-lab`** (dev harness, gated out of production builds) — grid of all 56
+- **`/dev/lesson-lab`** (dev harness, gated out of production builds) — grid of all 57
   fixtures by family; click → plays that single-segment lesson with the local grader;
   plus "Showcase" — one full lesson containing every type. This is the visual QA
   surface and the living authoring contract.
@@ -467,6 +531,10 @@ types to production content NEVER breaks players that predate them.
   `rationale_md` is REQUIRED — a generated wrong option without a teaching rationale is
   invalid output. Difficulty/xp assignment rules and per-type generation prompt
   fragments live with Forge (`coursegen/AGENTS.md`), not here.
-- **Echo (audiogen):** narratable fields are `prompt_md`, `story` family bodies and
-  `explanation_md`; Echo stamps `audio_segment_id`. Voice = the segment's `narrator`
-  character (voice casting is Echo's decision, per-locale).
+- **Echo (audiogen):** narratable fields are `prompt_md`, `story` family bodies,
+  `explanation_md`, a `choices` roll-up (the choice-family option labels read in
+  order, so a pre-reader hears the whole exercise) and each `hint`
+  (`hint.<n>`); Echo stamps `audio_segment_id`. Unit ids follow
+  `${segment_id}.${field}`. Voice = the segment's `narrator` character (voice
+  casting is Echo's decision, per-locale). The player auto-plays prompt→choices
+  and voices a hint when the kid reveals it; any missing unit is a silent no-op.

@@ -24,6 +24,7 @@ import {
   type AdventureFile,
 } from './schema.js';
 import { ALL_TYPES } from '../contract/registry.js';
+import { checkProgression } from './progression.js';
 
 export interface LoadIssue {
   level: 'error' | 'warning';
@@ -680,6 +681,20 @@ export function checkCourseDirs(courseDirs: readonly string[]): CatalogCheckRepo
   for (const issue of requiresIssues) {
     const owner = results.find((r) => path.join(r.course.courseDir, 'catalog.yaml') === issue.file);
     if (owner) owner.issues.push(issue);
+  }
+
+  // PEDAGOGY (src/catalog/progression.ts) — the schema checks that a catalog is
+  // well-FORMED; these checks prove it is TEACHABLE: it opens where a beginner can
+  // start, never jumps difficulty by more than one step, revisits what it taught at
+  // expanding intervals, does not run the same lesson shape for too long, and does
+  // not saturate one sitting. Deterministic and free, so a 1000-lesson course's
+  // pedagogy is validated before a single paid API call.
+  for (const result of results) {
+    if (!result.course.catalog) continue;
+    const catalogFile = path.join(result.course.courseDir, 'catalog.yaml');
+    for (const issue of checkProgression(result.course)) {
+      result.issues.push({ level: issue.level, file: catalogFile, message: `progression/${issue.code}: ${issue.message}` });
+    }
   }
 
   const summaries: CourseCheckSummary[] = results.map((result) => {

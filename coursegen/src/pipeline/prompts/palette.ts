@@ -11,7 +11,7 @@ import { ALL_TYPES, TYPE_TO_FAMILY, type FamilyName } from '../../contract/regis
 
 // prettier-ignore
 export type ExerciseTypeId =
-  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint'
+  | 'story_dialogue' | 'story_scene' | 'key_ideas' | 'concept_reveal' | 'checkpoint' | 'eavesdrop'
   | 'quiz_mcq' | 'true_false' | 'picture_choice' | 'odd_one_out' | 'best_decision' | 'yes_no_cases' | 'speed_tap' | 'confidence_quiz'
   | 'type_answer' | 'fill_blank' | 'number_input' | 'estimate_slider' | 'count_objects' | 'equation_builder'
   | 'match_pairs' | 'memory_flip' | 'sort_buckets' | 'order_steps' | 'rank_choices' | 'build_sentence' | 'timeline_order' | 'pattern_complete' | 'group_sets' | 'number_line'
@@ -28,6 +28,7 @@ export const PALETTE_GUIDE: Record<ExerciseTypeId, string> = {
   key_ideas: 'Takeaway cards. payload:{ideas:[{icon,title,body_md}] 2-5}. No answer.',
   concept_reveal: 'Curiosity-gap flip cards. payload:{cards:[{front_md,back_md,icon?}] 2-6}. No answer.',
   checkpoint: 'Mid-lesson self-check (metacognition, never graded). payload:{recap_md, mood_prompt_md?}. No answer.',
+  eavesdrop: 'Overheard money conversation between canon characters, revealed turn by turn; ==highlighted== terms carry tap-to-explain notes (real locale expressions only). payload:{context_md, lines:[{character,emotion?,text_md,notes?}] 2-10}. No answer. Follow with a graded segment exercising the highlighted idea.',
   // -- choice --
   quiz_mcq: 'Single-choice with per-wrong-option rationale. payload:{options:IdText&rationale_md 2-6, shuffle?}. answer:{correct_option_id}.',
   true_false: 'Judge a claim, optionally justify. payload:{statement_md, justifications?:IdText 2-4}. answer:{is_true, correct_justification_id?}.',
@@ -74,11 +75,11 @@ export const PALETTE_GUIDE: Record<ExerciseTypeId, string> = {
   red_flags: 'Audit a realistic FAKE ad/message/deal for scam signals (safety-arc adventures only). payload:{artifact_md, artifact_kind, flags:IdText 4-10}. answer:{redflag_ids:id[] (>=1)}.',
   fact_opinion: 'Tag each statement fact vs opinion. payload:{statements:IdText 3-8}. answer:{fact_ids:id[]} — statements NOT listed are opinions.',
   // -- storyplay (flows) --
-  story_branch: 'Branching decision story — wrong-ish paths still teach. payload:{start_node, nodes:[{id,text_md,character?,emotion?,choices:[{id,text_md,next}]}] 2-12}. answer:{qualities:[{node_id,choice_id,score:0-100}]} — one entry per choice across the whole tree.',
+  story_branch: 'Branching decision story — wrong-ish paths still teach. payload:{start_node, nodes:[{id,text_md,character?,emotion?,choices:[{id,text_md,next}]}] 2-12}. answer:{qualities:[{node_id,choice_id,score:0-100}]} — one entry per choice of every MULTI-choice node (>=1 such node required; one-choice continue/ending nodes are NOT decisions and are not graded). Score the best turn 90-100 and poor turns 0-30 so some path fails and some path passes.',
   dialogue_choice: 'Scripted NPC roleplay. Reply quality/reactions live ONLY in the answer — never in payload. payload:{persona:{character,name?,role_md}, opening_md, turns:[{id,npc_md,replies:IdText 2-4}] 2-6}. answer:{turns:[{turn_id,qualities:{reply_id:0-100},reactions?:{reply_id:react_md}}]}.',
   flash_match: 'FLOW: speed-match under a timer. payload:{left:IdText 3-8, right:IdText 3-8, seconds 20-90}. answer:{pairs:[id,id][]}.',
   lightning_round: 'FLOW: rapid-fire mini-quiz. payload:{questions:[{id,prompt_md,options:IdText 2-4}] 3-8, seconds_per_q 5-15}. answer:{correct:{question_id:option_id}}.',
-  would_you_rather: 'Tradeoff pick — BOTH sides can score 100 (genuine dilemma teaches opportunity cost). payload:{a:{text_md,icon?}, b:{text_md,icon?}, followup_md?}. answer:{qualities:{a:0-100,b:0-100}, reveal_md} (reveal_md ALWAYS required).',
+  would_you_rather: 'Tradeoff pick — ONE tap, so exactly one side may be passable: key the better trade-off 90-100 and the weaker (but tempting) one 0-30, NEVER both high and never both 0. payload:{a:{text_md,icon?}, b:{text_md,icon?}, followup_md?}. answer:{qualities:{a:0-100,b:0-100}, reveal_md} (reveal_md ALWAYS required — it teaches the opportunity cost of the side not taken).',
   // -- maker --
   code_order: 'Arrange code blocks into a working program. payload:{blocks:IdText 3-8, language_hint?}. answer:{order:id[]} length == blocks.length.',
   robot_path: 'FLOW: queue commands, RUN, walk the grid. payload:{grid:{w,h} 3-6, start:{x,y,dir}, goal:{x,y}, walls?, commands:("forward"|"left"|"right")[], max_commands}. answer:{} (simulated — the grader re-runs `commands` against the grid).',

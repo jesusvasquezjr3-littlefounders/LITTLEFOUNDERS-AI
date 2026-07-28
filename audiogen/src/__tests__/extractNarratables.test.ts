@@ -169,6 +169,45 @@ describe('extractNarratables', () => {
   });
 });
 
+describe('extractNarratables — choices & hints (B4)', () => {
+  function doc(segment: Partial<LessonDocument['segments'][number]> & { id: string; type: string; payload: Record<string, unknown> }): LessonDocument {
+    return {
+      ...fixture,
+      segments: [{ prompt_md: 'Q', difficulty: 1, xp: 10, ...segment } as LessonDocument['segments'][number]],
+    };
+  }
+
+  it('emits a `choices` roll-up reading option labels in order for choice types', () => {
+    const units = extractNarratables(
+      doc({ id: 'q', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: '**5** pesos' }, { id: 'b', text_md: '20 pesos' }] } }),
+    );
+    const choices = units.find((u) => u.unit_id === 'q.choices');
+    expect(choices?.text).toBe('5 pesos. 20 pesos');
+  });
+
+  it('reads would_you_rather a/b sides', () => {
+    const units = extractNarratables(
+      doc({ id: 'w', type: 'would_you_rather', payload: { a: { text_md: 'Save it' }, b: { text_md: 'Spend it' } } }),
+    );
+    expect(units.find((u) => u.unit_id === 'w.choices')?.text).toBe('Save it. Spend it');
+  });
+
+  it('does NOT emit choices for non-choice types or single-option payloads', () => {
+    const arrange = extractNarratables(doc({ id: 'm', type: 'match_pairs', payload: { left: [{ id: 'l', text_md: 'x' }], right: [{ id: 'r', text_md: 'y' }] } }));
+    expect(arrange.some((u) => u.field === 'choices')).toBe(false);
+    const single = extractNarratables(doc({ id: 's', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: 'only' }] } }));
+    expect(single.some((u) => u.field === 'choices')).toBe(false);
+  });
+
+  it('emits one hint unit per hint, markdown-stripped', () => {
+    const units = extractNarratables(
+      doc({ id: 'h', type: 'quiz_mcq', hints: ['Think about *cost*', 'It ends in **5**'], payload: { options: [{ id: 'a', text_md: 'A' }, { id: 'b', text_md: 'B' }] } }),
+    );
+    expect(units.find((u) => u.unit_id === 'h.hint.0')?.text).toBe('Think about cost');
+    expect(units.find((u) => u.unit_id === 'h.hint.1')?.text).toBe('It ends in 5');
+  });
+});
+
 describe('stripMarkdown', () => {
   it('strips bold, italic, code and list markers', () => {
     expect(stripMarkdown('**bold** and *italic* and `code`')).toBe('bold and italic and code');
@@ -177,5 +216,42 @@ describe('stripMarkdown', () => {
 
   it('drops blank lines and trims', () => {
     expect(stripMarkdown('  hello  \n\n  world  ')).toBe('hello. world');
+  });
+});
+
+describe('eavesdrop (type 57)', () => {
+  it('narrates context after the prompt, each line in its own character voice, highlights stripped, notes silent', () => {
+    const document = {
+      schema_version: 1,
+      meta: { slug: 'e', title: 'E', locale: 'es-MX', subject: 'money', estimated_minutes: 3, objectives: ['x'], cast: ['zara', 'rho'] },
+      scoring: { pass_threshold: 70, hint_penalty_pct: 10, max_attempts: 2, hearts: null },
+      segments: [
+        {
+          id: 'e1',
+          type: 'eavesdrop',
+          prompt_md: 'Escucha a los vendedores.',
+          difficulty: 1,
+          xp: 0,
+          payload: {
+            context_md: 'Es sábado en el mercado.',
+            lines: [
+              { character: 'zara', text_md: 'Hoy vamos a ==salir tablas==.', notes: ['No ganar ni perder.'] },
+              { character: 'rho', text_md: 'Yo aparto mi fondo primero.' },
+            ],
+          },
+        },
+      ],
+    } as never;
+
+    const units = extractNarratables(document);
+    const ids = units.map((u) => u.unit_id);
+    expect(ids).toEqual(['e1.prompt', 'e1.context', 'e1.line.0', 'e1.line.1']);
+    // ==markers== never reach the TTS text
+    expect(units[2]?.text).toBe('Hoy vamos a salir tablas.');
+    // per-line character drives the voice map
+    expect(units[2]?.character).toBe('zara');
+    expect(units[3]?.character).toBe('rho');
+    // tap-to-explain notes are NOT narrated
+    expect(units.some((u) => u.text.includes('No ganar ni perder'))).toBe(false);
   });
 });

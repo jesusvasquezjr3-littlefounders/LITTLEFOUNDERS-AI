@@ -4,7 +4,7 @@
 
 ## Architecture summary (locked 2026-07-11)
 
-8 independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
+Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
 
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
@@ -93,13 +93,13 @@ Depot, ~1.5–3 dedicated days; calibrate with a 1-saga pilot first.
 skeleton, skipping the plan-stage LLM call) and Echo gained the real
 per-character × per-locale **voice map** (`voiceFor()` — story/scene speaker →
 segment narrator → locale default, 12 optional override env vars). A 4th,
-non-shipping course — `qa-lesson-engine-smoketest` (62 lessons: one per each
+non-shipping course — `first-lemonade-stand` (62 lessons: one per each
 of the 56 LESSON_ENGINE types, 4 sequencing combos, a review-layer check) —
 exercises text, all gates, the judge, both localizations, images, and (once
 narrated) Echo end to end for a fraction of a real course's cost. GEMINI_API_KEY
 verified live against the real API (HTTP 200, `gemini-2.5-flash-image`
 confirmed available). Not yet run — `npm run generate -- --course
-qa-lesson-engine-smoketest` still costs real money and needs a go-ahead;
+first-lemonade-stand` still costs real money and needs a go-ahead;
 character voice files are pending (owner to provide the location).
 
 Next, in Jesús's stated order of interest:
@@ -109,6 +109,17 @@ Next, in Jesús's stated order of interest:
   start with a 1-saga `--slots` pilot to calibrate cost/latency from the ledger).
 - **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
   (Testing Tutor ↔ Testing Niño seed pair exists for this).
+- **Admin Generation Dashboard v2 (2026-07-27 — Phase 1 + 2 shipped):**
+  - ✅ Phase 1 (backend + coursegen): Live telemetry (0018), `liveTelemetry.ts`, Core endpoints `/admin/generation/live` + `/admin/generation/analytics`.
+  - ✅ Phase 2 (frontend): React Flow interactive canvas (`PipelineFlow.tsx`), live stats panel with 2s polling (`LiveStats.tsx`), cross-run analytics charts (`AnalyticsCharts.tsx`), three-tab layout (Live Monitor / Run History / Analytics) in `/admin/generation`. i18n in 3 locales.
+- **Admin dashboard hardening (2026-07-28 — shipped):**
+  - ✅ Content + Moderation merged into single unified page (`/admin/content`).
+  - ✅ Admin Users stats bar — role/local/age group distributions with charts.
+  - ✅ Signup timeline chart — SVG bar chart with 30d/90d/1y period selector.
+  - ✅ Email tracking infrastructure — migration 0021 (`email_logs`), email-server ring-buffer logger + `/api/v1/logs` endpoints, Core proxy `/admin/emails/*`, frontend email dashboard with pagination and KPI cards.
+  - ✅ Cybersecurity audit — 6 vulnerabilities fixed (Zod validation on unvalidated query params, proxy response shape validation, fetch timeouts).
+  - ✅ Staff Tutor-upgrade card hidden for admin/superadmin.
+  - ✅ React Router v7 future flags — silenced console warnings.
 
 ## Next up (post-sprint backlog, unordered)
 

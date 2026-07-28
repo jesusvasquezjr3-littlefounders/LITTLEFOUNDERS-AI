@@ -38,6 +38,8 @@ export interface SegmentBase {
   id: string
   type: string
   title?: string
+  /** Optional segment-level "scene anchor" illustration (Prism pipeline). */
+  image_url?: string
   prompt_md: string
   difficulty: 1 | 2 | 3 | 4 | 5
   xp: number
@@ -75,6 +77,8 @@ export interface Verdict {
 export interface GradeMeta {
   attempt_number: number
   time_spent_seconds?: number
+  /** Hints the kid revealed before this submission — the server applies the penalty. */
+  hints_used?: number
 }
 
 /** Pluggable grading boundary. Production: Core endpoint. Dev harness: local grader. */

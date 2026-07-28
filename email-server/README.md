@@ -30,7 +30,9 @@ Both processes run in one container, supervised by [`src/index.ts`](src/index.ts
 | Method | Path | Description |
 |---|---|---|
 | GET | /health | Service health envelope `{ data: { service, version, status: "ok" }, error: null }` |
-| POST | /api/v1/send | `{ to, subject, html?, text? }` → `202 { data: { id, status: "queued" }, error: null }`. Requires `x-internal-api-key`. |
+| POST | /api/v1/send | `{ to, subject, html?, text?, templateType?, locale?, userId? }` → `202 { data: { id, status: "queued" }, error: null }`. Requires `x-internal-api-key`. Logs to ring buffer. |
+| GET | /api/v1/logs | Query: `?limit=1-200&offset=0+`. Returns paginated email history from ring buffer. Requires `x-internal-api-key`. |
+| GET | /api/v1/logs/summary | Returns `{ total, statuses, templates }` aggregate. Requires `x-internal-api-key`.
 
 ## Environment
 

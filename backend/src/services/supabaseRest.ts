@@ -221,15 +221,16 @@ export interface LearningStatsRow {
   minutes_learned: number;
   lessons_completed: number;
   streak_days: number;
+  longest_streak: number;
   last_active_date?: string | null;
 }
 
-const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, last_active_date: null };
+const ZERO_STATS: LearningStatsRow = { xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, longest_streak: 0, last_active_date: null };
 
 /** Self or guardian, per RLS. Every user has a row (0006 trigger) — zeroed default is a defensive fallback only. */
 export async function getLearningStats(accessToken: string, userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     accessToken,
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -237,7 +238,7 @@ export async function getLearningStats(accessToken: string, userId: string): Pro
 
 export async function getLearningStatsByUserId(userId: string): Promise<LearningStatsRow> {
   const rows = await rest<LearningStatsRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? ZERO_STATS;
@@ -251,7 +252,7 @@ export interface LearningStatsForUpdateRow extends LearningStatsRow {
 
 export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
-    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,last_active_date`,
+    `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
   return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
@@ -461,9 +462,13 @@ export interface TopicHierarchyRow {
   position: number;
   slug: string;
   title: Json;
+  /** Spaced-review projection (0016): 'teaching' | review kinds. */
+  kind: string;
+  /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") this review topic cites. */
+  review_of: string[];
 }
 
-const TOPIC_FIELDS = 'id,saga_id,position,slug,title';
+const TOPIC_FIELDS = 'id,saga_id,position,slug,title,kind,review_of';
 
 export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Promise<TopicHierarchyRow[] | null> {
   if (sagaIds.length === 0) return Promise.resolve([]);
@@ -551,34 +556,62 @@ export interface SegmentAttemptRow {
   score: number;
 }
 
-/** Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own token is enough. */
-export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string): Promise<SegmentAttemptRow[] | null> {
+/**
+ * Self-read (RLS `user_id = auth.uid() OR verified guardian`) — the user's own
+ * token is enough. When `runId` is given, only THIS run's attempts are returned
+ * so /complete scores the run the kid just played, not a lifetime best (0012).
+ */
+export function getSegmentAttempts(accessToken: string, userId: string, lessonId: string, runId?: string): Promise<SegmentAttemptRow[] | null> {
+  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
   return rest<SegmentAttemptRow[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&select=segment_id,attempt_number,score`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}${runFilter}&select=segment_id,attempt_number,score`,
     accessToken,
   );
 }
 
-export async function countSegmentAttempts(accessToken: string, userId: string, lessonId: string, segmentId: string): Promise<number> {
+/**
+ * Count prior attempts for a segment. When `runId` is given (the client's
+ * per-lesson-entry id, 0012) only rows from THAT run count, so replaying a
+ * completed lesson starts each segment fresh instead of hitting the lifetime
+ * cap. Omitting it keeps the legacy lifetime count.
+ */
+export async function countSegmentAttempts(
+  accessToken: string,
+  userId: string,
+  lessonId: string,
+  segmentId: string,
+  runId?: string,
+): Promise<number> {
+  const runFilter = runId ? `&run_id=eq.${eu(runId)}` : '';
   const rows = await rest<unknown[]>(
-    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}&select=segment_id`,
+    `/lesson_segment_attempts?user_id=eq.${eu(userId)}&lesson_id=eq.${eu(lessonId)}&segment_id=eq.${es(segmentId)}${runFilter}&select=segment_id`,
     accessToken,
   );
   return rows?.length ?? 0;
 }
 
-/** No client INSERT policy (0007) — Core (service role) records every graded attempt. */
+/** No client INSERT policy (0007) — Core (service role) records every graded attempt. `score` is the hint-penalized, server-authoritative score (0012). */
 export async function insertSegmentAttempt(
   userId: string,
   lessonId: string,
   segmentId: string,
   attemptNumber: number,
   score: number,
+  runId?: string,
+  hintsUsed = 0,
 ): Promise<boolean> {
   const res = await rest<unknown>('/lesson_segment_attempts', serviceToken(), {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ user_id: userId, lesson_id: lessonId, segment_id: segmentId, attempt_number: attemptNumber, score }),
+    body: JSON.stringify({
+      user_id: userId,
+      lesson_id: lessonId,
+      segment_id: segmentId,
+      attempt_number: attemptNumber,
+      score,
+      ...(runId ? { run_id: runId } : {}),
+      hints_used: hintsUsed,
+    }),
   });
   return res !== null;
 }
@@ -600,7 +633,7 @@ export async function upsertLessonProgress(
 /** Learning stats are system-written only (0006) — Core applies the XP/lesson/minute/streak delta via service role. */
 export async function patchLearningStats(
   userId: string,
-  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; last_active_date?: string },
+  patch: { xp_points: number; minutes_learned: number; lessons_completed: number; streak_days: number; longest_streak?: number; last_active_date?: string },
 ): Promise<boolean> {
   const res = await restRaw(`/learning_stats?user_id=eq.${eu(userId)}`, serviceToken(), {
     method: 'PATCH',
@@ -678,4 +711,55 @@ export async function revokeRole(userId: string, role: string): Promise<boolean>
     headers: { Prefer: 'return=minimal' },
   });
   return res !== null;
+}
+
+// ── Family (guardian-brokered reads — routes/family.ts) ─────────────────────
+
+export interface GuardianLinkRow {
+  parent_user_id: string;
+  kid_user_id: string;
+  verification_status: string;
+}
+
+/** The caller's VERIFIED kid links. Service role: guardian_links has no parent SELECT policy; the route layer is the guard (§1.3 app-layer half). */
+export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkRow[] | null> {
+  return serviceRest<GuardianLinkRow[]>(
+    `/guardian_links?parent_user_id=eq.${eu(parentUserId)}&verification_status=eq.verified&select=parent_user_id,kid_user_id,verification_status`,
+  );
+}
+
+export interface KidProfileRow {
+  user_id: string;
+  display_name: string | null;
+  username: string | null;
+}
+
+/** WHITELISTED kid profile fields for the family dashboard — never the whole row (mirrors the /@username whitelist discipline). */
+export function getKidProfiles(kidIds: string[]): Promise<KidProfileRow[] | null> {
+  if (kidIds.length === 0) return Promise.resolve([]);
+  return serviceRest<KidProfileRow[]>(`/profiles?user_id=${inFilter(kidIds)}&select=user_id,display_name,username`);
+}
+
+export interface KidLearningStatsRow {
+  user_id: string;
+  xp_points: number;
+  lessons_completed: number;
+  streak_days: number;
+  longest_streak: number;
+  last_active_date: string | null;
+}
+
+/** A kid's learning_stats row, read AFTER the route verified the guardian link. */
+export function getKidLearningStats(kidId: string): Promise<KidLearningStatsRow[] | null> {
+  return serviceRest<KidLearningStatsRow[]>(
+    `/learning_stats?user_id=eq.${eu(kidId)}&select=user_id,xp_points,lessons_completed,streak_days,longest_streak,last_active_date`,
+  );
+}
+
+/** A kid's lesson_progress rows, read AFTER the route verified the guardian link (parent tokens can't pass lesson_progress_select_own). */
+export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
+  if (lessonIds.length === 0) return Promise.resolve([]);
+  return serviceRest<LessonProgressRow[]>(
+    `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+  );
 }

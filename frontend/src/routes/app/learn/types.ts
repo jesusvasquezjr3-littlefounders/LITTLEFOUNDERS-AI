@@ -26,11 +26,17 @@ export interface LessonNode {
   bestScore: number
 }
 
+/** Territory-map state per topic — server-derived (courseTree.ts, 0016), never self-reported. */
+export type TopicState = 'not-started' | 'in-progress' | 'completed' | 'review-due'
+
 export interface TopicNode {
   id: string
   slug: string
   title: Json
   position: number
+  kind: string
+  reviewOf: string[]
+  state: TopicState
   lessons: LessonNode[]
 }
 
