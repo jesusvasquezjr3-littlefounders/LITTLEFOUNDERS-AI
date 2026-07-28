@@ -109,6 +109,9 @@ Next, in Jesús's stated order of interest:
   start with a 1-saga `--slots` pilot to calibrate cost/latency from the ledger).
 - **Kid accounts from the Tutor dashboard** — creation + guardian linking UX
   (Testing Tutor ↔ Testing Niño seed pair exists for this).
+- **Admin Generation Dashboard v2 (2026-07-27 — Phase 1 + 2 shipped):**
+  - ✅ Phase 1 (backend + coursegen): Live telemetry (0018), `liveTelemetry.ts`, Core endpoints `/admin/generation/live` + `/admin/generation/analytics`.
+  - ✅ Phase 2 (frontend): React Flow interactive canvas (`PipelineFlow.tsx`), live stats panel with 2s polling (`LiveStats.tsx`), cross-run analytics charts (`AnalyticsCharts.tsx`), three-tab layout (Live Monitor / Run History / Analytics) in `/admin/generation`. i18n in 3 locales.
 
 ## Next up (post-sprint backlog, unordered)
 

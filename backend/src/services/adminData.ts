@@ -481,3 +481,699 @@ export async function getGenerationRun(runId: string): Promise<GenerationRunDeta
     })),
   };
 }
+
+// ── Live generation (0018 — the "what is happening RIGHT NOW" signal) ────────
+
+export interface LiveRunHeartbeat {
+  runId: string;
+  trackId: string | null;
+  courseSlug: string;
+  register: string;
+  activeSlots: number;
+  completedSlots: number;
+  failedSlots: number;
+  totalSlots: number;
+  stageBreakdown: Record<string, number>;
+  tokensUsed: number;
+  usdUsed: number;
+  cachedTokens: number;
+  imagesGenerated: number;
+  imagesBilled: number;
+  imagesInherited: number;
+  startedAt: string;
+  updatedAt: string;
+}
+
+export interface LiveGenerationStatus {
+  activeRuns: LiveRunHeartbeat[];
+}
+
+export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> {
+  const rows = await serviceRest<
+    {
+      run_id: string;
+      track_id: string | null;
+      course_slug: string;
+      register: string;
+      active_slots: number;
+      completed_slots: number;
+      failed_slots: number;
+      total_slots: number;
+      stage_breakdown: Record<string, number>;
+      tokens_used: number;
+      usd_used: number | string;
+      cached_tokens: number;
+      images_generated: number;
+      images_billed: number;
+      images_inherited: number;
+      started_at: string;
+      updated_at: string;
+    }[]
+  >('/generation_runs_live?select=*&order=updated_at.desc&limit=10');
+  if (!rows) return null;
+  // Stale rows (>2 min no update) mean the run process died — filter them out.
+  const now = Date.now();
+  const TWO_MIN = 2 * 60 * 1000;
+  const fresh = rows.filter((r) => now - new Date(r.updated_at).getTime() < TWO_MIN);
+  return {
+    activeRuns: fresh.map((r) => ({
+      runId: r.run_id,
+      trackId: r.track_id,
+      courseSlug: r.course_slug,
+      register: r.register,
+      activeSlots: r.active_slots,
+      completedSlots: r.completed_slots,
+      failedSlots: r.failed_slots,
+      totalSlots: r.total_slots,
+      stageBreakdown: r.stage_breakdown,
+      tokensUsed: r.tokens_used,
+      usdUsed: Number(r.usd_used),
+      cachedTokens: r.cached_tokens,
+      imagesGenerated: r.images_generated,
+      imagesBilled: r.images_billed,
+      imagesInherited: r.images_inherited,
+      startedAt: r.started_at,
+      updatedAt: r.updated_at,
+    })),
+  };
+}
+
+// ── Cross-run analytics (trends, failure patterns, quality over time) ───────
+
+export interface GenerationAnalytics {
+  courseSlug: string | null;
+  runsAnalyzed: number;
+  costTrend: { runId: string; updatedAt: string; usdPerPublished: number | null; tokensPerLesson: number | null }[];
+  qualityTrend: { runId: string; updatedAt: string; dimMeans: Record<string, number | null> }[];
+  cacheEfficiency: { runId: string; updatedAt: string; cacheHitPct: number }[];
+  failureByStage: { stage: string; count: number; pct: number }[];
+  failureByLocale: { locale: string; count: number; pct: number }[];
+  stageSuccessRate: { stage: string; passed: number; failed: number; rate: number };
+  costForecast: { perLesson: number | null; perCourse: number | null; basedOn: number } | null;
+  averages: {
+    costPerPublished: number | null;
+    tokensPerLesson: number | null;
+    cacheHitPct: number | null;
+  };
+}
+
+const ANALYTICS_LIMIT = 50;
+
+export async function getGenerationAnalytics(courseSlug?: string): Promise<GenerationAnalytics | null> {
+  const filter = courseSlug
+    ? `&course_slug=eq.${encodeURIComponent(courseSlug)}`
+    : '';
+  const runs = await serviceRest<
+    {
+      run_id: string;
+      course_slug: string;
+      register: string;
+      params: Record<string, unknown>;
+      summary: {
+        published?: string[];
+        failed?: { slotId: string; error: string; failedFrom?: string }[];
+        slotsEnumerated?: number;
+      } & Record<string, unknown>;
+      tokens_used: number;
+      usd_used: number | string;
+      cached_tokens: number;
+      updated_at: string;
+    }[]
+  >(
+    `/generation_runs?select=run_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,updated_at` +
+      `&order=updated_at.desc&limit=${ANALYTICS_LIMIT}${filter}`,
+  );
+  if (!runs || runs.length === 0) return null;
+
+  const filtered = runs.filter((r) => (r.summary.published?.length ?? 0) > 0 || (r.summary.failed?.length ?? 0) > 0);
+  if (filtered.length === 0) return null;
+
+  const costTrend = filtered.map((r) => {
+    const published = r.summary.published?.length ?? 0;
+    return {
+      runId: r.run_id,
+      updatedAt: r.updated_at,
+      usdPerPublished: published > 0 ? Number(r.usd_used) / published : null,
+      tokensPerLesson: published > 0 ? r.tokens_used / published : null,
+    };
+  });
+
+  // Batch-fetch rubric slots for all runs in ONE query
+  const allSlots = await serviceRest<
+    {
+      run_id: string;
+      rubric: Record<string, number | string> | null;
+    }[]
+  >(
+    `/generation_slots?or=(${filtered.map((r) => `run_id.eq.${encodeURIComponent(r.run_id)}`).join(',')})&select=run_id,rubric&rubric=not.is.null&limit=500`,
+  );
+  const slotsByRun = new Map<string, { rubric: Record<string, number | string> | null }[]>();
+  if (allSlots) {
+    for (const s of allSlots) {
+      const list = slotsByRun.get(s.run_id) ?? [];
+      list.push(s);
+      slotsByRun.set(s.run_id, list);
+    }
+  }
+
+  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const qualityTrend: GenerationAnalytics['qualityTrend'] = [];
+  for (const r of filtered) {
+    const runSlots = slotsByRun.get(r.run_id) ?? [];
+    if (runSlots.length === 0) {
+      qualityTrend.push({ runId: r.run_id, updatedAt: r.updated_at, dimMeans: {} });
+      continue;
+    }
+    const dimMeans: Record<string, number | null> = {};
+    for (const dim of dims) {
+      const values = runSlots
+        .map((s) => s.rubric?.[dim])
+        .filter((v): v is number => typeof v === 'number');
+      dimMeans[dim] = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : null;
+    }
+    qualityTrend.push({ runId: r.run_id, updatedAt: r.updated_at, dimMeans });
+  }
+
+  const cacheEfficiency = filtered.map((r) => ({
+    runId: r.run_id,
+    updatedAt: r.updated_at,
+    cacheHitPct: r.tokens_used > 0 ? (r.cached_tokens / r.tokens_used) * 100 : 0,
+  }));
+
+  const stageCounts = new Map<string, number>();
+  let totalFailures = 0;
+  for (const r of filtered) {
+    for (const f of r.summary.failed ?? []) {
+      const stage = f.failedFrom ?? 'unknown';
+      stageCounts.set(stage, (stageCounts.get(stage) ?? 0) + 1);
+      totalFailures++;
+    }
+  }
+  const failureByStage = [...stageCounts.entries()]
+    .map(([stage, count]) => ({ stage, count, pct: totalFailures > 0 ? (count / totalFailures) * 100 : 0 }))
+    .sort((a, b) => b.count - a.count);
+
+  // Locale stats approximated from the params.locales field or from run register.
+  const localeCounts = new Map<string, number>();
+  for (const r of filtered) {
+    const locales: string[] = r.params?.locales as string[] ?? ['es-MX', 'en-US', 'pt-BR'];
+    for (const locale of locales) {
+      localeCounts.set(locale, (localeCounts.get(locale) ?? 0) + 1);
+    }
+  }
+
+  const allPublished = filtered.reduce((n, r) => n + (r.summary.published?.length ?? 0), 0);
+  const totalCost = filtered.reduce((n, r) => n + Number(r.usd_used), 0);
+  const totalTokens = filtered.reduce((n, r) => n + r.tokens_used, 0);
+  const totalCached = filtered.reduce((n, r) => n + r.cached_tokens, 0);
+
+  // Stage success rate: across all runs, how many slots attempted per stage
+  // survived vs failed at that stage. Approximated from failureHeatmap.
+  const allAttempted = allPublished + totalFailures;
+  const stageSuccess = {
+    stage: 'overall',
+    passed: allPublished,
+    failed: totalFailures,
+    rate: allAttempted > 0 ? (allPublished / allAttempted) * 100 : 0,
+  };
+
+  // Cost forecast: based on published lesson cost average across runs
+  const costPerLessonAvg = allPublished > 0 ? totalCost / allPublished : null;
+  let costForecast: GenerationAnalytics['costForecast'] = null;
+  if (costPerLessonAvg !== null && allPublished > 5) {
+    // Estimate for a typical course (~500 lessons)
+    costForecast = {
+      perLesson: costPerLessonAvg,
+      perCourse: costPerLessonAvg * 500,
+      basedOn: allPublished,
+    };
+  }
+
+  return {
+    courseSlug: courseSlug ?? null,
+    runsAnalyzed: filtered.length,
+    costTrend,
+    qualityTrend,
+    cacheEfficiency,
+    failureByStage,
+    failureByLocale: [...localeCounts.entries()].map(([locale, count]) => ({
+      locale,
+      count,
+      pct: filtered.length > 0 ? (count / filtered.length) * 100 : 0,
+    })),
+    stageSuccessRate: stageSuccess,
+    costForecast,
+    averages: {
+      costPerPublished: allPublished > 0 ? totalCost / allPublished : null,
+      tokensPerLesson: allPublished > 0 ? totalTokens / allPublished : null,
+      cacheHitPct: totalTokens > 0 ? (totalCached / totalTokens) * 100 : null,
+    },
+  };
+}
+
+// ── Coach report (forge:coach surfaced in the admin dashboard) ─────────────
+
+export interface CoachReport {
+  courseSlug: string | null;
+  trackId: string | null;
+  runsAnalyzed: number;
+  outcomes: { published: number; failed: number; other: number };
+  failureHeatmap: Record<string, number>;
+  topErrors: { sample: string; count: number }[];
+  judge: {
+    judged: number;
+    dimensionMeans: Record<string, number | null>;
+    dimensionMins: Record<string, number | null>;
+    cyclesHistogram: { cycle1: number; cycle2: number; cycle3: number; earlyStops: number };
+    worstLessons: { slotId: string; dims: string[] }[];
+  };
+  cost: { totalUsd: number; totalTokens: number; cacheHitPct: number };
+  images: { generated: number; billed: number; inherited: number };
+  proposedActions: { tag: string; proposal: string; evidence: string }[];
+}
+
+const COACH_LIMIT = 20;
+
+export async function getCoachReport(courseSlug?: string, trackId?: string): Promise<CoachReport | null> {
+  let filter = courseSlug ? `&course_slug=eq.${encodeURIComponent(courseSlug)}` : '';
+  if (trackId) filter += `&track_id=eq.${encodeURIComponent(trackId)}`;
+
+  const runs = await serviceRest<
+    {
+      run_id: string;
+      track_id: string | null;
+      course_slug: string;
+      summary: {
+        published?: string[];
+        failed?: { slotId: string; error: string; failedFrom?: string }[];
+        dryRun?: string[];
+        skipped?: { slotId: string; reason: string }[];
+        alreadyDone?: string[];
+        imagesGenerated?: number;
+        imagesBilled?: number;
+        imagesInherited?: number;
+      } & Record<string, unknown>;
+      tokens_used: number;
+      usd_used: number | string;
+      cached_tokens: number;
+      images_generated: number;
+      images_billed: number;
+      images_inherited: number;
+      updated_at: string;
+    }[]
+  >(
+    `/generation_runs?select=run_id,track_id,course_slug,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at` +
+      `&order=updated_at.desc&limit=${COACH_LIMIT}${filter}`,
+  );
+  if (!runs || runs.length === 0) return null;
+
+  let totalPublished = 0;
+  let totalFailed = 0;
+  let totalOther = 0;
+  const heatmap = new Map<string, number>();
+  const errorGroups = new Map<string, number>();
+  let totalUsd = 0;
+  let totalTokens = 0;
+  let totalCached = 0;
+  let totalImagesGenerated = 0;
+  let totalImagesBilled = 0;
+  let totalImagesInherited = 0;
+
+  for (const r of runs) {
+    totalPublished += r.summary.published?.length ?? 0;
+    totalFailed += r.summary.failed?.length ?? 0;
+    totalOther += (r.summary.dryRun?.length ?? 0) + (r.summary.skipped?.length ?? 0) + (r.summary.alreadyDone?.length ?? 0);
+    for (const f of r.summary.failed ?? []) {
+      const stage = f.failedFrom ?? 'unknown';
+      heatmap.set(stage, (heatmap.get(stage) ?? 0) + 1);
+      const msg = f.error.slice(0, 120);
+      errorGroups.set(msg, (errorGroups.get(msg) ?? 0) + 1);
+    }
+    totalUsd += Number(r.usd_used);
+    totalTokens += r.tokens_used;
+    totalCached += r.cached_tokens;
+    totalImagesGenerated += r.images_generated;
+    totalImagesBilled += r.images_billed;
+    totalImagesInherited += r.images_inherited;
+  }
+
+  const topErrors = [...errorGroups.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([sample, count]) => ({ sample, count }));
+
+  // Judge rubric aggregation from slots — single batch query across all runs
+  const runIds = runs.map((r) => r.run_id);
+  const orClauses = runIds.map((id) => `run_id.eq.${encodeURIComponent(id)}`).join(',');
+  const slots = await serviceRest<
+    {
+      slot_id: string;
+      rubric: Record<string, number | string> | null;
+      review_cycles: number | null;
+      early_stopped: boolean;
+    }[]
+  >(
+    `/generation_slots?or=(${orClauses})&select=slot_id,rubric,review_cycles,early_stopped&rubric=not.is.null&limit=500`,
+  );
+  const judged = slots?.filter((s) => s.rubric) ?? [];
+
+  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const dimensionMeans: Record<string, number | null> = {};
+  const dimensionMins: Record<string, number | null> = {};
+  for (const dim of dims) {
+    const values = judged.map((s) => s.rubric?.[dim]).filter((v): v is number => typeof v === 'number');
+    dimensionMeans[dim] = values.length > 0 ? values.reduce((a, b) => a + b, 0) / values.length : null;
+    dimensionMins[dim] = values.length > 0 ? Math.min(...values) : null;
+  }
+
+  let cycle1 = 0, cycle2 = 0, cycle3 = 0, earlyStops = 0;
+  for (const s of judged) {
+    const c = s.review_cycles ?? 0;
+    if (c <= 1) cycle1++;
+    else if (c === 2) cycle2++;
+    else cycle3++;
+    if (s.early_stopped) earlyStops++;
+  }
+
+  // Worst lessons: lowest kid_safety or age_fit scores
+  const worstLessons = judged
+    .map((s) => {
+      const r = s.rubric ?? {};
+      const kidSafety = typeof r.kid_safety === 'number' ? r.kid_safety : 5;
+      const ageFit = typeof r.age_fit === 'number' ? r.age_fit : 5;
+      const low: string[] = [];
+      if (kidSafety < 5) low.push(`kid_safety=${kidSafety}`);
+      if (ageFit < 4) low.push(`age_fit=${ageFit}`);
+      return { slotId: s.slot_id, dims: low };
+    })
+    .filter((s) => s.dims.length > 0)
+    .sort((a, b) => b.dims.length - a.dims.length)
+    .slice(0, 10);
+
+  const cacheHitPct = totalTokens > 0 ? (totalCached / totalTokens) * 100 : 0;
+
+  // Generate proposed actions from evidence
+  const actions: CoachReport['proposedActions'] = [];
+  if (cacheHitPct < 30) {
+    actions.push({
+      tag: 'cost:cache',
+      proposal: 'Revisar el orden de los bloques en los prompts de write/review — el cache de prefijo de DeepSeek descuenta ~120x los tokens idénticos al inicio. Material estático primero, por-lección al final.',
+      evidence: `Cache-hit general: ${cacheHitPct.toFixed(1)}% (bajo — desperdicio estimado ~$${((totalTokens - totalCached) * 0.0004).toFixed(2)} en tokens no cacheados).`,
+    });
+  }
+  const judgeDimLow = dims.filter((d) => {
+    const m = dimensionMeans[d];
+    return typeof m === 'number' && m < 3.5;
+  });
+  for (const dim of judgeDimLow) {
+    actions.push({
+      tag: `judge:${dim}`,
+      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del content playbook (contentPlaybook.ts) y los anchors del juez en review.ts.`,
+      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} lecciones evaluadas (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
+    });
+  }
+  const topStage = [...heatmap.entries()].sort((a, b) => b[1] - a[1])[0];
+  if (topStage && topStage[1] > 0) {
+    actions.push({
+      tag: 'failure:stage',
+      proposal: `La etapa '${topStage[0]}' concentra ${topStage[1]} de ${totalFailed} fallos. Si es 'written', revisar los corrective retries y el salvage en write.ts. Si es 'reviewed', revisar los floors del juez en passesJudgeGate.`,
+      evidence: `Fallos en ${topStage[0]}: ${topStage[1]}/${totalFailed} (${((topStage[1] / totalFailed) * 100).toFixed(0)}%).`,
+    });
+  }
+  if (totalPublished > 0) {
+    const usdPerLesson = totalUsd / totalPublished;
+    if (usdPerLesson > 0.15) {
+      actions.push({
+        tag: 'cost:perLesson',
+        proposal: `Costo por lección: $${usdPerLesson.toFixed(3)} — arriba de ~$0.07-0.10. Verificar que imageInheritance.ts esté activo (la herencia de imágenes es el mayor ahorro) y que el prefijo de prompts sea estático.`,
+        evidence: `$${totalUsd.toFixed(2)} / ${totalPublished} lecciones = $${usdPerLesson.toFixed(3)}/lección. ${totalImagesInherited} imágenes heredadas (gratis) vs ${totalImagesBilled} facturadas.`,
+      });
+    }
+  }
+
+  return {
+    courseSlug: courseSlug ?? null,
+    trackId: trackId ?? null,
+    runsAnalyzed: runs.length,
+    outcomes: { published: totalPublished, failed: totalFailed, other: totalOther },
+    failureHeatmap: Object.fromEntries(heatmap),
+    topErrors,
+    judge: {
+      judged: judged.length,
+      dimensionMeans,
+      dimensionMins,
+      cyclesHistogram: { cycle1, cycle2, cycle3, earlyStops },
+      worstLessons,
+    },
+    cost: { totalUsd, totalTokens, cacheHitPct },
+    images: { generated: totalImagesGenerated, billed: totalImagesBilled, inherited: totalImagesInherited },
+    proposedActions: actions,
+  };
+}
+
+// ── Heartbeat snapshots (0020 — time-series of run progression) ────────────
+
+export interface HeartbeatSnapshot {
+  id: number;
+  runId: string;
+  activeSlots: number;
+  completedSlots: number;
+  failedSlots: number;
+  stageBreakdown: Record<string, number>;
+  tokensUsed: number;
+  usdUsed: number;
+  cachedTokens: number;
+  imagesGenerated: number;
+  imagesBilled: number;
+  imagesInherited: number;
+  createdAt: string;
+}
+
+export async function getHeartbeatSnapshots(runId: string): Promise<HeartbeatSnapshot[] | null> {
+  const rows = await serviceRest<
+    {
+      id: number;
+      run_id: string;
+      active_slots: number;
+      completed_slots: number;
+      failed_slots: number;
+      stage_breakdown: Record<string, number>;
+      tokens_used: number;
+      usd_used: number | string;
+      cached_tokens: number;
+      images_generated: number;
+      images_billed: number;
+      images_inherited: number;
+      created_at: string;
+    }[]
+  >(
+    `/generation_heartbeat_snapshots?run_id=eq.${encodeURIComponent(runId)}&select=*&order=created_at.asc&limit=500`,
+  );
+  if (!rows) return null;
+  return rows.map((r) => ({
+    id: r.id,
+    runId: r.run_id,
+    activeSlots: r.active_slots,
+    completedSlots: r.completed_slots,
+    failedSlots: r.failed_slots,
+    stageBreakdown: r.stage_breakdown,
+    tokensUsed: r.tokens_used,
+    usdUsed: Number(r.usd_used),
+    cachedTokens: r.cached_tokens,
+    imagesGenerated: r.images_generated,
+    imagesBilled: r.images_billed,
+    imagesInherited: r.images_inherited,
+    createdAt: r.created_at,
+  }));
+}
+
+// ── Slot detail (full inspection of a single generated lesson) ─────────────
+
+export interface SlotDetail {
+  slotId: string;
+  runId: string;
+  state: string;
+  failedFrom: string | null;
+  error: string | null;
+  salvaged: boolean;
+  droppedSegments: number;
+  imagesGenerated: number;
+  imagesBilled: number;
+  imagesInherited: number;
+  durationMs: number | null;
+  durationHuman: string | null;
+  rubric: Record<string, number | string> | null;
+  reviewCycles: number | null;
+  earlyStopped: boolean;
+  updatedAt: string;
+  run: { courseSlug: string; register: string; updatedAt: string } | null;
+}
+
+export async function getSlotDetail(runId: string, slotId: string): Promise<SlotDetail | null> {
+  const encodedRun = encodeURIComponent(runId);
+  const encodedSlot = encodeURIComponent(slotId);
+  const [slots, runs] = await Promise.all([
+    serviceRest<
+      {
+        slot_id: string;
+        run_id: string;
+        state: string;
+        failed_from: string | null;
+        error: string | null;
+        salvaged: boolean;
+        dropped_segments: number;
+        images_generated: number;
+        images_billed: number;
+        images_inherited: number;
+        duration_ms: number | null;
+        rubric: Record<string, number | string> | null;
+        review_cycles: number | null;
+        early_stopped: boolean;
+        updated_at: string;
+      }[]
+    >(
+      `/generation_slots?run_id=eq.${encodedRun}&slot_id=eq.${encodedSlot}&select=*`,
+    ),
+    serviceRest<
+      { course_slug: string; register: string; updated_at: string }[]
+    >(
+      `/generation_runs?run_id=eq.${encodedRun}&select=course_slug,register,updated_at`,
+    ),
+  ]);
+  if (!slots || slots.length === 0) return null;
+  const s = slots[0]!;
+  const run = runs?.[0] ?? null;
+  return {
+    slotId: s.slot_id,
+    runId: s.run_id,
+    state: s.state,
+    failedFrom: s.failed_from,
+    error: s.error,
+    salvaged: s.salvaged,
+    droppedSegments: s.dropped_segments,
+    imagesGenerated: s.images_generated,
+    imagesBilled: s.images_billed,
+    imagesInherited: s.images_inherited,
+    durationMs: s.duration_ms,
+    durationHuman: s.duration_ms !== null ? formatDuration(s.duration_ms) : null,
+    rubric: s.rubric,
+    reviewCycles: s.review_cycles,
+    earlyStopped: s.early_stopped,
+    updatedAt: s.updated_at,
+    run: run ? { courseSlug: run.course_slug, register: run.register, updatedAt: run.updated_at } : null,
+  };
+}
+
+function formatDuration(ms: number): string {
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return `${m}m ${rem}s`;
+}
+
+// ── Run comparison (side-by-side) ──────────────────────────────────────────
+
+export interface RunComparison {
+  runs: {
+    runId: string;
+    courseSlug: string;
+    register: string;
+    published: number;
+    failed: number;
+    slotsEnumerated: number;
+    usdUsed: number;
+    tokensUsed: number;
+    cachedTokens: number;
+    cacheHitPct: number;
+    imagesGenerated: number;
+    imagesBilled: number;
+    imagesInherited: number;
+    judgeMeans: Record<string, number | null>;
+    failureHeatmap: Record<string, number>;
+    updatedAt: string;
+  }[];
+  deltas: {
+    published: number;
+    failed: number;
+    usdUsed: number;
+    cacheHitPct: number;
+  } | null;
+}
+
+export async function compareRuns(runIdA: string, runIdB: string): Promise<RunComparison | null> {
+  const rows = await serviceRest<
+    {
+      run_id: string;
+      course_slug: string;
+      register: string;
+      summary: {
+        published?: string[];
+        failed?: { slotId: string; error: string; failedFrom?: string }[];
+        slotsEnumerated?: number;
+      } & Record<string, unknown>;
+      tokens_used: number;
+      usd_used: number | string;
+      cached_tokens: number;
+      images_generated: number;
+      images_billed: number;
+      images_inherited: number;
+      updated_at: string;
+    }[]
+  >(
+    `/generation_runs?run_id=in.(${encodeURIComponent(runIdA)},${encodeURIComponent(runIdB)})&select=run_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at`,
+  );
+  if (!rows || rows.length < 2) return null;
+
+  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+
+  const runs = await Promise.all(rows.map(async (r) => {
+    const slots = await serviceRest<
+      { rubric: Record<string, number | string> | null }[]
+    >(
+      `/generation_slots?run_id=eq.${encodeURIComponent(r.run_id)}&select=rubric&rubric=not.is.null&limit=200`,
+    );
+    const judged = slots?.filter((s) => s.rubric) ?? [];
+    const judgeMeans: Record<string, number | null> = {};
+    for (const dim of dims) {
+      const vals = judged.map((s) => s.rubric?.[dim]).filter((v): v is number => typeof v === 'number');
+      judgeMeans[dim] = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
+    }
+    const heatmap: Record<string, number> = {};
+    for (const f of r.summary.failed ?? []) {
+      const stage = f.failedFrom ?? 'unknown';
+      heatmap[stage] = (heatmap[stage] ?? 0) + 1;
+    }
+    const published = r.summary.published?.length ?? 0;
+    const failed = r.summary.failed?.length ?? 0;
+    const cacheHitPct = r.tokens_used > 0 ? (r.cached_tokens / r.tokens_used) * 100 : 0;
+    return {
+      runId: r.run_id,
+      courseSlug: r.course_slug,
+      register: r.register,
+      published,
+      failed,
+      slotsEnumerated: r.summary.slotsEnumerated ?? 0,
+      usdUsed: Number(r.usd_used),
+      tokensUsed: r.tokens_used,
+      cachedTokens: r.cached_tokens,
+      cacheHitPct,
+      imagesGenerated: r.images_generated,
+      imagesBilled: r.images_billed,
+      imagesInherited: r.images_inherited,
+      judgeMeans,
+      failureHeatmap: heatmap,
+      updatedAt: r.updated_at,
+    };
+  }));
+
+  const [a, b] = runs as [typeof runs[0], typeof runs[0]];
+  const deltas = a && b ? {
+    published: b.published - a.published,
+    failed: b.failed - a.failed,
+    usdUsed: b.usdUsed - a.usdUsed,
+    cacheHitPct: b.cacheHitPct - a.cacheHitPct,
+  } : null;
+
+  return { runs, deltas };
+}

@@ -20,9 +20,15 @@ import {
 import type { PlausibleFilter } from '../services/pulse.js';
 import {
   getAdminOverview,
+  getCoachReport,
+  compareRuns,
+  getGenerationAnalytics,
   getGenerationOverview,
   getGenerationRun,
+  getHeartbeatSnapshots,
   getLearningRetention,
+  getLiveGeneration,
+  getSlotDetail,
   grantRoleChecked,
   isCourseStatus,
   isLessonStatus,
@@ -288,6 +294,94 @@ export function adminRouter(): Router {
     const detail = await getGenerationRun(parsed.data.runId);
     if (!detail) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load that generation run (unknown id, or Vault unavailable)');
     ok(res, detail);
+  });
+
+  /**
+   * Live heartbeat for currently-active generation runs (0018). The admin
+   * dashboard polls this every ~2s while a run is active to render the live
+   * flow visualization — it shows slot progress per stage, cost, and image
+   * counts as they happen, not just after the fact (0017's post-mortem view).
+   * Rows older than 2 minutes are stale (the run process died) and are
+   * excluded by the query.
+   */
+  router.get('/generation/live', async (_req, res) => {
+    const status = await getLiveGeneration();
+    if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load live generation status');
+    ok(res, status);
+  });
+
+  /**
+   * Cross-run analytics: cost, quality, and failure trends aggregated across
+   * all historic runs for a course (or platform-wide if no course is specified).
+   * Optional query param: ?course=financial-education
+   */
+  router.get('/generation/analytics', async (req, res) => {
+    const course = typeof req.query.course === 'string' ? req.query.course : undefined;
+    const analytics = await getGenerationAnalytics(course);
+    if (!analytics) return fail(res, 502, DATA_UNAVAILABLE, 'No generation runs found for analysis');
+    ok(res, analytics);
+  });
+
+  /**
+   * Coach report: offline, deterministic diagnosis of the agentic pipeline's
+   * behaviour across runs — failure patterns, judge quality trends, cost
+   * efficiency, and proposed improvements each tied to evidence. Surface of
+   * the forge:coach improvement loop (Level 2) in the admin dashboard.
+   * Optional query: ?course=financial-education&track=trk-001
+   */
+  router.get('/generation/coach', async (req, res) => {
+    const course = typeof req.query.course === 'string' ? req.query.course : undefined;
+    const track = typeof req.query.track === 'string' ? req.query.track : undefined;
+    const report = await getCoachReport(course, track);
+    if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'No generation data available for coach analysis');
+    ok(res, report);
+  });
+
+  /**
+   * Heartbeat snapshots: the time-series record of a run's progression —
+   * every heartbeat update saved as a row (0020). Used by the admin dashboard
+   * to render the run's progress curve over time.
+   */
+  router.get('/generation/snapshots/:runId', async (req, res) => {
+    const parsed = GenerationRunParamSchema.safeParse(req.params);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const snapshots = await getHeartbeatSnapshots(parsed.data.runId);
+    if (!snapshots) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load heartbeat snapshots');
+    ok(res, { runId: parsed.data.runId, snapshots });
+  });
+
+  /**
+   * Full inspection of a single generated lesson slot: rubric, error, metrics,
+   * and the run it belongs to. Used by the slot detail modal in Run History.
+   */
+  router.get('/generation/slots/:runId/:slotId', async (req, res) => {
+    const runParsed = GenerationRunParamSchema.safeParse({ runId: req.params.runId });
+    if (!runParsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'runId must be a 1-200 char id (letters, digits, . _ -)');
+      return;
+    }
+    const detail = await getSlotDetail(runParsed.data.runId, req.params.slotId);
+    if (!detail) return fail(res, 404, 'NOT_FOUND', 'Slot not found in generation telemetry');
+    ok(res, detail);
+  });
+
+  /**
+   * Side-by-side comparison of two generation runs. Returns per-run
+   * stats + computed deltas for diff display.
+   */
+  router.get('/generation/compare', async (req, res) => {
+    const runA = typeof req.query.runA === 'string' ? req.query.runA : '';
+    const runB = typeof req.query.runB === 'string' ? req.query.runB : '';
+    if (!runA || !runB) {
+      fail(res, 400, 'VALIDATION_ERROR', 'Both runA and runB query params are required');
+      return;
+    }
+    const comparison = await compareRuns(runA, runB);
+    if (!comparison) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load comparison (both runs must exist in telemetry)');
+    ok(res, comparison);
   });
 
   // ── Users / Support ────────────────────────────────────────────────────────

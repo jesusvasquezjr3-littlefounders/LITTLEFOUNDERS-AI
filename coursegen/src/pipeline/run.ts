@@ -28,6 +28,7 @@ import { runAllGates, type GateContext } from './gates.js';
 import { reviewLesson, ReviewFailedError } from './review.js';
 import { RubricLog } from './rubricLog.js';
 import { ingestRunTelemetry } from '../vault/telemetry.js';
+import { LiveTelemetry } from './liveTelemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
@@ -228,6 +229,7 @@ async function processSlot(
   ledger: UsageLedger,
   register: ReturnType<typeof resolveRegister>,
   rubricLog?: RubricLog,
+  live?: LiveTelemetry,
 ): Promise<ProcessSlotOutcome> {
   if (isSlotDone(checkpoint, slot.slotId)) return { slotId: slot.slotId, state: 'already-published' };
   if (!course.taxonomy || !course.facts || !course.catalog) {
@@ -290,6 +292,7 @@ async function processSlot(
         : (await planLesson(planCtx, { ledger })).skeleton;
       checkpoint = setSlotState(checkpoint, slot.slotId, 'planned', { data: { skeleton } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'planned');
     }
 
     // ---- write (es-MX) ----
@@ -338,6 +341,7 @@ async function processSlot(
         data: { skeleton, documents, salvaged: writeResult.salvaged, droppedSegments: writeResult.droppedSegments },
       });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'written');
     }
 
     // ---- review (Qwen judge, es-MX only) ----
@@ -359,6 +363,7 @@ async function processSlot(
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'reviewed');
       // Rubric telemetry (forge:coach raw material) — never able to kill a run.
       await rubricLog
         ?.record({ slotId: slot.slotId, outcome: 'passed', cycles: reviewResult.cycles, earlyStopped: false, rubric: reviewResult.rubric })
@@ -392,6 +397,7 @@ async function processSlot(
       imagesGenerated += illustratedSource.generated ?? 0;
       imagesBilled += illustratedSource.billed ?? 0;
       imagesInherited += illustratedSource.inherited ?? 0;
+      live?.addImages(illustratedSource.generated ?? 0, illustratedSource.billed ?? 0, illustratedSource.inherited ?? 0);
       if (illustratedSource.skippedReason) imageSkipReasons.add(illustratedSource.skippedReason);
       for (const locale of locales) {
         if (locale === AUTHORING_LOCALE || documents[locale]) continue;
@@ -404,6 +410,7 @@ async function processSlot(
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'localized', { data: { skeleton, documents } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'localized');
     }
 
     // ---- images (optional; a no-op when the pre-localize pass covered everything) ----
@@ -426,10 +433,12 @@ async function processSlot(
         imagesGenerated += illustrated.generated ?? 0;
         imagesBilled += illustrated.billed ?? 0;
         imagesInherited += illustrated.inherited ?? 0;
+        live?.addImages(illustrated.generated ?? 0, illustrated.billed ?? 0, illustrated.inherited ?? 0);
         if (illustrated.skippedReason) imageSkipReasons.add(illustrated.skippedReason);
       }
       checkpoint = setSlotState(checkpoint, slot.slotId, 'illustrated', { data: { skeleton, documents } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'illustrated');
     }
 
     // ---- publish ----
@@ -499,6 +508,7 @@ async function processSlot(
       const publishResult = await publishLessonSlot(publishInput);
       checkpoint = setSlotState(checkpoint, slot.slotId, 'published', { data: { publishResult } });
       await store.save(checkpoint);
+      live?.onTransition(slot.slotId, 'published');
     }
 
     /*
@@ -567,6 +577,7 @@ async function processSlot(
       failedFrom: stateAtFailure === 'failed' ? getSlot(checkpoint, slot.slotId).failedFrom : stateAtFailure,
     });
     await saveQuietly(store, checkpoint, slot.slotId);
+    live?.onTransition(slot.slotId, 'failed');
     /*
      * Telemetry travels with a FAILURE too. Found on the 62-slot run that died on a
      * provider balance error: the summary printed "images: 0 placed, 0 freshly
@@ -775,6 +786,14 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   let stoppedOnBudget = false;
   let fatalProviderError: string | null = null;
 
+  const live = new LiveTelemetry({
+    runId,
+    trackId: options.trackId,
+    courseSlug: options.course,
+    register: options.register ?? 'kid',
+    totalSlots: slots.length,
+  });
+
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
       if (stoppedOnBudget) return;
@@ -804,7 +823,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // run (rethrown by processSlot), so retries never blow past the
       // kill-switches.
       const slotStartedAt = Date.now();
-      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog);
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
       let attempt = 1;
       while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
         attempt++;
@@ -819,7 +838,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
             `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
         );
         await store.save(checkpoint);
-        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
       }
       outcome.durationMs = Date.now() - slotStartedAt;
       slotOutcomes.push(outcome);
@@ -834,6 +853,9 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
         failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error', failedFrom: outcome.failedFrom });
       else if (outcome.state === 'dry-run') dryRun.push(outcome.slotId);
       else skipped.push({ slotId: outcome.slotId, reason: outcome.error ?? 'skipped' });
+      // Push latest cost data to the live heartbeat after each slot finishes.
+      live.setCost(ledger.tokens, ledger.usd, ledger.cachedTokens);
+      await live.flush();
     });
   } catch (err) {
     if (err instanceof BudgetExceededError) stoppedOnBudget = true;
@@ -841,7 +863,10 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // One clear cause, not 62 derived symptoms. Everything already published stays
       // published; everything else stays resumable from the checkpoint.
       fatalProviderError = err instanceof Error ? err.message : String(err);
-    } else throw err;
+    } else {
+      await live.finish().catch(() => {});
+      throw err;
+    }
   }
 
   /*
@@ -910,6 +935,10 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       outcomes: slotOutcomes,
       runDir,
     });
+  }
+  // Clean up the live heartbeat row — run is done, dashboard should stop polling.
+  if (!options.dryRun) {
+    await live.finish();
   }
   return summary;
 }

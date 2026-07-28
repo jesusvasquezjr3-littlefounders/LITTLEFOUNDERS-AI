@@ -230,6 +230,48 @@
     "title": "Geração",
     "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso — resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
     "loading": "Carregando telemetria de geração…",
+    "noData": "—",
+    "secondsUnit": "s",
+    "tabs": {
+      "aria": "Visualizações de geração",
+      "live": "Monitor ao vivo",
+      "history": "Histórico",
+      "analytics": "Analíticas",
+      "coach": "Diagnóstico"
+    },
+    "live": {
+      "badge": "Ao vivo",
+      "idle": "Nenhuma execução ativa",
+      "idleNote": "O dashboard atualiza automaticamente quando o coursegen inicia um run.",
+      "since": "desde {{time}}",
+      "polling": "Conectando…",
+      "realtime": "Ao vivo (Realtime)",
+      "connectionLost": "Conexão em tempo real perdida",
+      "progress": "{{completed}} / {{total}} lições processadas",
+      "progressAria": "Progresso geral da execução"
+    },
+    "stages": {
+      "pending": "Pendente",
+      "planning": "Planejando",
+      "writing": "Escrevendo",
+      "reviewing": "Julgando",
+      "localizing": "Traduzindo",
+      "illustrating": "Imagens",
+      "publishing": "Publicando",
+      "published": "Publicado"
+    },
+    "failedFromLabels": {
+      "pending": "Pendente",
+      "planned": "Planejando",
+      "written": "Escrevendo",
+      "reviewed": "Julgando",
+      "localized": "Traduzindo",
+      "illustrated": "Imagens",
+      "unknown": "Desconhecido"
+    },
+    "history": {
+      "runs": "Inspetor de execuções"
+    },
     "tracks": "Execuções em massa (tracks)",
     "selectRun": "Selecione uma execução de geração",
     "empty": "Ainda não há execuções registradas — a telemetria aparecerá aqui após a próxima geração.",
@@ -289,6 +331,96 @@
       "failed": "falha",
       "dry-run": "simulação",
       "skipped": "ignorada"
+    },
+    "analytics": {
+      "empty": "Ainda não há execuções de geração para analisar.",
+      "avgCostPerLesson": "Custo méd. / lição",
+      "avgTokensPerLesson": "Tokens méd. / lição",
+      "avgCacheHit": "% cache méd.",
+      "costTrend": "Custo por lição publicada (USD)",
+      "cacheTrend": "% de cache ao longo do tempo",
+      "qualityTrend": "Dimensões de qualidade — última execução de {{runs}}",
+      "failureByStage": "Falhas por etapa do pipeline (todas as execuções)",
+      "successRate": "Taxa de sucesso geral",
+      "successRateDetail": "{{passed}} / {{total}} lições publicadas",
+      "forecast": "Projeção de custo (~500 lições)",
+      "forecastPerLesson": "Por lição: {{cost}}",
+      "forecastPerCourse": "Curso estimado: {{cost}}",
+      "forecastBasedOn": "Baseado em {{count}} lições publicadas.",
+      "summary": "Totais da plataforma",
+      "runsAnalyzed": "{{count}} execuções analisadas."
+    },
+    "coach": {
+      "title": "Diagnóstico e melhoria do pipeline",
+      "runsAnalyzed": "{{count}} execuções analisadas",
+      "deterministic": "Determinístico · Grátis",
+      "heatmap": "Detalhamento de falhas",
+      "topErrors": "Padrões de erro recorrentes",
+      "noErrors": "Nenhum padrão de erro recorrente detectado.",
+      "judgeTitle": "Qualidade do juiz ({{count}} avaliadas)",
+      "cycle1": "1 ciclo: ",
+      "cycle2": "2 ciclos: ",
+      "cycle3": "3+ ciclos: ",
+      "minLabel": " / mín ",
+      "worstLessons": "Lições que precisam de atenção",
+      "costTitle": "Custo e eficiência",
+      "costTotal": "Custo total",
+      "tokensTotal": "Tokens totais",
+      "costPerLesson": "Custo por lição",
+      "imageEfficiency": "Reutilização de imagens",
+      "inherited": "herdadas",
+      "billed": "cobradas",
+      "actionsTitle": "Ações propostas",
+      "actionsNote": "Cada sugestão é respaldada por evidências. Aplique-as editando o playbook, prompts ou gates em um commit — o sistema nunca modifica automaticamente conteúdo infantil (§1.9).",
+      "allClear": "Sem problemas detectados — o pipeline está funcionando sem falhas.",
+      "empty": "Ainda não há dados de geração para diagnóstico."
+    },
+    "slotDetail": {
+      "notFound": "Lição não encontrada na telemetria de geração.",
+      "failedFrom": "Falhou em",
+      "duration": "Duração",
+      "dropped": "Descartados",
+      "images": "Imagens",
+      "error": "Detalhes do erro",
+      "runId": "Execução"
+    },
+    "timeline": {
+      "insufficient": "Não há snapshots suficientes para construir uma linha do tempo (mínimo 2).",
+      "progress": "Progressão de slots ao longo do tempo",
+      "cost": "Acumulação de custo ($USD)",
+      "stages": "Atividade por etapa"
+    },
+    "compare": {
+      "title": "Comparação de execuções",
+      "needTwo": "Necessário pelo menos 2 execuções para comparar.",
+      "runA": "Execução A (base)",
+      "runB": "Execução B (comparar)",
+      "deltas": "Deltas (B − A)",
+      "judge": "Comparação de dimensões do juiz"
+    },
+    "alerts": {
+      "critical": "Crítico",
+      "warning": "Aviso",
+      "liveCost": {
+        "title": "Custo total estimado: {{estimated}}",
+        "detail": "Gasto {{spent}} com {{progress}}% de progresso. Projetado a partir da taxa de gasto atual."
+      },
+      "lowCache": {
+        "title": "Taxa de cache criticamente baixa",
+        "detail": "{{pct}}% de cache — o prefixo de prompts pode ter mudado. A montagem estática-primeiro está quebrada ou o playbook mudou."
+      },
+      "highFailRate": {
+        "title": "Taxa de falhas: {{rate}}%",
+        "detail": "{{failed}} de {{total}} slots falharam. Considere pausar e investigar o estágio de falha."
+      },
+      "qualityDrop": {
+        "title": "{{dim}} caiu significativamente",
+        "detail": "Caiu de {{from}} para {{to}} entre as duas últimas execuções (±0.4 é ruído; >0.8 pode ser real)."
+      },
+      "costSpike": {
+        "title": "Custo por lição disparou 2× acima da linha base",
+        "detail": "Último: {{latest}} vs média: {{avg}}. A geração de imagens ou uso de tokens pode ter aumentado."
+      }
     }
   }
 }

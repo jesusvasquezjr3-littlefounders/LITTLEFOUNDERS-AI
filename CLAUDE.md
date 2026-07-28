@@ -240,7 +240,7 @@ All of these must pass, in every service you touched:
 - [ ] `npm run build` — must pass green (verify CI in all services)
 - [ ] `npm run docs:check` (root) — AGENTS.md == CLAUDE.md
 - [ ] `npm run secrets:check` (root) — no credential patterns in tracked files
-- [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity
+- [ ] Frontend changes: `npm run i18n:check` (root) — 3-locale key parity + hardcoded-string scan
 - [ ] Files added/moved/deleted: `npm run repo:map` (root) — regenerate the map
 - [ ] Docs updated per the stewardship table (§8)
 - [ ] No `any` without a written justification in the PR/commit body

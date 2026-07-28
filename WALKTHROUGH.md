@@ -2,6 +2,54 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-07-27f) — i18n fix + PipelineFlow particles + mobile optimization (Phase 6b)
+
+- **i18n audit & fix (35 issues resolved):** Hardcoded Spanish cycles ("1 ciclo:", "2 ciclos:", "3+ ciclos:") → `coach.cycle1/2/3` keys. Hardcoded English "Realtime connection lost" → `live.connectionLost`. Raw `failedFrom` stage values ("written", "reviewed"…) → `failedFromLabels.*` i18n keys. Em dashes `'—'` → `noData` key. `toFixed()` → locale-aware `formatPct()`/`formatFixed()`. "s" seconds suffix → `secondsUnit` key. New shared module `generationI18n.ts` with `failedFromI18nKey()`, `formatPct()`, `formatFixed()`.
+- **PipelineFlow slot particles:** Edges now show slot count labels with accent-colored arrow markers when slots are flowing — stage nodes connect through visible, labeled edges with animated dashed flow. Active edges are papaya-colored, inactive edges are outline-gray. Node size auto-adjusts on mobile via inline CSS media query.
+- **Mobile optimization:** canvas height reduced on mobile (220px vs 280px), node sizes shrink via CSS media query, `fitView` handles zoom. Tab labels hidden on mobile (icon-only).
+- **New i18n keys:** `noData`, `secondsUnit`, `connectionLost`, `failedFromLabels.*`, `coach.cycle1/2/3`, `coach.minLabel`.
+- **Gates:** type-check, lint, tests (13/13), i18n parity — all green.
+
+## Current State (2026-07-27e) — Analytics + alertas: forecast, success rate, anomaly detection (Phase 6)
+
+- **AlertBanner:** top-of-page warning cards on all tabs. Live alerts: estimated cost overrun, cache-hit below 20%, failure rate >30%. Historical alerts: quality dimension drops >0.8 between runs, cost spike >2× baseline. Color-coded by severity (critical=red, warning=yellow) with detail text and badge.
+- **Enhanced analytics:** stage success rate card (overall published/failed ratio), cost forecast card (per-lesson avg × 500 lesson course estimate, based on actual published count). Backend: `getGenerationAnalytics` now returns `stageSuccessRate` + `costForecast`.
+- **Analytics tab** now includes `AlertBanner` for historical anomaly detection between runs.
+- **5 i18n keys added** per locale (`successRate*`, `forecast*`, `alerts.*`).
+- **Gates:** type-check, lint, tests (13/13 gen page), i18n parity, docs sync, secrets check — all green.
+
+## Current State (2026-07-27d) — Supabase Realtime: true push-based live monitoring (Phase 5)
+
+- **RLS migration (0019):** SELECT policy on `generation_runs_live` for admin/superadmin — the ONLY client-accessible policy on generation telemetry tables. Enables Supabase Realtime (Postgres CDC via logical replication) so the browser subscribes to live row changes instead of polling.
+- **Supabase Realtime client (`lib/supabaseRealtime.ts`):** thin wrapper creating a Supabase client from `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`. Only used for the admin generation dashboard; every other Vault interaction stays through Core (service role).
+- **LiveStats rewritten:** replaced 2s polling with a Supabase Realtime channel subscription on `generation_runs_live`. INSERT/UPDATE events → heartbeat updates; DELETE → clear (run finished). Fallback to idle when Supabase is not configured (dev without env vars). Stale-timer clears after 2 min of no updates. Status indicator shows "Live (Realtime)" when connected.
+- **PipelineFlow unchanged:** already receives heartbeat via prop, so it updates instantly when Realtime fires.
+- **Env:** `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` added to `.env.example`. New dep: `@supabase/supabase-js`.
+- **Gates:** 19 migrations (sequential + RLS) · type-check ✅ · lint ✅ · i18n ✅ · docs ✅ · secrets ✅. Frontend gen page tests: 13/13.
+
+## Current State (2026-07-27c) — Coach dashboard: forge:coach improvement loop surfaced in admin (Phase 4)
+
+- **Coach endpoint (`GET /admin/generation/coach`):** Core aggregates data from `generation_runs` + `generation_slots` across up to 20 runs to produce a deterministic, free, proposal-only diagnosis. Computes: outcomes (published/failed/other), failure heatmap by stage, top recurring error patterns, judge dimension means/mins with cycles histogram and early-stop count, worst lessons (low kid_safety/age_fit), cost per published lesson, cache efficiency, image reuse rate, and evidence-backed proposed actions (low cache-hit → prefix drift; low judge dimension → playbook section; high cost → inheritance check; top failure stage → targeted pipeline fix).
+- **CoachTab frontend:** 4th tab in `/admin/generation`. Renders the diagnosis in structured cards: outcomes KPI row, failure heatmap + top errors side-by-side, judge quality panel (dimension progress bars with mean/min + cycles histogram pills), worst lessons list, cost breakdown with image reuse stat, and proposed actions with tag badges and evidence quotes.
+- **All 4 tabs live:** Live Monitor (PipelineFlow + LiveStats) · Run History · Analytics · Coach. 13 frontend tests for generation page.
+- **Gates:** type-check ✅ · lint ✅ · i18n:check ✅ · docs:check ✅ · secrets:check ✅. Frontend 339 tests (including 13 gen page tests), backend 183 tests, coursegen 505 tests.
+
+## Current State (2026-07-27b) — Admin Generation Dashboard v2: live flow canvas + cross-run analytics (Phase 2)
+
+- **React Flow interactive canvas (`PipelineFlow.tsx`):** 7-stage Forge pipeline shown as connected nodes on a zoomable React Flow canvas. Nodes color dynamically from live heartbeat data: gray (idle), papaya pulse (active slots), green (terminal). Edges animate when slots are flowing. Built with `@xyflow/react` (new dependency).
+- **Live stats panel (`LiveStats.tsx`):** polls `GET /api/v1/admin/generation/live` every 2s, renders overall progress bar, per-stage breakdown pills (colored by activity), 5 KPI cards, and cost ledger. Auto-stops polling when no active runs exist. Stale heartbeat detection (>2 min).
+- **Cross-run analytics (`AnalyticsCharts.tsx`):** fetches `GET /api/v1/admin/generation/analytics` — displays cost per published lesson trend (TrendChart), cache-hit % over time, latest-run quality dimensions (ProgressBar grid), failure breakdown by stage (ProgressBar grid), and platform averages.
+- **Three-tab layout:** Live Monitor (PipelineFlow + LiveStats), Run History (preserved v1 inspector with track cards + run selector + per-slot detail), Analytics (AnalyticsCharts). Tab bar with live indicator dot when a run is active.
+- **i18n:** all new keys added across en-US, es-MX, pt-BR. `npm run i18n:check` parity verified.
+- **Gates:** type-check, lint, build all green. 327 frontend tests pass. 505 coursegen tests pass.
+
+## Current State (2026-07-27) — Generation live monitoring: heartbeat telemetry + cross-run analytics (Phase 1)
+
+- **Live telemetry (Vault 0018):** `generation_runs_live` table + `liveTelemetry.ts` module in coursegen. On every slot stage transition during an active run, a heartbeat row is upserted with active/completed/failed counts, per-stage breakdown, cost ledger totals, and image counts. `LiveTelemetry` class is instantiated once per `runGeneration()` and called by `processSlot` after each `store.save`. Row is deleted at run end; stale rows (>2 min) are filtered out by Core.
+- **Core endpoints:** `GET /api/v1/admin/generation/live` (polls `generation_runs_live` for near-real-time dashboard) + `GET /api/v1/admin/generation/analytics?course=...` (cross-run trends: cost per published lesson, judge dimension means over time, cache-hit %, failure patterns by stage/locale, platform averages).
+- **coursegen integration:** `processSlot` now accepts an optional `LiveTelemetry` parameter; 7 `onTransition` calls were added after each stage's `store.save` (planned → written → reviewed → localized → illustrated → published), plus `addImages` after illustration stages and `setCost/flush` after each pool worker completes. Swallow-on-failure by design — live telemetry can never kill a run.
+- **Next (Phase 2):** React Flow canvas + live stats panel in the admin dashboard frontend; cross-run analytics charts.
+
 ## Current State (2026-07-24b) — Render-truth pass: no people in images, local currency, fixed pattern/robot/type_answer
 
 - **Owner reviewed the RENDERED player (a screenshot), not JSON, and caught what the JSON-judges missed.** Fixes, each verified in the player via the new `/dev/lesson-view` (loads real DB docs into the production `LessonPlayer`):

@@ -10,7 +10,7 @@
 > `coursegen/`, first course catalog authored (`financial-education`).
 > Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
 > never started by CI or by any automatic process (/AGENTS.md sign-off rule).
-> **Last updated:** 2026-07-12 · Language: English (project rule).
+> **Last updated:** 2026-07-27 · Language: English (project rule).
 
 ---
 
@@ -484,6 +484,19 @@ chart, full slot table). Ingest is swallow-on-failure — telemetry can never
 kill a run. Judge rubrics are also appended per run to
 `runs/<id>/rubrics.jsonl` (the coach's raw material).
 
+**Live telemetry — the "what is happening RIGHT NOW" signal (Vault 0018).**
+Complementing 0017's post-mortem scoreboard, coursegen NOW upserts a
+`generation_runs_live` heartbeat row on EVERY slot stage transition during an
+active run (a new `liveTelemetry.ts` module called by `processSlot` after each
+stage's `store.save`). The heartbeat carries active/completed/failed slot
+counts, a per-stage breakdown, cost ledger totals, and image counts —
+aggregated locally by the `LiveTelemetry` class and flushed to Vault on each
+slot completion. The row is DELETED when the run finishes (or becomes stale
+>2 min if the process dies). Core reads it through `GET
+/api/v1/admin/generation/live` (polled by the admin dashboard every ~2s) and
+`GET /api/v1/admin/generation/analytics` aggregates cost, quality, and failure
+trends across all historic runs. Same service-role-only posture as 0017: RLS
+enabled, ZERO client policies; the browser never touches Vault directly.
 **The improvement loop — `npm run coach` (`src/pipeline/coach.ts`).** Level 2
 of the self-improvement design (2026-07-26): offline, FREE, deterministic and
 PROPOSE-ONLY. Reads checkpoint + ledger + rubrics (+ track report), emits
