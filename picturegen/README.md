@@ -42,8 +42,25 @@ Every response uses the `{ data, error }` envelope (/AGENTS.md §1.6).
 | POST | `/api/v1/pictures` | `{ label, context?, purpose? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached }` |
 
 `label` (1–120 chars) is the subject. `context` (≤2000 chars, optional) grounds
-it in the lesson. `purpose` ∈ `lesson_option | memory_card | scene | generic`
-(default `generic`) steers composition.
+it in the lesson. `purpose` ∈ `lesson_option | option_card | item_card |
+scene_anchor | memory_card | outcome | scene | generic` (default `generic`)
+picks the per-purpose art direction — the structural role decides the
+composition, so a thumbnail option tile and a wide establishing scene are not
+the same picture.
+
+### Failure statuses — a retry instruction for the caller
+
+The status tells the caller whether asking again can help. It is a real
+cross-service contract: coursegen's transport retry re-requests 5xx and gives
+up on 4xx, and every needless re-request is a full paid generation
+(`AGENTS.md` → *The response status IS a retry instruction*).
+
+| Status | Codes | Caller should |
+|---|---|---|
+| `400` | `VALIDATION_ERROR` | Fix the body — never retry |
+| `401` | `UNAUTHORIZED` | Fix `x-internal-api-key` — never retry |
+| `502` | `IMAGE_TIMEOUT`, `IMAGE_RATE_LIMITED`, `IMAGE_PROVIDER_ERROR`, `IMAGE_DOWNLOAD_FAILED` | Retry — upstream was transiently unhappy |
+| `422` | `IMAGE_BAD_RESPONSE`, `IMAGE_VERIFICATION_FAILED`, `IMAGE_GENERATION_FAILED` | Do NOT retry — fall back (icon/text) and move on |
 
 ## Env vars
 

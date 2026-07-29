@@ -13,7 +13,8 @@
 | API envelope & conventions | /AGENTS.md §1.6 + agent/core/CONVENTIONS.md | — |
 | Naming | /AGENTS.md §1.7 + GLOSSARY.md | — |
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
-| Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
+| Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response); test-fixture placeholder convention: agent/core/CONVENTIONS.md | — |
+| Repo-wide CI gates (docs sync, secrets, i18n parity — no path filter) | .github/workflows/repo-gates.yml | all |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
 | Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
 | Auth email templates + language selector | frontend/public/email-templates/README.md | all |
@@ -31,7 +32,7 @@
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
-| Tutor IA (Oracle) — diseño futuro, NO implementado | `ORACLE.md` |
+| AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |

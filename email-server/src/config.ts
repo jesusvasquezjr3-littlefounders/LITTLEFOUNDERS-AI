@@ -41,6 +41,13 @@ const Env = z.object({
   SES_RELAY_PORT: z.coerce.number().int().positive().default(587),
   SES_SMTP_USER: z.string().min(1).optional(),
   SES_SMTP_PASS: z.string().min(1).optional(),
+
+  // Vault (0021 email_logs) — the durable delivery history. OPTIONAL on
+  // purpose: without them Courier still sends mail and still serves
+  // /api/v1/logs, just from the in-process ring buffer that dies on restart.
+  // `npm run dev` and `npm test` therefore need no database.
+  SUPABASE_URL: z.url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional(),
 });
 
 export type EmailEngine = 'noop' | 'haraka';
@@ -58,6 +65,8 @@ export type Config = Readonly<{
   SES_RELAY_PORT: number;
   SES_SMTP_USER?: string;
   SES_SMTP_PASS?: string;
+  SUPABASE_URL?: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
 }>;
 
 let cached: Config | null = null;

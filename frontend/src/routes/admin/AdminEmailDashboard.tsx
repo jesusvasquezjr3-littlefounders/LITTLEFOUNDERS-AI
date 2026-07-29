@@ -25,6 +25,10 @@ interface EmailSummary {
 
 const STATUS_TONES: Record<string, string> = {
   queued: 'bg-warning-soft text-warning-strong',
+  // 'relayed' = the SMTP path handed the message to Amazon SES and SES accepted
+  // it. That is a success as far as Courier can observe; only a downstream
+  // bounce webhook could promote it to 'delivered'.
+  relayed: 'bg-success-soft text-success-strong',
   delivered: 'bg-success-soft text-success-strong',
   failed: 'bg-error-soft text-error-strong',
 };

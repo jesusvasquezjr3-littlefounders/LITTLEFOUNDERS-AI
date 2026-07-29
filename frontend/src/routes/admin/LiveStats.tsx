@@ -17,6 +17,13 @@ import type { LiveRunHeartbeat } from './generationTypes';
 
 const STALE_MS = 2 * 60 * 1000;
 
+/**
+ * How often to hand Realtime a freshly minted JWT. Comfortably under Supabase's
+ * default 1 h access-token lifetime, so the socket is never authorized with a
+ * token that is about to expire.
+ */
+const REAUTH_INTERVAL_MS = 10 * 60 * 1000;
+
 const STAGES = [
   { key: 'pending', icon: 'pending' },
   { key: 'planning', icon: 'psychology' },
@@ -91,6 +98,7 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
 
     let cancelled = false;
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function subscribe() {
       const token = await getToken();
@@ -130,18 +138,55 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
         .subscribe((status) => {
           if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             setError(t('admin.generation.live.connectionLost'));
+            setConnected(false);
+            // Reconnect rather than sit there showing a stale banner. The
+            // usual cause is an expired JWT: Realtime authorizes ONCE at
+            // subscribe time, so a tab left open past the token's lifetime
+            // loses the channel permanently and then reports "no active run" —
+            // indistinguishable from a genuinely idle pipeline.
+            scheduleResubscribe();
           }
         });
     }
 
+    /** Tear the channel down and re-subscribe with a freshly minted token. */
+    function scheduleResubscribe(delayMs = 3000) {
+      if (cancelled) return;
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => {
+        if (cancelled) return;
+        if (channel) {
+          supabase!.removeChannel(channel);
+          channel = null;
+        }
+        void subscribe();
+      }, delayMs);
+    }
+
     void subscribe();
+
+    /*
+     * Proactive re-auth. Supabase access tokens are short-lived (1 h by
+     * default) and `realtime.setAuth` pins whatever token was current when
+     * subscribe() ran. Without this, the Live Monitor is guaranteed to die on
+     * any admin tab left open longer than the token's lifetime.
+     */
+    const reauth = setInterval(() => {
+      void (async () => {
+        const fresh = await getToken();
+        if (!fresh || cancelled) return;
+        await supabase.realtime.setAuth(fresh);
+      })();
+    }, REAUTH_INTERVAL_MS);
 
     return () => {
       cancelled = true;
+      clearInterval(reauth);
+      if (retryTimer) clearTimeout(retryTimer);
       if (channel) supabase.removeChannel(channel);
       if (staleTimerRef.current) clearTimeout(staleTimerRef.current);
     };
-  }, [getToken, applyHeartbeat, onHeartbeat]);
+  }, [getToken, applyHeartbeat, onHeartbeat, t]);
 
   // Idle state
   if (!heartbeat) {

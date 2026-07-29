@@ -236,6 +236,7 @@
     "next": "Próximo",
     "status": {
       "queued": "Na fila",
+      "relayed": "Retransmitido",
       "delivered": "Entregue",
       "failed": "Falhou"
     }

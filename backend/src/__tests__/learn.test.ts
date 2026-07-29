@@ -313,6 +313,48 @@ describe('POST /api/v1/learn/lessons/:id/complete', () => {
     expect(res.status).toBe(403);
   });
 
+  /*
+   * Regression: completion is a read-modify-write over learning_stats. When the
+   * READ failed transiently, supabaseRest collapsed the failure into a zeroed
+   * row and the following PATCH wrote deltas-from-zero straight back — silently
+   * erasing a learner's XP, minutes, lessons and BOTH streak columns behind a
+   * 200 response. minutes_learned and the streaks exist nowhere else, so the
+   * loss was permanent. The read must now be distinguishable from "no progress".
+   */
+  it('never overwrites accumulated stats when the learning_stats read fails transiently', async () => {
+    const app = createApp();
+    // A learner with real history.
+    const existing = {
+      user_id: userId, xp_points: 5000, minutes_learned: 300, lessons_completed: 40,
+      streak_days: 12, longest_streak: 30, last_active_date: '2020-01-01', updated_at: '2020-01-01T00:00:00.000Z',
+    };
+    db.learning_stats = [{ ...existing }];
+
+    await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'a' },
+      attempt_number: 1,
+    });
+
+    // Fault ONLY the learning_stats GET; every other call still succeeds.
+    const realFetch = createFakeFetch(db);
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = (init?.method ?? 'GET').toUpperCase();
+      if (url.includes('/learning_stats') && method === 'GET') {
+        return new Response('{"message":"no more connections allowed"}', { status: 503 });
+      }
+      return realFetch(input, init);
+    }));
+
+    const res = await auth(request(app).post(`/api/v1/learn/lessons/${LESSON_1_ID}/complete`)).send({ minutes_spent: 5 });
+
+    // Refuse rather than compute from assumed zeros.
+    expect(res.status).toBe(502);
+    // And crucially: the row is untouched.
+    expect(db.learning_stats[0]).toMatchObject(existing);
+  });
+
   it('a story-only lesson (no graded segments) scores 100 and PASSES on completion', async () => {
     const app = createApp();
     // Pass lesson-1 first to unlock the story-only lesson-2.

@@ -6,6 +6,7 @@
     "NOT_FOUND": "Não conseguimos encontrar isso.",
     "CONFLICT": "Isso conflita com algo que já existe.",
     "RATE_LIMITED": "Muitas tentativas — espere um momento.",
+    "PAYLOAD_TOO_LARGE": "Esse arquivo ou solicitação era grande demais.",
     "INTERNAL": "Algo deu errado do nosso lado.",
     "INVALID_CREDENTIALS": "Esse e-mail e senha não correspondem.",
     "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",

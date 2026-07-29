@@ -116,10 +116,16 @@ Next, in Jesús's stated order of interest:
   - ✅ Content + Moderation merged into single unified page (`/admin/content`).
   - ✅ Admin Users stats bar — role/local/age group distributions with charts.
   - ✅ Signup timeline chart — SVG bar chart with 30d/90d/1y period selector.
-  - ✅ Email tracking infrastructure — migration 0021 (`email_logs`), email-server ring-buffer logger + `/api/v1/logs` endpoints, Core proxy `/admin/emails/*`, frontend email dashboard with pagination and KPI cards.
+  - ✅ Email tracking infrastructure — migration 0021 (`email_logs`), email-server logger + `/api/v1/logs` endpoints, Core proxy `/admin/emails/*`, frontend email dashboard with pagination and KPI cards. **Made durable later the same day (uncommitted — ships with the resilience pass below):** the logger writes through to Vault with the service role (`src/db/emailLogsRepo.ts`) and the 1000-entry ring buffer survives only as the dev/test fallback; a second writer — the Haraka `log_delivery` plugin on `hook_queue_ok` — records GoTrue auth mail, which reaches the relay over SMTP :587 and never touches the HTTP API, so nothing in the repo had been capturing the platform's actual email.
   - ✅ Cybersecurity audit — 6 vulnerabilities fixed (Zod validation on unvalidated query params, proxy response shape validation, fetch timeouts).
   - ✅ Staff Tutor-upgrade card hidden for admin/superadmin.
   - ✅ React Router v7 future flags — silenced console warnings.
+- **Platform resilience pass (2026-07-28 — in branch, NOT yet merged or deployed):** an adversarial defect sweep (40 candidates, 33 confirmed) whose fixes changed standing platform rules, not just code. Each rule and its reasoning: WALKTHROUGH.md Decision Log. Everything below is uncommitted on `fix/lesson-engine-hardening` and lands in the next PR — production still runs the code merged in #25.
+  - ✅ Redis is a degradable dependency — Core listens before connecting, both limiters `passOnStoreError` (fail open), `/health` mounted above the limiter.
+  - ✅ Read-modify-write reads distinguish "Vault did not answer" (`null` → 502) from "zero"; `POST /learn/lessons/:id/complete` can no longer erase a learner's accumulated totals.
+  - ✅ Prism's HTTP status is Forge's retry instruction (502 transient / 422 terminal), and `BudgetExceededError` is rethrown so `FORGE_MAX_USD_PER_RUN` actually halts a paid run.
+  - ✅ Internal-key comparison hashes both sides to fixed-width SHA-256 digests in all 7 services (a non-ASCII header used to throw `RangeError` → 500 HTML instead of a 401 envelope).
+  - ✅ Repo-wide gates run without a path filter (`repo-gates.yml`); `check-secrets.sh` exempts declared placeholders, resolving a real conflict with §1.14.
 
 ## Next up (post-sprint backlog, unordered)
 

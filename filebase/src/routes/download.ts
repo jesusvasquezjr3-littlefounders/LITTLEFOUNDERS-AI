@@ -20,6 +20,33 @@ import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
  * (lesson audio/images carry no PII — /AGENTS.md §1.9).
  */
 
+/**
+ * Stream a file to the client without ever being able to kill the process.
+ *
+ * `createReadStream(...).pipe(res)` on its own is a liveness bug: the stat()
+ * above only proves the file existed a moment ago, so any later open/read
+ * failure (deleted mid-request, EACCES, EIO on the Railway volume) emits
+ * 'error' on a stream with NO listener — an uncaught exception that takes
+ * Depot down for every learner, not just this request.
+ *
+ * Also destroys the source when the client disconnects mid-stream (a paused
+ * lesson audio, a closed tab), which otherwise leaks an open fd per abort.
+ */
+function streamFile(path: string, res: Response, opts?: { start: number; end: number }): void {
+  const rs = opts ? createReadStream(path, opts) : createReadStream(path);
+  rs.on('error', () => {
+    if (res.headersSent) {
+      // Bytes already went out; the only honest move is to cut the response
+      // so the client sees a truncated transfer rather than a silent success.
+      res.destroy();
+    } else {
+      notFound(res);
+    }
+  });
+  res.on('close', () => rs.destroy());
+  rs.pipe(res);
+}
+
 function badRequest(res: Response, message: string): void {
   res.status(400).json({ data: null, error: { code: 'VALIDATION_ERROR', message } });
 }
@@ -47,7 +74,7 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
     const config = getConfig();
     const provided = req.get('x-internal-api-key') ?? '';
     const expected = config.INTERNAL_API_KEY;
-    if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
+    if (!crypto.timingSafeEqual(crypto.createHash('sha256').update(provided).digest(), crypto.createHash('sha256').update(expected).digest())) {
       return unauthorized(res);
     }
   }
@@ -111,7 +138,7 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
       res.end();
       return;
     }
-    createReadStream(path, { start: rangeStart, end: rangeEnd }).pipe(res);
+    streamFile(path, res, { start: rangeStart, end: rangeEnd });
     return;
   }
 
@@ -121,12 +148,20 @@ async function serve(req: Request, res: Response, sendBody: boolean): Promise<vo
     res.end();
     return;
   }
-  createReadStream(path).pipe(res);
+  streamFile(path, res);
 }
 
 export function downloadRouter(): Router {
   const router = Router();
-  router.get('/:bucket/:file', (req, res) => void serve(req, res, true));
-  router.head('/:bucket/:file', (req, res) => void serve(req, res, false));
+  // `void serve(...)` would drop the promise: any rejection inside this async
+  // handler becomes an unhandled rejection, which Node 24 turns into a process
+  // exit by default — one malformed request could take Depot down. Forward it
+  // to Express's error handler instead.
+  router.get('/:bucket/:file', (req, res, next) => {
+    serve(req, res, true).catch(next);
+  });
+  router.head('/:bucket/:file', (req, res, next) => {
+    serve(req, res, false).catch(next);
+  });
   return router;
 }

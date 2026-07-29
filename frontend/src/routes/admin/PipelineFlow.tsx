@@ -133,11 +133,21 @@ function buildEdges(): Edge[] {
   }));
 }
 
+/**
+ * Stable identity for "no heartbeat yet". Shared across every render so the
+ * effect's dependency only changes when a real breakdown arrives.
+ */
+const EMPTY_BREAKDOWN: Record<string, number> = {};
+
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
   const { t } = useTranslation();
-  const breakdown = heartbeat?.stageBreakdown ?? {};
+  // MUST be the module-level constant, never a fresh `{}`. The effect below
+  // depends on `breakdown`, so a new object literal per render made the
+  // dependency change every time: setNodes → re-render → new {} → setNodes …
+  // an unbreakable loop in the page's DEFAULT state (no active run).
+  const breakdown = heartbeat?.stageBreakdown ?? EMPTY_BREAKDOWN;
 
   const initialNodes = useMemo<Node[]>(() => buildNodes(t, breakdown), [t]);
   const initialEdges = useMemo<Edge[]>(() => buildEdges(), []);
@@ -149,26 +159,34 @@ export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
   // because setNodes/setEdges are side effects. useMemo on non-pure functions causes
   // infinite render loops (setState → re-render → useMemo → setState → …).
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((n) => {
+    setNodes((nds) => {
+      // Bail out when nothing actually changed: returning the SAME array makes
+      // React skip the re-render entirely. Belt and braces against this effect
+      // ever becoming self-triggering again (every poll delivers a fresh
+      // stageBreakdown object even when the numbers are identical).
+      let changed = false;
+      const next = nds.map((n) => {
         const count = breakdown[n.id] ?? 0;
         const active = n.id !== 'published' && n.id !== 'pending' && count > 0;
         const terminal = n.id === 'published';
+        const prev = n.data as unknown as PipelineNodeData;
+        if (prev.count === count && prev.active === active && prev.terminal === terminal) return n;
+        changed = true;
         return {
           ...n,
-          data: {
-            ...(n.data as unknown as PipelineNodeData),
-            count,
-            active,
-            terminal,
-          } satisfies PipelineNodeData,
+          data: { ...prev, count, active, terminal } satisfies PipelineNodeData,
         };
-      }),
-    );
-    setEdges((eds) =>
-      eds.map((e) => {
+      });
+      return changed ? next : nds;
+    });
+    setEdges((eds) => {
+      let changed = false;
+      const next = eds.map((e) => {
         const count = breakdown[e.source] ?? 0;
         const active = count > 0;
+        const sameLabel = e.label === (active ? String(count) : undefined);
+        if (e.animated === active && sameLabel) return e;
+        changed = true;
         return {
           ...e,
           animated: active,
@@ -184,8 +202,9 @@ export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
           labelBgStyle: { fill: 'var(--color-surface-sunken)', rx: 8, ry: 8 },
           labelBgPadding: [6, 3] as [number, number],
         };
-      }),
-    );
+      });
+      return changed ? next : eds;
+    });
   }, [breakdown, setNodes, setEdges]);
 
   return (

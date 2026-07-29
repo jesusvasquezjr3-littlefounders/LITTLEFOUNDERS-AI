@@ -45,7 +45,29 @@ directly, no proxy hop through Core required.
   (`GET/HEAD /files/:bucket/:hash.:ext`), which returns raw bytes with
   `Content-Type`/`Content-Length`/`Range` headers because it has to work as
   the `src` of an `<audio>`/`<img>` tag. Every error status on that route
-  (400/401/404/416) still returns the standard envelope.
+  (400/401/404/416, and 500 from the error handler) still returns the
+  standard envelope.
+- **A stream error must never be able to kill the process.** NEVER
+  `createReadStream(...).pipe(res)` without attaching an `'error'` listener
+  FIRST. The `stat()` above the pipe only proves the file existed a moment
+  ago; any later open/read failure (deleted mid-request, EACCES, EIO on the
+  Railway volume) emits `'error'` on a listener-less stream, which is an
+  uncaught exception — it kills Depot for every learner streaming audio at
+  that instant, not just the one request that hit the bad file. Everything
+  goes through `streamFile()` (`src/routes/download.ts`): listener before
+  pipe (404 envelope if no bytes went out yet, destroy the response if they
+  did, so the client sees a truncated transfer instead of a silent short
+  read), plus `res.on('close')` → `rs.destroy()` so a paused audio or a
+  closed tab doesn't leak an open fd.
+- **Async route handlers forward rejections — `.catch(next)`, never
+  `void handler(...)`.** `void` drops the promise, so a rejection inside the
+  handler becomes an unhandled rejection, which Node 24 escalates to a
+  process exit by default. That is a whole-service outage from one bad
+  request: a corrupt metadata sidecar makes `readMetadata` throw
+  (`src/lib/storage.ts` only swallows ENOENT and rethrows everything else),
+  and Depot is a public read path — anyone can send that request. With
+  `.catch(next)` the same failure returns the 500 `INTERNAL` envelope from
+  the error handler in `src/app.ts`.
 - **No database, no S3 SDK** — this is a deliberate scope boundary
   (/AGENTS.md §1.2 dep discipline). If the platform ever needs multi-region
   replication, CDN-backed storage, or signed URLs beyond what a Railway

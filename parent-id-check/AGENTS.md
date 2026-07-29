@@ -28,6 +28,12 @@ the verdict interface stays.
 - This service never grants roles directly — verdicts flow to Core.
 - Failing open is forbidden: OCR/engine errors → verification stays
   unverified (`DOCUMENT_UNREADABLE`, no detail).
+- **The internal-key check compares fixed-width SHA-256 digests** (`src/app.ts`,
+  §1.14). Never guard `timingSafeEqual` with a JS string-length pre-check:
+  `.length` counts UTF-16 code units while `Buffer.from()` yields UTF-8 bytes,
+  so a same-character-length key containing any byte ≥ 0x80 made
+  `timingSafeEqual` THROW and surface as a 500 instead of a 401 envelope.
+  Hashing both sides also closes the key-length side channel.
 
 ## Read before touching
 

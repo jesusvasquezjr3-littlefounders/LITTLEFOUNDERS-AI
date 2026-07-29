@@ -17,7 +17,7 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| GET | /health | — | Service health envelope |
+| GET | /health | — | Service health envelope. Mounted above the rate limiter — it never depends on Redis and never spends the caller's request budget (AGENTS.md) |
 | POST | /api/v1/auth/signup | — | Email+password signup via GoTrue; every account starts `universal` (DB trigger). Returns session or `confirmationRequired` |
 | POST | /api/v1/auth/login | — | Password login → session (access/refresh tokens) |
 | POST | /api/v1/auth/refresh | — | Exchange refresh token for a fresh session |
@@ -29,7 +29,7 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 | GET | /api/v1/learn/courses/:slug/tree | Bearer | Full course tree (adventures → sagas → topics → lessons) with per-node unlock state + `nextLessonId` — the single source of truth (COURSE_ENGINE.md §2) |
 | GET | /api/v1/learn/lessons/:id | Bearer | Lesson meta + client-safe document + Echo's narration manifest (`audio`), locale-resolved (caller locale → es-MX → any). 403 `LESSON_LOCKED` if not yet unlocked |
 | POST | /api/v1/learn/lessons/:id/grade | Bearer | Server-authoritative single-segment grading via `lesson-contract/` graders. 409 `ATTEMPTS_EXHAUSTED`, 422 `UNSUPPORTED_SEGMENT` |
-| POST | /api/v1/learn/lessons/:id/complete | Bearer | Body `{seconds_spent, local_date?}` (legacy `minutes_spent` accepted; `local_date` = the learner's local YYYY-MM-DD, the day-streak anchor). Recomputes the lesson score from recorded attempts (never trusts a client score; no graded weight = 100/passed), upserts `lesson_progress`, applies the XP/time/streak delta to `learning_stats`, and returns day-streak facts (`streak_days`/`streak_extended`/`first_today`) for the celebration screen |
+| POST | /api/v1/learn/lessons/:id/complete | Bearer | Body `{seconds_spent, local_date?}` (legacy `minutes_spent` accepted; `local_date` = the learner's local YYYY-MM-DD, the day-streak anchor). Recomputes the lesson score from recorded attempts (never trusts a client score; no graded weight = 100/passed), upserts `lesson_progress`, applies the XP/time/streak delta to `learning_stats`, and returns day-streak facts (`streak_days`/`streak_extended`/`first_today`) for the celebration screen. 502 if the `learning_stats` read does not answer — `lesson_progress` is already saved and the stats row is left untouched, so the client can retry (never computes the delta from assumed zeros; see AGENTS.md read-modify-write) |
 | GET | /api/v1/profile | Bearer | Own profile: identity, cover, avatar options, birthDate, follow counts, learningStats |
 | PATCH | /api/v1/profile | Bearer | Update displayName / @username (409 USERNAME_TAKEN) / locale (language of record) / birthDate |
 | PUT | /api/v1/profile/cover | Bearer | Set cover PRESET id (token gradients only — no binary/upload path exists) |
@@ -67,6 +67,7 @@ npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity
 ## Notes
 
 - JWTs are verified locally (HS256, `SUPABASE_JWT_SECRET`) — no per-request GoTrue round-trip.
+- Request bodies are capped at 64 kB (`express.json({ limit: '64kb' })`). The envelope error handler answers with the HTTP status the thrown error carries (`err.status`/`err.statusCode` — body-parser attaches one; a `MulterError` is mapped to 400 by name): 413 → `PAYLOAD_TOO_LARGE`, any other 4xx → `VALIDATION_ERROR`, everything else → 500 `INTERNAL`. It used to flatten every client mistake into 500, telling the caller "we broke" when their body was simply malformed or oversized.
 - Service-role PostgREST writes are reserved for what RLS deliberately closes to clients: role grants, `parent_verifications`, `audit_logs`, follower/following/blocked list hydration (reading OTHER users' profiles/avatars/roles).
 - The ID photo is forwarded in memory to Guardian and never persisted here either.
 - `learning_stats` (xp/minutes/lessons/streak) is system-written only — the ONLY route that mutates it is `POST /api/v1/learn/lessons/:id/complete`, and only by an XP delta / minutes / a newly-passed lesson increment it computes itself.

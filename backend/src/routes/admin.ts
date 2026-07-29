@@ -94,7 +94,10 @@ const UPSTREAM_FAILED = 'UPSTREAM_FAILED';
 const DATA_UNAVAILABLE = 'DATA_UNAVAILABLE';
 
 interface EmailLogEntry {
+  /** Row identity (Vault uuid, or the message id when Courier is buffer-only). */
   id: string;
+  /** The SMTP/provider Message-ID — the value to correlate with Amazon SES logs. */
+  messageId: string;
   to: string;
   subject: string;
   status: string;

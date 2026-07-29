@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
-import { Router, type Request, type Response } from 'express';
+import { Router, type NextFunction, type Request, type Response } from 'express';
 import multer, { MulterError } from 'multer';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -85,18 +85,21 @@ async function cleanupTmp(path: string | undefined): Promise<void> {
 export function filesRouter(): Router {
   const router = Router();
 
-  router.post('/', (req: Request, res: Response) => {
+  // Every handler is async: dropping the promise with `void` turns any
+  // rejection into an unhandled rejection, which Node 24 escalates to a
+  // process exit. Forward to Express's envelope error handler instead.
+  router.post('/', (req: Request, res: Response, next: NextFunction) => {
     getUpload().single('file')(req, res, (err: unknown) => {
-      void handleUpload(req, res, err);
+      handleUpload(req, res, err).catch(next);
     });
   });
 
-  router.get('/', (req: Request, res: Response) => {
-    void handleList(req, res);
+  router.get('/', (req: Request, res: Response, next: NextFunction) => {
+    handleList(req, res).catch(next);
   });
 
-  router.delete('/:bucket/:file', (req: Request, res: Response) => {
-    void handleDelete(req, res);
+  router.delete('/:bucket/:file', (req: Request, res: Response, next: NextFunction) => {
+    handleDelete(req, res).catch(next);
   });
 
   return router;

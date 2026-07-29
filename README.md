@@ -53,7 +53,10 @@ Repo-wide gates (from root):
 npm run typecheck:all && npm run lint:all && npm run test:all
 npm run docs:check     # AGENTS.md == CLAUDE.md
 npm run secrets:check  # no committed secrets
+npm run i18n:check     # 3-locale key parity + hardcoded-string scan
 ```
+
+Those last three also run in CI via [`.github/workflows/repo-gates.yml`](.github/workflows/repo-gates.yml) — on every pull request and every push to `main`/`littlefounders_v2`, deliberately **without** a `paths:` filter, because a secret hardcoded in `backend/` or an unmirrored `AGENTS.md` edit touches no path a per-service workflow watches. Per-service CI still owns type-check/lint/test.
 
 ## Documentation entry points
 

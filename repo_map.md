@@ -143,6 +143,7 @@ email-server/
     queue/
   src/
     __tests__/
+    db/
     services/
 filebase/
   data/
@@ -1227,6 +1228,26 @@ permissions:
   contents: write
 ```
 
+### .github/workflows/repo-gates.yml
+
+```
+name: repo gates
+
+# The repo-wide invariants (/AGENTS.md §5) — deliberately WITHOUT a `paths:`
+# filter.
+#
+# These used to live only in database-ci.yml, which fires on `database/**`.
+# That made them unreachable for the exact commits they exist to catch: a
+# secret hardcoded in backend/, or an edit to AGENTS.md that was not mirrored
+# to CLAUDE.md, changes nothing under database/ and so ran no gate at all.
+#
+# Per-service CI still owns type-check/lint/test/build; this job owns the
+# checks that are about the repository as a whole.
+
+on:
+  push:
+```
+
 ### .github/workflows/vault-backup.yml
 
 ```
@@ -1693,17 +1714,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-28) — Admin dashboard hardening + email tracking + cybersecurity audit
+## Current State (2026-07-28c) — /admin/emails made real + a functional-defect sweep (UNCOMMITTED, lands in the next PR)
 
-- **Admin Content+Moderation merged** (`/admin/content`): courses table + lesson review queue in a single unified view. Deleted `AdminModerationPage.tsx`. Removed `moderation` from admin nav (7 sections now → 8 with new Emails section). Overview page "awaiting review" CTA now points to `/admin/content`.
-- **Admin Users stats bar:** 3-card grid above the table — role distribution (top-role-first, stacked bar), locale distribution (per-locale colored bars: en-US=blue, es-MX=papaya, pt-BR=green), age groups (histogram from `profiles.birth_date`: <6, 6-8, 9-10, 11-12, 13-17, 18+).
-- **Signup timeline chart:** SVG bar chart with period selector (30d/90d/1y) at `/admin/users`. Backend `GET /admin/users/timeline?days=N` (Zod-validated 7-365). Groups `profiles.created_at` by day, fills zero-count days.
-- **Tutor upgrade hidden for staff:** `AppLayout.tsx` sidebar card now checks `!isStaff` so admin/superadmin never see "Verify your identity to become a Tutor".
-- **React Router v7 future flags:** `BrowserRouter` in `main.tsx` now carries `v7_startTransition: true` + `v7_relativeSplatPath: true` — silenced the console deprecation warnings in dev.
-- **New migration 0021 `email_logs`:** idempotent DDL, RLS enabled with zero client policies (service-role-only, same posture as 0017/0018). Columns: id, message_id, to_address, subject, template_type, locale, user_id, status, detail (jsonb), created_at. Indexes on created_at, status, to_address.
-- **email-server email tracking:** New `src/services/emailLog.ts` — ring buffer of 1000 entries logged on every `POST /api/v1/send`. New endpoints `GET /api/v1/logs?limit=&offset=` and `GET /api/v1/logs/summary` (Zod-validated query params, authenticated via `INTERNAL_API_KEY` middleware now scoped to `/api/v1/*`). `SendBody` schema extended with `templateType`, `locale`, `userId` optional fields.
-- **Backend email proxy:** `GET /admin/emails/logs` and `GET /admin/emails/summary` proxy email-server through Core (never direct browser access per §1.5). Zod-validated query params (`EmailLogsQuerySchema`), response shapes (`EmailLogsSchema`, `EmailSummarySchema`), `AbortSignal.timeout(10_000)` on fetch. New env var `EMAIL_SERVER_URL` (default `http://localhost:4005`).
-- **Admin Email Dashboard** (`/admin/emails`): KPI cards (total sent + status breakdown: queued/delivered/failed), paginated table (to, subject, type badge, status badge, sent-at), prev/next navigation. 3-locale i18n. New admin nav entry with `mail` icon.
+- **Courier's email history is durable.** It was a 1000-entry in-process ring buffer, wiped by every redeploy, restart and Haraka child death — `/admin/emails` was empty essentially always. New `email-server/src/db/emailLogsRepo.ts` writes through to `email_logs` (0021) with the service role; the buffer survives only as the dev/test fallback when `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` are unset. Round trip verified against the PRODUCTION Vault (write → Postgres → read back), test rows deleted afterwards.
+- **GoTrue auth mail is finally captured.** It reaches Haraka over SMTP :587 and never touches the HTTP API, so *nothing in the repo* was writing the platform's actual mail. New `haraka/plugins/log_delivery.js` reports each relayed message on `hook_queue_ok` to a new internal `POST /api/v1/logs`, recorded as `templateType='auth'`, `status='relayed'` (new i18n key in all three locales). The plugin holds no DB credentials and is fire-and-forget with a 2 s timeout — a logging outage must never bounce a password reset.
+- **Adversarial defect sweep: 40 candidates, 33 confirmed, 7 refuted.** Fixed here, worst first:
+  - **Completing a lesson could erase a child's entire learning record.** `getLearningStatsForUpdate` collapsed "Vault did not answer" into a zeroed row, and the following PATCH wrote deltas-from-zero back — silently, behind a 200. `minutes_learned` and both streak columns exist nowhere else, so the loss was permanent. The read now returns `null` on failure and the route refuses. Regression test proven to catch it (fails `expected 200 to be 502` when the guard is removed).
+  - **Core would hang forever if Redis was slow to boot.** node-redis retries the INITIAL connect indefinitely, so `await connect()` neither resolved nor rejected: `listen()` was never reached, `process.exit(1)` was unreachable, and Railway's ON_FAILURE policy never fired. Now listens first and connects in the background.
+  - **A Redis outage after boot 500'd every request including `/health`**, failing the healthcheck and taking Core down over a degraded rate limiter. `passOnStoreError: true` (fail-open — availability control, not authorization) and `/health` mounted above the limiter.
+  - **`/admin/generation` spun an infinite render loop in its default state** (`?? {}` as a `useEffect` dependency). Stable `EMPTY_BREAKDOWN` + idempotent updaters; regression test counts renders inside the mocked hook (a parent-level counter can't see it, since `setNodes` only re-renders the child) and fails with a `render loop: N renders` throw when the fix is reverted.
+  - **Depot could be killed by one request** — `createReadStream().pipe()` with no `error` listener, and `void serve(...)` dropping an async rejection. Both closed; source destroyed on client disconnect.
+  - **Prism answered 502 for every failure**, so Forge retried terminal errors — up to 12 paid image generations for a result that can never differ. Terminal codes now map to 422.
 ```
 
 ### agent/README.md
@@ -3643,7 +3664,7 @@ import { verificationRouter } from './routes/verification.js';
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
 
-export function createApp(): express.Express {
+/** HTTP status carried by a thrown middleware error, or 500 if it has none. */
 ```
 
 ### backend/src/config.ts
@@ -3676,14 +3697,14 @@ import { redisClient, isTestOrDev } from './middleware/rateLimit.js';
 const { PORT } = getConfig();
 
 async function startServer() {
-  if (!isTestOrDev) {
-    try {
-      await redisClient.connect();
-      console.log(`[${SERVICE}] Connected to Redis for distributed rate limiting`);
-    } catch (error) {
-      console.error(`[${SERVICE}] Failed to connect to Redis:`, error);
-      process.exit(1);
-    }
+  // Listen FIRST, connect to Redis in the background.
+  //
+  // This order is deliberate. node-redis applies its reconnect strategy to the
+  // INITIAL connect too, so `connect()` against an unreachable server neither
+  // resolves nor rejects — it retries forever. Awaiting it before listen()
+  // meant that a Redis service still booting after a redeploy left Core with
+  // no listener at all: the healthcheck got connection-refused, the catch
+  // below never ran, `process.exit(1)` was unreachable, and Railway's
 ```
 
 ### backend/src/lesson-contract/core/scoring.ts
@@ -8310,19 +8331,19 @@ create table if not exists generation_heartbeat_snapshots (
 ```
 -- 0021_email_logs.sql — transactional email audit trail.
 --
--- NOT YET WIRED. This migration creates the destination schema only; as of
--- this commit NOTHING reads or writes it. Courier's delivery history is an
--- in-process ring buffer (email-server/src/services/emailLog.ts, 1000 entries)
--- which Core proxies through /api/v1/admin/emails/{logs,summary} — so the
--- admin dashboard's history is lost on every redeploy or restart of
--- email-server. This table is the durable replacement; the follow-up work is
--- to make Courier write here on dispatch and Core read here instead of the
--- buffer.
+-- Courier (email-server) writes one row per dispatched message via PostgREST
+-- with the service role (email-server/src/db/emailLogsRepo.ts). It replaces an
+-- in-process 1000-entry ring buffer that was wiped by every redeploy and every
+-- restart, which is why the admin dashboard used to render an empty table.
+-- The buffer survives only as the dev/test fallback when SUPABASE_URL and
+-- SUPABASE_SERVICE_ROLE_KEY are unset.
 --
--- Even once wired, GoTrue-initiated auth mail (confirmation / recovery /
--- magic-link / invite / email-change) will NOT appear: it goes straight to
--- Haraka over SMTP and never touches the Courier HTTP API. Only mail that
--- flows through POST /api/v1/send can be captured.
+-- TWO WRITERS reach this table, and the second one is the reason it exists:
+--   1. POST /api/v1/send — mail Courier dispatches on our behalf.
+--   2. POST /api/v1/logs — mail captured by the Haraka plugin
+--      (haraka/plugins/log_delivery.js) on hook_queue_ok. GoTrue's auth mail
+--      (confirmation / recovery / magic-link / invite / email-change) is
+--      submitted over SMTP :587 and NEVER touches the HTTP API, so without
 ```
 
 ### database/migrations/0022_realtime_publication.sql
@@ -8818,6 +8839,26 @@ GoTrue (Supabase auth)  ─┐
 Courier HTTP API adapter ┘        relay_internal marks these                 smtp_forward
 ```
 
+### email-server/haraka/plugins/log_delivery.js
+
+```
+'use strict'
+
+// Courier delivery capture.
+//
+// GoTrue submits auth mail (confirmation / recovery / magic-link / invite /
+// email-change) straight to this relay over SMTP :587. It never touches
+// Courier's HTTP API, so before this plugin existed NONE of the platform's
+// real mail appeared in the admin console — /admin/emails rendered an empty
+// table while SES was happily delivering.
+//
+// This hook reports every successfully relayed message to Courier's own HTTP
+// API on localhost, which owns the (typed, tested) write to the email_logs
+// table. The plugin deliberately holds no database credentials and contains no
+// SQL: Haraka's runtime is CommonJS and is excluded from our linter and
+// type-checker (see email-server/eslint.config.js), so the less logic that
+```
+
 ### email-server/haraka/plugins/relay_internal.js
 
 ```
@@ -8896,6 +8937,26 @@ describe('getConfig', () => {
   it('defaults to the noop engine outside production', () => {
 ```
 
+### email-server/src/__tests__/delivery-capture.test.ts
+
+```
+import { describe, expect, it, beforeAll, beforeEach } from 'vitest';
+import { createRequire } from 'node:module';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
+import path from 'node:path';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { resetEmailLogForTests } from '../services/emailLog.js';
+
+const KEY = 'test-internal-key-0123456789';
+
+beforeAll(() => {
+  process.env.INTERNAL_API_KEY = KEY;
+});
+
+```
+
 ### email-server/src/__tests__/health.test.ts
 
 ```
@@ -8924,11 +8985,11 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 
 beforeAll(() => {
-  process.env.INTERNAL_API_KEY = 'test-key';
+  process.env.INTERNAL_API_KEY = 'test-internal-key-0123456789';
 });
 
 const auth = (app: ReturnType<typeof createApp>, path: string) =>
-  request(app).get(path).set('x-internal-api-key', 'test-key');
+  request(app).get(path).set('x-internal-api-key', 'test-internal-key-0123456789');
 
 describe('GET /api/v1/logs', () => {
   it('defaults limit and offset when the query is empty', async () => {
@@ -8944,14 +9005,14 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 
 beforeAll(() => {
-  process.env.INTERNAL_API_KEY = 'test-key';
+  process.env.INTERNAL_API_KEY = 'test-internal-key-0123456789';
 });
 
 describe('POST /api/v1/send', () => {
   it('queues a valid email through the no-op adapter', async () => {
     const res = await request(createApp())
       .post('/api/v1/send')
-      .set('x-internal-api-key', 'test-key')
+      .set('x-internal-api-key', 'test-internal-key-0123456789')
       .send({ to: 'parent@example.com', subject: 'Welcome', text: 'Hi!' });
     expect(res.status).toBe(202);
 ```
@@ -8983,17 +9044,17 @@ import crypto from 'crypto';
 import express from 'express';
 import { z } from 'zod';
 import { NoopAdapter, type EmailAdapter } from './services/adapter.js';
-import { getEmailLogs, getEmailSummary, recordEmail } from './services/emailLog.js';
+import { getEmailLogs, getEmailSummary, recordDelivery, recordEmail } from './services/emailLog.js';
 
 export const SERVICE = 'email-server';
 export const VERSION = '0.2.0';
 
+/** Fixed-width (32-byte) digest, so timingSafeEqual can never length-mismatch. */
+const digest = (v: string): Buffer => crypto.createHash('sha256').update(v, 'utf8').digest();
+
 const SendBody = z.object({
   to: z.string().email(),
   subject: z.string().min(1),
-  html: z.string().optional(),
-  text: z.string().optional(),
-  templateType: z.string().optional(),
 ```
 
 ### email-server/src/config.ts
@@ -9014,6 +9075,26 @@ import { z } from 'zod';
  * and `npm test` work without SES. INTERNAL_API_KEY has no default in
  * production: a missing key must crash boot, not silently serve unauthenticated.
  */
+```
+
+### email-server/src/db/emailLogsRepo.ts
+
+```
+import { getConfig } from '../config.js';
+import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/emailLog.js';
+
+/*
+ * Service-role PostgREST access to `email_logs`
+ * (database/migrations/0021_email_logs.sql) — the DURABLE delivery history.
+ *
+ * Before this, Courier's history was a 1000-entry in-process ring buffer that
+ * was wiped by every redeploy, every Railway restart, and every Haraka
+ * child-process death (src/index.ts exits non-zero on purpose so the platform
+ * restarts us). The admin dashboard therefore showed an empty table in
+ * production almost all of the time.
+ *
+ * The ring buffer survives as the fallback: SUPABASE_URL and
+ * SUPABASE_SERVICE_ROLE_KEY are optional, so `npm run dev` and `npm test` need
 ```
 
 ### email-server/src/index.ts
@@ -9060,20 +9141,20 @@ export interface SendResult {
 
 ```
 import type { SendRequest, SendResult } from './adapter.js';
+import { insertEmailLog, isVaultConfigured, listEmailLogs, summarizeEmailLogs } from '../db/emailLogsRepo.js';
 
-export interface EmailLogEntry {
-  id: string;
-  to: string;
-  subject: string;
-  status: string;
-  templateType: string;
-  locale?: string;
-  userId?: string;
-  detail: Record<string, unknown>;
-  createdAt: string;
-}
-
-const MAX_ENTRIES = 1000;
+/*
+ * Courier's delivery history.
+ *
+ * Two writers, one store:
+ *   - POST /api/v1/send      — mail we dispatch ourselves (templateType from
+ *                              the caller, defaults to 'transactional').
+ *   - POST /api/v1/logs      — mail captured by the Haraka SMTP plugin, i.e.
+ *                              GoTrue auth mail (confirmation / recovery /
+ *                              magic-link / invite / email-change), which
+ *                              reaches the relay over SMTP and never touches
+ *                              our HTTP API.
+ *
 ```
 
 ### email-server/src/services/haraka.ts
@@ -135728,7 +135809,7 @@ import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
 ```
 import { randomUUID } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
-import { Router, type Request, type Response } from 'express';
+import { Router, type NextFunction, type Request, type Response } from 'express';
 import multer, { MulterError } from 'multer';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
@@ -137080,6 +137161,26 @@ function renderApp(path = '/') {
 beforeEach(async () => {
 ```
 
+### frontend/src/__tests__/PipelineFlow.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import '@/i18n';
+import { PipelineFlow } from '@/routes/admin/PipelineFlow';
+
+/** A settled mount is a handful of renders; anything beyond this is a loop. */
+const RENDER_LIMIT = 25;
+
+/*
+ * Regression guard for a render loop that pegged /admin/generation in its
+ * DEFAULT state (no active run).
+ *
+ * PipelineFlow computed `heartbeat?.stageBreakdown ?? {}` during render and
+ * used it as a useEffect dependency. A fresh object literal has a fresh
+ * identity every render, so the effect re-ran every render, called
+```
+
 ### frontend/src/auth/AuthContext.tsx
 
 ```
@@ -137787,13 +137888,13 @@ export { Checkbox } from './Checkbox';
     "NOT_FOUND": "We couldn't find that.",
     "CONFLICT": "That conflicts with something that already exists.",
     "RATE_LIMITED": "Too many tries — wait a moment.",
+    "PAYLOAD_TOO_LARGE": "That file or request was too large.",
     "INTERNAL": "Something went wrong on our side.",
     "INVALID_CREDENTIALS": "That email and password don't match.",
     "EMAIL_IN_USE": "There's already an account with that email.",
     "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
     "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
-    "USERNAME_TAKEN": "That @username is taken — try another one.",
 ```
 
 ### frontend/src/i18n/en-US/learn.json
@@ -137967,13 +138068,13 @@ export { Checkbox } from './Checkbox';
     "NOT_FOUND": "No pudimos encontrar eso.",
     "CONFLICT": "Eso choca con algo que ya existe.",
     "RATE_LIMITED": "Demasiados intentos — espera un momento.",
+    "PAYLOAD_TOO_LARGE": "Ese archivo o solicitud era demasiado grande.",
     "INTERNAL": "Algo salió mal de nuestro lado.",
     "INVALID_CREDENTIALS": "Ese correo y contraseña no coinciden.",
     "EMAIL_IN_USE": "Ya existe una cuenta con ese correo.",
     "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
     "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
     "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada.",
-    "USERNAME_TAKEN": "Ese @usuario ya está ocupado — prueba con otro.",
 ```
 
 ### frontend/src/i18n/es-MX/learn.json
@@ -138167,13 +138268,13 @@ import enErrors from './en-US/errors.json';
     "NOT_FOUND": "Não conseguimos encontrar isso.",
     "CONFLICT": "Isso conflita com algo que já existe.",
     "RATE_LIMITED": "Muitas tentativas — espere um momento.",
+    "PAYLOAD_TOO_LARGE": "Esse arquivo ou solicitação era grande demais.",
     "INTERNAL": "Algo deu errado do nosso lado.",
     "INVALID_CREDENTIALS": "Esse e-mail e senha não correspondem.",
     "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",
     "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
     "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
     "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
-    "USERNAME_TAKEN": "Esse @usuário já está em uso — tente outro.",
 ```
 
 ### frontend/src/i18n/pt-BR/learn.json

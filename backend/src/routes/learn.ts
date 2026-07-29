@@ -352,7 +352,13 @@ export function learnRouter(): Router {
     });
     if (!upserted) return fail(res, 502, 'INTERNAL', 'Could not save progress');
 
+    // null means Vault did not answer — NOT "this learner has zero progress".
+    // Abort rather than compute the update from assumed zeros: the PATCH below
+    // is a blind overwrite and would erase the learner's accumulated totals.
+    // The lesson_progress row above is already saved, so nothing is lost by
+    // stopping here; the client can retry the completion.
     const stats = await getLearningStatsForUpdate(user.id);
+    if (!stats) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
     // Streak semantics (v1 parity / Duolingo model): ANY lesson passed today
     // sustains or extends the day streak — anchored to last_active_date
     // (the learner's LOCAL calendar day, 0009), pure date math only.

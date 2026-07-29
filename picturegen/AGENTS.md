@@ -100,6 +100,40 @@ untouched with a loud `console.warn` — a paid generation is never lost to a
 local encoder problem, and a systematic failure can't silently regress the
 catalog to PNG sizes.
 
+## The response status IS a retry instruction (the Forge contract)
+
+Prism's HTTP status is not decoration — it is the instruction its consumer
+obeys. `coursegen/src/providers/picturegen.ts` wraps every call in
+`withTransportRetry`, and `ProviderHttpError` marks 429/5xx retryable and
+every other 4xx terminal. So `src/routes/pictures.ts` maps the typed
+`ImageError.code` deliberately:
+
+- **Retryable → 502.** `IMAGE_TIMEOUT`, `IMAGE_RATE_LIMITED`,
+  `IMAGE_PROVIDER_ERROR`, `IMAGE_DOWNLOAD_FAILED` — upstream was briefly
+  unhappy; the same request later may well work.
+- **Terminal → 422.** `IMAGE_BAD_RESPONSE`, `IMAGE_VERIFICATION_FAILED` — the
+  provider answered and the answer was unusable, deterministically, for this
+  request. Re-asking cannot change it.
+
+**Cost of getting it wrong:** answering 502 for everything made Forge
+re-request terminal failures. Its ladder is 4 attempts, and each attempt
+re-enters the whole judge → generate → verify loop up to
+`PICTUREGEN_VERIFY_ATTEMPTS` (default 3) — **up to 12 paid `qwen-image`
+generations per target** for a result that can never differ. None of them
+reach the run ledger either: Forge only records a picture it actually
+received, so `FORGE_MAX_USD_PER_RUN` never sees that spend. A terminal answer
+is not a run-killer — Forge logs the skip and the slot keeps its icon/text
+fallback.
+
+Rules when touching this: **the default is terminal.** A new `ImageError`
+code that is genuinely worth retrying must be added to `RETRYABLE_CODES`
+explicitly; anything not in that set — including the `IMAGE_GENERATION_FAILED`
+catch-all for a non-`ImageError` throw, which is what a Depot-upload or
+Vault-insert failure surfaces as — answers 422. And note `IMAGE_RATE_LIMITED`
+goes out as 502, not 429: Forge's longer rate-limit ladder (6 attempts,
+1s→60s, honouring `Retry-After`) only triggers on 429, so a rate-limited Prism
+gets the standard 4-attempt ladder.
+
 ## Invariants that bite here
 
 - **The provider URL is temporary — never persisted.** Prism ALWAYS downloads

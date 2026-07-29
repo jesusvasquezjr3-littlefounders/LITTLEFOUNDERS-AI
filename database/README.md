@@ -28,7 +28,7 @@ Studio: http://localhost:8000 — dashboard credentials live in `supabase/docker
 
 - `SUPABASE_VERSION` — the pinned `supabase/supabase` release tag (upgrade protocol: [AGENTS.md](AGENTS.md))
 - `supabase/` — the pinned upstream clone (gitignored; created by `db:sync`)
-- `migrations/` — `0001_identity.sql` (locked identity domain), `0002_content_skeleton.sql` (PROVISIONAL), `0003_auth_bootstrap.sql` (signup trigger + role auditing + indexes)
+- `migrations/` — `0001_identity.sql` (locked identity domain), `0002_content_skeleton.sql` (PROVISIONAL), `0003_auth_bootstrap.sql` (signup trigger + role auditing + indexes), … through `0022_realtime_publication.sql`. What each one owns and its RLS posture: [AGENTS.md](AGENTS.md)
 - `seeds/dev_seed.sql` — one user per role + a 2-parent/1-kid family (dev only)
 - `types/` — generated TS types (shared-type hub)
-- `scripts/` — `check-migrations.mjs` (the `npm test` gate), `sync-supabase.sh` (pin sync), `local-stack.sh` (stack driver), `seed-dev-users.sh` (6 login-able test accounts), `publish-course.sh` (flip a Forge-generated course's chain to published)
+- `scripts/` — `check-migrations.mjs` (the `npm test` gate), `sync-supabase.sh` (pin sync), `local-stack.sh` (stack driver), `seed-dev-users.sh` (6 login-able test accounts), `publish-course.sh` (flip a Forge-generated course's chain to published), `export-course-fixture.sh` / `import-course-fixture.sh` (git-committable course snapshots)

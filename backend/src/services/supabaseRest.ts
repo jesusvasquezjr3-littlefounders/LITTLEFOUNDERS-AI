@@ -250,12 +250,30 @@ export interface LearningStatsForUpdateRow extends LearningStatsRow {
   last_active_date: string | null;
 }
 
-export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
+/**
+ * Returns null when VAULT DID NOT ANSWER — never a zeroed row.
+ *
+ * This distinction is load-bearing and must not be "simplified" away. The one
+ * caller (POST /learn/lessons/:id/complete) does a read-modify-write:
+ * it adds deltas to what this returns and PATCHes the result back. If a
+ * transient PostgREST failure (a pooler blip, a restart, a statement timeout)
+ * were collapsed into ZERO_STATS the way the display-only readers above do,
+ * the very next PATCH would overwrite a learner's accumulated xp_points,
+ * minutes_learned, lessons_completed, streak_days and longest_streak with
+ * deltas-from-zero — silently, behind a 200 response. minutes_learned and both
+ * streak columns exist nowhere else, so that loss is permanent.
+ *
+ * An empty result set is still ZERO_STATS: the 0006 trigger guarantees every
+ * user has a row, so that branch is only a defensive default for a brand-new
+ * account, not a failure signal.
+ */
+export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow | null> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
     `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
-  return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
+  if (rows === null) return null;
+  return rows[0] ?? { ...ZERO_STATS, last_active_date: null };
 }
 
 // ── Follow / block lists (0006) ──────────────────────────────

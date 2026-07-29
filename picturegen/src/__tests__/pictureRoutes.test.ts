@@ -228,7 +228,11 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
     const res = await request(app).post('/api/v1/pictures').set('x-internal-api-key', KEY).send({ label: 'a jar of coins' });
 
-    expect(res.status).toBe(502);
+    // 422, NOT 502: the provider answered and its answer failed the qwen-vl
+    // check, which is deterministic for this prompt. coursegen's
+    // withTransportRetry retries 5xx, so answering 502 here made Forge
+    // re-request a terminal failure — up to 12 paid generations per target.
+    expect(res.status).toBe(422);
     expect(res.body).toEqual({ data: null, error: { code: 'IMAGE_VERIFICATION_FAILED', message: expect.any(String) } });
     // PICTUREGEN_VERIFY_ATTEMPTS default = 3 attempts, all verified, none stored.
     expect(generateImage).toHaveBeenCalledTimes(3);

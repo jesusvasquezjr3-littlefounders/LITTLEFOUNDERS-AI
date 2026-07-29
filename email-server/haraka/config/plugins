@@ -16,3 +16,10 @@ rcpt_to.in_host_list
 # QUEUE — forward every relaying message to the Amazon SES smarthost over
 # TLS + SMTP AUTH. Config (secrets) rendered at boot into config/smtp_forward.ini.
 queue/smtp_forward
+
+# QUEUE OK — report each successfully relayed message to Courier's HTTP API on
+# localhost, which writes it to email_logs (0021). This is the ONLY way
+# GoTrue's auth mail reaches the admin console: it arrives over SMTP and never
+# touches POST /api/v1/send. Fire-and-forget; a logging failure never affects
+# delivery. Custom plugin (email-server/haraka/plugins/log_delivery.js).
+log_delivery

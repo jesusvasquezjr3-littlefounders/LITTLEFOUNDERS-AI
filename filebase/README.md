@@ -37,7 +37,7 @@ All JSON routes use the standard envelope (`/AGENTS.md` §1.6): `{ "data": <payl
 
 ### The streaming exception
 
-`GET/HEAD /files/:bucket/:hash.:ext` is the one route in this service (and, per `/AGENTS.md` §1.6, the one documented exception platform-wide) whose **success** response is not the `{data,error}` envelope — it streams raw bytes so it can be used directly as the `src` of an `<audio>` or `<img>` tag. Every *error* status on this route (400 invalid id, 401 unauthorized for an internal object, 404 not found, 416 range not satisfiable) still returns the standard JSON envelope.
+`GET/HEAD /files/:bucket/:hash.:ext` is the one route in this service (and, per `/AGENTS.md` §1.6, the one documented exception platform-wide) whose **success** response is not the `{data,error}` envelope — it streams raw bytes so it can be used directly as the `src` of an `<audio>` or `<img>` tag. Every *error* status on this route (400 invalid id, 401 unauthorized for an internal object, 404 not found, 416 range not satisfiable, 500 unexpected fault) still returns the standard JSON envelope.
 
 Behavior on success:
 - `Content-Type` set from the stored mime type.
@@ -45,6 +45,8 @@ Behavior on success:
 - `If-None-Match` matching the ETag → `304 Not Modified`.
 - `Range: bytes=start-end` (also `start-` and `-suffixLength`) → `206 Partial Content` with `Content-Range`/`Content-Length` set to the requested slice, for audio scrubbing. An unsatisfiable range → `416` (JSON envelope).
 - `HEAD` returns identical headers with no body.
+
+When the read fails mid-flight: *before* any byte leaves (blob deleted between the `stat()` and the open, volume I/O error) the client gets the `404` envelope; *after* the stream started, the response is destroyed, so the client sees a truncated transfer rather than a silently short file. Either way the process survives, and the source stream is also destroyed when the client disconnects (paused audio, closed tab) so an aborted download never leaks an open fd — see `AGENTS.md` (this dir), *A stream error must never be able to kill the process*.
 
 Allowed mime types (each maps to a fixed extension, independent of the uploader's original filename): `audio/mpeg`→mp3, `audio/wav`→wav, `audio/ogg`→ogg, `image/png`→png, `image/jpeg`→jpg, `image/webp`→webp, `application/json`→json.
 

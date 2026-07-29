@@ -17,7 +17,7 @@
 // only NOT_CONFIGURED short-circuits the whole document. A lesson must never be
 // unpublishable just because an illustration failed.
 
-import type { UsageLedger } from '../providers/usage.js';
+import { BudgetExceededError, type UsageLedger } from '../providers/usage.js';
 import { inheritedUrl, type ImageInheritance } from './imageInheritance.js';
 import { requestPicture, type PicturePurpose } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
@@ -274,6 +274,11 @@ export async function illustrateSegments(
       return picture.url;
     } catch (err) {
       if (err instanceof ProviderNotConfiguredError) throw err;
+      // A budget stop is the kill switch firing, NOT a per-image hiccup.
+      // Swallowing it here defeated FORGE_MAX_USD_PER_RUN entirely: the run
+      // kept walking every remaining target, paying for each one, and shipped
+      // lessons with silently missing illustrations instead of halting.
+      if (err instanceof BudgetExceededError) throw err;
       console.warn(`images: skipping illustration for "${label}" — ${err instanceof Error ? err.message : String(err)}`);
       return undefined;
     }

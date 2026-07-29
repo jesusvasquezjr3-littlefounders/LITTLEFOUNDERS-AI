@@ -30,13 +30,14 @@ Both processes run in one container, supervised by [`src/index.ts`](src/index.ts
 | Method | Path | Description |
 |---|---|---|
 | GET | /health | Service health envelope `{ data: { service, version, status: "ok" }, error: null }` |
-| POST | /api/v1/send | `{ to, subject, html?, text?, templateType?, locale?, userId? }` → `202 { data: { id, status: "queued" }, error: null }`. Requires `x-internal-api-key`. Logs to ring buffer. |
-| GET | /api/v1/logs | Query: `?limit=1-200&offset=0+`. Returns paginated email history from ring buffer. Requires `x-internal-api-key`. |
-| GET | /api/v1/logs/summary | Returns `{ total, statuses, templates }` aggregate. Requires `x-internal-api-key`.
+| POST | /api/v1/send | `{ to, subject, html?, text?, templateType?, locale?, userId? }` → `202 { data: { id, status: "queued" }, error: null }`. Requires `x-internal-api-key`. Recorded in `email_logs`. |
+| POST | /api/v1/logs | `{ messageId, to, subject?, status?, templateType?, locale?, userId?, detail? }` → `202 { data: { recorded, messageId }, error: null }`. Delivery capture for the SMTP path — called by the `log_delivery` Haraka plugin so GoTrue auth mail reaches the admin console. Requires `x-internal-api-key`. |
+| GET | /api/v1/logs | Query: `?limit=1-200&offset=0+`. Newest-first page `{ entries, total }` from `email_logs`, falling back to the in-process ring buffer when Vault is unset/unreachable. Requires `x-internal-api-key`. |
+| GET | /api/v1/logs/summary | Returns `{ total, statuses, templates }` aggregate, same source/fallback as above. Requires `x-internal-api-key`.
 
 ## Environment
 
-See [`.env.example`](.env.example). Key vars: `EMAIL_ENGINE` (`noop`\|`haraka`), `INTERNAL_API_KEY`, `MAIL_FROM`, the `HARAKA_*` listener knobs, and (when `haraka`) the `SES_RELAY_HOST` / `SES_SMTP_USER` / `SES_SMTP_PASS` smarthost credentials. `SES_SMTP_USER`/`PASS` are region-scoped SES **SMTP** credentials, not AWS console/access keys. Boot crashes (never serves half-configured) if `EMAIL_ENGINE=haraka` without the `SES_*` set, or if `INTERNAL_API_KEY` is missing in production.
+See [`.env.example`](.env.example). Key vars: `EMAIL_ENGINE` (`noop`\|`haraka`), `INTERNAL_API_KEY`, `MAIL_FROM`, the `HARAKA_*` listener knobs, (when `haraka`) the `SES_RELAY_HOST` / `SES_SMTP_USER` / `SES_SMTP_PASS` smarthost credentials, and `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` for the durable `email_logs` history (optional — without them history is in-memory only and dies on restart). `SES_SMTP_USER`/`PASS` are region-scoped SES **SMTP** credentials, not AWS console/access keys. Boot crashes (never serves half-configured) if `EMAIL_ENGINE=haraka` without the `SES_*` set, or if `INTERNAL_API_KEY` is missing in production.
 
 ## Live in production (2026-07-18)
 
