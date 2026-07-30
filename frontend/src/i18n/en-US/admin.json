@@ -52,7 +52,7 @@
   },
   "content": {
     "title": "Content",
-    "subtitle": "Manage courses and review kid-facing lessons before they go live.",
+    "subtitle": "Manage courses and review kid-facing lessons and games before they go live.",
     "coursesHeading": "Courses",
     "colTitle": "Course",
     "colSlug": "Slug",
@@ -62,7 +62,53 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "archive": "Archive",
-    "empty": "No courses yet."
+    "empty": "No courses yet.",
+    "tabs": {
+      "aria": "Content views",
+      "courses": "Courses",
+      "games": "Games"
+    }
+  },
+  "games": {
+    "heading": "Games awaiting review",
+    "note": "Arcade never auto-publishes. Every generated game lands here in review — play it end to end before it reaches a child (§1.9).",
+    "empty": "No games awaiting review. The arcade queue is clear.",
+    "unknownMechanic": "Unknown mechanic",
+    "tier": "Tier {{tier}}",
+    "xpMax": "{{xp}} XP",
+    "minutes": "{{minutes}} min",
+    "course": "Course",
+    "topic": "Topic",
+    "locales": "Locales",
+    "noData": "—",
+    "play": "Play to review",
+    "playAria": "Play “{{title}}” to review it",
+    "publish": "Publish",
+    "archive": "Archive",
+    "rubricTitle": "Judge rubric",
+    "rubricEmpty": "No judge rubric recorded — this game was never scored.",
+    "previewNote": "Review preview — the real game, nothing scored and no XP awarded.",
+    "previewClose": "Close preview",
+    "previewBroken": "This game's document could not be loaded, so it cannot be reviewed. Check the run that produced it before publishing anything.",
+    "dims": {
+      "concept_fit": "Concept fit",
+      "fun_agency": "Fun & agency",
+      "clarity": "Clarity",
+      "kid_safety": "Kid safety",
+      "difficulty_fairness": "Difficulty fairness"
+    },
+    "confirmPublish": {
+      "title": "Publish this game?",
+      "body": "“{{title}}” goes live for every kid whose topic is already published. Play it first — this is the last human gate.",
+      "confirm": "Publish it",
+      "cancel": "Not yet"
+    },
+    "confirmArchive": {
+      "title": "Archive this game?",
+      "body": "“{{title}}” disappears from the arcade. XP already earned stays with the kids who played it, and the game can be regenerated later.",
+      "confirm": "Archive it",
+      "cancel": "Keep it"
+    }
   },
   "users": {
     "title": "Users",
@@ -288,6 +334,9 @@
       "planning": "Planning",
       "writing": "Writing",
       "reviewing": "Judging",
+      "authoring": "Authoring",
+      "simulating": "Simulating",
+      "judging": "Judging",
       "localizing": "Localizing",
       "illustrating": "Images",
       "publishing": "Publishing",
@@ -300,7 +349,23 @@
       "reviewed": "Judging",
       "localized": "Localizing",
       "illustrated": "Images",
+      "planning": "Planning",
+      "writing": "Writing",
+      "reviewing": "Judging",
+      "authoring": "Authoring",
+      "simulating": "Simulating",
+      "judging": "Judging",
+      "localizing": "Localizing",
+      "illustrating": "Images",
       "unknown": "Unknown"
+    },
+    "kinds": {
+      "filterLabel": "Pipeline",
+      "filterAria": "Filter runs by pipeline",
+      "all": "All",
+      "lessons": "Lessons",
+      "games": "Games",
+      "note": "Lesson and game runs share the telemetry tables but never share a trend line — every cost, quality and failure chart is scoped to the selected pipeline."
     },
     "history": {
       "runs": "Run inspector"
@@ -343,7 +408,11 @@
       "feedback_quality": "Feedback quality",
       "distractor_quality": "Distractor quality",
       "narrative_quality": "Narrative quality",
-      "naturalness": "Naturalness"
+      "naturalness": "Naturalness",
+      "concept_fit": "Concept fit",
+      "fun_agency": "Fun & agency",
+      "clarity": "Clarity",
+      "difficulty_fairness": "Difficulty fairness"
     },
     "duration": {
       "title": "Wall-clock per lesson (seconds)"
@@ -358,6 +427,11 @@
       "duration": "Duration",
       "images": "Images g·b·i",
       "error": "Error"
+    },
+    "slotsGames": {
+      "title": "Games ({{count}})",
+      "empty": "No per-game records for this run.",
+      "slot": "Game"
     },
     "states": {
       "published": "published",

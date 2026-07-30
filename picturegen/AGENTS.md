@@ -36,6 +36,12 @@ reason the service exists ("optimizar consumo, no llamar APIs a cada rato").
 full paid catalog regeneration); failure-mode hardening instead deletes the
 offending cached rows surgically.
 
+**Adding a `PICTURE_PURPOSES` value is cache-safe — never bump `STYLE_VERSION`
+for one.** `purpose` is already a component of the hashed request descriptor, so
+a new value can only mint keys nothing has stored; every existing asset keeps
+its key and stays a HIT. Bumping `STYLE_VERSION` "to be safe" would re-pay for
+the entire catalog to obtain byte-identical-looking art.
+
 ## Provider decision — RESOLVED
 
 **Image provider: Qwen-Image on DashScope, model `qwen-image`.** Gemini was
@@ -66,6 +72,32 @@ Every final prompt (judged or fallback) exits through `finalizePrompt()`,
 which appends the code-enforced `PICTORIAL_CLAUSE` (no text/letters/numerals),
 and `mergeNegative()` always prefixes `BASE_NEGATIVE` — neither is trusted to
 the judge.
+
+`PURPOSE_GUIDANCE` (same file) is the per-role art direction handed to the
+judge: the structural ROLE decides composition, so a thumbnail option tile and
+a wide establishing scene are not the same picture. `PICTURE_PURPOSES` is the
+closed set (`src/routes/pictures.ts` derives its `z.enum` from it, so an unknown
+purpose is a 400 `VALIDATION_ERROR`), and every value MUST have a
+`PURPOSE_GUIDANCE` entry — the `Record<PicturePurpose, string>` type makes that
+a compile error, not a runtime hole.
+
+**Arcade's two purposes** (`game_sprite`, `game_background` — GAME_ENGINE.md §2,
+consumed by `gamegen/src/pipeline/images.ts`) are the only ones whose art is
+composited rather than displayed alone, and their guidance says so explicitly
+because **legibility under a HUD is the failure mode**:
+
+- `game_sprite` — ONE object, centered, bold silhouette, on a near-plain
+  single-tone ground so it composites cleanly; it is rendered ~48-96px *while
+  moving*, which is the strictest legibility case in the catalogue. Fine detail
+  and thin lines are a defect here, not craft.
+- `game_background` — deliberately the QUIETEST image we generate: wide (~16:9),
+  low-detail, low-contrast, muted, with an almost-empty middle. It sits under
+  sprites and score/lives text, so no dominant subject, no bright accents and no
+  high-contrast shapes that could be misread as a game piece or make overlaid
+  text unreadable.
+
+Both still obey `LF_VISUAL_IDENTITY` unchanged — flat vector, papaya/navy
+palette, complete background, ABSOLUTELY NO PEOPLE, no logos, no text.
 
 ## The pictorial verifier — the mechanical no-text guarantee
 

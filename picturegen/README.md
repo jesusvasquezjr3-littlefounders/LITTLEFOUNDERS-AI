@@ -43,10 +43,18 @@ Every response uses the `{ data, error }` envelope (/AGENTS.md §1.6).
 
 `label` (1–120 chars) is the subject. `context` (≤2000 chars, optional) grounds
 it in the lesson. `purpose` ∈ `lesson_option | option_card | item_card |
-scene_anchor | memory_card | outcome | scene | generic` (default `generic`)
-picks the per-purpose art direction — the structural role decides the
-composition, so a thumbnail option tile and a wide establishing scene are not
-the same picture.
+scene_anchor | memory_card | outcome | scene | game_sprite | game_background |
+generic` (default `generic`) picks the per-purpose art direction — the
+structural role decides the composition, so a thumbnail option tile and a wide
+establishing scene are not the same picture.
+
+The two `game_*` purposes serve Arcade (`gamegen/`, GAME_ENGINE.md §2):
+`game_sprite` is ONE object centered on a near-plain ground, readable at
+~48-96px while it moves; `game_background` is a wide, low-detail, low-contrast
+backdrop that must never compete with the sprites or the HUD text drawn over
+it. Adding a purpose is **cache-safe** — `purpose` is part of the request hash,
+so new values mint new keys and never invalidate stored art. A new purpose must
+therefore NEVER bump `STYLE_VERSION`.
 
 ### Failure statuses — a retry instruction for the caller
 

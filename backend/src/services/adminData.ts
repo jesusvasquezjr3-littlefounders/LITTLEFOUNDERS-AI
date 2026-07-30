@@ -188,6 +188,144 @@ export async function setLessonStatus(lessonId: string, status: LessonStatus, ac
   return true;
 }
 
+// ── Moderation (game review gate — GAME_ENGINE.md §9) ────────────────────────
+
+/*
+ * Arcade publishes every generated game with status='review' and NEVER
+ * auto-publishes: kid-facing content passes three layers — deterministic gates,
+ * the LLM judge, then a human — and none of them is optional (§1.9). This is
+ * that third layer's data, the exact twin of the lesson queue above.
+ *
+ * A reviewer needs to know WHICH concept a game claims to reinforce, so each row
+ * carries its topic → saga → adventure → course context. The chain is walked in
+ * separate service-role reads (the file's established style) rather than a
+ * PostgREST embed, and every level degrades to `null` independently: a game
+ * whose ancestry is missing must still appear in the queue — an unreviewable row
+ * silently vanishing from a moderation surface is the worst possible failure.
+ */
+export interface AdminReviewGame {
+  id: string;
+  slug: string;
+  title: string;
+  status: string;
+  mechanic: string;
+  tier: number;
+  xpMax: number;
+  estimatedMinutes: number;
+  createdAt: string;
+  topicId: string;
+  /** "<adventure>/<saga>/<topic>" — the GameDocument's concept binding. Null if the chain is broken. */
+  topicPath: string | null;
+  topicTitle: string | null;
+  courseSlug: string | null;
+  courseTitle: string | null;
+}
+
+const REVIEW_GAMES_LIMIT = 200;
+
+/** `in.(...)` with an empty list is a PostgREST syntax error — callers short-circuit. */
+function idList(ids: readonly string[]): string {
+  return ids.map((id) => encodeURIComponent(id)).join(',');
+}
+
+export async function listReviewGames(): Promise<AdminReviewGame[] | null> {
+  const games = await serviceRest<
+    {
+      id: string;
+      topic_id: string;
+      slug: string;
+      title: Localized;
+      status: string;
+      mechanic: string;
+      tier: number;
+      xp_max: number;
+      estimated_minutes: number;
+      created_at: string;
+    }[]
+  >(
+    '/games?status=eq.review&select=id,topic_id,slug,title,status,mechanic,tier,xp_max,estimated_minutes,created_at' +
+      `&order=created_at.desc&limit=${REVIEW_GAMES_LIMIT}`,
+  );
+  if (!games) return null;
+  if (games.length === 0) return [];
+
+  const topicIds = [...new Set(games.map((g) => g.topic_id))];
+  const topics = await serviceRest<{ id: string; saga_id: string; slug: string; title: Localized }[]>(
+    `/topics?id=in.(${idList(topicIds)})&select=id,saga_id,slug,title`,
+  );
+  if (!topics) return null;
+  const topicById = new Map(topics.map((t) => [t.id, t]));
+
+  const sagaIds = [...new Set(topics.map((t) => t.saga_id))];
+  const sagas = sagaIds.length
+    ? await serviceRest<{ id: string; adventure_id: string; slug: string }[]>(
+        `/sagas?id=in.(${idList(sagaIds)})&select=id,adventure_id,slug`,
+      )
+    : [];
+  if (!sagas) return null;
+  const sagaById = new Map(sagas.map((s) => [s.id, s]));
+
+  const adventureIds = [...new Set(sagas.map((s) => s.adventure_id))];
+  const adventures = adventureIds.length
+    ? await serviceRest<{ id: string; course_id: string; slug: string }[]>(
+        `/adventures?id=in.(${idList(adventureIds)})&select=id,course_id,slug`,
+      )
+    : [];
+  if (!adventures) return null;
+  const adventureById = new Map(adventures.map((a) => [a.id, a]));
+
+  const courseIds = [...new Set(adventures.map((a) => a.course_id))];
+  const courses = courseIds.length
+    ? await serviceRest<{ id: string; slug: string; title: Localized }[]>(
+        `/courses?id=in.(${idList(courseIds)})&select=id,slug,title`,
+      )
+    : [];
+  if (!courses) return null;
+  const courseById = new Map(courses.map((c) => [c.id, c]));
+
+  return games.map((g) => {
+    const topic = topicById.get(g.topic_id) ?? null;
+    const saga = topic ? sagaById.get(topic.saga_id) ?? null : null;
+    const adventure = saga ? adventureById.get(saga.adventure_id) ?? null : null;
+    const course = adventure ? courseById.get(adventure.course_id) ?? null : null;
+    return {
+      id: g.id,
+      slug: g.slug,
+      title: pickTitle(g.title),
+      status: g.status,
+      mechanic: g.mechanic,
+      tier: g.tier,
+      xpMax: g.xp_max,
+      estimatedMinutes: g.estimated_minutes,
+      createdAt: g.created_at,
+      topicId: g.topic_id,
+      topicPath: topic && saga && adventure ? `${adventure.slug}/${saga.slug}/${topic.slug}` : null,
+      topicTitle: topic ? pickTitle(topic.title) : null,
+      courseSlug: course?.slug ?? null,
+      courseTitle: course ? pickTitle(course.title) : null,
+    };
+  });
+}
+
+/** Mirrors games.status's CHECK constraint (migration 0027) exactly. */
+const GAME_STATUSES = ['draft', 'review', 'published', 'archived'] as const;
+export type GameStatus = (typeof GAME_STATUSES)[number];
+export function isGameStatus(s: string): s is GameStatus {
+  return (GAME_STATUSES as readonly string[]).includes(s);
+}
+
+/** Approve (review→published) or shelve (review→draft|archived) a game at the human gate. Audited. */
+export async function setGameStatus(gameId: string, status: GameStatus, actorId: string): Promise<boolean> {
+  const res = await serviceRest<unknown>(`/games?id=eq.${encodeURIComponent(gameId)}`, {
+    method: 'PATCH',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify({ status }),
+  });
+  if (res === null) return false;
+  await insertAuditLog(actorId, 'admin.game.set_status', gameId, { status });
+  return true;
+}
+
 // ── Audit log ────────────────────────────────────────────────────────────────
 
 export interface AdminAuditEntry {
@@ -320,8 +458,85 @@ export async function getLearningRetention(): Promise<LearningRetention | null> 
 
 // ── Generation telemetry (0017) ─────────────────────────────────────────────
 
+/*
+ * TWO pipelines write to the SAME telemetry tables (generation_runs /
+ * generation_slots / generation_runs_live / generation_heartbeat_snapshots):
+ * Forge (`coursegen/`, lessons) and Arcade (`gamegen/`, games) — their CONTENT
+ * tables are disjoint, their telemetry is not (GAME_ENGINE.md §9). So every
+ * aggregation here must be kind-SCOPED:
+ *
+ *  - cost trends are "per published LESSON" — a game run's usd/published mixed
+ *    into that average silently moves the number the whole cost model is read
+ *    off, and the per-lesson/per-course forecast derived from it;
+ *  - the judge rubrics are DIFFERENT closed sets (see RUBRIC_DIMENSIONS), so a
+ *    lesson-dimension mean computed over game slots is all-null while a game
+ *    run in a lesson trend just drops that run's contribution to zero.
+ *
+ * A mixed average is worse than a missing one because it still renders.
+ */
+export const GENERATION_KINDS = ['lessons', 'games'] as const;
+export type GenerationKind = (typeof GENERATION_KINDS)[number];
+export function isGenerationKind(s: string): s is GenerationKind {
+  return (GENERATION_KINDS as readonly string[]).includes(s);
+}
+
+/** Arcade's run-id namespace (GAME_ENGINE.md §9) — never collides with Forge's. */
+const GAME_RUN_ID_PREFIX = 'games-';
+
+/**
+ * Which pipeline produced a run. `params.kind` is the marker Arcade writes; the
+ * run-id prefix is the belt-and-braces fallback (and the ONLY signal available
+ * on generation_runs_live, which has no params column — migration 0018).
+ *
+ * Every historical row predates the marker entirely, so the default is
+ * 'lessons': that is what those rows actually are, not a shrug.
+ */
+export function resolveRunKind(runId: string, params?: Record<string, unknown> | null): GenerationKind {
+  const marked = params?.kind;
+  if (typeof marked === 'string' && isGenerationKind(marked)) return marked;
+  return runId.startsWith(GAME_RUN_ID_PREFIX) ? 'games' : 'lessons';
+}
+
+/**
+ * Judge rubric dimensions per pipeline — CLOSED sets, and deliberately
+ * different: Forge judges teaching, Arcade judges a game that reinforces a
+ * concept already taught (GAME_ENGINE.md §9). `kid_safety` is the one shared
+ * hard floor.
+ */
+const RUBRIC_DIMENSIONS: Record<GenerationKind, readonly string[]> = {
+  lessons: [
+    'kid_safety',
+    'age_fit',
+    'concreteness',
+    'pedagogy',
+    'cognitive_engagement',
+    'feedback_quality',
+    'distractor_quality',
+    'narrative_quality',
+    'naturalness',
+  ],
+  games: ['concept_fit', 'fun_agency', 'clarity', 'kid_safety', 'difficulty_fairness'],
+};
+
+export function rubricDimensions(kind: GenerationKind): readonly string[] {
+  return RUBRIC_DIMENSIONS[kind];
+}
+
+/*
+ * Kind is filtered in JS, after mapping, rather than as a PostgREST jsonb
+ * predicate. Two reasons: the fallback rule above ALSO consults the run id (a
+ * marker-less Arcade row must not slip into a lesson average), and the
+ * aggregation's correctness then does not depend on remote filter syntax that
+ * would 502 the whole console if it were ever rejected. The cost is that the
+ * `limit` window is consumed by both kinds, so the fetch over-fetches by this
+ * factor and the result is trimmed back to the requested size.
+ */
+const KIND_OVERFETCH = 3;
+
 export interface GenerationRunListItem {
   runId: string;
+  /** Which pipeline produced this run — 'lessons' (Forge) or 'games' (Arcade). */
+  kind: GenerationKind;
   trackId: string | null;
   courseSlug: string;
   register: string;
@@ -349,6 +564,7 @@ export interface GenerationTrackListItem {
 }
 
 export interface GenerationOverview {
+  kind: GenerationKind;
   tracks: GenerationTrackListItem[];
   runs: GenerationRunListItem[];
 }
@@ -358,6 +574,8 @@ interface GenerationRunRow {
   track_id: string | null;
   course_slug: string;
   register: string;
+  /** Run parameters; carries `kind` for Arcade runs. Absent on pre-0027 rows. */
+  params?: Record<string, unknown> | null;
   summary: {
     published?: string[];
     alreadyDone?: string[];
@@ -375,6 +593,7 @@ interface GenerationRunRow {
 function mapRunRow(r: GenerationRunRow): GenerationRunListItem {
   return {
     runId: r.run_id,
+    kind: resolveRunKind(r.run_id, r.params),
     trackId: r.track_id,
     courseSlug: r.course_slug,
     register: r.register,
@@ -393,12 +612,19 @@ function mapRunRow(r: GenerationRunRow): GenerationRunListItem {
   };
 }
 
+const OVERVIEW_RUN_LIMIT = 20;
+
 /**
  * The Generation console's landing data: recent tracks + recent runs from the
- * 0017 telemetry tables (written by coursegen at the end of every non-dry
- * run; service-role-only — this console is their ONLY reader).
+ * 0017 telemetry tables (written by coursegen/gamegen at the end of every
+ * non-dry run; service-role-only — this console is their ONLY reader).
+ *
+ * `kind` scopes the RUN list to one pipeline. It defaults to 'lessons' so every
+ * pre-existing caller sees exactly what it saw before Arcade existed. Tracks are
+ * NOT scoped: generation_tracks carries no kind marker (0017) and Arcade has no
+ * track concept, so the track list is left as-is rather than guessed at.
  */
-export async function getGenerationOverview(): Promise<GenerationOverview | null> {
+export async function getGenerationOverview(kind: GenerationKind = 'lessons'): Promise<GenerationOverview | null> {
   const [tracks, runs] = await Promise.all([
     serviceRest<
       {
@@ -416,11 +642,13 @@ export async function getGenerationOverview(): Promise<GenerationOverview | null
       }[]
     >('/generation_tracks?select=track_id,course_slug,budget_usd,halted,report,updated_at&order=updated_at.desc&limit=10'),
     serviceRest<GenerationRunRow[]>(
-      '/generation_runs?select=run_id,track_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at&order=updated_at.desc&limit=20',
+      '/generation_runs?select=run_id,track_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at' +
+        `&order=updated_at.desc&limit=${OVERVIEW_RUN_LIMIT * KIND_OVERFETCH}`,
     ),
   ]);
   if (!tracks || !runs) return null;
   return {
+    kind,
     tracks: tracks.map((t) => ({
       trackId: t.track_id,
       courseSlug: t.course_slug,
@@ -432,7 +660,7 @@ export async function getGenerationOverview(): Promise<GenerationOverview | null
       shards: t.report.shards?.length ?? 0,
       updatedAt: t.updated_at,
     })),
-    runs: runs.map(mapRunRow),
+    runs: runs.map(mapRunRow).filter((r) => r.kind === kind).slice(0, OVERVIEW_RUN_LIMIT),
   };
 }
 
@@ -510,6 +738,12 @@ export async function getGenerationRun(runId: string): Promise<GenerationRunDeta
 
 export interface LiveRunHeartbeat {
   runId: string;
+  /**
+   * Which pipeline is running. generation_runs_live (0018) has NO params
+   * column, so this is resolved from the run-id namespace alone — the reason
+   * Arcade's `games-` prefix is a contract and not a convention.
+   */
+  kind: GenerationKind;
   trackId: string | null;
   courseSlug: string;
   register: string;
@@ -529,10 +763,12 @@ export interface LiveRunHeartbeat {
 }
 
 export interface LiveGenerationStatus {
+  kind: GenerationKind;
   activeRuns: LiveRunHeartbeat[];
 }
 
-export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> {
+/** `kind` defaults to 'lessons' — the only pipeline that existed before Arcade. */
+export async function getLiveGeneration(kind: GenerationKind = 'lessons'): Promise<LiveGenerationStatus | null> {
   const rows = await serviceRest<
     {
       run_id: string;
@@ -560,8 +796,10 @@ export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> 
   const TWO_MIN = 2 * 60 * 1000;
   const fresh = rows.filter((r) => now - new Date(r.updated_at).getTime() < TWO_MIN);
   return {
+    kind,
     activeRuns: fresh.map((r) => ({
       runId: r.run_id,
+      kind: resolveRunKind(r.run_id),
       trackId: r.track_id,
       courseSlug: r.course_slug,
       register: r.register,
@@ -578,7 +816,7 @@ export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> 
       imagesInherited: r.images_inherited,
       startedAt: r.started_at,
       updatedAt: r.updated_at,
-    })),
+    })).filter((r) => r.kind === kind),
   };
 }
 
@@ -586,7 +824,10 @@ export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> 
 
 export interface GenerationAnalytics {
   courseSlug: string | null;
+  /** Every number below is computed over runs of THIS kind only. */
+  kind: GenerationKind;
   runsAnalyzed: number;
+  /** `tokensPerLesson` is "per published UNIT" — a lesson for kind='lessons', a game for kind='games'. */
   costTrend: { runId: string; updatedAt: string; usdPerPublished: number | null; tokensPerLesson: number | null }[];
   qualityTrend: { runId: string; updatedAt: string; dimMeans: Record<string, number | null> }[];
   cacheEfficiency: { runId: string; updatedAt: string; cacheHitPct: number }[];
@@ -603,7 +844,16 @@ export interface GenerationAnalytics {
 
 const ANALYTICS_LIMIT = 50;
 
-export async function getGenerationAnalytics(courseSlug?: string): Promise<GenerationAnalytics | null> {
+/**
+ * Cross-run cost/quality/failure trends for ONE pipeline. `kind` defaults to
+ * 'lessons': these averages are read as per-lesson economics, and a game run
+ * folded into them would move the platform's cost model without ever showing up
+ * as a wrong-looking number.
+ */
+export async function getGenerationAnalytics(
+  courseSlug?: string,
+  kind: GenerationKind = 'lessons',
+): Promise<GenerationAnalytics | null> {
   const filter = courseSlug
     ? `&course_slug=eq.${encodeURIComponent(courseSlug)}`
     : '';
@@ -625,11 +875,12 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
     }[]
   >(
     `/generation_runs?select=run_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,updated_at` +
-      `&order=updated_at.desc&limit=${ANALYTICS_LIMIT}${filter}`,
+      `&order=updated_at.desc&limit=${ANALYTICS_LIMIT * KIND_OVERFETCH}${filter}`,
   );
   if (!runs || runs.length === 0) return null;
 
-  const filtered = runs.filter((r) => (r.summary.published?.length ?? 0) > 0 || (r.summary.failed?.length ?? 0) > 0);
+  const ofKind = runs.filter((r) => resolveRunKind(r.run_id, r.params) === kind).slice(0, ANALYTICS_LIMIT);
+  const filtered = ofKind.filter((r) => (r.summary.published?.length ?? 0) > 0 || (r.summary.failed?.length ?? 0) > 0);
   if (filtered.length === 0) return null;
 
   const costTrend = filtered.map((r) => {
@@ -660,7 +911,7 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
     }
   }
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const dims = rubricDimensions(kind);
   const qualityTrend: GenerationAnalytics['qualityTrend'] = [];
   for (const r of filtered) {
     const runSlots = slotsByRun.get(r.run_id) ?? [];
@@ -721,20 +972,29 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
     rate: allAttempted > 0 ? (allPublished / allAttempted) * 100 : 0,
   };
 
-  // Cost forecast: based on published lesson cost average across runs
-  const costPerLessonAvg = allPublished > 0 ? totalCost / allPublished : null;
+  /*
+   * Cost forecast, from the published-unit cost average across runs of this
+   * kind. The per-course projection multiplies by the units a typical course
+   * holds — ~500 for lessons (the Forge track size). Games have no established
+   * per-course count yet, so kind='games' reports `perCourse: null` rather than
+   * borrowing the lesson constant: a projection off by an order of magnitude
+   * reads exactly like a real one.
+   */
+  const costPerUnitAvg = allPublished > 0 ? totalCost / allPublished : null;
+  const UNITS_PER_COURSE: Record<GenerationKind, number | null> = { lessons: 500, games: null };
   let costForecast: GenerationAnalytics['costForecast'] = null;
-  if (costPerLessonAvg !== null && allPublished > 5) {
-    // Estimate for a typical course (~500 lessons)
+  if (costPerUnitAvg !== null && allPublished > 5) {
+    const units = UNITS_PER_COURSE[kind];
     costForecast = {
-      perLesson: costPerLessonAvg,
-      perCourse: costPerLessonAvg * 500,
+      perLesson: costPerUnitAvg,
+      perCourse: units === null ? null : costPerUnitAvg * units,
       basedOn: allPublished,
     };
   }
 
   return {
     courseSlug: courseSlug ?? null,
+    kind,
     runsAnalyzed: filtered.length,
     costTrend,
     qualityTrend,
@@ -760,6 +1020,8 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
 export interface CoachReport {
   courseSlug: string | null;
   trackId: string | null;
+  /** Diagnosis is per-pipeline: the rubric dimensions and the playbook differ. */
+  kind: GenerationKind;
   runsAnalyzed: number;
   outcomes: { published: number; failed: number; other: number };
   failureHeatmap: Record<string, number>;
@@ -778,15 +1040,20 @@ export interface CoachReport {
 
 const COACH_LIMIT = 20;
 
-export async function getCoachReport(courseSlug?: string, trackId?: string): Promise<CoachReport | null> {
+export async function getCoachReport(
+  courseSlug?: string,
+  trackId?: string,
+  kind: GenerationKind = 'lessons',
+): Promise<CoachReport | null> {
   let filter = courseSlug ? `&course_slug=eq.${encodeURIComponent(courseSlug)}` : '';
   if (trackId) filter += `&track_id=eq.${encodeURIComponent(trackId)}`;
 
-  const runs = await serviceRest<
+  const allRuns = await serviceRest<
     {
       run_id: string;
       track_id: string | null;
       course_slug: string;
+      params?: Record<string, unknown> | null;
       summary: {
         published?: string[];
         failed?: { slotId: string; error: string; failedFrom?: string }[];
@@ -806,10 +1073,12 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
       updated_at: string;
     }[]
   >(
-    `/generation_runs?select=run_id,track_id,course_slug,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at` +
-      `&order=updated_at.desc&limit=${COACH_LIMIT}${filter}`,
+    `/generation_runs?select=run_id,track_id,course_slug,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at` +
+      `&order=updated_at.desc&limit=${COACH_LIMIT * KIND_OVERFETCH}${filter}`,
   );
-  if (!runs || runs.length === 0) return null;
+  if (!allRuns) return null;
+  const runs = allRuns.filter((r) => resolveRunKind(r.run_id, r.params) === kind).slice(0, COACH_LIMIT);
+  if (runs.length === 0) return null;
 
   let totalPublished = 0;
   let totalFailed = 0;
@@ -861,7 +1130,7 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
   );
   const judged = slots?.filter((s) => s.rubric) ?? [];
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const dims = rubricDimensions(kind);
   const dimensionMeans: Record<string, number | null> = {};
   const dimensionMins: Record<string, number | null> = {};
   for (const dim of dims) {
@@ -879,15 +1148,22 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
     if (s.early_stopped) earlyStops++;
   }
 
-  // Worst lessons: lowest kid_safety or age_fit scores
+  /*
+   * Worst units: the hard floor (`kid_safety`, shared by both rubrics) plus the
+   * pipeline's own "is this pitched right for the age band" dimension —
+   * `age_fit` for Forge, `difficulty_fairness` for Arcade. Reading `age_fit` off
+   * a game rubric would silently score every game a perfect 5 via the default.
+   */
+  const fitDim = kind === 'games' ? 'difficulty_fairness' : 'age_fit';
   const worstLessons = judged
     .map((s) => {
       const r = s.rubric ?? {};
       const kidSafety = typeof r.kid_safety === 'number' ? r.kid_safety : 5;
-      const ageFit = typeof r.age_fit === 'number' ? r.age_fit : 5;
+      const rawFit = r[fitDim];
+      const fit = typeof rawFit === 'number' ? rawFit : 5;
       const low: string[] = [];
       if (kidSafety < 5) low.push(`kid_safety=${kidSafety}`);
-      if (ageFit < 4) low.push(`age_fit=${ageFit}`);
+      if (fit < 4) low.push(`${fitDim}=${fit}`);
       return { slotId: s.slot_id, dims: low };
     })
     .filter((s) => s.dims.length > 0)
@@ -909,11 +1185,14 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
     const m = dimensionMeans[d];
     return typeof m === 'number' && m < 3.5;
   });
+  // The playbook a low dimension points at is the pipeline's own.
+  const playbookFile = kind === 'games' ? 'gamePlaybook.ts' : 'contentPlaybook.ts';
+  const unitPlural = kind === 'games' ? 'juegos' : 'lecciones';
   for (const dim of judgeDimLow) {
     actions.push({
       tag: `judge:${dim}`,
-      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del content playbook (contentPlaybook.ts) y los anchors del juez en review.ts.`,
-      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} lecciones evaluadas (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
+      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del playbook (${playbookFile}) y los anchors del juez.`,
+      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} ${unitPlural} evaluados (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
     });
   }
   const topStage = [...heatmap.entries()].sort((a, b) => b[1] - a[1])[0];
@@ -938,6 +1217,7 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
   return {
     courseSlug: courseSlug ?? null,
     trackId: trackId ?? null,
+    kind,
     runsAnalyzed: runs.length,
     outcomes: { published: totalPublished, failed: totalFailed, other: totalOther },
     failureHeatmap: Object.fromEntries(heatmap),
@@ -1101,6 +1381,7 @@ function formatDuration(ms: number): string {
 export interface RunComparison {
   runs: {
     runId: string;
+    kind: GenerationKind;
     courseSlug: string;
     register: string;
     published: number;
@@ -1131,6 +1412,7 @@ export async function compareRuns(runIdA: string, runIdB: string): Promise<RunCo
       run_id: string;
       course_slug: string;
       register: string;
+      params?: Record<string, unknown> | null;
       summary: {
         published?: string[];
         failed?: { slotId: string; error: string; failedFrom?: string }[];
@@ -1145,13 +1427,16 @@ export async function compareRuns(runIdA: string, runIdB: string): Promise<RunCo
       updated_at: string;
     }[]
   >(
-    `/generation_runs?run_id=in.(${encodeURIComponent(runIdA)},${encodeURIComponent(runIdB)})&select=run_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at`,
+    `/generation_runs?run_id=in.(${encodeURIComponent(runIdA)},${encodeURIComponent(runIdB)})&select=run_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at`,
   );
   if (!rows || rows.length < 2) return null;
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
-
   const runs = await Promise.all(rows.map(async (r) => {
+    // Dimensions come from the run's OWN pipeline: comparing an Arcade run
+    // against a Forge one is a legitimate operator action, and averaging each
+    // side over the other's rubric would report all-null for both.
+    const runKind = resolveRunKind(r.run_id, r.params);
+    const dims = rubricDimensions(runKind);
     const slots = await serviceRest<
       { rubric: Record<string, number | string> | null }[]
     >(
@@ -1173,6 +1458,7 @@ export async function compareRuns(runIdA: string, runIdB: string): Promise<RunCo
     const cacheHitPct = r.tokens_used > 0 ? (r.cached_tokens / r.tokens_used) * 100 : 0;
     return {
       runId: r.run_id,
+      kind: runKind,
       courseSlug: r.course_slug,
       register: r.register,
       published,

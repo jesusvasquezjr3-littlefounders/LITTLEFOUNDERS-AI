@@ -5,7 +5,7 @@ import { Card, Icon, ProgressBar, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabaseRealtime';
 import { formatPct } from './generationI18n';
-import type { LiveRunHeartbeat } from './generationTypes';
+import { resolveGenerationKind, stagesForKind, type LiveRunHeartbeat } from './generationTypes';
 
 /*
  * Subscribes to generation_runs_live changes via Supabase Realtime (Postgres
@@ -24,16 +24,12 @@ const STALE_MS = 2 * 60 * 1000;
  */
 const REAUTH_INTERVAL_MS = 10 * 60 * 1000;
 
-const STAGES = [
-  { key: 'pending', icon: 'pending' },
-  { key: 'planning', icon: 'psychology' },
-  { key: 'writing', icon: 'edit_note' },
-  { key: 'reviewing', icon: 'grading' },
-  { key: 'localizing', icon: 'translate' },
-  { key: 'illustrating', icon: 'image' },
-  { key: 'publishing', icon: 'cloud_upload' },
-  { key: 'published', icon: 'task_alt' },
-] as const;
+/*
+ * The stage pills below are driven by the run's kind, NOT by a fixed list —
+ * Forge (lessons) and Arcade (games) share these telemetry tables but have
+ * different stages, so a hardcoded list dropped every game stage on the floor.
+ * See GENERATION_STAGES in generationTypes.ts.
+ */
 
 interface LiveStatsProps {
   onHeartbeat: (hb: LiveRunHeartbeat | null) => void;
@@ -47,6 +43,11 @@ function mapRow(row: Record<string, unknown>): LiveRunHeartbeat {
     trackId: row.track_id ? String(row.track_id) : null,
     courseSlug: String(row.course_slug ?? ''),
     register: String(row.register ?? 'kid'),
+    // `generation_runs_live` (migration 0018) has no `kind` column, so this is
+    // normally null and the kind is derived from the run-id namespace. Reading
+    // it anyway means the dashboard picks the column up for free if one lands,
+    // without preferring an empty string over the namespace fallback.
+    kind: typeof row.kind === 'string' && row.kind !== '' ? row.kind : null,
     activeSlots: Number(row.active_slots ?? 0),
     completedSlots: Number(row.completed_slots ?? 0),
     failedSlots: Number(row.failed_slots ?? 0),
@@ -204,6 +205,7 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
     );
   }
 
+  const stages = stagesForKind(resolveGenerationKind(heartbeat));
   const total = heartbeat.completedSlots + heartbeat.failedSlots;
   const progressPct = heartbeat.totalSlots > 0 ? (total / heartbeat.totalSlots) * 100 : 0;
   const cachePct = heartbeat.tokensUsed > 0 ? (heartbeat.cachedTokens / heartbeat.tokensUsed) * 100 : 0;
@@ -252,9 +254,9 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
 
       {/* Stage breakdown pills */}
       <div className="flex flex-wrap gap-2">
-        {STAGES.map(({ key, icon }) => {
+        {stages.map(({ key, icon, terminal, idle }) => {
           const count = heartbeat.stageBreakdown[key] ?? 0;
-          const isActive = key !== 'published' && key !== 'pending' && count > 0;
+          const isActive = !terminal && !idle && count > 0;
           return (
             <div
               key={key}

@@ -751,8 +751,24 @@ frontend/
   tools/
     founder-island-assets/
 gamegen/
+  curriculum/
   src/
     __tests__/
+    catalog/
+    contract/
+      core/
+      mechanics/
+        autobattler/
+        defender/
+        explorer/
+        flyer/
+        launcher/
+        runner/
+        sorter/
+        stacker/
+    pipeline/
+    providers/
+    vault/
 parent-id-check/
   src/
     __tests__/
@@ -1088,19 +1104,19 @@ jobs:
 ```
 name: gamegen CI
 
-on:
-  push:
-    branches: [main, littlefounders_v2]
-    paths:
-      - 'gamegen/**'
-      - '.github/workflows/gamegen-ci.yml'
-  pull_request:
-    paths:
-      - 'gamegen/**'
-      - '.github/workflows/gamegen-ci.yml'
-
-jobs:
-  ci:
+# `npm test` here is not only vitest: gamegen's `test` script chains
+# `catalog:check && contract:check && vitest run`, and BOTH of those read files
+# that live OUTSIDE gamegen/ — so this workflow's path filters must cover them
+# or the gate is only reachable by an operator running it by hand.
+#
+#   catalog:check  cross-validates every blueprint's `topic_path` against
+#                  coursegen/curriculum/<course>/catalog.yaml. A Forge topic
+#                  rename/removal breaks the binding in a PR that touches no
+#                  gamegen file at all.
+#   contract:check diffs gamegen/src/contract/ against its originals in
+#                  frontend/src/game-engine/ (plus the character rig types).
+#                  Zod strips unknown keys, so drift is SILENT — a field added
+#                  on the frontend side simply vanishes in the pipeline copy.
 ```
 
 ### .github/workflows/insights-maintenance.yml
@@ -9867,6 +9883,26 @@ import {
  * effect report as "no difference":
  *
  * 1. normCDF() returned 1 - true_p instead of true_p, so a large,
+```
+
+### dataintel/src/__tests__/game-funnels.test.ts
+
+```
+import { randomUUID } from 'crypto';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { exec, execute, initDb, query } from '../db/duckdb.js';
+import {
+  gameBreakdownQuery,
+  gameCompletionQuery,
+  gameDimensionProbeQuery,
+  gameFunnelQuery,
+  gamesVsLessonsQuery,
+  resolveGameDimension,
+  UnsupportedGameDimensionError,
+} from '../db/queries.js';
+
+/*
+ * Game funnels, verified against a real seeded DuckDB.
 ```
 
 ### dataintel/src/__tests__/health.test.ts
@@ -143517,9 +143553,12 @@ function shortId(id: string | null): string {
 
 ```
 import { useState } from 'react';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { Card, Icon, Table, type TableColumn } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminAction, AdminEmpty, AdminPage, StatusBadge, Unavailable, useAdminData, useAdminMutation } from './adminShared';
+import { GamesReviewQueue, type AdminReviewGame } from './GamesReviewQueue';
 
 interface Course {
   id: string;
@@ -143528,9 +143567,6 @@ interface Course {
   subject: string;
   status: string;
   position: number;
-}
-
-interface ReviewLesson {
 ```
 
 ### frontend/src/routes/admin/AdminEmailDashboard.tsx
@@ -143753,6 +143789,46 @@ import { failedFromI18nKey, formatPct } from './generationI18n';
  */
 ```
 
+### frontend/src/routes/admin/GameReviewPreview.tsx
+
+```
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Icon, LoadingOverlay } from '@/components/ui';
+import { isUnsupportedMechanic, parseGameDocument } from '@/game-engine/core/schema';
+import { seedFromString } from '@/game-engine/core/rng';
+import type { GameDocument, MechanicSlice } from '@/game-engine/core/types';
+import { loadMechanic } from '@/game-engine/registry';
+import GamePlayer from '@/game-engine/player/GamePlayer';
+import { UnsupportedGameCard } from '@/game-engine/player/overlays';
+import { Unavailable } from './adminShared';
+
+/*
+```
+
+### frontend/src/routes/admin/GamesReviewQueue.tsx
+
+```
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { Badge, Button, Card, Icon, ProgressBar } from '@/components/ui';
+import { MECHANIC_IDS } from '@/game-engine/core/types';
+import type { MechanicId } from '@/game-engine/core/types';
+import { MECHANIC_META } from '@/game-engine/registry';
+import { cn } from '@/lib/utils';
+import { AdminAction, AdminEmpty, StatusBadge, Unavailable, useAdminMutation, type Loadable } from './adminShared';
+
+/*
+ * Games review queue — the HUMAN PUBLISH GATE for the Arcade pipeline
+ * (GAME_ENGINE.md §9). Generated games land as `status='review'` and NEVER
+ * auto-publish: nothing here reaches a child until a person promotes it (§1.9).
+ *
+```
+
 ### frontend/src/routes/admin/LiveStats.tsx
 
 ```
@@ -143763,7 +143839,7 @@ import { Card, Icon, ProgressBar, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabaseRealtime';
 import { formatPct } from './generationI18n';
-import type { LiveRunHeartbeat } from './generationTypes';
+import { resolveGenerationKind, stagesForKind, type LiveRunHeartbeat } from './generationTypes';
 
 /*
  * Subscribes to generation_runs_live changes via Supabase Realtime (Postgres
@@ -143891,6 +143967,26 @@ const fakeToken = 'fake-token';
  *  vi.mock calls are hoisted above imports, so these MUST be vi.hoisted. */
 const { mockGetToken, mockApi } = vi.hoisted(() => ({
   mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+```
+
+### frontend/src/routes/admin/__tests__/GamesReviewQueue.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { GamesReviewQueue, type AdminReviewGame } from '../GamesReviewQueue';
+import type { Loadable } from '../adminShared';
+
+/*
+ * The Games queue is the human publish gate (§1.9): the only thing standing
+ * between a generated game and a child. These tests pin the two properties that
+ * make it a gate rather than a list — a status change NEVER fires without an
+ * explicit confirmation, and a game with no judge rubric says so instead of
+ * rendering as if it had passed.
+ */
+
+const { mockGetToken, mockApi } = vi.hoisted(() => ({
+  mockGetToken: vi.fn().mockResolvedValue('test-admin-token'),
 ```
 
 ### frontend/src/routes/admin/adminNav.ts
@@ -144042,15 +144138,15 @@ export type DimensionKey =
  * stage labels consistently in the user's locale.
  */
 
-/** Maps checkpoint failedFrom values → i18n key suffixes for stage labels. */
-const FAILED_FROM_TO_STAGE: Record<string, string> = {
-  pending: 'pending',
-  planned: 'planning',
-  written: 'writing',
-  reviewed: 'reviewing',
-  localized: 'localizing',
-  illustrated: 'illustrating',
-  unknown: 'unknown',
+/**
+ * Maps checkpoint failedFrom values → i18n key suffixes for stage labels.
+ *
+ * Both producers write to the SHARED `generation_slots` table, so this map spans
+ * both vocabularies. The two overlap only on `pending`/`planned`/`localized`/
+ * `illustrated`; every unmapped value collapses to `unknown`, which is why the
+ * Arcade states have to be listed here — without them a game run's failure
+ * heatmap flattens into one meaningless `Unknown` bar.
+ */
 ```
 
 ### frontend/src/routes/admin/generationTypes.ts
@@ -144063,14 +144159,14 @@ import type { TrendPoint } from '@/components/ui';
  * Mirrors backend/src/services/adminData.ts return shapes.
  */
 
-export interface LiveRunHeartbeat {
-  runId: string;
-  trackId: string | null;
-  courseSlug: string;
-  register: string;
-  activeSlots: number;
-  completedSlots: number;
-  failedSlots: number;
+// ── Run kind (Forge lessons vs Arcade games) ────────────────────────────────
+
+/**
+ * The two producers that write to the SHARED generation telemetry tables
+ * (`generation_runs`, `generation_slots`, `generation_runs_live`). Runs are
+ * marked by `generation_runs.params.kind` — `'games'` for Arcade, absent or
+ * `'lessons'` for Forge, which predates the marker.
+ */
 ```
 
 ### frontend/src/routes/app/AppLayout.tsx
@@ -145345,6 +145441,26 @@ npm test
 > **What is shipped vs. planned.** This README describes the service **as it will be at the end of Phase 5** of the Game Engine build; the implementation lands across Phases 1–5 on branch `feat/game-engine`. Everything below is tagged: **[shipped]** = read out of this package's code/config today (2026-07-30); **[planned]** = the contract the implementation must satisfy, not yet code. Today `src/` is only `app.ts` (health + envelope 404) and `index.ts`.
 ```
 
+### gamegen/curriculum/README.md
+
+```
+# `gamegen/curriculum/` — game blueprint authoring
+
+One directory per course, one file inside it:
+
+```
+gamegen/curriculum/<course-slug>/games.yaml
+```
+
+A **game blueprint** is the human-designed input to Arcade. It is not a game: it is the
+brief a game is generated *from*. `npm run catalog:check` validates every file here, and
+the pipeline's free `validate` stage runs the same checks before the first paid call.
+
+This is **content design, reviewed by a human**. The pipeline code never writes or edits
+these files — a `catalog:check` finding about content goes to whoever authors the file
+(`gamegen/AGENTS.md`).
+```
+
 ### gamegen/eslint.config.js
 
 ```
@@ -145377,8 +145493,8 @@ export default tseslint.config(
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npm run catalog:check && npm run contract:check && vitest run",
+    "test:watch": "vitest",
 ```
 
 ### gamegen/railway.json
@@ -145397,6 +145513,86 @@ export default tseslint.config(
     "restartPolicyMaxRetries": 10
   }
 }
+```
+
+### gamegen/src/__tests__/budget-kill-switch.test.ts
+
+```
+// THE RUN-LEVEL KILL SWITCHES — the two errors that must ESCAPE every catch.
+//
+//  1. `BudgetExceededError`. `checkBudget()` runs before every paid call, but a kill
+//     switch only exists if the error PROPAGATES: run.ts stops scheduling new slots,
+//     published slots stay published, the rest stay resumable. A per-item catch that
+//     degrades it to "skip this one" is exactly what defeated FORGE_MAX_USD_PER_RUN —
+//     a run past its cap kept walking every remaining target, paid for each, and
+//     reported the cap as enforced. The slot must NOT be marked 'failed' either: a
+//     budget stop is not a content failure, and recording it as one would send the
+//     outer retry to re-draw a perfectly good slot.
+//
+//  2. A FATAL provider error (401 / 402 / 403). A dead credential or an empty balance
+//     is not a slot-level problem. A real Forge run hit DeepSeek "Insufficient
+//     Balance" and then burned 2.17M tokens / ~$10 failing all 62 slots three times
+//     each before exiting. The run must abort on the FIRST one, with ONE clear cause.
+```
+
+### gamegen/src/__tests__/catalog.test.ts
+
+```
+// Arcade game-catalog tests — GAME_ENGINE.md §8/§9.
+//
+// The four cases the gate exists for:
+//   1. a valid catalog loads clean, with the mechanic distribution reported;
+//   2. an unknown mechanic id is rejected BY NAME (a closed-set typo must not cost a
+//      paid run to discover);
+//   3. a slug repeated within one topic is rejected (games.slug is UNIQUE per topic);
+//   4. a `topic_path` that resolves to nothing in Forge's catalog is a HARD failure,
+//      with the closest real topics named — an orphan game cannot exist, because
+//      `games.topic_id` is NOT NULL.
+//
+// Fixtures are real temp directories holding real YAML, with `coursegenCurriculumRoot`
+// pointed at a fixture Forge tree: the cross-catalog read is the thing under test, so
+// stubbing it away would test nothing.
+
+```
+
+### gamegen/src/__tests__/checkpoint.test.ts
+
+```
+// The checkpoint is the only durable record of what a paid run has already bought.
+//
+// `CheckpointStore` is shared by ARCADE_CONCURRENCY concurrent slot workers, so
+// `save()` is called CONCURRENTLY (gamegen/AGENTS.md). Forge's pre-queue version
+// crashed at concurrency 2: two saves built the same pid-only tmp filename, and the
+// second rename of an already-renamed-away file threw ENOENT — mid-run, after the
+// tokens were spent. Even with unique tmp names, two in-flight renames could still
+// land out of order and leave checkpoint.json holding a STALER snapshot than the one
+// already on disk, which on the next resume re-pays every stage it forgot.
+//
+// This suite hammers the queue (interleaved mutations, concurrent saves, a poisoned
+// write) and pins the failedFrom/dry-run state semantics the stage-aware retry and
+// the dry-run guard both read. No network, no provider, nothing paid.
+
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+```
+
+### gamegen/src/__tests__/dry-run.test.ts
+
+```
+// THE MOST IMPORTANT TEST IN THIS SERVICE.
+//
+// `--dry-run` must spend NOTHING and destroy NOTHING (GAME_ENGINE.md §9). The guard
+// short-circuits BEFORE all five paid stages (plan, author, judge, localize,
+// illustrate), `runGeneration` skips the key check entirely for a dry run, and this
+// suite is the structural regression pin: it runs the WHOLE pipeline end to end with
+// **every API key deleted from the environment** and a `fetch` that fails the test if
+// it is ever called.
+//
+// If a regression ever moves a paid call above the guard, one of three things fails
+// loudly here — the missing-key refusal (`ProviderNotConfiguredError`), the
+// `require*Keys()` gate, or the fetch trap. That is the whole point: Forge's first
+// dry-run implementation only skipped the final publish, so an operator "validating"
+// a large enumeration ran and BILLED the entire generation while the summary claimed
+// nothing was paid for.
 ```
 
 ### gamegen/src/__tests__/health.test.ts
@@ -145419,35 +145615,1337 @@ describe('GET /health', () => {
   it('unknown routes return the error envelope', async () => {
 ```
 
+### gamegen/src/__tests__/keyless.test.ts
+
+```
+// EVERYTHING THIS SERVICE DOES WITHOUT A SINGLE CREDENTIAL CONFIGURED.
+//
+// Two independent invariants share this file because they share a precondition —
+// `Env.parse({})` must succeed:
+//
+//  1. §1.14 LIVENESS: `GET /health` sits above every guard and every optional
+//     dependency. A service that cannot answer its platform healthcheck is restarted
+//     forever, so coupling health to a key turns a missing secret into an outage.
+//  2. GAME_ENGINE.md §9: `--dry-run` requires NO API keys. That is only structurally
+//     possible if config parsing never demands one and the `require*Keys()` gates are
+//     LAZY — called right before money is spent, never at import time. The end-to-end
+//     proof is `dry-run.test.ts`; this file pins the foundation it stands on.
+//
+// The suite deletes every credential from the environment on purpose. Nothing here
+// opens a socket.
+```
+
+### gamegen/src/__tests__/localize-freeze.test.ts
+
+```
+// THE LOCALIZE STRING FREEZE, proved as a ROUND TRIP through the real stage.
+//
+// `illustrate` runs on the es-MX document BEFORE `localize` (GAME_ENGINE.md §9), so
+// the Prism/Depot sprite URLs are already sitting in `skin.sprites` when the
+// translator runs — and they are copied verbatim into en-US and pt-BR. ONE IMAGE
+// SERVES THREE LOCALES, a 3x cut in the dominant cost of mass generation.
+//
+// That saving is entirely load-bearing on the freeze, and the freeze is what
+// `nonVisibleKeys.ts` skips WITH ITS WHOLE SUBTREE (`sprites`, `config`, `sfx`,
+// `props`…), because sprite slots are arbitrary Record keys that a coursegen-style
+// field-name list cannot enumerate. `pipeline/nonVisibleKeys.test.ts` proves the key
+// SET is complete against every mechanic schema; this file proves the STAGE actually
+// honors it end to end: numbers and URLs identical, prose different, and a translator
+// that "helpfully" restructures the document REFUSED rather than published.
+//
+```
+
+### gamegen/src/__tests__/prism-status.test.ts
+
+```
+// Prism's HTTP STATUS IS A RETRY INSTRUCTION (picturegen/AGENTS.md), and the
+// `illustrate` loop is the exact shape that defeated Forge's budget cap.
+//
+// Two independent invariants are pinned here, in the order a run meets them:
+//
+//  1. TRANSPORT — a 502 from picturegen is transient and retried; a 4xx (422, 400)
+//     is TERMINAL and must never be retried. Re-asking for a generation that can
+//     never differ re-pays it: with the 4-attempt ladder and 3 targets that is up to
+//     12 paid generations for one broken request. `ProviderHttpError.retryable`
+//     already encodes the split — this suite proves `requestPicture` actually
+//     inherits it rather than wrapping the call in its own catch.
+//
+//  2. STAGE — a failed image NEVER fails a slot (every item keeps its Material
+//     Symbols `icon` fallback), with EXACTLY TWO exemptions that must ESCAPE:
+//     `ProviderNotConfiguredError` (skip the whole document, reported, not silent)
+```
+
+### gamegen/src/__tests__/providers.test.ts
+
+```
+// Regression pins for the two MONEY-CRITICAL provider behaviors:
+//   1. the UsageLedger's budget arithmetic (the run kill switch), and
+//   2. openaiChat's finish_reason==='length' throw (the silent-blank-output bug).
+// Both were paid for by real Forge runs; see the comments in the modules.
+
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { resetConfigCache } from '../env.js';
+import { BudgetExceededError, UsageLedger, estimateCostUsd } from '../providers/usage.js';
+import { openAiCompatibleComplete } from '../providers/openaiChat.js';
+import {
+  ProviderHttpError,
+  ProviderNetworkError,
+```
+
+### gamegen/src/__tests__/publish.test.ts
+
+```
+// Regression pins for the two publish invariants that cannot be enforced by a comment:
+//   1. the SERVER-ONLY sidecar reaches the `validation` column and NEVER `document`
+//      (a leak hands a client the numbers it needs to forge a maximal input log past
+//      Core's replay — migration 0027's header), and
+//   2. `status` is ALWAYS 'review' — there is no code path to 'published', because the
+//      human review queue is the publish gate for kid-facing generated content.
+// Plus the idempotency keys, because "re-publishing duplicates the game" is a defect
+// you only discover on the second real run.
+
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { resetConfigCache } from '../env.js';
+import { publishGameSlot, splitGameDocument, type PublishGameInput } from '../pipeline/publish.js';
+import { TopicResolutionError, resetTopicResolutionCache } from '../vault/gamesRepo.js';
+import type { GameDocument, GameLocale, GameValidation } from '../contract/core/types.js';
+```
+
+### gamegen/src/__tests__/simulateGate.test.ts
+
+```
+// `simulate` — the bot-play winnability gate (GAME_ENGINE.md §9).
+//
+// Every case here runs the REAL mechanics out of `gamegen/src/contract/`: a gate that
+// passed against a stub simulator would prove nothing about the manifests it clears for
+// the paid judge. The three cases the stage exists for are a deliberately UNWINNABLE
+// manifest (rejected), a TRIVIALLY EASY one (rejected), and a well-tuned one (passes),
+// plus the explorer world solver and the sidecar bounds Core enforces at reward time.
+//
+// The sorter manifests are adapted from `frontend/src/game-engine/mechanics/sorter/
+// fixtures.ts` — the reference answer to "what does a well-tuned sorter look like" —
+// then detuned in exactly one dimension per case, so a failure names the dimension.
+// Content is curriculum, never a child (§1.9).
+
+import { describe, expect, it } from 'vitest'
+
+```
+
+### gamegen/src/__tests__/stage-aware-retry.test.ts
+
+```
+// STAGE-AWARE OUTER RETRY — which failures are worth re-paying for.
+//
+// A slot that fails from a LATE stage (judged / localized / illustrated) is holding a
+// judge-approved manifest, and possibly its translations and its Prism sprite URLs, in
+// its checkpoint `data`. Re-running it from scratch would re-pay plan + author +
+// revise cycles + judge to redo work whose input was fine — so the retry RESUMES at
+// the failed stage instead.
+//
+// Failures from the early stages (pending / planned / authored / simulated) keep the
+// measured from-scratch behaviour: a fresh draw converges far better than revising a
+// bad draft (the ARCADE_SLOT_ATTEMPTS rationale in env.ts). And the LAST attempt
+// always forces a fresh draw, because a DETERMINISTIC late-stage failure — a
+// translation that trips the target locale's vocabulary gate every single time —
+// otherwise retries into the same wall until the attempts run out.
+//
+```
+
 ### gamegen/src/app.ts
 
 ```
-import express from 'express';
+import crypto from 'crypto';
+import express, { type NextFunction, type Request, type Response } from 'express';
+import { getConfig } from './env.js';
 
 export const SERVICE = 'gamegen';
 export const VERSION = '0.1.0';
 
+/** sha256 digest — always 32 bytes, so timingSafeEqual can never throw RangeError. */
+function digest(value: string): Buffer {
+  return crypto.createHash('sha256').update(value).digest();
+}
+
 export function createApp(): express.Express {
   const app = express();
-  app.use(express.json());
 
-  app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
-  });
+```
 
-  app.use((_req, res) => {
-    res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
+### gamegen/src/catalog/check.ts
+
+```
+// The Arcade catalog ORACLE — GAME_ENGINE.md §9 (`validate`, the free stage that runs
+// before every paid one).
+//
+// Not a smoke test. A smoke test asks "does this file parse"; this asks the two
+// questions that decide whether a paid run is worth starting:
+//   1. Does every game bind to a concept that REALLY EXISTS in Forge's curriculum?
+//      (loader.ts — an unresolvable `topic_path` is an orphan, and orphan games do not
+//      exist: `games.topic_id` is NOT NULL, so the failure is otherwise discovered at
+//      publish, after every paid stage has already been billed.)
+//   2. Is the resulting course a SHAPE worth generating — mechanic distribution, topic
+//      coverage, tier agreement? (Reported here, warnings only.)
+//
+// DEV/CI-TIME ONLY. Reading `coursegen/curriculum/` is impossible in gamegen's Railway
+// image (`--path-as-root`), and nothing on a request path may call this module. See the
+// deployment note at the top of loader.ts.
+```
+
+### gamegen/src/catalog/loader.ts
+
+```
+// Arcade game-catalog loader — GAME_ENGINE.md §8/§9, gamegen/AGENTS.md.
+//
+// Loads `gamegen/curriculum/<course-slug>/games.yaml`, Zod-validates it, and
+// CROSS-VALIDATES it against Forge's own catalog: every blueprint's `topic_path` must
+// resolve to a real topic in `coursegen/curriculum/<course-slug>/catalog.yaml` (plus
+// the adventure files that catalog points at). A game bound to a concept that does not
+// exist is an ORPHAN, and orphan games do not exist — that is the standing invariant in
+// gamegen/AGENTS.md, enforced at publish time by a NOT NULL `games.topic_id` FK. This
+// gate is the same rule moved earlier, to before the first paid call.
+//
+// ── DEPLOYMENT NOTE — THIS IS A DEV/CI-TIME GATE ONLY ─────────────────────────────
+// Railway deploys gamegen with `--path-as-root`, so `coursegen/` does NOT exist in the
+// production image and the cross-catalog read here would fail there by construction.
+// That is fine and intended: nothing on a request path may call this module. It runs in
+// exactly two places — `npm run catalog:check` (via src/catalogCli.ts) and the pipeline's
+```
+
+### gamegen/src/catalog/schema.ts
+
+```
+// Zod schemas for the Arcade game catalog — GAME_ENGINE.md §8/§9, gamegen/AGENTS.md
+// "Curriculum catalog authoring".
+//
+// One authored file per course: `gamegen/curriculum/<course-slug>/games.yaml`. Its
+// entries are GAME BLUEPRINTS — the human-designed input the `validate` stage checks
+// before a single paid call happens. This module owns SHAPE only. Two deliberate
+// splits, both copied from Forge (`coursegen/src/catalog/schema.ts`), not invented here:
+//
+//  1. **Closed-set membership that needs the contract lives in loader.ts, not here.**
+//     Forge's schema keeps `forced_types: string[]` and resolves it against
+//     `ALL_TYPES` in the loader, precisely so schema.ts imports no contract module.
+//     `mechanic` is the one place we bend that, because the closed mechanic set is
+//     tiny and stable and the authoring error ("you typed `sorterr`") deserves a
+//     message that NAMES the value — see `mechanicIdSchema`.
+//  2. **Cross-file resolution lives in loader.ts.** `topic_path` shape is enforced
+```
+
+### gamegen/src/catalogCli.ts
+
+```
+#!/usr/bin/env node
+// `npm run catalog:check [-- <course-dir>]` — the Arcade catalog gate.
+//
+// Thin entry point on purpose (Forge's `cli.ts` / `pipeline/run.ts` split): argv in,
+// exit code out. Discovery, validation, cross-catalog resolution and printing all live
+// in `src/catalog/check.ts` + `src/catalog/loader.ts`, which are pure and are what the
+// test suite calls directly.
+//
+// With no argument it validates every course directory under `gamegen/curriculum/`.
+// With one it validates just that directory (absolute, or relative to cwd).
+//
+// DEV/CI-TIME ONLY — this reads `coursegen/curriculum/` from the repo root to prove
+// every blueprint's `topic_path` binds to a real Forge topic. Railway deploys gamegen
+// with `--path-as-root`, so `coursegen/` does not exist in the production image and this
+// command cannot (and must not) run there. Nothing on a request path may call it.
+```
+
+### gamegen/src/cli.ts
+
+```
+#!/usr/bin/env node
+// Arcade CLI — the ONLY entry point in this package that spends money
+// (GAME_ENGINE.md §9, gamegen/AGENTS.md).
+//
+//   npm run generate -- --course financial-education
+//     [--slots <adventure>/<saga>/<topic>[/<game>],...]
+//     [--mechanic sorter,runner] [--locales es-MX,en-US,pt-BR]
+//     [--no-images] [--dry-run] [--budget-usd 5] [--run-id <id>]
+//
+// OPERATOR-TRIGGERED ONLY — never run by CI or any automatic process
+// (/AGENTS.md sign-off rule, agent/core/BOUNDARIES.md #8: calling paid AI APIs in
+// bulk and publishing are both boundary actions).
+//
+// `npm run generate` carries `tsx --env-file-if-exists=.env`: Forge's `generate` and
+// Echo's `narrate:all` both crashed on their very first real invocation because the
+```
+
+### gamegen/src/contract/check.ts
+
+```
+#!/usr/bin/env node
+// contract:check — the no-workspaces parity gate for `gamegen/src/contract/`.
+//
+// CLAUDE.md §1.2 pins "10 independent npm packages — no workspaces", so Arcade cannot
+// import `frontend/src/game-engine` directly. But the `simulate` stage IS the
+// winnability gate (GAME_ENGINE.md §9): it bot-plays a freshly authored document with
+// the mechanic's REAL simulator — perfect bot must reach `scoring.pass_score`, random
+// bot must not — and a gate that runs a stale fork of the simulator proves nothing
+// about the game a child will actually load. So the pure simulation modules are COPIED
+// here, and a copy drifts.
+//
+// WHY DRIFT IS SILENT AND EXPENSIVE (the lesson coursegen/AGENTS.md records): Zod
+// STRIPS unknown keys by default. A field the frontend adds and this copy lacks is not
+// rejected on the way in — it is silently DELETED. The gate then bot-plays a document
+// missing exactly the field the mechanic depends on, scores it, publishes it, and the
+```
+
+### gamegen/src/contract/core/characters.ts
+
+```
+// The canon four character ids — a PARITY COPY of the two symbols
+// `frontend/src/components/characters/control/types.ts` exports that the game
+// document contract depends on (`GameMeta.cast` and `characterIdEnum`).
+//
+// Why a separate module rather than an import: the frontend original also carries
+// the emotion/action vocabulary and the per-character native prop maps, which are
+// RENDERING concerns a generation service has no business holding. Copying only the
+// closed id set keeps Arcade free of the rig while `npm run contract:check` still
+// fails the moment the frontend's list changes (it diffs `CHARACTER_IDS` symbol-wise
+// against the original).
+
+export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
+export type CharacterId = (typeof CHARACTER_IDS)[number]
+```
+
+### gamegen/src/contract/core/mathd.ts
+
+```
+// Deterministic math for the Game Engine — GAME_ENGINE.md §5 / brief §4.
+//
+// WHY THIS MODULE EXISTS
+// ----------------------
+// A play session's reward is not the number the client reports: Core re-runs the
+// mechanic's simulator over the player's input log and derives the score itself. That
+// is only sound if a simulator produces BIT-IDENTICAL results in the browser's V8 and
+// in Node.
+//
+// ECMAScript leaves `Math.sin`, `cos`, `tan`, `atan`, `atan2`, `exp`, `log`, `pow`,
+// `hypot` and `cbrt` IMPLEMENTATION-DEFINED — the spec only requires an implementation-
+// approximated result, so two engines (or two builds of the same engine) may disagree
+// in the low bits. One wrong bit in a projectile arc is a rejected reward for an honest
+// child. What IS exactly specified is IEEE-754 `+ - * /` and `Math.sqrt`, plus the
+// exactly-defined `Math.abs/min/max/floor/ceil/round/trunc/sign`. So every function
+```
+
+### gamegen/src/contract/core/replay.ts
+
+```
+// The single shared replay entry point — GAME_ENGINE.md §5, §6.
+//
+// THREE callers, ONE implementation: the dev lab, the Arcade pipeline's winnability
+// gate, and Core's `POST /api/v1/games/:gameId/complete`. A player's reward is not the
+// number the client reports — it is what this function DERIVES by re-running the
+// mechanic's simulator over the player's input log. `replayGame` therefore takes no
+// score argument at all: there is nothing for a forged client to inflate.
+//
+// This module is deliberately free of React, DOM, Node and Zod so that
+// `backend/src/game-contract/` and `gamegen/src/contract/` can carry it verbatim; the
+// only runtime import is core/rng.ts, which is part of the same parity copy.
+// It is fully synchronous and pure: same inputs -> same outputs, always, forever.
+
+import type {
+  GameBot,
+```
+
+### gamegen/src/contract/core/rng.ts
+
+```
+// Seeded PRNG for the Game Engine — GAME_ENGINE.md §5 rule 5. Every source of
+// randomness a simulator touches comes from here, because rewards are derived by
+// REPLAYING the player's input log on the server: a single `Math.random()` anywhere
+// in the simulation path makes the replay diverge and rejects an honest child's XP.
+//
+// Algorithm: mulberry32 — a 32-bit state advanced with `+`, `^`, `>>>` and
+// `Math.imul`. Every one of those is exactly specified by ECMAScript on int32
+// values (`Math.imul` returns the low 32 bits of the integer product, not a float
+// multiply), so the browser's V8 and Node agree on the last bit. No float
+// accumulator, no transcendental, no engine-defined rounding anywhere in the state
+// update — the only float in the module is the final division that maps the 32-bit
+// output into [0, 1), and 2^32 is exact in IEEE-754 double.
+
+import type { Rng } from './types.js'
+
+```
+
+### gamegen/src/contract/core/schema.ts
+
+```
+// PARITY COPY of `frontend/src/game-engine/core/schema.ts` — DO NOT EDIT BY HAND,
+// except for the one documented divergence below.
+//
+// THE DIVERGENCE (the whole reason this file is not a verbatim copy):
+// the frontend's `parseGameDocument` is ASYNC because the browser must not download
+// eight mechanics to play one — it `await loadMechanic(id)`s exactly the chunk the
+// document names. Arcade has no bundle and no code-splitting concern: it holds every
+// mechanic eagerly in `contract/registry.ts`, and the `author → gate → simulate`
+// stages validate documents inside a synchronous pipeline step. So this copy replaces
+// that ONE function with `parseGameDocumentSync`, which differs by exactly three
+// textual substitutions and nothing else:
+//
+//   export async function parseGameDocument(  ->  export function parseGameDocumentSync(
+//   Promise<GameDocumentParse>                ->  GameDocumentParse
+//   await loadMechanic(                       ->  getMechanic(
+```
+
+### gamegen/src/contract/core/schemaBase.ts
+
+```
+// Zod building blocks for the game document — GAME_ENGINE.md §3.
+// Mechanic slices compose their own config/content schemas from these; the composed
+// document schema (envelope + registry-driven per-mechanic parse + the cross-field
+// checks) lives in core/schema.ts.
+//
+// No React and no mechanic knowledge here, on purpose: the backend/gamegen parity
+// copies import this module as-is.
+
+import { z } from 'zod'
+import { CHARACTER_IDS } from './characters.js'
+import {
+  GAME_BGM,
+  GAME_INTERLUDE_KINDS,
+  GAME_ITEM_TIERS,
+  GAME_LOCALES,
+```
+
+### gamegen/src/contract/core/scoring.ts
+
+```
+// Pure scoring helpers — GAME_ENGINE.md §6. Every mechanic composes its score out
+// of these; nothing here knows a mechanic exists.
+//
+// DEPENDENCY-FREE BY CONTRACT. The SERVER re-derives every score by replaying the
+// player's input log (the client's number is a claim, never the grant), so this
+// module is copied verbatim into `backend/src/game-contract/` and
+// `gamegen/src/contract/`. It therefore has ZERO imports — no React, no Zod, no I/O
+// — and uses only the §5 allowed arithmetic (`+ - * /`, `Math.min/max/abs/floor/
+// ceil/round/trunc/sign/sqrt`). The transcendentals are implementation-defined in
+// ECMAScript; one differing bit between browser V8 and Node is a rejected reward for
+// an honest child.
+//
+// INVARIANT for every function below: a finite input yields a finite number. NaN,
+// Infinity and division by zero are handled explicitly at each entry point rather
+// than allowed to propagate into the reward path.
+```
+
+### gamegen/src/contract/core/types.ts
+
+```
+// PARITY COPY of `frontend/src/game-engine/core/types.ts` — DO NOT EDIT BY HAND.
+// Arcade's `simulate` stage is the WINNABILITY GATE: it runs the mechanic's real
+// simulator headless (perfect bot must reach `scoring.pass_score`, random bot must
+// not) before a generated document can be published. There are no npm workspaces
+// (CLAUDE.md §1.2), so the pure simulation modules are copied here instead of
+// imported. `npm run contract:check` diffs every copy against its frontend original;
+// change the frontend file first, then re-copy (adjusting ONLY the import specifiers
+// to NodeNext `.js` form).
+//
+// This file is a DELIBERATELY TRIMMED subset: the two React/rendering symbols
+// `MechanicViewProps` and `MechanicSlice` are omitted, because React must never enter
+// a generation service. The checker therefore compares core/types.ts SYMBOL BY SYMBOL
+// (it derives the list from the frontend file and subtracts exactly those two, so a
+// symbol added upstream and not copied here fails the gate). `CharacterId` comes from
+// the local ./characters.js parity copy rather than the character rig.
+```
+
+### gamegen/src/contract/mechanics/autobattler/schema.ts
+
+```
+// `autobattler` — the config + content contract (GAME_ENGINE.md §4 row `autobattler`, §7).
+//
+// THE POINT OF THIS FILE: the owner's report specifies a shop, a draft, star merging,
+// a synergy matrix, an adjacency rule, an inter-round economy with interest, a player
+// health table, AI opponent personalities with a calibrated error rate, and PvE camps
+// that drop combinable items. v1 would have hardcoded every one of those numbers inside
+// one game component. Here they are ALL manifest fields: `simulate.ts` and
+// `components.tsx` read every threshold, cost, multiplier and weight from `config`, and
+// every label from `content`. A second auto-battler is a second JSON file.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+//
+// DEFERRED, NOT DROPPED (GAME_ENGINE.md §13): the report's CROSS-RUN meta-progression
+// (unlockable units, cosmetics, voluntary handicaps that persist between runs) is
+```
+
+### gamegen/src/contract/mechanics/autobattler/simulate.ts
+
+```
+// `autobattler` — the PURE simulator (GAME_ENGINE.md §5, §4 row `autobattler`).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental.
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts, seeded from the run.
+//
+// THE TICK MAPPING. The owner's report specifies a 0.5s combat tick. The engine's fixed
+// tick is 50ms (`TICK_MS`), so ONE COMBAT TICK IS EXACTLY 10 ENGINE TICKS — and it is
+// implemented as the integer counter `combatSubTick` counting up to
+// `config.combat.engine_ticks_per_combat_tick`, never as a float accumulator. The ratio
+// is config so a document can slow a battle down for tier 1, but it is always integer.
+//
+// TWO v1 BUGS ARE STRUCTURALLY EXCLUDED, and both cost a comment:
+//  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
+```
+
+### gamegen/src/contract/mechanics/defender/schema.ts
+
+```
+// `defender` — the config + content contract (GAME_ENGINE.md §4 row `defender`, §7).
+//
+// THE POINT OF THIS FILE: v1's tower game (`hacker-defense`) hardcoded its grid, its
+// wave table, its tower stats, its gold economy and its win condition inside the game
+// component — a second instance would have been a second copy of the code, and nobody
+// could re-skin or re-tune it without editing TypeScript. Here EVERY tunable number
+// lives in `config`: the grid and its terrain, the enemy roster with its behaviours,
+// the eight tower archetypes with their upgrade branches, the damage-type × armour
+// matrix, the slow curve, the whole economy (gold, interest, secondary currency,
+// abilities), the wave table with its exponential growth factors, the voluntary heat
+// modifiers, the efficiency targets and the score weights. `simulate.ts` and
+// `components.tsx` read all of them and hardcode none of them.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+```
+
+### gamegen/src/contract/mechanics/defender/simulate.ts
+
+```
+// `defender` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental
+// function anywhere: Core re-runs this exact code over the player's input log to derive
+// the reward, so every operation here is one the ECMAScript spec pins to the last bit
+// (`+ - * /`, `Math.sqrt/abs/min/max/floor/ceil/round/trunc/sign`). Row and column are
+// derived with `Math.floor(index / cols)` rather than `%` for exactly that reason.
+//
+// THIS MECHANIC IS FULLY SCRIPTED. Waves, stats and costs all come from the manifest,
+// so the simulation needs no randomness at all; `init` still accepts and records the
+// seed for contract uniformity, and two different seeds produce identical runs. The
+// only seeded stream in the mechanic is the one `runBot` hands the `random` bot.
+//
+// The two v1 bugs the brief calls out are structurally excluded, and both earn a
+// comment because both were expensive:
+```
+
+### gamegen/src/contract/mechanics/explorer/schema.ts
+
+```
+// `explorer` — the config + content contract (GAME_ENGINE.md §4 row `explorer`, §7).
+//
+// THE POINT OF THIS FILE: every number that shapes this mechanic's difficulty,
+// economy, physics-of-progression and scoring is a MANIFEST field. Connectivity
+// ratios, the hard/soft/compound/temporal lock mix, ability tiers and their energy /
+// cooldown costs, the fragment-upgrade depth, the hidden-content share, the soft
+// currency lost on death and recovered at the death site, the exploration-percentage
+// ending and every scoring weight live in `config`; every label, node, edge, lock,
+// ability and micro-challenge lives in `content`. A new explorer game is a new JSON
+// document, never new code.
+//
+// WHERE THE LINE BETWEEN config AND content FALLS, and why it is not arbitrary: the
+// Arcade pipeline's `localize` stage skips the WHOLE `config` container (GAME_ENGINE.md
+// §9), so anything carrying a user-visible string MUST live in `content`. That is why
+// the world graph — whose nodes and locks carry `label_md` / `hint_md` — is content,
+```
+
+### gamegen/src/contract/mechanics/explorer/simulate.ts
+
+```
+// `explorer` — the PURE simulator + the world SOLVER (GAME_ENGINE.md §5, §13).
+//
+// THIS IS NOT A PLATFORMER, and nobody may later mistake it for one. The owner's report
+// describes a metroidvania; what makes that mechanic a mechanic is the ABILITY-LOCK
+// structure — explore, meet a lock, go find the ability elsewhere, come back, open it —
+// and that structure is preserved here in full. Its incidental real-time platforming is
+// deliberately dropped (GAME_ENGINE.md §13): a physics platformer needs a control scheme
+// that only works with a keyboard (/CLAUDE.md §1.11 forbids that), and per-frame
+// character physics widens the replay-divergence surface for zero pedagogical gain. So
+// this mechanic is GRAPH TRAVERSAL plus per-node MICRO-CHALLENGES: deterministic,
+// replayable, and honest on a touch device.
+//
+// THE LEARNING BINDING, which is why this mechanic exists at all:
+//  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
+//    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### gamegen/src/contract/mechanics/flyer/schema.ts
+
+```
+// Flyer — Zod config + content schemas (GAME_ENGINE.md §4 row `flyer`, §7, §13).
+//
+// DELIBERATELY 2.5D, NOT THE REPORT'S 6DoF (owner-approved, recorded in
+// /GAME_ENGINE.md §13). Forward motion is a tick advance the player does not steer;
+// what the player DOES steer is pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. Three reasons, restated here because a later reader of this
+// file will not have the spec open:
+//   1. INPUT. A touch screen has no throttle, no rudder and no six-axis stick, and
+//      /CLAUDE.md §1.11 forbids a control scheme that only works on a desktop.
+//   2. COGNITIVE LOAD. For a 6–12 year old a full flight model IS the game, and the
+//      money concept the lesson taught becomes decoration.
+//   3. DETERMINISTIC REPLAY BUDGET. §5 bans the transcendentals a full orientation
+//      model wants; 6DoF would mean a large rotation surface in `core/mathd.ts` and a
+//      much wider replay-divergence risk on the reward path.
+// Full 6DoF stays possible later BEHIND THIS SAME MANIFEST — it would be optional
+```
+
+### gamegen/src/contract/mechanics/flyer/simulate.ts
+
+```
+// Flyer — the PURE simulator (GAME_ENGINE.md §5, §13; brief §4).
+//
+// DELIBERATELY 2.5D, NOT 6DoF (owner-approved, /GAME_ENGINE.md §13). Forward motion is
+// a tick advance; the player steers pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. The three reasons, restated so this file stands alone:
+// touch-first input on a phone cannot honestly express six degrees of freedom and
+// §1.11 forbids a desktop-only control scheme; a full flight model overwhelms a 6–12
+// year old and turns the money concept into decoration; and a deterministic replay
+// budget is far easier to guarantee in 2.5D, since §5 bans exactly the transcendentals
+// a full orientation model wants. Full 6DoF stays possible later behind this same
+// manifest. The flight fantasy is NOT dropped — mount, energy, thermals, storms,
+// armament and aerial enemies are all simulated here.
+//
+// PURITY. No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of
+// the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
+```
+
+### gamegen/src/contract/mechanics/launcher/schema.ts
+
+```
+// `launcher` — the config + content contract (GAME_ENGINE.md §4 row `launcher`, §7).
+//
+// THE POINT OF THIS FILE: v1's aiming game baked gravity, the launch-speed range, the
+// angle limits, the target layout and the point values into the component, so a second
+// launcher meant a second codebase and re-skinning was impossible. Here EVERY number
+// that shapes physics, difficulty, economy or scoring is a manifest field — gravity,
+// wind, drag, friction, restitution, projectiles per round, the leftover bonus, the
+// per-kind projectile tuning, the target layouts and their motion, obstacle materials
+// and the scoring weights — and `simulate.ts` / `components.tsx` read all of them from
+// `config`. A new launcher game is a new JSON document, never new code.
+//
+// Zod only, no React and no DOM: `backend/src/game-contract/` and `gamegen/src/contract/`
+// carry this module verbatim next to `simulate.ts` for the server-side replay.
+
+import { z } from 'zod'
+```
+
+### gamegen/src/contract/mechanics/launcher/simulate.ts
+
+```
+// `launcher` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; every piece of
+// trigonometry goes through `core/mathd.ts` (`dsin`, `dcos`, `datan2`, `dhypot`),
+// because ECMAScript leaves `Math.sin`/`cos`/`atan2`/`hypot` implementation-defined and
+// one wrong bit in a projectile arc is a rejected reward for an honest child.
+//
+// INTEGRATOR (documented, per §4's "documented integrator"): SEMI-IMPLICIT (symplectic)
+// EULER at the fixed tick — velocity is updated first, then position is advanced with
+// the NEW velocity:
+//     v' = (v + a) * (1 - drag)          a = gravity + wind + steering
+//     p' = p + v'
+// Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
+// for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
+### gamegen/src/contract/mechanics/runner/schema.ts
+
+```
+// Runner — Zod config + content schemas (GAME_ENGINE.md §4 row `runner`, §7).
+//
+// THE WHOLE POINT OF THIS FILE: v1's endless runners hardcoded gravity, jump impulse,
+// scroll speed, obstacle spacing and the point values inside the game component, so a
+// second runner meant a second codebase. Here EVERY number that shapes difficulty,
+// physics, spacing, economy or scoring is a manifest field, and `simulate.ts` /
+// `components.tsx` read all of them from `config`. A new runner is a new JSON file.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### gamegen/src/contract/mechanics/runner/simulate.ts
+
+```
+// Runner — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; no transcendental
+// is reached for at all (the one periodic motion in the mechanic is a TRIANGLE wave
+// built from integer division, so `core/mathd.ts` is not needed here).
+//
+// Two engine-level rules the kernel documents and this file honours:
+//  - PER-ENTITY TIMERS. A moving obstacle's phase is `tick - entity.bornAt`, and a
+//    `sudden` obstacle arms from its OWN distance to the avatar. There is no shared
+//    accumulator anywhere, so N entities never advance N times too fast.
+//  - BATCHED REMOVALS. Collisions are resolved over the whole entity array and the
+//    survivors are produced in ONE filter, so several pickups on the same tick are one
+//    state transition rather than the first pickup plus a stalled world.
+//
+```
+
+### gamegen/src/contract/mechanics/sorter/schema.ts
+
+```
+// `sorter` — the config + content contract (GAME_ENGINE.md §4 row 1, §7).
+//
+// THE POINT OF THIS FILE: v1's needs-vs-wants game hardcoded every number it used —
+// the spawn table, the fall speed, the combo curve, the penalty, the colours — so a
+// second instance meant a second copy of the code. Here EVERY tunable the simulator
+// or the view reads lives in `config`, and every label, category and trap lives in
+// `content`. A new sorter game is a new JSON document, never new code.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim into their synchronous registry.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### gamegen/src/contract/mechanics/sorter/simulate.ts
+
+```
+// `sorter` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental:
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts.
+//
+// Two v1 bugs are structurally excluded and both cost a full comment:
+//
+//  - PER-ENTITY TIMERS. Every element carries its OWN `speed`, position and
+//    `spawnedAt`. There is no shared accumulator that N elements each decrement, so
+//    N elements cannot make one clock run N times too fast.
+//  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
+//    in ONE pass that drops both the consumed and the escaped elements together.
+//    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### gamegen/src/contract/mechanics/stacker/schema.ts
+
+```
+// `stacker` — the config + content contract (GAME_ENGINE.md §4 row `stacker`, §7).
+//
+// THE POINT OF THIS FILE: v1's building game hardcoded gravity, the piece list, the
+// wind gust, the budget and the score formula inside the component, so a second
+// instance meant a second copy of the code. Here EVERY tunable — gravity magnitude AND
+// direction (zero-G included), the piece catalogue and its special properties, the
+// solver's iteration count and sleep thresholds, the announced force timeline, the
+// stability threshold and hold time, the whole economy, the score model and its
+// weights, and the adaptive-assistance dials — is a manifest field. `simulate.ts` and
+// `components.tsx` read all of them from `config`; neither contains a tuning number.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+```
+
+### gamegen/src/contract/mechanics/stacker/simulate.ts
+
+```
+// `stacker` — the PURE simulator, including its own small rigid-body solver
+// (GAME_ENGINE.md §5, §13; brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, and no banned
+// transcendental: Core re-runs this exact code over the player's input log to derive the
+// reward, so every operation is one the ECMAScript spec pins to the last bit. The only
+// non-elementary functions used are `dsin`/`dcos`/`datan2`/`dhypot` from core/mathd.ts,
+// which are built from the allowed arithmetic on purpose. Randomness comes only from
+// core/rng.ts, drawn ONCE at init.
+//
+// THE SOLVER (documented, because §13 makes it a contract rather than an implementation
+// detail):
+//
+//   * Bodies are axis-aligned boxes and circles. A circle is stored square
+//     (`w === h`), radius `w / 2`, so half-extents are uniform and every overlap test
+```
+
+### gamegen/src/contract/registry.ts
+
+```
+// The SYNCHRONOUS mechanic registry for Arcade (GAME_ENGINE.md §7, brief §5, §9).
+//
+// This and `core/schema.ts`'s `parseGameDocumentSync` are the only parts of
+// `gamegen/src/contract/` that are not verbatim copies of a frontend module, and this
+// one exists because the two registries answer different questions. The frontend's
+// `registry.ts` is asynchronous on purpose — eight mechanics must never become one
+// bundle every player downloads to play one game, so each slice is a dynamic
+// `import()` and its own lazy chunk. Arcade has no bundle: what it needs is to look a
+// simulator up by id inside the `simulate` stage — the WINNABILITY GATE that bot-plays
+// a freshly authored document before it may be published — without an await and
+// without a React component ever entering the process. So it holds the React-free half
+// of the slice (`MechanicSimSlice`: configSchema + contentSchema + simulator +
+// spriteSlots) eagerly.
+//
+// Deliberately IDENTICAL in shape to `backend/src/game-contract/registry.ts`: the
+```
+
+### gamegen/src/env.ts
+
+```
+import { z } from 'zod';
+
+/*
+ * Env validated once at boot (agent/core/CONVENTIONS.md), then FROZEN.
+ * Modeled on coursegen/src/env.ts — Arcade is Forge's twin and inherits its
+ * budget/concurrency/cost posture verbatim (gamegen/AGENTS.md "Read before
+ * touching").
+ *
+ * EVERY field here is optional or defaulted ON PURPOSE. `Env.parse({})` must
+ * succeed, because:
+ *   - the Express /health service must answer with zero credentials
+ *     (/AGENTS.md §1.14: liveness must not depend on optional infrastructure),
+ *   - `npm run generate -- --dry-run` must spend nothing AND run keyless
+ *     (/GAME_ENGINE.md §9), and
+ *   - offline commands (catalog:check, contract:check, vitest) never touch a
 ```
 
 ### gamegen/src/index.ts
 
 ```
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './env.js';
 
-const port = Number(process.env.PORT ?? 4003);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+// Env is validated (and frozen) once here, at boot — the service crashes on
+// invalid env immediately, never at request time (agent/core/CONVENTIONS.md).
+const config = getConfig();
+
+createApp().listen(config.PORT, () => {
+  console.log(`[${SERVICE}] listening on :${config.PORT}`);
 });
+```
+
+### gamegen/src/pipeline/author.ts
+
+```
+// author stage — skeleton → a COMPLETE es-MX `GameDocument` + its server-only
+// `GameValidation` sidecar (GAME_ENGINE.md §9, gamegen/AGENTS.md).
+//
+// The direct model is `coursegen/src/pipeline/write.ts`, which is battle-tested against
+// real paid Forge runs; this is a port of that design, not a new one. What is carried
+// over verbatim in shape:
+//
+//   1. A corrective-retry loop (max 4 attempts) that feeds TRUNCATED, actionable issues
+//      back into the next call instead of failing the slot.
+//   2. Feedback is APPENDED after the original messages, never spliced into them, so
+//      attempts 2..N re-send a byte-identical leading prompt and bill as a DeepSeek
+//      prefix-cache hit (~120x cheaper). `buildAuthorMessages` is therefore called ONCE
+//      per slot and `withFeedback` only ever pushes a trailing user turn.
+//   3. Deterministic SANITIZERS before every schema check (`stripNullValues`,
+//      `repairAuthoredDocument`). Fighting a model over a value we can simply compute is
+```
+
+### gamegen/src/pipeline/checkpoint.ts
+
+```
+// File checkpoint — runs/<run-id>/checkpoint.json (GAME_ENGINE.md §9).
+//
+// Per-slot state machine (the eight states §9 pins, plus the two markers):
+//   pending → planned → authored → simulated → judged → localized → illustrated → published
+//   (+ 'failed' carrying failedFrom, + 'dry-run' for PRISTINE slots only)
+//
+// Resuming a run just means re-invoking the CLI with the same --course/--run-id:
+// each stage in run.ts checks the slot's current state and no-ops past whatever
+// already succeeded. Ported from `coursegen/src/pipeline/checkpoint.ts`, whose
+// every comment below records a failure that actually happened on a paid Forge
+// run — Arcade inherits the fixes, not the bugs (gamegen/AGENTS.md "Read before
+// touching": coursegen/AGENTS.md rules are inherited verbatim).
+
+import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+```
+
+### gamegen/src/pipeline/correctiveRetry.ts
+
+```
+// Schema-corrective retry loop — a SEPARATE counter from providers/retry.ts's
+// transport retries (GAME_ENGINE.md §9). Used by plan.ts, author.ts, judge.ts and
+// localize.ts: call the model, try to parse + validate its JSON, and on failure feed
+// the issues back into the NEXT call instead of giving up.
+//
+// The prefix-cache discipline lives at the CALL SITES, not here: each `callModel`
+// must APPEND the previous attempt's issues after the original messages rather than
+// rebuilding the prompt, so attempts 2..N re-send an identical leading prompt and bill
+// as a full context-cache hit. A rebuilt prompt is a silent cost regression.
+//
+// Ported from coursegen/src/pipeline/correctiveRetry.ts — the two must stay
+// behaviourally identical, because Forge's measured retry economics are what this
+// pipeline's budget assumptions are based on.
+
+export interface CorrectiveRetryResult<T> {
+```
+
+### gamegen/src/pipeline/gamePlaybook.ts
+
+```
+// Game-design playbook — the CREATIVE brief shared by the AUTHOR (what to aim for) and
+// the JUDGE (what to score against). ONE module, two injection points, on purpose: the
+// twin of `coursegen/src/pipeline/contentPlaybook.ts`, which exists because injecting the
+// bar in only one place gives you an author aiming at a different target than the judge
+// rejects against — i.e. mechanically-valid, boring content (the 2026-07-23 QA verdict on
+// Forge's first exercises, and the reason gamegen/AGENTS.md pins this file by name).
+//
+// DIVISION OF LABOUR. The Zod contract (`src/contract/`) and the deterministic `gate`
+// stage enforce CORRECTNESS: shapes, bounds, closed sets, unique ids, a trap that carries
+// its misconception. The `simulate` bot gate enforces WINNABILITY mechanically. THIS file
+// enforces VALUE — that the game teaches the concept it is bound to, is worth a child's
+// five minutes, and could not be reskinned into meaninglessness.
+//
+// NOT a copy of contentPlaybook: those rules are exercise-shaped (prompt_md <= 140 chars,
+// per-option rationales, one reasoning step per screen) and do not map onto a real-time
+```
+
+### gamegen/src/pipeline/gates.ts
+
+```
+// The 8 deterministic gates — GAME_ENGINE.md §9 `gate` stage, gamegen/AGENTS.md.
+//
+// FREE, no network, no LLM, run in order, cheap-first. Gate 1 (contract) gates every
+// gate after it: if the authored JSON does not parse against the mechanic's real Zod
+// schemas there is no typed document to reason about, so gates 2-8 have nothing to say
+// and saying it anyway would bury the one message that matters.
+//
+// WHERE THIS RUNS. `gate` owns no checkpoint state of its own: it is expected to run
+// INSIDE the author stage's corrective-retry loop, the way Forge's gates run inside
+// `write.ts` via `WriteInput.gateCtx`. A gate failure is therefore actionable feedback
+// to the next attempt, not a dead slot — which is why every `message` here NAMES THE
+// FIELD, the expected value and the observed value (coursegen/AGENTS.md, "gate failures
+// are corrective feedback, not death sentences"). Keep that shape when adding a check.
+//
+// WHAT THIS IS NOT. This module never bot-plays anything: winnability is the separate,
+```
+
+### gamegen/src/pipeline/images.ts
+
+```
+// illustrate stage — fills a game manifest's `skin.sprites` and
+// `skin.background_url` by asking Prism (picturegen/) for one image per DECLARED
+// sprite slot of the mechanic, plus the background. Prism owns the whole image
+// concern: the art-director judge (LF visual identity), the qwen-image
+// generation, the pictorial verifier, Depot storage, and the request-hash cache
+// that guarantees an identical request never hits the paid API twice — Arcade
+// only embeds the returned public URL.
+//
+// TWIN OF `coursegen/src/pipeline/images.ts`. Everything load-bearing here was
+// paid for by real Forge runs; it is ported, not re-derived:
+//
+//  1. **Inherit → checkBudget → request, in that order.** Inheritance is cheaper
+//     than Prism's own cache because it needs no network at all AND survives the
+//     label/context rewrite that makes the request hash miss on every
+//     regeneration. `checkBudget()` then runs before the paid call, never after.
+```
+
+### gamegen/src/pipeline/judge.ts
+
+```
+// `judge` stage — the INDEPENDENT quality judge for a game manifest
+// (GAME_ENGINE.md §9, gamegen/AGENTS.md "Pipeline shape"). Port of
+// `coursegen/src/pipeline/review.ts`, which is battle-tested against real paid
+// Forge runs; the design here is inherited, not invented.
+//
+// WHY QWEN AND NOT DEEPSEEK. The author is DeepSeek; the judge is Qwen. A judge
+// sharing the author's provider shares the author's blind spots, so a bad design
+// the author cannot see is a bad design the judge cannot see either. Splitting
+// the two providers decorrelates the failure modes — this is why
+// `providers/qwen.ts` exists at all and why swapping the judge onto the author's
+// provider "for consistency" would quietly delete the stage's value.
+//
+// ────────────────────────────────────────────────────────────────────────────
+// THE SCORES ARE DEFECT POINTERS, NOT AN OPTIMIZATION TARGET. READ THIS BEFORE
+// TOUCHING A FLOOR OR REPORTING A MEAN.
+```
+
+### gamegen/src/pipeline/liveTelemetry.ts
+
+```
+// Live telemetry → Vault (migration 0018 `generation_runs_live` + migration 0020
+// `generation_heartbeat_snapshots`). Port of `coursegen/src/pipeline/liveTelemetry.ts`
+// — Forge's module is battle-tested against real paid runs, so this is a port with
+// the game-specific facts substituted, never a re-derivation (gamegen/AGENTS.md
+// "Read before touching").
+//
+// Unlike `vault/telemetry.ts`, which ingests the FULL run ONCE at the end, this
+// module upserts a heartbeat row DURING the run on every slot stage transition —
+// the "what is happening RIGHT NOW" signal the admin dashboard polls every few
+// seconds — and appends a time-series snapshot alongside it. `finish()` flushes a
+// final state and DELETES the live row; a row still present with a stale
+// `updated_at` is how Core detects a run process that died.
+//
+// TELEMETRY, NEVER CONTROL FLOW. Every write here is best-effort: a Vault outage,
+// a bad service key or a network hiccup is swallowed to a `console.warn`. A paid
+```
+
+### gamegen/src/pipeline/localize.ts
+
+```
+// `localize` stage — es-MX GameDocument -> {en-US, pt-BR} (GAME_ENGINE.md §9).
+//
+// STRUCTURE IS FROZEN PROGRAMMATICALLY, not by asking the model nicely. Only
+// learner-visible strings are extracted into an indexed map, DeepSeek translates just
+// that map, and each translation is written back at the exact path it came from. The
+// model never SEES an id, a number, an enum, a sprite URL or a mechanic config value,
+// so it cannot drift them — see `nonVisibleKeys.ts` for what the freeze covers and, in
+// particular, why it skips CONTAINERS rather than leaf field names.
+//
+// ORDERING THAT THIS STAGE DEPENDS ON: `illustrate` runs on the es-MX document BEFORE
+// `localize` (gamegen/AGENTS.md), so `skin.sprites` / `skin.background_url` are already
+// populated when we get here and are copied through verbatim — one image serves three
+// locales. If that order is ever swapped, this stage becomes 3x the image bill, not a
+// translation bug you would notice.
+//
+```
+
+### gamegen/src/pipeline/nonVisibleKeys.test.ts
+
+```
+// Coverage pin for the `localize` string freeze (`nonVisibleKeys.ts`).
+//
+// WHY THIS TEST IS SCHEMA-DERIVED AND NOT A HAND LIST. The freeze is a DENY list, so a
+// field added to a mechanic schema is translatable BY DEFAULT — which is correct for a
+// new `*_md` line and catastrophic for a new URL, id, enum or tuning number. Nothing at
+// runtime would complain: a sprite URL handed to DeepSeek comes back as plausible prose,
+// `z.url()` rejects it, and the run burns paid corrective attempts on a stage that can
+// never succeed — or worse, an id "translates" into another valid id and the replay
+// silently scores a different game. So this test walks the REAL schemas (the envelope
+// plus all eight mechanics' config + content) and fails until every non-prose leaf is
+// covered. Adding such a field to a schema breaks CI here until the freeze is updated.
+//
+// The rule it encodes, in one line: **a GameDocument's translatable surface is exactly
+// its MarkdownLite `*_md` fields plus `meta.title` — everything else is structure.**
+// Both halves are asserted: nothing structural is translated, and nothing prose is
+```
+
+### gamegen/src/pipeline/nonVisibleKeys.ts
+
+```
+// The STRING FREEZE for `localize` — which keys of a GameDocument a translation pass
+// may touch, and which it must copy through byte-for-byte.
+//
+// ─────────────────────────────────────────────────────────────────────────────────
+// READ THIS BEFORE "SIMPLIFYING" THIS MODULE INTO A FIELD-NAME LIST.
+//
+// coursegen's twin (`coursegen/src/pipeline/gates.ts` → `NON_VISIBLE_KEYS`) is a list
+// of LEAF FIELD NAMES: `image_url`, `a_image_url`, `ask_icon`, `mode`… That works there
+// because every non-visible value in a lesson document sits at a leaf with a NAME the
+// list can enumerate.
+//
+// A GameDocument does not have that property. `skin.sprites` is
+// `Record<string, string>` whose keys are SPRITE SLOT IDS declared per mechanic
+// (`bin_1`, `item_14`, `tray`…), `skin.sfx` is `Record<eventName, sfxName>`,
+// `item.props` is `Record<string, number>`, and `config` is a whole mechanic-specific
+```
+
+### gamegen/src/pipeline/plan.ts
+
+```
+// plan stage — game blueprint → manifest SKELETON (GAME_ENGINE.md §9, gamegen/AGENTS.md).
+// DeepSeek, temp 0.3, JSON mode. The twin of `coursegen/src/pipeline/plan.ts`; every
+// structural decision below is ported from Forge rather than re-derived.
+//
+// WHAT THIS STAGE PRODUCES — AND WHAT IT MUST NOT. A skeleton is COUNTS AND SHAPE:
+// which mechanic config surface to target, how many items and categories, how the
+// difficulty ladder ramps across rounds, how many rounds, whether interludes are
+// warranted, and the scoring posture (mode / pass_score / minutes). It authors NO
+// content: no labels, no category names, no prompts, no feedback lines, no numbers that
+// end up inside `content`. That is the `author` stage's job, held to `gamePlaybook.ts`.
+// Two reasons this split is worth a whole paid call: a plan is ~30x cheaper to retry
+// than a full manifest, and a document whose counts were decided in the same breath as
+// its prose reliably drifts out of the tier bands (Forge's pre-split behaviour).
+//
+// DETERMINISTIC REPAIR BEFORE A PAID RETRY. `planRepair()` fixes every mechanically
+```
+
+### gamegen/src/pipeline/publish.ts
+
+```
+// publish stage — GAME_ENGINE.md §9, the twin of `coursegen/src/pipeline/publish.ts`.
+// FREE (no model call, no image call): it resolves the blueprint's concept binding,
+// splits each locale's manifest into the CLIENT-SAFE `document` and the SERVER-ONLY
+// `validation` sidecar, and upserts `games` + `game_documents`×N by slug.
+//
+// TWO INVARIANTS, ENFORCED IN CODE RATHER THAN IN A COMMENT:
+//
+//  1. **The sidecar's only home is the `validation` column.** `splitGameDocument()`
+//     removes a `validation` key from the manifest and then WALKS the result asserting
+//     that no nested one survived. If the sidecar could ride inside `document`, then
+//     stripping it client-side would be the only defense left — and `game_documents`
+//     is served to the browser by Core, which strips the COLUMN, not a nested field.
+//     What leaks if this slips is `max_score`, `min_duration_seconds`, `max_events`
+//     and `item_values`: exactly the numbers needed to forge a maximal input log past
+//     the server-side replay, i.e. the whole reward economy (migration 0027's header).
+```
+
+### gamegen/src/pipeline/run.ts
+
+```
+// Run orchestration — wires validate → plan → author → gate → simulate → judge →
+// localize → illustrate → publish per slot, with checkpoint/resume, a small
+// concurrency pool, and the budget kill switches (GAME_ENGINE.md §9).
+//
+// Ported from `coursegen/src/pipeline/run.ts`. Forge is battle-tested against real
+// paid runs and every defensive branch below records a failure that actually
+// happened; Arcade inherits the fixes verbatim (gamegen/AGENTS.md).
+//
+// THE ORDERING FACT (GAME_ENGINE.md §9, and the whole reason the stage list looks
+// the way it does): `illustrate` runs on the es-MX document BEFORE the `localize`
+// string-freeze. `sprites`, `background_url`, `palette`, `sfx` and `bgm` are
+// CONTAINER keys `nonVisibleKeys.ts` skips, so they copy verbatim into en-US and
+// pt-BR — ONE image serves THREE locales. The separate `illustrated` checkpoint
+// state is the belt-and-braces sweep that follows, which makes ZERO Prism calls on
+// the happy path.
+```
+
+### gamegen/src/pipeline/shapeExample.ts
+
+```
+// Per-mechanic JSON shape examples for the Arcade author/judge prompts — generic Zod
+// v4 introspection over the REAL contract schemas (`src/contract/`), so this can never
+// drift from what `gate` will validate against.
+//
+// WHY THIS EXISTS (ported verbatim in spirit from `coursegen/src/pipeline/shapeExample.ts`,
+// coursegen/AGENTS.md rule 1 "the model cannot infer JSON shapes from type names"): before
+// Forge derived its examples, the write prompt gave DeepSeek no structural hint per segment
+// type beyond its name, and one type (`story_scene`) produced FOUR entirely different,
+// all-invalid shapes across four attempts. A game `config` is an order of magnitude wider
+// than a segment payload — `runner.config` alone nests a discriminated action model, a speed
+// ramp, a pattern library and a scoring-weight block — so guessing is not a possibility.
+// Deriving the example means adding a config field to a mechanic schema updates the prompt
+// for free; a hand-maintained example list would be stale on the first schema edit, and the
+// resulting document would lose that field silently (Zod objects STRIP unknown keys).
+//
+```
+
+### gamegen/src/pipeline/simulateGate.ts
+
+```
+// The `simulate` stage — THE BOT-PLAY WINNABILITY GATE (GAME_ENGINE.md §9,
+// gamegen/AGENTS.md "Pipeline shape").
+//
+// This stage has no equivalent in Forge, and it is the strongest quality guarantee in
+// this pipeline: before a generated manifest may be judged, localized, illustrated or
+// published, Arcade PLAYS it. Two headless bots, the mechanic's own, drive the real
+// simulator over the real document:
+//
+//   - the PERFECT bot must reach `scoring.pass_score` on EVERY seed. If it cannot, the
+//     game is unwinnable and a child would fail content that is broken, not hard.
+//   - the RANDOM bot must NOT reach it on any seed. If it can, mashing is a complete
+//     strategy, the XP is free and the game teaches nothing.
+//
+// It is free, deterministic and involves no LLM, so it runs BEFORE the paid judge —
+// the cheap-first ordering Forge's two-phase gate/judge split already paid for. On
+```
+
+### gamegen/src/providers/deepseek.ts
+
+```
+// DeepSeek — the AUTHOR provider (plan / author / localize stages).
+// Ported from `coursegen/src/providers/deepseek.ts`.
+
+import { getConfig } from '../env.js';
+import { ProviderNotConfiguredError } from './errors.js';
+import { openAiCompatibleComplete, type ChatCompleteRequest, type ChatCompleteResult } from './openaiChat.js';
+import type { UsageLedger } from './usage.js';
+
+export interface CompleteOptions {
+  /** Ledger operation label — 'plan' | 'author' | 'localize' | 'revise' etc. */
+  operation: string;
+  ledger?: UsageLedger;
+}
+
+/**
+```
+
+### gamegen/src/providers/errors.ts
+
+```
+// Typed provider errors — the transport-retry / non-retryable split lives on
+// `retryable`. Ported verbatim in behavior from `coursegen/src/providers/errors.ts`
+// (GAME_ENGINE.md §9: "Arcade's stages, checkpointing, providers and telemetry are
+// modeled on Forge"). These classifications were paid for by real runs; do not
+// re-derive them.
+
+export class ProviderHttpError extends Error {
+  readonly status: number;
+  readonly retryable: boolean;
+  readonly provider: string;
+  /**
+   * `Retry-After` in milliseconds when the provider sent one. Rate-limit replies
+   * usually do, and it is the ONLY authoritative answer to "how long until my
+   * quota resets" — guessing with exponential backoff against a per-MINUTE window
+   * loses, which is exactly how sustained 429s used to turn into terminal slot
+```
+
+### gamegen/src/providers/openaiChat.ts
+
+```
+// Shared OpenAI-compatible chat/completions transport — the ONE fetch
+// chokepoint DeepSeek (author) and Qwen (judge, DashScope compatible-mode) both
+// go through. Ported from `coursegen/src/providers/openaiChat.ts`; every rule in
+// here was paid for by a real Forge run.
+
+import { getConfig } from '../env.js';
+import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, parseRetryAfter } from './errors.js';
+import { withTransportRetry } from './retry.js';
+
+export interface ChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+export interface ChatCompleteRequest {
+```
+
+### gamegen/src/providers/picturegen.ts
+
+```
+// Prism (picturegen/) client — the ONLY way Arcade obtains sprites and
+// backgrounds. Prism owns the whole image concern: an art-director judge crafts
+// the final prompt (LF visual identity), a cache guarantees an identical request
+// never hits the paid image API twice, and the asset is stored in Depot. Arcade
+// just asks for a picture and embeds the returned public URL into
+// `skin.sprites` / `skin.background_url`.
+//
+// Ported from `coursegen/src/providers/picturegen.ts`.
+
+import { getConfig } from '../env.js';
+import { ProviderHttpError, ProviderNotConfiguredError, parseRetryAfter } from './errors.js';
+import { withTransportRetry } from './retry.js';
+
+/**
+ * Structural role the picture plays — steers Prism's per-purpose art direction.
+```
+
+### gamegen/src/providers/qwen.ts
+
+```
+// Qwen (DashScope compatible-mode) — the independent JUDGE provider.
+// Deliberately a SEPARATE provider from the DeepSeek author so its blind spots
+// decorrelate from the author's (gamegen/AGENTS.md: rubric dimensions
+// concept_fit, fun_agency, clarity, kid_safety, difficulty_fairness).
+// Ported from `coursegen/src/providers/qwen.ts`.
+
+import { getConfig } from '../env.js';
+import { ProviderNotConfiguredError } from './errors.js';
+import { openAiCompatibleComplete, type ChatCompleteRequest, type ChatCompleteResult } from './openaiChat.js';
+import type { UsageLedger } from './usage.js';
+
+export interface CompleteOptions {
+  operation: string;
+  ledger?: UsageLedger;
+}
+```
+
+### gamegen/src/providers/retry.ts
+
+```
+// Transport-retry: jittered exponential backoff 0.5s→8s, max 4 attempts,
+// ONLY for retryable errors (429/5xx/network/timeout). Non-retryable errors
+// (4xx other than 429) throw immediately. This is a SEPARATE counter from the
+// schema-corrective retries in pipeline/correctiveRetry.ts — conflating the two
+// spends transport budget on prompt problems and vice versa.
+//
+// Ported from `coursegen/src/providers/retry.ts`.
+
+import { isRateLimitError, isRetryableError, retryAfterMsOf } from './errors.js';
+
+export interface RetryOptions {
+  maxAttempts?: number;
+  baseMs?: number;
+  maxMs?: number;
+  /** Attempts for a RATE LIMIT specifically — quotas are per-minute, so this ladder is longer. */
+```
+
+### gamegen/src/providers/usage.ts
+
+```
+// Usage ledger — one JSONL line per provider call, appended to
+// runs/<run-id>/ledger.jsonl, plus an in-memory running total the kill switches
+// (ARCADE_MAX_TOKENS_PER_RUN / ARCADE_MAX_USD_PER_RUN) check BEFORE every paid
+// call. Ported from `coursegen/src/providers/usage.ts`.
+//
+// gamegen/AGENTS.md: "Every cost goes through the JSONL UsageLedger, or it is
+// invisible to every guard." Image spend sat outside Forge's ledger for months
+// and was its largest uncapped cost — Arcade's `illustrate` loops over sprite
+// slots, the identical shape, so the identical trap.
+
+import { appendFile, mkdir, readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { getConfig } from '../env.js';
+
+export type UsageProvider = 'deepseek' | 'qwen' | 'picturegen';
+```
+
+### gamegen/src/vault/client.ts
+
+```
+// Service-role PostgREST client for Vault writes — the twin of
+// `coursegen/src/vault/restClient.ts` (gamegen/AGENTS.md: Arcade inherits Forge's
+// hard-won rules verbatim rather than re-deriving them).
+//
+// Arcade is an offline operator CLI, never a request handler, so it NEVER holds a
+// user JWT: every call here is service-role and bypasses RLS ON PURPOSE. That is
+// load-bearing twice over for the Game Engine:
+//
+//  1. `games` rows land as status='review' and are invisible to clients until a
+//     human flips them to 'published' (GAME_ENGINE.md §9 — generated kid-facing
+//     content never auto-publishes).
+//  2. `game_documents` has RLS ENABLED WITH ZERO POLICIES (migration 0027),
+//     because RLS is row-level and any SELECT policy would also expose the
+//     server-only `validation` sidecar. The service role is therefore the only
+//     writer this table can ever have.
+```
+
+### gamegen/src/vault/gamesRepo.ts
+
+```
+// Vault repository for the Game Engine content tables (migration
+// `database/migrations/0027_game_engine.sql`): `games` and `game_documents`.
+//
+// Two responsibilities, both deliberately narrow:
+//
+//  1. **Resolve a blueprint's `topic_path` to a real `topics.id`.** Every game binds
+//     to a learn/ concept and the binding is DATA, not convention (gamegen/AGENTS.md):
+//     `games.topic_id` is a NOT NULL FK. Arcade RESOLVES that chain, it never creates
+//     it — the course → adventure → saga → topic hierarchy belongs to Forge
+//     (`coursegen/src/pipeline/publish.ts` upserts it by slug at each level; this
+//     module walks the identical (parent_id, slug) path in the read direction). A
+//     path that does not resolve FAILS the slot: an "unbound" game must not exist.
+//  2. **Upsert the two content rows idempotently**, keyed on the UNIQUE constraints
+//     0027 declares: `(topic_id, slug)` for games, the `(game_id, locale)` primary key
+//     for documents. Re-publishing a slot updates in place; it never duplicates.
+```
+
+### gamegen/src/vault/telemetry.ts
+
+```
+// Durable generation telemetry → Vault (migration 0017: `generation_runs` /
+// `generation_slots`). Port of `coursegen/src/vault/telemetry.ts`; the design is
+// inherited from Forge, which is battle-tested against real paid runs, not
+// re-derived here (gamegen/AGENTS.md "Read before touching").
+//
+// This is the permanent "registro" of how an Arcade run behaved: per-slot
+// outcomes, the stage a slot failed from, the judge rubric, revise cycles, cost
+// and cache-hit share. It is the raw material for the admin Generation dashboard
+// (Core `/api/v1/admin/generation/*`), and it is what a run dir alone cannot
+// provide — `runs/` is a gitignored local directory on whatever machine the
+// operator ran the generation from.
+//
+// Service-role-only posture (RLS enabled, ZERO client policies — 0017): the
+// browser never reads these tables, Core does, holding the service key and
+// gating on admin/superadmin.
 ```
 
 ### gamegen/tsconfig.json
@@ -145499,8 +146997,8 @@ export default defineConfig({
     "setup": "bash scripts/setup-dev.sh",
     "dev": "bash scripts/start-dev.sh",
     "repo:map": "bash scripts/update-repo-map.sh",
+    "generate:full": "node scripts/generate-full.mjs",
     "docs:check": "bash agent/tools/check-docs-sync.sh",
-    "secrets:check": "bash agent/tools/check-secrets.sh",
 ```
 
 ### parent-id-check/AGENTS.md

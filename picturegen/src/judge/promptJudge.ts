@@ -31,6 +31,12 @@ export const PICTURE_PURPOSES = [
   'memory_card',
   'outcome',
   'scene',
+  // Arcade (gamegen/) — GAME_ENGINE.md §2. Purpose is part of the request-cache
+  // hash (service/pictures.ts), so adding values is cache-safe: it mints new
+  // keys and cannot invalidate an existing asset. NEVER bump STYLE_VERSION for
+  // a new purpose — that would re-pay for the entire catalog.
+  'game_sprite',
+  'game_background',
   'generic',
 ] as const;
 export type PicturePurpose = (typeof PICTURE_PURPOSES)[number];
@@ -60,6 +66,15 @@ const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
     'This is a wide story scene: show the objects and setting of the lemonade-stand world with a complete background, and NO people or characters.',
   outcome:
     'This is an OUTCOME/consequence illustration for a story branch ending. Convey the result through the SCENE and OBJECTS (e.g. a full coin jar for success, wilted lemonade for a setback) — never through a person or character, never anything scary or shaming.',
+  // A minigame SPRITE: one prop the engine composites onto a live canvas, often
+  // rendered at ~48-96px while it moves. It must read as the named object in a
+  // fraction of a second, so it is the strictest legibility case we have.
+  game_sprite:
+    'This is a minigame SPRITE — a single game piece the engine draws on a moving canvas, often at ~48-96px. Depict ONE object, centered, filling the frame, with a bold high-contrast silhouette and chunky simple shapes; a child must name it at a glance while it is small and in motion. Sit it on a simple near-plain single-tone warm ground so it composites cleanly over the game canvas — no scene, no horizon, no secondary props, no fine detail or thin lines that vanish when scaled down. Ambiguity is a failure: the object must be unmistakable, never a generic blob and never a symbolic stand-in for the thing.',
+  // A minigame BACKGROUND: deliberately the quietest image in the catalogue. It
+  // sits UNDER the sprites and the HUD, so anything eye-catching in it is a bug.
+  game_background:
+    'This is a minigame BACKGROUND — a wide (roughly 16:9) backdrop that sits BEHIND moving sprites and a HUD of score/lives text. It must NEVER compete with the foreground for attention: this is the failure mode, so treat it as the rule. Keep it low-detail, low-contrast and softly muted (a calm sky, a gentle far-off street, simple ground bands), with an uncluttered, almost empty middle where the game is played and any detail pushed low and to the edges. NO single dominant subject, no bright accents, no busy patterns, no hard edges or high-contrast shapes that could be mistaken for a game piece or make overlaid text unreadable. Setting and objects only, complete background, no people or characters of any kind.',
   generic: 'A clear, friendly illustration of the subject with a simple complete background.',
 };
 

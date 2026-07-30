@@ -11,6 +11,7 @@
     "setup": "bash scripts/setup-dev.sh",
     "dev": "bash scripts/start-dev.sh",
     "repo:map": "bash scripts/update-repo-map.sh",
+    "generate:full": "node scripts/generate-full.mjs",
     "docs:check": "bash agent/tools/check-docs-sync.sh",
     "secrets:check": "bash agent/tools/check-secrets.sh",
     "i18n:check": "bash agent/tools/check-i18n.sh",

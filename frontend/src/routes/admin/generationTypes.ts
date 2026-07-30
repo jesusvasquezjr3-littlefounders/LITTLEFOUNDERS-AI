@@ -5,11 +5,111 @@ import type { TrendPoint } from '@/components/ui';
  * Mirrors backend/src/services/adminData.ts return shapes.
  */
 
+// ── Run kind (Forge lessons vs Arcade games) ────────────────────────────────
+
+/**
+ * The two producers that write to the SHARED generation telemetry tables
+ * (`generation_runs`, `generation_slots`, `generation_runs_live`). Runs are
+ * marked by `generation_runs.params.kind` — `'games'` for Arcade, absent or
+ * `'lessons'` for Forge, which predates the marker.
+ */
+export const GENERATION_KINDS = ['lessons', 'games'] as const;
+export type GenerationKind = (typeof GENERATION_KINDS)[number];
+
+/** Forge predates `params.kind`, so an unmarked run is a lesson run. */
+export const DEFAULT_GENERATION_KIND: GenerationKind = 'lessons';
+
+/** Arcade run ids are namespaced `games-<courseSlug>-<ISO8601>` (GAME_ENGINE.md §9). */
+const GAMES_RUN_ID_PREFIX = 'games-';
+
+/**
+ * Narrows an untrusted wire value into a `GenerationKind`.
+ *
+ * `kind` is the authoritative signal, but it is not available on every path:
+ * `generation_runs_live` (migration 0018) has no `kind` column, so the browser's
+ * Realtime subscription receives rows without one. The run-id namespace is
+ * carried by every row on every path, so it is the fallback — never a guess,
+ * since Arcade run ids are prefixed precisely so they cannot collide with Forge's
+ * `<courseSlug>-<ISO8601>`.
+ */
+export function resolveGenerationKind(
+  source: { kind?: string | null; runId?: string | null } | null | undefined,
+): GenerationKind {
+  const declared = source?.kind;
+  if (declared) {
+    const match = GENERATION_KINDS.find((k) => k === declared);
+    if (match) return match;
+  }
+  if (source?.runId?.startsWith(GAMES_RUN_ID_PREFIX)) return 'games';
+  return DEFAULT_GENERATION_KIND;
+}
+
+// ── Pipeline stages, per kind ───────────────────────────────────────────────
+
+export interface GenerationStageDescriptor {
+  /** i18n key suffix under `admin.generation.stages.*` AND the `stageBreakdown` key. */
+  key: string;
+  /** Material Symbols name. */
+  icon: string;
+  /** Terminal stage: rendered as done, never pulsed as in-flight. */
+  terminal?: boolean;
+  /** Not in-flight: a non-zero count here is a queue, not work in progress. */
+  idle?: boolean;
+}
+
+/**
+ * The stage list is PER-KIND: the two pipelines do not share a stage vocabulary
+ * beyond their bookends. Rendering the Forge list for an Arcade run silently
+ * dropped every game stage and showed a run with empty pills.
+ *
+ * Arcade's free deterministic `gate` stage has no live label of its own (it runs
+ * inside authoring); `simulate` is the bot-play winnability gate and does.
+ */
+export const GENERATION_STAGES: Record<GenerationKind, readonly GenerationStageDescriptor[]> = {
+  lessons: [
+    { key: 'pending', icon: 'pending', idle: true },
+    { key: 'planning', icon: 'psychology' },
+    { key: 'writing', icon: 'edit_note' },
+    { key: 'reviewing', icon: 'grading' },
+    { key: 'localizing', icon: 'translate' },
+    { key: 'illustrating', icon: 'image' },
+    { key: 'publishing', icon: 'cloud_upload' },
+    { key: 'published', icon: 'task_alt', terminal: true },
+  ],
+  games: [
+    { key: 'pending', icon: 'pending', idle: true },
+    { key: 'planning', icon: 'psychology' },
+    { key: 'authoring', icon: 'draw' },
+    { key: 'simulating', icon: 'smart_toy' },
+    { key: 'judging', icon: 'grading' },
+    { key: 'localizing', icon: 'translate' },
+    { key: 'illustrating', icon: 'image' },
+    { key: 'publishing', icon: 'cloud_upload' },
+    { key: 'published', icon: 'task_alt', terminal: true },
+  ],
+};
+
+/**
+ * Stage list for a run kind. Returns the module-level array, so the identity is
+ * STABLE across renders — callers use it as a hook dependency (see the render-loop
+ * note in PipelineFlow.tsx). Never build a fresh array here.
+ */
+export function stagesForKind(kind: GenerationKind): readonly GenerationStageDescriptor[] {
+  return GENERATION_STAGES[kind];
+}
+
 export interface LiveRunHeartbeat {
   runId: string;
   trackId: string | null;
   courseSlug: string;
   register: string;
+  /**
+   * Producer marker (`params.kind`). Optional: `generation_runs_live` has no
+   * such column today, so the Realtime path leaves it null and callers fall back
+   * to `resolveGenerationKind`. Kept as a raw string because it is unvalidated
+   * wire data — narrow it with `resolveGenerationKind`, never cast it.
+   */
+  kind?: string | null;
   activeSlots: number;
   completedSlots: number;
   failedSlots: number;
@@ -51,6 +151,8 @@ export interface RunListItem {
   trackId: string | null;
   courseSlug: string;
   register: string;
+  /** See `LiveRunHeartbeat.kind`. Narrow with `resolveGenerationKind`. */
+  kind?: string | null;
   published: number;
   failed: number;
   slotsEnumerated: number;

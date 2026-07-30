@@ -1,6 +1,10 @@
 import { createApp, SERVICE } from './app.js';
+import { getConfig } from './env.js';
 
-const port = Number(process.env.PORT ?? 4003);
-createApp().listen(port, () => {
-  console.log(`[${SERVICE}] listening on :${port}`);
+// Env is validated (and frozen) once here, at boot — the service crashes on
+// invalid env immediately, never at request time (agent/core/CONVENTIONS.md).
+const config = getConfig();
+
+createApp().listen(config.PORT, () => {
+  console.log(`[${SERVICE}] listening on :${config.PORT}`);
 });

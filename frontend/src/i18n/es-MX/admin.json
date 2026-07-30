@@ -52,7 +52,7 @@
   },
   "content": {
     "title": "Contenido",
-    "subtitle": "Gestiona cursos y revisa lecciones antes de que lleguen a los niños.",
+    "subtitle": "Gestiona cursos y revisa lecciones y juegos antes de que lleguen a los niños.",
     "coursesHeading": "Cursos",
     "colTitle": "Curso",
     "colSlug": "Slug",
@@ -62,7 +62,53 @@
     "publish": "Publicar",
     "unpublish": "Despublicar",
     "archive": "Archivar",
-    "empty": "Aún no hay cursos."
+    "empty": "Aún no hay cursos.",
+    "tabs": {
+      "aria": "Vistas de contenido",
+      "courses": "Cursos",
+      "games": "Juegos"
+    }
+  },
+  "games": {
+    "heading": "Juegos esperando revisión",
+    "note": "Arcade nunca publica solo. Todo juego generado llega aquí en revisión — juégalo de principio a fin antes de que lo vea un niño (§1.9).",
+    "empty": "No hay juegos esperando revisión. La cola del arcade está limpia.",
+    "unknownMechanic": "Mecánica desconocida",
+    "tier": "Nivel {{tier}}",
+    "xpMax": "{{xp}} XP",
+    "minutes": "{{minutes}} min",
+    "course": "Curso",
+    "topic": "Tema",
+    "locales": "Idiomas",
+    "noData": "—",
+    "play": "Jugar para revisar",
+    "playAria": "Jugar “{{title}}” para revisarlo",
+    "publish": "Publicar",
+    "archive": "Archivar",
+    "rubricTitle": "Rúbrica del juez",
+    "rubricEmpty": "Sin rúbrica del juez registrada — este juego nunca se evaluó.",
+    "previewNote": "Vista de revisión — el juego real, sin puntaje y sin otorgar XP.",
+    "previewClose": "Cerrar la vista previa",
+    "previewBroken": "No se pudo cargar el documento de este juego, así que no se puede revisar. Revisa la ejecución que lo generó antes de publicar nada.",
+    "dims": {
+      "concept_fit": "Ajuste al concepto",
+      "fun_agency": "Diversión y agencia",
+      "clarity": "Claridad",
+      "kid_safety": "Seguridad infantil",
+      "difficulty_fairness": "Dificultad justa"
+    },
+    "confirmPublish": {
+      "title": "¿Publicar este juego?",
+      "body": "“{{title}}” sale en vivo para cada niño cuyo tema ya esté publicado. Juégalo primero — esta es la última compuerta humana.",
+      "confirm": "Publicarlo",
+      "cancel": "Todavía no"
+    },
+    "confirmArchive": {
+      "title": "¿Archivar este juego?",
+      "body": "“{{title}}” desaparece del arcade. El XP ya ganado se queda con quienes lo jugaron, y el juego se puede regenerar después.",
+      "confirm": "Archivarlo",
+      "cancel": "Conservarlo"
+    }
   },
   "users": {
     "title": "Usuarios",
@@ -288,6 +334,9 @@
       "planning": "Planificando",
       "writing": "Escribiendo",
       "reviewing": "Juzgando",
+      "authoring": "Redactando",
+      "simulating": "Simulando",
+      "judging": "Juzgando",
       "localizing": "Traduciendo",
       "illustrating": "Imágenes",
       "publishing": "Publicando",
@@ -300,7 +349,23 @@
       "reviewed": "Juzgando",
       "localized": "Traduciendo",
       "illustrated": "Imágenes",
+      "planning": "Planificando",
+      "writing": "Escribiendo",
+      "reviewing": "Juzgando",
+      "authoring": "Redactando",
+      "simulating": "Simulando",
+      "judging": "Juzgando",
+      "localizing": "Traduciendo",
+      "illustrating": "Imágenes",
       "unknown": "Desconocido"
+    },
+    "kinds": {
+      "filterLabel": "Pipeline",
+      "filterAria": "Filtrar ejecuciones por pipeline",
+      "all": "Todos",
+      "lessons": "Lecciones",
+      "games": "Juegos",
+      "note": "Las ejecuciones de lecciones y de juegos comparten las tablas de telemetría, pero nunca una misma línea de tendencia — cada gráfica de costo, calidad y fallos se limita al pipeline seleccionado."
     },
     "history": {
       "runs": "Inspector de ejecuciones"
@@ -343,7 +408,11 @@
       "feedback_quality": "Calidad del feedback",
       "distractor_quality": "Calidad de distractores",
       "narrative_quality": "Calidad narrativa",
-      "naturalness": "Naturalidad"
+      "naturalness": "Naturalidad",
+      "concept_fit": "Ajuste al concepto",
+      "fun_agency": "Diversión y agencia",
+      "clarity": "Claridad",
+      "difficulty_fairness": "Dificultad justa"
     },
     "duration": {
       "title": "Tiempo real por lección (segundos)"
@@ -358,6 +427,11 @@
       "duration": "Duración",
       "images": "Imágenes g·c·h",
       "error": "Error"
+    },
+    "slotsGames": {
+      "title": "Juegos ({{count}})",
+      "empty": "No hay registros por juego para esta ejecución.",
+      "slot": "Juego"
     },
     "states": {
       "published": "publicada",
