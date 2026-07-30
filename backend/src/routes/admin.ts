@@ -789,5 +789,48 @@ export function adminRouter(): Router {
     ok(res, { families, consent });
   });
 
+  // ── Data Intelligence (dataintel/) proxy ────────────────────────────────────
+  // Forwards analytics queries to the dataintel service (port 4008).
+  // The browser talks only to Core; Core relays to dataintel with the
+  // internal API key. dataintel responses are passed through unmodified
+  // — they already carry the standard { data, error } envelope.
+
+  const { DATAINTEL_URL, DATAINTEL_INTERNAL_KEY } = getConfig();
+
+  router.use('/intel', async (req, res) => {
+    const intelPath = req.originalUrl.replace(/^\/intel/, '');
+    const url = `${DATAINTEL_URL}/api/v1/intel${intelPath}`;
+    try {
+      const proxyRes = await fetch(url, {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-internal-api-key': DATAINTEL_INTERNAL_KEY,
+        },
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+        signal: AbortSignal.timeout(30_000),
+      });
+      const contentLength = proxyRes.headers.get('content-length');
+      const maxSize = 50 * 1024 * 1024;
+      if (contentLength && parseInt(contentLength, 10) > maxSize) {
+        return fail(res, 413, 'PAYLOAD_TOO_LARGE', 'Intel response exceeds maximum size');
+      }
+      const body = await proxyRes.text();
+      if (proxyRes.headers.get('content-type')) {
+        res.setHeader('Content-Type', proxyRes.headers.get('content-type')!);
+      }
+      if (proxyRes.headers.get('x-lf-export-rows')) {
+        res.setHeader('X-LF-Export-Rows', proxyRes.headers.get('x-lf-export-rows')!);
+        res.setHeader('Access-Control-Expose-Headers', 'X-LF-Export-Rows');
+      }
+      return res.status(proxyRes.status).send(body);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return fail(res, 504, 'UPSTREAM_TIMEOUT', 'Intel service did not respond in time');
+      }
+      return fail(res, 502, 'UPSTREAM_FAILED', 'Intel service unreachable');
+    }
+  });
+
   return router;
 }

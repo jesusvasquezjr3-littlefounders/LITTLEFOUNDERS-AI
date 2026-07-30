@@ -34,6 +34,7 @@ import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
 import { AdminContentPage } from '@/routes/admin/AdminContentPage';
 import { AdminEmailDashboard } from '@/routes/admin/AdminEmailDashboard';
 import { AdminInsightsPage } from '@/routes/admin/AdminInsightsPage';
+import { AdminIntelPage } from '@/routes/admin/AdminIntelPage';
 import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
 import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
 import { CookieConsentBanner } from '@/components/CookieConsentBanner';
@@ -195,6 +196,7 @@ export function App() {
             <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
             <Route path="admin/emails" element={<RequireRole role={STAFF}><AdminEmailDashboard /></RequireRole>} />
             <Route path="admin/insights" element={<RequireRole role={STAFF}><AdminInsightsPage /></RequireRole>} />
+            <Route path="admin/intel" element={<RequireRole role={STAFF}><AdminIntelPage /></RequireRole>} />
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
             <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />

@@ -30,12 +30,12 @@ import {
 /** Mirrors the 0024 CHECK and Core's enum exactly. Closed by design. */
 export type InsightEvent =
   | 'session_start' | 'session_heartbeat' | 'session_end' | 'nav_view'
-  | 'page_view' | 'cta_click' | 'scroll_depth' | 'video_play'
+  | 'page_view' | 'cta_click' | 'scroll_depth'
   | 'signup_start' | 'signup_submit' | 'signup_complete' | 'login_complete'
   | 'course_open' | 'lesson_start' | 'lesson_complete' | 'first_lesson_complete'
   | 'lesson_abandon' | 'segment_view' | 'segment_submit' | 'segment_retry'
   | 'hint_open' | 'explanation_view' | 'audio_replay' | 'results_view'
-  | 'game_open' | 'game_complete' | 'task_view' | 'task_complete'
+  | 'game_open' | 'task_view'
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke';
 

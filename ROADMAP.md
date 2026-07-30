@@ -4,7 +4,7 @@
 
 ## Architecture summary (locked 2026-07-11)
 
-Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
+Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server, **Data Intel** dataintel (added 2026-07-29 — DuckDB analytics warehouse: segmentation, forecasting, anomaly detection, experiments) — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
 
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
@@ -137,6 +137,9 @@ Next, in Jesús's stated order of interest:
 - Arcade first generated minigame bound to a learn concept
 - Courier: **DONE + LIVE 2026-07-18** (Haraka → Amazon SES relay) — deployed as the 17th Railway service, GoTrue points at it, `GOTRUE_MAILER_AUTOCONFIRM=false`, branded trilingual auth mail delivering through SES in production. Old Resend DNS/records retired. Only optional leftover: set `EMAIL_SERVER_LIVE=true` to activate the email-server CD workflow (email-server/README.md)
 - Google social login: **LIVE 2026-07-20** — Google Cloud OAuth client "LittleFounders v2 (GoTrue)" created (project `littlefounders-auth`, consent screen External + In production), credentials set on the `auth` service, `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true`. Verified end-to-end in production: login button → Google → GoTrue callback → `/auth/callback` → authenticated dashboard; OAuth user created with `provider=google`, display_name from Google metadata (0011), `universal` role, email auto-confirmed (backend/README.md "Social login")
+- **Data Intelligence (dataintel/)** — DuckDB analytics warehouse with
+  segmentation, forecasting, anomaly detection, and experiment framework
+  (2026-07-29, SHIPPED)
 - **Move Vault backups to a dedicated Railway volume** once billing allows creating one — today's mechanism (piggybacking on filebase's volume) works and is verified, but a purpose-built backup volume is the better long-term shape
 - Pay down the Vercel + Railway billing holds and renew the `littlefounders.ai` GoDaddy registration (owner action, not agent-doable)
 

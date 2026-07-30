@@ -62,7 +62,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
-| Package layout | 8 independent npm packages — **no workspaces** |
+| Package layout | 10 independent npm packages — **no workspaces** |
 
 ### §1.3 Schema invariants
 
@@ -102,6 +102,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
 | `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
+| `dataintel/` | Data Intel | Analytics warehouse: DuckDB OLAP, segmentation, forecasting, anomaly detection, experiments | 4008 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.

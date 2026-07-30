@@ -19,6 +19,10 @@ const Env = z.object({
   PARENT_ID_CHECK_URL: z.url().default('http://localhost:4004'),
   EMAIL_SERVER_URL: z.url().default('http://localhost:4005'),
 
+  // dataintel analytics proxy
+  DATAINTEL_URL: z.string().url().default('http://localhost:4008'),
+  DATAINTEL_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });

@@ -1,0 +1,42 @@
+import { syncAll, refreshAggregates } from '../db/sync.js';
+import { getConfig } from '../env.js';
+import { isReady } from '../db/duckdb.js';
+
+let timer: ReturnType<typeof setInterval> | null = null;
+let running = false;
+
+export function startSyncWorker(): void {
+  const config = getConfig();
+
+  void runSync();
+
+  timer = setInterval(() => void runSync(), config.SYNC_INTERVAL_MS);
+}
+
+export function stopSyncWorker(): void {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+
+async function runSync(): Promise<void> {
+  if (!isReady()) return;
+  if (running) return;
+
+  try {
+    running = true;
+    console.log('[dataintel] Starting sync...');
+    const result = await syncAll();
+    await refreshAggregates();
+    console.log(
+      `[dataintel] Sync complete:`,
+      result.tables,
+      `in ${result.elapsed}ms`,
+    );
+  } catch (err) {
+    console.error('[dataintel] Sync failed:', err);
+  } finally {
+    running = false;
+  }
+}

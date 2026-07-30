@@ -21,7 +21,8 @@
     "generation": "Generation",
     "audit": "Audit log",
     "roles": "Roles & Access",
-    "insights": "Insights"
+    "insights": "Insights",
+    "intel": "Data Intel"
   },
   "overview": {
     "title": "Admin panel",
@@ -453,6 +454,197 @@
         "title": "Cost per lesson spiked 2× above baseline",
         "detail": "Latest: {{latest}} vs average: {{avg}}. Image generation or token usage may have increased."
       }
+    }
+  },
+  "intel": {
+    "title": "Data Intelligence",
+    "subtitle": "First-party analytics warehouse — segmentation, forecasting, anomaly detection, and experiment analysis.",
+    "tabs": {
+      "home": "Home",
+      "trends": "Trends",
+      "funnels": "Funnels",
+      "retention": "Retention",
+      "segments": "Segments",
+      "people": "People",
+      "experiments": "Experiments",
+      "alerts": "Alerts",
+      "settings": "Settings"
+    },
+    "home": {
+      "kpiDau": "Daily Active Users",
+      "kpiEvents": "Events ({{days}}d)",
+      "kpiRetention": "Week 1 Retention",
+      "kpiActivation": "Activation Rate",
+      "kpiActivationHint": "Median: {{median}}h to first lesson",
+      "sectionAdoption": "Feature Adoption",
+      "sectionAnomalies": "Active Anomalies",
+      "colRole": "Role",
+      "colSurface": "Surface",
+      "colUsers": "Users",
+      "colSessions": "Sessions",
+      "colEvents": "Events"
+    },
+    "trends": {
+      "title": "Trends Explorer",
+      "subtitle": "Time-series analysis for any metric across any dimension.",
+      "empty": "Select a metric to view trends.",
+      "metricDau": "Daily Active Users",
+      "metricWau": "Weekly Active Users",
+      "metricMau": "Monthly Active Users",
+      "metricEvents": "Event Volume",
+      "metricUsers": "Total Users",
+      "metricSessions": "Sessions",
+      "metricRetention": "Retention Rate",
+      "metricActivation": "Activation Rate",
+      "metricCompletion": "Lesson Completions",
+      "granularityHour": "Hourly",
+      "granularityDay": "Daily",
+      "granularityWeek": "Weekly",
+      "granularityMonth": "Monthly",
+      "current": "Current",
+      "dauTitle": "DAU",
+      "sparklineHint": ""
+    },
+    "funnels": {
+      "title": "Funnel Analysis",
+      "subtitle": "Track user progression through configurable conversion funnels.",
+      "empty": "Define funnel steps to begin analysis.",
+      "stepVisited": "Visited",
+      "stepSignup": "Signed Up",
+      "stepCourse": "Opened Course",
+      "stepLesson": "Started Lesson",
+      "stepComplete": "Completed Lesson",
+      "colStep": "Step",
+      "colUsers": "Users",
+      "colConversion": "Conversion",
+      "colDropoff": "Drop-off"
+    },
+    "retention": {
+      "title": "Cohort Retention",
+      "subtitle": "Weekly cohort retention matrix showing returning users over time.",
+      "empty": "No cohort data available yet.",
+      "colCohort": "Cohort",
+      "colSize": "Size",
+      "colWeek": "Week {{n}}"
+    },
+    "segments": {
+      "title": "Segments",
+      "subtitle": "Create, save, and compare user segments across all metrics.",
+      "empty": "Create your first segment to begin.",
+      "create": "New Segment",
+      "compare": "Compare Segments",
+      "name": "Segment Name",
+      "save": "Save Segment",
+      "delete": "Delete",
+      "filterRole": "Role",
+      "filterDevice": "Device",
+      "filterLocale": "Locale",
+      "filterSurface": "Surface",
+      "opEq": "equals",
+      "opNeq": "not equals",
+      "opIn": "in",
+      "colName": "Name",
+      "colUsers": "Users",
+      "colEngagement": "Engagement",
+      "colRetention": "Retention",
+      "colCreated": "Created"
+    },
+    "people": {
+      "title": "People Explorer",
+      "subtitle": "Per-user behavioral profiles with engagement scoring and churn risk.",
+      "empty": "No user data available.",
+      "colScore": "Engagement",
+      "colLessons": "Lessons",
+      "colStreak": "Best Streak",
+      "colSessions30d": "Sessions (30d)",
+      "colDays30d": "Active Days (30d)",
+      "colChurn": "Churn Risk",
+      "riskHigh": "High",
+      "riskMedium": "Medium",
+      "riskLow": "Low"
+    },
+    "experiments": {
+      "title": "Experiments",
+      "subtitle": "A/B test management with statistical significance analysis.",
+      "empty": "No experiments configured.",
+      "create": "New Experiment",
+      "name": "Experiment Name",
+      "variantA": "Control",
+      "variantB": "Variant",
+      "metric": "Primary Metric",
+      "statusRunning": "Running",
+      "statusConcluded": "Concluded",
+      "statusDraft": "Draft",
+      "significance": "p-value",
+      "confidence": "Confidence",
+      "winner": "Winner"
+    },
+    "alerts": {
+      "title": "Alerts",
+      "subtitle": "Threshold-based monitoring with webhook and email notifications.",
+      "empty": "No alerts configured.",
+      "create": "New Alert",
+      "metric": "Metric",
+      "condition": "Condition",
+      "threshold": "Threshold",
+      "channel": "Channel",
+      "channelWebhook": "Webhook",
+      "channelEmail": "Email",
+      "condAbove": "above",
+      "condBelow": "below",
+      "condChange": "% change",
+      "cooldown": "Cooldown (min)",
+      "statusActive": "Active",
+      "statusPaused": "Paused",
+      "statusTriggered": "Triggered"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Export schedules, data retention, and webhook configuration.",
+      "exports": "Scheduled Exports",
+      "exportCreate": "Schedule Export",
+      "retention": "Data Retention",
+      "webhooks": "Webhooks",
+      "webhookUrl": "Webhook URL",
+      "webhookTest": "Test"
+    },
+    "filters": {
+      "period": "Period",
+      "role": "Role",
+      "surface": "Surface",
+      "device": "Device",
+      "locale": "Locale",
+      "all": "All",
+      "days7": "7 days",
+      "days30": "30 days",
+      "days90": "90 days",
+      "days365": "365 days"
+    },
+    "export": {
+      "csv": "Export CSV",
+      "json": "Export JSON",
+      "comingSoon": "Export coming soon",
+      "downloading": "Downloading…",
+      "note": "Export carries no user_id or anon_id. Sessions are re-keyed per file."
+    },
+    "retry": "Retry",
+    "kpi": {
+      "w1retention": "W1 Retention",
+      "activation": "Activation Rate"
+    },
+    "adoption": {
+      "title": "Feature Adoption",
+      "subtitle": "Which surfaces each role actually reaches.",
+      "current": "Users"
+    },
+    "anomalies": {
+      "title": "Active Anomalies",
+      "subtitle": "Statistical outliers detected in the last scan.",
+      "colMetric": "Metric",
+      "colValue": "Value",
+      "colExpected": "Expected",
+      "colDeviation": "Z-Score",
+      "colStart": "Start"
     }
   },
   "insights": {

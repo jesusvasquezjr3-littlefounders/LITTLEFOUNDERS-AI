@@ -35,6 +35,8 @@
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
 | AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
+| Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
+| Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |
@@ -53,4 +55,5 @@
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |
 | filebase (Depot) | filebase/AGENTS.md |
+| dataintel (Data Intel) | dataintel/AGENTS.md · engine spec: /DATAINTEL.md |
 | pulse (Pulse) | pulse/AGENTS.md · pulse/README.md |

@@ -136,6 +136,15 @@ database/
   scripts/
   seeds/
   types/
+dataintel/
+  src/
+    __tests__/
+    db/
+    lib/
+    middleware/
+    routes/
+    services/
+    workers/
 email-server/
   haraka/
     config/
@@ -702,6 +711,7 @@ frontend/
     lib/
     routes/
       admin/
+        __tests__/
         analytics/
       app/
         family/
@@ -8546,6 +8556,26 @@ create table if not exists generation_heartbeat_snapshots (
 -- 2. RETENTION IS NOW EXECUTABLE, NOT DOCUMENTED. `prune_learning_events()`
 ```
 
+### database/migrations/0026_dataintel_sync.sql
+
+```
+-- 0026_dataintel_sync.sql — dataintel (DuckDB) sync views & cursor state in Vault.
+--
+-- dataintel is a companion analytics service backed by DuckDB that runs offline
+-- analytical queries (cohorts, funnels, ML). It needs an efficient incremental
+-- feed from Vault — a cursor it can resume from plus dimension views that
+-- always serve the current shape of the data.
+--
+-- This migration creates:
+--
+-- 1. dataintel_sync_state       — cursor table (one row per source table).
+-- 2. dataintel_events_sync      — raw event stream ordered by id (sync worker
+--                                 filters `event_id > last_event_id` via
+--                                 PostgREST query params).
+-- 3. dataintel_users_sync       — user dimension (role, locale, XP, streak).
+-- 4. dataintel_lessons_sync     — lesson dimension (title, course, segment count).
+```
+
 ### database/package.json
 
 ```
@@ -8918,6 +8948,680 @@ export type Database = {
         Row: {
           age_tier: string
           course_id: string
+```
+
+### dataintel/AGENTS.md
+
+```
+# AGENTS.md — dataintel (Data Intelligence)
+
+> Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+
+## Mission
+
+Data Intelligence is the platform's first-party analytics warehouse — a
+read-only, service-to-service microservice that powers dashboards,
+segmentation, forecasting, anomaly detection, and experiment analysis.
+It syncs structured data from Vault (Supabase) into a local DuckDB
+analytical database on a configurable interval and serves pre-computed
+query results through a key-gated REST API. Internal service —
+`x-internal-api-key` only, constant-time compared.
+
+## Owns / does not own
+```
+
+### dataintel/README.md
+
+```
+# dataintel (Data Intelligence)
+
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+
+**Mission:** First-party analytics warehouse — a read-only microservice that syncs Vault (Supabase) data into a local DuckDB analytical database and serves pre-computed query results for dashboards, segmentation, forecasting, anomaly detection, and experiment analysis.
+**Port (dev):** 4008 · **Deploy:** Railway · **Access:** internal only (`x-internal-api-key`)
+
+```bash
+npm install
+cp .env.example .env   # fill in INTERNAL_API_KEY, SUPABASE_SERVICE_ROLE_KEY
+npm run dev
+npm test
+```
+
+## Architecture
+```
+
+### dataintel/eslint.config.js
+
+```
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  { ignores: ['dist/'] },
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+);
+```
+
+### dataintel/package.json
+
+```
+{
+  "name": "@littlefounders/dataintel",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint .",
+```
+
+### dataintel/src/__tests__/health.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp, SERVICE } from '../app.js';
+import { getConfig } from '../env.js';
+
+describe('GET /health', () => {
+  it('returns the ok envelope', async () => {
+    const res = await request(createApp()).get('/health');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      data: { service: SERVICE, version: expect.any(String), status: 'ok' },
+      error: null,
+    });
+  });
+
+```
+
+### dataintel/src/app.ts
+
+```
+import crypto from 'crypto';
+import express from 'express';
+import { getConfig } from './env.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
+import { intelRouter } from './routes/queries.js';
+
+export const SERVICE = 'dataintel';
+export const VERSION = '0.1.0';
+
+export function createApp(): express.Express {
+  const config = getConfig();
+  const app = express();
+
+  app.use(express.json({ limit: '256kb' }));
+
+```
+
+### dataintel/src/db/duckdb.ts
+
+```
+import duckdb from 'duckdb';
+import { readFile } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { getConfig } from '../env.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+let db: duckdb.Database | null = null;
+let ready = false;
+
+export function getDb(): duckdb.Database {
+  if (!db) {
+    const config = getConfig();
+    db = new duckdb.Database(config.DUCKDB_PATH);
+```
+
+### dataintel/src/db/queries.ts
+
+```
+export interface QueryResult {
+  sql: string;
+  params: unknown[];
+}
+
+const VALID_IDENTIFIER = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+
+function assertIdentifier(col: string): string {
+  if (!VALID_IDENTIFIER.test(col)) {
+    throw new Error(`Invalid identifier: ${col}`);
+  }
+  return col;
+}
+
+export function buildWhere(filters: Record<string, unknown>): QueryResult {
+```
+
+### dataintel/src/db/schema.sql
+
+```
+CREATE TABLE IF NOT EXISTS fact_events (
+  event_id BIGINT PRIMARY KEY,
+  user_id UUID,
+  anon_id UUID,
+  session_id UUID,
+  lesson_id UUID,
+  segment_id VARCHAR,
+  event_type VARCHAR NOT NULL,
+  role VARCHAR,
+  route_class VARCHAR,
+  device VARCHAR,
+  locale VARCHAR,
+  referrer_class VARCHAR,
+  ordinal INTEGER,
+  value DOUBLE,
+```
+
+### dataintel/src/db/sync.ts
+
+```
+import { query, execute, exec, isReady } from './duckdb.js';
+import { getConfig } from '../env.js';
+
+type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions';
+
+interface SyncState {
+  table_name: string;
+  last_event_id: number;
+  last_synced_at: string;
+  rows_synced: number;
+  last_error: string | null;
+}
+
+// ── Sync state management ──
+
+```
+
+### dataintel/src/env.ts
+
+```
+import { z } from 'zod';
+
+const Env = z.object({
+  PORT: z.coerce.number().int().positive().default(4008),
+
+  INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
+
+  SUPABASE_URL: z.url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
+
+  REDIS_URL: z.string().url().default('redis://localhost:6379'),
+
+  DUCKDB_PATH: z.string().min(1).default('./duckdb/dataintel.db'),
+
+  SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(300_000),
+```
+
+### dataintel/src/index.ts
+
+```
+import { createApp, SERVICE } from './app.js';
+import { getConfig } from './env.js';
+import { cacheClient } from './middleware/cache.js';
+import { rateLimitClient } from './middleware/rateLimit.js';
+import { initDb, closeDb } from './db/duckdb.js';
+import { startSyncWorker, stopSyncWorker } from './workers/sync.js';
+
+const config = getConfig();
+
+const server = createApp().listen(config.PORT, () => {
+  console.log(`[${SERVICE}] listening on :${config.PORT}`);
+});
+
+// Connect Redis clients in background — non-blocking, listener opens first.
+Promise.all([
+```
+
+### dataintel/src/lib/http.ts
+
+```
+import type { Response } from 'express';
+
+export function fail(res: Response, status: number, code: string, message: string): Response {
+  return res.status(status).json({ data: null, error: { code, message } });
+}
+
+export function ok<T>(res: Response, data: T, status = 200): Response {
+  return res.status(status).json({ data, error: null });
+}
+```
+
+### dataintel/src/middleware/cache.ts
+
+```
+import { createClient } from 'redis';
+import { getConfig } from '../env.js';
+import type { Request, Response, NextFunction } from 'express';
+
+export const isTestOrDev = process.env.NODE_ENV !== 'production';
+
+export const cacheClient = createClient({
+  url: getConfig().REDIS_URL,
+});
+
+if (!isTestOrDev) {
+  cacheClient.on('error', (err) => console.error('[dataintel] Cache Client Error', err));
+}
+
+const DEFAULT_TTL = 300;
+```
+
+### dataintel/src/middleware/rateLimit.ts
+
+```
+import rateLimit, { MemoryStore } from 'express-rate-limit';
+import RedisStore from 'rate-limit-redis';
+import { createClient } from 'redis';
+import { getConfig } from '../env.js';
+import { isTestOrDev } from './cache.js';
+
+export const rateLimitClient = createClient({
+  url: getConfig().REDIS_URL,
+});
+
+if (!isTestOrDev) {
+  rateLimitClient.on('error', (err) => console.error('[dataintel] RateLimit Client Error', err));
+}
+
+const getStore = () => {
+```
+
+### dataintel/src/routes/queries.ts
+
+```
+import { z } from 'zod';
+import { Router } from 'express';
+import { ok, fail } from '../lib/http.js';
+import * as metrics from '../services/metrics.js';
+import * as funnels from '../services/funnel.js';
+import * as retention from '../services/retention.js';
+import * as segments from '../services/segments.js';
+import * as exports_ from '../services/exports.js';
+import * as anomalies from '../services/anomalies.js';
+import * as churn from '../services/churn.js';
+import * as forecasting from '../services/forecasting.js';
+import * as paths from '../services/paths.js';
+import * as experiments from '../services/experiments.js';
+import * as alerts from '../services/alerts.js';
+import * as lessons from '../services/lessons.js';
+```
+
+### dataintel/src/services/alerts.ts
+
+```
+import { query, execute } from '../db/duckdb.js';
+import crypto from 'crypto';
+
+export interface Alert {
+  id: string;
+  name: string;
+  metric: string;
+  condition: 'above' | 'below' | 'change_pct';
+  threshold: number;
+  channel: 'webhook' | 'email';
+  cooldownMinutes: number;
+  status: 'active' | 'paused';
+  lastTriggeredAt?: string;
+  createdAt: string;
+}
+```
+
+### dataintel/src/services/anomalies.ts
+
+```
+import { query, execute } from '../db/duckdb.js';
+import { anomalyQuery } from '../db/queries.js';
+
+export interface Anomaly {
+  metric: string;
+  date: string;
+  value: number;
+  expected: number;
+  zScore: number;
+  direction: 'up' | 'down';
+  severity: 'low' | 'medium' | 'high';
+  resolved: boolean;
+}
+
+function severityFromZScore(z: number): 'low' | 'medium' | 'high' {
+```
+
+### dataintel/src/services/churn.ts
+
+```
+import { query } from '../db/duckdb.js';
+import { churnRiskQuery, churnFactorsQuery } from '../db/queries.js';
+
+export interface ChurnRiskEntry {
+  user_id: string;
+  active_days_7d: number;
+  active_days_14d: number;
+  days_since_active: number;
+  risk_level: 'high' | 'medium' | 'at_risk' | 'active';
+  risk_score: number;
+  lessons_completed: number;
+  last_event_at: string;
+}
+
+export interface ChurnFactor {
+```
+
+### dataintel/src/services/experiments.ts
+
+```
+import { query, execute } from '../db/duckdb.js';
+import crypto from 'crypto';
+
+export interface Experiment {
+  id: string;
+  name: string;
+  status: 'draft' | 'running' | 'concluded';
+  metric: string;
+  variantA: string;
+  variantB: string;
+  segmentFilter?: Record<string, unknown>;
+  createdAt: string;
+  startedAt?: string;
+  concludedAt?: string;
+}
+```
+
+### dataintel/src/services/exports.ts
+
+```
+import { query, execute } from '../db/duckdb.js';
+import { exportQuery } from '../db/queries.js';
+
+export interface ExportJob {
+  jobId: string;
+  status: 'pending' | 'running' | 'complete' | 'failed';
+  filters: Record<string, unknown>;
+  format: 'csv' | 'json' | 'parquet';
+  createdAt: string;
+  completedAt?: string;
+  downloadUrl?: string;
+  rows?: number;
+  error?: string;
+}
+
+```
+
+### dataintel/src/services/forecasting.ts
+
+```
+import { query } from '../db/duckdb.js';
+import { forecastQuery } from '../db/queries.js';
+
+export interface ForecastPoint {
+  date: string;
+  value: number | null;
+  isForecast: boolean;
+  confidenceLower?: number;
+  confidenceUpper?: number;
+}
+
+type ForecastRow = {
+  day: string;
+  forecast_value: number;
+  slope: number;
+```
+
+### dataintel/src/services/funnel.ts
+
+```
+import { query } from '../db/duckdb.js';
+import {
+  activationFunnelQuery,
+  customFunnelQuery,
+} from '../db/queries.js';
+
+export interface FunnelStep {
+  step: string;
+  stepOrder: number;
+  users: number;
+  conversionFromPrevious: number | null;
+  dropoffFromPrevious: number | null;
+}
+
+interface ActivationFunnelRow {
+```
+
+### dataintel/src/services/lessons.ts
+
+```
+import { query } from '../db/duckdb.js';
+import {
+  lessonDropoffQuery,
+  segmentCalibrationQuery,
+} from '../db/queries.js';
+
+export interface DropoffEntry {
+  lesson_id: string;
+  lesson_slug: string;
+  title_en: string;
+  starts: number;
+  completions: number;
+  abandon_rate: number;
+  avg_seconds_before_abandon: number;
+}
+```
+
+### dataintel/src/services/metrics.ts
+
+```
+import { query } from '../db/duckdb.js';
+import {
+  dailyUsersQuery,
+  engagementQuery,
+  trendQuery,
+  compareQuery,
+  timeToValueQuery,
+  featureAdoptionQuery,
+  anomalyQuery,
+  cohortRetentionQuery,
+  activationFunnelQuery,
+} from '../db/queries.js';
+
+export interface MetricsSummary {
+  dau: number;
+```
+
+### dataintel/src/services/paths.ts
+
+```
+import { query } from '../db/duckdb.js';
+import { pathQuery, sankeyQuery } from '../db/queries.js';
+
+export interface PathTransition {
+  fromEvent: string;
+  toEvent: string;
+  count: number;
+  pct: number;
+}
+
+export interface SankeyNode {
+  name: string;
+  step: number;
+}
+
+```
+
+### dataintel/src/services/retention.ts
+
+```
+import { query } from '../db/duckdb.js';
+import { cohortRetentionQuery } from '../db/queries.js';
+
+export interface CohortEntry {
+  cohortWeek: string;
+  weekOffset: number;
+  users: number;
+  cohortSize: number;
+  retentionPct: number;
+}
+
+export interface RetentionCurve {
+  cohortLabel: string;
+  points: { week: number; retention: number }[];
+}
+```
+
+### dataintel/src/services/segments.ts
+
+```
+import { query, execute } from '../db/duckdb.js';
+
+export interface SegmentDefinition {
+  id?: string;
+  name: string;
+  filters: SegmentFilter[];
+}
+
+export interface SegmentFilter {
+  field: string;
+  op: 'eq' | 'neq' | 'in';
+  value: string | string[];
+}
+
+export interface SegmentMetrics {
+```
+
+### dataintel/src/services/sessions.ts
+
+```
+import { query } from '../db/duckdb.js';
+import { sessionDepthQuery } from '../db/queries.js';
+
+export interface DepthEntry {
+  session_id: string;
+  started_at: string;
+  role: string;
+  device: string;
+  events: number;
+  surfaces: number;
+  lessons_started: number;
+  visible_seconds: number;
+}
+
+interface SessionDepthRow {
+```
+
+### dataintel/src/test-setup.ts
+
+```
+process.env.INTERNAL_API_KEY ??= 'test-internal-key-0123456789';
+process.env.SUPABASE_URL ??= 'http://localhost:54321';
+process.env.SUPABASE_SERVICE_ROLE_KEY ??= 'test-service-role-key-01234';
+process.env.DUCKDB_PATH ??= ':memory:';
+process.env.REDIS_URL ??= 'redis://localhost:6379';
+process.env.SYNC_INTERVAL_MS ??= '60000';
+```
+
+### dataintel/src/workers/alerts.ts
+
+```
+import { evaluateAlerts } from '../services/alerts.js';
+
+let timer: ReturnType<typeof setInterval> | null = null;
+
+export function startAlertWorker(): void {
+  void evaluateAlerts();
+  timer = setInterval(() => void evaluateAlerts(), 5 * 60 * 1000);
+}
+
+export function stopAlertWorker(): void {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+```
+
+### dataintel/src/workers/churn.ts
+
+```
+let timer: ReturnType<typeof setInterval> | null = null;
+
+export function startChurnWorker(): void {
+  timer = setInterval(() => {
+    // Refresh churn scores (the churn query is live, but we could cache results)
+  }, 24 * 60 * 60 * 1000);
+}
+
+export function stopChurnWorker(): void {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+}
+```
+
+### dataintel/src/workers/sync.ts
+
+```
+import { syncAll, refreshAggregates } from '../db/sync.js';
+import { getConfig } from '../env.js';
+import { isReady } from '../db/duckdb.js';
+
+let timer: ReturnType<typeof setInterval> | null = null;
+
+export function startSyncWorker(): void {
+  const config = getConfig();
+
+  void runSync();
+
+  timer = setInterval(() => void runSync(), config.SYNC_INTERVAL_MS);
+}
+
+export function stopSyncWorker(): void {
+```
+
+### dataintel/tsconfig.json
+
+```
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"]
+  },
+  "include": ["src"],
+  "exclude": ["src/__tests__"]
+```
+
+### dataintel/vitest.config.ts
+
+```
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  test: {
+    environment: 'node',
+    include: ['src/**/*.test.ts'],
+    setupFiles: ['src/test-setup.ts'],
+  },
+});
 ```
 
 ### doc_map.md
@@ -140383,6 +141087,26 @@ import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
  *   Acquisition — where do people come from and where do they fall off
  *   Learning    — are they actually learning, and which content is mistuned
  *   Sessions    — how substantial is a visit, by role and device
+```
+
+### frontend/src/routes/admin/AdminIntelPage.tsx
+
+```
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
+import type { DropdownOption, TableColumn } from '@/components/ui';
+import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import {
+  ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ComposedChart,
+} from 'recharts';
+import type { TooltipProps } from 'recharts';
+
+/*
+ * /admin/intel — full analytics dashboard powered by the dataintel service.
 ```
 
 ### frontend/src/routes/admin/AdminOverviewPage.tsx

@@ -30,7 +30,7 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 `src/routes/` (pages + Layout) · `src/components/` (shared; characters live here) · `src/lesson-engine/` (core/ · families/ · player/ · lab/ · registry/schema — see /LESSON_ENGINE.md) · `src/i18n/` (3 locale dirs of fragment JSONs + init) · `src/theme/` (dark-mode hook) · `src/lib/` (utils).
 
-**Admin sections** live in `src/routes/admin/`: 8 pages gated behind `admin`/`superadmin` via `<RequireRole role={STAFF}>`. The admin nav registry is `adminNav.ts` (rendered as a "Staff" group in the app sidebar). Key pages: Overview, Content (merged courses + moderation), Users (stats bar + signup timeline), Emails (Resend-style dashboard), Analytics & Health, Generation, Audit, Roles (superadmin-only). Shared building blocks in `adminShared.tsx`. The Staff group is HIDDEN for non-staff (never shown as a locked section).
+**Admin sections** live in `src/routes/admin/`: 9 pages gated behind `admin`/`superadmin` via `<RequireRole role={STAFF}>`. The admin nav registry is `adminNav.ts` (rendered as a "Staff" group in the app sidebar). Key pages: Overview, Content (merged courses + moderation), Users (stats bar + signup timeline), Emails (Resend-style dashboard), Analytics & Health, Generation, Intel (Data Intelligence — 9-tab console, `/DATAINTEL.md` §7), Audit, Roles (superadmin-only). Shared building blocks in `adminShared.tsx`. The Staff group is HIDDEN for non-staff (never shown as a locked section).
 
 ## Read before touching
 

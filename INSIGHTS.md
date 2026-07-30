@@ -311,7 +311,7 @@ Four tabs over six SQL views, all aggregated in Postgres:
 
 `learning_events` now carries `session_id`, `ordinal`, `device`, `locale` and
 `referrer_class`, which is what makes any of those segmentable. The event
-vocabulary is ~35 entries covering marketing → signup → activation →
+vocabulary is 32 entries covering marketing → signup → activation →
 engagement → retention — still a CLOSED enum, still no free-text column.
 
 **Export** (`GET /api/v1/admin/insights/export`): CSV or JSON, filtered by

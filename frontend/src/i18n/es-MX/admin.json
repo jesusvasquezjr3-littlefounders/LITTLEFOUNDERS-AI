@@ -21,7 +21,8 @@
     "generation": "Generación",
     "audit": "Auditoría",
     "roles": "Roles y acceso",
-    "insights": "Insights"
+    "insights": "Insights",
+    "intel": "Intel Datos"
   },
   "overview": {
     "title": "Panel de administración",
@@ -453,6 +454,197 @@
         "title": "Costo por lección se disparó 2× sobre la línea base",
         "detail": "Último: {{latest}} vs promedio: {{avg}}. La generación de imágenes o el uso de tokens puede haber aumentado."
       }
+    }
+  },
+  "intel": {
+    "title": "Inteligencia de Datos",
+    "subtitle": "Almacén de analíticas propias — segmentación, predicción, detección de anomalías y análisis de experimentos.",
+    "tabs": {
+      "home": "Inicio",
+      "trends": "Tendencias",
+      "funnels": "Embudos",
+      "retention": "Retención",
+      "segments": "Segmentos",
+      "people": "Personas",
+      "experiments": "Experimentos",
+      "alerts": "Alertas",
+      "settings": "Configuración"
+    },
+    "home": {
+      "kpiDau": "Usuarios Activos Diarios",
+      "kpiEvents": "Eventos ({{days}}d)",
+      "kpiRetention": "Retención Semana 1",
+      "kpiActivation": "Tasa de Activación",
+      "kpiActivationHint": "Mediana: {{median}}h hasta primera lección",
+      "sectionAdoption": "Adopción de Funciones",
+      "sectionAnomalies": "Anomalías Activas",
+      "colRole": "Rol",
+      "colSurface": "Superficie",
+      "colUsers": "Usuarios",
+      "colSessions": "Sesiones",
+      "colEvents": "Eventos"
+    },
+    "trends": {
+      "title": "Explorador de Tendencias",
+      "subtitle": "Análisis de series temporales para cualquier métrica en cualquier dimensión.",
+      "empty": "Selecciona una métrica para ver tendencias.",
+      "metricDau": "Usuarios Activos Diarios",
+      "metricWau": "Usuarios Activos Semanales",
+      "metricMau": "Usuarios Activos Mensuales",
+      "metricEvents": "Volumen de Eventos",
+      "metricUsers": "Usuarios Totales",
+      "metricSessions": "Sesiones",
+      "metricRetention": "Tasa de Retención",
+      "metricActivation": "Tasa de Activación",
+      "metricCompletion": "Lecciones Completadas",
+      "granularityHour": "Por Hora",
+      "granularityDay": "Diario",
+      "granularityWeek": "Semanal",
+      "granularityMonth": "Mensual",
+      "current": "Actual",
+      "dauTitle": "DAU",
+      "sparklineHint": ""
+    },
+    "funnels": {
+      "title": "Análisis de Embudos",
+      "subtitle": "Sigue la progresión de usuarios a través de embudos de conversión configurables.",
+      "empty": "Define los pasos del embudo para comenzar el análisis.",
+      "stepVisited": "Visitó",
+      "stepSignup": "Se Registró",
+      "stepCourse": "Abrió Curso",
+      "stepLesson": "Comenzó Lección",
+      "stepComplete": "Completó Lección",
+      "colStep": "Paso",
+      "colUsers": "Usuarios",
+      "colConversion": "Conversión",
+      "colDropoff": "Abandono"
+    },
+    "retention": {
+      "title": "Retención por Cohortes",
+      "subtitle": "Matriz de retención semanal por cohorte mostrando usuarios que regresan en el tiempo.",
+      "empty": "Aún no hay datos de cohortes.",
+      "colCohort": "Cohorte",
+      "colSize": "Tamaño",
+      "colWeek": "Semana {{n}}"
+    },
+    "segments": {
+      "title": "Segmentos",
+      "subtitle": "Crea, guarda y compara segmentos de usuarios en todas las métricas.",
+      "empty": "Crea tu primer segmento para comenzar.",
+      "create": "Nuevo Segmento",
+      "compare": "Comparar Segmentos",
+      "name": "Nombre del Segmento",
+      "save": "Guardar Segmento",
+      "delete": "Eliminar",
+      "filterRole": "Rol",
+      "filterDevice": "Dispositivo",
+      "filterLocale": "Idioma",
+      "filterSurface": "Superficie",
+      "opEq": "igual a",
+      "opNeq": "no igual a",
+      "opIn": "en",
+      "colName": "Nombre",
+      "colUsers": "Usuarios",
+      "colEngagement": "Engagement",
+      "colRetention": "Retención",
+      "colCreated": "Creado"
+    },
+    "people": {
+      "title": "Explorador de Personas",
+      "subtitle": "Perfiles de comportamiento por usuario con puntuación de engagement y riesgo de abandono.",
+      "empty": "No hay datos de usuarios disponibles.",
+      "colScore": "Engagement",
+      "colLessons": "Lecciones",
+      "colStreak": "Mejor Racha",
+      "colSessions30d": "Sesiones (30d)",
+      "colDays30d": "Días Activos (30d)",
+      "colChurn": "Riesgo de Abandono",
+      "riskHigh": "Alto",
+      "riskMedium": "Medio",
+      "riskLow": "Bajo"
+    },
+    "experiments": {
+      "title": "Experimentos",
+      "subtitle": "Gestión de pruebas A/B con análisis de significancia estadística.",
+      "empty": "No hay experimentos configurados.",
+      "create": "Nuevo Experimento",
+      "name": "Nombre del Experimento",
+      "variantA": "Control",
+      "variantB": "Variante",
+      "metric": "Métrica Principal",
+      "statusRunning": "En Curso",
+      "statusConcluded": "Concluido",
+      "statusDraft": "Borrador",
+      "significance": "valor-p",
+      "confidence": "Confianza",
+      "winner": "Ganador"
+    },
+    "alerts": {
+      "title": "Alertas",
+      "subtitle": "Monitoreo basado en umbrales con notificaciones por webhook y correo electrónico.",
+      "empty": "No hay alertas configuradas.",
+      "create": "Nueva Alerta",
+      "metric": "Métrica",
+      "condition": "Condición",
+      "threshold": "Umbral",
+      "channel": "Canal",
+      "channelWebhook": "Webhook",
+      "channelEmail": "Correo Electrónico",
+      "condAbove": "por encima de",
+      "condBelow": "por debajo de",
+      "condChange": "% de cambio",
+      "cooldown": "Enfriamiento (min)",
+      "statusActive": "Activa",
+      "statusPaused": "Pausada",
+      "statusTriggered": "Disparada"
+    },
+    "settings": {
+      "title": "Configuración",
+      "subtitle": "Programación de exportaciones, retención de datos y configuración de webhooks.",
+      "exports": "Exportaciones Programadas",
+      "exportCreate": "Programar Exportación",
+      "retention": "Retención de Datos",
+      "webhooks": "Webhooks",
+      "webhookUrl": "URL del Webhook",
+      "webhookTest": "Probar"
+    },
+    "filters": {
+      "period": "Periodo",
+      "role": "Rol",
+      "surface": "Superficie",
+      "device": "Dispositivo",
+      "locale": "Idioma",
+      "all": "Todos",
+      "days7": "7 días",
+      "days30": "30 días",
+      "days90": "90 días",
+      "days365": "365 días"
+    },
+    "export": {
+      "csv": "Exportar CSV",
+      "json": "Exportar JSON",
+      "comingSoon": "Exportación próximamente",
+      "downloading": "Descargando…",
+      "note": "La exportación no incluye user_id ni anon_id. Las sesiones se reasignan por archivo."
+    },
+    "retry": "Reintentar",
+    "kpi": {
+      "w1retention": "Retención W1",
+      "activation": "Tasa de Activación"
+    },
+    "adoption": {
+      "title": "Adopción de Funciones",
+      "subtitle": "Qué superficies alcanza cada rol.",
+      "current": "Usuarios"
+    },
+    "anomalies": {
+      "title": "Anomalías Activas",
+      "subtitle": "Valores atípicos estadísticos detectados en el último escaneo.",
+      "colMetric": "Métrica",
+      "colValue": "Valor",
+      "colExpected": "Esperado",
+      "colDeviation": "Z-Score",
+      "colStart": "Inicio"
     }
   },
   "insights": {
