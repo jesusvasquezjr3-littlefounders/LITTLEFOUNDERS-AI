@@ -87,7 +87,7 @@ function computeRiskScore(
     score += 10;
   }
 
-  return Math.min(score, 100);
+  return Math.max(0, Math.min(score, 100));
 }
 
 function factorImpact(difference: number): 'high' | 'medium' | 'low' {
@@ -101,7 +101,7 @@ export async function getChurnRisk(
   limit: number,
 ): Promise<ChurnRiskEntry[] | null> {
   try {
-    const q = churnRiskQuery(limit);
+    const q = churnRiskQuery();
     const rows = await query<ChurnRiskRow>(q.sql, ...q.params);
 
     const entries: ChurnRiskEntry[] = rows.map((r) => ({
@@ -119,9 +119,13 @@ export async function getChurnRisk(
       last_event_at: r.last_active,
     }));
 
+    // Sort by the JS-computed risk_score BEFORE truncating — the SQL layer
+    // deliberately does not LIMIT (see churnRiskQuery's comment): risk_score
+    // isn't a SQL column, so truncating by any other order first can drop
+    // the users who are actually highest-risk by this formula.
     entries.sort((a, b) => b.risk_score - a.risk_score);
 
-    return entries;
+    return entries.slice(0, limit);
   } catch (err) {
     console.error('[dataintel][churn] getChurnRisk failed:', err);
     return null;

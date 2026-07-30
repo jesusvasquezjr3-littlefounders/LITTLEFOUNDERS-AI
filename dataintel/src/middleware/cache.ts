@@ -1,5 +1,6 @@
 import { createClient } from 'redis';
 import { getConfig } from '../env.js';
+import { withTimeout } from '../lib/timeout.js';
 import type { Request, Response, NextFunction } from 'express';
 
 export const isTestOrDev = process.env.NODE_ENV !== 'production';
@@ -13,6 +14,11 @@ if (!isTestOrDev) {
 }
 
 const DEFAULT_TTL = 300;
+// `cacheClient.isOpen` only reflects "never connected yet" / "permanently
+// abandoned" — during a live outage it stays true through the reconnect
+// loop, so a hung .get()/.setEx() would otherwise block the request instead
+// of falling through to the existing best-effort catch below.
+const COMMAND_TIMEOUT_MS = 250;
 
 export function cacheMiddleware(req: Request, res: Response, next: NextFunction): void {
   if (req.method !== 'GET') {
@@ -25,7 +31,7 @@ export function cacheMiddleware(req: Request, res: Response, next: NextFunction)
     return next();
   }
 
-  cacheClient.get(key).then((etag) => {
+  withTimeout(cacheClient.get(key), COMMAND_TIMEOUT_MS).then((etag) => {
     if (etag) {
       res.setHeader('ETag', etag);
       res.setHeader('Cache-Control', `private, max-age=${DEFAULT_TTL}`);
@@ -46,8 +52,8 @@ export async function cacheResult(key: string, data: unknown): Promise<void> {
     const body = JSON.stringify(data);
     const hash = simpleHash(body);
     const etag = `"${hash}"`;
-    await cacheClient.setEx(`dataintel:etag:${key}`, DEFAULT_TTL, etag);
-    await cacheClient.setEx(`dataintel:data:${key}`, DEFAULT_TTL, body);
+    await withTimeout(cacheClient.setEx(`dataintel:etag:${key}`, DEFAULT_TTL, etag), COMMAND_TIMEOUT_MS);
+    await withTimeout(cacheClient.setEx(`dataintel:data:${key}`, DEFAULT_TTL, body), COMMAND_TIMEOUT_MS);
   } catch {
     // cache is best-effort
   }

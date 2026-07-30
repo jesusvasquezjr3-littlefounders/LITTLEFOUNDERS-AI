@@ -378,3 +378,47 @@ describe('GET /api/v1/admin/learning/retention', () => {
     expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 });
+
+describe('GET /api/v1/admin/intel/* (dataintel proxy)', () => {
+  it('forwards to the mount-relative dataintel path, not the doubled /api/v1/intel/api/v1/admin/intel/... path', async () => {
+    const intelCalls: { url: string; method: string }[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        intelCalls.push({ url, method: (init?.method ?? 'GET').toUpperCase() });
+        return Promise.resolve(jsonResponse(200, { data: { segments: [] }, error: null }));
+      }),
+    );
+
+    const res = await request(createApp())
+      .get('/api/v1/admin/intel/segments?limit=5')
+      .set('Authorization', authed());
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ data: { segments: [] }, error: null });
+    expect(intelCalls).toHaveLength(1);
+    // Regression guard: a req.originalUrl-based path build re-prepends the
+    // full /api/v1/admin/intel prefix onto itself instead of stripping it.
+    expect(intelCalls[0].url).toBe('http://localhost:4008/api/v1/intel/segments?limit=5');
+  });
+
+  it('403s for a non-staff role without ever reaching dataintel', async () => {
+    const intelCalls: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'universal' }]));
+        intelCalls.push(url);
+        return Promise.resolve(jsonResponse(200, { data: null, error: null }));
+      }),
+    );
+
+    const res = await request(createApp()).get('/api/v1/admin/intel/segments').set('Authorization', authed());
+
+    expect(res.status).toBe(403);
+    expect(intelCalls).toHaveLength(0);
+  });
+});

@@ -1,4 +1,5 @@
 import duckdb from 'duckdb';
+import { mkdirSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,13 @@ let ready = false;
 export function getDb(): duckdb.Database {
   if (!db) {
     const config = getConfig();
+    // The native driver does not create its parent directory and fails with
+    // an opaque internal assertion ("dereference unique_ptr that is NULL")
+    // rather than a clear ENOENT — hits every fresh checkout/environment
+    // that hasn't manually created this folder yet, :memory: excepted.
+    if (config.DUCKDB_PATH !== ':memory:') {
+      mkdirSync(dirname(config.DUCKDB_PATH), { recursive: true });
+    }
     db = new duckdb.Database(config.DUCKDB_PATH);
   }
   return db;

@@ -5,7 +5,6 @@ import { rateLimitClient } from './middleware/rateLimit.js';
 import { initDb, closeDb } from './db/duckdb.js';
 import { startSyncWorker, stopSyncWorker } from './workers/sync.js';
 import { startAlertWorker, stopAlertWorker } from './workers/alerts.js';
-import { startChurnWorker, stopChurnWorker } from './workers/churn.js';
 
 const config = getConfig();
 
@@ -31,7 +30,6 @@ initDb()
     console.log(`[${SERVICE}] duckdb initialised`);
     startSyncWorker();
     startAlertWorker();
-    startChurnWorker();
   })
   .catch((err: unknown) => {
     console.warn(`[${SERVICE}] duckdb init failed (non-fatal):`, err);
@@ -42,7 +40,6 @@ function shutdown(): void {
   console.log(`[${SERVICE}] shutting down...`);
   stopSyncWorker();
   stopAlertWorker();
-  stopChurnWorker();
   server.close();
   cacheClient.disconnect().catch(() => {});
   rateLimitClient.disconnect().catch(() => {});

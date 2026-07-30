@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { flushInsights, trackInsight } from '@/lib/insights';
+import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
@@ -19,7 +19,7 @@ import { SocialAuth } from './SocialAuth';
  */
 export function SignupPage() {
   const { t, i18n } = useTranslation();
-  const { signup } = useAuth();
+  const { signup, getToken } = useAuth();
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState('');
@@ -50,7 +50,7 @@ export function SignupPage() {
     trackInsight('signup_submit', { routeClass: 'marketing' });
     setSubmitting(true);
     setErrorCode(null);
-    const { error, confirmationRequired } = await signup({
+    const { error, confirmationRequired, analyticsEnabled } = await signup({
       email,
       password,
       displayName,
@@ -62,6 +62,12 @@ export function SignupPage() {
       setErrorCode(error.code);
       return;
     }
+    // configureInsights() is called explicitly with the FRESH value signup()
+    // just resolved, rather than waiting for the next render's
+    // useInsightsBeacon effect to pick it up from context — otherwise this
+    // event sits in insights.ts's pre-consent buffer, where a later
+    // configureInsights() call can legitimately (and silently) discard it.
+    configureInsights({ enabled: analyticsEnabled, getToken });
     // Funnel step 3 — the account exists (whether or not email confirmation
     // is still pending; that is a separate, later gate).
     trackInsight('signup_complete', { routeClass: 'marketing' });

@@ -760,6 +760,16 @@ export function adminRouter(): Router {
         exportToken: out.token,
       });
     }
+    /*
+     * Deliberate §1.6 envelope exception, not an oversight: this is a file
+     * download, and the frontend's export reader (AdminInsightsPage.tsx)
+     * calls res.text() on this exact path and pastes the response straight
+     * into the downloaded .csv Blob. Wrapping it as {data,error} would put
+     * JSON syntax inside every exported spreadsheet. Truncation/paging
+     * metadata already travels via the X-LF-Export-* headers above for
+     * exactly this reason — a CSV body cannot carry it without breaking the
+     * grid. Same posture as the JSON branch's Content-Disposition above.
+     */
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="lf-insights-${stamp}${page}.csv"`);
     return res.status(200).send(toCsv(out.rows));
@@ -795,11 +805,13 @@ export function adminRouter(): Router {
   // internal API key. dataintel responses are passed through unmodified
   // — they already carry the standard { data, error } envelope.
 
-  const { DATAINTEL_URL, DATAINTEL_INTERNAL_KEY } = getConfig();
+  const { DATAINTEL_URL, DATAINTEL_INTERNAL_KEY, DATAINTEL_TIMEOUT_MS } = getConfig();
 
   router.use('/intel', async (req, res) => {
-    const intelPath = req.originalUrl.replace(/^\/intel/, '');
-    const url = `${DATAINTEL_URL}/api/v1/intel${intelPath}`;
+    // req.url is already relative to this '/intel' mount point (Express
+    // strips matched prefixes progressively); req.originalUrl would still
+    // carry the full /api/v1/admin/intel/... path and double it up.
+    const url = `${DATAINTEL_URL}/api/v1/intel${req.url}`;
     try {
       const proxyRes = await fetch(url, {
         method: req.method,
@@ -808,7 +820,7 @@ export function adminRouter(): Router {
           'x-internal-api-key': DATAINTEL_INTERNAL_KEY,
         },
         body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
-        signal: AbortSignal.timeout(30_000),
+        signal: AbortSignal.timeout(DATAINTEL_TIMEOUT_MS),
       });
       const contentLength = proxyRes.headers.get('content-length');
       const maxSize = 50 * 1024 * 1024;

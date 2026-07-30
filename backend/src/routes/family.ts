@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
@@ -75,8 +76,10 @@ export function familyRouter(): Router {
    * revocation keeps the row (audit) while stopping collection immediately.
    */
   router.post('/kids/:kidId/analytics-consent', async (req, res) => {
+    const parsedKidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!parsedKidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const kidId = parsedKidId.data;
     const user = authedUser(res);
-    const kidId = req.params.kidId as string;
     const links = await getVerifiedKidLinks(user.id);
     if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     if (!links.some((l) => l.kid_user_id === kidId)) {
@@ -94,8 +97,10 @@ export function familyRouter(): Router {
   });
 
   router.delete('/kids/:kidId/analytics-consent', async (req, res) => {
+    const parsedKidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!parsedKidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const kidId = parsedKidId.data;
     const user = authedUser(res);
-    const kidId = req.params.kidId as string;
     const links = await getVerifiedKidLinks(user.id);
     if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
     if (!links.some((l) => l.kid_user_id === kidId)) {

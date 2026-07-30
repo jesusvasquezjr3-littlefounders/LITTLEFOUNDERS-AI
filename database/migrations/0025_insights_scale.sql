@@ -58,7 +58,7 @@ alter table public.learning_events add constraint learning_events_event_check ch
 -- cast is computed once per refresh instead of once per row per query.
 
 /*
- * insights_daily_activity has now been three shapes: a plain VIEW (0024), a
+ * insights_daily_activity has now been three shapes: a plain VIEW (0023), a
  * MATERIALIZED view (this migration's first draft), and — below — a real
  * TABLE. Every DROP form raises rather than no-ops when the object is one of
  * the other kinds, so no fixed order is safe. Decide from the catalog.

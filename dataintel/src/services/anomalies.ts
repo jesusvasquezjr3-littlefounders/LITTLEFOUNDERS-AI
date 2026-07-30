@@ -21,11 +21,8 @@ function severityFromZScore(z: number): 'low' | 'medium' | 'high' {
 
 type AnomalyRow = {
   hour_bucket: string;
-  event_count: number;
-  users: number;
-  avg_value: number;
-  total_value: number;
-  mean_val: number;
+  metric_value: number;
+  expected_value: number;
   std_val: number;
   z_score: number;
   classification: string;
@@ -70,8 +67,8 @@ export async function detectAnomalies(
 
     for (const row of rows) {
       const zScore = Number(row.z_score);
-      const value = Number(row.event_count);
-      const expected = Number(row.mean_val);
+      const value = Number(row.metric_value);
+      const expected = Number(row.expected_value);
       const direction: 'up' | 'down' = value > expected ? 'up' : 'down';
       const severity = severityFromZScore(zScore);
 

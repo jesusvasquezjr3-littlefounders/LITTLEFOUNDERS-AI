@@ -12,6 +12,45 @@ function assertIdentifier(col: string): string {
   return col;
 }
 
+/**
+ * Thrown when a caller-supplied `metric` has no corresponding column in the
+ * per-bucket rollup these queries compute from (see resolveBucketMetricColumn).
+ */
+export class UnsupportedMetricError extends Error {
+  constructor(metric: string) {
+    super(
+      `Metric '${metric}' is not supported by this per-bucket query — only events, dau, users, sessions are (wau/mau/retention/activation/completions need a dedicated cohort/window query, not a flat bucket rollup).`,
+    );
+    this.name = 'UnsupportedMetricError';
+  }
+}
+
+/**
+ * Maps the public metric name to the actual rollup column name computed by
+ * anomalyQuery/forecastQuery/compareQuery's inner subqueries. Previously
+ * these functions ran `assertIdentifier(metric)` (a syntax-only check) and
+ * interpolated the raw metric string as a column name directly — 'events'
+ * doesn't match the rollup's `event_count` column and 'sessions'/'dau'/'wau'/
+ * 'mau'/etc. weren't computed by the subquery at all, so every metric except
+ * the one that happened to literally match a column name ('users') threw a
+ * DuckDB "column not found" error. This resolves through an explicit
+ * allowlist instead, so unsupported metrics fail fast and clearly rather
+ * than as an opaque 502.
+ */
+export function resolveBucketMetricColumn(metric: string): string {
+  switch (metric) {
+    case 'events':
+      return 'event_count';
+    case 'dau':
+    case 'users':
+      return 'users';
+    case 'sessions':
+      return 'sessions';
+    default:
+      throw new UnsupportedMetricError(metric);
+  }
+}
+
 export function buildWhere(filters: Record<string, unknown>): QueryResult {
   const entries = Object.entries(filters).filter(
     ([, v]) => v !== undefined && v !== null,
@@ -392,7 +431,16 @@ export function segmentMetricsQuery(
   return { sql, params };
 }
 
-export function churnRiskQuery(limit: number): QueryResult {
+/**
+ * Deliberately unlimited: risk_score is a 3-factor JS-computed value
+ * (days_since_active bucket, active_days_last_7d, lessons_completed), not a
+ * SQL column, so it can't be the SQL ORDER BY key. Truncating here by any
+ * other column (e.g. days_since_active) before risk_score is computed can
+ * silently drop the users who are actually highest-risk by the service's
+ * own formula. The caller computes risk_score for every row, sorts by it,
+ * and slices to the requested limit — see getChurnRisk().
+ */
+export function churnRiskQuery(): QueryResult {
   const sql = `\
     WITH user_activity AS (
       SELECT
@@ -437,9 +485,8 @@ export function churnRiskQuery(limit: number): QueryResult {
     FROM user_activity ua
     LEFT JOIN dim_users du      ON ua.user_id = du.user_id
     LEFT JOIN recent_activity ra ON ua.user_id = ra.user_id
-    ORDER BY days_since_active DESC
-    LIMIT $1`;
-  return { sql, params: [limit] };
+    ORDER BY days_since_active DESC`;
+  return { sql, params: [] };
 }
 
 export function churnFactorsQuery(): QueryResult {
@@ -482,7 +529,7 @@ export function anomalyQuery(
   days: number,
   threshold: number,
 ): QueryResult {
-  const col = assertIdentifier(metric);
+  const col = resolveBucketMetricColumn(metric);
 
   const sql = `\
     WITH hourly_metric AS (
@@ -490,6 +537,7 @@ export function anomalyQuery(
         date_trunc('hour', created_at) AS hour_bucket,
         COUNT(*) AS event_count,
         COUNT(DISTINCT user_id) AS users,
+        COUNT(DISTINCT session_id) AS sessions,
         AVG(COALESCE(value, 0)) AS avg_value,
         SUM(COALESCE(value, 0)) AS total_value
       FROM fact_events
@@ -504,11 +552,8 @@ export function anomalyQuery(
     )
     SELECT
       hm.hour_bucket,
-      hm.event_count,
-      hm.users,
-      hm.avg_value,
-      hm.total_value,
-      s.mean_val,
+      hm.${col} AS metric_value,
+      s.mean_val AS expected_value,
       s.std_val,
       ABS(hm.${col} - s.mean_val) / NULLIF(s.std_val, 0) AS z_score,
       CASE
@@ -640,19 +685,20 @@ export function forecastQuery(
   daysHistory: number,
   daysForecast: number,
 ): QueryResult {
-  const col = assertIdentifier(metric);
+  const col = resolveBucketMetricColumn(metric);
 
   const sql = `\
     WITH daily_data AS (
       SELECT
-        created_at::DATE AS day,
-        (EXTRACT(EPOCH FROM created_at::DATE) / 86400.0)::DOUBLE AS day_idx,
+        day,
+        (EXTRACT(EPOCH FROM day) / 86400.0)::DOUBLE AS day_idx,
         ${col} AS metric_value
       FROM (
         SELECT
-          created_at::DATE,
+          created_at::DATE AS day,
           COUNT(*) AS event_count,
-          COUNT(DISTINCT user_id) AS users
+          COUNT(DISTINCT user_id) AS users,
+          COUNT(DISTINCT session_id) AS sessions
         FROM fact_events
         WHERE created_at::DATE >= CURRENT_DATE - INTERVAL '${daysHistory}' DAY
           AND created_at::DATE < CURRENT_DATE
@@ -687,6 +733,11 @@ export function compareQuery(
   previousStart: string,
   previousEnd: string,
 ): QueryResult {
+  // Unlike forecastQuery/anomalyQuery, this is called by
+  // metrics.ts#getComparison with an ALREADY-RESOLVED column name (via that
+  // module's own METRIC_COLUMN map) — resolving again here would reject an
+  // already-real column name like 'event_count'. Just validate it's a safe
+  // SQL identifier, as before.
   const col = assertIdentifier(metric);
 
   const sql = `\
@@ -695,7 +746,8 @@ export function compareQuery(
       FROM (
         SELECT
           COUNT(*) AS event_count,
-          COUNT(DISTINCT user_id) AS users
+          COUNT(DISTINCT user_id) AS users,
+          COUNT(DISTINCT session_id) AS sessions
         FROM fact_events
         WHERE created_at BETWEEN $1::TIMESTAMP AND $2::TIMESTAMP
       )
@@ -705,7 +757,8 @@ export function compareQuery(
       FROM (
         SELECT
           COUNT(*) AS event_count,
-          COUNT(DISTINCT user_id) AS users
+          COUNT(DISTINCT user_id) AS users,
+          COUNT(DISTINCT session_id) AS sessions
         FROM fact_events
         WHERE created_at BETWEEN $3::TIMESTAMP AND $4::TIMESTAMP
       )

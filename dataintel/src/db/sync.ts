@@ -266,8 +266,8 @@ async function syncEventsTable(): Promise<{ rows: number; elapsed: number }> {
 
   while (hasMore) {
     const params: Record<string, string> = {
-      id: `gt.${lastEventId}`,
-      order: 'id.asc',
+      event_id: `gt.${lastEventId}`,
+      order: 'event_id.asc',
       limit: '1000',
     };
 
@@ -352,6 +352,7 @@ async function syncDimTable(
   vaultPath: string,
   mapper: (row: Record<string, unknown>) => Record<string, unknown>,
   columns: readonly string[],
+  orderColumn: string,
 ): Promise<{ rows: number; elapsed: number }> {
   const start = Date.now();
 
@@ -363,9 +364,13 @@ async function syncDimTable(
   const limit = 5000;
 
   while (hasMore) {
+    // Explicit ORDER BY is required for stable LIMIT/OFFSET pagination —
+    // without it Postgres/PostgREST make no ordering guarantee across
+    // separate requests, which can skip or duplicate rows between pages.
     const params: Record<string, string> = {
       limit: String(limit),
       offset: String(offset),
+      order: `${orderColumn}.asc`,
     };
 
     const raw = await fetchFromVault<Record<string, unknown>>(vaultPath, params);
@@ -403,13 +408,18 @@ async function syncDimTable(
 
 export async function refreshAggregates(): Promise<void> {
   const state = await getSyncState('learning_events');
-  const lastSyncTime = state?.last_synced_at;
+  // DuckDB's Node driver returns TIMESTAMP columns as JS Date objects;
+  // interpolating one into a template literal calls its default
+  // Date#toString() ("Wed Jul 29 2026 19:27:41 GMT-0600 (...)"), which
+  // DuckDB's TIMESTAMP parser rejects outright — every refresh after the
+  // first successful sync threw a Conversion Error and never wrote a single
+  // aggregate row. Bound as a real parameter instead of interpolated text.
+  const lastSyncTime = state?.last_synced_at
+    ? new Date(state.last_synced_at).toISOString()
+    : null;
 
-  const timeCondition = lastSyncTime
-    ? `WHERE created_at >= '${lastSyncTime}'::TIMESTAMP`
-    : '';
-
-  await exec(`
+  await execute(
+    `
     INSERT INTO agg_daily_activity (day, role, event_type, route_class, device, locale, events, users, sessions, total_value)
     SELECT
       created_at::DATE AS day,
@@ -423,14 +433,16 @@ export async function refreshAggregates(): Promise<void> {
       COUNT(DISTINCT session_id) AS sessions,
       SUM(COALESCE(value, 0)) AS total_value
     FROM fact_events
-    ${timeCondition}
+    WHERE $1::TIMESTAMP IS NULL OR created_at >= $1::TIMESTAMP
     GROUP BY day, role, event_type, route_class, device, locale
     ON CONFLICT (day, role, event_type, route_class, device, locale) DO UPDATE SET
       events = EXCLUDED.events,
       users = EXCLUDED.users,
       sessions = EXCLUDED.sessions,
       total_value = EXCLUDED.total_value
-  `);
+  `,
+    lastSyncTime,
+  );
 
   await exec(`
     INSERT INTO agg_daily_users (day, role, users, sessions)
@@ -466,25 +478,28 @@ export async function syncTable(
         return await syncDimTable(
           'users',
           'dim_users',
-          'users',
+          'dataintel_users_sync',
           mapUserRow,
           USER_COLUMNS,
+          'user_id',
         );
       case 'lessons':
         return await syncDimTable(
           'lessons',
           'dim_lessons',
-          'lessons',
+          'dataintel_lessons_sync',
           mapLessonRow,
           LESSON_COLUMNS,
+          'lesson_id',
         );
       case 'sessions':
         return await syncDimTable(
           'sessions',
           'dim_sessions',
-          'sessions',
+          'dataintel_sessions_sync',
           mapSessionRow,
           SESSION_COLUMNS,
+          'session_id',
         );
     }
   } catch (err) {

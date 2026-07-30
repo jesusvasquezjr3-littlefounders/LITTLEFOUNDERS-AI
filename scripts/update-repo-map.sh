@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 
 OUT="repo_map.md"
 # Pruned by NAME at any depth (per-service node_modules/dist/coverage included):
-EXCLUDE_NAMES=(.git node_modules dist coverage .claude LEGAL .vscode .branches .temp)
+EXCLUDE_NAMES=(.git node_modules dist coverage .claude LEGAL .vscode .branches .temp duckdb)
 # Pruned by exact PATH from root:
 EXCLUDE_PATHS=(.github/skills database/supabase)
 INCLUDE_EXT=(ts tsx js jsx json sql md sh yml yaml css html toml)

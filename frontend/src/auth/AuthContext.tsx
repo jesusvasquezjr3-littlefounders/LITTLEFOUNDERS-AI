@@ -64,12 +64,14 @@ interface AuthContextValue {
   meLoaded: boolean;
   /** Whether the usage beacon may transmit for this account (/INSIGHTS.md). Kids: only with active guardian consent. */
   analyticsEnabled: boolean;
-  login(email: string, password: string): Promise<ApiError | null>;
-  signup(input: SignupInput): Promise<{ error: ApiError | null; confirmationRequired: boolean }>;
+  login(email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
+  signup(
+    input: SignupInput,
+  ): Promise<{ error: ApiError | null; confirmationRequired: boolean; analyticsEnabled: boolean }>;
   /** Establish a session from OAuth tokens returned to /auth/callback (social login). */
   completeOAuth(
     tokens: { accessToken: string; refreshToken: string; expiresIn: number },
-  ): Promise<{ error: ApiError | null; newAccount: boolean }>;
+  ): Promise<{ error: ApiError | null; newAccount: boolean; analyticsEnabled: boolean }>;
   logout(): Promise<void>;
   /** Re-fetch profile + roles (e.g. after the Tutor upgrade). */
   refreshMe(): Promise<void>;
@@ -153,11 +155,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return current?.accessToken ?? null;
   }, [refreshSession]);
 
-  const loadMe = useCallback(async () => {
+  const loadMe = useCallback(async (): Promise<{ newAccount: boolean; analyticsEnabled: boolean }> => {
     const token = await getToken();
     if (!token) {
       setMeLoaded(true);
-      return false;
+      return { newAccount: false, analyticsEnabled: false };
     }
     const { data } = await api<{
       profile: Profile | null;
@@ -166,17 +168,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       analyticsEnabled?: boolean;
       newAccount?: boolean;
     }>('/auth/me', { token });
+    const resolvedAnalyticsEnabled = data?.analyticsEnabled ?? false;
     if (data) {
       setProfile(data.profile);
       setRoles(data.roles);
       setAvatarOptions(data.avatarOptions ?? {});
-      setAnalyticsEnabled(data.analyticsEnabled ?? false);
+      setAnalyticsEnabled(resolvedAnalyticsEnabled);
     }
     setMeLoaded(true);
     // Core's verdict on "was this account created just now" — the OAuth
     // landing needs it to pick the right funnel event and cannot tell on its
-    // own. Returned rather than stored: it is true for one call, not state.
-    return data?.newAccount === true;
+    // own. analyticsEnabled is returned alongside it (not just left in state)
+    // because completeOAuth's caller must configure the insights beacon with
+    // the FRESH value the instant it's known — waiting for the next render's
+    // useInsightsBeacon effect to pick it up from context left a signup/
+    // login funnel event sitting in insights.ts's pre-consent buffer, which
+    // configureInsights() can legitimately wipe if analyticsEnabled is false.
+    return { newAccount: data?.newAccount === true, analyticsEnabled: resolvedAnalyticsEnabled };
   }, [getToken]);
 
   // Restore once on mount.
@@ -189,16 +197,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadMe]);
 
   const login = useCallback(
-    async (email: string, password: string): Promise<ApiError | null> => {
+    async (email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
       const { data, error } = await api<{ session: SessionPayload | null }>('/auth/login', {
         body: { email, password },
       });
-      if (error) return error;
+      if (error) return { error, analyticsEnabled: false };
       const next = data.session ? toStored(data.session) : null;
-      if (!next) return { code: 'INTERNAL', message: 'No session returned' };
+      if (!next) return { error: { code: 'INTERNAL', message: 'No session returned' }, analyticsEnabled: false };
+      // Fail-closed during the identity switch: without this, a same-tab
+      // login while meLoaded is already true from a prior identity leaves
+      // `ready` (meLoaded && !!session) true with the PREVIOUS identity's
+      // analyticsEnabled still in state until this loadMe() resolves.
+      setMeLoaded(false);
+      setAnalyticsEnabled(false);
       persist(next);
-      void loadMe();
-      return null;
+      // Awaited (not fire-and-forget) so the caller has the FRESH
+      // analyticsEnabled value in hand before it configures the insights
+      // beacon and tracks login_complete — see AuthCallbackPage's comment
+      // for why waiting on the next render's effect isn't good enough.
+      const { analyticsEnabled } = await loadMe();
+      return { error: null, analyticsEnabled };
     },
     [persist, loadMe],
   );
@@ -213,13 +231,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         '/auth/signup',
         { body: { ...input, anonId } },
       );
-      if (error) return { error, confirmationRequired: false };
+      if (error) return { error, confirmationRequired: false, analyticsEnabled: false };
       const next = data.session ? toStored(data.session) : null;
+      let analyticsEnabled = false;
       if (next) {
+        // See login(): fail-closed during the identity switch, and awaited
+        // (not fire-and-forget) so the caller has the fresh value in hand
+        // before configuring the insights beacon and tracking signup_complete.
+        setMeLoaded(false);
+        setAnalyticsEnabled(false);
         persist(next);
-        void loadMe();
+        ({ analyticsEnabled } = await loadMe());
       }
-      return { error: null, confirmationRequired: data.confirmationRequired };
+      return { error: null, confirmationRequired: data.confirmationRequired, analyticsEnabled };
     },
     [persist, loadMe],
   );
@@ -236,17 +260,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const completeOAuth = useCallback(
     async (
       tokens: { accessToken: string; refreshToken: string; expiresIn: number },
-    ): Promise<{ error: ApiError | null; newAccount: boolean }> => {
+    ): Promise<{ error: ApiError | null; newAccount: boolean; analyticsEnabled: boolean }> => {
       const { sub, email } = jwtClaims(tokens.accessToken);
-      if (!sub) return { error: { code: 'INTERNAL', message: 'Invalid session token' }, newAccount: false };
+      if (!sub) {
+        return { error: { code: 'INTERNAL', message: 'Invalid session token' }, newAccount: false, analyticsEnabled: false };
+      }
+      // See login(): fail-closed during the identity switch.
+      setMeLoaded(false);
+      setAnalyticsEnabled(false);
       persist({
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         expiresAt: Date.now() + tokens.expiresIn * 1000,
         user: { id: sub, email: email ?? '' },
       });
-      const newAccount = await loadMe();
-      return { error: null, newAccount };
+      const { newAccount, analyticsEnabled } = await loadMe();
+      return { error: null, newAccount, analyticsEnabled };
     },
     [persist, loadMe],
   );

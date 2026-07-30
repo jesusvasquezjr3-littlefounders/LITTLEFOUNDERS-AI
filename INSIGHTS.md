@@ -70,11 +70,17 @@ Core /api/v1/events ── roles ── kid? ──► analytics_consents (activ
         ▼
 learning_events (0023, RLS service-role-only)
         ▼
-SQL views: insights_segment_calibration · insights_daily_activity · insights_family_engagement
+SQL views/tables (14 across 0023-0025 — full list: §6 rollups, §8 console, §9 derived measures):
+  insights_segment_calibration · insights_daily_activity · insights_family_engagement ·
+  insights_cohort_retention · insights_activation_funnel · insights_learning_velocity ·
+  insights_lesson_dropoff · insights_session_depth · insights_feature_adoption ·
+  insights_daily_users · insights_time_to_value · insights_engagement ·
+  insights_today_activity · insights_today_users
         ▼
-Core /api/v1/admin/insights/{calibration,activity,families}  (admin/superadmin)
+Core /api/v1/admin/insights/* — 12 routes (admin/superadmin): calibration, activity,
+  cohorts, funnel, velocity, dropoff, adoption, sessions, export, timetovalue, engagement, families
         ▼
-/admin/insights  ·  KPIs / surfaces / calibration table
+/admin/insights  ·  4-tab console (learning / behaviour / family / acquisition)
 ```
 
 ## 4. Event vocabulary (closed — mirror of the 0025 CHECK)

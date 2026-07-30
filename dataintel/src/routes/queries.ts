@@ -20,6 +20,12 @@ import * as sessions from '../services/sessions.js';
 const daysSchema = z.coerce.number().int().min(1).max(365).default(30);
 const limitSchema = z.coerce.number().int().min(1).max(1000);
 const metricSchema = z.enum(['dau', 'wau', 'mau', 'events', 'users', 'sessions', 'retention', 'activation', 'completions']);
+// Anomaly detection, forecasting and period-comparison run off a flat
+// per-bucket (hour/day) rollup of fact_events — only these four metrics
+// have a column in that rollup. wau/mau/retention/activation/completions
+// need a dedicated cohort/window query, not a bucket aggregate, so they're
+// rejected here at the edge (400) rather than failing deep inside DuckDB.
+const bucketMetricSchema = z.enum(['events', 'dau', 'users', 'sessions']);
 const granularitySchema = z.enum(['hour', 'day', 'week', 'month']).default('day');
 
 const customFunnelSchema = z.object({
@@ -118,6 +124,10 @@ export function intelRouter(): Router {
 
   router.get('/metrics/compare', async (req, res) => {
     try {
+      // Unlike /anomalies and /forecast, getComparison() pre-resolves all 9
+      // metrics (including retention/activation/completions, approximately)
+      // via its own METRIC_COLUMN map before ever reaching compareQuery, so
+      // the full metricSchema is genuinely supported here.
       const metric = metricSchema.parse(req.query.metric);
       const currentStart = z.string().datetime().parse(req.query.currentStart);
       const currentEnd = z.string().datetime().parse(req.query.currentEnd);
@@ -367,7 +377,7 @@ export function intelRouter(): Router {
 
   router.get('/anomalies', async (req, res) => {
     try {
-      const metric = metricSchema.parse(req.query.metric);
+      const metric = bucketMetricSchema.parse(req.query.metric);
       const days = daysSchema.parse(req.query.days ?? '30');
       const threshold = z.coerce.number().min(0.5).max(10).default(2.0).parse(req.query.threshold ?? '2.0');
       const result = await anomalies.detectAnomalies(metric, days, threshold);
@@ -392,7 +402,7 @@ export function intelRouter(): Router {
   router.post('/anomalies/:date/resolve', async (req, res) => {
     try {
       const date = z.string().date().parse(req.params.date);
-      const metric = metricSchema.parse(req.query.metric);
+      const metric = bucketMetricSchema.parse(req.query.metric);
       const result = await anomalies.resolveAnomaly(date, metric);
       if (result === null) return fail(res, 404, 'NOT_FOUND', 'Anomaly not found');
       return ok(res, result);
@@ -442,7 +452,7 @@ export function intelRouter(): Router {
 
   router.get('/forecast', async (req, res) => {
     try {
-      const metric = metricSchema.parse(req.query.metric);
+      const metric = bucketMetricSchema.parse(req.query.metric);
       const daysHistory = z.coerce.number().int().min(7).max(365).default(90).parse(req.query.daysHistory ?? '90');
       const daysForecast = z.coerce.number().int().min(1).max(365).default(30).parse(req.query.daysForecast ?? '30');
       const result = await forecasting.getForecast(metric, daysHistory, daysForecast);

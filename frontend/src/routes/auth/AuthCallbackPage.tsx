@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { flushInsights, trackInsight } from '@/lib/insights';
+import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { AuthShell } from './AuthShell';
 
 /*
@@ -13,7 +13,7 @@ import { AuthShell } from './AuthShell';
  * to the app. Tokens are scrubbed from the URL/history immediately.
  */
 export function AuthCallbackPage() {
-  const { completeOAuth } = useAuth();
+  const { completeOAuth, getToken } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
@@ -39,7 +39,7 @@ export function AuthCallbackPage() {
       setFailed(true);
       return;
     }
-    void completeOAuth({ accessToken, refreshToken, expiresIn }).then(({ error, newAccount }) => {
+    void completeOAuth({ accessToken, refreshToken, expiresIn }).then(({ error, newAccount, analyticsEnabled }) => {
       if (error) {
         setFailed(true);
         return;
@@ -52,14 +52,21 @@ export function AuthCallbackPage() {
        * produced them read as permanently zero-yield.
        *
        * `newAccount` comes from Core (the client cannot tell a first-ever
-       * Google sign-in from a returning one). The flush is immediate because
-       * the very next thing this component does is navigate away.
+       * Google sign-in from a returning one). configureInsights() is called
+       * explicitly, right here, with the analyticsEnabled value completeOAuth
+       * just resolved — waiting for useInsightsBeacon's own effect to pick it
+       * up from context on the next render left this event sitting in
+       * insights.ts's pre-consent buffer, where a later configureInsights()
+       * call can legitimately (and silently) discard it. The flush is
+       * immediate because the very next thing this component does is
+       * navigate away.
        */
+      configureInsights({ enabled: analyticsEnabled, getToken });
       trackInsight(newAccount ? 'signup_complete' : 'login_complete', { routeClass: 'marketing' });
       void flushInsights();
       navigate(APP_HOME, { replace: true });
     });
-  }, [completeOAuth, navigate]);
+  }, [completeOAuth, getToken, navigate]);
 
   return (
     <AuthShell

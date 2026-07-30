@@ -102,3 +102,24 @@ describe('GET /api/v1/family/kids/:kidId/courses/:slug/territory', () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe('POST/DELETE /api/v1/family/kids/:kidId/analytics-consent — kidId validation', () => {
+  it('400s a non-uuid kidId on grant, without ever reaching the guardian-link lookup', async () => {
+    const res = await auth(request(createApp()).post('/api/v1/family/kids/not-a-uuid/analytics-consent'));
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('400s a non-uuid kidId on revoke, without ever reaching the guardian-link lookup', async () => {
+    const res = await auth(request(createApp()).delete('/api/v1/family/kids/not-a-uuid/analytics-consent'));
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('still 403s a well-formed but unlinked kidId (uuid shape alone is not authorization)', async () => {
+    const res = await auth(
+      request(createApp()).post(`/api/v1/family/kids/${STRANGER_KID}/analytics-consent`),
+    );
+    expect(res.status).toBe(403);
+  });
+});

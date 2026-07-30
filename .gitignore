@@ -44,6 +44,7 @@ database/supabase/
 
 # ── Databases (local snapshots) ─────────────────────────────
 *.db
+*.db.wal
 *.sqlite
 !database/migrations/*.sql
 

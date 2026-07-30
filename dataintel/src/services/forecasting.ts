@@ -1,5 +1,5 @@
 import { query } from '../db/duckdb.js';
-import { forecastQuery } from '../db/queries.js';
+import { forecastQuery, resolveBucketMetricColumn } from '../db/queries.js';
 
 export interface ForecastPoint {
   date: string;
@@ -27,14 +27,26 @@ export async function getForecast(
   daysForecast: number,
 ): Promise<ForecastPoint[] | null> {
   try {
+    // Same metric resolution forecastQuery uses below — the historical and
+    // forecast halves of this series must be the same metric, or the RMSE
+    // computed between them (and the confidence band derived from it) is
+    // just noise from comparing two unrelated quantities.
+    const col = resolveBucketMetricColumn(metric);
     const histSql = `\
       SELECT
-        created_at::DATE AS day,
-        COUNT(*) AS metric_value
-      FROM fact_events
-      WHERE created_at::DATE >= CURRENT_DATE - INTERVAL '${daysHistory}' DAY
-        AND created_at::DATE < CURRENT_DATE
-      GROUP BY created_at::DATE
+        day,
+        ${col} AS metric_value
+      FROM (
+        SELECT
+          created_at::DATE AS day,
+          COUNT(*) AS event_count,
+          COUNT(DISTINCT user_id) AS users,
+          COUNT(DISTINCT session_id) AS sessions
+        FROM fact_events
+        WHERE created_at::DATE >= CURRENT_DATE - INTERVAL '${daysHistory}' DAY
+          AND created_at::DATE < CURRENT_DATE
+        GROUP BY created_at::DATE
+      )
       ORDER BY day`;
 
     const histRows = await query<HistoryRow>(histSql);

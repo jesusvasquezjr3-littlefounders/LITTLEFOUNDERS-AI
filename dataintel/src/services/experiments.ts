@@ -256,21 +256,6 @@ export async function getExperimentResults(
 
     const experiment = rowToExperiment(expRows[0]!);
 
-    let aggExpression: string;
-    switch (experiment.metric) {
-      case 'dau':
-      case 'users':
-        aggExpression = 'COUNT(DISTINCT user_id)';
-        break;
-      case 'sessions':
-        aggExpression = 'COUNT(DISTINCT session_id)';
-        break;
-      case 'events':
-      default:
-        aggExpression = 'COUNT(*)';
-        break;
-    }
-
     const assignments = await query<AssignmentRow>(
       'SELECT * FROM experiment_assignments WHERE experiment_id = ?',
       id,
@@ -284,16 +269,8 @@ export async function getExperimentResults(
     const userMetricsB: number[] = [];
 
     for (const a of assignments) {
-      const metricRows = await query<UserMetricRow>(
-        `SELECT user_id, ${aggExpression} AS metric_value
-         FROM fact_events
-         WHERE user_id = ?
-         GROUP BY user_id`,
-        a.user_id,
-      );
-
-      if (metricRows.length > 0 && metricRows[0]!.metric_value !== undefined) {
-        const val = Number(metricRows[0]!.metric_value);
+      const val = await getUserMetricValue(a.user_id, experiment.metric);
+      if (val !== null) {
         if (a.variant === 'A') {
           userMetricsA.push(val);
         } else {
@@ -339,6 +316,46 @@ export async function getExperimentResults(
     console.error('[dataintel][experiments] getResults failed:', err);
     return null;
   }
+}
+
+/**
+ * Per-assigned-user metric value used as the t-test's sample unit.
+ *
+ * 'dau'/'users' cannot reuse the events/sessions GROUP BY shape: with the
+ * query already filtered to WHERE user_id = ?, COUNT(DISTINCT user_id) is
+ * always exactly 1 for any user with >=1 matching row (and the row vanishes
+ * entirely — not a 0 — for a user with none), so every sample collapses to
+ * the same constant and the t-test always reports zero variance. The correct
+ * per-user unit for a user-count metric is binary activation: did this user
+ * do anything at all during the experiment, 1 or 0 — computed via EXISTS so
+ * an inactive user still yields a real (0) sample instead of no row at all.
+ */
+async function getUserMetricValue(
+  userId: string,
+  metric: string,
+): Promise<number | null> {
+  if (metric === 'dau' || metric === 'users') {
+    const rows = await query<{ metric_value: number }>(
+      `SELECT CASE WHEN EXISTS (SELECT 1 FROM fact_events WHERE user_id = ?) THEN 1 ELSE 0 END AS metric_value`,
+      userId,
+    );
+    return rows.length > 0 ? Number(rows[0]!.metric_value) : null;
+  }
+
+  const aggExpression =
+    metric === 'sessions' ? 'COUNT(DISTINCT session_id)' : 'COUNT(*)';
+
+  const rows = await query<UserMetricRow>(
+    `SELECT user_id, ${aggExpression} AS metric_value
+     FROM fact_events
+     WHERE user_id = ?
+     GROUP BY user_id`,
+    userId,
+  );
+
+  return rows.length > 0 && rows[0]!.metric_value !== undefined
+    ? Number(rows[0]!.metric_value)
+    : null;
 }
 
 function computeStats(values: number[]): {
@@ -415,7 +432,7 @@ function normCDF(x: number): number {
       t *
       Math.exp(-z * z);
 
-  return x > 0 ? 1 - 0.5 * y : 0.5 * y;
+  return x > 0 ? 0.5 + 0.5 * y : 0.5 - 0.5 * y;
 }
 
 function round2(n: number): number {

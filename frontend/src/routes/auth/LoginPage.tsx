@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { flushInsights, trackInsight } from '@/lib/insights';
+import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
@@ -12,7 +12,7 @@ import { SocialAuth } from './SocialAuth';
 
 export function LoginPage() {
   const { t } = useTranslation();
-  const { login } = useAuth();
+  const { login, getToken } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -26,12 +26,18 @@ export function LoginPage() {
     e.preventDefault();
     setSubmitting(true);
     setErrorCode(null);
-    const error = await login(email, password);
+    const { error, analyticsEnabled } = await login(email, password);
     setSubmitting(false);
     if (error) {
       setErrorCode(error.code);
       return;
     }
+    // configureInsights() is called explicitly with the FRESH value login()
+    // just resolved, rather than waiting for the next render's
+    // useInsightsBeacon effect to pick it up from context — otherwise this
+    // event sits in insights.ts's pre-consent buffer, where a later
+    // configureInsights() call can legitimately (and silently) discard it.
+    configureInsights({ enabled: analyticsEnabled, getToken });
     // Returning-user signal — the numerator of "do they come back at all",
     // distinct from signup_complete which only ever fires once per account.
     trackInsight('login_complete', { routeClass: 'marketing' });

@@ -6,7 +6,7 @@
 > intelligence console.
 >
 > Status: SHIPPED 2026-07-29. Service `dataintel/` (port 4008), DuckDB
-> in-process, sync pipeline, 25+ analytical endpoints, 9-tab admin console.
+> in-process, sync pipeline, 40 analytical endpoints, 9-tab admin console.
 
 ## 1. Why this exists
 
@@ -73,7 +73,7 @@ against DuckDB on every request, never that the dashboard shows an error.
 | Frontend | AdminIntelPage — 9-tab console, recharts-powered |
 | Proxy | Core `/api/v1/admin/intel/*` — JWT role gate + internal-key forward |
 
-## 4. Endpoints (25+)
+## 4. Endpoints (40)
 
 All routes are internal-key-gated except `/health`. Grouped by analytical
 domain:
@@ -124,6 +124,22 @@ domain:
 Export responses carry `X-LF-Export-Rows`, `X-LF-Export-Truncated`, and
 `X-LF-Export-Next-Offset` headers so a truncated file is declared, never silent
 (the same contract as INSIGHTS.md §8).
+
+**The `metric` query param is not one enum with uniform support.** Nine values
+are accepted at the Zod edge somewhere in this service (`dau`, `wau`, `mau`,
+`events`, `users`, `sessions`, `retention`, `activation`, `completions`), but
+`/anomalies`, `/anomalies/:date/resolve`, and `/forecast` only genuinely
+support `events`, `dau`, `users`, `sessions` — the only four with a column in
+the hourly/daily bucket rollup these three queries run off of. `wau`/`mau`/
+`retention`/`activation`/`completions` need a dedicated cohort or rolling-
+window query, not a flat bucket aggregate, and are rejected with `400
+VALIDATION_ERROR` on those three routes rather than failing opaquely inside
+DuckDB (fixed 2026-07-30 — previously 8 of the 9 documented values, including
+the default-looking `events`, threw a raw "column not found" error surfaced
+as a 502). `/metrics/compare` and `/metrics/trends` DO support the full nine
+via `metrics.ts`'s own `METRIC_COLUMN` pre-resolution (with `retention`/
+`activation`/`completions` approximated as `users`/`users`/`event_count`
+respectively — a known simplification, not a precise per-metric computation).
 
 ## 5. DuckDB star schema
 
@@ -213,7 +229,12 @@ INSIGHTS.md §6.
 
 ## 6. Workers
 
-Three background workers run on independent intervals:
+Two background workers run on independent intervals (a third, `src/workers/
+churn.ts`, was removed 2026-07-30: churn scoring is answered live from DuckDB
+on every `/churn/risk` request, and a daily ticker with no body — reserved
+for future result caching that was never built — is dead code, not a
+placeholder worth keeping around; add it back if/when caching is actually
+implemented):
 
 - **sync worker** (`src/workers/sync.ts`): Incremental pull from Vault →
   DuckDB fact/dimension tables, then refreshes the aggregate tables. Runs every
@@ -227,11 +248,10 @@ Three background workers run on independent intervals:
   minutes ago does not re-fire). Thresholds are defined in the anomaly config:
   DAU drop >2σ below the 30-day mean, completion rate drop >20% day-over-day,
   churn risk spike >50% week-over-week. Fired alerts are written to the
-  `alerts` table (DuckDB) and surfaced through the anomaly endpoints.
-
-- **churn worker** (`src/workers/churn.ts`): Daily ticker — scoring is computed
-  live from DuckDB queries; the worker is reserved for future result caching.
-  Currently an empty stub that fires a 24-hour interval with no logic.
+  `alerts` table (DuckDB) and surfaced through the anomaly endpoints. Guards
+  against overlapping ticks (a `running` flag, matching the sync worker) so a
+  slow evaluation pass can't double-fire an alert against the same cooldown
+  window.
 
 ## 7. Frontend — AdminIntelPage
 

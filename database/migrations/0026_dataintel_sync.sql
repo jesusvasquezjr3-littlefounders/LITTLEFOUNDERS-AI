@@ -122,7 +122,11 @@ WHERE l.status = 'published';
 CREATE OR REPLACE VIEW dataintel_sessions_sync AS
 SELECT
   session_id,
-  MIN(user_id) FILTER (WHERE user_id IS NOT NULL) AS user_id,
+  -- Standard PostgreSQL has no MIN/MAX aggregate for uuid (verified against
+  -- 17.6: "function min(uuid) does not exist") — a session has at most one
+  -- user_id in practice, so this only needs A representative non-null value,
+  -- not a true minimum. The text round-trip is a no-op for that purpose.
+  MIN(user_id::text) FILTER (WHERE user_id IS NOT NULL) ::uuid AS user_id,
   MIN(created_at) AS started_at,
   MAX(created_at) AS ended_at,
   MODE() WITHIN GROUP (ORDER BY device) AS device,
