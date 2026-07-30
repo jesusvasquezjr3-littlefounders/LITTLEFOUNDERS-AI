@@ -51,6 +51,11 @@ import { Suspense, lazy, useState } from 'react';
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
 const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 
+/* Dev-only harness — the Game Engine QA surface (GAME_ENGINE.md §7/§10). Lazy +
+ * DEV-gated so the lab (and every mechanic slice it eagerly loads) never reaches
+ * production bundles. */
+const GameLabPage = lazy(() => import('@/game-engine/lab/GameLabPage'));
+
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
@@ -96,6 +101,16 @@ export function App() {
               element={
                 <Suspense fallback={null}>
                   <LessonViewPage />
+                </Suspense>
+              }
+            />
+          ) : null}
+          {import.meta.env.DEV ? (
+            <Route
+              path="dev/game-lab"
+              element={
+                <Suspense fallback={null}>
+                  <GameLabPage />
                 </Suspense>
               }
             />

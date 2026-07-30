@@ -585,6 +585,13 @@ from the `/admin/content` Games queue. Kid-facing content is human-moderated bef
 - **Pause is always reachable** — one tap, from any state, thumb-reachable on mobile. The
   simulation is tick-driven, so pausing is exact (no ticks advance) rather than approximate.
   Interludes and the pause overlay are the two sanctioned interruptions.
+- **The loop never claims to be running when it cannot run.** The auto-pause sources
+  (`visibilitychange`, `blur`) are EDGE-triggered and therefore blind to a run that *starts*
+  inside the condition: a browser fires no `requestAnimationFrame` at all in a hidden tab and
+  no transition event either, because nothing changed. `GameLoopScheduler.canDeliverFrames()`
+  closes that hole — `start()` asks the frame source directly and starts PAUSED when the
+  answer is no, so the child gets the pause overlay and its resume instead of a board that
+  renders, reports `paused: false`, swallows every tap onto tick 0 and can never advance.
 - **Both breakpoints are first-class (§1.11, non-negotiable).** Mobile (<768px): single
   column, canvas fills the viewport within the 16px `margin-mobile`, controls in the thumb
   zone. Desktop (>=1024px): the freed width is used deliberately — the hub is a

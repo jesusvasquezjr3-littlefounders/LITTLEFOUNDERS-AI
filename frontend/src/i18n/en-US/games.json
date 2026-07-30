@@ -1,0 +1,177 @@
+{
+  "hub": {
+    "title": "Games",
+    "subtitle": "Every game here comes from something you already learned. Pick one and play it.",
+    "emptyTitle": "Your arcade is warming up",
+    "emptyBody": "No games are ready for this course yet. Keep going with your lessons — games show up as you unlock them.",
+    "groupBy": {
+      "label": "Group by",
+      "course": "By course",
+      "adventure": "By adventure"
+    },
+    "play": "Play",
+    "replay": "Play again",
+    "bestScore": "Best {{score}}",
+    "xp": "{{xp}} XP",
+    "locked": {
+      "badge": "Locked",
+      "body": "Learn it first, then play it.",
+      "explain": "Finish a lesson from this topic and this game unlocks for you."
+    }
+  },
+  "player": {
+    "intro": {
+      "heading": "What you just learned",
+      "start": "Play!"
+    },
+    "tutorial": {
+      "heading": "How to play",
+      "tryIt": "Give it a tap to try it out",
+      "next": "Got it",
+      "skip": "Skip the how-to"
+    },
+    "hud": {
+      "score": "Score",
+      "lives": "Lives",
+      "combo": "Combo",
+      "progress": "Progress",
+      "target": "Target"
+    },
+    "pause": "Pause",
+    "resume": "Keep playing",
+    "mute": "Turn sound off",
+    "unmute": "Turn sound on",
+    "quit": "Leave game",
+    "quitConfirm": {
+      "title": "Leave this game?",
+      "body": "Your score for this round won't be saved. You can come back and play it whenever you want.",
+      "confirm": "Yes, leave",
+      "cancel": "Stay and play"
+    },
+    "interlude": {
+      "heading": "Quick check",
+      "check": "Check my answer",
+      "continue": "Back to the game"
+    },
+    "results": {
+      "title": {
+        "perfect": "Perfect run!",
+        "great": "Great game!",
+        "good": "Nice work!",
+        "keepGoing": "Good effort!"
+      },
+      "xpEarned": "XP earned",
+      "bestScore": "Best score",
+      "newBest": "New best score!",
+      "stats": {
+        "score": "Score",
+        "time": "Time",
+        "rounds": "Rounds",
+        "bestCombo": "Best combo"
+      },
+      "highlight": {
+        "combo": "You chained {{count}} right in a row!",
+        "accuracy": "You picked the right one almost every time!",
+        "effort": "You played this round all the way to the end — every run makes you sharper."
+      },
+      "retry": "Play again",
+      "backToHub": "Back to games"
+    }
+  },
+  "mechanics": {
+    "sorter": {
+      "title": "Sorting Machine",
+      "blurb": "Send every item to the group where it belongs."
+    },
+    "launcher": {
+      "title": "Launch Pad",
+      "blurb": "Aim, launch and hit the right target."
+    },
+    "runner": {
+      "title": "Run & Grab",
+      "blurb": "Run forward, grab the good stuff and dodge the rest."
+    },
+    "stacker": {
+      "title": "Tower Builder",
+      "blurb": "Stack the pieces to build the tallest tower you can."
+    },
+    "autobattler": {
+      "title": "Team Duel",
+      "blurb": "Pick your team, then watch your plan win the duel."
+    },
+    "explorer": {
+      "title": "Explorer",
+      "blurb": "Move around the map and uncover what's hidden."
+    },
+    "defender": {
+      "title": "Base Guard",
+      "blurb": "Hold the line and stop every wave before it gets through."
+    },
+    "flyer": {
+      "title": "Sky Run",
+      "blurb": "Fly through the gaps and collect what you need."
+    }
+  },
+  "sorter": {
+    "fieldLabel": "Items to sort",
+    "itemLabel": "Item: {{label}}",
+    "binLabel": "Group: {{label}}",
+    "trash": "Trash",
+    "empty": "Nothing to sort right now",
+    "combo": "×{{multiplier}}",
+    "hint": "Drag an item to its group — or tap the item, then the group."
+  },
+  "runner": {
+    "stageLabel": "Game area",
+    "pausedLabel": "Paused",
+    "action": {
+      "jump": "Jump",
+      "lane": "Change lane",
+      "flip": "Flip to the other side",
+      "contextual": "Move"
+    },
+    "hint": {
+      "jump": "Tap anywhere to jump.",
+      "lane": "Tap anywhere to change lane.",
+      "flip": "Tap anywhere to flip to the other side.",
+      "contextual": "One tap: jump on land, dive in water, rise in the air.",
+      "hold": "Hold to glide."
+    }
+  },
+  "states": {
+    "loading": "Loading your game…",
+    "unsupported": {
+      "title": "This game needs a newer version of the app",
+      "body": "We can't run this one here yet. Nothing broke and nothing was lost — pick another game while we catch up.",
+      "back": "Back to games"
+    },
+    "loadFailed": "We couldn't load this game right now. Try again in a moment.",
+    "offline": "Some pictures or sounds didn't load. The game still works — you can play it just fine."
+  },
+  "a11y": {
+    "dragHandle": "Drag to move",
+    "dragItem": "Drag {{label}}",
+    "dropZone": "Drop area",
+    "dropZoneNamed": "Drop area: {{label}}",
+    "actionButton": "Action",
+    "pause": "Pause game"
+  },
+  "lab": {
+    "title": "Game Lab",
+    "subtitle": "{{fixtures}} fixtures · {{ready}} of {{total}} mechanics implemented",
+    "loading": "Loading mechanics…",
+    "seed": "Seed",
+    "seedAuto": "auto",
+    "newSeed": "Random seed",
+    "stepMode": "Step mode",
+    "pending": "Not implemented yet",
+    "pendingHint": "These mechanics have no slice registered in the loader yet.",
+    "debug": "Debug",
+    "step": "Advance",
+    "awaitingLog": "Waiting for the run",
+    "copyLog": "Copy input log",
+    "restart": "Restart run",
+    "copied": "Input log copied.",
+    "copyFailed": "Clipboard unavailable — the log was printed to the console."
+  }
+}

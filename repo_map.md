@@ -691,6 +691,13 @@ frontend/
       characters/
         control/
       ui/
+    game-engine/
+      core/
+      lab/
+      mechanics/
+        runner/
+        sorter/
+      player/
     i18n/
       en-US/
       es-MX/
@@ -2156,20 +2163,20 @@ fi
 
 ```
 #!/usr/bin/env bash
-# i18n:check — two-phase verification:
+# i18n:check — three-phase verification:
 #   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth)
 #   Phase 2: Hardcoded string scan in TSX/TS source (strings not wrapped in t())
-set -euo pipefail
-cd "$(dirname "$0")/../.."
-
-FAIL=0
-
-# ── Phase 1: JSON key parity ──────────────────────────────────────────────────
-DIR="frontend/src/i18n"
-if [ ! -d "$DIR/en-US" ]; then
-  echo "i18n:check SKIPPED — $DIR/en-US does not exist yet"
-  exit 0
-fi
+#   Phase 3: Every STATICALLY DECIDABLE t() key in source EXISTS in en-US —
+#            plain literals, BOTH branches of t(cond ? 'a' : 'b'), and the
+#            leading namespace of t(`a.b.${expr}`)
+#
+# Phase 1 alone is not enough: it only proves the three locales agree with each
+# other. A key called by a component but present in NO locale is trivially "in
+# parity" and renders on screen as its raw dot-path. Phase 3 closes that hole.
+#
+# Phase 3 is not limited to plain literals, because "dynamic" is not the same as
+# "unknowable": in t(cond ? 'a.b' : 'a.c') both keys are literals, and in
+# t(`a.b.${x}`) the namespace 'a.b' is literal even when the leaf is not. Six
 ```
 
 ### agent/tools/check-secrets.sh
@@ -138882,6 +138889,806 @@ export { Field } from './Field';
 export { Checkbox } from './Checkbox';
 ```
 
+### frontend/src/game-engine/core/audio.ts
+
+```
+// Game audio — SFX resolver + BGM manager.
+//
+// PENDING OWNER DECISION: no game-specific audio asset exists in this repo. The only
+// files that exist are the 9 mp3s in `frontend/public/sfx/` (app chrome, generated
+// once with ElevenLabs sound-generation — ElevenLabs is SOUND-EFFECTS-ONLY here, TTS
+// is qwen3-tts via Echo). Commissioning real arcade SFX and BGM loops is an owner
+// call that is deliberately NOT part of this implementation, so this module is built
+// asset-tolerant instead of asset-assuming:
+//
+//   - `GAME_SFX` (core/types.ts) is the MANIFEST vocabulary — what a generated
+//     document is allowed to name. It is not a list of files that exist.
+//   - `SFX_FILES` below maps each vocabulary name to an EXISTING file where the fit is
+//     honest, and to `null` where it is not. `launch`, `explode`, `whoosh`, `alarm`
+//     and `engine` have no honest stand-in among the 9, so they resolve to SILENCE
+//     rather than to a sound that means something else.
+```
+
+### frontend/src/game-engine/core/input.test.ts
+
+```
+// Pointer-layer + stage-scaling regression tests. These cover the three failure
+// modes v1's per-game drag code kept re-introducing — a tap being swallowed as a
+// drag, a drop landing on the wrong (or no) zone, and the synthetic click firing a
+// second action after a drag — plus the scaling maths at both mandated breakpoints
+// (~375px mobile and ~1280px desktop, /CLAUDE.md §1.11).
+//
+// jsdom implements neither PointerEvent, ResizeObserver nor elementFromPoint, so
+// each is stubbed explicitly here rather than assumed.
+
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, renderHook } from '@testing-library/react'
+import type { MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react'
+import { DRAG_THRESHOLD_PX, resolveDropZone, useGameDrag, useTapPlacement } from './input'
+import { computeStage, useStageScale } from './stage'
+
+```
+
+### frontend/src/game-engine/core/input.ts
+
+```
+// The ONE pointer layer for every mechanic (GAME_ENGINE.md §10). v1 re-implemented
+// dragging inside each game; here a mechanic wires `useGameDrag` + `useTapPlacement`
+// and gets the same feel, the same thresholds and the same accessibility posture.
+//
+// The implementation follows the proven in-repo pattern of `useSortingDrag` in
+// `frontend/src/lesson-engine/families/arrange/components.tsx`: native Pointer
+// Events (no drag-and-drop dependency), a movement threshold before a gesture
+// counts as a drag, `preventDefault` on move once dragging so touch-scroll stops,
+// drop resolution through `elementFromPoint(...).closest('[data-dropzone]')`, and a
+// suppress-click guard cleared on the NEXT TICK so a drag that ends over a zone
+// (which fires no click) cannot leave the guard stuck and eat the next real tap.
+//
+// ACCESSIBILITY — NON-NEGOTIABLE (/CLAUDE.md §1.11, GAME_ENGINE.md §10):
+// drag is PROGRESSIVE ENHANCEMENT, never the only way to act. Every mechanic view
+// that spreads `dragHandleProps` MUST also wire `useTapPlacement` on the same items
+```
+
+### frontend/src/game-engine/core/kernel.test.ts
+
+```
+// Kernel tests — the whole point of the injectable scheduler seam.
+//
+// Not one of these tests reads a real clock or a real rAF: `createManualScheduler`
+// supplies `now()` and the frame queue, so "advance 1000ms" is an exact statement
+// about the simulation and never a timing race. The kernel is the time base the
+// server's replay agrees with, so its arithmetic gets asserted, not eyeballed.
+
+import { act, renderHook } from '@testing-library/react'
+
+import {
+  MAX_CATCH_UP_TICKS,
+  MAX_FRAME_DELTA_MS,
+  createGameLoop,
+  useGameLoop,
+  type GameLoopEventSource,
+```
+
+### frontend/src/game-engine/core/kernel.ts
+
+```
+// The Game Engine kernel — the single time base for every mechanic.
+//
+// GAME_ENGINE.md §5 makes the simulation replayable server-side: Core re-runs the
+// mechanic's simulator over the player's input log and DERIVES the reward. That is
+// only sound if the browser advances the simulation in exactly the same units the
+// server does. So this module owns one job: turn messy real time (rAF deltas, tab
+// blur, a stalled main thread) into a stream of WHOLE 50ms ticks, and turn player
+// gestures into an input log that replays byte-for-byte.
+//
+// Simulation is decoupled from rendering: rendering happens on requestAnimationFrame
+// at whatever rate the device gives us, while the simulation only ever advances in
+// fixed `TICK_MS` steps. A frame that owes 3 ticks runs 3 ticks; a frame that owes
+// none runs none and re-renders nothing.
+//
+// This file is deliberately framework-agnostic (`createGameLoop`) with a thin React
+```
+
+### frontend/src/game-engine/core/mathd.test.ts
+
+```
+// Determinism regression tests for core/mathd.ts — GAME_ENGINE.md §5 / brief §4.
+//
+// Two different kinds of assertion live here, and the distinction matters:
+//
+// 1. CORRECTNESS — `dsin`/`dcos`/`datan2` are compared against `Math.sin`/`Math.cos`/
+//    `Math.atan2` within ACCURACY. Calling the banned functions is legitimate HERE
+//    because a test is never replayed on the server; it only has to establish that the
+//    polynomials really do approximate the true function. Simulator code must not.
+// 2. DETERMINISM — the identities that must hold EXACTLY (`toBe`), independent of any
+//    engine's transcendental implementation. These are the properties the reward path
+//    actually leans on.
+
+import { ACCURACY, datan2, dcos, dhypot, dpow, dsin } from '@/game-engine/core/mathd'
+
+const referenceSin = (degrees: number): number => Math.sin((degrees * Math.PI) / 180)
+```
+
+### frontend/src/game-engine/core/mathd.ts
+
+```
+// Deterministic math for the Game Engine — GAME_ENGINE.md §5 / brief §4.
+//
+// WHY THIS MODULE EXISTS
+// ----------------------
+// A play session's reward is not the number the client reports: Core re-runs the
+// mechanic's simulator over the player's input log and derives the score itself. That
+// is only sound if a simulator produces BIT-IDENTICAL results in the browser's V8 and
+// in Node.
+//
+// ECMAScript leaves `Math.sin`, `cos`, `tan`, `atan`, `atan2`, `exp`, `log`, `pow`,
+// `hypot` and `cbrt` IMPLEMENTATION-DEFINED — the spec only requires an implementation-
+// approximated result, so two engines (or two builds of the same engine) may disagree
+// in the low bits. One wrong bit in a projectile arc is a rejected reward for an honest
+// child. What IS exactly specified is IEEE-754 `+ - * /` and `Math.sqrt`, plus the
+// exactly-defined `Math.abs/min/max/floor/ceil/round/trunc/sign`. So every function
+```
+
+### frontend/src/game-engine/core/replay.test.ts
+
+```
+import { DEFAULT_MAX_EVENTS_PER_TICK, replayGame, runBot } from '@/game-engine/core/replay'
+import type {
+  GameDocument,
+  GameInputEvent,
+  SimInit,
+  SimResult,
+  SimSnapshot,
+  Simulator,
+} from '@/game-engine/core/types'
+
+// ---- A toy mechanic ----------------------------------------------------------
+// A counter that advances on `tap` and finishes at `scoring.target`. It obeys the §5
+// rules (pure, integer ticks, allowed arithmetic only, no randomness) so that what the
+// tests prove about replayGame is not an artefact of a sloppy stand-in.
+
+```
+
+### frontend/src/game-engine/core/replay.ts
+
+```
+// The single shared replay entry point — GAME_ENGINE.md §5, §6.
+//
+// THREE callers, ONE implementation: the dev lab, the Arcade pipeline's winnability
+// gate, and Core's `POST /api/v1/games/:gameId/complete`. A player's reward is not the
+// number the client reports — it is what this function DERIVES by re-running the
+// mechanic's simulator over the player's input log. `replayGame` therefore takes no
+// score argument at all: there is nothing for a forged client to inflate.
+//
+// This module is deliberately free of React, DOM, Node and Zod so that
+// `backend/src/game-contract/` and `gamegen/src/contract/` can carry it verbatim; the
+// only runtime import is core/rng.ts, which is part of the same parity copy.
+// It is fully synchronous and pure: same inputs -> same outputs, always, forever.
+
+import type {
+  GameBot,
+```
+
+### frontend/src/game-engine/core/rng.test.ts
+
+```
+import { createRng, seedFromString, shuffleWith } from '@/game-engine/core/rng'
+
+/** Drains `count` floats from a fresh Rng built on `seed`. */
+function sequence(seed: number, count: number): number[] {
+  const rng = createRng(seed)
+  const out: number[] = []
+  for (let i = 0; i < count; i += 1) out.push(rng.next())
+  return out
+}
+
+describe('createRng', () => {
+  it('produces an identical sequence for an identical seed', () => {
+    expect(sequence(12345, 64)).toEqual(sequence(12345, 64))
+  })
+
+```
+
+### frontend/src/game-engine/core/rng.ts
+
+```
+// Seeded PRNG for the Game Engine — GAME_ENGINE.md §5 rule 5. Every source of
+// randomness a simulator touches comes from here, because rewards are derived by
+// REPLAYING the player's input log on the server: a single `Math.random()` anywhere
+// in the simulation path makes the replay diverge and rejects an honest child's XP.
+//
+// Algorithm: mulberry32 — a 32-bit state advanced with `+`, `^`, `>>>` and
+// `Math.imul`. Every one of those is exactly specified by ECMAScript on int32
+// values (`Math.imul` returns the low 32 bits of the integer product, not a float
+// multiply), so the browser's V8 and Node agree on the last bit. No float
+// accumulator, no transcendental, no engine-defined rounding anywhere in the state
+// update — the only float in the module is the final division that maps the 32-bit
+// output into [0, 1), and 2^32 is exact in IEEE-754 double.
+
+import type { Rng } from '@/game-engine/core/types'
+
+```
+
+### frontend/src/game-engine/core/schema.ts
+
+```
+// The composed GameDocument contract — GAME_ENGINE.md §3 (document), §7 (registry).
+//
+// TWO LAYERS, on purpose. A single eagerly-composed discriminated union over all eight
+// mechanics would import every mechanic the moment anything imported the schema, which
+// defeats the per-mechanic code-splitting the registry exists to provide (§7). So:
+//
+//   LAYER 1  `gameDocumentEnvelopeSchema` — everything the core knows: meta, skin,
+//            scoring, adaptive and content's SHARED fields. `config` stays `unknown`
+//            here and per-mechanic content extras pass through unchecked, because core
+//            carries zero mechanic knowledge by construction.
+//   LAYER 2  `parseGameDocument()` — async and registry-driven: it loads ONLY the one
+//            mechanic the document names, parses `config`/`content` with that slice's
+//            schemas, then runs the cross-field checks that need both the document and
+//            the slice (sprite slots, category references, id uniqueness).
+//
+```
+
+### frontend/src/game-engine/core/schemaBase.ts
+
+```
+// Zod building blocks for the game document — GAME_ENGINE.md §3.
+// Mechanic slices compose their own config/content schemas from these; the composed
+// document schema (envelope + registry-driven per-mechanic parse + the cross-field
+// checks) lives in core/schema.ts.
+//
+// No React and no mechanic knowledge here, on purpose: the backend/gamegen parity
+// copies import this module as-is.
+
+import { z } from 'zod'
+import { CHARACTER_IDS } from '@/components/characters/control/types'
+import {
+  GAME_BGM,
+  GAME_INTERLUDE_KINDS,
+  GAME_ITEM_TIERS,
+  GAME_LOCALES,
+```
+
+### frontend/src/game-engine/core/scoring.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+import {
+  accuracyScore,
+  applyPenalty,
+  clampScore,
+  comboMultiplier,
+  efficiencyScore,
+  survivalScore,
+  targetScore,
+  tierForScore,
+  weightedScore,
+} from './scoring'
+
+describe('clampScore', () => {
+  it('rounds to an integer inside 0..100', () => {
+```
+
+### frontend/src/game-engine/core/scoring.ts
+
+```
+// Pure scoring helpers — GAME_ENGINE.md §6. Every mechanic composes its score out
+// of these; nothing here knows a mechanic exists.
+//
+// DEPENDENCY-FREE BY CONTRACT. The SERVER re-derives every score by replaying the
+// player's input log (the client's number is a claim, never the grant), so this
+// module is copied verbatim into `backend/src/game-contract/` and
+// `gamegen/src/contract/`. It therefore has ZERO imports — no React, no Zod, no I/O
+// — and uses only the §5 allowed arithmetic (`+ - * /`, `Math.min/max/abs/floor/
+// ceil/round/trunc/sign/sqrt`). The transcendentals are implementation-defined in
+// ECMAScript; one differing bit between browser V8 and Node is a rejected reward for
+// an honest child.
+//
+// INVARIANT for every function below: a finite input yields a finite number. NaN,
+// Infinity and division by zero are handled explicitly at each entry point rather
+// than allowed to propagate into the reward path.
+```
+
+### frontend/src/game-engine/core/stage.ts
+
+```
+// The ONE scaling primitive for every mechanic canvas (GAME_ENGINE.md §10, /CLAUDE.md
+// §1.11). v1 shipped two competing approaches — percentage-positioned zones in some
+// games and a fixed 900x540 stage with a CSS `transform: scale()` in others — so
+// nothing looked or behaved the same across breakpoints. Here a mechanic renders in
+// STABLE DESIGN COORDINATES and this module maps them onto whatever viewport the
+// child actually has: 375px and 1280px are both first-class, neither is a stretched
+// version of the other.
+//
+// Two modes:
+//  - 'contain' — letterbox. The design box is preserved exactly (aspect ratio intact),
+//    scaled to fit, and centred; `offsetX/offsetY` are the letterbox bars. Use it when
+//    the mechanic's layout is authored (a launcher's trajectory field, a board).
+//  - 'fluid'  — fill. The scale is driven by width and the REAL design-space height is
+//    reported back, so a mechanic can reflow (spawn more lanes, extend a runway)
+//    instead of being letterboxed. Use it when the playfield is generative.
+```
+
+### frontend/src/game-engine/core/strip.test.ts
+
+```
+import { stripValidation } from './strip'
+import type { GameDocument, GameValidation } from './types'
+
+/** A minimal but complete client document. Mechanic-specific `config`/`content`
+ *  extras are deliberately thin: the stripper is mechanic-agnostic. */
+const cleanDocument: GameDocument = {
+  schema_version: 1,
+  meta: {
+    slug: 'market-sorter',
+    title: 'Ordena el mercado',
+    locale: 'es-MX',
+    mechanic: 'sorter',
+    concept: {
+      topic_path: 'mi-primer-negocio/precios/costo-vs-precio',
+      recap_md: 'Un **costo** es lo que pagas; un **precio** es lo que cobras.',
+```
+
+### frontend/src/game-engine/core/strip.ts
+
+```
+// The sanctioned validation-sidecar stripper (GAME_ENGINE.md §3.2), the twin of the
+// Lesson Engine's `stripAnswers()` (frontend/src/lesson-engine/core/strip.ts).
+//
+// IMPORTANT — what this is and is NOT. The Lesson Engine's secret (`segment.answer`)
+// lives INSIDE the document, so `stripAnswers()` is the thing that removes it. The
+// Game Engine's secret is `GameValidation`, which lives in a SEPARATE DB column
+// (`game_documents.validation`) and is never part of `GameDocument` in the first
+// place — which is why `game_documents` runs RLS-enabled with zero policies
+// (service-role only): RLS is row-level, not column-level.
+//
+// So this function is a DEFENCE IN DEPTH, not the primary control. It gives:
+//   (a) a type-level guarantee — the returned `ClientGameDocument` provably carries
+//       no `validation` property, so a payload typed as one cannot silently grow it;
+//   (b) a runtime guarantee — if a server bug ever merges the sidecar onto a document
+//       object (a `SELECT *` row spread is the realistic way this happens), the key is
+```
+
+### frontend/src/game-engine/core/types.ts
+
+```
+// Game Engine contract types — GAME_ENGINE.md §3 (document), §5 (determinism &
+// replay), §7 (slice anatomy). The per-mechanic `config`/`content` shapes live in
+// mechanics/<m>/schema.ts (Zod-inferred): core carries ZERO mechanic knowledge, so
+// nothing in this file ever grows a per-mechanic branch.
+//
+// Both imports below are TYPE-ONLY and erased at compile time — this module pulls
+// neither React nor Zod into any runtime bundle, and the backend/gamegen parity
+// copies keep only the simulation subset (see MechanicSimSlice).
+
+import type { ComponentType } from 'react'
+import type { z } from 'zod'
+import type { CharacterId } from '@/components/characters/control/types'
+
+/** The single fixed simulation tick, in milliseconds. Every simulator advances in
+ *  whole integer ticks and never sees a delta-time float: rewards are DERIVED by
+```
+
+### frontend/src/game-engine/lab/GameLabPage.tsx
+
+```
+// /dev/game-lab — the Game Engine QA surface (GAME_ENGINE.md §7 slices, §10 player).
+// Dev-gated in App.tsx; never reaches a production bundle.
+//
+// Twin of /dev/lesson-lab, with the four affordances the determinism contract (§5)
+// needs and that ONLY a lab can give, because a nondeterminism bug is otherwise a
+// mystery — the server rejects a reward and nobody can reproduce the run:
+//
+//   SEED         every launch states the seed it used, and the seed is overridable,
+//                so "it only breaks on this run" becomes a repeatable experiment.
+//   TICK STEP    a manual GameLoopScheduler (the kernel's injectable seam) advances
+//                the simulation one whole tick at a time instead of at rAF speed, so
+//                the tick a state goes wrong on can actually be looked at.
+//   SNAPSHOT     the live SimSnapshot the HUD reads, printed raw — the mechanic's own
+//                View is a renderer and can hide a wrong score behind a right-looking
+//                board.
+```
+
+### frontend/src/game-engine/mechanics/runner/components.test.tsx
+
+```
+// `runner` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
+//
+// The twin of `sorter/components.test.tsx`, and it exists for the same reason:
+// `runner.test.ts` feeds the SIMULATOR hand-written `act` actions, so it cannot tell
+// whether the control surface a child actually touches ever produces one, nor whether
+// the kernel above it advances a tick. The runner's whole input path is a single
+// binary action, which makes "it emits nothing" exactly as invisible to a simulator
+// test as the sorter's was.
+//
+// jsdom implements no PointerEvent constructor, so it is stubbed exactly as
+// `core/input.test.ts` does.
+
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+
+```
+
+### frontend/src/game-engine/mechanics/runner/components.tsx
+
+```
+// Runner — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what
+// lets Core replay the same mechanic without React.
+//
+// Canvas-vs-chrome (/DESIGN.md, NON-NEGOTIABLE): inside the stage rectangle we draw
+// Prism sprites and palette-tinted shapes; outside it everything is closed DESIGN
+// tokens. There is no raw hex in this file and no arcade font import — v1 shipped six
+// games with six Google Fonts, so arcade character here comes from weight, size and
+// motion, in Figtree, at the `lf-*` scale.
+//
+// Scaling goes through `core/stage.ts` rather than a bespoke transform: the simulation
+// runs in fixed design units and the stage maps them onto whatever viewport the child
+// has, so 375px and 1280px are the same game, letterboxed, never re-laid-out.
+```
+
+### frontend/src/game-engine/mechanics/runner/fixtures.ts
+
+```
+// Runner — complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// These are not test stubs: each one satisfies the PRODUCTION schemas (§1.14 forbids
+// relaxing a schema for a fixture), each one is winnable by the `perfect` bot and not
+// by the `random` bot (`runner.test.ts` asserts both), and each one carries real
+// financial-literacy content for its tier. There is no child PII here and there never
+// can be: a game is generated from curriculum, not from a child (§11).
+//
+// `skin.sprites` is deliberately EMPTY. Sprite URLs are Prism/Depot artifacts produced
+// by the `illustrate` stage; inventing one here would be a fabricated asset. The view
+// falls back to palette-tinted shapes plus each item's Material Symbols `icon`, which
+// is the same path a document takes before illustration.
+
+import type { GameDocument } from '@/game-engine/core/types'
+
+```
+
+### frontend/src/game-engine/mechanics/runner/register.ts
+
+```
+// Runner — the slice (GAME_ENGINE.md §7).
+//
+// This is the ONLY module the registry's lazy `import()` reaches for, so it is also
+// the only place in the slice that pulls the React view in. `schema.ts` and
+// `simulate.ts` stay React-free on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` build their SYNCHRONOUS `MechanicSimSlice` registry out of
+// exactly those two files, and a React import there would break the parity copy.
+//
+// Zero cross-slice imports: everything below comes from `core/*` or from this
+// directory.
+
+import type { MechanicSlice, Simulator } from '@/game-engine/core/types'
+
+import { RunnerView } from './components'
+import { runnerFixtures } from './fixtures'
+```
+
+### frontend/src/game-engine/mechanics/runner/runner.test.ts
+
+```
+// Runner — the slice's regression tests.
+//
+// Four properties are load-bearing and each one has an explicit test here:
+//  1. DETERMINISM. Same seed + same input log => byte-identical SimResult, twice. This
+//     is the property Core's reward path rests on (GAME_ENGINE.md §5/§6).
+//  2. WINNABILITY. The `perfect` bot reaches `pass_score` on EVERY fixture and the
+//     `random` bot does not — the §9 gate, run here so a fixture can never drift into
+//     "unwinnable" or "mashable" without a red test.
+//  3. SCHEMA. An out-of-bounds config is REJECTED, not coerced (§1.14).
+//  4. THE MECHANIC'S OWN RULE. A wrong pickup costs exactly what the manifest says.
+
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { createElement } from 'react'
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+```
+
+### frontend/src/game-engine/mechanics/runner/schema.ts
+
+```
+// Runner — Zod config + content schemas (GAME_ENGINE.md §4 row `runner`, §7).
+//
+// THE WHOLE POINT OF THIS FILE: v1's endless runners hardcoded gravity, jump impulse,
+// scroll speed, obstacle spacing and the point values inside the game component, so a
+// second runner meant a second codebase. Here EVERY number that shapes difficulty,
+// physics, spacing, economy or scoring is a manifest field, and `simulate.ts` /
+// `components.tsx` read all of them from `config`. A new runner is a new JSON file.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### frontend/src/game-engine/mechanics/runner/simulate.ts
+
+```
+// Runner — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; no transcendental
+// is reached for at all (the one periodic motion in the mechanic is a TRIANGLE wave
+// built from integer division, so `core/mathd.ts` is not needed here).
+//
+// Two engine-level rules the kernel documents and this file honours:
+//  - PER-ENTITY TIMERS. A moving obstacle's phase is `tick - entity.bornAt`, and a
+//    `sudden` obstacle arms from its OWN distance to the avatar. There is no shared
+//    accumulator anywhere, so N entities never advance N times too fast.
+//  - BATCHED REMOVALS. Collisions are resolved over the whole entity array and the
+//    survivors are produced in ONE filter, so several pickups on the same tick are one
+//    state transition rather than the first pickup plus a stalled world.
+//
+```
+
+### frontend/src/game-engine/mechanics/sorter/components.test.tsx
+
+```
+// `sorter` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
+//
+// WHY THIS FILE EXISTS. `sorter.test.ts` feeds the SIMULATOR hand-written `place`
+// actions and proves the rules. It cannot see the renderer, the pointer layer or the
+// kernel, so an engine whose UI produced no events at all — or whose loop never
+// advanced a tick — passed every one of those tests while nobody could play the game.
+// Everything here therefore drives the REAL controls a child touches and asserts on
+// what came out the other end:
+//
+//   1. the tap route emits the placement (the §1.11 guaranteed path),
+//   2. the drag route emits the IDENTICAL event (drag is enhancement, not a second
+//      set of rules — the two paths must agree byte-for-byte or the server replays a
+//      different game than the one that was played),
+//   3. the whole chain — tap -> emit -> kernel -> step() -> HUD — moves the score
+//      when driven over simulated time through the real GamePlayer and real kernel.
+```
+
+### frontend/src/game-engine/mechanics/sorter/components.tsx
+
+```
+// `sorter` — the renderer (GAME_ENGINE.md §10).
+//
+// It is a RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`.
+// It never scores, never advances a tick and never reads the wall clock — that split
+// is what lets Core replay the same mechanic without React.
+//
+// Three rules it exists to obey:
+//  - EVERY container is BOTH a pointer drop zone (`data-dropzone`, via core/input.ts)
+//    and a tap target. Mobile has no hover and a touch drag is not available to every
+//    child, so drag is enhancement and tap is the guaranteed path (§1.11).
+//  - The canvas scales through core/stage.ts, in stable DESIGN coordinates, so 375px
+//    and 1280px are the same layout at two sizes rather than two layouts.
+//  - Chrome belongs to the player shell. This view draws the playfield, the labelled
+//    containers and the streak — never the score/lives HUD, which the shell owns.
+
+```
+
+### frontend/src/game-engine/mechanics/sorter/fixtures.ts
+
+```
+// `sorter` fixtures — two complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// They are not demo scaffolding. They are the reference answer to "what does a
+// well-tuned sorter document look like", they are what `/dev/game-lab` loads, and
+// `sorter.test.ts` asserts that the PERFECT bot reaches `pass_score` on each one
+// while the RANDOM bot does not — the same §9 winnability gate the Arcade pipeline
+// runs before a generated document may be published.
+//
+// Deliberately different difficulty settings: a tier-1 CHEER manifest (static tray,
+// two containers, no fail state, a discard target for the traps) and a tier-3 ARCADE
+// manifest (falling elements, four containers, three lives, a life per mistake, no
+// discard target so a trap must simply be let go).
+//
+// Content is curriculum, never a child: no names, no locations, no PII (§1.9).
+// `skin.sprites` is empty on purpose — Prism fills it at illustrate time, and the
+```
+
+### frontend/src/game-engine/mechanics/sorter/register.ts
+
+```
+// `sorter` — the slice (GAME_ENGINE.md §7).
+//
+// The ONLY module the registry imports, and the reason each mechanic is its own lazy
+// chunk: `MECHANIC_LOADERS.sorter` dynamic-imports this file, so loading the hub
+// loads no mechanic code at all.
+//
+// It composes and adds nothing. Schema, simulator, view and fixtures each own their
+// rules; a decision that lives here would be a decision the backend parity copy —
+// which builds `MechanicSimSlice` from schema.ts + simulate.ts alone — could not see.
+
+import type { MechanicSlice } from '@/game-engine/core/types'
+
+import { SorterView } from './components'
+import { sorterFixtures } from './fixtures'
+import { SORTER_SPRITE_SLOTS, sorterConfigSchema, sorterContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/sorter/schema.ts
+
+```
+// `sorter` — the config + content contract (GAME_ENGINE.md §4 row 1, §7).
+//
+// THE POINT OF THIS FILE: v1's needs-vs-wants game hardcoded every number it used —
+// the spawn table, the fall speed, the combo curve, the penalty, the colours — so a
+// second instance meant a second copy of the code. Here EVERY tunable the simulator
+// or the view reads lives in `config`, and every label, category and trap lives in
+// `content`. A new sorter game is a new JSON document, never new code.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim into their synchronous registry.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### frontend/src/game-engine/mechanics/sorter/simulate.ts
+
+```
+// `sorter` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental:
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts.
+//
+// Two v1 bugs are structurally excluded and both cost a full comment:
+//
+//  - PER-ENTITY TIMERS. Every element carries its OWN `speed`, position and
+//    `spawnedAt`. There is no shared accumulator that N elements each decrement, so
+//    N elements cannot make one clock run N times too fast.
+//  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
+//    in ONE pass that drops both the consumed and the escaped elements together.
+//    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### frontend/src/game-engine/mechanics/sorter/sorter.test.ts
+
+```
+// `sorter` — the four regression classes GAME_ENGINE.md §14 requires of a mechanic:
+// determinism, the winnability gate, schema bounds, and the mechanic's own rules.
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+
+import { sorterFixtures } from './fixtures'
+import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './schema'
+import { sorterSimulator, type SorterState } from './simulate'
+
+const SEED = 20260730
+
+function maxTicksOf(document: GameDocument): number {
+  const config = sorterConfigSchema.parse(document.config)
+  return config.round.tick_budget
+```
+
+### frontend/src/game-engine/player/GamePlayer.test.tsx
+
+```
+// GamePlayer contract tests — GAME_ENGINE.md §6 (the reward path), §7 (unsupported
+// mechanic), §10 (pause).
+//
+// Everything here runs against the REAL `sorter` slice and its REAL fixtures (§1.14 —
+// fixtures satisfy the production schema, tests never get a relaxed one), and the loop
+// is driven through the kernel's documented scheduler seam rather than fake timers or
+// the wall clock, so the ticks these tests observe are the ticks production runs.
+//
+// Copy is asserted through `i18n.t`, never through literal English: the assertions then
+// hold whatever locale the detector picks, and a key that games.json does not define
+// yet resolves to the key itself on BOTH sides of the comparison.
+
+import { fireEvent, render, screen, act } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+
+```
+
+### frontend/src/game-engine/player/GamePlayer.tsx
+
+```
+// The fullscreen Game Player — GAME_ENGINE.md §6 (rewards), §7 (slices & the
+// unsupported card), §10 (motion, pause, both breakpoints).
+//
+// The shell that plays ANY mechanic. It owns the flow and nothing else:
+//
+//   concept recap  ->  tutorial  ->  play  ->  results
+//                                     |
+//                          pause / interlude overlays
+//
+// THE RECAP IS NOT DECORATION. `meta.concept.recap_md` is on screen before a single
+// tick runs, because it is the lesson link: it is what makes this reinforcement of
+// something the child already learned rather than an arcade toy with a curriculum
+// sticker on it (§8 — games consolidate, they do not teach).
+//
+// THE CLIENT NEVER REPORTS A SCORE. On completion this component hands UP exactly three
+```
+
+### frontend/src/game-engine/player/hud.tsx
+
+```
+// The game HUD — GAME_ENGINE.md §10 (canvas-vs-chrome boundary, hit areas, both
+// breakpoints first-class) and DESIGN.md §Screen Recipes.
+//
+// This is CHROME, not canvas: kit components, closed DESIGN tokens, the `lf-*` type
+// scale, Material Symbols, `lf-number` for every figure. No arcade font — the arcade
+// feel comes from weight, size and motion (§10). It is the exact twin of the Lesson
+// Player's sticky glass header, so a child meets ONE progress language across lessons
+// and games rather than two.
+//
+// It reads a `SimSnapshot` and calls back. It never scores, never advances a tick and
+// never touches the simulator — the same renderer/simulator split the mechanic views
+// obey, applied to the shell.
+//
+// ACTION COLOR CONTRACT: there is NO papaya control here. The single accent CTA of the
+// play view belongs to the mechanic canvas / the overlays; the HUD's pause and quit are
+```
+
+### frontend/src/game-engine/player/overlays.tsx
+
+```
+// The game player's four interruptions and its ending — GAME_ENGINE.md §6 (results,
+// scoring modes), §10 (motion, hit areas, canvas-vs-chrome), §11 (earned celebration).
+//
+// All CHROME: kit components, closed DESIGN tokens, `lf-*` type scale, Material
+// Symbols, `lf-number` for figures. Every one of these views obeys the Action Color
+// Contract — exactly ONE papaya (accent) button on screen at a time — and every control
+// is a >= 44x44 tap target.
+//
+// The two sanctioned interruptions of a run are the PAUSE overlay and an INTERLUDE
+// (§10). The quit confirmation is a guard on top of pause, never a third interruption
+// that can appear on its own. Nothing here ever advances or scores the simulation.
+
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+```
+
+### frontend/src/game-engine/registry.test.tsx
+
+```
+// Registry-completeness gate (GAME_ENGINE.md §7) — the twin of the Lesson Engine's
+// registry.test.tsx. It proves the two properties the hub and the player depend on:
+//
+//   COMPLETENESS   every declared mechanic id has hub metadata and a loader row, so a
+//                  9th id cannot be added without its card and its chunk.
+//   DEGRADATION    a mechanic this build does not implement resolves to `null` and
+//                  parses to the stable unsupported reason — it never throws. That is
+//                  the property that lets new mechanics ship into production content
+//                  without breaking clients that predate them.
+//
+// It also holds the implemented slices to their own contract: their fixtures must
+// survive the FULL production parse (§1.14 — fixtures satisfy production schemas,
+// never a relaxed one).
+
+import { describe, expect, it } from 'vitest'
+```
+
+### frontend/src/game-engine/registry.ts
+
+```
+// The mechanic registry — GAME_ENGINE.md §7.
+//
+// Three exports, and the split between the first two is the whole point:
+//
+//   MECHANIC_META    SYNCHRONOUS metadata (i18n keys + a Material Symbols ligature).
+//                    The /games hub renders entirely from this, so browsing the hub
+//                    loads ZERO mechanic code — no schema, no simulator, no view.
+//   MECHANIC_LOADERS one dynamic import() per mechanic, so each mechanic is its own
+//                    lazy chunk. Eight mechanics must never become one bundle every
+//                    player downloads in order to play one game.
+//   loadMechanic()   the cached loader. An id with no slice returns null; it NEVER
+//                    throws.
+//
+// FORWARD COMPATIBILITY (non-negotiable, GAME_ENGINE.md §7). `loadMechanic` answers
+// null for BOTH an id outside MECHANIC_IDS and a declared id whose slice does not
+```
+
 ### frontend/src/i18n/en-US/admin.json
 
 ```
@@ -138930,6 +139737,9 @@ export { Checkbox } from './Checkbox';
     "name": "LittleFounders",
     "tagline": "Learn, play, and build your future"
   },
+  "actions": {
+    "close": "Close"
+  },
   "theme": {
     "toggle": "Theme",
     "auto": "Match system",
@@ -138937,9 +139747,6 @@ export { Checkbox } from './Checkbox';
     "dark": "Dark"
   },
   "language": {
-    "label": "Language",
-    "en-US": "English",
-    "es-MX": "Spanish",
 ```
 
 ### frontend/src/i18n/en-US/dashboard.json
@@ -138980,6 +139787,26 @@ export { Checkbox } from './Checkbox';
     "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
     "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
+```
+
+### frontend/src/i18n/en-US/games.json
+
+```
+{
+  "hub": {
+    "title": "Games",
+    "subtitle": "Every game here comes from something you already learned. Pick one and play it.",
+    "emptyTitle": "Your arcade is warming up",
+    "emptyBody": "No games are ready for this course yet. Keep going with your lessons — games show up as you unlock them.",
+    "groupBy": {
+      "label": "Group by",
+      "course": "By course",
+      "adventure": "By adventure"
+    },
+    "play": "Play",
+    "replay": "Play again",
+    "bestScore": "Best {{score}}",
+    "xp": "{{xp}} XP",
 ```
 
 ### frontend/src/i18n/en-US/learn.json
@@ -139110,6 +139937,9 @@ export { Checkbox } from './Checkbox';
     "name": "LittleFounders",
     "tagline": "Aprende, juega y construye tu futuro"
   },
+  "actions": {
+    "close": "Cerrar"
+  },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual que el sistema",
@@ -139117,9 +139947,6 @@ export { Checkbox } from './Checkbox';
     "dark": "Oscuro"
   },
   "language": {
-    "label": "Idioma",
-    "en-US": "Inglés",
-    "es-MX": "Español",
 ```
 
 ### frontend/src/i18n/es-MX/dashboard.json
@@ -139160,6 +139987,26 @@ export { Checkbox } from './Checkbox';
     "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
     "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
     "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada.",
+```
+
+### frontend/src/i18n/es-MX/games.json
+
+```
+{
+  "hub": {
+    "title": "Juegos",
+    "subtitle": "Cada juego de aquí sale de algo que ya aprendiste. Escoge uno y a jugar.",
+    "emptyTitle": "Tu arcade se está preparando",
+    "emptyBody": "Todavía no hay juegos listos para este curso. Sigue con tus lecciones — los juegos van apareciendo conforme los desbloqueas.",
+    "groupBy": {
+      "label": "Agrupar por",
+      "course": "Por curso",
+      "adventure": "Por aventura"
+    },
+    "play": "Jugar",
+    "replay": "Jugar otra vez",
+    "bestScore": "Mejor {{score}}",
+    "xp": "{{xp}} XP",
 ```
 
 ### frontend/src/i18n/es-MX/learn.json
@@ -139310,6 +140157,9 @@ import enErrors from './en-US/errors.json';
     "name": "LittleFounders",
     "tagline": "Aprenda, jogue e construa seu futuro"
   },
+  "actions": {
+    "close": "Fechar"
+  },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual ao sistema",
@@ -139317,9 +140167,6 @@ import enErrors from './en-US/errors.json';
     "dark": "Escuro"
   },
   "language": {
-    "label": "Idioma",
-    "en-US": "Inglês",
-    "es-MX": "Espanhol",
 ```
 
 ### frontend/src/i18n/pt-BR/dashboard.json
@@ -139360,6 +140207,26 @@ import enErrors from './en-US/errors.json';
     "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
     "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
     "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
+```
+
+### frontend/src/i18n/pt-BR/games.json
+
+```
+{
+  "hub": {
+    "title": "Jogos",
+    "subtitle": "Cada jogo daqui vem de algo que você já aprendeu. Escolha um e bora jogar.",
+    "emptyTitle": "Seu fliperama está esquentando",
+    "emptyBody": "Ainda não há jogos prontos para este curso. Siga com suas lições — os jogos vão aparecendo conforme você desbloqueia.",
+    "groupBy": {
+      "label": "Agrupar por",
+      "course": "Por curso",
+      "adventure": "Por aventura"
+    },
+    "play": "Jogar",
+    "replay": "Jogar de novo",
+    "bestScore": "Melhor {{score}}",
+    "xp": "{{xp}} XP",
 ```
 
 ### frontend/src/i18n/pt-BR/learn.json

@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
-# i18n:check — two-phase verification:
+# i18n:check — three-phase verification:
 #   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth)
 #   Phase 2: Hardcoded string scan in TSX/TS source (strings not wrapped in t())
+#   Phase 3: Every STATICALLY DECIDABLE t() key in source EXISTS in en-US —
+#            plain literals, BOTH branches of t(cond ? 'a' : 'b'), and the
+#            leading namespace of t(`a.b.${expr}`)
+#
+# Phase 1 alone is not enough: it only proves the three locales agree with each
+# other. A key called by a component but present in NO locale is trivially "in
+# parity" and renders on screen as its raw dot-path. Phase 3 closes that hole.
+#
+# Phase 3 is not limited to plain literals, because "dynamic" is not the same as
+# "unknowable": in t(cond ? 'a.b' : 'a.c') both keys are literals, and in
+# t(`a.b.${x}`) the namespace 'a.b' is literal even when the leaf is not. Six
+# defects that rendered raw dot-paths on screen hid in exactly those two shapes.
+# What phase 3 still cannot see is the LEAF under a `${…}` segment — the check
+# says so in its own output so a green run is never mistaken for full coverage.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -49,6 +63,14 @@ if ! node agent/tools/check-hardcoded-strings.mjs; then
   FAIL=1
 fi
 
+# ── Phase 3: Referenced-key existence ─────────────────────────────────────────
+# Reports every missing key (and every missing dynamic namespace, under its own
+# label) with the file:line that references it.
+if ! node agent/tools/check-t-keys.mjs; then
+  FAIL=1
+fi
+
 [ "$FAIL" -eq 1 ] && exit 1
 echo "i18n:check OK — en-US, es-MX, pt-BR file and key sets identical"
 echo "i18n:check OK — no hardcoded user-facing strings in source"
+echo "i18n:check OK — every statically decidable t() key referenced in source exists in en-US"

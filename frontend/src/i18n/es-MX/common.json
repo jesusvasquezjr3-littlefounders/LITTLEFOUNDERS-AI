@@ -3,6 +3,9 @@
     "name": "LittleFounders",
     "tagline": "Aprende, juega y construye tu futuro"
   },
+  "actions": {
+    "close": "Cerrar"
+  },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual que el sistema",

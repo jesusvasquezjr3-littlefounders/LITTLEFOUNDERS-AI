@@ -3,6 +3,9 @@
     "name": "LittleFounders",
     "tagline": "Learn, play, and build your future"
   },
+  "actions": {
+    "close": "Close"
+  },
   "theme": {
     "toggle": "Theme",
     "auto": "Match system",

@@ -1,0 +1,177 @@
+{
+  "hub": {
+    "title": "Jogos",
+    "subtitle": "Cada jogo daqui vem de algo que você já aprendeu. Escolha um e bora jogar.",
+    "emptyTitle": "Seu fliperama está esquentando",
+    "emptyBody": "Ainda não há jogos prontos para este curso. Siga com suas lições — os jogos vão aparecendo conforme você desbloqueia.",
+    "groupBy": {
+      "label": "Agrupar por",
+      "course": "Por curso",
+      "adventure": "Por aventura"
+    },
+    "play": "Jogar",
+    "replay": "Jogar de novo",
+    "bestScore": "Melhor {{score}}",
+    "xp": "{{xp}} XP",
+    "locked": {
+      "badge": "Bloqueado",
+      "body": "Primeiro aprenda, depois jogue.",
+      "explain": "Conclua uma lição deste tema e este jogo é liberado para você."
+    }
+  },
+  "player": {
+    "intro": {
+      "heading": "O que você acabou de aprender",
+      "start": "Bora jogar!"
+    },
+    "tutorial": {
+      "heading": "Como jogar",
+      "tryIt": "Dê um toque para experimentar",
+      "next": "Entendi",
+      "skip": "Pular as instruções"
+    },
+    "hud": {
+      "score": "Pontos",
+      "lives": "Vidas",
+      "combo": "Combo",
+      "progress": "Progresso",
+      "target": "Meta"
+    },
+    "pause": "Pausar",
+    "resume": "Continuar jogando",
+    "mute": "Desligar o som",
+    "unmute": "Ligar o som",
+    "quit": "Sair do jogo",
+    "quitConfirm": {
+      "title": "Sair deste jogo?",
+      "body": "A pontuação desta rodada não vai ser salva. Você pode voltar e jogar quando quiser.",
+      "confirm": "Sim, sair",
+      "cancel": "Ficar e jogar"
+    },
+    "interlude": {
+      "heading": "Pausa rápida",
+      "check": "Conferir minha resposta",
+      "continue": "Voltar ao jogo"
+    },
+    "results": {
+      "title": {
+        "perfect": "Rodada perfeita!",
+        "great": "Que partida!",
+        "good": "Muito bem!",
+        "keepGoing": "Bom esforço!"
+      },
+      "xpEarned": "XP conquistados",
+      "bestScore": "Melhor pontuação",
+      "newBest": "Novo recorde!",
+      "stats": {
+        "score": "Pontos",
+        "time": "Tempo",
+        "rounds": "Rodadas",
+        "bestCombo": "Melhor combo"
+      },
+      "highlight": {
+        "combo": "Você emendou {{count}} certas seguidas!",
+        "accuracy": "Você escolheu a certa quase todas as vezes!",
+        "effort": "Você jogou esta rodada até o fim: cada partida te deixa mais afiado."
+      },
+      "retry": "Jogar de novo",
+      "backToHub": "Voltar aos jogos"
+    }
+  },
+  "mechanics": {
+    "sorter": {
+      "title": "Máquina de separar",
+      "blurb": "Mande cada coisa para o grupo certo."
+    },
+    "launcher": {
+      "title": "Rampa de lançamento",
+      "blurb": "Mire, lance e acerte o alvo certo."
+    },
+    "runner": {
+      "title": "Corre e pega",
+      "blurb": "Corra em frente, pegue o que vale e desvie do resto."
+    },
+    "stacker": {
+      "title": "Construtor de torres",
+      "blurb": "Empilhe as peças e levante a torre mais alta que conseguir."
+    },
+    "autobattler": {
+      "title": "Duelo de equipes",
+      "blurb": "Monte seu time e veja seu plano vencer o duelo."
+    },
+    "explorer": {
+      "title": "Explorador",
+      "blurb": "Percorra o mapa e descubra o que está escondido."
+    },
+    "defender": {
+      "title": "Guardião da base",
+      "blurb": "Segure a linha e pare cada onda antes que ela passe."
+    },
+    "flyer": {
+      "title": "Voo alto",
+      "blurb": "Voe pelos vãos e colete o que você precisa."
+    }
+  },
+  "sorter": {
+    "fieldLabel": "Coisas para separar",
+    "itemLabel": "Coisa: {{label}}",
+    "binLabel": "Grupo: {{label}}",
+    "trash": "Lixo",
+    "empty": "Nada para separar agora",
+    "combo": "×{{multiplier}}",
+    "hint": "Arraste uma coisa até o grupo dela — ou toque na coisa e depois no grupo."
+  },
+  "runner": {
+    "stageLabel": "Área do jogo",
+    "pausedLabel": "Em pausa",
+    "action": {
+      "jump": "Pular",
+      "lane": "Trocar de pista",
+      "flip": "Ir para o outro lado",
+      "contextual": "Mover"
+    },
+    "hint": {
+      "jump": "Toque em qualquer lugar para pular.",
+      "lane": "Toque em qualquer lugar para trocar de pista.",
+      "flip": "Toque em qualquer lugar para ir para o outro lado.",
+      "contextual": "Um toque: pula na terra, mergulha na água e sobe no ar.",
+      "hold": "Segure para planar."
+    }
+  },
+  "states": {
+    "loading": "Carregando seu jogo…",
+    "unsupported": {
+      "title": "Este jogo precisa de uma versão mais nova do app",
+      "body": "Ainda não conseguimos abrir este aqui. Nada quebrou e nada se perdeu — escolha outro jogo enquanto colocamos em dia.",
+      "back": "Voltar aos jogos"
+    },
+    "loadFailed": "Não conseguimos carregar este jogo agora. Tente de novo daqui a pouco.",
+    "offline": "Algumas imagens ou sons não carregaram. O jogo continua funcionando — pode jogar tranquilo."
+  },
+  "a11y": {
+    "dragHandle": "Arraste para mover",
+    "dragItem": "Arraste {{label}}",
+    "dropZone": "Área para soltar",
+    "dropZoneNamed": "Área para soltar: {{label}}",
+    "actionButton": "Ação",
+    "pause": "Pausar o jogo"
+  },
+  "lab": {
+    "title": "Laboratório de jogos",
+    "subtitle": "{{fixtures}} fixtures · {{ready}} de {{total}} mecânicas implementadas",
+    "loading": "Carregando mecânicas…",
+    "seed": "Semente",
+    "seedAuto": "automática",
+    "newSeed": "Semente aleatória",
+    "stepMode": "Modo passo a passo",
+    "pending": "Ainda não implementadas",
+    "pendingHint": "Estas mecânicas ainda não têm um slice registrado no loader.",
+    "debug": "Depuração",
+    "step": "Avançar",
+    "awaitingLog": "Aguardando a rodada",
+    "copyLog": "Copiar registro de entradas",
+    "restart": "Reiniciar rodada",
+    "copied": "Registro de entradas copiado.",
+    "copyFailed": "Área de transferência indisponível — o registro foi impresso no console."
+  }
+}
