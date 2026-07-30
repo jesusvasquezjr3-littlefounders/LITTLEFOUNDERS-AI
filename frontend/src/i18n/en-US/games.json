@@ -85,7 +85,7 @@
     },
     "launcher": {
       "title": "Launch Pad",
-      "blurb": "Aim, launch and hit the right target."
+      "blurb": "Set your angle, pick your power and hit the right target."
     },
     "runner": {
       "title": "Run & Grab",
@@ -93,7 +93,7 @@
     },
     "stacker": {
       "title": "Tower Builder",
-      "blurb": "Stack the pieces to build the tallest tower you can."
+      "blurb": "Buy your pieces, build up to the mark and keep it standing."
     },
     "autobattler": {
       "title": "Team Duel",
@@ -105,7 +105,7 @@
     },
     "defender": {
       "title": "Base Guard",
-      "blurb": "Hold the line and stop every wave before it gets through."
+      "blurb": "Spend your gold, place your towers and stop every wave."
     },
     "flyer": {
       "title": "Sky Run",
@@ -136,6 +136,112 @@
       "flip": "Tap anywhere to flip to the other side.",
       "contextual": "One tap: jump on land, dive in water, rise in the air.",
       "hold": "Hold to glide."
+    }
+  },
+  "launcher": {
+    "stageLabel": "Launch area",
+    "fieldLabel": "Launch area — drag to aim, tap to launch",
+    "pausedLabel": "Paused",
+    "hint": "Drag to aim, then tap to launch.",
+    "shots_one": "{{count}} shot left",
+    "shots_other": "{{count}} shots left",
+    "targetLabel": "Target: {{label}}",
+    "cradleLabel": "Loading cradle",
+    "ammoLabel": "Load {{label}}",
+    "assist": {
+      "on": "Show the aim line",
+      "off": "Hide the aim line"
+    },
+    "readout": {
+      "angle": "{{angle}}°",
+      "power": "Power {{power}}%"
+    },
+    "control": {
+      "angleUp": "Raise the angle",
+      "angleDown": "Lower the angle",
+      "powerUp": "More power",
+      "powerDown": "Less power",
+      "fire": "Launch!",
+      "moveForward": "Move forward",
+      "moveBack": "Move back",
+      "nudgeLeft": "Steer left",
+      "nudgeRight": "Steer right"
+    }
+  },
+  "stacker": {
+    "stageLabel": "Building area",
+    "pausedLabel": "Paused",
+    "columnLabel": "Column {{index}}",
+    "budget": "{{amount}} to spend",
+    "height": "{{height}} of {{target}} tall",
+    "margin": "Balance {{value}}",
+    "marginLabel": "Balance",
+    "hold": "Steady {{seconds}}s of {{target}}s",
+    "holdLabel": "Holding steady",
+    "trayLabel": "Pieces you can buy",
+    "pieceLabel": "{{label}} — costs {{cost}}, {{uses}} left",
+    "uses": "{{uses}} left",
+    "nudgeLeft": "Nudge left",
+    "nudgeRight": "Nudge right",
+    "rotate": "Turn the piece",
+    "commit": "Place it",
+    "commitMove": "Move it here",
+    "removeLast": "Take back the last piece (+{{refund}})",
+    "moveLast": "Move the last piece ({{cost}})",
+    "ready": "Test it!",
+    "assistOn": "Help is on",
+    "assistOff": "Help is off",
+    "hintBuild": "Pick a piece, line it up and place it.",
+    "hintTest": "Hands off — let's see if it holds!",
+    "force": {
+      "wind": "Wind",
+      "vibration": "Shaking",
+      "earthquake": "Earthquake",
+      "rain": "Rain",
+      "load": "Extra weight"
+    }
+  },
+  "defender": {
+    "gridLabel": "Defense board",
+    "pausedLabel": "Paused",
+    "gold": "{{gold}} gold",
+    "gems": "{{gems}} gems",
+    "costGold": "{{cost}} gold",
+    "costGems": "{{cost}} gems",
+    "wave": "Wave {{current}}/{{total}}",
+    "startWave": "Send the wave",
+    "hint": "Tap a tower below, then tap a spot on the board.",
+    "hintPlace": "Now tap the spot where it goes.",
+    "sealWarning": "That spot would close the last path — try another one.",
+    "heatTitle": "Want it harder?",
+    "heatOption": "{{label}} · {{multiplier}}% points",
+    "priorityAction": "Shoot {{priority}}",
+    "upgradeAction": "{{label}} level {{tier}} ({{cost}} gold)",
+    "sellAction": "Sell (+{{gold}} gold)",
+    "cell": {
+      "empty": "Empty spot, column {{col}}, row {{row}}",
+      "tower": "{{label}}, column {{col}}, row {{row}}"
+    },
+    "palette": {
+      "wall": "Wall",
+      "ability": "Power-up"
+    },
+    "priority": {
+      "first": "the one in front",
+      "last": "the one at the back",
+      "strongest": "the strongest",
+      "weakest": "the weakest",
+      "nearest": "the closest"
+    },
+    "archetype": {
+      "single": "Single shot",
+      "area": "Splash",
+      "slow": "Slower",
+      "dot": "Burn",
+      "antiair": "Anti-air",
+      "aura": "Booster",
+      "economy": "Money maker",
+      "block": "Blocker"
     }
   },
   "states": {

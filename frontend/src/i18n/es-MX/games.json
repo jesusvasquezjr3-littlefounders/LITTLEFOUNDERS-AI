@@ -85,7 +85,7 @@
     },
     "launcher": {
       "title": "Rampa de lanzamiento",
-      "blurb": "Apunta, lanza y pega en el blanco correcto."
+      "blurb": "Ajusta el ángulo, elige la fuerza y pégale al blanco correcto."
     },
     "runner": {
       "title": "Corre y atrapa",
@@ -93,7 +93,7 @@
     },
     "stacker": {
       "title": "Constructor de torres",
-      "blurb": "Apila las piezas para levantar la torre más alta que puedas."
+      "blurb": "Compra tus piezas, llega a la marca y logra que no se caiga."
     },
     "autobattler": {
       "title": "Duelo de equipos",
@@ -105,7 +105,7 @@
     },
     "defender": {
       "title": "Guardián de la base",
-      "blurb": "Aguanta la línea y detén cada oleada antes de que pase."
+      "blurb": "Gasta tu oro, coloca tus torres y detén cada oleada."
     },
     "flyer": {
       "title": "Vuelo alto",
@@ -136,6 +136,112 @@
       "flip": "Toca donde sea para pasarte al otro lado.",
       "contextual": "Un toque: salta en la tierra, bucea en el agua y sube en el aire.",
       "hold": "Mantén presionado para planear."
+    }
+  },
+  "launcher": {
+    "stageLabel": "Área de lanzamiento",
+    "fieldLabel": "Área de lanzamiento — arrastra para apuntar, toca para lanzar",
+    "pausedLabel": "En pausa",
+    "hint": "Arrastra para apuntar y luego toca para lanzar.",
+    "shots_one": "Te queda {{count}} tiro",
+    "shots_other": "Te quedan {{count}} tiros",
+    "targetLabel": "Blanco: {{label}}",
+    "cradleLabel": "Base de carga",
+    "ammoLabel": "Cargar {{label}}",
+    "assist": {
+      "on": "Mostrar la línea de tiro",
+      "off": "Ocultar la línea de tiro"
+    },
+    "readout": {
+      "angle": "{{angle}}°",
+      "power": "Fuerza {{power}}%"
+    },
+    "control": {
+      "angleUp": "Subir el ángulo",
+      "angleDown": "Bajar el ángulo",
+      "powerUp": "Más fuerza",
+      "powerDown": "Menos fuerza",
+      "fire": "¡Lanzar!",
+      "moveForward": "Avanzar",
+      "moveBack": "Retroceder",
+      "nudgeLeft": "Dirigir a la izquierda",
+      "nudgeRight": "Dirigir a la derecha"
+    }
+  },
+  "stacker": {
+    "stageLabel": "Área de construcción",
+    "pausedLabel": "En pausa",
+    "columnLabel": "Columna {{index}}",
+    "budget": "{{amount}} para gastar",
+    "height": "{{height}} de {{target}} de alto",
+    "margin": "Equilibrio {{value}}",
+    "marginLabel": "Equilibrio",
+    "hold": "Firme {{seconds}}s de {{target}}s",
+    "holdLabel": "Aguantando firme",
+    "trayLabel": "Piezas que puedes comprar",
+    "pieceLabel": "{{label}} — cuesta {{cost}}, te quedan {{uses}}",
+    "uses": "Quedan {{uses}}",
+    "nudgeLeft": "Mover a la izquierda",
+    "nudgeRight": "Mover a la derecha",
+    "rotate": "Girar la pieza",
+    "commit": "Colocar",
+    "commitMove": "Mover aquí",
+    "removeLast": "Quitar la última pieza (+{{refund}})",
+    "moveLast": "Mover la última pieza ({{cost}})",
+    "ready": "¡A probarla!",
+    "assistOn": "Ayuda activada",
+    "assistOff": "Ayuda desactivada",
+    "hintBuild": "Escoge una pieza, acomódala y colócala.",
+    "hintTest": "No la toques — ¡a ver si aguanta!",
+    "force": {
+      "wind": "Viento",
+      "vibration": "Vibración",
+      "earthquake": "Temblor",
+      "rain": "Lluvia",
+      "load": "Peso extra"
+    }
+  },
+  "defender": {
+    "gridLabel": "Tablero de defensa",
+    "pausedLabel": "En pausa",
+    "gold": "{{gold}} de oro",
+    "gems": "{{gems}} gemas",
+    "costGold": "{{cost}} de oro",
+    "costGems": "{{cost}} gemas",
+    "wave": "Oleada {{current}}/{{total}}",
+    "startWave": "Mandar la oleada",
+    "hint": "Toca una torre de abajo y luego toca un lugar del tablero.",
+    "hintPlace": "Ahora toca el lugar donde va.",
+    "sealWarning": "Ahí taparías el último camino — escoge otro lugar.",
+    "heatTitle": "¿Lo quieres más difícil?",
+    "heatOption": "{{label}} · {{multiplier}}% de puntos",
+    "priorityAction": "Dispara {{priority}}",
+    "upgradeAction": "{{label}} nivel {{tier}} ({{cost}} de oro)",
+    "sellAction": "Vender (+{{gold}} de oro)",
+    "cell": {
+      "empty": "Lugar vacío, columna {{col}}, fila {{row}}",
+      "tower": "{{label}}, columna {{col}}, fila {{row}}"
+    },
+    "palette": {
+      "wall": "Muro",
+      "ability": "Poder"
+    },
+    "priority": {
+      "first": "al de adelante",
+      "last": "al de atrás",
+      "strongest": "al más fuerte",
+      "weakest": "al más débil",
+      "nearest": "al más cercano"
+    },
+    "archetype": {
+      "single": "Tiro simple",
+      "area": "Explosión",
+      "slow": "Hace lento",
+      "dot": "Quema",
+      "antiair": "Antiaérea",
+      "aura": "Potenciadora",
+      "economy": "Da monedas",
+      "block": "Bloquea"
     }
   },
   "states": {

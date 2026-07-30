@@ -51,6 +51,12 @@ const FULL_FILE_PAIRS = [
   'mechanics/sorter/simulate.ts',
   'mechanics/runner/schema.ts',
   'mechanics/runner/simulate.ts',
+  'mechanics/launcher/schema.ts',
+  'mechanics/launcher/simulate.ts',
+  'mechanics/stacker/schema.ts',
+  'mechanics/stacker/simulate.ts',
+  'mechanics/defender/schema.ts',
+  'mechanics/defender/simulate.ts',
 ];
 
 /** Rendering-only symbols that must NEVER reach the backend copy of core/types.ts. */

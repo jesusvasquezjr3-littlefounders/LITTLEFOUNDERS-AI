@@ -30,6 +30,29 @@ import {
   runnerContentSchema,
 } from '../game-contract/mechanics/runner/schema.js';
 import { runnerSimulator } from '../game-contract/mechanics/runner/simulate.js';
+import {
+  launcherConfigSchema,
+  launcherContentSchema,
+} from '../game-contract/mechanics/launcher/schema.js';
+import { launcherSimulator } from '../game-contract/mechanics/launcher/simulate.js';
+import {
+  stackerConfigSchema,
+  stackerContentSchema,
+} from '../game-contract/mechanics/stacker/schema.js';
+import { stackerSimulator } from '../game-contract/mechanics/stacker/simulate.js';
+import {
+  defenderConfigSchema,
+  defenderContentSchema,
+} from '../game-contract/mechanics/defender/schema.js';
+import { defenderSimulator } from '../game-contract/mechanics/defender/simulate.js';
+import {
+  DEFENDER_DOCUMENT,
+  DEFENDER_MAX_TICKS,
+  LAUNCHER_DOCUMENT,
+  LAUNCHER_MAX_TICKS,
+  STACKER_DOCUMENT,
+  STACKER_MAX_TICKS,
+} from './gameContractFixtures.js';
 
 /** Fixed for every replay here: a seed is what makes the run reproducible at all. */
 const SEED = 20260730;
@@ -481,10 +504,17 @@ describe('game-contract — the synchronous registry', () => {
   it('resolves the implemented mechanics to their simulator', () => {
     expect(getMechanic('sorter')?.simulator).toBe(sorterSimulator);
     expect(getMechanic('runner')?.simulator).toBe(runnerSimulator);
+    expect(getMechanic('launcher')?.simulator).toBe(launcherSimulator);
+    expect(getMechanic('stacker')?.simulator).toBe(stackerSimulator);
+    expect(getMechanic('defender')?.simulator).toBe(defenderSimulator);
   });
 
   it('answers null — never throws — for an unknown or unimplemented mechanic', () => {
-    expect(getMechanic('launcher')).toBeNull();
+    // `autobattler`, `explorer` and `flyer` are declared in the closed set but have no
+    // slice this release. A document naming one must degrade to a refusal, never a 500.
+    expect(getMechanic('autobattler')).toBeNull();
+    expect(getMechanic('explorer')).toBeNull();
+    expect(getMechanic('flyer')).toBeNull();
     expect(getMechanic('not-a-mechanic')).toBeNull();
     expect(isMechanicId('sorter')).toBe(true);
     expect(isMechanicId('not-a-mechanic')).toBe(false);
@@ -494,5 +524,228 @@ describe('game-contract — the synchronous registry', () => {
     const sorter = getMechanic('sorter');
     expect(sorter?.spriteSlots).toContain('bin_1');
     expect(getMechanic('runner')?.spriteSlots).toContain('avatar');
+    expect(getMechanic('launcher')?.spriteSlots).toContain('projectile');
+    expect(getMechanic('stacker')?.spriteSlots).toContain('piece_1');
+    expect(getMechanic('defender')?.spriteSlots).toContain('tower_single');
+  });
+});
+
+// ---- The three mechanics added after the first parity batch ---------------------
+//
+// Same three properties the sorter/runner suites above assert, expressed once per
+// mechanic through a table: the copied schemas accept the production document with no
+// relaxation and strip nothing from it; the perfect bot's recorded log replays to a
+// byte-identical result; the winnability gate (perfect passes, random does not) holds
+// on the server side too. A mechanic missing from `backend/src/game-contract/` fails
+// every reward for that mechanic in production, so each one gets its own row here.
+
+const LATER_MECHANICS = [
+  {
+    name: 'launcher',
+    simulator: launcherSimulator,
+    document: LAUNCHER_DOCUMENT,
+    maxTicks: LAUNCHER_MAX_TICKS,
+    configSchema: launcherConfigSchema,
+    contentSchema: launcherContentSchema,
+  },
+  {
+    name: 'stacker',
+    simulator: stackerSimulator,
+    document: STACKER_DOCUMENT,
+    maxTicks: STACKER_MAX_TICKS,
+    configSchema: stackerConfigSchema,
+    contentSchema: stackerContentSchema,
+  },
+  {
+    name: 'defender',
+    simulator: defenderSimulator,
+    document: DEFENDER_DOCUMENT,
+    maxTicks: DEFENDER_MAX_TICKS,
+    configSchema: defenderConfigSchema,
+    contentSchema: defenderContentSchema,
+  },
+] as const;
+
+describe.each(LATER_MECHANICS)(
+  'game-contract — $name (parity copy)',
+  ({ name, simulator, document, maxTicks, configSchema, contentSchema }) => {
+    it('parses the production document with the copied schemas, unmodified', () => {
+      expect(configSchema.safeParse(document.config).success).toBe(true);
+      expect(contentSchema.safeParse(document.content).success).toBe(true);
+    });
+
+    it('strips nothing the simulator reads — the parsed config round-trips', () => {
+      // Zod strips unknown keys by DEFAULT. A field the frontend authored and this copy
+      // lacks is therefore DELETED here rather than rejected, and the replay then scores
+      // a document the child never played. This is the assertion that catches it.
+      expect(configSchema.parse(document.config)).toEqual(document.config);
+      expect(contentSchema.parse(document.content)).toEqual(document.content);
+    });
+
+    it('names the mechanic it is registered under', () => {
+      expect(simulator.mechanic).toBe(name);
+      expect(getMechanic(name)?.simulator).toBe(simulator);
+    });
+
+    it('replays the perfect bot log to an identical result', () => {
+      const played = runBot({
+        simulator,
+        document,
+        seed: SEED,
+        bot: simulator.bots.perfect,
+        maxTicks,
+      });
+
+      const replay = replayGame({
+        simulator,
+        document,
+        seed: SEED,
+        inputLog: played.inputLog,
+        maxTicks,
+        maxEvents: played.inputLog.length,
+      });
+
+      expect(replay.ok).toBe(true);
+      expect(replay.ok && replay.result).toEqual(played.result);
+    });
+
+    it('replays the same log twice to the same result (no hidden state, no clock)', () => {
+      const played = runBot({
+        simulator,
+        document,
+        seed: SEED,
+        bot: simulator.bots.perfect,
+        maxTicks,
+      });
+      const args = {
+        simulator,
+        document,
+        seed: SEED,
+        inputLog: played.inputLog,
+        maxTicks,
+        maxEvents: played.inputLog.length,
+      };
+      expect(replayGame(args)).toEqual(replayGame(args));
+    });
+
+    it('holds the winnability gate: perfect passes, random does not', () => {
+      const perfect = runBot({
+        simulator,
+        document,
+        seed: SEED,
+        bot: simulator.bots.perfect,
+        maxTicks,
+      });
+      expect(perfect.result.finished).toBe(true);
+      expect(perfect.result.score).toBeGreaterThanOrEqual(document.scoring.pass_score);
+
+      const random = runBot({
+        simulator,
+        document,
+        seed: SEED,
+        bot: simulator.bots.random,
+        maxTicks,
+      });
+      expect(random.result.score).toBeLessThan(document.scoring.pass_score);
+    });
+
+    it('refuses a forged action instead of scoring it', () => {
+      const log: GameInputEvent[] = [{ tick: 0, action: 'teleport', n: 1 }];
+      expect(replayGame({ simulator, document, seed: SEED, inputLog: log, maxTicks })).toEqual({
+        ok: false,
+        reason: 'unknown_action',
+      });
+    });
+  },
+);
+
+describe('game-contract — golden replay for the later mechanics', () => {
+  // Pinned exactly as the sorter/runner goldens above: these numbers came out of THIS
+  // copy at SEED, so any change to the PRNG, the scoring helpers or a simulator's
+  // arithmetic surfaces as a failing test rather than as a silently different reward
+  // for a child. Re-verifying an attempt months later must land on the same score.
+  it('launcher: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: launcherSimulator,
+      document: LAUNCHER_DOCUMENT,
+      seed: SEED,
+      bot: launcherSimulator.bots.perfect,
+      maxTicks: LAUNCHER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(90);
+    expect(played.result.stats).toEqual({
+      shots_fired: 4,
+      shots_budget: 9,
+      shots_left: 3,
+      correct_hits: 4,
+      incorrect_hits: 0,
+      targets_destroyed: 4,
+      targets_total: 4,
+      misses: 0,
+      useful_bounces: 0,
+      points: 84,
+      combo_best: 2,
+      rounds_cleared: 2,
+      ticks: 111,
+    });
+    // One `launch` per target: the aim is carried on the launch event itself.
+    expect(played.inputLog.length).toBe(4);
+  });
+
+  it('stacker: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: stackerSimulator,
+      document: STACKER_DOCUMENT,
+      seed: SEED,
+      bot: stackerSimulator.bots.perfect,
+      maxTicks: STACKER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(86);
+    expect(played.result.stats).toEqual({
+      pieces: 6,
+      placements: 6,
+      repositions: 0,
+      removals: 0,
+      collapses: 0,
+      shattered: 0,
+      avoid_used: 0,
+      spent: 85,
+      budget_left: 115,
+      height: 254,
+      margin_x100: 183,
+      hold_ticks: 300,
+      won: 1,
+      assisted: 0,
+      ticks: 576,
+    });
+    // Six placements plus the single `ready` that ends the build phase.
+    expect(played.inputLog.length).toBe(7);
+  });
+
+  it('defender: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: defenderSimulator,
+      document: DEFENDER_DOCUMENT,
+      seed: SEED,
+      bot: defenderSimulator.bots.perfect,
+      maxTicks: DEFENDER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(100);
+    expect(played.result.stats).toEqual({
+      killed: 32,
+      leaked: 0,
+      waves_cleared: 3,
+      towers_built: 8,
+      walls_built: 0,
+      gold_left: 449,
+      gold_spent: 205,
+      gold_earned: 584,
+      gems_left: 0,
+      abilities_used: 0,
+      blocked_builds: 0,
+      defeated: 0,
+      ticks: 774,
+    });
+    expect(played.inputLog.length).toBe(8);
   });
 });

@@ -88,9 +88,9 @@ export type MechanicLoader = () => Promise<MechanicSlice>
  * document layer and the player both treat it exactly like an unknown mechanic.
  *
  * HOW TO PLUG A NEW MECHANIC IN (the only change this file needs): replace that
- * mechanic's `null` with its loader, mirroring the two implemented rows —
+ * mechanic's `null` with its loader, mirroring the implemented rows —
  *
- *   launcher: () => import('./mechanics/launcher/register').then((m) => m.launcherSlice),
+ *   flyer: () => import('./mechanics/flyer/register').then((m) => m.flyerSlice),
  *
  * The path must stay a plain relative literal so the bundler can statically discover
  * the chunk, and the row must resolve to the slice VALUE (not the module namespace).
@@ -98,12 +98,12 @@ export type MechanicLoader = () => Promise<MechanicSlice>
  */
 export const MECHANIC_LOADERS: Record<MechanicId, MechanicLoader | null> = {
   sorter: () => import('./mechanics/sorter/register').then((m) => m.sorterSlice),
-  launcher: null,
+  launcher: () => import('./mechanics/launcher/register').then((m) => m.launcherSlice),
   runner: () => import('./mechanics/runner/register').then((m) => m.runnerSlice),
-  stacker: null,
+  stacker: () => import('./mechanics/stacker/register').then((m) => m.stackerSlice),
   autobattler: null,
   explorer: null,
-  defender: null,
+  defender: () => import('./mechanics/defender/register').then((m) => m.defenderSlice),
   flyer: null,
 }
 

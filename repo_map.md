@@ -50,8 +50,11 @@ backend/
     game-contract/
       core/
       mechanics/
+        defender/
+        launcher/
         runner/
         sorter/
+        stacker/
     lesson-contract/
       core/
       families/
@@ -700,8 +703,11 @@ frontend/
       core/
       lab/
       mechanics/
+        defender/
+        launcher/
         runner/
         sorter/
+        stacker/
       player/
     i18n/
       en-US/
@@ -3650,6 +3656,26 @@ import { COURSE_SLUG, LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 // no child, no PII (§1.9).
 ```
 
+### backend/src/__tests__/gameContractFixtures.ts
+
+```
+// Inline game documents for the three mechanics added after the first parity batch
+// (launcher, stacker, defender) — the data half of `game-contract.test.ts`.
+//
+// WHY THEY LIVE HERE AND NOT IN THE TEST FILE. `game-contract.test.ts` already carries
+// the sorter and runner documents inline; three more full manifests would bury the
+// assertions under a thousand lines of data. Same rule as `learnFixtures.ts`: the
+// fixture module holds the values, the test file holds the argument.
+//
+// WHY THEY ARE TRANSCRIBED AND NOT IMPORTED. `frontend/` is not a dependency of
+// `backend/` (CLAUDE.md §1.2: ten independent packages, no workspaces), so importing
+// `frontend/src/game-engine/mechanics/*/fixtures.ts` is impossible at build time and
+// would misrepresent what Core can actually reach at runtime. The config/content
+// VALUES of each mechanic's first published fixture are transcribed instead, and they
+// satisfy the PRODUCTION schemas unmodified — §1.14 forbids a relaxed schema for a
+// fixture, and `game-contract.test.ts` asserts the parse of each one explicitly.
+```
+
 ### backend/src/__tests__/games.test.ts
 
 ```
@@ -4048,6 +4074,86 @@ import {
 // Original header follows.
 ```
 
+### backend/src/game-contract/mechanics/defender/schema.ts
+
+```
+// `defender` — the config + content contract (GAME_ENGINE.md §4 row `defender`, §7).
+//
+// THE POINT OF THIS FILE: v1's tower game (`hacker-defense`) hardcoded its grid, its
+// wave table, its tower stats, its gold economy and its win condition inside the game
+// component — a second instance would have been a second copy of the code, and nobody
+// could re-skin or re-tune it without editing TypeScript. Here EVERY tunable number
+// lives in `config`: the grid and its terrain, the enemy roster with its behaviours,
+// the eight tower archetypes with their upgrade branches, the damage-type × armour
+// matrix, the slow curve, the whole economy (gold, interest, secondary currency,
+// abilities), the wave table with its exponential growth factors, the voluntary heat
+// modifiers, the efficiency targets and the score weights. `simulate.ts` and
+// `components.tsx` read all of them and hardcode none of them.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+```
+
+### backend/src/game-contract/mechanics/defender/simulate.ts
+
+```
+// `defender` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental
+// function anywhere: Core re-runs this exact code over the player's input log to derive
+// the reward, so every operation here is one the ECMAScript spec pins to the last bit
+// (`+ - * /`, `Math.sqrt/abs/min/max/floor/ceil/round/trunc/sign`). Row and column are
+// derived with `Math.floor(index / cols)` rather than `%` for exactly that reason.
+//
+// THIS MECHANIC IS FULLY SCRIPTED. Waves, stats and costs all come from the manifest,
+// so the simulation needs no randomness at all; `init` still accepts and records the
+// seed for contract uniformity, and two different seeds produce identical runs. The
+// only seeded stream in the mechanic is the one `runBot` hands the `random` bot.
+//
+// The two v1 bugs the brief calls out are structurally excluded, and both earn a
+// comment because both were expensive:
+```
+
+### backend/src/game-contract/mechanics/launcher/schema.ts
+
+```
+// `launcher` — the config + content contract (GAME_ENGINE.md §4 row `launcher`, §7).
+//
+// THE POINT OF THIS FILE: v1's aiming game baked gravity, the launch-speed range, the
+// angle limits, the target layout and the point values into the component, so a second
+// launcher meant a second codebase and re-skinning was impossible. Here EVERY number
+// that shapes physics, difficulty, economy or scoring is a manifest field — gravity,
+// wind, drag, friction, restitution, projectiles per round, the leftover bonus, the
+// per-kind projectile tuning, the target layouts and their motion, obstacle materials
+// and the scoring weights — and `simulate.ts` / `components.tsx` read all of them from
+// `config`. A new launcher game is a new JSON document, never new code.
+//
+// Zod only, no React and no DOM: `backend/src/game-contract/` and `gamegen/src/contract/`
+// carry this module verbatim next to `simulate.ts` for the server-side replay.
+
+import { z } from 'zod'
+```
+
+### backend/src/game-contract/mechanics/launcher/simulate.ts
+
+```
+// `launcher` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; every piece of
+// trigonometry goes through `core/mathd.ts` (`dsin`, `dcos`, `datan2`, `dhypot`),
+// because ECMAScript leaves `Math.sin`/`cos`/`atan2`/`hypot` implementation-defined and
+// one wrong bit in a projectile arc is a rejected reward for an honest child.
+//
+// INTEGRATOR (documented, per §4's "documented integrator"): SEMI-IMPLICIT (symplectic)
+// EULER at the fixed tick — velocity is updated first, then position is advanced with
+// the NEW velocity:
+//     v' = (v + a) * (1 - drag)          a = gravity + wind + steering
+//     p' = p + v'
+// Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
+// for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
 ### backend/src/game-contract/mechanics/runner/schema.ts
 
 ```
@@ -4126,6 +4232,46 @@ import {
 //  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
 //    in ONE pass that drops both the consumed and the escaped elements together.
 //    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### backend/src/game-contract/mechanics/stacker/schema.ts
+
+```
+// `stacker` — the config + content contract (GAME_ENGINE.md §4 row `stacker`, §7).
+//
+// THE POINT OF THIS FILE: v1's building game hardcoded gravity, the piece list, the
+// wind gust, the budget and the score formula inside the component, so a second
+// instance meant a second copy of the code. Here EVERY tunable — gravity magnitude AND
+// direction (zero-G included), the piece catalogue and its special properties, the
+// solver's iteration count and sleep thresholds, the announced force timeline, the
+// stability threshold and hold time, the whole economy, the score model and its
+// weights, and the adaptive-assistance dials — is a manifest field. `simulate.ts` and
+// `components.tsx` read all of them from `config`; neither contains a tuning number.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+```
+
+### backend/src/game-contract/mechanics/stacker/simulate.ts
+
+```
+// `stacker` — the PURE simulator, including its own small rigid-body solver
+// (GAME_ENGINE.md §5, §13; brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, and no banned
+// transcendental: Core re-runs this exact code over the player's input log to derive the
+// reward, so every operation is one the ECMAScript spec pins to the last bit. The only
+// non-elementary functions used are `dsin`/`dcos`/`datan2`/`dhypot` from core/mathd.ts,
+// which are built from the allowed arithmetic on purpose. Randomness comes only from
+// core/rng.ts, drawn ONCE at init.
+//
+// THE SOLVER (documented, because §13 makes it a contract rather than an implementation
+// detail):
+//
+//   * Bodies are axis-aligned boxes and circles. A circle is stored square
+//     (`w === h`), radius `w / 2`, so half-extents are uniform and every overlap test
 ```
 
 ### backend/src/game-contract/registry.ts
@@ -139753,6 +139899,246 @@ import type { CharacterId } from '@/components/characters/control/types'
 //                board.
 ```
 
+### frontend/src/game-engine/mechanics/defender/components.tsx
+
+```
+// `defender` — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React.
+//
+// Canvas-vs-chrome (NON-NEGOTIABLE): inside the board we draw Prism sprites and
+// palette-tinted shapes; outside it everything is closed DESIGN tokens, the `lf-*` type
+// scale and Material Symbols. There is no raw hex in this file and no arcade font import
+// — arcade character comes from weight, size and motion, in Figtree.
+//
+// INPUT (/CLAUDE.md §1.11). Every cell is BOTH a `data-dropzone` (so a build can be
+// dragged from the palette, via core/input.ts) and a real `<button>` (so it can be
+// tapped, and so keyboard and screen readers get it for free). Tap is the guaranteed
+// path and drag is the enhancement: mobile has no hover, and a touch drag is not
+```
+
+### frontend/src/game-engine/mechanics/defender/defender.test.ts
+
+```
+// `defender` — the four regression classes a mechanic owes GAME_ENGINE.md: determinism,
+// the §9 winnability gate, schema bounds, and the mechanic's OWN rules (the seal
+// rejection, wall redirection, mutually exclusive upgrade branches, the sell refund,
+// flying enemies ignoring the labyrinth, and per-tower firing timers).
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+
+import { defenderFixtures } from './fixtures'
+import {
+  DEFENDER_SPRITE_SLOTS,
+  defenderConfigSchema,
+  defenderContentSchema,
+  type DefenderConfig,
+} from './schema'
+```
+
+### frontend/src/game-engine/mechanics/defender/fixtures.ts
+
+```
+// `defender` fixtures — two complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// They are not demo scaffolding. They are the reference answer to "what does a
+// well-tuned defender document look like", they are what `/dev/game-lab` loads, and
+// `defender.test.ts` asserts that the PERFECT bot reaches `pass_score` on each one while
+// the RANDOM bot does not — the same §9 winnability gate the Arcade pipeline runs before
+// a generated document may be published.
+//
+// Deliberately opposite ends of the dial:
+//
+//   1. "Cuida tu alcancía" — tier 1, CHEER (no fail state), a fixed road with dead-end
+//      build pockets, three waves, three tower types one of which is a TRAP purchase
+//      (expensive, slow, and carrying the misconception that explains why). Towers never
+//      block the path, so a six-year-old cannot accidentally break their own board.
+//   2. "El laberinto del presupuesto" — tier 3, ARCADE with five lives, an open field
+```
+
+### frontend/src/game-engine/mechanics/defender/register.ts
+
+```
+// `defender` — the slice (GAME_ENGINE.md §7).
+//
+// The ONLY module the registry imports, and the reason each mechanic is its own lazy
+// chunk: `MECHANIC_LOADERS.defender` dynamic-imports this file, so loading the hub loads
+// no mechanic code at all.
+//
+// It composes and adds nothing. Schema, simulator, view and fixtures each own their
+// rules; a decision that lived here would be a decision the backend parity copy — which
+// builds `MechanicSimSlice` from schema.ts + simulate.ts alone — could not see.
+
+import type { MechanicSlice } from '@/game-engine/core/types'
+
+import { DefenderView } from './components'
+import { defenderFixtures } from './fixtures'
+import { DEFENDER_SPRITE_SLOTS, defenderConfigSchema, defenderContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/defender/schema.ts
+
+```
+// `defender` — the config + content contract (GAME_ENGINE.md §4 row `defender`, §7).
+//
+// THE POINT OF THIS FILE: v1's tower game (`hacker-defense`) hardcoded its grid, its
+// wave table, its tower stats, its gold economy and its win condition inside the game
+// component — a second instance would have been a second copy of the code, and nobody
+// could re-skin or re-tune it without editing TypeScript. Here EVERY tunable number
+// lives in `config`: the grid and its terrain, the enemy roster with its behaviours,
+// the eight tower archetypes with their upgrade branches, the damage-type × armour
+// matrix, the slow curve, the whole economy (gold, interest, secondary currency,
+// abilities), the wave table with its exponential growth factors, the voluntary heat
+// modifiers, the efficiency targets and the score weights. `simulate.ts` and
+// `components.tsx` read all of them and hardcode none of them.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+```
+
+### frontend/src/game-engine/mechanics/defender/simulate.ts
+
+```
+// `defender` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental
+// function anywhere: Core re-runs this exact code over the player's input log to derive
+// the reward, so every operation here is one the ECMAScript spec pins to the last bit
+// (`+ - * /`, `Math.sqrt/abs/min/max/floor/ceil/round/trunc/sign`). Row and column are
+// derived with `Math.floor(index / cols)` rather than `%` for exactly that reason.
+//
+// THIS MECHANIC IS FULLY SCRIPTED. Waves, stats and costs all come from the manifest,
+// so the simulation needs no randomness at all; `init` still accepts and records the
+// seed for contract uniformity, and two different seeds produce identical runs. The
+// only seeded stream in the mechanic is the one `runBot` hands the `random` bot.
+//
+// The two v1 bugs the brief calls out are structurally excluded, and both earn a
+// comment because both were expensive:
+```
+
+### frontend/src/game-engine/mechanics/launcher/components.tsx
+
+```
+// `launcher` — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React.
+//
+// TWO INPUT PATHS, BOTH COMPLETE (§1.11, non-negotiable):
+//  - the slingshot: pull back anywhere on the field and release (core/input.ts's
+//    `useGameDrag`, native Pointer Events, no drag library);
+//  - the power bar + angle wheel: four 44px steppers and a Launch button, plus the tap
+//    path from core/input.ts's `useTapPlacement` for loading ammo into the cradle.
+// Drag is PROGRESSIVE ENHANCEMENT. Every shot a child can fire by dragging, they can
+// fire by tapping, and every control is keyboard-reachable because every control is a
+// real `<button>`.
+//
+```
+
+### frontend/src/game-engine/mechanics/launcher/fixtures.ts
+
+```
+// `launcher` — complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// These are not test stubs: each one satisfies the PRODUCTION schemas (§1.14 forbids
+// relaxing a schema for a fixture), each one is winnable by the `perfect` bot and not by
+// the `random` bot (`launcher.test.ts` asserts both), and each one carries real
+// financial-literacy content for its tier — the target a child aims at IS the answer,
+// and every misconception target explains itself. There is no child PII here and there
+// never can be: a game is generated from curriculum, not from a child (§11).
+//
+// `skin.sprites` is deliberately EMPTY. Sprite URLs are Prism/Depot artifacts produced
+// by the `illustrate` stage; inventing one here would be a fabricated asset. The view
+// falls back to palette-tinted shapes plus each element's Material Symbols `icon`, which
+// is the same path a document takes before illustration.
+
+import type { GameDocument } from '@/game-engine/core/types'
+```
+
+### frontend/src/game-engine/mechanics/launcher/launcher.test.ts
+
+```
+// `launcher` — the slice's regression tests.
+//
+// Five properties are load-bearing and each one has explicit coverage here:
+//  1. DETERMINISM. Same seed + same input log => byte-identical SimResult, twice. This
+//     is the property Core's reward path rests on (GAME_ENGINE.md §5/§6).
+//  2. WINNABILITY. The `perfect` bot reaches `pass_score` on EVERY fixture and the
+//     `random` bot does not — the §9 gate, run here so a fixture can never drift into
+//     "unwinnable" or "spammable" without a red test.
+//  3. SCHEMA. An out-of-bounds config is REJECTED, not coerced (§1.14).
+//  4. THE MECHANIC'S OWN RULES. Ballistics, wind, mass, bounce materials, chained
+//     explosions, guided steering, the leftover economy and the misconception penalty
+//     all behave exactly as the manifest configures them — nothing is hardcoded.
+//  5. THE VIEW IS A RENDERER. It emits; it never scores and never advances a tick.
+
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+```
+
+### frontend/src/game-engine/mechanics/launcher/register.ts
+
+```
+// `launcher` — the slice (GAME_ENGINE.md §7).
+//
+// This is the ONLY module the registry's lazy `import()` reaches for, so it is also the
+// only place in the slice that pulls the React view in. `schema.ts` and `simulate.ts`
+// stay React-free on purpose: `backend/src/game-contract/` and `gamegen/src/contract/`
+// build their SYNCHRONOUS `MechanicSimSlice` registry out of exactly those two files,
+// and a React import there would break the parity copy.
+//
+// Zero cross-slice imports: everything below comes from `core/*` or from this directory.
+
+import type { MechanicSlice, Simulator } from '@/game-engine/core/types'
+
+import { LauncherView } from './components'
+import { launcherFixtures } from './fixtures'
+import { LAUNCHER_SPRITE_SLOTS, launcherConfigSchema, launcherContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/launcher/schema.ts
+
+```
+// `launcher` — the config + content contract (GAME_ENGINE.md §4 row `launcher`, §7).
+//
+// THE POINT OF THIS FILE: v1's aiming game baked gravity, the launch-speed range, the
+// angle limits, the target layout and the point values into the component, so a second
+// launcher meant a second codebase and re-skinning was impossible. Here EVERY number
+// that shapes physics, difficulty, economy or scoring is a manifest field — gravity,
+// wind, drag, friction, restitution, projectiles per round, the leftover bonus, the
+// per-kind projectile tuning, the target layouts and their motion, obstacle materials
+// and the scoring weights — and `simulate.ts` / `components.tsx` read all of them from
+// `config`. A new launcher game is a new JSON document, never new code.
+//
+// Zod only, no React and no DOM: `backend/src/game-contract/` and `gamegen/src/contract/`
+// carry this module verbatim next to `simulate.ts` for the server-side replay.
+
+import { z } from 'zod'
+```
+
+### frontend/src/game-engine/mechanics/launcher/simulate.ts
+
+```
+// `launcher` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; every piece of
+// trigonometry goes through `core/mathd.ts` (`dsin`, `dcos`, `datan2`, `dhypot`),
+// because ECMAScript leaves `Math.sin`/`cos`/`atan2`/`hypot` implementation-defined and
+// one wrong bit in a projectile arc is a rejected reward for an honest child.
+//
+// INTEGRATOR (documented, per §4's "documented integrator"): SEMI-IMPLICIT (symplectic)
+// EULER at the fixed tick — velocity is updated first, then position is advanced with
+// the NEW velocity:
+//     v' = (v + a) * (1 - drag)          a = gravity + wind + steering
+//     p' = p + v'
+// Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
+// for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
 ### frontend/src/game-engine/mechanics/runner/components.test.tsx
 
 ```
@@ -140033,6 +140419,126 @@ function maxTicksOf(document: GameDocument): number {
   return config.round.tick_budget
 ```
 
+### frontend/src/game-engine/mechanics/stacker/components.tsx
+
+```
+// `stacker` — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React. Every number it draws with (field size,
+// piece geometry, costs, the margin threshold, the announced timeline) comes out of the
+// validated `config`; there is no tuning constant in this file.
+//
+// TWO INPUT PATHS, ALWAYS (/CLAUDE.md §1.11, non-negotiable):
+//  - TAP/KEYBOARD is the guaranteed path: pick a piece from the tray, nudge the ghost
+//    with the arrow controls, commit with "Colocar". Every one of those is a real
+//    `<button>` at >= 44x44px at BOTH breakpoints, so a child on a phone and a child on
+//    a keyboard get the same game.
+//  - DRAG is progressive enhancement over it, through core/input.ts: drag a tray piece
+//    onto a column of the canvas. Drag is never the only way to do anything.
+```
+
+### frontend/src/game-engine/mechanics/stacker/fixtures.ts
+
+```
+// `stacker` fixtures — two complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// They are not demo scaffolding. They are the reference answer to "what does a
+// well-tuned stacker document look like", they are what `/dev/game-lab` loads, and
+// `stacker.test.ts` asserts that the PERFECT bot reaches `pass_score` on each one while
+// the RANDOM bot does not — the same §9 winnability gate the Arcade pipeline runs before
+// a generated document may be published.
+//
+// Deliberately different across every axis the schema exposes: a tier-1 CHEER manifest
+// (snap placement, no rotation, no fail state, a gentle wind-then-rain timeline, blended
+// scoring) and a tier-3 ARCADE manifest (pieces dropped from above, four rotation steps,
+// two lives, an earthquake in the timeline, special-property pieces, a reposition cost,
+// adaptive assistance enabled, and the report's literal product score model).
+//
+// THE CONCEPT IS THE ECONOMY (§4 learning binding). In both documents the pieces are
+```
+
+### frontend/src/game-engine/mechanics/stacker/register.ts
+
+```
+// `stacker` — the slice (GAME_ENGINE.md §7).
+//
+// The ONLY module the registry imports, and the reason each mechanic is its own lazy
+// chunk: `MECHANIC_LOADERS.stacker` dynamic-imports this file, so loading the hub loads
+// no mechanic code at all.
+//
+// It composes and adds nothing. Schema, simulator, view and fixtures each own their
+// rules; a decision that lived here would be a decision the backend parity copy — which
+// builds `MechanicSimSlice` from schema.ts + simulate.ts alone — could not see.
+
+import type { MechanicSlice } from '@/game-engine/core/types'
+
+import { StackerView } from './components'
+import { stackerFixtures } from './fixtures'
+import { STACKER_SPRITE_SLOTS, stackerConfigSchema, stackerContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/stacker/schema.ts
+
+```
+// `stacker` — the config + content contract (GAME_ENGINE.md §4 row `stacker`, §7).
+//
+// THE POINT OF THIS FILE: v1's building game hardcoded gravity, the piece list, the
+// wind gust, the budget and the score formula inside the component, so a second
+// instance meant a second copy of the code. Here EVERY tunable — gravity magnitude AND
+// direction (zero-G included), the piece catalogue and its special properties, the
+// solver's iteration count and sleep thresholds, the announced force timeline, the
+// stability threshold and hold time, the whole economy, the score model and its
+// weights, and the adaptive-assistance dials — is a manifest field. `simulate.ts` and
+// `components.tsx` read all of them from `config`; neither contains a tuning number.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+```
+
+### frontend/src/game-engine/mechanics/stacker/simulate.ts
+
+```
+// `stacker` — the PURE simulator, including its own small rigid-body solver
+// (GAME_ENGINE.md §5, §13; brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, and no banned
+// transcendental: Core re-runs this exact code over the player's input log to derive the
+// reward, so every operation is one the ECMAScript spec pins to the last bit. The only
+// non-elementary functions used are `dsin`/`dcos`/`datan2`/`dhypot` from core/mathd.ts,
+// which are built from the allowed arithmetic on purpose. Randomness comes only from
+// core/rng.ts, drawn ONCE at init.
+//
+// THE SOLVER (documented, because §13 makes it a contract rather than an implementation
+// detail):
+//
+//   * Bodies are axis-aligned boxes and circles. A circle is stored square
+//     (`w === h`), radius `w / 2`, so half-extents are uniform and every overlap test
+```
+
+### frontend/src/game-engine/mechanics/stacker/stacker.test.ts
+
+```
+// `stacker` — the four regression classes a mechanic owes (GAME_ENGINE.md §5, §7, §9):
+// determinism, the winnability gate, schema bounds, and the mechanic's OWN rules —
+// here the collapse criterion, the economy, the announced force timeline, the score
+// model switch and adaptive assistance.
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+
+import { stackerFixtures } from './fixtures'
+import {
+  costOfPiece,
+  stackerConfigSchema,
+  stackerContentSchema,
+  STACKER_SPRITE_SLOTS,
+} from './schema'
+```
+
 ### frontend/src/game-engine/player/GamePlayer.test.tsx
 
 ```
@@ -140129,8 +140635,8 @@ import { useTranslation } from 'react-i18next'
 // It also holds the implemented slices to their own contract: their fixtures must
 // survive the FULL production parse (§1.14 — fixtures satisfy production schemas,
 // never a relaxed one).
-
-import { describe, expect, it } from 'vitest'
+//
+// Every per-slice assertion below is driven by IMPLEMENTED, which is DERIVED from the
 ```
 
 ### frontend/src/game-engine/registry.ts

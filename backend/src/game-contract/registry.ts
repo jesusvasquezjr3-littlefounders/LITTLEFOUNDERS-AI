@@ -35,6 +35,24 @@ import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './
 import { sorterSimulator } from './mechanics/sorter/simulate.js'
 import { runnerConfigSchema, runnerContentSchema, RUNNER_SPRITE_SLOTS } from './mechanics/runner/schema.js'
 import { runnerSimulator } from './mechanics/runner/simulate.js'
+import {
+  launcherConfigSchema,
+  launcherContentSchema,
+  LAUNCHER_SPRITE_SLOTS,
+} from './mechanics/launcher/schema.js'
+import { launcherSimulator } from './mechanics/launcher/simulate.js'
+import {
+  stackerConfigSchema,
+  stackerContentSchema,
+  STACKER_SPRITE_SLOTS,
+} from './mechanics/stacker/schema.js'
+import { stackerSimulator } from './mechanics/stacker/simulate.js'
+import {
+  defenderConfigSchema,
+  defenderContentSchema,
+  DEFENDER_SPRITE_SLOTS,
+} from './mechanics/defender/schema.js'
+import { defenderSimulator } from './mechanics/defender/simulate.js'
 
 /**
  * Every declared mechanic, implemented or not. Typed over `MechanicId`, so adding a
@@ -51,17 +69,32 @@ export const GAME_MECHANICS: Record<MechanicId, MechanicSimSlice | null> = {
     simulator: sorterSimulator,
     spriteSlots: SORTER_SPRITE_SLOTS,
   },
-  launcher: null,
+  launcher: {
+    configSchema: launcherConfigSchema,
+    contentSchema: launcherContentSchema,
+    simulator: launcherSimulator,
+    spriteSlots: LAUNCHER_SPRITE_SLOTS,
+  },
   runner: {
     configSchema: runnerConfigSchema,
     contentSchema: runnerContentSchema,
     simulator: runnerSimulator,
     spriteSlots: RUNNER_SPRITE_SLOTS,
   },
-  stacker: null,
+  stacker: {
+    configSchema: stackerConfigSchema,
+    contentSchema: stackerContentSchema,
+    simulator: stackerSimulator,
+    spriteSlots: STACKER_SPRITE_SLOTS,
+  },
   autobattler: null,
   explorer: null,
-  defender: null,
+  defender: {
+    configSchema: defenderConfigSchema,
+    contentSchema: defenderContentSchema,
+    simulator: defenderSimulator,
+    spriteSlots: DEFENDER_SPRITE_SLOTS,
+  },
   flyer: null,
 }
 
