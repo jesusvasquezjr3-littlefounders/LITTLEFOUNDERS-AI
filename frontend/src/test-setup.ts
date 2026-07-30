@@ -1,32 +1,43 @@
-import '@testing-library/jest-dom/vitest';
-import '@/i18n';
+import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
+import '@/i18n'
 
-// jsdom doesn't implement scrollTo — stub it so the scroll-to-top-on-route-change
-// effect (MarketingLayout) doesn't spam "Not implemented" errors in test output.
-window.scrollTo = () => {};
+vi.mock('phaser', () => ({
+  default: {
+    AUTO: 2,
+    Scale: { FIT: 'FIT', CENTER_BOTH: 'CENTER_BOTH' },
+    Scene: class {},
+    Game: class { events = { once: () => {}, on: () => {} }; destroy = () => {} },
+    Geom: {
+      Point: class { x = 0; y = 0 },
+      Circle: class { radius = 0 },
+      Rectangle: class {},
+    },
+    Math: { Interpolation: { Linear: (arr: number[], t: number) => (arr[0] ?? 0) + ((arr[1] ?? 0) - (arr[0] ?? 0)) * t } },
+    Display: { Color: { HexStringToColor: () => ({}) } },
+  },
+}))
 
-// jsdom doesn't implement scrollIntoView either — stub it so the course map's
-// auto-scroll-to-current-lesson effect (routes/app/learn/CoursePage.tsx)
-// doesn't spam "Not implemented" errors in test output.
-window.HTMLElement.prototype.scrollIntoView = () => {};
+window.scrollTo = () => {}
 
-// Mock IntersectionObserver for JSDOM
+window.HTMLElement.prototype.scrollIntoView = () => {}
+
 class IntersectionObserverMock {
-  observe = () => {};
-  unobserve = () => {};
-  disconnect = () => {};
-  root = null;
-  rootMargin = '';
-  thresholds = [];
-  takeRecords = () => [];
+  observe = () => {}
+  unobserve = () => {}
+  disconnect = () => {}
+  root = null
+  rootMargin = ''
+  thresholds = []
+  takeRecords = () => []
 }
 Object.defineProperty(window, 'IntersectionObserver', {
   writable: true,
   configurable: true,
   value: IntersectionObserverMock,
-});
+})
 Object.defineProperty(global, 'IntersectionObserver', {
   writable: true,
   configurable: true,
   value: IntersectionObserverMock,
-});
+})

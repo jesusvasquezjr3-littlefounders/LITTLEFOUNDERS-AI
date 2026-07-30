@@ -8,10 +8,11 @@
 > ROADMAP.md, GLOSSARY.md or DESIGN.md, **those win and this file gets fixed** — never the
 > other way round.
 >
-> **Status:** v1 — specified and being implemented on branch `feat/game-engine`
-> (frontend `game-engine/`, Core `/api/v1/games`, Vault `0027`/`0028`, Arcade pipeline in
-> `gamegen/`). Nothing in this document is claimed as pre-existing: where it says MUST, it
-> is a requirement on the implementation landing in the same PR, not an observation.
+> **Status:** v1.1 — Phaser 3.90 rendering layer shipped 2026-07-30. All 8 mechanic scenes
+> (canvas-based games with particles, screen shake, tweens, SFX and proper game feel) replace
+> the earlier React-DOM renderers. Core (port 4000), Vault migrations 0027/0028/0029, and
+> the Arcade generation pipeline (`gamegen/`, port 4003) are unaffected — this was a
+> rendering-layer rewrite only.
 > **Last updated:** 2026-07-30 · Language: English (project rule).
 
 ---
@@ -99,6 +100,39 @@ Core route surface (details in §6):
 Every response uses the §1.6 envelope `{ data, error }` — no exceptions, including 404 and
 500. New error codes `GAME_LOCKED` (403) and `RESULT_REJECTED` (422) each require
 `errors.api.<CODE>` in all three locales in the same commit (§1.8).
+
+### §2.1 Rendering layer (Phaser 3.90)
+
+The 8 mechanics render through **Phaser 3.90 scenes** — `<canvas>`-based games with particle
+systems, camera shake, sprite tweens, and synthesised SFX. The simulators (§5) remain
+untouched; Phaser is the *renderer only*. Architecture:
+
+```
+Simulator (50ms tick, deterministic, PURE)
+     │
+     ▼
+GameEngineBridge (interpolates, manages input log, drives Phaser scene)
+     │
+     ▼
+PhaserScene (sprites, particles, camera, SFX, pointer/keyboard → emit)
+```
+
+Key files in `frontend/src/game-engine/`:
+
+| Path | Role |
+|---|---|
+| `phaser/bridge.ts` | `GameEngineBridge<S>` — wraps a simulator in a Phaser-compatible lifecycle |
+| `phaser/scene.ts` | `BaseMechanicScene<S>` — abstract scene base: palette, helpers, pause/resume, lifecycle |
+| `phaser/juice.ts` | Camera shake, particle bursts, scale punch, hit pause, floating text |
+| `phaser/assets.ts` | Procedural sprite/background generation, palette resolution |
+| `phaser/sfx.ts` | Web Audio API synthesised SFX (click, collect, explode, levelUp, etc.) |
+| `player/PhaserGameBox.tsx` | React component that mounts a Phaser.Game, bridges to React lifecycle |
+| `mechanics/<id>/scene.ts` | Per-mechanic Phaser scene (one per mechanic) — the game world renderer |
+
+The React `MechanicView` components (`components.tsx`) are **deprecated** and replaced by the
+Phaser scenes. They remain in the codebase as reference; `GamePlayer.tsx` now renders
+`PhaserGameBox` during the play phase. Assets are generated procedurally (colored geometric
+shapes) until Prism produces real sprites via the pipeline (§9).
 
 ## §3 The `GameDocument` contract
 

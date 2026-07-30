@@ -28,7 +28,9 @@ The SPA: the five product sections (learn, tutor, games, tasks, profile). Talks 
 
 ## Layout
 
-`src/routes/` (pages + Layout) · `src/components/` (shared; characters live here) · `src/lesson-engine/` (core/ · families/ · player/ · lab/ · registry/schema — see /LESSON_ENGINE.md) · `src/i18n/` (3 locale dirs of fragment JSONs + init) · `src/theme/` (dark-mode hook) · `src/lib/` (utils).
+`src/routes/` (pages + Layout) · `src/components/` (shared; characters live here) · `src/lesson-engine/` (core/ · families/ · player/ · lab/ · registry/schema — see /LESSON_ENGINE.md) · `src/game-engine/` (core/ · mechanics/<8>/ · phaser/ · player/ · registry.ts — see /GAME_ENGINE.md) · `src/i18n/` (3 locale dirs of fragment JSONs + init) · `src/theme/` (dark-mode hook) · `src/lib/` (utils).
+
+**Game Engine** (`src/game-engine/`): /GAME_ENGINE.md is authoritative. All 8 mechanic scenes render via **Phaser 3.90** (canvas-based) — NOT React DOM. The deterministic simulators (`simulate.ts`) are pure and shared between frontend and backend; Phaser is the renderer only. New mechanics follow the §12 extension protocol (slice + scene). Test infrastructure: `vitest` mocks Phaser via `src/test-setup.ts`; DOM-based component tests are skipped (canvas rendering requires browser E2E).
 
 **Admin sections** live in `src/routes/admin/`: 9 pages gated behind `admin`/`superadmin` via `<RequireRole role={STAFF}>`. The admin nav registry is `adminNav.ts` (rendered as a "Staff" group in the app sidebar). Key pages: Overview, Content (merged courses + moderation), Users (stats bar + signup timeline), Emails (Resend-style dashboard), Analytics & Health, Generation, Intel (Data Intelligence — 9-tab console, `/DATAINTEL.md` §7), Audit, Roles (superadmin-only). Shared building blocks in `adminShared.tsx`. The Staff group is HIDDEN for non-staff (never shown as a locked section).
 

@@ -22,26 +22,29 @@
 // caller that navigates on completion rips the results screen away before the child has
 // seen what they earned.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import CharacterActor from '@/components/characters/control/CharacterActor'
 import { Button, Icon } from '@/components/ui'
 import { isGameAudioMuted, setGameAudioMuted } from '@/game-engine/core/audio'
-import { useGameLoop, type GameLoopScheduler } from '@/game-engine/core/kernel'
+import type { GameLoopScheduler } from '@/game-engine/core/kernel'
 import { TICK_MS } from '@/game-engine/core/types'
+import type { BridgeSnapshot } from '@/game-engine/phaser/bridge'
 import type {
   GameDocument,
   GameInputEvent,
   GameInterlude,
   MechanicSlice,
   SimResult,
+  SimSnapshot,
 } from '@/game-engine/core/types'
+import { PhaserGameBox } from '@/game-engine/player/PhaserGameBox'
 import { MECHANIC_META } from '@/game-engine/registry'
 import MarkdownLite from '@/lesson-engine/core/MarkdownLite'
 import { cn } from '@/lib/utils'
 
-import { GameHud, HUD_CONTROL_CLASS, comboFromStats } from './hud'
+import { GameHud, HUD_CONTROL_CLASS } from './hud'
 import {
   GameResultsScreen,
   InterludeOverlay,
@@ -79,6 +82,8 @@ export interface GamePlayerProps {
   /** The run's seed. The server replays under the SAME number, so it is the route's to
    *  mint (from the run id) and never the player's to invent. */
   seed: number
+  /** Unique run identifier. Used as part of the Phaser scene key. */
+  runId?: string
   /** Hard tick ceiling for the session; defaults from `meta.estimated_minutes`. The
    *  server enforces its own bound from the `validation` sidecar during replay. */
   maxTicks?: number
@@ -175,57 +180,50 @@ interface GameStageProps {
   maxTicks: number
   reducedMotion: boolean
   scheduler?: GameLoopScheduler
+  runId: string
   onFinish: (run: FinishedRun) => void
   onExit: () => void
 }
 
-/**
- * Owns the kernel for one run. Mounted ONLY for the play phase, which is what makes the
- * loop's lifecycle trivially correct: mount = start, unmount = stop. No `autoStart`
- * dance, no "did we already start" flag.
- */
 function GameStage({
   document: doc,
-  slice,
   seed,
   maxTicks,
-  reducedMotion,
-  scheduler,
+  runId,
   onFinish,
   onExit,
 }: GameStageProps) {
-  const { simulator, View } = slice
-
-  // MUST be referentially stable — a new identity tears the loop down and starts a
-  // fresh run (core/kernel.ts).
-  const initialState = useMemo(
-    () =>
-      simulator.init({
-        config: doc.config,
-        content: doc.content,
-        scoring: doc.scoring,
-        seed,
-      }),
-    [simulator, doc, seed],
-  )
-
-  const loop = useGameLoop({ simulator, initialState, maxTicks, scheduler })
-  const { snapshot, state, tick, paused, emit, pause, resume, getInputLog } = loop
-
+  const [snapshot, setSnapshot] = useState<SimSnapshot>({
+    finished: false, score: 0, lives: null, round: 0,
+  })
+  const [paused, setPaused] = useState(false)
   const [interlude, setInterlude] = useState<GameInterlude | null>(null)
   const [confirmQuit, setConfirmQuit] = useState(false)
   const [muted, setMuted] = useState(() => isGameAudioMuted())
   const shownInterludes = useRef<Set<string>>(new Set())
   const finishedRef = useRef(false)
 
-  // Derived aggregates are the ONLY combo signal the engine contract exposes (see
-  // comboFromStats). `result()` is pure and cheap, so recomputing it per state is fine.
-  const stats = useMemo(() => simulator.result(state).stats, [simulator, state])
-  const combo = comboFromStats(stats)
+  const handleSnapshot = useCallback((snap: BridgeSnapshot) => {
+    setSnapshot({
+      score: snap.score,
+      lives: snap.lives,
+      finished: snap.finished,
+      round: snap.round,
+    })
+  }, [])
 
-  // An interlude is declared "after round N", so it fires the moment the run has climbed
-  // PAST that round. The simulation is paused for it: interruptions are exact, never a
-  // race against a still-falling field (§10).
+  const handleFinish = useCallback((inputLog: readonly GameInputEvent[]) => {
+    if (finishedRef.current) return
+    finishedRef.current = true
+
+    onFinish({
+      inputLog: [...inputLog],
+      ticks: 0,
+      round: 0,
+      result: { score: 0, finished: true, stats: {} },
+    })
+  }, [onFinish])
+
   useEffect(() => {
     if (interlude !== null || snapshot.finished) return
     const declared = doc.content.interludes ?? []
@@ -233,45 +231,26 @@ function GameStage({
       if (shownInterludes.current.has(candidate.id)) continue
       if (snapshot.round <= candidate.after_round) continue
       shownInterludes.current.add(candidate.id)
-      pause()
+      setPaused(true)
       setInterlude(candidate)
       return
     }
-  }, [doc, interlude, snapshot.finished, snapshot.round, pause])
+  }, [doc, interlude, snapshot.finished, snapshot.round])
 
-  // Completion is read from values this render already has, never from `running` — which
-  // is false for one render before the loop's own effect starts it, and would otherwise
-  // end the game before it began.
-  const done = snapshot.finished || tick >= maxTicks
-  useEffect(() => {
-    if (!done || finishedRef.current) return
-    finishedRef.current = true
-    // Copy: `getInputLog()` hands back the live array, which `start()` would reassign.
-    onFinish({
-      inputLog: [...getInputLog()],
-      ticks: tick,
-      round: snapshot.round,
-      result: simulator.result(state),
-    })
-  }, [done, tick, snapshot.round, getInputLog, onFinish, simulator, state])
-
+  const handleResume = useCallback(() => setPaused(false), [])
+  const handlePauseAction = useCallback(() => setPaused(true), [])
   const handleQuitRequest = useCallback(() => {
-    pause()
+    setPaused(true)
     setConfirmQuit(true)
-  }, [pause])
-
-  const handleToggleMute = useCallback(() => {
-    setMuted((previous) => {
-      const next = !previous
-      setGameAudioMuted(next)
-      return next
-    })
   }, [])
 
-  // Pause and interlude are the two sanctioned interruptions; the quit guard sits on top
-  // of pause rather than becoming a third one.
+  const handleToggleMute = useCallback(() => {
+    setMuted((prev) => { const next = !prev; setGameAudioMuted(next); return next })
+  }, [])
+
   const showInterlude = interlude !== null && !confirmQuit
-  const showPause = paused && !showInterlude && !confirmQuit && !done
+  const showPause = paused && !showInterlude && !confirmQuit && !snapshot.finished
+  const combo = 0 // Phaser scenes handle their own combo display
 
   return (
     <>
@@ -279,24 +258,27 @@ function GameStage({
         document={doc}
         snapshot={snapshot}
         combo={combo}
-        onPause={pause}
+        onPause={handlePauseAction}
         onQuit={handleQuitRequest}
       />
       <main className="mx-auto flex w-full min-h-0 max-w-container flex-1 flex-col px-4 py-3 md:px-8">
-        <View
+        <PhaserGameBox
+          mechanic={doc.meta.mechanic}
           document={doc}
-          state={state}
-          snapshot={snapshot}
-          emit={emit}
+          runId={runId}
+          seed={seed}
+          maxTicks={maxTicks}
           paused={paused}
-          reducedMotion={reducedMotion}
+          className="flex-1"
+          onSnapshot={handleSnapshot}
+          onFinish={handleFinish}
         />
       </main>
 
       {showPause ? (
         <PauseOverlay
           muted={muted}
-          onResume={resume}
+          onResume={handleResume}
           onToggleMute={handleToggleMute}
           onQuit={handleQuitRequest}
         />
@@ -305,10 +287,10 @@ function GameStage({
       {showInterlude && interlude !== null ? (
         <InterludeOverlay
           interlude={interlude}
-          reducedMotion={reducedMotion}
+          reducedMotion={false}
           onContinue={() => {
             setInterlude(null)
-            resume()
+            setPaused(false)
           }}
         />
       ) : null}
@@ -318,7 +300,7 @@ function GameStage({
           onConfirm={onExit}
           onCancel={() => {
             setConfirmQuit(false)
-            resume()
+            setPaused(false)
           }}
         />
       ) : null}
@@ -470,6 +452,7 @@ export function GamePlayer({
   document: doc,
   slice,
   seed,
+  runId,
   maxTicks,
   onComplete,
   onExit,
@@ -482,6 +465,7 @@ export function GamePlayer({
   const reportedRef = useRef(false)
   const reducedMotion = useReducedMotion()
   const ticks = maxTicks ?? defaultMaxTicks(doc)
+  const gameRunId = runId ?? doc.meta.slug
 
   const handleFinish = useCallback(
     (finished: FinishedRun) => {
@@ -574,6 +558,7 @@ export function GamePlayer({
         maxTicks={ticks}
         reducedMotion={reducedMotion}
         scheduler={scheduler}
+        runId={gameRunId}
         onFinish={handleFinish}
         onExit={onExit}
       />
