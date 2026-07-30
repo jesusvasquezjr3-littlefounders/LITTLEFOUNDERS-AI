@@ -191,9 +191,10 @@ export function gamesRouter(): Router {
   const CompleteBody = z.object({
     /** This play-through's id. Single-use: a run is credited exactly once. */
     run_id: z.string().uuid(),
-    /** The PRNG seed the client played with — the replay must reproduce its stream
-     *  bit for bit. It reshuffles content only; the score still comes from the
-     *  replay, and the §9 winnability gate holds for every seed. */
+    /** The PRNG seed the client says it played under. NOT authoritative: the
+     *  server derives the seed from `run_id` (`seedFromString`, the same function
+     *  the browser uses) and refuses a mismatch, so this field is a consistency
+     *  claim rather than an input to the grading. */
     seed: z.number().int().min(0).max(4_294_967_295),
     input_log: z
       .array(
@@ -247,7 +248,12 @@ export function gamesRouter(): Router {
       rawValidation: picked.validation,
       mechanic: ctx.game.mechanic,
       rowXpMax: ctx.game.xp_max,
-      seed: parsed.data.seed,
+      // The seed is DERIVED from the run id inside deriveGameResult; the body's
+      // `seed` is only checked against it. A client that picks its own number
+      // could otherwise re-roll seeds against a known document until it drew a
+      // layout it likes — seed-shopping, with the reward path none the wiser.
+      runId: parsed.data.run_id,
+      claimedSeed: parsed.data.seed,
       inputLog: parsed.data.input_log,
       durationSeconds: parsed.data.duration_seconds,
     });
@@ -270,7 +276,17 @@ export function gamesRouter(): Router {
       // and is discarded here — it is never persisted (§1.9, 0027).
       stats,
     });
-    if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
+    if (recorded === null) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
+    // The DB refused a second row for this run (0029's unique index). The check
+    // above missed it because two concurrent POSTs both read zero attempts before
+    // either had committed — so this is the branch that actually makes "a run is
+    // paid once" true. It is the SAME answer the pre-check gives, and it is
+    // deliberately the answer an honest double-submit gets too: the run was
+    // already credited, so this one credits nothing and no write follows.
+    if (recorded === 'duplicate') {
+      console.warn(`[games] result rejected game=${gameId} reason=run_already_recorded`);
+      return fail(res, 422, RESULT_REJECTED, 'run_already_recorded');
+    }
 
     const previous = await getGameProgressRow(user.id, gameId);
     if (!previous) return fail(res, 502, 'INTERNAL', 'Content service unreachable');

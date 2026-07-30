@@ -18,6 +18,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runGeneration } from './pipeline/run.js';
+import { ConfigError, getConfig } from './env.js';
 import { GAME_LOCALES, MECHANIC_IDS, type GameLocale } from './contract/core/types.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -155,12 +156,37 @@ function printUsage(): void {
   );
 }
 
+/**
+ * Resolve the configuration UP FRONT, before a single stage runs.
+ *
+ * The config is read lazily all over the pipeline, so a bad variable used to
+ * surface as a raw ZodError from whichever provider happened to touch
+ * `getConfig()` first — a stack trace pointing at src/env.ts, thrown mid-run,
+ * and (worse) thrown even for `--dry-run`, the one mode whose entire promise is
+ * that it validates without spending or configuring anything. Doing it here
+ * turns that into a single readable refusal naming the offending variables,
+ * before any slot is enumerated. Note this does NOT demand credentials: an
+ * unset — or blank — key parses fine; only a genuinely invalid VALUE fails.
+ */
+function loadConfigOrExit(): void {
+  try {
+    getConfig();
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
     printUsage();
     process.exit(1);
   }
+  loadConfigOrExit();
 
   const summary = await runGeneration({
     course: opts.course,
@@ -266,6 +292,14 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
+  // A configuration problem is an OPERATOR problem: print the instructions, not
+  // a stack trace through zod that names no variable and suggests no fix. The
+  // gates in env.ts (`require*Keys`) throw ConfigError too, so a run that dies
+  // for a missing key at stage 3 reads the same way as one that never started.
+  if (err instanceof ConfigError) {
+    console.error(err.message);
+    process.exit(1);
+  }
   console.error(err instanceof Error ? (err.stack ?? err.message) : String(err));
   process.exit(1);
 });

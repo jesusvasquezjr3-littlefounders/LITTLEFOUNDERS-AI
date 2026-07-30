@@ -51,9 +51,11 @@ database/supabase/
 # ── tesseract.js language-data cache (downloaded at runtime) ──
 *.traineddata
 
-# ── Forge (coursegen) generation run artifacts — checkpoints/ledgers,
-#    never tracked (COURSE_ENGINE.md §4, coursegen/README.md) ──
+# ── Forge (coursegen) and Arcade (gamegen) generation run artifacts —
+#    checkpoints/ledgers/rubrics, never tracked
+#    (COURSE_ENGINE.md §4, GAME_ENGINE.md §9, each service's README) ──
 coursegen/runs/
+gamegen/runs/
 
 # ── Echo (audiogen) character voice reference samples — large binary audio,
 #    never tracked. Trimmed/registration output also stays local-only. ──

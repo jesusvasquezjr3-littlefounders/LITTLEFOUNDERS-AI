@@ -4,6 +4,7 @@
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { sorterBots } from './bots'
 import { sorterFixtures } from './fixtures'
 import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './schema'
 import { sorterSimulator, type SorterState } from './simulate'
@@ -84,7 +85,7 @@ describe('sorter determinism', () => {
         simulator: sorterSimulator,
         document,
         seed: SEED,
-        bot: sorterSimulator.bots.perfect,
+        bot: sorterBots.perfect,
         maxTicks,
       })
 
@@ -101,7 +102,7 @@ describe('sorter determinism', () => {
         simulator: sorterSimulator,
         document,
         seed: SEED,
-        bot: sorterSimulator.bots.perfect,
+        bot: sorterBots.perfect,
         maxTicks,
       })
       const replay = replayGame({
@@ -143,7 +144,7 @@ describe('sorter winnability gate', () => {
         simulator: sorterSimulator,
         document,
         seed: SEED,
-        bot: sorterSimulator.bots.perfect,
+        bot: sorterBots.perfect,
         maxTicks,
       })
       expect(result.finished).toBe(true)
@@ -161,7 +162,7 @@ describe('sorter winnability gate', () => {
           simulator: sorterSimulator,
           document,
           seed,
-          bot: sorterSimulator.bots.random,
+          bot: sorterBots.random,
           maxTicks,
         })
         expect(result.score).toBeLessThan(document.scoring.pass_score)

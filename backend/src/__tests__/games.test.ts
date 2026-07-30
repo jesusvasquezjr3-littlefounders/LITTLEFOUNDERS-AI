@@ -5,9 +5,14 @@ import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb, type FakeRow } from './fakePostgrest.js';
 import { LESSON_1_ID, SAGA_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 import { runBot } from '../game-contract/core/replay.js';
+import { seedFromString } from '../game-contract/core/rng.js';
+import { getMechanic } from '../game-contract/registry.js';
 import { sorterSimulator } from '../game-contract/mechanics/sorter/simulate.js';
+import { sorterBots } from '../game-contract/mechanics/sorter/bots.js';
+import { explorerBots } from '../game-contract/mechanics/explorer/bots.js';
 import type { GameDocument, GameInputEvent } from '../game-contract/core/types.js';
 import { maxTicksFor } from '../services/gameDocument.js';
+import { EXPLORER_DOCUMENT } from './gameContractFixtures.js';
 
 /*
  * /api/v1/games — the HTTP surface of the Game Engine (GAME_ENGINE.md §6-§8).
@@ -25,6 +30,10 @@ import { maxTicksFor } from '../services/gameDocument.js';
  *     and must write NOTHING.
  *  3. A GAME IS NOT A LESSON. `lessons_completed` is never touched, and a
  *     learning_stats read that FAILED must never be mistaken for zeros.
+ *  4. THE REWARD IS EARNED. XP requires PASSING, passing requires actually
+ *     playing (§5b), the grading seed is the SERVER's (derived from the run id,
+ *     never the client's choice), and one run is paid exactly once even when two
+ *     completions race past the attempt pre-check.
  *
  * The sorter manifest is transcribed inline (identical to the one in
  * game-contract.test.ts): frontend/ is not a dependency of backend/, and a
@@ -43,9 +52,17 @@ const GAME_LOCKED_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2';
 const GAME_DRAFT_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa3';
 /** A published game naming a mechanic this release cannot replay. */
 const GAME_UNSUPPORTED_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa4';
+/** Planted per-test (§5b): a manifest whose DO-NOTHING score clears its own bar. */
+const GAME_IDLE_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa5';
 const UNKNOWN_GAME_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const RUN_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
-const SEED = 20260730;
+/**
+ * NOT a free-standing number: the seed is a pure function of the run id, derived
+ * with the same `seedFromString` the browser uses, and the server refuses any
+ * other. A test that hard-coded a seed would be testing a contract no honest
+ * client can satisfy.
+ */
+const SEED = seedFromString(RUN_ID);
 const LOCAL_DATE = '2026-07-30';
 
 /**
@@ -144,7 +161,7 @@ function perfectLog(): GameInputEvent[] {
     simulator: sorterSimulator,
     document: SORTER_DOCUMENT,
     seed: SEED,
-    bot: sorterSimulator.bots.perfect,
+    bot: sorterBots.perfect,
     maxTicks: MAX_TICKS,
   }).inputLog;
 }
@@ -512,6 +529,62 @@ describe('POST /api/v1/games/:gameId/complete — the reward is replayed, not re
     expect(statsRow().minutes_learned).toBe(14);
   });
 
+  /*
+   * THE RACE the pre-check above cannot win. `countAttemptsForRun` and the attempt
+   * INSERT are separated by the document read and the replay, so two concurrent
+   * POSTs carrying ONE run id both read zero attempts and both used to be
+   * credited. The fix is the database's: migration 0029's UNIQUE
+   * (user_id, game_id, run_id), which Core writes against with `ON CONFLICT DO
+   * NOTHING` and reads the verdict of.
+   *
+   * The stub below is that database. It has to be, twice over: the fake PostgREST
+   * enforces no constraints at all, and it answers an ignored duplicate with the
+   * row that was SUBMITTED rather than with the empty representation real
+   * PostgREST returns for `ON CONFLICT DO NOTHING`. Both halves are modelled here
+   * — the pre-check reading zero (the race window) and the DB refusing the second
+   * row — so what is asserted is exactly what production does.
+   */
+  it('credits a run exactly ONCE when two completions race past the attempt pre-check', async () => {
+    const app = createApp();
+    const inner = recordingFetch(db);
+    vi.stubGlobal('fetch', vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = (init?.method ?? 'GET').toUpperCase();
+      const json = (body: unknown, status: number) =>
+        new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+      // The race window: neither request can see the other's attempt yet.
+      if (url.includes('/game_attempts') && method === 'GET') return json([], 200);
+
+      if (url.includes('/game_attempts') && method === 'POST') {
+        const row = JSON.parse(String(init?.body)) as Record<string, unknown>;
+        const clash = db.game_attempts.some(
+          (r) => r.user_id === row.user_id && r.game_id === row.game_id && r.run_id === row.run_id,
+        );
+        // ON CONFLICT DO NOTHING ... RETURNING id → no row for the loser.
+        if (clash) return json([], 201);
+      }
+      return inner(input, init);
+    }));
+
+    const first = await auth(request(app).post(`/api/v1/games/${GAME_READY_ID}/complete`)).send(completeBody());
+    expect(first.status).toBe(200);
+    expect(first.body.data).toMatchObject({ xp_delta: 10, plays: 1 });
+
+    const second = await auth(request(app).post(`/api/v1/games/${GAME_READY_ID}/complete`)).send(completeBody());
+    expect(second.status).toBe(422);
+    expect(second.body.error.code).toBe('RESULT_REJECTED');
+    expect(second.body.error.message).toBe('run_already_recorded');
+
+    // Paid once: one attempt row, one progress upsert, one stats PATCH across BOTH
+    // requests — and the ledger reads as a single 120-second play.
+    expect(db.game_attempts).toHaveLength(1);
+    expect(writesTo('game_progress')).toHaveLength(1);
+    expect(writesTo('learning_stats')).toHaveLength(1);
+    expect(db.game_progress[0]).toMatchObject({ plays: 1, xp_earned: 10 });
+    expect(statsRow()).toMatchObject({ xp_points: 50, minutes_learned: 14 });
+  });
+
   it('403s GAME_LOCKED on a locked game and writes nothing', async () => {
     const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_LOCKED_ID}/complete`)).send(completeBody());
     expect(res.status).toBe(403);
@@ -615,6 +688,120 @@ describe('POST /:gameId/complete — a forged log earns nothing and writes nothi
     // No XP, no streak — but the play IS recorded.
     expect(statsRow()).toMatchObject({ xp_points: 40, streak_days: 0 });
     expect(db.game_progress[0]).toMatchObject({ plays: 1, passed: false, xp_earned: 0 });
+  });
+
+  it('422s a seed the run id does not derive — a player cannot shop for a layout', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_READY_ID}/complete`)).send(
+      // One away from the derived seed: enough to be a DIFFERENT shuffle of the
+      // same content, which is the whole point of picking your own number.
+      completeBody({ seed: SEED + 1 }),
+    );
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('RESULT_REJECTED');
+    expect(res.body.error.message).toBe('seed_mismatch');
+    expectNoRewardWritten();
+  });
+
+  it('422s a seed that is plausible but simply not this run id\'s', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_READY_ID}/complete`)).send(
+      // The seed of a DIFFERENT run: a valid uint32, and one a seed-shopper would
+      // have found by re-rolling run ids locally until a layout looked easy.
+      completeBody({ seed: seedFromString('dddddddd-dddd-4ddd-8ddd-dddddddddddd') }),
+    );
+    expect(res.status).toBe(422);
+    expect(res.body.error.message).toBe('seed_mismatch');
+    expectNoRewardWritten();
+  });
+});
+
+// ---- 5b. XP is EARNED: the pass gate and the engagement floor ----------------------
+
+/*
+ * The audit's measurement: an EMPTY input log scores 45, 44, 41, 40, 28 and 23 on
+ * the explorer, runner, flyer, autobattler and launcher manifests — several
+ * mechanics award partial credit for state the simulation reaches on its own. XP
+ * was `round(score / 100 * xp_max)` with no pass gate, so opening a game and
+ * submitting nothing paid real XP into a child's learning_stats.
+ *
+ * Two properties close it, and both are asserted here:
+ *   1. XP requires PASSING — a failed run pays nothing, however close it came.
+ *   2. PASSING requires PLAYING — a run that does not beat what doing nothing
+ *      scores under the same seed cannot pass, whatever bar the manifest sets.
+ */
+describe('POST /:gameId/complete — XP is earned, not accrued', () => {
+  it('pays NO XP for an honest run that missed the bar', async () => {
+    // Two of the perfect bot's ten placements: a real partial run, scoring 58
+    // against this manifest's pass_score of 60.
+    const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_READY_ID}/complete`)).send(
+      completeBody({ input_log: perfectLog().slice(0, 2) }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ score: 58, passed: false, xp_earned: 0, xp_delta: 0 });
+    // Not 6 XP (58% of xp_max) for a run the game itself calls a loss.
+    expect(statsRow()).toMatchObject({ xp_points: 40, streak_days: 0 });
+    expect(db.game_progress[0]).toMatchObject({ plays: 1, passed: false, xp_earned: 0 });
+  });
+
+  /**
+   * A published explorer manifest whose bar sits BELOW its own idle score: doing
+   * nothing scores 44 at this run's seed, and `pass_score` is 40. `pass_score`'s
+   * schema floor is 0, so this is a manifest the pipeline can emit — and the §9
+   * winnability gate bounds `pass_score` against the random bot, never against
+   * doing nothing at all.
+   */
+  function plantIdleGame(): void {
+    const document = { ...EXPLORER_DOCUMENT, scoring: { ...EXPLORER_DOCUMENT.scoring, pass_score: 40 } };
+    db.games = [...db.games, gameRow(GAME_IDLE_ID, TOPIC_ID, 4, { mechanic: 'explorer', slug: 'game-idle' })];
+    db.game_documents = [
+      ...db.game_documents,
+      ...['en-US', 'es-MX'].map((locale) => ({
+        game_id: GAME_IDLE_ID,
+        locale,
+        schema_version: 1,
+        document,
+        validation: { max_score: 100, min_duration_seconds: 1, max_events: 200 },
+      })),
+    ];
+  }
+
+  it('refuses to PASS an empty log even when idling outscores the manifest bar', async () => {
+    plantIdleGame();
+    const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_IDLE_ID}/complete`)).send(
+      completeBody({ input_log: [] }),
+    );
+
+    expect(res.status).toBe(200);
+    // The score is reported honestly — it is what the simulation reached — but it
+    // was not EARNED, so it is not a pass and it buys nothing.
+    expect(res.body.data).toMatchObject({ score: 44, passed: false, xp_earned: 0, xp_delta: 0 });
+    expect(statsRow()).toMatchObject({ xp_points: 40, streak_days: 0, last_active_date: null });
+    expect(db.game_progress[0]).toMatchObject({ plays: 1, passed: false, xp_earned: 0 });
+  });
+
+  it('still pays a genuinely played run on that same manifest — the floor is engagement, not difficulty', async () => {
+    plantIdleGame();
+    const document = { ...EXPLORER_DOCUMENT, scoring: { ...EXPLORER_DOCUMENT.scoring, pass_score: 40 } };
+    const slice = getMechanic('explorer');
+    if (slice === null) throw new Error('the explorer slice must be registered for this test to mean anything');
+    const inputLog = runBot({
+      simulator: slice.simulator,
+      document,
+      seed: SEED,
+      bot: explorerBots.perfect,
+      maxTicks: maxTicksFor(document),
+    }).inputLog;
+
+    const res = await auth(request(createApp()).post(`/api/v1/games/${GAME_IDLE_ID}/complete`)).send(
+      // Long enough that the wall-clock plausibility check is not what is being
+      // tested here: the explorer's honest run spans more ticks than the sorter's.
+      completeBody({ input_log: inputLog, duration_seconds: 900 }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.data).toMatchObject({ score: 100, passed: true });
+    expect(res.body.data.xp_earned).toBeGreaterThan(0);
+    expect(statsRow().xp_points).toBeGreaterThan(40);
   });
 });
 

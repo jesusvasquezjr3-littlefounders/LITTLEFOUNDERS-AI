@@ -314,6 +314,8 @@ interface GameInputEvent { tick: number; action: string; slot?: string; x?: numb
 interface SimSnapshot { finished: boolean; score: number; lives: number | null; round: number }
 interface SimResult { score: number; finished: boolean; stats: Record<string, number> }
 
+// A simulator is BOT-LESS. See "Where the bots live" below — that is a security
+// boundary, not an omission.
 interface Simulator<S = unknown> {
   readonly mechanic: MechanicId
   readonly actions: readonly string[]                 // valid `action` values (validation)
@@ -321,10 +323,38 @@ interface Simulator<S = unknown> {
   step(state: S, tick: number, events: readonly GameInputEvent[]): S
   snapshot(state: S): SimSnapshot                     // cheap read for HUD + bots
   result(state: S): SimResult
-  bots: { perfect: GameBot<S>; random: GameBot<S> }   // for the winnability gate (§9)
 }
 type GameBot<S> = (state: S, tick: number, rng: Rng) => GameInputEvent[]
+interface GameBots<S> {                               // for the winnability gate (§9)
+  perfect(state: S, tick: number, rng: Rng): GameInputEvent[]
+  random(state: S, tick: number, rng: Rng): GameInputEvent[]
+}
 ```
+
+### Where the bots live — and why not on the simulator
+
+`bots.perfect` returns the exact `GameInputEvent[]` Core replays to grant XP, and a
+maximal log is short: 4 events for `launcher`, 8 for `defender`, 10 for `sorter`. While
+`bots` was a member of `Simulator`, every mechanic's `register.ts` — the module
+`MECHANIC_LOADERS` dynamic-imports, i.e. the root of that mechanic's lazy chunk — pulled
+an optimal headless player into the JavaScript the browser downloads. Anyone could lift it
+out of the emitted chunk, run it against the document the API had already served them, and
+POST a maximal input log without playing a tick. Replay-derived rewards exist precisely so
+the client cannot assert a score; shipping the optimal player hands that back.
+
+So each mechanic declares its bots in a sibling **`bots.ts`**, exported as
+`<m>Bots: GameBots<State>`:
+
+- **imported by** gamegen's `simulate` winnability gate (via `getMechanicBots()` in
+  `gamegen/src/contract/registry.ts`) and by the test suites — neither runs in a browser;
+- **never imported by** `register.ts`, `components.tsx`, `GamePlayer` or anything else on
+  the client import graph. `registry.test.tsx` walks the real import graph from each
+  `register.ts` and fails on the edge by name.
+
+Keeping `bots` off `Simulator` is what makes "no bots in the browser" the DEFAULT rather
+than a rule someone has to remember: there is no field to helpfully fill in. Core's
+`MechanicSimSlice` deliberately has no bots field either — the reward replay has no
+business holding a bot, and one shared shape is how the bot would find its way back.
 
 `core/replay.ts` exports the **single shared entry point** used by the dev lab, the
 generation bot-gate and the SERVER — three callers, one implementation, so a divergence is
@@ -361,8 +391,46 @@ ejection. This mirrors the Lesson Engine's hearts/cheer split (LESSON_ENGINE §7
 one product-wide failure posture, not a per-surface invention.
 
 **The score** is whatever the mechanic's `result(state).score` returns, normalized 0..100 by
-the simulator. `passed = score >= scoring.pass_score`. XP is `round(score / 100 * xp_max)`,
-capped at `xp_max` (5..50).
+the simulator.
+
+**Passing is a conjunction, and XP is gated on it** — all three must hold:
+
+```
+passed = score >= scoring.pass_score        // the manifest's bar
+      && inputLog.length > 0                // the player actually played
+      && score > idleScore                  // and beat what DOING NOTHING scores
+                                            // (same document, same seed, empty log)
+xpEarned = passed ? min(xp_max, round(score / 100 * xp_max)) : 0
+```
+
+`xp_max` is bounded 5..50 by the `games` row, which takes precedence over the manifest's own
+figure. **A run that does not pass earns no XP.** Proportional credit below the bar is not a
+kindness, it is a hole: several mechanics award points for state the simulation reaches on
+its own — an audit measured 23..45 points for an EMPTY input log across six published
+manifests — so partial credit paid real XP into a child's `learning_stats` for opening a game
+and submitting nothing.
+
+The `idleScore` term is the **engagement floor**, and it is derived from the content rather
+than picked as a constant: an empty log scores exactly the idle baseline by construction, so
+it can never pass, whatever `pass_score` a manifest declares — including one set below what
+idling reaches. The §9 winnability gate bounds `pass_score` against the *random* bot and
+never against doing nothing at all, and the sidecar carries no floor either (`max_events` is
+a ceiling; `min_duration_seconds` is written as `0` for every generated game). Deriving the
+floor per replay needs no per-manifest authoring and cannot be forgotten by the pipeline.
+
+**The seed is the SERVER's.** It is `seedFromString(run_id)` (`core/rng.ts`), computed by
+Core; the body's `seed` field is only compared against it and a mismatch is a
+`422 RESULT_REJECTED` (`seed_mismatch`). A client that chose its own number could re-roll
+seeds against the document it was already served until it drew a favourable layout — a
+seed-shop the replay could not detect, because every seed replays honestly.
+
+**A run is paid exactly once.** `run_id` is single-use: Core checks recorded attempts before
+replaying, and the DATABASE is the backstop that makes it true under concurrency —
+migration `0029`'s `UNIQUE (user_id, game_id, run_id)`, written against with `ON CONFLICT DO
+NOTHING`. Core credits only when the insert actually returns a row; a losing (or honest
+double-submitted) completion gets the same `422 RESULT_REJECTED` (`run_already_recorded`)
+and writes nothing. The application check alone cannot close this: the window it must close
+is the window between its own read and its own write.
 
 **The reward path — the client's score is a CLAIM, the server's replay is the GRANT:**
 
@@ -416,7 +484,8 @@ imports** (a slice may import `core/*` and the UI kit; never another mechanic):
 | File | Contents |
 |---|---|
 | `schema.ts` | `export const <m>ConfigSchema`, `<m>ContentSchema` (Zod), the inferred types, and `export const <M>_SPRITE_SLOTS: readonly string[]` — the declared sprite slot ids. |
-| `simulate.ts` | `export const <m>Simulator: Simulator<State>` — PURE per §5, including `bots`. |
+| `simulate.ts` | `export const <m>Simulator: Simulator<State>` — PURE per §5. NO bots: see §5 "Where the bots live". |
+| `bots.ts` | `export const <m>Bots: GameBots<State>` — the headless `perfect`/`random` players. Imported by gamegen's `simulate` gate and by tests ONLY; never by anything the browser loads. |
 | `components.tsx` | the renderer: `export function <M>View(props: MechanicViewProps)`. |
 | `fixtures.ts` | `export const <m>Fixtures: GameDocument[]` — **>= 2** complete, PLAYABLE es-MX manifests that pass the schema and whose perfect bot passes. Fixtures satisfy the PRODUCTION schema; §1.14 forbids relaxing it for tests. |
 | `register.ts` | `export const <m>Slice: MechanicSlice`. |

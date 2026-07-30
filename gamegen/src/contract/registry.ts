@@ -37,8 +37,17 @@
 // means the winnability gate cannot be run, which means the document MUST NOT be
 // published: an ungated game is exactly what the gate exists to prevent.
 
-import type { MechanicId, MechanicSimSlice } from './core/types.js'
+import type { GameBots, MechanicId, MechanicSimSlice } from './core/types.js'
 import { MECHANIC_IDS } from './core/types.js'
+
+import { sorterBots } from './mechanics/sorter/bots.js'
+import { launcherBots } from './mechanics/launcher/bots.js'
+import { runnerBots } from './mechanics/runner/bots.js'
+import { stackerBots } from './mechanics/stacker/bots.js'
+import { autobattlerBots } from './mechanics/autobattler/bots.js'
+import { explorerBots } from './mechanics/explorer/bots.js'
+import { defenderBots } from './mechanics/defender/bots.js'
+import { flyerBots } from './mechanics/flyer/bots.js'
 
 import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './mechanics/sorter/schema.js'
 import { sorterSimulator } from './mechanics/sorter/simulate.js'
@@ -136,6 +145,35 @@ export const GAME_MECHANICS: Record<MechanicId, MechanicSimSlice | null> = {
   },
 }
 
+/**
+ * The headless bots, in a table of their OWN rather than as a member of the slice.
+ *
+ * `Simulator` deliberately has no `bots` (see `core/types.ts`): while it did, the
+ * frontend's `register.ts` — the root of each mechanic's lazy chunk — dragged an optimal
+ * player into the JS every child downloads, and `bots.perfect` returns exactly the input
+ * log Core replays to grant XP. Arcade is the one process that legitimately needs them:
+ * `simulate` is the WINNABILITY GATE, and it cannot prove a game is beatable without
+ * playing it perfectly. So the bots live in each mechanic's `bots.ts` and are imported
+ * HERE, in a service that never ships a byte to a browser.
+ *
+ * Keep this table separate from GAME_MECHANICS rather than folding a `bots` field back
+ * into `MechanicSimSlice`: Core builds the same slice shape for the reward replay and has
+ * no business holding a bot at all, and one shared shape is how the bot would find its
+ * way back onto the client.
+ */
+export const GAME_MECHANIC_BOTS: Record<MechanicId, GameBots<unknown> | null> = {
+  // `GameBots<SorterState>` widens to `GameBots<unknown>` because both members are
+  // declared with METHOD syntax (bivariant) in core/types.ts. No cast, no `any`.
+  sorter: sorterBots,
+  launcher: launcherBots,
+  runner: runnerBots,
+  stacker: stackerBots,
+  autobattler: autobattlerBots,
+  explorer: explorerBots,
+  defender: defenderBots,
+  flyer: flyerBots,
+}
+
 /** Narrows an arbitrary string (a catalog `mechanic` value) to a declared id. */
 export function isMechanicId(id: string): id is MechanicId {
   return (MECHANIC_IDS as readonly string[]).includes(id)
@@ -151,4 +189,15 @@ export function isMechanicId(id: string): id is MechanicId {
 export function getMechanic(id: string): MechanicSimSlice | null {
   if (!isMechanicId(id)) return null
   return GAME_MECHANICS[id]
+}
+
+/**
+ * The bots for a mechanic id, or `null` when this release has none. Same contract and
+ * same non-throwing degradation as `getMechanic`, and the caller must treat `null` the
+ * same way: no bots means the winnability gate cannot run, which means the document MUST
+ * NOT be published.
+ */
+export function getMechanicBots(id: string): GameBots<unknown> | null {
+  if (!isMechanicId(id)) return null
+  return GAME_MECHANIC_BOTS[id]
 }

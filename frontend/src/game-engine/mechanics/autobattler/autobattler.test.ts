@@ -9,6 +9,7 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 import { createRng } from '@/game-engine/core/rng'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { autobattlerBots } from './bots'
 import { autobattlerFixtures } from './fixtures'
 import {
   AUTOBATTLER_SPRITE_SLOTS,
@@ -110,7 +111,7 @@ describe('autobattler determinism', () => {
         simulator: autobattlerSimulator,
         document,
         seed: SEED,
-        bot: autobattlerSimulator.bots.perfect,
+        bot: autobattlerBots.perfect,
         maxTicks,
       })
 
@@ -139,7 +140,7 @@ describe('autobattler determinism', () => {
         simulator: autobattlerSimulator,
         document,
         seed: SEED,
-        bot: autobattlerSimulator.bots.perfect,
+        bot: autobattlerBots.perfect,
         maxTicks,
       })
       const replay = replayGame({
@@ -160,7 +161,7 @@ describe('autobattler determinism', () => {
 
       for (let tick = 0; tick <= maxTicks; tick += 1) {
         if (autobattlerSimulator.snapshot(state).finished) break
-        const emitted = autobattlerSimulator.bots.perfect(state, tick, rng)
+        const emitted = autobattlerBots.perfect(state, tick, rng)
         if (state.phase === 'combat') {
           combatTicks += 1
           // All strategy happens in preparation; a well-formed log carries nothing here.
@@ -192,7 +193,7 @@ describe('autobattler winnability gate', () => {
           simulator: autobattlerSimulator,
           document,
           seed,
-          bot: autobattlerSimulator.bots.perfect,
+          bot: autobattlerBots.perfect,
           maxTicks,
         })
         expect(result.finished).toBe(true)
@@ -209,7 +210,7 @@ describe('autobattler winnability gate', () => {
           simulator: autobattlerSimulator,
           document,
           seed,
-          bot: autobattlerSimulator.bots.random,
+          bot: autobattlerBots.random,
           maxTicks,
         })
         expect(result.score).toBeLessThan(document.scoring.pass_score)
@@ -439,7 +440,7 @@ describe('autobattler rules', () => {
       simulator: autobattlerSimulator,
       document: cheer,
       seed: SEED,
-      bot: autobattlerSimulator.bots.perfect,
+      bot: autobattlerBots.perfect,
       maxTicks,
     })
     // The perfect bot equips whatever the camps drop, so a run that beats a camp must

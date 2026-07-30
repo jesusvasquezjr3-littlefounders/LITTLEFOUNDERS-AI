@@ -201,10 +201,37 @@ export interface GameAttemptInsert {
   stats: Record<string, number>;
 }
 
-export async function insertGameAttempt(attempt: GameAttemptInsert): Promise<boolean> {
-  const res = await serviceRest<unknown>('/game_attempts', {
+/**
+ * What happened to one attempt insert.
+ *
+ *  - `inserted`  this run was recorded here and now; the caller may credit it.
+ *  - `duplicate` the run was ALREADY recorded — the DB's unique index (0029)
+ *                refused the second row. The caller must credit NOTHING.
+ *  - `null`      Vault did not answer; nothing may be concluded either way.
+ */
+export type AttemptInsertOutcome = 'inserted' | 'duplicate' | null;
+
+/**
+ * Record one attempt, idempotently on `(user_id, game_id, run_id)`.
+ *
+ * WHY THE DB DECIDES AND NOT A PRE-CHECK. routes/games.ts counts this run's
+ * existing attempts before replaying, but that count and this insert are separated
+ * by several awaits, so two concurrent POSTs carrying one run id both read zero and
+ * both used to be credited — the same run paying XP, `plays` and `minutes_learned`
+ * twice. `ON CONFLICT DO NOTHING` against the 0029 unique index closes that window
+ * where it actually closes: in the database, atomically, for every caller.
+ *
+ * `resolution=ignore-duplicates` + `return=representation` is how PostgREST reports
+ * the outcome without an error status: the winner gets its row back, the loser gets
+ * `[]`. A 2xx with a body that is not an array at all means the write committed but
+ * the representation did not come back — the honest reading is `inserted`, and it is
+ * the safe one too, because the very next thing 0029 guarantees is that a retry of
+ * the same run can only ever be a `duplicate`.
+ */
+export async function insertGameAttempt(attempt: GameAttemptInsert): Promise<AttemptInsertOutcome> {
+  const res = await serviceRest<unknown>('/game_attempts?on_conflict=user_id,game_id,run_id&select=id', {
     method: 'POST',
-    headers: { Prefer: 'return=minimal' },
+    headers: { Prefer: 'return=representation,resolution=ignore-duplicates' },
     body: JSON.stringify({
       user_id: attempt.userId,
       game_id: attempt.gameId,
@@ -214,7 +241,9 @@ export async function insertGameAttempt(attempt: GameAttemptInsert): Promise<boo
       stats: attempt.stats,
     }),
   });
-  return res !== null;
+  if (res === null) return null;
+  if (Array.isArray(res)) return res.length > 0 ? 'inserted' : 'duplicate';
+  return 'inserted';
 }
 
 /**

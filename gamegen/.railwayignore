@@ -5,6 +5,9 @@ node_modules/
 dist/
 coverage/
 *.log
+# Generation run artifacts (checkpoints, ledgers, rubrics). Operator-local only —
+# they are never needed by the deployed service and can be large.
+runs/
 .env
 .env.*
 !.env.example

@@ -33,6 +33,7 @@ import { seedFromString } from '../contract/core/rng.js'
 import { TICK_MS } from '../contract/core/types.js'
 import type {
   GameBot,
+  GameBots,
   GameDocument,
   GameInputEvent,
   GameValidation,
@@ -40,7 +41,7 @@ import type {
   SimSnapshot,
   Simulator,
 } from '../contract/core/types.js'
-import { getMechanic } from '../contract/registry.js'
+import { getMechanic, getMechanicBots } from '../contract/registry.js'
 import {
   explorerConfigSchema,
   explorerContentSchema,
@@ -291,7 +292,11 @@ export function simulateGate(
   // `null` means this release cannot bot-play the mechanic. That is a slot failure, never
   // a pass: publishing an ungated game is the exact hole this stage exists to close.
   const slice = getMechanic(options.mechanic)
-  if (slice === null) {
+  // The bots live in their own table because `Simulator` carries none — they must never
+  // reach a browser (core/types.ts). Arcade is the one caller entitled to them, and a
+  // mechanic with a simulator but no bots is just as ungatable as one with neither.
+  const bots = getMechanicBots(options.mechanic)
+  if (slice === null || bots === null) {
     problems.push({
       code: 'mechanic_unsupported',
       field: 'meta.mechanic',
@@ -349,7 +354,7 @@ export function simulateGate(
   const perfect: BotTrace[] = []
 
   for (const seed of perfectSeeds) {
-    const run = playSeed(slice, document, seed, 'perfect', maxTicks)
+    const run = playSeed(slice, bots, document, seed, 'perfect', maxTicks)
     perfect.push(run.trace)
 
     if (run.trace.score < passScore) {
@@ -461,7 +466,7 @@ export function simulateGate(
   let worstRandom: BotTrace | undefined
 
   for (const seed of randomSeeds) {
-    const run = playSeed(slice, document, seed, 'random', maxTicks)
+    const run = playSeed(slice, bots, document, seed, 'random', maxTicks)
     random.push(run.trace)
     if (run.trace.score >= passScore) {
       randomPasses += 1
@@ -556,13 +561,14 @@ interface RunProbe {
  */
 function playSeed(
   slice: MechanicSimSlice,
+  bots: GameBots<unknown>,
   document: GameDocument,
   seed: number,
   role: 'perfect' | 'random',
   maxTicks: number,
 ): SeedRun {
   const simulator: Simulator<unknown> = slice.simulator
-  const bot: GameBot<unknown> = role === 'perfect' ? simulator.bots.perfect : simulator.bots.random
+  const bot: GameBot<unknown> = role === 'perfect' ? bots.perfect : bots.random
 
   const probe: RunProbe = {
     lastTick: -1,

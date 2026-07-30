@@ -83,6 +83,8 @@ coursegen/
     investing/
       adventures/
   runs/
+    first-lemonade-stand-full-2026-07-30/
+    first-lemonade-stand-full-2026-07-30--estacion-de-pruebas/
     fix-3blockers/
     fix-balance/
     fix-batch2/
@@ -752,6 +754,7 @@ frontend/
     founder-island-assets/
 gamegen/
   curriculum/
+    first-lemonade-stand/
   src/
     __tests__/
     catalog/
@@ -884,19 +887,19 @@ permissions:
 ```
 name: backend CI
 
-on:
-  push:
-    branches: [main, littlefounders_v2]
-    paths:
-      - 'backend/**'
-      - 'database/types/**'
-      - '.github/workflows/backend-ci.yml'
-  pull_request:
-    paths:
-      - 'backend/**'
-      - 'database/types/**'
-      - '.github/workflows/backend-ci.yml'
-
+# `npm test` here is not only vitest: backend's `test` script chains
+# `contract:check && vitest run`, and `contract:check` = `lesson-contract:check
+# && game-contract:check` — BOTH of which read files that live OUTSIDE backend/.
+# So this workflow's path filters must cover them or the gate is only reachable
+# by an operator running it by hand.
+#
+#   lesson-contract:check  diffs backend/src/lesson-contract/ against its
+#                          originals in frontend/src/lesson-engine/.
+#   game-contract:check    diffs backend/src/game-contract/ against its
+#                          originals in frontend/src/game-engine/ (plus the
+#                          character rig's closed id set).
+#
+# Core derives a game's reward by REPLAYING the player's input log through the
 ```
 
 ### .github/workflows/coursegen-cd.yml
@@ -957,6 +960,26 @@ on:
 
 jobs:
   ci:
+```
+
+### .github/workflows/dataintel-ci.yml
+
+```
+name: dataintel CI
+
+# dataintel shipped without a workflow, so its whole suite had never run in CI.
+# A missing workflow is the one failure mode nothing surfaces: no job goes red,
+# because no job exists.
+#
+# The filters are deliberately narrow. Unlike backend/ and coursegen/, dataintel
+# imports nothing from database/types — it talks to Postgres over PostgREST and
+# owns its own DuckDB schema in src/db/, so no file outside dataintel/ takes part
+# in its type-check, lint or tests. Add a filter here the moment that stops being
+# true; dataintel/src/__tests__/ci-workflow.test.ts pins the rest of this file to
+# what dataintel/package.json actually defines.
+
+on:
+  push:
 ```
 
 ### .github/workflows/email-server-cd.yml
@@ -1845,17 +1868,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-30) — Game Engine: the `games/` section gets a real runtime (Phase 0 done, Phases 1–6 in flight, UNCOMMITTED on `feat/game-engine`)
+## Current State (2026-07-30b) — Game Engine: Phases 0–6 implemented on `feat/game-engine` (5 commits, `4b0b64f..d968a3e`) — NOT merged, NOT deployed, NO paid run
 
-- **Status when this was written, stated plainly:** the branch `feat/game-engine` holds exactly one new file, the untracked `/GAME_ENGINE.md`. `frontend/src/game-engine/` does not exist yet, `database/migrations/` still ends at `0026_dataintel_sync.sql`, `gamegen/src/` is still only `app.ts` + `index.ts` + `__tests__`, `frontend/src/App.tsx:157` still serves `games` as `<SectionComingSoon>`, and there is no `games.json` i18n fragment. Nothing below is deployed and nothing below has been merged. Phase 0 is executed; Phases 1–6 are being implemented concurrently by the rest of this session.
-- **The 3-year-old OPEN decision is closed: prebuilt parameterized mechanics + generated JSON manifests.** `gamegen/AGENTS.md` had carried "Approach: OPEN — fully generated HTML5 sandboxed games vs parameterized prebuilt templates" since the v2 scaffold, which is why `games/` never got past a placeholder. Generated game *code* is rejected on three independently disqualifying grounds (`/GAME_ENGINE.md` §1): a novel program per instance is an unreviewable surface aimed at children and "sandboxed" is a containment claim, not a §1.9 safety claim; N generated engines means N feel/accessibility/§1.11-responsive/motion postures instead of one, and improving `runner` once must improve every `runner` game ever generated, retroactively; and generated code cannot be replayed, so it cannot be bot-tested for winnability before publish and cannot be trusted with XP.
-- **`/GAME_ENGINE.md` authored as the authoritative engine spec (level 6, the twin of `/LESSON_ENGINE.md`)** — 13 sections: the `GameDocument` contract (§3) and its server-only `GameValidation` sidecar, the CLOSED 8-mechanic taxonomy with each mechanic's `config` surface (§4), the determinism/replay contract (§5), the reward path (§6), slice anatomy + the lazy registry (§7), concept binding and gating (§8), the 9-stage Arcade pipeline (§9), motion/responsiveness (§10), §1.9 applied (§11), the extension protocol for mechanic #9 (§12), and open questions + deliberate deviations (§13). The document is written so a slice can be added without editing another slice, and so the pipeline, the lab and Core all target the same executable contract.
-- **The engine mirrors the Lesson Engine deliberately, down to the failure posture.** Hand-written mechanics (code) + generated manifest (data); `cheer` mode is the tier-1 default with no fail state and `arcade` mode ends at the RESULTS screen with a retry CTA, never a mid-game ejection — one product-wide failure posture rather than a per-surface invention. Games consolidate a concept a child already learned; they never teach one cold, and a game is locked until the bound topic has a passed lesson for that user.
-- **Rewards are server-derived by replay, not client-reported.** The client sends `{ run_id, seed, input_log, duration_seconds, local_date }` and no score at all; Core loads the full document plus the validation sidecar with the service role, re-runs the mechanic's simulator through the one shared `replayGame()` entry point, and derives score/stats itself — a log violation is `422 RESULT_REJECTED` with no reward. `backend/src/game-contract/` will be a parity copy of the pure simulation code with its own `contract:check`, exactly like the lesson graders. `learning_stats` writes are delta-only and **`lessons_completed` is never touched by a game** — incrementing it would corrupt course progress, the parent dashboard, the `lessons_completed === 0` first-lesson-ever assertion in `backend/src/routes/learn.ts`, and every `dataintel` funnel.
-- **Raw input logs are never persisted.** The log is replayed in memory and discarded; `game_attempts.stats` holds derived aggregates only. A tick-resolution behavioural trace of a child at play is precisely the data COPPA-minded minimalism says not to keep, and the reward does not need it.
-- **Audio is honestly incomplete and documented as such.** The manifest vocabulary for SFX/BGM is closed so generated content can only name known sounds, but the only audio assets that exist are the 9 files already in `frontend/public/sfx/`. New event names map to the closest honest existing file or resolve to no sound; a missing asset is a silent no-op, and every game must be fully playable and winnable with zero audio. Real game audio (ElevenLabs one-offs vs licensed loops) is an owner decision and the one pending owner action — game audio is not "done" and is not described as such anywhere.
-- **The paid generation run is out of scope by design.** Publish writes `status='review'`; the §1.9 human publish flip stays the single blocking gate, and an actual paid Arcade run needs the owner's go-ahead like every Forge run (`agent/core/BOUNDARIES.md`).
-- **Companion docs move in the same commit (§8 stewardship):** root `AGENTS.md`/`CLAUDE.md` §1.5 Arcade mission line (byte-identical, `docs:check`), `gamegen/AGENTS.md` (decision RESOLVED), `gamegen/README.md`, `GLOSSARY.md`, `doc_map.md`, `DESIGN.md` (Games hub + player recipes, the `GAME_PALETTES` enumeration, the canvas-vs-chrome rule, the game-canvas motion carve-out), `ROADMAP.md` (this decision + the 7-phase program) and this file. Those edits were in flight while this entry was written.
+- **What actually exists now.** `frontend/src/game-engine/` (core + all 8 mechanic slices + player + lab + registry), `backend/src/routes/games.ts` with `backend/src/game-contract/` as its parity copy, Vault migrations `0027`/`0028` (+ `0029` from the audit-fix pass in flight), the full Arcade pipeline in `gamegen/src/`, `games.json` in three locales, `/games` + `/games/:slug` + `/dev/game-lab` registered lazily in `App.tsx` (the `<SectionComingSoon section="games">` placeholder is gone), and `gamegen/curriculum/first-lemonade-stand/games.yaml` as the QA catalog. The entry below (2026-07-30a) is the Phase-0 record and its "nothing exists yet" status paragraph describes the branch *at that moment only* — it is superseded by this entry.
+- **Nothing here is merged or deployed, and no paid generation run has been executed.** Not one DeepSeek, Qwen or Prism call has been made by Arcade; `games`/`game_documents` hold zero generated rows. That run is the owner's call under `agent/core/BOUNDARIES.md` #8, exactly like a Forge run.
+- **The engine: 8 hand-written mechanics, six files each, zero cross-slice imports.** `schema.ts` (config/content Zod + `<M>_SPRITE_SLOTS`), `simulate.ts` (pure), `bots.ts`, `components.tsx`, `fixtures.ts`, `register.ts`. `registry.ts` splits synchronous `MECHANIC_META` (the hub renders from it and loads **zero** mechanic code) from `MECHANIC_LOADERS` (one dynamic `import()` per mechanic, so eight mechanics never become one bundle), and `loadMechanic()` returns `null` for an unknown id — the forward-compatibility property that lets mechanic #9's *content* ship before every client has its code.
+- **The bots left `Simulator` for a sibling `bots.ts`, and that is a security boundary, not tidiness.** `bots.perfect` returns the exact `GameInputEvent[]` Core replays to grant XP, and a maximal log is short. While `bots` was a member of `Simulator`, every `register.ts` — the module `MECHANIC_LOADERS` dynamic-imports, i.e. the root of that mechanic's lazy chunk — pulled an optimal headless player into the JavaScript the browser downloads; anyone could lift it out of the emitted chunk and POST a maximal log without playing a tick. `registry.test.tsx` now walks the real import graph from each `register.ts` and fails on the edge by name, and Core's `MechanicSimSlice` has no bots field either.
+- **Rewards are the server's replay, and passing is a conjunction.** `passed = score >= pass_score && inputLog.length > 0 && score > idleScore`, where `idleScore` is what the SAME document and seed score for an EMPTY log — several mechanics award points for state the simulation reaches on its own, so a manifest whose `pass_score` sits below the idle baseline would otherwise have paid real XP for opening a game and submitting nothing. XP is gated on passing: no partial credit below the bar. The seed is `seedFromString(run_id)` computed by Core; the body's `seed` is only compared against it (a mismatch is `422 RESULT_REJECTED` / `seed_mismatch`), because a client that picked its own number could re-roll seeds against the document it was already served until it drew a favourable layout — a seed-shop the replay could never detect, since every seed replays honestly.
+- **A run is paid exactly once, and the DATABASE is what makes that true.** Core checks recorded attempts before replaying, but the window that check must close is the window between its own read and its own write; `0029_game_attempt_integrity.sql` adds `UNIQUE (user_id, game_id, run_id)` and the insert runs `ON CONFLICT DO NOTHING`, so credit is granted only when a row actually comes back. A losing race — and an honest double-submit — gets `422 RESULT_REJECTED` / `run_already_recorded` and writes nothing.
+- **Vault postures.** `game_documents` is RLS-enabled with **zero policies** (service-role only): RLS is row-level, not column-level, so any client SELECT policy would expose the server-only `validation` sidecar sitting on the same row — the same posture `lesson_documents` uses for `answer_keys`. `game_attempts`/`game_progress` are readable by the row's owner **or** a verified guardian, with no client write policy at all. `game_attempts.stats` holds derived aggregates only; the raw input log is replayed in memory and discarded.
+- **The Arcade pipeline is real, and its cheapest gate is the one Forge never had.** `validate → plan → author → gate → simulate → judge → localize → illustrate → publish`, nine stages over eight checkpoint states (`gate` owns none — it runs inside author's corrective-retry loop, so a gate failure is feedback rather than a dead slot). `simulate` bot-plays the freshly authored manifest with the mechanic's real simulator: the `perfect` bot must reach `pass_score`, the `random` bot must not, the tick budget must hold, and `explorer` additionally runs its reachability solver — a beautiful unsolvable map is a total failure no LLM judge catches. It costs nothing and runs BEFORE the paid judge. `gamePlaybook.ts` is injected into BOTH the author and judge prompts so the bar the author aims at is the bar the judge rejects against. `illustrate` runs on the es-MX document BEFORE the localize string-freeze, so one image serves three locales, which forced a `NON_VISIBLE_KEYS` twin that skips whole CONTAINERS (`skin.sprites` is a `Record` with arbitrary slot ids that a field-name list could never protect). `publish` writes `status='review'` and `upsertGame()` takes no status argument — the absence of the parameter is the enforcement.
+- **`--dry-run` spends nothing and destroys nothing.** It short-circuits before all five paid stages, skips the key checks entirely (a keyless dry-run test is the pin), and marks only PRISTINE pending slots — a slot carrying checkpoint data is counted as validated without being touched, because `setSlotState` replaces `data` wholesale and marking it would wipe paid, judge-approved work.
 ```
 
 ### agent/README.md
@@ -3558,6 +3581,26 @@ afterEach(() => vi.unstubAllGlobals());
 function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
 ```
 
+### backend/src/__tests__/ciPathFilters.test.ts
+
+```
+// Regression gate for `.github/workflows/backend-ci.yml` path filters.
+//
+// `npm test` here runs `contract:check` first (backend/package.json), and BOTH
+// parity scripts read files that live OUTSIDE backend/:
+//
+//   scripts/contract-check.ts       → frontend/src/lesson-engine
+//   scripts/game-contract-check.ts  → frontend/src/game-engine
+//                                   → frontend/src/components/characters/control/types.ts
+//
+// If a workflow path filter does not cover one of those roots, the drift the
+// script exists to catch becomes unreachable in CI: editing a mechanic's
+// simulate.ts under frontend/ triggers frontend CI and gamegen CI, but never
+// backend CI, so the backend's copy silently keeps the old shape. Zod strips
+// unknown keys by default, so the divergence is not rejected — the missing
+// field is DELETED during replay and the child is scored on a document that
+```
+
 ### backend/src/__tests__/cors.test.ts
 
 ```
@@ -3708,14 +3751,14 @@ import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb, type FakeRow } from './fakePostgrest.js';
 import { LESSON_1_ID, SAGA_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 import { runBot } from '../game-contract/core/replay.js';
+import { seedFromString } from '../game-contract/core/rng.js';
+import { getMechanic } from '../game-contract/registry.js';
 import { sorterSimulator } from '../game-contract/mechanics/sorter/simulate.js';
+import { sorterBots } from '../game-contract/mechanics/sorter/bots.js';
+import { explorerBots } from '../game-contract/mechanics/explorer/bots.js';
 import type { GameDocument, GameInputEvent } from '../game-contract/core/types.js';
 import { maxTicksFor } from '../services/gameDocument.js';
-
-/*
- * /api/v1/games — the HTTP surface of the Game Engine (GAME_ENGINE.md §6-§8).
- *
- * The three properties this file exists to pin, none of which a green
+import { EXPLORER_DOCUMENT } from './gameContractFixtures.js';
 ```
 
 ### backend/src/__tests__/health.test.ts
@@ -4096,6 +4139,26 @@ import {
 // Original header follows.
 ```
 
+### backend/src/game-contract/mechanics/autobattler/bots.ts
+
+```
+// `autobattler` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `autobattlerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### backend/src/game-contract/mechanics/autobattler/schema.ts
 
 ```
@@ -4134,6 +4197,26 @@ import {
 //
 // TWO v1 BUGS ARE STRUCTURALLY EXCLUDED, and both cost a comment:
 //  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
+```
+
+### backend/src/game-contract/mechanics/defender/bots.ts
+
+```
+// `defender` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `defenderSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### backend/src/game-contract/mechanics/defender/schema.ts
@@ -4176,6 +4259,26 @@ import {
 // comment because both were expensive:
 ```
 
+### backend/src/game-contract/mechanics/explorer/bots.ts
+
+```
+// `explorer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `explorerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### backend/src/game-contract/mechanics/explorer/schema.ts
 
 ```
@@ -4214,6 +4317,26 @@ import {
 // THE LEARNING BINDING, which is why this mechanic exists at all:
 //  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
 //    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### backend/src/game-contract/mechanics/flyer/bots.ts
+
+```
+// `flyer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `flyerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### backend/src/game-contract/mechanics/flyer/schema.ts
@@ -4256,6 +4379,26 @@ import {
 // the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
 ```
 
+### backend/src/game-contract/mechanics/launcher/bots.ts
+
+```
+// `launcher` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `launcherSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### backend/src/game-contract/mechanics/launcher/schema.ts
 
 ```
@@ -4294,6 +4437,26 @@ import { z } from 'zod'
 //     p' = p + v'
 // Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
 // for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
+### backend/src/game-contract/mechanics/runner/bots.ts
+
+```
+// `runner` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `runnerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### backend/src/game-contract/mechanics/runner/schema.ts
@@ -4336,6 +4499,26 @@ import {
 //
 ```
 
+### backend/src/game-contract/mechanics/sorter/bots.ts
+
+```
+// `sorter` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `sorterSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### backend/src/game-contract/mechanics/sorter/schema.ts
 
 ```
@@ -4374,6 +4557,26 @@ import {
 //  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
 //    in ONE pass that drops both the consumed and the escaped elements together.
 //    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### backend/src/game-contract/mechanics/stacker/bots.ts
+
+```
+// `stacker` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `stackerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### backend/src/game-contract/mechanics/stacker/schema.ts
@@ -5035,10 +5238,12 @@ import { getMechanic } from '../game-contract/registry.js';
 ### backend/src/services/gameReplay.ts
 
 ```
-import { TICK_MS, type GameInputEvent } from '../game-contract/core/types.js';
+import { TICK_MS, type GameDocument, type GameInputEvent } from '../game-contract/core/types.js';
 import { replayGame, type ReplayRejectionReason } from '../game-contract/core/replay.js';
+import { seedFromString } from '../game-contract/core/rng.js';
 import { clampScore } from '../game-contract/core/scoring.js';
 import { getMechanic } from '../game-contract/registry.js';
+import type { MechanicSimSlice } from '../game-contract/core/types.js';
 import { maxTicksFor, parseStoredGameDocument, parseValidationSidecar, type DocumentRejectionReason } from './gameDocument.js';
 
 /*
@@ -5048,8 +5253,6 @@ import { maxTicksFor, parseStoredGameDocument, parseValidationSidecar, type Docu
  * The request body carries no score at all, so there is nothing to inflate; what
  * it carries is the input log, which Core re-runs through the exact simulator the
  * browser ran. A replay violation, an out-of-bounds result or an implausible
- * duration returns a REFUSAL — never a partial reward, never a fallback to a
- * client number.
 ```
 
 ### backend/src/services/gotrue.ts
@@ -6070,6 +6273,46 @@ export default tseslint.config(
     "restartPolicyMaxRetries": 10
   }
 }
+```
+
+### coursegen/runs/first-lemonade-stand-full-2026-07-30--estacion-de-pruebas/checkpoint.json
+
+```
+{
+  "runId": "first-lemonade-stand-full-2026-07-30--estacion-de-pruebas",
+  "course": "first-lemonade-stand",
+  "startedAt": "2026-07-30T21:29:46.455Z",
+  "updatedAt": "2026-07-30T21:29:46.481Z",
+  "params": {
+    "course": "first-lemonade-stand",
+    "locales": [
+      "en-US",
+      "es-MX",
+      "pt-BR"
+    ],
+    "noImages": false,
+    "register": "kid"
+  },
+```
+
+### coursegen/runs/first-lemonade-stand-full-2026-07-30/track-report.json
+
+```
+{
+  "trackId": "first-lemonade-stand-full-2026-07-30",
+  "course": "first-lemonade-stand",
+  "startedAt": "2026-07-30T21:30:18.521Z",
+  "finishedAt": "2026-07-30T21:30:18.539Z",
+  "budgetUsd": 50,
+  "shardPasses": 3,
+  "shards": [
+    {
+      "adventure": "estacion-de-pruebas",
+      "runId": "first-lemonade-stand-full-2026-07-30--estacion-de-pruebas",
+      "passes": 1,
+      "slotCount": 62,
+      "published": 0,
+      "alreadyDone": 0,
 ```
 
 ### coursegen/runs/fix-3blockers/checkpoint.json
@@ -9375,6 +9618,26 @@ create table if not exists generation_heartbeat_snapshots (
 --     only new things expressible are the two named events. A closed enum is
 ```
 
+### database/migrations/0029_game_attempt_integrity.sql
+
+```
+-- 0029_game_attempt_integrity.sql — one run is paid exactly once.
+--
+-- Delta over 0027 (never edit an applied migration). Idempotent.
+--
+-- THE DEFECT THIS CLOSES. `POST /api/v1/games/:gameId/complete` credits XP,
+-- `plays` and `minutes_learned` for a run, and it deduplicates by asking
+-- `game_attempts` whether that run id was already recorded. That question and the
+-- INSERT that answers it are separated by several awaits (the document read, the
+-- replay, the attempt write), so two concurrent POSTs carrying ONE run id both
+-- read zero rows, both insert, and both credit — the same play-through paid twice.
+-- 0027 had no constraint that could stop it: `run_id` was `uuid NOT NULL` and
+-- nothing more.
+--
+-- An application-level check cannot fix this, because the window it has to close
+-- is exactly the window between its own read and its own write. Only the database
+```
+
 ### database/package.json
 
 ```
@@ -9865,6 +10128,26 @@ import { getChurnRisk } from '../services/churn.js';
  */
 ```
 
+### dataintel/src/__tests__/ci-workflow.test.ts
+
+```
+// Regression gate for `.github/workflows/dataintel-ci.yml`.
+//
+// dataintel shipped with a full test suite and NO workflow at all, so none of
+// it had ever run in CI: type errors, lint errors and failing tests could all
+// reach main untouched. A missing workflow is invisible by construction —
+// nothing goes red, because nothing runs. This test makes the absence loud.
+//
+// It also pins the workflow to what dataintel/package.json actually defines:
+// every `npm run <script>` step must name a real script, so renaming or
+// dropping a script cannot leave CI green while running nothing.
+
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+```
+
 ### dataintel/src/__tests__/experiments-stats.test.ts
 
 ```
@@ -9883,6 +10166,26 @@ import {
  * effect report as "no difference":
  *
  * 1. normCDF() returned 1 - true_p instead of true_p, so a large,
+```
+
+### dataintel/src/__tests__/game-analytics.test.ts
+
+```
+import { randomUUID } from 'crypto';
+import { beforeAll, describe, expect, it } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { getConfig } from '../env.js';
+import { exec, execute, initDb } from '../db/duckdb.js';
+import {
+  getGameBreakdown,
+  getGameCompletion,
+  getGameDimensionCapabilities,
+  getGameFunnel,
+  getGamesVsLessons,
+} from '../services/games.js';
+
+/*
 ```
 
 ### dataintel/src/__tests__/game-funnels.test.ts
@@ -10357,6 +10660,26 @@ export interface FunnelStep {
 }
 
 interface ActivationFunnelRow {
+```
+
+### dataintel/src/services/games.ts
+
+```
+import { query } from '../db/duckdb.js';
+import {
+  GAME_FUNNEL_STEPS,
+  gameBreakdownQuery,
+  gameCompletionQuery,
+  gameDimensionProbeQuery,
+  gameFunnelQuery,
+  gamesVsLessonsQuery,
+  resolveGameDimension,
+} from '../db/queries.js';
+import type {
+  GameBreakdownDimension,
+  GameFunnelStep,
+} from '../db/queries.js';
+
 ```
 
 ### dataintel/src/services/lessons.ts
@@ -139806,6 +140129,7 @@ const referenceSin = (degrees: number): number => Math.sin((degrees * Math.PI) /
 ```
 import { DEFAULT_MAX_EVENTS_PER_TICK, replayGame, runBot } from '@/game-engine/core/replay'
 import type {
+  GameBots,
   GameDocument,
   GameInputEvent,
   SimInit,
@@ -139818,7 +140142,6 @@ import type {
 // A counter that advances on `tap` and finishes at `scoring.target`. It obeys the §5
 // rules (pure, integer ticks, allowed arithmetic only, no randomness) so that what the
 // tests prove about replayGame is not an artefact of a sloppy stand-in.
-
 ```
 
 ### frontend/src/game-engine/core/replay.ts
@@ -140075,10 +140398,30 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 import { createRng } from '@/game-engine/core/rng'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { autobattlerBots } from './bots'
 import { autobattlerFixtures } from './fixtures'
 import {
   AUTOBATTLER_SPRITE_SLOTS,
-  autobattlerConfigSchema,
+```
+
+### frontend/src/game-engine/mechanics/autobattler/bots.ts
+
+```
+// `autobattler` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `autobattlerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### frontend/src/game-engine/mechanics/autobattler/components.tsx
@@ -140181,6 +140524,26 @@ import {
 //  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
 ```
 
+### frontend/src/game-engine/mechanics/defender/bots.ts
+
+```
+// `defender` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `defenderSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### frontend/src/game-engine/mechanics/defender/components.tsx
 
 ```
@@ -140212,13 +140575,13 @@ import {
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { defenderBots } from './bots'
 import { defenderFixtures } from './fixtures'
 import {
   DEFENDER_SPRITE_SLOTS,
   defenderConfigSchema,
   defenderContentSchema,
   type DefenderConfig,
-} from './schema'
 ```
 
 ### frontend/src/game-engine/mechanics/defender/fixtures.ts
@@ -140301,6 +140664,26 @@ import { DEFENDER_SPRITE_SLOTS, defenderConfigSchema, defenderContentSchema } fr
 // comment because both were expensive:
 ```
 
+### frontend/src/game-engine/mechanics/explorer/bots.ts
+
+```
+// `explorer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `explorerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### frontend/src/game-engine/mechanics/explorer/components.tsx
 
 ```
@@ -140337,8 +140720,8 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit, SimSnapshot } from '@/game-engine/core/types'
 
 import { ExplorerView } from './components'
+import { explorerBots } from './bots'
 import { explorerFixtures } from './fixtures'
-import {
 ```
 
 ### frontend/src/game-engine/mechanics/explorer/fixtures.ts
@@ -140419,6 +140802,26 @@ import { EXPLORER_SPRITE_SLOTS, explorerConfigSchema, explorerContentSchema } fr
 // THE LEARNING BINDING, which is why this mechanic exists at all:
 //  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
 //    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### frontend/src/game-engine/mechanics/flyer/bots.ts
+
+```
+// `flyer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `flyerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### frontend/src/game-engine/mechanics/flyer/components.tsx
@@ -140541,6 +140944,26 @@ import { FLYER_SPRITE_SLOTS, flyerConfigSchema, flyerContentSchema } from './sch
 // the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
 ```
 
+### frontend/src/game-engine/mechanics/launcher/bots.ts
+
+```
+// `launcher` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `launcherSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### frontend/src/game-engine/mechanics/launcher/components.tsx
 
 ```
@@ -140659,6 +141082,26 @@ import { z } from 'zod'
 //     p' = p + v'
 // Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
 // for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
+### frontend/src/game-engine/mechanics/runner/bots.ts
+
+```
+// `runner` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `runnerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### frontend/src/game-engine/mechanics/runner/components.test.tsx
@@ -140801,6 +141244,26 @@ import {
 //
 ```
 
+### frontend/src/game-engine/mechanics/sorter/bots.ts
+
+```
+// `sorter` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `sorterSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### frontend/src/game-engine/mechanics/sorter/components.test.tsx
 
 ```
@@ -140930,6 +141393,7 @@ import {
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { sorterBots } from './bots'
 import { sorterFixtures } from './fixtures'
 import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './schema'
 import { sorterSimulator, type SorterState } from './simulate'
@@ -140938,7 +141402,26 @@ const SEED = 20260730
 
 function maxTicksOf(document: GameDocument): number {
   const config = sorterConfigSchema.parse(document.config)
-  return config.round.tick_budget
+```
+
+### frontend/src/game-engine/mechanics/stacker/bots.ts
+
+```
+// `stacker` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `stackerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### frontend/src/game-engine/mechanics/stacker/components.tsx
@@ -141052,13 +141535,13 @@ import { z } from 'zod'
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { stackerBots } from './bots'
 import { stackerFixtures } from './fixtures'
 import {
   costOfPiece,
   stackerConfigSchema,
   stackerContentSchema,
   STACKER_SPRITE_SLOTS,
-} from './schema'
 ```
 
 ### frontend/src/game-engine/player/GamePlayer.test.tsx
@@ -145413,12 +145896,12 @@ export default defineConfig({
 
 Generates concept-bound educational minigames for `games/` using **DeepSeek (author) + Qwen (judge) + Prism (art)**. Two things live in this package:
 
-1. An Express `/health` service (internal, reachable only with `INTERNAL_API_KEY` — currently just the health envelope; not yet called service-to-service by anything).
-2. **Arcade**, a CLI pipeline (`npm run generate`) that turns a curated game catalog into `GameDocument`s in Vault. Arcade is **operator-triggered only** — never run by CI or any automatic process (`/AGENTS.md` sign-off rule, `agent/core/BOUNDARIES.md` #8: calling paid AI APIs in bulk and publishing are both boundary actions).
+1. An Express `/health` service (internal). `src/app.ts` answers the health envelope **above** every guard and every optional dependency, mounts the internal-key guard on the `/api/v1` prefix (`timingSafeEqual` over fixed-width SHA-256 digests, **fail-closed** when `INTERNAL_API_KEY` is unset — `sha256('') === sha256('')` would otherwise make an absent header a valid match), and answers everything else with the `NOT_FOUND` envelope. There is still **no `/api/v1` route**: the guard exists so the first one cannot land unguarded, and nothing calls this service service-to-service today.
+2. **Arcade**, a CLI pipeline (`npm run generate` → `src/cli.ts` → `src/pipeline/run.ts`) that turns a curated game catalog into `GameDocument`s in Vault. Arcade is **operator-triggered only** — never run by CI or any automatic process (`/AGENTS.md` sign-off rule, `agent/core/BOUNDARIES.md` #8: calling paid AI APIs in bulk and publishing are both boundary actions).
 
-**Implementation status (read this before believing anything below is code).** As of 2026-07-30 `gamegen/src` is a bare scaffold: `app.ts` (health envelope + `NOT_FOUND` catch-all) and `index.ts` (raw `process.env.PORT` read). Every pipeline rule in this file is a **requirement on the implementation landing on `feat/game-engine`**, not an observation of existing code. When a stage lands, its rule here stops being a requirement and starts being a description — do not blur the two.
+## Implementation status — 2026-07-30, branch `feat/game-engine`
 
-## Approach decision — RESOLVED 2026-07-30
+Phases 0–6 of the Game Engine program are committed (`4b0b64f..d968a3e`), with an adversarial-audit fix pass in flight on top of them. The pipeline is **code, not a plan**. `src/` holds `env.ts` (Zod-parsed frozen config + `getConfig()`/`resetConfigCache()` + the lazy `require*Keys()` gates), `app.ts`, `index.ts`, `cli.ts`, `catalogCli.ts`, `catalog/` (schema, loader, check), `contract/` (the parity copy + `check.ts` + `registry.ts`), `pipeline/` (`plan`, `author`, `gates`, `simulateGate`, `judge`, `localize`, `images`, `publish`, `run`, `checkpoint`, `correctiveRetry`, `gamePlaybook`, `shapeExample`, `nonVisibleKeys`, `liveTelemetry`), `providers/` (`deepseek`, `qwen`, `openaiChat`, `retry`, `usage`, `errors`, `picturegen`) and `vault/` (`client`, `gamesRepo`, `telemetry`).
 ```
 
 ### gamegen/README.md
@@ -145428,17 +145911,17 @@ Generates concept-bound educational minigames for `games/` using **DeepSeek (aut
 
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md). Engine spec: [/GAME_ENGINE.md](../GAME_ENGINE.md).
 
-**Mission:** Concept-bound minigame generation for the `games/` section — DeepSeek authors a `GameDocument` manifest, Qwen judges it, Prism draws its sprites, Vault stores it — plus a minimal internal `/health` service.
+**Mission:** Concept-bound minigame generation for the `games/` section — DeepSeek authors a `GameDocument` manifest, deterministic gates and a headless bot-play prove it is winnable, Qwen judges it, Prism draws its sprites, Vault stores it as `review` — plus a minimal internal `/health` service.
 **Port (dev):** 4003 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
 
 ```bash
 npm install
 cp .env.example .env
-npm run dev        # Express /health service
-npm test
+npm run dev            # Express /health service
+npm test               # catalog:check && contract:check && vitest run
 ```
 
-> **What is shipped vs. planned.** This README describes the service **as it will be at the end of Phase 5** of the Game Engine build; the implementation lands across Phases 1–5 on branch `feat/game-engine`. Everything below is tagged: **[shipped]** = read out of this package's code/config today (2026-07-30); **[planned]** = the contract the implementation must satisfy, not yet code. Today `src/` is only `app.ts` (health + envelope 404) and `index.ts`.
+**Status (2026-07-30, branch `feat/game-engine`).** The service and the full nine-stage pipeline are implemented — Phases 0–6 committed as `4b0b64f..d968a3e`, with an adversarial-audit fix pass in flight on top. `npm test` passes. Everything documented below was read out of this package's code, not planned. The honest exceptions are listed under [Known gaps](AGENTS.md#known-gaps--verified-2026-07-30-against-the-code-on-this-branch) in `AGENTS.md` — most importantly, **no paid run has ever been executed** and the two telemetry modules are written but not yet called by `run.ts`.
 ```
 
 ### gamegen/curriculum/README.md
@@ -145459,6 +145942,46 @@ the pipeline's free `validate` stage runs the same checks before the first paid 
 This is **content design, reviewed by a human**. The pipeline code never writes or edits
 these files — a `catalog:check` finding about content goes to whoever authors the file
 (`gamegen/AGENTS.md`).
+```
+
+### gamegen/curriculum/first-lemonade-stand/README.md
+
+```
+# `first-lemonade-stand` — the Arcade QA catalog
+
+> **Internal note.** `first-lemonade-stand` is the platform's **non-shipping QA course**.
+> Nothing a learner can see says so: its slug, title and description are deliberately
+> learner-facing. Only files like this one, and the comments inside `games.yaml`, say what
+> it is for.
+
+This directory is the Game Engine twin of Forge's QA course. Forge uses
+`coursegen/curriculum/first-lemonade-stand/` to exercise all 56 LESSON_ENGINE segment
+types for a fraction of a real course's cost; `games.yaml` here is the smallest catalog
+that still forces **one** Arcade run to touch every simulator, every gate and every
+per-mechanic schema.
+
+Format, field rules and the `catalog:check` contract live one level up, in
+[`../README.md`](../README.md). This file records only what is specific to *this* catalog
+```
+
+### gamegen/curriculum/first-lemonade-stand/games.yaml
+
+```
+schema_version: 1
+# INTERNAL NOTE (never user-visible, same posture as the Forge catalog this binds to):
+# `first-lemonade-stand` is the platform's non-shipping QA course. Forge uses it to
+# exercise all 56 LESSON_ENGINE types for a fraction of a real course's cost; this file
+# is its Game Engine twin — the smallest catalog that still forces a single run to touch
+# EVERY simulator, EVERY gate and EVERY per-mechanic schema.
+#
+# Design rules this file follows (GAME_ENGINE.md §4/§8/§9, curriculum/README.md):
+#   * >= 2 blueprints per mechanic across all 8 closed mechanics (18 games total), so
+#     `simulate` runs every bot pair and `author` produces every config shape.
+#   * Tier 1, 2 and 3 are all represented. The bound adventure declares `age_tier: tier2`,
+#     so the tier1/tier3 blueprints trip the loader's tier-agreement WARNING on purpose:
+#     the consolidation game is deliberately pitched a band easier (tier1 counting/sorting
+#     drills) or a band harder (tier3 planning/economy games) than the lesson that taught
+#     the concept. That warning is the design conversation, and this comment is our side
 ```
 
 ### gamegen/eslint.config.js
@@ -145618,7 +146141,7 @@ describe('GET /health', () => {
 ### gamegen/src/__tests__/keyless.test.ts
 
 ```
-// EVERYTHING THIS SERVICE DOES WITHOUT A SINGLE CREDENTIAL CONFIGURED.
+// EVERYTHING THIS SERVICE DOES WITHOUT A SINGLE VALID CREDENTIAL CONFIGURED.
 //
 // Two independent invariants share this file because they share a precondition —
 // `Env.parse({})` must succeed:
@@ -145631,8 +146154,8 @@ describe('GET /health', () => {
 //     LAZY — called right before money is spent, never at import time. The end-to-end
 //     proof is `dry-run.test.ts`; this file pins the foundation it stands on.
 //
-// The suite deletes every credential from the environment on purpose. Nothing here
-// opens a socket.
+// "No credential" has THREE shapes in the real world, and all three are pinned below:
+// the variable is absent, the variable is BLANK (how every deploy target hands over a
 ```
 
 ### gamegen/src/__tests__/localize-freeze.test.ts
@@ -146053,6 +146576,26 @@ import {
 // the local ./characters.js parity copy rather than the character rig.
 ```
 
+### gamegen/src/contract/mechanics/autobattler/bots.ts
+
+```
+// `autobattler` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `autobattlerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### gamegen/src/contract/mechanics/autobattler/schema.ts
 
 ```
@@ -146091,6 +146634,26 @@ import {
 //
 // TWO v1 BUGS ARE STRUCTURALLY EXCLUDED, and both cost a comment:
 //  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
+```
+
+### gamegen/src/contract/mechanics/defender/bots.ts
+
+```
+// `defender` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `defenderSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### gamegen/src/contract/mechanics/defender/schema.ts
@@ -146133,6 +146696,26 @@ import {
 // comment because both were expensive:
 ```
 
+### gamegen/src/contract/mechanics/explorer/bots.ts
+
+```
+// `explorer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `explorerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### gamegen/src/contract/mechanics/explorer/schema.ts
 
 ```
@@ -146171,6 +146754,26 @@ import {
 // THE LEARNING BINDING, which is why this mechanic exists at all:
 //  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
 //    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### gamegen/src/contract/mechanics/flyer/bots.ts
+
+```
+// `flyer` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `flyerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### gamegen/src/contract/mechanics/flyer/schema.ts
@@ -146213,6 +146816,26 @@ import {
 // the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
 ```
 
+### gamegen/src/contract/mechanics/launcher/bots.ts
+
+```
+// `launcher` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `launcherSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### gamegen/src/contract/mechanics/launcher/schema.ts
 
 ```
@@ -146251,6 +146874,26 @@ import { z } from 'zod'
 //     p' = p + v'
 // Explicit Euler drifts energy upward on a ballistic arc; RK4 costs four evaluations
 // for an accuracy nobody can see at 20 frames per second. Semi-implicit Euler is
+```
+
+### gamegen/src/contract/mechanics/runner/bots.ts
+
+```
+// `runner` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `runnerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### gamegen/src/contract/mechanics/runner/schema.ts
@@ -146293,6 +146936,26 @@ import {
 //
 ```
 
+### gamegen/src/contract/mechanics/sorter/bots.ts
+
+```
+// `sorter` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `sorterSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
+```
+
 ### gamegen/src/contract/mechanics/sorter/schema.ts
 
 ```
@@ -146331,6 +146994,26 @@ import {
 //  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
 //    in ONE pass that drops both the consumed and the escaped elements together.
 //    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### gamegen/src/contract/mechanics/stacker/bots.ts
+
+```
+// `stacker` — the HEADLESS BOTS (GAME_ENGINE.md §9).
+//
+// A SEPARATE MODULE ON PURPOSE, and the separation is a security boundary, not tidiness.
+// `perfect` plays this mechanic optimally and returns the exact `GameInputEvent[]` that
+// Core replays to grant XP — and a maximal log is only a handful of events long. While
+// the bots hung off `stackerSimulator`, `register.ts` pulled them into the mechanic's lazy
+// chunk and the browser shipped a working cheat: lift the function out of the emitted
+// JS, run it headless, POST the log, collect the XP without ever playing.
+//
+// The bots exist for the `simulate` winnability gate (gamegen) and for the test suites.
+// Neither runs in a browser, so both import THIS module directly, and nothing on the
+// client import graph — `register.ts`, `components.tsx`, `GamePlayer` — may reference
+// it. `Simulator` has no `bots` member at all (core/types.ts), so a bot-less simulator
+// is the NORMAL shape: that is what stops the leak from being re-opened by someone
+// helpfully "completing" the simulator literal.
 ```
 
 ### gamegen/src/contract/mechanics/stacker/schema.ts
@@ -146417,15 +147100,20 @@ import { z } from 'zod';
 
 ```
 import { createApp, SERVICE } from './app.js';
-import { getConfig } from './env.js';
+import { getBootPort } from './env.js';
 
-// Env is validated (and frozen) once here, at boot — the service crashes on
-// invalid env immediately, never at request time (agent/core/CONVENTIONS.md).
-const config = getConfig();
-
-createApp().listen(config.PORT, () => {
-  console.log(`[${SERVICE}] listening on :${config.PORT}`);
-});
+/*
+ * OPEN THE LISTENER NO MATTER WHAT (/AGENTS.md §1.14).
+ *
+ * This used to be `const config = getConfig()` at module scope, which meant any
+ * env the schema disliked threw before `listen()` ever ran: the platform
+ * healthcheck got connection-refused, Railway restarted the container, and the
+ * same throw happened again forever. A service that cannot answer /health is
+ * indistinguishable from a service that is down — so a bad OPTIONAL credential
+ * would have taken Arcade completely offline (Core does the same thing for
+ * Redis: listen first, degrade the dependency).
+ *
+ * `getBootPort()` therefore resolves the port without ever throwing, printing
 ```
 
 ### gamegen/src/pipeline/author.ts

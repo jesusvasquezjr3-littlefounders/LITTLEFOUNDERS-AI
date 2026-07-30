@@ -20,6 +20,7 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, SimResult } from '@/game-engine/core/types'
 
 import { FlyerView } from './components'
+import { flyerBots } from './bots'
 import { flyerFixtures } from './fixtures'
 import { flyerSlice } from './register'
 import { flyerConfigSchema, flyerContentSchema, type FlyerConfig } from './schema'
@@ -45,7 +46,7 @@ function playPerfect(document: GameDocument, seed = SEED) {
     simulator: flyerSimulator,
     document,
     seed,
-    bot: flyerSimulator.bots.perfect,
+    bot: flyerBots.perfect,
     maxTicks: configOf(document).max_ticks,
   })
 }
@@ -55,7 +56,7 @@ function playRandom(document: GameDocument, seed = SEED) {
     simulator: flyerSimulator,
     document,
     seed,
-    bot: flyerSimulator.bots.random,
+    bot: flyerBots.random,
     maxTicks: configOf(document).max_ticks,
   })
 }

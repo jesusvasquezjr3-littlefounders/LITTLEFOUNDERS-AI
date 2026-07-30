@@ -6,6 +6,7 @@
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { defenderBots } from './bots'
 import { defenderFixtures } from './fixtures'
 import {
   DEFENDER_SPRITE_SLOTS,
@@ -150,7 +151,7 @@ describe('defender determinism', () => {
         simulator: defenderSimulator,
         document,
         seed: SEED,
-        bot: defenderSimulator.bots.perfect,
+        bot: defenderBots.perfect,
         maxTicks,
       })
 
@@ -167,7 +168,7 @@ describe('defender determinism', () => {
         simulator: defenderSimulator,
         document,
         seed: SEED,
-        bot: defenderSimulator.bots.perfect,
+        bot: defenderBots.perfect,
         maxTicks,
       })
       const replay = replayGame({
@@ -193,7 +194,7 @@ describe('defender determinism', () => {
         simulator: defenderSimulator,
         document,
         seed: SEED,
-        bot: defenderSimulator.bots.perfect,
+        bot: defenderBots.perfect,
         maxTicks,
       })
       const a = replayGame({ simulator: defenderSimulator, document, seed: SEED, inputLog, maxTicks })
@@ -217,7 +218,7 @@ describe('defender winnability gate', () => {
         simulator: defenderSimulator,
         document,
         seed: SEED,
-        bot: defenderSimulator.bots.perfect,
+        bot: defenderBots.perfect,
         maxTicks,
       })
       expect(result.finished).toBe(true)
@@ -234,7 +235,7 @@ describe('defender winnability gate', () => {
           simulator: defenderSimulator,
           document,
           seed,
-          bot: defenderSimulator.bots.random,
+          bot: defenderBots.random,
           maxTicks,
         })
         expect(result.score).toBeLessThan(document.scoring.pass_score)

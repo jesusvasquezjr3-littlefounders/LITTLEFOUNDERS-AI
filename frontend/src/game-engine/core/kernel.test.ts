@@ -121,7 +121,6 @@ function makeSimulator(finishAt: number | null = null): Simulator<CounterState> 
       finished: state.finishAt !== null && state.ticks >= state.finishAt,
       stats: { ticks: state.ticks },
     }),
-    bots: { perfect: () => [], random: () => [] },
   }
 }
 

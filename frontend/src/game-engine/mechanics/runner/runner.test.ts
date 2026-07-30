@@ -17,6 +17,7 @@ import type { GameDocument, SimResult } from '@/game-engine/core/types'
 import enGames from '@/i18n/en-US/games.json'
 
 import { RunnerView } from './components'
+import { runnerBots } from './bots'
 import { runnerFixtures } from './fixtures'
 import { runnerSlice } from './register'
 import { runnerConfigSchema, runnerContentSchema, type RunnerConfig } from './schema'
@@ -42,7 +43,7 @@ function playPerfect(document: GameDocument, seed = SEED) {
     simulator: runnerSimulator,
     document,
     seed,
-    bot: runnerSimulator.bots.perfect,
+    bot: runnerBots.perfect,
     maxTicks: configOf(document).max_ticks,
   })
 }
@@ -52,7 +53,7 @@ function playRandom(document: GameDocument, seed = SEED) {
     simulator: runnerSimulator,
     document,
     seed,
-    bot: runnerSimulator.bots.random,
+    bot: runnerBots.random,
     maxTicks: configOf(document).max_ticks,
   })
 }

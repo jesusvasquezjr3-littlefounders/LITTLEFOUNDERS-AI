@@ -40,29 +40,39 @@ const CONTRACT_ROOT = path.resolve(here, '../src/game-contract');
 const ENGINE_ROOT = path.resolve(here, '../../frontend/src/game-engine');
 const RIG_TYPES = path.resolve(here, '../../frontend/src/components/characters/control/types.ts');
 
-/** Every module copied verbatim. Add a mechanic's two files here when its slice lands. */
+/** The eight declared mechanics, in the order their slices landed. */
+const MECHANICS = [
+  'sorter',
+  'runner',
+  'launcher',
+  'stacker',
+  'defender',
+  'autobattler',
+  'explorer',
+  'flyer',
+];
+
+/**
+ * Every module copied verbatim. Add a mechanic's THREE files here when its slice lands.
+ *
+ * `bots.ts` is copied even though Core never runs a bot: it is a pure-simulation module
+ * of the same mechanic, the backend's own game-contract tests drive it to synthesise the
+ * input logs they replay, and an uncovered copy is the drift this script exists to
+ * prevent. The bots live outside `simulate.ts` because a browser must never receive them
+ * (see `frontend/src/game-engine/core/types.ts`, `Simulator`) — splitting the module
+ * without extending this list would have silently dropped them out of parity coverage.
+ */
 const FULL_FILE_PAIRS = [
   'core/schemaBase.ts',
   'core/rng.ts',
   'core/mathd.ts',
   'core/scoring.ts',
   'core/replay.ts',
-  'mechanics/sorter/schema.ts',
-  'mechanics/sorter/simulate.ts',
-  'mechanics/runner/schema.ts',
-  'mechanics/runner/simulate.ts',
-  'mechanics/launcher/schema.ts',
-  'mechanics/launcher/simulate.ts',
-  'mechanics/stacker/schema.ts',
-  'mechanics/stacker/simulate.ts',
-  'mechanics/defender/schema.ts',
-  'mechanics/defender/simulate.ts',
-  'mechanics/autobattler/schema.ts',
-  'mechanics/autobattler/simulate.ts',
-  'mechanics/explorer/schema.ts',
-  'mechanics/explorer/simulate.ts',
-  'mechanics/flyer/schema.ts',
-  'mechanics/flyer/simulate.ts',
+  ...MECHANICS.flatMap((mechanic) => [
+    `mechanics/${mechanic}/schema.ts`,
+    `mechanics/${mechanic}/simulate.ts`,
+    `mechanics/${mechanic}/bots.ts`,
+  ]),
 ];
 
 /** Rendering-only symbols that must NEVER reach the backend copy of core/types.ts. */

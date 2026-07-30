@@ -27,6 +27,7 @@ import {
 import type { GameDocument, GameInputEvent, SimResult } from '@/game-engine/core/types'
 
 import { LauncherView } from './components'
+import { launcherBots } from './bots'
 import { launcherFixtures } from './fixtures'
 import { launcherSlice } from './register'
 import {
@@ -70,7 +71,7 @@ function playPerfect(document: GameDocument, seed = SEED) {
     simulator: launcherSimulator,
     document,
     seed,
-    bot: launcherSimulator.bots.perfect,
+    bot: launcherBots.perfect,
     maxTicks: configOf(document).max_ticks,
   })
 }
@@ -80,7 +81,7 @@ function playRandom(document: GameDocument, seed = SEED) {
     simulator: launcherSimulator,
     document,
     seed,
-    bot: launcherSimulator.bots.random,
+    bot: launcherBots.random,
     maxTicks: configOf(document).max_ticks,
   })
 }

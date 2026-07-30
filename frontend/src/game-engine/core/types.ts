@@ -323,13 +323,29 @@ export type Rng = {
 export type GameBot<S> = (state: S, tick: number, rng: Rng) => GameInputEvent[]
 
 /** Declared with METHOD syntax on purpose: it makes the state parameter bivariant,
- *  which is what lets a concrete `Simulator<SorterState>` be held as the erased
- *  `Simulator<unknown>` that replayGame() and MechanicSlice take. */
+ *  which is what lets a concrete `GameBots<SorterState>` be held as the erased
+ *  `GameBots<unknown>` that gamegen's bot table and runBot() take. */
 export interface GameBots<S> {
   perfect(state: S, tick: number, rng: Rng): GameInputEvent[]
   random(state: S, tick: number, rng: Rng): GameInputEvent[]
 }
 
+/**
+ * A simulator is BOT-LESS, and that is the point rather than an omission.
+ *
+ * `bots.perfect` used to live here, so every consumer of a `Simulator` — including
+ * `register.ts`, which is what the browser lazily imports to play — dragged an optimal
+ * headless player into the mechanic's shipped chunk. A perfect log for these mechanics
+ * is 4-61 events long: anyone could lift the function out of the emitted JS, run it
+ * against the document the API already handed them, and POST a maximal input log
+ * without playing a single tick. Rewards are replay-derived precisely so the client
+ * cannot assert a score, and shipping the optimal player defeats that.
+ *
+ * The bots now live in each mechanic's `bots.ts`, imported ONLY by gamegen's `simulate`
+ * winnability gate and by the test suites — never by anything on the client import
+ * graph. Keeping them off this interface is what makes "no bots in the browser" the
+ * default instead of a rule someone has to remember.
+ */
 export interface Simulator<S = unknown> {
   readonly mechanic: MechanicId
   /** Valid `action` values — replayGame() rejects a log naming anything else. */
@@ -338,7 +354,6 @@ export interface Simulator<S = unknown> {
   step(state: S, tick: number, events: readonly GameInputEvent[]): S
   snapshot(state: S): SimSnapshot
   result(state: S): SimResult
-  bots: GameBots<S>
 }
 
 // ---- Slice composition (GAME_ENGINE.md §7) -----------------------------------

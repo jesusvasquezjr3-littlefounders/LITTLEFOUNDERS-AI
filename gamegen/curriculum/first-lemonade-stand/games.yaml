@@ -1,0 +1,222 @@
+schema_version: 1
+# INTERNAL NOTE (never user-visible, same posture as the Forge catalog this binds to):
+# `first-lemonade-stand` is the platform's non-shipping QA course. Forge uses it to
+# exercise all 56 LESSON_ENGINE types for a fraction of a real course's cost; this file
+# is its Game Engine twin — the smallest catalog that still forces a single run to touch
+# EVERY simulator, EVERY gate and EVERY per-mechanic schema.
+#
+# Design rules this file follows (GAME_ENGINE.md §4/§8/§9, curriculum/README.md):
+#   * >= 2 blueprints per mechanic across all 8 closed mechanics (18 games total), so
+#     `simulate` runs every bot pair and `author` produces every config shape.
+#   * Tier 1, 2 and 3 are all represented. The bound adventure declares `age_tier: tier2`,
+#     so the tier1/tier3 blueprints trip the loader's tier-agreement WARNING on purpose:
+#     the consolidation game is deliberately pitched a band easier (tier1 counting/sorting
+#     drills) or a band harder (tier3 planning/economy games) than the lesson that taught
+#     the concept. That warning is the design conversation, and this comment is our side
+#     of it — it is not a typo to "fix" by flattening every tier to 2.
+#   * `density` is deliberately ABSENT. A uniform games-per-topic target would make the
+#     run uniform, which is the opposite of what a QA harness wants; topics carry 2 or 3
+#     games depending on how much money handling they actually teach.
+#   * Difficulty is spread 1..5 rather than parked in the middle, so the judge and the
+#     winnability gate both see easy and hard content in one pass.
+#
+# CONTENT LANGUAGE: es-MX, matching the bound course's `authoring_locale`. Comments are
+# English (/AGENTS.md §1.0.4). Nothing here is user-visible; `localize` produces the three
+# learner-facing locales downstream.
+#
+# Every `topic_path` below was copied out of
+# coursegen/curriculum/first-lemonade-stand/adventures/01-estacion-de-pruebas.yaml and
+# each `micro_objective` names a concept that topic's own `concept` /
+# `learning_objective` really teaches. QA coverage and real pedagogy are not in tension.
+course: first-lemonade-stand
+
+games:
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-story — "La Gran Idea" ──────────────
+  # Topic teaches: money is EARNED by offering something others want; a clear goal (the
+  # 80-peso guitar) gets you started; costo vs ganancia.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-story
+    slug: mapa-de-la-gran-idea
+    mechanic: explorer
+    micro_objective: "Descubrir que el dinero se GANA ofreciendo algo que la gente quiere: la reja de la tienda de guitarras solo abre cuando Liruf consigue la idea de vender limonada en el barrio."
+    skin_brief: "Barrio soleado de media mañana visto como un mapita de calles: casitas de colores, la tienda de guitarras con reja al fondo y el puesto de limonada como punto de partida. Sprites necesarios: la guitarra de la meta detrás de la reja, un letrero de 'se vende limonada', una jarra fría con rodajas de limón, un candado grande y simpático para los caminos cerrados, y una llave con forma de foco (la idea). Trazo redondeado, colores cálidos, sin sombras duras."
+    difficulty: 1
+    tier: 1
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-story
+    slug: torre-de-la-ganancia
+    mechanic: stacker
+    micro_objective: "Apilar solo la GANANCIA de cada vaso — lo que queda después de pagar el costo de limones y azúcar — hasta que la torre llegue a la marca de los 80 pesos de la guitarra sin que el viento la tire."
+    skin_brief: "Mesa de madera del puesto al atardecer, con la pared del cuarto de Liruf detrás y una cinta métrica pintada que marca los 80 pesos. Sprites: bloques-moneda dorados de ganancia (ligeros, estables), bloques grises de costo (pesados, resbalosos), la marca de meta con la silueta de una guitarra, y una ráfaga de viento dibujada como espiral suave. Luz naranja de tarde, madera clarita, ánimo tranquilo y acogedor."
+    difficulty: 3
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-choice — "Decisiones de Vendedor" ───
+  # Topic teaches: choose a fair price, a safe place for the money, and tell a purchase
+  # that helps the stand from a whim that can wait.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-choice
+    slug: punteria-del-precio-justo
+    mechanic: launcher
+    micro_objective: "Ajustar la fuerza del tiro como se ajusta un precio: 5 pesos da en el blanco; 1 peso se queda corto y no cubre los 2 pesos de costo, y 50 pesos se pasa de largo y espanta a los clientes."
+    skin_brief: "Banqueta frente al puesto, mediodía claro. Sprites: una etiqueta de precio con forma de globo que sale volando, tres blancos de tela — uno cortito marcado 'no alcanza', el del centro con el vaso de limonada, y uno lejano con clientes que se dan la vuelta —, un resorte de fuerza junto al puesto y una sombrilla de rayas. Cielo despejado, frescos de limón y madera, gesto caricaturesco y alegre."
+    difficulty: 2
+    tier: 2
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-choice
+    slug: carrera-del-mercado
+    mechanic: runner
+    micro_objective: "Correr por el mercado atrapando solo lo que hace vender más limonada (limones, vasos, hielo, azúcar) y dejando pasar los caprichos que se comen el dinero del puesto."
+    skin_brief: "Pasillo largo de mercado de barrio con toldos de rayas y cajas de fruta, visto de lado mientras Liruf corre con su carrito. Sprites que se recogen: red de limones, torre de vasos, bolsa de hielo, costal de azúcar. Sprites que se esquivan: calcomanía de dinosaurio, paleta de caramelo, un yoyo brillante. Colores vivos de frutería, líneas de velocidad suaves, nada de peligro ni de susto."
+    difficulty: 1
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-input — "Las Cuentas del Puesto" ────
+  # Topic teaches: exact numbers of the stand — sums to 80, counts to 20, 4 vasos x 5 = 20,
+  # ganancia = precio menos costo.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-input
+    slug: torre-de-los-cinco-pesos
+    mechanic: stacker
+    micro_objective: "Apilar un bloque por cada vaso vendido a 5 pesos hasta que la torre marque el total exacto de la venta del día — cuatro vasos son 20 pesos — sin pasarse ni quedarse corto."
+    skin_brief: "Cuaderno de cuentas abierto sobre la mesa del puesto, mañana luminosa. Sprites: bloques cuadrados con una moneda de 5 pesos dibujada, una regla vertical con los números 5, 10, 15 y 20 marcados, un vaso de limonada por cada bloque colocado y el lápiz de Dina apoyado a un lado. Papel color crema, líneas de cuaderno, todo limpio y ordenado como una libreta escolar."
+    difficulty: 2
+    tier: 1
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-input
+    slug: tiro-al-total-del-dia
+    mechanic: launcher
+    micro_objective: "Sumar antes de disparar: calcular cuánto dejó la tarde (5 + 5 + 5) y elegir la fuerza que cae justo en el 15 de la diana, ni en el 10 ni en el 20."
+    skin_brief: "Patio trasero de la casa de Liruf al caer la tarde, con una diana de tiza dibujada en el suelo y números grandes escritos con gis. Sprites: monedas de 5 pesos como proyectiles, aros de tiza numerados 5, 10, 15 y 20, un frasco de vidrio como blanco final y el gis a un lado. Luz dorada, tonos de patio y tiza pastel, ambiente de juego de recreo."
+    difficulty: 3
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-arrange — "Organizar el Puesto" ─────
+  # Topic teaches: order the steps, match product to price, and split purchases between
+  # what the stand needs and what can wait.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-arrange
+    slug: cubetas-de-necesidad-y-gusto
+    mechanic: sorter
+    micro_objective: "Separar cada compra del día en su cubeta: NECESIDAD del puesto (limones, vasos) o GUSTO que puede esperar (calcomanías, globos), para que el dinero alcance para abrir mañana."
+    skin_brief: "Cocina de la casa antes de ir al mercado, luz de mañana por la ventana. Sprites: dos cubetas bien distintas — una con el letrero del puesto de limonada, otra con una carita sonriente de antojo — y objetos que caen: red de limones, paquete de vasos, bolsa de azúcar, hielo, calcomanías, globos y un dulce. Azulejo claro, objetos gorditos y redondeados, tono ordenado y amable."
+    difficulty: 2
+    tier: 2
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-arrange
+    slug: ruta-de-las-prioridades
+    mechanic: explorer
+    micro_objective: "Abrir el día en el orden que manda la prioridad: sin comprar limones no se pasa a preparar la jarra, y sin preparar no se puede vender — con solo 20 pesos, el orden equivocado deja el puesto cerrado."
+    skin_brief: "El día dibujado como estaciones unidas por caminitos: el mercado, la cocina, el puesto y la caja del cierre. Sprites: puertas con candado en cada camino, una llave-limón, una llave-jarra, una llave-cartel, monedas sueltas en el bolsillo del mapa y banderitas de meta. Estilo de mapa de aventura infantil sobre papel, colores planos y cálidos, nada oscuro."
+    difficulty: 3
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-money — "La Caja del Dinero" ────────
+  # Topic teaches: count 1/2/5/10-peso coins, make change from a 20, split the profit
+  # between two piggy banks, and plan how many weeks the 80-peso goal takes. Three games
+  # here, not two — it is the topic with the most distinct money skills.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-money
+    slug: caja-de-monedas-mexicanas
+    mechanic: sorter
+    micro_objective: "Meter cada moneda mexicana en su frasco — 1, 2, 5 y 10 pesos — para que la caja del día se pueda contar rápido y sin equivocarse al cerrar el puesto."
+    skin_brief: "Mostrador del puesto al cierre, con la caja de madera volcada y monedas regadas. Sprites: cuatro frascos de vidrio etiquetados 1, 2, 5 y 10 pesos, monedas mexicanas redondas y brillantes de cada valor, la caja de madera y un trapo doblado. Luz tibia de final de tarde, madera clarita, dorados suaves, todo grande y fácil de tocar con el dedo."
+    difficulty: 1
+    tier: 1
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-money
+    slug: mercado-de-los-20-pesos
+    mechanic: autobattler
+    micro_objective: "Armar el carrito del mercado con un solo billete de 20 pesos: apartar primero limones y azúcar, porque sin ellos no hay limonada, y ver cómo se vende el día con lo que alcanzó a comprar."
+    skin_brief: "Puesto del marchante con cajas apiladas y precios en cartelitos de cartón, y al lado el mostrador donde el día se juega solo. Sprites: red de limones, bolsa de azúcar, bolsa de hielo, popotes, una jarra bonita de vidrio, un billete de 20 pesos y un carrito de mandado; cada producto con su cartelito de precio. Colores de mercado mexicano, toldos de rayas, mediodía lleno de vida."
+    difficulty: 4
+    tier: 3
+    position: 2
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-money
+    slug: guardianes-de-la-alcancia
+    mechanic: defender
+    micro_objective: "Cuidar la alcancía de la guitarra: dejar pasar el gasto que el puesto de verdad necesita (limones, vasos) y frenar los antojos que se llevarían los pesos ya ahorrados para los 80."
+    skin_brief: "Cuarto de Liruf de noche, con la alcancía de la guitarra sobre el buró y un caminito de duela que llega hasta ella. Sprites: la alcancía con ranura, torres simpáticas hechas de objetos del puesto (un exprimidor, una libreta de cuentas, un candado), antojos caminando en fila (paleta, cómic, juguete) y una barda de bloques de madera. Lamparita cálida, sombras suaves; los antojos son graciosos, nunca monstruos."
+    difficulty: 2
+    tier: 2
+    position: 3
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-analyze — "Detective de Números" ────
+  # Topic teaches: find the mistake in a sum, read a simple chart, and recognise the red
+  # flags of a deal that is too good to be true.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-analyze
+    slug: frascos-de-hecho-y-opinion
+    mechanic: sorter
+    micro_objective: "Clasificar cada frase del puesto en su frasco: HECHO que se puede comprobar, como 'el vaso cuesta 5 pesos', u OPINIÓN que solo es un gusto, como 'mi limonada es la más rica del mundo'."
+    skin_brief: "Mesa del puesto con la libreta abierta y globos de diálogo de papel volando desde ella. Sprites: dos frascos etiquetados, uno con una lupa (hecho) y otro con un corazón (opinión); tarjetas-globo con frases cortas; una lupa grande de mano y la libreta de Rho. Papel, tinta y madera; luz de tarde; estética de detective amable, nada tenebroso."
+    difficulty: 4
+    tier: 3
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-analyze
+    slug: vuelo-de-las-ofertas
+    mechanic: flyer
+    micro_objective: "Esquivar en el aire las ofertas demasiado buenas, como 'dame tus 20 pesos hoy y mañana te doy 100', y recoger solo los tratos que se pueden comprobar con un recibo."
+    skin_brief: "Cielo sobre el mercado del barrio al atardecer, con toldos y azoteas abajo. Sprites: Liruf en un papalote-planeador de papel, burbujas brillantes con promesas exageradas que revientan al tocarlas, recibos de papel que se recogen, corrientes de aire cálido dibujadas como espirales y una banderita de meta en la azotea del puesto. Cielo anaranjado, nubes gorditas, aventura tranquila."
+    difficulty: 4
+    tier: 3
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-storyplay — "Historias con Decisiones"
+  # Topic teaches: every decision (price, how you treat a customer, what you spend) has an
+  # immediate consequence for the day's sales and savings.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-storyplay
+    slug: paciencia-en-el-aire
+    mechanic: flyer
+    micro_objective: "Planear en vez de aletear: dejar pasar la moneda cercana de 10 pesos de hoy y llegar con energía suficiente a la corriente de 20 de la semana que viene."
+    skin_brief: "Cielo de mañana sobre el barrio, con el puesto de limonada chiquito allá abajo. Sprites: Liruf con alas de papalote, una moneda de 10 pesos cercana y brillante, una moneda de 20 más lejos y más alta, corrientes de aire tibias dibujadas como plumas que suben y una barrita de energía con forma de limón. Azules suaves, nubes blancas, todo sereno y luminoso."
+    difficulty: 3
+    tier: 2
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-storyplay
+    slug: hora-pico-del-cambio
+    mechanic: runner
+    micro_objective: "Dar el cambio al vuelo en la hora pico: cada cliente paga con 10 o 20 pesos por vasos de 5, y hay que soltar el cambio exacto antes de que la fila se canse y se vaya."
+    skin_brief: "Banqueta frente al puesto a la hora de más calor, con una fila de vecinos que se va moviendo. Sprites: clientes de cuerpo entero con su billete en la mano, charolas de cambio con monedas de 1, 2, 5 y 10, un reloj de arena de la fila y el vaso de limonada que se entrega. Sol alto, colores brillantes, caras contentas y prisa alegre, nunca agobio."
+    difficulty: 4
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/camara-de-tipos/tipos-maker — "Constructores del Puesto" ──
+  # Topic teaches: build and calibrate the tools of the stand — the delivery route and the
+  # cardboard cash register that follows steps in order.
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-maker
+    slug: ruta-del-carrito-repartidor
+    mechanic: explorer
+    micro_objective: "Abrir la cuadrícula del barrio hasta la casa del cliente con la ruta más corta: cada paso de más es limonada tibia y una entrega menos en el día."
+    skin_brief: "Cuadrícula del barrio vista desde arriba como tablero de calles, con banquetas, camellones y una casa marcada con globos. Sprites: el carrito repartidor con su hielera, flechas de dirección, conos que bloquean calles, charcos que hay que rodear y la casa del cliente con su timbre. Colores planos de mapa, líneas claras, tarde despejada, todo ordenado y legible."
+    difficulty: 2
+    tier: 2
+    position: 1
+
+  - topic_path: estacion-de-pruebas/camara-de-tipos/tipos-maker
+    slug: torres-de-la-registradora
+    mechanic: defender
+    micro_objective: "Colocar en orden los puestos de la registradora — recibir el pago, verificar el monto, dar el cambio y anotar la venta — para que ningún cliente llegue al final sin que su venta quede bien cobrada."
+    skin_brief: "El mostrador del puesto visto como una bandita por donde avanzan los clientes. Sprites: cuatro estaciones de cartón que se colocan (una mano que recibe, una lupa que verifica, una charola de cambio, una libreta que anota), clientes en fila con su billete y una campanita de venta cerrada. Cartón, cinta adhesiva y plumón: invento casero de niño, colores alegres y trazo grueso."
+    difficulty: 3
+    tier: 2
+    position: 2
+
+  # ── estacion-de-pruebas/secuencias-y-repaso/combinaciones — "Un Día Completo" ─────
+  # Topic teaches: a real day chains every skill at once — listen, decide, calculate, charge.
+  # The hardest blueprint in the catalog, and the one that exercises the judge's ceiling.
+  - topic_path: estacion-de-pruebas/secuencias-y-repaso/combinaciones
+    slug: domingo-completo-de-ventas
+    mechanic: autobattler
+    micro_objective: "Preparar el domingo entero — precio del vaso, ingredientes comprados y monedas de cambio en la caja — y ver cómo se resuelve solo el día: lo que se planeó decide cuánto entra al frasco de la guitarra."
+    skin_brief: "Domingo completo de sol a atardecer en el puesto, con el barrio de fondo y el frasco de la guitarra junto a la caja. Sprites: cartel de precio que se elige, cajones de limones, azúcar y hielo, charola de monedas de cambio, vecinos clientes de distintas edades y el frasco de ahorro que se va llenando. La luz pasa de mañana clara a naranja de tarde; colores cálidos, fiesta de barrio tranquila."
+    difficulty: 5
+    tier: 3
+    position: 1

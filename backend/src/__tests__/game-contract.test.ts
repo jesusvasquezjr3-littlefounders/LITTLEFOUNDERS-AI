@@ -25,38 +25,46 @@ import {
   sorterContentSchema,
 } from '../game-contract/mechanics/sorter/schema.js';
 import { sorterSimulator } from '../game-contract/mechanics/sorter/simulate.js';
+import { sorterBots } from '../game-contract/mechanics/sorter/bots.js';
 import {
   runnerConfigSchema,
   runnerContentSchema,
 } from '../game-contract/mechanics/runner/schema.js';
 import { runnerSimulator } from '../game-contract/mechanics/runner/simulate.js';
+import { runnerBots } from '../game-contract/mechanics/runner/bots.js';
 import {
   launcherConfigSchema,
   launcherContentSchema,
 } from '../game-contract/mechanics/launcher/schema.js';
 import { launcherSimulator } from '../game-contract/mechanics/launcher/simulate.js';
+import { launcherBots } from '../game-contract/mechanics/launcher/bots.js';
 import {
   stackerConfigSchema,
   stackerContentSchema,
 } from '../game-contract/mechanics/stacker/schema.js';
 import { stackerSimulator } from '../game-contract/mechanics/stacker/simulate.js';
+import { stackerBots } from '../game-contract/mechanics/stacker/bots.js';
 import {
   defenderConfigSchema,
   defenderContentSchema,
 } from '../game-contract/mechanics/defender/schema.js';
 import { defenderSimulator } from '../game-contract/mechanics/defender/simulate.js';
+import { defenderBots } from '../game-contract/mechanics/defender/bots.js';
 import {
   autobattlerConfigSchema,
   autobattlerContentSchema,
 } from '../game-contract/mechanics/autobattler/schema.js';
 import { autobattlerSimulator } from '../game-contract/mechanics/autobattler/simulate.js';
+import { autobattlerBots } from '../game-contract/mechanics/autobattler/bots.js';
 import {
   explorerConfigSchema,
   explorerContentSchema,
 } from '../game-contract/mechanics/explorer/schema.js';
 import { explorerSimulator } from '../game-contract/mechanics/explorer/simulate.js';
+import { explorerBots } from '../game-contract/mechanics/explorer/bots.js';
 import { flyerConfigSchema, flyerContentSchema } from '../game-contract/mechanics/flyer/schema.js';
 import { flyerSimulator } from '../game-contract/mechanics/flyer/simulate.js';
+import { flyerBots } from '../game-contract/mechanics/flyer/bots.js';
 import {
   AUTOBATTLER_DOCUMENT,
   AUTOBATTLER_MAX_TICKS,
@@ -308,14 +316,16 @@ describe('game-contract — replaying a recorded log reproduces the run exactly'
   it('sorter: the perfect bot log replays to an identical result', () => {
     const played = runBot({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
-      bot: sorterSimulator.bots.perfect,
+      bot: sorterBots.perfect,
       maxTicks: SORTER_MAX_TICKS,
     });
 
     const replay = replayGame({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
       inputLog: played.inputLog,
@@ -330,14 +340,16 @@ describe('game-contract — replaying a recorded log reproduces the run exactly'
   it('runner: the perfect bot log replays to an identical result', () => {
     const played = runBot({
       simulator: runnerSimulator,
+    bots: runnerBots,
       document: RUNNER_DOCUMENT,
       seed: SEED,
-      bot: runnerSimulator.bots.perfect,
+      bot: runnerBots.perfect,
       maxTicks: RUNNER_MAX_TICKS,
     });
 
     const replay = replayGame({
       simulator: runnerSimulator,
+    bots: runnerBots,
       document: RUNNER_DOCUMENT,
       seed: SEED,
       inputLog: played.inputLog,
@@ -352,13 +364,15 @@ describe('game-contract — replaying a recorded log reproduces the run exactly'
   it('replaying the same log twice yields the same result (no hidden state, no clock)', () => {
     const played = runBot({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
-      bot: sorterSimulator.bots.perfect,
+      bot: sorterBots.perfect,
       maxTicks: SORTER_MAX_TICKS,
     });
     const args = {
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
       inputLog: played.inputLog,
@@ -373,9 +387,10 @@ describe('game-contract — the winnability gate holds server-side', () => {
   it('sorter: perfect passes, random does not', () => {
     const perfect = runBot({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
-      bot: sorterSimulator.bots.perfect,
+      bot: sorterBots.perfect,
       maxTicks: SORTER_MAX_TICKS,
     });
     expect(perfect.result.finished).toBe(true);
@@ -383,9 +398,10 @@ describe('game-contract — the winnability gate holds server-side', () => {
 
     const random = runBot({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
-      bot: sorterSimulator.bots.random,
+      bot: sorterBots.random,
       maxTicks: SORTER_MAX_TICKS,
     });
     expect(random.result.score).toBeLessThan(SORTER_DOCUMENT.scoring.pass_score);
@@ -394,18 +410,20 @@ describe('game-contract — the winnability gate holds server-side', () => {
   it('runner: perfect passes, random does not', () => {
     const perfect = runBot({
       simulator: runnerSimulator,
+    bots: runnerBots,
       document: RUNNER_DOCUMENT,
       seed: SEED,
-      bot: runnerSimulator.bots.perfect,
+      bot: runnerBots.perfect,
       maxTicks: RUNNER_MAX_TICKS,
     });
     expect(perfect.result.score).toBeGreaterThanOrEqual(RUNNER_DOCUMENT.scoring.pass_score);
 
     const random = runBot({
       simulator: runnerSimulator,
+    bots: runnerBots,
       document: RUNNER_DOCUMENT,
       seed: SEED,
-      bot: runnerSimulator.bots.random,
+      bot: runnerBots.random,
       maxTicks: RUNNER_MAX_TICKS,
     });
     expect(random.result.score).toBeLessThan(RUNNER_DOCUMENT.scoring.pass_score);
@@ -420,9 +438,10 @@ describe('game-contract — golden replay (the cross-engine regression pin)', ()
   it('sorter: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: sorterSimulator,
+    bots: sorterBots,
       document: SORTER_DOCUMENT,
       seed: SEED,
-      bot: sorterSimulator.bots.perfect,
+      bot: sorterBots.perfect,
       maxTicks: SORTER_MAX_TICKS,
     });
     expect(played.result.score).toBe(100);
@@ -444,9 +463,10 @@ describe('game-contract — golden replay (the cross-engine regression pin)', ()
   it('runner: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: runnerSimulator,
+    bots: runnerBots,
       document: RUNNER_DOCUMENT,
       seed: SEED,
-      bot: runnerSimulator.bots.perfect,
+      bot: runnerBots.perfect,
       maxTicks: RUNNER_MAX_TICKS,
     });
     expect(played.result.score).toBe(96);
@@ -468,6 +488,7 @@ describe('game-contract — golden replay (the cross-engine regression pin)', ()
 describe('game-contract — a forged log is refused, not scored', () => {
   const base = {
     simulator: sorterSimulator,
+    bots: sorterBots,
     document: SORTER_DOCUMENT,
     seed: SEED,
     maxTicks: SORTER_MAX_TICKS,
@@ -573,6 +594,7 @@ const LATER_MECHANICS = [
   {
     name: 'launcher',
     simulator: launcherSimulator,
+    bots: launcherBots,
     document: LAUNCHER_DOCUMENT,
     maxTicks: LAUNCHER_MAX_TICKS,
     configSchema: launcherConfigSchema,
@@ -581,6 +603,7 @@ const LATER_MECHANICS = [
   {
     name: 'stacker',
     simulator: stackerSimulator,
+    bots: stackerBots,
     document: STACKER_DOCUMENT,
     maxTicks: STACKER_MAX_TICKS,
     configSchema: stackerConfigSchema,
@@ -589,6 +612,7 @@ const LATER_MECHANICS = [
   {
     name: 'defender',
     simulator: defenderSimulator,
+    bots: defenderBots,
     document: DEFENDER_DOCUMENT,
     maxTicks: DEFENDER_MAX_TICKS,
     configSchema: defenderConfigSchema,
@@ -597,6 +621,7 @@ const LATER_MECHANICS = [
   {
     name: 'autobattler',
     simulator: autobattlerSimulator,
+    bots: autobattlerBots,
     document: AUTOBATTLER_DOCUMENT,
     maxTicks: AUTOBATTLER_MAX_TICKS,
     configSchema: autobattlerConfigSchema,
@@ -605,6 +630,7 @@ const LATER_MECHANICS = [
   {
     name: 'explorer',
     simulator: explorerSimulator,
+    bots: explorerBots,
     document: EXPLORER_DOCUMENT,
     maxTicks: EXPLORER_MAX_TICKS,
     configSchema: explorerConfigSchema,
@@ -613,6 +639,7 @@ const LATER_MECHANICS = [
   {
     name: 'flyer',
     simulator: flyerSimulator,
+    bots: flyerBots,
     document: FLYER_DOCUMENT,
     maxTicks: FLYER_MAX_TICKS,
     configSchema: flyerConfigSchema,
@@ -622,7 +649,7 @@ const LATER_MECHANICS = [
 
 describe.each(LATER_MECHANICS)(
   'game-contract — $name (parity copy)',
-  ({ name, simulator, document, maxTicks, configSchema, contentSchema }) => {
+  ({ name, simulator, bots, document, maxTicks, configSchema, contentSchema }) => {
     it('parses the production document with the copied schemas, unmodified', () => {
       expect(configSchema.safeParse(document.config).success).toBe(true);
       expect(contentSchema.safeParse(document.content).success).toBe(true);
@@ -646,7 +673,7 @@ describe.each(LATER_MECHANICS)(
         simulator,
         document,
         seed: SEED,
-        bot: simulator.bots.perfect,
+        bot: bots.perfect,
         maxTicks,
       });
 
@@ -668,7 +695,7 @@ describe.each(LATER_MECHANICS)(
         simulator,
         document,
         seed: SEED,
-        bot: simulator.bots.perfect,
+        bot: bots.perfect,
         maxTicks,
       });
       const args = {
@@ -687,7 +714,7 @@ describe.each(LATER_MECHANICS)(
         simulator,
         document,
         seed: SEED,
-        bot: simulator.bots.perfect,
+        bot: bots.perfect,
         maxTicks,
       });
       expect(perfect.result.finished).toBe(true);
@@ -697,7 +724,7 @@ describe.each(LATER_MECHANICS)(
         simulator,
         document,
         seed: SEED,
-        bot: simulator.bots.random,
+        bot: bots.random,
         maxTicks,
       });
       expect(random.result.score).toBeLessThan(document.scoring.pass_score);
@@ -721,9 +748,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('launcher: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: launcherSimulator,
+    bots: launcherBots,
       document: LAUNCHER_DOCUMENT,
       seed: SEED,
-      bot: launcherSimulator.bots.perfect,
+      bot: launcherBots.perfect,
       maxTicks: LAUNCHER_MAX_TICKS,
     });
     expect(played.result.score).toBe(90);
@@ -749,9 +777,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('stacker: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: stackerSimulator,
+    bots: stackerBots,
       document: STACKER_DOCUMENT,
       seed: SEED,
-      bot: stackerSimulator.bots.perfect,
+      bot: stackerBots.perfect,
       maxTicks: STACKER_MAX_TICKS,
     });
     expect(played.result.score).toBe(86);
@@ -779,9 +808,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('defender: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: defenderSimulator,
+    bots: defenderBots,
       document: DEFENDER_DOCUMENT,
       seed: SEED,
-      bot: defenderSimulator.bots.perfect,
+      bot: defenderBots.perfect,
       maxTicks: DEFENDER_MAX_TICKS,
     });
     expect(played.result.score).toBe(100);
@@ -806,9 +836,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('autobattler: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: autobattlerSimulator,
+    bots: autobattlerBots,
       document: AUTOBATTLER_DOCUMENT,
       seed: SEED,
-      bot: autobattlerSimulator.bots.perfect,
+      bot: autobattlerBots.perfect,
       maxTicks: AUTOBATTLER_MAX_TICKS,
     });
     expect(played.result.score).toBe(100);
@@ -834,9 +865,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('explorer: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: explorerSimulator,
+    bots: explorerBots,
       document: EXPLORER_DOCUMENT,
       seed: SEED,
-      bot: explorerSimulator.bots.perfect,
+      bot: explorerBots.perfect,
       maxTicks: EXPLORER_MAX_TICKS,
     });
     expect(played.result.score).toBe(100);
@@ -864,9 +896,10 @@ describe('game-contract — golden replay for the later mechanics', () => {
   it('flyer: a fixed seed produces exactly this score and these stats', () => {
     const played = runBot({
       simulator: flyerSimulator,
+    bots: flyerBots,
       document: FLYER_DOCUMENT,
       seed: SEED,
-      bot: flyerSimulator.bots.perfect,
+      bot: flyerBots.perfect,
       maxTicks: FLYER_MAX_TICKS,
     });
     expect(played.result.score).toBe(84);

@@ -433,41 +433,6 @@ function result(state: SorterState): SimResult {
   }
 }
 
-/**
- * The §9 winnability gate's competent player: it resolves EVERY element on screen on
- * the tick it can see it, so it never misses and never mis-sorts. Traps are discarded
- * when the manifest offers a discard target and otherwise left alone, which is the
- * report's other sanctioned answer to a trap.
- */
-function perfectBot(state: SorterState, tick: number): GameInputEvent[] {
-  if (state.finished) return []
-  const events: GameInputEvent[] = []
-  for (const entity of state.active) {
-    if (entity.categoryId !== null) {
-      events.push({ tick, action: 'place', slot: entity.categoryId, n: entity.uid })
-    } else if (state.config.trash_zone) {
-      events.push({ tick, action: 'discard', n: entity.uid })
-    }
-  }
-  return events
-}
-
-/**
- * Arbitrary play: about half the ticks it does nothing, otherwise it drops one random
- * element into one random container. It must NOT reach `pass_score` — if it does, the
- * manifest is not measuring anything and the pipeline rejects it.
- */
-function randomBot(state: SorterState, tick: number, rng: Rng): GameInputEvent[] {
-  if (state.finished) return []
-  if (state.active.length === 0) return []
-  if (rng.next() < 0.5) return []
-  const entity = state.active[rng.int(state.active.length)]
-  if (entity === undefined) return []
-  const slot = state.categories[rng.int(state.categories.length)]
-  if (slot === undefined) return []
-  return [{ tick, action: 'place', slot, n: entity.uid }]
-}
-
 export const sorterSimulator: Simulator<SorterState> = {
   mechanic: 'sorter',
   actions: SORTER_ACTIONS,
@@ -475,8 +440,4 @@ export const sorterSimulator: Simulator<SorterState> = {
   step,
   snapshot,
   result,
-  bots: {
-    perfect: (state, tick) => perfectBot(state, tick),
-    random: (state, tick, rng) => randomBot(state, tick, rng),
-  },
 }

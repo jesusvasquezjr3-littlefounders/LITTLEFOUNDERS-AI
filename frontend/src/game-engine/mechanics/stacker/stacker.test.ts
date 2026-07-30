@@ -6,6 +6,7 @@
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
+import { stackerBots } from './bots'
 import { stackerFixtures } from './fixtures'
 import {
   costOfPiece,
@@ -106,7 +107,7 @@ describe('stacker determinism', () => {
         simulator: stackerSimulator,
         document,
         seed: SEED,
-        bot: stackerSimulator.bots.perfect,
+        bot: stackerBots.perfect,
         maxTicks,
       })
 
@@ -123,7 +124,7 @@ describe('stacker determinism', () => {
         simulator: stackerSimulator,
         document,
         seed: SEED,
-        bot: stackerSimulator.bots.perfect,
+        bot: stackerBots.perfect,
         maxTicks,
       })
       const replay = replayGame({
@@ -159,7 +160,7 @@ describe('stacker winnability gate', () => {
         simulator: stackerSimulator,
         document,
         seed: SEED,
-        bot: stackerSimulator.bots.perfect,
+        bot: stackerBots.perfect,
         maxTicks,
       })
       expect(result.finished).toBe(true)
@@ -177,7 +178,7 @@ describe('stacker winnability gate', () => {
           simulator: stackerSimulator,
           document,
           seed,
-          bot: stackerSimulator.bots.random,
+          bot: stackerBots.random,
           maxTicks,
         })
         expect(result.score).toBeLessThan(document.scoring.pass_score)

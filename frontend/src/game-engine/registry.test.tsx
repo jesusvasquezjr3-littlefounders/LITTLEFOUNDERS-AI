@@ -27,6 +27,10 @@
 // declared ahead of its slice. Those loops iterate an empty list today, so each one also
 // asserts that emptiness explicitly rather than passing silently on nothing.
 
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, resolve as resolvePath } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { describe, expect, it } from 'vitest'
 
 import { UNSUPPORTED_MECHANIC, isUnsupportedMechanic, parseGameDocument } from './core/schema'
@@ -112,8 +116,13 @@ describe('implemented mechanics', () => {
     expect(typeof slice.View).not.toBe('undefined')
     expect(slice.simulator.mechanic).toBe(id)
     expect(slice.simulator.actions.length).toBeGreaterThan(0)
-    expect(typeof slice.simulator.bots.perfect).toBe('function')
-    expect(typeof slice.simulator.bots.random).toBe('function')
+    // The slice the BROWSER loads must carry no headless player. `bots.perfect` returns
+    // the exact input log Core replays for XP — 4-61 events for these mechanics — so a
+    // simulator that still exposed it would be a working cheat shipped in the chunk.
+    // The bots live in each mechanic's `bots.ts`, imported only by gamegen's winnability
+    // gate and by tests (see the module-graph guard below).
+    expect(slice.simulator).not.toHaveProperty('bots')
+    expect(slice).not.toHaveProperty('bots')
     // GAME_ENGINE.md §7: >= 2 complete, playable manifests per mechanic.
     expect(slice.fixtures.length).toBeGreaterThanOrEqual(2)
   })
@@ -268,5 +277,78 @@ describe('forward compatibility', () => {
     if (parsed.ok) return
     expect(isUnsupportedMechanic(parsed.issues)).toBe(false)
     expect(parsed.issues.some((issue) => issue.startsWith('config.'))).toBe(true)
+  })
+})
+
+// ---- The bot leak (GAME_ENGINE.md §9, core/types.ts `Simulator`) ---------------------
+//
+// `bots.perfect` returns the exact `GameInputEvent[]` Core replays to grant XP, and a
+// perfect log for these mechanics is 4-61 events. The bots therefore must not be
+// reachable from anything the browser downloads. The runtime shape is asserted above;
+// this suite pins the IMPORT GRAPH, because the shape check alone would still pass if
+// `bots.ts` were pulled into the chunk for a side effect or a re-export.
+//
+// It walks the real relative-import graph from `register.ts` — the one module
+// MECHANIC_LOADERS dynamic-imports, i.e. the exact root of the mechanic's lazy chunk —
+// and asserts `bots.ts` is not in it. Source text rather than a bundler run: this is the
+// property the bundler merely reflects, and it fails on the offending edge by name.
+
+/** This file's own directory — `src/game-engine`. */
+const HERE = dirname(fileURLToPath(import.meta.url))
+
+describe('no mechanic ships its bots to the browser', () => {
+  /** In-repo specifiers: `./x`, `../x`, and the `@/` alias (tsconfig `paths` → `src/*`).
+   *  Both forms are followed, so an alias hop cannot launder the edge. */
+  const IN_REPO_IMPORT = /from\s+'((?:\.|@\/)[^']*)'/g
+
+  /** `frontend/src` — this file lives at `src/game-engine/registry.test.tsx`. */
+  const SRC_ROOT = resolvePath(HERE, '..')
+
+  function resolveModule(specifier: string): string | null {
+    for (const candidate of [`${specifier}.ts`, `${specifier}.tsx`, `${specifier}/index.ts`]) {
+      if (existsSync(candidate)) return candidate
+    }
+    return null
+  }
+
+  /** Every module reachable from `entry` through in-repo imports, entry included. */
+  function moduleGraph(entry: string): string[] {
+    const seen = new Set<string>()
+    const queue = [entry]
+    while (queue.length > 0) {
+      const current = queue.shift()
+      if (current === undefined || seen.has(current)) continue
+      seen.add(current)
+      const source = readFileSync(current, 'utf8')
+      for (const match of source.matchAll(IN_REPO_IMPORT)) {
+        const specifier = match[1]
+        if (specifier === undefined) continue
+        const absolute = specifier.startsWith('@/')
+          ? resolvePath(SRC_ROOT, specifier.slice(2))
+          : resolvePath(dirname(current), specifier)
+        const resolved = resolveModule(absolute)
+        if (resolved !== null) queue.push(resolved)
+      }
+    }
+    return [...seen]
+  }
+
+  it.each(IMPLEMENTED)('%s/register.ts never reaches bots.ts', (id) => {
+    const entry = resolvePath(HERE, `mechanics/${id}/register.ts`)
+    expect(existsSync(entry), entry).toBe(true)
+    const graph = moduleGraph(entry)
+    const leaked = graph.filter((file) => file.endsWith('/bots.ts'))
+    expect(leaked, `${id}'s client chunk pulls in ${leaked.join(', ')}`).toEqual([])
+  })
+
+  it.each(IMPLEMENTED)('%s/bots.ts exists and is where the bots actually live', (id) => {
+    const bots = resolvePath(HERE, `mechanics/${id}/bots.ts`)
+    expect(existsSync(bots), bots).toBe(true)
+    const source = readFileSync(bots, 'utf8')
+    expect(source).toContain(`export const ${id}Bots`)
+    // The simulator literal must stay bot-less; a `bots:` member on it is the exact
+    // regression this whole suite exists to prevent.
+    const simulate = readFileSync(resolvePath(HERE, `mechanics/${id}/simulate.ts`), 'utf8')
+    expect(simulate).not.toMatch(/^\s*bots:/m)
   })
 })

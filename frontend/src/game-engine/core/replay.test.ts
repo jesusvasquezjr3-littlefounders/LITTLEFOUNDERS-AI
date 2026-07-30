@@ -1,5 +1,6 @@
 import { DEFAULT_MAX_EVENTS_PER_TICK, replayGame, runBot } from '@/game-engine/core/replay'
 import type {
+  GameBots,
   GameDocument,
   GameInputEvent,
   SimInit,
@@ -53,16 +54,19 @@ const toySimulator: Simulator<ToyState> = {
       stats: { count: state.count, events: state.events },
     }
   },
+}
 
-  bots: {
-    // One tap per tick: reaches the target in exactly `target` ticks.
-    perfect(): GameInputEvent[] {
-      return [{ tick: 0, action: 'tap' }]
-    },
-    // A bot that never acts — the "must NOT pass" side of the winnability gate.
-    random(): GameInputEvent[] {
-      return []
-    },
+/** The toy bots, declared OUTSIDE `toySimulator` exactly the way every mechanic now
+ *  declares its own: `Simulator` has no `bots` member, so the optimal player is not
+ *  reachable from anything the browser imports. */
+const toyBots: GameBots<ToyState> = {
+  // One tap per tick: reaches the target in exactly `target` ticks.
+  perfect(): GameInputEvent[] {
+    return [{ tick: 0, action: 'tap' }]
+  },
+  // A bot that never acts — the "must NOT pass" side of the winnability gate.
+  random(): GameInputEvent[] {
+    return []
   },
 }
 
@@ -312,7 +316,7 @@ describe('runBot', () => {
       simulator: toySimulator,
       document: toyDocument,
       seed: 99,
-      bot: toySimulator.bots.perfect,
+      bot: toyBots.perfect,
       maxTicks: MAX_TICKS,
     })
     expect(result.finished).toBe(true)
@@ -325,7 +329,7 @@ describe('runBot', () => {
       simulator: toySimulator,
       document: toyDocument,
       seed: 99,
-      bot: toySimulator.bots.perfect,
+      bot: toyBots.perfect,
       maxTicks: MAX_TICKS,
     })
     expect(inputLog.map((event) => event.tick)).toEqual([0, 1, 2, 3, 4, 5, 6, 7])
@@ -336,7 +340,7 @@ describe('runBot', () => {
       simulator: toySimulator,
       document: toyDocument,
       seed: 99,
-      bot: toySimulator.bots.perfect,
+      bot: toyBots.perfect,
       maxTicks: MAX_TICKS,
     })
     const outcome = replay(inputLog)
@@ -350,7 +354,7 @@ describe('runBot', () => {
       simulator: toySimulator,
       document: toyDocument,
       seed: 99,
-      bot: toySimulator.bots.random,
+      bot: toyBots.random,
       maxTicks: MAX_TICKS,
     })
     expect(result.finished).toBe(false)
@@ -365,7 +369,7 @@ describe('runBot', () => {
         simulator: toySimulator,
         document: toyDocument,
         seed: 12345,
-        bot: toySimulator.bots.perfect,
+        bot: toyBots.perfect,
         maxTicks: MAX_TICKS,
       })
     expect(run()).toEqual(run())
@@ -376,7 +380,7 @@ describe('runBot', () => {
       simulator: toySimulator,
       document: toyDocument,
       seed: 7,
-      bot: toySimulator.bots.perfect,
+      bot: toyBots.perfect,
       maxTicks: 2,
     })
     // Ticks 0, 1 and 2 are all playable, so three taps fit inside a budget of 2.

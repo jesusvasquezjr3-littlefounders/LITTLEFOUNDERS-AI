@@ -53,7 +53,6 @@ import {
 } from '@/game-engine/core/scoring'
 import type {
   GameInputEvent,
-  Rng,
   SimInit,
   SimResult,
   SimSnapshot,
@@ -1420,12 +1419,7 @@ function result(state: StackerState): SimResult {
   }
 }
 
-// ---- Bots -------------------------------------------------------------------------
-
-interface Placement {
-  itemId: string
-  x: number
-}
+// ---- The assist ------------------------------------------------------------------
 
 /**
  * The piece the assist offers, and the piece the perfect bot reaches for: the WIDEST
@@ -1473,69 +1467,6 @@ export function suggestPiece(state: StackerState): string | null {
   return bestId
 }
 
-function nextPlacement(state: StackerState): Placement | null {
-  if (state.maxHeight >= state.config.stability.target_height) return null
-  const itemId = suggestPiece(state)
-  if (itemId === null) return null
-  return { itemId, x: state.config.field.base_x }
-}
-
-/**
- * The §9 winnability gate's competent player.
- *
- * It is not a script: it reads the manifest's own catalogue and economy and builds the
- * structure the physics rewards — a centred, monotonically narrowing stack of the
- * widest affordable pieces, which maximises the support span and keeps the centre of
- * mass over the base centre (so the symmetry bonus falls out of playing well rather
- * than being aimed at). It adds a piece only once everything already placed has come to
- * rest, so a `drop`-mode manifest is built as carefully as a `snap`-mode one, then
- * declares itself ready and lets the announced timeline run.
- */
-function perfectBot(state: StackerState, tick: number): GameInputEvent[] {
-  if (state.finished) return []
-  if (state.phase !== 'build') return []
-  for (const body of state.bodies) {
-    if (!body.asleep) return []
-  }
-  const placement = nextPlacement(state)
-  if (placement === null) return [{ tick, action: 'ready' }]
-  return [{ tick, action: 'place', slot: placement.itemId, x: placement.x, n: 0 }]
-}
-
-/** Roll denominators for the `random` bot, one per branch. It builds carelessly — random
- *  pieces at random columns, the odd pointless move or removal, and a `ready` far too
- *  early. Mashing must NOT be a complete strategy (§9); this bot is the half of the gate
- *  that proves it. */
-const RANDOM_BRANCHES = 12
-
-function randomBot(state: StackerState, tick: number, rng: Rng): GameInputEvent[] {
-  if (state.finished) return []
-  if (state.phase !== 'build') return []
-  const config = state.config
-  const roll = rng.int(RANDOM_BRANCHES)
-
-  if (roll === 0) return [{ tick, action: 'ready' }]
-  if (roll <= 5) {
-    const piece = config.catalog[rng.int(config.catalog.length)]
-    if (piece === undefined) return []
-    return [
-      {
-        tick,
-        action: 'place',
-        slot: piece.item_id,
-        x: rng.int(config.field.width),
-        n: rng.int(4),
-      },
-    ]
-  }
-  if (state.bodies.length === 0) return []
-  const body = state.bodies[rng.int(state.bodies.length)]
-  if (body === undefined) return []
-  if (roll === 6) return [{ tick, action: 'move', n: body.uid, x: rng.int(config.field.width) }]
-  if (roll === 7) return [{ tick, action: 'remove', n: body.uid }]
-  return []
-}
-
 export const stackerSimulator: Simulator<StackerState> = {
   mechanic: 'stacker',
   actions: STACKER_ACTIONS,
@@ -1543,8 +1474,4 @@ export const stackerSimulator: Simulator<StackerState> = {
   step,
   snapshot,
   result,
-  bots: {
-    perfect: (state, tick) => perfectBot(state, tick),
-    random: (state, tick, rng) => randomBot(state, tick, rng),
-  },
 }

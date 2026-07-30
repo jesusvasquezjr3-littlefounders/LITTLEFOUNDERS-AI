@@ -68,7 +68,16 @@ const MECHANICS = [
   'flyer',
 ] as const;
 
-/** Every module copied verbatim. Add a mechanic's two files here when its slice lands. */
+/**
+ * Every module copied verbatim. Add a mechanic's THREE files here when its slice lands.
+ *
+ * `bots.ts` is in this list and NOT optional. The `simulate` stage bot-plays a document
+ * with the mechanic's real bots, so a bot that drifted from the frontend's would gate the
+ * wrong game — and the bots left `simulate.ts` precisely because a browser must never
+ * receive them (see `frontend/src/game-engine/core/types.ts`, `Simulator`). Splitting the
+ * module without extending this list would have silently ended parity coverage of the
+ * exact code the gate runs.
+ */
 const FULL_FILE_PAIRS: string[] = [
   'core/schemaBase.ts',
   'core/rng.ts',
@@ -78,6 +87,7 @@ const FULL_FILE_PAIRS: string[] = [
   ...MECHANICS.flatMap((mechanic) => [
     `mechanics/${mechanic}/schema.ts`,
     `mechanics/${mechanic}/simulate.ts`,
+    `mechanics/${mechanic}/bots.ts`,
   ]),
 ];
 

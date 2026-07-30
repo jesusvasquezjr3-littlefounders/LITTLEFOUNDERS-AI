@@ -11,6 +11,7 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit, SimSnapshot } from '@/game-engine/core/types'
 
 import { ExplorerView } from './components'
+import { explorerBots } from './bots'
 import { explorerFixtures } from './fixtures'
 import {
   EXPLORER_SPRITE_SLOTS,
@@ -136,7 +137,7 @@ describe('explorer determinism', () => {
         simulator: explorerSimulator,
         document,
         seed: SEED,
-        bot: explorerSimulator.bots.perfect,
+        bot: explorerBots.perfect,
         maxTicks,
       })
 
@@ -165,7 +166,7 @@ describe('explorer determinism', () => {
         simulator: explorerSimulator,
         document,
         seed: SEED,
-        bot: explorerSimulator.bots.perfect,
+        bot: explorerBots.perfect,
         maxTicks,
       })
       const replay = replayGame({
@@ -200,7 +201,7 @@ describe('explorer winnability gate', () => {
         simulator: explorerSimulator,
         document,
         seed: SEED,
-        bot: explorerSimulator.bots.perfect,
+        bot: explorerBots.perfect,
         maxTicks,
       })
       expect(result.finished).toBe(true)
@@ -235,7 +236,7 @@ describe('explorer winnability gate', () => {
           simulator: explorerSimulator,
           document,
           seed,
-          bot: explorerSimulator.bots.random,
+          bot: explorerBots.random,
           maxTicks,
         })
         expect(result.score).toBeLessThan(document.scoring.pass_score)
