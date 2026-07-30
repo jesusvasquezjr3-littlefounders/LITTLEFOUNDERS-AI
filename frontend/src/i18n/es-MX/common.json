@@ -48,6 +48,29 @@
       "streak": "Racha de días",
       "longestStreak": "Mejor racha"
     },
+    "games": {
+      "title": "Juegos",
+      "subtitle": "Cada juego practica algo que este curso ya enseñó.",
+      "noneYet": "Aún no ha jugado ningún juego",
+      "summary_one": "{{count}} juego jugado · {{xp}} XP",
+      "summary_other": "{{count}} juegos jugados · {{xp}} XP",
+      "emptyTitle": "El arcade todavía está esperando",
+      "emptyBody": "Los juegos se desbloquean al terminar lecciones. No hay prisa: aquí estarán cuando tenga ganas de jugar.",
+      "stats": {
+        "played": "Juegos jugados",
+        "cleared": "Juegos superados",
+        "xp": "XP de juegos",
+        "lastPlayed": "Última vez que jugó",
+        "notYet": "Todavía no"
+      },
+      "row": {
+        "game": "Juego",
+        "best": "Mejor {{score}}",
+        "notYet": "Aún sin jugar",
+        "plays_one": "{{count}} partida",
+        "plays_other": "{{count}} partidas"
+      }
+    },
     "insightsConsent": {
       "label": "Compartir datos de uso",
       "hint": "Ayuda a mejorar las lecciones con señales de uso. Puedes desactivarlo cuando quieras."

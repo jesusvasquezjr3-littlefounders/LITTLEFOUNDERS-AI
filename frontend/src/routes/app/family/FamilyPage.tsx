@@ -19,14 +19,53 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
  * revoking are both re-guarded server-side by the verified guardian link.
  */
 
+/**
+ * Lifetime game rollup per kid (Core's `foldGameProgress`,
+ * backend/src/routes/family.ts). `xpEarned` is a COMPONENT of the kid's
+ * learning_stats.xp_points, never an addition to it — never sum the two.
+ *
+ * Optional on the WIRE, not in the contract: the SPA and Core deploy
+ * independently, so an older Core means "games unknown" and the line hides,
+ * rather than the parent reading a fabricated zero.
+ */
+interface GameRollup {
+  gamesPlayed: number;
+  gamesPassed: number;
+  totalPlays: number;
+  xpEarned: number;
+  lastPlayedAt: string | null;
+}
+
 interface Kid {
   userId: string;
   displayName: string | null;
   username: string | null;
   analyticsConsent: boolean;
+  games?: GameRollup;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; kids: Kid[] };
+
+/**
+ * One-line game activity for a kid row (§1.9 parent visibility). A kid with no
+ * plays yet gets an inviting line, never a row of zeros: on this surface the
+ * absence of a play is simply a game still ahead of them.
+ */
+function GamesLine({ games }: { games: GameRollup }) {
+  const { t, i18n } = useTranslation();
+  const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
+
+  return (
+    <span className="lf-caption mt-0.5 flex items-center gap-1 text-content-faint">
+      <Icon name="stadia_controller" className="shrink-0 text-[14px]" aria-hidden />
+      <span className="truncate">
+        {games.gamesPlayed === 0
+          ? t('family.games.noneYet')
+          : t('family.games.summary', { count: games.gamesPlayed, xp: nf.format(games.xpEarned) })}
+      </span>
+    </span>
+  );
+}
 
 export function FamilyPage() {
   const { t } = useTranslation();
@@ -94,7 +133,8 @@ export function FamilyPage() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="lf-label block truncate text-content">{kid.displayName ?? kid.username}</span>
-                  {kid.username ? <span className="lf-caption text-content-faint">@{kid.username}</span> : null}
+                  {kid.username ? <span className="lf-caption block truncate text-content-faint">@{kid.username}</span> : null}
+                  {kid.games ? <GamesLine games={kid.games} /> : null}
                 </span>
                 <span className="lf-caption flex shrink-0 items-center gap-1 font-bold text-primary">
                   <Icon name="map" className="text-[18px]" aria-hidden />

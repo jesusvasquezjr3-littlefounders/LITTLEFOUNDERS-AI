@@ -18,7 +18,7 @@ import { serviceRest } from './supabaseRest.js';
  *    third-party API.
  */
 
-/** Mirrors the 0024 CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028 CHECK exactly. Closed by design (§1.9 rule 2). */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -31,11 +31,13 @@ export const RECORDABLE_EVENTS = [
   // lesson micro-behaviour
   'lesson_abandon', 'segment_view', 'segment_submit', 'segment_retry',
   'hint_open', 'explanation_view', 'audio_replay', 'results_view',
-  // other surfaces. game_complete/task_complete are deliberately ABSENT: the
-  // features do not exist, so nothing can emit them. This list must mirror the
-  // 0025 CHECK exactly — a value Core accepts but Postgres rejects fails the
+  // other surfaces. task_complete is deliberately ABSENT: Tasks is still a
+  // placeholder surface, so nothing can emit it. This list must mirror the
+  // 0028 CHECK exactly — a value Core accepts but Postgres rejects fails the
   // INSERT for the entire 25-event batch, not just the offending row.
-  'game_open', 'task_view',
+  // game_start/game_complete return with the Game Engine that emits them
+  // (0025 removed game_complete as dead vocabulary on exactly that condition).
+  'game_open', 'game_start', 'game_complete', 'task_view',
   'profile_edit', 'avatar_edit', 'tutor_open',
   // retention / family
   'streak_extend', 'territory_view', 'consent_grant', 'consent_revoke',
@@ -72,6 +74,12 @@ export interface LearningEventInsert {
   event: RecordableEvent;
   route_class?: RouteClass | null;
   lesson_id?: string | null;
+  /**
+   * Which game an event is about (0028). A content id like lesson_id — the id
+   * of a row in `games`, never anything that identifies a person — and, like
+   * lesson_id, carried WITHOUT a foreign key so history survives republish.
+   */
+  game_id?: string | null;
   segment_id?: string | null;
   value?: number | null;
   session_id?: string | null;
@@ -533,13 +541,13 @@ export interface ExportFilters {
 /** Columns pulled from the table. session_id never reaches the file as-is. */
 const EXPORT_SOURCE = [
   'created_at', 'role', 'event', 'route_class', 'locale', 'device',
-  'referrer_class', 'session_id', 'ordinal', 'lesson_id', 'segment_id', 'value',
+  'referrer_class', 'session_id', 'ordinal', 'lesson_id', 'game_id', 'segment_id', 'value',
 ] as const;
 
 /** Columns actually written out: session_id is replaced by session_ref. */
 const EXPORT_COLUMNS = [
   'created_at', 'role', 'event', 'route_class', 'locale', 'device',
-  'referrer_class', 'session_ref', 'ordinal', 'lesson_id', 'segment_id', 'value',
+  'referrer_class', 'session_ref', 'ordinal', 'lesson_id', 'game_id', 'segment_id', 'value',
 ] as const;
 
 /**

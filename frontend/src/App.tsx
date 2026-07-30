@@ -56,6 +56,13 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
  * production bundles. */
 const GameLabPage = lazy(() => import('@/game-engine/lab/GameLabPage'));
 
+/* The games product surface (GAME_ENGINE.md §8). BOTH lazy: the hub so its
+ * catalog view is its own chunk, and the play route so the player, its overlays
+ * and the mechanic chunk it pulls in never enter the main bundle — nobody
+ * downloads a simulator to read the dashboard. */
+const GamesHubPage = lazy(() => import('@/routes/app/games/GamesHubPage'));
+const GameRoute = lazy(() => import('@/routes/app/games/GameRoute'));
+
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
@@ -169,7 +176,14 @@ export function App() {
             <Route path="learn/:courseSlug" element={<CoursePage />} />
             <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
             <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
-            <Route path="games" element={<SectionComingSoon section="games" icon="stadia_controller" />} />
+            <Route
+              path="games"
+              element={
+                <Suspense fallback={null}>
+                  <GamesHubPage />
+                </Suspense>
+              }
+            />
             <Route
               path="tasks"
               element={
@@ -231,6 +245,20 @@ export function App() {
             element={
               <RequireAuth>
                 <LessonRoute />
+              </RequireAuth>
+            }
+          />
+
+          {/* Game Player — the Lesson player's peer: its own fullscreen layer,
+              no app chrome (DESIGN.md Screen Recipes → Game player). Same
+              placement rule, deliberately outside the AppLayout route group. */}
+          <Route
+            path="games/:slug"
+            element={
+              <RequireAuth>
+                <Suspense fallback={null}>
+                  <GameRoute />
+                </Suspense>
               </RequireAuth>
             }
           />

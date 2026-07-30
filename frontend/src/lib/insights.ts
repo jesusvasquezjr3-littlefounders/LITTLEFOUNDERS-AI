@@ -27,7 +27,7 @@ import {
  * rather than growing without bound.
  */
 
-/** Mirrors the 0024 CHECK and Core's enum exactly. Closed by design. */
+/** Mirrors the 0028 CHECK and Core's enum exactly. Closed by design. */
 export type InsightEvent =
   | 'session_start' | 'session_heartbeat' | 'session_end' | 'nav_view'
   | 'page_view' | 'cta_click' | 'scroll_depth'
@@ -35,7 +35,10 @@ export type InsightEvent =
   | 'course_open' | 'lesson_start' | 'lesson_complete' | 'first_lesson_complete'
   | 'lesson_abandon' | 'segment_view' | 'segment_submit' | 'segment_retry'
   | 'hint_open' | 'explanation_view' | 'audio_replay' | 'results_view'
-  | 'game_open' | 'task_view'
+  // `game_open` is the hub signal; `game_start`/`game_complete` are the play
+  // signals the Game Engine emits (0028 — they exist only now that something
+  // can actually produce them).
+  | 'game_open' | 'game_start' | 'game_complete' | 'task_view'
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke';
 

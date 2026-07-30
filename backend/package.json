@@ -13,9 +13,11 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "npm run contract:check && vitest run",
     "test:watch": "vitest",
-    "contract:check": "tsx scripts/contract-check.ts"
+    "contract:check": "npm run lesson-contract:check && npm run game-contract:check",
+    "lesson-contract:check": "tsx scripts/contract-check.ts",
+    "game-contract:check": "tsx scripts/game-contract-check.ts"
   },
   "dependencies": {
     "express": "^5.1.0",

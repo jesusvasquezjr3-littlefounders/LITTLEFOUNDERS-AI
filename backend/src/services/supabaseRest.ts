@@ -782,3 +782,69 @@ export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promis
     `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
   );
 }
+
+// ── Family game visibility (0027, GAME_ENGINE.md §6-§7) ────────────────────
+// Games are a SECOND category of kid activity — plays, best scores, pass state
+// and XP that lands in the same learning_stats.xp_points a parent already sees.
+// Parent visibility into kid activity is a product invariant (/AGENTS.md §1.9),
+// so the family surface reads them under the SAME two-grade split as the lesson
+// reads above: published game CONTENT through the PARENT's own token (0027's
+// games_select_published chain does the filtering), and the KID's own rollup
+// rows through the service role, only AFTER routes/family.ts verified the
+// guardian link. No second authorization path exists.
+
+export interface GameCatalogRow {
+  id: string;
+  topic_id: string;
+  position: number;
+  slug: string;
+  mechanic: string;
+  title: Json;
+  tier: number;
+  xp_max: number;
+  estimated_minutes: number;
+}
+
+const GAME_CATALOG_FIELDS = 'id,topic_id,position,slug,mechanic,title,tier,xp_max,estimated_minutes';
+
+/** Published games hanging off a set of topics, read with the CALLER's own token (0027 games_select_published). */
+export function getGamesForTopics(accessToken: string, topicIds: string[]): Promise<GameCatalogRow[] | null> {
+  if (topicIds.length === 0) return Promise.resolve([]);
+  return rest<GameCatalogRow[]>(`/games?topic_id=${inFilter(topicIds)}&select=${GAME_CATALOG_FIELDS}`, accessToken);
+}
+
+export interface GameProgressRow {
+  game_id: string;
+  best_score: number;
+  plays: number;
+  passed: boolean;
+  xp_earned: number;
+  last_played_at: string | null;
+}
+
+const GAME_PROGRESS_FIELDS = 'game_id,best_score,plays,passed,xp_earned,last_played_at';
+
+/** One kid's game_progress rows for a set of games, read AFTER the route verified the guardian link. */
+export function getKidGameProgress(kidId: string, gameIds: string[]): Promise<GameProgressRow[] | null> {
+  if (gameIds.length === 0) return Promise.resolve([]);
+  return serviceRest<GameProgressRow[]>(
+    `/game_progress?user_id=eq.${eu(kidId)}&game_id=${inFilter(gameIds)}&select=${GAME_PROGRESS_FIELDS}`,
+  );
+}
+
+export interface KidGameProgressRow extends GameProgressRow {
+  user_id: string;
+}
+
+/**
+ * LIFETIME game_progress for SEVERAL kids in one round trip — the /kids list
+ * rollup. Unfiltered by game on purpose: the rollup counts everything the kid
+ * played, including games since unpublished, so the parent's totals never
+ * shrink because a content row changed status.
+ */
+export function getKidsGameProgress(kidIds: string[]): Promise<KidGameProgressRow[] | null> {
+  if (kidIds.length === 0) return Promise.resolve([]);
+  return serviceRest<KidGameProgressRow[]>(
+    `/game_progress?user_id=${inFilter(kidIds)}&select=user_id,${GAME_PROGRESS_FIELDS}`,
+  );
+}

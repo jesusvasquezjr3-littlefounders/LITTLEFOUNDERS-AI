@@ -47,6 +47,11 @@ backend/
   scripts/
   src/
     __tests__/
+    game-contract/
+      core/
+      mechanics/
+        runner/
+        sorter/
     lesson-contract/
       core/
       families/
@@ -722,6 +727,7 @@ frontend/
         analytics/
       app/
         family/
+        games/
         learn/
           __tests__/
           scenes/
@@ -3345,9 +3351,9 @@ npm install
 cp .env.example .env   # fill values (local Supabase secrets live in database/supabase/docker/.env)
 npm run dev
 npm test
-npm run contract:check   # lesson-contract/ vs frontend/src/lesson-engine parity gate
-```
-
+npm run contract:check         # BOTH parity gates below (also runs as part of `npm test`)
+npm run lesson-contract:check  # lesson-contract/ vs frontend/src/lesson-engine
+npm run game-contract:check    # game-contract/  vs frontend/src/game-engine
 ```
 
 ### backend/eslint.config.js
@@ -3422,6 +3428,26 @@ export default tseslint.config(
 //     use). Normalizing strips import lines + whitespace, then compares.
 //  2. Symbol parity (core/types.ts): that file is a DELIBERATELY TRIMMED
 //     subset of the frontend original (the React/ComponentType registry
+```
+
+### backend/scripts/game-contract-check.ts
+
+```
+#!/usr/bin/env -S npx tsx
+// game-contract:check — the no-workspaces parity gate for backend/src/game-contract/
+// (CLAUDE.md §1.2: "10 independent npm packages — no workspaces", so Core cannot
+// import frontend/src/game-engine directly). Core derives a game's reward by
+// REPLAYING the player's input log through the same pure simulation code the browser
+// ran, so the modules are COPIED here — and a copy drifts.
+//
+// WHY DRIFT IS SILENT AND EXPENSIVE (the lesson coursegen/src/contract/AGENTS.md
+// records): Zod STRIPS unknown keys by default, so a field the frontend added and
+// this copy lacks is not rejected on the way in — it is silently DELETED. The
+// simulator then replays a document that is missing exactly the field the player's
+// session depended on, derives a lower score than the child earned, and Core rejects
+// or under-pays an honest attempt. Nothing logs an error anywhere. This script is the
+// only thing standing between that and production.
+//
 ```
 
 ### backend/src/__tests__/admin-generation.test.ts
@@ -3582,6 +3608,66 @@ import { COURSE_SLUG, LESSON_1_ID, makeDb } from './learnFixtures.js';
  */
 
 const PARENT_ID = '11111111-1111-4111-8111-111111111111';
+```
+
+### backend/src/__tests__/familyGames.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { mintToken } from './helpers.js';
+import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+import { COURSE_SLUG, LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
+
+/*
+ * /api/v1/family — the GAME half of parent visibility (GAME_ENGINE.md §6-§7).
+ *
+ * Games are the second category of kid activity, and parent visibility into a
+ * kid's activity is a product invariant, not a feature flag (/AGENTS.md §1.9).
+ * So this file pins BOTH halves of that invariant:
+ *
+ *   - a VERIFIED guardian sees their kid's game plays, best scores, pass state
+```
+
+### backend/src/__tests__/game-contract.test.ts
+
+```
+// backend/src/game-contract/ — the parity copy's own regression suite.
+//
+// WHAT THIS PROVES AND WHAT IT DOES NOT. That the copy is byte-equivalent to
+// frontend/src/game-engine is proved by `npm run game-contract:check`, not here.
+// What THIS file proves is the property the reward path actually depends on: that
+// replaying a recorded input log through the copied simulator reproduces, exactly,
+// the result the run produced — same score, same stats, every time, from a fixed
+// seed. If that ever stops holding, Core under-pays or rejects honest children.
+//
+// The documents below are INLINE on purpose. `frontend/` is not a dependency of
+// `backend/` (no workspaces), so importing the frontend fixtures would be both
+// impossible at build time and a lie about what Core can reach; their config/content
+// VALUES are transcribed instead. They satisfy the production schemas unmodified
+// (§1.14: a fixture never gets a relaxed schema) and carry curriculum content only —
+// no child, no PII (§1.9).
+```
+
+### backend/src/__tests__/games.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { mintToken } from './helpers.js';
+import { createFakeFetch, type FakeDb, type FakeRow } from './fakePostgrest.js';
+import { LESSON_1_ID, SAGA_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
+import { runBot } from '../game-contract/core/replay.js';
+import { sorterSimulator } from '../game-contract/mechanics/sorter/simulate.js';
+import type { GameDocument, GameInputEvent } from '../game-contract/core/types.js';
+import { maxTicksFor } from '../services/gameDocument.js';
+
+/*
+ * /api/v1/games — the HTTP surface of the Game Engine (GAME_ENGINE.md §6-§8).
+ *
+ * The three properties this file exists to pin, none of which a green
 ```
 
 ### backend/src/__tests__/health.test.ts
@@ -3795,13 +3881,13 @@ import { adminRouter } from './routes/admin.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
+import { gamesRouter } from './routes/games.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
 export const VERSION = '0.1.0';
-
 ```
 
 ### backend/src/config.ts
@@ -3822,6 +3908,244 @@ const Env = z.object({
   SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
   SUPABASE_JWT_SECRET: z.string().min(16),
+```
+
+### backend/src/game-contract/core/characters.ts
+
+```
+// The canon four character ids — a PARITY COPY of the two symbols
+// `frontend/src/components/characters/control/types.ts` exports that the game
+// document contract depends on (`GameMeta.cast` and `characterIdEnum`).
+//
+// Why a separate module rather than an import: the frontend original also carries
+// the emotion/action vocabulary and the per-character native prop maps, which are
+// RENDERING concerns Core has no business holding. Copying only the closed id set
+// keeps the backend free of the rig while `npm run game-contract:check` still fails
+// the moment the frontend's list changes (it diffs `CHARACTER_IDS` symbol-wise
+// against the original).
+
+export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
+export type CharacterId = (typeof CHARACTER_IDS)[number]
+```
+
+### backend/src/game-contract/core/mathd.ts
+
+```
+// Deterministic math for the Game Engine — GAME_ENGINE.md §5 / brief §4.
+//
+// WHY THIS MODULE EXISTS
+// ----------------------
+// A play session's reward is not the number the client reports: Core re-runs the
+// mechanic's simulator over the player's input log and derives the score itself. That
+// is only sound if a simulator produces BIT-IDENTICAL results in the browser's V8 and
+// in Node.
+//
+// ECMAScript leaves `Math.sin`, `cos`, `tan`, `atan`, `atan2`, `exp`, `log`, `pow`,
+// `hypot` and `cbrt` IMPLEMENTATION-DEFINED — the spec only requires an implementation-
+// approximated result, so two engines (or two builds of the same engine) may disagree
+// in the low bits. One wrong bit in a projectile arc is a rejected reward for an honest
+// child. What IS exactly specified is IEEE-754 `+ - * /` and `Math.sqrt`, plus the
+// exactly-defined `Math.abs/min/max/floor/ceil/round/trunc/sign`. So every function
+```
+
+### backend/src/game-contract/core/replay.ts
+
+```
+// The single shared replay entry point — GAME_ENGINE.md §5, §6.
+//
+// THREE callers, ONE implementation: the dev lab, the Arcade pipeline's winnability
+// gate, and Core's `POST /api/v1/games/:gameId/complete`. A player's reward is not the
+// number the client reports — it is what this function DERIVES by re-running the
+// mechanic's simulator over the player's input log. `replayGame` therefore takes no
+// score argument at all: there is nothing for a forged client to inflate.
+//
+// This module is deliberately free of React, DOM, Node and Zod so that
+// `backend/src/game-contract/` and `gamegen/src/contract/` can carry it verbatim; the
+// only runtime import is core/rng.ts, which is part of the same parity copy.
+// It is fully synchronous and pure: same inputs -> same outputs, always, forever.
+
+import type {
+  GameBot,
+```
+
+### backend/src/game-contract/core/rng.ts
+
+```
+// Seeded PRNG for the Game Engine — GAME_ENGINE.md §5 rule 5. Every source of
+// randomness a simulator touches comes from here, because rewards are derived by
+// REPLAYING the player's input log on the server: a single `Math.random()` anywhere
+// in the simulation path makes the replay diverge and rejects an honest child's XP.
+//
+// Algorithm: mulberry32 — a 32-bit state advanced with `+`, `^`, `>>>` and
+// `Math.imul`. Every one of those is exactly specified by ECMAScript on int32
+// values (`Math.imul` returns the low 32 bits of the integer product, not a float
+// multiply), so the browser's V8 and Node agree on the last bit. No float
+// accumulator, no transcendental, no engine-defined rounding anywhere in the state
+// update — the only float in the module is the final division that maps the 32-bit
+// output into [0, 1), and 2^32 is exact in IEEE-754 double.
+
+import type { Rng } from './types.js'
+
+```
+
+### backend/src/game-contract/core/schemaBase.ts
+
+```
+// Zod building blocks for the game document — GAME_ENGINE.md §3.
+// Mechanic slices compose their own config/content schemas from these; the composed
+// document schema (envelope + registry-driven per-mechanic parse + the cross-field
+// checks) lives in core/schema.ts.
+//
+// No React and no mechanic knowledge here, on purpose: the backend/gamegen parity
+// copies import this module as-is.
+
+import { z } from 'zod'
+import { CHARACTER_IDS } from './characters.js'
+import {
+  GAME_BGM,
+  GAME_INTERLUDE_KINDS,
+  GAME_ITEM_TIERS,
+  GAME_LOCALES,
+```
+
+### backend/src/game-contract/core/scoring.ts
+
+```
+// Pure scoring helpers — GAME_ENGINE.md §6. Every mechanic composes its score out
+// of these; nothing here knows a mechanic exists.
+//
+// DEPENDENCY-FREE BY CONTRACT. The SERVER re-derives every score by replaying the
+// player's input log (the client's number is a claim, never the grant), so this
+// module is copied verbatim into `backend/src/game-contract/` and
+// `gamegen/src/contract/`. It therefore has ZERO imports — no React, no Zod, no I/O
+// — and uses only the §5 allowed arithmetic (`+ - * /`, `Math.min/max/abs/floor/
+// ceil/round/trunc/sign/sqrt`). The transcendentals are implementation-defined in
+// ECMAScript; one differing bit between browser V8 and Node is a rejected reward for
+// an honest child.
+//
+// INVARIANT for every function below: a finite input yields a finite number. NaN,
+// Infinity and division by zero are handled explicitly at each entry point rather
+// than allowed to propagate into the reward path.
+```
+
+### backend/src/game-contract/core/types.ts
+
+```
+// PARITY COPY of `frontend/src/game-engine/core/types.ts` — DO NOT EDIT BY HAND.
+// Core derives a game's reward by REPLAYING the player's input log through the exact
+// code the browser ran, and there are no npm workspaces (CLAUDE.md §1.2), so the pure
+// simulation modules are copied here instead of imported. `npm run game-contract:check`
+// diffs every copy against its frontend original; change the frontend file first, then
+// re-copy (adjusting ONLY the import specifiers to NodeNext `.js` form).
+//
+// This file is a DELIBERATELY TRIMMED subset: the two React/rendering symbols
+// `MechanicViewProps` and `MechanicSlice` are omitted, because React must never enter
+// the backend. The checker therefore compares core/types.ts SYMBOL BY SYMBOL (it
+// derives the list from the frontend file and subtracts exactly those two, so a symbol
+// added upstream and not copied here fails the gate). `CharacterId` comes from the
+// local ./characters.js parity copy rather than the character rig.
+//
+// Original header follows.
+```
+
+### backend/src/game-contract/mechanics/runner/schema.ts
+
+```
+// Runner — Zod config + content schemas (GAME_ENGINE.md §4 row `runner`, §7).
+//
+// THE WHOLE POINT OF THIS FILE: v1's endless runners hardcoded gravity, jump impulse,
+// scroll speed, obstacle spacing and the point values inside the game component, so a
+// second runner meant a second codebase. Here EVERY number that shapes difficulty,
+// physics, spacing, economy or scoring is a manifest field, and `simulate.ts` /
+// `components.tsx` read all of them from `config`. A new runner is a new JSON file.
+//
+// No React and no DOM here on purpose: `backend/src/game-contract/` and
+// `gamegen/src/contract/` carry this module verbatim next to `simulate.ts`.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### backend/src/game-contract/mechanics/runner/simulate.ts
+
+```
+// Runner — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of the
+// state handed in. Fixed 50ms ticks. Only the §5-allowed arithmetic; no transcendental
+// is reached for at all (the one periodic motion in the mechanic is a TRIANGLE wave
+// built from integer division, so `core/mathd.ts` is not needed here).
+//
+// Two engine-level rules the kernel documents and this file honours:
+//  - PER-ENTITY TIMERS. A moving obstacle's phase is `tick - entity.bornAt`, and a
+//    `sudden` obstacle arms from its OWN distance to the avatar. There is no shared
+//    accumulator anywhere, so N entities never advance N times too fast.
+//  - BATCHED REMOVALS. Collisions are resolved over the whole entity array and the
+//    survivors are produced in ONE filter, so several pickups on the same tick are one
+//    state transition rather than the first pickup plus a stalled world.
+//
+```
+
+### backend/src/game-contract/mechanics/sorter/schema.ts
+
+```
+// `sorter` — the config + content contract (GAME_ENGINE.md §4 row 1, §7).
+//
+// THE POINT OF THIS FILE: v1's needs-vs-wants game hardcoded every number it used —
+// the spawn table, the fall speed, the combo curve, the penalty, the colours — so a
+// second instance meant a second copy of the code. Here EVERY tunable the simulator
+// or the view reads lives in `config`, and every label, category and trap lives in
+// `content`. A new sorter game is a new JSON document, never new code.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim into their synchronous registry.
+
+import { z } from 'zod'
+
+import {
+  gameCategorySchema,
+```
+
+### backend/src/game-contract/mechanics/sorter/simulate.ts
+
+```
+// `sorter` — the PURE simulator (GAME_ENGINE.md §5, brief §4).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental:
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts.
+//
+// Two v1 bugs are structurally excluded and both cost a full comment:
+//
+//  - PER-ENTITY TIMERS. Every element carries its OWN `speed`, position and
+//    `spawnedAt`. There is no shared accumulator that N elements each decrement, so
+//    N elements cannot make one clock run N times too fast.
+//  - BATCHED REMOVALS. A tick resolves the WHOLE event batch, then rebuilds `active`
+//    in ONE pass that drops both the consumed and the escaped elements together.
+//    There is no per-event dispatch and no early return, so simultaneous removals
+```
+
+### backend/src/game-contract/registry.ts
+
+```
+// The SYNCHRONOUS server-side mechanic registry (GAME_ENGINE.md §7, brief §5).
+//
+// This is the one file in `backend/src/game-contract/` that is NOT a copy of a
+// frontend module, and it exists because the two registries answer different
+// questions. The frontend's `registry.ts` is asynchronous on purpose — eight
+// mechanics must never become one bundle every player downloads to play one game, so
+// each slice is a dynamic `import()` and its own lazy chunk. Core has no bundle and
+// no code-splitting concern; what it needs is to look a simulator up by id inside a
+// request handler, without an await and without a React component ever entering the
+// process. So it holds the React-free half of the slice (`MechanicSimSlice`:
+// configSchema + contentSchema + simulator + spriteSlots) eagerly.
+//
+// HOW TO PLUG A NEW MECHANIC IN — the only change this file needs (Phase 3/4):
+//   1. copy that mechanic's `schema.ts` and `simulate.ts` from
+//      `frontend/src/game-engine/mechanics/<id>/` into
 ```
 
 ### backend/src/index.ts
@@ -4220,6 +4544,26 @@ import {
   getAdventuresByCourseIds,
 ```
 
+### backend/src/routes/games.ts
+
+```
+import express, { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import { groupGameCatalog, unlockedTopicIds } from '../services/gameCatalog.js';
+import {
+  countAttemptsForRun,
+  getGameDocumentLocales,
+  getGameDocumentLocalesForReplay,
+  getGameProgressForGames,
+  getGameProgressRow,
+  getPublishedGameById,
+  getPublishedGamesByTopicIds,
+  insertGameAttempt,
+  loadCourseTreeForUser,
+```
+
 ### backend/src/routes/learn.ts
 
 ```
@@ -4338,6 +4682,86 @@ type Json = Record<string, unknown>;
 export interface CourseRowLite {
   id: string;
   slug: string;
+```
+
+### backend/src/services/gameCatalog.ts
+
+```
+import type { CourseTree } from './courseTree.js';
+import type { GameProgressRow, GameRow } from './gameData.js';
+
+/*
+ * Pure assembly of the /api/v1/games hub — published games grouped
+ * course → adventure → topic, each with the caller's own progress and its
+ * server-computed `state`. No I/O here (routes/games.ts fetches the rows), so
+ * the gating rule is unit-testable with plain fixtures.
+ *
+ * THE GATE (GAME_ENGINE.md §8): a game is `locked` until the topic it hangs off
+ * has at least ONE lesson this user has PASSED. Games consolidate a concept, they
+ * do not teach it — a child who has not met the concept would be guessing at an
+ * arcade loop, which is the opposite of the pedagogy.
+ *
+ * "Passed" is read off the already-assembled course tree, never recomputed: the
+```
+
+### backend/src/services/gameData.ts
+
+```
+import { assembleCourseTree, type CourseTree } from './courseTree.js';
+import {
+  getAdventuresByCourseIds,
+  getLessonProgressForLessons,
+  getLessonsByTopicIds,
+  getSagasByAdventureIds,
+  getTopicsBySagaIds,
+  serviceRest,
+  type CourseHierarchyRow,
+} from './supabaseRest.js';
+
+/*
+ * PostgREST access for the Game Engine tables (Vault 0027).
+ *
+ * WHY EVERY CALL HERE IS SERVICE-ROLE, and why that is not a hole:
+```
+
+### backend/src/services/gameDocument.ts
+
+```
+import { z } from 'zod';
+import {
+  gameAdaptiveSchema,
+  gameCategorySchema,
+  gameFeedbackSchema,
+  gameInterludeSchema,
+  gameItemSchema,
+  gameMetaSchema,
+  gameScoringSchema,
+  gameSkinSchema,
+  gameValidationSchema,
+} from '../game-contract/core/schemaBase.js';
+import { TICK_MS, type GameContent, type GameDocument, type GameValidation, type MechanicConfig } from '../game-contract/core/types.js';
+import { DEFAULT_MAX_EVENTS_PER_TICK } from '../game-contract/core/replay.js';
+import { getMechanic } from '../game-contract/registry.js';
+```
+
+### backend/src/services/gameReplay.ts
+
+```
+import { TICK_MS, type GameInputEvent } from '../game-contract/core/types.js';
+import { replayGame, type ReplayRejectionReason } from '../game-contract/core/replay.js';
+import { clampScore } from '../game-contract/core/scoring.js';
+import { getMechanic } from '../game-contract/registry.js';
+import { maxTicksFor, parseStoredGameDocument, parseValidationSidecar, type DocumentRejectionReason } from './gameDocument.js';
+
+/*
+ * The reward derivation — GAME_ENGINE.md §6.
+ *
+ * THE ONE RULE: the client's score is a CLAIM, this module's replay is the GRANT.
+ * The request body carries no score at all, so there is nothing to inflate; what
+ * it carries is the input log, which Core re-runs through the exact simulator the
+ * browser ran. A replay violation, an out-of-bounds result or an implausible
+ * duration returns a REFUSAL — never a partial reward, never a fallback to a
+ * client number.
 ```
 
 ### backend/src/services/gotrue.ts
@@ -8621,6 +9045,46 @@ create table if not exists generation_heartbeat_snapshots (
 --                                 PostgREST query params).
 -- 3. dataintel_users_sync       — user dimension (role, locale, XP, streak).
 -- 4. dataintel_lessons_sync     — lesson dimension (title, course, segment count).
+```
+
+### database/migrations/0027_game_engine.sql
+
+```
+-- 0027_game_engine.sql — the Game Engine content + play tables (GAME_ENGINE.md §6).
+-- Delta over 0001-0026 (never edit an applied migration). Idempotent.
+--
+--   topics ── games ── game_documents (×3 locales)
+--                   └─ game_attempts / game_progress (per user, Core-written)
+--
+-- Games are prebuilt deterministic MECHANICS (code) skinned per instance by a
+-- generated GameDocument manifest (data), exactly as lessons are a fixed segment
+-- runtime skinned by a generated lesson document. A game reinforces ONE topic's
+-- concept, so it hangs off `topics` — the same anchor lessons use — and inherits
+-- the identical published-chain read posture.
+--
+-- `game_documents` splits the manifest in two for the SAME reason
+-- `lesson_documents` splits out its answer keys: `document` is CLIENT-SAFE, while
+-- `validation` is a SERVER-ONLY sidecar (theoretical max score, minimum duration,
+```
+
+### database/migrations/0028_game_insights.sql
+
+```
+-- 0028_game_insights.sql — the Game Engine's two events and its content id.
+--
+-- 0025 §3 DELETED `game_complete` as dead vocabulary, with the rule that such
+-- values "come back in the same commit as the features that emit them". The
+-- Game Engine is that feature, so this is that commit: `game_complete` returns
+-- and `game_start` joins it, alongside the `game_id` column that says WHICH
+-- game an event is about.
+--
+-- §1.9 REVIEW — the "widening this table = §1.9 review first" gate from 0023.
+-- Nothing about the privacy posture changes, and each part of that is a
+-- property of the schema rather than a promise about the code:
+--
+--  1. THE VOCABULARY STAYS CLOSED. `event` remains a CHECK-constrained enum;
+--     this migration re-declares the FULL list rather than relaxing it, so the
+--     only new things expressible are the two named events. A closed enum is
 ```
 
 ### database/package.json
@@ -142707,14 +143171,114 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { MECHANIC_META, isMechanicId } from '@/game-engine/registry';
 import { TerritoryProgressStrip, TerritoryView } from '@/routes/app/learn/TerritoryPage';
-import type { CourseTree } from '@/routes/app/learn/types';
+import { localizedText, type CourseTree, type Json } from '@/routes/app/learn/types';
 
 /*
  * /family/:kidId/territory — a kid's territory through the parent's eyes:
  * the SAME TerritoryView the kid sees (one renderer, zero drift), fed by
  * Core's guardian-guarded family endpoint, plus a stats strip. Wording
- * discipline: territory still to explore, never deficiency; kids are never
+```
+
+### frontend/src/routes/app/games/GameCard.tsx
+
+```
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+import { Badge, Card, Icon, IconChip } from '@/components/ui';
+import { MECHANIC_META, isMechanicId } from '@/game-engine/registry';
+import { cn } from '@/lib/utils';
+import { localizedText } from '@/routes/app/learn/types';
+import type { CatalogGame, CatalogTopic } from './api';
+
+/*
+ * The games-hub poster card — /DESIGN.md §Screen Recipes → Games hub.
+ *
+ * Anatomy, in the recipe's order: ① 16:9 media area clipped to the card radius
+ * ② `lf-title` title clamped to 2 lines ③ the concept chip (the topic this game
+ * reinforces — the reason the card exists, never omitted) ④ the progress chip
+```
+
+### frontend/src/routes/app/games/GameRoute.tsx
+
+```
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
+import { trackInsight } from '@/lib/insights';
+import { Button, Icon, LoadingOverlay } from '@/components/ui';
+import CharacterActor from '@/components/characters/control/CharacterActor';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { isUnsupportedMechanic, parseGameDocument } from '@/game-engine/core/schema';
+import { seedFromString } from '@/game-engine/core/rng';
+import type { GameDocument, MechanicSlice } from '@/game-engine/core/types';
+import { loadMechanic } from '@/game-engine/registry';
+import GamePlayer from '@/game-engine/player/GamePlayer';
+import type { GameRunSubmission, ServerGameResult } from '@/game-engine/player/GamePlayer';
+import { UnsupportedGameCard } from '@/game-engine/player/overlays';
+```
+
+### frontend/src/routes/app/games/GamesHubPage.test.tsx
+
+```
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { api } from '@/lib/api';
+import type { CatalogCourse, CatalogGame, GameCompletionResponse } from './api';
+import { toServerGameResult } from './api';
+import { GamesHubPage, buildHubGroups, pickPrimaryGameId } from './GamesHubPage';
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+// getToken must be a STABLE reference — the page's fetch effect depends on it.
+vi.mock('@/auth/AuthContext', () => {
+  const getToken = async () => 'token-123';
+  return { useAuth: () => ({ getToken }) };
+});
+
+```
+
+### frontend/src/routes/app/games/GamesHubPage.tsx
+
+```
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { trackInsight } from '@/lib/insights';
+import { Card, LoadingOverlay } from '@/components/ui';
+import CharacterActor from '@/components/characters/control/CharacterActor';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { localizedText } from '@/routes/app/learn/types';
+import { fetchGameCatalog, type CatalogCourse, type Json } from './api';
+import { GameCard, LockedGameCard, type HubCard } from './GameCard';
+
+/*
+ * /games — the Games hub (GAME_ENGINE.md §8, /DESIGN.md §Screen Recipes →
+ * Games hub). A section INSIDE the Dashboard shell, never a fullscreen layer:
+ * AppLayout already supplies `max-w-container` and the responsive gutters.
+```
+
+### frontend/src/routes/app/games/api.ts
+
+```
+import { api } from '@/lib/api';
+import type { ApiResult } from '@/lib/api';
+import type { ServerGameResult } from '@/game-engine/player/GamePlayer';
+import type { GameInputEvent } from '@/game-engine/core/types';
+
+/*
+ * Wire layer for the games surface — GAME_ENGINE.md §8 (`/api/v1/games`).
+ *
+ * Local mirror of Core's response shapes, exactly like
+ * `routes/app/learn/types.ts` mirrors the course tree: there is no shared-type
+ * package between services (/AGENTS.md §1.2 — independent npm packages, no
+ * workspaces), so the frontend re-declares the wire shape and every call still
+ * goes through `lib/api.ts` so the §1.6 envelope is unwrapped in exactly one
+ * place.
+ *
 ```
 
 ### frontend/src/routes/app/learn/AdventureBanner.tsx
