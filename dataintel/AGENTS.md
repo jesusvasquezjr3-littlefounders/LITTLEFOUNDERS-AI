@@ -41,6 +41,30 @@ query results through a key-gated REST API. Internal service —
   PII is ever exposed through its endpoints. Individual-child drill-downs
   require the caller (Core) to apply its own role-based access controls.
 
+## Known pitfalls (found 2026-07-30, only reproducible against real data)
+
+- **DuckDB's Node driver returns `TIMESTAMP` columns as JS `Date` objects.**
+  Interpolating one into a template literal calls `Date#toString()`
+  ("Wed Jul 29 2026 19:27:41 GMT-0600 (...)"), which DuckDB's own
+  `TIMESTAMP` parser rejects outright. Bind it as a real parameter instead
+  (`execute(sql, dateValue)`), or explicitly `new Date(value).toISOString()`
+  first if it must go inline. `:memory:` unit tests won't catch this — they
+  never populate a real `last_synced_at` row, so the bug only shows up once
+  the sync loop has actually run once against real data.
+- **`getDb()` does not create `DUCKDB_PATH`'s parent directory.** A fresh
+  checkout with no `dataintel/duckdb/` folder yet fails with an opaque
+  internal DuckDB assertion ("dereference unique_ptr that is NULL"), not a
+  clear ENOENT. `getDb()` now `mkdirSync`s it (skipped for `:memory:`) —
+  don't remove that guard.
+- **A caller-supplied `metric` string must never be interpolated directly
+  as a SQL column name** against a query that only computes a FIXED set of
+  aggregate columns (e.g. the hourly/daily bucket rollups in
+  `forecastQuery`/`anomalyQuery`/`compareQuery`). Resolve it through an
+  explicit allowlist mapping first (`resolveBucketMetricColumn` in
+  `db/queries.ts`) and reject anything not in that map at the Zod edge —
+  `assertIdentifier()` only checks SQL-identifier *syntax*, not that the
+  column actually exists in the query's result set.
+
 ## Read before touching
 
 - `agent/core/CONVENTIONS.md` — app layout, envelope, test shape.
