@@ -44,6 +44,16 @@
       "lessons": "Lições concluídas",
       "streak": "Sequência de dias",
       "longestStreak": "Melhor sequência"
+    },
+    "insightsConsent": {
+      "label": "Compartilhar dados de uso",
+      "hint": "Ajude a melhorar as lições com sinais de uso. Você pode desativar quando quiser."
     }
+  },
+  "cookies": {
+    "title": "Usamos cookies próprios",
+    "body": "Um cookie próprio nos ajuda a ver quais páginas e campanhas trazem pessoas ao LittleFounders. Fica no nosso domínio — sem redes de anúncios nem rastreamento entre sites. Você pode recusar e nada é armazenado.",
+    "accept": "Aceitar",
+    "decline": "Recusar"
   }
 }

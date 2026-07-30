@@ -20,7 +20,8 @@
     "analytics": "Analíticas y Salud",
     "generation": "Generación",
     "audit": "Auditoría",
-    "roles": "Roles y acceso"
+    "roles": "Roles y acceso",
+    "insights": "Insights"
   },
   "overview": {
     "title": "Panel de administración",
@@ -452,6 +453,138 @@
         "title": "Costo por lección se disparó 2× sobre la línea base",
         "detail": "Último: {{latest}} vs promedio: {{avg}}. La generación de imágenes o el uso de tokens puede haber aumentado."
       }
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Señales propias de aprendizaje y uso — calibración, ritmo, familias.",
+    "loading": "Cargando insights…",
+    "kpi": {
+      "consent": "Niños con permiso",
+      "consentHint": "El consentimiento del tutor abre cada señal infantil.",
+      "events": "Eventos ({{days}}d)",
+      "eventsHint": "{{kid}} de sesiones infantiles",
+      "peakUsers": "Pico de usuarios diarios",
+      "peakUsersHint": "El día más activo del periodo.",
+      "tasks": "Tareas completadas",
+      "tasksHint": "{{done}} de {{total}} tareas familiares hechas",
+      "activation": "Activación",
+      "activationHint": "Llegaron a su primera lección completada · mediana {{hours}}h en lograrlo"
+    },
+    "surfaces": {
+      "title": "Dónde pasa el tiempo",
+      "empty": "Aún no hay eventos de navegación — el beacon lo llena con cada sesión.",
+      "learn": "Aprender",
+      "games": "Juegos",
+      "tasks": "Tareas",
+      "profile": "Perfil",
+      "tutor": "Tutor",
+      "family": "Familia",
+      "admin": "Admin",
+      "marketing": "Marketing",
+      "other": "Otro"
+    },
+    "calibration": {
+      "title": "Calibración de ejercicios",
+      "subtitle": "Primero los de más intentos por aprendiz. Muchos intentos + muchas pistas + bajo primer intento = el ejercicio está mal calibrado, no el niño.",
+      "empty": "Aún no hay intentos calificados.",
+      "colLesson": "Lección",
+      "colSegment": "Segmento",
+      "colLearners": "Aprendices",
+      "colAttempts": "Intentos prom.",
+      "colHints": "Tasa de pistas",
+      "colFirstTry": "Primer intento"
+    },
+    "tabs": {
+      "overview": "Panorama",
+      "acquisition": "Adquisición",
+      "learning": "Aprendizaje",
+      "sessions": "Sesiones"
+    },
+    "filters": {
+      "days": "Periodo",
+      "role": "Rol",
+      "event": "Evento",
+      "surface": "Superficie",
+      "locale": "Idioma",
+      "device": "Dispositivo",
+      "all": "Todos",
+      "apply": "Aplicar"
+    },
+    "export": {
+      "button": "Exportar",
+      "csv": "Descargar CSV",
+      "json": "Descargar JSON",
+      "hint": "Sólo conducta y dimensiones — las exportaciones nunca llevan identificador del aprendiz.",
+      "failed": "La exportación falló — no se descargó nada.",
+      "complete": "Se descargaron {{rows}} filas — la selección completa.",
+      "capped": "Se descargaron {{rows}} filas y se alcanzó el límite de seguridad — este archivo NO es la selección completa. Acota el periodo o los filtros."
+    },
+    "cohorts": {
+      "title": "Retención por cohorte semanal",
+      "subtitle": "De quienes aparecieron por primera vez en una semana dada, cuántos volvieron después. La gráfica que dice si el producto retiene.",
+      "empty": "Aún no hay historia suficiente — las cohortes se llenan con las semanas.",
+      "week": "Semana",
+      "size": "Tamaño"
+    },
+    "funnel": {
+      "title": "Embudo de activación",
+      "subtitle": "Personas distintas que llegan a cada paso. Dónde los pierde el producto.",
+      "empty": "Aún no hay datos de embudo.",
+      "ofPrevious": "{{pct}} del anterior"
+    },
+    "velocity": {
+      "title": "Velocidad de aprendizaje",
+      "subtitle": "Lecciones aprobadas por semana activa, por aprendiz. Sale de los registros propios del producto, así que funciona sin importar el consentimiento de telemetría.",
+      "empty": "Aún no hay lecciones completadas.",
+      "colLearner": "Aprendiz",
+      "colPassed": "Aprobadas",
+      "colPerWeek": "Por semana",
+      "colScore": "Puntaje prom.",
+      "colAttempts": "Intentos prom.",
+      "colStreak": "Racha"
+    },
+    "dropoff": {
+      "title": "Abandono de lecciones",
+      "subtitle": "Primero la mayor tasa de abandono, con cuánto duraron antes de salirse.",
+      "empty": "Aún no hay actividad de lecciones.",
+      "colLesson": "Lección",
+      "colStarts": "Inicios",
+      "colAbandons": "Abandonos",
+      "colRate": "Tasa de abandono",
+      "colSeconds": "Seg. prom. antes de salir"
+    },
+    "adoption": {
+      "title": "Adopción de funciones",
+      "subtitle": "A qué superficies llega realmente cada rol.",
+      "empty": "Aún no hay actividad por superficie.",
+      "colRole": "Rol",
+      "colSurface": "Superficie",
+      "colUsers": "Usuarios",
+      "colSessions": "Sesiones",
+      "colEvents": "Eventos"
+    },
+    "sessions": {
+      "title": "Profundidad de sesión",
+      "subtitle": "Qué tan sustancial es una visita: eventos, superficies tocadas y tiempo visible.",
+      "empty": "Aún no hay sesiones registradas.",
+      "colWhen": "Cuándo",
+      "colRole": "Rol",
+      "colDevice": "Dispositivo",
+      "colEvents": "Eventos",
+      "colSurfaces": "Superficies",
+      "colLessons": "Lecciones",
+      "colTime": "Tiempo visible"
+    },
+    "engagement": {
+      "title": "Tabla de engagement",
+      "subtitle": "Un puntaje 0-100 comparable por aprendiz: amplitud (lecciones), constancia (racha), profundidad (días activos). La fórmula está a la vista en la migración 0025.",
+      "empty": "Aún no hay aprendices con puntaje.",
+      "colScore": "Puntaje",
+      "colLessons": "Lecciones",
+      "colStreak": "Mejor racha",
+      "colSessions": "Sesiones (30d)",
+      "colActiveDays": "Días activos (30d)"
     }
   }
 }

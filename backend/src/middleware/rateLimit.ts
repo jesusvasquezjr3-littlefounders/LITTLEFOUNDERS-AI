@@ -46,6 +46,21 @@ export const globalRateLimiter = rateLimit({
   store: getStore(),
 });
 
+// Telemetry gets its OWN budget, outside the global pool: beacon flushes
+// from a shared-IP household/classroom must never consume the 200-req
+// budget real product calls depend on. Generous enough for many concurrent
+// sessions behind one NAT (a flush is ~1 req/min/session), fail-open like
+// the others — losing telemetry is always acceptable, blocking lessons never is.
+export const eventsRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  passOnStoreError: true,
+  message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many telemetry batches, slow down.' } },
+  store: getStore(),
+});
+
 // Strict auth rate limiter (e.g., 10 requests per 15 minutes per IP)
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

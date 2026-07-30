@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { trackInsight } from '@/lib/insights';
 import { Button, Icon, LoadingOverlay } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
@@ -54,6 +55,21 @@ export function LessonRoute() {
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? null;
+  // Insights (/INSIGHTS.md): lesson_start on entry; lesson_abandon on exit
+  // WITHOUT completing — the drop-off signal the server cannot see, since
+  // /complete only fires on the results screen. trackInsight is a no-op for
+  // unconsented kids, so this wiring carries no §1.9 decision of its own.
+  const completedRef = useRef(false);
+  useEffect(() => {
+    completedRef.current = false;
+    const enteredAt = Date.now();
+    trackInsight('lesson_start', { lessonId, routeClass: 'learn' });
+    return () => {
+      if (!completedRef.current) {
+        trackInsight('lesson_abandon', { lessonId, routeClass: 'learn', value: Math.round((Date.now() - enteredAt) / 1000) });
+      }
+    };
+  }, [lessonId]);
   // One run id per lesson entry (0012): the server scopes the attempt cap to it,
   // so replaying a completed lesson starts every segment fresh instead of
   // hitting the lifetime cap (which the player mis-rendered as a 0/100 fail).
@@ -79,6 +95,9 @@ export function LessonRoute() {
   }
 
   async function persistCompletion(secondsSpent: number): Promise<ServerCompletion | null> {
+    // Reaching the results phase means the lesson was NOT abandoned,
+    // regardless of whether the persist below succeeds.
+    completedRef.current = true;
     const token = await getToken();
     // A failed persist never blocks the kid's Results screen or exit path
     // (the Lesson Engine's "never punish the kid for our outage" rule, §7) —
@@ -127,6 +146,7 @@ export function LessonRoute() {
   return (
     <LessonPlayer
       document={state.document}
+      lessonId={lessonId}
       grader={grader}
       audio={state.audio}
       onExit={goBack}

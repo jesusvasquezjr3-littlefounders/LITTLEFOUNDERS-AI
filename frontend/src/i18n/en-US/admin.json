@@ -20,7 +20,8 @@
     "analytics": "Analytics & Health",
     "generation": "Generation",
     "audit": "Audit log",
-    "roles": "Roles & Access"
+    "roles": "Roles & Access",
+    "insights": "Insights"
   },
   "overview": {
     "title": "Admin panel",
@@ -452,6 +453,138 @@
         "title": "Cost per lesson spiked 2× above baseline",
         "detail": "Latest: {{latest}} vs average: {{avg}}. Image generation or token usage may have increased."
       }
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "First-party learning and usage signals — calibration, rhythm, families.",
+    "loading": "Loading insights…",
+    "kpi": {
+      "consent": "Kids opted in",
+      "consentHint": "Guardian consent gates every kid signal.",
+      "events": "Events ({{days}}d)",
+      "eventsHint": "{{kid}} from kid sessions",
+      "peakUsers": "Peak daily users",
+      "peakUsersHint": "Busiest single day in the window.",
+      "tasks": "Task completion",
+      "tasksHint": "{{done}} of {{total}} family tasks done",
+      "activation": "Activation",
+      "activationHint": "Reached a first completed lesson · median {{hours}}h to get there"
+    },
+    "surfaces": {
+      "title": "Where time goes",
+      "empty": "No navigation events yet — the beacon fills this in as sessions happen.",
+      "learn": "Learn",
+      "games": "Games",
+      "tasks": "Tasks",
+      "profile": "Profile",
+      "tutor": "Tutor",
+      "family": "Family",
+      "admin": "Admin",
+      "marketing": "Marketing",
+      "other": "Other"
+    },
+    "calibration": {
+      "title": "Exercise calibration",
+      "subtitle": "Highest attempts-per-learner first. High attempts + high hints + low first-try score = the exercise is mistuned, not the kid.",
+      "empty": "No graded attempts yet.",
+      "colLesson": "Lesson",
+      "colSegment": "Segment",
+      "colLearners": "Learners",
+      "colAttempts": "Avg attempts",
+      "colHints": "Hint rate",
+      "colFirstTry": "First-try score"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "acquisition": "Acquisition",
+      "learning": "Learning",
+      "sessions": "Sessions"
+    },
+    "filters": {
+      "days": "Period",
+      "role": "Role",
+      "event": "Event",
+      "surface": "Surface",
+      "locale": "Locale",
+      "device": "Device",
+      "all": "All",
+      "apply": "Apply"
+    },
+    "export": {
+      "button": "Export",
+      "csv": "Download CSV",
+      "json": "Download JSON",
+      "hint": "Behaviour + dimensions only — exports never carry a learner identifier.",
+      "failed": "Export failed — nothing was downloaded.",
+      "complete": "Downloaded {{rows}} rows — the complete selection.",
+      "capped": "Downloaded {{rows}} rows and stopped at the safety limit — this file is NOT the complete selection. Narrow the period or filters."
+    },
+    "cohorts": {
+      "title": "Weekly cohort retention",
+      "subtitle": "Of the people who first showed up in a given week, how many came back later. The chart that says whether the product holds anyone.",
+      "empty": "Not enough history yet — cohorts fill in as weeks pass.",
+      "week": "Week",
+      "size": "Size"
+    },
+    "funnel": {
+      "title": "Activation funnel",
+      "subtitle": "Distinct people reaching each step. Where the product loses them.",
+      "empty": "No funnel data yet.",
+      "ofPrevious": "{{pct}} of previous"
+    },
+    "velocity": {
+      "title": "Learning velocity",
+      "subtitle": "Lessons passed per active week, per learner. Built from the product's own records, so it works regardless of telemetry consent.",
+      "empty": "No completions yet.",
+      "colLearner": "Learner",
+      "colPassed": "Passed",
+      "colPerWeek": "Per week",
+      "colScore": "Avg score",
+      "colAttempts": "Avg attempts",
+      "colStreak": "Streak"
+    },
+    "dropoff": {
+      "title": "Lesson drop-off",
+      "subtitle": "Highest abandon rate first, with how long they lasted before quitting.",
+      "empty": "No lesson activity yet.",
+      "colLesson": "Lesson",
+      "colStarts": "Starts",
+      "colAbandons": "Abandons",
+      "colRate": "Abandon rate",
+      "colSeconds": "Avg sec before quit"
+    },
+    "adoption": {
+      "title": "Feature adoption",
+      "subtitle": "Which surfaces each role actually reaches.",
+      "empty": "No surface activity yet.",
+      "colRole": "Role",
+      "colSurface": "Surface",
+      "colUsers": "Users",
+      "colSessions": "Sessions",
+      "colEvents": "Events"
+    },
+    "sessions": {
+      "title": "Session depth",
+      "subtitle": "How substantial a visit is: events, surfaces touched, and visible time.",
+      "empty": "No sessions recorded yet.",
+      "colWhen": "When",
+      "colRole": "Role",
+      "colDevice": "Device",
+      "colEvents": "Events",
+      "colSurfaces": "Surfaces",
+      "colLessons": "Lessons",
+      "colTime": "Visible time"
+    },
+    "engagement": {
+      "title": "Engagement leaderboard",
+      "subtitle": "One comparable 0-100 score per learner: breadth (lessons), consistency (streak), depth (active days). Formula is visible in migration 0025.",
+      "empty": "No learners scored yet.",
+      "colScore": "Score",
+      "colLessons": "Lessons",
+      "colStreak": "Best streak",
+      "colSessions": "Sessions (30d)",
+      "colActiveDays": "Active days (30d)"
     }
   }
 }

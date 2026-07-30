@@ -33,13 +33,17 @@ import { PublicFollowingPage } from '@/routes/app/profile/PublicFollowingPage';
 import { AdminOverviewPage } from '@/routes/admin/AdminOverviewPage';
 import { AdminContentPage } from '@/routes/admin/AdminContentPage';
 import { AdminEmailDashboard } from '@/routes/admin/AdminEmailDashboard';
+import { AdminInsightsPage } from '@/routes/admin/AdminInsightsPage';
+import { useInsightsBeacon } from '@/lib/useInsightsBeacon';
+import { useMarketingBeacon } from '@/lib/useMarketingBeacon';
+import { CookieConsentBanner } from '@/components/CookieConsentBanner';
 
 import { AdminUsersPage } from '@/routes/admin/AdminUsersPage';
 import { AdminAuditPage } from '@/routes/admin/AdminAuditPage';
 import { AdminRolesPage } from '@/routes/admin/AdminRolesPage';
 import { AnalyticsHealthPage } from '@/routes/admin/AnalyticsHealthPage';
 import { AdminGenerationPage } from '@/routes/admin/AdminGenerationPage';
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useState } from 'react';
 
 /* Dev-only harness — the Lesson Engine QA surface (LESSON_ENGINE.md §10). Lazy +
  * DEV-gated so the lab (and its local grader) never reaches production bundles. */
@@ -49,11 +53,31 @@ const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
+/*
+ * First-party usage beacon (/INSIGHTS.md), mounted ONCE above BOTH route
+ * groups — the lesson player lives OUTSIDE AppLayout, so a layout-level
+ * beacon died on every lesson entry, silently discarding lesson events.
+ * Renders nothing; transmits nothing without a session + analyticsEnabled.
+ */
+function InsightsBeacon({ consentVersion }: { consentVersion: number }) {
+  useInsightsBeacon();
+  // Acquisition funnel: anonymous, marketing-only, cookie-consent gated.
+  // consentVersion is bumped by the banner so accepting starts tracking
+  // IMMEDIATELY — the banner's own setState only re-renders the banner, so
+  // without this the hook would not re-evaluate consent until the next
+  // navigation and the landing visit that produced the accept would be lost.
+  useMarketingBeacon(consentVersion);
+  return null;
+}
+
 export function App() {
+  const [consentVersion, setConsentVersion] = useState(0);
   return (
     <ThemeProvider>
       <AuthProvider>
         <AnalyticsScripts />
+        <InsightsBeacon consentVersion={consentVersion} />
+        <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
         <Routes>
           {import.meta.env.DEV ? (
             <Route
@@ -170,6 +194,7 @@ export function App() {
 
             <Route path="admin/users" element={<RequireRole role={STAFF}><AdminUsersPage /></RequireRole>} />
             <Route path="admin/emails" element={<RequireRole role={STAFF}><AdminEmailDashboard /></RequireRole>} />
+            <Route path="admin/insights" element={<RequireRole role={STAFF}><AdminInsightsPage /></RequireRole>} />
             <Route path="admin/analytics" element={<RequireRole role={STAFF}><AnalyticsHealthPage /></RequireRole>} />
             <Route path="admin/generation" element={<RequireRole role={STAFF}><AdminGenerationPage /></RequireRole>} />
             <Route path="admin/audit" element={<RequireRole role={STAFF}><AdminAuditPage /></RequireRole>} />

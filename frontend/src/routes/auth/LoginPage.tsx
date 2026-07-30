@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { flushInsights, trackInsight } from '@/lib/insights';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
@@ -31,6 +32,10 @@ export function LoginPage() {
       setErrorCode(error.code);
       return;
     }
+    // Returning-user signal — the numerator of "do they come back at all",
+    // distinct from signup_complete which only ever fires once per account.
+    trackInsight('login_complete', { routeClass: 'marketing' });
+    void flushInsights();
     const from = (location.state as { from?: string } | null)?.from;
     navigate(from ?? APP_HOME, { replace: true });
   }

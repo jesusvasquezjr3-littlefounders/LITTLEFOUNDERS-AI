@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { flushInsights, trackInsight } from '@/lib/insights';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
@@ -30,11 +31,23 @@ export function SignupPage() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [confirmationPending, setConfirmationPending] = useState(false);
 
+  const startedRef = useRef(false);
+
   const passwordTooShort = password.length > 0 && password.length < 8;
+
+  // Funnel step 2 (/INSIGHTS.md): fired once, when the visitor first engages
+  // with the form rather than merely landing on it — "started the signup" has
+  // to mean intent, or the funnel's biggest drop is an artefact of pageviews.
+  function markSignupStart() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackInsight('signup_start', { routeClass: 'marketing' });
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (password.length < 8) return;
+    trackInsight('signup_submit', { routeClass: 'marketing' });
     setSubmitting(true);
     setErrorCode(null);
     const { error, confirmationRequired } = await signup({
@@ -49,6 +62,10 @@ export function SignupPage() {
       setErrorCode(error.code);
       return;
     }
+    // Funnel step 3 — the account exists (whether or not email confirmation
+    // is still pending; that is a separate, later gate).
+    trackInsight('signup_complete', { routeClass: 'marketing' });
+    void flushInsights();
     if (confirmationRequired) {
       setConfirmationPending(true);
       return;
@@ -86,7 +103,7 @@ export function SignupPage() {
       }
     >
       <SocialAuth />
-      <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
+      <form onSubmit={(e) => void onSubmit(e)} onFocusCapture={markSignupStart} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field
           label={t('auth.signup.displayName')}

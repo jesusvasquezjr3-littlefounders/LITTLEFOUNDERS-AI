@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
 import { Button, Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
@@ -92,6 +93,8 @@ export function SettingsPage() {
     if (username) body.username = username;
     if (birthDate) body.birthDate = birthDate;
     const { error } = await api('/profile', { method: 'PATCH', body, token });
+    // Personalisation depth — a strong early-retention correlate.
+    if (!error) trackInsight('profile_edit', { routeClass: 'profile' });
     setSaving(false);
     if (error) {
       setErrorCode(error.code);

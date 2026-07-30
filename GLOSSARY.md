@@ -75,6 +75,8 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **shared-type hub** | `database/types/` — generated TS types every service consumes; never hand-edited. |
 | **internal service** | Any service other than backend/frontend; reachable only service-to-service via `INTERNAL_API_KEY`. |
 | **delivery capture** | Courier's SMTP-side email logging: the `log_delivery` Haraka plugin reports each message on `hook_queue_ok` to `POST /api/v1/logs`, which writes `email_logs` (0021). GoTrue auth mail is submitted over SMTP :587 and never touches `POST /api/v1/send`, so this is the only path by which the platform's real mail is recorded. Fire-and-forget: a logging outage must never bounce a password reset. |
+| **Insights** | The first-party learning/usage telemetry system (/INSIGHTS.md): closed-vocabulary `learning_events` (0023), the parental consent gate, and the `/admin/insights` console. First-party forever — never Pulse, never a third-party AI API. |
+| **analytics consent** | The per-kid, guardian-granted permission row (`analytics_consents`) that gates ALL kid usage telemetry, fail-closed and auditable (revocation keeps the row). Surfaced as the "Share usage insights" toggle on the parent dashboard. |
 | **relayed** | The `email_logs.status` written by delivery capture — Haraka accepted the message and handed it to the SES relay. Distinct from `queued`, which means Courier accepted it on `POST /api/v1/send` and passed it to the adapter. Neither is an SES *delivery* confirmation; correlate `message_id` with SES logs for that. |
 | **team-mode skill** | An opt-in agent skill that must be proposed to the human before use (TEAM_PROTOCOL.md). |
 | **characters** | The four canonical mascots: **Dina, Liruf, Dr. Rho, Zara Vex**. |

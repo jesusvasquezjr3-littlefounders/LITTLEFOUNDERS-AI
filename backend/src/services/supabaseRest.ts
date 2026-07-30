@@ -53,6 +53,7 @@ export interface ProfileRow {
   locale: string;
   theme: string;
   cover: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface RoleRow {
@@ -61,7 +62,7 @@ export interface RoleRow {
 
 export function getOwnProfile(accessToken: string, userId: string): Promise<ProfileRow[] | null> {
   return rest<ProfileRow[]>(
-    `/profiles?user_id=eq.${eu(userId)}&select=user_id,display_name,username,locale,theme,cover`,
+    `/profiles?user_id=eq.${eu(userId)}&select=user_id,display_name,username,locale,theme,cover,created_at`,
     accessToken,
   );
 }

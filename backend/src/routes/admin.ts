@@ -3,6 +3,27 @@ import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
+import {
+  readActivationFunnel,
+  readCohortRetention,
+  readConsentCoverage,
+  readDailyActivity,
+  readDailyUsers,
+  readEventExport,
+  readFamilyEngagement,
+  readFeatureAdoption,
+  readLearningVelocity,
+  readLessonDropoff,
+  readSegmentCalibration,
+  readEngagement,
+  readSessionDepth,
+  readTimeToValue,
+  toCsv,
+  DEVICES,
+  LOCALES,
+  RECORDABLE_EVENTS,
+  ROUTE_CLASSES,
+} from '../services/insights.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
   getExcludedIps,
@@ -19,6 +40,7 @@ import {
   umamiConfigured,
 } from '../services/pulse.js';
 import type { PlausibleFilter } from '../services/pulse.js';
+import { insertAuditLog } from '../services/supabaseRest.js';
 import {
   getAdminOverview,
   getCoachReport,
@@ -122,6 +144,63 @@ const EmailSummarySchema = z.object({
   total: z.number().int().min(0),
   statuses: z.record(z.string(), z.number().int().min(0)),
   templates: z.record(z.string(), z.number().int().min(0)),
+});
+
+const InsightsCalibrationQuerySchema = z.object({
+  minLearners: z.coerce.number().int().min(1).max(100).default(2),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+});
+
+const InsightsActivityQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(365).default(30),
+});
+
+const InsightsFamiliesQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(500).default(100),
+});
+
+const InsightsCohortQuerySchema = z.object({
+  weeks: z.coerce.number().int().min(1).max(52).default(12),
+});
+
+const InsightsLimitQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(500).default(50),
+});
+
+/*
+ * Session depth is a RECENT-sessions inspector. Its view is bounded to a
+ * rolling 90 days so the window prunes the scan rather than the output (see
+ * 0025 §5), and the parameter is clamped to match: accepting `days=365` and
+ * silently returning nothing older than 90 would be a contract this endpoint
+ * cannot honour. Long-range session volume is answered by
+ * insights_daily_users.sessions, which is rolled up daily and kept forever.
+ */
+const InsightsDepthQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(90).default(30),
+  limit: z.coerce.number().int().min(1).max(1000).default(500),
+});
+
+/*
+ * Export filters. Every dimension is an enum or a bounded number — an export
+ * endpoint is the one place a free-form filter string would become a SQL/
+ * PostgREST injection surface, so there are no free-form filters.
+ */
+const InsightsExportQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(365).default(30),
+  format: z.enum(['csv', 'json']).default('csv'),
+  role: z.enum(['anon', 'universal', 'parent', 'kid', 'bigfounder', 'admin', 'superadmin']).optional(),
+  event: z.enum(RECORDABLE_EVENTS).optional(),
+  routeClass: z.enum(ROUTE_CLASSES).optional(),
+  locale: z.enum(LOCALES).optional(),
+  device: z.enum(DEVICES).optional(),
+  limit: z.coerce.number().int().min(1).max(50_000).default(10_000),
+  // Paging exists so "export everything" is actually reachable: a 90-day
+  // window can exceed any single-response cap, and an analyst must be able to
+  // walk it rather than receive a silently clipped file.
+  offset: z.coerce.number().int().min(0).max(10_000_000).default(0),
+  // Continuation token: the salt from page 1, so session_ref stays stable
+  // across the pages of one logical export.
+  exportToken: z.string().regex(/^[0-9a-f]{64}$/).optional(),
 });
 
 const TimelineQuerySchema = z.object({
@@ -555,6 +634,159 @@ export function adminRouter(): Router {
     } catch {
       fail(res, 502, 'DATA_UNAVAILABLE', 'Email server unreachable');
     }
+  });
+
+  // ── Insights (first-party learning/usage telemetry, /INSIGHTS.md) ─────────
+  // Reads the 0023 SQL views via the service role. Aggregation happens in
+  // Postgres; these routes only validate, fetch, and envelope.
+
+  router.get('/insights/calibration', async (req, res) => {
+    const q = InsightsCalibrationQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'minLearners 1-100, limit 1-200');
+    const rows = await readSegmentCalibration({ minLearners: q.data.minLearners, limit: q.data.limit });
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Calibration view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/activity', async (req, res) => {
+    const q = InsightsActivityQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-365');
+    const [rows, users] = await Promise.all([
+      readDailyActivity(q.data.days),
+      readDailyUsers(q.data.days),
+    ]);
+    if (rows === null || users === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Activity view unreachable');
+    // `entries` carries the per-dimension breakdown; `users` carries the
+    // distinct counts. They are separate because distinct counts are not
+    // additive — summing `entries[].users` counts one learner once per
+    // dimension combination.
+    ok(res, { days: q.data.days, entries: rows, users });
+  });
+
+  router.get('/insights/cohorts', async (req, res) => {
+    const q = InsightsCohortQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'weeks 1-52');
+    const rows = await readCohortRetention(q.data.weeks);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Cohort view unreachable');
+    ok(res, { weeks: q.data.weeks, entries: rows });
+  });
+
+  router.get('/insights/funnel', async (_req, res) => {
+    const rows = await readActivationFunnel();
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Funnel view unreachable');
+    ok(res, { steps: rows });
+  });
+
+  router.get('/insights/velocity', async (req, res) => {
+    const q = InsightsLimitQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
+    const rows = await readLearningVelocity(q.data.limit);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Velocity view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/dropoff', async (req, res) => {
+    const q = InsightsLimitQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
+    const rows = await readLessonDropoff(q.data.limit);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Drop-off view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/adoption', async (_req, res) => {
+    const rows = await readFeatureAdoption();
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Adoption view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/sessions', async (req, res) => {
+    const q = InsightsDepthQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 1-90, limit 1-1000');
+    const rows = await readSessionDepth(q.data.days, q.data.limit);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Session view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  /*
+   * Filtered export for internal analysis. Deliberately carries NO user_id or
+   * anon_id (see readEventExport): a file leaves the platform's access
+   * controls, so it holds behaviour and dimensions, never an identifier that
+   * re-identifies a learner. Every export is written to the append-only audit
+   * log — who pulled what, when.
+   */
+  router.get('/insights/export', async (req, res) => {
+    const q = InsightsExportQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'Invalid export filters');
+    const out = await readEventExport({
+      sinceDays: q.data.days,
+      role: q.data.role,
+      event: q.data.event,
+      routeClass: q.data.routeClass,
+      locale: q.data.locale,
+      device: q.data.device,
+      limit: q.data.limit,
+      offset: q.data.offset,
+      token: q.data.exportToken,
+    });
+    if (out === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Export unavailable');
+
+    void insertAuditLog(authedUser(res).id, 'insights.export', 'learning_events', {
+      days: q.data.days, format: q.data.format, rows: out.rows.length,
+      offset: q.data.offset, truncated: out.truncated,
+      role: q.data.role ?? null, event: q.data.event ?? null,
+    });
+
+    /*
+     * Truncation is DECLARED, never silent. A clipped CSV is indistinguishable
+     * from a complete one once it is open in a spreadsheet, and a partial file
+     * read as the whole picture is how an analysis reaches a confident wrong
+     * conclusion. Headers carry it for both formats (a CSV body cannot hold
+     * metadata without breaking the grid) and the JSON envelope repeats it.
+     */
+    const nextOffset = q.data.offset + out.rows.length;
+    res.setHeader('X-LF-Export-Rows', String(out.rows.length));
+    res.setHeader('X-LF-Export-Token', out.token);
+    res.setHeader('X-LF-Export-Truncated', out.truncated ? 'true' : 'false');
+    if (out.truncated) res.setHeader('X-LF-Export-Next-Offset', String(nextOffset));
+
+    const stamp = new Date().toISOString().slice(0, 10);
+    const page = q.data.offset > 0 ? `-p${q.data.offset}` : '';
+    if (q.data.format === 'json') {
+      res.setHeader('Content-Disposition', `attachment; filename="lf-insights-${stamp}${page}.json"`);
+      return ok(res, {
+        rows: out.rows,
+        truncated: out.truncated,
+        nextOffset: out.truncated ? nextOffset : null,
+        exportToken: out.token,
+      });
+    }
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="lf-insights-${stamp}${page}.csv"`);
+    return res.status(200).send(toCsv(out.rows));
+  });
+
+  router.get('/insights/timetovalue', async (req, res) => {
+    const q = InsightsLimitQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
+    const rows = await readTimeToValue(q.data.limit);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Time-to-value view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/engagement', async (req, res) => {
+    const q = InsightsLimitQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
+    const rows = await readEngagement(q.data.limit);
+    if (rows === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Engagement view unreachable');
+    ok(res, { entries: rows });
+  });
+
+  router.get('/insights/families', async (req, res) => {
+    const q = InsightsFamiliesQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-500');
+    const [families, consent] = await Promise.all([readFamilyEngagement(q.data.limit), readConsentCoverage()]);
+    if (families === null || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
+    ok(res, { families, consent });
   });
 
   return router;

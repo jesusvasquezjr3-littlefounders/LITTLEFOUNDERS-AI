@@ -41,7 +41,7 @@ export function Landing() {
               {t('marketing.hero.subtitle')}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
-              <Link to={ctaTo}>
+              <Link to={ctaTo} data-cta="hero-primary">
                 <Button className="group">
                   {primaryCtaLabel}
                   <Icon
@@ -50,7 +50,7 @@ export function Landing() {
                   />
                 </Button>
               </Link>
-              <Link to="/how-it-works">
+              <Link to="/how-it-works" data-cta="hero-secondary">
                 <Button variant="secondary">
                   <Icon name="play_circle" />
                   {t('marketing.hero.ctaSecondary')}

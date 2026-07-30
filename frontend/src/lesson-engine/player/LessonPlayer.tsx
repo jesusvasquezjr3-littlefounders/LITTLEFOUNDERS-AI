@@ -4,6 +4,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
 import { Button, Icon, ProgressBar, LottieIcon } from '@/components/ui'
 import CharacterActor from '@/components/characters/control/CharacterActor'
@@ -29,6 +30,12 @@ import { formatDuration, useCountUp, type ServerCompletion } from './completion'
 export interface LessonPlayerProps {
   /** Client-safe document (answers stripped in production; the grader knows them). */
   document: LessonDocument
+  /**
+   * Vault id of the lesson. Only the route knows it (the document carries a
+   * slug, not an id), and insights_lesson_dropoff groups by lesson_id — so
+   * without threading it here, `completions` for every lesson is permanently 0.
+   */
+  lessonId?: string
   grader: Grader
   /** Echo's narration manifest for this locale (Core serves it with the document). Absent/empty = silent lesson. */
   audio?: AudioManifest | null
@@ -52,15 +59,15 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, grader, audio, onExit, onComplete }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, lessonId, grader, audio, onExit, onComplete }: LessonPlayerProps) {
   return (
     <NarrationProvider manifest={audio}>
-      <LessonPlayerInner document={doc} grader={grader} onExit={onExit} onComplete={onComplete} />
+      <LessonPlayerInner document={doc} lessonId={lessonId} grader={grader} onExit={onExit} onComplete={onComplete} />
     </NarrationProvider>
   )
 }
 
-function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
+function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
   const [state, dispatch] = useReducer(reducer, doc, initialSession)
@@ -97,6 +104,14 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
   // player must not also fire the prompt for them (it would talk over the
   // sequence, and the body/card audio would otherwise never play at all, B2/B3).
   // Segment changes are click-driven, so play() has activation.
+  // Insights: one row per exercise actually REACHED (/INSIGHTS.md). With
+  // segment_submit/retry this is the per-step funnel INSIDE a lesson — the
+  // finest-grained learning signal the platform has.
+  useEffect(() => {
+    if (state.phase !== 'playing' || !segment) return
+    trackInsight('segment_view', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
+  }, [state.phase, segment])
+
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
     if (getRegistryEntry(segment.type)?.kind === 'content') return
@@ -112,6 +127,23 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
       completedRef.current = true
       narration.stop()
       secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
+      // The results screen is reached on BOTH outcomes (hearts exhausted or a
+      // score below threshold also finish the run), so lesson_complete must be
+      // gated on actually passing — otherwise the activation funnel's last
+      // step counts failures as completions and reads higher than reality.
+      // results_view is unconditional: reaching the screen IS the event.
+      if (state.outcome === 'passed') {
+        trackInsight('lesson_complete', {
+          routeClass: 'learn',
+          lessonId,
+          value: lessonScore(doc, state),
+        })
+      }
+      trackInsight('results_view', {
+        routeClass: 'learn',
+        lessonId,
+        value: secondsSpentRef.current,
+      })
       const maybe = onComplete?.({
         score: lessonScore(doc, state),
         passed: state.outcome === 'passed',
@@ -140,6 +172,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
       dispatch({ type: 'SUBMIT' })
       setGradeError(false)
       try {
+        trackInsight('segment_submit', {
+          segmentId: segment.id.slice(0, 64),
+          routeClass: 'learn',
+          value: (segState?.attempts ?? 0) + 1,
+        })
         const v: Verdict = await grader.grade(segment.id, answer, {
           attempt_number: (segState?.attempts ?? 0) + 1,
           time_spent_seconds: Math.round((Date.now() - segStartRef.current) / 1000),
@@ -340,7 +377,10 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
             segIndex={state.index}
             reaction={reaction}
             done={Boolean(segState?.done)}
-            onRetry={() => dispatch({ type: 'RETRY' })}
+            onRetry={() => {
+              trackInsight('segment_retry', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
+              dispatch({ type: 'RETRY' })
+            }}
             onNext={handleNext}
           />
         ) : (
@@ -351,6 +391,11 @@ function LessonPlayerInner({ document: doc, grader, onExit, onComplete }: Omit<L
                   variant="secondary"
                   onClick={() => {
                     const hintIndex = segState?.hintsShown ?? 0
+                    trackInsight('hint_open', {
+                      segmentId: segment.id.slice(0, 64),
+                      routeClass: 'learn',
+                      value: hintIndex + 1,
+                    })
                     dispatch({ type: 'HINT', segmentId: segment.id })
                     react('hint', segment.narrator?.character)
                     playSfx('hint')
@@ -409,7 +454,12 @@ function NarrationReplayButton({ unitId }: { unitId: string }) {
   return (
     <button
       type="button"
-      onClick={() => narration.play(unitId)}
+      onClick={() => {
+        // A deliberate replay is an audio-engagement signal (/INSIGHTS.md).
+        // No-op for unconsented kids; segment_id is a content id, never text.
+        trackInsight('audio_replay', { segmentId: unitId.slice(0, 64), routeClass: 'learn' })
+        narration.play(unitId)
+      }}
       aria-label={t('lesson.audio.replay')}
       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-primary-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
     >
@@ -546,6 +596,18 @@ function FeedbackBanner({
     narration.play(explanationUnit)
     return () => narration.stop()
   }, [explanationAudible, explanationUnit, narration])
+
+  // The teaching moment itself (/INSIGHTS.md). value=1 when the learner also
+  // HEARD it, so "does narrated feedback change the retry outcome" becomes a
+  // question the data can answer.
+  useEffect(() => {
+    if (!teachingMd) return
+    trackInsight('explanation_view', {
+      segmentId: segment.id.slice(0, 64),
+      routeClass: 'learn',
+      value: explanationAudible ? 1 : 0,
+    })
+  }, [teachingMd, explanationAudible, segment.id])
 
   return (
     <div className={cn('lf-pop shadow-pop', tierStyles)} role="status">

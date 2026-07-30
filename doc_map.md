@@ -17,6 +17,8 @@
 | Repo-wide CI gates (docs sync, secrets, i18n parity — no path filter) | .github/workflows/repo-gates.yml | all |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
 | Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
+| First-party learning/usage telemetry, kid consent, /admin/insights | /INSIGHTS.md | all |
+| Insights rollup refresh + retention prune (nightly) | .github/workflows/insights-maintenance.yml + /INSIGHTS.md | §6 |
 | Auth email templates + language selector | frontend/public/email-templates/README.md | all |
 | Social login (Google OAuth) | backend/README.md ("Social login") · backend/AGENTS.md | — |
 | Architecture decisions & sprint | ROADMAP.md | all |

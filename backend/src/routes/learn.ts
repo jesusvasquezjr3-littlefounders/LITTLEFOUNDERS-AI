@@ -1,3 +1,9 @@
+import {
+  getRolesForGate,
+  hasActiveAnalyticsConsent,
+  insertLearningEvents,
+  stampRole,
+} from '../services/insights.js';
 import { Router } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
@@ -385,6 +391,40 @@ export function learnRouter(): Router {
       ...(passedNow ? { last_active_date: todayLocal } : {}),
     });
     if (!statsUpdated) return fail(res, 502, 'INTERNAL', 'Progress was saved, but learning stats could not be updated');
+
+    /*
+     * Retention signal, recorded SERVER-side because only the server knows
+     * whether the streak genuinely extended (it owns last_active_date and the
+     * date maths). value = the new streak length, so "how far do streaks
+     * actually get" is answerable without touching learning_stats.
+     * Fire-and-forget and consent-gated like every other kid event.
+     */
+    // Activation milestone: the FIRST lesson this learner ever passed. Only
+    // the server can assert it (it sees lessons_completed before the update),
+    // and it is the single most predictive early-retention event there is.
+    if (newlyPassed && stats.lessons_completed === 0) {
+      void (async () => {
+        const roles = await getRolesForGate(user.id);
+        if (!roles || roles.length === 0) return;
+        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
+        await insertLearningEvents([{
+          user_id: user.id, role: stampRole(roles), event: 'first_lesson_complete',
+          route_class: 'learn', lesson_id: lessonId,
+        }]);
+      })();
+    }
+
+    if (streakExtended) {
+      void (async () => {
+        const roles = await getRolesForGate(user.id);
+        if (!roles || roles.length === 0) return;
+        if (roles.includes('kid') && (await hasActiveAnalyticsConsent(user.id)) !== true) return;
+        await insertLearningEvents([{
+          user_id: user.id, role: stampRole(roles), event: 'streak_extend',
+          route_class: 'learn', value: newStreak,
+        }]);
+      })();
+    }
 
     // Re-fetch the tree so `progress`/`next_lesson_id` reflect the write above.
     const refreshedTree = await loadCourseTree(user.accessToken, user.id, ctx.course);

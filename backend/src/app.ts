@@ -5,6 +5,7 @@ import { globalRateLimiter } from './middleware/rateLimit.js';
 import { adminRouter } from './routes/admin.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
+import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
@@ -43,6 +44,10 @@ export function createApp(): express.Express {
   // Access-Control-Allow-Origin, so the browser discarded it and the user saw
   // an opaque network error instead of "slow down".
   app.use(cors);
+  // Telemetry sits ABOVE the global limiter with its own budget + json
+  // parser (events.ts): beacon traffic must not drain the per-IP pool that
+  // lessons and auth depend on, and a 429 here is invisible by design.
+  app.use('/api/v1/events', eventsRouter());
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '64kb' }));
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { trackInsight } from '@/lib/insights';
 import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
@@ -22,6 +23,10 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
 
 export function CoursePage() {
+  // Funnel step 4 (/INSIGHTS.md): the learner reached a course.
+  useEffect(() => {
+    trackInsight('course_open', { routeClass: 'learn' });
+  }, []);
   const { t, i18n } = useTranslation();
   const { courseSlug = '' } = useParams();
   const { getToken } = useAuth();

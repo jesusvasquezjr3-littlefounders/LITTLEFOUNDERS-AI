@@ -44,6 +44,16 @@
       "lessons": "Lecciones completadas",
       "streak": "Racha de días",
       "longestStreak": "Mejor racha"
+    },
+    "insightsConsent": {
+      "label": "Compartir datos de uso",
+      "hint": "Ayuda a mejorar las lecciones con señales de uso. Puedes desactivarlo cuando quieras."
     }
+  },
+  "cookies": {
+    "title": "Usamos cookies propias",
+    "body": "Una cookie propia nos ayuda a ver qué páginas y campañas traen gente a LittleFounders. Se queda en nuestro dominio — sin redes publicitarias ni rastreo entre sitios. Puedes rechazarla y no se guarda nada.",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
   }
 }

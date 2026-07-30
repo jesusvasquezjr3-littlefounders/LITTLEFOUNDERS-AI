@@ -12,12 +12,18 @@ import { ErrorBanner } from '@/routes/auth/ErrorBanner';
  * kids (Core re-checks guardian_links on every request) and opens each kid's
  * territory. Parent visibility is a product invariant (§1.9) — this is that
  * invariant becoming a surface.
+ *
+ * The usage-insights toggle per kid is the §1.9 parental consent gate made
+ * visible (/INSIGHTS.md): OFF means the kid's browser transmits no usage
+ * events at all and Core drops anything that slips through. Granting and
+ * revoking are both re-guarded server-side by the verified guardian link.
  */
 
 interface Kid {
   userId: string;
   displayName: string | null;
   username: string | null;
+  analyticsConsent: boolean;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; kids: Kid[] };
@@ -26,6 +32,7 @@ export function FamilyPage() {
   const { t } = useTranslation();
   const { getToken } = useAuth();
   const [state, setState] = useState<LoadState>({ status: 'loading' });
+  const [busyKid, setBusyKid] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,6 +47,23 @@ export function FamilyPage() {
       cancelled = true;
     };
   }, [getToken]);
+
+  async function toggleConsent(kid: Kid) {
+    if (state.status !== 'ready' || busyKid) return;
+    setBusyKid(kid.userId);
+    const token = await getToken();
+    const { data, error } = await api<{ kidId: string; analyticsConsent: boolean }>(
+      `/family/kids/${kid.userId}/analytics-consent`,
+      { method: kid.analyticsConsent ? 'DELETE' : 'POST', token },
+    );
+    setBusyKid(null);
+    if (error || !data) return; // the switch simply stays put — state is server truth
+    setState((prev) =>
+      prev.status === 'ready'
+        ? { ...prev, kids: prev.kids.map((k) => (k.userId === data.kidId ? { ...k, analyticsConsent: data.analyticsConsent } : k)) }
+        : prev,
+    );
+  }
 
   if (state.status === 'loading') return <LoadingOverlay label={t('family.loading')} />;
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
@@ -60,10 +84,10 @@ export function FamilyPage() {
       ) : (
         <ul className="flex flex-col gap-3">
           {state.kids.map((kid) => (
-            <li key={kid.userId}>
+            <li key={kid.userId} className="rounded-lg border border-outline/70 bg-surface shadow-glass-sm">
               <Link
                 to={`/family/${kid.userId}/territory`}
-                className="flex min-h-14 items-center gap-4 rounded-lg border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm transition-[border-color,transform] duration-150 hover:border-primary/60 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="flex min-h-14 items-center gap-4 rounded-t-lg px-4 py-3 transition-[background-color] duration-150 hover:bg-surface-sunken/50 active:translate-y-px focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft lf-title font-bold text-primary">
                   {(kid.displayName ?? kid.username ?? '?').charAt(0).toUpperCase()}
@@ -77,6 +101,30 @@ export function FamilyPage() {
                   {t('family.viewTerritory')}
                 </span>
               </Link>
+              <div className="flex items-center gap-3 border-t border-outline/50 px-4 py-2.5">
+                <Icon name="query_stats" className="shrink-0 text-[18px] text-content-faint" aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="lf-caption block text-content">{t('family.insightsConsent.label')}</span>
+                  <span className="lf-caption block text-content-faint">{t('family.insightsConsent.hint')}</span>
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={kid.analyticsConsent}
+                  aria-label={t('family.insightsConsent.label')}
+                  disabled={busyKid === kid.userId}
+                  onClick={() => void toggleConsent(kid)}
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-50 ${
+                    kid.analyticsConsent ? 'bg-primary' : 'bg-outline'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-[left] duration-150 ${
+                      kid.analyticsConsent ? 'left-[22px]' : 'left-0.5'
+                    }`}
+                  />
+                </button>
+              </div>
             </li>
           ))}
         </ul>

@@ -44,7 +44,9 @@ describe('GET /api/v1/family/kids', () => {
   it('lists only VERIFIED kids with whitelisted fields', async () => {
     const res = await auth(request(createApp()).get('/api/v1/family/kids'));
     expect(res.status).toBe(200);
-    expect(res.body.data.kids).toEqual([{ userId: KID_ID, displayName: 'Niño Test', username: 'ninotest' }]);
+    expect(res.body.data.kids).toEqual([
+      { userId: KID_ID, displayName: 'Niño Test', username: 'ninotest', analyticsConsent: false },
+    ]);
   });
 
   it('403s for a non-parent role', async () => {

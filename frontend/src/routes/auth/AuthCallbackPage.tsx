@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
+import { flushInsights, trackInsight } from '@/lib/insights';
 import { AuthShell } from './AuthShell';
 
 /*
@@ -38,9 +39,25 @@ export function AuthCallbackPage() {
       setFailed(true);
       return;
     }
-    void completeOAuth({ accessToken, refreshToken, expiresIn }).then((e) => {
-      if (e) setFailed(true);
-      else navigate(APP_HOME, { replace: true });
+    void completeOAuth({ accessToken, refreshToken, expiresIn }).then(({ error, newAccount }) => {
+      if (error) {
+        setFailed(true);
+        return;
+      }
+      /*
+       * Social sign-in is a funnel path like any other, and it was the only
+       * one that reported nothing. Google signups therefore never appeared as
+       * conversions, and — worse — the retention prune later deleted their
+       * anonymous visitor rows as non-converters, so the campaigns that
+       * produced them read as permanently zero-yield.
+       *
+       * `newAccount` comes from Core (the client cannot tell a first-ever
+       * Google sign-in from a returning one). The flush is immediate because
+       * the very next thing this component does is navigate away.
+       */
+      trackInsight(newAccount ? 'signup_complete' : 'login_complete', { routeClass: 'marketing' });
+      void flushInsights();
+      navigate(APP_HOME, { replace: true });
     });
   }, [completeOAuth, navigate]);
 
