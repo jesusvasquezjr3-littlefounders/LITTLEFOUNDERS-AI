@@ -26,7 +26,7 @@
 | **follow** | A user→user edge in `follows` ("sígueme en LittleFounders"). Self-managed via RLS; counts are public profile data. |
 | **avatar** | The user's DiceBear **Avataaars** option set (`avatars.options`), rendered locally as SVG. Never an uploaded photo — same rule for covers (token-gradient presets only). |
 | **block** | A one-directional `blocks` edge that (a) prevents new `follows` rows between the pair in either direction (DB-enforced, `is_blocked()`) and (b) hides both public profiles from each other (mutual 404 — never reveals who blocked whom). Blocking clears any existing follow edge both ways. |
-| **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, streak days. One row per user (auto-created at signup), system-written only; zero until the lesson/game engines exist. |
+| **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, `streak_days` + `longest_streak` (0013). One row per user (auto-created at signup), system-written only (no client INSERT/UPDATE policy). Lessons write all of them; **games write `xp_points`, `minutes_learned` and the streak columns but NEVER `lessons_completed`** — a game is not a lesson, and inflating that counter would corrupt course-progress reporting. |
 
 ## Services & codenames
 
@@ -37,7 +37,7 @@
 | `frontend/` | — | The SPA |
 | `coursegen/` | **Forge** | Course & lesson generation (DeepSeek + Qwen) |
 | `audiogen/` | **Echo** | Lesson TTS audio, per-locale voices |
-| `gamegen/` | **Arcade** | Personalized educational minigames |
+| `gamegen/` | **Arcade** | Game generation — `GameDocument` manifests that skin the 8 prebuilt deterministic mechanics (DeepSeek author + Qwen judge + Prism sprites). Documents are shared per-locale content, never per-child: §1.9 keeps kid data out of generation entirely |
 | `parent-id-check/` | **Guardian** | Identity verification service |
 | `email-server/` | **Courier** | Transactional email — Haraka SMTP engine relaying to Amazon SES (open-source Resend replacement) |
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
@@ -63,7 +63,7 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 
 ## Product sections
 
-`learn` (gamified courses) · `tutor` (live AI tutor) · `games` (concept-bound minigames) · `tasks` (parent-assigned, gamified rewards) · `profile` (DiceBear avatar + settings).
+`learn` (gamified courses) · `tutor` (live AI tutor) · `games` (concept-bound minigames — prebuilt mechanics skinned by generated manifests, /GAME_ENGINE.md) · `tasks` (parent-assigned, gamified rewards) · `profile` (DiceBear avatar + settings).
 
 ## Platform terms
 
@@ -101,3 +101,29 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **lesson-lab** | Dev-only harness at `/dev/lesson-lab`: plays every fixture and the full showcase through the real player with the local grader. |
 
 **Territory map** — the whole-course skill map at `/learn/:courseSlug/territory`: a pure projection of Core's course tree where every topic carries a DATA-DERIVED state (`not-started` / `in-progress` / `completed` / `review-due`). `review-due` comes from the spaced-review layer (`topics.review_of`, migration 0016): a completed topic flips while a review topic citing it has unpassed lessons. Locked adventures render as fog-of-war silhouettes. Never a second source of truth — it renders the same `/learn/courses/:slug/tree` payload as the caminito.
+
+## Game Engine terms (spec: /GAME_ENGINE.md)
+
+| Term | Definition |
+|---|---|
+| **Game Engine** | The frontend game runtime (`frontend/src/game-engine/`): the `GameDocument` contract, the 8 mechanic slices, the mechanic registry, the pure simulation/replay layer and the player. Same code-vs-data split as the Lesson Engine — behaviour is hand-written, only the manifest is generated. |
+| **game document** | One self-contained, single-locale game instance (`GameDocument`), stored per locale in `game_documents`. Arcade emits one per locale, like a **lesson document**. Data only: it skins and parameterizes a mechanic and can never introduce behaviour. |
+| **GameDocument manifest** | The manifest shape itself: `schema_version`, `meta`, `skin`, `config`, `content`, `scoring`, optional `adaptive`. Validated in two layers so mechanics stay code-split — `gameDocumentEnvelopeSchema` (mechanic-agnostic, `config` as `unknown`) then the mechanic's own `configSchema`/`contentSchema` plus the cross-field checks, via async `parseGameDocument()`. |
+| **mechanic** | One of the 8 closed, hand-written, deterministic game behaviours: `sorter, launcher, runner, stacker, autobattler, explorer, defender, flyer`. Mechanics are CODE and are never generated; the LLMs only author manifests that skin them. |
+| **mechanic slice** | The 5-file directory one mechanic owns (`game-engine/mechanics/<mechanic>/`): `schema.ts`, `simulate.ts`, `components.tsx`, `fixtures.ts`, `register.ts`. Zero cross-slice imports, so each mechanic is its own lazy chunk — the twin of an **exercise family** slice. `simulate.ts`/`schema.ts` import no React precisely so the server and gamegen can hold parity copies. |
+| **skin** | The `skin` block of a game document: `palette`, Prism `background_url`, the sprite-slot→URL map, and the closed `sfx`/`bgm` names. Purely presentational — a skin change can never alter the simulation or the score. |
+| **sprite slot** | A mechanic-declared string id (`<M>_SPRITE_SLOTS`) that `skin.sprites` maps to a Depot URL and that items/categories reference through `image_slot`. Validation rejects any `skin.sprites` key that is not a declared slot of that mechanic. Slot ids are container keys, never localized. |
+| **game palette** | One of the 6 closed skin palettes: `navy-papaya, forest-pear, ocean-blue, sunset-papaya, violet-night, sand-clay`. Each resolves to DESIGN.md tokens only — never raw hex. |
+| **interlude** | A between-rounds micro-exercise carried in `content.interludes` (≤4, kind `pick_one`, `true_false` or `tap_all`): the concept check that keeps a game a learning surface and not just play. Not a lesson **segment** and not scored by the lesson graders. |
+| **GameValidation sidecar** | The server-only block in `game_documents.validation` (`max_score`, `min_duration_seconds`, `max_events`, `item_values`). The Game Engine's twin of the lesson **answer key**: `stripValidation()` is the only sanctioned stripper (mirrored server-side), and `game_documents` runs RLS with **zero policies** because RLS is row-level, not column-level — any SELECT policy would expose this column. |
+| **input log** | The ordered `GameInputEvent[]` the client records during a play (integer `tick` + `action` + optional slot/coords/count). Sent once on completion, replayed in memory, then DISCARDED — never persisted. `game_attempts.stats` holds derived aggregates only. |
+| **replay validation** | How rewards are derived: Core re-runs the submitted input log through the same pure simulator at the same seed and computes the score itself. A client-reported score is never trusted. A log failing the checks (non-monotonic ticks, unknown action, over the event or tick cap) or a bound violation → 422 `RESULT_REJECTED`, no reward, logged. |
+| **simulator** | A mechanic's pure `Simulator` in `simulate.ts` — `init/step/snapshot/result` + bots — on a fixed 50ms integer tick (`TICK_MS`) with randomness only from the injected seeded PRNG. Must be bit-identical across browser V8 and Node, which is what makes replay validation possible: no `Date.now()`, no `Math.random()`, no input mutation, and none of the implementation-defined `Math` transcendentals (use `core/mathd.ts`). |
+| **bot gate** (winnability gate) | The free, deterministic `simulate` stage of the **Arcade pipeline**: headless bot play proving a generated document is actually beatable — the `perfect` bot MUST reach `scoring.pass_score`, the `random` bot MUST NOT, inside the tick budget. Failure feeds the bot trace back as corrective-retry feedback instead of shipping an unwinnable game. |
+| **cheer mode / arcade mode** (games) | The same pair defined for lessons in *Lesson Engine terms* above, expressed as `scoring.mode`: `cheer` = `lives: null`, no fail state (tier1 default); `arcade` = numbered lives. One vocabulary across both engines on purpose — a kid never meets two different meanings of "cheer mode". |
+| **game blueprint** | One planned game slot in the games catalog — mechanic, bound `topic_path`, tier, target minutes. The Arcade twin of a lesson **blueprint**. |
+| **games catalog** | `gamegen/curriculum/<course>/games.yaml` — the curated set of game blueprints for a course, Zod-validated by `npm run catalog:check`, which also does cross-catalog validation: every blueprint's `topic_path` must exist in `coursegen/curriculum/<course>/catalog.yaml`. |
+| **Arcade pipeline** | gamegen's generation run: `validate → plan → author → gate → simulate → judge → localize → illustrate → publish`. `gate` and `simulate` are deterministic and free; `plan/author/judge/localize/illustrate` are paid and sit behind `checkBudget()` and the `--dry-run` short-circuit. `illustrate` runs on the es-MX document BEFORE the localize string-freeze, so 1 sprite serves 3 locales. Run ids are namespaced `games-<courseSlug>-<ISO8601>` and runs carry `generation_runs.params.kind = 'games'`, so game runs never contaminate Forge's lesson cost/quality trends. Publishes at `status='review'` — never auto-published; the human gate is the admin content queue. |
+| **concept binding** | `meta.concept.topic_path` + `recap_md` — the DATA edge tying a game to the topic it reinforces. It gates access (a game stays `locked` until the user has passed a lesson in the bound topic, else 403 `GAME_LOCKED`) and drives the recap intro. Binding is data; no mechanic hardcodes a concept. |
+| **game progress** | `game_progress` — one row per (user, game): `best_score` high-water, `plays`, `passed` (sticky OR), `xp_earned` (max, so replays can't farm XP). System-written only through Core's service role; readable by the user and their verified guardians. |
+| **game-lab** | Dev-only harness at `/dev/game-lab` (twin of **lesson-lab**): plays every mechanic fixture through the real player and runs the bots locally. |

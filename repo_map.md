@@ -1484,7 +1484,7 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-11 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-07-30 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -1504,7 +1504,7 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-11 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-07-30 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -1595,6 +1595,26 @@ colors:
   base: "#ffffff"                 # page background
   surface: "#ffffff"              # cards, panels
   surface-sunken: "#f2f2f2"       # wells, segmented controls, pill tracks
+```
+
+### GAME_ENGINE.md
+
+```
+# GAME_ENGINE.md — The LittleFounders Game Engine Specification
+
+> **Authority:** Engine spec doc (level 6 in /AGENTS.md §1.1), sibling of /LESSON_ENGINE.md
+> and /COURSE_ENGINE.md. AUTHORITATIVE for the game document contract, the mechanic
+> taxonomy, the determinism/replay contract, reward derivation, the mechanic slice layout
+> and the Arcade generation pipeline's obligations toward all of it. `gamegen/` (Arcade)
+> MUST generate against this contract. On conflict with /AGENTS.md (== /CLAUDE.md),
+> ROADMAP.md, GLOSSARY.md or DESIGN.md, **those win and this file gets fixed** — never the
+> other way round.
+>
+> **Status:** v1 — specified and being implemented on branch `feat/game-engine`
+> (frontend `game-engine/`, Core `/api/v1/games`, Vault `0027`/`0028`, Arcade pipeline in
+> `gamegen/`). Nothing in this document is claimed as pre-existing: where it says MUST, it
+> is a requirement on the implementation landing in the same PR, not an observation.
+> **Last updated:** 2026-07-30 · Language: English (project rule).
 ```
 
 ### GLOSSARY.md
@@ -1726,7 +1746,7 @@ primary register.
 
 ## Architecture summary (locked 2026-07-11)
 
-Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen, **Guardian** parent-id-check, **Courier** email-server, **Data Intel** dataintel (added 2026-07-29 — DuckDB analytics warehouse: segmentation, forecasting, anomaly detection, experiments) — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
+Independent services (no npm workspaces): **Vault** (Supabase self-hosted on Railway), **Core** backend, frontend (Vercel), **Forge** coursegen, **Echo** audiogen, **Prism** picturegen (added 2026-07-23, owner-directed: the only image-generation path — art-director judge + Qwen `qwen-image` + Depot storage + Vault request-cache; Gemini discarded, quota-0), **Arcade** gamegen (approach resolved 2026-07-30: 8 hand-written deterministic game mechanics skinned per instance by generated JSON manifests — never generated game code; the Arcade pipeline authors the manifests and Core derives every reward by replaying the input log — `/GAME_ENGINE.md`), **Guardian** parent-id-check, **Courier** email-server, **Data Intel** dataintel (added 2026-07-29 — DuckDB analytics warehouse: segmentation, forecasting, anomaly detection, experiments) — all TypeScript + Express + Node 24 except Vault (SQL + tooling). Six roles, five product sections, 3 locales, light/dark. Full tables: /AGENTS.md §1.2–§1.5.
 
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
@@ -1784,17 +1804,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-07-30) — Adversarial re-review of the dataintel + insights commits: 24 confirmed defects, the whole warehouse pipeline was actually disconnected end-to-end
+## Current State (2026-07-30) — Game Engine: the `games/` section gets a real runtime (Phase 0 done, Phases 1–6 in flight, UNCOMMITTED on `feat/game-engine`)
 
-- **Why this pass happened.** The two prior sessions (2026-07-29, below) shipped `dataintel/` and the insights capture layer with their own internal adversarial sweeps (17+23 and separate rounds) and all gates green. A follow-up multi-agent review (8 independent dimensions — SQL injection, service lifecycle, analytics math, the §1.9 consent gate, frontend capture, backend API integrity, migration idempotency, docs accuracy — each finding adversarially re-verified by a second, skeptical agent) still surfaced 26 candidates, 24 confirmed, 2 refuted. Every mechanical gate (type-check/lint/test/build, docs:check/secrets:check/i18n:check) was already green going in — none of this was caught by CI, because the tests exercised dataintel's own DuckDB directly and never the real Postgres/PostgREST wiring or the actual math.
-- **Three compounding bugs meant the dataintel warehouse had zero real data and was unreachable from Core, despite 112/112 dataintel tests and a working build.** (1) `dataintel/src/db/sync.ts` filtered/ordered the incremental event pull by a column named `id`; the `dataintel_events_sync` view (0026) only ever exposed `event_id` — every sync tick failed and the cursor never advanced past 0. (2) The three dimension syncs (`users`/`lessons`/`sessions`) hit the raw Vault table names instead of the `dataintel_*_sync` views 0026 built for them — `users`/`sessions` don't exist as such and 404'd, and `lessons` succeeded against the WRONG shape (no `title_en`/`course_id`/`segment_count`, and the view's `WHERE status='published'` filter was bypassed, leaking drafts). (3) `backend/src/routes/admin.ts`'s `/api/v1/admin/intel/*` proxy built the forwarded path from `req.originalUrl` instead of the mount-relative `req.url`, so it never stripped the `/intel` prefix and doubled it — every one of the 40 dataintel endpoints 404'd through Core. All three fixed; a regression test for the proxy (and one for the sync column name) provably fails against the pre-fix code.
-- **The A/B experiment engine had its statistics backwards.** `normCDF()`'s final return branch was inverted (`1 - 0.5*y` where it needed `0.5 + 0.5*y`), so `pValue` was `1 - true_p` for every experiment — a t=2 result (real p≈0.045) reported p≈0.955 and "not significant." Separately, the `dau`/`users` metric's per-assigned-user query was already filtered to one `user_id`, so `COUNT(DISTINCT user_id)` was always exactly 1 — every such experiment had zero variance and always reported "no difference" regardless of the real gap. Both fixed with a regression test seeding real DuckDB data and proving the old code reported the wrong sign/verdict.
-- **Forecast/anomaly/churn all had metric-vs-column mismatches that either 502'd or reported the wrong number.** `forecastQuery`/`anomalyQuery` interpolated the raw `metric` query param as a SQL column name against a rollup that only ever computed `event_count`/`users` — 8 of the 9 documented metric values (including the default-looking `events`) threw a DuckDB "column not found," surfaced as an opaque 502; only `users` happened to match. Fixed via an explicit metric→column resolver, narrowed the `/anomalies` and `/forecast` Zod schemas to the four metrics the bucket rollup can actually answer (`events`/`dau`/`users`/`sessions`, 400 for the rest instead of a 502), and along the way found a second, pre-existing bug in the same query: the inner subquery's unaliased `created_at::DATE` doesn't auto-name itself `created_at` in DuckDB the way it would in Postgres, so the outer query's `day` column never resolved for ANY metric — this one had never worked. `anomalies.ts` also always reported `row.event_count` as `value` regardless of the requested metric; now reads the metric-generic column the query exposes. `churnRiskQuery`'s SQL `ORDER BY days_since_active DESC LIMIT $N` truncated the candidate set before `risk_score` (a 3-factor JS computation) was ever calculated, silently dropping the actually-highest-risk users when the true count exceeded the limit — the SQL LIMIT is gone, JS now scores every candidate, sorts, then slices; also floored the score at 0 (it was only clamped at 100).
-- **Two infra hardening gaps, one dead worker.** `dataintel`'s rate limiter and cache both trusted `cacheClient.isOpen`, which node-redis keeps `true` throughout an entire outage's reconnect-retry loop — a live Redis outage would hang every request instead of the documented fail-open behavior; both now race the Redis call against a 250ms timeout. The alert worker had no reentrancy guard (sync's had one); added, so a slow evaluation pass can't double-fire an alert past its own cooldown. The churn worker was an openly-documented (per the original DATAINTEL.md) empty 24h ticker "reserved for future caching" that was never built — removed rather than left as dead code masquerading as a live job; scoring is already answered live on every `/churn/risk` call.
-- **Two frontend gaps in the consent-gate wiring, not the consent policy itself.** `login()`/`signup()`/`completeOAuth()` persisted a new session and re-fetched `/auth/me` without first resetting `meLoaded`/`analyticsEnabled` to false — a same-tab identity switch (no intervening logout) could read the PREVIOUS identity's `analyticsEnabled` for the async gap until the new `/auth/me` answered. And the `signup_complete`/`login_complete` tracking call fired before `useInsightsBeacon`'s own effect had configured the beacon for the new identity, so the event sat in the pre-consent buffer and could be silently wiped if `analyticsEnabled` resolved false moments later (most likely right after a brand-new signup, before the role-assignment trigger's row is visible) — exactly the "Google signups never appear as conversions" class of bug the 2026-07-29 session believed it had fixed. `login`/`signup`/`completeOAuth` now resolve `analyticsEnabled` directly (not left to the next render), and `LoginPage`/`SignupPage`/`AuthCallbackPage` all call `configureInsights()` explicitly with that fresh value before tracking. No actual data was ever recorded incorrectly for a kid — the backend's independent per-batch consent recheck was always the backstop — but the frontend's own fail-closed claim wasn't structurally true before this.
-- **Docs brought back to 100%:** `INSIGHTS.md` §3's pipeline diagram (was frozen at 0023's original 3 views/3 routes; the real count is 14 views/tables and 12 routes), `DATAINTEL.md` (endpoint count "25+" → 40, matching its own §4 table; the removed churn worker; a new note on which four metrics `/anomalies`/`/forecast` actually support vs. the full nine `/metrics/compare` approximates), `backend/README.md` (8 of 12 insights routes plus the entire `/intel` proxy were undocumented), and a comment-accuracy fix in `0025_insights_scale.sql` (misattributed a view's origin to the wrong migration — no functional effect). `repo_map.md` regenerated — it had gone stale mid-session on 2026-07-29 (missing `DATAINTEL.md` and several `dataintel/` file previews) with no gate to catch it.
-- **Net: every fix has a regression test proven to fail against the pre-fix code** (stashed the file, re-ran, restored), following the same discipline as 2026-07-28c. Full gates re-run clean after all fixes: dataintel 127/127, backend 220/220, frontend 389/389; type-check/lint/build green in all three; root docs/secrets/i18n green.
-
+- **Status when this was written, stated plainly:** the branch `feat/game-engine` holds exactly one new file, the untracked `/GAME_ENGINE.md`. `frontend/src/game-engine/` does not exist yet, `database/migrations/` still ends at `0026_dataintel_sync.sql`, `gamegen/src/` is still only `app.ts` + `index.ts` + `__tests__`, `frontend/src/App.tsx:157` still serves `games` as `<SectionComingSoon>`, and there is no `games.json` i18n fragment. Nothing below is deployed and nothing below has been merged. Phase 0 is executed; Phases 1–6 are being implemented concurrently by the rest of this session.
+- **The 3-year-old OPEN decision is closed: prebuilt parameterized mechanics + generated JSON manifests.** `gamegen/AGENTS.md` had carried "Approach: OPEN — fully generated HTML5 sandboxed games vs parameterized prebuilt templates" since the v2 scaffold, which is why `games/` never got past a placeholder. Generated game *code* is rejected on three independently disqualifying grounds (`/GAME_ENGINE.md` §1): a novel program per instance is an unreviewable surface aimed at children and "sandboxed" is a containment claim, not a §1.9 safety claim; N generated engines means N feel/accessibility/§1.11-responsive/motion postures instead of one, and improving `runner` once must improve every `runner` game ever generated, retroactively; and generated code cannot be replayed, so it cannot be bot-tested for winnability before publish and cannot be trusted with XP.
+- **`/GAME_ENGINE.md` authored as the authoritative engine spec (level 6, the twin of `/LESSON_ENGINE.md`)** — 13 sections: the `GameDocument` contract (§3) and its server-only `GameValidation` sidecar, the CLOSED 8-mechanic taxonomy with each mechanic's `config` surface (§4), the determinism/replay contract (§5), the reward path (§6), slice anatomy + the lazy registry (§7), concept binding and gating (§8), the 9-stage Arcade pipeline (§9), motion/responsiveness (§10), §1.9 applied (§11), the extension protocol for mechanic #9 (§12), and open questions + deliberate deviations (§13). The document is written so a slice can be added without editing another slice, and so the pipeline, the lab and Core all target the same executable contract.
+- **The engine mirrors the Lesson Engine deliberately, down to the failure posture.** Hand-written mechanics (code) + generated manifest (data); `cheer` mode is the tier-1 default with no fail state and `arcade` mode ends at the RESULTS screen with a retry CTA, never a mid-game ejection — one product-wide failure posture rather than a per-surface invention. Games consolidate a concept a child already learned; they never teach one cold, and a game is locked until the bound topic has a passed lesson for that user.
+- **Rewards are server-derived by replay, not client-reported.** The client sends `{ run_id, seed, input_log, duration_seconds, local_date }` and no score at all; Core loads the full document plus the validation sidecar with the service role, re-runs the mechanic's simulator through the one shared `replayGame()` entry point, and derives score/stats itself — a log violation is `422 RESULT_REJECTED` with no reward. `backend/src/game-contract/` will be a parity copy of the pure simulation code with its own `contract:check`, exactly like the lesson graders. `learning_stats` writes are delta-only and **`lessons_completed` is never touched by a game** — incrementing it would corrupt course progress, the parent dashboard, the `lessons_completed === 0` first-lesson-ever assertion in `backend/src/routes/learn.ts`, and every `dataintel` funnel.
+- **Raw input logs are never persisted.** The log is replayed in memory and discarded; `game_attempts.stats` holds derived aggregates only. A tick-resolution behavioural trace of a child at play is precisely the data COPPA-minded minimalism says not to keep, and the reward does not need it.
+- **Audio is honestly incomplete and documented as such.** The manifest vocabulary for SFX/BGM is closed so generated content can only name known sounds, but the only audio assets that exist are the 9 files already in `frontend/public/sfx/`. New event names map to the closest honest existing file or resolve to no sound; a missing asset is a silent no-op, and every game must be fully playable and winnable with zero audio. Real game audio (ElevenLabs one-offs vs licensed loops) is an owner decision and the one pending owner action — game audio is not "done" and is not described as such anywhere.
+- **The paid generation run is out of scope by design.** Publish writes `status='review'`; the §1.9 human publish flip stays the single blocking gate, and an actual paid Arcade run needs the owner's go-ahead like every Forge run (`agent/core/BOUNDARIES.md`).
+- **Companion docs move in the same commit (§8 stewardship):** root `AGENTS.md`/`CLAUDE.md` §1.5 Arcade mission line (byte-identical, `docs:check`), `gamegen/AGENTS.md` (decision RESOLVED), `gamegen/README.md`, `GLOSSARY.md`, `doc_map.md`, `DESIGN.md` (Games hub + player recipes, the `GAME_PALETTES` enumeration, the canvas-vs-chrome rule, the game-canvas motion carve-out), `ROADMAP.md` (this decision + the 7-phase program) and this file. Those edits were in flight while this entry was written.
 ```
 
 ### agent/README.md
@@ -142868,18 +142888,18 @@ export default defineConfig({
 # AGENTS.md — gamegen (Arcade)
 
 > Domain rules for this service. Root rules: [/AGENTS.md](../AGENTS.md). Context: [agent/core/CONTEXT.md](../agent/core/CONTEXT.md).
+> **Engine spec (authoritative for the pipeline and for what Arcade generates):** [/GAME_ENGINE.md](../GAME_ENGINE.md) — §9 is this pipeline, §3–§5 are the contract it must satisfy.
 
 ## Mission
 
-Creates personalized educational minigames for users, bound to learn/ concepts. Internal service — `INTERNAL_API_KEY` only.
+Generates concept-bound educational minigames for `games/` using **DeepSeek (author) + Qwen (judge) + Prism (art)**. Two things live in this package:
 
-## Open decision
+1. An Express `/health` service (internal, reachable only with `INTERNAL_API_KEY` — currently just the health envelope; not yet called service-to-service by anything).
+2. **Arcade**, a CLI pipeline (`npm run generate`) that turns a curated game catalog into `GameDocument`s in Vault. Arcade is **operator-triggered only** — never run by CI or any automatic process (`/AGENTS.md` sign-off rule, `agent/core/BOUNDARIES.md` #8: calling paid AI APIs in bulk and publishing are both boundary actions).
 
-**Approach: OPEN** (tracked in ROADMAP.md) — fully generated HTML5 sandboxed games vs parameterized prebuilt templates. The scaffold is approach-neutral; don't commit to either without human sign-off (stack-of-record adjacent).
+**Implementation status (read this before believing anything below is code).** As of 2026-07-30 `gamegen/src` is a bare scaffold: `app.ts` (health envelope + `NOT_FOUND` catch-all) and `index.ts` (raw `process.env.PORT` read). Every pipeline rule in this file is a **requirement on the implementation landing on `feat/game-engine`**, not an observation of existing code. When a stage lands, its rule here stops being a requirement and starts being a description — do not blur the two.
 
-## Invariants that bite here
-
-- **Every game binds to a learn/ concept id** — orphan games don't exist (the link is data, not convention).
+## Approach decision — RESOLVED 2026-07-30
 ```
 
 ### gamegen/README.md
@@ -142887,19 +142907,19 @@ Creates personalized educational minigames for users, bound to learn/ concepts. 
 ```
 # gamegen (Arcade)
 
-> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
+> Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md). Engine spec: [/GAME_ENGINE.md](../GAME_ENGINE.md).
 
-**Mission:** Personalized educational minigame generation, bound to learn/ concepts.
+**Mission:** Concept-bound minigame generation for the `games/` section — DeepSeek authors a `GameDocument` manifest, Qwen judges it, Prism draws its sprites, Vault stores it — plus a minimal internal `/health` service.
 **Port (dev):** 4003 · **Deploy:** Railway · **Access:** internal only (`INTERNAL_API_KEY`)
 
 ```bash
 npm install
 cp .env.example .env
-npm run dev
+npm run dev        # Express /health service
 npm test
 ```
 
-## Routes
+> **What is shipped vs. planned.** This README describes the service **as it will be at the end of Phase 5** of the Game Engine build; the implementation lands across Phases 1–5 on branch `feat/game-engine`. Everything below is tagged: **[shipped]** = read out of this package's code/config today (2026-07-30); **[planned]** = the contract the implementation must satisfy, not yet code. Today `src/` is only `app.ts` (health + envelope 404) and `index.ts`.
 ```
 
 ### gamegen/eslint.config.js

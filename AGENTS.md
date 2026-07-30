@@ -2,7 +2,7 @@
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-11 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-07-30 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -97,7 +97,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `frontend/` | — | SPA with the 5 product sections | 5173 | Vercel |
 | `coursegen/` | Forge | Course & lesson generation pipeline (DeepSeek + Qwen) | 4001 | Railway |
 | `audiogen/` | Echo | Lesson TTS audio, per-locale voices | 4002 | Railway |
-| `gamegen/` | Arcade | Personalized minigames bound to learn/ concepts | 4003 | Railway |
+| `gamegen/` | Arcade | Concept-bound minigames: prebuilt deterministic mechanics skinned by generated per-locale manifests (shared content, never per-kid) | 4003 | Railway |
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
@@ -107,7 +107,7 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 
 Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract), `/COURSE_ENGINE.md` (content hierarchy + generation pipeline), and `/GAME_ENGINE.md` (game runtime + generation contract).
 
 ### §1.6 API conventions
 
@@ -196,6 +196,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `backend/AGENTS.md` | API routes, auth, middleware |
 | `frontend/AGENTS.md` | components, routes, i18n, theming |
 | `coursegen/AGENTS.md` · `audiogen/AGENTS.md` · `gamegen/AGENTS.md` | generation pipelines |
+| `gamegen/AGENTS.md` · `/GAME_ENGINE.md` | any `gamegen/` or game-engine work (mechanics, manifests, replay/reward path) |
 | `parent-id-check/AGENTS.md` | identity verification, PII handling |
 | `email-server/AGENTS.md` | email sending contract |
 | `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |
