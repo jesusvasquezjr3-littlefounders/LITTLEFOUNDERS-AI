@@ -16,8 +16,12 @@
 //      `backend/src/game-contract/mechanics/<id>/`, rewriting ONLY the import
 //      specifiers to NodeNext `.js` form;
 //   2. add the pair to `PAIRS` in `backend/scripts/game-contract-check.ts`;
-//   3. replace that mechanic's `null` below with the same object shape the two
-//      implemented rows use.
+//   3. add its row below with the same object shape every implemented row uses (a
+//      mechanic id declared in the closed set but not yet copied here sits at `null`
+//      until then — see FORWARD COMPATIBILITY).
+// As of this batch all eight declared mechanics are implemented, so no row is `null`;
+// `game-contract.test.ts` asserts that, because a `null` row silently fails every
+// reward for that mechanic in production.
 // Nothing else in Core changes: the route reads `getMechanic(game.mechanic)`.
 //
 // FORWARD COMPATIBILITY (non-negotiable, mirrors the frontend's `loadMechanic`).
@@ -53,6 +57,20 @@ import {
   DEFENDER_SPRITE_SLOTS,
 } from './mechanics/defender/schema.js'
 import { defenderSimulator } from './mechanics/defender/simulate.js'
+import {
+  autobattlerConfigSchema,
+  autobattlerContentSchema,
+  AUTOBATTLER_SPRITE_SLOTS,
+} from './mechanics/autobattler/schema.js'
+import { autobattlerSimulator } from './mechanics/autobattler/simulate.js'
+import {
+  explorerConfigSchema,
+  explorerContentSchema,
+  EXPLORER_SPRITE_SLOTS,
+} from './mechanics/explorer/schema.js'
+import { explorerSimulator } from './mechanics/explorer/simulate.js'
+import { flyerConfigSchema, flyerContentSchema, FLYER_SPRITE_SLOTS } from './mechanics/flyer/schema.js'
+import { flyerSimulator } from './mechanics/flyer/simulate.js'
 
 /**
  * Every declared mechanic, implemented or not. Typed over `MechanicId`, so adding a
@@ -87,15 +105,30 @@ export const GAME_MECHANICS: Record<MechanicId, MechanicSimSlice | null> = {
     simulator: stackerSimulator,
     spriteSlots: STACKER_SPRITE_SLOTS,
   },
-  autobattler: null,
-  explorer: null,
+  autobattler: {
+    configSchema: autobattlerConfigSchema,
+    contentSchema: autobattlerContentSchema,
+    simulator: autobattlerSimulator,
+    spriteSlots: AUTOBATTLER_SPRITE_SLOTS,
+  },
+  explorer: {
+    configSchema: explorerConfigSchema,
+    contentSchema: explorerContentSchema,
+    simulator: explorerSimulator,
+    spriteSlots: EXPLORER_SPRITE_SLOTS,
+  },
   defender: {
     configSchema: defenderConfigSchema,
     contentSchema: defenderContentSchema,
     simulator: defenderSimulator,
     spriteSlots: DEFENDER_SPRITE_SLOTS,
   },
-  flyer: null,
+  flyer: {
+    configSchema: flyerConfigSchema,
+    contentSchema: flyerContentSchema,
+    simulator: flyerSimulator,
+    spriteSlots: FLYER_SPRITE_SLOTS,
+  },
 }
 
 /** Narrows an arbitrary string (a `games.mechanic` column value) to a declared id. */

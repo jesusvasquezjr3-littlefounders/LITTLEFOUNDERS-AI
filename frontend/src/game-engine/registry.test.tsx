@@ -18,6 +18,14 @@
 // build claims to ship, so a row silently reverting to `null` (or a mechanic landing
 // with a slice nobody registered) fails loudly instead of quietly shrinking the
 // derived matrix to the mechanics that still work.
+//
+// Coverage is now FULL: all eight declared mechanics are wired, so IMPLEMENTED ===
+// MECHANIC_IDS and UNIMPLEMENTED is empty. The DEGRADATION suite is deliberately NOT
+// deleted along with the partial coverage it was written for — its live, reachable case
+// is an id outside MECHANIC_IDS entirely ('newthing'), which is precisely the mechanic-#9
+// scenario, and its UNIMPLEMENTED-driven cases re-arm themselves the moment a 9th id is
+// declared ahead of its slice. Those loops iterate an empty list today, so each one also
+// asserts that emptiness explicitly rather than passing silently on nothing.
 
 import { describe, expect, it } from 'vitest'
 
@@ -31,7 +39,16 @@ import { MECHANIC_LOADERS, MECHANIC_META, isMechanicId, loadMechanic } from './r
  * — never to make a red test green, since a row disappearing from MECHANIC_LOADERS is
  * exactly the regression this list exists to catch.
  */
-const WIRED: MechanicId[] = ['sorter', 'launcher', 'runner', 'stacker', 'defender']
+const WIRED: MechanicId[] = [
+  'sorter',
+  'launcher',
+  'runner',
+  'stacker',
+  'autobattler',
+  'explorer',
+  'defender',
+  'flyer',
+]
 
 const IMPLEMENTED: MechanicId[] = MECHANIC_IDS.filter((id) => MECHANIC_LOADERS[id] !== null)
 const UNIMPLEMENTED: MechanicId[] = MECHANIC_IDS.filter((id) => MECHANIC_LOADERS[id] === null)
@@ -63,13 +80,20 @@ describe('registry completeness', () => {
   it('MECHANIC_LOADERS has a row for every id, and exactly the wired ones resolve', () => {
     expect(Object.keys(MECHANIC_LOADERS).sort()).toEqual([...MECHANIC_IDS].sort())
     expect(IMPLEMENTED.sort()).toEqual([...WIRED].sort())
-    // Coverage is PARTIAL by design today: autobattler, explorer and flyer have no
-    // slice yet, and the degradation suite below is what keeps that safe. When the
-    // last three land, WIRED becomes all of MECHANIC_IDS and this becomes full
-    // coverage — the forward-compatibility suite is written to survive that.
     for (const id of UNIMPLEMENTED) {
       expect(WIRED, `${id} is unwired but listed as shipped`).not.toContain(id)
     }
+  })
+
+  it('ships EVERY declared mechanic — coverage is full, not partial', () => {
+    // The assertion this file was built to grow into. Every declared id resolves to a
+    // slice, so no published document can name a mechanic this build merely knows the
+    // name of. A future id added to MECHANIC_IDS fails HERE first, which is the intended
+    // signal: declare it, wire it, and only then does content start naming it.
+    expect(IMPLEMENTED.sort()).toEqual([...MECHANIC_IDS].sort())
+    expect(UNIMPLEMENTED).toEqual([])
+    expect(WIRED.sort()).toEqual([...MECHANIC_IDS].sort())
+    for (const id of MECHANIC_IDS) expect(MECHANIC_LOADERS[id], `loader for ${id}`).not.toBeNull()
   })
 
   it('isMechanicId accepts declared ids and rejects anything else', () => {
@@ -167,9 +191,14 @@ describe('implemented mechanics', () => {
 
 describe('forward compatibility', () => {
   it('returns null, never throwing, for a declared-but-unimplemented mechanic', async () => {
+    // Empty today (full coverage), so the emptiness is asserted rather than left as a
+    // silently-passing loop. The loop stays armed for the next id declared ahead of its
+    // slice: on that day this is the test that catches a throw before a blank screen
+    // reaches a child.
     for (const id of UNIMPLEMENTED) {
       await expect(loadMechanic(id)).resolves.toBeNull()
     }
+    expect(UNIMPLEMENTED).toEqual([])
   })
 
   it('returns null, never throwing, for an id this build has never heard of', async () => {
@@ -193,14 +222,19 @@ describe('forward compatibility', () => {
     expect(isUnsupportedMechanic(parsed.issues)).toBe(true)
   })
 
-  it.each(UNIMPLEMENTED)('parses a %s document to the unsupported reason', async (id) => {
+  it('parses a declared-but-unimplemented mechanic to the unsupported reason', async () => {
+    // A `for` loop rather than `it.each(UNIMPLEMENTED)`: the list is empty at full
+    // coverage, and an empty `each` table is a Vitest error, not a skipped case.
     const slice = await requireSlice('sorter')
     const fixture = slice.fixtures[0]
     if (fixture === undefined) throw new Error('sorter has no fixtures')
 
-    const parsed = await parseGameDocument({ ...fixture, meta: { ...fixture.meta, mechanic: id } })
-    expect(parsed.ok).toBe(false)
-    if (!parsed.ok) expect(isUnsupportedMechanic(parsed.issues)).toBe(true)
+    for (const id of UNIMPLEMENTED) {
+      const parsed = await parseGameDocument({ ...fixture, meta: { ...fixture.meta, mechanic: id } })
+      expect(parsed.ok, `${id} document parsed as supported`).toBe(false)
+      if (!parsed.ok) expect(isUnsupportedMechanic(parsed.issues)).toBe(true)
+    }
+    expect(UNIMPLEMENTED).toEqual([])
   })
 
   it.each(IMPLEMENTED)('reports a broken %s document as field issues', async (id) => {

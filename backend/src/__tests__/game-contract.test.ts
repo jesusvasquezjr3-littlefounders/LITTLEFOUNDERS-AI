@@ -46,8 +46,26 @@ import {
 } from '../game-contract/mechanics/defender/schema.js';
 import { defenderSimulator } from '../game-contract/mechanics/defender/simulate.js';
 import {
+  autobattlerConfigSchema,
+  autobattlerContentSchema,
+} from '../game-contract/mechanics/autobattler/schema.js';
+import { autobattlerSimulator } from '../game-contract/mechanics/autobattler/simulate.js';
+import {
+  explorerConfigSchema,
+  explorerContentSchema,
+} from '../game-contract/mechanics/explorer/schema.js';
+import { explorerSimulator } from '../game-contract/mechanics/explorer/simulate.js';
+import { flyerConfigSchema, flyerContentSchema } from '../game-contract/mechanics/flyer/schema.js';
+import { flyerSimulator } from '../game-contract/mechanics/flyer/simulate.js';
+import {
+  AUTOBATTLER_DOCUMENT,
+  AUTOBATTLER_MAX_TICKS,
   DEFENDER_DOCUMENT,
   DEFENDER_MAX_TICKS,
+  EXPLORER_DOCUMENT,
+  EXPLORER_MAX_TICKS,
+  FLYER_DOCUMENT,
+  FLYER_MAX_TICKS,
   LAUNCHER_DOCUMENT,
   LAUNCHER_MAX_TICKS,
   STACKER_DOCUMENT,
@@ -507,14 +525,23 @@ describe('game-contract — the synchronous registry', () => {
     expect(getMechanic('launcher')?.simulator).toBe(launcherSimulator);
     expect(getMechanic('stacker')?.simulator).toBe(stackerSimulator);
     expect(getMechanic('defender')?.simulator).toBe(defenderSimulator);
+    expect(getMechanic('autobattler')?.simulator).toBe(autobattlerSimulator);
+    expect(getMechanic('explorer')?.simulator).toBe(explorerSimulator);
+    expect(getMechanic('flyer')?.simulator).toBe(flyerSimulator);
   });
 
-  it('answers null — never throws — for an unknown or unimplemented mechanic', () => {
-    // `autobattler`, `explorer` and `flyer` are declared in the closed set but have no
-    // slice this release. A document naming one must degrade to a refusal, never a 500.
-    expect(getMechanic('autobattler')).toBeNull();
-    expect(getMechanic('explorer')).toBeNull();
-    expect(getMechanic('flyer')).toBeNull();
+  it('resolves EVERY declared mechanic — no reward path is missing its simulator', () => {
+    // The whole closed set is implemented as of this batch. A `null` row here would
+    // mean every attempt at that mechanic is refused in production, so assert the
+    // absence of holes directly rather than trusting the row-count check above.
+    for (const id of MECHANIC_IDS) {
+      expect(getMechanic(id), `mechanic "${id}" has no server-side simulator`).not.toBeNull();
+    }
+  });
+
+  it('answers null — never throws — for an unknown mechanic', () => {
+    // Forward compatibility: a document naming a mechanic this release does not know
+    // must degrade to a refusal the route turns into an envelope error, never a 500.
     expect(getMechanic('not-a-mechanic')).toBeNull();
     expect(isMechanicId('sorter')).toBe(true);
     expect(isMechanicId('not-a-mechanic')).toBe(false);
@@ -527,6 +554,9 @@ describe('game-contract — the synchronous registry', () => {
     expect(getMechanic('launcher')?.spriteSlots).toContain('projectile');
     expect(getMechanic('stacker')?.spriteSlots).toContain('piece_1');
     expect(getMechanic('defender')?.spriteSlots).toContain('tower_single');
+    expect(getMechanic('autobattler')?.spriteSlots).toContain('board');
+    expect(getMechanic('explorer')?.spriteSlots).toContain('map');
+    expect(getMechanic('flyer')?.spriteSlots).toContain('mount');
   });
 });
 
@@ -563,6 +593,30 @@ const LATER_MECHANICS = [
     maxTicks: DEFENDER_MAX_TICKS,
     configSchema: defenderConfigSchema,
     contentSchema: defenderContentSchema,
+  },
+  {
+    name: 'autobattler',
+    simulator: autobattlerSimulator,
+    document: AUTOBATTLER_DOCUMENT,
+    maxTicks: AUTOBATTLER_MAX_TICKS,
+    configSchema: autobattlerConfigSchema,
+    contentSchema: autobattlerContentSchema,
+  },
+  {
+    name: 'explorer',
+    simulator: explorerSimulator,
+    document: EXPLORER_DOCUMENT,
+    maxTicks: EXPLORER_MAX_TICKS,
+    configSchema: explorerConfigSchema,
+    contentSchema: explorerContentSchema,
+  },
+  {
+    name: 'flyer',
+    simulator: flyerSimulator,
+    document: FLYER_DOCUMENT,
+    maxTicks: FLYER_MAX_TICKS,
+    configSchema: flyerConfigSchema,
+    contentSchema: flyerContentSchema,
   },
 ] as const;
 
@@ -747,5 +801,97 @@ describe('game-contract — golden replay for the later mechanics', () => {
       ticks: 774,
     });
     expect(played.inputLog.length).toBe(8);
+  });
+
+  it('autobattler: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: autobattlerSimulator,
+      document: AUTOBATTLER_DOCUMENT,
+      seed: SEED,
+      bot: autobattlerSimulator.bots.perfect,
+      maxTicks: AUTOBATTLER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(100);
+    expect(played.result.stats).toEqual({
+      rounds_won: 6,
+      rounds_lost: 0,
+      health: 20,
+      gold: 29,
+      level: 3,
+      interest_earned: 15,
+      income_earned: 38,
+      streak_earned: 15,
+      gold_spent: 57,
+      refreshes: 10,
+      merges: 5,
+      items_equipped: 2,
+      units_owned: 7,
+      ticks: 723,
+    });
+    expect(played.inputLog.length).toBe(53);
+  });
+
+  it('explorer: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: explorerSimulator,
+      document: EXPLORER_DOCUMENT,
+      seed: SEED,
+      bot: explorerSimulator.bots.perfect,
+      maxTicks: EXPLORER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(100);
+    expect(played.result.stats).toEqual({
+      visited: 10,
+      nodes: 10,
+      exploration_pct: 100,
+      abilities: 3,
+      collectibles: 2,
+      locks_opened: 11,
+      currency: 90,
+      mastery: 4,
+      moves: 13,
+      uses: 4,
+      rests: 1,
+      actions: 26,
+      deaths: 0,
+      wrong: 0,
+      reached_goal: 1,
+      ticks: 52,
+    });
+    expect(played.inputLog.length).toBe(26);
+  });
+
+  it('flyer: a fixed seed produces exactly this score and these stats', () => {
+    const played = runBot({
+      simulator: flyerSimulator,
+      document: FLYER_DOCUMENT,
+      seed: SEED,
+      bot: flyerSimulator.bots.perfect,
+      maxTicks: FLYER_MAX_TICKS,
+    });
+    expect(played.result.score).toBe(84);
+    expect(played.result.stats).toEqual({
+      distance: 6003,
+      collected: 14,
+      missed: 0,
+      wrong: 1,
+      points: 200,
+      enemies_downed: 0,
+      enemy_points: 0,
+      slams: 0,
+      shots_fired: 0,
+      beam_ticks: 0,
+      hits: 0,
+      stalls: 0,
+      thermal_ticks: 0,
+      storm_ticks: 50,
+      energy_spent: 219,
+      energy_left: 102,
+      commands: 29,
+      combo_best: 10,
+      ticks: 537,
+      reached_target: 1,
+    });
+    expect(played.inputLog.length).toBe(29);
   });
 });

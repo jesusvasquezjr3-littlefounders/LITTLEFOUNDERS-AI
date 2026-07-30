@@ -85,12 +85,15 @@ export type MechanicLoader = () => Promise<MechanicSlice>
 
 /**
  * Loader table. `null` means "declared in MECHANIC_IDS, slice not written yet" — the
- * document layer and the player both treat it exactly like an unknown mechanic.
+ * document layer and the player both treat it exactly like an unknown mechanic. All
+ * eight declared mechanics are wired today, so no row is `null`; the type keeps the
+ * `null` arm because a 9th id is declared here (and starts shipping in CONTENT) before
+ * its slice exists, and that intermediate state must degrade rather than throw.
  *
- * HOW TO PLUG A NEW MECHANIC IN (the only change this file needs): replace that
- * mechanic's `null` with its loader, mirroring the implemented rows —
+ * HOW TO PLUG A NEW MECHANIC IN (the only change this file needs): add its row,
+ * mirroring the ones below —
  *
- *   flyer: () => import('./mechanics/flyer/register').then((m) => m.flyerSlice),
+ *   newthing: () => import('./mechanics/newthing/register').then((m) => m.newthingSlice),
  *
  * The path must stay a plain relative literal so the bundler can statically discover
  * the chunk, and the row must resolve to the slice VALUE (not the module namespace).
@@ -101,10 +104,10 @@ export const MECHANIC_LOADERS: Record<MechanicId, MechanicLoader | null> = {
   launcher: () => import('./mechanics/launcher/register').then((m) => m.launcherSlice),
   runner: () => import('./mechanics/runner/register').then((m) => m.runnerSlice),
   stacker: () => import('./mechanics/stacker/register').then((m) => m.stackerSlice),
-  autobattler: null,
-  explorer: null,
+  autobattler: () => import('./mechanics/autobattler/register').then((m) => m.autobattlerSlice),
+  explorer: () => import('./mechanics/explorer/register').then((m) => m.explorerSlice),
   defender: () => import('./mechanics/defender/register').then((m) => m.defenderSlice),
-  flyer: null,
+  flyer: () => import('./mechanics/flyer/register').then((m) => m.flyerSlice),
 }
 
 /** Narrows an arbitrary string (a document's `meta.mechanic`) to a declared id. */

@@ -50,7 +50,10 @@ backend/
     game-contract/
       core/
       mechanics/
+        autobattler/
         defender/
+        explorer/
+        flyer/
         launcher/
         runner/
         sorter/
@@ -703,7 +706,10 @@ frontend/
       core/
       lab/
       mechanics/
+        autobattler/
         defender/
+        explorer/
+        flyer/
         launcher/
         runner/
         sorter/
@@ -3659,8 +3665,9 @@ import { COURSE_SLUG, LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 ### backend/src/__tests__/gameContractFixtures.ts
 
 ```
-// Inline game documents for the three mechanics added after the first parity batch
-// (launcher, stacker, defender) — the data half of `game-contract.test.ts`.
+// Inline game documents for the mechanics added after the first parity batch
+// (launcher, stacker, defender, then autobattler, explorer, flyer) — the data half of
+// `game-contract.test.ts`.
 //
 // WHY THEY LIVE HERE AND NOT IN THE TEST FILE. `game-contract.test.ts` already carries
 // the sorter and runner documents inline; three more full manifests would bury the
@@ -3673,7 +3680,6 @@ import { COURSE_SLUG, LESSON_1_ID, TOPIC_ID, makeDb } from './learnFixtures.js';
 // would misrepresent what Core can actually reach at runtime. The config/content
 // VALUES of each mechanic's first published fixture are transcribed instead, and they
 // satisfy the PRODUCTION schemas unmodified — §1.14 forbids a relaxed schema for a
-// fixture, and `game-contract.test.ts` asserts the parse of each one explicitly.
 ```
 
 ### backend/src/__tests__/games.test.ts
@@ -4074,6 +4080,46 @@ import {
 // Original header follows.
 ```
 
+### backend/src/game-contract/mechanics/autobattler/schema.ts
+
+```
+// `autobattler` — the config + content contract (GAME_ENGINE.md §4 row `autobattler`, §7).
+//
+// THE POINT OF THIS FILE: the owner's report specifies a shop, a draft, star merging,
+// a synergy matrix, an adjacency rule, an inter-round economy with interest, a player
+// health table, AI opponent personalities with a calibrated error rate, and PvE camps
+// that drop combinable items. v1 would have hardcoded every one of those numbers inside
+// one game component. Here they are ALL manifest fields: `simulate.ts` and
+// `components.tsx` read every threshold, cost, multiplier and weight from `config`, and
+// every label from `content`. A second auto-battler is a second JSON file.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+//
+// DEFERRED, NOT DROPPED (GAME_ENGINE.md §13): the report's CROSS-RUN meta-progression
+// (unlockable units, cosmetics, voluntary handicaps that persist between runs) is
+```
+
+### backend/src/game-contract/mechanics/autobattler/simulate.ts
+
+```
+// `autobattler` — the PURE simulator (GAME_ENGINE.md §5, §4 row `autobattler`).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental.
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts, seeded from the run.
+//
+// THE TICK MAPPING. The owner's report specifies a 0.5s combat tick. The engine's fixed
+// tick is 50ms (`TICK_MS`), so ONE COMBAT TICK IS EXACTLY 10 ENGINE TICKS — and it is
+// implemented as the integer counter `combatSubTick` counting up to
+// `config.combat.engine_ticks_per_combat_tick`, never as a float accumulator. The ratio
+// is config so a document can slow a battle down for tier 1, but it is always integer.
+//
+// TWO v1 BUGS ARE STRUCTURALLY EXCLUDED, and both cost a comment:
+//  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
+```
+
 ### backend/src/game-contract/mechanics/defender/schema.ts
 
 ```
@@ -4112,6 +4158,86 @@ import {
 //
 // The two v1 bugs the brief calls out are structurally excluded, and both earn a
 // comment because both were expensive:
+```
+
+### backend/src/game-contract/mechanics/explorer/schema.ts
+
+```
+// `explorer` — the config + content contract (GAME_ENGINE.md §4 row `explorer`, §7).
+//
+// THE POINT OF THIS FILE: every number that shapes this mechanic's difficulty,
+// economy, physics-of-progression and scoring is a MANIFEST field. Connectivity
+// ratios, the hard/soft/compound/temporal lock mix, ability tiers and their energy /
+// cooldown costs, the fragment-upgrade depth, the hidden-content share, the soft
+// currency lost on death and recovered at the death site, the exploration-percentage
+// ending and every scoring weight live in `config`; every label, node, edge, lock,
+// ability and micro-challenge lives in `content`. A new explorer game is a new JSON
+// document, never new code.
+//
+// WHERE THE LINE BETWEEN config AND content FALLS, and why it is not arbitrary: the
+// Arcade pipeline's `localize` stage skips the WHOLE `config` container (GAME_ENGINE.md
+// §9), so anything carrying a user-visible string MUST live in `content`. That is why
+// the world graph — whose nodes and locks carry `label_md` / `hint_md` — is content,
+```
+
+### backend/src/game-contract/mechanics/explorer/simulate.ts
+
+```
+// `explorer` — the PURE simulator + the world SOLVER (GAME_ENGINE.md §5, §13).
+//
+// THIS IS NOT A PLATFORMER, and nobody may later mistake it for one. The owner's report
+// describes a metroidvania; what makes that mechanic a mechanic is the ABILITY-LOCK
+// structure — explore, meet a lock, go find the ability elsewhere, come back, open it —
+// and that structure is preserved here in full. Its incidental real-time platforming is
+// deliberately dropped (GAME_ENGINE.md §13): a physics platformer needs a control scheme
+// that only works with a keyboard (/CLAUDE.md §1.11 forbids that), and per-frame
+// character physics widens the replay-divergence surface for zero pedagogical gain. So
+// this mechanic is GRAPH TRAVERSAL plus per-node MICRO-CHALLENGES: deterministic,
+// replayable, and honest on a touch device.
+//
+// THE LEARNING BINDING, which is why this mechanic exists at all:
+//  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
+//    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### backend/src/game-contract/mechanics/flyer/schema.ts
+
+```
+// Flyer — Zod config + content schemas (GAME_ENGINE.md §4 row `flyer`, §7, §13).
+//
+// DELIBERATELY 2.5D, NOT THE REPORT'S 6DoF (owner-approved, recorded in
+// /GAME_ENGINE.md §13). Forward motion is a tick advance the player does not steer;
+// what the player DOES steer is pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. Three reasons, restated here because a later reader of this
+// file will not have the spec open:
+//   1. INPUT. A touch screen has no throttle, no rudder and no six-axis stick, and
+//      /CLAUDE.md §1.11 forbids a control scheme that only works on a desktop.
+//   2. COGNITIVE LOAD. For a 6–12 year old a full flight model IS the game, and the
+//      money concept the lesson taught becomes decoration.
+//   3. DETERMINISTIC REPLAY BUDGET. §5 bans the transcendentals a full orientation
+//      model wants; 6DoF would mean a large rotation surface in `core/mathd.ts` and a
+//      much wider replay-divergence risk on the reward path.
+// Full 6DoF stays possible later BEHIND THIS SAME MANIFEST — it would be optional
+```
+
+### backend/src/game-contract/mechanics/flyer/simulate.ts
+
+```
+// Flyer — the PURE simulator (GAME_ENGINE.md §5, §13; brief §4).
+//
+// DELIBERATELY 2.5D, NOT 6DoF (owner-approved, /GAME_ENGINE.md §13). Forward motion is
+// a tick advance; the player steers pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. The three reasons, restated so this file stands alone:
+// touch-first input on a phone cannot honestly express six degrees of freedom and
+// §1.11 forbids a desktop-only control scheme; a full flight model overwhelms a 6–12
+// year old and turns the money concept into decoration; and a deterministic replay
+// budget is far easier to guarantee in 2.5D, since §5 bans exactly the transcendentals
+// a full orientation model wants. Full 6DoF stays possible later behind this same
+// manifest. The flight fantasy is NOT dropped — mount, energy, thermals, storms,
+// armament and aerial enemies are all simulated here.
+//
+// PURITY. No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of
+// the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
 ```
 
 ### backend/src/game-contract/mechanics/launcher/schema.ts
@@ -139899,6 +140025,126 @@ import type { CharacterId } from '@/components/characters/control/types'
 //                board.
 ```
 
+### frontend/src/game-engine/mechanics/autobattler/autobattler.test.ts
+
+```
+// `autobattler` — the four regression classes GAME_ENGINE.md requires of a mechanic:
+// determinism, the winnability gate, schema bounds, and the mechanic's own rules.
+//
+// This mechanic is the engine's strongest determinism test on purpose: the player only
+// acts during PREPARATION, so the input log is EMPTY for every combat tick and the whole
+// battle outcome has to fall out of the seed and the board alone.
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+import { createRng } from '@/game-engine/core/rng'
+import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+
+import { autobattlerFixtures } from './fixtures'
+import {
+  AUTOBATTLER_SPRITE_SLOTS,
+  autobattlerConfigSchema,
+```
+
+### frontend/src/game-engine/mechanics/autobattler/components.tsx
+
+```
+// `autobattler` — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React.
+//
+// THE LESSON IS ON SCREEN. The report binds this mechanic to the shop economy, so the
+// economy strip is not decoration: gold, next income, the interest the player would
+// collect RIGHT NOW and the cap it stops at are all visible before every decision, and
+// `content.tips.interest_md` states the rule in the document's own words. A child who
+// cannot see the rule cannot be learning it.
+//
+// INPUT (/CLAUDE.md §1.11). Every board square is BOTH a `data-dropzone` (so a bench
+// unit can be dragged onto it, via core/input.ts) and a real `<button>` (so it can be
+// tapped, and so keyboard and screen readers get it for free). Tap is the guaranteed
+```
+
+### frontend/src/game-engine/mechanics/autobattler/fixtures.ts
+
+```
+// `autobattler` fixtures — two complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// They are not demo scaffolding. They are the reference answer to "what does a
+// well-tuned auto-battler document look like", they are what `/dev/game-lab` loads, and
+// `autobattler.test.ts` asserts that the PERFECT bot reaches `pass_score` on each one
+// while the RANDOM bot does not — the same §9 winnability gate the Arcade pipeline runs
+// before a generated document may be published.
+//
+// Deliberately different: a tier-2 CHEER manifest (5 rounds, one trait tier, no crits,
+// no fail state) and a tier-3 ARCADE manifest (7 rounds, three stars, crits, a stricter
+// adjacency rule, three lives).
+//
+// THE CONCEPT IN BOTH IS THE SHOP ECONOMY: income, saving, interest with a CAP, and the
+// decision to spend now or bank for a stronger round later. `score_weights.interest`
+// makes that decision worth score, `content.tips.interest_md` makes the rule visible on
+```
+
+### frontend/src/game-engine/mechanics/autobattler/register.ts
+
+```
+// Autobattler — the slice (GAME_ENGINE.md §7).
+//
+// This is the ONLY module the registry's lazy `import()` reaches for, so it is also the
+// only place in the slice that pulls the React view in. `schema.ts` and `simulate.ts`
+// stay React-free on purpose: `backend/src/game-contract/` and `gamegen/src/contract/`
+// build their SYNCHRONOUS `MechanicSimSlice` registry out of exactly those two files,
+// and a React import there would break the parity copy.
+//
+// Zero cross-slice imports: everything below comes from `core/*` or from this directory.
+
+import type { MechanicSlice, Simulator } from '@/game-engine/core/types'
+
+import { AutobattlerView } from './components'
+import { autobattlerFixtures } from './fixtures'
+import {
+```
+
+### frontend/src/game-engine/mechanics/autobattler/schema.ts
+
+```
+// `autobattler` — the config + content contract (GAME_ENGINE.md §4 row `autobattler`, §7).
+//
+// THE POINT OF THIS FILE: the owner's report specifies a shop, a draft, star merging,
+// a synergy matrix, an adjacency rule, an inter-round economy with interest, a player
+// health table, AI opponent personalities with a calibrated error rate, and PvE camps
+// that drop combinable items. v1 would have hardcoded every one of those numbers inside
+// one game component. Here they are ALL manifest fields: `simulate.ts` and
+// `components.tsx` read every threshold, cost, multiplier and weight from `config`, and
+// every label from `content`. A second auto-battler is a second JSON file.
+//
+// Zod only, no React: `backend/src/game-contract/` and `gamegen/src/contract/` carry
+// this module verbatim next to `simulate.ts` into their synchronous registry.
+//
+// DEFERRED, NOT DROPPED (GAME_ENGINE.md §13): the report's CROSS-RUN meta-progression
+// (unlockable units, cosmetics, voluntary handicaps that persist between runs) is
+```
+
+### frontend/src/game-engine/mechanics/autobattler/simulate.ts
+
+```
+// `autobattler` — the PURE simulator (GAME_ENGINE.md §5, §4 row `autobattler`).
+//
+// No React, no DOM, no `Date.now()`, no `Math.random()`, no `%`, no transcendental.
+// Core re-runs this exact code over the player's input log to derive the reward, so
+// every operation here is one the ECMAScript spec pins to the last bit. Randomness
+// comes only from core/rng.ts, seeded from the run.
+//
+// THE TICK MAPPING. The owner's report specifies a 0.5s combat tick. The engine's fixed
+// tick is 50ms (`TICK_MS`), so ONE COMBAT TICK IS EXACTLY 10 ENGINE TICKS — and it is
+// implemented as the integer counter `combatSubTick` counting up to
+// `config.combat.engine_ticks_per_combat_tick`, never as a float accumulator. The ratio
+// is config so a document can slow a battle down for tier 1, but it is always integer.
+//
+// TWO v1 BUGS ARE STRUCTURALLY EXCLUDED, and both cost a comment:
+//  - PER-ENTITY TIMERS. Every fighter carries its OWN `cooldown` and its OWN `mana`.
+```
+
 ### frontend/src/game-engine/mechanics/defender/components.tsx
 
 ```
@@ -140017,6 +140263,246 @@ import { DEFENDER_SPRITE_SLOTS, defenderConfigSchema, defenderContentSchema } fr
 //
 // The two v1 bugs the brief calls out are structurally excluded, and both earn a
 // comment because both were expensive:
+```
+
+### frontend/src/game-engine/mechanics/explorer/components.tsx
+
+```
+// `explorer` — the renderer (GAME_ENGINE.md §7, §10; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React.
+//
+// Four rules it exists to obey:
+//  - TAP IS THE GUARANTEED PATH. Selecting an ability and tapping a lock is the primary
+//    interaction; dragging the ability chip onto the lock is PROGRESSIVE ENHANCEMENT over
+//    it (core/input.ts). Mobile has no hover and a touch drag is not available to every
+//    child, so a drag-only affordance would be a bug (/CLAUDE.md §1.11).
+//  - THE MAP SCALES THROUGH core/stage.ts, in stable DESIGN coordinates, so 375px and
+//    1280px are the same map at two sizes rather than two layouts. Mobile stacks the map
+//    over the control panel; desktop puts the panel in the freed width beside it.
+//  - SIGNPOSTING IS COLOUR + SHAPE + SOUND (the report's triad, config-driven). Colour
+```
+
+### frontend/src/game-engine/mechanics/explorer/explorer.test.ts
+
+```
+// `explorer` — the regression classes GAME_ENGINE.md requires of a mechanic:
+// determinism, the winnability gate, schema bounds, the mechanic's own rules, and — the
+// one that matters most for THIS mechanic — the reachability solver that proves a world
+// is completable and rejects one that is not.
+
+import { createElement } from 'react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { vi } from 'vitest'
+
+import { replayGame, runBot } from '@/game-engine/core/replay'
+import type { GameDocument, GameInputEvent, SimInit, SimSnapshot } from '@/game-engine/core/types'
+
+import { ExplorerView } from './components'
+import { explorerFixtures } from './fixtures'
+import {
+```
+
+### frontend/src/game-engine/mechanics/explorer/fixtures.ts
+
+```
+// `explorer` fixtures — two complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// They are not demo scaffolding. They are the reference answer to "what does a
+// well-tuned explorer world look like", they are what `/dev/game-lab` loads, and
+// `explorer.test.ts` asserts on each one that the world SOLVER proves it completable,
+// that the PERFECT bot reaches `pass_score`, and that the RANDOM bot does not — the same
+// §9 winnability gate the Arcade pipeline runs before a generated document is published.
+//
+// Deliberately different difficulty settings:
+//  1. a tier-1 CHEER world — ten nodes, four locks (hard / soft / temporal), free
+//     movement, no fail state, hidden content drawn faintly rather than truly hidden;
+//  2. a tier-3 ARCADE world — fourteen nodes, eight locks including a COMPOUND tier-2
+//     lock fed by fragment upgrades and a SEQUENCE (combination) lock, a shop purchase,
+//     an energy price on every ability and on every step, three lives.
+//
+```
+
+### frontend/src/game-engine/mechanics/explorer/register.ts
+
+```
+// `explorer` — the slice (GAME_ENGINE.md §7).
+//
+// The ONLY module the registry imports, and the reason each mechanic is its own lazy
+// chunk: `MECHANIC_LOADERS.explorer` dynamic-imports this file, so loading the hub loads
+// no mechanic code at all.
+//
+// It composes and adds nothing. Schema, simulator, view and fixtures each own their
+// rules; a decision that lived here would be a decision the backend parity copy — which
+// builds `MechanicSimSlice` from schema.ts + simulate.ts alone — could not see.
+
+import type { MechanicSlice } from '@/game-engine/core/types'
+
+import { ExplorerView } from './components'
+import { explorerFixtures } from './fixtures'
+import { EXPLORER_SPRITE_SLOTS, explorerConfigSchema, explorerContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/explorer/schema.ts
+
+```
+// `explorer` — the config + content contract (GAME_ENGINE.md §4 row `explorer`, §7).
+//
+// THE POINT OF THIS FILE: every number that shapes this mechanic's difficulty,
+// economy, physics-of-progression and scoring is a MANIFEST field. Connectivity
+// ratios, the hard/soft/compound/temporal lock mix, ability tiers and their energy /
+// cooldown costs, the fragment-upgrade depth, the hidden-content share, the soft
+// currency lost on death and recovered at the death site, the exploration-percentage
+// ending and every scoring weight live in `config`; every label, node, edge, lock,
+// ability and micro-challenge lives in `content`. A new explorer game is a new JSON
+// document, never new code.
+//
+// WHERE THE LINE BETWEEN config AND content FALLS, and why it is not arbitrary: the
+// Arcade pipeline's `localize` stage skips the WHOLE `config` container (GAME_ENGINE.md
+// §9), so anything carrying a user-visible string MUST live in `content`. That is why
+// the world graph — whose nodes and locks carry `label_md` / `hint_md` — is content,
+```
+
+### frontend/src/game-engine/mechanics/explorer/simulate.ts
+
+```
+// `explorer` — the PURE simulator + the world SOLVER (GAME_ENGINE.md §5, §13).
+//
+// THIS IS NOT A PLATFORMER, and nobody may later mistake it for one. The owner's report
+// describes a metroidvania; what makes that mechanic a mechanic is the ABILITY-LOCK
+// structure — explore, meet a lock, go find the ability elsewhere, come back, open it —
+// and that structure is preserved here in full. Its incidental real-time platforming is
+// deliberately dropped (GAME_ENGINE.md §13): a physics platformer needs a control scheme
+// that only works with a keyboard (/CLAUDE.md §1.11 forbids that), and per-frame
+// character physics widens the replay-divergence surface for zero pedagogical gain. So
+// this mechanic is GRAPH TRAVERSAL plus per-node MICRO-CHALLENGES: deterministic,
+// replayable, and honest on a touch device.
+//
+// THE LEARNING BINDING, which is why this mechanic exists at all:
+//  - abilities and locks are KNOWLEDGE and PREREQUISITES. The map is literally a
+//    concept-dependency graph the child walks: you cannot cross the "compare prices"
+```
+
+### frontend/src/game-engine/mechanics/flyer/components.tsx
+
+```
+// Flyer — the renderer (GAME_ENGINE.md §7, §10, §13; /DESIGN.md "Game visuals").
+//
+// A RENDERER, not a simulator: it reads `state`/`snapshot` and calls `emit`. It never
+// scores, never advances a tick and never reads the wall clock — that split is what lets
+// Core replay the same mechanic without React.
+//
+// The mechanic is DELIBERATELY 2.5D (owner-approved, /GAME_ENGINE.md §13): the mount
+// holds a fixed x while the sky scrolls, the player steers pitch (climb/dive) and an
+// optional lane-like yaw, and lanes are drawn as a parallax depth offset rather than as
+// a third simulated axis. A touch screen has no throttle or rudder, a 6DoF model would
+// bury the money concept for a 6–12 year old, and 2.5D keeps the deterministic replay
+// budget small. None of that costs the flight fantasy: energy, thermals, storms, the
+// beam, projectiles and aerial enemies are all on screen.
+//
+// Canvas-vs-chrome (/DESIGN.md, NON-NEGOTIABLE): inside the stage rectangle we draw
+```
+
+### frontend/src/game-engine/mechanics/flyer/fixtures.ts
+
+```
+// Flyer — complete, PLAYABLE es-MX manifests (GAME_ENGINE.md §7).
+//
+// These are not test stubs: each one satisfies the PRODUCTION schemas (§1.14 forbids
+// relaxing a schema for a fixture), each one is winnable by the `perfect` bot and not by
+// the `random` bot (`flyer.test.ts` asserts both), and each one carries real
+// financial-literacy content for its tier. There is no child PII here and there never
+// can be: a game is generated from curriculum, not from a child (§11).
+//
+// `skin.sprites` is deliberately EMPTY. Sprite URLs are Prism/Depot artifacts produced
+// by the `illustrate` stage; inventing one here would be a fabricated asset. The view
+// falls back to palette-tinted shapes plus each item's Material Symbols `icon`, which is
+// the same path a document takes before illustration.
+//
+// The two manifests deliberately sit at opposite ends of the config surface, so the
+// "one mechanic, many games" claim is exercised rather than asserted:
+```
+
+### frontend/src/game-engine/mechanics/flyer/flyer.test.ts
+
+```
+// Flyer — the slice's regression tests.
+//
+// Four properties are load-bearing and each one has an explicit test here:
+//  1. DETERMINISM. Same seed + same input log => byte-identical SimResult, twice. This is
+//     the property Core's reward path rests on (GAME_ENGINE.md §5/§6). Extra weight here
+//     because this is the first mechanic to use `core/mathd.ts`: a single `Math.sin` in
+//     the flight model would make the browser and Node disagree in the low bits and
+//     reject an honest child's XP.
+//  2. WINNABILITY. The `perfect` bot reaches `pass_score` on EVERY fixture and the
+//     `random` bot does not — the §9 gate, run here so a fixture can never drift into
+//     "unwinnable" or "mashable" without a red test.
+//  3. SCHEMA. An out-of-bounds config is REJECTED, not coerced (§1.14).
+//  4. THE MECHANIC'S OWN RULES. The stall condition and the energy curve — the two
+//     mechanic-specific behaviours the spec pins — behave exactly as configured.
+
+```
+
+### frontend/src/game-engine/mechanics/flyer/register.ts
+
+```
+// Flyer — the slice (GAME_ENGINE.md §7).
+//
+// This is the ONLY module the registry's lazy `import()` reaches for, so it is also the
+// only place in the slice that pulls the React view in. `schema.ts` and `simulate.ts`
+// stay React-free on purpose: `backend/src/game-contract/` and `gamegen/src/contract/`
+// build their SYNCHRONOUS `MechanicSimSlice` registry out of exactly those two files,
+// and a React import there would break the parity copy.
+//
+// Zero cross-slice imports: everything below comes from `core/*` or from this directory.
+
+import type { MechanicSlice, Simulator } from '@/game-engine/core/types'
+
+import { FlyerView } from './components'
+import { flyerFixtures } from './fixtures'
+import { FLYER_SPRITE_SLOTS, flyerConfigSchema, flyerContentSchema } from './schema'
+```
+
+### frontend/src/game-engine/mechanics/flyer/schema.ts
+
+```
+// Flyer — Zod config + content schemas (GAME_ENGINE.md §4 row `flyer`, §7, §13).
+//
+// DELIBERATELY 2.5D, NOT THE REPORT'S 6DoF (owner-approved, recorded in
+// /GAME_ENGINE.md §13). Forward motion is a tick advance the player does not steer;
+// what the player DOES steer is pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. Three reasons, restated here because a later reader of this
+// file will not have the spec open:
+//   1. INPUT. A touch screen has no throttle, no rudder and no six-axis stick, and
+//      /CLAUDE.md §1.11 forbids a control scheme that only works on a desktop.
+//   2. COGNITIVE LOAD. For a 6–12 year old a full flight model IS the game, and the
+//      money concept the lesson taught becomes decoration.
+//   3. DETERMINISTIC REPLAY BUDGET. §5 bans the transcendentals a full orientation
+//      model wants; 6DoF would mean a large rotation surface in `core/mathd.ts` and a
+//      much wider replay-divergence risk on the reward path.
+// Full 6DoF stays possible later BEHIND THIS SAME MANIFEST — it would be optional
+```
+
+### frontend/src/game-engine/mechanics/flyer/simulate.ts
+
+```
+// Flyer — the PURE simulator (GAME_ENGINE.md §5, §13; brief §4).
+//
+// DELIBERATELY 2.5D, NOT 6DoF (owner-approved, /GAME_ENGINE.md §13). Forward motion is
+// a tick advance; the player steers pitch (climb/dive → altitude and speed) and an
+// optional lane-like yaw. The three reasons, restated so this file stands alone:
+// touch-first input on a phone cannot honestly express six degrees of freedom and
+// §1.11 forbids a desktop-only control scheme; a full flight model overwhelms a 6–12
+// year old and turns the money concept into decoration; and a deterministic replay
+// budget is far easier to guarantee in 2.5D, since §5 bans exactly the transcendentals
+// a full orientation model wants. Full 6DoF stays possible later behind this same
+// manifest. The flight fantasy is NOT dropped — mount, energy, thermals, storms,
+// armament and aerial enemies are all simulated here.
+//
+// PURITY. No React, no DOM, no `Date.now()`, no `Math.random()`, no I/O, no mutation of
+// the state handed in. Fixed 50ms ticks. All trigonometry goes through `core/mathd.ts`
 ```
 
 ### frontend/src/game-engine/mechanics/launcher/components.tsx

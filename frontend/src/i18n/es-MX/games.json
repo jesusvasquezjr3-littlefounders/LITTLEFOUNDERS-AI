@@ -97,11 +97,11 @@
     },
     "autobattler": {
       "title": "Duelo de equipos",
-      "blurb": "Arma tu equipo y mira cómo tu plan gana el duelo."
+      "blurb": "Gasta o guarda tu oro, arma tu equipo y deja que el duelo se juegue solo."
     },
     "explorer": {
       "title": "Explorador",
-      "blurb": "Recorre el mapa y descubre lo que está escondido."
+      "blurb": "Gana habilidades nuevas, abre lo que estaba cerrado y llega a la meta."
     },
     "defender": {
       "title": "Guardián de la base",
@@ -109,7 +109,7 @@
     },
     "flyer": {
       "title": "Vuelo alto",
-      "blurb": "Vuela entre los huecos y junta lo que necesitas."
+      "blurb": "Sube, planea y cuida tu energía hasta el final."
     }
   },
   "sorter": {
@@ -242,6 +242,114 @@
       "aura": "Potenciadora",
       "economy": "Da monedas",
       "block": "Bloquea"
+    }
+  },
+  "autobattler": {
+    "stageLabel": "Tablero de batalla",
+    "pausedLabel": "En pausa",
+    "rivalSide": "Lado del rival",
+    "shopTitle": "Tienda",
+    "traitsTitle": "Bonos del equipo",
+    "traitChip": "{{label}} ×{{count}}",
+    "gold": "{{gold}} de oro",
+    "income": "+{{income}} por ronda",
+    "interest": "+{{interest}} de interés, hasta {{cap}}",
+    "levelChip": "Nivel {{level}} · hasta {{cap}} en el tablero",
+    "streakWin_one": "{{count}} victoria seguida",
+    "streakWin_other": "{{count}} victorias seguidas",
+    "health": "{{health}} corazones",
+    "cost": "{{cost}} de oro",
+    "buy": "Comprar {{label}} por {{cost}} de oro",
+    "refresh": "Otras opciones ({{cost}})",
+    "levelUp": "Subir de nivel ({{cost}})",
+    "ready": "¡A pelear!",
+    "benchTitle": "Tu equipo {{placed}}/{{cap}}",
+    "benchEmpty": "Tu banca está vacía — compra a alguien en la tienda.",
+    "benchUnit": "{{label}} {{star}}★, en la banca",
+    "boardUnit": "{{label}} {{star}}★, columna {{col}}, fila {{row}}",
+    "emptyCell": "Casilla vacía, columna {{col}}, fila {{row}}",
+    "merge": "Fusionar en {{label}} de {{star}}★",
+    "toBench": "Mandar a la banca",
+    "equip": "Darle {{label}}",
+    "sell": "Vender",
+    "hintPrep": "Toca a un peleador y luego toca una casilla de tu mitad.",
+    "hintPlace": "Ahora toca la casilla donde va.",
+    "hintBattle": "No le muevas — ¡tu equipo está peleando!"
+  },
+  "explorer": {
+    "mapLabel": "Mapa",
+    "pausedLabel": "En pausa",
+    "travelling": "En camino…",
+    "energy": "Energía {{value}}/{{max}}",
+    "currency": "{{amount}} monedas",
+    "mastery": "Práctica {{value}}",
+    "explored": "{{pct}}% explorado",
+    "youAreHere": "Estás en {{label}}",
+    "recover": "Recoger {{amount}}",
+    "take": "Tomarlo",
+    "buy": "Comprarlo por {{price}}",
+    "rest": "Descansar aquí",
+    "nothingHere": "Aquí no hay nada que hacer — escoge a dónde ir.",
+    "attemptsLeft_one": "Te queda {{count}} intento",
+    "attemptsLeft_other": "Te quedan {{count}} intentos",
+    "abilityTray": "Tus habilidades",
+    "abilityTier": "{{label}} — habilidad de {{family}}, nivel {{tier}}",
+    "abilityLocked": "{{label}} — todavía no la tienes",
+    "abilityNotYet": "Aún no",
+    "lockLabel": "{{kind}} {{hint}}",
+    "hint": "Toca un lugar para viajar ahí. Toca una habilidad y luego un candado para abrirlo.",
+    "hintSelected": "Ahora toca el candado que quieres abrir.",
+    "node": {
+      "current": "{{label}}, {{kind}}. Aquí estás.",
+      "move": "{{label}}, {{kind}}. Toca para viajar aquí.",
+      "blocked": "{{label}}, {{kind}}. Todavía no puedes llegar."
+    },
+    "kind": {
+      "start": "inicio",
+      "tutorial": "lugar de práctica",
+      "plain": "parada",
+      "boss": "gran reto",
+      "shrine": "santuario escondido",
+      "shop": "tienda",
+      "fragment": "pedazo de habilidad",
+      "goal": "meta"
+    },
+    "lock": {
+      "hard": "Cerrado — necesita justo esa habilidad.",
+      "soft": "Cerrado — necesita esa habilidad o suficiente práctica.",
+      "compound": "Cerrado — necesita dos habilidades juntas.",
+      "temporal": "Cerrado — necesita algo que ya hiciste antes."
+    },
+    "family": {
+      "movement": "movimiento",
+      "interaction": "uso",
+      "perception": "vista"
+    }
+  },
+  "flyer": {
+    "stageLabel": "Área de vuelo",
+    "pausedLabel": "En pausa",
+    "hud": {
+      "energy": "Energía",
+      "hull": "Vida",
+      "speed": "Velocidad"
+    },
+    "status": {
+      "stall": "¡Sin impulso!",
+      "thermal": "¡Corriente que sube!",
+      "storm": "Tormenta"
+    },
+    "hint": {
+      "intro": "Toca subir para ir hacia arriba y bajar para descender.",
+      "energy": "Poca energía — planea un rato para recuperarla."
+    },
+    "action": {
+      "climb": "Subir",
+      "dive": "Bajar",
+      "fire": "Disparar",
+      "beam": "Rayo",
+      "lane": "Cambiar de carril",
+      "steer": "Dirigir"
     }
   },
   "states": {

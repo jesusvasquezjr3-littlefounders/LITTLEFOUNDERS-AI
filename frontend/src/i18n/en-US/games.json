@@ -97,11 +97,11 @@
     },
     "autobattler": {
       "title": "Team Duel",
-      "blurb": "Pick your team, then watch your plan win the duel."
+      "blurb": "Spend or save your gold, build your team and let the duel play out."
     },
     "explorer": {
       "title": "Explorer",
-      "blurb": "Move around the map and uncover what's hidden."
+      "blurb": "Earn new skills, open what was locked and reach the goal."
     },
     "defender": {
       "title": "Base Guard",
@@ -109,7 +109,7 @@
     },
     "flyer": {
       "title": "Sky Run",
-      "blurb": "Fly through the gaps and collect what you need."
+      "blurb": "Climb, glide and watch your energy all the way to the end."
     }
   },
   "sorter": {
@@ -242,6 +242,114 @@
       "aura": "Booster",
       "economy": "Money maker",
       "block": "Blocker"
+    }
+  },
+  "autobattler": {
+    "stageLabel": "Battle board",
+    "pausedLabel": "Paused",
+    "rivalSide": "Rival side",
+    "shopTitle": "Shop",
+    "traitsTitle": "Team bonuses",
+    "traitChip": "{{label}} ×{{count}}",
+    "gold": "{{gold}} gold",
+    "income": "+{{income}} per round",
+    "interest": "+{{interest}} interest, up to {{cap}}",
+    "levelChip": "Level {{level}} · up to {{cap}} on the board",
+    "streakWin_one": "{{count}} win in a row",
+    "streakWin_other": "{{count}} wins in a row",
+    "health": "{{health}} hearts",
+    "cost": "{{cost}} gold",
+    "buy": "Buy {{label}} for {{cost}} gold",
+    "refresh": "New picks ({{cost}})",
+    "levelUp": "Level up ({{cost}})",
+    "ready": "Fight!",
+    "benchTitle": "Your team {{placed}}/{{cap}}",
+    "benchEmpty": "Your bench is empty — buy someone from the shop.",
+    "benchUnit": "{{label}} {{star}}★, on the bench",
+    "boardUnit": "{{label}} {{star}}★, column {{col}}, row {{row}}",
+    "emptyCell": "Empty square, column {{col}}, row {{row}}",
+    "merge": "Merge into a {{star}}★ {{label}}",
+    "toBench": "Send to the bench",
+    "equip": "Give {{label}}",
+    "sell": "Sell",
+    "hintPrep": "Tap a fighter, then tap a square on your half.",
+    "hintPlace": "Now tap the square where it goes.",
+    "hintBattle": "Hands off — your team is fighting!"
+  },
+  "explorer": {
+    "mapLabel": "Map",
+    "pausedLabel": "Paused",
+    "travelling": "On the way…",
+    "energy": "Energy {{value}}/{{max}}",
+    "currency": "{{amount}} coins",
+    "mastery": "Practice {{value}}",
+    "explored": "{{pct}}% explored",
+    "youAreHere": "You're at {{label}}",
+    "recover": "Pick up {{amount}}",
+    "take": "Take it",
+    "buy": "Buy it for {{price}}",
+    "rest": "Rest here",
+    "nothingHere": "Nothing to do here — pick where to go next.",
+    "attemptsLeft_one": "{{count}} try left",
+    "attemptsLeft_other": "{{count}} tries left",
+    "abilityTray": "Your skills",
+    "abilityTier": "{{label}} — {{family}} skill, level {{tier}}",
+    "abilityLocked": "{{label}} — you don't have it yet",
+    "abilityNotYet": "Not yet",
+    "lockLabel": "{{kind}} {{hint}}",
+    "hint": "Tap a place to travel there. Tap a skill, then a lock, to open it.",
+    "hintSelected": "Now tap the lock you want to open.",
+    "node": {
+      "current": "{{label}}, {{kind}}. You are here.",
+      "move": "{{label}}, {{kind}}. Tap to travel here.",
+      "blocked": "{{label}}, {{kind}}. You can't reach it yet."
+    },
+    "kind": {
+      "start": "start",
+      "tutorial": "practice spot",
+      "plain": "stop",
+      "boss": "big challenge",
+      "shrine": "hidden shrine",
+      "shop": "shop",
+      "fragment": "skill piece",
+      "goal": "goal"
+    },
+    "lock": {
+      "hard": "Locked — needs one exact skill.",
+      "soft": "Locked — needs that skill, or enough practice.",
+      "compound": "Locked — needs two skills together.",
+      "temporal": "Locked — needs something you did before."
+    },
+    "family": {
+      "movement": "moving",
+      "interaction": "using",
+      "perception": "seeing"
+    }
+  },
+  "flyer": {
+    "stageLabel": "Flight area",
+    "pausedLabel": "Paused",
+    "hud": {
+      "energy": "Energy",
+      "hull": "Health",
+      "speed": "Speed"
+    },
+    "status": {
+      "stall": "Losing lift!",
+      "thermal": "Rising air!",
+      "storm": "Storm"
+    },
+    "hint": {
+      "intro": "Tap climb to go up and dive to go down.",
+      "energy": "Low energy — glide for a bit to get it back."
+    },
+    "action": {
+      "climb": "Climb",
+      "dive": "Dive",
+      "fire": "Shoot",
+      "beam": "Beam",
+      "lane": "Change lane",
+      "steer": "Steer"
     }
   },
   "states": {
