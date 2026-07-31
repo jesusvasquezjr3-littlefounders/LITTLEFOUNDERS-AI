@@ -3,8 +3,13 @@
 // here the collapse criterion, the economy, the announced force timeline, the score
 // model switch and adaptive assistance.
 
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { replayGame, runBot } from '@/game-engine/core/replay'
-import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+import { TICK_MS, type GameDocument, type GameInputEvent, type SimInit } from '@/game-engine/core/types'
+import { GameEngineBridge } from '@/game-engine/phaser/bridge'
 
 import { stackerBots } from './bots'
 import { stackerFixtures } from './fixtures'
@@ -14,6 +19,7 @@ import {
   stackerContentSchema,
   STACKER_SPRITE_SLOTS,
 } from './schema'
+import { MIN_HIT_DESIGN_PX, READY_BTN_WIDTH, StackerScene } from './scene'
 import {
   assistActive,
   budgetLeft,
@@ -530,5 +536,193 @@ describe('stacker rules', () => {
 
     expect(after.bodies.length).toBe(2)
     expect(after.spent).toBe(costOfPiece(config, first) + costOfPiece(config, second))
+  })
+})
+
+// `stacker` — the audit's remaining findings (keyboard access + in-canvas touch
+// targets, GAME_ENGINE.md §10) — verified two different ways:
+//
+//   1. HANDLER -> BRIDGE WIRING: a real StackerScene, driving a real GameEngineBridge
+//      over the real stackerSimulator (never mocked), with only the Phaser rendering
+//      surface (`.tweens`) stubbed out. PhaserGameBox wires `.tweens`/`.input`/`.add`
+//      through the SceneManager at runtime, never the class constructor — confirmed by
+//      constructing `new StackerScene()` standalone and observing those fields
+//      `undefined` while every plain class field (`rotationStep`, `catalogSlots`,
+//      `lastClickedSlotIndex`, `ghostRect`) initializes normally — so a bare instance
+//      is enough to exercise the keyboard handlers, which touch only `this.bridge`
+//      (real) and the few nullable view fields the class already null-guards
+//      (`ghostRect`, `rotateBtn`). This proves each keyboard action reaches the bridge
+//      as the correct STACKER_ACTIONS entry with the correct payload, without needing
+//      a canvas/WebGL context jsdom cannot provide.
+//   2. TOUCH-TARGET ARITHMETIC: MIN_HIT_DESIGN_PX/READY_BTN_WIDTH are exported from
+//      scene.ts specifically so this file asserts the SAME constants the button/
+//      catalog-slot draw calls use, rather than a second, potentially-diverging copy
+//      of the 44px-real-px formula.
+describe('stacker — keyboard access reaches the bridge (GAME_ENGINE.md §10)', () => {
+  function buildScene() {
+    // budgetTower: drop mode, 4 rotation steps, snap_grid 20 — meaningfully exercises
+    // rotation and quantised placement (the cheer/tier-1 fixture disables rotation).
+    const document = stackerFixtures[1]
+    if (document === undefined) throw new Error('fixture missing')
+    const config = stackerConfigSchema.parse(document.config)
+    const content = stackerContentSchema.parse(document.content)
+    const simInit: SimInit = { config, content, scoring: document.scoring, seed: SEED }
+    const bridge = new GameEngineBridge(stackerSimulator, simInit, config.round.tick_budget)
+    bridge.start()
+
+    // `as unknown as` — deliberately re-typing a real StackerScene instance to expose
+    // the private members this test needs to drive directly (no live Game exists to
+    // drive them via real pointer/keyboard events). See the file-level comment above.
+    const scene = new StackerScene() as unknown as {
+      tweens: { add: (...args: unknown[]) => void; killTweensOf: (...args: unknown[]) => void }
+      catalogSlots: Array<{ pieceIndex: number; piece: (typeof config.catalog)[number]; container: unknown }>
+      ghostX: number | null
+      rotationStep: number
+      bridge: GameEngineBridge<StackerState>
+      getLastClickedSlotIndex: () => number
+      cycleCatalogSelection: (direction: number) => void
+      nudgeGhostX: (direction: number) => void
+      rotateGhost: () => void
+      confirmBuildAction: () => void
+      removeLastPiece: () => void
+      toggleAssist: () => void
+    }
+
+    scene.tweens = { add: () => {}, killTweensOf: () => {} }
+    scene.bridge = bridge
+    scene.catalogSlots = config.catalog.map((piece, pieceIndex) => ({ pieceIndex, piece, container: {} }))
+
+    return { scene, bridge, config }
+  }
+
+  it('Tab selects the first catalog piece and drops a ghost x', () => {
+    const { scene } = buildScene()
+    expect(scene.getLastClickedSlotIndex()).toBe(-1)
+
+    scene.cycleCatalogSelection(1)
+
+    expect(scene.getLastClickedSlotIndex()).toBe(0)
+    expect(scene.ghostX).not.toBeNull()
+  })
+
+  it('Shift+Tab wraps backwards to the LAST catalog piece when nothing is selected', () => {
+    const { scene, config } = buildScene()
+
+    scene.cycleCatalogSelection(-1)
+
+    expect(scene.getLastClickedSlotIndex()).toBe(config.catalog.length - 1)
+  })
+
+  it('ArrowRight nudges the ghost by exactly one snap_grid step', () => {
+    const { scene, config } = buildScene()
+    scene.cycleCatalogSelection(1)
+    const before = scene.ghostX
+    if (before === null) throw new Error('ghost not selected')
+
+    scene.nudgeGhostX(1)
+
+    expect(scene.ghostX).toBe(before + config.placement.snap_grid)
+  })
+
+  it("'R' advances the rotation step, wrapping at the manifest's rotation_steps", () => {
+    const { scene, config } = buildScene()
+    expect(config.placement.rotation_steps).toBe(4)
+    scene.cycleCatalogSelection(1)
+
+    scene.rotateGhost()
+    expect(scene.rotationStep).toBe(1)
+    scene.rotateGhost()
+    scene.rotateGhost()
+    scene.rotateGhost()
+    expect(scene.rotationStep).toBe(0) // wrapped back to 0 after 4 steps
+  })
+
+  it('Enter/Space drops the selected+rotated ghost as a real "place" action', () => {
+    const { scene, bridge, config } = buildScene()
+    const firstPiece = config.catalog[0]
+    if (firstPiece === undefined) throw new Error('empty catalog')
+
+    scene.cycleCatalogSelection(1) // selects catalog[0]
+    scene.rotateGhost() // rotationStep -> 1
+
+    scene.confirmBuildAction()
+
+    const last = bridge.inputLog[bridge.inputLog.length - 1]
+    expect(last?.action).toBe('place')
+    expect(last?.slot).toBe(firstPiece.item_id)
+    expect(last?.n).toBe(1)
+    expect(last?.x).toBeDefined()
+    // Quantised to `snap_grid` — the same contract the pointer path guarantees.
+    expect((last?.x as number) % config.placement.snap_grid).toBe(0)
+  })
+
+  it('Enter/Space with nothing selected ends the build phase early (same as READY)', () => {
+    const { scene, bridge } = buildScene()
+    // No cycleCatalogSelection call: no piece selected, no ghost showing.
+
+    scene.confirmBuildAction()
+
+    expect(bridge.inputLog[bridge.inputLog.length - 1]?.action).toBe('ready')
+  })
+
+  it('Backspace/Delete removes the most recently placed piece', () => {
+    const { scene, bridge, config } = buildScene()
+    if (config.catalog[0] === undefined) throw new Error('empty catalog')
+
+    scene.cycleCatalogSelection(1)
+    scene.confirmBuildAction() // enqueues 'place' at tick 0
+    bridge.update(TICK_MS) // apply the queued tick so the body actually exists
+    expect(bridge.state.bodies.length).toBe(1)
+    const placedUid = bridge.state.bodies[0]?.uid
+
+    scene.removeLastPiece()
+
+    const last = bridge.inputLog[bridge.inputLog.length - 1]
+    expect(last?.action).toBe('remove')
+    expect(last?.n).toBe(placedUid)
+  })
+
+  it("'A' toggles adaptive assistance on, then off", () => {
+    const { scene, bridge } = buildScene()
+
+    scene.toggleAssist()
+    expect(bridge.inputLog[bridge.inputLog.length - 1]?.action).toBe('assist_on')
+
+    bridge.update(TICK_MS) // apply it, so the next read of assistOn reflects it
+
+    scene.toggleAssist()
+    expect(bridge.inputLog[bridge.inputLog.length - 1]?.action).toBe('assist_off')
+  })
+})
+
+describe('stacker — in-canvas hit areas meet the >=44px-real touch-target floor (GAME_ENGINE.md §10)', () => {
+  // Mirrors the formula documented on MIN_HIT_DESIGN_PX in scene.ts: the worst-case
+  // Phaser.Scale.FIT ratio is a 375px mobile viewport minus DESIGN.md's 16px
+  // `margin-mobile` on each side, divided by the fixed 800px canvas PhaserGameBox
+  // authors.
+  const REAL_TOUCH_MIN_PX = 44
+  const WORST_CASE_FIT_SCALE = (375 - 2 * 16) / 800
+
+  it('MIN_HIT_DESIGN_PX clears the real 44px floor at the worst-case mobile FIT scale', () => {
+    expect(MIN_HIT_DESIGN_PX * WORST_CASE_FIT_SCALE).toBeGreaterThanOrEqual(REAL_TOUCH_MIN_PX)
+  })
+
+  it('the wider READY button is at least as wide as the square icon buttons, and its height (the binding axis) also clears the floor', () => {
+    expect(READY_BTN_WIDTH).toBeGreaterThanOrEqual(MIN_HIT_DESIGN_PX)
+    expect(MIN_HIT_DESIGN_PX * WORST_CASE_FIT_SCALE).toBeGreaterThanOrEqual(REAL_TOUCH_MIN_PX)
+  })
+
+  it('every button and the catalog slot are drawn from MIN_HIT_DESIGN_PX on BOTH axes — a regression guard on the actual draw calls, not just the constant', () => {
+    // jsdom cannot render a Phaser canvas, so this checks the same source scene.ts's
+    // create paths run, rather than re-deriving a second copy of the arithmetic above:
+    // a future edit that reintroduces a smaller hardcoded literal at any of these call
+    // sites breaks this assertion, not just an unrelated arithmetic check.
+    const scenePath = join(dirname(fileURLToPath(import.meta.url)), 'scene.ts')
+    const src = readFileSync(scenePath, 'utf8')
+    expect(src).toContain('generatePlaceholderSprite(this, CATALOG_SLOT_KEY, MIN_HIT_DESIGN_PX, MIN_HIT_DESIGN_PX,')
+    expect(src).toContain('generateButtonTexture(this, BTN_ROTATE_KEY, MIN_HIT_DESIGN_PX, MIN_HIT_DESIGN_PX,')
+    expect(src).toContain('generateButtonTexture(this, BTN_REMOVE_KEY, MIN_HIT_DESIGN_PX, MIN_HIT_DESIGN_PX,')
+    expect(src).toContain('generateButtonTexture(this, BTN_ASSIST_KEY, MIN_HIT_DESIGN_PX, MIN_HIT_DESIGN_PX,')
+    expect(src).toContain('generateButtonTexture(this, BTN_READY_KEY, READY_BTN_WIDTH, MIN_HIT_DESIGN_PX,')
   })
 })

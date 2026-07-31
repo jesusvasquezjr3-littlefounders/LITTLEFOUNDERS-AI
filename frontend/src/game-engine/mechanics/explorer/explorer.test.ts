@@ -20,6 +20,13 @@ import {
   type ExplorerConfig,
   type ExplorerContent,
 } from './schema'
+import {
+  cycleFocusIndex,
+  ExplorerScene,
+  MIN_TAP_RADIUS,
+  reachableNodeIndices,
+  truncateAtWord,
+} from './scene'
 import { explorerSimulator, solveExplorerWorld, type ExplorerState } from './simulate'
 
 const SEED = 20260730
@@ -738,5 +745,258 @@ describe('explorer view', () => {
       expect(button.className).toContain('min-h-11')
       expect(button.className).toContain('min-w-11')
     }
+  })
+})
+
+// The Phaser scene (`./scene`). Everything below is testable WITHOUT a live canvas:
+// `truncateAtWord`/`reachableNodeIndices`/`cycleFocusIndex` are plain functions with
+// no Phaser dependency at all, and `ExplorerScene#init()`/`#createBridge()` touch
+// nothing render-related either — so a bare `new ExplorerScene()`, `init()`ed and
+// wired to a real (non-Phaser) `GameEngineBridge`, can exercise the keyboard-input
+// methods directly, as long as the interaction stays on an OPEN edge / a challenge-
+// less node (the locked-edge and challenge-modal branches reach into `this.infoLabel`/
+// `this.time`/`this.add`, which only exist once Phaser's own `create()` has run — see
+// `bootScene`'s doc comment).
+describe('explorer scene — label truncation (truncateAtWord)', () => {
+  it('leaves a string at or under the limit unchanged', () => {
+    expect(truncateAtWord('Tu casa', 22)).toBe('Tu casa')
+    expect(truncateAtWord('', 22)).toBe('')
+  })
+
+  it('truncates at the last word boundary at or before the limit, never mid-word', () => {
+    // 'Aprende a comparar precios' is 26 chars — over a 22-char limit. The naive
+    // `.slice(0, 22)` this replaces would have produced 'Aprende a comparar pre' —
+    // a word chopped in half. The fix must break at the space before 'precios'.
+    const result = truncateAtWord('Aprende a comparar precios', 22)
+    expect(result).toBe('Aprende a comparar…')
+    expect(result.length).toBeLessThanOrEqual(22 + 1) // +1 for the ellipsis glyph
+    expect(result.endsWith('…')).toBe(true)
+    // No trailing space was left before the ellipsis.
+    expect(result).not.toMatch(/\s…$/)
+  })
+
+  it('an es-MX/pt-BR-length label (routinely 20-40% longer than en-US) still breaks cleanly', () => {
+    // A realistic es-MX challenge-option string, well past the pre-fix 40-char
+    // English-tuned cutoff, with a word straddling the old boundary.
+    const esLabel = 'Guardar una parte del dinero antes de gastar el resto en la feria'
+    const result = truncateAtWord(esLabel, 40)
+    expect(result.endsWith('…')).toBe(true)
+    expect(result).not.toMatch(/\s…$/)
+    // Every word in the truncated result (minus the ellipsis) must be a WHOLE word
+    // from the source string, never a fragment.
+    const words = result.slice(0, -1).trim().split(/\s+/).filter(Boolean)
+    const sourceWords = esLabel.split(/\s+/)
+    for (const word of words) {
+      expect(sourceWords).toContain(word)
+    }
+  })
+
+  it('a single word longer than the whole budget, with no space to break on at all, still returns a sane, non-empty, ellipsis-suffixed result', () => {
+    // Deliberately no spaces anywhere near (or past) the cutoff — the fallback path.
+    const noSpaces = 'Supercalifragilisticexpialidocioso'.repeat(2) // 70 chars, zero spaces
+    const result = truncateAtWord(noSpaces, 14)
+    expect(result.length).toBe(14 + 1)
+    expect(result.endsWith('…')).toBe(true)
+    expect(result.startsWith(noSpaces.slice(0, 14))).toBe(true)
+  })
+
+  it('a string exactly at the limit is returned unchanged (boundary case)', () => {
+    const exact = 'x'.repeat(22)
+    expect(truncateAtWord(exact, 22)).toBe(exact)
+  })
+})
+
+describe('explorer scene — touch-target floor (MIN_TAP_RADIUS)', () => {
+  it('pins the enforced tap-radius floor at 48 canvas px (≈96px diameter)', () => {
+    // Regression pin for the fix: `nodeAt()`'s hit-test now uses
+    // `Math.max(visualRadius + 6, MIN_TAP_RADIUS)`, so even the smallest authored
+    // node kind (KIND_RADII 12) gets a 48px-radius tap target, independent of its
+    // 12px visual dot. The exact on-screen CSS px this maps to depends on the
+    // player's runtime game-box size (Phaser FIT scaling), which this module has
+    // no way to read — see MIN_TAP_RADIUS's own doc comment for the reasoning this
+    // pin backs.
+    expect(MIN_TAP_RADIUS).toBe(48)
+    const smallestVisualRadius = 12
+    expect(Math.max(smallestVisualRadius + 6, MIN_TAP_RADIUS)).toBe(48)
+  })
+})
+
+describe('explorer scene — reachableNodeIndices / cycleFocusIndex', () => {
+  const document_ = explorerFixtures[0]
+  if (document_ === undefined) throw new Error('fixture missing')
+
+  function idxOf(state: ExplorerState, id: string): number {
+    return state.nodes.findIndex((node) => node.id === id)
+  }
+
+  it('starts with the current node, then every open-edge neighbor in edge document order', () => {
+    const state = initOf(document_)
+    const list = reachableNodeIndices(state)
+    expect(list).toEqual([
+      idxOf(state, 'casa'),
+      idxOf(state, 'tiendita'),
+      idxOf(state, 'puesto'),
+      idxOf(state, 'feria'),
+    ])
+  })
+
+  it('includes a LOCKED edge target — keyboard can discover a lock exactly like a tap does', () => {
+    const state = drive(initOf(document_), 0, 3, [{ tick: 0, action: 'move', slot: 'tiendita' }])
+    expect(nodeIdAt(state)).toBe('tiendita')
+    const ids = reachableNodeIndices(state).map((i) => state.nodes[i]?.id)
+    expect(ids).toContain('libreria') // guarded by a 'hard' lock the player doesn't hold yet
+    expect(ids).toContain('casa') // the two-way edge back
+  })
+
+  it('excludes an edge target that is hidden and not yet perceivable', () => {
+    const real = initOf(document_)
+    const list = reachableNodeIndices(real)
+    const targetIdx = list[1]
+    expect(targetIdx).toBeDefined()
+    const hiddenState: ExplorerState = {
+      ...real,
+      config: {
+        ...real.config,
+        optional: { ...real.config.optional, reveal_requires_perception: true },
+      },
+      nodes: real.nodes.map((node, i) => (i === targetIdx ? { ...node, hidden: true } : node)),
+    }
+    expect(reachableNodeIndices(hiddenState)).not.toContain(targetIdx)
+    // ...but is restored once the node has already been visited.
+    const visitedState: ExplorerState = {
+      ...hiddenState,
+      visited: hiddenState.visited.map((v, i) => (i === targetIdx ? true : v)),
+    }
+    expect(reachableNodeIndices(visitedState)).toContain(targetIdx)
+  })
+
+  it('never traverses a one-way edge backward', () => {
+    const real = initOf(document_)
+    const metaIdx = idxOf(real, 'meta-bici')
+    const bodegaIdx = idxOf(real, 'bodega')
+    expect(metaIdx).toBeGreaterThanOrEqual(0)
+    expect(bodegaIdx).toBeGreaterThanOrEqual(0)
+    const state: ExplorerState = { ...real, at: metaIdx }
+    const list = reachableNodeIndices(state)
+    expect(list).toContain(metaIdx) // itself, always
+    expect(list).not.toContain(bodegaIdx) // 'e-bodega-meta' is one_way: true
+  })
+
+  it('cycleFocusIndex walks forward through every reachable node, then wraps', () => {
+    const state = initOf(document_)
+    const list = reachableNodeIndices(state)
+    let focus = state.at
+    for (const expected of list.slice(1)) {
+      focus = cycleFocusIndex(state, focus, 1)
+      expect(focus).toBe(expected)
+    }
+    focus = cycleFocusIndex(state, focus, 1)
+    expect(focus).toBe(list[0]) // wrapped back to the start
+  })
+
+  it('cycleFocusIndex walks backward symmetrically', () => {
+    const state = initOf(document_)
+    const list = reachableNodeIndices(state)
+    const last = list[list.length - 1]
+    expect(last).toBeDefined()
+    expect(cycleFocusIndex(state, state.at, -1)).toBe(last)
+  })
+
+  it('a stale or unset focus (-1) starts the cycle from the current node, not from nothing', () => {
+    const state = initOf(document_)
+    const list = reachableNodeIndices(state)
+    expect(cycleFocusIndex(state, -1, 1)).toBe(list[1])
+    expect(cycleFocusIndex(state, -1, -1)).toBe(list[list.length - 1])
+  })
+})
+
+describe('explorer scene — keyboard interaction drives the real bridge.enqueue', () => {
+  const document_ = explorerFixtures[0]
+  if (document_ === undefined) throw new Error('fixture missing')
+
+  type ExplorerScenePrivates = {
+    focusIndex: number
+    moveFocus: (direction: 1 | -1) => void
+    activateFocusedNode: () => void
+    attemptRest: () => void
+  }
+
+  function priv(scene: ExplorerScene): ExplorerScenePrivates {
+    return scene as unknown as ExplorerScenePrivates
+  }
+
+  /**
+   * See the file-level comment above this section: `init()` and `createBridge()`
+   * are pure, so this exercises the REAL scene methods against a REAL (non-Phaser)
+   * `GameEngineBridge` — no mocking of `bridge.enqueue` beyond a spy to observe
+   * calls, and no stand-in for `reachableNodeIndices`/`cycleFocusIndex` either.
+   */
+  function bootScene(seed = SEED): ExplorerScene {
+    const scene = new ExplorerScene()
+    scene.init({
+      document: document_!,
+      runId: 'test-run',
+      seed,
+      maxTicks: maxTicksOf(document_!),
+      reducedMotion: true,
+      strings: {},
+    })
+    const { bridge } = scene.createBridge()
+    scene.bridge = bridge
+    bridge.start()
+    priv(scene).focusIndex = bridge.state.at
+    return scene
+  }
+
+  it('Tab/arrow cycling then Enter enqueues "move" with the focused node\'s id', () => {
+    const scene = bootScene()
+    const enqueue = vi.spyOn(scene.bridge, 'enqueue')
+
+    // casa -> tiendita -> puesto (two forward steps through reachableNodeIndices).
+    priv(scene).moveFocus(1)
+    priv(scene).moveFocus(1)
+    expect(priv(scene).focusIndex).toBe(scene.bridge.state.nodes.findIndex((n) => n.id === 'puesto'))
+
+    priv(scene).activateFocusedNode()
+
+    expect(enqueue).toHaveBeenCalledWith('move', { slot: 'puesto' })
+  })
+
+  it('the dedicated rest key enqueues "rest" at a checkpoint', () => {
+    const scene = bootScene()
+    const enqueue = vi.spyOn(scene.bridge, 'enqueue')
+    expect(nodeIdAt(scene.bridge.state)).toBe('casa') // start, and start_is_checkpoint
+
+    priv(scene).attemptRest()
+
+    expect(enqueue).toHaveBeenCalledWith('rest')
+  })
+
+  it('the rest key is a no-op away from a checkpoint (matches the rest button\'s own guard)', () => {
+    const scene = bootScene()
+    // Move to 'puesto' first — a tutorial room, not a checkpoint, via the open edge.
+    scene.bridge.enqueue('move', { slot: 'puesto' })
+    const maxTicks = maxTicksOf(document_!)
+    for (let i = 0; i < maxTicks && nodeIdAt(scene.bridge.state) !== 'puesto'; i += 1) {
+      scene.bridge.update(50)
+    }
+    expect(nodeIdAt(scene.bridge.state)).toBe('puesto')
+
+    const enqueue = vi.spyOn(scene.bridge, 'enqueue')
+    priv(scene).attemptRest()
+
+    expect(enqueue.mock.calls.some((call) => call[0] === 'rest')).toBe(false)
+  })
+
+  it('keyboard input is a no-op while paused — Enter enqueues nothing', () => {
+    const scene = bootScene()
+    scene.togglePause()
+    const enqueue = vi.spyOn(scene.bridge, 'enqueue')
+
+    priv(scene).moveFocus(1)
+    priv(scene).activateFocusedNode()
+    priv(scene).attemptRest()
+
+    expect(enqueue).not.toHaveBeenCalled()
   })
 })

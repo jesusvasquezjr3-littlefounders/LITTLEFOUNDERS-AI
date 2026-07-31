@@ -710,6 +710,7 @@ frontend/
       mechanics/
         autobattler/
         defender/
+          __scratch__/
         explorer/
         flyer/
         launcher/
@@ -1675,11 +1676,11 @@ colors:
 > ROADMAP.md, GLOSSARY.md or DESIGN.md, **those win and this file gets fixed** — never the
 > other way round.
 >
-> **Status:** v1.1 — Phaser 3.90 rendering layer shipped 2026-07-30. All 8 mechanic scenes
-> (canvas-based games with particles, screen shake, tweens, SFX and proper game feel) replace
-> the earlier React-DOM renderers. Core (port 4000), Vault migrations 0027/0028/0029, and
-> the Arcade generation pipeline (`gamegen/`, port 4003) are unaffected — this was a
-> rendering-layer rewrite only.
+> **Status:** v1.2 — Phaser 3.90 rendering layer shipped 2026-07-30, then hardened same-day
+> (boot sequence, seed correctness, reward-derivation path, camera/world-size fit — commits
+> `4530850`, `695891c`). All 8 mechanic scenes (canvas-based games with particles, screen
+> shake, tweens, SFX and proper game feel) are the live play-time renderer; the earlier
+> React-DOM `components.tsx` views remain in the tree as a reference/testing artifact only
 ```
 
 ### GLOSSARY.md
@@ -2221,20 +2222,20 @@ fi
 
 ```
 #!/usr/bin/env bash
-# i18n:check — three-phase verification:
+# i18n:check — four-phase verification:
 #   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth)
 #   Phase 2: Hardcoded string scan in TSX/TS source (strings not wrapped in t())
 #   Phase 3: Every STATICALLY DECIDABLE t() key in source EXISTS in en-US —
 #            plain literals, BOTH branches of t(cond ? 'a' : 'b'), and the
 #            leading namespace of t(`a.b.${expr}`)
+#   Phase 4: Hardcoded string scan in Phaser canvas text calls under
+#            frontend/src/game-engine/ (.add.text(...), .setText(...),
+#            makeText(...)) — the JSX-only scan in phase 2 and the t()-call-only
+#            scan in phase 3 are both structurally blind to canvas-drawn text,
+#            since it never touches the DOM and is never wrapped in t(). Runs
+#            in the same node invocation as phase 3 (check-t-keys.mjs).
 #
 # Phase 1 alone is not enough: it only proves the three locales agree with each
-# other. A key called by a component but present in NO locale is trivially "in
-# parity" and renders on screen as its raw dot-path. Phase 3 closes that hole.
-#
-# Phase 3 is not limited to plain literals, because "dynamic" is not the same as
-# "unknowable": in t(cond ? 'a.b' : 'a.c') both keys are literals, and in
-# t(`a.b.${x}`) the namespace 'a.b' is literal even when the leaf is not. Six
 ```
 
 ### agent/tools/check-secrets.sh
@@ -140371,18 +140372,18 @@ import type { CharacterId } from '@/components/characters/control/types'
 // /dev/game-lab — the Game Engine QA surface (GAME_ENGINE.md §7 slices, §10 player).
 // Dev-gated in App.tsx; never reaches a production bundle.
 //
-// Twin of /dev/lesson-lab, with the four affordances the determinism contract (§5)
-// needs and that ONLY a lab can give, because a nondeterminism bug is otherwise a
-// mystery — the server rejects a reward and nobody can reproduce the run:
+// Twin of /dev/lesson-lab. Two affordances the determinism contract (§5) needs and
+// that ONLY a lab can give, because a nondeterminism bug is otherwise a mystery — the
+// server rejects a reward and nobody can reproduce the run:
 //
 //   SEED         every launch states the seed it used, and the seed is overridable,
 //                so "it only breaks on this run" becomes a repeatable experiment.
-//   TICK STEP    a manual GameLoopScheduler (the kernel's injectable seam) advances
-//                the simulation one whole tick at a time instead of at rAF speed, so
-//                the tick a state goes wrong on can actually be looked at.
-//   SNAPSHOT     the live SimSnapshot the HUD reads, printed raw — the mechanic's own
-//                View is a renderer and can hide a wrong score behind a right-looking
-//                board.
+//   LOG EXPORT   the completed input log as JSON, copyable, so the exact run can be
+//                replayed through core/replay.ts here, in a test, or on the server.
+//
+// It also doubles as a build-progress view: every MECHANIC_IDS entry whose
+// MECHANIC_LOADERS row is still null is listed, so "which mechanics exist" is read off
+// the registry rather than remembered.
 ```
 
 ### frontend/src/game-engine/mechanics/autobattler/autobattler.test.ts
@@ -140593,16 +140594,16 @@ import {
 // rejection, wall redirection, mutually exclusive upgrade branches, the sell refund,
 // flying enemies ignoring the labyrinth, and per-tower firing timers).
 
+import Phaser from 'phaser'
+import { vi } from 'vitest'
+
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
 import { defenderBots } from './bots'
 import { defenderFixtures } from './fixtures'
+import { DefenderScene } from './scene'
 import {
-  DEFENDER_SPRITE_SLOTS,
-  defenderConfigSchema,
-  defenderContentSchema,
-  type DefenderConfig,
 ```
 
 ### frontend/src/game-engine/mechanics/defender/fixtures.ts
@@ -140660,7 +140661,7 @@ import {
   defenderSimulator, type DefenderState, cellIndex, cellCol, cellRow, cellCentre,
   enemyPosition, towerTypeAt, TERRAIN_ROCK, TERRAIN_ROAD, TERRAIN_ENTRY, TERRAIN_EXIT,
 } from './simulate'
-import { defenderConfigSchema, defenderContentSchema } from './schema'
+import { defenderConfigSchema, defenderContentSchema, DEFENDER_PRIORITIES, type DefenderPriority } from './schema'
 
 const GRID_OFFSET_X = 10
 ```
@@ -140970,8 +140971,6 @@ import { FLYER_SPRITE_SLOTS, flyerConfigSchema, flyerContentSchema } from './sch
 ```
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -140983,6 +140982,8 @@ import {
   floatText,
   scalePunch,
   spawnCollectSparkles,
+  spawnExplosion,
+  spawnWrongParticles,
 ```
 
 ### frontend/src/game-engine/mechanics/flyer/schema.ts
@@ -141139,10 +141140,10 @@ import { generatePlaceholderSprite, generateBackground } from '@/game-engine/pha
 import { Sfx } from '@/game-engine/phaser/sfx'
 import {
   launcherSimulator, type LauncherState, targetRect,
-  muzzlePoint, quantizeAngle, quantizePower,
+  muzzlePoint, quantizeAngle, quantizePower, activeProjectile,
   currentRound, previewPath, environmentAt, windAt,
 } from './simulate'
-import { launcherConfigSchema, launcherContentSchema } from './schema'
+import {
 ```
 
 ### frontend/src/game-engine/mechanics/launcher/schema.ts
@@ -141208,8 +141209,6 @@ import { z } from 'zod'
 ### frontend/src/game-engine/mechanics/runner/components.test.tsx
 
 ```
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // `runner` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
 //
 // The twin of `sorter/components.test.tsx`, and it exists for the same reason:
@@ -141221,8 +141220,10 @@ import { z } from 'zod'
 //
 // jsdom implements no PointerEvent constructor, so it is stubbed exactly as
 // `core/input.test.ts` does.
-
-import { act, fireEvent, render, screen } from '@testing-library/react'
+//
+// STATUS (post Phaser rewrite, commits 4680a61/4530850/695891c). `RunnerView`
+// rendered directly (the first `describe` block) still passes unmodified — plain
+// React, no Phaser in the tree. As with the sorter twin, `GamePlayer.tsx` no longer
 ```
 
 ### frontend/src/game-engine/mechanics/runner/components.tsx
@@ -141310,8 +141311,6 @@ import { replayGame, runBot } from '@/game-engine/core/replay'
 ```
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -141323,6 +141322,8 @@ import {
   floatText,
   scalePunch,
   spawnCollectSparkles,
+  spawnConfetti,
+  spawnWrongParticles,
 ```
 
 ### frontend/src/game-engine/mechanics/runner/schema.ts
@@ -141388,8 +141389,6 @@ import {
 ### frontend/src/game-engine/mechanics/sorter/components.test.tsx
 
 ```
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // `sorter` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
 //
 // WHY THIS FILE EXISTS. `sorter.test.ts` feeds the SIMULATOR hand-written `place`
@@ -141403,6 +141402,8 @@ import {
 //   2. the drag route emits the IDENTICAL event (drag is enhancement, not a second
 //      set of rules — the two paths must agree byte-for-byte or the server replays a
 //      different game than the one that was played),
+//   3. the whole chain — tap -> emit -> kernel -> step() -> HUD — moves the score
+//      when driven over simulated time through the real GamePlayer and real kernel.
 ```
 
 ### frontend/src/game-engine/mechanics/sorter/components.tsx
@@ -141470,8 +141471,6 @@ import { SORTER_SPRITE_SLOTS, sorterConfigSchema, sorterContentSchema } from './
 ```
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -141483,6 +141482,8 @@ import {
   spawnConfetti,
   spawnCorrectParticles,
   spawnWrongParticles,
+} from '@/game-engine/phaser/juice'
+import { BaseMechanicScene } from '@/game-engine/phaser/scene'
 ```
 
 ### frontend/src/game-engine/mechanics/sorter/schema.ts
@@ -141529,7 +141530,12 @@ import {
 
 ```
 // `sorter` — the four regression classes GAME_ENGINE.md §14 requires of a mechanic:
-// determinism, the winnability gate, schema bounds, and the mechanic's own rules.
+// determinism, the winnability gate, schema bounds, and the mechanic's own rules —
+// plus the Phaser-scene input/label regression classes the mechanic-pass audit added
+// (label_md resolution, the keyboard path, and the NON-static tap alternative).
+
+import Phaser from 'phaser'
+import { vi } from 'vitest'
 
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
@@ -141537,12 +141543,7 @@ import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/t
 import { sorterBots } from './bots'
 import { sorterFixtures } from './fixtures'
 import { sorterConfigSchema, sorterContentSchema, SORTER_SPRITE_SLOTS } from './schema'
-import { sorterSimulator, type SorterState } from './simulate'
-
-const SEED = 20260730
-
-function maxTicksOf(document: GameDocument): number {
-  const config = sorterConfigSchema.parse(document.config)
+import {
 ```
 
 ### frontend/src/game-engine/mechanics/stacker/bots.ts
@@ -141693,16 +141694,16 @@ import { z } from 'zod'
 // here the collapse criterion, the economy, the announced force timeline, the score
 // model switch and adaptive assistance.
 
+import { readFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { replayGame, runBot } from '@/game-engine/core/replay'
-import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
+import { TICK_MS, type GameDocument, type GameInputEvent, type SimInit } from '@/game-engine/core/types'
+import { GameEngineBridge } from '@/game-engine/phaser/bridge'
 
 import { stackerBots } from './bots'
 import { stackerFixtures } from './fixtures'
-import {
-  costOfPiece,
-  stackerConfigSchema,
-  stackerContentSchema,
-  STACKER_SPRITE_SLOTS,
 ```
 
 ### frontend/src/game-engine/phaser/assets.ts
@@ -141710,19 +141711,39 @@ import {
 ```
 import Phaser from 'phaser'
 
-export interface GamePalette {
-  bg: number
-  bgAccent: number
-  surface: number
-  primary: number
-  accent: number
-  success: number
-  danger: number
-  warning: number
-  text: number
-  inverse: number
-  inverseText: number
-}
+/**
+ * GamePalette values are NOT invented — every hex below is one of the six
+ * closed `GAME_PALETTES` rows from /DESIGN.md ("GAME_PALETTES — CLOSED").
+ * That table maps each palette id to five DESIGN.md tokens (Stage fill /
+ * Stage well / Canvas accent / Highlight / Ink on stage); this module is
+ * only responsible for resolving those token NAMES to the hex values
+ * already declared in `frontend/src/index.css` (`--lf-*`, light mode) /
+ * `frontend/tailwind.config.js`. No new colors are introduced here.
+ *
+ * Field ↔ DESIGN.md column mapping (see GamePalette below):
+ *   bg              = Stage fill
+ *   bgAccent/surface = Stage well (two fields, one token — background
+ *                      gradient end and card/panel fills read the same
+```
+
+### frontend/src/game-engine/phaser/bridge.test.ts
+
+```
+// GameEngineBridge — unit tests. GAME_ENGINE.md §5 (determinism & replay), §9
+// (tick ceiling).
+//
+// WHY THIS FILE EXISTS. `bridge.ts` is 162+ lines of pure TypeScript — no Phaser, no
+// DOM, only `core/types` and one `core/kernel` constant — and it is the exact code
+// that decides which tick every child's input gets stamped with, i.e. the input the
+// server later replays to derive XP. It had zero tests despite that. Nothing here
+// needs a mechanic, a scene or a browser: a tiny toy `Simulator`, declared below in
+// the same house style as `core/replay.test.ts`, is enough to exercise the bridge in
+// complete isolation from any real mechanic.
+
+import { describe, expect, it } from 'vitest'
+
+import { MAX_CATCH_UP_TICKS } from '@/game-engine/core/kernel'
+import { TICK_MS } from '@/game-engine/core/types'
 ```
 
 ### frontend/src/game-engine/phaser/bridge.ts
@@ -141750,19 +141771,19 @@ export interface BridgeSnapshot {
 ```
 import Phaser from 'phaser'
 
-const SHAKE_DEFAULTS = {
-  light: { intensity: 0.003, duration: 120 },
-  medium: { intensity: 0.008, duration: 220 },
-  heavy: { intensity: 0.018, duration: 400 },
-  collect: { intensity: 0.002, duration: 80 },
-  combo: { intensity: 0.006, duration: 200 },
-  explosion: { intensity: 0.025, duration: 600 },
-  wrong: { intensity: 0.004, duration: 150 },
+// Structural, not imported from ./scene — a `type` import of BaseMechanicScene would
+// work too (TS erases it), but this avoids any coupling at all: any Phaser.Scene that
+// happens to carry a `reducedMotion` flag (which BaseMechanicScene always does, per
+// its `init()`) satisfies this without scene.ts and juice.ts knowing about each other.
+interface MotionAwareScene extends Phaser.Scene {
+  reducedMotion?: boolean
 }
 
-export function addShake(
-  scene: Phaser.Scene,
-  preset: keyof typeof SHAKE_DEFAULTS | { intensity: number; duration: number },
+/** GAME_ENGINE.md §10 / CLAUDE.md §1.11: reduced motion disables DECORATIVE effects
+ *  only — never the simulation, never scoring, never completion. Every camera shake,
+ *  flash and particle burst in this file is gated on this at the source, so no scene
+ *  call site has to remember to check it. */
+function isReduced(scene: Phaser.Scene): boolean {
 ```
 
 ### frontend/src/game-engine/phaser/scene.ts
@@ -141773,16 +141794,16 @@ import Phaser from 'phaser'
 import type { GameDocument } from '@/game-engine/core/types'
 
 import { resolvePalette, type GamePalette } from './assets'
-import { GameEngineBridge, type BridgeSnapshot } from './bridge'
+import { GameEngineBridge, type BridgeFinishPayload, type BridgeSnapshot } from './bridge'
 import { createParticleTextures } from './juice'
+import {
+  createSpriteLoadTracker,
+  queueRealSprites,
+  resolveBackgroundKey,
+  resolveSpriteKey,
+  type SpriteLoadTracker,
+} from './spriteLoader'
 
-export interface MechanicSceneInit {
-  document: GameDocument
-  runId: string
-  seed: number
-  maxTicks: number
-  onSnapshot?: (snap: BridgeSnapshot) => void
-  onFinish?: (inputLog: readonly import('@/game-engine/core/types').GameInputEvent[]) => void
 ```
 
 ### frontend/src/game-engine/phaser/sceneRegistry.ts
@@ -141808,41 +141829,81 @@ const SCENE_LOADERS: Record<MechanicId, () => Promise<SceneModule>> = {
 ### frontend/src/game-engine/phaser/sfx.ts
 
 ```
+import { isGameAudioMuted } from '@/game-engine/core/audio'
+
 let audioCtx: AudioContext | null = null
 
+// The ONE chokepoint every Sfx.* entry point routes through (playTone/playNoise, and
+// the two hand-rolled whoosh/powerUp calls below) — checked here rather than at each
+// of the 12 call sites, so muting can never be forgotten by a future sound. Before this
+// fix `Sfx.*` ran its own AudioContext straight to `ctx.destination` and never
+// consulted the mute flag the pause overlay's icon claimed to control.
 function getCtx(): AudioContext | null {
+  if (isGameAudioMuted()) return null
   if (audioCtx && audioCtx.state !== 'closed') return audioCtx
   try {
     audioCtx = new (window.AudioContext || ((window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext))()
     return audioCtx
-  } catch {
-    return null
-  }
-}
+```
 
-function playTone(
-  frequency: number,
-  duration: number,
+### frontend/src/game-engine/phaser/spriteLoader.test.ts
+
+```
+import { describe, expect, it } from 'vitest'
+
+import type { GameSkin } from '@/game-engine/core/types'
+
+import {
+  createSpriteLoadTracker,
+  queueRealSprites,
+  realSpriteKey,
+  REAL_BACKGROUND_KEY,
+  resolveBackgroundKey,
+  resolveSpriteKey,
+  type SpriteLoaderTarget,
+} from './spriteLoader'
+
+/** A minimal, fully controllable stand-in for Phaser's `load`/`textures` plugins —
+```
+
+### frontend/src/game-engine/phaser/spriteLoader.ts
+
+```
+// GAME_ENGINE.md: skin.sprites (Prism → Depot raster URLs, keyed by the mechanic's
+// declared sprite slot ids) and skin.background_url are part of the document contract
+// and are authored by the generation pipeline, but before this file NOTHING ever
+// called `this.load.image(...)` for them — `assets.ts`'s procedural placeholders were
+// the only rendering path, unconditionally, even when real art was declared. This
+// file is the seam: it queues the real URLs in `preload()` and hands mechanics a
+// single decision point (`resolveSpriteKey`) for "did the real art actually load, or
+// do I draw the placeholder" — so no mechanic has to know which path is active.
+//
+// Kept as free functions over a narrow duck-typed `SpriteLoaderTarget` (not methods
+// hung directly off `Phaser.Scene`) on purpose: the app's global Phaser test stub
+// (src/test-setup.ts) replaces the whole `phaser` module with a bare `class {}` for
+// `Scene`, so nothing here can depend on constructing a real `Phaser.Scene` instance,
+// or on `Phaser.Loader.Events` existing at import time, and still be unit-testable.
+
 ```
 
 ### frontend/src/game-engine/player/GamePlayer.test.tsx
 
 ```
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // GamePlayer contract tests — GAME_ENGINE.md §6 (the reward path), §7 (unsupported
 // mechanic), §10 (pause).
 //
 // Everything here runs against the REAL `sorter` slice and its REAL fixtures (§1.14 —
-// fixtures satisfy the production schema, tests never get a relaxed one), and the loop
-// is driven through the kernel's documented scheduler seam rather than fake timers or
-// the wall clock, so the ticks these tests observe are the ticks production runs.
+// fixtures satisfy the production schema, tests never get a relaxed one).
 //
 // Copy is asserted through `i18n.t`, never through literal English: the assertions then
 // hold whatever locale the detector picks, and a key that games.json does not define
 // yet resolves to the key itself on BOTH sides of the comparison.
-
-import { fireEvent, render, screen, act } from '@testing-library/react'
+//
+// STATUS (post Phaser rewrite, commits 4680a61/4530850/695891c). The Phaser rewrite
+// replaced the React-DOM play surface with a `<canvas>` PhaserGameBox, and it also
+// deleted the injectable-clock seam: `GamePlayerProps.scheduler` is still declared and
+// still threaded down to `GameStage`, but `GameStage` (this file's production
+// counterpart, player/GamePlayer.tsx) never destructures it, so it is a DEAD prop on
 ```
 
 ### frontend/src/game-engine/player/GamePlayer.tsx
@@ -141868,21 +141929,41 @@ import { fireEvent, render, screen, act } from '@testing-library/react'
 ### frontend/src/game-engine/player/PhaserGameBox.tsx
 
 ```
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import Phaser from 'phaser'
 
-import type { GameDocument, GameInputEvent, MechanicId } from '@/game-engine/core/types'
-import type { BridgeSnapshot } from '@/game-engine/phaser/bridge'
+import type { GameDocument, MechanicId } from '@/game-engine/core/types'
+import type { BridgeFinishPayload, BridgeSnapshot } from '@/game-engine/phaser/bridge'
+import { CANVAS_STRING_KEYS } from '@/game-engine/phaser/scene'
 import { loadMechanicScene } from '@/game-engine/phaser/sceneRegistry'
+import { MECHANIC_META } from '@/game-engine/registry'
 import { cn } from '@/lib/utils'
 
 export interface PhaserGameBoxProps {
   mechanic: MechanicId
   document: GameDocument
   runId: string
-  seed: number
-  maxTicks: number
-  paused: boolean
+```
+
+### frontend/src/game-engine/player/hud.test.tsx
+
+```
+// GameHud's screen-reader live region — GAME_ENGINE.md §10 (canvas-vs-chrome boundary).
+//
+// The canvas is pointer-driven Phaser and out of reach for a screen reader by design;
+// what this file verifies is the fallback that closes the audit finding: an AT user is
+// never left silent about score/round/completion, and — just as important — is never
+// spammed on ticks that changed nothing announced.
+//
+// `useLiveAnnouncement` is the one piece of real branching logic here (the JSX around
+// it is a static `aria-live` div), so it is tested directly via `renderHook` rather than
+// through the full `GameHud` render (which needs kit components, icons, etc. that would
+// make this a rendering test instead of a logic test).
+//
+// NOT verified here (needs a real screen reader / live AT session, out of reach in this
+// environment): that a mutation of this div's text is actually SPOKEN by VoiceOver/
+// NVDA/JAWS with the timing and interruption behaviour `aria-live="polite"` implies.
 ```
 
 ### frontend/src/game-engine/player/hud.tsx

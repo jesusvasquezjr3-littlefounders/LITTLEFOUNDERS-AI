@@ -10,11 +10,21 @@ import {
   defenderSimulator, type DefenderState, cellIndex, cellCol, cellRow, cellCentre,
   enemyPosition, towerTypeAt, TERRAIN_ROCK, TERRAIN_ROAD, TERRAIN_ENTRY, TERRAIN_EXIT,
 } from './simulate'
-import { defenderConfigSchema, defenderContentSchema } from './schema'
+import { defenderConfigSchema, defenderContentSchema, DEFENDER_PRIORITIES, type DefenderPriority } from './schema'
 
 const GRID_OFFSET_X = 10
 const GRID_OFFSET_Y = 40
 const PALETTE_HEIGHT = 64
+/** §1.11's 44px touch-target floor, in world units — defender never overrides
+ *  `getWorldSize()` (both shipped fixtures author below the 800x600 canvas: see
+ *  695891c's commit message), so the camera stays at zoom 1 and one world unit is one
+ *  real CSS px at the canvas's fit scale, matching launcher's `TOUCH_TARGET` pattern
+ *  rather than sorter's zoomed-camera `MIN_TOUCH_DESIGN_PX` workaround. */
+const TOUCH_TARGET = 44
+/** Namespaces a build-palette selection as a global-ability cast (secondary currency)
+ *  rather than a tower/wall placement, so `handleCellClick` can tell them apart —
+ *  mirrors `components.tsx`'s own `ABILITY_PREFIX` convention. */
+const ABILITY_PREFIX = '__ability__:'
 
 export class DefenderScene extends BaseMechanicScene<DefenderState> {
   private cellSize = 32
@@ -35,8 +45,18 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
   private paletteBg!: Phaser.GameObjects.Rectangle
   private paletteBtnGfx!: Phaser.GameObjects.Graphics
   private paletteBtns: { cell: number; rect: Phaser.GameObjects.Rectangle; icon: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }[] = []
+  /** Global-ability palette buttons (secondary currency, `config.economy.secondary`).
+   *  Empty when a manifest declares no secondary economy — see `createBuildPalette`. */
+  private abilityBtns: { id: string; rect: Phaser.GameObjects.Rectangle; icon: Phaser.GameObjects.Arc; label: Phaser.GameObjects.Text }[] = []
+  /** Voluntary heat-modifier toggles (`config.heat`), built once and shown only while
+   *  no tower is inspected AND no wave has started yet — see `updateHeatPanel`. */
+  private heatBtns: { index: number; rect: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text }[] = []
+  private heatPanel!: Phaser.GameObjects.Container
   private startWaveBtn!: Phaser.GameObjects.Container
-  private sellBtn!: Phaser.GameObjects.Container
+  /** The inspected-tower panel: re-populated on every `handleCellClick`/`updateTowerInfo`
+   *  with the priority-cycle button, up to 3 upgrade-branch buttons and the sell button
+   *  — never just the sell button alone (the audit's confirmed-missing surface). */
+  private actionPanel!: Phaser.GameObjects.Container
   private towerInfoText!: Phaser.GameObjects.Text
   private selectedCell = -1
   private selectedPaletteSlot = ''
@@ -58,6 +78,53 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
   create() {
     this.generateTextures()
     super.create()
+  }
+
+  /** Resolves a `games.canvas.*` key from `this.strings` and fills in `{{var}}`
+   *  placeholders — `PhaserGameBox.tsx` resolves each key to its raw, non-interpolated
+   *  template exactly once at scene start (see `CANVAS_STRING_KEYS`'s doc comment in
+   *  phaser/scene.ts), so a mechanic that needs a parameterized readout does its own
+   *  substitution here (same pattern as launcher/scene.ts's `fmt`). Falls back to the
+   *  bare key (never a hardcoded English literal) so a missing wire-up is visible
+   *  instead of silently shipping English. */
+  private fmt(key: string, vars: Record<string, string | number> = {}): string {
+    let s = this.strings[key] ?? key
+    for (const [name, value] of Object.entries(vars)) s = s.split(`{{${name}}}`).join(String(value))
+    return s
+  }
+
+  /** The report's 8 fixed archetype ids resolved to their `games.canvas.archetype*`
+   *  name — a CLOSED set (schema.ts's `DEFENDER_ARCHETYPES`), so every branch is
+   *  covered and the fallback is unreachable in practice. */
+  private archetypeLabel(archetype: string): string {
+    const key =
+      archetype === 'single' ? 'archetypeSingle'
+      : archetype === 'area' ? 'archetypeArea'
+      : archetype === 'slow' ? 'archetypeSlow'
+      : archetype === 'dot' ? 'archetypeDot'
+      : archetype === 'antiair' ? 'archetypeAntiair'
+      : archetype === 'aura' ? 'archetypeAura'
+      : archetype === 'economy' ? 'archetypeEconomy'
+      : archetype === 'block' ? 'archetypeBlock'
+      : undefined
+    return key === undefined ? archetype : (this.strings[key] ?? key)
+  }
+
+  /** The 5 switchable target priorities (schema.ts's `DEFENDER_PRIORITIES`), resolved
+   *  to their `games.canvas.priority*` name. */
+  private priorityLabel(priority: DefenderPriority): string {
+    const key =
+      priority === 'first' ? 'priorityFirst'
+      : priority === 'last' ? 'priorityLast'
+      : priority === 'strongest' ? 'priorityStrongest'
+      : priority === 'weakest' ? 'priorityWeakest'
+      : 'priorityNearest'
+    return this.strings[key] ?? key
+  }
+
+  private nextPriority(current: DefenderPriority): DefenderPriority {
+    const index = DEFENDER_PRIORITIES.indexOf(current)
+    return DEFENDER_PRIORITIES[(index + 1) % DEFENDER_PRIORITIES.length] ?? 'first'
   }
 
   generateTextures() {
@@ -131,12 +198,12 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
   createStatusBar() {
     const st = this.bridge.state
     const y = 6
-    this.goldText = this.makeText(GRID_OFFSET_X + 4, y, `Gold: ${st.gold}`, 14, 0xffcc00, 20).setOrigin(0, 0)
-    this.waveText = this.makeText(GRID_OFFSET_X + this.gridW / 2 + 4, y, `Wave ${st.waveIndex + 1}/${st.config.waves.length}`, 14, this.palette.text, 20).setOrigin(0, 0)
-    this.phaseText = this.makeText(GRID_OFFSET_X + this.gridW / 2 + 4, y + 16, st.phase, 11, this.palette.primary, 20).setOrigin(0, 0)
-    this.livesText = this.makeText(GRID_OFFSET_X + this.gridW - 4, y, st.lives !== null ? `❤ ${st.lives}` : '', 14, this.palette.danger, 20).setOrigin(1, 0)
+    this.goldText = this.makeText(GRID_OFFSET_X + 4, y, this.fmt('goldLabel', { amount: st.gold }), 14, 0xffcc00, 20).setOrigin(0, 0)
+    this.waveText = this.makeText(GRID_OFFSET_X + this.gridW / 2 + 4, y, this.fmt('waveLabel', { current: st.waveIndex + 1, total: st.config.waves.length }), 14, this.palette.text, 20).setOrigin(0, 0)
+    this.phaseText = this.makeText(GRID_OFFSET_X + this.gridW / 2 + 4, y + 16, this.strings['prep'] ?? 'prep', 11, this.palette.primary, 20).setOrigin(0, 0)
+    this.livesText = this.makeText(GRID_OFFSET_X + this.gridW - 4, y, st.lives !== null ? this.fmt('livesLabel', { count: st.lives }) : '', 14, this.palette.danger, 20).setOrigin(1, 0)
     if (st.config.economy.secondary) {
-      this._gemsText = this.makeText(GRID_OFFSET_X + 120, y, `Gems: ${st.gems}`, 14, 0xcc44cc, 20).setOrigin(0, 0)
+      this._gemsText = this.makeText(GRID_OFFSET_X + 120, y, this.fmt('gemsLabel', { amount: st.gems }), 14, 0xcc44cc, 20).setOrigin(0, 0)
     }
   }
   private _gemsText?: Phaser.GameObjects.Text
@@ -196,7 +263,38 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       Sfx.click()
     })
 
-    const swX = GRID_OFFSET_X + (st.config.towers.length + 1) * (btnW + 4) + btnW / 2
+    // Global abilities (secondary currency): one palette button per declared ability,
+    // inserted between the wall and the start-wave button. Empty when the manifest
+    // declares no `economy.secondary` — the report's "secondary currency for global
+    // abilities" row, previously entirely unreachable (audit finding).
+    const secondary = st.config.economy.secondary
+    const abilities = secondary?.abilities ?? []
+    this.abilityBtns = []
+    abilities.forEach((ability, index) => {
+      const ax = GRID_OFFSET_X + (st.config.towers.length + 1 + index) * (btnW + 4) + btnW / 2
+      const ay = py + ph / 2
+      const color = 0xcc44cc
+      const abBg = this.makeRect(ax, ay, btnW, btnH, color, 0.15, 4)
+        .setStrokeStyle(1, color, 0.4)
+        .setInteractive({ useHandCursor: true })
+      const abIcon = this.makeCircle(ax, ay - 8, 8, color, 1, 5)
+      const abLabel = this.makeText(ax, ay + 14, `${ability.cost}`, 9, this.palette.text, 6)
+      const clickSlot = `${ABILITY_PREFIX}${ability.id}`
+      abBg.on('pointerdown', () => {
+        if (this.paused || this.finished) return
+        const current = this.bridge.state
+        const cooldown = current.abilityCooldown[index] ?? 0
+        if (current.gems < ability.cost || cooldown > 0) { Sfx.wrong(); addShake(this, 'light'); return }
+        this.selectedPaletteSlot = clickSlot
+        for (const b of this.paletteBtns) b.rect.setStrokeStyle(1, 0x666666, 0.3)
+        for (const b of this.abilityBtns) b.rect.setStrokeStyle(1, color, 0.4)
+        abBg.setStrokeStyle(3, this.palette.accent, 1)
+        Sfx.click()
+      })
+      this.abilityBtns.push({ id: ability.id, rect: abBg, icon: abIcon, label: abLabel })
+    })
+
+    const swX = GRID_OFFSET_X + (st.config.towers.length + 1 + abilities.length) * (btnW + 4) + btnW / 2
     const swBtn = this.makeRect(swX, wallY, btnW + 10, btnH, this.palette.success, 0.25, 4)
       .setStrokeStyle(2, this.palette.success, 0.8)
       .setInteractive({ useHandCursor: true })
@@ -209,8 +307,41 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
     this.startWaveBtn = this.add.container(0, 0, [swBtn])
 
     this.towerInfoText = this.makeText(10, GRID_OFFSET_Y + this.gridH + PALETTE_HEIGHT + 4, '', 10, this.palette.text, 20).setOrigin(0, 0)
-    this.sellBtn = this.add.container(-100, -100, [])
-    this.sellBtn.setAlpha(0)
+    this.actionPanel = this.add.container(0, 0, [])
+    this.actionPanel.setAlpha(0)
+
+    this.createHeatPanel(st)
+  }
+
+  /** Voluntary "heat" modifiers (`config.heat`) — built ONCE (never rebuilt per frame)
+   *  and toggled visible only while no tower is inspected and no wave has started yet,
+   *  reusing the same vertical slot the tower-inspect `actionPanel` occupies (the two
+   *  are mutually exclusive, so there is no layout conflict). */
+  createHeatPanel(st: DefenderState) {
+    const heats = st.config.heat ?? []
+    const y = GRID_OFFSET_Y + this.gridH + PALETTE_HEIGHT + 4 + 26
+    this.heatBtns = []
+    const children: Phaser.GameObjects.GameObject[] = []
+    let cursor = GRID_OFFSET_X
+    const gap = 6
+    const w = 96
+    heats.forEach((heat, index) => {
+      const cx = cursor + w / 2
+      cursor += w + gap
+      const bg = this.makeRect(cx, y, w, TOUCH_TARGET, this.palette.warning, 0.15, 20)
+        .setStrokeStyle(1, this.palette.warning, 0.4)
+        .setInteractive({ useHandCursor: true })
+      const label = this.makeText(cx, y, this.fmt('heatOption', { multiplier: (heat.score_multiplier_pct / 100).toFixed(1) }), 11, this.palette.warning, 21)
+      bg.on('pointerdown', () => {
+        if (this.paused || this.finished) return
+        if (this.bridge.state.wavesStarted > 0) return
+        this.bridge.enqueue('heat', { slot: heat.id })
+        Sfx.click()
+      })
+      this.heatBtns.push({ index, rect: bg, label })
+      children.push(bg, label)
+    })
+    this.heatPanel = this.add.container(0, 0, children)
   }
 
   setupInput() {
@@ -218,6 +349,17 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       p: Phaser.Input.Keyboard.KeyCodes.P,
       w: Phaser.Input.Keyboard.KeyCodes.W,
       s: Phaser.Input.Keyboard.KeyCodes.S,
+      // Keyboard access for the newly-wired actions, extending (not replacing) the
+      // existing p/w/s/space/esc scheme: 't' cycles target priority and 'u' upgrades
+      // the selected tower (both operate on `selectedCell`, exactly like 's' already
+      // does for sell); '1'/'2'/'3' cast a global ability by slot; 'h' cycles the
+      // voluntary heat modifier before the first wave.
+      t: Phaser.Input.Keyboard.KeyCodes.T,
+      u: Phaser.Input.Keyboard.KeyCodes.U,
+      h: Phaser.Input.Keyboard.KeyCodes.H,
+      one: Phaser.Input.Keyboard.KeyCodes.ONE,
+      two: Phaser.Input.Keyboard.KeyCodes.TWO,
+      three: Phaser.Input.Keyboard.KeyCodes.THREE,
       space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       esc: Phaser.Input.Keyboard.KeyCodes.ESC,
     }) as Record<string, Phaser.Input.Keyboard.Key>
@@ -235,6 +377,18 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       if (wr) {
         this.tweens.add({ targets: wr, scaleX: 1.15, scaleY: 1.15, duration: 90, yoyo: true, ease: 'Back.easeOut',
           onComplete: () => { wr.setScale(1, 1) } })
+      }
+      return
+    }
+
+    if (this.selectedPaletteSlot.startsWith(ABILITY_PREFIX)) {
+      const col = cellCol(st.cols, cell)
+      const row = cellRow(st.cols, cell)
+      this.bridge.enqueue('ability', { slot: this.selectedPaletteSlot.slice(ABILITY_PREFIX.length), x: col, y: row })
+      const cr = this.cellRects[row]?.[col]
+      if (cr) {
+        this.tweens.add({ targets: cr, scaleX: 1.15, scaleY: 1.15, duration: 90, yoyo: true, ease: 'Back.easeOut',
+          onComplete: () => { cr.setScale(1, 1) } })
       }
       return
     }
@@ -260,10 +414,18 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       this.selectedCell = -1
       this.rangeCircle.setAlpha(0)
       this.towerInfoText.setText('')
-      this.sellBtn.setAlpha(0)
+      this.actionPanel.removeAll(true)
+      this.actionPanel.setAlpha(0)
     }
   }
 
+  /**
+   * Rebuilds the tower-inspect action panel: target-priority cycle, one button per
+   * upgrade branch still open to this tower (mutually exclusive once committed — the
+   * simulator's own rule, mirrored here rather than re-derived), and sell. Previously
+   * this panel held ONLY sell (the audit's confirmed-missing surface for `upgrade` and
+   * `priority`); every button here enqueues an action `simulate.ts` already declares.
+   */
   updateTowerInfo(st: DefenderState, cell: number) {
     const uid = st.towerAt[cell] ?? 0
     if (uid === 0) return
@@ -271,29 +433,85 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
     if (!tower) return
     const type = towerTypeAt(st.config, tower.typeIndex)
     const infoY = GRID_OFFSET_Y + this.gridH + PALETTE_HEIGHT + 4
-    this.towerInfoText.setText(`${type?.archetype ?? ''} | Dmg:${tower.damage} | Rng:${tower.range} | Tier:${tower.branchTier}`)
+    this.towerInfoText.setText(this.fmt('towerInfo', {
+      archetype: this.archetypeLabel(tower.archetype),
+      damage: tower.damage,
+      range: tower.range,
+      tier: tower.branchTier,
+    }))
 
-    const sellX = GRID_OFFSET_X + this.gridW - 40
-    const sellY = infoY + 10
-    this.sellBtn.removeAll(true)
-    const sellBg = this.makeRect(sellX, sellY, 32, 20, this.palette.danger, 0.3, 20)
+    const col = cellCol(st.cols, cell)
+    const row = cellRow(st.cols, cell)
+    const y = infoY + 26
+    this.actionPanel.removeAll(true)
+
+    let cursor = GRID_OFFSET_X
+    const gap = 6
+    const place = (w: number): number => {
+      const cx = cursor + w / 2
+      cursor += w + gap
+      return cx
+    }
+
+    // Target priority — cycles through the 5 CLOSED priorities on every tap, exactly
+    // like the DOM renderer's `nextPriority` (components.tsx).
+    const priW = 92
+    const priCx = place(priW)
+    const priBg = this.makeRect(priCx, y, priW, TOUCH_TARGET, this.palette.primary, 0.25, 20)
+      .setStrokeStyle(1, this.palette.primary, 0.6)
+      .setInteractive({ useHandCursor: true })
+    const priLabel = this.makeText(priCx, y, this.priorityLabel(tower.priority), 10, this.palette.primary, 21)
+    priBg.on('pointerdown', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('priority', { slot: this.nextPriority(tower.priority), x: col, y: row })
+      Sfx.click()
+    })
+    this.actionPanel.add([priBg, priLabel])
+
+    // Upgrade branches: only the ones still open to this tower (branchId===null shows
+    // every branch; once committed, only the chosen one survives the filter) — and
+    // only while that branch still has an unbought tier.
+    const branches = (type?.upgrades ?? []).filter((branch) => tower.branchId === null || tower.branchId === branch.id)
+    branches.forEach((branch, index) => {
+      const tier = branch.tiers[tower.branchTier]
+      if (tier === undefined) return
+      const affordable = st.gold >= tier.cost
+      const upW = 104
+      const upCx = place(upW)
+      const upBg = this.makeRect(upCx, y, upW, TOUCH_TARGET, this.palette.accent, affordable ? 0.25 : 0.1, 20)
+        .setStrokeStyle(1, this.palette.accent, affordable ? 0.6 : 0.2)
+        .setInteractive({ useHandCursor: true })
+      const upLabel = this.makeText(upCx, y, this.fmt('upgradeBranch', { n: index + 1, tier: tower.branchTier + 1, cost: tier.cost }), 9, this.palette.accent, 21)
+      upBg.on('pointerdown', () => {
+        if (this.paused || this.finished) return
+        if (st.gold < tier.cost) { Sfx.wrong(); addShake(this, 'light'); return }
+        this.bridge.enqueue('upgrade', { slot: branch.id, x: col, y: row })
+        Sfx.click()
+      })
+      this.actionPanel.add([upBg, upLabel])
+    })
+
+    // Sell, with the exact refund the tap will apply shown underneath it.
+    const sellW = 92
+    const sellCx = place(sellW)
+    const refund = Math.floor((tower.invested * st.config.build.sell_refund_pct) / 100)
+    const sellBg = this.makeRect(sellCx, y, sellW, TOUCH_TARGET, this.palette.danger, 0.25, 20)
       .setStrokeStyle(1, this.palette.danger, 0.6)
       .setInteractive({ useHandCursor: true })
-    const sellLabel = this.makeText(sellX, sellY, 'Sell', 9, this.palette.danger, 21)
+    const sellLabel = this.makeText(sellCx, y - 7, this.strings['sell'] ?? 'sell', 10, this.palette.danger, 21)
+    const sellSub = this.makeText(sellCx, y + 8, this.fmt('incomePreview', { amount: refund }), 9, this.palette.danger, 21)
     sellBg.on('pointerdown', () => {
       if (this.paused || this.finished) return
-      const col = cellCol(st.cols, cell)
-      const row = cellRow(st.cols, cell)
       this.bridge.enqueue('sell', { x: col, y: row })
       this.selectedCell = -1
       this.rangeCircle.setAlpha(0)
       this.towerInfoText.setText('')
-      this.sellBtn.setAlpha(0)
+      this.actionPanel.removeAll(true)
+      this.actionPanel.setAlpha(0)
       Sfx.click()
     })
-    this.sellBtn.add([sellBg, sellLabel])
-    this.sellBtn.setPosition(0, 0)
-    this.sellBtn.setAlpha(1)
+    this.actionPanel.add([sellBg, sellLabel, sellSub])
+    this.actionPanel.setAlpha(1)
   }
 
   showRangeIndicator(st: DefenderState, cell: number) {
@@ -326,9 +544,39 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
     this.syncEnemiesFromState(st, prev, a)
     this.updateStatusBar(st)
     this.updatePaletteButtons(st)
+    this.updateAbilityButtons(st)
     this.updateWaveButton(st)
-    if (this.selectedCell >= 0) this.showRangeIndicator(st, this.selectedCell)
+    this.updateHeatPanel(st)
+    this.updateSelectedTowerPanel(st)
     this.checkRoundTransition(prev, st)
+  }
+
+  /** Live-refreshes the inspect panel (priority/upgrade/sell) whenever anything it
+   *  depends on actually changes — the tower's own tier/priority, or the gold that
+   *  gates affordability — rather than only on the click that opened it, so buying an
+   *  upgrade immediately shows the NEXT tier's cost instead of a stale one. Also
+   *  clears the selection if the inspected tower stops existing (sold from elsewhere,
+   *  e.g. the keyboard 's' path). */
+  private _actionPanelKey = ''
+
+  updateSelectedTowerPanel(st: DefenderState): void {
+    if (this.selectedCell < 0) return
+    const uid = st.towerAt[this.selectedCell] ?? 0
+    const tower = st.towers.find((t) => t.uid === uid)
+    if (!tower) {
+      this.selectedCell = -1
+      this.rangeCircle.setAlpha(0)
+      this.towerInfoText.setText('')
+      this.actionPanel.removeAll(true)
+      this.actionPanel.setAlpha(0)
+      return
+    }
+    this.showRangeIndicator(st, this.selectedCell)
+    const key = `${this.selectedCell}:${tower.uid}:${tower.branchTier}:${tower.priority}:${st.gold}`
+    if (key !== this._actionPanelKey) {
+      this._actionPanelKey = key
+      this.updateTowerInfo(st, this.selectedCell)
+    }
   }
 
   handleKeys(st: DefenderState) {
@@ -336,18 +584,68 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
     if (Phaser.Input.Keyboard.JustDown(this.keys.space!) || Phaser.Input.Keyboard.JustDown(this.keys.w!)) {
       this.bridge.enqueue('start_wave')
     }
-    if (Phaser.Input.Keyboard.JustDown(this.keys.s!)) {
+    if (Phaser.Input.Keyboard.JustDown(this.keys.s!) && this.selectedCell >= 0) {
       const col = cellCol(st.cols, this.selectedCell)
       const row = cellRow(st.cols, this.selectedCell)
       this.bridge.enqueue('sell', { x: col, y: row })
       this.selectedCell = -1
       this.rangeCircle.setAlpha(0)
+      this.actionPanel.removeAll(true)
+      this.actionPanel.setAlpha(0)
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.keys.t!) && this.selectedCell >= 0) {
+      const uid = st.towerAt[this.selectedCell] ?? 0
+      const tower = st.towers.find((candidate) => candidate.uid === uid)
+      if (tower) {
+        const col = cellCol(st.cols, this.selectedCell)
+        const row = cellRow(st.cols, this.selectedCell)
+        this.bridge.enqueue('priority', { slot: this.nextPriority(tower.priority), x: col, y: row })
+      }
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.keys.u!) && this.selectedCell >= 0) {
+      const uid = st.towerAt[this.selectedCell] ?? 0
+      const tower = st.towers.find((candidate) => candidate.uid === uid)
+      const type = tower ? towerTypeAt(st.config, tower.typeIndex) : undefined
+      const branch = (type?.upgrades ?? []).find((candidate) => tower!.branchId === null || tower!.branchId === candidate.id)
+      if (tower && branch) {
+        const col = cellCol(st.cols, this.selectedCell)
+        const row = cellRow(st.cols, this.selectedCell)
+        this.bridge.enqueue('upgrade', { slot: branch.id, x: col, y: row })
+      }
+    }
+    const secondary = st.config.economy.secondary
+    if (secondary) {
+      const abilityKeys = [this.keys.one, this.keys.two, this.keys.three]
+      for (let i = 0; i < secondary.abilities.length; i += 1) {
+        const key = abilityKeys[i]
+        if (key === undefined || !Phaser.Input.Keyboard.JustDown(key)) continue
+        const ability = secondary.abilities[i]
+        if (ability === undefined) continue
+        // No keyboard cursor exists over the grid — cast at the selected tower's cell
+        // when one is inspected, else defend the base (the first exit cell), mirroring
+        // the pointer path's own dependency on a prior tap-to-select.
+        const target = this.selectedCell >= 0 ? this.selectedCell : (st.exitCells[0] ?? -1)
+        if (target >= 0) {
+          const col = cellCol(st.cols, target)
+          const row = cellRow(st.cols, target)
+          this.bridge.enqueue('ability', { slot: ability.id, x: col, y: row })
+        }
+      }
+    }
+    if (Phaser.Input.Keyboard.JustDown(this.keys.h!) && st.wavesStarted === 0) {
+      const heats = st.config.heat ?? []
+      if (heats.length > 0) {
+        const nextIndex = st.heatIndex >= 0 && st.heatIndex === heats.length - 1 ? st.heatIndex : st.heatIndex + 1
+        const next = heats[nextIndex]
+        if (next) this.bridge.enqueue('heat', { slot: next.id })
+      }
     }
     if (Phaser.Input.Keyboard.JustDown(this.keys.esc!)) {
       this.selectedCell = -1
       this.selectedPaletteSlot = ''
       this.rangeCircle.setAlpha(0)
-      this.sellBtn.setAlpha(0)
+      this.actionPanel.removeAll(true)
+      this.actionPanel.setAlpha(0)
     }
   }
 
@@ -501,13 +799,13 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
   }
 
   updateStatusBar(st: DefenderState) {
-    this.goldText.setText(`Gold: ${st.gold}`)
-    this.waveText.setText(`Wave ${st.waveIndex + 1}/${st.config.waves.length}`)
-    this.phaseText.setText(st.phase === 'prep' ? 'Prep' : `Wave ${st.waveIndex + 1}`)
-    if (st.lives !== null) this.livesText.setText(`❤ ${st.lives}`)
+    this.goldText.setText(this.fmt('goldLabel', { amount: st.gold }))
+    this.waveText.setText(this.fmt('waveLabel', { current: st.waveIndex + 1, total: st.config.waves.length }))
+    this.phaseText.setText(st.phase === 'prep' ? (this.strings['prep'] ?? 'prep') : (this.strings['fight'] ?? 'fight'))
+    if (st.lives !== null) this.livesText.setText(this.fmt('livesLabel', { count: st.lives }))
     else this.livesText.setText('')
     if (this._gemsText && st.config.economy.secondary) {
-      this._gemsText.setText(`Gems: ${st.gems}`)
+      this._gemsText.setText(this.fmt('gemsLabel', { amount: st.gems }))
     }
   }
 
@@ -518,6 +816,36 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       const canAfford = st.gold >= t.cost && st.phase === 'prep'
       btn.rect.setAlpha(canAfford ? 1 : 0.3)
       btn.icon.setAlpha(canAfford ? 1 : 0.3)
+    }
+  }
+
+  /** Gems + cooldown gate ability affordability — unlike towers, abilities are NOT
+   *  phase-gated: their whole purpose is acting on enemies already on the board. */
+  updateAbilityButtons(st: DefenderState): void {
+    const secondary = st.config.economy.secondary
+    const abilities = secondary?.abilities ?? []
+    for (let i = 0; i < this.abilityBtns.length; i += 1) {
+      const btn = this.abilityBtns[i]!
+      const ability = abilities[i]
+      if (!ability) continue
+      const onCooldown = (st.abilityCooldown[i] ?? 0) > 0
+      const canAfford = st.gems >= ability.cost && !onCooldown
+      btn.rect.setAlpha(canAfford ? 1 : 0.3)
+      btn.icon.setAlpha(canAfford ? 1 : 0.3)
+    }
+  }
+
+  /** Shown only while no tower is inspected and no wave has started — the exact
+   *  window `applyHeat` itself accepts (`draft.wavesStarted > 0` refuses it), so the
+   *  panel is never offered dishonestly. */
+  updateHeatPanel(st: DefenderState): void {
+    const show = this.selectedCell < 0 && st.wavesStarted === 0 && this.heatBtns.length > 0
+    this.heatPanel.setVisible(show)
+    if (!show) return
+    for (const btn of this.heatBtns) {
+      const active = st.heatIndex === btn.index
+      btn.rect.setStrokeStyle(active ? 2 : 1, this.palette.warning, active ? 1 : 0.4)
+      btn.rect.setFillStyle(this.palette.warning, active ? 0.4 : 0.15)
     }
   }
 
@@ -535,7 +863,7 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       this._lastWaveCleared = st.wavesCleared
       spawnConfetti(this, GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, 30)
       Sfx.levelUp()
-      floatText(this, GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2 - 20, 'Wave Complete!', '#ffcc00', 1200)
+      floatText(this, GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2 - 20, this.strings['waveComplete'] ?? 'waveComplete', '#ffcc00', 1200)
     }
     if (st.killed > this._lastKilled) {
       const diff = st.killed - this._lastKilled
@@ -556,12 +884,12 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
       if (st.defeated) {
         addShake(this, 'heavy')
         Sfx.heavyHit()
-        this.makeText(GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, 'Defeated!', 28, this.palette.danger, 100)
+        this.makeText(GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, this.strings['defeated'] ?? 'defeated', 28, this.palette.danger, 100)
       } else if (st.finished) {
         spawnConfetti(this, GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, 50)
         Sfx.levelUp()
         const snap = this.bridge.snapshot
-        this.makeText(GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, `Victory! Score: ${snap.score}`, 22, this.palette.accent, 100)
+        this.makeText(GRID_OFFSET_X + this.gridW / 2, GRID_OFFSET_Y + this.gridH / 2, this.fmt('victory', { score: snap.score }), 22, this.palette.accent, 100)
       }
     }
   }

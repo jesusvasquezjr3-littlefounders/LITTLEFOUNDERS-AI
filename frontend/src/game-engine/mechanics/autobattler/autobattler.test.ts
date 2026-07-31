@@ -463,4 +463,77 @@ describe('autobattler rules', () => {
     expect(state.lives).toBe(0)
     expect(state.finished).toBe(true)
   })
+
+  // The next two tests pin the EXACT payload shapes `mechanics/autobattler/scene.ts`
+  // sends from its pointer (action-bar chips) and keyboard (X/E) paths — `{ n: uid }`
+  // for sell, `{ n: uid, slot: itemId }` for equip — the same shapes `bots.ts` already
+  // uses (GAME_ENGINE.md §5: one shared contract, never a scene-only dialect). A
+  // Phaser-level test of the actual wiring is not possible in this repo: `phaser` is
+  // globally mocked in `test-setup.ts` (`vi.mock('phaser', ...)`), stubbing
+  // `Phaser.Scene`/`Phaser.Game` to empty shells with no `add`/`input`/`cameras` — so
+  // `scene.ts`'s side of "does tapping the chip actually call `bridge.enqueue`" was
+  // verified by reading the code path, not by a live render (see this mechanic's task
+  // notes). What IS verifiable here, and what actually matters for correctness, is
+  // that the simulator accepts those exact shapes and does the right thing with them.
+
+  it('selling refunds gold by the star-scaled worth and returns held items to the bag', () => {
+    if (cheer === undefined) throw new Error('fixture missing')
+    const config = configOf(cheer)
+    const start = initOf(cheer)
+    const typeIndex = 0
+    const type = config.units[typeIndex]
+    if (type === undefined) throw new Error('fixture has no units')
+    const heldItemIndex = 0
+    if (config.items[heldItemIndex] === undefined) throw new Error('fixture has no items')
+
+    const seeded: AutobattlerState = {
+      ...start,
+      units: [{ uid: 1, typeIndex, star: 1, cell: -1, items: [heldItemIndex] }],
+      nextUid: 2,
+    }
+
+    // Scene.ts's Sell chip (pointer) and its X key (keyboard) both send exactly
+    // this shape: `{ n: uid }`.
+    const sold = stepThrough(seeded, 1, [{ tick: 0, action: 'sell', n: 1 }])
+
+    expect(sold.units.length).toBe(0)
+    const expectedRefund = Math.floor((type.cost * config.economy.sell_refund_pct) / 100)
+    expect(sold.gold).toBe(start.gold + expectedRefund)
+    expect(sold.bag).toContain(config.items[heldItemIndex]?.id)
+  })
+
+  it('equipping the second half of a recipe combines it into the crafted item', () => {
+    if (cheer === undefined) throw new Error('fixture missing')
+    const config = configOf(cheer)
+    const start = initOf(cheer)
+    const first = config.items.find((item) => item.combines_with !== undefined)
+    if (first === undefined) throw new Error('fixture has no combinable item')
+    const second = config.items.find((item) => item.id === first.combines_with)
+    if (second === undefined) throw new Error('fixture missing the recipe partner')
+    const combinedId = first.combines_into
+    if (combinedId === undefined) throw new Error('fixture recipe missing combines_into')
+
+    const seeded: AutobattlerState = {
+      ...start,
+      units: [{ uid: 1, typeIndex: 0, star: 1, cell: 0, items: [] }],
+      bag: [first.id, second.id],
+      nextUid: 2,
+    }
+
+    // Scene.ts's Equip chip (pointer) and its E key (keyboard) both send exactly
+    // this shape: `{ n: uid, slot: itemId }`.
+    const afterFirst = stepThrough(seeded, 1, [{ tick: 0, action: 'equip', n: 1, slot: first.id }])
+    const firstIndex = config.items.findIndex((item) => item.id === first.id)
+    expect(afterFirst.units[0]?.items).toEqual([firstIndex])
+    expect(afterFirst.bag).not.toContain(first.id)
+    expect(afterFirst.itemsEquipped).toBe(1)
+
+    const afterSecond = autobattlerSimulator.step(afterFirst, 1, [
+      { tick: 1, action: 'equip', n: 1, slot: second.id },
+    ])
+    const combinedIndex = config.items.findIndex((item) => item.id === combinedId)
+    expect(afterSecond.units[0]?.items).toEqual([combinedIndex])
+    expect(afterSecond.bag).not.toContain(second.id)
+    expect(afterSecond.itemsEquipped).toBe(2)
+  })
 })

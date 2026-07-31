@@ -1,5 +1,3 @@
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // `runner` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
 //
 // The twin of `sorter/components.test.tsx`, and it exists for the same reason:
@@ -11,6 +9,21 @@
 //
 // jsdom implements no PointerEvent constructor, so it is stubbed exactly as
 // `core/input.test.ts` does.
+//
+// STATUS (post Phaser rewrite, commits 4680a61/4530850/695891c). `RunnerView`
+// rendered directly (the first `describe` block) still passes unmodified — plain
+// React, no Phaser in the tree. As with the sorter twin, `GamePlayer.tsx` no longer
+// references `slice.View` at all, so `RunnerView`/`runnerSlice.View` is currently
+// DEAD on the production play path (`mechanics/runner/scene.ts` draws the stage on
+// canvas instead); these tests prove the component's own emit contract, not that the
+// shipped game exercises this code.
+//
+// "over the real kernel" (the last `describe` block) is blocked for the same reason
+// as the sorter twin: `<GamePlayer>` mounts `PhaserGameBox`, which never renders
+// `RunnerView`'s DOM, so the stage button these tests query for does not exist in the
+// tree at all — independent of, and in addition to, the mocked `Game` never actually
+// booting a scene. `manual.scheduler` is inert on the Phaser play path (`GameStage` in
+// GamePlayer.tsx never destructures its own `scheduler` prop).
 
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
@@ -65,7 +78,7 @@ function firePointerOn(target: EventTarget, type: 'pointerdown' | 'pointerup') {
 }
 
 describe('RunnerView — the tap route (§1.11 guaranteed path)', () => {
-  it.skip('emits the action when the stage is tapped', () => {
+  it('emits the action when the stage is tapped', () => {
     const emit = vi.fn()
     const state = initOf(jumpDoc)
     render(
@@ -85,7 +98,7 @@ describe('RunnerView — the tap route (§1.11 guaranteed path)', () => {
     expect(emit.mock.calls.map((call) => call[0])).toEqual(['act'])
   })
 
-  it.skip('emits the SAME action from the keyboard as from the tap', () => {
+  it('emits the SAME action from the keyboard as from the tap', () => {
     const state = initOf(jumpDoc)
     const render_ = (emit: ReturnType<typeof vi.fn>) =>
       render(
@@ -117,7 +130,7 @@ describe('RunnerView — the tap route (§1.11 guaranteed path)', () => {
     expect(keyEmit.mock.calls).toEqual(tapped)
   })
 
-  it.skip('emits nothing while the run is paused', () => {
+  it('emits nothing while the run is paused', () => {
     const emit = vi.fn()
     const state = initOf(jumpDoc)
     render(
@@ -172,6 +185,11 @@ function enterPlay() {
 }
 
 describe('runner over the real kernel — a run a child can actually play', () => {
+  // BLOCKED: `<GamePlayer>` mounts `PhaserGameBox`, so there is no stage button in
+  // the DOM to tap (`mechanics/runner/scene.ts` draws it on canvas), and the mocked
+  // `Game` never boots a scene either way (`Game.scene` is undefined, `events.on`/
+  // `once` never invoke a listener — see file header). `manual.scheduler` is inert on
+  // the Phaser play path. Needs a live browser to observe this chain at all.
   it.skip('records the tapped action in the input log and advances ticks', () => {
     const manual = createManualScheduler()
     const onComplete = vi.fn()

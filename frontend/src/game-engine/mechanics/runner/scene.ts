@@ -65,6 +65,7 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
   private lastCollected = 0
   private holding = false
   private lastPhaseIdx = 0
+  private spaceKey: Phaser.Input.Keyboard.Key | null = null
 
   constructor() {
     super('runner')
@@ -136,7 +137,7 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
       this.avatarTrail.stop()
     }
 
-    this.distanceText = this.makeText(world.width - 80, 36, '0m', 18, p.text, HUD_DEPTH).setOrigin(1, 0.5)
+    this.distanceText = this.makeText(world.width - 80, 36, this.formatDistance(0), 18, p.text, HUD_DEPTH).setOrigin(1, 0.5)
     this.scoreText = this.makeText(80, 36, '0', 20, p.text, HUD_DEPTH).setOrigin(0, 0.5)
     this.comboText = this.makeText(world.width / 2, 36, '', 16, p.accent, HUD_DEPTH)
     this.speedText = this.makeText(world.width - 80, 60, '', 12, p.primary, HUD_DEPTH).setOrigin(1, 0.5)
@@ -148,18 +149,48 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
   }
 
   setupInput(): void {
-    this.input.on('pointerdown', () => {
+    // ONE binary action (GAME_ENGINE.md §4 `runner` row) reachable two ways — a tap
+    // and Space — both driving the SAME two logical inputs the simulator declares
+    // (`RUNNER_ACTIONS` in simulate.ts): `act` fires the jump/lane-switch/flip on
+    // press, and `hold_start`/`hold_end` bracket the press so a manifest with
+    // `action.hold.enabled` can glide for as long as the button stays down. The
+    // previous version enqueued `act` and flipped a LOCAL `this.holding` flag on
+    // press, but never enqueued `hold_start` itself — so the simulator's own
+    // `holding` field could never become true from a press, and `hold_end` on
+    // release paired with an event the simulator never received. `hold_start`/
+    // `hold_end` stay valid actions even when `hold.enabled` is false (schema.ts's
+    // `holdSchema` doc comment) — they simply do nothing in that case, so wiring
+    // them unconditionally here is safe for every action model.
+    const startPress = (): void => {
       if (this.paused || this.finished) return
       this.bridge.enqueue('act')
-      this.holding = true
+      if (!this.holding) {
+        this.holding = true
+        this.bridge.enqueue('hold_start')
+      }
       Sfx.pop()
-    })
+    }
 
-    this.input.on('pointerup', () => {
+    const endPress = (): void => {
       if (!this.holding) return
       this.holding = false
       this.bridge.enqueue('hold_end')
-    })
+    }
+
+    this.input.on('pointerdown', startPress)
+    this.input.on('pointerup', endPress)
+
+    // Keyboard: Space performs exactly what a tap does, including hold semantics —
+    // this mechanic had ZERO keyboard references before this fix. `addKey` (rather
+    // than the bare `keydown-SPACE` global event other mechanics use for idempotent
+    // actions) registers a `Key` object first, so Phaser's own repeat filter
+    // (`Key#onDown` only emits `down` once per physical press while the key is
+    // already up — `emitOnRepeat` defaults to `false`, `keys/Key.js`) absorbs OS
+    // key-repeat instead of spamming `act`/`hold_start` on every autorepeat tick,
+    // which would otherwise turn "holding Space" into "mashing jump".
+    this.spaceKey = this.input.keyboard?.addKey('SPACE') ?? null
+    this.spaceKey?.on('down', startPress)
+    this.spaceKey?.on('up', endPress)
   }
 
   updateGameObjects(_delta: number): void {
@@ -190,7 +221,7 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
     const phaseIdx = phaseIndexAt(config, state.tick)
     if (phaseIdx > this.lastPhaseIdx) {
       Sfx.levelUp()
-      floatText(this, world.width / 2, world.height / 2, 'Faster!', '#22c55e', 1200)
+      floatText(this, world.width / 2, world.height / 2, this.strings['faster'] ?? 'faster', '#22c55e', 1200)
       spawnConfetti(this, world.width / 2, world.height / 3, 20)
     }
 
@@ -337,21 +368,45 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
     const speed = speedAt(config, state.tick)
 
     if (this.distanceText) {
-      this.distanceText.setText(`${Math.floor(state.reach)}m`)
+      this.distanceText.setText(this.formatDistance(Math.floor(state.reach)))
     }
     if (this.scoreText) {
       this.scoreText.setText(`${Math.round(snap.score)}`)
     }
     if (this.comboText) {
-      this.comboText.setText(state.combo > 1 ? `x${state.combo}` : '')
+      this.comboText.setText(state.combo > 1 ? this.formatCombo(state.combo) : '')
       this.comboText.setAlpha(state.combo > 1 ? 1 : 0)
     }
     if (this.livesText) {
       this.livesText.setText(state.lives !== null ? `${'\u2665'} ${state.lives}` : '')
     }
     if (this.speedText) {
-      this.speedText.setText(`${speed.toFixed(1)}x`)
+      this.speedText.setText(this.formatSpeed(speed))
     }
+  }
+
+  // ---- i18n canvas-text formatting (phaser/scene.ts CANVAS_STRING_KEYS contract) ----
+  // These three HUD readouts are number+unit template strings \u2014 "12m", "x3", "1.5x" \u2014
+  // so unlike a plain label, the resolved `games.canvas.*` copy still carries an
+  // i18next `{{placeholder}}` (PhaserGameBox resolves `t()` with no interpolation
+  // values, so a missing value is left as the literal `{{name}}` rather than
+  // vanishing \u2014 see PhaserGameBox.tsx). Each helper substitutes it by hand, and
+  // falls back to the KEY name (never a hardcoded English literal) if the string
+  // bag is somehow missing the entry, so a broken wire-up is loud on screen instead
+  // of silently shipping English.
+  private formatDistance(value: number): string {
+    const template = this.strings['distanceLabel'] ?? 'distanceLabel'
+    return template.replace('{{value}}', String(value))
+  }
+
+  private formatCombo(count: number): string {
+    const template = this.strings['comboMultiplier'] ?? 'comboMultiplier'
+    return template.replace('{{count}}', String(count))
+  }
+
+  private formatSpeed(speed: number): string {
+    const template = this.strings['speedMultiplier'] ?? 'speedMultiplier'
+    return template.replace('{{value}}', speed.toFixed(1))
   }
 
   private onCollect(): void {
@@ -380,7 +435,14 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
   private onComboBreak(): void {
     if (this.lastCombo >= 5) {
       addShake(this, 'light')
-      floatText(this, this.scale.width / 2, this.scale.height / 3, 'Break!', '#ef4444', 600)
+      floatText(
+        this,
+        this.scale.width / 2,
+        this.scale.height / 3,
+        this.strings['comboBreak'] ?? 'comboBreak',
+        '#ef4444',
+        600,
+      )
     }
   }
 }

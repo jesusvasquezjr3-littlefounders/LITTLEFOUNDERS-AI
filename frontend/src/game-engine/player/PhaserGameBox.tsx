@@ -4,6 +4,7 @@ import Phaser from 'phaser'
 
 import type { GameDocument, MechanicId } from '@/game-engine/core/types'
 import type { BridgeFinishPayload, BridgeSnapshot } from '@/game-engine/phaser/bridge'
+import { CANVAS_STRING_KEYS } from '@/game-engine/phaser/scene'
 import { loadMechanicScene } from '@/game-engine/phaser/sceneRegistry'
 import { MECHANIC_META } from '@/game-engine/registry'
 import { cn } from '@/lib/utils'
@@ -19,12 +20,13 @@ export interface PhaserGameBoxProps {
   className?: string
   onSnapshot?: (snap: BridgeSnapshot) => void
   onFinish?: (payload: BridgeFinishPayload) => void
-  /** Fired when the browser takes focus away mid-run (tab hidden or window blurred) —
-   *  GAME_ENGINE.md §10's hidden-tab/auto-pause invariant, restored at this layer since
-   *  the play path no longer runs through core/kernel.ts's scheduler. The caller is
-   *  expected to set `paused` true in response, which shows the real PauseOverlay
-   *  rather than leaving a simulation running (or silently frozen) behind nobody's
-   *  attention. */
+  /** Fired when the browser takes focus away mid-run (tab hidden, window blurred, OR
+   *  — see the boot-time check in the effect below — the tab was ALREADY hidden the
+   *  moment this run started, e.g. opened in a background tab) — GAME_ENGINE.md §10's
+   *  hidden-tab/auto-pause invariant, restored at this layer since the play path no
+   *  longer runs through core/kernel.ts's scheduler. The caller is expected to set
+   *  `paused` true in response, which shows the real PauseOverlay rather than leaving
+   *  a simulation running (or silently frozen) behind nobody's attention. */
   onAutoPause?: () => void
 }
 
@@ -133,6 +135,16 @@ export function PhaserGameBox({
       // that starts it, with the real init data.
       game.scene.add(mechanic, SceneClass, false)
 
+      // Resolved ONCE here, on the only side of this component that can call `t()` —
+      // see the doc comment on `CANVAS_STRING_KEYS` in phaser/scene.ts for the full
+      // contract. Read once at scene start, same convention as `document`/`seed`/
+      // `reducedMotion` below: a language change mid-run does not tear down and
+      // restart the Game.
+      const strings: Record<string, string> = {}
+      for (const key of CANVAS_STRING_KEYS) {
+        strings[key] = t(`games.canvas.${key}`)
+      }
+
       game.events.once('ready', () => {
         if (cancelled || gameRef.current !== game) return
         game?.scene.start(mechanic, {
@@ -141,6 +153,7 @@ export function PhaserGameBox({
           seed,
           maxTicks,
           reducedMotion,
+          strings,
           onSnapshot: (snap: BridgeSnapshot) => onSnapshotRef.current?.(snap),
           onFinish: (payload: BridgeFinishPayload) => onFinishRef.current?.(payload),
         })
@@ -148,13 +161,33 @@ export function PhaserGameBox({
         // synchronously up to `create()`, so this is available immediately — no async
         // race with a later 'ready'-nested lookup.
         sceneRef.current = game?.scene.getScene(mechanic) as unknown as SceneWithPause
+
+        // A run that STARTS already hidden (opened in a background tab, or the user
+        // switched away during the async scene-module import above) gets no signal at
+        // all from Phaser's own visibility plumbing: VisibilityHandler only attaches
+        // forward-looking `visibilitychange`/blur/focus listeners at Game boot — it
+        // never inspects the CURRENT state (verified against the installed Phaser 3.90
+        // source, node_modules/phaser/src/core/VisibilityHandler.js) — so with only the
+        // event listeners below, a run beginning hidden would tick, unpaused, for as
+        // long as it stayed hidden. Checked once, right here, after the scene has real
+        // init data. `globalThis.document` (NOT the bare `document` identifier) is
+        // deliberate: this component's own `document` prop is a `GameDocument`, which
+        // shadows the DOM global of the same name inside this closure.
+        if (typeof globalThis.document !== 'undefined' && globalThis.document.hidden) {
+          onAutoPauseRef.current?.()
+        }
       })
 
       // §10: a run left running while the tab is hidden or the window loses focus gets
-      // no attention from anyone. Phaser's own visibility handler already halts the
-      // RAF loop while the tab is hidden (ticks simply stop, nothing to wire), but
-      // BLUR — the window losing focus while still visible — is not covered by that,
-      // so it is wired explicitly here to the same auto-pause path a hidden tab gets.
+      // no attention from anyone. Phaser's own RAF loop already halts while the tab is
+      // hidden (ticks simply stop), but nothing shows the PauseOverlay for it on its
+      // own — so both HIDDEN (document.visibilitychange -> hidden) and BLUR (the
+      // window losing focus while still visible, e.g. switching to another app) are
+      // wired explicitly to the same auto-pause path.
+      game.events.on(Phaser.Core.Events.HIDDEN, () => {
+        if (cancelled) return
+        onAutoPauseRef.current?.()
+      })
       game.events.on(Phaser.Core.Events.BLUR, () => {
         if (cancelled) return
         onAutoPauseRef.current?.()

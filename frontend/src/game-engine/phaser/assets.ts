@@ -1,5 +1,51 @@
 import Phaser from 'phaser'
 
+/**
+ * GamePalette values are NOT invented — every hex below is one of the six
+ * closed `GAME_PALETTES` rows from /DESIGN.md ("GAME_PALETTES — CLOSED").
+ * That table maps each palette id to five DESIGN.md tokens (Stage fill /
+ * Stage well / Canvas accent / Highlight / Ink on stage); this module is
+ * only responsible for resolving those token NAMES to the hex values
+ * already declared in `frontend/src/index.css` (`--lf-*`, light mode) /
+ * `frontend/tailwind.config.js`. No new colors are introduced here.
+ *
+ * Field ↔ DESIGN.md column mapping (see GamePalette below):
+ *   bg              = Stage fill
+ *   bgAccent/surface = Stage well (two fields, one token — background
+ *                      gradient end and card/panel fills read the same
+ *                      "interior" depth in the closed table)
+ *   primary         = Canvas accent (default game-object tint)
+ *   accent          = Highlight (celebration/combo pulses — delight in
+ *                      every palette except forest-pear, where pear is
+ *                      already the canvas accent so warning is used)
+ *   text            = Ink on stage, primary option (`on-inverse` where the
+ *                      table offers a pair, matching DESIGN.md's own rule
+ *                      that navy-band body text uses `on-inverse`, not the
+ *                      `-muted` variant, for anything read at a glance)
+ *   inverseText     = the ink token that pairs with whatever fills
+ *                      `accent` (i.e. `on-delight` / `on-warning`) — this
+ *                      is what every `generateButtonTexture(..., accent,
+ *                      inverseText, ...)` call in the mechanics actually
+ *                      renders, so it must contrast against a Highlight
+ *                      fill, not against the stage background
+ *   inverse         = the literal `inverse` token (theme-stable navy,
+ *                      identical in both modes per DESIGN.md) — unused by
+ *                      any mechanic today, kept as the deep-navy constant
+ *                      the field name promises
+ *   success/danger/warning = the fixed DESIGN.md semantic signal colors
+ *                      (`success` / `error` / `warning`). These are
+ *                      feedback signals (correct/wrong/caution), not part
+ *                      of the palette table, so they stay constant across
+ *                      all six palettes — "the palette never leaves the
+ *                      stage" (DESIGN.md).
+ *
+ * DESIGN.md's `-soft` well tones are PROHIBITED in a palette (they invert
+ * between light/dark while the stage does not), and `primary-strong` /
+ * `inverse-surface` are the two tokens allowed to shift hue between modes.
+ * The game canvas has no live theme signal at texture-generation time, so
+ * this file always uses the LIGHT-mode value for those two tokens — see
+ * `frontend/src/index.css` `:root` (not `.dark`).
+ */
 export interface GamePalette {
   bg: number
   bgAccent: number
@@ -14,84 +60,107 @@ export interface GamePalette {
   inverseText: number
 }
 
+// Fixed DESIGN.md feedback-signal tokens — identical across every palette.
+const ON_DELIGHT_OR_WARNING = 0x1e1e1e // --lf-on-delight AND --lf-on-warning (both 30 30 30 in index.css)
+const SIGNAL_SUCCESS = 0x15b441 // --lf-success (21 180 65)
+const SIGNAL_DANGER = 0xba1a1a // --lf-error (186 26 26)
+const SIGNAL_WARNING = 0xff8d23 // --lf-warning (255 141 35)
+const LITERAL_INVERSE = 0x080f28 // --lf-inverse (8 15 40) — theme-stable, DESIGN.md "identical in light and dark"
+
 export const PALETTES: Record<string, GamePalette> = {
+  // Stage fill=inverse, Stage well=inverse-surface, Canvas accent=accent,
+  // Highlight=delight, Ink on stage=on-inverse/on-inverse-muted.
   'navy-papaya': {
-    bg: 0x0a1628,
-    bgAccent: 0x122444,
-    surface: 0x1a2d5a,
-    primary: 0x3b82f6,
-    accent: 0xff6b35,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xf0f4ff,
-    inverse: 0xffffff,
-    inverseText: 0x0a1628,
+    bg: 0x080f28, // --lf-inverse
+    bgAccent: 0x142563, // --lf-inverse-surface
+    surface: 0x142563, // --lf-inverse-surface
+    primary: 0xff775c, // --lf-accent (papaya)
+    accent: 0xd8e82e, // --lf-delight (pear)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: 0xffffff, // --lf-on-inverse
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-delight
   },
+  // Stage fill=success-strong, Stage well=success, Canvas accent=delight,
+  // Highlight=warning (pear is already the canvas accent here), Ink=on-success.
   'forest-pear': {
-    bg: 0x0a1f14,
-    bgAccent: 0x143022,
-    surface: 0x1d4532,
-    primary: 0x4ade80,
-    accent: 0xc3d629,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xe8f5e9,
-    inverse: 0xe8f5e9,
-    inverseText: 0x0a1f14,
+    bg: 0x109634, // --lf-success-strong
+    bgAccent: 0x15b441, // --lf-success
+    surface: 0x15b441, // --lf-success
+    primary: 0xd8e82e, // --lf-delight (pear)
+    accent: 0xff8d23, // --lf-warning (Highlight exception for this palette)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: 0xffffff, // --lf-on-success
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-warning (accent field is warning here)
   },
+  // Stage fill=inverse-surface, Stage well=inverse, Canvas accent=accent,
+  // Highlight=delight, Ink on stage=on-inverse/on-inverse-muted.
   'ocean-blue': {
-    bg: 0x0c1929,
-    bgAccent: 0x142840,
-    surface: 0x1a3a5c,
-    primary: 0x38bdf8,
-    accent: 0xf97316,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xe0f2fe,
-    inverse: 0xe0f2fe,
-    inverseText: 0x0c1929,
+    bg: 0x142563, // --lf-inverse-surface
+    bgAccent: 0x080f28, // --lf-inverse
+    surface: 0x080f28, // --lf-inverse
+    primary: 0xff775c, // --lf-accent (papaya)
+    accent: 0xd8e82e, // --lf-delight (pear)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: 0xffffff, // --lf-on-inverse
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-delight
   },
+  // Stage fill=accent-strong, Stage well=accent, Canvas accent=inverse,
+  // Highlight=delight, Ink on stage=on-accent.
   'sunset-papaya': {
-    bg: 0x1a0f0a,
-    bgAccent: 0x2d1a12,
-    surface: 0x42281c,
-    primary: 0xfbbf24,
-    accent: 0xff6b35,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xfef3c7,
-    inverse: 0xfef3c7,
-    inverseText: 0x1a0f0a,
+    bg: 0xe55f45, // --lf-accent-strong
+    bgAccent: 0xff775c, // --lf-accent
+    surface: 0xff775c, // --lf-accent
+    primary: 0x080f28, // --lf-inverse (Canvas accent for this palette)
+    accent: 0xd8e82e, // --lf-delight (pear)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: 0x080f28, // --lf-on-accent (dark navy on papaya, never white)
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-delight
   },
+  // DESIGN.md: no literal violet token exists — realized as the deepest
+  // navy stage with a cool primary-strong accent (a night canvas with no
+  // papaya competing against chrome). Stage fill=inverse, Stage
+  // well=inverse-surface, Canvas accent=primary-strong, Highlight=delight,
+  // Ink on stage=on-inverse/on-inverse-muted.
   'violet-night': {
-    bg: 0x120a1e,
-    bgAccent: 0x1e1432,
-    surface: 0x2d1f4e,
-    primary: 0xa78bfa,
-    accent: 0xf472b6,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xf3e8ff,
-    inverse: 0xf3e8ff,
-    inverseText: 0x120a1e,
+    bg: 0x080f28, // --lf-inverse
+    bgAccent: 0x142563, // --lf-inverse-surface
+    surface: 0x142563, // --lf-inverse-surface
+    primary: 0x375ce3, // --lf-primary-strong (light-mode value: 55 92 227)
+    accent: 0xd8e82e, // --lf-delight (pear)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: 0xffffff, // --lf-on-inverse
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-delight
   },
+  // DESIGN.md: no sand/clay token exists — realized from the warning family,
+  // the closest warm earth tone the closed set has. Stage fill=warning-strong,
+  // Stage well=warning, Canvas accent=inverse, Highlight=delight, Ink=on-warning.
   'sand-clay': {
-    bg: 0x1a1814,
-    bgAccent: 0x2d2a24,
-    surface: 0x423d34,
-    primary: 0x94a3b8,
-    accent: 0xe8854a,
-    success: 0x22c55e,
-    danger: 0xef4444,
-    warning: 0xf59e0b,
-    text: 0xf5f0e8,
-    inverse: 0xf5f0e8,
-    inverseText: 0x1a1814,
+    bg: 0xe07412, // --lf-warning-strong
+    bgAccent: 0xff8d23, // --lf-warning
+    surface: 0xff8d23, // --lf-warning
+    primary: 0x080f28, // --lf-inverse (Canvas accent for this palette)
+    accent: 0xd8e82e, // --lf-delight (pear)
+    success: SIGNAL_SUCCESS,
+    danger: SIGNAL_DANGER,
+    warning: SIGNAL_WARNING,
+    text: ON_DELIGHT_OR_WARNING, // --lf-on-warning (30 30 30, same value as on-delight)
+    inverse: LITERAL_INVERSE,
+    inverseText: ON_DELIGHT_OR_WARNING, // --lf-on-delight
   },
 }
 

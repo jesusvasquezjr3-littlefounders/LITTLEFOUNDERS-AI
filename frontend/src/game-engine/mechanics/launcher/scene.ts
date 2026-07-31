@@ -9,10 +9,87 @@ import { generatePlaceholderSprite, generateBackground } from '@/game-engine/pha
 import { Sfx } from '@/game-engine/phaser/sfx'
 import {
   launcherSimulator, type LauncherState, targetRect,
-  muzzlePoint, quantizeAngle, quantizePower,
+  muzzlePoint, quantizeAngle, quantizePower, activeProjectile,
   currentRound, previewPath, environmentAt, windAt,
 } from './simulate'
-import { launcherConfigSchema, launcherContentSchema } from './schema'
+import {
+  launcherConfigSchema, launcherContentSchema,
+  type LauncherProjectileKind, type LauncherMaterial,
+} from './schema'
+
+/** Touch-target floor for every canvas-drawn button (ammo slots, the limited-axis move
+ *  buttons) — 44 DESIGN units, matching `flyer/scene.ts`'s `beamBtn` (the one other
+ *  Phaser mechanic that already ships a sized, interactive canvas button). The canvas
+ *  is authored at a fixed 800x600 and letterboxed onto the real viewport by
+ *  `Phaser.Scale.FIT` (`PhaserGameBox.tsx`), so on a viewport narrower than 800 CSS px
+ *  a design unit renders SMALLER than 1 CSS px — 44 design units is therefore the
+ *  floor assumed by the sibling mechanics already shipped, not a value re-derived here;
+ *  verifying the actual rendered CSS size on a real small viewport needs live rendering
+ *  this task cannot perform (flagged in the review notes). */
+const TOUCH_TARGET = 44
+
+/** Kind → the `games.canvas.*` key carrying its translated name (see `CANVAS_STRING_KEYS`
+ *  in phaser/scene.ts). The ammo icon shows only the first 3 letters, uppercased, of
+ *  whichever locale this resolves to — same layout the old hardcoded English abbreviation
+ *  used, but now every locale gets its OWN abbreviation instead of always English. */
+const AMMO_LABEL_KEY: Record<LauncherProjectileKind, string> = {
+  standard: 'ammoStandard',
+  heavy: 'ammoHeavy',
+  light: 'ammoLight',
+  guided: 'ammoGuided',
+  explosive: 'ammoExplosive',
+}
+
+/** Obstacle material → its translated name, same rationale as `AMMO_LABEL_KEY`. */
+const OBSTACLE_LABEL_KEY: Record<LauncherMaterial, string> = {
+  solid: 'obstacleSolid',
+  deflect: 'obstacleDeflect',
+  absorb: 'obstacleAbsorb',
+  breakable: 'obstacleBreakable',
+}
+
+/**
+ * The pure decision behind `slingshotAim`'s aim-event throttling — deliberately kept
+ * FRAMEWORK-FREE (no `this`, no Phaser) and exported so `launcher.test.ts` can drive it
+ * directly: this project's vitest environment globally stubs the `phaser` module
+ * (`src/test-setup.ts`'s `vi.mock('phaser', …)`, applied to every test file via
+ * `setupFiles`), so booting a real `Phaser.Scene` inside a unit test is not available
+ * here — the same reason no sibling mechanic's `scene.ts` has a scene-level test today.
+ * Extracting the actual decision into a plain function keeps the regression coverage
+ * real (byte-for-byte the logic `slingshotAim` runs) rather than a re-implementation a
+ * test could drift from.
+ *
+ * `pointermove` fires at the browser's native pointer rate (commonly 60-240Hz) for the
+ * whole span of a drag, but `GameEngineBridge.enqueue` has no dedup of its own — every
+ * call is a permanent, unbounded append to `inputLog`, and the server replays against
+ * `validation.max_events` (core/replay.ts's `log_too_long`/`RESULT_REJECTED`). An
+ * honest few-second pull-back at 120Hz could log 200+ raw samples for a shot the
+ * config's own angle/power grid resolves into at most a few dozen DISTINCT states.
+ *
+ * FIX: value-change dedup, not time-throttling. `angle`/`power` are already quantized
+ * to the manifest's discrete grid before they ever reach here — a time-based throttle
+ * (e.g. "at most one aim per N ticks") would either drop a real bucket transition
+ * during a fast flick (the aim the child actually released on) or, tuned generously
+ * enough not to, still let a slow, jittery drag emit many redundant events while
+ * sitting inside the same bucket. Comparing against the LAST value actually enqueued
+ * guarantees at most one event per real state change — bounded by the config's own
+ * (max_angle-min_angle)/angle_step * (max_power-min_power)/power_step grid size
+ * regardless of how fast the pointer fires — while every genuine change is still
+ * emitted the instant it happens, so the aim feels exactly as responsive as before.
+ *
+ * Returns the pair to enqueue, or `null` when it exactly repeats `last` (nothing to
+ * send). `last` should be reset to `{ angle: null, power: null }` on `pointerdown` so a
+ * new gesture's first sample always sends even if it happens to match where the
+ * previous shot's drag ended.
+ */
+export function nextAimToEnqueue(
+  last: { angle: number | null; power: number | null },
+  angle: number,
+  power: number,
+): { angle: number; power: number } | null {
+  if (angle === last.angle && power === last.power) return null
+  return { angle, power }
+}
 
 const SCENE_WIDTH = 800
 const SCENE_HEIGHT = 600
@@ -50,6 +127,7 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
   private obstacleMap = new Map<number, Phaser.GameObjects.Container>()
   private projMap = new Map<number, TrackedProj>()
   private ammoIcons: Phaser.GameObjects.Container[] = []
+  private moveButtons: Phaser.GameObjects.Container[] = []
   private groundDecor: Phaser.GameObjects.Rectangle[] = []
   private gesture: AimGesture = { dragging: false, startX: 0, startY: 0, currentX: 0, currentY: 0 }
   private aimEnabled = true
@@ -58,6 +136,19 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
   private lastIncorrectHits = 0
   private lastRound = 0
   private lastMisses = 0
+  /** The last QUANTIZED (angle, power) pair actually enqueued as an `aim` event during
+   *  the CURRENT drag — see `slingshotAim`'s doc comment for why this exists. `null`
+   *  outside a drag so a fresh gesture's first sample is always sent regardless of what
+   *  the previous gesture ended on. */
+  private lastEnqueuedAngle: number | null = null
+  private lastEnqueuedPower: number | null = null
+  /** The bridge tick a `nudge` was last enqueued on — see `handleKeys`'s guided-steering
+   *  branch: `isDown` is polled every RENDER frame (far more often than the 50ms fixed
+   *  tick), so without this a held key would flood the log with several `nudge` events
+   *  per tick the simulator only ever reads once (`MAX_STEER_UNITS` collapses them
+   *  anyway, but the log itself must still stay near one event per tick — the same
+   *  `max_events` budget `slingshotAim`'s fix protects). */
+  private lastNudgeTick = -1
 
   constructor() { super('launcher') }
 
@@ -70,6 +161,29 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
       bridge: new GameEngineBridge(launcherSimulator, simInit, this.maxTicks),
       simInit,
     }
+  }
+
+  protected override getWorldSize(): { width: number; height: number } {
+    // `config.world` is authored per-manifest and can legitimately differ from the
+    // fixed 800x600 canvas — confirmed: both shipped fixtures declare 900x540, and one
+    // target (`fondo`, x:780 w:80 → right edge 860) sits well past the canvas's x=800
+    // edge, so without this fit it renders silently clipped on every device (the exact
+    // sorter/stacker bug fixed in 695891c). Same rationale as those siblings.
+    const { world } = this.bridge.state.config
+    return { width: world.width, height: world.height }
+  }
+
+  /** Resolves a `games.canvas.*` key from `this.strings` and fills in `{{var}}`
+   *  placeholders — `PhaserGameBox.tsx` resolves each key to its raw, non-interpolated
+   *  template exactly once at scene start (see `CANVAS_STRING_KEYS`'s doc comment in
+   *  phaser/scene.ts), so a mechanic that needs a parameterized readout (the score, the
+   *  round counter, the wind reading) does its own substitution here rather than a
+   *  second ad-hoc i18n mechanism. Falls back to the bare key (never a hardcoded
+   *  English literal) so a missing wire-up is visible instead of silently English. */
+  private fmt(key: string, vars: Record<string, string | number> = {}): string {
+    let s = this.strings[key] ?? key
+    for (const [name, value] of Object.entries(vars)) s = s.split(`{{${name}}}`).join(String(value))
+    return s
   }
 
   create() {
@@ -97,14 +211,14 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     const pad = 16
     this.powerBarBg = this.makeRect(pad, SCENE_HEIGHT / 2, 20, 200, 0x333333, 0.6, 25).setOrigin(0, 0.5)
     this.powerBarFill = this.makeRect(pad, SCENE_HEIGHT / 2 + 100, 20, 0, this.palette.accent, 1, 26).setOrigin(0, 1)
-    this.powerText = this.makeText(pad + 10, SCENE_HEIGHT / 2 - 110, `${st.power}%`, 12, this.palette.text, 27)
-    this.angleText = this.makeText(pad + 10, SCENE_HEIGHT / 2 + 120, `${st.angle}°`, 12, this.palette.text, 27)
-    this.scoreText = this.makeText(SCENE_WIDTH / 2, 20, 'Score: 0', 16, this.palette.accent, 30)
-    this.roundText = this.makeText(SCENE_WIDTH / 2, 44, `Round ${st.round + 1}/${st.config.rounds.length}`, 14, this.palette.text, 30)
-    this.shotsText = this.makeText(SCENE_WIDTH - pad, 20, `Shots: ${st.shotsLeft}`, 14, this.palette.text, 30).setOrigin(1, 0)
+    this.powerText = this.makeText(pad + 10, SCENE_HEIGHT / 2 - 110, this.fmt('powerLabel', { value: st.power }), 12, this.palette.text, 27)
+    this.angleText = this.makeText(pad + 10, SCENE_HEIGHT / 2 + 120, this.fmt('angleLabel', { value: st.angle }), 12, this.palette.text, 27)
+    this.scoreText = this.makeText(SCENE_WIDTH / 2, 20, this.fmt('scoreLabel', { score: 0 }), 16, this.palette.accent, 30)
+    this.roundText = this.makeText(SCENE_WIDTH / 2, 44, this.fmt('roundLabel', { current: st.round + 1, total: st.config.rounds.length }), 14, this.palette.text, 30)
+    this.shotsText = this.makeText(SCENE_WIDTH - pad, 20, this.fmt('shotsLabel', { count: st.shotsLeft }), 14, this.palette.text, 30).setOrigin(1, 0)
     this.livesText = this.makeText(SCENE_WIDTH - pad, 44, '', 14, this.palette.danger, 30).setOrigin(1, 0).setAlpha(0)
     this.windArrow = this.add.graphics().setDepth(25)
-    this.windText = this.makeText(SCENE_WIDTH / 2 + 60, 60, 'Wind: 0', 12, this.palette.text, 30).setOrigin(0, 0.5)
+    this.windText = this.makeText(SCENE_WIDTH / 2 + 60, 60, this.fmt('windLabel', { value: 0 }), 12, this.palette.text, 30).setOrigin(0, 0.5)
     this.comboText = this.makeText(SCENE_WIDTH / 2, 76, '', 24, this.palette.warning, 30)
     this.roundStartText = this.makeText(SCENE_WIDTH / 2, SCENE_HEIGHT / 2 - 60, '', 20, this.palette.accent, 100).setAlpha(0)
 
@@ -117,10 +231,46 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     }
 
     this.createLauncher()
+    this.createMoveControls(st)
     this.syncTargetsFromState(st)
     this.syncObstaclesFromState(st)
     this.syncAmmoFromState(st)
     this.showRoundStart(st)
+  }
+
+  /**
+   * `config.launcher.move` (LAUNCHER_ACTIONS's `move`) has a keyboard path (A/D, added
+   * in `setupInput`) but was reachable from NO input at all before this — confirmed
+   * against a real fixture (`fixtures.ts`'s wind-round manifest declares
+   * `move: { axis: 'x', min: 40, max: 200, step: 20 }`) which a touch-only player could
+   * never trigger. Only rendered when the manifest actually declares an axis — a fixed
+   * emplacement (`axis: 'none'`, every other fixture) gets no buttons cluttering the
+   * field for a control that would be a permanent no-op.
+   */
+  createMoveControls(st: LauncherState) {
+    if (st.config.launcher.move.axis === 'none') return
+    const y = SCENE_HEIGHT - TOUCH_TARGET / 2 - 8
+    this.moveButtons.push(this.makeMoveButton(TOUCH_TARGET / 2 + 8, y, '‹', -1))
+    this.moveButtons.push(this.makeMoveButton(TOUCH_TARGET / 2 + 8 + TOUCH_TARGET + 8, y, '›', 1))
+  }
+
+  makeMoveButton(x: number, y: number, glyph: string, direction: -1 | 1): Phaser.GameObjects.Container {
+    const bg = this.makeRect(0, 0, TOUCH_TARGET, TOUCH_TARGET, 0x222222, 0.5, 0)
+      .setStrokeStyle(1, this.palette.accent, 0.6)
+    // A bare directional glyph, not a word — no i18n key needed (see phaser/scene.ts's
+    // CANVAS_STRING_KEYS doc comment: only LETTERS require translation).
+    const lbl = this.makeText(0, 0, glyph, 22, this.palette.text, 1)
+    const c = this.add.container(x, y, [bg, lbl]).setDepth(25)
+    c.setSize(TOUCH_TARGET, TOUCH_TARGET)
+    c.setInteractive(
+      new Phaser.Geom.Rectangle(-TOUCH_TARGET / 2, -TOUCH_TARGET / 2, TOUCH_TARGET, TOUCH_TARGET),
+      Phaser.Geom.Rectangle.Contains,
+    )
+    c.on('pointerdown', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('move', { n: direction })
+    })
+    return c
   }
 
   createLauncher() {
@@ -168,11 +318,24 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
       four: Phaser.Input.Keyboard.KeyCodes.FOUR,
       five: Phaser.Input.Keyboard.KeyCodes.FIVE,
       p: Phaser.Input.Keyboard.KeyCodes.P,
+      // The launcher's own limited-axis movement (`config.launcher.move`, LAUNCHER_
+      // ACTIONS's `move`) — arrows/space/1-5 are already spoken for, so this is a new
+      // binding rather than an overload, and it is direction-generic (works for an
+      // 'x' or a 'y' axis) since the config, not the key, decides which axis moves.
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
     }) as Record<string, Phaser.Input.Keyboard.Key>
 
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
-      if (this.paused || this.finished) return
+      if (this.paused || this.finished || !this.aimEnabled) return
+      // A tap on the ammo rack or a move button must NOT also start a slingshot drag
+      // from that same point — same bounds-check-and-return pattern flyer/scene.ts
+      // uses for its fireBtn/beamBtn against its own whole-canvas pointerdown handler.
+      for (const icon of this.ammoIcons) if (icon.getBounds().contains(p.x, p.y)) return
+      for (const btn of this.moveButtons) if (btn.getBounds().contains(p.x, p.y)) return
       this.gesture = { dragging: true, startX: p.x, startY: p.y, currentX: p.x, currentY: p.y }
+      this.lastEnqueuedAngle = null
+      this.lastEnqueuedPower = null
     })
 
     this.input.on('pointermove', (p: Phaser.Input.Pointer) => {
@@ -190,6 +353,10 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     })
   }
 
+  /** Computes the drag's current (angle, power) and enqueues it through
+   *  `nextAimToEnqueue`'s dedup — see that function's doc comment for the full
+   *  rationale (aim-event flood risk against `validation.max_events`) and why the
+   *  decision itself lives in a plain, directly-testable function rather than here. */
   slingshotAim() {
     const st = this.bridge.state
     if (st.projectiles.length > 0 || st.cooldownLeft > 0) return
@@ -199,7 +366,17 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     const dist = Math.sqrt(dx * dx + dy * dy)
     const pct = Math.min(1, dist / st.config.launcher.pull_max_units)
     const angleDeg = Math.round(Phaser.Math.RadToDeg(Math.atan2(-dy, dx)))
-    this.bridge.enqueue('aim', { x: quantizeAngle(st.config, angleDeg), y: quantizePower(st.config, Math.round(pct * 100)) })
+    const angle = quantizeAngle(st.config, angleDeg)
+    const power = quantizePower(st.config, Math.round(pct * 100))
+    const decision = nextAimToEnqueue(
+      { angle: this.lastEnqueuedAngle, power: this.lastEnqueuedPower },
+      angle,
+      power,
+    )
+    if (!decision) return
+    this.lastEnqueuedAngle = decision.angle
+    this.lastEnqueuedPower = decision.power
+    this.bridge.enqueue('aim', { x: decision.angle, y: decision.power })
   }
 
   fireLaunch() {
@@ -235,16 +412,44 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     if (Phaser.Input.Keyboard.JustDown(this.keys.p!)) { this.togglePause(); return }
     const angStep = st.config.launcher.angle_step
     const pwStep = st.config.launcher.power_step
+    const kind = activeProjectile(st)
+    // A `guided` projectile accepts in-flight steering (`nudge`) — while one is
+    // airborne, LEFT/RIGHT steer it instead of adjusting power (which is meaningless
+    // once the shot has already left the launcher). Same two keys, context-switched by
+    // flight phase, rather than a second binding nobody would discover.
+    const inFlightGuided = st.projectiles.length > 0 && kind?.kind === 'guided'
+
     if (Phaser.Input.Keyboard.JustDown(this.keys.up!)) this.bridge.enqueue('aim', { x: st.angle + angStep })
     if (Phaser.Input.Keyboard.JustDown(this.keys.down!)) this.bridge.enqueue('aim', { x: st.angle - angStep })
-    if (Phaser.Input.Keyboard.JustDown(this.keys.left!) && st.cooldownLeft <= 0) this.bridge.enqueue('aim', { y: st.power - pwStep })
-    if (Phaser.Input.Keyboard.JustDown(this.keys.right!) && st.cooldownLeft <= 0) this.bridge.enqueue('aim', { y: st.power + pwStep })
+
+    if (inFlightGuided) {
+      // `isDown` is polled every render frame — far more often than the fixed 50ms
+      // tick the simulator actually steps on — so this is gated to at most one `nudge`
+      // per tick (see `lastNudgeTick`'s doc comment), the same log-growth discipline
+      // `slingshotAim` applies to `aim`.
+      const dir = this.keys.left!.isDown ? -1 : this.keys.right!.isDown ? 1 : 0
+      if (dir !== 0 && this.bridge.tick !== this.lastNudgeTick) {
+        this.bridge.enqueue('nudge', { n: dir })
+        this.lastNudgeTick = this.bridge.tick
+      }
+    } else {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.left!) && st.cooldownLeft <= 0) this.bridge.enqueue('aim', { y: st.power - pwStep })
+      if (Phaser.Input.Keyboard.JustDown(this.keys.right!) && st.cooldownLeft <= 0) this.bridge.enqueue('aim', { y: st.power + pwStep })
+    }
+
     if (Phaser.Input.Keyboard.JustDown(this.keys.space!) && st.projectiles.length === 0 && st.cooldownLeft <= 0) { this.bridge.enqueue('launch'); Sfx.whoosh() }
     if (Phaser.Input.Keyboard.JustDown(this.keys.one!)) this.bridge.enqueue('select', { slot: st.config.projectiles[0]?.id })
     if (Phaser.Input.Keyboard.JustDown(this.keys.two!)) this.bridge.enqueue('select', { slot: st.config.projectiles[1]?.id })
     if (Phaser.Input.Keyboard.JustDown(this.keys.three!)) this.bridge.enqueue('select', { slot: st.config.projectiles[2]?.id })
     if (Phaser.Input.Keyboard.JustDown(this.keys.four!)) this.bridge.enqueue('select', { slot: st.config.projectiles[3]?.id })
     if (Phaser.Input.Keyboard.JustDown(this.keys.five!)) this.bridge.enqueue('select', { slot: st.config.projectiles[4]?.id })
+
+    // Limited-axis movement (see `createMoveControls`'s doc comment) — discrete, one
+    // step per press, matching `n = -1 | +1` ("one step") in simulate.ts's action doc.
+    if (st.config.launcher.move.axis !== 'none') {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.a!)) this.bridge.enqueue('move', { n: -1 })
+      if (Phaser.Input.Keyboard.JustDown(this.keys.d!)) this.bridge.enqueue('move', { n: 1 })
+    }
   }
 
   updateLauncherPos(prev: LauncherState | null, st: LauncherState, a: number) {
@@ -256,8 +461,8 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     this.drawAimArm()
     const pct = st.power / 100
     this.powerBarFill.setSize(20, pct * 200)
-    this.powerText.setText(`${st.power}%`)
-    this.angleText.setText(`${st.angle}°`)
+    this.powerText.setText(this.fmt('powerLabel', { value: st.power }))
+    this.angleText.setText(this.fmt('angleLabel', { value: st.angle }))
   }
 
   updateTrajectory(st: LauncherState) {
@@ -289,7 +494,8 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
       const tx = cx + dir * len
       this.windArrow.fillTriangle(tx, cy, tx - dir * 8, cy - 5, tx - dir * 8, cy + 5)
     }
-    this.windText.setText(`Wind: ${wnd > 0 ? '→' : '←'} ${Math.abs(wnd).toFixed(1)}`)
+    const arrow = wnd > 0 ? '→' : '←'
+    this.windText.setText(this.fmt('windLabel', { value: `${arrow} ${Math.abs(wnd).toFixed(1)}` }))
   }
 
   syncTargetsFromState(st: LauncherState) {
@@ -341,7 +547,7 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
       else if (o.material === 'breakable') color = 0x44aa44
       const r = this.makeRect(o.x + o.w / 2, o.y + o.h / 2, o.w, o.h, color, 0.7, 4)
         .setStrokeStyle(o.material === 'deflect' ? 2 : 1, o.material === 'deflect' ? 0x88ccff : 0x555555, 0.5)
-      const lbl = this.makeText(o.x + o.w / 2, o.y + o.h / 2, o.material.substring(0, 6), 9, this.palette.text, 15)
+      const lbl = this.makeText(o.x + o.w / 2, o.y + o.h / 2, this.fmt(OBSTACLE_LABEL_KEY[o.material]).substring(0, 6), 9, this.palette.text, 15)
       const ct = this.add.container(0, 0, [r, lbl]).setDepth(4)
       this.obstacleMap.set(o.key, ct)
     }
@@ -399,41 +605,63 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
     }
   }
 
+  /**
+   * The ammo rack. Rebuilt every frame (matches this mechanic's existing sync-from-
+   * state style for targets/obstacles/projectiles) — cheap relative to the rest of the
+   * per-frame work, and destroy() cleanly drops each frame's interactive hit area with
+   * it, so there is nothing to leak.
+   *
+   * Was PURELY DECORATIVE before this fix: `select` (LAUNCHER_ACTIONS) had a keyboard
+   * path (keys 1-5) but nothing here was ever `setInteractive()`'d, so a touch-only
+   * player — the primary input on this platform (§1.11) — had no way to change ammo at
+   * all. Now each slot is a real TOUCH_TARGET (44 design units) button.
+   */
   syncAmmoFromState(st: LauncherState) {
     for (const c of this.ammoIcons) c.destroy()
     this.ammoIcons = []
+    const x = SCENE_WIDTH - 16 - TOUCH_TARGET / 2
     for (let i = 0; i < st.config.projectiles.length; i++) {
       const p = st.config.projectiles[i]!
-      const x = SCENE_WIDTH - 16
-      const y = 80 + i * 28
+      const y = 80 + i * (TOUCH_TARGET + 8)
       const active = i === st.ammoIndex
       let clr = this.palette.accent
       if (p.kind === 'explosive') clr = 0xff3300
       else if (p.kind === 'guided') clr = 0x44aaff
       else if (p.kind === 'heavy') clr = 0x884422
       else if (p.kind === 'light') clr = 0xaaffaa
-      const bg = this.makeRect(x, y, 24, 24, active ? 0xffffff : 0x222222, active ? 0.3 : 0.15, 25)
+      const bg = this.makeRect(0, 0, TOUCH_TARGET, TOUCH_TARGET, active ? 0xffffff : 0x222222, active ? 0.3 : 0.15, 0)
         .setStrokeStyle(1, active ? clr : 0x555555, active ? 1 : 0.3)
-      const dot = this.makeCircle(x, y, 6, clr, 1, 26)
-      const lbl = this.makeText(x, y + 16, p.kind.substring(0, 3).toUpperCase(), 8, this.palette.text, 27)
-      this.ammoIcons.push(this.add.container(0, 0, [bg, dot, lbl]).setDepth(25))
+      const dot = this.makeCircle(0, -8, 7, clr, 1, 1)
+      const lbl = this.makeText(0, 12, this.fmt(AMMO_LABEL_KEY[p.kind]).substring(0, 3).toUpperCase(), 9, this.palette.text, 1)
+      const container = this.add.container(x, y, [bg, dot, lbl]).setDepth(25)
+      container.setSize(TOUCH_TARGET, TOUCH_TARGET)
+      container.setInteractive(
+        new Phaser.Geom.Rectangle(-TOUCH_TARGET / 2, -TOUCH_TARGET / 2, TOUCH_TARGET, TOUCH_TARGET),
+        Phaser.Geom.Rectangle.Contains,
+      )
+      const slot = p.id
+      container.on('pointerdown', () => {
+        if (this.paused || this.finished) return
+        this.bridge.enqueue('select', { slot })
+      })
+      this.ammoIcons.push(container)
     }
   }
 
   updateHUD(st: LauncherState) {
     const snap = this.bridge.snapshot
-    this.scoreText.setText(`Score: ${snap.score}`)
-    this.roundText.setText(`Round ${st.round + 1}/${st.config.rounds.length}`)
-    this.shotsText.setText(`Shots: ${st.shotsLeft}`)
+    this.scoreText.setText(this.fmt('scoreLabel', { score: snap.score }))
+    this.roundText.setText(this.fmt('roundLabel', { current: st.round + 1, total: st.config.rounds.length }))
+    this.shotsText.setText(this.fmt('shotsLabel', { count: st.shotsLeft }))
     if (st.combo > 1) {
-      this.comboText.setText(`COMBO x${st.combo}`)
+      this.comboText.setText(this.fmt('comboLabel', { count: st.combo }))
       this.comboText.setAlpha(1)
     } else {
       this.comboText.setAlpha(0)
     }
     if (st.lives !== null) {
       this.livesText.setAlpha(1)
-      this.livesText.setText(`❤ ${st.lives}`)
+      this.livesText.setText(this.fmt('livesLabel', { count: st.lives }))
     } else {
       this.livesText.setAlpha(0)
     }
@@ -472,7 +700,7 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
 
   showRoundStart(st: LauncherState) {
     const round = currentRound(st)
-    this.roundStartText.setText(`Round ${st.round + 1}: ${round?.id ?? '???'}`)
+    this.roundStartText.setText(this.fmt('roundStart', { current: st.round + 1, name: round?.id ?? '???' }))
     this.roundStartText.setAlpha(1)
     this.tweens.add({
       targets: this.roundStartText,
@@ -499,7 +727,7 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
       spawnConfetti(this, SCENE_WIDTH / 2, SCENE_HEIGHT / 2, 60)
       Sfx.levelUp()
       const snap = this.bridge.snapshot
-      const finalText = this.makeText(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, `Score: ${snap.score}`, 28, this.palette.accent, 100)
+      const finalText = this.makeText(SCENE_WIDTH / 2, SCENE_HEIGHT / 2, this.fmt('victory', { score: snap.score }), 28, this.palette.accent, 100)
       this.tweens.add({
         targets: finalText,
         scale: 1.3,

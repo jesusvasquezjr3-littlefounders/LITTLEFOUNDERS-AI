@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
-# i18n:check — three-phase verification:
+# i18n:check — four-phase verification:
 #   Phase 1: JSON key parity across en-US, es-MX, pt-BR (en-US = source of truth)
 #   Phase 2: Hardcoded string scan in TSX/TS source (strings not wrapped in t())
 #   Phase 3: Every STATICALLY DECIDABLE t() key in source EXISTS in en-US —
 #            plain literals, BOTH branches of t(cond ? 'a' : 'b'), and the
 #            leading namespace of t(`a.b.${expr}`)
+#   Phase 4: Hardcoded string scan in Phaser canvas text calls under
+#            frontend/src/game-engine/ (.add.text(...), .setText(...),
+#            makeText(...)) — the JSX-only scan in phase 2 and the t()-call-only
+#            scan in phase 3 are both structurally blind to canvas-drawn text,
+#            since it never touches the DOM and is never wrapped in t(). Runs
+#            in the same node invocation as phase 3 (check-t-keys.mjs).
 #
 # Phase 1 alone is not enough: it only proves the three locales agree with each
 # other. A key called by a component but present in NO locale is trivially "in
@@ -63,9 +69,11 @@ if ! node agent/tools/check-hardcoded-strings.mjs; then
   FAIL=1
 fi
 
-# ── Phase 3: Referenced-key existence ─────────────────────────────────────────
+# ── Phase 3 + 4: Referenced-key existence + canvas-text hardcoded scan ────────
 # Reports every missing key (and every missing dynamic namespace, under its own
-# label) with the file:line that references it.
+# label) with the file:line that references it, PLUS every hardcoded string
+# literal drawn to <canvas> via Phaser text calls under frontend/src/game-engine/
+# (see check-t-keys.mjs's own header for why this lives in the same file).
 if ! node agent/tools/check-t-keys.mjs; then
   FAIL=1
 fi
@@ -74,3 +82,4 @@ fi
 echo "i18n:check OK — en-US, es-MX, pt-BR file and key sets identical"
 echo "i18n:check OK — no hardcoded user-facing strings in source"
 echo "i18n:check OK — every statically decidable t() key referenced in source exists in en-US"
+echo "i18n:check OK — no hardcoded string literals drawn to <canvas> via Phaser text calls"

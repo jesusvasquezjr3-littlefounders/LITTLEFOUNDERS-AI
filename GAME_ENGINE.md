@@ -8,11 +8,13 @@
 > ROADMAP.md, GLOSSARY.md or DESIGN.md, **those win and this file gets fixed** — never the
 > other way round.
 >
-> **Status:** v1.1 — Phaser 3.90 rendering layer shipped 2026-07-30. All 8 mechanic scenes
-> (canvas-based games with particles, screen shake, tweens, SFX and proper game feel) replace
-> the earlier React-DOM renderers. Core (port 4000), Vault migrations 0027/0028/0029, and
-> the Arcade generation pipeline (`gamegen/`, port 4003) are unaffected — this was a
-> rendering-layer rewrite only.
+> **Status:** v1.2 — Phaser 3.90 rendering layer shipped 2026-07-30, then hardened same-day
+> (boot sequence, seed correctness, reward-derivation path, camera/world-size fit — commits
+> `4530850`, `695891c`). All 8 mechanic scenes (canvas-based games with particles, screen
+> shake, tweens, SFX and proper game feel) are the live play-time renderer; the earlier
+> React-DOM `components.tsx` views remain in the tree as a reference/testing artifact only
+> (§2.1, §7). Core (port 4000), Vault migrations 0027/0028/0029, and the Arcade generation
+> pipeline (`gamegen/`, port 4003) are unaffected — this was a rendering-layer change only.
 > **Last updated:** 2026-07-30 · Language: English (project rule).
 
 ---
@@ -105,34 +107,97 @@ Every response uses the §1.6 envelope `{ data, error }` — no exceptions, incl
 
 The 8 mechanics render through **Phaser 3.90 scenes** — `<canvas>`-based games with particle
 systems, camera shake, sprite tweens, and synthesised SFX. The simulators (§5) remain
-untouched; Phaser is the *renderer only*. Architecture:
+untouched; Phaser is the *renderer only*. Architecture — **the scene drives the bridge, not
+the other way round**: `BaseMechanicScene.update()` (Phaser's own per-frame callback) calls
+`bridge.update(delta)` and then reads `bridge.bridgeSnapshot`/`bridge.finishPayload`; the
+bridge itself has no Phaser dependency and never reaches into the scene.
 
 ```
 Simulator (50ms tick, deterministic, PURE)
+     ▲
+     │  bridge.update(delta) / bridge.enqueue(action, payload)
      │
-     ▼
-GameEngineBridge (interpolates, manages input log, drives Phaser scene)
+GameEngineBridge (interpolates, owns the input log, enforces maxTicks)
+     ▲
+     │  scene.update() calls the bridge every frame and reads bridgeSnapshot/finishPayload
      │
-     ▼
-PhaserScene (sprites, particles, camera, SFX, pointer/keyboard → emit)
+PhaserScene (sprites, particles, camera, SFX, pointer/keyboard → bridge.enqueue)
 ```
 
 Key files in `frontend/src/game-engine/`:
 
 | Path | Role |
 |---|---|
-| `phaser/bridge.ts` | `GameEngineBridge<S>` — wraps a simulator in a Phaser-compatible lifecycle |
-| `phaser/scene.ts` | `BaseMechanicScene<S>` — abstract scene base: palette, helpers, pause/resume, lifecycle |
-| `phaser/juice.ts` | Camera shake, particle bursts, scale punch, hit pause, floating text |
-| `phaser/assets.ts` | Procedural sprite/background generation, palette resolution |
-| `phaser/sfx.ts` | Web Audio API synthesised SFX (click, collect, explode, levelUp, etc.) |
-| `player/PhaserGameBox.tsx` | React component that mounts a Phaser.Game, bridges to React lifecycle |
-| `mechanics/<id>/scene.ts` | Per-mechanic Phaser scene (one per mechanic) — the game world renderer |
+| `phaser/bridge.ts` | `GameEngineBridge<S>` — wraps a simulator in a Phaser-compatible lifecycle; has no import of `phaser` itself |
+| `phaser/scene.ts` | `BaseMechanicScene<S>` — abstract scene base: seed/runId/maxTicks/reducedMotion/strings from `init()`, palette, `getWorldSize()` camera-fit hook, `update()` drives the bridge, pause/resume lifecycle |
+| `phaser/juice.ts` | Camera shake, particle bursts, scale punch, hit pause, floating text — every entry point gates on `reducedMotion` through one shared `isReduced(scene)` chokepoint (§10) |
+| `phaser/sfx.ts` | Web Audio API synthesised SFX (click, collect, explode, levelUp, etc.) — every entry point gates on the mute flag through one shared function (§10) |
+| `phaser/assets.ts` | Procedural sprite/background generation (colored geometric shapes), palette resolution |
+| `phaser/spriteLoader.ts` | Queues real Prism/Depot art (`skin.sprites`/`skin.background_url`) in `preload()` and resolves, per slot, whether the real texture loaded — see below |
+| `phaser/sceneRegistry.ts` | Lazy-loading registry from `MechanicId` to its scene class, one dynamic `import()` per mechanic |
+| `player/PhaserGameBox.tsx` | React component that mounts exactly one `Phaser.Game` per run, bridges to React lifecycle (§10 auto-pause) |
+| `mechanics/<id>/scene.ts` | Per-mechanic Phaser scene (one per mechanic) — the game world renderer, extends `BaseMechanicScene` |
 
-The React `MechanicView` components (`components.tsx`) are **deprecated** and replaced by the
-Phaser scenes. They remain in the codebase as reference; `GamePlayer.tsx` now renders
-`PhaserGameBox` during the play phase. Assets are generated procedurally (colored geometric
-shapes) until Prism produces real sprites via the pipeline (§9).
+**Real art vs. procedural placeholders.** `preload()` (in `BaseMechanicScene`) calls
+`spriteLoader.ts`'s `queueRealSprites()` to `load.image()` every URL the document's
+`skin.sprites`/`skin.background_url` declare. A mechanic's `scene.ts` always generates its
+usual procedural placeholder first (cheap, synchronous, never fails), then asks
+`this.spriteKeyFor(slot, fallbackKey)` / `this.backgroundKeyFor(fallbackKey)` which texture key
+to actually draw: the real key if that slot was bound AND the load succeeded, the placeholder
+key otherwise (unbound slot, or a Depot URL that 404s/errors — tracked per-run so one bad URL
+degrades to the placeholder instead of a blank sprite). No mechanic branches on "is real art
+loading" itself; the two helper methods are the only decision point.
+
+**Renderer status: `components.tsx` is not the play-time renderer, and is currently dormant
+everywhere else too.** Every mechanic still ships a `components.tsx`
+(`export function <M>View(props: MechanicViewProps)`) and every `register.ts` still wires it
+into `MechanicSlice.View`, because `MechanicSlice` is the shared type the backend/gamegen
+parity registries are built over (§7) — removing the field is a type-contract change, not a
+delete. `GamePlayer.tsx`'s real play path (`GameStage`, mounted for BOTH the production
+`/games/:slug` route and `/dev/game-lab`) never reads `slice.View` at all — it always loads the
+mechanic's `scene.ts` via `sceneRegistry.ts` and mounts it through `PhaserGameBox`, regardless
+of what `slice` it was given. `/dev/game-lab` (`GameLabPage.tsx`) still imports `View` and
+wraps it in a debug probe (`createProbeView`) before handing the wrapped slice to `GamePlayer`
+— but because `GameStage` ignores `slice.View`, that wrapper is never actually mounted today,
+so the lab's live-snapshot readout and manual step-mode UI (built on that same View/scheduler
+wiring, §10) are themselves stale against the Phaser path, not a working secondary consumer.
+The component's own DOM-rendering tests (`components.test.tsx` in `sorter`/`runner`,
+`GamePlayer.test.tsx`) exist and still render `<SorterView>`/`<RunnerView>` directly, but every
+`it()` in all three files is currently `.skip`'d (commit `4680a61`: "canvas rendering requires
+browser E2E") — so as of this read, **no test in CI exercises `components.tsx` either.**
+`components.tsx` is therefore, honestly: dead at runtime (no code path renders it), unverified
+in CI (its own tests are skipped), and kept as source only — a reference implementation of the
+mechanic's `MechanicViewProps` contract and a type-level placeholder for `MechanicSlice.View`.
+The audit that reviewed the Phaser rewrite downgraded its continued presence to a minor
+finding on the basis that its bundle cost is negligible (it is its own lazy chunk, like
+`scene.ts`) and that full removal — including un-skipping or deleting its tests and dropping
+`View` from `MechanicSlice`/`MechanicSimSlice` — was deliberately scoped out of that pass
+rather than silently deferred. Re-enabling the lab's live probe against the real Phaser scene,
+or removing `components.tsx`/`View` outright, is open follow-up work, not something this
+document can claim is already handled.
+
+**i18n for canvas-drawn text.** A Phaser scene is a plain class with no React context — it
+cannot call `useTranslation()`/`t()` — so a canvas string reaches the player's locale through
+one closed channel instead: `MechanicSceneInit.strings: Record<string, string>`
+(`phaser/scene.ts`). `PhaserGameBox.tsx` is the only file in this tree that calls `t()` for
+canvas copy; it resolves every key in the exported `CANVAS_STRING_KEYS` array through
+`t(`games.canvas.\<key\>`)` **once**, at scene start (the same "read once, no mid-run
+re-wire" convention already used for `document`/`seed`/`reducedMotion`), and hands the
+resolved dictionary into the scene's init data. `BaseMechanicScene` stores it as
+`this.strings`, and every mechanic's `scene.ts` reads `this.strings['someKey']` in its
+`makeText`/`setText`/`floatText` calls instead of a hardcoded literal.
+
+The dictionary lives under a single flat `games.canvas.*` namespace (§1.7/§1.8 — key set
+defined in `en-US`, mirrored with real translations into `es-MX` and `pt-BR` in the same
+commit) so several mechanics can share one key for the same concept — e.g. `games.canvas.sell`,
+`games.canvas.ready`, `games.canvas.rest` — instead of each mechanic inventing its own scoped
+copy. Keys are named after their MEANING, not their mechanic. To add a new canvas string: add
+`games.canvas.<name>` to all three locale files, then append `'<name>'` to `CANVAS_STRING_KEYS`
+in `phaser/scene.ts` — that array is the single source of truth for which keys a scene may
+read, and it is intentionally separate from the longer, full-sentence `games.<mechanic>.*` keys
+that already exist for the DOM `MechanicView` components' (`components.tsx`, dormant per the
+status above) ARIA labels — those stay as they are; canvas copy is deliberately terser to fit
+a fixed-pixel `Phaser.GameObjects.Text`.
 
 ## §3 The `GameDocument` contract
 
@@ -512,15 +577,16 @@ PATCHing back erased a child's XP, minutes and both streak columns behind a `200
 
 ## §7 Slice anatomy & the registry
 
-`frontend/src/game-engine/mechanics/<mechanic>/` — exactly five files, **zero cross-slice
-imports** (a slice may import `core/*` and the UI kit; never another mechanic):
+`frontend/src/game-engine/mechanics/<mechanic>/` — seven files, **zero cross-slice imports**
+(a slice may import `core/*`, `phaser/*` and the UI kit; never another mechanic):
 
 | File | Contents |
 |---|---|
 | `schema.ts` | `export const <m>ConfigSchema`, `<m>ContentSchema` (Zod), the inferred types, and `export const <M>_SPRITE_SLOTS: readonly string[]` — the declared sprite slot ids. |
 | `simulate.ts` | `export const <m>Simulator: Simulator<State>` — PURE per §5. NO bots: see §5 "Where the bots live". |
 | `bots.ts` | `export const <m>Bots: GameBots<State>` — the headless `perfect`/`random` players. Imported by gamegen's `simulate` gate and by tests ONLY; never by anything the browser loads. |
-| `components.tsx` | the renderer: `export function <M>View(props: MechanicViewProps)`. |
+| `scene.ts` | `export class <M>Scene extends BaseMechanicScene<State>` — **the play-time renderer.** Loaded lazily via `phaser/sceneRegistry.ts` and mounted by `player/PhaserGameBox.tsx`; this is what a player actually sees (§2.1). |
+| `components.tsx` | `export function <M>View(props: MechanicViewProps)` — the React-DOM renderer. **Not the play-time renderer, and currently unexercised anywhere else too** (§2.1): `GameStage` never reads `slice.View` (production or `/dev/game-lab` — both mount `PhaserGameBox`), and where a `components.test.tsx` exists (only `sorter`/`runner` have one; the other 6 mechanics never had DOM component tests) every one of its `it()`s is `.skip`'d. Kept as a type-contract placeholder and reference source; do not delete without re-reading §2.1's rationale. |
 | `fixtures.ts` | `export const <m>Fixtures: GameDocument[]` — **>= 2** complete, PLAYABLE es-MX manifests that pass the schema and whose perfect bot passes. Fixtures satisfy the PRODUCTION schema; §1.14 forbids relaxing it for tests. |
 | `register.ts` | `export const <m>Slice: MechanicSlice`. |
 
@@ -539,15 +605,25 @@ interface MechanicSlice {
   configSchema: z.ZodType
   contentSchema: z.ZodType
   simulator: Simulator<never>       // structurally: Simulator<any-state>
-  View: React.ComponentType<MechanicViewProps>
+  View: React.ComponentType<MechanicViewProps>   // dev-lab renderer, see components.tsx above
   fixtures: GameDocument[]
   spriteSlots: readonly string[]
 }
 ```
 
-The view is a **renderer, not a simulator**: it reads `state`/`snapshot` and calls `emit`.
-It never computes score, never advances ticks, never branches on wall-clock time. That split
-is what makes the same mechanic replayable server-side without React.
+`scene.ts` is NOT part of `MechanicSlice` — Phaser scene classes are loaded through the
+separate `phaser/sceneRegistry.ts` map, keyed by `MechanicId`, independently of the slice
+object. This is deliberate: `MechanicSlice`/`MechanicSimSlice` are the types the backend and
+gamegen parity copies build their SYNCHRONOUS registries over (§1's stack-of-record split), so
+`scene.ts` — which imports `phaser`, a browser-only rendering dependency — must never become
+reachable from that type or those copies would drag Phaser into a Node service.
+
+Both renderers are held to the same discipline: **a renderer computes nothing.** `components.tsx`
+reads `state`/`snapshot` and calls `emit`; a mechanic's `scene.ts` reads the bridge's snapshot
+and calls `bridge.enqueue(action, payload)` (§2.1) — never a raw pixel coordinate, never an
+outcome the scene resolved itself. Neither renderer computes score, advances a tick, or
+branches on wall-clock time. That split is what makes the same mechanic replayable
+server-side without either renderer.
 
 `registry.ts` exports three things, and the split between the first two matters:
 
@@ -688,13 +764,27 @@ from the `/admin/content` Games queue. Kid-facing content is human-moderated bef
 - **Pause is always reachable** — one tap, from any state, thumb-reachable on mobile. The
   simulation is tick-driven, so pausing is exact (no ticks advance) rather than approximate.
   Interludes and the pause overlay are the two sanctioned interruptions.
-- **The loop never claims to be running when it cannot run.** The auto-pause sources
-  (`visibilitychange`, `blur`) are EDGE-triggered and therefore blind to a run that *starts*
-  inside the condition: a browser fires no `requestAnimationFrame` at all in a hidden tab and
-  no transition event either, because nothing changed. `GameLoopScheduler.canDeliverFrames()`
-  closes that hole — `start()` asks the frame source directly and starts PAUSED when the
-  answer is no, so the child gets the pause overlay and its resume instead of a board that
-  renders, reports `paused: false`, swallows every tap onto tick 0 and can never advance.
+- **The loop never claims to be running when nobody is looking.** The play path is Phaser's
+  own loop (`player/PhaserGameBox.tsx` mounts one `Phaser.Game` per run), and it is covered by
+  two DIFFERENT mechanisms, not a single scheduler:
+  - **Hidden tab:** Phaser's own `requestAnimationFrame` loop simply stops firing while the
+    tab is hidden — the browser delivers no frames, so no ticks advance and nothing needs to
+    be wired for this case.
+  - **Window blur (still visible, but focus left the window):** not covered by the above, so
+    `PhaserGameBox` listens for Phaser's `Phaser.Core.Events.BLUR` and calls the caller's
+    `onAutoPause`, which sets `paused` and shows the real `PauseOverlay` — the same overlay a
+    manual pause tap gets, never a silently-frozen board.
+  The kernel-era `GameLoopScheduler.canDeliverFrames()` start-time check (`core/kernel.ts`)
+  addressed this same class of bug for the pre-Phaser DOM/tick loop, and `GamePlayer`'s
+  `scheduler` prop (used for `/dev/game-lab`'s manual tick-step affordance) still exists in
+  the type signature — but `GameStage`, the component that actually mounts the play surface,
+  never reads that prop and never renders `slice.View`: it always mounts `PhaserGameBox`
+  regardless of caller. **This is a confirmed doc-accuracy correction, not yet a code fix**:
+  the pre-Phaser scheduler seam is a vestige with no effect on the live Phaser loop, and the
+  two BLUR/hidden-tab mechanisms above are the entire real protection today. `/dev/game-lab`'s
+  step-mode and live-snapshot readout (built on that same `View`/scheduler wiring) are
+  consequently stale against the Phaser play path — flagged here as an open item, not
+  something this document can silently paper over (§1.12).
 - **Both breakpoints are first-class (§1.11, non-negotiable).** Mobile (<768px): single
   column, canvas fills the viewport within the 16px `margin-mobile`, controls in the thumb
   zone. Desktop (>=1024px): the freed width is used deliberately — the hub is a
@@ -755,23 +845,42 @@ from the `/admin/content` Games queue. Kid-facing content is human-moderated bef
    for anything transcendental, seeded RNG), plus BOTH bots. Determinism tests (same seed +
    log → same result) and the §9 winnability property (perfect passes, random does not) are
    part of this step, not a follow-up.
-4. **Render.** `components.tsx` — a renderer over `MechanicViewProps` only: reads state,
-   calls `emit`, computes nothing. Kit components for chrome, sprites for canvas (§10).
-5. **Fixtures.** `fixtures.ts` with >= 2 complete, PLAYABLE es-MX manifests that satisfy the
+4. **Scene — the play-time renderer (§2.1).** `scene.ts`: `export class <M>Scene extends
+   BaseMechanicScene<State>`, implementing `createBridge()`, `setupInput()`,
+   `createGameObjects()`, `updateGameObjects(delta)`, and — only if the mechanic's own
+   authored content has a natural width/height other than the fixed 800×600 canvas (e.g. a
+   `config.field`/`config.map`) — `getWorldSize()` so the base class can fit the camera to it
+   (§2.1/§10, `695891c`). Every input handler calls `this.bridge.enqueue(action, payload)` with
+   a LOGICAL action from the mechanic's own declared `actions` list and a payload the simulator
+   already understands (quantized where the simulator expects quantized values) — never a raw
+   pixel coordinate, never an outcome the scene resolved itself. Every canvas-drawn string goes
+   through `this.strings['someKey']` (`CANVAS_STRING_KEYS` in `phaser/scene.ts`), never a
+   hardcoded literal — adding a new one means a new `games.canvas.<name>` key in all three
+   locales in the same commit (§1.8) plus the key appended to `CANVAS_STRING_KEYS`. Add the id
+   to `phaser/sceneRegistry.ts`'s lazy-loading map so `PhaserGameBox` can find the class.
+5. **View — the dev-lab/reference renderer.** `components.tsx` — a renderer over
+   `MechanicViewProps` only: reads state, calls `emit`, computes nothing. Required because
+   `MechanicSlice.View` is currently a non-optional field of the shared slice type (§2.1/§7);
+   as of this document's last update it is not exercised by any live code path or passing test
+   (§2.1) — write it as a correct reference implementation of the contract regardless, since
+   `MechanicSlice`'s shape is not something one new mechanic's slice gets to unilaterally
+   change.
+6. **Fixtures.** `fixtures.ts` with >= 2 complete, PLAYABLE es-MX manifests that satisfy the
    PRODUCTION schema and whose perfect bot passes. `/dev/game-lab` picks them up automatically.
-6. **Register.** `register.ts` exports the slice; add ONE entry to `MECHANIC_META` and ONE to
+7. **Register.** `register.ts` exports the slice; add ONE entry to `MECHANIC_META` and ONE to
    `MECHANIC_LOADERS`. A registry-completeness test fails until both exist.
-7. **Parity.** Copy `simulate.ts` + `schema.ts` into `backend/src/game-contract/` and
+8. **Parity.** Copy `simulate.ts` + `schema.ts` into `backend/src/game-contract/` and
    `gamegen/src/contract/`; `contract:check` in both services must pass. A mechanic the server
    cannot replay can never grant XP.
-8. **Docs & i18n.** This file's §4 table, `gamegen/AGENTS.md` if an invariant moved,
-   DESIGN.md if the mechanic needs a canvas recipe, and every new chrome string in
+9. **Docs & i18n.** This file's §4 table, `gamegen/AGENTS.md` if an invariant moved,
+   DESIGN.md if the mechanic needs a canvas recipe, and every new chrome/canvas string in
    `games.json` × 3 locales in the SAME commit (§1.8).
 
-Adding a mechanic touches only: the new slice, `MECHANIC_IDS`, the union, the two registry
-maps, the parity copies, one delta migration, and docs/i18n. It edits **no other slice**.
-Old clients meet the new mechanic as the unsupported-game card (§7), so mechanic #9's content
-can ship to production before every client has the code.
+Adding a mechanic touches only: the new slice (now seven files, §7), `MECHANIC_IDS`, the
+union, `phaser/sceneRegistry.ts`, the two `registry.ts` maps, the parity copies, one delta
+migration, and docs/i18n. It edits **no other slice**. Old clients meet the new mechanic as
+the unsupported-game card (§7), so mechanic #9's content can ship to production before every
+client has the code.
 
 ## §13 Open questions & deliberate deviations
 

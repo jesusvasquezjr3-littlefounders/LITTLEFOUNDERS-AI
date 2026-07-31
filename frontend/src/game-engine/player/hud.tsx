@@ -15,6 +15,7 @@
 // play view belongs to the mechanic canvas / the overlays; the HUD's pause and quit are
 // deliberately quiet, because the loudest thing on the screen must be the game.
 
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Icon, ProgressBar } from '@/components/ui'
@@ -67,6 +68,60 @@ function HudChip({ icon, label, value, tone }: HudChipProps) {
   )
 }
 
+// ---- Live region (screen-reader state announcements) -------------------------
+//
+// The canvas is pointer-driven Phaser — a screen reader cannot operate it, and making
+// it fully AT-operable is out of scope for this pass (the same boundary mainstream
+// canvas games draw). What IS in scope, and was missing until now: an AT user must
+// never be left silent about what is HAPPENING. `role="img"` on the canvas container
+// (PhaserGameBox.tsx) names the game once; this announces the state changes that a
+// sighted player reads off the HUD as they happen — score, round and completion — so
+// a screen-reader user gets the same "what just happened" signal, even though they
+// cannot reach into the canvas to change it themselves.
+//
+// Throttling is not a timer — it is identity. The announcement text only changes (and
+// therefore only gets picked up by the live region's mutation observer / announced by
+// the AT) on the exact score/round/finished DELTA the HUD's own chips re-render on, via
+// the same `snapshot` prop; a tick that moves nothing announced stays silent.
+
+type LiveSnapshot = Pick<SimSnapshot, 'score' | 'round' | 'finished'>
+
+/** Exported for its own focused test — this is the only piece of the live region that
+ *  has real branching logic; the JSX around it is a static `aria-live` div. */
+export function useLiveAnnouncement(
+  snapshot: LiveSnapshot,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string {
+  const [message, setMessage] = useState('')
+  const prevRef = useRef<LiveSnapshot | null>(null)
+
+  useEffect(() => {
+    const prev = prevRef.current
+    prevRef.current = snapshot
+
+    // The very first snapshot a run mounts with is not news — announcing "Score 0,
+    // round 0" the instant the canvas appears would just be noise ahead of anything
+    // actually happening.
+    if (prev === null) return
+
+    if (snapshot.finished && !prev.finished) {
+      setMessage(t('games.a11y.live.finished', { score: snapshot.score }))
+      return
+    }
+    // Once completion has been announced, further churn (results screen forming,
+    // etc.) is not this region's job to narrate.
+    if (snapshot.finished) return
+
+    if (snapshot.round !== prev.round) {
+      setMessage(t('games.a11y.live.round', { round: snapshot.round, score: snapshot.score }))
+    } else if (snapshot.score !== prev.score) {
+      setMessage(t('games.a11y.live.score', { score: snapshot.score }))
+    }
+  }, [snapshot.score, snapshot.round, snapshot.finished, t])
+
+  return message
+}
+
 export interface GameHudProps {
   document: GameDocument
   snapshot: SimSnapshot
@@ -84,9 +139,16 @@ export function GameHud({ document: doc, snapshot, combo, onPause, onQuit }: Gam
   // can never lose invents a threat the mode exists to remove.
   const showLives = doc.scoring.mode !== 'cheer' && snapshot.lives !== null
   const showCombo = typeof combo === 'number' && combo >= 2
+  const liveMessage = useLiveAnnouncement(snapshot, t)
 
   return (
     <header className="lf-glass sticky top-0 z-20 shadow-glass-sm">
+      {/* See "Live region" doc comment above: score/round/completion, for a screen
+          reader that cannot operate the canvas but must not be left guessing what it
+          is doing. */}
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {liveMessage}
+      </div>
       <div className="mx-auto flex w-full max-w-container flex-wrap items-center gap-2 px-4 py-2 md:px-8">
         <button
           type="button"

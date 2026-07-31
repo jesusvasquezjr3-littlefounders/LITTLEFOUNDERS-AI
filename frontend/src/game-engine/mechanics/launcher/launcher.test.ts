@@ -44,6 +44,7 @@ import {
   targetRect,
   type LauncherState,
 } from './simulate'
+import { nextAimToEnqueue } from './scene'
 
 const SEED = 424242
 
@@ -909,4 +910,94 @@ describe('launcher — the registered slice', () => {
     expect(launcherSlice.spriteSlots).toContain('target_correct')
     expect(launcherSlice.simulator.actions).toEqual(['aim', 'launch', 'move', 'select', 'nudge'])
   })
+})
+
+// ---- Aim-event throttling (audit finding) -----------------------------------------
+//
+// `slingshotAim` used to call `this.bridge.enqueue('aim', …)` on EVERY `pointermove`
+// while dragging (the browser's native pointer rate, commonly 60-240Hz), and
+// `GameEngineBridge.enqueue` has no dedup of its own — every call is a permanent,
+// unbounded append to `inputLog`, risking `log_too_long`/`RESULT_REJECTED` (core/
+// replay.ts) for an honest run against the server's `validation.max_events` bound.
+//
+// The fix's actual decision logic is `nextAimToEnqueue` (scene.ts), extracted to a
+// plain, framework-free function specifically so it is directly testable here: this
+// project's vitest environment globally stubs the `phaser` module for every test file
+// (`src/test-setup.ts`'s `vi.mock('phaser', …)`, wired in via `setupFiles`), so a real
+// `Phaser.Scene`/`Phaser.Game` cannot be booted inside a unit test — confirmed no
+// sibling mechanic's `scene.ts` has scene-level test coverage for the same reason.
+// Testing the exact function `slingshotAim` calls (not a re-implementation of its
+// logic) is the honest way to get real regression coverage under that constraint.
+describe('launcher — aim-event throttling (nextAimToEnqueue)', () => {
+  it('drops a sample that repeats the last quantized aim actually enqueued', () => {
+    expect(nextAimToEnqueue({ angle: 45, power: 70 }, 45, 70)).toBeNull()
+  })
+
+  it('keeps a sample whenever angle or power actually changes', () => {
+    expect(nextAimToEnqueue({ angle: 45, power: 70 }, 50, 70)).toEqual({ angle: 50, power: 70 })
+    expect(nextAimToEnqueue({ angle: 45, power: 70 }, 45, 80)).toEqual({ angle: 45, power: 80 })
+    expect(nextAimToEnqueue({ angle: 45, power: 70 }, 50, 80)).toEqual({ angle: 50, power: 80 })
+  })
+
+  it("always keeps a fresh gesture's first sample, even one that repeats the previous gesture's final aim (the pointerdown reset)", () => {
+    // scene.ts resets the tracker to { angle: null, power: null } on pointerdown —
+    // this is that reset state. Without it, a second shot aimed identically to the
+    // first would silently emit no 'aim' event at all.
+    expect(nextAimToEnqueue({ angle: null, power: null }, 45, 70)).toEqual({ angle: 45, power: 70 })
+  })
+
+  it(
+    'a rapid, jittery stream of quantized samples enqueues a BOUNDED number of aim events — not one per sample — and the last one enqueued is exactly the true final sample (release fidelity)',
+    () => {
+      // What a real drag's pointermove flood looks like AFTER quantization: the
+      // manifest's own discrete angle_step/power_step grid means many consecutive
+      // raw samples collapse to the same bucket, with jitter (real touch/mouse input
+      // is never perfectly smooth) sometimes revisiting a bucket it already left —
+      // exactly the case a one-event-per-pointermove implementation floods on, and
+      // exactly the case a naive TIME-based throttle (vs. this value-based one)
+      // would not reliably collapse either.
+      const SAMPLES = 300
+      const quantizedStream: { angle: number; power: number }[] = []
+      for (let i = 0; i < SAMPLES; i++) {
+        const t = i / SAMPLES
+        const angle = 15 + Math.floor(t * 12) * 5 // 12 discrete 5° steps, e.g. angle_step
+        // Toggles once every 20 samples (not every sample) — an OCCASIONAL revisit of
+        // the previous bucket, the realistic shape of pointer jitter, not a value that
+        // never settles for two consecutive samples in a row.
+        const jitterBucket = Math.floor(i / 20) % 2
+        const power = 30 + (Math.floor(t * 7) + jitterBucket) * 10 // 7 discrete 10% steps + jitter
+        quantizedStream.push({ angle, power })
+      }
+
+      let last: { angle: number | null; power: number | null } = { angle: null, power: null }
+      const enqueued: { angle: number; power: number }[] = []
+      for (const sample of quantizedStream) {
+        const decision = nextAimToEnqueue(last, sample.angle, sample.power)
+        if (decision) {
+          enqueued.push(decision)
+          last = decision
+        }
+      }
+
+      expect(enqueued.length).toBeGreaterThan(0)
+      // Bounded: nowhere near one-per-sample — the grid this stream sweeps has far
+      // fewer than SAMPLES/4 distinct (angle, power) pairs.
+      expect(enqueued.length).toBeLessThan(SAMPLES / 4)
+
+      // The dedup guarantee itself: no two CONSECUTIVE enqueued events are identical.
+      for (let i = 1; i < enqueued.length; i++) {
+        const prev = enqueued[i - 1]!
+        const cur = enqueued[i]!
+        expect(cur.angle !== prev.angle || cur.power !== prev.power).toBe(true)
+      }
+
+      // Release fidelity: the LAST event enqueued is exactly the true final sample —
+      // full precision is never lost to the dedup, so `launch` (which reads the
+      // state's current angle/power, already updated by the last applied `aim`
+      // event — see `applyLaunch`/`applyAim` in simulate.ts) fires with exactly
+      // where the drag actually ended.
+      const finalSample = quantizedStream[quantizedStream.length - 1]!
+      expect(enqueued[enqueued.length - 1]).toEqual(finalSample)
+    },
+  )
 })

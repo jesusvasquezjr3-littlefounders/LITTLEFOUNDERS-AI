@@ -41,8 +41,17 @@
  * Still skipped, because nothing at all is knowable: t(someVar),
  * t('a.' + b), t(`${ns}.title`) — no static leading segment exists.
  *
+ * A FOURTH, structurally separate check also lives in this file (search
+ * "Phase 4" below): frontend/src/game-engine/**\/*.ts is scanned for hardcoded
+ * string literals passed to Phaser's canvas text-drawing calls
+ * (`.add.text(`, `.setText(`, `makeText(`) — text that check-hardcoded-strings
+ * (JSX-only) and the t()-key checks above (t()-call-only) are both structurally
+ * blind to, because it never touches the DOM and never goes through t(). It
+ * reuses this file's literal/ternary walker rather than inventing a second one.
+ *
  * Usage:  node agent/tools/check-t-keys.mjs [path]
- * Exit:   0 = every decidable key/namespace resolves, 1 = at least one is missing
+ * Exit:   0 = every decidable key/namespace resolves AND no hardcoded canvas
+ *             text found, 1 = at least one of either is missing/found
  */
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
@@ -333,6 +342,152 @@ function walk(dir) {
 
 walk(ROOT);
 
+// ── Phase 4: Phaser canvas-text hardcoded-string scan ─────────────────────────
+// grep can prove `check-hardcoded-strings.mjs` only matches JSX text-node
+// patterns (`>text<`) — it is structurally blind to Phaser drawing calls like
+// `this.add.text(x, y, 'Some String', style)` or `label.setText('Some String')`.
+// Those calls render directly to <canvas>, bypassing the DOM (and therefore
+// every DOM-shaped heuristic) entirely, so ~30 hardcoded canvas strings shipped
+// clean through both existing gates in commit 4680a61.
+//
+// Detection reuses the SAME literal/ternary walker as the t()-key checks above
+// (collectBranches + topLevelQuestion/matchingColon/skipQuoted/skipTemplate) —
+// a canvas string literal is not a structurally different thing from a t() key
+// literal, so it gets the same treatment: both branches of a literal ternary
+// are walked, and a template literal's non-interpolated text is inspected.
+//
+// Scope: frontend/src/game-engine/**/*.ts — Phaser is only used there.
+// Calls recognized: `.add.text(`, `.setText(`, `makeText(` (BaseMechanicScene's
+// own helper — see phaser/scene.ts). Text-argument position per call shape:
+//   this.add.text(x, y, TEXT, style)  → arg index 2
+//   this.makeText(x, y, TEXT, ...)    → arg index 2
+//   label.setText(TEXT)               → arg index 0
+//
+// A hit requires the argument to be a STATIC STRING LITERAL (or a literal
+// leaf under a top-level ternary) containing at least one letter. Skipped as
+// not user-facing: empty strings, digit/symbol-only strings (scores, counts),
+// and template literals whose only non-interpolated content has no letters
+// (e.g. a bare heart glyph). Anything that is not a literal at all — an
+// identifier, a member expression, a non-ternary call — is unknowable here and
+// silently skipped, exactly like the t()-key walker above: a regex cannot
+// prove it clean OR dirty, so it is left for a human (or the i18n-bag pass) to
+// judge, never asserted about.
+const CANVAS_TEXT_CALL = /(\.add\.text|\.setText|(?<![A-Za-z0-9_$])makeText)\s*\(/g;
+const CANVAS_ARG_INDEX = { '.add.text': 2, makeText: 2, '.setText': 0 };
+const HAS_LETTER = /[A-Za-zÀ-ÖØ-öø-ÿ]/;
+/** ♥, \u{1FA99}, \xE9 — JS unicode/hex escapes for symbol/emoji glyphs. Their
+ *  hex digits and the literal 'u'/'x' are NOT user-facing text, so strip them
+ *  before the letter test or every glyph-only label (an icon, a heart) false-
+ *  positives on its own escape syntax. */
+const UNICODE_ESCAPE = /\\u\{[0-9a-fA-F]+\}|\\u[0-9a-fA-F]{4}|\\x[0-9a-fA-F]{2}/g;
+const hasUserFacingLetter = (s) => HAS_LETTER.test(s.replace(UNICODE_ESCAPE, ''));
+
+/** Top-level comma-split call arguments starting at the call's '(' index, or null if it never closes cleanly. */
+function readArgs(content, openIdx) {
+  let depth = 0;
+  let start = openIdx + 1;
+  const args = [];
+  for (let i = openIdx; i < content.length && i - openIdx < SCAN_LIMIT; i++) {
+    const c = content[i];
+    if (c === "'" || c === '"') { const e = skipQuoted(content, i); if (e < 0) return null; i = e; continue; }
+    if (c === '`') { const e = skipTemplate(content, i); if (e < 0) return null; i = e; continue; }
+    if (c === '(' || c === '[' || c === '{') { depth++; continue; }
+    if (c === ')') {
+      depth--;
+      if (depth === 0) {
+        const last = content.slice(start, i).trim();
+        if (last.length || args.length) args.push(last);
+        return args;
+      }
+      if (depth < 0) return null;
+      continue;
+    }
+    if (c === ']' || c === '}') { depth--; if (depth < 0) return null; continue; }
+    if (c === ',' && depth === 1) { args.push(content.slice(start, i).trim()); start = i + 1; continue; }
+  }
+  return null;
+}
+
+/** Non-interpolated literal text of a template — `\`a ${x} b\`` → "a  b". Used to tell "PREP:" from a bare glyph/interpolation. */
+function templateLiteralText(tpl) {
+  const inner = tpl.slice(1, -1);
+  let out = '';
+  for (let j = 0; j < inner.length; j++) {
+    const c = inner[j];
+    if (c === '\\') {
+      // \u{21BB}, ♥, \xE9 — a multi-char unicode/hex escape for ONE glyph.
+      // Naively taking inner[j+1] (the generic single-escaped-char case below)
+      // would strip only the backslash and leave "u{21BB}" behind as if it
+      // were plain text, false-positiving every escaped icon/glyph.
+      const esc = /^\\u\{[0-9a-fA-F]+\}|^\\u[0-9a-fA-F]{4}|^\\x[0-9a-fA-F]{2}/.exec(inner.slice(j));
+      if (esc) { j += esc[0].length - 1; continue; } // whole escape consumed, contributes no text
+      out += inner[j + 1] ?? '';
+      j++;
+      continue;
+    }
+    if (c === '$' && inner[j + 1] === '{') {
+      let depth = 1;
+      let k = j + 2;
+      while (k < inner.length && depth > 0) {
+        const cc = inner[k];
+        if (cc === '\\') { k += 2; continue; }
+        if (cc === "'" || cc === '"') { const e = skipQuoted(inner, k); k = e < 0 ? k + 1 : e + 1; continue; }
+        if (cc === '`') { const e = skipTemplate(inner, k); k = e < 0 ? k + 1 : e + 1; continue; }
+        if (cc === '{') depth++;
+        else if (cc === '}') depth--;
+        k++;
+      }
+      j = k - 1;
+      continue;
+    }
+    out += c;
+  }
+  return out;
+}
+
+const canvasHits = [];
+
+function scanCanvasText(filePath, content) {
+  const lines = content.split('\n');
+  for (const m of content.matchAll(CANVAS_TEXT_CALL)) {
+    const kind = m[1];
+    const argIndex = CANVAS_ARG_INDEX[kind];
+    const openIdx = m.index + m[0].length - 1;
+    const args = readArgs(content, openIdx);
+    if (!args || args.length <= argIndex) continue;
+    const textArg = args[argIndex];
+    if (!textArg) continue;
+
+    const branches = [];
+    collectBranches(textArg, branches);
+    const lineno = content.slice(0, openIdx).split('\n').length;
+    const line = lines[lineno - 1] ?? '';
+    if (line.trim().startsWith('//') || line.trim().startsWith('*')) continue;
+
+    for (const b of branches) {
+      const literalText = b.kind === 'exact' ? b.value : templateLiteralText(b.value);
+      if (!literalText.trim()) continue; // empty string — not user-facing
+      if (!hasUserFacingLetter(literalText)) continue; // digits/symbols/glyphs only (scores, counts, icons)
+      canvasHits.push({ text: b.kind === 'exact' ? b.value : b.value, file: filePath, lineno, call: kind });
+    }
+  }
+}
+
+const GAME_ENGINE_DIR = join(ROOT, 'game-engine');
+if (existsSync(GAME_ENGINE_DIR)) {
+  (function walkCanvas(dir) {
+    for (const entry of readdirSync(dir)) {
+      if (EXCLUDE_DIRS.has(entry)) continue;
+      const full = join(dir, entry);
+      const st = statSync(full);
+      if (st.isDirectory()) walkCanvas(full);
+      else if (st.isFile() && INCLUDE_EXTS.has(extname(entry)) && !/\.(test|spec)\.tsx?$/.test(entry)) {
+        scanCanvasText(full, readFileSync(full, 'utf8'));
+      }
+    }
+  })(GAME_ENGINE_DIR);
+}
+
 const NOTE =
   'check-t-keys NOTE — under a dynamic `${…}` segment only the static namespace is\n' +
   '  verified. The individual LEAF keys below it are NOT checked and cannot be: a\n' +
@@ -360,7 +515,22 @@ if (missingNs.length > 0) {
   console.error('Add the whole branch to en-US first, then es-MX and pt-BR in the SAME commit (§1.8).');
 }
 
-if (missing.length > 0 || missingNs.length > 0) {
+if (canvasHits.length > 0) {
+  if (missing.length > 0 || missingNs.length > 0) console.error('');
+  console.error('check-t-keys FAILED [canvas text] — hardcoded string literal(s) drawn to <canvas>');
+  console.error('via Phaser text calls, never routed through the i18n layer:');
+  for (const { text, file, lineno, call } of canvasHits.sort(
+    (a, b) => a.file.localeCompare(b.file) || a.lineno - b.lineno,
+  )) {
+    console.error(`  ${call}(…, ${text}, …)  ←  ${file}:${lineno}`);
+  }
+  console.error(`\ncheck-t-keys: ${canvasHits.length} hardcoded canvas string(s) found.`);
+  console.error('Route each through the mechanic scene\'s i18n bag (see the Foundation task pattern),');
+  console.error('never a second ad-hoc mechanism. Review each hit — a false positive is possible');
+  console.error('(e.g. a non-user-facing debug label); when in doubt, flag it for human judgment.');
+}
+
+if (missing.length > 0 || missingNs.length > 0 || canvasHits.length > 0) {
   console.error(`\n${NOTE}`);
   process.exit(1);
 }
@@ -368,5 +538,6 @@ if (missing.length > 0 || missingNs.length > 0) {
 console.log('check-t-keys OK — every static t() key resolves in en-US');
 console.log('check-t-keys OK — both branches of every literal t(cond ? a : b) resolve in en-US');
 console.log('check-t-keys OK — every t(`ns.${…}`) namespace exists in en-US');
+console.log('check-t-keys OK — no hardcoded string literals drawn to <canvas> via Phaser text calls');
 console.log(NOTE);
 process.exit(0);

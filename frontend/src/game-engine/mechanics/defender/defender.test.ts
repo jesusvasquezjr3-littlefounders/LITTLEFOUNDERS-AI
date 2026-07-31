@@ -3,11 +3,15 @@
 // rejection, wall redirection, mutually exclusive upgrade branches, the sell refund,
 // flying enemies ignoring the labyrinth, and per-tower firing timers).
 
+import Phaser from 'phaser'
+import { vi } from 'vitest'
+
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, GameInputEvent, SimInit } from '@/game-engine/core/types'
 
 import { defenderBots } from './bots'
 import { defenderFixtures } from './fixtures'
+import { DefenderScene } from './scene'
 import {
   DEFENDER_SPRITE_SLOTS,
   defenderConfigSchema,
@@ -524,5 +528,432 @@ describe('defender rules', () => {
     for (let cell = 0; cell < state.cols * state.rows; cell += 1) {
       expect(cellIndex(state.cols, cellCol(state.cols, cell), cellRow(state.cols, cell))).toBe(cell)
     }
+  })
+})
+
+// ---- Scene-layer regressions (mechanic-pass audit: defender had the MOST missing
+// reachable surface — only start_wave/build_wall/build_tower/sell were wired; upgrade,
+// priority, ability and heat were declared in `simulate.ts`'s `actions` list but no
+// control ever enqueued them) ------------------------------------------------------
+//
+// `DefenderScene` extends `Phaser.Scene`, whose real `this.add`/`this.tweens` only
+// exist once booted (see sorter.test.ts's header for why a real boot is impractical
+// under jsdom). These tests exercise the REAL prototype methods against a minimal fake
+// `this`: a chainable fake for every `this.add.rectangle/text/circle/container` call
+// `makeRect`/`makeText`/`makeCircle`/`this.add.container` make, capturing whatever
+// `.on('pointerdown', …)` handler a button installs so the POINTER path can be invoked
+// directly — not just asserted to exist — alongside the KEYBOARD path through the real
+// `handleKeys`, proving both reach `simulate.ts`'s exact declared payload shape.
+
+interface FakeGameObject {
+  setDepth: (...args: unknown[]) => FakeGameObject
+  setStrokeStyle: (...args: unknown[]) => FakeGameObject
+  setInteractive: (...args: unknown[]) => FakeGameObject
+  setOrigin: (...args: unknown[]) => FakeGameObject
+  setAlpha: (...args: unknown[]) => FakeGameObject
+  setFillStyle: (...args: unknown[]) => FakeGameObject
+  setSize: (...args: unknown[]) => FakeGameObject
+  setPosition: (...args: unknown[]) => FakeGameObject
+  setScale: (...args: unknown[]) => FakeGameObject
+  setVisible: (...args: unknown[]) => FakeGameObject
+  setRadius: (...args: unknown[]) => FakeGameObject
+  setText: (text: string) => FakeGameObject
+  on: (event: string, handler: () => void) => FakeGameObject
+  _handlers: Record<string, () => void>
+}
+
+interface FakeContainer {
+  list: unknown[]
+  add: (children: unknown[]) => FakeContainer
+  removeAll: (destroy?: boolean) => FakeContainer
+  setAlpha: (...args: unknown[]) => FakeContainer
+  setPosition: (...args: unknown[]) => FakeContainer
+  setVisible: (...args: unknown[]) => FakeContainer
+}
+
+function fakeGameObject(): FakeGameObject {
+  const obj = {} as FakeGameObject
+  const chainNames: (keyof FakeGameObject)[] = [
+    'setDepth', 'setStrokeStyle', 'setInteractive', 'setOrigin', 'setAlpha',
+    'setFillStyle', 'setSize', 'setPosition', 'setScale', 'setVisible', 'setRadius',
+  ]
+  for (const name of chainNames) {
+    (obj as unknown as Record<string, () => FakeGameObject>)[name] = () => obj
+  }
+  obj._handlers = {}
+  obj.setText = (text: string) => { (obj as unknown as { text: string }).text = text; return obj }
+  obj.on = (event: string, handler: () => void) => { obj._handlers[event] = handler; return obj }
+  return obj
+}
+
+function fakeContainer(): FakeContainer {
+  const obj: FakeContainer = {
+    list: [],
+    add: (children: unknown[]) => { obj.list.push(...children); return obj },
+    removeAll: () => { obj.list = []; return obj },
+    setAlpha: () => obj,
+    setPosition: () => obj,
+    setVisible: () => obj,
+  }
+  return obj
+}
+
+interface FakeBridge {
+  state: DefenderState
+  enqueue: ReturnType<typeof vi.fn>
+  finished: boolean
+}
+
+/** The exact private/protected surface `handleCellClick`/`handleKeys`/`updateTowerInfo`/
+ *  `createBuildPalette`/`createHeatPanel` read or write — typed by hand (never
+ *  `DefenderScene` itself, whose members are mostly untyped-public-but-undocumented)
+ *  so the fake only has to satisfy this shape, matching sorter.test.ts's pattern. */
+interface TestableDefenderScene {
+  add: {
+    rectangle: (...args: unknown[]) => FakeGameObject
+    text: (...args: unknown[]) => FakeGameObject
+    circle: (...args: unknown[]) => FakeGameObject
+    container: (...args: unknown[]) => FakeContainer
+  }
+  tweens: { add: (...args: unknown[]) => unknown }
+  strings: Record<string, string>
+  bridge: FakeBridge
+  cellRects: unknown[][]
+  selectedCell: number
+  selectedPaletteSlot: string
+  gridW: number
+  gridH: number
+  cellSize: number
+  keys: Record<string, { _justDown: boolean }>
+  actionPanel: FakeContainer
+  heatBtns: { index: number; rect: FakeGameObject; label: FakeGameObject }[]
+  heatPanel: FakeContainer
+  abilityBtns: { id: string; rect: FakeGameObject; icon: FakeGameObject; label: FakeGameObject }[]
+  towerInfoText: FakeGameObject
+  rangeCircle: FakeGameObject
+  handleCellClick(cell: number): void
+  handleKeys(st: DefenderState): void
+  updateTowerInfo(st: DefenderState, cell: number): void
+  createBuildPalette(st: DefenderState): void
+  createHeatPanel(st: DefenderState): void
+}
+
+// `src/test-setup.ts`'s global `vi.mock('phaser', …)` (shared across every mechanic's
+// tests, not owned by this file) stubs only `AUTO`/`Scale`/`Scene`/`Game`/`Geom`/`Math`/
+// `Display` — it has no `Input` namespace at all, so `handleKeys`'s real
+// `Phaser.Input.Keyboard.JustDown(...)` calls (a PRE-EXISTING pattern here and in
+// launcher/runner's scenes, not introduced by this pass) throw immediately under
+// vitest. Augmenting the ALREADY-MOCKED module object with the one function actually
+// exercised — never touching `test-setup.ts` itself — keeps this fix local to this
+// test file (Vitest isolates the module registry per file) rather than editing shared
+// test infrastructure this mechanic does not own. `JustDown`'s real semantics (from
+// `node_modules/phaser/src/input/keyboard/keys/JustDown.js`): read-and-clear
+// `key._justDown`.
+;(Phaser as unknown as { Input: unknown }).Input = {
+  Keyboard: {
+    JustDown: (key: { _justDown: boolean }): boolean => {
+      if (key._justDown) {
+        key._justDown = false
+        return true
+      }
+      return false
+    },
+  },
+}
+
+const NO_KEY = { _justDown: false }
+
+function makeFakeDefenderScene(state: DefenderState): TestableDefenderScene {
+  const fake = Object.create(DefenderScene.prototype) as TestableDefenderScene & {
+    palette: Record<string, number>
+    paused: unknown
+  }
+  fake.add = {
+    rectangle: () => fakeGameObject(),
+    text: () => fakeGameObject(),
+    circle: () => fakeGameObject(),
+    container: () => fakeContainer(),
+  }
+  fake.tweens = { add: () => undefined }
+  fake.palette = {
+    bg: 0, bgAccent: 0, surface: 0, primary: 0, accent: 0,
+    success: 0, danger: 0, warning: 0, text: 0, inverse: 0, inverseText: 0,
+  }
+  fake.strings = {}
+  fake.bridge = { state, enqueue: vi.fn(), finished: false }
+  fake.cellRects = []
+  fake.selectedCell = -1
+  fake.selectedPaletteSlot = ''
+  fake.gridW = state.cols * state.config.grid.cell_size
+  fake.gridH = state.rows * state.config.grid.cell_size
+  fake.cellSize = state.config.grid.cell_size
+  fake.towerInfoText = fakeGameObject()
+  fake.rangeCircle = fakeGameObject()
+  fake.actionPanel = fakeContainer()
+  fake.heatBtns = []
+  fake.heatPanel = fakeContainer()
+  fake.abilityBtns = []
+  fake.keys = {
+    p: { ...NO_KEY }, w: { ...NO_KEY }, s: { ...NO_KEY }, t: { ...NO_KEY }, u: { ...NO_KEY },
+    h: { ...NO_KEY }, one: { ...NO_KEY }, two: { ...NO_KEY }, three: { ...NO_KEY },
+    space: { ...NO_KEY }, esc: { ...NO_KEY },
+  }
+  return fake
+}
+
+/** A tower type declaring 2 mutually exclusive upgrade branches — reused across
+ *  several tests below, mirroring the existing "upgrade branches are MUTUALLY
+ *  EXCLUSIVE" rule test's fixture choice. */
+const UPGRADABLE_TOWER = mazeConfig.towers.find((tower) => (tower.upgrades ?? []).length >= 2)
+if (UPGRADABLE_TOWER === undefined) throw new Error('fixture has no two-branch tower')
+const FIRST_BRANCH = UPGRADABLE_TOWER.upgrades?.[0]
+if (FIRST_BRANCH === undefined) throw new Error('fixture tower has no first branch')
+
+/** A maze variant with a one-ability secondary economy, since NEITHER shipped fixture
+ *  declares one (confirmed: `grep -n secondary fixtures.ts` finds no manifest use) —
+ *  the `ability` action is real simulator surface a future manifest can reach, so it
+ *  still owes a test even though no fixture exercises it live. */
+const mazeWithAbility = variantOf(maze, (config) => {
+  config.economy.secondary = {
+    starting: 5,
+    per_wave: 0,
+    per_kill: 0,
+    abilities: [
+      { id: 'frost-blast', kind: 'freeze', cost: 2, radius_mcells: 2000, freeze_ticks: 20, cooldown_ticks: 100 },
+    ],
+  }
+})
+
+describe('defender scene: global ability cast (pointer, previously unreachable)', () => {
+  it('selecting the ability palette slot then tapping a cell enqueues the SAME shape simulate.ts expects', () => {
+    const state = initOf(mazeWithAbility)
+    const scene = makeFakeDefenderScene(state)
+
+    // Step 1: build the palette (this is where the ability button is created and its
+    // pointerdown handler installed) and click it.
+    scene.createBuildPalette(state)
+    const abilityBtn = scene.abilityBtns.find((b) => b.id === 'frost-blast')
+    if (abilityBtn === undefined) throw new Error('ability button not built')
+    abilityBtn.rect._handlers['pointerdown']?.()
+    expect(scene.selectedPaletteSlot).toBe('__ability__:frost-blast')
+    expect(scene.bridge.enqueue).not.toHaveBeenCalled()
+
+    // Step 2: tap a cell — this is the call the audit found unreachable.
+    const cell = cellIndex(state.cols, 3, 3)
+    scene.handleCellClick(cell)
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledTimes(1)
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('ability', { slot: 'frost-blast', x: 3, y: 3 })
+  })
+
+  it('a manifest with NO secondary economy builds zero ability buttons — never a dangling slot', () => {
+    const state = initOf(maze)
+    const scene = makeFakeDefenderScene(state)
+    scene.createBuildPalette(state)
+    expect(scene.abilityBtns.length).toBe(0)
+  })
+})
+
+describe('defender scene: target priority (pointer AND keyboard, previously unreachable)', () => {
+  it('the keyboard "t" path enqueues the exact `priority` payload simulate.ts expects', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    scene.selectedCell = cellIndex(built.cols, 2, 2)
+    scene.keys.t!._justDown = true
+
+    scene.handleKeys(built)
+
+    // `default_priority: 'first'` for this tower type (fixtures.ts) — the next entry
+    // in schema.ts's DEFENDER_PRIORITIES tuple is 'last'.
+    expect(scene.bridge.enqueue).toHaveBeenCalledTimes(1)
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('priority', { slot: 'last', x: 2, y: 2 })
+  })
+
+  it('the pointer path built by updateTowerInfo enqueues the BYTE-IDENTICAL call', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    const cell = cellIndex(built.cols, 2, 2)
+
+    scene.updateTowerInfo(built, cell)
+    const priorityBtn = (scene.actionPanel.list as FakeGameObject[]).find((o) => o._handlers['pointerdown'])
+    if (priorityBtn === undefined) throw new Error('priority button not built')
+    priorityBtn._handlers['pointerdown']?.()
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledTimes(1)
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('priority', { slot: 'last', x: 2, y: 2 })
+  })
+})
+
+describe('defender scene: tower upgrade branches (pointer AND keyboard, previously unreachable)', () => {
+  it('the keyboard "u" path upgrades the FIRST open branch — the same one `find` resolves', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    scene.selectedCell = cellIndex(built.cols, 2, 2)
+    scene.keys.u!._justDown = true
+
+    scene.handleKeys(built)
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledTimes(1)
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('upgrade', { slot: FIRST_BRANCH!.id, x: 2, y: 2 })
+  })
+
+  it('the pointer path built by updateTowerInfo enqueues one button PER open branch, each with its own cost', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    const cell = cellIndex(built.cols, 2, 2)
+
+    scene.updateTowerInfo(built, cell)
+    const branchButtons = (scene.actionPanel.list as FakeGameObject[]).filter((o) => o._handlers['pointerdown'])
+    // priority (1) + N upgrade branches + sell (1) — this tower declares 2 branches.
+    expect(branchButtons.length).toBe(1 + (UPGRADABLE_TOWER!.upgrades?.length ?? 0) + 1)
+
+    const firstBranchBtn = branchButtons[1]!
+    firstBranchBtn._handlers['pointerdown']?.()
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('upgrade', { slot: FIRST_BRANCH!.id, x: 2, y: 2 })
+  })
+
+  it('mutual exclusivity reaches the panel too: once committed, only the chosen branch still renders', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const committed = stepThrough(built, 1, [
+      { tick: 0, action: 'upgrade', slot: FIRST_BRANCH!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(committed)
+    const cell = cellIndex(committed.cols, 2, 2)
+
+    scene.updateTowerInfo(committed, cell)
+    const branchButtons = (scene.actionPanel.list as FakeGameObject[]).filter((o) => o._handlers['pointerdown'])
+    // priority (1) + exactly 1 remaining branch (tier 2 of the committed one) + sell (1).
+    expect(branchButtons.length).toBe(3)
+  })
+})
+
+describe('defender scene: sell (regression — must survive the actionPanel generalisation)', () => {
+  it('the pointer sell button still enqueues `sell` with the cell, and clears the selection', () => {
+    const built = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    const cell = cellIndex(built.cols, 2, 2)
+    scene.selectedCell = cell
+
+    scene.updateTowerInfo(built, cell)
+    const buttons = (scene.actionPanel.list as FakeGameObject[]).filter((o) => o._handlers['pointerdown'])
+    const sellBtn = buttons[buttons.length - 1]!
+    sellBtn._handlers['pointerdown']?.()
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('sell', { x: 2, y: 2 })
+    expect(scene.selectedCell).toBe(-1)
+  })
+})
+
+describe('defender scene: voluntary heat modifier (pointer AND keyboard, previously unreachable)', () => {
+  it('the keyboard "h" path cycles off -> first heat option', () => {
+    const state = initOf(maze) // heatIndex starts at -1, wavesStarted at 0
+    const scene = makeFakeDefenderScene(state)
+    scene.keys.h!._justDown = true
+
+    scene.handleKeys(state)
+
+    const firstHeat = mazeConfig.heat?.[0]
+    if (firstHeat === undefined) throw new Error('fixture has no heat modifiers')
+    expect(scene.bridge.enqueue).toHaveBeenCalledTimes(1)
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('heat', { slot: firstHeat.id })
+  })
+
+  it('the keyboard "h" path re-selects the LAST option to toggle back off, matching applyHeat\'s own rule', () => {
+    const heats = mazeConfig.heat ?? []
+    const lastIndex = heats.length - 1
+    if (lastIndex < 0) throw new Error('fixture has no heat modifiers')
+    const onLast = stepThrough(initOf(maze), 1, [
+      { tick: 0, action: 'heat', slot: heats[0]!.id },
+    ])
+    // Cycle up to the last option first (deterministic, mirrors the sequence 'h' drives).
+    let state = onLast
+    for (let i = 1; i <= lastIndex; i += 1) {
+      state = stepThrough(state, 1, [{ tick: 0, action: 'heat', slot: heats[i]!.id }])
+    }
+    expect(state.heatIndex).toBe(lastIndex)
+
+    const scene = makeFakeDefenderScene(state)
+    scene.keys.h!._justDown = true
+    scene.handleKeys(state)
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('heat', { slot: heats[lastIndex]!.id })
+  })
+
+  it('"h" is refused once a wave has started — matches applyHeat\'s own wavesStarted guard', () => {
+    const state: DefenderState = { ...initOf(maze), wavesStarted: 1 }
+    const scene = makeFakeDefenderScene(state)
+    scene.keys.h!._justDown = true
+
+    scene.handleKeys(state)
+
+    expect(scene.bridge.enqueue).not.toHaveBeenCalled()
+  })
+
+  it('the pointer path built by createHeatPanel enqueues the same first-option call', () => {
+    const state = initOf(maze)
+    const scene = makeFakeDefenderScene(state)
+
+    scene.createHeatPanel(state)
+    const firstBtn = scene.heatBtns[0]
+    if (firstBtn === undefined) throw new Error('no heat buttons built')
+    firstBtn.rect._handlers['pointerdown']?.()
+
+    const firstHeat = mazeConfig.heat?.[0]
+    if (firstHeat === undefined) throw new Error('fixture has no heat modifiers')
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('heat', { slot: firstHeat.id })
+  })
+
+  it('createHeatPanel builds nothing for a manifest with no heat modifiers', () => {
+    const document = variantOf(maze, (config) => { config.heat = undefined })
+    const state = initOf(document)
+    const scene = makeFakeDefenderScene(state)
+
+    scene.createHeatPanel(state)
+
+    expect(scene.heatBtns.length).toBe(0)
+  })
+})
+
+describe('defender scene: global-ability keyboard fallback (no selected tower)', () => {
+  it('pressing "1" with nothing selected targets the first exit cell — the base', () => {
+    const state = initOf(mazeWithAbility)
+    const scene = makeFakeDefenderScene(state)
+    scene.selectedCell = -1
+    scene.keys.one!._justDown = true
+
+    scene.handleKeys(state)
+
+    const exitCell = state.exitCells[0]
+    if (exitCell === undefined) throw new Error('fixture has no exit cell')
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('ability', {
+      slot: 'frost-blast',
+      x: cellCol(state.cols, exitCell),
+      y: cellRow(state.cols, exitCell),
+    })
+  })
+
+  it('pressing "1" with a tower selected targets that tower\'s cell instead', () => {
+    const built = stepThrough(initOf(mazeWithAbility), 1, [
+      { tick: 0, action: 'build_tower', slot: UPGRADABLE_TOWER!.id, x: 2, y: 2 },
+    ])
+    const scene = makeFakeDefenderScene(built)
+    scene.selectedCell = cellIndex(built.cols, 2, 2)
+    scene.keys.one!._justDown = true
+
+    scene.handleKeys(built)
+
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('ability', { slot: 'frost-blast', x: 2, y: 2 })
   })
 })

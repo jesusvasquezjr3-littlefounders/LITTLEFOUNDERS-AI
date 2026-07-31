@@ -1,18 +1,12 @@
 // /dev/game-lab — the Game Engine QA surface (GAME_ENGINE.md §7 slices, §10 player).
 // Dev-gated in App.tsx; never reaches a production bundle.
 //
-// Twin of /dev/lesson-lab, with the four affordances the determinism contract (§5)
-// needs and that ONLY a lab can give, because a nondeterminism bug is otherwise a
-// mystery — the server rejects a reward and nobody can reproduce the run:
+// Twin of /dev/lesson-lab. Two affordances the determinism contract (§5) needs and
+// that ONLY a lab can give, because a nondeterminism bug is otherwise a mystery — the
+// server rejects a reward and nobody can reproduce the run:
 //
 //   SEED         every launch states the seed it used, and the seed is overridable,
 //                so "it only breaks on this run" becomes a repeatable experiment.
-//   TICK STEP    a manual GameLoopScheduler (the kernel's injectable seam) advances
-//                the simulation one whole tick at a time instead of at rAF speed, so
-//                the tick a state goes wrong on can actually be looked at.
-//   SNAPSHOT     the live SimSnapshot the HUD reads, printed raw — the mechanic's own
-//                View is a renderer and can hide a wrong score behind a right-looking
-//                board.
 //   LOG EXPORT   the completed input log as JSON, copyable, so the exact run can be
 //                replayed through core/replay.ts here, in a test, or on the server.
 //
@@ -22,21 +16,53 @@
 //
 // Everything plays through the REAL GamePlayer with the REAL slice. A lab that
 // re-implemented the player would verify the lab.
+//
+// ---- WHY TICK-STEP AND A LIVE SNAPSHOT READOUT ARE GONE ----------------------------
+// The kernel-era version of this file drove the mechanic's View through a manual
+// GameLoopScheduler (`core/kernel.ts`) and read its live state off `MechanicSlice.View`
+// props. The Phaser rewrite (commit 4680a61 onward) replaced that entire path:
+// `GameStage` (in `player/GamePlayer.tsx`) mounts `PhaserGameBox`, which loads a scene
+// straight from `phaser/sceneRegistry.ts` by `document.meta.mechanic` — the `slice`
+// prop `GamePlayer` still accepts is used ONLY for the null → "unsupported" card, and
+// the `scheduler` prop it still accepts is not read by `GameStage` at all. Neither
+// ever reaches the running simulation any more, so the tick-step buttons and the live
+// score/lives/round/paused readout this lab used to render were dead controls that
+// LOOKED wired and were not (the confirmed audit finding this file now fixes).
+//
+// `GamePlayer`'s public contract exposes no live per-tick signal to its caller — only
+// `onComplete(run: GameRunSubmission)` once a run ends, carrying `seed`/`input_log`/
+// `duration_seconds` and deliberately no score (§ the client never reports a score).
+// This lab owns none of `player/GamePlayer.tsx`, `player/PhaserGameBox.tsx`,
+// `phaser/scene.ts` or `phaser/bridge.ts`, so it cannot restore a live readout by
+// itself. What follows is the honest subset: real values where `GamePlayer` actually
+// exposes one, an explicit "not available" everywhere it does not, and a disabled
+// (not silently inert) Step mode control. The exact seam that would unblock this,
+// for whoever owns those files next:
+//
+//   1. `GamePlayerProps.onSnapshot?: (snap: BridgeSnapshot) => void` — forwarded from
+//      `GameStage`'s existing `handleSnapshot` in addition to its own `setSnapshot`,
+//      so a caller (this lab) can read the live score/lives/round/finished/tick.
+//   2. `GamePlayerProps.stepMode?: boolean`, threaded down to a new
+//      `PhaserGameBoxProps.stepMode?: boolean`: when true, `BaseMechanicScene.update()`
+//      must NOT call `this.bridge.update(delta)` on its own; the bridge only advances
+//      when driven manually.
+//   3. `PhaserGameBoxProps` needs a way to hand the caller a manual-advance handle —
+//      e.g. `onSceneReady?: (controls: { advanceOneTick: () => void }) => void` fired
+//      once `sceneRef.current` exists, mirroring the `togglePause` seam already there.
+//      `advanceOneTick` would call `this.bridge.update(TICK_MS)` exactly once and run
+//      the same post-update bookkeeping `update()` already does (snapshot diff,
+//      `updateGameObjects`, completion edge) — the smallest change is probably
+//      extracting that bookkeeping out of `update()` into a private method both call.
+//
+// Until that lands, `stepMode` here is a disabled, explained control rather than a
+// button that quietly does nothing.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import type { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Badge, Button, Card, Icon, ThemeToggle } from '@/components/ui'
-import type { GameLoopScheduler } from '@/game-engine/core/kernel'
-import { MECHANIC_IDS, TICK_MS } from '@/game-engine/core/types'
-import type {
-  GameDocument,
-  MechanicId,
-  MechanicSlice,
-  MechanicViewProps,
-  SimSnapshot,
-} from '@/game-engine/core/types'
+import { MECHANIC_IDS } from '@/game-engine/core/types'
+import type { GameDocument, MechanicId, MechanicSlice } from '@/game-engine/core/types'
 import GamePlayer from '@/game-engine/player/GamePlayer'
 import type { GameRunSubmission } from '@/game-engine/player/GamePlayer'
 import { MECHANIC_LOADERS, MECHANIC_META, loadMechanic } from '@/game-engine/registry'
@@ -61,76 +87,6 @@ function parseSeedOverride(raw: string): number | null {
   if (trimmed === '' || !/^\d+$/.test(trimmed)) return null
   const value = Number(trimmed)
   return Number.isSafeInteger(value) ? value : null
-}
-
-// ---- The manual scheduler (tick stepping) ------------------------------------
-
-interface ManualScheduler extends GameLoopScheduler {
-  /** Dispatches up to `ticks` frames, each carrying exactly TICK_MS of virtual time.
-   *  Returns how many frames actually ran — zero once the loop has stopped or paused,
-   *  because a halted loop schedules no frame to dispatch. */
-  advance(ticks: number): number
-}
-
-/**
- * A GameLoopScheduler whose clock only moves when this lab moves it. `now()` never
- * reads the wall clock, so a breakpoint or a slow render cannot inject extra ticks:
- * one press is one tick, always.
- */
-function createManualScheduler(): ManualScheduler {
-  let clock = 0
-  let nextHandle = 1
-  const frames = new Map<number, () => void>()
-
-  return {
-    now: () => clock,
-    request: (callback) => {
-      const handle = nextHandle
-      nextHandle += 1
-      frames.set(handle, callback)
-      return handle
-    },
-    cancel: (handle) => {
-      frames.delete(handle)
-    },
-    advance: (ticks) => {
-      let dispatched = 0
-      for (let i = 0; i < ticks; i += 1) {
-        if (frames.size === 0) break
-        clock += TICK_MS
-        const due = Array.from(frames.values())
-        frames.clear()
-        for (const callback of due) callback()
-        dispatched += 1
-      }
-      return dispatched
-    },
-  }
-}
-
-// ---- The snapshot probe -------------------------------------------------------
-
-interface ProbeSignal {
-  snapshot: SimSnapshot
-  paused: boolean
-}
-
-/**
- * Wraps a mechanic's View so the lab can read the live snapshot without the player
- * having to expose it. The View already receives exactly what the debug readout wants,
- * and a pass-through wrapper keeps the played code path identical to production.
- */
-function createProbeView(
-  View: ComponentType<MechanicViewProps>,
-  report: (signal: ProbeSignal) => void,
-): ComponentType<MechanicViewProps> {
-  return function LabProbeView(props: MechanicViewProps) {
-    const { snapshot, paused } = props
-    useEffect(() => {
-      report({ snapshot, paused })
-    }, [snapshot, paused])
-    return <View {...props} />
-  }
 }
 
 // ---- Clipboard ----------------------------------------------------------------
@@ -159,11 +115,17 @@ interface ActiveRun {
   slice: MechanicSlice
   document: GameDocument
   seed: number
-  /** Captured at launch: swapping schedulers mid-run would restart the simulation. */
-  stepMode: boolean
 }
 
-const STEP_SIZES = [1, 10, 100] as const
+/** A row in the debug readout. `unavailable` renders the value as an explicit
+ *  "not available" instead of a value that merely never updates — a permanent-looking
+ *  dash is indistinguishable from "hasn't happened yet" and is exactly the silent-lie
+ *  failure mode this file exists to close. */
+interface DebugRow {
+  label: string
+  value: string
+  unavailable?: boolean
+}
 
 interface GameLabRunProps {
   run: ActiveRun
@@ -173,9 +135,7 @@ interface GameLabRunProps {
 
 function GameLabRun({ run, onExit, onReplay }: GameLabRunProps) {
   const { t } = useTranslation()
-  const [probe, setProbe] = useState<ProbeSignal | null>(null)
   const [submission, setSubmission] = useState<GameRunSubmission | null>(null)
-  const [steps, setSteps] = useState(0)
   const [copyState, setCopyState] = useState<CopyState>('idle')
   // Collapsed by default on a narrow viewport: the panel floats over the stage, and at
   // 375px it covered the pause overlay's own buttons — which broke the mobile QA pass
@@ -184,28 +144,9 @@ function GameLabRun({ run, onExit, onReplay }: GameLabRunProps) {
     () => typeof window !== 'undefined' && window.innerWidth < 768,
   )
 
-  const report = useCallback((signal: ProbeSignal) => setProbe(signal), [])
-
-  // MUST be referentially stable for the whole run — useGameLoop tears the loop down
-  // and starts a FRESH run when the slice, the scheduler or the document change.
-  const scheduler = useMemo(() => (run.stepMode ? createManualScheduler() : null), [run.stepMode])
-  const labSlice = useMemo<MechanicSlice>(
-    () => ({ ...run.slice, View: createProbeView(run.slice.View, report) }),
-    [run.slice, report],
-  )
-
   const handleComplete = useCallback((completed: GameRunSubmission) => {
     setSubmission(completed)
   }, [])
-
-  const advance = useCallback(
-    (ticks: number) => {
-      if (scheduler === null) return
-      const dispatched = scheduler.advance(ticks)
-      setSteps((previous) => previous + dispatched)
-    },
-    [scheduler],
-  )
 
   const handleCopy = useCallback(() => {
     if (submission === null) return
@@ -222,31 +163,38 @@ function GameLabRun({ run, onExit, onReplay }: GameLabRunProps) {
     })
   }, [run.document.meta.slug, run.mechanic, submission])
 
-  const snapshot = probe?.snapshot ?? null
-  const rows: [string, string][] = [
-    ['mechanic', run.mechanic],
-    ['slug', run.document.meta.slug],
-    ['seed', String(run.seed)],
-    ['mode', run.stepMode ? 'step' : 'live'],
-    ['steps', String(steps)],
-    ['score', snapshot === null ? '-' : String(snapshot.score)],
-    ['lives', snapshot === null ? '-' : String(snapshot.lives)],
-    ['round', snapshot === null ? '-' : String(snapshot.round)],
-    ['finished', snapshot === null ? '-' : String(snapshot.finished)],
-    ['paused', probe === null ? '-' : String(probe.paused)],
-    ['events', submission === null ? '-' : String(submission.input_log.length)],
+  // `finished` is real, derived from whether GamePlayer has reported completion — the
+  // one live-ish signal its public contract actually exposes. Everything below it is
+  // NOT available through that contract today; see the file-level comment for the
+  // exact seam that would make it real instead of an honest placeholder.
+  const finished = submission !== null
+  const unavailable = t('games.lab.unavailable')
+
+  const rows: DebugRow[] = [
+    { label: 'mechanic', value: run.mechanic },
+    { label: 'slug', value: run.document.meta.slug },
+    { label: 'seed', value: String(run.seed) },
+    { label: 'finished', value: String(finished) },
+    { label: 'events', value: submission === null ? '-' : String(submission.input_log.length) },
+    {
+      label: 'duration_s',
+      value: submission === null ? '-' : String(submission.duration_seconds),
+    },
+    { label: 'score', value: unavailable, unavailable: true },
+    { label: 'lives', value: unavailable, unavailable: true },
+    { label: 'round', value: unavailable, unavailable: true },
+    { label: 'paused', value: unavailable, unavailable: true },
   ]
 
   return (
     <>
       <GamePlayer
         document={run.document}
-        slice={labSlice}
+        slice={run.slice}
         seed={run.seed}
         onComplete={handleComplete}
         onExit={onExit}
         onReplay={onReplay}
-        {...(scheduler === null ? {} : { scheduler })}
       />
 
       {/* Above the player's own fixed z-50 shell, and full-width on mobile so the
@@ -268,29 +216,22 @@ function GameLabRun({ run, onExit, onReplay }: GameLabRunProps) {
         {collapsed ? null : (
           <div className="mt-2">
             <div className="space-y-1">
-              {rows.map(([label, value]) => (
-                <div key={label} className="flex items-baseline justify-between gap-3">
-                  <span className="lf-caption text-content-faint">{label}</span>
-                  <span className="lf-caption truncate font-bold text-content">{value}</span>
+              {rows.map((row) => (
+                <div key={row.label} className="flex items-baseline justify-between gap-3">
+                  <span className="lf-caption text-content-faint">{row.label}</span>
+                  <span
+                    className={cn(
+                      'lf-caption truncate',
+                      row.unavailable ? 'italic text-content-faint' : 'font-bold text-content',
+                    )}
+                  >
+                    {row.value}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {run.stepMode ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="lf-caption text-content-faint">{t('games.lab.step')}</span>
-                {STEP_SIZES.map((size) => (
-                  <button
-                    key={size}
-                    type="button"
-                    onClick={() => advance(size)}
-                    className="lf-caption flex min-h-11 min-w-11 items-center justify-center rounded-full border border-outline px-3 font-bold text-content transition-colors hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
-                  >
-                    {`+${size}`}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            <p className="lf-caption mt-2 text-content-faint">{t('games.lab.telemetryNote')}</p>
 
             <div className="mt-3 flex flex-wrap gap-2">
               <Button
@@ -332,7 +273,6 @@ export function GameLabPage() {
   const { t } = useTranslation()
   const [loaded, setLoaded] = useState<LoadedMechanic[] | null>(null)
   const [seedText, setSeedText] = useState('')
-  const [stepMode, setStepMode] = useState(false)
   const [active, setActive] = useState<ActiveRun | null>(null)
   const [runId, setRunId] = useState(0)
 
@@ -362,9 +302,9 @@ export function GameLabPage() {
   const launch = useCallback(
     (mechanic: MechanicId, slice: MechanicSlice, document: GameDocument, seed: number) => {
       setRunId((previous) => previous + 1)
-      setActive({ mechanic, slice, document, seed, stepMode })
+      setActive({ mechanic, slice, document, seed })
     },
-    [stepMode],
+    [],
   )
 
   if (active !== null) {
@@ -413,14 +353,16 @@ export function GameLabPage() {
               <Icon name="casino" className="text-[18px]" />
               {t('games.lab.newSeed')}
             </Button>
+            {/* Disabled, not hidden: the affordance documents that step mode is a real,
+                planned capability rather than pretending it doesn't exist — but it must
+                never look pressable when pressing it does nothing (see the file-level
+                comment for the exact seam this is waiting on). */}
             <button
               type="button"
-              onClick={() => setStepMode((previous) => !previous)}
-              aria-pressed={stepMode}
-              className={cn(
-                'lf-label flex min-h-11 items-center gap-2 rounded-full border-2 bg-surface px-4 text-content transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary',
-                stepMode ? 'border-primary text-primary' : 'border-outline/70 hover:border-primary/60',
-              )}
+              disabled
+              aria-disabled="true"
+              title={t('games.lab.stepModeUnavailable')}
+              className="lf-label flex min-h-11 cursor-not-allowed items-center gap-2 rounded-full border-2 border-outline/40 bg-surface px-4 text-content-faint opacity-60"
             >
               <Icon name="skip_next" />
               {t('games.lab.stepMode')}

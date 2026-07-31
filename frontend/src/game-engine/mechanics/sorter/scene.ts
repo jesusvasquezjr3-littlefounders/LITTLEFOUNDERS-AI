@@ -14,14 +14,19 @@ import {
 } from '@/game-engine/phaser/juice'
 import { BaseMechanicScene } from '@/game-engine/phaser/scene'
 import { Sfx } from '@/game-engine/phaser/sfx'
+import type { GameCategory, GameItem } from '@/game-engine/core/types'
 
 import { sorterConfigSchema, sorterContentSchema } from './schema'
-import { sorterSimulator, type SorterEntity, type SorterState } from './simulate'
+import { sorterSimulator, type SorterAction, type SorterEntity, type SorterState } from './simulate'
 
 const BG_KEY = 'sorter-bg'
 const ITEM_PREFIX = 'sorter-item-'
 const BIN_PREFIX = 'sorter-bin-'
 const TRASH_KEY = 'sorter-trash'
+
+/** Sentinel bin id for the discard target — namespaced so it can never collide with a
+ *  generated (kebab-case) category id, matching the DOM-era `SORTER_TRASH_ZONE`. */
+export const TRASH_BIN_ID = '__trash__'
 
 const ITEM_DEPTH = 10
 const BIN_DEPTH = 5
@@ -31,6 +36,20 @@ const GLOW_ALPHA = 0.4
 const HOVER_SCALE_PEAK = 1.06
 const BIN_HIGHLIGHT_SCALE = 1.04
 
+/** §1.11: a real 44px touch target at the canvas's FIT scale. The canvas is a fixed
+ *  800x600 world and a common phone renders it around 350-375 CSS px wide (scale
+ *  ~0.44-0.47), so any interactive object's DESIGN-space footprint must clear
+ *  44 / 0.44 ~= 100 design px in both dimensions to clear the real minimum — applied
+ *  as a floor under whatever a document authors (`field.item_size` has a schema
+ *  minimum of only 24, and the bin row's height was a bare 80), never a silent
+ *  shrink of anything already larger. */
+const MIN_TOUCH_DESIGN_PX = 100
+
+/** Design-px pointer travel, in a NON-static mode, that distinguishes a DRAG from a
+ *  TAP on pointerup. Below this, `onPointerUp` treats the gesture as a tap-select
+ *  (the §1.11 drag alternative) instead of a drop attempt. */
+const DRAG_MOVE_THRESHOLD = 12
+
 const TIER_COLORS: Record<number, number> = {
   1: 0x3b82f6,
   2: 0x22c55e,
@@ -38,7 +57,9 @@ const TIER_COLORS: Record<number, number> = {
   4: 0xef4444,
 }
 
-interface ItemView {
+// Exported so `sorter.test.ts` can type a minimal fake scene against the real shape
+// (see the doc comment there) instead of duplicating it.
+export interface ItemView {
   entity: SorterEntity
   container: Phaser.GameObjects.Container
   rect: Phaser.GameObjects.Image
@@ -47,7 +68,7 @@ interface ItemView {
   uid: number
 }
 
-interface BinView {
+export interface BinView {
   categoryId: string
   container: Phaser.GameObjects.Container
   rect: Phaser.GameObjects.Image
@@ -55,10 +76,79 @@ interface BinView {
   glow: Phaser.GameObjects.Rectangle
 }
 
+/** Minimal pointer shape every input handler below actually reads — lets the real
+ *  handlers run against a plain `{x, y}` fixture in tests, with no fake
+ *  `Phaser.Input.Pointer` required. `worldX`/`worldY` are optional (test fixtures never
+ *  set them) but MUST be preferred over `x`/`y` whenever present: `x`/`y` are raw
+ *  canvas-design coordinates, while every item/bin `container.x/y` this file hit-tests
+ *  against is a WORLD coordinate — identical to canvas space only when the camera is
+ *  unzoomed. `getWorldSize()` (this scene overrides it) zooms the camera for any
+ *  fixture whose authored `field` differs from 800x600, so `x`/`y` alone silently
+ *  miss every tap once a real fixture triggers that path — confirmed live: taps
+ *  computed against `x`/`y` landed tens of design-px away from the actual item/bin.
+ *  Phaser's own `InputManager.hitTest` (called for every pointer event, before any
+ *  listener runs) already writes the correct `camera.getWorldPoint(x, y)` result into
+ *  `pointer.worldX/worldY` — real `Phaser.Input.Pointer` objects always carry it. */
+interface PointerLike {
+  x: number
+  y: number
+  worldX?: number
+  worldY?: number
+}
+
+/** The coordinate every hit test in this file must use — see `PointerLike`'s doc
+ *  comment for why `worldX`/`worldY` (when present) wins over `x`/`y`. */
+function pointerPos(pointer: PointerLike): { x: number; y: number } {
+  return { x: pointer.worldX ?? pointer.x, y: pointer.worldY ?? pointer.y }
+}
+
+/**
+ * The content-authored display text for an item/category id — the DOM-era renderer's
+ * proven resolution (`components.tsx`'s `itemsById.get(entity.itemId)?.label_md ??
+ * entity.itemId`), lifted out to a pure function so it is exercised by a real id-map
+ * lookup in a test rather than only read by eye. Falls back to the raw id (never a
+ * hardcoded placeholder) so a document with a genuinely missing entry stays legible
+ * instead of throwing.
+ */
+export function resolveLabel(source: ReadonlyMap<string, { label_md: string }>, id: string): string {
+  return source.get(id)?.label_md ?? id
+}
+
+/**
+ * Wraps `current` by `direction` (+-1) over a list of `length` items, treating a
+ * negative `current` (nothing focused yet) as "enter the list" rather than requiring
+ * a caller-side special case. Returns -1 only when `length` is 0 (nothing to focus) —
+ * the ONE state the keyboard-focus methods below treat as "no focus target exists".
+ * Pure and Phaser-free on purpose: the keyboard-cycling behaviour is asserted here
+ * directly rather than only through a simulated keydown sequence.
+ */
+export function cycleFocusIndex(length: number, current: number, direction: 1 | -1): number {
+  if (length <= 0) return -1
+  if (current < 0 || current >= length) return direction === 1 ? 0 : length - 1
+  return (current + direction + length) % length
+}
+
+/**
+ * The ONE place a (uid, bin target) pair becomes a logical `SorterAction` + payload —
+ * called by every input path (pointer-drag drop, non-static tap-select, keyboard
+ * confirm) so a keyboard-driven placement and a pointer-driven placement are
+ * PROVABLY the same bridge call: they run the same function, not two hand-written
+ * copies that could drift.
+ */
+export function resolvePlacementEvent(
+  uid: number,
+  binId: string,
+): { action: SorterAction; payload: { n: number; slot?: string } } {
+  if (binId === TRASH_BIN_ID) return { action: 'discard', payload: { n: uid } }
+  return { action: 'place', payload: { slot: binId, n: uid } }
+}
+
 export class SorterScene extends BaseMechanicScene<SorterState> {
   private itemViews: Map<number, ItemView> = new Map()
   private binViews: Map<string, BinView> = new Map()
   private trashView: BinView | null = null
+  private itemsById: Map<string, GameItem> = new Map()
+  private categoriesById: Map<string, GameCategory> = new Map()
   private comboText: Phaser.GameObjects.Text | null = null
   private scoreText: Phaser.GameObjects.Text | null = null
   private livesText: Phaser.GameObjects.Text | null = null
@@ -66,7 +156,19 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
   private selectedItem: ItemView | null = null
   private dragOffsetX = 0
   private dragOffsetY = 0
+  private dragStartX = 0
+  private dragStartY = 0
+  /** Set the moment a NON-static drag crosses `DRAG_MOVE_THRESHOLD`; read once on
+   *  pointerup to decide drag-drop vs tap-select. Reset on every pointerdown. */
+  private dragMoved = false
   private binGlowTarget: BinView | null = null
+  /** Keyboard focus ring (§1.11 keyboard-access path), independent of `selectedItem`/
+   *  `dragItem` (pointer state): a focused-but-not-yet-confirmed item, cycled with
+   *  Tab/Arrow keys and confirmed with Enter/Space — mirroring the DOM-era renderer's
+   *  real `tabIndex`-driven focus, the closest a canvas scene can get to it. */
+  private kbFocusUid: number | null = null
+  /** Same idea, once an item is selected: the bin the keyboard is currently on. */
+  private kbFocusBinId: string | null = null
   private lastCorrect = 0
   private lastWrong = 0
   private lastCombo = 0
@@ -102,16 +204,28 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     return { width: field.width, height: field.height }
   }
 
+  /** `config.field.item_size` floored at `MIN_TOUCH_DESIGN_PX` (§1.11) — the ONE value
+   *  used for BOTH the rendered sprite/container size and the `findItemAt` hit-test
+   *  radius, so the tap target is never invisibly larger than what a child sees. */
+  private effectiveItemSize(): number {
+    return Math.max(this.bridge.state.config.field.item_size, MIN_TOUCH_DESIGN_PX)
+  }
+
   createGameObjects(): void {
     const { config } = this.bridge.state
+
+    for (const item of this.doc.content.items) this.itemsById.set(item.id, item)
+    for (const category of this.doc.content.categories ?? []) this.categoriesById.set(category.id, category)
+
     generateBackground(this, BG_KEY, config.field.width, config.field.height, this.palette)
     this.add.image(config.field.width / 2, config.field.height / 2, BG_KEY).setDepth(0)
 
+    const itemSize = this.effectiveItemSize()
     generatePlaceholderSprite(
       this,
       TRASH_KEY,
-      config.field.item_size + 20,
-      config.field.item_size + 20,
+      itemSize + 20,
+      itemSize + 20,
       this.palette.danger,
       'rect',
       this.palette.text,
@@ -126,115 +240,253 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
   }
 
   setupInput(): void {
+    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => this.onPointerDown(pointer))
+    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => this.onPointerMove(pointer))
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => this.onPointerUp(pointer))
+    // §1.11 keyboard-access path: Tab/Arrow cycles focus, Enter/Space confirms, Escape
+    // bails out. `this.input.keyboard` is undefined only if the keyboard plugin was
+    // explicitly disabled in GameConfig (it is not), so the optional chain is a
+    // defensive no-op in practice, never a silent feature loss.
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => this.handleKeyDown(event))
+  }
+
+  private onPointerDown(pointer: PointerLike): void {
+    if (this.paused || this.finished) return
+
     const { config } = this.bridge.state
-
-    this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      if (this.paused || this.finished) return
-
-      const item = this.findItemAt(pointer.x, pointer.y)
-      if (item !== null && item !== this.selectedItem) {
-        if (config.mode === 'static') {
-          if (this.selectedItem) {
-            this.setItemHighlight(this.selectedItem, false)
-          }
-          this.selectedItem = item
-          this.setItemHighlight(item, true)
-          Sfx.click()
-          return
-        }
-        this.dragItem = item
-        this.dragOffsetX = pointer.x - item.container.x
-        this.dragOffsetY = pointer.y - item.container.y
-        item.container.setDepth(50)
-        this.tweens.add({
-          targets: item.container,
-          scaleX: 1.08,
-          scaleY: 1.08,
-          duration: 100,
-          ease: 'Back.easeOut',
-        })
+    const { x: px, y: py } = pointerPos(pointer)
+    const item = this.findItemAt(px, py)
+    if (item !== null && item !== this.selectedItem) {
+      if (config.mode === 'static') {
+        this.clearSelection()
+        this.selectedItem = item
+        this.setItemHighlight(item, true)
         Sfx.click()
         return
       }
 
-      if (this.selectedItem !== null) {
-        const binId = this.findBinIdAt(pointer.x, pointer.y)
-        if (binId !== null) {
-          this.commitPlace(this.selectedItem.uid, binId)
-        }
-        this.setItemHighlight(this.selectedItem, false)
-        this.selectedItem = null
-      }
-    })
+      // NON-static (falling/conveyor): pointerdown always ARMS a potential drag.
+      // `onPointerUp` decides drag-drop vs tap-select from the travel distance — a
+      // tap that never moves selects the item exactly like static mode does, so
+      // drag is never the ONLY way to place an element (§1.11). A different item
+      // (or a keyboard-driven selection, mid-cross-modality) already selected must
+      // lose its highlight and any leftover bin-focus glow here, the same way the
+      // static branch above clears it, or it would linger stale.
+      this.clearSelection()
+      this.dragItem = item
+      this.dragStartX = px
+      this.dragStartY = py
+      this.dragMoved = false
+      this.dragOffsetX = px - item.container.x
+      this.dragOffsetY = py - item.container.y
+      item.container.setDepth(50)
+      this.tweens.add({
+        targets: item.container,
+        scaleX: 1.08,
+        scaleY: 1.08,
+        duration: 100,
+        ease: 'Back.easeOut',
+      })
+      Sfx.click()
+      return
+    }
 
-    this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
-      const prevGlow = this.binGlowTarget
-
-      if (this.dragItem !== null) {
-        this.dragItem.container.x = pointer.x - this.dragOffsetX
-        this.dragItem.container.y = pointer.y - this.dragOffsetY
-
-        const binId = this.findBinIdAt(pointer.x, pointer.y)
-        if (binId !== null) {
-          const bin = this.binViews.get(binId) ?? this.trashView
-          this.setBinGlow(bin ?? null)
-        } else {
-          this.setBinGlow(null)
-        }
-      } else if (this.selectedItem !== null) {
-        const binId = this.findBinIdAt(pointer.x, pointer.y)
-        if (binId !== null) {
-          const bin = this.binViews.get(binId) ?? this.trashView
-          this.setBinGlow(bin ?? null)
-        } else {
-          this.setBinGlow(null)
-        }
-      } else {
-        const item = this.findItemAt(pointer.x, pointer.y)
-        if (item && item.container.scaleX < HOVER_SCALE_PEAK) {
-          this.tweens.add({
-            targets: item.container,
-            scaleX: HOVER_SCALE_PEAK,
-            scaleY: HOVER_SCALE_PEAK,
-            duration: 120,
-            ease: 'Sine.easeOut',
-          })
-        }
-      }
-
-      if (prevGlow !== this.binGlowTarget && prevGlow) {
-        this.setBinHighlight(prevGlow, false)
-      }
-      if (this.binGlowTarget && this.binGlowTarget !== prevGlow) {
-        this.setBinHighlight(this.binGlowTarget, true)
-      }
-    })
-
-    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
-      if (this.dragItem === null) return
-
-      const uid = this.dragItem.uid
-      const binId = this.findBinIdAt(pointer.x, pointer.y)
-
-      const item = this.dragItem
-      this.dragItem = null
-      this.setBinGlow(null)
-
+    if (this.selectedItem !== null) {
+      const binId = this.findBinIdAt(px, py)
       if (binId !== null) {
-        this.commitPlace(uid, binId)
+        this.commitPlace(this.selectedItem.uid, binId)
+      }
+      this.setItemHighlight(this.selectedItem, false)
+      this.selectedItem = null
+    }
+  }
+
+  private onPointerMove(pointer: PointerLike): void {
+    const prevGlow = this.binGlowTarget
+    const { x: px, y: py } = pointerPos(pointer)
+
+    if (this.dragItem !== null) {
+      const travelled = Math.hypot(px - this.dragStartX, py - this.dragStartY)
+      if (travelled > DRAG_MOVE_THRESHOLD) this.dragMoved = true
+
+      this.dragItem.container.x = px - this.dragOffsetX
+      this.dragItem.container.y = py - this.dragOffsetY
+
+      const binId = this.findBinIdAt(px, py)
+      if (binId !== null) {
+        const bin = this.binViews.get(binId) ?? this.trashView
+        this.setBinGlow(bin ?? null)
       } else {
+        this.setBinGlow(null)
+      }
+    } else if (this.selectedItem !== null) {
+      const binId = this.findBinIdAt(px, py)
+      if (binId !== null) {
+        const bin = this.binViews.get(binId) ?? this.trashView
+        this.setBinGlow(bin ?? null)
+      } else {
+        this.setBinGlow(null)
+      }
+    } else {
+      const item = this.findItemAt(px, py)
+      if (item && item.container.scaleX < HOVER_SCALE_PEAK) {
         this.tweens.add({
           targets: item.container,
-          x: item.entity.x,
-          y: item.entity.y,
-          scaleX: 1,
-          scaleY: 1,
-          duration: 250,
-          ease: 'Back.easeOut',
-          onComplete: () => item.container.setDepth(ITEM_DEPTH),
+          scaleX: HOVER_SCALE_PEAK,
+          scaleY: HOVER_SCALE_PEAK,
+          duration: 120,
+          ease: 'Sine.easeOut',
         })
       }
-    })
+    }
+
+    if (prevGlow !== this.binGlowTarget && prevGlow) {
+      this.setBinHighlight(prevGlow, false)
+    }
+    if (this.binGlowTarget && this.binGlowTarget !== prevGlow) {
+      this.setBinHighlight(this.binGlowTarget, true)
+    }
+  }
+
+  private onPointerUp(pointer: PointerLike): void {
+    if (this.dragItem === null) return
+
+    const item = this.dragItem
+    const uid = item.uid
+    const moved = this.dragMoved
+    this.dragItem = null
+    this.dragMoved = false
+    this.setBinGlow(null)
+
+    if (!moved) {
+      // A TAP, not a drag — the NON-static tap-equivalent (§1.11): arm selection
+      // exactly like static mode instead of committing or snapping back. The very
+      // next tap (on the bin-commit branch in `onPointerDown`, or the keyboard's
+      // confirm-a-bin branch) resolves it through the SAME `commitPlace` call a
+      // drag-drop would have made.
+      item.container.setDepth(ITEM_DEPTH)
+      this.selectedItem = item
+      this.setItemHighlight(item, true)
+      return
+    }
+
+    const { x: px, y: py } = pointerPos(pointer)
+    const binId = this.findBinIdAt(px, py)
+    if (binId !== null) {
+      this.commitPlace(uid, binId)
+    } else {
+      this.tweens.add({
+        targets: item.container,
+        x: item.entity.x,
+        y: item.entity.y,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 250,
+        ease: 'Back.easeOut',
+        onComplete: () => item.container.setDepth(ITEM_DEPTH),
+      })
+    }
+  }
+
+  /** §1.11 keyboard path. With nothing selected, Tab/Arrow cycles a FOCUS ring among
+   *  items and Enter/Space confirms the focused one into `selectedItem` — the same
+   *  field the pointer/tap paths use. With an item already selected, the same keys
+   *  cycle a focus ring among bins (including the trash target) and Enter/Space
+   *  commits through `commitPlace`, so a keyboard-only placement and a pointer
+   *  placement are the same call. Escape clears everything. */
+  private handleKeyDown(event: { key: string }): void {
+    if (this.paused || this.finished) return
+
+    const key = event.key
+    if (key === 'Escape') {
+      this.clearSelection()
+      return
+    }
+
+    const forward = key === 'ArrowRight' || key === 'ArrowDown' || key === 'Tab'
+    const backward = key === 'ArrowLeft' || key === 'ArrowUp'
+    const confirm = key === 'Enter' || key === ' ' || key === 'Spacebar'
+    if (!forward && !backward && !confirm) return
+
+    if (this.selectedItem === null) {
+      if (forward || backward) {
+        this.moveItemFocus(forward ? 1 : -1)
+        return
+      }
+      if (this.kbFocusUid === null) return
+      const item = this.itemViews.get(this.kbFocusUid)
+      if (item === undefined) return
+      this.kbFocusUid = null
+      this.selectedItem = item
+      this.setItemHighlight(item, true)
+      Sfx.click()
+      return
+    }
+
+    if (forward || backward) {
+      this.moveBinFocus(forward ? 1 : -1)
+      return
+    }
+    if (this.kbFocusBinId === null) return
+    this.commitPlace(this.selectedItem.uid, this.kbFocusBinId)
+    this.setItemHighlight(this.selectedItem, false)
+    this.selectedItem = null
+    this.kbFocusBinId = null
+    this.setBinGlow(null)
+  }
+
+  private orderedItemUids(): number[] {
+    return [...this.itemViews.keys()].sort((a, b) => a - b)
+  }
+
+  private orderedBinIds(): string[] {
+    const ids = [...this.binViews.keys()]
+    if (this.trashView) ids.push(TRASH_BIN_ID)
+    return ids
+  }
+
+  private moveItemFocus(direction: 1 | -1): void {
+    const uids = this.orderedItemUids()
+    const currentIndex = this.kbFocusUid === null ? -1 : uids.indexOf(this.kbFocusUid)
+    const nextIndex = cycleFocusIndex(uids.length, currentIndex, direction)
+
+    if (this.kbFocusUid !== null) {
+      const prevView = this.itemViews.get(this.kbFocusUid)
+      if (prevView) this.setItemHighlight(prevView, false)
+    }
+
+    const nextUid = nextIndex === -1 ? null : (uids[nextIndex] ?? null)
+    this.kbFocusUid = nextUid
+    if (nextUid !== null) {
+      const view = this.itemViews.get(nextUid)
+      if (view) this.setItemHighlight(view, true)
+    }
+  }
+
+  private moveBinFocus(direction: 1 | -1): void {
+    const ids = this.orderedBinIds()
+    const currentIndex = this.kbFocusBinId === null ? -1 : ids.indexOf(this.kbFocusBinId)
+    const nextIndex = cycleFocusIndex(ids.length, currentIndex, direction)
+    const nextId = nextIndex === -1 ? null : (ids[nextIndex] ?? null)
+    this.kbFocusBinId = nextId
+    const bin = nextId === null ? null : nextId === TRASH_BIN_ID ? this.trashView : (this.binViews.get(nextId) ?? null)
+    this.setBinGlow(bin)
+  }
+
+  /** Shared teardown for Escape and for anything that discovers a selection can no
+   *  longer be honoured — clears every visual highlight along with the state. */
+  private clearSelection(): void {
+    if (this.kbFocusUid !== null) {
+      const view = this.itemViews.get(this.kbFocusUid)
+      if (view) this.setItemHighlight(view, false)
+      this.kbFocusUid = null
+    }
+    if (this.selectedItem !== null) {
+      this.setItemHighlight(this.selectedItem, false)
+      this.selectedItem = null
+    }
+    this.kbFocusBinId = null
+    this.setBinGlow(null)
   }
 
   updateGameObjects(_delta: number): void {
@@ -269,14 +521,15 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     this.lastLives = state.lives
 
     if (this.comboText) {
-      this.comboText.setText(state.combo > 1 ? `x${state.combo}` : '')
+      const comboLabel = this.strings['comboLabel'] ?? 'comboLabel'
+      this.comboText.setText(state.combo > 1 ? comboLabel.replace('{{count}}', `${state.combo}`) : '')
       this.comboText.setAlpha(state.combo > 1 ? 1 : 0)
     }
     if (this.scoreText) {
       this.scoreText.setText(`${Math.round(this.bridge.snapshot.score)}`)
     }
     if (this.livesText) {
-      this.livesText.setText(state.lives !== null ? `${'\u2665'} ${state.lives}` : '')
+      this.livesText.setText(state.lives !== null ? `${'♥'} ${state.lives}` : '')
     }
   }
 
@@ -287,8 +540,11 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     const catCount = categories.length
     const hasTrash = config.trash_zone
     const total = hasTrash ? catCount + 1 : catCount
-    const binW = Math.min(160, (field.width - 40) / total - 12)
-    const binH = 80
+    // §1.11: floored at MIN_TOUCH_DESIGN_PX so a document with many containers (up to
+    // the report's ceiling of 8 + trash) never renders a bin real devices can't
+    // reliably tap, even though the packing formula alone could go much narrower.
+    const binW = Math.max(MIN_TOUCH_DESIGN_PX, Math.min(160, (field.width - 40) / total - 12))
+    const binH = MIN_TOUCH_DESIGN_PX
     const binY = field.height - binH / 2 - 16
     const totalW = total * (binW + 8) - 8
     const startX = (field.width - totalW) / 2 + binW / 2
@@ -313,7 +569,7 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
       glowRect.setAlpha(0)
       container.add(glowRect)
 
-      const catLabel = this.makeText(0, 0, catId, 13, this.palette.text, BIN_DEPTH + 1)
+      const catLabel = this.makeText(0, 0, resolveLabel(this.categoriesById, catId), 13, this.palette.text, BIN_DEPTH + 1)
       container.add(catLabel)
 
       const binView: BinView = { categoryId: catId, container, rect, label: catLabel, glow: glowRect }
@@ -342,10 +598,11 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
       glowRect.setAlpha(0)
       container.add(glowRect)
 
-      const label = this.makeText(0, 0, 'Trash', 13, this.palette.danger, BIN_DEPTH + 1)
+      const trashLabel = this.strings['trash'] ?? 'trash'
+      const label = this.makeText(0, 0, trashLabel, 13, this.palette.danger, BIN_DEPTH + 1)
       container.add(label)
 
-      this.trashView = { categoryId: '__trash__', container, rect, label, glow: glowRect }
+      this.trashView = { categoryId: TRASH_BIN_ID, container, rect, label, glow: glowRect }
 
       container.on('pointerdown', () => {
         if (this.selectedItem !== null && this.selectedItem.uid !== undefined) {
@@ -362,7 +619,10 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
 
     for (const [uid, view] of this.itemViews) {
       if (!currentUids.has(uid)) {
+        if (this.kbFocusUid === uid) this.kbFocusUid = null
         if (view === this.dragItem || view === this.selectedItem) {
+          if (view === this.dragItem) this.dragItem = null
+          if (view === this.selectedItem) this.selectedItem = null
           view.container.setAlpha(0)
           view.container.destroy()
           this.itemViews.delete(uid)
@@ -374,28 +634,29 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
       }
     }
 
+    const itemSize = this.effectiveItemSize()
+
     for (const entity of state.active) {
       let view = this.itemViews.get(entity.uid)
       const tierColor = TIER_COLORS[entity.tier] ?? this.palette.primary
 
       if (view === undefined) {
         const key = `${ITEM_PREFIX}${entity.uid}`
-        const size = state.config.field.item_size
 
-        generatePlaceholderSprite(this, key, size, size, tierColor, 'rect', this.palette.text)
+        generatePlaceholderSprite(this, key, itemSize, itemSize, tierColor, 'rect', this.palette.text)
 
         const container = this.add.container(entity.x, entity.y)
         container.setDepth(ITEM_DEPTH)
-        container.setSize(size, size)
+        container.setSize(itemSize, itemSize)
 
         const rect = this.add.image(0, 0, key)
         container.add(rect)
 
-        const label = this.makeText(0, 0, entity.itemId, 11, this.palette.text, ITEM_DEPTH + 1)
+        const label = this.makeText(0, 0, resolveLabel(this.itemsById, entity.itemId), 11, this.palette.text, ITEM_DEPTH + 1)
         container.add(label)
 
         container.setInteractive(
-          new Phaser.Geom.Rectangle(-size / 2, -size / 2, size, size),
+          new Phaser.Geom.Rectangle(-itemSize / 2, -itemSize / 2, itemSize, itemSize),
           Phaser.Geom.Rectangle.Contains,
         )
 
@@ -426,12 +687,10 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
   }
 
   private findItemAt(x: number, y: number): ItemView | null {
+    const half = this.effectiveItemSize() / 2 + 4
     for (const view of this.itemViews.values()) {
       const cx = view.container.x
       const cy = view.container.y
-      const half = view.entity !== undefined
-        ? this.bridge.state.config.field.item_size / 2 + 4
-        : 30
       if (Math.abs(x - cx) < half && Math.abs(y - cy) < half) {
         return view
       }
@@ -443,16 +702,13 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     for (const [id, bin] of this.binViews) {
       if (bin.container.getBounds().contains(x, y)) return id
     }
-    if (this.trashView?.container.getBounds().contains(x, y)) return '__trash__'
+    if (this.trashView?.container.getBounds().contains(x, y)) return TRASH_BIN_ID
     return null
   }
 
   private commitPlace(uid: number, binId: string): void {
-    if (binId === '__trash__') {
-      this.bridge.enqueue('discard', { n: uid })
-    } else {
-      this.bridge.enqueue('place', { slot: binId, n: uid })
-    }
+    const { action, payload } = resolvePlacementEvent(uid, binId)
+    this.bridge.enqueue(action, payload)
   }
 
   private setBinGlow(bin: BinView | null): void {
@@ -498,7 +754,8 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     const prevLevelIdx = Math.floor((this.bridge.state.correct - 1) / config.level_up.correct_per_level)
     if (levelIdx > prevLevelIdx) {
       Sfx.levelUp()
-      floatText(this, config.field.width / 2, config.field.height / 2, 'Level Up!', '#22c55e', 1200)
+      const levelUpLabel = this.strings['levelUp'] ?? 'levelUp'
+      floatText(this, config.field.width / 2, config.field.height / 2, levelUpLabel, '#22c55e', 1200)
       spawnConfetti(this, config.field.width / 2, config.field.height / 2, 30)
     }
   }
@@ -512,7 +769,8 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
   private onComboStep(combo: number): void {
     if (combo % 3 === 0) {
       Sfx.combo()
-      floatText(this, this.scale.width / 2, 60, `${combo}x`, '#ffd700', 600)
+      const comboLabel = this.strings['comboLabel'] ?? 'comboLabel'
+      floatText(this, this.scale.width / 2, 60, comboLabel.replace('{{count}}', `${combo}`), '#ffd700', 600)
     }
   }
 }

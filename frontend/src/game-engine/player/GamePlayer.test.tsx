@@ -1,16 +1,36 @@
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // GamePlayer contract tests — GAME_ENGINE.md §6 (the reward path), §7 (unsupported
 // mechanic), §10 (pause).
 //
 // Everything here runs against the REAL `sorter` slice and its REAL fixtures (§1.14 —
-// fixtures satisfy the production schema, tests never get a relaxed one), and the loop
-// is driven through the kernel's documented scheduler seam rather than fake timers or
-// the wall clock, so the ticks these tests observe are the ticks production runs.
+// fixtures satisfy the production schema, tests never get a relaxed one).
 //
 // Copy is asserted through `i18n.t`, never through literal English: the assertions then
 // hold whatever locale the detector picks, and a key that games.json does not define
 // yet resolves to the key itself on BOTH sides of the comparison.
+//
+// STATUS (post Phaser rewrite, commits 4680a61/4530850/695891c). The Phaser rewrite
+// replaced the React-DOM play surface with a `<canvas>` PhaserGameBox, and it also
+// deleted the injectable-clock seam: `GamePlayerProps.scheduler` is still declared and
+// still threaded down to `GameStage`, but `GameStage` (this file's production
+// counterpart, player/GamePlayer.tsx) never destructures it, so it is a DEAD prop on
+// the Phaser play path today — confirmed by reading GamePlayer.tsx, not assumed.
+// `PhaserGameBox` runs its own Phaser-driven loop with no test seam of any kind.
+//
+// The tests below split cleanly along that line:
+//   - `intro`/`tutorial`/`scoring modes (cheer)`/`unsupported mechanic` never depend on
+//     the bridge ticking — they assert on the pre-play shell or on `doc.scoring` alone
+//     — and pass UNMODIFIED under `test-setup.ts`'s Phaser mock.
+//   - Everything that needs the bridge to actually start and tick (arcade lives,
+//     pause/resume, completion, the hidden-tab regression) is blocked: the mock's
+//     `Game` class has no `scene` manager (`game.scene.add(...)` throws inside
+//     `PhaserGameBox`'s fire-and-forget `start()`) and its `events.on`/`once` never
+//     invoke a listener, so `scene.start()` never runs, the bridge never advances past
+//     its `create()`-time initial snapshot, and `onSnapshot`/`onFinish`/`onAutoPause`
+//     never fire. These stay `.skip`, each with the specific reason at the call site
+//     rather than this file's old blanket "canvas rendering requires browser E2E" —
+//     that blanket line was true for exactly 0 of the 6 mock-blocked tests below for
+//     the reason just given (a Game.scene/events gap, not a canvas-pixels gap) and
+//     false for the 3 that pass unmodified.
 
 import { fireEvent, render, screen, act } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
@@ -92,7 +112,7 @@ function livesChipText(): string | null {
 }
 
 describe('GamePlayer — intro', () => {
-  it.skip('renders the concept recap before anything is playable', () => {
+  it('renders the concept recap before anything is playable', () => {
     render(
       <GamePlayer document={cheerDoc} slice={sorterSlice} seed={11} onExit={() => {}} />,
     )
@@ -103,7 +123,7 @@ describe('GamePlayer — intro', () => {
     expect(screen.getByRole('button', { name: LABEL.start })).toBeInTheDocument()
   })
 
-  it.skip('moves through the tutorial into play', () => {
+  it('moves through the tutorial into play', () => {
     render(
       <GamePlayer document={cheerDoc} slice={sorterSlice} seed={11} onExit={() => {}} />,
     )
@@ -122,7 +142,7 @@ describe('GamePlayer — intro', () => {
 })
 
 describe('GamePlayer — scoring modes', () => {
-  it.skip('renders no lives at all in cheer mode', () => {
+  it('renders no lives at all in cheer mode', () => {
     render(
       <GamePlayer document={cheerDoc} slice={sorterSlice} seed={11} onExit={() => {}} />,
     )
@@ -133,6 +153,15 @@ describe('GamePlayer — scoring modes', () => {
     expect(screen.queryByText(LABEL.lives)).toBeNull()
   })
 
+  // BLOCKED: `snapshot.lives` starts at the `useState` default (`null`) and only ever
+  // changes inside `BaseMechanicScene.update()`'s `_onSnapshot` callback (phaser/
+  // scene.ts). Under `test-setup.ts`'s Phaser mock, `PhaserGameBox`'s `start()` throws
+  // at `game.scene.add(...)` (the mocked `Game` has no `scene` property at all) before
+  // it ever reaches `game.events.once('ready', ...)`, and even that listener is a
+  // no-op in the mock — so the scene never boots and `onSnapshot` never fires past the
+  // initial default. `manual.scheduler` is passed here but does nothing: the Phaser
+  // play path has no scheduler seam (see the file header). Needs a live browser with a
+  // real `Phaser.Game` (canvas + WebGL/Canvas2D context) to observe.
   it.skip('renders lives in arcade mode', () => {
     const manual = createManualScheduler()
     render(
@@ -151,6 +180,12 @@ describe('GamePlayer — scoring modes', () => {
 })
 
 describe('GamePlayer — pause', () => {
+  // BLOCKED: same root cause as "renders lives in arcade mode" above — the mock
+  // `Game` never actually boots a scene, so `livesChipText()` never leaves its initial
+  // `null` and this loop would spin all 400 simulated frames without the lives chip
+  // ever changing. `manual.scheduler` is inert on the Phaser path (see file header).
+  // Needs a live browser: real ticks, a real fall-and-lose-a-life event, and a real
+  // click-driven `PhaserGameBox`'s `togglePause()` round trip.
   it.skip('halts the simulation and resumes it', () => {
     const manual = createManualScheduler()
     render(
@@ -199,6 +234,29 @@ describe('GamePlayer — a run that starts in a hidden tab', () => {
   // rendered, the HUD read Score 0 / paused false, taps were swallowed onto tick 0 and
   // the simulation could never advance. The child had no overlay and no way back.
   // Starting frameless must present the pause overlay instead.
+  //
+  // PRODUCTION GAP NOW CLOSED (see `player/PhaserGameBox.tsx`'s `ready` handler and its
+  // `Phaser.Core.Events.HIDDEN` listener). The prior version wired exactly ONE
+  // auto-pause source, `game.events.on(Phaser.Core.Events.BLUR, ...)` — EDGE-TRIGGERED
+  // on the window losing focus, verified against the installed Phaser 3.90 source
+  // (node_modules/phaser/src/core/VisibilityHandler.js, Game.js `onHidden`/`start`) to
+  // never inspect `document.hidden`/`visibilityState` at the moment it attaches, so a
+  // document ALREADY hidden when the listener installs got no transition and therefore
+  // no event at all — the ORIGINAL incident, reproducible in a real browser. Fixed by
+  // (1) a one-time `globalThis.document.hidden` check right after `scene.start()`,
+  // firing `onAutoPause` immediately if the run begins hidden, and (2) also listening
+  // for `Phaser.Core.Events.HIDDEN` (document.visibilitychange -> hidden) alongside
+  // `BLUR`, so a same-tab visibility change while the window keeps focus is covered
+  // too, not just window blur.
+  //
+  // STILL SKIPPED — this file's jsdom Phaser mock independently can't reach ANY of
+  // this: the mocked `Game` has no `scene` property, so `PhaserGameBox`'s `start()`
+  // throws at `game.scene.add(...)` before it ever reaches the `ready` handler where
+  // both the boot-time check and the HIDDEN/BLUR listeners live — the same root cause
+  // that blocks every other bridge-driven test in this file (see the file header).
+  // Closing this needs either a live browser or a `test-setup.ts` Phaser mock with a
+  // working scene manager (shared infra outside this file's ownership); a headless
+  // browser-level check of the fix itself was run separately in-session instead.
   it.skip('shows the pause overlay instead of a board that can never advance', () => {
     const visibility = Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState')
     Object.defineProperty(document, 'visibilityState', {
@@ -221,6 +279,13 @@ describe('GamePlayer — a run that starts in a hidden tab', () => {
 })
 
 describe('GamePlayer — completion', () => {
+  // BLOCKED: `onComplete` fires from `handleFinish`, which only runs off
+  // `BaseMechanicScene.update()`'s finished-edge check (phaser/scene.ts) — the same
+  // code path that never runs under the mock (see file header: `game.scene.add`
+  // throws before boot, `events.on`/`once` are no-ops). `manual.scheduler`/`FULL_FRAME_MS`
+  // frames are fed to nothing; the Phaser play path is driven by Phaser's own RAF loop,
+  // not this seam. Needs a live browser to reach the tick ceiling and observe
+  // `onComplete`'s payload for real.
   it.skip('hands up the seed, the input log and the elapsed seconds — and never a score', () => {
     const manual = createManualScheduler()
     const onComplete = vi.fn()
@@ -254,6 +319,8 @@ describe('GamePlayer — completion', () => {
     expect(screen.getByRole('button', { name: LABEL.backToHub })).toBeInTheDocument()
   })
 
+  // BLOCKED: same root cause — `onComplete` (and therefore the results screen) never
+  // fires because the run never reaches its tick ceiling under the mock.
   it.skip('still shows results when the server persist rejects', async () => {
     const manual = createManualScheduler()
     const onComplete = vi.fn(() => Promise.reject(new Error('offline')))
@@ -280,7 +347,7 @@ describe('GamePlayer — completion', () => {
 })
 
 describe('GamePlayer — unsupported mechanic', () => {
-  it.skip('renders the friendly card and never throws', () => {
+  it('renders the friendly card and never throws', () => {
     const onExit = vi.fn()
     expect(() =>
       render(<GamePlayer document={cheerDoc} slice={null} seed={11} onExit={onExit} />),

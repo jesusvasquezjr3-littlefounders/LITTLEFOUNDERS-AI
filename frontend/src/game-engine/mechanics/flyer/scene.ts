@@ -14,7 +14,7 @@ import {
   spawnExplosion,
   spawnWrongParticles,
 } from '@/game-engine/phaser/juice'
-import { BaseMechanicScene } from '@/game-engine/phaser/scene'
+import { BaseMechanicScene, type CanvasStringKey } from '@/game-engine/phaser/scene'
 import { Sfx } from '@/game-engine/phaser/sfx'
 
 import { flyerConfigSchema, flyerContentSchema } from './schema'
@@ -24,6 +24,7 @@ import {
   flyerSimulator,
   isInStorm,
   isInThermal,
+  laneMatches,
   type FlyerEntity,
   type FlyerShot,
   type FlyerState,
@@ -43,6 +44,34 @@ const MOUNT_DEPTH = 10
 const BEAM_DEPTH = 9
 const HUD_DEPTH = 20
 const OVERLAY_DEPTH = 15
+
+// ---- Touch-target floor (CLAUDE.md §1.11: >= 44x44 REAL px for every control,
+// including in-canvas ones) --------------------------------------------------------
+//
+// Phaser draws in DESIGN-SPACE pixels; what actually reaches a child's finger is that
+// size run through Phaser.Scale.FIT (PhaserGameBox authors a fixed 800x600 canvas and
+// lets FIT scale the whole thing down to whatever the container measures). The worst
+// case this platform supports is mobile at 375px wide, with content filling it inside
+// DESIGN.md's 16px `margin-mobile` on each side (CLAUDE.md §1.11) — so the container is
+// never narrower than 375 - 2*16 = 343px, and the FIT ratio never below 343 / 800. A
+// design-space control needs 44 / (343/800) ~= 102.7 design px on a side to still read
+// as >=44 real px at that floor; 104 gives a small safety margin. Same derivation and
+// constant as `mechanics/stacker/scene.ts`'s `MIN_HIT_DESIGN_PX` (duplicated rather
+// than imported — §0/register.ts: zero cross-slice imports between mechanics).
+//
+// KNOWN SIMPLIFICATION (shared with sorter/stacker, flagged there as a follow-up, not
+// re-solved per-mechanic here): this assumes the scene's own camera zoom is 1. Flyer's
+// `getWorldSize()` below fits the camera to `config.world`, which can be LARGER than
+// the 800x600 canvas — a manifest that does zooms every draw call down further, buttons
+// included. Both shipped fixtures (fixtures.ts: 900x540 and 960x560) sit close enough
+// to the canvas's own 4:3 aspect that the zoom stays near 0.83-0.89, not far off 1, so
+// 104 is a reasonable floor for the documents this engine ships today.
+// Exported so flyer.test.ts can assert the real button-layout math against the
+// documented 44-real-px requirement and the getWorldSize() bounds without re-deriving
+// (and risking silently diverging from) the same constants scene.ts draws with.
+export const MIN_TOUCH_DESIGN_PX = 104
+export const CONTROL_MARGIN = 16
+export const CONTROL_GAP = 12
 
 interface EntityView {
   entity: FlyerEntity
@@ -73,6 +102,8 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
   private stallWarning: Phaser.GameObjects.Text | null = null
   private fireBtn: Phaser.GameObjects.Container | null = null
   private beamBtn: Phaser.GameObjects.Container | null = null
+  private laneBtn: Phaser.GameObjects.Container | null = null
+  private laneDots: Phaser.GameObjects.Arc[] = []
 
   private stormOverlay: Phaser.GameObjects.Rectangle | null = null
 
@@ -104,6 +135,35 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       bridge: new GameEngineBridge(flyerSimulator, simInit, this.maxTicks),
       simInit,
     }
+  }
+
+  /** `config.world` is authored per-manifest (200-2000 x 120-1200 per schema.ts) and can
+   *  legitimately differ from the fixed 800x600 canvas — both shipped fixtures author
+   *  900x540 and 960x560. Without this, on-canvas controls positioned in world-space
+   *  (below, `createControls`) render outside the visible 800x600 viewport whenever a
+   *  manifest's world isn't exactly canvas-sized (the confirmed audit finding: fire/beam
+   *  rendered off-canvas on some layouts). Same pattern as sorter/stacker/explorer
+   *  (695891c): read off the bridge's already-Zod-parsed state, so no cast is needed.
+   */
+  protected override getWorldSize(): { width: number; height: number } {
+    const { world } = this.bridge.state.config
+    return { width: world.width, height: world.height }
+  }
+
+  /** Resolves a `games.canvas.*` key from `this.strings`, falling back to the bare key
+   *  (never a hardcoded English literal) so a missing wire-up is visible instead of
+   *  silently English — same contract as `phaser/scene.ts`'s `CANVAS_STRING_KEYS` doc
+   *  comment and the same helper shape `explorer/scene.ts` already uses. */
+  private str(key: CanvasStringKey): string {
+    return this.strings[key] ?? key
+  }
+
+  /** Interpolates a `games.canvas.*` template's `{{var}}` placeholders — `PhaserGameBox`
+   *  resolves every key via a bare `t(key)` with no interpolation options, so the
+   *  template survives into `this.strings` verbatim for the scene to fill in itself. */
+  private strFmt(key: CanvasStringKey, vars: Record<string, string | number>): string {
+    const template = this.str(key)
+    return template.replace(/\{\{(\w+)\}\}/g, (_match, name: string) => String(vars[name] ?? ''))
   }
 
   createGameObjects(): void {
@@ -155,7 +215,7 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     this.stormOverlay.setDepth(OVERLAY_DEPTH)
 
     this.scoreText = this.makeText(80, 28, '0', 18, p.text, HUD_DEPTH).setOrigin(0, 0.5)
-    this.distanceText = this.makeText(world.width - 80, 28, '0m', 16, p.text, HUD_DEPTH).setOrigin(1, 0.5)
+    this.distanceText = this.makeText(world.width - 80, 28, this.strFmt('distanceLabel', { value: 0 }), 16, p.text, HUD_DEPTH).setOrigin(1, 0.5)
     this.comboText = this.makeText(world.width / 2, 28, '', 16, p.accent, HUD_DEPTH)
     this.speedText = this.makeText(world.width - 80, 50, '', 12, p.primary, HUD_DEPTH).setOrigin(1, 0.5)
 
@@ -173,19 +233,27 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     this.createControls(world)
   }
 
+  /** Every button below is sized `MIN_TOUCH_DESIGN_PX` and positioned from `world.width`/
+   *  `world.height` — the SAME coordinate space `getWorldSize()` fits the camera to, so a
+   *  button at (say) `world.width - CONTROL_MARGIN - size/2` lands at the visible
+   *  viewport's own right edge (minus the margin) regardless of what a manifest's
+   *  `config.world` authors, instead of the fixed-800x600 assumption that clipped it off
+   *  the real canvas whenever a manifest's world wasn't exactly canvas-sized. */
   private createControls(world: FlyerState['config']['world']): void {
     const p = this.palette
+    const size = MIN_TOUCH_DESIGN_PX
 
-    const fireSize = 56
-    generatePlaceholderSprite(this, 'fire-btn', fireSize, fireSize, p.accent, 'circle', p.text)
-    this.fireBtn = this.add.container(world.width - 44, world.height - 44)
+    const fireX = world.width - CONTROL_MARGIN - size / 2
+    const fireY = world.height - CONTROL_MARGIN - size / 2
+    generatePlaceholderSprite(this, 'fire-btn', size, size, p.accent, 'circle', p.text)
+    this.fireBtn = this.add.container(fireX, fireY)
     this.fireBtn.setDepth(HUD_DEPTH)
     const fireImg = this.add.image(0, 0, 'fire-btn').setInteractive({ useHandCursor: true })
-    const fireLabel = this.makeText(0, 0, 'FIRE', 11, p.inverse, HUD_DEPTH + 1)
+    const fireLabel = this.makeText(0, 0, this.str('fire'), 12, p.inverse, HUD_DEPTH + 1)
     this.fireBtn.add([fireImg, fireLabel])
-    this.fireBtn.setSize(fireSize, fireSize)
+    this.fireBtn.setSize(size, size)
     this.fireBtn.setInteractive(
-      new Phaser.Geom.Rectangle(-fireSize / 2, -fireSize / 2, fireSize, fireSize),
+      new Phaser.Geom.Rectangle(-size / 2, -size / 2, size, size),
       Phaser.Geom.Rectangle.Contains,
     )
     this.fireBtn.on('pointerdown', () => {
@@ -193,16 +261,17 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       this.bridge.enqueue('fire')
     })
 
-    const beamSize = 44
-    generatePlaceholderSprite(this, 'beam-btn', beamSize, beamSize, 0xffdd00, 'circle', p.text)
-    this.beamBtn = this.add.container(world.width - 44, world.height - 44 - fireSize - 12)
+    const beamX = fireX
+    const beamY = fireY - size - CONTROL_GAP
+    generatePlaceholderSprite(this, 'beam-btn', size, size, 0xffdd00, 'circle', p.text)
+    this.beamBtn = this.add.container(beamX, beamY)
     this.beamBtn.setDepth(HUD_DEPTH)
     const beamImg = this.add.image(0, 0, 'beam-btn').setInteractive({ useHandCursor: true })
-    const beamLabel = this.makeText(0, 0, 'BEAM', 10, 0x000000, HUD_DEPTH + 1)
+    const beamLabel = this.makeText(0, 0, this.str('beam'), 11, 0x000000, HUD_DEPTH + 1)
     this.beamBtn.add([beamImg, beamLabel])
-    this.beamBtn.setSize(beamSize, beamSize)
+    this.beamBtn.setSize(size, size)
     this.beamBtn.setInteractive(
-      new Phaser.Geom.Rectangle(-beamSize / 2, -beamSize / 2, beamSize, beamSize),
+      new Phaser.Geom.Rectangle(-size / 2, -size / 2, size, size),
       Phaser.Geom.Rectangle.Contains,
     )
     this.beamBtn.on('pointerdown', () => {
@@ -213,6 +282,56 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
         this.bridge.enqueue('beam_start')
       }
     })
+
+    // The lane-shift control (GAME_ENGINE.md §4's flight-model `lanes` block): the
+    // simulator already declares `lane` in FLYER_ACTIONS and handles it unconditionally
+    // (a no-op when `config.lanes.enabled` is false — "an inert but VALID action", per
+    // `simulate.ts`'s own comment on the handler), the same always-shown-even-if-inert
+    // convention `fire`/`beam` above already use when their own config disables them. A
+    // bare `enqueue('lane')` (no `n`) steps to the next lane and wraps, so one button
+    // reaches every lane with repeated taps — no drag, no second control needed.
+    const laneX = beamX
+    const laneY = beamY - size - CONTROL_GAP
+    generatePlaceholderSprite(this, 'lane-btn', size, size, p.primary, 'diamond', p.text)
+    this.laneBtn = this.add.container(laneX, laneY)
+    this.laneBtn.setDepth(HUD_DEPTH)
+    const laneImg = this.add.image(0, 0, 'lane-btn').setInteractive({ useHandCursor: true })
+    const laneLabel = this.makeText(0, 0, this.str('lane'), 11, p.inverse, HUD_DEPTH + 1)
+    this.laneBtn.add([laneImg, laneLabel])
+    this.laneBtn.setSize(size, size)
+    this.laneBtn.setInteractive(
+      new Phaser.Geom.Rectangle(-size / 2, -size / 2, size, size),
+      Phaser.Geom.Rectangle.Contains,
+    )
+    this.laneBtn.on('pointerdown', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('lane')
+    })
+
+    this.createLaneDots()
+  }
+
+  /** A small non-interactive readout of "which lane is the mount in, out of how many" —
+   *  needs no i18n (it draws no text, only palette-coloured dots), and gives the newly
+   *  reachable `lane` action a visible effect beyond the hit-testing `laneMatches`
+   *  already gates silently. Rebuilt once at create time; `count` is fixed for the run
+   *  (schema: `lanes.count` is not a live-tunable field), so `updateGameObjects` only
+   *  ever needs to re-tint, never re-lay-out, these. Positioned off `laneBtn.x`/`.y`
+   *  (already computed in `createControls`), so it needs no `world` of its own. */
+  private createLaneDots(): void {
+    const { lanes } = this.bridge.state.config
+    if (!lanes.enabled || lanes.count < 2 || this.laneBtn === null) return
+
+    const dotRadius = 4
+    const dotGap = 12
+    const totalWidth = (lanes.count - 1) * dotGap
+    const startX = this.laneBtn.x - totalWidth / 2
+    const y = this.laneBtn.y - MIN_TOUCH_DESIGN_PX / 2 - 10
+
+    for (let i = 0; i < lanes.count; i += 1) {
+      const dot = this.makeCircle(startX + i * dotGap, y, dotRadius, this.palette.surface, 1, HUD_DEPTH + 1)
+      this.laneDots.push(dot)
+    }
   }
 
   setupInput(): void {
@@ -223,10 +342,18 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (this.paused || this.finished) return
 
-      if (this.fireBtn?.getBounds().contains(pointer.x, pointer.y)) return
-      if (this.beamBtn?.getBounds().contains(pointer.x, pointer.y)) return
+      // `worldX`/`worldY` (not `x`/`y`): flyer's `getWorldSize()` (see the fix in this
+      // same task) zooms the camera for any manifest whose `world` differs from
+      // 800x600, and both the buttons' `getBounds()` and `midY` are WORLD coordinates
+      // — Phaser's own InputManager already writes the correct
+      // `camera.getWorldPoint()` result into `pointer.worldX/worldY` before this
+      // listener runs. Raw `x`/`y` are pre-zoom canvas coordinates and silently miss
+      // every control/lane split once the camera isn't at zoom 1.
+      if (this.fireBtn?.getBounds().contains(pointer.worldX, pointer.worldY)) return
+      if (this.beamBtn?.getBounds().contains(pointer.worldX, pointer.worldY)) return
+      if (this.laneBtn?.getBounds().contains(pointer.worldX, pointer.worldY)) return
 
-      if (pointer.y < midY) {
+      if (pointer.worldY < midY) {
         this.bridge.enqueue('climb')
         Sfx.pop()
       } else {
@@ -235,15 +362,35 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       }
     })
 
-    this.input.keyboard?.on('keydown-UP', () => this.bridge.enqueue('climb'))
-    this.input.keyboard?.on('keydown-DOWN', () => this.bridge.enqueue('dive'))
-    this.input.keyboard?.on('keydown-SPACE', () => this.bridge.enqueue('fire'))
+    // Guarded against paused/finished on every branch (BUGFIX while verifying keyboard
+    // access still works, per the task brief: only the pointerdown handler above and
+    // the beam toggle below used to check this, so UP/DOWN/SPACE kept commanding the
+    // sim through a pause — the same class of bug `Sfx.pop()`'s pointer path never had).
+    this.input.keyboard?.on('keydown-UP', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('climb')
+    })
+    this.input.keyboard?.on('keydown-DOWN', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('dive')
+    })
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('fire')
+    })
     this.input.keyboard?.on('keydown-B', () => {
+      if (this.paused || this.finished) return
       if (this.bridge.state.beamOn) {
         this.bridge.enqueue('beam_end')
       } else {
         this.bridge.enqueue('beam_start')
       }
+    })
+    // The lane-shift action's keyboard path (CLAUDE.md §1.11) — `L` mirrors the pointer
+    // button's bare `enqueue('lane')`, stepping to the next lane and wrapping.
+    this.input.keyboard?.on('keydown-L', () => {
+      if (this.paused || this.finished) return
+      this.bridge.enqueue('lane')
     })
   }
 
@@ -267,7 +414,7 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     }
     if (state.combo !== this.lastCombo && state.combo > this.lastCombo && state.combo % 3 === 0) {
       Sfx.combo()
-      floatText(this, world.width / 2, 100, `${state.combo}x`, '#ffd700', 600)
+      floatText(this, world.width / 2, 100, this.strFmt('comboMultiplier', { count: state.combo }), '#ffd700', 600)
     }
     if (state.hits !== this.lastHits && state.hits > this.lastHits) {
       this.onHit()
@@ -286,7 +433,14 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     const mileStoneCurr = Math.floor(state.reach / 500)
     if (mileStoneCurr > mileStonePrev) {
       Sfx.levelUp()
-      floatText(this, world.width / 2, world.height / 3, `${mileStoneCurr * 500}m!`, '#22c55e', 1200)
+      floatText(
+        this,
+        world.width / 2,
+        world.height / 3,
+        this.strFmt('distanceLabel', { value: mileStoneCurr * 500 }),
+        '#22c55e',
+        1200,
+      )
     }
 
     this.lastScore = this.bridge.snapshot.score
@@ -333,7 +487,7 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     this.mountBody.setFillStyle(state.stalled ? 0xff4444 : this.palette.accent)
 
     if (state.stalled) {
-      this.stallWarning?.setText('STALL!').setAlpha(
+      this.stallWarning?.setText(this.str('stall')).setAlpha(
         0.5 + Math.sin(this.time.now * 0.01) * 0.5,
       )
     } else {
@@ -371,7 +525,7 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       }
 
       if (view === undefined) {
-        const sprite = this.makeEntitySprite(entity, screenX)
+        const sprite = this.makeEntitySprite(entity, screenX, state)
         if (sprite === null) continue
         view = { entity, sprite }
         this.entityViews.set(entity.key, view)
@@ -383,16 +537,45 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
 
         view.sprite.x = Phaser.Math.Linear(prevX, curX, this.bridge.alpha)
         view.sprite.y = entity.y + entity.h / 2
+        view.sprite.setAlpha(this.baseAlphaFor(entity) * this.laneDimFor(entity, state))
         view.entity = entity
       }
     }
   }
 
-  private makeEntitySprite(entity: FlyerEntity, screenX: number): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle | null {
+  /** Entities the sim actually collision-gates by lane (everything except the
+   *  non-lane-gated `thermal`/`storm` zones — `simulate.ts`'s hit-test skips the
+   *  `laneMatches` check for those two roles entirely, before it ever runs). Dimming
+   *  an off-lane entity is the only visual signal the newly-reachable `lane` action
+   *  gets today: without it, a child who taps LANE sees the dot indicator move but
+   *  nothing about the sky itself explains why an obstacle stopped hurting them. */
+  private laneDimFor(entity: FlyerEntity, state: FlyerState): number {
+    if (entity.role === 'thermal' || entity.role === 'storm') return 1
+    return laneMatches(state, entity.lane) ? 1 : 0.35
+  }
+
+  private baseAlphaFor(entity: FlyerEntity): number {
+    switch (entity.role) {
+      case 'enemy':
+        return entity.enemyTypeId !== null && entity.enemyTypeId !== undefined ? 0.9 : 0.8
+      case 'thermal':
+        return 0.2
+      case 'storm':
+        return 0.3
+      default:
+        return 1
+    }
+  }
+
+  private makeEntitySprite(
+    entity: FlyerEntity,
+    screenX: number,
+    state: FlyerState,
+  ): Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle | null {
     let color: number
     let shape: 'rect' | 'circle' | 'diamond' = 'rect'
     let depth = ENTITY_DEPTH
-    let alpha = 1
+    const alpha = this.baseAlphaFor(entity) * this.laneDimFor(entity, state)
 
     switch (entity.role) {
       case 'good':
@@ -410,26 +593,17 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
         break
       case 'enemy': {
         const isBoss = entity.enemyTypeId !== null && entity.enemyTypeId !== undefined
-        if (isBoss) {
-          color = 0xff00ff
-          shape = 'diamond'
-          alpha = 0.9
-        } else {
-          color = 0xcc44cc
-          shape = 'diamond'
-          alpha = 0.8
-        }
+        color = isBoss ? 0xff00ff : 0xcc44cc
+        shape = 'diamond'
         break
       }
       case 'thermal':
         color = this.palette.success
-        alpha = 0.2
         shape = 'rect'
         depth = ZONE_DEPTH
         break
       case 'storm':
         color = 0x222244
-        alpha = 0.3
         shape = 'rect'
         depth = ZONE_DEPTH
         break
@@ -447,6 +621,7 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
   }
 
   private updateShots(state: FlyerState): void {
+    const world = state.config.world
     const currentKeys = new Set(state.shots.map((s) => s.key))
 
     for (const [key, view] of this.shotViews) {
@@ -460,7 +635,13 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       let view = this.shotViews.get(shot.key)
       const screenX = shot.x - state.distance
 
-      if (screenX > this.scale.width + 100 || screenX < -200) {
+      // BUGFIX (found while wiring `getWorldSize()`): culling against the fixed
+      // `this.scale.width` (800) instead of `world.width` — the SAME world-space a
+      // shot's `screenX` is already expressed in — hid shots early on both shipped
+      // fixtures (900/960 wide): a shot at x=850 is still visible in the camera-fitted
+      // viewport once `world.width` > 800, but the old check culled it at 800 anyway.
+      // `updateEntities` above already used `world.width` for this exact reason.
+      if (screenX > world.width + 100 || screenX < -200) {
         if (view) {
           view.sprite.destroy()
           this.shotViews.delete(shot.key)
@@ -500,7 +681,10 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     const box = beamBox(state)
     const screenX = box.x - state.distance
 
-    if (screenX + box.w < 0 || screenX > this.scale.width) return
+    // Same BUGFIX as `updateShots` above: cull against `world.width`, not the fixed
+    // canvas resolution, or the beam stops drawing before the visible right edge on
+    // any manifest whose world is wider than 800.
+    if (screenX + box.w < 0 || screenX > state.config.world.width) return
 
     this.beamGfx.setDepth(BEAM_DEPTH)
     this.beamGfx.setAlpha(0.3)
@@ -532,16 +716,18 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
     const snap = this.bridge.snapshot
 
     if (this.scoreText) this.scoreText.setText(`${Math.round(snap.score)}`)
-    if (this.distanceText) this.distanceText.setText(`${Math.floor(state.reach)}m`)
+    if (this.distanceText) {
+      this.distanceText.setText(this.strFmt('distanceLabel', { value: Math.floor(state.reach) }))
+    }
     if (this.comboText) {
-      this.comboText.setText(state.combo > 1 ? `x${state.combo}` : '')
+      this.comboText.setText(state.combo > 1 ? this.strFmt('comboMultiplier', { count: state.combo }) : '')
       this.comboText.setAlpha(state.combo > 1 ? 1 : 0)
     }
     if (this.livesText) {
       this.livesText.setText(state.lives !== null ? `${'\u2665'} ${state.lives}` : '')
     }
     if (this.speedText) {
-      this.speedText.setText(`${state.speed.toFixed(1)}u/t`)
+      this.speedText.setText(this.strFmt('speedLabel', { value: state.speed.toFixed(1) }))
     }
 
     const capacity = state.config.energy.capacity + state.config.upgrades.energy_capacity_bonus
@@ -571,6 +757,16 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       } else if (beamImg) {
         beamImg.clearTint()
       }
+    }
+
+    // Highlights the dot matching `laneTarget` (the commanded lane, not the still-
+    // interpolating `lanePos`) so a tap registers its effect on the very next frame
+    // rather than waiting out `lanes.shift_ticks`' visual travel.
+    const activeIndex = Math.round(state.laneTarget)
+    for (let i = 0; i < this.laneDots.length; i += 1) {
+      const dot = this.laneDots[i]
+      if (dot === undefined) continue
+      dot.setFillStyle(i === activeIndex ? this.palette.accent : this.palette.surface)
     }
   }
 

@@ -20,6 +20,7 @@ import { RunnerView } from './components'
 import { runnerBots } from './bots'
 import { runnerFixtures } from './fixtures'
 import { runnerSlice } from './register'
+import { RunnerScene } from './scene'
 import { runnerConfigSchema, runnerContentSchema, type RunnerConfig } from './schema'
 import { avatarTopY, runnerSimulator } from './simulate'
 
@@ -356,6 +357,134 @@ describe('runner — the registered slice', () => {
     for (const key of Object.keys(document.skin.sprites)) {
       expect(runnerSlice.spriteSlots).toContain(key)
     }
+  })
+})
+
+describe('runner — the Phaser scene wires hold_start/hold_end via pointer AND keyboard', () => {
+  // The audit's confirmed finding: the pre-fix scene enqueued `act` and flipped a
+  // LOCAL `this.holding` flag on `pointerdown`, but never enqueued `hold_start`
+  // itself — so the simulator's `RunnerState.holding` could never become true from a
+  // press, and the mechanic had ZERO keyboard references at all.
+  //
+  // `Phaser.Scene` is globally stubbed to a bare `class {}` in `src/test-setup.ts`
+  // (see `phaser/spriteLoader.test.ts`'s doc comment), so a real Phaser.Game/canvas
+  // boot is not available in this suite. `setupInput()` only reads `this.input`,
+  // `this.bridge`, `this.paused` and `this.finished` — none of them require a live
+  // renderer — so it is exercised directly: a real `RunnerScene` is constructed, its
+  // own `init()`/`createBridge()` build a real `GameEngineBridge` over the real
+  // `runnerSimulator`, and `this.input` is swapped for a minimal, fully controllable
+  // stand-in emitter (the same "narrow shape, not the whole engine" approach
+  // `spriteLoader.test.ts` uses for `load`/`textures`). This drives the REAL
+  // `setupInput()` method body and the REAL `bridge.enqueue()`, not a
+  // reimplementation of either, so a regression in the wiring itself fails these
+  // tests.
+
+  interface FakeEmitter {
+    on(event: string, cb: () => void): void
+    emit(event: string): void
+  }
+
+  function makeEmitter(): FakeEmitter {
+    const listeners = new Map<string, Array<() => void>>()
+    return {
+      on(event, cb) {
+        const arr = listeners.get(event) ?? []
+        arr.push(cb)
+        listeners.set(event, arr)
+      },
+      emit(event) {
+        for (const cb of listeners.get(event) ?? []) cb()
+      },
+    }
+  }
+
+  interface FakeInputPlugin {
+    on(event: string, cb: () => void): void
+    keyboard: { addKey(keyCode: string): FakeEmitter }
+  }
+
+  function bootRunnerScene(): { scene: RunnerScene; pointer: FakeEmitter; spaceKey: FakeEmitter } {
+    const doc = runnerFixtures[0]
+    if (doc === undefined) throw new Error('fixture 0 is missing')
+
+    const scene = new RunnerScene()
+    scene.init({
+      document: doc,
+      runId: 'test-run',
+      seed: SEED,
+      maxTicks: configOf(doc).max_ticks,
+      reducedMotion: true,
+      strings: {},
+    })
+
+    const { bridge } = scene.createBridge()
+    scene.bridge = bridge
+    // Real lifecycle order (BaseMechanicScene.create()): the bridge starts running
+    // BEFORE setupInput() is called, so `enqueue()`'s `!this._running` guard is open
+    // exactly as it would be for a real play session.
+    bridge.start()
+
+    const pointer = makeEmitter()
+    const spaceKey = makeEmitter()
+    const fakeInput: FakeInputPlugin = {
+      on: pointer.on,
+      keyboard: { addKey: () => spaceKey },
+    }
+    ;(scene as unknown as { input: FakeInputPlugin }).input = fakeInput
+
+    scene.setupInput()
+
+    return { scene, pointer, spaceKey }
+  }
+
+  it('a pointer press enqueues act + hold_start; release enqueues hold_end', () => {
+    const { scene, pointer } = bootRunnerScene()
+
+    pointer.emit('pointerdown')
+    expect(scene.bridge.inputLog.map((e) => e.action)).toEqual(['act', 'hold_start'])
+
+    pointer.emit('pointerup')
+    expect(scene.bridge.inputLog.map((e) => e.action)).toEqual(['act', 'hold_start', 'hold_end'])
+  })
+
+  it('Space performs exactly what a tap does — the same actions, keyboard-reachable', () => {
+    const { scene, spaceKey } = bootRunnerScene()
+
+    spaceKey.emit('down')
+    expect(scene.bridge.inputLog.map((e) => e.action)).toEqual(['act', 'hold_start'])
+
+    spaceKey.emit('up')
+    expect(scene.bridge.inputLog.map((e) => e.action)).toEqual(['act', 'hold_start', 'hold_end'])
+  })
+
+  it('a repeated press while already holding does not re-enqueue hold_start', () => {
+    // Mirrors OS key-autorepeat: `startPress` must stay idempotent on `holding` so a
+    // held key (or a stray double pointerdown) cannot spam `hold_start`.
+    const { scene, pointer } = bootRunnerScene()
+
+    pointer.emit('pointerdown')
+    pointer.emit('pointerdown')
+
+    const actions = scene.bridge.inputLog.map((e) => e.action)
+    expect(actions.filter((a) => a === 'hold_start')).toHaveLength(1)
+    expect(actions.filter((a) => a === 'act')).toHaveLength(2)
+  })
+
+  it('release without a prior press does not enqueue a stray hold_end', () => {
+    const { scene, pointer } = bootRunnerScene()
+
+    pointer.emit('pointerup')
+    expect(scene.bridge.inputLog).toHaveLength(0)
+  })
+
+  it('the keyboard path and the pointer path are independent — a key press does not need a prior tap', () => {
+    const { scene, spaceKey } = bootRunnerScene()
+
+    spaceKey.emit('up') // no matching 'down' first — must not enqueue a stray hold_end
+    expect(scene.bridge.inputLog).toHaveLength(0)
+
+    spaceKey.emit('down')
+    expect(scene.bridge.inputLog.map((e) => e.action)).toEqual(['act', 'hold_start'])
   })
 })
 

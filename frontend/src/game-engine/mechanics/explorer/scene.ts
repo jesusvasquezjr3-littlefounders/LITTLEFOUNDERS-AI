@@ -13,7 +13,7 @@ import {
   spawnConfetti,
   spawnWrongParticles,
 } from '@/game-engine/phaser/juice'
-import { BaseMechanicScene } from '@/game-engine/phaser/scene'
+import { BaseMechanicScene, type CanvasStringKey } from '@/game-engine/phaser/scene'
 import { Sfx } from '@/game-engine/phaser/sfx'
 
 import {
@@ -92,6 +92,117 @@ const SIGNPOST_COLORS: Record<string, number> = {
   delight: 0xffd700,
 }
 
+/**
+ * Minimum tap-target RADIUS in canvas design px, independent of a node's visual
+ * `KIND_RADII` size. §1.11's ~44 CSS px touch-target floor cannot be enforced in
+ * exact CSS px from here — the 800x600 canvas is scaled by Phaser's FIT mode to
+ * whatever CSS size the player's game box renders at, a runtime/device fact this
+ * scene has no way to read. What CAN be guaranteed from here is a floor in the
+ * canvas's own fixed coordinate space: this keeps the smallest node kind (`plain`/
+ * `fragment` at KIND_RADII 12, a 24px-diameter dot) from being a precision-only
+ * target once its interactive circle is unioned with this floor. NOTE: the schema
+ * (`explorerMapSchema.node_radius`, 12-120) is documented there as "the tap
+ * target's floor" but is NOT currently wired into rendering anywhere in this file
+ * — KIND_RADII below is the actual visual radius per node kind, unconditionally —
+ * so this floor is applied independently of both the visual radius AND the unused
+ * config field, per the audit's guidance to decouple the hit-test from the art
+ * rather than resize it. Wiring `node_radius` into the actual drawn size (so
+ * content authors can tune it per-manifest) is a separate, larger change than this
+ * touch-target fix and is called out in the accompanying report as unresolved.
+ *
+ * Exported so the regression is pinned by a test (explorer.test.ts) even though
+ * the geometry it feeds (`createNodeView`'s Phaser `container.setInteractive`
+ * call) cannot itself be exercised without a live canvas.
+ */
+export const MIN_TAP_RADIUS = 48
+
+/** Node-label truncation floor — see `truncateAtWord`. Widened from the pre-fix
+ *  14-char cutoff (English-tuned; confirmed cutting es-MX/pt-BR labels mid-word,
+ *  since both languages routinely run 20-40% longer than their en-US source) — a
+ *  node label floats freely above its marker with no fixed-width box to overflow,
+ *  so 22 gives a typical two-word label real room while `truncateAtWord` still
+ *  protects the rare longer one. */
+const NODE_LABEL_MAX = 22
+
+/** Challenge-option truncation floor — see `truncateAtWord`. Unlike the node
+ *  label, the option row IS a fixed-width box (300px at 12px bold), so this
+ *  cannot grow as freely as `NODE_LABEL_MAX` did: 48 gives es-MX/pt-BR
+ *  meaningfully more room than the pre-fix 40-char English-tuned cutoff for the
+ *  common case; `truncateAtWord`'s word-boundary rule is what keeps the rare
+ *  overflow from reading as a broken word instead of visual overflow. */
+const OPTION_LABEL_MAX = 48
+
+/**
+ * Truncates `text` to at most `maxLen` characters without ever cutting a word in
+ * half, appending an ellipsis whenever it does cut. Finds the last space at or
+ * before `maxLen` and breaks there; only falls back to a hard character cut
+ * (still ellipsis-suffixed) when `text` has no space within the first `maxLen`
+ * characters at all — a single "word" longer than the whole budget, which has no
+ * valid word boundary to break on regardless of locale.
+ *
+ * Exported as a plain function (not a scene method) so it is testable without
+ * instantiating Phaser — see explorer.test.ts's label-truncation suite.
+ */
+export function truncateAtWord(text: string, maxLen: number): string {
+  if (text.length <= maxLen) return text
+  const slice = text.slice(0, maxLen)
+  const lastSpace = slice.lastIndexOf(' ')
+  const cut = lastSpace > 0 ? slice.slice(0, lastSpace) : slice
+  return `${cut.trimEnd()}…`
+}
+
+/**
+ * Every node index the keyboard can cycle FOCUS onto from `state.at`: the current
+ * node itself (so Enter there can `take`/answer a challenge exactly like tapping
+ * it), plus every node connected by an edge FROM the current node (or, for a
+ * two-way edge, TO it) that is currently revealed — the same set a sighted player
+ * could reach by tapping, since `nodeAt()`'s hit-test only ever matches a visible
+ * (revealed) node. Order follows `state.edges` document order, which is what
+ * makes Tab/arrow cycling deterministic and testable rather than dependent on
+ * node layout/pixel position.
+ *
+ * A LOCKED edge's target is still included — exactly like tapping a locked node
+ * does today (it surfaces the lock's hint via `handleLockedEdge`), so keyboard-
+ * only play can discover a lock the same way pointer play does, never silently
+ * skipping it.
+ *
+ * Exported as a plain function (not a scene method) so it is testable without
+ * instantiating Phaser — see explorer.test.ts's keyboard-navigation suite.
+ */
+export function reachableNodeIndices(state: ExplorerState): number[] {
+  const result: number[] = [state.at]
+  const here = state.nodes[state.at]
+  if (!here) return result
+  for (const edge of state.edges) {
+    if (!edge) continue
+    let neighborId: string | null = null
+    if (edge.from === here.id) neighborId = edge.to
+    else if (!edge.one_way && edge.to === here.id) neighborId = edge.from
+    if (neighborId === null) continue
+    const idx = indexOfNode(state.nodes, neighborId)
+    if (idx < 0 || idx === state.at) continue
+    if (!nodeIsRevealed(state, idx)) continue
+    if (!result.includes(idx)) result.push(idx)
+  }
+  return result
+}
+
+/**
+ * The next (`direction` 1) or previous (`direction` -1) node index to keyboard-
+ * focus, wrapping around `reachableNodeIndices(state)`. A `currentFocus` absent
+ * from that list (stale after a move, or -1 before any focus was set) starts the
+ * cycle from `state.at` — the same "start from where the player stands" default
+ * the scene falls back to on arrival.
+ */
+export function cycleFocusIndex(state: ExplorerState, currentFocus: number, direction: 1 | -1): number {
+  const list = reachableNodeIndices(state)
+  if (list.length === 0) return state.at
+  const pos = list.indexOf(currentFocus)
+  const from = pos >= 0 ? pos : 0
+  const next = (from + direction + list.length) % list.length
+  return list[next] ?? state.at
+}
+
 interface NodeView {
   nodeIndex: number
   container: Phaser.GameObjects.Container
@@ -99,6 +210,9 @@ interface NodeView {
   label: Phaser.GameObjects.Text
   icon: Phaser.GameObjects.Text
   ring: Phaser.GameObjects.Arc
+  /** Independent of `shape`'s visual radius — see `MIN_TAP_RADIUS`. What `nodeAt()`
+   *  actually hit-tests against. */
+  tapRadius: number
 }
 
 interface EdgeView {
@@ -123,6 +237,10 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
   private challengeGroup: Phaser.GameObjects.Container | null = null
   private restBtn: Phaser.GameObjects.Container | null = null
   private infoLabel: Phaser.GameObjects.Text | null = null
+  /** Keyboard-cycled node focus (Tab/arrows), independent of `state.at` (the
+   *  player's actual position) — see `reachableNodeIndices`/`cycleFocusIndex`.
+   *  -1 before `createGameObjects()` runs. */
+  private focusIndex = -1
   private prevAt = -1
   private prevEnergy = 0
   private prevCurrency = 0
@@ -175,6 +293,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     this.prevAt = state.at
     this.prevEnergy = state.energy
     this.prevCurrency = state.currency
+    this.focusIndex = state.at
   }
 
   setupInput(): void {
@@ -183,12 +302,77 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
       const state = this.bridge.state
       if (state.travelLeft > 0) return
 
-      const clickedNode = this.nodeAt(pointer.x, pointer.y)
+      // `worldX`/`worldY` (not `x`/`y`): explorer's `getWorldSize()` zooms the camera
+      // for any manifest whose `map` differs from 800x600, and every node's position
+      // is a WORLD coordinate — Phaser's own InputManager already writes the correct
+      // `camera.getWorldPoint()` result into `pointer.worldX/worldY` before this
+      // listener runs. Raw `x`/`y` are pre-zoom canvas coordinates and silently miss
+      // every node once the camera isn't at zoom 1.
+      const clickedNode = this.nodeAt(pointer.worldX, pointer.worldY)
       if (clickedNode !== null) {
         this.handleNodeClick(clickedNode)
         return
       }
     })
+
+    // Keyboard graph navigation (§4/§5's move/use/take/rest actions have no keyboard
+    // path otherwise): Tab/Shift+Tab and the arrow keys cycle `focusIndex` across
+    // `reachableNodeIndices()`, Enter runs the exact same `handleNodeClick()` a tap
+    // on the focused node would, and R rests — mirroring the rest button's own
+    // handler via `attemptRest()` so the two paths can never drift apart. All of it
+    // is a no-op while a challenge dialog is open (`this.challengeGroup`): that
+    // modal is mouse-only today (its options are individually `pointerdown`-wired),
+    // a pre-existing gap this pass does not extend to, so keyboard nav intentionally
+    // stands down here rather than double-firing behind it.
+    const keyboard = this.input.keyboard
+    if (!keyboard) return
+
+    keyboard.on('keydown-TAB', (event: KeyboardEvent) => {
+      event.preventDefault()
+      this.moveFocus(event.shiftKey ? -1 : 1)
+    })
+    keyboard.on('keydown-RIGHT', () => this.moveFocus(1))
+    keyboard.on('keydown-DOWN', () => this.moveFocus(1))
+    keyboard.on('keydown-LEFT', () => this.moveFocus(-1))
+    keyboard.on('keydown-UP', () => this.moveFocus(-1))
+    keyboard.on('keydown-ENTER', () => this.activateFocusedNode())
+    keyboard.on('keydown-R', () => this.attemptRest())
+  }
+
+  private str(key: CanvasStringKey): string {
+    return this.strings[key] ?? key
+  }
+
+  /** Interpolates a `games.canvas.*` template (e.g. `"Locked: {{hint}}"`) against
+   *  `vars`. `PhaserGameBox` resolves every `CANVAS_STRING_KEYS` entry via a bare
+   *  `t(key)` with no interpolation options (see its doc comment), so `{{name}}`
+   *  placeholders survive into `this.strings` verbatim for the scene to fill in
+   *  itself — this is that fill-in step. */
+  private strFmt(key: CanvasStringKey, vars: Record<string, string>): string {
+    const template = this.str(key)
+    return template.replace(/\{\{(\w+)\}\}/g, (_match, name: string) => vars[name] ?? '')
+  }
+
+  private moveFocus(direction: 1 | -1): void {
+    if (this.paused || this.finished || this.challengeGroup) return
+    const state = this.bridge.state
+    if (state.travelLeft > 0) return
+    this.focusIndex = cycleFocusIndex(state, this.focusIndex, direction)
+  }
+
+  private activateFocusedNode(): void {
+    if (this.paused || this.finished || this.challengeGroup) return
+    const state = this.bridge.state
+    if (state.travelLeft > 0) return
+    if (this.focusIndex < 0) return
+    this.handleNodeClick(this.focusIndex)
+  }
+
+  private attemptRest(): void {
+    if (this.paused || this.finished || this.challengeGroup) return
+    if (!canRestAt(this.bridge.state, this.bridge.state.at)) return
+    this.bridge.enqueue('rest')
+    Sfx.collect()
   }
 
   updateGameObjects(_delta: number): void {
@@ -200,6 +384,9 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
 
     if (state.at !== this.prevAt) {
       this.onArrive(state)
+      // Keyboard focus follows the player on arrival, same as a sighted player's
+      // eye would — cycling then resumes from wherever they actually landed.
+      this.focusIndex = state.at
     }
 
     if (state.energy !== this.prevEnergy && state.energy > this.prevEnergy && state.actions > 0) {
@@ -208,7 +395,8 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
 
     if (state.currency !== this.prevCurrency && state.currency > this.prevCurrency) {
       Sfx.collect()
-      floatText(this, this.scale.width / 2, this.scale.height / 2, `+${state.currency - this.prevCurrency}g`, '#ffd700', 600)
+      const amount = String(state.currency - this.prevCurrency)
+      floatText(this, this.scale.width / 2, this.scale.height / 2, this.strFmt('incomePreview', { amount }), '#ffd700', 600)
     }
 
     if (state.deaths > this.prevDeaths) {
@@ -372,7 +560,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     const icon = this.makeText(0, 0, this.nodeIconFor(node), 12, this.palette.inverseText, NODE_DEPTH + 1)
     container.add(icon)
 
-    const label = this.makeText(0, -radius - 12, node.label_md.slice(0, 14), 10, this.palette.text, NODE_DEPTH + 1)
+    const label = this.makeText(0, -radius - 12, truncateAtWord(node.label_md, NODE_LABEL_MAX), 10, this.palette.text, NODE_DEPTH + 1)
     container.add(label)
 
     const ring = this.add.circle(0, 0, radius + 4, kindColor, 0)
@@ -380,9 +568,11 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     ring.setDepth(NODE_DEPTH - 0.5)
     container.add(ring)
 
-    container.setInteractive(new Phaser.Geom.Circle(0, 0, radius + 6), Phaser.Geom.Circle.Contains)
+    // Decoupled from `radius` on purpose — see `MIN_TAP_RADIUS`'s doc comment.
+    const tapRadius = Math.max(radius + 6, MIN_TAP_RADIUS)
+    container.setInteractive(new Phaser.Geom.Circle(0, 0, tapRadius), Phaser.Geom.Circle.Contains)
 
-    this.nodeViews.push({ nodeIndex, container, shape, label, icon, ring })
+    this.nodeViews.push({ nodeIndex, container, shape, label, icon, ring, tapRadius })
   }
 
   private nodeIconFor(node: ExplorerNode): string {
@@ -430,7 +620,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
 
     this.currencyLabel = this.makeText(panelX + 140, startY + 8, `\u{1FA99} ${state.currency}`, 14, this.palette.warning, HUD_DEPTH + 1)
 
-    this.masteryLabel = this.makeText(panelX, startY + 28, 'M:0', 12, this.palette.success, HUD_DEPTH + 1)
+    this.masteryLabel = this.makeText(panelX, startY + 28, this.strFmt('masteryLabel', { count: '0' }), 12, this.palette.success, HUD_DEPTH + 1)
 
     this.scoreLabel = this.makeText(this.scale.width - 40, startY + 8, '0', 16, this.palette.text, HUD_DEPTH + 1)
 
@@ -453,14 +643,9 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     const restBg = this.add.image(0, 0, BTN_REST_KEY)
     restBg.setInteractive({ cursor: 'pointer' })
     restContainer.add(restBg)
-    const restLabel = this.makeText(0, 0, 'Rest', 13, this.palette.primary, HUD_DEPTH + 1)
+    const restLabel = this.makeText(0, 0, this.str('rest'), 13, this.palette.primary, HUD_DEPTH + 1)
     restContainer.add(restLabel)
-    restBg.on('pointerdown', () => {
-      if (this.paused || this.finished) return
-      if (!canRestAt(this.bridge.state, this.bridge.state.at)) return
-      this.bridge.enqueue('rest')
-      Sfx.collect()
-    })
+    restBg.on('pointerdown', () => this.attemptRest())
     this.restBtn = restContainer
   }
 
@@ -480,9 +665,15 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
       view.container.setAlpha(visited ? 1 : 0.5)
 
       const isCurrent = view.nodeIndex === state.at
+      // `isFocused` is the KEYBOARD cursor (Tab/arrows) — distinct from `isCurrent`,
+      // the player's actual position, so a keyboard user can see which node Enter
+      // would act on without it being confused for "you are here".
+      const isFocused = !isCurrent && view.nodeIndex === this.focusIndex
       if (isCurrent) {
         const pulse = 0.6 + Math.sin(Date.now() * 0.005) * 0.4
         view.ring.setStrokeStyle(2, this.palette.accent, pulse)
+      } else if (isFocused) {
+        view.ring.setStrokeStyle(3, this.palette.primary, 0.85)
       } else {
         view.ring.setStrokeStyle(2, this.palette.accent, 0)
       }
@@ -579,7 +770,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     }
     if (this.energyLabel) this.energyLabel.setText(`${state.energy}/${config.energy.max}`)
     if (this.currencyLabel) this.currencyLabel.setText(`\u{1FA99} ${state.currency}`)
-    if (this.masteryLabel) this.masteryLabel.setText(`M:${state.mastery}`)
+    if (this.masteryLabel) this.masteryLabel.setText(this.strFmt('masteryLabel', { count: String(state.mastery) }))
     if (this.scoreLabel) this.scoreLabel.setText(`${Math.round(this.bridge.snapshot.score)}`)
     if (this.livesLabel && state.lives !== null) {
       this.livesLabel.setText(`${'\u{2764}'} ${state.lives}`)
@@ -601,20 +792,32 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     if (this.infoLabel) {
       const node = state.nodes[state.at]
       if (node && nodeIsClaimable(state, state.at)) {
-        this.infoLabel.setText('Tap node to take')
+        this.infoLabel.setText(this.str('tapNodeToTake'))
       } else if (state.cache[state.at] && state.cache[state.at]! > 0) {
-        this.infoLabel.setText(`\u{1F4B0} ${state.cache[state.at]} here`)
+        const amount = String(state.cache[state.at])
+        this.infoLabel.setText(this.strFmt('currencyHere', { amount }))
       } else {
         this.infoLabel.setText('')
       }
     }
   }
 
+  /**
+   * A precise circular hit-test against `view.tapRadius` (see `MIN_TAP_RADIUS`) —
+   * NOT `container.getBounds()`, which used to union in the label text's own
+   * bounds (positioned above the marker) and so produced a hit region that grew
+   * or shrank with a node's label LENGTH rather than guaranteeing any actual
+   * floor, and was offset upward instead of centered on the marker. A fixed
+   * circular radius, decoupled from both the visual dot size and the label, is
+   * the only one of the two that can be reasoned about — and guaranteed to clear
+   * the touch-target floor — without live-rendering it.
+   */
   private nodeAt(x: number, y: number): number | null {
     for (const view of this.nodeViews) {
       if (!view.container.visible) continue
-      const bounds = view.container.getBounds()
-      if (bounds.contains(x, y)) return view.nodeIndex
+      const dx = x - view.container.x
+      const dy = y - view.container.y
+      if (dx * dx + dy * dy <= view.tapRadius * view.tapRadius) return view.nodeIndex
     }
     return null
   }
@@ -666,7 +869,8 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
       this.bridge.enqueue('use', { slot: edge.id, n: undefined })
     } else {
       if (this.infoLabel) {
-        this.infoLabel.setText(`Locked: ${lock.hint_md ?? 'need ability'}`)
+        const hint = lock.hint_md ?? this.str('needAbility')
+        this.infoLabel.setText(this.strFmt('lockedPrefix', { hint }))
         this.time.delayedCall(2000, () => {
           if (this.infoLabel) this.infoLabel.setText('')
         })
@@ -699,7 +903,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
       optBg.setInteractive({ cursor: 'pointer' })
       this.challengeGroup.add(optBg)
 
-      const optLabel = this.makeText(0, optY, option.label_md.slice(0, 40), 12, this.palette.text, CHALLENGE_DEPTH + 2)
+      const optLabel = this.makeText(0, optY, truncateAtWord(option.label_md, OPTION_LABEL_MAX), 12, this.palette.text, CHALLENGE_DEPTH + 2)
       this.challengeGroup.add(optLabel)
 
       const idx = i
@@ -729,7 +933,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     if (node.kind === 'goal' && !state.finished) {
       Sfx.levelUp()
       spawnConfetti(this, this.scale.width / 2, this.scale.height / 2, 50)
-      floatText(this, this.scale.width / 2, this.scale.height / 2, 'GOAL!', '#f59e0b', 2000)
+      floatText(this, this.scale.width / 2, this.scale.height / 2, this.str('goal'), '#f59e0b', 2000)
     }
 
     if (node.challenge && !state.solved[state.at] && !state.claimed[state.at]) {
@@ -755,7 +959,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     spawnCollectSparkles(this, this.scale.width / 2, this.scale.height / 2)
     addFlash(this, this.palette.accent, 80)
 
-    floatText(this, this.scale.width / 2, this.scale.height / 2 - 40, 'Unlocked!', '#22c55e', 1000)
+    floatText(this, this.scale.width / 2, this.scale.height / 2 - 40, this.str('unlocked'), '#22c55e', 1000)
   }
 }
 

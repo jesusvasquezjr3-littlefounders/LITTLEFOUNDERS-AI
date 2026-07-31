@@ -18,13 +18,15 @@ import { createElement } from 'react'
 
 import { replayGame, runBot } from '@/game-engine/core/replay'
 import type { GameDocument, SimResult } from '@/game-engine/core/types'
+import { resolvePalette } from '@/game-engine/phaser/assets'
 
 import { FlyerView } from './components'
 import { flyerBots } from './bots'
 import { flyerFixtures } from './fixtures'
 import { flyerSlice } from './register'
+import { CONTROL_GAP, CONTROL_MARGIN, FlyerScene, MIN_TOUCH_DESIGN_PX } from './scene'
 import { flyerConfigSchema, flyerContentSchema, type FlyerConfig } from './schema'
-import { flyerSimulator, type FlyerState } from './simulate'
+import { flyerSimulator, type FlyerShot, type FlyerState } from './simulate'
 
 const SEED = 987654
 
@@ -492,6 +494,333 @@ describe('flyer — the view is a renderer (GAME_ENGINE.md §7, §10)', () => {
     fireEvent.click(climb)
     expect(emit).toHaveBeenCalled()
   })
+})
+
+// ---- Scene-layer regressions (the viewport blocker, the missing `lane` action, and
+// the 44px touch-target floor) --------------------------------------------------------
+//
+// `FlyerScene` extends `Phaser.Scene`, whose real `this.add`/`this.input`/`this.textures`
+// only exist once a scene is added to a booted `Phaser.Game` — and a real boot needs a
+// canvas/WebGL context jsdom does not provide (same finding `sorter.test.ts`'s own header
+// comment documents). Rather than fight that, these tests exercise the REAL prototype
+// methods (`getWorldSize`, `createControls`, `setupInput`) against a minimal fake `this`
+// built with `Object.create(FlyerScene.prototype)`: every Phaser API surface the methods
+// under test actually touch (`this.add.container/image/text/circle`, `this.textures`,
+// `this.input.on`/`this.input.keyboard.on`) is faked just enough to capture what was
+// created and what event handlers were registered, so a real button's real x/y and a
+// real handler's real `bridge.enqueue` call can both be asserted directly — not
+// reimplemented and re-asserted against a second copy of the logic.
+
+interface FakeGameObject {
+  x: number
+  y: number
+  setDepth: (...args: unknown[]) => FakeGameObject
+  setOrigin: (...args: unknown[]) => FakeGameObject
+  setAlpha: (...args: unknown[]) => FakeGameObject
+  setText: (...args: unknown[]) => FakeGameObject
+  setFillStyle: (...args: unknown[]) => FakeGameObject
+  setTint: (...args: unknown[]) => FakeGameObject
+  clearTint: (...args: unknown[]) => FakeGameObject
+  setInteractive: (...args: unknown[]) => FakeGameObject
+  setSize: (...args: unknown[]) => FakeGameObject
+  add: (...args: unknown[]) => FakeGameObject
+  getBounds: () => { contains: (px: number, py: number) => boolean }
+  on: (event: string, handler: (...args: unknown[]) => void) => FakeGameObject
+  handlers: Record<string, (...args: unknown[]) => void>
+}
+
+function fakeGameObject(x = 0, y = 0): FakeGameObject {
+  const handlers: Record<string, (...args: unknown[]) => void> = {}
+  const obj: FakeGameObject = {
+    x,
+    y,
+    setDepth: () => obj,
+    setOrigin: () => obj,
+    setAlpha: () => obj,
+    setText: () => obj,
+    setFillStyle: () => obj,
+    setTint: () => obj,
+    clearTint: () => obj,
+    setInteractive: () => obj,
+    setSize: () => obj,
+    add: () => obj,
+    getBounds: () => ({
+      contains: (px: number, py: number) =>
+        Math.abs(px - obj.x) <= MIN_TOUCH_DESIGN_PX / 2 && Math.abs(py - obj.y) <= MIN_TOUCH_DESIGN_PX / 2,
+    }),
+    on: (event, handler) => {
+      handlers[event] = handler
+      return obj
+    },
+    handlers,
+  }
+  return obj
+}
+
+interface TestableFlyerScene {
+  palette: ReturnType<typeof resolvePalette>
+  textures: { exists: () => boolean }
+  add: {
+    container: (x: number, y: number) => FakeGameObject
+    image: (...args: unknown[]) => FakeGameObject
+    text: (...args: unknown[]) => FakeGameObject
+    circle: (...args: unknown[]) => FakeGameObject
+    rectangle: (...args: unknown[]) => FakeGameObject
+  }
+  strings: Record<string, string>
+  bridge: { state: FlyerState; snapshot: unknown; enqueue: ReturnType<typeof vi.fn>; finished: boolean }
+  /** `paused` is a GETTER-ONLY accessor on `BaseMechanicScene.prototype` (reads a
+   *  private `_paused`) — a plain `fake.paused = x` throws ("has only a getter")
+   *  because assignment walks the prototype chain to the accessor before falling back
+   *  to an own property. `makeFakeFlyerScene` shadows it once with
+   *  `Object.defineProperty` (an own writable data property short-circuits the
+   *  prototype accessor on every future read AND write, so ordinary `scene.paused = x`
+   *  assignments in test bodies work after that). `finished` is a getter reading
+   *  `this.bridge.finished` — driven via `bridge.finished` instead, never assigned here. */
+  paused: boolean
+  input: {
+    on: (...args: unknown[]) => void
+    keyboard: { on: (event: string, handler: (...args: unknown[]) => void) => void }
+  }
+  fireBtn: FakeGameObject | null
+  beamBtn: FakeGameObject | null
+  laneBtn: FakeGameObject | null
+  laneDots: FakeGameObject[]
+  shotViews: Map<number, { shot: FlyerShot; sprite: FakeGameObject }>
+  getWorldSize(): { width: number; height: number } | null
+  createControls(world: FlyerState['config']['world']): void
+  setupInput(): void
+  updateShots(state: FlyerState): void
+}
+
+function makeFakeFlyerScene(document: GameDocument, state: FlyerState): TestableFlyerScene {
+  const fake = Object.create(FlyerScene.prototype) as TestableFlyerScene
+  fake.palette = resolvePalette(document.skin.palette)
+  fake.textures = { exists: () => true } // short-circuits generatePlaceholderSprite's real draw
+  fake.add = {
+    container: (x: number, y: number) => fakeGameObject(x, y),
+    image: () => fakeGameObject(),
+    text: () => fakeGameObject(),
+    circle: () => fakeGameObject(),
+    rectangle: () => fakeGameObject(),
+  }
+  fake.strings = {
+    fire: 'FIRE',
+    beam: 'BEAM',
+    lane: 'LANE',
+    stall: 'STALL!',
+    distanceLabel: '{{value}}m',
+    comboMultiplier: 'x{{count}}',
+    speedLabel: '{{value}} u/t',
+  }
+  fake.bridge = { state, snapshot: { score: 0 }, enqueue: vi.fn(), finished: false }
+  Object.defineProperty(fake, 'paused', { value: false, writable: true, configurable: true })
+  const keyboardHandlers: Record<string, (...args: unknown[]) => void> = {}
+  fake.input = {
+    on: () => undefined,
+    keyboard: {
+      on: (event: string, handler: (...args: unknown[]) => void) => {
+        keyboardHandlers[event] = handler
+      },
+    },
+  }
+  ;(fake as unknown as { _keyboardHandlers: typeof keyboardHandlers })._keyboardHandlers = keyboardHandlers
+  fake.fireBtn = null
+  fake.beamBtn = null
+  fake.laneBtn = null
+  fake.laneDots = []
+  fake.shotViews = new Map()
+  return fake
+}
+
+function keyboardHandlersOf(scene: TestableFlyerScene): Record<string, (...args: unknown[]) => void> {
+  return (scene as unknown as { _keyboardHandlers: Record<string, (...args: unknown[]) => void> })._keyboardHandlers
+}
+
+describe('flyer scene — getWorldSize() fits the camera to config.world (the viewport blocker)', () => {
+  for (const document of flyerFixtures) {
+    it(`${document.meta.slug}: getWorldSize() returns the manifest's own world, not the fixed 800x600 canvas`, () => {
+      const state = initOf(document)
+      const scene = makeFakeFlyerScene(document, state)
+      const size = scene.getWorldSize()
+      expect(size).toEqual({ width: state.config.world.width, height: state.config.world.height })
+      // Both shipped fixtures author a world wider/taller than the fixed canvas — the
+      // exact case that clipped fire/beam off-canvas before getWorldSize() existed.
+      expect(size?.width).not.toBe(800)
+    })
+  }
+})
+
+describe('flyer scene — fire/beam/lane controls land within the getWorldSize()-fitted bounds', () => {
+  for (const document of flyerFixtures) {
+    it(`${document.meta.slug}: every control's container sits fully inside [0, world.width] x [0, world.height]`, () => {
+      const state = initOf(document)
+      const scene = makeFakeFlyerScene(document, state)
+      const world = state.config.world
+
+      scene.createControls(world)
+
+      for (const btn of [scene.fireBtn, scene.beamBtn, scene.laneBtn]) {
+        expect(btn).not.toBeNull()
+        if (btn === null) continue
+        const half = MIN_TOUCH_DESIGN_PX / 2
+        expect(btn.x - half).toBeGreaterThanOrEqual(0)
+        expect(btn.x + half).toBeLessThanOrEqual(world.width)
+        expect(btn.y - half).toBeGreaterThanOrEqual(0)
+        expect(btn.y + half).toBeLessThanOrEqual(world.height)
+      }
+
+      // The three controls are stacked bottom-up on the same x, each MIN_TOUCH_DESIGN_PX
+      // apart plus CONTROL_GAP — this is the exact formula scene.ts draws with, re-derived
+      // here (not re-read from the source) so a regression in the spacing itself, not just
+      // the bounds, fails this test.
+      const expectedX = world.width - CONTROL_MARGIN - MIN_TOUCH_DESIGN_PX / 2
+      const expectedFireY = world.height - CONTROL_MARGIN - MIN_TOUCH_DESIGN_PX / 2
+      expect(scene.fireBtn?.x).toBe(expectedX)
+      expect(scene.fireBtn?.y).toBe(expectedFireY)
+      expect(scene.beamBtn?.x).toBe(expectedX)
+      expect(scene.beamBtn?.y).toBe(expectedFireY - MIN_TOUCH_DESIGN_PX - CONTROL_GAP)
+      expect(scene.laneBtn?.x).toBe(expectedX)
+      expect(scene.laneBtn?.y).toBe(expectedFireY - 2 * (MIN_TOUCH_DESIGN_PX + CONTROL_GAP))
+    })
+
+    it(`${document.meta.slug}: tapping each button enqueues its action`, () => {
+      const state = initOf(document)
+      const scene = makeFakeFlyerScene(document, state)
+      scene.createControls(state.config.world)
+
+      scene.fireBtn?.handlers.pointerdown?.()
+      expect(scene.bridge.enqueue).toHaveBeenCalledWith('fire')
+
+      scene.beamBtn?.handlers.pointerdown?.()
+      expect(scene.bridge.enqueue).toHaveBeenCalledWith('beam_start')
+
+      scene.laneBtn?.handlers.pointerdown?.()
+      expect(scene.bridge.enqueue).toHaveBeenCalledWith('lane')
+    })
+
+    it(`${document.meta.slug}: a paused or finished scene refuses every button tap`, () => {
+      const state = initOf(document)
+      const scene = makeFakeFlyerScene(document, state)
+      scene.createControls(state.config.world)
+      scene.paused = true
+
+      scene.fireBtn?.handlers.pointerdown?.()
+      scene.beamBtn?.handlers.pointerdown?.()
+      scene.laneBtn?.handlers.pointerdown?.()
+      expect(scene.bridge.enqueue).not.toHaveBeenCalled()
+    })
+  }
+})
+
+describe('flyer scene — the lane action is reachable by keyboard (CLAUDE.md §1.11)', () => {
+  it('L enqueues "lane", matching the pointer control', () => {
+    const document = fixture(1) // the armed fixture: lanes enabled per flyer.test.ts's own "armed" note
+    const state = initOf(document)
+    const scene = makeFakeFlyerScene(document, state)
+    scene.setupInput()
+
+    const handlers = keyboardHandlersOf(scene)
+    expect(handlers['keydown-L']).toBeDefined()
+    handlers['keydown-L']?.()
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('lane')
+  })
+
+  it('climb/dive/fire/beam/lane are all reachable by keyboard, and none fire while paused', () => {
+    const document = fixture(1)
+    const state = initOf(document)
+    const scene = makeFakeFlyerScene(document, state)
+    scene.setupInput()
+    const handlers = keyboardHandlersOf(scene)
+
+    for (const key of ['keydown-UP', 'keydown-DOWN', 'keydown-SPACE', 'keydown-B', 'keydown-L']) {
+      expect(handlers[key]).toBeDefined()
+    }
+
+    scene.paused = true
+    for (const key of ['keydown-UP', 'keydown-DOWN', 'keydown-SPACE', 'keydown-B', 'keydown-L']) {
+      handlers[key]?.()
+    }
+    expect(scene.bridge.enqueue).not.toHaveBeenCalled()
+
+    scene.paused = false
+    handlers['keydown-UP']?.()
+    expect(scene.bridge.enqueue).toHaveBeenCalledWith('climb')
+  })
+})
+
+describe('flyer scene — touch-target floor (CLAUDE.md §1.11)', () => {
+  // Same derivation `stacker/scene.ts`'s `MIN_HIT_DESIGN_PX` test uses: the worst-case
+  // Phaser.Scale.FIT ratio is a 375px mobile viewport minus DESIGN.md's 16px
+  // `margin-mobile` on each side, divided by the fixed 800px canvas PhaserGameBox
+  // authors.
+  const REAL_TOUCH_MIN_PX = 44
+  const WORST_CASE_FIT_SCALE = (375 - 2 * 16) / 800
+
+  it('MIN_TOUCH_DESIGN_PX clears the real 44px floor at the worst-case mobile FIT scale', () => {
+    expect(MIN_TOUCH_DESIGN_PX * WORST_CASE_FIT_SCALE).toBeGreaterThanOrEqual(REAL_TOUCH_MIN_PX)
+  })
+
+  for (const document of flyerFixtures) {
+    it(`${document.meta.slug}: fire/beam/lane are each drawn at MIN_TOUCH_DESIGN_PX, not a smaller literal`, () => {
+      const state = initOf(document)
+      const scene = makeFakeFlyerScene(document, state)
+      const setSizeCalls: unknown[][] = []
+      const originalContainer = scene.add.container
+      scene.add.container = (x: number, y: number) => {
+        const obj = originalContainer(x, y)
+        const realSetSize = obj.setSize
+        obj.setSize = (...args: unknown[]) => {
+          setSizeCalls.push(args)
+          return realSetSize(...args)
+        }
+        return obj
+      }
+
+      scene.createControls(state.config.world)
+
+      expect(setSizeCalls).toEqual([
+        [MIN_TOUCH_DESIGN_PX, MIN_TOUCH_DESIGN_PX],
+        [MIN_TOUCH_DESIGN_PX, MIN_TOUCH_DESIGN_PX],
+        [MIN_TOUCH_DESIGN_PX, MIN_TOUCH_DESIGN_PX],
+      ])
+    })
+  }
+})
+
+describe('flyer scene — shot culling uses world.width, not the fixed canvas resolution (bugfix)', () => {
+  // Found while wiring `getWorldSize()`: a fired shot's `screenX` moves independently of
+  // the world scroll (`simulate.ts`: `x: shot.x + shot.vx`, never re-anchored to
+  // `state.distance` the way the mount/beam are), so on a world wider than the fixed
+  // 800x600 canvas — both shipped fixtures qualify — a shot between x=800 and
+  // `world.width` is still genuinely on-screen once the camera is fitted to the wider
+  // world, but the old `screenX > this.scale.width` check culled (destroyed) its sprite
+  // there anyway.
+  for (const document of flyerFixtures) {
+    it(`${document.meta.slug}: a shot beyond 800 but still inside the (wider) world is not culled`, () => {
+      const state = initOf(document)
+      const world = state.config.world
+      expect(world.width).toBeGreaterThan(800) // precondition: the bug only reproduces here
+
+      const scene = makeFakeFlyerScene(document, state)
+      const shot: FlyerShot = {
+        key: 1,
+        x: 850,
+        y: 100,
+        w: 10,
+        h: 10,
+        lane: 0,
+        vx: 1,
+        damage: 1,
+        fromMount: true,
+        rangeLeft: 100,
+      }
+      const withShot: FlyerState = { ...state, distance: 0, shots: [shot] }
+
+      scene.updateShots(withShot)
+      expect(scene.shotViews.has(1)).toBe(true)
+    })
+  }
 })
 
 describe('flyer — the registered slice', () => {

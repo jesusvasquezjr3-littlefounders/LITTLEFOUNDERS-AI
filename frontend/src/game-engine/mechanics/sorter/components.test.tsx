@@ -1,5 +1,3 @@
-// NOTE: These tests use React DOM assertions that don't apply to the Phaser canvas renderer. Re-enable after adding canvas-based test infrastructure.
-
 // `sorter` — RENDERER tests (GAME_ENGINE.md §10, /CLAUDE.md §1.11).
 //
 // WHY THIS FILE EXISTS. `sorter.test.ts` feeds the SIMULATOR hand-written `place`
@@ -18,6 +16,26 @@
 //
 // jsdom implements neither PointerEvent nor elementFromPoint, so both are stubbed
 // exactly as `core/input.test.ts` does.
+//
+// STATUS (post Phaser rewrite, commits 4680a61/4530850/695891c). Group 1 above
+// (`SorterView` rendered directly) still passes unmodified: `SorterView` is a plain
+// React component and `renderView()` mounts it standalone, with no Phaser/canvas in
+// the tree at all. It is worth recording precisely what that DOES and DOES NOT prove
+// today: `GamePlayer.tsx` no longer references `slice.View` anywhere (confirmed by
+// reading it) — the Phaser scene (`mechanics/sorter/scene.ts`) draws the sorter
+// entirely on canvas now, so `SorterView`/`sorterSlice.View` is currently DEAD on the
+// production play path. These 4 tests prove the renderer component's OWN emit
+// contract still holds (useful if it is ever revived, e.g. a canvas-free/accessibility
+// fallback), not that a child playing the shipped game exercises this code.
+//
+// Group 3 ("over the real kernel", driving the whole chain through `<GamePlayer>`) is
+// a DIFFERENT and stronger failure than "jsdom can't paint a canvas": `GamePlayer`
+// mounts `PhaserGameBox`, which never renders `SorterView`'s DOM at all — the item/
+// container buttons these tests query for (`screen.getByRole('button', { name:
+// labelOf(...) })`) simply do not exist in the tree Testing Library can see, Phaser
+// mock or not. `manual.scheduler` is also inert here (`GameStage` in GamePlayer.tsx
+// never destructures its own `scheduler` prop — the Phaser play path dropped the
+// injectable-clock seam entirely). These stay `.skip`, each with its own reason.
 
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -138,7 +156,7 @@ function renderView(state: SorterState): RenderedView {
 }
 
 describe('SorterView — the tap route (§1.11 guaranteed path)', () => {
-  it.skip('emits the placement after tapping an element and then its container', () => {
+  it('emits the placement after tapping an element and then its container', () => {
     const state = initOf(cheerDoc)
     const { uid, itemId, categoryId } = firstSortable(state)
     const view = renderView(state)
@@ -160,7 +178,7 @@ describe('SorterView — the tap route (§1.11 guaranteed path)', () => {
     expect(item).toHaveAttribute('aria-pressed', 'false')
   })
 
-  it.skip('emits a discard when the container tapped is the trash target', () => {
+  it('emits a discard when the container tapped is the trash target', () => {
     const state = initOf(cheerDoc)
     const { uid, itemId } = firstSortable(state)
     const view = renderView(state)
@@ -173,7 +191,7 @@ describe('SorterView — the tap route (§1.11 guaranteed path)', () => {
     expect(view.events()).toEqual([{ action: 'discard', payload: { n: uid } }])
   })
 
-  it.skip('emits nothing when a container is tapped with no element selected', () => {
+  it('emits nothing when a container is tapped with no element selected', () => {
     const state = initOf(cheerDoc)
     const { categoryId } = firstSortable(state)
     const view = renderView(state)
@@ -187,7 +205,7 @@ describe('SorterView — the tap route (§1.11 guaranteed path)', () => {
 })
 
 describe('SorterView — the drag route agrees with the tap route', () => {
-  it.skip('produces the SAME event the tap produces for the same element and container', () => {
+  it('produces the SAME event the tap produces for the same element and container', () => {
     const state = initOf(cheerDoc)
     const { uid, itemId, categoryId } = firstSortable(state)
 
@@ -265,6 +283,11 @@ function scoreChipText(): string {
 }
 
 describe('sorter over the real kernel — a run a child can actually play', () => {
+  // BLOCKED: `<GamePlayer>` mounts `PhaserGameBox`, not `SorterView` — the item/
+  // container `getByRole('button', ...)` queries below have nothing to find, in ANY
+  // jsdom mock, because the sorter's tray/bins are canvas-drawn by
+  // `mechanics/sorter/scene.ts` now. Needs a live browser (accessibility-tree reads
+  // of canvas content, or a pixel/visual assertion) to observe this chain at all.
   it.skip('turns a tap-then-tap placement into a scored tick', () => {
     const manual = createManualScheduler()
     const { itemId, categoryId } = firstSortable(initOf(cheerDoc, 11))
@@ -292,6 +315,10 @@ describe('sorter over the real kernel — a run a child can actually play', () =
     expect(scoreChipText()).not.toBe(before)
   })
 
+  // BLOCKED: `onComplete` fires from the bridge's finished-edge check in
+  // `phaser/scene.ts`, which never runs under the mock (`Game.scene` is undefined,
+  // `events.on`/`once` never invoke a listener — see file header). `manual.scheduler`
+  // is inert on the Phaser path. Needs a live browser to reach the tick ceiling.
   it.skip('advances ticks over simulated time', () => {
     const manual = createManualScheduler()
     const onComplete = vi.fn()
@@ -318,6 +345,8 @@ describe('sorter over the real kernel — a run a child can actually play', () =
     expect(payload?.duration_seconds).toBe(1)
   })
 
+  // BLOCKED: same root cause as the two tests above — no button to tap in the DOM
+  // (canvas-drawn) and no scene ever boots under the mock to produce an input log.
   it.skip('records the placement in the input log the server will replay', () => {
     const manual = createManualScheduler()
     const onComplete = vi.fn()
