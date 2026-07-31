@@ -15,6 +15,19 @@ export interface BridgeSnapshot {
   round: number
   tick: number
   tickAlpha: number
+  /** Derived aggregates from `simulator.result(state).stats` — the ONLY combo signal
+   *  the engine contract exposes (mirrors the pre-Phaser kernel's `comboFromStats`). */
+  stats: Record<string, number>
+}
+
+/** What a finished run hands upstream. `ticks`/`round`/`result` come from the SAME
+ *  bridge that recorded `inputLog`, never hardcoded — the results screen's provisional
+ *  numbers and the server's replayed ones must agree on what was actually played. */
+export interface BridgeFinishPayload {
+  inputLog: readonly GameInputEvent[]
+  ticks: number
+  round: number
+  result: SimResult
 }
 
 export class GameEngineBridge<S> {
@@ -30,10 +43,16 @@ export class GameEngineBridge<S> {
   private _lastFrameTime = 0
   private _accumulator = 0
   private _tickAlpha = 0
+  /** The session's hard tick ceiling (GAME_ENGINE.md §5/§9) — matches the server's own
+   *  bound from the `validation` sidecar. Without this a simulator that never sets
+   *  `finished` runs forever client-side; WITH it, the run behaves exactly as the old
+   *  kernel's `isDone()` did: `tick >= maxTicks || finished`. */
+  private readonly _maxTicks: number
 
-  constructor(simulator: Simulator<S>, init: SimInit) {
+  constructor(simulator: Simulator<S>, init: SimInit, maxTicks: number) {
     this.simulator = simulator
     this._state = simulator.init(init)
+    this._maxTicks = Number.isFinite(maxTicks) && maxTicks > 0 ? Math.floor(maxTicks) : Number.POSITIVE_INFINITY
   }
 
   start(): void {
@@ -63,10 +82,14 @@ export class GameEngineBridge<S> {
     this._tickAlpha = 0
   }
 
+  private isDone(): boolean {
+    return this._tick >= this._maxTicks || this.simulator.snapshot(this._state).finished
+  }
+
   update(rawDeltaMs: number): void {
     if (!this._running || this._paused) return
 
-    if (this.simulator.snapshot(this._state).finished) {
+    if (this.isDone()) {
       this.stop()
       return
     }
@@ -75,7 +98,7 @@ export class GameEngineBridge<S> {
     this._accumulator += clamped
 
     let ticksThisFrame = 0
-    while (this._accumulator >= TICK_MS && ticksThisFrame < MAX_CATCH_UP_TICKS) {
+    while (this._accumulator >= TICK_MS && ticksThisFrame < MAX_CATCH_UP_TICKS && !this.isDone()) {
       this._accumulator -= TICK_MS
       this._prevState = this._state
       const batch = this._pending
@@ -86,10 +109,15 @@ export class GameEngineBridge<S> {
     }
 
     this._tickAlpha = Math.min(1, this._accumulator / TICK_MS)
+
+    // The tick ceiling can be crossed WITHIN the loop above (not just by the guard at
+    // entry), so re-check immediately: a run that just hit maxTicks must stop taking
+    // input this same frame, not one frame late.
+    if (this.isDone()) this.stop()
   }
 
   enqueue(action: string, payload?: Omit<GameInputEvent, 'tick' | 'action'>): void {
-    if (!this._running || this._paused) return
+    if (!this._running || this._paused || this.isDone()) return
     const known = this.simulator.actions as readonly string[]
     if (!known.includes(action)) return
 
@@ -153,6 +181,19 @@ export class GameEngineBridge<S> {
       round: s.round,
       tick: this._tick,
       tickAlpha: this._tickAlpha,
+      stats: this.result.stats,
+    }
+  }
+
+  /** The payload a finished run hands upstream — always read from the bridge's own
+   *  tick/round/result, never invented by a caller (that was the bug: a caller-side
+   *  `{score: 0, ticks: 0}` stand-in silently replaced this on every completion). */
+  get finishPayload(): BridgeFinishPayload {
+    return {
+      inputLog: this.inputLog,
+      ticks: this._tick,
+      round: this.snapshot.round,
+      result: this.result,
     }
   }
 

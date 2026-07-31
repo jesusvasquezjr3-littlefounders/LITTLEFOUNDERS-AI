@@ -30,21 +30,20 @@ import { Button, Icon } from '@/components/ui'
 import { isGameAudioMuted, setGameAudioMuted } from '@/game-engine/core/audio'
 import type { GameLoopScheduler } from '@/game-engine/core/kernel'
 import { TICK_MS } from '@/game-engine/core/types'
-import type { BridgeSnapshot } from '@/game-engine/phaser/bridge'
+import type { BridgeFinishPayload, BridgeSnapshot } from '@/game-engine/phaser/bridge'
 import type {
   GameDocument,
   GameInputEvent,
   GameInterlude,
   MechanicSlice,
   SimResult,
-  SimSnapshot,
 } from '@/game-engine/core/types'
 import { PhaserGameBox } from '@/game-engine/player/PhaserGameBox'
 import { MECHANIC_META } from '@/game-engine/registry'
 import MarkdownLite from '@/lesson-engine/core/MarkdownLite'
 import { cn } from '@/lib/utils'
 
-import { GameHud, HUD_CONTROL_CLASS } from './hud'
+import { GameHud, HUD_CONTROL_CLASS, comboFromStats } from './hud'
 import {
   GameResultsScreen,
   InterludeOverlay,
@@ -189,12 +188,13 @@ function GameStage({
   document: doc,
   seed,
   maxTicks,
+  reducedMotion,
   runId,
   onFinish,
   onExit,
 }: GameStageProps) {
-  const [snapshot, setSnapshot] = useState<SimSnapshot>({
-    finished: false, score: 0, lives: null, round: 0,
+  const [snapshot, setSnapshot] = useState<BridgeSnapshot>({
+    finished: false, score: 0, lives: null, round: 0, tick: 0, tickAlpha: 0, stats: {},
   })
   const [paused, setPaused] = useState(false)
   const [interlude, setInterlude] = useState<GameInterlude | null>(null)
@@ -204,25 +204,30 @@ function GameStage({
   const finishedRef = useRef(false)
 
   const handleSnapshot = useCallback((snap: BridgeSnapshot) => {
-    setSnapshot({
-      score: snap.score,
-      lives: snap.lives,
-      finished: snap.finished,
-      round: snap.round,
-    })
+    setSnapshot(snap)
   }, [])
 
-  const handleFinish = useCallback((inputLog: readonly GameInputEvent[]) => {
+  // The bridge's OWN tick/round/result — never a caller-invented stand-in. A completed
+  // run's provisional results (and the duration/round the server sees) must reflect
+  // exactly what the child played, not a placeholder that happens to always read as a
+  // loss (the regression this replaces: every run used to finish 0/0/failed locally
+  // until the network round trip overwrote it, if it ever succeeded).
+  const handleFinish = useCallback((payload: BridgeFinishPayload) => {
     if (finishedRef.current) return
     finishedRef.current = true
 
     onFinish({
-      inputLog: [...inputLog],
-      ticks: 0,
-      round: 0,
-      result: { score: 0, finished: true, stats: {} },
+      inputLog: [...payload.inputLog],
+      ticks: payload.ticks,
+      round: payload.round,
+      result: payload.result,
     })
   }, [onFinish])
+
+  // A run left running while nobody is looking (tab hidden, window blurred) is the
+  // exact incident GAME_ENGINE.md §10 exists to prevent — pausing shows the real
+  // overlay instead of letting lives drain or the board freeze with no explanation.
+  const handleAutoPause = useCallback(() => setPaused(true), [])
 
   useEffect(() => {
     if (interlude !== null || snapshot.finished) return
@@ -250,7 +255,9 @@ function GameStage({
 
   const showInterlude = interlude !== null && !confirmQuit
   const showPause = paused && !showInterlude && !confirmQuit && !snapshot.finished
-  const combo = 0 // Phaser scenes handle their own combo display
+  // The engine contract exposes no combo field directly — derived aggregates in
+  // `stats` are the only signal (mirrors the pre-Phaser kernel's own convention).
+  const combo = comboFromStats(snapshot.stats)
 
   return (
     <>
@@ -269,9 +276,11 @@ function GameStage({
           seed={seed}
           maxTicks={maxTicks}
           paused={paused}
+          reducedMotion={reducedMotion}
           className="flex-1"
           onSnapshot={handleSnapshot}
           onFinish={handleFinish}
+          onAutoPause={handleAutoPause}
         />
       </main>
 
@@ -287,7 +296,7 @@ function GameStage({
       {showInterlude && interlude !== null ? (
         <InterludeOverlay
           interlude={interlude}
-          reducedMotion={false}
+          reducedMotion={reducedMotion}
           onContinue={() => {
             setInterlude(null)
             setPaused(false)

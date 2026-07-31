@@ -59,18 +59,16 @@ export class LauncherScene extends BaseMechanicScene<LauncherState> {
   private lastRound = 0
   private lastMisses = 0
 
-  constructor() { super('launcher-scene') }
+  constructor() { super('launcher') }
 
   createBridge() {
     const c = launcherConfigSchema.safeParse(this.doc.config)
     const t = launcherContentSchema.safeParse(this.doc.content)
     if (!c.success || !t.success) throw new Error('INVALID_DOCUMENT')
+    const simInit = { config: c.data, content: t.data, scoring: this.doc.scoring, seed: this.seed }
     return {
-      bridge: new GameEngineBridge(launcherSimulator, {
-        config: c.data, content: t.data, scoring: this.doc.scoring,
-        seed: (this as unknown as { seed: number }).seed ?? 1,
-      }),
-      simInit: { config: c.data, content: t.data, scoring: this.doc.scoring, seed: (this as unknown as { seed: number }).seed ?? 1 },
+      bridge: new GameEngineBridge(launcherSimulator, simInit, this.maxTicks),
+      simInit,
     }
   }
 

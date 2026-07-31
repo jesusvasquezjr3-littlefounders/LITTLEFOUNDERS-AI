@@ -37,6 +37,7 @@
       "progress": "Progress",
       "target": "Target"
     },
+    "canvasLabel": "{{title}} — game in progress",
     "pause": "Pause",
     "resume": "Keep playing",
     "mute": "Turn sound off",

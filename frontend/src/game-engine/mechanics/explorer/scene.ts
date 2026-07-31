@@ -133,7 +133,7 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
   private travelling = false
 
   constructor() {
-    super('explorer-scene')
+    super('explorer')
   }
 
   createBridge(): { bridge: GameEngineBridge<ExplorerState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -144,9 +144,9 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: (this.scene.settings.data as Record<string, unknown>)?.seed as number ?? Date.now(),
+      seed: this.seed,
     }
-    return { bridge: new GameEngineBridge(explorerSimulator, simInit), simInit }
+    return { bridge: new GameEngineBridge(explorerSimulator, simInit, this.maxTicks), simInit }
   }
 
   createGameObjects(): void {

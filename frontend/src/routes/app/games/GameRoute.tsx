@@ -252,6 +252,7 @@ export function GameRoute() {
       document={state.document}
       slice={state.slice}
       seed={seed}
+      runId={runId}
       onComplete={persistRun}
       onExit={goBack}
       onReplay={replay}

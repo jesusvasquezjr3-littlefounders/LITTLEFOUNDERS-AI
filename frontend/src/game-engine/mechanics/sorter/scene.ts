@@ -1,7 +1,5 @@
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -74,15 +72,9 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
   private lastCombo = 0
   private lastPoints = 0
   private lastLives: number | null = null
-  private _seed = 0
 
   constructor() {
     super('sorter')
-  }
-
-  init(data: MechanicSceneInit): void {
-    super.init(data)
-    this._seed = data.seed
   }
 
   createBridge(): { bridge: GameEngineBridge<SorterState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -93,10 +85,10 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: this._seed,
+      seed: this.seed,
     }
     return {
-      bridge: new GameEngineBridge(sorterSimulator, simInit),
+      bridge: new GameEngineBridge(sorterSimulator, simInit, this.maxTicks),
       simInit,
     }
   }

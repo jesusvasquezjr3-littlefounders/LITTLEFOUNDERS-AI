@@ -1,6 +1,14 @@
+import { isGameAudioMuted } from '@/game-engine/core/audio'
+
 let audioCtx: AudioContext | null = null
 
+// The ONE chokepoint every Sfx.* entry point routes through (playTone/playNoise, and
+// the two hand-rolled whoosh/powerUp calls below) — checked here rather than at each
+// of the 12 call sites, so muting can never be forgotten by a future sound. Before this
+// fix `Sfx.*` ran its own AudioContext straight to `ctx.destination` and never
+// consulted the mute flag the pause overlay's icon claimed to control.
 function getCtx(): AudioContext | null {
+  if (isGameAudioMuted()) return null
   if (audioCtx && audioCtx.state !== 'closed') return audioCtx
   try {
     audioCtx = new (window.AudioContext || ((window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext))()

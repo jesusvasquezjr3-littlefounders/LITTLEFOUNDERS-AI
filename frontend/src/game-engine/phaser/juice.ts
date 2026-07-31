@@ -1,5 +1,21 @@
 import Phaser from 'phaser'
 
+// Structural, not imported from ./scene — a `type` import of BaseMechanicScene would
+// work too (TS erases it), but this avoids any coupling at all: any Phaser.Scene that
+// happens to carry a `reducedMotion` flag (which BaseMechanicScene always does, per
+// its `init()`) satisfies this without scene.ts and juice.ts knowing about each other.
+interface MotionAwareScene extends Phaser.Scene {
+  reducedMotion?: boolean
+}
+
+/** GAME_ENGINE.md §10 / CLAUDE.md §1.11: reduced motion disables DECORATIVE effects
+ *  only — never the simulation, never scoring, never completion. Every camera shake,
+ *  flash and particle burst in this file is gated on this at the source, so no scene
+ *  call site has to remember to check it. */
+function isReduced(scene: Phaser.Scene): boolean {
+  return (scene as MotionAwareScene).reducedMotion === true
+}
+
 const SHAKE_DEFAULTS = {
   light: { intensity: 0.003, duration: 120 },
   medium: { intensity: 0.008, duration: 220 },
@@ -14,11 +30,13 @@ export function addShake(
   scene: Phaser.Scene,
   preset: keyof typeof SHAKE_DEFAULTS | { intensity: number; duration: number },
 ): void {
+  if (isReduced(scene)) return
   const p = typeof preset === 'string' ? SHAKE_DEFAULTS[preset] : preset
   scene.cameras.main.shake(p.duration, p.intensity)
 }
 
 export function addFlash(scene: Phaser.Scene, color: number = 0xffffff, duration: number = 80): void {
+  if (isReduced(scene)) return
   scene.cameras.main.flash(duration, (color >> 16) & 0xff, (color >> 8) & 0xff, color & 0xff)
 }
 
@@ -35,6 +53,7 @@ export function scalePunch(
   peakScale: number = 1.18,
   duration: number = 220,
 ): void {
+  if (isReduced(scene)) return
   const origX = target.scaleX
   const origY = target.scaleY
   scene.tweens.add({
@@ -70,12 +89,16 @@ export function floatText(
   t.setOrigin(0.5)
   t.setDepth(100)
 
+  // The TEXT is informational (a score delta, a label) and stays either way — only the
+  // upward float + scale-up motion is decorative and drops under reduced motion; a
+  // plain fade keeps the information legible without the translation.
+  const reduced = isReduced(scene)
   scene.tweens.add({
     targets: t,
-    y: y - 50,
+    y: reduced ? y : y - 50,
     alpha: 0,
-    scale: 1.3,
-    duration,
+    scale: reduced ? 1 : 1.3,
+    duration: reduced ? Math.min(duration, 400) : duration,
     ease: 'Cubic.easeOut',
     onComplete: () => t.destroy(),
   })
@@ -98,6 +121,7 @@ export function burstParticles(
   y: number,
   config: ParticleBurstConfig,
 ): void {
+  if (isReduced(scene)) return
   const particles = scene.add.particles(x, y, config.texture, {
     speed: config.speed ?? { min: 60, max: 200 },
     lifespan: config.lifespan ?? 500,
@@ -122,6 +146,10 @@ export function trailParticles(
   texture: string,
   tint?: number,
 ): Phaser.GameObjects.Particles.ParticleEmitter {
+  // Reduced motion: return a real (but inert) emitter rather than skipping creation —
+  // callers may keep the handle for the object's lifetime and call .stop()/.destroy()
+  // on it; `frequency: -1` means it simply never emits.
+  const reduced = isReduced(scene)
   const emitter = scene.add.particles(0, 0, texture, {
     follow: target,
     followOffset: { x: 0, y: 0 },
@@ -129,7 +157,7 @@ export function trailParticles(
     scale: { start: 0.4, end: 0 },
     alpha: { start: 0.6, end: 0 },
     lifespan: 250,
-    frequency: 40,
+    frequency: reduced ? -1 : 40,
     quantity: 1,
     tint: tint !== undefined ? tint : 0xffffff,
   })

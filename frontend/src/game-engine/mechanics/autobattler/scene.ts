@@ -120,7 +120,7 @@ export class AutobattlerScene extends BaseMechanicScene<AutobattlerState> {
   private cellPixelSize = 0
 
   constructor() {
-    super('autobattler-scene')
+    super('autobattler')
   }
 
   createBridge(): { bridge: GameEngineBridge<AutobattlerState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -131,9 +131,9 @@ export class AutobattlerScene extends BaseMechanicScene<AutobattlerState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: (this.scene.settings.data as Record<string, unknown>)?.seed as number ?? Date.now(),
+      seed: this.seed,
     }
-    return { bridge: new GameEngineBridge(autobattlerSimulator, simInit), simInit }
+    return { bridge: new GameEngineBridge(autobattlerSimulator, simInit, this.maxTicks), simInit }
   }
 
   createGameObjects(): void {

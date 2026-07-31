@@ -1,7 +1,5 @@
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -87,15 +85,9 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
   private lastReach = 0
 
   private cloudSprites: Array<{ sprite: Phaser.GameObjects.Image; speed: number }> = []
-  private _seed = 0
 
   constructor() {
     super('flyer')
-  }
-
-  init(data: MechanicSceneInit): void {
-    super.init(data)
-    this._seed = data.seed
   }
 
   createBridge(): { bridge: GameEngineBridge<FlyerState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -106,10 +98,10 @@ export class FlyerScene extends BaseMechanicScene<FlyerState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: this._seed,
+      seed: this.seed,
     }
     return {
-      bridge: new GameEngineBridge(flyerSimulator, simInit),
+      bridge: new GameEngineBridge(flyerSimulator, simInit, this.maxTicks),
       simInit,
     }
   }

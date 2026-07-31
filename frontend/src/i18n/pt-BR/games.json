@@ -37,6 +37,7 @@
       "progress": "Progresso",
       "target": "Meta"
     },
+    "canvasLabel": "{{title}} — jogo em andamento",
     "pause": "Pausar",
     "resume": "Continuar jogando",
     "mute": "Desligar o som",

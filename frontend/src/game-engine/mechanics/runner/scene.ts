@@ -1,7 +1,5 @@
 import Phaser from 'phaser'
 
-import type { MechanicSceneInit } from '@/game-engine/phaser/scene'
-
 import {
   generateBackground,
   generatePlaceholderSprite,
@@ -67,15 +65,9 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
   private lastCollected = 0
   private holding = false
   private lastPhaseIdx = 0
-  private _seed = 0
 
   constructor() {
     super('runner')
-  }
-
-  init(data: MechanicSceneInit): void {
-    super.init(data)
-    this._seed = data.seed
   }
 
   createBridge(): { bridge: GameEngineBridge<RunnerState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -86,10 +78,10 @@ export class RunnerScene extends BaseMechanicScene<RunnerState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: this._seed,
+      seed: this.seed,
     }
     return {
-      bridge: new GameEngineBridge(runnerSimulator, simInit),
+      bridge: new GameEngineBridge(runnerSimulator, simInit, this.maxTicks),
       simInit,
     }
   }

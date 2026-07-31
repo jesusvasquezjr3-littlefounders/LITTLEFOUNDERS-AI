@@ -127,7 +127,7 @@ export class StackerScene extends BaseMechanicScene<StackerState> {
   private forceParticles: Phaser.GameObjects.Particles.ParticleEmitter[] = []
 
   constructor() {
-    super('stacker-scene')
+    super('stacker')
   }
 
   createBridge(): { bridge: GameEngineBridge<StackerState>; simInit: import('@/game-engine/core/types').SimInit } {
@@ -138,9 +138,9 @@ export class StackerScene extends BaseMechanicScene<StackerState> {
       config: configParse.data,
       content: contentParse.data,
       scoring: this.doc.scoring,
-      seed: (this.scene.settings.data as Record<string, unknown>)?.seed as number ?? Date.now(),
+      seed: this.seed,
     }
-    return { bridge: new GameEngineBridge(stackerSimulator, simInit), simInit }
+    return { bridge: new GameEngineBridge(stackerSimulator, simInit, this.maxTicks), simInit }
   }
 
   createGameObjects(): void {

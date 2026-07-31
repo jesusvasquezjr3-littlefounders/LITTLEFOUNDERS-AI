@@ -42,18 +42,16 @@ export class DefenderScene extends BaseMechanicScene<DefenderState> {
   private selectedPaletteSlot = ''
   private keys!: Record<string, Phaser.Input.Keyboard.Key>
 
-  constructor() { super('defender-scene') }
+  constructor() { super('defender') }
 
   createBridge() {
     const c = defenderConfigSchema.safeParse(this.doc.config)
     const t = defenderContentSchema.safeParse(this.doc.content)
     if (!c.success || !t.success) throw new Error('INVALID_DOCUMENT')
+    const simInit = { config: c.data, content: t.data, scoring: this.doc.scoring, seed: this.seed }
     return {
-      bridge: new GameEngineBridge(defenderSimulator, {
-        config: c.data, content: t.data, scoring: this.doc.scoring,
-        seed: (this as unknown as { seed: number }).seed ?? 1,
-      }),
-      simInit: { config: c.data, content: t.data, scoring: this.doc.scoring, seed: (this as unknown as { seed: number }).seed ?? 1 },
+      bridge: new GameEngineBridge(defenderSimulator, simInit, this.maxTicks),
+      simInit,
     }
   }
 
