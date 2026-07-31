@@ -93,6 +93,15 @@ export class SorterScene extends BaseMechanicScene<SorterState> {
     }
   }
 
+  protected override getWorldSize(): { width: number; height: number } {
+    // `config.field` is authored per-manifest and can differ from the fixed 800x600
+    // canvas (confirmed: a real fixture declares 900x540) — fit the camera to it.
+    // Read off the bridge's already-Zod-parsed state (properly typed) rather than the
+    // raw `this.doc.config`, so no cast is needed.
+    const { field } = this.bridge.state.config
+    return { width: field.width, height: field.height }
+  }
+
   createGameObjects(): void {
     const { config } = this.bridge.state
     generateBackground(this, BG_KEY, config.field.width, config.field.height, this.palette)

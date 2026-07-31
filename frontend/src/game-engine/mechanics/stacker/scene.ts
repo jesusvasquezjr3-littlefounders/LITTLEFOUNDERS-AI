@@ -143,6 +143,13 @@ export class StackerScene extends BaseMechanicScene<StackerState> {
     return { bridge: new GameEngineBridge(stackerSimulator, simInit, this.maxTicks), simInit }
   }
 
+  protected override getWorldSize(): { width: number; height: number } {
+    // Same rationale as sorter: `config.field` is authored per-manifest and can
+    // legitimately differ from the fixed 800x600 canvas.
+    const { field } = this.bridge.state.config
+    return { width: field.width, height: field.height }
+  }
+
   createGameObjects(): void {
     const state = this.bridge.state
     const { config } = state

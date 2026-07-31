@@ -73,12 +73,38 @@ export abstract class BaseMechanicScene<S> extends Phaser.Scene {
 
   abstract createBridge(): { bridge: GameEngineBridge<S> }
 
+  /**
+   * A mechanic whose authored world (its own `config.field`/`config.map`/equivalent)
+   * is a different size than the fixed 800x600 game canvas returns it here; the base
+   * class fits the camera to it. Returning `null` (the default) means "my content is
+   * already authored at 800x600" and leaves the camera untouched.
+   *
+   * WHY THIS EXISTS: a real fixture (`sorter`'s tier-3 "arcade" manifest) declares
+   * `field: { width: 900, height: 540 }` — wider than the canvas — and with no camera
+   * fit, content past x=800 (here, the trash/discard zone) is silently clipped off the
+   * right edge on every device, mobile included, regardless of viewport size (verified
+   * live). `setZoom` + `centerOn` make the WHOLE authored world visible (letterboxed
+   * if the aspect differs) instead of cropped, and because it scales the camera rather
+   * than each object, every mechanic's existing draw calls keep using its own field's
+   * native coordinates unchanged.
+   */
+  protected getWorldSize(): { width: number; height: number } | null {
+    return null
+  }
+
   create(): void {
     const { bridge } = this.createBridge()
     this.bridge = bridge
     this.bridge.start()
 
     this.cameras.main.setBackgroundColor(this.palette.bg)
+
+    const world = this.getWorldSize()
+    if (world && world.width > 0 && world.height > 0) {
+      const zoom = Math.min(this.scale.width / world.width, this.scale.height / world.height)
+      this.cameras.main.setZoom(zoom)
+      this.cameras.main.centerOn(world.width / 2, world.height / 2)
+    }
 
     this.setupInput()
     this.createGameObjects()

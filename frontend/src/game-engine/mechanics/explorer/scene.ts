@@ -149,6 +149,13 @@ export class ExplorerScene extends BaseMechanicScene<ExplorerState> {
     return { bridge: new GameEngineBridge(explorerSimulator, simInit, this.maxTicks), simInit }
   }
 
+  protected override getWorldSize(): { width: number; height: number } {
+    // `config.map` is authored per-manifest (320-2000 x 240-1400) and can legitimately
+    // differ from the fixed 800x600 canvas.
+    const { map } = this.bridge.state.config
+    return { width: map.width, height: map.height }
+  }
+
   createGameObjects(): void {
     const state = this.bridge.state
     const config = state.config
