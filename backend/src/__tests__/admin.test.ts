@@ -225,6 +225,10 @@ function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { 
         if (method === 'POST') return Promise.resolve(new Response(null, { status: 204 }));
         return Promise.resolve(jsonResponse(200, [AUDIT]));
       }
+      if (url.includes('/rest/v1/admin_permissions')) {
+        if (method === 'POST' || method === 'DELETE') return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_users' }]));
+      }
       throw new Error(`admin.test data: unexpected fetch ${url}`);
     }),
   );

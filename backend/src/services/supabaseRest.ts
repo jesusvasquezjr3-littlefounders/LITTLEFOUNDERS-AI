@@ -697,9 +697,26 @@ export async function grantRole(userId: string, role: string, grantedBy: string)
   return res !== null;
 }
 
+export async function grantAdminPermission(userId: string, permission: string, grantedBy: string): Promise<boolean> {
+  const res = await rest<unknown>('/admin_permissions?on_conflict=user_id,permission', serviceToken(), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({ user_id: userId, permission, granted_by: grantedBy }),
+  });
+  return res !== null;
+}
+
 export async function hasRole(userId: string, role: string): Promise<boolean> {
   const rows = await rest<RoleRow[]>(`/user_roles?user_id=eq.${eu(userId)}&role=eq.${role}&select=role`, serviceToken());
   return Array.isArray(rows) && rows.length > 0;
+}
+
+export async function revokeAdminPermission(userId: string, permission: string): Promise<boolean> {
+  const res = await restRaw(`/admin_permissions?user_id=eq.${eu(userId)}&permission=eq.${permission}`, serviceToken(), {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' },
+  });
+  return res.ok;
 }
 
 /** Append-only audit entry (no PII in detail — booleans/ids only). */

@@ -165,6 +165,9 @@ extrabold and tight (`lf-display-*`); body stays regular with relaxed leading.
 Weight — not size or color — is the first hierarchy tool. Headlines balance
 their lines (`text-balance`, built into the classes); never uppercase body
 text.
+**End-User UI Cleanliness & Copy Protocol (NON-NEGOTIABLE):** The UI must be clean, direct, clear, and designed exclusively for the END USER.
+1. **Designed for End-Users:** Every title, label, hint, note, and button text must be written strictly for the end-user. NEVER include internal spec section numbers (e.g. `(§1.9)`, `(§1.3)`, `(0025)`), developer implementation notes, or system architecture citations in user-facing UI text, i18n files, or fallback states.
+2. **Clean & Minimalist Typography:** NEVER add AI-characteristic text artifacts such as double dashes (`--`), em-dashes (`—`), colons as prefix dividers, or filler punctuation in UI copy or empty state fallbacks. Keep text literal, functional, and visually clean.
 
 ## Layout — Responsive Adaptation (NON-NEGOTIABLE)
 

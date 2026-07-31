@@ -273,7 +273,7 @@ function CustomTooltip({ active, payload, label }: TooltipProps<number, string>)
       <p className="lf-caption text-content-muted">{label}</p>
       {payload.map((p, i) => (
         <p key={i} className="lf-number text-content" style={{ color: p.color }}>
-          {p.name}: {p.value !== undefined ? (typeof p.value === 'number' ? p.value.toLocaleString() : String(p.value)) : '—'}
+          {p.name}: {p.value !== undefined ? (typeof p.value === 'number' ? p.value.toLocaleString() : String(p.value)) : null}
         </p>
       ))}
     </div>
@@ -296,10 +296,10 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard dense icon={<Icon name="group" />} value={data.summary ? nf.format(data.summary.dau) : '—'} label={t('admin.intel.trends.metricDau')} />
-        <StatCard dense icon={<Icon name="bolt" />} value={data.summary ? nf.format(data.summary.totalEvents) : '—'} label={t('admin.intel.trends.metricEvents')} />
-        <StatCard dense icon={<Icon name="calendar_month" />} tone="accent" value={data.summary ? pf.format(data.summary.week1Retention / 100) : '—'} label={t('admin.intel.kpi.w1retention')} />
-        <StatCard dense icon={<Icon name="rocket_launch" />} value={data.summary ? pf.format(data.summary.activationRate / 100) : '—'} label={t('admin.intel.kpi.activation')} />
+        <StatCard dense icon={<Icon name="group" />} value={data.summary ? nf.format(data.summary.dau) : ''} label={t('admin.intel.trends.metricDau')} className="shadow-glass border border-outline/50" />
+        <StatCard dense icon={<Icon name="bolt" />} value={data.summary ? nf.format(data.summary.totalEvents) : ''} label={t('admin.intel.trends.metricEvents')} className="shadow-glass border border-outline/50" />
+        <StatCard dense icon={<Icon name="calendar_month" />} tone="accent" value={data.summary ? pf.format(data.summary.week1Retention / 100) : ''} label={t('admin.intel.kpi.w1retention')} className="shadow-glass border border-outline/50" />
+        <StatCard dense icon={<Icon name="rocket_launch" />} value={data.summary ? pf.format(data.summary.activationRate / 100) : ''} label={t('admin.intel.kpi.activation')} className="shadow-glass border border-outline/50" />
       </div>
 
       <ChartCard title={t(`${'admin.intel.trends.dauTitle'}`) || `DAU (${days}d)`} subtitle={String(t('admin.intel.trends.sparklineHint'))}>
@@ -476,7 +476,7 @@ function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => stri
                   <tr key={s.stepOrder} className="hover:bg-surface-sunken/50">
                     <td className="lf-body py-3 pr-4 text-content">{s.step}</td>
                     <td className="lf-body py-3 pr-4 text-right tabular-nums text-content">{s.users.toLocaleString()}</td>
-                    <td className="lf-body py-3 pr-4 text-right tabular-nums text-content">{s.conversionFromPrevious !== null ? pf.format(s.conversionFromPrevious / 100) : '—'}</td>
+                    <td className="lf-body py-3 pr-4 text-right tabular-nums text-content">{s.conversionFromPrevious !== null ? pf.format(s.conversionFromPrevious / 100) : null}</td>
                   </tr>
                 ))}
               </tbody>
@@ -570,9 +570,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
                         const pct = cell ? cell.retentionPct : null;
                         return (
                           <td key={w} className="py-2 pr-3">
-                            {pct === null ? (
-                              <span className="lf-caption text-content-faint">—</span>
-                            ) : (
+                            {pct === null ? null : (
                               <span
                                 className="lf-caption inline-block rounded px-2 py-0.5 text-content"
                                 style={{ backgroundColor: `color-mix(in srgb, var(--lf-primary) ${Math.round(pct * 100)}%, transparent)` }}

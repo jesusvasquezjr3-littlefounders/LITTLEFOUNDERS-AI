@@ -44,11 +44,11 @@
     "details": "Details",
     "healthUnavailable": "Health monitor unavailable",
     "retentionTitle": "Learning retention",
-    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced — the platform’s always-on delayed test.",
+    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced.",
     "retentionBucket": "{{bucket}} days",
     "retentionAttempts": "{{count}} review answers",
     "retentionWeakest": "Concepts that decay fastest",
-    "retentionEmpty": "No spaced reviews played yet — the curve draws itself as kids replay review lessons."
+    "retentionEmpty": "No spaced reviews played yet. The curve draws itself as kids replay review lessons."
   },
   "content": {
     "title": "Content",
@@ -71,8 +71,8 @@
   },
   "games": {
     "heading": "Games awaiting review",
-    "note": "Arcade never auto-publishes. Every generated game lands here in review — play it end to end before it reaches a child (§1.9).",
-    "empty": "No games awaiting review. The arcade queue is clear.",
+    "note": "Arcade never auto-publishes. Every generated game lands here in review. Play it end to end before it reaches a child.",
+    "empty": "No games waiting for review. The arcade queue is clean.",
     "unknownMechanic": "Unknown mechanic",
     "tier": "Tier {{tier}}",
     "xpMax": "{{xp}} XP",
@@ -80,7 +80,7 @@
     "course": "Course",
     "topic": "Topic",
     "locales": "Locales",
-    "noData": "—",
+    "noData": "",
     "play": "Play to review",
     "playAria": "Play “{{title}}” to review it",
     "publish": "Publish",
@@ -135,7 +135,7 @@
   },
   "moderation": {
     "heading": "Review queue",
-    "note": "Every lesson shown to children passes this human review before it goes live (§1.9). Approve to publish, reject to send back to draft.",
+    "note": "Every lesson shown to children passes this human review before going live. Approve to publish or reject to return to draft.",
     "approve": "Approve",
     "reject": "Reject",
     "empty": "Nothing awaiting review. All clear."
@@ -165,7 +165,23 @@
     "colUsername": "Username",
     "colRoles": "Roles",
     "colActions": "Revoke",
-    "empty": "No role holders yet."
+    "empty": "No role holders yet.",
+    "manageAccess": "Manage Access",
+    "accessControlTitle": "Access Control for {{name}}",
+    "accessControlDesc": "Toggle specific permissions for this admin profile.",
+    "permissions": {
+      "manage_users": "Manage Users",
+      "manage_users_desc": "Can manage user roles, families, and profiles.",
+      "manage_content": "Manage Content",
+      "manage_content_desc": "Can edit courses, lessons, and minigames.",
+      "view_analytics": "View Analytics",
+      "view_analytics_desc": "Can access metrics in DataIntel and Pulse.",
+      "manage_support": "Manage Support",
+      "manage_support_desc": "Can handle support and user operations."
+    },
+    "permissionGranted": "Permission granted.",
+    "permissionRevoked": "Permission revoked.",
+    "permissionFailed": "Could not update permission."
   },
   "analytics": {
     "title": "Analytics & Health",
@@ -193,7 +209,7 @@
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
-      "scopeNote": "Umami runs only on marketing and parent/admin surfaces — never on kid sessions (§1.9).",
+      "scopeNote": "Umami runs only on marketing and parent/admin surfaces, never on kid sessions.",
       "pageviews": "Pageviews",
       "visitors": "Visitors",
       "visits": "Visits",
@@ -478,8 +494,8 @@
       "inherited": "inherited",
       "billed": "billed",
       "actionsTitle": "Proposed actions",
-      "actionsNote": "Each suggestion is tied to evidence. Apply them by editing the playbook, prompts, or gates in a commit — the system never auto-modifies kid-facing content (§1.9).",
-      "allClear": "No issues detected — the pipeline is running clean.",
+      "actionsNote": "Each suggestion is tied to evidence. Apply them by updating the playbook or prompts. The system never auto-modifies kid-facing content.",
+      "allClear": "No issues detected. The pipeline is running clean.",
       "empty": "No generation data available for coach analysis yet."
     },
     "slotDetail": {
@@ -892,7 +908,7 @@
     },
     "engagement": {
       "title": "Engagement leaderboard",
-      "subtitle": "One comparable 0-100 score per learner: breadth (lessons), consistency (streak), depth (active days). Formula is visible in migration 0025.",
+      "subtitle": "A comparable 0-100 score per learner based on breadth (lessons), consistency (streak), and depth (active days).",
       "empty": "No learners scored yet.",
       "colScore": "Score",
       "colLessons": "Lessons",

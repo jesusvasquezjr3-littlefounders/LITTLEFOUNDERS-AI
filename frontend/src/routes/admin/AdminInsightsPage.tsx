@@ -297,8 +297,8 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
           <Kpi label={t('admin.insights.kpi.consent')} value={`${nf.format(data.consent.kidsConsented)} / ${nf.format(data.consent.kidsTotal)}`} hint={t('admin.insights.kpi.consentHint')} />
           <Kpi label={t('admin.insights.kpi.events', { days })} value={nf.format(totalEvents)} hint={t('admin.insights.kpi.eventsHint', { kid: nf.format(kidEvents) })} />
           <Kpi label={t('admin.insights.kpi.peakUsers')} value={nf.format(peak)} hint={t('admin.insights.kpi.peakUsersHint')} />
-          <Kpi label={t('admin.insights.kpi.activation')} value={activationPct === null ? '—' : pf.format(activationPct)}
-            hint={t('admin.insights.kpi.activationHint', { hours: medianTtv === null ? '—' : nf.format(medianTtv) })} />
+          <Kpi label={t('admin.insights.kpi.activation')} value={activationPct === null ? '' : pf.format(activationPct)}
+            hint={t('admin.insights.kpi.activationHint', { hours: medianTtv === null ? '' : nf.format(medianTtv) })} />
         </div>
         <Panel title={t('admin.insights.adoption.title')} subtitle={t('admin.insights.adoption.subtitle')} empty={data.adoption.length === 0} emptyMsg={t('admin.insights.adoption.empty')} icon="dashboard">
           <Table head={[t('admin.insights.adoption.colRole'), t('admin.insights.adoption.colSurface'), t('admin.insights.adoption.colUsers'), t('admin.insights.adoption.colSessions'), t('admin.insights.adoption.colEvents')]}
@@ -337,17 +337,17 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
   if (tab === 'learning') {
     const lessonLabel = (e: CalibrationEntry) => {
       const title = e.lesson_title?.[locale] ?? e.lesson_title?.['en-US'];
-      return typeof title === 'string' ? title : (e.lesson_slug ?? '—');
+      return typeof title === 'string' ? title : (e.lesson_slug ?? '');
     };
     return (
       <>
         <Panel title={t('admin.insights.dropoff.title')} subtitle={t('admin.insights.dropoff.subtitle')} empty={data.dropoff.length === 0} emptyMsg={t('admin.insights.dropoff.empty')} icon="trending_down">
           <Table head={[t('admin.insights.dropoff.colLesson'), t('admin.insights.dropoff.colStarts'), t('admin.insights.dropoff.colAbandons'), t('admin.insights.dropoff.colRate'), t('admin.insights.dropoff.colSeconds')]}
-            rows={data.dropoff.map((d) => [d.lesson_slug ?? '—', nf.format(d.starts), nf.format(d.abandons), d.abandon_rate !== null ? pf.format(d.abandon_rate) : '—', d.avg_seconds_before_abandon ?? '—'])} />
+            rows={data.dropoff.map((d) => [d.lesson_slug ?? '', nf.format(d.starts), nf.format(d.abandons), d.abandon_rate !== null ? pf.format(d.abandon_rate) : '', d.avg_seconds_before_abandon ?? ''])} />
         </Panel>
         <Panel title={t('admin.insights.calibration.title')} subtitle={t('admin.insights.calibration.subtitle')} empty={data.calibration.length === 0} emptyMsg={t('admin.insights.calibration.empty')} icon="school">
           <Table head={[t('admin.insights.calibration.colLesson'), t('admin.insights.calibration.colSegment'), t('admin.insights.calibration.colLearners'), t('admin.insights.calibration.colAttempts'), t('admin.insights.calibration.colHints'), t('admin.insights.calibration.colFirstTry')]}
-            rows={data.calibration.map((e) => [lessonLabel(e), e.segment_id, nf.format(e.learners), e.avg_attempts_per_learner ?? '—', e.hint_rate !== null ? pf.format(e.hint_rate) : '—', e.first_try_avg_score ?? '—'])} />
+            rows={data.calibration.map((e) => [lessonLabel(e), e.segment_id, nf.format(e.learners), e.avg_attempts_per_learner ?? '', e.hint_rate !== null ? pf.format(e.hint_rate) : '', e.first_try_avg_score ?? ''])} />
         </Panel>
         <Panel title={t('admin.insights.engagement.title')} subtitle={t('admin.insights.engagement.subtitle')} empty={data.engagement.length === 0} emptyMsg={t('admin.insights.engagement.empty')} icon="local_fire_department">
           <Table head={[t('admin.insights.engagement.colScore'), t('admin.insights.engagement.colLessons'), t('admin.insights.engagement.colStreak'), t('admin.insights.engagement.colSessions'), t('admin.insights.engagement.colActiveDays')]}
@@ -355,7 +355,7 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
         </Panel>
         <Panel title={t('admin.insights.velocity.title')} subtitle={t('admin.insights.velocity.subtitle')} empty={data.velocity.length === 0} emptyMsg={t('admin.insights.velocity.empty')} icon="speed">
           <Table head={[t('admin.insights.velocity.colPassed'), t('admin.insights.velocity.colPerWeek'), t('admin.insights.velocity.colScore'), t('admin.insights.velocity.colAttempts'), t('admin.insights.velocity.colStreak')]}
-            rows={data.velocity.map((v) => [nf.format(v.lessons_passed), v.lessons_per_week ?? '—', v.avg_score ?? '—', v.avg_attempts ?? '—', nf.format(v.longest_streak ?? 0)])} />
+            rows={data.velocity.map((v) => [nf.format(v.lessons_passed), v.lessons_per_week ?? '', v.avg_score ?? '', v.avg_attempts ?? '', nf.format(v.longest_streak ?? 0)])} />
         </Panel>
       </>
     );
@@ -365,7 +365,7 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
   return (
     <Panel title={t('admin.insights.sessions.title')} subtitle={t('admin.insights.sessions.subtitle')} empty={data.sessions.length === 0} emptyMsg={t('admin.insights.sessions.empty')} icon="timeline">
       <Table head={[t('admin.insights.sessions.colWhen'), t('admin.insights.sessions.colRole'), t('admin.insights.sessions.colDevice'), t('admin.insights.sessions.colEvents'), t('admin.insights.sessions.colSurfaces'), t('admin.insights.sessions.colLessons'), t('admin.insights.sessions.colTime')]}
-        rows={data.sessions.map((s) => [df.format(new Date(s.started_at)), s.role ?? '—', s.device ?? '—', nf.format(s.events), nf.format(s.surfaces), nf.format(s.lessons_started), s.visible_seconds !== null ? `${nf.format(Math.round(s.visible_seconds / 60))}m` : '—'])} />
+        rows={data.sessions.map((s) => [df.format(new Date(s.started_at)), s.role ?? '', s.device ?? '', nf.format(s.events), nf.format(s.surfaces), nf.format(s.lessons_started), s.visible_seconds !== null ? `${nf.format(Math.round(s.visible_seconds / 60))}m` : ''])} />
     </Panel>
   );
 }
@@ -396,7 +396,7 @@ function CohortGrid({ rows, nf, pf, weekLabel, sizeLabel }: { rows: CohortEntry[
                   const pct = cell && size > 0 ? cell.users / size : null;
                   return (
                     <td key={o} className="py-2 pr-3">
-                      {pct === null ? <span className="lf-caption text-content-faint">—</span> : (
+                      {pct === null ? '' : (
                         <span className="lf-caption inline-block rounded px-2 py-0.5 text-content"
                           style={{ backgroundColor: `color-mix(in srgb, var(--color-primary) ${Math.round(pct * 100)}%, transparent)` }}>
                           {pf.format(pct)}

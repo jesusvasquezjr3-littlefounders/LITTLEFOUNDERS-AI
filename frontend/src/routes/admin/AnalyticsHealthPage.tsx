@@ -104,13 +104,13 @@ export function AnalyticsHealthPage() {
       key: 'ping',
       header: t('admin.health.columns.latency'),
       numeric: true,
-      cell: (m) => (m.pingMs === null ? '—' : `${nf.format(m.pingMs)} ms`),
+      cell: (m) => (m.pingMs === null ? null : `${nf.format(m.pingMs)} ms`),
     },
     {
       key: 'uptime',
       header: t('admin.health.columns.uptime24h'),
       numeric: true,
-      cell: (m) => (m.uptime24h === null ? '—' : pct.format(m.uptime24h)),
+      cell: (m) => (m.uptime24h === null ? null : pct.format(m.uptime24h)),
     },
   ];
 
@@ -146,19 +146,22 @@ export function AnalyticsHealthPage() {
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
               <StatCard
                 dense
+                className="shadow-glass border border-outline/50"
                 icon={<Icon name="group" />}
                 value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.visitors) : '…'}
                 label={t('admin.analytics.web.visitors')}
               />
               <StatCard
                 dense
+                className="shadow-glass border border-outline/50"
                 icon={<Icon name="visibility" />}
                 value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.pageviews) : '…'}
                 label={t('admin.analytics.web.pageviews')}
               />
               <StatCard
                 dense
-                icon={<Icon name="u_turn_left" />}
+                className="shadow-glass border border-outline/50"
+                icon={<Icon name="reply" />}
                 value={overview.state === 'ready' ? pct.format(overview.data.aggregate.bounce_rate / 100) : '…'}
                 label={t('admin.analytics.web.bounceRate')}
               />
@@ -167,7 +170,7 @@ export function AnalyticsHealthPage() {
                 icon={<Icon name="timer" />}
                 value={overview.state === 'ready' ? secondsFmt(overview.data.aggregate.visit_duration) : '…'}
                 label={t('admin.analytics.web.visitDuration')}
-                className="col-span-2 md:col-span-3 lg:col-span-3"
+                className="col-span-2 md:col-span-3 lg:col-span-3 shadow-glass border border-outline/50"
               />
             </div>
 

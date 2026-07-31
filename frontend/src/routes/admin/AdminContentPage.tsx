@@ -165,7 +165,7 @@ export function AdminContentPage() {
               <ul className="flex flex-col gap-3">
                 {moderationData.data.data.lessons.map((l) => (
                   <li key={l.id}>
-                    <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
+                    <Card className="flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
                       <div className="min-w-0">
                         <p className="lf-label truncate text-content">{l.title}</p>
                         <p className="lf-number lf-caption text-content-muted">{l.slug}</p>

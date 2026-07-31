@@ -16,7 +16,7 @@ import { countryLabel, type BreakdownData, type BreakdownRow, type DimensionKey,
 /** Compact status note for a grid cell (full UnavailableCard is too heavy ×10). */
 function PanelNote({ icon, text, spin }: { icon: string; text: string; spin?: boolean }) {
   return (
-    <Card className="flex flex-col items-center gap-2 py-8 text-center">
+    <Card className="flex flex-col items-center gap-2 py-8 text-center shadow-glass border border-outline/50">
       <Icon name={icon} className={cn('!text-[28px] text-content-faint', spin && 'animate-spin')} />
       <p className="lf-caption text-content-muted">{text}</p>
     </Card>
@@ -43,7 +43,7 @@ export function BreakdownCard({
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
   const display = (label: string) =>
-    dimension === 'country' ? countryLabel(label, i18n.resolvedLanguage) : label || '—';
+    dimension === 'country' ? countryLabel(label, i18n.resolvedLanguage) : label || undefined;
 
   const columns: TableColumn<BreakdownRow>[] = [
     {

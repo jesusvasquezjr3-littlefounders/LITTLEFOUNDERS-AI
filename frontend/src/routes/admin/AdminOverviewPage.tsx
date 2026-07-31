@@ -77,17 +77,17 @@ export function AdminOverviewPage() {
         <>
           {/* KPI row */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            <StatCard dense icon={<Icon name="group" />} value={o ? nf.format(o.users.total) : '…'} label={t('admin.overview.kpiUsers')} />
-            <StatCard dense icon={<Icon name="shield_person" />} value={o ? nf.format(staffCount) : '…'} label={t('admin.overview.kpiStaff')} />
-            <StatCard dense icon={<Icon name="school" />} value={o ? nf.format(o.content.courses.published ?? 0) : '…'} label={t('admin.overview.kpiCoursesLive')} />
-            <StatCard dense tone="accent" icon={<Icon name="gpp_maybe" />} value={o ? nf.format(o.content.reviewQueue) : '…'} label={t('admin.overview.kpiReview')} />
-            <StatCard dense icon={<Icon name="menu_book" />} value={o ? nf.format(o.content.lessons.published ?? 0) : '…'} label={t('admin.overview.kpiLessonsLive')} />
-            <StatCard dense icon={<Icon name="history" />} value={o ? nf.format(o.audit.recent) : '…'} label={t('admin.overview.kpiAudit')} />
+            <StatCard dense icon={<Icon name="group" />} value={o ? nf.format(o.users.total) : '…'} label={t('admin.overview.kpiUsers')} className="shadow-glass border border-outline/50" />
+            <StatCard dense icon={<Icon name="shield_person" />} value={o ? nf.format(staffCount) : '…'} label={t('admin.overview.kpiStaff')} className="shadow-glass border border-outline/50" />
+            <StatCard dense icon={<Icon name="school" />} value={o ? nf.format(o.content.courses.published ?? 0) : '…'} label={t('admin.overview.kpiCoursesLive')} className="shadow-glass border border-outline/50" />
+            <StatCard dense tone="accent" icon={<Icon name="gpp_maybe" />} value={o ? nf.format(o.content.reviewQueue) : '…'} label={t('admin.overview.kpiReview')} className="shadow-glass border border-outline/50" />
+            <StatCard dense icon={<Icon name="menu_book" />} value={o ? nf.format(o.content.lessons.published ?? 0) : '…'} label={t('admin.overview.kpiLessonsLive')} className="shadow-glass border border-outline/50" />
+            <StatCard dense icon={<Icon name="history" />} value={o ? nf.format(o.audit.recent) : '…'} label={t('admin.overview.kpiAudit')} className="shadow-glass border border-outline/50" />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
             {/* Content status */}
-            <Card className="flex flex-col gap-4 p-5">
+            <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <h2 className="lf-title">{t('admin.overview.contentTitle')}</h2>
                 <Link to="/admin/content" className="lf-caption font-bold text-primary hover:underline">
@@ -116,7 +116,7 @@ export function AdminOverviewPage() {
             </Card>
 
             {/* Roles distribution */}
-            <Card className="flex flex-col gap-3 p-5">
+            <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
               <div className="flex items-center justify-between">
                 <h2 className="lf-title">{t('admin.overview.rolesTitle')}</h2>
                 {isSuperadmin && (
@@ -140,7 +140,7 @@ export function AdminOverviewPage() {
           </div>
 
           {/* Learning retention — always-on delayed test (spaced reviews, 0016) */}
-          <Card className="flex flex-col gap-3 p-5">
+          <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
             <div>
               <h2 className="lf-title">{t('admin.overview.retentionTitle')}</h2>
               <p className="lf-caption mt-1 text-content-muted">{t('admin.overview.retentionSubtitle')}</p>
@@ -182,7 +182,7 @@ export function AdminOverviewPage() {
           </Card>
 
           {/* Health strip */}
-          <Card className="flex flex-col gap-3 p-5">
+          <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <h2 className="lf-title">{t('admin.overview.healthTitle')}</h2>
               <div className="flex items-center gap-2">

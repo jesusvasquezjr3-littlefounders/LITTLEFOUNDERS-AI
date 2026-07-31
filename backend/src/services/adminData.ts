@@ -1,4 +1,4 @@
-import { grantRole, insertAuditLog, revokeRole, serviceRest } from './supabaseRest.js';
+import { grantRole, grantAdminPermission, insertAuditLog, revokeRole, revokeAdminPermission, serviceRest } from './supabaseRest.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Every read here is service-role
@@ -359,6 +359,7 @@ export interface AdminRoleHolder {
   displayName: string;
   username: string | null;
   roles: string[];
+  permissions: string[];
 }
 
 /** Everyone who holds a STAFF or upgraded role (not the universal baseline). */
@@ -369,18 +370,27 @@ export async function listRoleHolders(): Promise<AdminRoleHolder[] | null> {
   if (!rows) return null;
   if (rows.length === 0) return [];
   const ids = [...new Set(rows.map((r) => r.user_id))].join(',');
-  const profiles = await serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
-    `/profiles?user_id=in.(${ids})&select=user_id,display_name,username`,
-  );
-  if (!profiles) return null;
+  const [profiles, perms] = await Promise.all([
+    serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
+      `/profiles?user_id=in.(${ids})&select=user_id,display_name,username`,
+    ),
+    serviceRest<{ user_id: string; permission: string }[]>(
+      `/admin_permissions?user_id=in.(${ids})&select=user_id,permission`,
+    ),
+  ]);
+  if (!profiles || !perms) return null;
   const pByUser = new Map(profiles.map((p) => [p.user_id, p]));
   const byUser = new Map<string, string[]>();
+  const permsByUser = new Map<string, string[]>();
   for (const r of rows) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
+  for (const p of perms) permsByUser.set(p.user_id, [...(permsByUser.get(p.user_id) ?? []), p.permission]);
+  
   return [...byUser.entries()].map(([userId, roles]) => ({
     userId,
     displayName: pByUser.get(userId)?.display_name ?? '—',
     username: pByUser.get(userId)?.username ?? null,
     roles,
+    permissions: permsByUser.get(userId) ?? [],
   }));
 }
 
@@ -400,6 +410,16 @@ export async function grantRoleChecked(userId: string, role: string, actorId: st
 
 export async function revokeRoleChecked(userId: string, role: string): Promise<RoleMutationResult> {
   const ok = await revokeRole(userId, role);
+  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
+}
+
+export async function grantAdminPermissionChecked(userId: string, permission: string, actorId: string): Promise<RoleMutationResult> {
+  const ok = await grantAdminPermission(userId, permission, actorId);
+  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
+}
+
+export async function revokeAdminPermissionChecked(userId: string, permission: string): Promise<RoleMutationResult> {
+  const ok = await revokeAdminPermission(userId, permission);
   return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
 }
 

@@ -44,11 +44,11 @@
     "details": "Detalles",
     "healthUnavailable": "Monitor de salud no disponible",
     "retentionTitle": "Retención de aprendizaje",
-    "retentionSubtitle": "Puntaje al primer intento en repasos espaciados, por días desde la última práctica del concepto: el examen diferido siempre-activo de la plataforma.",
+    "retentionSubtitle": "Puntajes de primer intento en repasos espaciados, por días desde la última práctica.",
     "retentionBucket": "{{bucket}} días",
     "retentionAttempts": "{{count}} respuestas de repaso",
     "retentionWeakest": "Conceptos que más rápido se olvidan",
-    "retentionEmpty": "Aún no se juegan repasos espaciados: la curva se dibuja sola cuando los niños repasan."
+    "retentionEmpty": "Aún no hay repasos espaciados. La curva se dibuja a medida que repasan lecciones."
   },
   "content": {
     "title": "Contenido",
@@ -71,7 +71,7 @@
   },
   "games": {
     "heading": "Juegos esperando revisión",
-    "note": "Arcade nunca publica solo. Todo juego generado llega aquí en revisión — juégalo de principio a fin antes de que lo vea un niño (§1.9).",
+    "note": "Arcade nunca publica solo. Todo juego generado llega aquí en revisión. Juégalo de principio a fin antes de que lo vea un niño.",
     "empty": "No hay juegos esperando revisión. La cola del arcade está limpia.",
     "unknownMechanic": "Mecánica desconocida",
     "tier": "Nivel {{tier}}",
@@ -80,7 +80,7 @@
     "course": "Curso",
     "topic": "Tema",
     "locales": "Idiomas",
-    "noData": "—",
+    "noData": "",
     "play": "Jugar para revisar",
     "playAria": "Jugar “{{title}}” para revisarlo",
     "publish": "Publicar",
@@ -135,7 +135,7 @@
   },
   "moderation": {
     "heading": "Cola de revisión",
-    "note": "Toda lección que se muestra a niños pasa por esta revisión humana antes de salir en vivo (§1.9). Aprueba para publicar, rechaza para devolver a borrador.",
+    "note": "Toda lección que se muestra a niños pasa por esta revisión humana antes de salir en vivo. Aprueba para publicar o rechaza para devolver a borrador.",
     "approve": "Aprobar",
     "reject": "Rechazar",
     "empty": "Nada esperando revisión. Todo en orden."
@@ -165,7 +165,23 @@
     "colUsername": "Usuario",
     "colRoles": "Roles",
     "colActions": "Revocar",
-    "empty": "Aún no hay portadores de roles."
+    "empty": "Aún no hay portadores de roles.",
+    "manageAccess": "Gestionar Accesos",
+    "accessControlTitle": "Control de Accesos para {{name}}",
+    "accessControlDesc": "Activa o desactiva permisos específicos para este perfil administrador.",
+    "permissions": {
+      "manage_users": "Gestionar Usuarios",
+      "manage_users_desc": "Puede administrar roles de usuario, familias y perfiles.",
+      "manage_content": "Gestionar Contenido",
+      "manage_content_desc": "Puede editar cursos, lecciones y minijuegos.",
+      "view_analytics": "Ver Analíticas",
+      "view_analytics_desc": "Puede ver métricas de la plataforma en DataIntel y Pulse.",
+      "manage_support": "Gestionar Soporte",
+      "manage_support_desc": "Puede manejar soporte técnico y operaciones de usuarios."
+    },
+    "permissionGranted": "Permiso otorgado.",
+    "permissionRevoked": "Permiso revocado.",
+    "permissionFailed": "No se pudo actualizar el permiso."
   },
   "analytics": {
     "title": "Analíticas y Salud",
@@ -193,7 +209,7 @@
     },
     "behavior": {
       "title": "Comportamiento (superficies adultas)",
-      "scopeNote": "Umami corre solo en marketing y superficies de tutores/admin — nunca en sesiones de niños (§1.9).",
+      "scopeNote": "Umami corre solo en marketing y superficies de tutores/admin, nunca en sesiones de niños.",
       "pageviews": "Páginas vistas",
       "visitors": "Visitantes",
       "visits": "Visitas",
@@ -478,8 +494,8 @@
       "inherited": "heredadas",
       "billed": "facturadas",
       "actionsTitle": "Acciones propuestas",
-      "actionsNote": "Cada sugerencia está respaldada por evidencia. Aplícalas editando el playbook, prompts o gates en un commit — el sistema nunca modifica automáticamente contenido infantil (§1.9).",
-      "allClear": "Sin problemas detectados — el pipeline está funcionando limpiamente.",
+      "actionsNote": "Cada sugerencia está respaldada por evidencia. Aplícalas editando el playbook o prompts. El sistema nunca modifica automáticamente contenido infantil.",
+      "allClear": "Sin problemas detectados. El pipeline está funcionando limpiamente.",
       "empty": "Aún no hay datos de generación para el diagnóstico."
     },
     "slotDetail": {
@@ -892,7 +908,7 @@
     },
     "engagement": {
       "title": "Tabla de engagement",
-      "subtitle": "Un puntaje 0-100 comparable por aprendiz: amplitud (lecciones), constancia (racha), profundidad (días activos). La fórmula está a la vista en la migración 0025.",
+      "subtitle": "Un puntaje 0-100 comparable por aprendiz basado en amplitud (lecciones), constancia (racha) y profundidad (días activos).",
       "empty": "Aún no hay aprendices con puntaje.",
       "colScore": "Puntaje",
       "colLessons": "Lecciones",

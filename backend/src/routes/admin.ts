@@ -64,6 +64,8 @@ import {
   listReviewLessons,
   listRoleHolders,
   revokeRoleChecked,
+  grantAdminPermissionChecked,
+  revokeAdminPermissionChecked,
   setCourseStatus,
   setGameStatus,
   setLessonStatus,
@@ -235,6 +237,12 @@ const RoleMutationSchema = z.object({
   userId: z.string().uuid(),
   role: z.enum(GRANTABLE_ROLES),
 });
+
+const AdminPermissionMutationSchema = z.object({
+  userId: z.string().uuid(),
+  permission: z.string().min(2),
+});
+
 const AuditQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
@@ -648,6 +656,22 @@ export function adminRouter(): Router {
     const result = await revokeRoleChecked(parsed.data.userId, parsed.data.role);
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, revoked: true });
+  });
+
+  router.post('/roles/permissions/grant', superadminOnly, async (req, res) => {
+    const parsed = AdminPermissionMutationSchema.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + permission required');
+    const result = await grantAdminPermissionChecked(parsed.data.userId, parsed.data.permission, authedUser(res).id);
+    if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this permission change');
+    ok(res, { userId: parsed.data.userId, permission: parsed.data.permission, granted: true });
+  });
+
+  router.post('/roles/permissions/revoke', superadminOnly, async (req, res) => {
+    const parsed = AdminPermissionMutationSchema.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + permission required');
+    const result = await revokeAdminPermissionChecked(parsed.data.userId, parsed.data.permission);
+    if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this permission change');
+    ok(res, { userId: parsed.data.userId, permission: parsed.data.permission, revoked: true });
   });
 
   // ── Email (Courier proxy) ──────────────────────────────────────────────────

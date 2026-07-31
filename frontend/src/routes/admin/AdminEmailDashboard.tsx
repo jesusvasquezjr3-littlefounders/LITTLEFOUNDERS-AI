@@ -72,12 +72,12 @@ export function AdminEmailDashboard() {
         <>
           {summary && (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <Card className="flex flex-col gap-1 p-4">
+              <Card className="flex flex-col gap-1 p-4 sm:p-5 shadow-glass border border-outline/50">
                 <p className="lf-caption text-content-muted">{t('admin.emails.totalSent')}</p>
                 <p className="lf-display-lg text-content">{summary.total}</p>
               </Card>
               {Object.entries(summary.statuses).map(([k, v]) => (
-                <Card key={k} className="flex flex-col gap-1 p-4">
+                <Card key={k} className="flex flex-col gap-1 p-4 sm:p-5 shadow-glass border border-outline/50">
                   <p className="lf-caption text-content-muted">
                     {t(`admin.emails.status.${k}`, k)}
                   </p>

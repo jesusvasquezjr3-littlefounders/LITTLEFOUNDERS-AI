@@ -86,13 +86,13 @@ export function AdminUsersPage() {
 
   const columns: TableColumn<User>[] = [
     { key: 'name', header: t('admin.users.colName'), primary: true, cell: (u) => u.displayName },
-    { key: 'username', header: t('admin.users.colUsername'), cell: (u) => (u.username ? <span className="lf-number text-content-muted">@{u.username}</span> : '—') },
+    { key: 'username', header: t('admin.users.colUsername'), cell: (u) => (u.username ? <span className="lf-number text-content-muted">@{u.username}</span> : null) },
     {
       key: 'roles',
       header: t('admin.users.colRoles'),
       cell: (u) => (
         <span className="flex flex-wrap gap-1">
-          {u.roles.length ? u.roles.map((r) => <RoleChip key={r} role={r} />) : <span className="text-content-faint">—</span>}
+          {u.roles.length ? u.roles.map((r) => <RoleChip key={r} role={r} />) : null}
         </span>
       ),
     },
@@ -119,7 +119,7 @@ export function AdminUsersPage() {
       {stats && (
         <div className="grid gap-4 md:grid-cols-3">
           {/* Role distribution */}
-          <Card className="flex flex-col gap-3 p-4">
+          <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
             <h3 className="lf-label text-content-muted">{t('admin.users.statsRoles')}</h3>
             <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-sunken">
               {ROLE_ORDER.filter((r) => stats.roles[r]).map((r) => (
@@ -137,7 +137,7 @@ export function AdminUsersPage() {
           </Card>
 
           {/* Locale distribution */}
-          <Card className="flex flex-col gap-3 p-4">
+          <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
             <h3 className="lf-label text-content-muted">{t('admin.users.statsLocales')}</h3>
             <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-sunken">
               {Object.entries(LOCALE_LABELS)
@@ -159,7 +159,7 @@ export function AdminUsersPage() {
           </Card>
 
           {/* Age groups */}
-          <Card className="flex flex-col gap-3 p-4">
+          <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
             <h3 className="lf-label text-content-muted">{t('admin.users.statsAges')}</h3>
             {Object.keys(stats.ages).length > 0 ? (
               <>
