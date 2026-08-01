@@ -633,7 +633,7 @@ export function SavingsGoal({ segment, value, onChange, disabled, verdict }: Exe
                 {t('lesson.families.money.savingPerWeek', { amount: format(weekly) })}
               </span>
               <span className="lf-title lf-number text-content">
-                {typed === '' ? '—' : formatNumber(Number(typed))}{' '}
+                {typed === '' ? '0' : formatNumber(Number(typed))}{' '}
                 <span className="lf-caption text-content-muted">{t('lesson.families.money.weeks')}</span>
                 {verdict && expected !== undefined && !isRight ? (
                   <span className="ml-2 lf-label text-success-strong">{formatNumber(expected)}</span>

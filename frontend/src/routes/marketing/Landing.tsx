@@ -3,9 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { LOCALES, type Locale } from '@/i18n';
+
+const LOCALE_FLAGS: Record<Locale, string> = {
+  'en-US': '🇺🇸',
+  'es-MX': '🇲🇽',
+  'pt-BR': '🇧🇷',
+};
 
 /* Composition per /DESIGN.md §Screen Recipes → Landing: full-bleed alternating
-   bands (navy hero → white problem/solution → tinted feature grid → navy fact
+   bands (inverse hero → white problem/solution → tinted feature grid → inverse fact
    band → white motivation → final CTA banner). Sections rise in on scroll;
    grids stagger (DESIGN.md §Motion). */
 
@@ -15,10 +23,11 @@ const FEATURES = [
   { key: 'f3', icon: 'touch_app', tone: 'accent' },
   { key: 'f5', icon: 'family_restroom', tone: 'warning' },
   { key: 'f6', icon: 'shield', tone: 'primary' },
+  { key: 'f7', icon: 'stadia_controller', tone: 'delight' },
 ] as const;
 
 export function Landing() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { session } = useAuth();
   
   const ctaTo = session ? APP_HOME : '/signup';
@@ -27,7 +36,7 @@ export function Landing() {
 
   return (
     <div>
-      {/* 1. Hero — responds to light/dark mode (user requested override of navy band) */}
+      {/* 1. Hero — responds to light/dark mode (user requested override of inverse band) */}
       <section className="bg-base text-content">
         <div className="mx-auto grid max-w-container items-center gap-12 px-5 py-24 md:grid-cols-2 md:px-8 md:py-32 lg:py-40">
           <div className="z-10 flex flex-col items-start gap-6">
@@ -57,7 +66,7 @@ export function Landing() {
               </Link>
             </div>
           </div>
-          <div className="lf-float relative flex w-full items-center justify-center">
+          <div className="relative flex w-full items-center justify-center">
             <div className="absolute inset-0 scale-75 rounded-full bg-primary/20 blur-3xl" />
             <img
               src="/Hero-Families.webp"
@@ -66,6 +75,31 @@ export function Landing() {
             />
           </div>
         </div>
+      </section>
+
+      {/* Language selector band — always dark, thin, simple */}
+      <section className="bg-inverse py-8 text-on-inverse">
+        <Reveal className="mx-auto flex max-w-container flex-col items-center gap-4 px-5 md:px-8">
+          <span className="lf-label text-on-inverse-muted">{t('marketing.languageSection.label')}</span>
+          <div className="flex gap-2">
+            {LOCALES.map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => void i18n.changeLanguage(l)}
+                className={cn(
+                  'lf-label flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors',
+                  i18n.resolvedLanguage === l
+                    ? 'border-accent bg-accent text-on-accent'
+                    : 'border-on-inverse-muted/25 text-on-inverse-muted hover:border-on-inverse-muted/50',
+                )}
+              >
+                <span aria-hidden="true">{LOCALE_FLAGS[l]}</span>
+                {t(`language.${l}`)}
+              </button>
+            ))}
+          </div>
+        </Reveal>
       </section>
 
       {/* 2. Problem → solution — white band */}
@@ -120,18 +154,30 @@ export function Landing() {
         </div>
       </section>
 
-      {/* 4. Historical fact — navy band with a frosted glass card */}
+      {/* 4. Historical fact — inverse band, B&W blurred image + stat overlay */}
       <section className="bg-inverse py-20 text-on-inverse sm:py-28">
-        <Reveal className="mx-auto max-w-container px-5 md:px-8">
-          <Card onInverse hero className="grid items-center gap-8 lg:grid-cols-[auto_1fr]">
-            <p className="lf-display-xl lf-number text-delight">{t('marketing.fact.stat')}</p>
-            <div>
-              <h2 className="lf-headline">{t('marketing.fact.title')}</h2>
-              <p className="lf-body mt-3 text-on-inverse-muted">{t('marketing.fact.body')}</p>
-              <p className="lf-caption mt-3 text-on-inverse-muted/70">{t('marketing.fact.source')}</p>
+        <div className="mx-auto grid max-w-container items-center gap-12 px-5 md:grid-cols-2 md:px-8">
+          <Reveal>
+            <div className="relative overflow-hidden rounded-lg">
+              <img
+                src="/marketing/fact-financial-literacy.jpg"
+                alt=""
+                className="aspect-[4/3] w-full object-cover"
+                style={{ filter: 'grayscale(100%) blur(2px) brightness(0.4)' }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <p className="lf-display-xl lf-number text-white drop-shadow-lg">
+                  {t('marketing.fact.stat')}
+                </p>
+              </div>
             </div>
-          </Card>
-        </Reveal>
+          </Reveal>
+          <Reveal delay={80}>
+            <h2 className="lf-display-lg">{t('marketing.fact.title')}</h2>
+            <p className="lf-body-lg mt-4 text-on-inverse-muted">{t('marketing.fact.body')}</p>
+            <p className="lf-caption mt-4 text-on-inverse-muted/70">{t('marketing.fact.source')}</p>
+          </Reveal>
+        </div>
       </section>
 
       {/* 5. Human motivation — white band */}

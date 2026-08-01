@@ -10,7 +10,7 @@
   "minutes_other": "{{count}} min",
   "backToCourse": "Volver al curso",
   "emptyTitle": "Esta aventura está cargando",
-  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones — ¡vuelve pronto!",
+  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones, ¡vuelve pronto!",
   "state": {
     "locked": "bloqueado",
     "available": "disponible",
@@ -21,7 +21,7 @@
     "open": "Mapa del territorio",
     "title": "Tu territorio",
     "back": "Volver al camino",
-    "subtitle": "Todo lo que enseña este curso — y cuánto ya es tuyo.",
+    "subtitle": "Todo lo que enseña este curso, y cuánto ya es tuyo.",
     "loading": "Dibujando tu territorio…",
     "progress": "Progreso del curso",
     "progressLabel": "{{passed}} de {{total}} lecciones",

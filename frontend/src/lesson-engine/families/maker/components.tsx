@@ -531,9 +531,7 @@ export function BalanceScale({ segment, value, onChange, disabled, verdict }: Ex
                 {weight.label}
               </TokenChip>
             ))}
-            {bank.length === 0 ? (
-              <p className="lf-caption py-1 text-content-muted">—</p>
-            ) : null}
+            {bank.length === 0 ? null : null}
           </div>
         </SunkenWell>
       </div>
@@ -717,7 +715,7 @@ export function MeasureRead({ segment, value, onChange, disabled, verdict }: Exe
               : 'bg-primary-soft text-primary',
           )}
         >
-          {entered === '' ? '—' : entered}
+          {entered === '' ? '0' : entered}
           <span className="lf-label">{unit}</span>
         </span>
         {verdict && !verdict.correct && targetValue !== undefined ? (

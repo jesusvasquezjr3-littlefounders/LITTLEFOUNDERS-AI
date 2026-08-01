@@ -113,7 +113,7 @@
     "subtitle": "Conceda e revogue papéis. Apenas superadmin.",
     "grantTitle": "Conceder um papel",
     "userId": "ID do usuário",
-    "userIdHint": "O UUID do usuário — clique num ID na tabela abaixo para preencher.",
+    "userIdHint": "O UUID do usuário, clique num ID na tabela abaixo para preencher.",
     "role": "Papel",
     "grant": "Conceder",
     "granted": "{{role}} concedido.",
@@ -154,7 +154,7 @@
       "12mo": "Últimos 12 meses"
     },
     "unavailableTitle": "Analytics indisponível",
-    "unavailableBody": "O Pulse não respondeu. O produto não é afetado — verifique os serviços do Pulse na Railway.",
+    "unavailableBody": "O Pulse não respondeu. O produto não é afetado, verifique os serviços do Pulse na Railway.",
     "web": {
       "title": "Analytics da web",
       "visitors": "Visitantes",
@@ -218,7 +218,7 @@
     "toolsTitle": "Exportações e controles",
     "reports": {
       "title": "Relatórios por equipe (PDF)",
-      "caption": "Relatórios PDF com marca e marca-d'água para cada equipe — gerados com o período e os filtros atuais.",
+      "caption": "Relatórios PDF com marca e marca-d'água para cada equipe, gerados com o período e os filtros atuais.",
       "failed": "Não foi possível gerar o relatório. Tente de novo.",
       "audiences": {
         "marketing": "Marketing",
@@ -239,13 +239,13 @@
       "commandLabel": "Aplique com",
       "copy": "Copiar",
       "copied": "Copiado",
-      "pending": "A lista editada ainda não foi aplicada — execute o comando e faça o redeploy do pulse-plausible.",
-      "note": "Espelho somente leitura: a aplicação vive na variável de ambiente IP_BLOCKLIST do pulse-plausible (aplicada no redeploy) — esta tela nunca a escreve."
+      "pending": "A lista editada ainda não foi aplicada, execute o comando e faça o redeploy do pulse-plausible.",
+      "note": "Espelho somente leitura: a aplicação vive na variável de ambiente IP_BLOCKLIST do pulse-plausible (aplicada no redeploy), esta tela nunca a escreve."
     }
   },
   "emails": {
     "title": "E-mails",
-    "subtitle": "Histórico de envio de e-mails transacionais — um registro estilo Resend.",
+    "subtitle": "Histórico de envio de e-mails transacionais, um registro estilo Resend.",
     "totalSent": "Total enviados",
     "colTo": "Para",
     "colSubject": "Assunto",
@@ -281,9 +281,9 @@
   },
   "generation": {
     "title": "Geração",
-    "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso — resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
+    "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso, resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
     "loading": "Carregando telemetria de geração…",
-    "noData": "—",
+    "noData": "N/A",
     "secondsUnit": "s",
     "tabs": {
       "aria": "Visualizações de geração",
@@ -345,7 +345,7 @@
     },
     "tracks": "Execuções em massa (tracks)",
     "selectRun": "Selecione uma execução de geração",
-    "empty": "Ainda não há execuções registradas — a telemetria aparecerá aqui após a próxima geração.",
+    "empty": "Ainda não há execuções registradas, a telemetria aparecerá aqui após a próxima geração.",
     "runTitle": "Execução {{runId}}",
     "salvaged": "reduzida",
     "earlyStop": "parada antecipada",
@@ -365,11 +365,11 @@
     },
     "heatmap": {
       "title": "Falhas por etapa do pipeline",
-      "empty": "Sem falhas — todas as lições tentadas foram publicadas."
+      "empty": "Sem falhas, todas as lições tentadas foram publicadas."
     },
     "judge": {
       "title": "Dimensões do juiz ({{count}} avaliadas)",
-      "note": "O piso de ruído entre execuções é ±0.4 — leia como indícios de defeitos, não como pontuação a perseguir.",
+      "note": "O piso de ruído entre execuções é ±0.4, leia como indícios de defeitos, não como pontuação a perseguir.",
       "empty": "Não há rubricas do juiz registradas para esta execução."
     },
     "dims": {
@@ -414,7 +414,7 @@
       "avgCacheHit": "% cache méd.",
       "costTrend": "Custo por lição publicada (USD)",
       "cacheTrend": "% de cache ao longo do tempo",
-      "qualityTrend": "Dimensões de qualidade — última execução de {{runs}}",
+      "qualityTrend": "Dimensões de qualidade, última execução de {{runs}}",
       "failureByStage": "Falhas por etapa do pipeline (todas as execuções)",
       "successRate": "Taxa de sucesso geral",
       "successRateDetail": "{{passed}} / {{total}} lições publicadas",
@@ -482,7 +482,7 @@
       },
       "lowCache": {
         "title": "Taxa de cache criticamente baixa",
-        "detail": "{{pct}}% de cache — o prefixo de prompts pode ter mudado. A montagem estática-primeiro está quebrada ou o playbook mudou."
+        "detail": "{{pct}}% de cache, o prefixo de prompts pode ter mudado. A montagem estática-primeiro está quebrada ou o playbook mudou."
       },
       "highFailRate": {
         "title": "Taxa de falhas: {{rate}}%",
@@ -500,7 +500,7 @@
   },
   "intel": {
     "title": "Inteligência de Dados",
-    "subtitle": "Armazém de análises próprias — segmentação, previsão, detecção de anomalias e análise de experimentos.",
+    "subtitle": "Armazém de análises próprias, segmentação, previsão, detecção de anomalias e análise de experimentos.",
     "tabs": {
       "home": "Início",
       "trends": "Tendências",
@@ -577,7 +577,7 @@
       "cohortTitle": "Curvas por Coorte",
       "cohortSubtitle": "Coortes semanais, traçadas por quantos voltaram em cada semana seguinte.",
       "heatmapTitle": "Matriz de Retenção",
-      "heatmapSubtitle": "As mesmas coortes em grade — células mais escuras seguraram mais gente.",
+      "heatmapSubtitle": "As mesmas coortes em grade, células mais escuras seguraram mais gente.",
       "colCohort": "Coorte",
       "colSize": "Tamanho",
       "colWeek": "Semana {{n}}"
@@ -611,7 +611,7 @@
       "subtitle": "Perfis comportamentais por usuário com pontuação de engajamento e risco de abandono.",
       "empty": "Nenhum dado de usuário disponível.",
       "leaderboardTitle": "Ranking de Engajamento",
-      "leaderboardSubtitle": "Os aprendizes com maior pontuação composta de engajamento — amplitude, constância e profundidade.",
+      "leaderboardSubtitle": "Os aprendizes com maior pontuação composta de engajamento, amplitude, constância e profundidade.",
       "churnTitle": "Distribuição do Risco de Abandono",
       "churnSubtitle": "Como a população avaliada se divide entre risco alto, médio e baixo.",
       "churnTableTitle": "Aprendizes em Risco",
@@ -739,7 +739,7 @@
   },
   "insights": {
     "title": "Insights",
-    "subtitle": "Sinais próprios de aprendizado e uso — calibração, ritmo, famílias.",
+    "subtitle": "Sinais próprios de aprendizado e uso, calibração, ritmo, famílias.",
     "loading": "Carregando insights…",
     "kpi": {
       "consent": "Crianças com permissão",
@@ -755,7 +755,7 @@
     },
     "surfaces": {
       "title": "Onde o tempo passa",
-      "empty": "Ainda não há eventos de navegação — o beacon preenche isso a cada sessão.",
+      "empty": "Ainda não há eventos de navegação, o beacon preenche isso a cada sessão.",
       "learn": "Aprender",
       "tasks": "Tarefas",
       "profile": "Perfil",
@@ -796,15 +796,15 @@
       "button": "Exportar",
       "csv": "Baixar CSV",
       "json": "Baixar JSON",
-      "hint": "Só comportamento e dimensões — exportações nunca levam identificador do aprendiz.",
-      "failed": "A exportação falhou — nada foi baixado.",
-      "complete": "{{rows}} linhas baixadas — a seleção completa.",
-      "capped": "{{rows}} linhas baixadas e o limite de segurança foi atingido — este arquivo NÃO é a seleção completa. Restrinja o período ou os filtros."
+      "hint": "Só comportamento e dimensões, exportações nunca levam identificador do aprendiz.",
+      "failed": "A exportação falhou, nada foi baixado.",
+      "complete": "{{rows}} linhas baixadas, a seleção completa.",
+      "capped": "{{rows}} linhas baixadas e o limite de segurança foi atingido, este arquivo NÃO é a seleção completa. Restrinja o período ou os filtros."
     },
     "cohorts": {
       "title": "Retenção por coorte semanal",
       "subtitle": "De quem apareceu pela primeira vez numa dada semana, quantos voltaram depois. O gráfico que diz se o produto retém.",
-      "empty": "Ainda não há histórico suficiente — as coortes se preenchem com as semanas.",
+      "empty": "Ainda não há histórico suficiente, as coortes se preenchem com as semanas.",
       "week": "Semana",
       "size": "Tamanho"
     },

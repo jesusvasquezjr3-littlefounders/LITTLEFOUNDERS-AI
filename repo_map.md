@@ -1560,20 +1560,20 @@ problem: turning that stream into answers, predictions, and alerts —
 
 ```
 ---
-name: LittleFounders Arcade
+name: LittleFounders Liquid Glass
 direction: >
-  Brilliant.org-style gaming clarity — confident extrabold type, a warm
-  papaya CTA on a deep navy/blue world, full pill buttons, big rounded
-  cards — fused with liquid glass: frosted translucent panels
-  (backdrop-blur + hairline light borders) for all floating chrome.
+  Premium glassmorphism aesthetic — confident bold type, a strong indigo CTA on
+  a slate/white world, full pill buttons, big rounded cards — rendered as
+  frosted liquid glass: translucent panels with backdrop-blur, subtle light
+  borders, and layered soft shadows for depth and premium feel.
 modes: [light, dark]              # both first-class, toggled via .dark on <html>
 
 colors:
   # Semantic tokens only in code (rgb triplets in index.css). Raw hex prohibited.
   # ── Light ──
-  base: "#ffffff"                 # page background
+  base: "#f8fafc"                 # page background (slate-50)
   surface: "#ffffff"              # cards, panels
-  surface-sunken: "#f2f2f2"       # wells, segmented controls, pill tracks
+  surface-sunken: "#f1f5f9"       # wells, segmented controls (slate-100)
 ```
 
 ### GLOSSARY.md
@@ -4476,6 +4476,26 @@ export default defineConfig({
     setupFiles: ['src/test-setup.ts'],
   },
 });
+```
+
+### convert.js
+
+```
+const hslToRgb = (h, s, l) => {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
+};
+
+const parseHsl = (str) => {
+  const parts = str.trim().replace(/%/g, '').split(' ');
+  return hslToRgb(parseFloat(parts[0]), parseFloat(parts[1]), parseFloat(parts[2]));
+};
+
+const light = {
+  background: '249 100% 99%',
 ```
 
 ### coursegen/AGENTS.md
@@ -137022,6 +137042,46 @@ export default defineConfig({
 });
 ```
 
+### fix_glass.sh
+
+```
+#!/bin/bash
+
+# Find all tsx files and replace bg-surface/90 with bg-surface/60 and backdrop-blur-md with backdrop-blur-xl
+find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/bg-surface\/90/bg-surface\/60/g' {} +
+find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/bg-surface\/80/bg-surface\/50/g' {} +
+find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/backdrop-blur-md/backdrop-blur-xl/g' {} +
+find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/backdrop-blur-sm/backdrop-blur-lg/g' {} +
+
+# Same for index.css
+perl -pi -e 's/surface\/72%/surface\/50%/g' DESIGN.md
+perl -pi -e 's/blur\(24px\)/blur(32px)/g' DESIGN.md
+perl -pi -e 's/surface\) \/ 0\.72/surface) \/ 0.50/g' frontend/src/index.css
+perl -pi -e 's/blur\(24px\)/blur(32px)/g' frontend/src/index.css
+
+echo "Done"
+```
+
+### fix_glass_v2.sh
+
+```
+#!/bin/bash
+
+# Update DESIGN.md
+perl -pi -e 's/surface\/72%/surface\/50%/g' DESIGN.md
+perl -pi -e 's/blur\(16px\)/blur(32px)/g' DESIGN.md
+perl -pi -e 's/white\/8%/white\/6%/g' DESIGN.md
+perl -pi -e 's/white\/14%/white\/10%/g' DESIGN.md
+
+# Update index.css
+perl -pi -e 's/surface\) \/ 0\.72/surface) \/ 0.50/g' frontend/src/index.css
+perl -pi -e 's/blur\(16px\)/blur(32px)/g' frontend/src/index.css
+perl -pi -e 's/white \/ 0\.08/white \/ 0.06/g' frontend/src/index.css
+perl -pi -e 's/white \/ 0\.14/white \/ 0.10/g' frontend/src/index.css
+
+echo "Done"
+```
+
 ### frontend/.vercel/node/package-manifest.json
 
 ```
@@ -137055,9 +137115,9 @@ The SPA: the four product sections (learn, tutor, tasks, profile). Talks ONLY to
 
 ## Invariants that bite here
 
-- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Arcade). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Figtree). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`); sharp corners and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
+- **/DESIGN.md is AUTHORITATIVE** (LittleFounders Liquid Glass). Tokens live in `tailwind.config.js` + `src/index.css` CSS vars — never add values those files/DESIGN.md don't define. Type ONLY via the closed `lf-*` scale (`lf-display-xl`…`lf-caption`, Inter + Sora). Build UI with the kit in `src/components/ui/` (Button, Icon, Card, IconChip, Dropdown, ThemeToggle, ProgressBar, Badge, StatCard) — no per-view restyling. Elevation ONLY via the liquid-glass set (`shadow-glass*`, `shadow-pop`, `.lf-glass`, `.lf-glass-deep`) — frosted translucent panels with backdrop-blur, subtle light borders, and layered soft shadows; flat opaque surfaces and raw hex are prohibited. Icons: Material Symbols via `<Icon name="…"/>` — never emojis (except country flags in the language switcher, DESIGN.md's one exception).
 - **No native pickers**: never `<select>`, `<input type="date">`, etc. as a choice control — always `Dropdown` or a purpose-built component (`ThemeToggle`).
-- **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary` variant = the ONE main CTA (papaya `accent` fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Blue (`primary` token) is for links/focus/info — never the CTA fill; `warning`/`delight` are status/celebration only, never button fills.
+- **Action Color Contract (/DESIGN.md §Colors) is NON-NEGOTIABLE**: every button/action's color is chosen by what it DOES, not by taste — `primary`/`accent` variant = the ONE main CTA (indigo fill), `secondary` (alternative/lower emphasis, outlined), `success` (positive completion), `danger` (destructive/irreversible). Indigo (`primary` token) is for links/focus/info. `delight` (violet) and `warning` are status/celebration only, never button fills.
 - **COMPOSITION FIDELITY (/DESIGN.md §0):** build from **/DESIGN.md §Screen Recipes** — they are the single composition source (there is no mockup directory). Deviating without human sign-off is a design bug; if a recipe is ambiguous, fix the recipe in the same commit.
 - **Motion is a closed system** (/DESIGN.md §Motion): only the five recipes (page transition via layout, `<Reveal>` scroll reveal with ≤3×80ms stagger, `.lf-pop` panels, press physics, arrow nudge) with `--lf-ease`/`--lf-dur-*` tokens. `.lf-float` is the only infinite animation. Everything reduced-motion safe (wired in index.css).
 ```
@@ -137114,12 +137174,12 @@ export default tseslint.config(
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap"
       rel="stylesheet"
     />
-    <!-- Icon font uses display=block, NOT swap: the glyphs are ligatures, so
-         during the swap period the fallback font paints the raw ligature name
-         ("close", "timer", "check_circle") as visible text. block keeps the
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,0&display=block"
+      rel="stylesheet"
 ```
 
 ### frontend/package.json
@@ -138119,7 +138179,7 @@ serves them as **static files** at `https://littlefounders.ai/email-templates/<n
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
-  <title>Confirm your email — LittleFounders</title>
+  <title>Confirm your email, LittleFounders</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
@@ -138139,7 +138199,7 @@ serves them as **static files** at `https://littlefounders.ai/email-templates/<n
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
-  <title>Confirm your new email — LittleFounders</title>
+  <title>Confirm your new email, LittleFounders</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
@@ -138179,7 +138239,7 @@ serves them as **static files** at `https://littlefounders.ai/email-templates/<n
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
-  <title>Your sign-in link — LittleFounders</title>
+  <title>Your sign-in link, LittleFounders</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
@@ -138199,7 +138259,7 @@ serves them as **static files** at `https://littlefounders.ai/email-templates/<n
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="color-scheme" content="light">
   <meta name="supported-color-schemes" content="light">
-  <title>Reset your password — LittleFounders</title>
+  <title>Reset your password, LittleFounders</title>
   <!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
   <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
@@ -138621,86 +138681,6 @@ export const CHARACTER_EMOTIONS = [
   'proud',
 ```
 
-### frontend/src/components/ui/Badge.tsx
-
-```
-import type { HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/* /DESIGN.md §Components — Badge: pill, soft fill, bold caption type. */
-
-export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cn(
-        'lf-caption inline-flex items-center rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted',
-        className,
-      )}
-      {...props}
-    />
-  );
-```
-
-### frontend/src/components/ui/Button.tsx
-
-```
-import type { ButtonHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
- * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
- *
- * Variant = the action's color, per the Action Color Contract (/DESIGN.md
- * §Colors): primary = the one main CTA (papaya), secondary = alternative/
- * lower-emphasis (outlined glass), success = positive completion, danger =
- * destructive. Never pick a variant by taste — pick by what the action does.
- */
-
-type Variant = 'primary' | 'secondary' | 'success' | 'danger';
-
-```
-
-### frontend/src/components/ui/Card.tsx
-
-```
-import type { HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Card: rounded-lg surface, hairline outline, soft
- * glass shadow. `onInverse` = frosted-glass variant for navy bands.
- * `hero` = larger radius + padding for banner cards.
- */
-
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  hero?: boolean;
-  interactive?: boolean;
-  onInverse?: boolean;
-}
-
-```
-
-### frontend/src/components/ui/Checkbox.tsx
-
-```
-import { useId, type InputHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-import { Icon } from './Icon';
-
-/*
- * /DESIGN.md §Components — Checkbox: custom square-rounded control (native
- * appearance suppressed), primary fill when checked, label + optional help
- * text form one large tap target.
- */
-
-interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  label: string;
-  help?: string;
-}
-
-```
-
 ### frontend/src/components/ui/Dropdown.tsx
 
 ```
@@ -138728,10 +138708,10 @@ import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /*
- * /DESIGN.md §Components — Field: labeled text input. rounded-md container
- * radius (inputs are containers, not pills), surface fill, hairline outline,
- * primary focus ring, error state on the error token. Both themes via
- * semantic tokens.
+ * /DESIGN.md §Components — Field: glass-appropriate input. rounded-md
+ * (16px, per DESIGN.md radius scale), sunken surface fill, subtle
+ * hairline edge defined by light, not a solid border. Primary focus
+ * ring on semantic token. Both themes via semantic tokens.
  */
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -138901,26 +138881,6 @@ interface StatCardProps {
    * 6-col KPI track leaves ~70-100px for the numeral, where `lf-display-lg`
 ```
 
-### frontend/src/components/ui/Table.tsx
-
-```
-import type { ReactNode } from 'react';
-import { Card } from '@/components/ui/Card';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Table (console-only; Data table grid category).
- * The §1.11 mobile answer to a wide table is NEVER horizontal body scroll:
- * below `md:` each row renders as a stacked compact card (primary line +
- * caption pairs); from `md:` up it is a real <table> inside its own
- * overflow-x-auto container. Never used on kid/parent product surfaces.
- */
-
-export interface TableColumn<Row> {
-  key: string;
-  header: string;
-```
-
 ### frontend/src/components/ui/ThemeToggle.tsx
 
 ```
@@ -138961,6 +138921,86 @@ interface TrendChartProps {
   ariaLabel: string;
 ```
 
+### frontend/src/components/ui/badge.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — Badge: pill, soft fill, bold caption type. */
+
+export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn(
+        'lf-caption inline-flex items-center rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted',
+        className,
+      )}
+      {...props}
+    />
+  );
+```
+
+### frontend/src/components/ui/button.tsx
+
+```
+import type { ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
+ * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
+ *
+ * Variant = the action's color, per the Action Color Contract (/DESIGN.md
+ * §Colors): primary = the one main CTA (indigo), secondary = alternative/
+ * lower-emphasis (outlined glass), success = positive completion, danger =
+ * destructive. Never pick a variant by taste — pick by what the action does.
+ */
+
+type Variant = 'primary' | 'secondary' | 'success' | 'danger';
+
+```
+
+### frontend/src/components/ui/card.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Card: liquid glass surface with rim light,
+ * hairline edge, and layered atmospheric depth.
+ * `onInverse` = deep glass variant for inverse bands.
+ * `hero` = larger radius + padding for banner cards.
+ */
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  hero?: boolean;
+  interactive?: boolean;
+  onInverse?: boolean;
+}
+```
+
+### frontend/src/components/ui/checkbox.tsx
+
+```
+import { useId, type InputHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — Checkbox: custom square-rounded control (native
+ * appearance suppressed), primary fill when checked, label + optional help
+ * text form one large tap target.
+ */
+
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  label: string;
+  help?: string;
+}
+
+```
+
 ### frontend/src/components/ui/index.ts
 
 ```
@@ -138979,6 +139019,26 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { StatCard } from './StatCard';
 export { Field } from './Field';
 export { Checkbox } from './Checkbox';
+```
+
+### frontend/src/components/ui/table.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Card } from '@/components/ui/Card';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Table (console-only; Data table grid category).
+ * The §1.11 mobile answer to a wide table is NEVER horizontal body scroll:
+ * below `md:` each row renders as a stacked compact card (primary line +
+ * caption pairs); from `md:` up it is a real <table> inside its own
+ * overflow-x-auto container. Never used on kid/parent product surfaces.
+ */
+
+export interface TableColumn<Row> {
+  key: string;
+  header: string;
 ```
 
 ### frontend/src/i18n/en-US/admin.json
@@ -139005,6 +139065,7 @@ export { Checkbox } from './Checkbox';
 
 ```
 {
+  "backToHome": "Back",
   "login": {
     "title": "Welcome back",
     "subtitle": "Sign in to keep building",
@@ -139018,7 +139079,6 @@ export { Checkbox } from './Checkbox';
     "signupLink": "Create an account"
   },
   "signup": {
-    "title": "Create your account",
 ```
 
 ### frontend/src/i18n/en-US/common.json
@@ -139071,14 +139131,14 @@ export { Checkbox } from './Checkbox';
     "FORBIDDEN": "You don't have permission for that.",
     "NOT_FOUND": "We couldn't find that.",
     "CONFLICT": "That conflicts with something that already exists.",
-    "RATE_LIMITED": "Too many tries — wait a moment.",
+    "RATE_LIMITED": "Too many tries, wait a moment.",
     "PAYLOAD_TOO_LARGE": "That file or request was too large.",
     "INTERNAL": "Something went wrong on our side.",
     "INVALID_CREDENTIALS": "That email and password don't match.",
     "EMAIL_IN_USE": "There's already an account with that email.",
-    "EMAIL_NOT_CONFIRMED": "Confirm your email first — check your inbox.",
+    "EMAIL_NOT_CONFIRMED": "Confirm your email first, check your inbox.",
     "ALREADY_VERIFIED": "This account is already a verified Tutor.",
-    "DOCUMENT_UNREADABLE": "We couldn't read that photo — try a sharper, well-lit one.",
+    "DOCUMENT_UNREADABLE": "We couldn't read that photo, try a sharper, well-lit one.",
 ```
 
 ### frontend/src/i18n/en-US/learn.json
@@ -139096,7 +139156,7 @@ export { Checkbox } from './Checkbox';
   "minutes_other": "{{count}} min",
   "backToCourse": "Back to course",
   "emptyTitle": "This adventure is loading",
-  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions — check back soon!",
+  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions, check back soon!",
   "state": {
     "locked": "locked",
 ```
@@ -139135,7 +139195,7 @@ export { Checkbox } from './Checkbox';
   "hero": {
     "titleLead": "Money skills,",
     "titleHighlight": "learned by playing",
-    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play — safe, guided, and side by side with your family.",
+    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play, safe, guided, and side by side with your family.",
     "ctaPrimary": "Start free",
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
@@ -139152,7 +139212,7 @@ export { Checkbox } from './Checkbox';
   "settingsCta": "Settings",
   "coverPicker": {
     "title": "Pick your cover",
-    "hint": "Color blends only — your cover is drawn by the app, never uploaded."
+    "hint": "Color blends only, your cover is drawn by the app, never uploaded."
   },
   "covers": {
     "aurora": "Aurora",
@@ -139185,6 +139245,7 @@ export { Checkbox } from './Checkbox';
 
 ```
 {
+  "backToHome": "Regresar",
   "login": {
     "title": "Hola de nuevo",
     "subtitle": "Inicia sesión para seguir construyendo",
@@ -139198,7 +139259,6 @@ export { Checkbox } from './Checkbox';
     "signupLink": "Crea una cuenta"
   },
   "signup": {
-    "title": "Crea tu cuenta",
 ```
 
 ### frontend/src/i18n/es-MX/common.json
@@ -139251,14 +139311,14 @@ export { Checkbox } from './Checkbox';
     "FORBIDDEN": "No tienes permiso para eso.",
     "NOT_FOUND": "No pudimos encontrar eso.",
     "CONFLICT": "Eso choca con algo que ya existe.",
-    "RATE_LIMITED": "Demasiados intentos — espera un momento.",
+    "RATE_LIMITED": "Demasiados intentos, espera un momento.",
     "PAYLOAD_TOO_LARGE": "Ese archivo o solicitud era demasiado grande.",
     "INTERNAL": "Algo salió mal de nuestro lado.",
     "INVALID_CREDENTIALS": "Ese correo y contraseña no coinciden.",
     "EMAIL_IN_USE": "Ya existe una cuenta con ese correo.",
-    "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero — revisa tu bandeja.",
+    "EMAIL_NOT_CONFIRMED": "Confirma tu correo primero, revisa tu bandeja.",
     "ALREADY_VERIFIED": "Esta cuenta ya es un Tutor verificado.",
-    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto — intenta con una más nítida y bien iluminada.",
+    "DOCUMENT_UNREADABLE": "No pudimos leer esa foto, intenta con una más nítida y bien iluminada.",
 ```
 
 ### frontend/src/i18n/es-MX/learn.json
@@ -139276,7 +139336,7 @@ export { Checkbox } from './Checkbox';
   "minutes_other": "{{count}} min",
   "backToCourse": "Volver al curso",
   "emptyTitle": "Esta aventura está cargando",
-  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones — ¡vuelve pronto!",
+  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones, ¡vuelve pronto!",
   "state": {
     "locked": "bloqueado",
 ```
@@ -139315,7 +139375,7 @@ export { Checkbox } from './Checkbox';
   "hero": {
     "titleLead": "Educación financiera,",
     "titleHighlight": "aprendida jugando",
-    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar — seguro, guiado y en familia.",
+    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar, seguro, guiado y en familia.",
     "ctaPrimary": "Empieza gratis",
     "ctaSecondary": "Cómo funciona",
     "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
@@ -139332,7 +139392,7 @@ export { Checkbox } from './Checkbox';
   "settingsCta": "Configuración",
   "coverPicker": {
     "title": "Elige tu portada",
-    "hint": "Solo mezclas de color — tu portada la dibuja la app, nunca se sube."
+    "hint": "Solo mezclas de color, tu portada la dibuja la app, nunca se sube."
   },
   "covers": {
     "aurora": "Aurora",
@@ -139385,6 +139445,7 @@ import enErrors from './en-US/errors.json';
 
 ```
 {
+  "backToHome": "Voltar",
   "login": {
     "title": "Bem-vindo de volta",
     "subtitle": "Entre para continuar construindo",
@@ -139398,7 +139459,6 @@ import enErrors from './en-US/errors.json';
     "signupLink": "Crie uma conta"
   },
   "signup": {
-    "title": "Crie sua conta",
 ```
 
 ### frontend/src/i18n/pt-BR/common.json
@@ -139451,14 +139511,14 @@ import enErrors from './en-US/errors.json';
     "FORBIDDEN": "Você não tem permissão para isso.",
     "NOT_FOUND": "Não conseguimos encontrar isso.",
     "CONFLICT": "Isso conflita com algo que já existe.",
-    "RATE_LIMITED": "Muitas tentativas — espere um momento.",
+    "RATE_LIMITED": "Muitas tentativas, espere um momento.",
     "PAYLOAD_TOO_LARGE": "Esse arquivo ou solicitação era grande demais.",
     "INTERNAL": "Algo deu errado do nosso lado.",
     "INVALID_CREDENTIALS": "Esse e-mail e senha não correspondem.",
     "EMAIL_IN_USE": "Já existe uma conta com esse e-mail.",
-    "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro — verifique sua caixa de entrada.",
+    "EMAIL_NOT_CONFIRMED": "Confirme seu e-mail primeiro, verifique sua caixa de entrada.",
     "ALREADY_VERIFIED": "Esta conta já é um Tutor verificado.",
-    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto — tente uma mais nítida e bem iluminada.",
+    "DOCUMENT_UNREADABLE": "Não conseguimos ler essa foto, tente uma mais nítida e bem iluminada.",
 ```
 
 ### frontend/src/i18n/pt-BR/learn.json
@@ -139476,7 +139536,7 @@ import enErrors from './en-US/errors.json';
   "minutes_other": "{{count}} min",
   "backToCourse": "Voltar ao curso",
   "emptyTitle": "Esta aventura está carregando",
-  "emptyBody": "Ainda não há aventuras publicadas para este curso. A Dina está preparando as primeiras missões — volte em breve!",
+  "emptyBody": "Ainda não há aventuras publicadas para este curso. A Dina está preparando as primeiras missões, volte em breve!",
   "state": {
     "locked": "bloqueado",
 ```
@@ -139515,7 +139575,7 @@ import enErrors from './en-US/errors.json';
   "hero": {
     "titleLead": "Educação financeira,",
     "titleHighlight": "aprendida brincando",
-    "subtitle": "O LittleFounders transforma finanças e empreendedorismo em um jogo que seus filhos realmente querem jogar — seguro, guiado e em família.",
+    "subtitle": "O LittleFounders transforma finanças e empreendedorismo em um jogo que seus filhos realmente querem jogar, seguro, guiado e em família.",
     "ctaPrimary": "Comece grátis",
     "ctaSecondary": "Como funciona",
     "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
@@ -139532,7 +139592,7 @@ import enErrors from './en-US/errors.json';
   "settingsCta": "Configurações",
   "coverPicker": {
     "title": "Escolha sua capa",
-    "hint": "Apenas misturas de cores — sua capa é desenhada pelo app, nunca enviada."
+    "hint": "Apenas misturas de cores, sua capa é desenhada pelo app, nunca enviada."
   },
   "covers": {
     "aurora": "Aurora",
@@ -139549,16 +139609,16 @@ import enErrors from './en-US/errors.json';
 @tailwind utilities;
 
 /*
- * Token implementation of /DESIGN.md (LittleFounders Arcade).
+ * Token implementation of /DESIGN.md (LittleFounders Liquid Glass).
  * CSS variables are the single source; tailwind.config.js references them.
  * RGB triplets so Tailwind opacity modifiers work.
  */
 @layer base {
   :root {
-    /* Neutrals */
-    --lf-base: 255 255 255;
+    /* Neutrals — slate scale */
+    --lf-base: 248 250 252; /* slate-50 */
     --lf-surface: 255 255 255;
-    --lf-surface-sunken: 242 242 242;
+    --lf-surface-sunken: 241 245 249; /* slate-100 */
 ```
 
 ### frontend/src/lesson-engine/core/MarkdownLite.tsx
@@ -141961,7 +142021,7 @@ import { localizedText, type AdventureNode } from './types';
  * One vertically-stacked adventure banner on the course map (DESIGN.md
  * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
  * composition follows the Dashboard/Lesson recipes' grammar: scene +
- * .lf-glass-deep chrome on a navy-equivalent illustrated band; documented
+ * .lf-glass-deep chrome on an inverse-equivalent illustrated band; documented
  * here per §0 Composition Fidelity since the recipe itself wasn't extended
  * (frontend/AGENTS.md forbids touching root docs from this task).
  */
@@ -142635,15 +142695,15 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { Dropdown, ThemeToggle, type DropdownOption } from '@/components/ui';
 
-// Country flag paired with each locale (DESIGN.md exception: flags are content
-// labels for language identity, not functional UI icons — Material Symbols
-// has no equivalent). Mirrors MarketingLayout's own map (§Screen Recipes).
 const LOCALE_FLAGS: Record<Locale, string> = {
   'en-US': '🇺🇸',
   'es-MX': '🇲🇽',
   'pt-BR': '🇧🇷',
 };
 
+/*
+ * Auth pages — full-viewport background image (B&W blurred, color on hover),
+ * 2-column split layout (DESIGN.md §Screen Recipes → Auth). Image covers both
 ```
 
 ### frontend/src/routes/auth/AuthShell.tsx
@@ -142664,6 +142724,26 @@ export function AuthShell({ title, subtitle, children, footer, wide = false }: {
   footer?: ReactNode;
   wide?: boolean;
 }) {
+```
+
+### frontend/src/routes/auth/AuthSplit.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@/components/ui';
+
+/*
+ * /DESIGN.md §Screen Recipes → Auth: 2-column split layout.
+ * Desktop: text left, form right — full-viewport image behind both.
+ * Mobile: single column, text then form.
+ */
+export function AuthSplit({ title, subtitle, children, footer }: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  footer?: ReactNode;
 ```
 
 ### frontend/src/routes/auth/ErrorBanner.tsx
@@ -142697,7 +142777,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthShell } from './AuthShell';
+import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -142719,7 +142799,7 @@ import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { AuthShell } from './AuthShell';
+import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -142814,16 +142894,16 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { LOCALES, type Locale } from '@/i18n';
+
+const LOCALE_FLAGS: Record<Locale, string> = {
+  'en-US': '🇺🇸',
+  'es-MX': '🇲🇽',
+  'pt-BR': '🇧🇷',
+};
 
 /* Composition per /DESIGN.md §Screen Recipes → Landing: full-bleed alternating
-   bands (navy hero → white problem/solution → tinted feature grid → navy fact
-   band → white motivation → final CTA banner). Sections rise in on scroll;
-   grids stagger (DESIGN.md §Motion). */
-
-const FEATURES = [
-  { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
-  { key: 'f2', icon: 'smart_toy', tone: 'primary' },
-  { key: 'f3', icon: 'touch_app', tone: 'accent' },
 ```
 
 ### frontend/src/routes/marketing/LegalPage.tsx
@@ -142979,6 +143059,26 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+```
+
+### old_index.css
+
+```
+/* ── Animatable Glass Properties ── */
+@property --glass-badge-glow {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: false;
+}
+
+@property --glass-card-lift {
+  syntax: '<length>';
+  initial-value: 0px;
+  inherits: false;
+}
+
+@property --glass-border-alpha {
+  syntax: '<number>';
 ```
 
 ### package.json

@@ -40,7 +40,7 @@
     "viewTerritory": "Ver território",
     "back": "Voltar à família",
     "territoryTitle": "O território dela",
-    "territorySubtitle": "Tudo o que o curso ensina — e quanto já é dela.",
+    "territorySubtitle": "Tudo o que o curso ensina, e quanto já é dela.",
     "territoryLoading": "Desenhando o território…",
     "stats": {
       "xp": "XP ganhos",
@@ -55,7 +55,7 @@
   },
   "cookies": {
     "title": "Usamos cookies próprios",
-    "body": "Um cookie próprio nos ajuda a ver quais páginas e campanhas trazem pessoas ao LittleFounders. Fica no nosso domínio — sem redes de anúncios nem rastreamento entre sites. Você pode recusar e nada é armazenado.",
+    "body": "Um cookie próprio nos ajuda a ver quais páginas e campanhas trazem pessoas ao LittleFounders. Fica no nosso domínio, sem redes de anúncios nem rastreamento entre sites. Você pode recusar e nada é armazenado.",
     "accept": "Aceitar",
     "decline": "Recusar"
   }

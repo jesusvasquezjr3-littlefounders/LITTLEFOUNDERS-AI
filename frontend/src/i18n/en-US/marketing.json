@@ -9,7 +9,7 @@
   "hero": {
     "titleLead": "Money skills,",
     "titleHighlight": "learned by playing",
-    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play — safe, guided, and side by side with your family.",
+    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play, safe, guided, and side by side with your family.",
     "ctaPrimary": "Start free",
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
@@ -18,9 +18,9 @@
   "problem": {
     "title": "The problem is real. So is the fix.",
     "problemTitle": "The problem",
-    "problemBody": "Money is one of the most important subjects in life — and one of the least taught. Most kids grow into adults without ever practicing how to save, budget, or build something of their own.",
+    "problemBody": "Money is one of the most important subjects in life, and one of the least taught. Most kids grow into adults without ever practicing how to save, budget, or build something of their own.",
     "solutionTitle": "Our solution",
-    "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, and family tasks with real rewards — all under verified parental control."
+    "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, and family tasks with real rewards, all under verified parental control."
   },
   "fact": {
     "stat": "1 in 3",
@@ -30,7 +30,7 @@
   },
   "motivation": {
     "title": "Kids already dream big. We help them build.",
-    "body1": "Every kid saving coins in a jar is already a little founder — they have a goal, a plan, and the patience to get there. What they're missing is a guide that speaks their language.",
+    "body1": "Every kid saving coins in a jar is already a little founder, they have a goal, a plan, and the patience to get there. What they're missing is a guide that speaks their language.",
     "body2": "LittleFounders meets them where they play: characters they love, quests they want to finish, and a family cheering them on.",
     "imageAlt": "A child counting coins next to a savings jar"
   },
@@ -43,7 +43,7 @@
     },
     "f2": {
       "title": "AI Tutor",
-      "body": "A personal tutor that adapts to each child and gives gentle hints — never just the answer."
+      "body": "A personal tutor that adapts to each child and gives gentle hints, never just the answer."
     },
     "f3": {
       "title": "Interactive lessons",
@@ -56,6 +56,10 @@
     "f6": {
       "title": "Safe by design",
       "body": "Verified guardian links, moderated content, and no child data ever sold or shared."
+    },
+    "f7": {
+      "title": "Gaming that teaches",
+      "body": "Interactive games where every tap builds real skills, saving, budgeting, investing. Real learning disguised as play."
     }
   },
   "finalCta": {
@@ -74,21 +78,24 @@
   },
   "comingSoon": {
     "badge": "Coming soon",
-    "body": "We're building this page. Come back shortly — it will be worth it."
+    "body": "We're building this page. Come back shortly, it will be worth it."
   },
   "pages": {
     "howItWorks": {
       "title": "How it works",
-      "description": "Courses, AI tutor, and family tasks — how it all fits together."
+      "description": "Courses, AI tutor, and family tasks, how it all fits together."
     },
     "families": {
       "title": "Families",
-      "description": "Parental controls, multiple guardians, tasks and rewards — everything families can do together."
+      "description": "Parental controls, multiple guardians, tasks and rewards, everything families can do together."
     },
     "faq": {
       "title": "Frequently asked questions",
       "description": "Answers about accounts, safety, pricing, and more."
     }
+  },
+  "languageSection": {
+    "label": "Select your language"
   },
   "legal": {
     "badge": "Under construction",

@@ -6,7 +6,7 @@
   "settingsCta": "Settings",
   "coverPicker": {
     "title": "Pick your cover",
-    "hint": "Color blends only — your cover is drawn by the app, never uploaded."
+    "hint": "Color blends only, your cover is drawn by the app, never uploaded."
   },
   "covers": {
     "aurora": "Aurora",
@@ -38,7 +38,7 @@
   },
   "avatarEditor": {
     "title": "Your avatar",
-    "subtitle": "Make it yours — it shows everywhere your profile does",
+    "subtitle": "Make it yours, it shows everywhere your profile does",
     "back": "Back to profile",
     "randomize": "Surprise me",
     "save": "Save my look",
@@ -66,10 +66,10 @@
     "usernameHint": "3-20 characters: letters, numbers, underscores. This becomes littlefounders.ai/@you",
     "usernameInvalid": "Only a-z, 0-9 and _ (3-20 characters)",
     "language": "Language",
-    "languageHint": "Your language of record — lessons and the interface follow it.",
+    "languageHint": "Your language of record, lessons and the interface follow it.",
     "account": "Account",
     "email": "Email",
-    "emailPasswordPending": "Email and password changes arrive with our mail service — coming soon.",
+    "emailPasswordPending": "Email and password changes arrive with our mail service, coming soon.",
     "save": "Save changes",
     "saving": "Saving…",
     "saved": "Saved!",

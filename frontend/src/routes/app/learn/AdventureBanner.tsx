@@ -7,7 +7,7 @@ import { localizedText, type AdventureNode } from './types';
  * One vertically-stacked adventure banner on the course map (DESIGN.md
  * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
  * composition follows the Dashboard/Lesson recipes' grammar: scene +
- * .lf-glass-deep chrome on a navy-equivalent illustrated band; documented
+ * .lf-glass-deep chrome on an inverse-equivalent illustrated band; documented
  * here per §0 Composition Fidelity since the recipe itself wasn't extended
  * (frontend/AGENTS.md forbids touching root docs from this task).
  */

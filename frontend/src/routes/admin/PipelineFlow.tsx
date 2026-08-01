@@ -23,7 +23,7 @@ import {
 /*
  * /admin/generation live flow visualization. Shows the active run's pipeline as
  * an interactive React Flow canvas. Nodes are colored by slot activity: gray
- * (idle), papaya pulse (active), green (all done).
+ * (idle), indigo pulse (active), green (all done).
  *
  * The stage list is PER-KIND (see generationTypes.ts): these telemetry tables
  * are shared across generation pipelines but not the stage vocabulary, so the

@@ -6,7 +6,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
-import { AuthShell } from './AuthShell';
+import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -47,7 +47,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthShell
+    <AuthSplit
       title={t('auth.login.title')}
       subtitle={t('auth.login.subtitle')}
       footer={
@@ -55,7 +55,7 @@ export function LoginPage() {
           {t('auth.login.noAccount')}{' '}
           <Link
             to="/signup"
-            className="lf-label rounded-sm text-primary hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
           >
             {t('auth.login.signupLink')}
           </Link>
@@ -96,6 +96,6 @@ export function LoginPage() {
           {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </Button>
       </form>
-    </AuthShell>
+    </AuthSplit>
   );
 }

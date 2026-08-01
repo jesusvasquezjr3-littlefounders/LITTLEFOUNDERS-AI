@@ -2,8 +2,9 @@ import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 /*
- * /DESIGN.md §Components — Card: rounded-lg surface, hairline outline, soft
- * glass shadow. `onInverse` = frosted-glass variant for navy bands.
+ * /DESIGN.md §Components — Card: liquid glass surface with rim light,
+ * hairline edge, and layered atmospheric depth.
+ * `onInverse` = deep glass variant for inverse bands.
  * `hero` = larger radius + padding for banner cards.
  */
 
@@ -25,7 +26,7 @@ export function Card({
       className={cn(
         onInverse
           ? 'lf-glass-deep text-on-inverse'
-          : 'border border-outline/70 bg-surface shadow-glass',
+          : 'lf-glass',
         hero ? 'rounded-xl p-8' : 'rounded-lg p-6',
         interactive && 'motion-safe-lift transition-transform duration-300 hover:-translate-y-1',
         className,

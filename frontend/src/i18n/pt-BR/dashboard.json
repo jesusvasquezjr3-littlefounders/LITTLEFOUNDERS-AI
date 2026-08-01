@@ -26,13 +26,13 @@
     "lessonCount_other": "{{count}} lições",
     "progressLabel": "{{passed}}/{{total}} lições",
     "emptyTitle": "Sua aventura está carregando",
-    "emptyBody": "Ainda não há cursos publicados. A Dina está preparando as primeiras missões — volte em breve!"
+    "emptyBody": "Ainda não há cursos publicados. A Dina está preparando as primeiras missões, volte em breve!"
   },
   "sections": {
     "soonBadge": "A caminho",
     "tutor": {
       "title": "Seu tutor pessoal com IA",
-      "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios — um tutor amigável que explica no seu ritmo chegará a este espaço."
+      "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios, um tutor amigável que explica no seu ritmo chegará a este espaço."
     },
     "tasks": {
       "title": "Tarefas e recompensas",

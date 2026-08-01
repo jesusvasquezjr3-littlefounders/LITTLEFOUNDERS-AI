@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
  * size "md" = 48px rounded-md (stats/rows) · "lg" = 56px rounded-lg (feature cards).
  */
 
-type Tone = 'primary' | 'secondary' | 'accent' | 'success' | 'warning';
+type Tone = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'delight';
 type Size = 'md' | 'lg';
 
 interface IconChipProps extends HTMLAttributes<HTMLSpanElement> {
@@ -20,6 +20,7 @@ const TONES: Record<Tone, string> = {
   accent: 'bg-accent-soft text-accent-strong',
   success: 'bg-success-soft text-success',
   warning: 'bg-warning-soft text-warning-strong',
+  delight: 'bg-delight-soft text-delight',
 };
 
 const SIZES: Record<Size, string> = {

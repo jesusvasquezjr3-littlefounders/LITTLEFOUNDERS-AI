@@ -8,7 +8,7 @@ import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { AuthShell } from './AuthShell';
+import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -81,19 +81,19 @@ export function SignupPage() {
 
   if (confirmationPending) {
     return (
-      <AuthShell title={t('auth.signup.confirmTitle')}>
+      <AuthSplit title={t('auth.signup.confirmTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="mark_email_read" className="text-success-strong" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.confirmBody', { email })}</p>
         </div>
-      </AuthShell>
+      </AuthSplit>
     );
   }
 
   return (
-    <AuthShell
+    <AuthSplit
       title={t('auth.signup.title')}
       subtitle={t('auth.signup.subtitle')}
       footer={
@@ -101,7 +101,7 @@ export function SignupPage() {
           {t('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
-            className="lf-label rounded-sm text-primary hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
           >
             {t('auth.signup.loginLink')}
           </Link>
@@ -164,6 +164,6 @@ export function SignupPage() {
         </Button>
         <p className="lf-caption text-center text-content-muted">{t('auth.signup.universalNote')}</p>
       </form>
-    </AuthShell>
+    </AuthSplit>
   );
 }

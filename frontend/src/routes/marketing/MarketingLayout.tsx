@@ -135,7 +135,7 @@ export function MarketingLayout() {
         <Outlet />
       </main>
 
-      {/* Footer — full-bleed navy band (/DESIGN.md §Layout → Section bands) */}
+      {/* Footer — full-bleed inverse band (/DESIGN.md §Layout → Section bands) */}
       <footer className="mt-24 bg-inverse pb-8 pt-16 text-on-inverse">
         <div className="mx-auto grid max-w-container gap-10 px-5 md:grid-cols-3 md:px-8">
           <div>

@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { Dropdown, ThemeToggle, type DropdownOption } from '@/components/ui';
 
-// Country flag paired with each locale (DESIGN.md exception: flags are content
-// labels for language identity, not functional UI icons — Material Symbols
-// has no equivalent). Mirrors MarketingLayout's own map (§Screen Recipes).
 const LOCALE_FLAGS: Record<Locale, string> = {
   'en-US': '🇺🇸',
   'es-MX': '🇲🇽',
@@ -14,15 +11,10 @@ const LOCALE_FLAGS: Record<Locale, string> = {
 };
 
 /*
- * Bare trust surface for /login and /signup — no marketing nav links or
- * footer (DESIGN.md §Screen Recipes → Auth: "focused single centered
- * column... ONE resting card"). Just enough utility chrome to not strand
- * the visitor: a way back to `/`, the language switcher, and the theme
- * control — the same controls MarketingLayout offers, minus the nav links
- * and CTA button that don't apply on a page that IS the CTA's destination.
- * AuthShell renders the actual centered title + card; this layout only
- * owns the utility row, the full-height background, and the same
- * scroll-reset + page-enter motion every other top-level route gets.
+ * Auth pages — full-viewport background image (B&W blurred, color on hover),
+ * 2-column split layout (DESIGN.md §Screen Recipes → Auth). Image covers both
+ * sides as a unified backdrop; the grid overlays text left, form right.
+ * Utility row (logo, language, theme) floats above the image.
  */
 export function AuthLayout() {
   const { t, i18n } = useTranslation();
@@ -39,33 +31,43 @@ export function AuthLayout() {
   }));
 
   return (
-    <div className="min-h-screen bg-base text-content">
-      <header className="flex items-center justify-between px-5 py-5 md:px-8">
-        <Link
-          to="/"
-          className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-        >
-          <img
-            src="/logo-main-trimmed.png"
-            alt={t('marketing.hero.logoAlt')}
-            className="h-9 w-auto sm:h-10"
-          />
-        </Link>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Dropdown
-            compact
-            value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
-            options={localeOptions}
-            onChange={(l) => void i18n.changeLanguage(l)}
-            ariaLabel={t('language.label')}
-          />
-          <ThemeToggle />
-        </div>
-      </header>
+    <div className="relative min-h-screen text-on-inverse">
+      <div className="auth-bg">
+        <img src="/marketing/auth-bg.jpg" alt="" className="auth-bg-img-bw" />
+        <img src="/marketing/auth-bg.jpg" alt="" className="auth-bg-img-color" />
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
 
-      <main key={location.pathname} className="lf-page-enter">
-        <Outlet />
-      </main>
+      <div className="pointer-events-none relative z-10 flex min-h-screen flex-col">
+        <header className="lf-glass pointer-events-auto sticky top-0 z-40">
+        <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-5 md:px-8">
+          <Link
+            to="/"
+            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-on-inverse"
+          >
+            <img
+              src="/logo-main-trimmed.png"
+              alt={t('marketing.hero.logoAlt')}
+              className="h-9 w-auto sm:h-10"
+            />
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Dropdown
+              compact
+              value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}
+              options={localeOptions}
+              onChange={(l) => void i18n.changeLanguage(l)}
+              ariaLabel={t('language.label')}
+            />
+            <ThemeToggle className="hidden sm:inline-flex" />
+          </div>
+          </div>
+        </header>
+
+        <main key={location.pathname} className="lf-page-enter flex-1">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

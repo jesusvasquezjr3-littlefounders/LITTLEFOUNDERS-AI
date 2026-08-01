@@ -10,7 +10,7 @@
   "minutes_other": "{{count}} min",
   "backToCourse": "Back to course",
   "emptyTitle": "This adventure is loading",
-  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions — check back soon!",
+  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions, check back soon!",
   "state": {
     "locked": "locked",
     "available": "available",
@@ -21,7 +21,7 @@
     "open": "Territory map",
     "title": "Your territory",
     "back": "Back to the path",
-    "subtitle": "Everything this course teaches — and how much of it is already yours.",
+    "subtitle": "Everything this course teaches, and how much of it is already yours.",
     "loading": "Drawing your territory…",
     "progress": "Course progress",
     "progressLabel": "{{passed}} of {{total}} lessons",

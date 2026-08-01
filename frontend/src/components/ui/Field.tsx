@@ -2,10 +2,10 @@ import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 /*
- * /DESIGN.md §Components — Field: labeled text input. rounded-md container
- * radius (inputs are containers, not pills), surface fill, hairline outline,
- * primary focus ring, error state on the error token. Both themes via
- * semantic tokens.
+ * /DESIGN.md §Components — Field: glass-appropriate input. rounded-md
+ * (16px, per DESIGN.md radius scale), sunken surface fill, subtle
+ * hairline edge defined by light, not a solid border. Primary focus
+ * ring on semantic token. Both themes via semantic tokens.
  */
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -32,10 +32,10 @@ export function Field({ label, hint, error, trailing, className, id, ...props }:
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? errorId : hint ? hintId : undefined}
           className={cn(
-            'lf-body min-h-12 w-full rounded-md border bg-surface px-4 text-content placeholder:text-content-muted',
+            'lf-body min-h-12 w-full rounded-md border border-outline/30 bg-surface-sunken px-4 text-content placeholder:text-content-faint',
             'transition-[border-color,box-shadow] duration-150',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 focus:ring-offset-base',
-            error ? 'border-error' : 'border-outline hover:border-content-faint focus:border-primary',
+            'focus:border-primary/60 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-0',
+            error ? 'border-error/60' : 'border-outline/30 hover:border-outline/60',
             trailing && 'pr-12',
           )}
           {...props}

@@ -9,7 +9,7 @@
   "hero": {
     "titleLead": "Educación financiera,",
     "titleHighlight": "aprendida jugando",
-    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar — seguro, guiado y en familia.",
+    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar, seguro, guiado y en familia.",
     "ctaPrimary": "Empieza gratis",
     "ctaSecondary": "Cómo funciona",
     "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
@@ -18,9 +18,9 @@
   "problem": {
     "title": "El problema es real. La solución también.",
     "problemTitle": "El problema",
-    "problemBody": "El dinero es uno de los temas más importantes de la vida — y uno de los menos enseñados. La mayoría de los niños crecen sin practicar jamás cómo ahorrar, presupuestar o construir algo propio.",
+    "problemBody": "El dinero es uno de los temas más importantes de la vida, y uno de los menos enseñados. La mayoría de los niños crecen sin practicar jamás cómo ahorrar, presupuestar o construir algo propio.",
     "solutionTitle": "Nuestra solución",
-    "solutionBody": "Lecciones cortas y altamente gamificadas, un tutor de IA que se adapta a cada niño, y tareas familiares con recompensas reales — todo bajo control parental verificado."
+    "solutionBody": "Lecciones cortas y altamente gamificadas, un tutor de IA que se adapta a cada niño, y tareas familiares con recompensas reales, todo bajo control parental verificado."
   },
   "fact": {
     "stat": "1 de cada 3",
@@ -43,7 +43,7 @@
     },
     "f2": {
       "title": "Tutor de IA",
-      "body": "Un tutor personal que se adapta a cada niño y da pistas suaves — nunca solo la respuesta."
+      "body": "Un tutor personal que se adapta a cada niño y da pistas suaves, nunca solo la respuesta."
     },
     "f3": {
       "title": "Lecciones interactivas",
@@ -56,6 +56,10 @@
     "f6": {
       "title": "Seguro por diseño",
       "body": "Vínculos de tutor verificados, contenido moderado y datos de los niños que jamás se venden ni se comparten."
+    },
+    "f7": {
+      "title": "Juegos que enseñan de verdad",
+      "body": "Juegos interactivos donde cada toque construye habilidades reales: ahorro, presupuestos, inversión. Aprendizaje real disfrazado de diversión."
     }
   },
   "finalCta": {
@@ -74,21 +78,24 @@
   },
   "comingSoon": {
     "badge": "Próximamente",
-    "body": "Estamos construyendo esta página. Vuelve pronto — valdrá la pena."
+    "body": "Estamos construyendo esta página. Vuelve pronto, valdrá la pena."
   },
   "pages": {
     "howItWorks": {
       "title": "Cómo funciona",
-      "description": "Cursos, tutor de IA y tareas familiares — cómo encaja todo."
+      "description": "Cursos, tutor de IA y tareas familiares, cómo encaja todo."
     },
     "families": {
       "title": "Familias",
-      "description": "Control parental, varios tutores, tareas y recompensas — todo lo que las familias pueden hacer juntas."
+      "description": "Control parental, varios tutores, tareas y recompensas, todo lo que las familias pueden hacer juntas."
     },
     "faq": {
       "title": "Preguntas frecuentes",
       "description": "Respuestas sobre cuentas, seguridad, precios y más."
     }
+  },
+  "languageSection": {
+    "label": "Selecciona tu idioma"
   },
   "legal": {
     "badge": "En construcción",

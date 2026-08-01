@@ -113,7 +113,7 @@
     "subtitle": "Grant and revoke roles. Superadmin only.",
     "grantTitle": "Grant a role",
     "userId": "User ID",
-    "userIdHint": "The user's UUID — click an ID in the table below to fill this.",
+    "userIdHint": "The user's UUID, click an ID in the table below to fill this.",
     "role": "Role",
     "grant": "Grant",
     "granted": "Granted {{role}}.",
@@ -154,7 +154,7 @@
       "12mo": "Last 12 months"
     },
     "unavailableTitle": "Analytics unavailable",
-    "unavailableBody": "Pulse didn't answer. The product is unaffected — check the Pulse services on Railway.",
+    "unavailableBody": "Pulse didn't answer. The product is unaffected, check the Pulse services on Railway.",
     "web": {
       "title": "Web analytics",
       "visitors": "Visitors",
@@ -218,7 +218,7 @@
     "toolsTitle": "Exports & controls",
     "reports": {
       "title": "Team reports (PDF)",
-      "caption": "Branded, watermarked PDF reports for each team — generated with the current period and filters.",
+      "caption": "Branded, watermarked PDF reports for each team, generated with the current period and filters.",
       "failed": "Could not generate the report. Try again.",
       "audiences": {
         "marketing": "Marketing",
@@ -239,13 +239,13 @@
       "commandLabel": "Apply with",
       "copy": "Copy",
       "copied": "Copied",
-      "pending": "Edited list not applied yet — run the command and redeploy pulse-plausible.",
-      "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy) — this screen never writes it."
+      "pending": "Edited list not applied yet, run the command and redeploy pulse-plausible.",
+      "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy), this screen never writes it."
     }
   },
   "emails": {
     "title": "Emails",
-    "subtitle": "Transactional email delivery history — a Resend-style audit trail.",
+    "subtitle": "Transactional email delivery history, a Resend-style audit trail.",
     "totalSent": "Total sent",
     "colTo": "To",
     "colSubject": "Subject",
@@ -281,9 +281,9 @@
   },
   "generation": {
     "title": "Generation",
-    "subtitle": "How the agentic pipeline behaved on every course generation — outcomes, judge verdicts, failure stages, cost and cache efficiency.",
+    "subtitle": "How the agentic pipeline behaved on every course generation, outcomes, judge verdicts, failure stages, cost and cache efficiency.",
     "loading": "Loading generation telemetry…",
-    "noData": "—",
+    "noData": "N/A",
     "secondsUnit": "s",
     "tabs": {
       "aria": "Generation views",
@@ -345,7 +345,7 @@
     },
     "tracks": "Mass runs (tracks)",
     "selectRun": "Select a generation run",
-    "empty": "No generation runs recorded yet — telemetry appears here after the next coursegen run.",
+    "empty": "No generation runs recorded yet, telemetry appears here after the next coursegen run.",
     "runTitle": "Run {{runId}}",
     "salvaged": "salvaged",
     "earlyStop": "early stop",
@@ -365,11 +365,11 @@
     },
     "heatmap": {
       "title": "Failures by pipeline stage",
-      "empty": "No failures — every attempted lesson published."
+      "empty": "No failures, every attempted lesson published."
     },
     "judge": {
       "title": "Judge dimensions ({{count}} judged)",
-      "note": "Run-over-run noise floor is ±0.4 — read these as defect pointers, not as a score to chase.",
+      "note": "Run-over-run noise floor is ±0.4, read these as defect pointers, not as a score to chase.",
       "empty": "No judge rubrics recorded for this run."
     },
     "dims": {
@@ -414,7 +414,7 @@
       "avgCacheHit": "Avg cache hit",
       "costTrend": "Cost per published lesson (USD)",
       "cacheTrend": "Cache-hit % over time",
-      "qualityTrend": "Quality dimensions — latest run of {{runs}}",
+      "qualityTrend": "Quality dimensions, latest run of {{runs}}",
       "failureByStage": "Failures by pipeline stage (all runs)",
       "successRate": "Overall success rate",
       "successRateDetail": "{{passed}} / {{total}} lessons published",
@@ -482,7 +482,7 @@
       },
       "lowCache": {
         "title": "Cache-hit rate critically low",
-        "detail": "{{pct}}% cache-hit — prompt prefix may have drifted. Static-first assembly is broken or the playbook changed."
+        "detail": "{{pct}}% cache-hit, prompt prefix may have drifted. Static-first assembly is broken or the playbook changed."
       },
       "highFailRate": {
         "title": "Failure rate: {{rate}}%",
@@ -500,7 +500,7 @@
   },
   "intel": {
     "title": "Data Intelligence",
-    "subtitle": "First-party analytics warehouse — segmentation, forecasting, anomaly detection, and experiment analysis.",
+    "subtitle": "First-party analytics warehouse, segmentation, forecasting, anomaly detection, and experiment analysis.",
     "tabs": {
       "home": "Home",
       "trends": "Trends",
@@ -577,7 +577,7 @@
       "cohortTitle": "Cohort Curves",
       "cohortSubtitle": "Weekly cohorts, plotted by how many came back in each following week.",
       "heatmapTitle": "Retention Matrix",
-      "heatmapSubtitle": "The same cohorts as a grid — darker cells held on to more users.",
+      "heatmapSubtitle": "The same cohorts as a grid, darker cells held on to more users.",
       "colCohort": "Cohort",
       "colSize": "Size",
       "colWeek": "Week {{n}}"
@@ -611,7 +611,7 @@
       "subtitle": "Per-user behavioral profiles with engagement scoring and churn risk.",
       "empty": "No user data available.",
       "leaderboardTitle": "Engagement Leaderboard",
-      "leaderboardSubtitle": "Top learners by composite engagement score — breadth, consistency and depth.",
+      "leaderboardSubtitle": "Top learners by composite engagement score, breadth, consistency and depth.",
       "churnTitle": "Churn Risk Distribution",
       "churnSubtitle": "How the scored population splits across high, medium and low risk.",
       "churnTableTitle": "At-Risk Learners",
@@ -739,7 +739,7 @@
   },
   "insights": {
     "title": "Insights",
-    "subtitle": "First-party learning and usage signals — calibration, rhythm, families.",
+    "subtitle": "First-party learning and usage signals, calibration, rhythm, families.",
     "loading": "Loading insights…",
     "kpi": {
       "consent": "Kids opted in",
@@ -755,7 +755,7 @@
     },
     "surfaces": {
       "title": "Where time goes",
-      "empty": "No navigation events yet — the beacon fills this in as sessions happen.",
+      "empty": "No navigation events yet, the beacon fills this in as sessions happen.",
       "learn": "Learn",
       "tasks": "Tasks",
       "profile": "Profile",
@@ -796,15 +796,15 @@
       "button": "Export",
       "csv": "Download CSV",
       "json": "Download JSON",
-      "hint": "Behaviour + dimensions only — exports never carry a learner identifier.",
-      "failed": "Export failed — nothing was downloaded.",
-      "complete": "Downloaded {{rows}} rows — the complete selection.",
-      "capped": "Downloaded {{rows}} rows and stopped at the safety limit — this file is NOT the complete selection. Narrow the period or filters."
+      "hint": "Behaviour + dimensions only, exports never carry a learner identifier.",
+      "failed": "Export failed, nothing was downloaded.",
+      "complete": "Downloaded {{rows}} rows, the complete selection.",
+      "capped": "Downloaded {{rows}} rows and stopped at the safety limit, this file is NOT the complete selection. Narrow the period or filters."
     },
     "cohorts": {
       "title": "Weekly cohort retention",
       "subtitle": "Of the people who first showed up in a given week, how many came back later. The chart that says whether the product holds anyone.",
-      "empty": "Not enough history yet — cohorts fill in as weeks pass.",
+      "empty": "Not enough history yet, cohorts fill in as weeks pass.",
       "week": "Week",
       "size": "Size"
     },

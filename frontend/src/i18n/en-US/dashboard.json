@@ -26,13 +26,13 @@
     "lessonCount_other": "{{count}} lessons",
     "progressLabel": "{{passed}}/{{total}} lessons",
     "emptyTitle": "Your adventure is loading",
-    "emptyBody": "There are no published courses yet. Dina is preparing the first missions — check back soon!"
+    "emptyBody": "There are no published courses yet. Dina is preparing the first missions, check back soon!"
   },
   "sections": {
     "soonBadge": "On the way",
     "tutor": {
       "title": "Your personal AI tutor",
-      "body": "Ask anything about money, saving, and business — a friendly tutor that explains at your pace is coming to this space."
+      "body": "Ask anything about money, saving, and business, a friendly tutor that explains at your pace is coming to this space."
     },
     "tasks": {
       "title": "Tasks & rewards",
