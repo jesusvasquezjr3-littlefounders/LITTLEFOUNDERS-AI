@@ -146,6 +146,7 @@ const EmailSummarySchema = z.object({
   total: z.number().int().min(0),
   statuses: z.record(z.string(), z.number().int().min(0)),
   templates: z.record(z.string(), z.number().int().min(0)),
+  locales: z.record(z.string(), z.number().int().min(0)).optional(),
 });
 
 const InsightsCalibrationQuerySchema = z.object({

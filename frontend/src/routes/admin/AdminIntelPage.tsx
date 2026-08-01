@@ -4,6 +4,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
 import type { DropdownOption, TableColumn } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -241,7 +242,17 @@ const GRANULARITY_KEYS: DropdownOption<string>[] = [
   { value: 'week', label: '' },
 ];
 
-const TABS: Tab[] = ['home', 'trends', 'funnels', 'retention', 'segments', 'people', 'experiments', 'alerts', 'settings'];
+const TABS_WITH_ICONS: { key: Tab; icon: string }[] = [
+  { key: 'home', icon: 'space_dashboard' },
+  { key: 'trends', icon: 'trending_up' },
+  { key: 'funnels', icon: 'filter_alt' },
+  { key: 'retention', icon: 'grid_view' },
+  { key: 'segments', icon: 'pie_chart' },
+  { key: 'people', icon: 'groups' },
+  { key: 'experiments', icon: 'science' },
+  { key: 'alerts', icon: 'notifications' },
+  { key: 'settings', icon: 'settings' },
+];
 
 const CHURN_COLORS: Record<string, string> = {
   high: SVG_ERROR,
@@ -902,17 +913,20 @@ export function AdminIntelPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto">
-        {TABS.map((k) => (
+      <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-xl border border-outline/30">
+        {TABS_WITH_ICONS.map(({ key: k, icon }) => (
           <button
             key={k}
             type="button"
             onClick={() => setTab(k)}
-            className={`lf-label min-h-11 shrink-0 rounded-full px-4 transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-              tab === k ? 'bg-primary-soft font-bold text-primary' : 'text-content-muted hover:bg-surface-sunken'
-            }`}
+            className={cn(
+              'flex items-center gap-1.5 min-h-10 shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              tab === k ? 'bg-surface text-content shadow-glass-sm border border-outline/30 font-bold' : 'text-content-muted hover:text-content',
+            )}
           >
-            {t(`admin.intel.tabs.${k}`)}
+            <Icon name={icon} className="!text-[16px]" />
+            <span>{t(`admin.intel.tabs.${k}`)}</span>
           </button>
         ))}
       </div>

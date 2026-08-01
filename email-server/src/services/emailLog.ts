@@ -51,7 +51,9 @@ export interface EmailLogSummary {
   total: number;
   statuses: Record<string, number>;
   templates: Record<string, number>;
+  locales?: Record<string, number>;
 }
+
 
 /** What the SMTP capture path (and any non-/send writer) supplies. */
 export interface DeliveryRecord {
@@ -144,11 +146,15 @@ export async function getEmailSummary(): Promise<EmailLogSummary> {
 
   const statuses: Record<string, number> = {};
   const templates: Record<string, number> = {};
+  const locales: Record<string, number> = {};
   for (const e of entries) {
     statuses[e.status] = (statuses[e.status] ?? 0) + 1;
     templates[e.templateType] = (templates[e.templateType] ?? 0) + 1;
+    if (e.locale) {
+      locales[e.locale] = (locales[e.locale] ?? 0) + 1;
+    }
   }
-  return { total: entries.length, statuses, templates };
+  return { total: entries.length, statuses, templates, locales };
 }
 
 /** Test-only: drop the in-process buffer so cases start from a known state. */

@@ -70,7 +70,7 @@ export function AdminGenerationPage() {
   return (
     <AdminPage titleKey="admin.generation.title" subtitleKey="admin.generation.subtitle">
       {/* Tab bar */}
-      <nav className="mb-5 flex gap-1 rounded-xl bg-surface-sunken p-1 w-fit" role="tablist" aria-label={t('admin.generation.tabs.aria')}>
+      <nav className="mb-5 flex gap-1 rounded-xl bg-surface-sunken p-1 w-fit border border-outline/30 shadow-sm" role="tablist" aria-label={t('admin.generation.tabs.aria')}>
         {TABS.map(({ key, icon }) => (
           <button
             key={key}
@@ -79,19 +79,20 @@ export function AdminGenerationPage() {
             aria-selected={tab === key}
             onClick={() => setTab(key)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
+              'flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               tab === key
-                ? 'bg-base text-content shadow-glass-sm'
+                ? 'bg-surface text-content shadow-glass-sm border border-outline/30 font-bold'
                 : 'text-content-muted hover:text-content',
             )}
           >
-            <span className="material-symbols-outlined text-base leading-none">{icon}</span>
+            <Icon name={icon} className="!text-[18px]" />
             <span className="hidden sm:inline">{t(`admin.generation.tabs.${key}`)}</span>
           </button>
         ))}
         {/* Live indicator dot when a run is active */}
         {liveHeartbeat && (
-          <span className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs text-accent">
+          <span className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-bold text-accent bg-accent-soft">
             <span className="h-2 w-2 rounded-full bg-accent animate-pulse" aria-hidden />
             <span className="hidden sm:inline">{t('admin.generation.live.badge')}</span>
           </span>

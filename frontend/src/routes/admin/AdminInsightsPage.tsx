@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { BASE_URL, api } from '@/lib/api';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, StatCard } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
 
 /*
@@ -234,12 +235,25 @@ export function AdminInsightsPage() {
         ) : null}
       </div>
 
-      <div className="flex gap-2 overflow-x-auto">
-        {(['overview', 'acquisition', 'learning', 'sessions'] as const).map((k) => (
-          <button key={k} type="button" onClick={() => setTab(k)}
-            className={`lf-label min-h-11 shrink-0 rounded-full px-4 transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary ${
-              tab === k ? 'bg-primary-soft font-bold text-primary' : 'text-content-muted hover:bg-surface-sunken'}`}>
-            {t(`admin.insights.tabs.${k}`)}
+      <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-xl border border-outline/30">
+        {[
+          { key: 'overview', icon: 'space_dashboard' },
+          { key: 'acquisition', icon: 'filter_alt' },
+          { key: 'learning', icon: 'school' },
+          { key: 'sessions', icon: 'timeline' },
+        ].map(({ key: k, icon }) => (
+          <button
+            key={k}
+            type="button"
+            onClick={() => setTab(k as Tab)}
+            className={cn(
+              'flex items-center gap-1.5 min-h-10 shrink-0 rounded-lg px-4 text-xs font-bold transition-all duration-150',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+              tab === k ? 'bg-surface text-content shadow-glass-sm border border-outline/30' : 'text-content-muted hover:text-content',
+            )}
+          >
+            <Icon name={icon} className="!text-[16px]" />
+            <span>{t(`admin.insights.tabs.${k}`)}</span>
           </button>
         ))}
       </div>
@@ -294,11 +308,30 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
     return (
       <>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Kpi label={t('admin.insights.kpi.consent')} value={`${nf.format(data.consent.kidsConsented)} / ${nf.format(data.consent.kidsTotal)}`} hint={t('admin.insights.kpi.consentHint')} />
-          <Kpi label={t('admin.insights.kpi.events', { days })} value={nf.format(totalEvents)} hint={t('admin.insights.kpi.eventsHint', { kid: nf.format(kidEvents) })} />
-          <Kpi label={t('admin.insights.kpi.peakUsers')} value={nf.format(peak)} hint={t('admin.insights.kpi.peakUsersHint')} />
-          <Kpi label={t('admin.insights.kpi.activation')} value={activationPct === null ? '' : pf.format(activationPct)}
-            hint={t('admin.insights.kpi.activationHint', { hours: medianTtv === null ? '' : nf.format(medianTtv) })} />
+          <StatCard
+            icon={<Icon name="shield_person" className="!text-[24px]" />}
+            value={`${nf.format(data.consent.kidsConsented)} / ${nf.format(data.consent.kidsTotal)}`}
+            label={t('admin.insights.kpi.consent')}
+            tone="primary"
+          />
+          <StatCard
+            icon={<Icon name="query_stats" className="!text-[24px]" />}
+            value={nf.format(totalEvents)}
+            label={t('admin.insights.kpi.events', { days })}
+            tone="secondary"
+          />
+          <StatCard
+            icon={<Icon name="group" className="!text-[24px]" />}
+            value={nf.format(peak)}
+            label={t('admin.insights.kpi.peakUsers')}
+            tone="accent"
+          />
+          <StatCard
+            icon={<Icon name="bolt" className="!text-[24px]" />}
+            value={activationPct === null ? '—' : pf.format(activationPct)}
+            label={t('admin.insights.kpi.activation')}
+            tone="primary"
+          />
         </div>
         <Panel title={t('admin.insights.adoption.title')} subtitle={t('admin.insights.adoption.subtitle')} empty={data.adoption.length === 0} emptyMsg={t('admin.insights.adoption.empty')} icon="dashboard">
           <Table head={[t('admin.insights.adoption.colRole'), t('admin.insights.adoption.colSurface'), t('admin.insights.adoption.colUsers'), t('admin.insights.adoption.colSessions'), t('admin.insights.adoption.colEvents')]}
@@ -418,8 +451,8 @@ function Panel({ title, subtitle, empty, emptyMsg, icon, children }: {
   title: string; subtitle?: string; empty: boolean; emptyMsg: string; icon: string; children: React.ReactNode;
 }) {
   return (
-    <Card className="flex flex-col gap-3 p-5">
-      <h2 className="lf-title text-content">{title}</h2>
+    <Card className="flex flex-col gap-3 p-5 shadow-glass border border-outline/50">
+      <h2 className="lf-title font-bold text-content">{title}</h2>
       {subtitle ? <p className="lf-caption text-content-muted">{subtitle}</p> : null}
       {empty ? <AdminEmpty icon={icon} message={emptyMsg} /> : children}
     </Card>

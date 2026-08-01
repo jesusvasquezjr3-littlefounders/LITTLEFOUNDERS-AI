@@ -141272,9 +141272,10 @@ createRoot(document.getElementById('root')!).render(
 ### frontend/src/routes/admin/AdminAuditPage.tsx
 
 ```
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, type TableColumn } from '@/components/ui';
-import { AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
+import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
+import { AdminAction, AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
 
 interface AuditEntry {
   id: number;
@@ -141286,16 +141287,14 @@ interface AuditEntry {
 }
 
 function shortId(id: string | null): string | null {
-  return id ? `${id.slice(0, 8)}…` : null;
 ```
 
 ### frontend/src/routes/admin/AdminContentPage.tsx
 
 ```
-import { useState } from 'react';
-import type { TFunction } from 'i18next';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Icon, Table, type TableColumn } from '@/components/ui';
+import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminEmpty, AdminPage, StatusBadge, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
@@ -141307,26 +141306,27 @@ interface Course {
   status: string;
   position: number;
 }
+
 ```
 
 ### frontend/src/routes/admin/AdminEmailDashboard.tsx
 
 ```
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card } from '@/components/ui';
+import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
 import { AdminAction, AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { cn } from '@/lib/utils';
 
 interface EmailEntry {
   id: string;
+  messageId?: string;
   to: string;
   subject: string;
   status: string;
   templateType: string;
-  locale?: string;
-  userId?: string;
 ```
 
 ### frontend/src/routes/admin/AdminGenerationPage.tsx
@@ -141356,7 +141356,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { BASE_URL, api } from '@/lib/api';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, StatCard } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
 
 /*
@@ -141366,7 +141367,6 @@ import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
  *   Overview    — is the product healthy right now (consent coverage, volume)
  *   Acquisition — where do people come from and where do they fall off
  *   Learning    — are they actually learning, and which content is mistuned
- *   Sessions    — how substantial is a visit, by role and device
 ```
 
 ### frontend/src/routes/admin/AdminIntelPage.tsx
@@ -141378,6 +141378,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
 import type { DropdownOption, TableColumn } from '@/components/ui';
+import { cn } from '@/lib/utils';
 import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -141386,7 +141387,6 @@ import {
 import type { TooltipProps } from 'recharts';
 
 /*
- * /admin/intel — full analytics dashboard powered by the dataintel service.
 ```
 
 ### frontend/src/routes/admin/AdminOverviewPage.tsx
@@ -141395,7 +141395,7 @@ import type { TooltipProps } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
-import { Badge, Card, Icon, StatCard } from '@/components/ui';
+import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 
@@ -141412,9 +141412,9 @@ interface Health {
 ### frontend/src/routes/admin/AdminRolesPage.tsx
 
 ```
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Dropdown, Field, Icon, Table, type DropdownOption, type TableColumn } from '@/components/ui';
+import { Button, Card, Dropdown, Field, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
 import { AdminAction, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
 interface Holder {
@@ -141432,11 +141432,11 @@ type Grantable = (typeof GRANTABLE)[number];
 ### frontend/src/routes/admin/AdminUsersPage.tsx
 
 ```
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Field, Table, type TableColumn } from '@/components/ui';
+import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { AdminAction, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 import { SignupTimeline } from './SignupTimeline';
 
 interface User {
@@ -141492,7 +141492,7 @@ import { failedFromI18nKey, formatPct, formatFixed } from './generationI18n';
 ### frontend/src/routes/admin/AnalyticsHealthPage.tsx
 
 ```
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import {

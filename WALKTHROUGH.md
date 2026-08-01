@@ -2,6 +2,22 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-01) — Complete Sequential Overhaul of All 10 Admin Panels
+
+- **Context & Audit.** Following the owner's directive, we conducted a systematic audit and UI/UX overhaul of all 10 admin panels in `/admin`, one by one in exact sequential order (`emails`, `overview`, `content`, `users`, `analytics`, `insights`, `intel`, `generation`, `audit`, `roles`).
+- **Panels upgraded and features added:**
+  1. `admin/emails` — KPI StatCards (Total Sent, Delivery Success Rate %, Active Templates, Top Locale), Template/Locale distribution progress bars, search/filter controls, and a Resend-style Email Detail Inspector Modal. Extended `email-server` and `backend` schemas to return locale breakdowns.
+  2. `admin` (Overview) — Staff Quick-Action Hub, visual retention progress bars with color-coded score thresholds (`>=80%` green, `>=50%` yellow, `<50%` red), and operational telemetry summary.
+  3. `admin/content` — Content KPI header cards, course search & status filter pills, lesson moderation preview modal, and cleaned fallback types.
+  4. `admin/users` — User KPI header cards, role filter pills, search bar, and User Detail Inspector Modal with copyable User ID.
+  5. `admin/analytics` — Telemetry refresh control, health KPI summary cards, and color-coded latency threshold badges (`<100ms` green, `100-300ms` yellow, `>300ms` red).
+  6. `admin/insights` — Standarized KPI StatCards (Consent Coverage, Events, Peak DAU, Activation/TTV), icon-enhanced tab navigation (`space_dashboard`, `filter_alt`, `school`, `timeline`), and glassmorphic card wrappers.
+  7. `admin/intel` — Iconic 9-tab navigation bar (`Home`, `Trends`, `Funnels`, `Retention`, `Segments`, `People`, `Experiments`, `Alerts`, `Settings`) and glassmorphic container cards for Recharts visualizations.
+  8. `admin/generation` — Standardized tab bar navigation using `<Icon>` design tokens and glassmorphic pill active states.
+  9. `admin/audit` — Audit KPI header cards (Total Events, Unique Actors, Top Action Type), real-time search & action filter dropdown, and Audit Detail Inspector Modal with prettified JSON detail viewer and 1-click Actor ID copy.
+  10. `admin/roles` — Superadmin role KPI header cards (Total Holders, Admins, Superadmins, Privileged Accounts), search input, role filter pills, and glassmorphic grant card & permission toggle modal.
+- **i18n & Verification.** 60+ new translation keys added with 100% key set identity across `en-US`, `es-MX`, and `pt-BR` (`admin.json`). Verified with `npm run typecheck:all`, `npm run i18n:check`, `npm run secrets:check`, `npm run repo:map`, and full unit/contract test suites (`backend`: 223/223 passed, `email-server`: 29/29 passed).
+
 ## Current State (2026-07-31) — Game Engine: REMOVED entirely, after redesign, on the owner's explicit call
 
 - **What happened, in order.** The owner played the shipped Phases 0–6 build (below) live and judged it a failure as a GAME — flat-color placeholder shapes, a generic one-line tutorial, and a lesson-style live "progress to mastery" bar in the HUD, none of which read as an arcade game. A first corrective pass (juice/contrast/level-readout improvements across all 5 flagged mechanics: sorter, stacker, autobattler, defender, explorer) shipped and was judged still insufficient — "no veo cambios sustanciales." A second, much more directive pass then explicitly cloned named, beloved games onto each mechanic (defender→Plants vs. Zombies, autobattler→Clash Royale/Teamfight Tactics, stacker→Tricky Towers, sorter→an Overcooked-style factory line, explorer→the Super Mario World overworld map), landed real bugs found live (an emitter-starvation particle bug, a double-coordinate-transform bug, dead code, an ability-label bug), and was independently live-verified in-browser by the orchestrating session itself (not just agent self-report) — genuinely distinctive, working, tested results. Despite that verified success, the owner made the explicit, final call to delete the entire feature and start from zero rather than keep iterating on it.

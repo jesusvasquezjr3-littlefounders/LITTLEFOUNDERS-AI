@@ -189,13 +189,14 @@ export async function summarizeEmailLogs(): Promise<EmailLogSummary | null> {
   const total = await countWhere('');
   if (total === null) return null;
 
-  const [statuses, templates] = await Promise.all([
+  const [statuses, templates, locales] = await Promise.all([
     countByColumn('status'),
     countByColumn('template_type'),
+    countByColumn('locale'),
   ]);
-  if (!statuses || !templates) return null;
+  if (!statuses || !templates || !locales) return null;
 
-  return { total, statuses, templates };
+  return { total, statuses, templates, locales };
 }
 
 /** Row count matching a PostgREST filter, via a 0-row request + count=exact. */
@@ -212,7 +213,7 @@ async function countWhere(filter: string): Promise<number | null> {
  * no GROUP BY, so we read the distinct set once (capped) and then issue one
  * exact count per value.
  */
-async function countByColumn(column: 'status' | 'template_type'): Promise<Record<string, number> | null> {
+async function countByColumn(column: 'status' | 'template_type' | 'locale'): Promise<Record<string, number> | null> {
   const res = await rest<Record<string, string>[]>(`/email_logs?select=${column}&limit=5000`);
   if (!res.ok || !res.body) return null;
 
