@@ -141877,15 +141877,15 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Badge, Button, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
 /*
- * learn/ — the universal user's home. Course cards per /DESIGN.md §Screen
- * Recipes → Dashboard (md:grid-cols-2 lg:grid-cols-3 with ProgressBars).
- * Liquid glass hero header + staggered reveal grid of gamified course cards.
+ * learn/ — the universal user's home (Brilliant.org-inspired course catalog).
+ * Features a prominent "Featured / Jump Back In" hero banner, interactive
+ * learning track filter pills, and a 3-column liquid glass course card grid.
  */
 ```
 
