@@ -14,7 +14,7 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 
 /*
  * /learn/:courseSlug — Brilliant.org-style Course Detail & Interactive Syllabus.
- * Fixed sticky Course Hero Header & Left "Plan de Estudios" sidebar.
+ * Desktop (≥1024px): Pinned Hero Header & vertical-stretching Plan de Estudios sidebar.
  * Lessons list scrolls top-to-bottom under sticky headers.
  */
 
@@ -120,7 +120,7 @@ export function CoursePage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Sticky Fixed Top Course Hero Header */}
-      <div className="sticky top-0 z-30 pt-1 pb-2 backdrop-blur-md bg-background/80 transition-all">
+      <div className="sticky top-0 z-30 pt-1 pb-2 backdrop-blur-md bg-background/85 transition-all">
         <Reveal>
           <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/95 to-primary-soft/30 p-5 shadow-glass md:p-6">
             <div className="mb-2">
@@ -160,11 +160,11 @@ export function CoursePage() {
         </Reveal>
       </div>
 
-      {/* Main Layout: Pinned Sticky Sidebar on Desktop, Lessons Scroll Underneath */}
+      {/* Main Layout: Sticky Pinned Sidebar & Scrolling Lessons Column */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-        {/* Left Pinned Sticky Sidebar ("Plan de Estudios") */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-36 z-20 flex flex-col gap-6">
-          <Card className="flex flex-col gap-5 p-6 border-outline/60 shadow-glass">
+        {/* Left Pinned Sticky Sidebar ("Plan de Estudios" — Stretches to Fill Bottom Space) */}
+        <aside className="lg:col-span-4 lg:sticky lg:top-[128px] lg:h-[calc(100vh-140px)] z-20 flex flex-col">
+          <Card className="flex h-full flex-col justify-between p-6 border-outline/60 shadow-glass overflow-hidden">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline/50 bg-primary-soft/40">
                 <CharacterActor character="dina" emotion="happy" action="idle" size="sm" />
@@ -177,7 +177,7 @@ export function CoursePage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 pt-2 border-t border-outline/50">
+            <div className="flex flex-col gap-2 pt-3 border-t border-outline/50">
               <div className="flex items-center justify-between lf-caption font-bold text-content-muted">
                 <span>{t('learn.territory.progress')}</span>
                 <span className="lf-number">{tree.course.progress.pct}%</span>
@@ -192,10 +192,10 @@ export function CoursePage() {
               </span>
             </div>
 
-            {/* Quick Chapter Jump Navigation */}
-            <div className="flex flex-col gap-2 pt-3 border-t border-outline/50">
+            {/* Quick Chapter Jump Navigation — Stretches Vertically to Fill Bottom Space */}
+            <div className="mt-3 flex flex-1 flex-col gap-2 pt-3 border-t border-outline/50 min-h-0">
               <h4 className="lf-label text-content-muted">{t('learn.chapters')}</h4>
-              <div className="flex flex-col gap-1 max-h-64 overflow-y-auto">
+              <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto pr-1">
                 {tree.adventures.map((adventure, idx) => {
                   const isCurrentOpen = adventure.id === openAdventureId;
                   const isAdvCompleted = adventure.state === 'completed';
@@ -208,9 +208,9 @@ export function CoursePage() {
                       disabled={isAdvLocked}
                       onClick={() => setOpenAdventureId(adventure.id)}
                       aria-label={t('learn.chapter', { num: idx + 1 })}
-                      className={`flex items-center justify-between rounded-lg px-3 py-2 text-left text-xs transition-colors ${
+                      className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-xs transition-colors ${
                         isCurrentOpen
-                          ? 'bg-primary-soft text-primary font-bold'
+                          ? 'bg-primary-soft text-primary font-bold shadow-glass-sm'
                           : isAdvLocked
                           ? 'text-content-faint opacity-60 cursor-not-allowed'
                           : 'text-content hover:bg-surface-sunken font-medium'
