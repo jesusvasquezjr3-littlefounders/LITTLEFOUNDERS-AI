@@ -75,9 +75,6 @@ export function LearnPage() {
   const locale = i18n.resolvedLanguage ?? 'en-US';
   const firstName = (profile?.display_name ?? '').split(/\s+/)[0] ?? '';
 
-  const totalPassed = state.status === 'ready' ? state.courses.reduce((acc, c) => acc + c.progress.passed, 0) : 0;
-  const totalLessons = state.status === 'ready' ? state.courses.reduce((acc, c) => acc + c.progress.total, 0) : 0;
-
   return (
     <div className="flex flex-col gap-8">
       {/* Liquid Glass Hero Header */}
@@ -85,16 +82,6 @@ export function LearnPage() {
         <div className="relative overflow-hidden rounded-xl border border-outline/60 bg-gradient-to-br from-primary-soft/40 via-surface to-accent-soft/30 p-6 shadow-glass md:p-8">
           <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div className="flex flex-col gap-3 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <span className="lf-caption rounded-full bg-primary/10 px-3 py-1 font-bold text-primary">
-                  {t('dashboard.learn.heroBadge')}
-                </span>
-                {totalLessons > 0 && (
-                  <span className="lf-caption lf-number rounded-full bg-accent-soft px-3 py-1 font-bold text-accent-strong">
-                    {totalPassed}/{totalLessons} {t('learn.state.passed')}
-                  </span>
-                )}
-              </div>
               <h1 className="lf-display-lg text-content">
                 {firstName ? t('dashboard.learn.greeting', { name: firstName }) : t('dashboard.learn.greetingAnon')}
               </h1>
