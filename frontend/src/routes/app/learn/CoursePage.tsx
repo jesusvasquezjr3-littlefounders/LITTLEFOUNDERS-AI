@@ -14,8 +14,8 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 
 /*
  * /learn/:courseSlug — Brilliant.org-style Course Detail & Interactive Syllabus.
- * Desktop (≥1024px): Dual-column split layout with sticky Course Overview sidebar & chapter syllabus.
- * Mobile (<768px): Responsive single-column structured chapter modules.
+ * Fixed sticky Course Hero Header & Left "Plan de Estudios" sidebar.
+ * Lessons list scrolls top-to-bottom under sticky headers.
  */
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
@@ -118,50 +118,52 @@ export function CoursePage() {
   const courseTitle = localizedText(tree.course.title, locale, tree.course.slug);
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* Top Header Card */}
-      <Reveal>
-        <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/90 to-primary-soft/30 p-6 shadow-glass">
-          <div className="mb-3">
-            <Link
-              to="/learn"
-              className="lf-caption inline-flex items-center gap-1.5 font-bold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              <Icon name="arrow_back" className="!text-[16px]" aria-hidden />
-              {t('dashboard.nav.learn')}
-            </Link>
-          </div>
-
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge className="bg-primary-soft text-primary font-bold">
-                  {t('learn.chapters', { num: tree.adventures.length })}: {tree.adventures.length}
-                </Badge>
-                <Badge className="bg-accent-soft text-accent-strong font-bold">
-                  {t('learn.totalLessons', { count: tree.course.progress.total })}
-                </Badge>
-              </div>
-              <h1 className="lf-display-lg text-content">{courseTitle}</h1>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
+    <div className="flex flex-col gap-6">
+      {/* Sticky Fixed Top Course Hero Header */}
+      <div className="sticky top-0 z-30 pt-1 pb-2 backdrop-blur-md bg-background/80 transition-all">
+        <Reveal>
+          <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/95 to-primary-soft/30 p-5 shadow-glass md:p-6">
+            <div className="mb-2">
               <Link
-                to={`/learn/${tree.course.slug}/territory`}
-                className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-all hover:bg-primary hover:text-on-primary hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                to="/learn"
+                className="lf-caption inline-flex items-center gap-1.5 font-bold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
-                <Icon name="map" className="text-[18px]" aria-hidden />
-                {t('learn.territory.open')}
+                <Icon name="arrow_back" className="!text-[16px]" aria-hidden />
+                {t('dashboard.nav.learn')}
               </Link>
             </div>
-          </div>
-        </header>
-      </Reveal>
 
-      {/* Main Responsive Layout: Sticky Sidebar on Desktop, Stacked on Mobile */}
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-primary-soft text-primary font-bold">
+                    {t('learn.chapters', { num: tree.adventures.length })}: {tree.adventures.length}
+                  </Badge>
+                  <Badge className="bg-accent-soft text-accent-strong font-bold">
+                    {t('learn.totalLessons', { count: tree.course.progress.total })}
+                  </Badge>
+                </div>
+                <h1 className="lf-display-lg text-content">{courseTitle}</h1>
+              </div>
+
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  to={`/learn/${tree.course.slug}/territory`}
+                  className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-all hover:bg-primary hover:text-on-primary hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  <Icon name="map" className="text-[18px]" aria-hidden />
+                  {t('learn.territory.open')}
+                </Link>
+              </div>
+            </div>
+          </header>
+        </Reveal>
+      </div>
+
+      {/* Main Layout: Pinned Sticky Sidebar on Desktop, Lessons Scroll Underneath */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-        {/* Left Sticky Sidebar (Desktop Only Summary & Quick Jump) */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-6 flex flex-col gap-6">
+        {/* Left Pinned Sticky Sidebar ("Plan de Estudios") */}
+        <aside className="lg:col-span-4 lg:sticky lg:top-36 z-20 flex flex-col gap-6">
           <Card className="flex flex-col gap-5 p-6 border-outline/60 shadow-glass">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline/50 bg-primary-soft/40">
@@ -193,7 +195,7 @@ export function CoursePage() {
             {/* Quick Chapter Jump Navigation */}
             <div className="flex flex-col gap-2 pt-3 border-t border-outline/50">
               <h4 className="lf-label text-content-muted">{t('learn.chapters')}</h4>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1 max-h-64 overflow-y-auto">
                 {tree.adventures.map((adventure, idx) => {
                   const isCurrentOpen = adventure.id === openAdventureId;
                   const isAdvCompleted = adventure.state === 'completed';
@@ -232,7 +234,7 @@ export function CoursePage() {
           </Card>
         </aside>
 
-        {/* Right Main Chapter Syllabus Accordion Cards */}
+        {/* Right Main Column: Scrollable Lessons Syllabus */}
         <main className="lg:col-span-8 flex flex-col gap-6">
           {tree.adventures.map((adventure, idx) => {
             const isOpen = adventure.id === openAdventureId;

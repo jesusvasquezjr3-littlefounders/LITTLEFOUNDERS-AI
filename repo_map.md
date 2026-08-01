@@ -141996,7 +141996,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Badge, Button, Icon } from '@/components/ui';
+import { Badge, Icon } from '@/components/ui';
 import type { CharacterId } from '@/components/characters/control/types';
 import { localizedText, type LessonNode } from './types';
 
