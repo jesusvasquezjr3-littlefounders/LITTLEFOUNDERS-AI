@@ -127,25 +127,35 @@ export function CoursePage() {
 
   return (
     <div>
-      <header>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/90 to-primary-soft/30 p-5 shadow-glass md:p-6">
+        <div className="mb-2">
+          <Link
+            to="/learn"
+            className="lf-caption inline-flex items-center gap-1.5 font-bold text-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Icon name="arrow_back" className="!text-[16px]" aria-hidden />
+            {t('dashboard.nav.learn')}
+          </Link>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="lf-display-lg text-content">{localizedText(tree.course.title, locale, tree.course.slug)}</h1>
           <Link
             to={`/learn/${tree.course.slug}/territory`}
-            className="lf-label flex min-h-11 items-center gap-1.5 rounded-full border border-outline/70 bg-surface px-4 font-bold text-primary shadow-glass-sm transition-colors hover:border-primary/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-all hover:bg-primary hover:text-on-primary hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           >
             <Icon name="map" className="text-[18px]" aria-hidden />
             {t('learn.territory.open')}
           </Link>
         </div>
-        <div className="mt-3 flex items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <ProgressBar
             value={tree.course.progress.pct}
+            tone="accent"
             label={t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
-            className="max-w-xs"
+            className="max-w-xs flex-1"
           />
-          <span className="lf-caption lf-number shrink-0 font-bold text-content-muted">
-            {t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
+          <span className="lf-caption lf-number shrink-0 rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted">
+            {t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })} ({tree.course.progress.pct}%)
           </span>
         </div>
       </header>

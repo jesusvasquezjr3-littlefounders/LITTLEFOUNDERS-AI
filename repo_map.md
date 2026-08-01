@@ -4478,26 +4478,6 @@ export default defineConfig({
 });
 ```
 
-### convert.js
-
-```
-const hslToRgb = (h, s, l) => {
-  s /= 100; l /= 100;
-  const k = n => (n + h / 30) % 12;
-  const a = s * Math.min(l, 1 - l);
-  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
-  return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
-};
-
-const parseHsl = (str) => {
-  const parts = str.trim().replace(/%/g, '').split(' ');
-  return hslToRgb(parseFloat(parts[0]), parseFloat(parts[1]), parseFloat(parts[2]));
-};
-
-const light = {
-  background: '249 100% 99%',
-```
-
 ### coursegen/AGENTS.md
 
 ```
@@ -137042,46 +137022,6 @@ export default defineConfig({
 });
 ```
 
-### fix_glass.sh
-
-```
-#!/bin/bash
-
-# Find all tsx files and replace bg-surface/90 with bg-surface/60 and backdrop-blur-md with backdrop-blur-xl
-find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/bg-surface\/90/bg-surface\/60/g' {} +
-find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/bg-surface\/80/bg-surface\/50/g' {} +
-find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/backdrop-blur-md/backdrop-blur-xl/g' {} +
-find frontend/src -name "*.tsx" -type f -exec perl -pi -e 's/backdrop-blur-sm/backdrop-blur-lg/g' {} +
-
-# Same for index.css
-perl -pi -e 's/surface\/72%/surface\/50%/g' DESIGN.md
-perl -pi -e 's/blur\(24px\)/blur(32px)/g' DESIGN.md
-perl -pi -e 's/surface\) \/ 0\.72/surface) \/ 0.50/g' frontend/src/index.css
-perl -pi -e 's/blur\(24px\)/blur(32px)/g' frontend/src/index.css
-
-echo "Done"
-```
-
-### fix_glass_v2.sh
-
-```
-#!/bin/bash
-
-# Update DESIGN.md
-perl -pi -e 's/surface\/72%/surface\/50%/g' DESIGN.md
-perl -pi -e 's/blur\(16px\)/blur(32px)/g' DESIGN.md
-perl -pi -e 's/white\/8%/white\/6%/g' DESIGN.md
-perl -pi -e 's/white\/14%/white\/10%/g' DESIGN.md
-
-# Update index.css
-perl -pi -e 's/surface\) \/ 0\.72/surface) \/ 0.50/g' frontend/src/index.css
-perl -pi -e 's/blur\(16px\)/blur(32px)/g' frontend/src/index.css
-perl -pi -e 's/white \/ 0\.08/white \/ 0.06/g' frontend/src/index.css
-perl -pi -e 's/white \/ 0\.14/white \/ 0.10/g' frontend/src/index.css
-
-echo "Done"
-```
-
 ### frontend/.vercel/node/package-manifest.json
 
 ```
@@ -138681,6 +138621,86 @@ export const CHARACTER_EMOTIONS = [
   'proud',
 ```
 
+### frontend/src/components/ui/Badge.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/* /DESIGN.md §Components — Badge: pill, soft fill, bold caption type. */
+
+export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
+  return (
+    <span
+      className={cn(
+        'lf-caption inline-flex items-center rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted',
+        className,
+      )}
+      {...props}
+    />
+  );
+```
+
+### frontend/src/components/ui/Button.tsx
+
+```
+import type { ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
+ * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
+ *
+ * Variant = the action's color, per the Action Color Contract (/DESIGN.md
+ * §Colors): primary = the one main CTA (indigo), secondary = alternative/
+ * lower-emphasis (outlined glass), success = positive completion, danger =
+ * destructive. Never pick a variant by taste — pick by what the action does.
+ */
+
+type Variant = 'primary' | 'secondary' | 'success' | 'danger';
+
+```
+
+### frontend/src/components/ui/Card.tsx
+
+```
+import type { HTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Card: liquid glass surface with rim light,
+ * hairline edge, and layered atmospheric depth.
+ * `onInverse` = deep glass variant for inverse bands.
+ * `hero` = larger radius + padding for banner cards.
+ */
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  hero?: boolean;
+  interactive?: boolean;
+  onInverse?: boolean;
+}
+```
+
+### frontend/src/components/ui/Checkbox.tsx
+
+```
+import { useId, type InputHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
+import { Icon } from './Icon';
+
+/*
+ * /DESIGN.md §Components — Checkbox: custom square-rounded control (native
+ * appearance suppressed), primary fill when checked, label + optional help
+ * text form one large tap target.
+ */
+
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+  label: string;
+  help?: string;
+}
+
+```
+
 ### frontend/src/components/ui/Dropdown.tsx
 
 ```
@@ -138772,7 +138792,7 @@ import { cn } from '@/lib/utils';
  * size "md" = 48px rounded-md (stats/rows) · "lg" = 56px rounded-lg (feature cards).
  */
 
-type Tone = 'primary' | 'secondary' | 'accent' | 'success' | 'warning';
+type Tone = 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'delight';
 type Size = 'md' | 'lg';
 
 interface IconChipProps extends HTMLAttributes<HTMLSpanElement> {
@@ -138881,6 +138901,26 @@ interface StatCardProps {
    * 6-col KPI track leaves ~70-100px for the numeral, where `lf-display-lg`
 ```
 
+### frontend/src/components/ui/Table.tsx
+
+```
+import type { ReactNode } from 'react';
+import { Card } from '@/components/ui/Card';
+import { cn } from '@/lib/utils';
+
+/*
+ * /DESIGN.md §Components — Table (console-only; Data table grid category).
+ * The §1.11 mobile answer to a wide table is NEVER horizontal body scroll:
+ * below `md:` each row renders as a stacked compact card (primary line +
+ * caption pairs); from `md:` up it is a real <table> inside its own
+ * overflow-x-auto container. Never used on kid/parent product surfaces.
+ */
+
+export interface TableColumn<Row> {
+  key: string;
+  header: string;
+```
+
 ### frontend/src/components/ui/ThemeToggle.tsx
 
 ```
@@ -138921,86 +138961,6 @@ interface TrendChartProps {
   ariaLabel: string;
 ```
 
-### frontend/src/components/ui/badge.tsx
-
-```
-import type { HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/* /DESIGN.md §Components — Badge: pill, soft fill, bold caption type. */
-
-export function Badge({ className, ...props }: HTMLAttributes<HTMLSpanElement>) {
-  return (
-    <span
-      className={cn(
-        'lf-caption inline-flex items-center rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted',
-        className,
-      )}
-      {...props}
-    />
-  );
-```
-
-### frontend/src/components/ui/button.tsx
-
-```
-import type { ButtonHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Button: full pill (rounded-full), bold label,
- * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
- *
- * Variant = the action's color, per the Action Color Contract (/DESIGN.md
- * §Colors): primary = the one main CTA (indigo), secondary = alternative/
- * lower-emphasis (outlined glass), success = positive completion, danger =
- * destructive. Never pick a variant by taste — pick by what the action does.
- */
-
-type Variant = 'primary' | 'secondary' | 'success' | 'danger';
-
-```
-
-### frontend/src/components/ui/card.tsx
-
-```
-import type { HTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Card: liquid glass surface with rim light,
- * hairline edge, and layered atmospheric depth.
- * `onInverse` = deep glass variant for inverse bands.
- * `hero` = larger radius + padding for banner cards.
- */
-
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  hero?: boolean;
-  interactive?: boolean;
-  onInverse?: boolean;
-}
-```
-
-### frontend/src/components/ui/checkbox.tsx
-
-```
-import { useId, type InputHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-import { Icon } from './Icon';
-
-/*
- * /DESIGN.md §Components — Checkbox: custom square-rounded control (native
- * appearance suppressed), primary fill when checked, label + optional help
- * text form one large tap target.
- */
-
-interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  label: string;
-  help?: string;
-}
-
-```
-
 ### frontend/src/components/ui/index.ts
 
 ```
@@ -139019,26 +138979,6 @@ export { LoadingOverlay } from './LoadingOverlay';
 export { StatCard } from './StatCard';
 export { Field } from './Field';
 export { Checkbox } from './Checkbox';
-```
-
-### frontend/src/components/ui/table.tsx
-
-```
-import type { ReactNode } from 'react';
-import { Card } from '@/components/ui/Card';
-import { cn } from '@/lib/utils';
-
-/*
- * /DESIGN.md §Components — Table (console-only; Data table grid category).
- * The §1.11 mobile answer to a wide table is NEVER horizontal body scroll:
- * below `md:` each row renders as a stacked compact card (primary line +
- * caption pairs); from `md:` up it is a real <table> inside its own
- * overflow-x-auto container. Never used on kid/parent product surfaces.
- */
-
-export interface TableColumn<Row> {
-  key: string;
-  header: string;
 ```
 
 ### frontend/src/i18n/en-US/admin.json
@@ -141937,15 +141877,15 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, IconChip, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { Badge, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
 /*
  * learn/ — the universal user's home. Course cards per /DESIGN.md §Screen
  * Recipes → Dashboard (md:grid-cols-2 lg:grid-cols-3 with ProgressBars).
- * Cards link into the gamified course map (routes/app/learn/CoursePage.tsx,
- * COURSE_ENGINE.md §2) with real server-computed progress.
+ * Liquid glass hero header + staggered reveal grid of gamified course cards.
  */
 ```
 
@@ -143059,26 +142999,6 @@ export default defineConfig({
   server: {
     port: 5173,
   },
-```
-
-### old_index.css
-
-```
-/* ── Animatable Glass Properties ── */
-@property --glass-badge-glow {
-  syntax: '<number>';
-  initial-value: 0;
-  inherits: false;
-}
-
-@property --glass-card-lift {
-  syntax: '<length>';
-  initial-value: 0px;
-  inherits: false;
-}
-
-@property --glass-border-alpha {
-  syntax: '<number>';
 ```
 
 ### package.json
