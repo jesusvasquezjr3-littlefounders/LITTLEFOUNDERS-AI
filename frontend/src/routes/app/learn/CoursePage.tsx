@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import { Card, Icon, LoadingOverlay, ProgressBar } from '@/components/ui';
+import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
@@ -146,17 +146,6 @@ export function CoursePage() {
             <Icon name="map" className="text-[18px]" aria-hidden />
             {t('learn.territory.open')}
           </Link>
-        </div>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <ProgressBar
-            value={tree.course.progress.pct}
-            tone="accent"
-            label={t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
-            className="max-w-xs flex-1"
-          />
-          <span className="lf-caption lf-number shrink-0 rounded-full bg-surface-sunken px-3 py-1 font-bold text-content-muted">
-            {t('learn.lessonsProgress', { passed: tree.course.progress.passed, total: tree.course.progress.total })} ({tree.course.progress.pct}%)
-          </span>
         </div>
       </header>
 
