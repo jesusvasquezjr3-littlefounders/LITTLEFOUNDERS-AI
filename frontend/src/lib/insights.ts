@@ -35,16 +35,12 @@ export type InsightEvent =
   | 'course_open' | 'lesson_start' | 'lesson_complete' | 'first_lesson_complete'
   | 'lesson_abandon' | 'segment_view' | 'segment_submit' | 'segment_retry'
   | 'hint_open' | 'explanation_view' | 'audio_replay' | 'results_view'
-  // `game_open` is the hub signal; `game_start`/`game_complete` are the play
-  // signals the Game Engine emits (0028 — they exist only now that something
-  // can actually produce them).
-  | 'game_open' | 'game_start' | 'game_complete' | 'task_view'
+  | 'task_view'
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke';
 
 export type InsightRouteClass =
   | 'learn'
-  | 'games'
   | 'tasks'
   | 'profile'
   | 'tutor'
@@ -323,7 +319,6 @@ export function classifyRoute(pathname: string): InsightRouteClass {
   const first = pathname.split('/').filter(Boolean)[0] ?? '';
   switch (first) {
     case 'learn': return 'learn';
-    case 'games': return 'games';
     case 'tasks': return 'tasks';
     case 'profile': return 'profile';
     case 'tutor': return 'tutor';

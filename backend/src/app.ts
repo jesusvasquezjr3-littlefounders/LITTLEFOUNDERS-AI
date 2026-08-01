@@ -6,7 +6,6 @@ import { adminRouter } from './routes/admin.js';
 import { familyRouter } from './routes/family.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
-import { gamesRouter } from './routes/games.js';
 import { learnRouter } from './routes/learn.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
@@ -50,11 +49,6 @@ export function createApp(): express.Express {
   // lessons and auth depend on, and a 429 here is invisible by design.
   app.use('/api/v1/events', eventsRouter());
   app.use(globalRateLimiter);
-  // Games sits UNDER the global limiter (it is ordinary product traffic) but
-  // ABOVE the 64kb json parser, because POST /:gameId/complete carries a replay
-  // input log. It brings its own express.json limit rather than raising the
-  // global one for every route — the same reason /api/v1/events parses its own.
-  app.use('/api/v1/games', gamesRouter());
   app.use(express.json({ limit: '64kb' }));
 
   app.use('/api/v1/auth', authRouter());

@@ -1,28 +1,24 @@
 name: backend CI
 
 # `npm test` here is not only vitest: backend's `test` script chains
-# `contract:check && vitest run`, and `contract:check` = `lesson-contract:check
-# && game-contract:check` — BOTH of which read files that live OUTSIDE backend/.
+# `contract:check && vitest run`, and `contract:check` = `lesson-contract:check`,
+# which reads files that live OUTSIDE backend/.
 # So this workflow's path filters must cover them or the gate is only reachable
 # by an operator running it by hand.
 #
 #   lesson-contract:check  diffs backend/src/lesson-contract/ against its
 #                          originals in frontend/src/lesson-engine/.
-#   game-contract:check    diffs backend/src/game-contract/ against its
-#                          originals in frontend/src/game-engine/ (plus the
-#                          character rig's closed id set).
 #
-# Core derives a game's reward by REPLAYING the player's input log through the
-# same pure simulation code the browser ran, so those modules are COPIED here
-# (CLAUDE.md §1.2: no workspaces) — and a copy drifts. The drift is SILENT:
-# Zod strips unknown keys by default, so a field the frontend added and the
-# backend copy lacks is not rejected on the way in, it is DELETED. The replay
-# then scores a document that is not the one the child played, and the wrong
-# score reaches production with nothing logged anywhere.
+# backend/src/lesson-contract/ is a COPY of the frontend originals (CLAUDE.md
+# §1.2: no workspaces), and a copy drifts. The drift is SILENT: Zod strips
+# unknown keys by default, so a field the frontend added and the backend copy
+# lacks is not rejected on the way in, it is DELETED. Grading then runs against
+# a document that is not the one the child was shown, with nothing logged
+# anywhere.
 #
-# Editing a mechanic's simulate.ts touches no backend file, so without these
-# frontend filters the only workflows that fire are frontend CI and gamegen CI
-# — neither of which runs game-contract:check. Keep this list in sync with the
+# Editing a lesson-engine module touches no backend file, so without this
+# frontend filter the only workflow that fires is frontend CI, which never
+# runs lesson-contract:check. Keep this list in sync with the
 # `path.resolve(here, …)` targets in backend/scripts/*.ts; the regression test
 # backend/src/__tests__/ciPathFilters.test.ts derives them and fails if a new
 # cross-package read is added without a matching filter.
@@ -34,16 +30,12 @@ on:
       - 'backend/**'
       - 'database/types/**'
       - 'frontend/src/lesson-engine/**'
-      - 'frontend/src/game-engine/**'
-      - 'frontend/src/components/characters/control/types.ts'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
       - 'backend/**'
       - 'database/types/**'
       - 'frontend/src/lesson-engine/**'
-      - 'frontend/src/game-engine/**'
-      - 'frontend/src/components/characters/control/types.ts'
       - '.github/workflows/backend-ci.yml'
 
 jobs:
@@ -63,6 +55,6 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
-      # = contract:check (lesson + game parity) && vitest run (backend/package.json).
+      # = contract:check (lesson parity) && vitest run (backend/package.json).
       # If that chain is ever unbundled, add the checks back as explicit steps.
       - run: npm test

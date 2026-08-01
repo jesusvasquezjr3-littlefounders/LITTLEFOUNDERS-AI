@@ -6,26 +6,15 @@
 
 /**
  * Maps checkpoint failedFrom values → i18n key suffixes for stage labels.
- *
- * Both producers write to the SHARED `generation_slots` table, so this map spans
- * both vocabularies. The two overlap only on `pending`/`planned`/`localized`/
- * `illustrated`; every unmapped value collapses to `unknown`, which is why the
- * Arcade states have to be listed here — without them a game run's failure
- * heatmap flattens into one meaningless `Unknown` bar.
+ * Every unmapped value collapses to `unknown`.
  */
 const FAILED_FROM_TO_STAGE: Record<string, string> = {
-  // Shared bookends + shared late stages.
   pending: 'pending',
   planned: 'planning',
   localized: 'localizing',
   illustrated: 'illustrating',
-  // Forge (lessons).
   written: 'writing',
   reviewed: 'reviewing',
-  // Arcade (games) — checkpoint states from GAME_ENGINE.md §9.
-  authored: 'authoring',
-  simulated: 'simulating',
-  judged: 'judging',
   unknown: 'unknown',
 };
 

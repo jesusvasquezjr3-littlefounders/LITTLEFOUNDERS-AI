@@ -1,6 +1,6 @@
 # LittleFounders
 
-**LittleFounders** is a gamified financial-literacy and entrepreneurship learning platform for kids and families. Kids learn through highly gamified courses, an AI tutor, educational minigames, and parent-assigned tasks with rewards — under verified parental control.
+**LittleFounders** is a gamified financial-literacy and entrepreneurship learning platform for kids and families. Kids learn through highly gamified courses, an AI tutor, and parent-assigned tasks with rewards — under verified parental control.
 
 > **v2 — total platform rebuild.** `main` is the v2 monorepo and the only branch that deploys (v1's last state is reachable only via git history, see RUNBOOK.md). `littlefounders_v2` was the working branch during the rewrite and is no longer developed on.
 >
@@ -14,10 +14,9 @@
 |---|---|---|---|---|---|
 | [`database/`](database/) | Vault | Schema, migrations, RLS, seeds — Supabase self-hosted | — | Railway (Supabase stack) | `auth-b2c.littlefounders.ai` |
 | [`backend/`](backend/) | Core | Main API: auth, roles, families, tasks, profiles | 4000 | Railway | `api-b2c.littlefounders.ai` |
-| [`frontend/`](frontend/) | — | React SPA: learn, tutor, games, tasks, profile | 5173 | Vercel | `littlefounders.ai` |
+| [`frontend/`](frontend/) | — | React SPA: learn, tutor, tasks, profile | 5173 | Vercel | `littlefounders.ai` |
 | [`coursegen/`](coursegen/) | Forge | Course & lesson generation (DeepSeek + Qwen) | 4001 | Railway | — (internal-only, no public domain) |
 | [`audiogen/`](audiogen/) | Echo | TTS audio for lessons (3 locales) | 4002 | Railway | — (internal-only, no public domain) |
-| [`gamegen/`](gamegen/) | Arcade | Personalized educational minigame generation | 4003 | Railway | — (internal-only, no public domain) |
 | [`parent-id-check/`](parent-id-check/) | Guardian | Guardian identity verification (kid/bigfounder gating) | 4004 | Railway | — (internal-only, no public domain) |
 | [`email-server/`](email-server/) | Courier | Transactional email — Haraka SMTP → Amazon SES relay | 4005 | Railway (internal-only) | **live** — GoTrue auth mail via SES |
 | [`filebase/`](filebase/) | Depot | Media storage — lesson audio & generated images (Railway volume) | 4006 | Railway | `media-b2c.littlefounders.ai` |

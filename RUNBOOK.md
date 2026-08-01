@@ -73,9 +73,9 @@ through Kong returns 201/200/200.
    only add OOM risk — measure before capping any Node service; only cap if
    steady-state RSS is genuinely high (>~400 MB).
 3. ✅ **Scale-to-zero (Railway service → Settings → Serverless) — APPLIED** to
-   the 8 services with zero live-user traffic: `studio` (admin dashboard),
+   the 7 services with zero live-user traffic: `studio` (admin dashboard),
    `meta` (studio-only), `storage`/`supavisor`/`realtime` (deployed but unused
-   by app code), `coursegen`/`audiogen`/`gamegen` (operator-triggered
+   by app code), `coursegen`/`audiogen` (operator-triggered
    generation). They sleep after ~10-15 min idle and wake on first request;
    cold start is irrelevant for admin/generation and they receive no user
    traffic. Combined ~$8/mo → near-$0 while asleep.

@@ -25,10 +25,11 @@ import {
  * an interactive React Flow canvas. Nodes are colored by slot activity: gray
  * (idle), papaya pulse (active), green (all done).
  *
- * The stage list is PER-KIND (see generationTypes.ts): Forge lesson runs and
- * Arcade game runs share the telemetry tables but not the stage vocabulary, so
- * the list is derived from the run rather than hardcoded. A hardcoded Forge list
- * rendered a live game run as a row of empty pills.
+ * The stage list is PER-KIND (see generationTypes.ts): these telemetry tables
+ * are shared across generation pipelines but not the stage vocabulary, so the
+ * list is derived from the run rather than hardcoded (a hardcoded Forge list
+ * once rendered a live Arcade game run — since removed — as a row of empty
+ * pills).
  */
 
 const NODE_W = 140;

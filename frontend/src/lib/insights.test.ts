@@ -138,7 +138,6 @@ describe('session dedup', () => {
 describe('classifyRoute', () => {
   it.each([
     ['/learn/course-1/territory', 'learn'],
-    ['/games', 'games'],
     ['/tasks/123', 'tasks'],
     ['/profile/settings', 'profile'],
     ['/tutor', 'tutor'],

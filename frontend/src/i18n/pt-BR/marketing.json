@@ -20,7 +20,7 @@
     "problemTitle": "O problema",
     "problemBody": "Dinheiro é um dos assuntos mais importantes da vida — e um dos menos ensinados. A maioria das crianças cresce sem nunca praticar como poupar, planejar um orçamento ou construir algo próprio.",
     "solutionTitle": "Nossa solução",
-    "solutionBody": "Lições curtas e altamente gamificadas, um tutor de IA que se adapta a cada criança, minijogos que fixam os conceitos e tarefas em família com recompensas reais — tudo sob controle parental verificado."
+    "solutionBody": "Lições curtas e altamente gamificadas, um tutor de IA que se adapta a cada criança, e tarefas em família com recompensas reais — tudo sob controle parental verificado."
   },
   "fact": {
     "stat": "1 em cada 3",
@@ -48,10 +48,6 @@
     "f3": {
       "title": "Lições interativas",
       "body": "Sem aulas expositivas. Arraste, solte e construa seu caminho por cada conceito."
-    },
-    "f4": {
-      "title": "Jogos de aprendizado",
-      "body": "Minijogos ligados a cada lição para que os conceitos fiquem brincando."
     },
     "f5": {
       "title": "Tarefas em família",
@@ -83,7 +79,7 @@
   "pages": {
     "howItWorks": {
       "title": "Como funciona",
-      "description": "Cursos, tutor de IA, jogos e tarefas em família — como tudo se encaixa."
+      "description": "Cursos, tutor de IA e tarefas em família — como tudo se encaixa."
     },
     "families": {
       "title": "Famílias",

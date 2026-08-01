@@ -69,7 +69,7 @@ type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { s
 
 const DAY_OPTIONS = [7, 30, 90, 365] as const;
 const ROLE_OPTIONS = ['anon', 'universal', 'parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
-const SURFACE_OPTIONS = ['learn', 'games', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
+const SURFACE_OPTIONS = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 
 export function AdminInsightsPage() {
   const { t, i18n } = useTranslation();

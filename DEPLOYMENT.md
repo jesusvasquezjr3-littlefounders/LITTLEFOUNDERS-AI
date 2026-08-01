@@ -19,7 +19,7 @@
 | Core (backend) | **Railway** (project `littlefounders-b2c`) | the ONLY service the SPA calls | `api-b2c.littlefounders.ai` |
 | Vault gateway | **Railway** — Kong | Supabase self-hosted stack entrypoint | `auth-b2c.littlefounders.ai` |
 | Media (Depot) | **Railway** — filebase | PII-free media reads; internal writes | `media-b2c.littlefounders.ai` |
-| Internal services | **Railway** — coursegen, audiogen, gamegen, parent-id-check, email-server | service-to-service only | **no public domain (private networking only)** |
+| Internal services | **Railway** — coursegen, audiogen, parent-id-check, email-server | service-to-service only | **no public domain (private networking only)** |
 | Vault internals | **Railway** — db, auth, rest, realtime, storage, meta, supavisor, studio | reached only via Kong / private net | no public domain |
 | Cache/limit | **Railway** — Redis | rate-limit store | no public domain |
 
@@ -69,7 +69,7 @@ prevented at two levels:
 
 - **Public surface is minimal:** only Core (`api-b2c`), Kong (`auth-b2c`), and
   Depot reads (`media-b2c`) are reachable from the internet. Internal services
-  (coursegen/audiogen/gamegen/parent-id-check) and all Vault internals have **no
+  (coursegen/audiogen/parent-id-check) and all Vault internals have **no
   public domain** — they're reached only over Railway private networking.
 - **Service-to-service auth:** internal endpoints require the
   `x-internal-api-key` header, compared with **`crypto.timingSafeEqual`** (length
@@ -170,7 +170,7 @@ decision, every deploy is an **upload authenticated by a token secret**:
 | Tier | Scale-down (auto) | Scale-up (under load) |
 |---|---|---|
 | Frontend (Vercel) | ✅ automatic (CDN + serverless) | ✅ automatic |
-| Idle Railway services (studio, meta, storage, supavisor, realtime, coursegen, audiogen, gamegen) | ✅ **Serverless scale-to-zero** (sleep after ~10-15 min idle, wake on request) | on request (cold start) |
+| Idle Railway services (studio, meta, storage, supavisor, realtime, coursegen, audiogen) | ✅ **Serverless scale-to-zero** (sleep after ~10-15 min idle, wake on request) | on request (cold start) |
 | Hot-path Railway services (kong, auth, rest, db, backend, Redis, filebase, parent-id-check) | — (kept always-warm) | **manual but trivial** — see below |
 | Postgres (db) | — | vertical only (bigger instance); no read-replicas/HA yet |
 
@@ -205,7 +205,7 @@ removed, all reversible):
    a cap below real need only adds OOM risk. Only cap if steady-state RSS is
    genuinely high (>~400 MB).
 3. **Scale-to-zero every service off the hot path** (Settings → Serverless).
-   Sleepable = admin-only (studio) + operator-only (coursegen/audiogen/gamegen) +
+   Sleepable = admin-only (studio) + operator-only (coursegen/audiogen) +
    deployed-but-unused (storage/supavisor/realtime/meta). **Never** sleep the hot
    path (§6 table). Combined ~$8/mo → ~$0 while asleep.
 

@@ -48,29 +48,6 @@
       "streak": "Sequência de dias",
       "longestStreak": "Melhor sequência"
     },
-    "games": {
-      "title": "Jogos",
-      "subtitle": "Cada jogo pratica algo que este curso já ensinou.",
-      "noneYet": "Ainda não jogou nenhum jogo",
-      "summary_one": "{{count}} jogo jogado · {{xp}} XP",
-      "summary_other": "{{count}} jogos jogados · {{xp}} XP",
-      "emptyTitle": "O fliperama ainda está esperando",
-      "emptyBody": "Os jogos são liberados conforme as lições são concluídas. Sem pressa — eles estarão aqui quando der vontade de jogar.",
-      "stats": {
-        "played": "Jogos jogados",
-        "cleared": "Jogos concluídos",
-        "xp": "XP dos jogos",
-        "lastPlayed": "Jogou pela última vez",
-        "notYet": "Ainda não"
-      },
-      "row": {
-        "game": "Jogo",
-        "best": "Melhor {{score}}",
-        "notYet": "Ainda não jogado",
-        "plays_one": "{{count}} partida",
-        "plays_other": "{{count}} partidas"
-      }
-    },
     "insightsConsent": {
       "label": "Compartilhar dados de uso",
       "hint": "Ajude a melhorar as lições com sinais de uso. Você pode desativar quando quiser."

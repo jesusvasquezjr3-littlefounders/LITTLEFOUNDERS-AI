@@ -46,16 +46,13 @@ describe('GET /api/v1/family/kids', () => {
     expect(res.status).toBe(200);
     // Deliberately an exact-shape assertion, not a subset match: this test is the
     // PII whitelist for the family payload, so any field that appears here must be
-    // added on purpose. `games` is the Game Engine's parent-visibility block (§1.9
-    // makes parent visibility into kid activity a product invariant) and carries
-    // only aggregate counters — never a raw input log and nothing identifying.
+    // added on purpose.
     expect(res.body.data.kids).toEqual([
       {
         userId: KID_ID,
         displayName: 'Niño Test',
         username: 'ninotest',
         analyticsConsent: false,
-        games: { gamesPlayed: 0, gamesPassed: 0, totalPlays: 0, xpEarned: 0, lastPlayedAt: null },
       },
     ]);
   });

@@ -9,12 +9,12 @@ import { Badge, Card, Icon, IconChip } from '@/components/ui';
  * honestly that it's on the way.
  */
 /** Opening a locked surface IS the demand signal for building it. */
-const DEMAND_EVENT = { tutor: 'tutor_open', games: 'game_open', tasks: 'task_view' } as const;
+const DEMAND_EVENT = { tutor: 'tutor_open', tasks: 'task_view' } as const;
 
-export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'games' | 'tasks'; icon: string }) {
+export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks'; icon: string }) {
   const { t } = useTranslation();
   // These sections have no feature yet, but the INTENT to open them is real
-  // product data: "how many people tried Games this week" is a roadmap input
+  // product data: "how many people tried Tasks this week" is a roadmap input
   // (/INSIGHTS.md). No-op for unconsented kids.
   useEffect(() => {
     trackInsight(DEMAND_EVENT[section], { routeClass: section === 'tutor' ? 'tutor' : section });

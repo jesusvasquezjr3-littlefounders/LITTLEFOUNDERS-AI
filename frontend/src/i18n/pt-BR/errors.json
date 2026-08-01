@@ -17,8 +17,6 @@
     "LESSON_LOCKED": "Esta lição ainda não está desbloqueada — termine as anteriores primeiro.",
     "ATTEMPTS_EXHAUSTED": "Não há mais tentativas para esta pergunta.",
     "UNSUPPORTED_SEGMENT": "Esta parte da lição não pode ser avaliada agora.",
-    "GAME_LOCKED": "Este jogo ainda não está liberado — conclua uma lição do tema dele primeiro.",
-    "RESULT_REJECTED": "Não conseguimos confirmar esse resultado do jogo, então nenhum XP foi concedido.",
     "PULSE_UNCONFIGURED": "O analytics não está configurado nesta implantação.",
     "UPSTREAM_FAILED": "Um serviço interno não respondeu.",
     "ROLE_REJECTED": "O banco rejeitou essa mudança de papel (invariantes de papel).",

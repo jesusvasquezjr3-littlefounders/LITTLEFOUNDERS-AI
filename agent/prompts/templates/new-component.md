@@ -1,7 +1,7 @@
 ---
 template: new-component
 inputs:
-  section: "learn | tutor | games | tasks | profile | shared"
+  section: "learn | tutor | tasks | profile | shared"
   component: "component name (PascalCase)"
 ---
 

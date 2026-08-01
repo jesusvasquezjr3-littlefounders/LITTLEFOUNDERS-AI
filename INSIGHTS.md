@@ -88,8 +88,11 @@ Core /api/v1/admin/insights/* — 12 routes (admin/superadmin): calibration, act
 **Every event in the enum is emitted by real code.** A declared-but-unwired
 event is how a dashboard silently lies with an empty series, so 0025 deleted
 the three that nothing could produce (`video_play`, `game_complete`,
-`task_complete` — there is no video, and Games/Tasks are placeholder
-surfaces). They return in the same commit as the features that emit them.
+`task_complete` — there is no video, and Tasks is a placeholder surface).
+`game_open`/`game_start`/`game_complete` returned when the Game Engine shipped
+and were retired again as dead vocabulary when it was removed 2026-07-31
+(WALKTHROUGH.md) — an event returns only in the same commit as the feature
+that emits it, and leaves in the same commit that feature does.
 
 | Group | Events | Emitted by |
 |---|---|---|
@@ -98,7 +101,7 @@ surfaces). They return in the same commit as the features that emit them.
 | Signup funnel | `signup_start` `signup_submit` `signup_complete` `login_complete` | Signup/Login pages; `signup_start` fires on first field FOCUS, so "started" means intent, not a pageview |
 | Activation | `course_open` `lesson_start` `lesson_complete` `first_lesson_complete` | CoursePage, LessonRoute, LessonPlayer; `first_lesson_complete` is SERVER-side (only Core sees `lessons_completed` before the update). `lesson_complete` fires ONLY on a pass — the results screen is reached on failure too, and counting those inflated the funnel's last step |
 | Lesson micro-behaviour | `segment_view` `segment_submit` `segment_retry` `hint_open` `explanation_view` `audio_replay` `results_view` `lesson_abandon` | LessonPlayer / LessonRoute. `value` carries attempt number, hint depth, score, seconds |
-| Surfaces | `game_open` `task_view` `tutor_open` `profile_edit` `avatar_edit` | Opening a locked surface IS the demand signal for building it |
+| Surfaces | `task_view` `tutor_open` `profile_edit` `avatar_edit` | Opening a locked surface IS the demand signal for building it |
 | Retention & family | `streak_extend` `territory_view` `consent_grant` `consent_revoke` | SERVER-side — only Core can assert a streak truthfully or witness a consent decision |
 
 Deliberately NOT events: per-exercise ANSWERS (authoritative in

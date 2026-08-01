@@ -14,7 +14,6 @@ import * as experiments from '../services/experiments.js';
 import * as alerts from '../services/alerts.js';
 import * as lessons from '../services/lessons.js';
 import * as sessions from '../services/sessions.js';
-import * as games from '../services/games.js';
 
 // ── Reusable Zod schemas ─────────────────────────────────────────────
 
@@ -28,17 +27,6 @@ const metricSchema = z.enum(['dau', 'wau', 'mau', 'events', 'users', 'sessions',
 // rejected here at the edge (400) rather than failing deep inside DuckDB.
 const bucketMetricSchema = z.enum(['events', 'dau', 'users', 'sessions']);
 const granularitySchema = z.enum(['hour', 'day', 'week', 'month']).default('day');
-
-// The Arcade surface. `windowDays` and `days` are interpolated into an
-// INTERVAL literal downstream (DuckDB will not bind a parameter inside
-// `INTERVAL '?' DAY`), so the integer bound here is the FIRST of two gates —
-// `assertDayCount()` in db/queries.ts is the second. Neither may be relaxed.
-const gameWindowSchema = z.coerce.number().int().min(1).max(365);
-// A closed set, mirroring `resolveGameDimension`'s allowlist exactly. The
-// dimension is the one input that decides which SQL column expression is
-// built, so it is rejected here rather than sanitised: caller text must never
-// reach the query string (dataintel/AGENTS.md, "Known pitfalls").
-const gameDimensionSchema = z.enum(['game', 'mechanic']);
 
 const customFunnelSchema = z.object({
   steps: z.array(z.string().min(1)).min(2).max(10),
@@ -213,82 +201,6 @@ export function intelRouter(): Router {
       const limit = limitSchema.default(200).parse(req.query.limit ?? '200');
       const result = await sessions.getSessionDepth(days, limit);
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Session depth data unavailable');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  // ═══ Games (Arcade) ════════════════════════════════════════════════
-
-  router.get('/games/funnel', async (req, res) => {
-    try {
-      const windowDays = gameWindowSchema.default(7).parse(req.query.windowDays ?? '7');
-      const result = await games.getGameFunnel(windowDays);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Game funnel unavailable');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/games/completion', async (req, res) => {
-    try {
-      const days = gameWindowSchema.default(30).parse(req.query.days ?? '30');
-      const result = await games.getGameCompletion(days);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Game completion data unavailable');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/games/vs-lessons', async (req, res) => {
-    try {
-      const days = gameWindowSchema.default(30).parse(req.query.days ?? '30');
-      const result = await games.getGamesVsLessons(days);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Surface comparison unavailable');
-      return ok(res, result);
-    } catch (err) {
-      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/games/dimensions', async (_req, res) => {
-    try {
-      const result = await games.getGameDimensionCapabilities();
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Game dimension probe unavailable');
-      return ok(res, result);
-    } catch (err) {
-      return fail(res, 500, 'INTERNAL', (err as Error).message);
-    }
-  });
-
-  router.get('/games/breakdown', async (req, res) => {
-    try {
-      const dimension = gameDimensionSchema.parse(req.query.dimension);
-      const limit = limitSchema.default(50).parse(req.query.limit ?? '50');
-      const result = await games.getGameBreakdown(dimension, limit);
-      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Game breakdown unavailable');
-      // Three outcomes, three distinct statuses, on purpose:
-      //   400 VALIDATION_ERROR    — the dimension is not one we can ever express
-      //   502 DATA_UNAVAILABLE    — the warehouse failed to answer (transient)
-      //   501 DIMENSION_UNAVAILABLE — the query is fine, the warehouse simply does
-      //       not carry this dimension YET (the sync does not map game_id).
-      // Collapsing the third into an empty 200 would report "no games were
-      // played" for a warehouse that cannot see games at all.
-      if (!result.available) {
-        return fail(
-          res,
-          501,
-          'DIMENSION_UNAVAILABLE',
-          `Game breakdown by '${result.dimension}' needs warehouse objects that do not exist yet: ${result.missing.join(', ')}`,
-        );
-      }
       return ok(res, result);
     } catch (err) {
       if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);

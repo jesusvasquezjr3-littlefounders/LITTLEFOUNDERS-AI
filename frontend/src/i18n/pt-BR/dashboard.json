@@ -7,7 +7,6 @@
   "nav": {
     "learn": "Aprenda",
     "tutor": "Tutor IA",
-    "games": "Jogos",
     "tasks": "Tarefas",
     "lockedBadge": "Tutor",
     "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
@@ -34,10 +33,6 @@
     "tutor": {
       "title": "Seu tutor pessoal com IA",
       "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios — um tutor amigável que explica no seu ritmo chegará a este espaço."
-    },
-    "games": {
-      "title": "Jogos que ensinam de verdade",
-      "body": "Aqui vão morar minijogos conectados ao que você aprende nos seus cursos. Jogue, ganhe e suba de nível nas suas habilidades com dinheiro."
     },
     "tasks": {
       "title": "Tarefas e recompensas",

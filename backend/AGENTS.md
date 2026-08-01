@@ -4,12 +4,12 @@
 
 ## Mission
 
-The main API and the **only** service the frontend calls. Owns auth session handling (against Supabase GoTrue), the 6-role model enforcement, families & guardian links, tasks & rewards, and profiles/avatars. Orchestrates internal services (Forge, Echo, Arcade, Guardian, Courier) via `INTERNAL_API_KEY` service-to-service calls.
+The main API and the **only** service the frontend calls. Owns auth session handling (against Supabase GoTrue), the 6-role model enforcement, families & guardian links, tasks & rewards, and profiles/avatars. Orchestrates internal services (Forge, Echo, Guardian, Courier) via `INTERNAL_API_KEY` service-to-service calls.
 
 ## Owns / does not own
 
 - **Owns:** `/api/v1/*` public API, role middleware, family/guardian-link business logic, task assignment/rewards, profile & avatar persistence, orchestration of internal services.
-- **Does NOT own:** schema & RLS (→ `database/`), content generation (→ coursegen/gamegen), TTS (→ audiogen), identity verification itself (→ parent-id-check — Core only consumes its verdicts), email sending (→ email-server).
+- **Does NOT own:** schema & RLS (→ `database/`), content generation (→ coursegen), TTS (→ audiogen), identity verification itself (→ parent-id-check — Core only consumes its verdicts), email sending (→ email-server).
 
 ## Invariants that bite here
 

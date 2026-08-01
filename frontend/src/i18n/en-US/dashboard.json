@@ -7,7 +7,6 @@
   "nav": {
     "learn": "Learn",
     "tutor": "AI Tutor",
-    "games": "Games",
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
     "lockedHint": "Unlocks when your account becomes a verified Tutor",
@@ -34,10 +33,6 @@
     "tutor": {
       "title": "Your personal AI tutor",
       "body": "Ask anything about money, saving, and business — a friendly tutor that explains at your pace is coming to this space."
-    },
-    "games": {
-      "title": "Games that teach for real",
-      "body": "Minigames tied to what you learn in your courses will live here. Play, earn, and level up your money skills."
     },
     "tasks": {
       "title": "Tasks & rewards",

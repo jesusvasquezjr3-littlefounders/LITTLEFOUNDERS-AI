@@ -34,8 +34,6 @@
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
-| Game Engine (mechanics, GameDocument manifest contract, determinism/replay, rewards) | GAME_ENGINE.md | all |
-| Games generation pipeline (games catalog, Arcade stages, bot/winnability gate, judge) | gamegen/AGENTS.md · contract + stage semantics: /GAME_ENGINE.md | all |
 | AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
@@ -53,7 +51,6 @@
 | coursegen (Forge) | coursegen/AGENTS.md · lesson contract: /LESSON_ENGINE.md · pipeline spec: /COURSE_ENGINE.md |
 | audiogen (Echo) | audiogen/AGENTS.md |
 | picturegen (Prism) | picturegen/AGENTS.md |
-| gamegen (Arcade) | gamegen/AGENTS.md · game contract + pipeline spec: /GAME_ENGINE.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |
 | filebase (Depot) | filebase/AGENTS.md |

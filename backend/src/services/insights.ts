@@ -32,18 +32,21 @@ export const RECORDABLE_EVENTS = [
   'lesson_abandon', 'segment_view', 'segment_submit', 'segment_retry',
   'hint_open', 'explanation_view', 'audio_replay', 'results_view',
   // other surfaces. task_complete is deliberately ABSENT: Tasks is still a
-  // placeholder surface, so nothing can emit it. This list must mirror the
-  // 0028 CHECK exactly — a value Core accepts but Postgres rejects fails the
+  // placeholder surface, so nothing can emit it. This list must be a SUBSET
+  // of the 0028 CHECK — a value Core accepts but Postgres rejects fails the
   // INSERT for the entire 25-event batch, not just the offending row.
-  // game_start/game_complete return with the Game Engine that emits them
-  // (0025 removed game_complete as dead vocabulary on exactly that condition).
-  'game_open', 'game_start', 'game_complete', 'task_view',
+  // game_open/game_start/game_complete removed as dead vocabulary: the Game
+  // Engine that emitted them was removed 2026-07-31 (WALKTHROUGH.md) and no
+  // code path emits them anymore. The 0028 CHECK still permits them at the
+  // DB level (narrower app-side vocabulary than the DB allows is safe); no
+  // migration is needed to remove app-side support for a value.
+  'task_view',
   'profile_edit', 'avatar_edit', 'tutor_open',
   // retention / family
   'streak_extend', 'territory_view', 'consent_grant', 'consent_revoke',
 ] as const;
 
-export const ROUTE_CLASSES = ['learn', 'games', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
+export const ROUTE_CLASSES = ['learn', 'tasks', 'profile', 'tutor', 'family', 'admin', 'marketing', 'other'] as const;
 export const DEVICES = ['mobile', 'tablet', 'desktop'] as const;
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 export const REFERRER_CLASSES = ['direct', 'search', 'social', 'referral', 'internal', 'campaign'] as const;
@@ -74,12 +77,6 @@ export interface LearningEventInsert {
   event: RecordableEvent;
   route_class?: RouteClass | null;
   lesson_id?: string | null;
-  /**
-   * Which game an event is about (0028). A content id like lesson_id — the id
-   * of a row in `games`, never anything that identifies a person — and, like
-   * lesson_id, carried WITHOUT a foreign key so history survives republish.
-   */
-  game_id?: string | null;
   segment_id?: string | null;
   value?: number | null;
   session_id?: string | null;
@@ -541,13 +538,13 @@ export interface ExportFilters {
 /** Columns pulled from the table. session_id never reaches the file as-is. */
 const EXPORT_SOURCE = [
   'created_at', 'role', 'event', 'route_class', 'locale', 'device',
-  'referrer_class', 'session_id', 'ordinal', 'lesson_id', 'game_id', 'segment_id', 'value',
+  'referrer_class', 'session_id', 'ordinal', 'lesson_id', 'segment_id', 'value',
 ] as const;
 
 /** Columns actually written out: session_id is replaced by session_ref. */
 const EXPORT_COLUMNS = [
   'created_at', 'role', 'event', 'route_class', 'locale', 'device',
-  'referrer_class', 'session_ref', 'ordinal', 'lesson_id', 'game_id', 'segment_id', 'value',
+  'referrer_class', 'session_ref', 'ordinal', 'lesson_id', 'segment_id', 'value',
 ] as const;
 
 /**

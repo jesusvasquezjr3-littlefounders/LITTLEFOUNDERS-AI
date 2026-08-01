@@ -18,7 +18,6 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { key: 'learn', path: '/learn', icon: 'school' },
   { key: 'tutor', path: '/tutor', icon: 'smart_toy' },
-  { key: 'games', path: '/games', icon: 'stadia_controller' },
   { key: 'tasks', path: '/tasks', icon: 'checklist', requiresRole: 'parent' },
   { key: 'family', path: '/family', icon: 'family_restroom', requiresRole: 'parent' },
   { key: 'profile', path: '/profile', icon: 'account_circle' },

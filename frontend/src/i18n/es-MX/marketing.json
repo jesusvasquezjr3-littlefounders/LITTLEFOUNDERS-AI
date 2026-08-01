@@ -20,7 +20,7 @@
     "problemTitle": "El problema",
     "problemBody": "El dinero es uno de los temas más importantes de la vida — y uno de los menos enseñados. La mayoría de los niños crecen sin practicar jamás cómo ahorrar, presupuestar o construir algo propio.",
     "solutionTitle": "Nuestra solución",
-    "solutionBody": "Lecciones cortas y altamente gamificadas, un tutor de IA que se adapta a cada niño, minijuegos que fijan los conceptos y tareas familiares con recompensas reales — todo bajo control parental verificado."
+    "solutionBody": "Lecciones cortas y altamente gamificadas, un tutor de IA que se adapta a cada niño, y tareas familiares con recompensas reales — todo bajo control parental verificado."
   },
   "fact": {
     "stat": "1 de cada 3",
@@ -48,10 +48,6 @@
     "f3": {
       "title": "Lecciones interactivas",
       "body": "Sin cátedras. Arrastra, suelta y construye tu camino por cada concepto."
-    },
-    "f4": {
-      "title": "Juegos de aprendizaje",
-      "body": "Minijuegos ligados a cada lección para que los conceptos se queden jugando."
     },
     "f5": {
       "title": "Tareas familiares",
@@ -83,7 +79,7 @@
   "pages": {
     "howItWorks": {
       "title": "Cómo funciona",
-      "description": "Cursos, tutor de IA, juegos y tareas familiares — cómo encaja todo."
+      "description": "Cursos, tutor de IA y tareas familiares — cómo encaja todo."
     },
     "families": {
       "title": "Familias",

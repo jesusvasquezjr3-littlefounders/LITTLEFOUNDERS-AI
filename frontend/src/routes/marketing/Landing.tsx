@@ -13,7 +13,6 @@ const FEATURES = [
   { key: 'f1', icon: 'sports_esports', tone: 'secondary' },
   { key: 'f2', icon: 'smart_toy', tone: 'primary' },
   { key: 'f3', icon: 'touch_app', tone: 'accent' },
-  { key: 'f4', icon: 'joystick', tone: 'success' },
   { key: 'f5', icon: 'family_restroom', tone: 'warning' },
   { key: 'f6', icon: 'shield', tone: 'primary' },
 ] as const;

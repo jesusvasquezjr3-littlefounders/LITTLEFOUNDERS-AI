@@ -17,8 +17,6 @@
     "LESSON_LOCKED": "This lesson isn't unlocked yet — finish the ones before it first.",
     "ATTEMPTS_EXHAUSTED": "No attempts left for this question.",
     "UNSUPPORTED_SEGMENT": "This part of the lesson can't be graded right now.",
-    "GAME_LOCKED": "This game isn't unlocked yet — finish a lesson from its topic first.",
-    "RESULT_REJECTED": "We couldn't confirm that game result, so no XP was awarded.",
     "PULSE_UNCONFIGURED": "Analytics isn't configured on this deployment.",
     "UPSTREAM_FAILED": "An internal service didn't answer.",
     "ROLE_REJECTED": "The database rejected that role change (role invariants).",

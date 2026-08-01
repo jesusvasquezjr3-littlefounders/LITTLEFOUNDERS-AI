@@ -52,7 +52,7 @@
   },
   "content": {
     "title": "Conteúdo",
-    "subtitle": "Gerencie cursos e revise lições e jogos antes que cheguem às crianças.",
+    "subtitle": "Gerencie cursos e revise lições antes que cheguem às crianças.",
     "coursesHeading": "Cursos",
     "colTitle": "Curso",
     "colSlug": "Slug",
@@ -65,49 +65,7 @@
     "empty": "Ainda não há cursos.",
     "tabs": {
       "aria": "Visualizações de conteúdo",
-      "courses": "Cursos",
-      "games": "Jogos"
-    }
-  },
-  "games": {
-    "heading": "Jogos aguardando revisão",
-    "note": "O Arcade nunca publica sozinho. Todo jogo gerado chega aqui em revisão. Jogue do início ao fim antes que ele chegue a uma criança.",
-    "empty": "Nenhum jogo aguardando revisão. A fila do arcade está limpa.",
-    "unknownMechanic": "Mecânica desconhecida",
-    "tier": "Nível {{tier}}",
-    "xpMax": "{{xp}} XP",
-    "minutes": "{{minutes}} min",
-    "course": "Curso",
-    "topic": "Tópico",
-    "locales": "Idiomas",
-    "noData": "",
-    "play": "Jogar para revisar",
-    "playAria": "Jogar “{{title}}” para revisar",
-    "publish": "Publicar",
-    "archive": "Arquivar",
-    "rubricTitle": "Rubrica do juiz",
-    "rubricEmpty": "Sem rubrica do juiz registrada — este jogo nunca foi avaliado.",
-    "previewNote": "Prévia de revisão — o jogo real, sem pontuação e sem conceder XP.",
-    "previewClose": "Fechar a prévia",
-    "previewBroken": "Não foi possível carregar o documento deste jogo, então ele não pode ser revisado. Verifique a execução que o gerou antes de publicar qualquer coisa.",
-    "dims": {
-      "concept_fit": "Aderência ao conceito",
-      "fun_agency": "Diversão e agência",
-      "clarity": "Clareza",
-      "kid_safety": "Segurança infantil",
-      "difficulty_fairness": "Dificuldade justa"
-    },
-    "confirmPublish": {
-      "title": "Publicar este jogo?",
-      "body": "“{{title}}” vai ao ar para toda criança cujo tópico já esteja publicado. Jogue antes — este é o último portão humano.",
-      "confirm": "Publicar",
-      "cancel": "Ainda não"
-    },
-    "confirmArchive": {
-      "title": "Arquivar este jogo?",
-      "body": "“{{title}}” some do arcade. O XP já conquistado fica com quem jogou, e o jogo pode ser regerado depois.",
-      "confirm": "Arquivar",
-      "cancel": "Manter"
+      "courses": "Cursos"
     }
   },
   "users": {
@@ -173,7 +131,7 @@
       "manage_users": "Gerenciar Usuários",
       "manage_users_desc": "Pode administrar papéis de usuário, famílias e perfis.",
       "manage_content": "Gerenciar Conteúdo",
-      "manage_content_desc": "Pode editar cursos, lições e minijogos.",
+      "manage_content_desc": "Pode editar cursos e lições.",
       "view_analytics": "Ver Analytics",
       "view_analytics_desc": "Pode ver métricas da plataforma no DataIntel e Pulse.",
       "manage_support": "Gerenciar Suporte",
@@ -380,8 +338,7 @@
       "filterAria": "Filtrar execuções por pipeline",
       "all": "Todos",
       "lessons": "Lições",
-      "games": "Jogos",
-      "note": "Execuções de lições e de jogos compartilham as tabelas de telemetria, mas nunca a mesma linha de tendência — cada gráfico de custo, qualidade e falhas fica restrito ao pipeline selecionado."
+      "note": "Cada gráfico de custo, qualidade e falhas aqui fica restrito ao pipeline selecionado."
     },
     "history": {
       "runs": "Inspetor de execuções"
@@ -443,11 +400,6 @@
       "duration": "Duração",
       "images": "Imagens g·c·h",
       "error": "Erro"
-    },
-    "slotsGames": {
-      "title": "Jogos ({{count}})",
-      "empty": "Não há registros por jogo para esta execução.",
-      "slot": "Jogo"
     },
     "states": {
       "published": "publicada",
@@ -805,7 +757,6 @@
       "title": "Onde o tempo passa",
       "empty": "Ainda não há eventos de navegação — o beacon preenche isso a cada sessão.",
       "learn": "Aprender",
-      "games": "Jogos",
       "tasks": "Tarefas",
       "profile": "Perfil",
       "tutor": "Tutor",

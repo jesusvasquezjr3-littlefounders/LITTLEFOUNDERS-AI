@@ -48,29 +48,6 @@
       "streak": "Day streak",
       "longestStreak": "Best streak"
     },
-    "games": {
-      "title": "Games",
-      "subtitle": "Each game practises something this course already taught.",
-      "noneYet": "No games played yet",
-      "summary_one": "{{count}} game played · {{xp}} XP",
-      "summary_other": "{{count}} games played · {{xp}} XP",
-      "emptyTitle": "The arcade is still waiting",
-      "emptyBody": "Games unlock as lessons get finished. There is no rush — they will be right here whenever they are ready to play.",
-      "stats": {
-        "played": "Games played",
-        "cleared": "Games cleared",
-        "xp": "XP from games",
-        "lastPlayed": "Last played",
-        "notYet": "Not yet"
-      },
-      "row": {
-        "game": "Game",
-        "best": "Best {{score}}",
-        "notYet": "Not played yet",
-        "plays_one": "{{count}} play",
-        "plays_other": "{{count}} plays"
-      }
-    },
     "insightsConsent": {
       "label": "Share usage insights",
       "hint": "Help improve lessons with anonymous-style usage signals. You can turn this off anytime."

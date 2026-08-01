@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { Card, Icon, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminEmpty, AdminPage, StatusBadge, Unavailable, useAdminData, useAdminMutation } from './adminShared';
-import { GamesReviewQueue, type AdminReviewGame } from './GamesReviewQueue';
 
 interface Course {
   id: string;
@@ -22,20 +21,19 @@ interface ReviewLesson {
   status: string;
 }
 
-/* The console's own tab grammar (AdminGenerationPage). Courses, lessons and now
- * games are three separate jobs, and the two review queues are HUMAN PUBLISH
- * GATES (§1.9) — so each tab carries a count badge: a queue you cannot see from
- * the tab you are on is a queue that quietly grows. */
+/* The console's own tab grammar (AdminGenerationPage). Courses and lessons are
+ * two separate jobs, and the lesson review queue is a HUMAN PUBLISH GATE
+ * (§1.9) — so its tab carries a count badge: a queue you cannot see from the
+ * tab you are on is a queue that quietly grows. */
 const TABS = [
   { key: 'courses', icon: 'menu_book' },
   { key: 'lessons', icon: 'shield' },
-  { key: 'games', icon: 'stadia_controller' },
 ] as const;
 type Tab = (typeof TABS)[number]['key'];
 
 /* `admin.content.tabs.lessons` does not exist yet (the locale files carry only
- * `aria`, `courses` and `games`). Until it lands, the lesson tab borrows the
- * review queue's own heading — which IS translated in all three locales — so no
+ * `aria` and `courses`). Until it lands, the lesson tab borrows the review
+ * queue's own heading — which IS translated in all three locales — so no
  * reviewer ever sees a raw key. Delete this the moment the key exists. */
 function tabFallback(key: Tab, t: TFunction): string {
   return key === 'lessons' ? t('admin.moderation.heading') : key;
@@ -45,7 +43,6 @@ export function AdminContentPage() {
   const { t } = useTranslation();
   const coursesData = useAdminData<{ courses: Course[] }>('/admin/content');
   const moderationData = useAdminData<{ lessons: ReviewLesson[] }>('/admin/moderation');
-  const gamesData = useAdminData<{ games: AdminReviewGame[] }>('/admin/games');
   const mutate = useAdminMutation();
   const [busy, setBusy] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('courses');
@@ -53,7 +50,6 @@ export function AdminContentPage() {
   const pending: Record<Tab, number | null> = {
     courses: null,
     lessons: moderationData.data.state === 'ready' ? moderationData.data.data.lessons.length : null,
-    games: gamesData.data.state === 'ready' ? gamesData.data.data.games.length : null,
   };
 
   async function setCourseStatus(id: string, status: string) {
@@ -188,9 +184,6 @@ export function AdminContentPage() {
           )}
         </section>
       )}
-
-      {/* ── Games review queue (the Arcade human publish gate) ── */}
-      {tab === 'games' && <GamesReviewQueue data={gamesData.data} reload={gamesData.reload} />}
     </AdminPage>
   );
 }

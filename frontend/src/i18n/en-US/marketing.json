@@ -20,7 +20,7 @@
     "problemTitle": "The problem",
     "problemBody": "Money is one of the most important subjects in life — and one of the least taught. Most kids grow into adults without ever practicing how to save, budget, or build something of their own.",
     "solutionTitle": "Our solution",
-    "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, minigames that make concepts stick, and family tasks with real rewards — all under verified parental control."
+    "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, and family tasks with real rewards — all under verified parental control."
   },
   "fact": {
     "stat": "1 in 3",
@@ -48,10 +48,6 @@
     "f3": {
       "title": "Interactive lessons",
       "body": "No lectures. Drag, drop, and build your way through every concept."
-    },
-    "f4": {
-      "title": "Learning games",
-      "body": "Minigames tied to each lesson so concepts stick through play."
     },
     "f5": {
       "title": "Family tasks",
@@ -83,7 +79,7 @@
   "pages": {
     "howItWorks": {
       "title": "How it works",
-      "description": "Courses, AI tutor, games, and family tasks — how it all fits together."
+      "description": "Courses, AI tutor, and family tasks — how it all fits together."
     },
     "families": {
       "title": "Families",

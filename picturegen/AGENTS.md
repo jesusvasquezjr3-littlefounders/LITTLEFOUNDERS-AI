@@ -81,23 +81,9 @@ purpose is a 400 `VALIDATION_ERROR`), and every value MUST have a
 `PURPOSE_GUIDANCE` entry — the `Record<PicturePurpose, string>` type makes that
 a compile error, not a runtime hole.
 
-**Arcade's two purposes** (`game_sprite`, `game_background` — GAME_ENGINE.md §2,
-consumed by `gamegen/src/pipeline/images.ts`) are the only ones whose art is
-composited rather than displayed alone, and their guidance says so explicitly
-because **legibility under a HUD is the failure mode**:
-
-- `game_sprite` — ONE object, centered, bold silhouette, on a near-plain
-  single-tone ground so it composites cleanly; it is rendered ~48-96px *while
-  moving*, which is the strictest legibility case in the catalogue. Fine detail
-  and thin lines are a defect here, not craft.
-- `game_background` — deliberately the QUIETEST image we generate: wide (~16:9),
-  low-detail, low-contrast, muted, with an almost-empty middle. It sits under
-  sprites and score/lives text, so no dominant subject, no bright accents and no
-  high-contrast shapes that could be misread as a game piece or make overlaid
-  text unreadable.
-
-Both still obey `LF_VISUAL_IDENTITY` unchanged — flat vector, papaya/navy
-palette, complete background, ABSOLUTELY NO PEOPLE, no logos, no text.
+Every purpose still obeys `LF_VISUAL_IDENTITY` unchanged — flat vector,
+papaya/navy palette, complete background, ABSOLUTELY NO PEOPLE, no logos, no
+text.
 
 ## The pictorial verifier — the mechanical no-text guarantee
 

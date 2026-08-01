@@ -2,7 +2,7 @@
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-30 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-07-31 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -62,7 +62,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
-| Package layout | 10 independent npm packages — **no workspaces** |
+| Package layout | 9 independent npm packages — **no workspaces** |
 
 ### §1.3 Schema invariants
 
@@ -94,10 +94,9 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 |---|---|---|---|---|
 | `database/` | Vault | Migrations, RLS, seeds, generated TS types (the shared-type hub) | — | Railway (Supabase stack) |
 | `backend/` | Core | The ONLY service the frontend calls: auth, roles, families, tasks, profiles | 4000 | Railway |
-| `frontend/` | — | SPA with the 5 product sections | 5173 | Vercel |
+| `frontend/` | — | SPA with the 4 product sections | 5173 | Vercel |
 | `coursegen/` | Forge | Course & lesson generation pipeline (DeepSeek + Qwen) | 4001 | Railway |
 | `audiogen/` | Echo | Lesson TTS audio, per-locale voices | 4002 | Railway |
-| `gamegen/` | Arcade | Concept-bound minigames: prebuilt deterministic mechanics skinned by generated per-locale manifests (shared content, never per-kid) | 4003 | Railway |
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
@@ -105,9 +104,9 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 | `dataintel/` | Data Intel | Analytics warehouse: DuckDB OLAP, segmentation, forecasting, anomaly detection, experiments | 4008 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
-Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
+Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `tasks/`, `profile/`.
 
-Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract), `/COURSE_ENGINE.md` (content hierarchy + generation pipeline), and `/GAME_ENGINE.md` (game runtime + generation contract).
+Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
 
 ### §1.6 API conventions
 
@@ -139,7 +138,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 ### §1.9 Child safety & privacy — non-negotiable
 
 - **No PII of minors is ever sent to third-party AI APIs** (DeepSeek, Qwen, TTS). Maximum allowed context: age band + first name. No surnames, no locations, no photos, no free-text history that could identify a child.
-- AI tutor and gamegen output for kids passes **content moderation — non-optional**, before display.
+- AI tutor output for kids passes **content moderation — non-optional**, before display.
 - Parent visibility into kid activity is a **product invariant**, not a feature flag.
 - Default to COPPA-minded behavior: minimal data collection, parental consent gates, no dark patterns aimed at kids.
 
@@ -195,8 +194,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `database/AGENTS.md` | schema, migrations, RLS |
 | `backend/AGENTS.md` | API routes, auth, middleware |
 | `frontend/AGENTS.md` | components, routes, i18n, theming |
-| `coursegen/AGENTS.md` · `audiogen/AGENTS.md` · `gamegen/AGENTS.md` | generation pipelines |
-| `gamegen/AGENTS.md` · `/GAME_ENGINE.md` | any `gamegen/` or game-engine work (mechanics, manifests, replay/reward path) |
+| `coursegen/AGENTS.md` · `audiogen/AGENTS.md` | generation pipelines |
 | `parent-id-check/AGENTS.md` | identity verification, PII handling |
 | `email-server/AGENTS.md` | email sending contract |
 | `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |

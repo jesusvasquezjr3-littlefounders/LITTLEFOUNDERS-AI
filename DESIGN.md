@@ -246,26 +246,10 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
 8. **Lottie Animations** — strict usage and state conditions (Activated vs Not Activated)
    for streak, coins, time, etc., are governed exclusively by `frontend/public/lottie/README.md`.
    No new animations or visual states can be introduced without updating that document.
-9. **Game canvas — the simulation carve-out** (added 2026-07-30, `GAME_ENGINE.md`).
-   A mechanic's canvas is driven by its deterministic fixed-tick simulation, not by a
-   CSS recipe: it animates continuously while the game runs, because the animation IS
-   the content. This is the ONE documented exception to "no new infinite animations",
-   and it is bounded on four sides: **(a)** the exemption covers the stage rectangle
-   only — game CHROME (HUD chips, pause/interlude/results overlays, hub cards) obeys
-   recipes 1–6 and adds nothing new; **(b)** it stops when the simulation stops — pause,
-   interlude, results and unmount all halt the tick loop, so there is no animation
-   without a running game; **(c)** `prefers-reduced-motion` disables DECORATIVE canvas
-   effects (particles, screen shake, trails, flourish, camera bob) and every chrome
-   animation, but NEVER the simulation itself — a reduced-motion player must still be
-   able to win, so motion is never the carrier of required information; **(d)**
-   pause/resume is reachable at all times and at both breakpoints (≥44px control, plus
-   `Esc` on desktop). That escape hatch is what makes an unbounded animation acceptable
-   at all.
 
 `.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
-in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7;
-the simulation-driven game canvas is the carve-out in recipe 9, bounded by the
-game running). Everything is reduced-motion safe (wired in index.css / rig.css).
+in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7).
+Everything is reduced-motion safe (wired in index.css / rig.css).
 
 ## Shapes
 
@@ -389,105 +373,6 @@ ONLY from `lesson-engine/core/primitives.tsx` (OptionCard, TokenChip,
 SunkenWell, BigIconTile, NumberPad, KidSlider, GentleTimerBar) so all 50+
 types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
 
-**Games hub** (`/games`) — expanded 2026-07-30 with the Game Engine
-(`GAME_ENGINE.md`). A section INSIDE the Dashboard shell (same sidebar / bottom
-tabs as Learn), never a fullscreen layer. `lf-display-lg` page title + one
-`lf-body text-content-muted` line saying what a game is FOR ("play what you
-just learned"), then one section per **course → adventure**: an `lf-headline`
-group header with an `lf-caption text-content-muted` count, and below it the
-**Card grid** (§Layout → Grid Systems: `grid-cols-1 md:grid-cols-2
-lg:grid-cols-3 gap-4` — `gap-4` at EVERY breakpoint, never a
-breakpoint-specific gap). Groups stack in curriculum order and never collapse
-into accordions; a short last row stays short. Mobile: one full-width card per
-row inside `px-5`. Desktop: three per row inside `max-w-container px-8` — the
-freed width buys a third column, never wider cards.
-Poster card (`Card interactive`, `rounded-lg`, the whole card is ONE link — no
-nested interactive elements): ① 16:9 media area at the top (`overflow-hidden`,
-clipped to the card radius) holding the Prism `game_background` raster; with no
-image it falls back to the mechanic's IconChip on an `inverse` fill — never a
-broken image, never a blank rectangle. ② `lf-title` game title, clamped to 2
-lines. ③ **concept chip** — a Badge in `primary-soft` naming the topic the game
-reinforces; this chip is the reason the card exists and is never omitted.
-④ **progress chip** — `success-soft` Badge (check + best score in `lf-number`)
-once passed, `surface-sunken` Badge with the best score when played but not
-passed, and NOTHING when never played (absence is the signal; a rendered `0` is
-noise). ⑤ `lf-caption text-content-muted` meta row: mechanic icon + name +
-estimated minutes. ⑥ exactly one action slot.
-**CTA density — the resolution (Action Color Contract).** A papaya pill on
-every card would put a dozen "ONE main CTA per view"s in one view, which is a
-bug; dropping papaya entirely would leave the section with no forward action.
-So papaya is spent **per view, not per card**: exactly ONE card in the hub —
-the next/resume game — carries the papaya Play pill; every other ready card
-carries the outlined glass secondary pill, and an already-passed card reads
-"Play again" in that same secondary pill. This is the rule the learn path
-already applies, where `bg-accent` marks only the `current` node
-(`routes/app/learn/LessonPathNode.tsx`) and every other node is outline- or
-done-toned.
-**Locked cards — locked, NEVER hidden.** A game unlocks when its bound topic
-has a passed lesson, so a locked card is the platform's clearest "learn first,
-then play" signal — hiding it would hide the reason to go learn. Locked =
-`surface-sunken` media area, `content-faint` text, a `lock` chip in place of
-the action pill, no hover lift: the same locked grammar as the lesson path node
-and the role-locked sidebar pills. The card stays reachable by tap and
-keyboard, and activating it does not start a game — it reveals the one-line
-unlock reason naming the topic and links to that lesson. That reason is never
-carried by a hover-only tooltip (mobile has no hover). Hidden-not-locked stays
-reserved for `/admin`, which is not aspirational.
-**Empty state** — only when the user genuinely has no games (no published game
-for any of their courses): the standard empty grammar in one `Card hero`,
-centered CharacterActor + `lf-title` + `lf-body text-content-muted`, identical
-to Learn's. A hub where games exist but every one is locked is NOT empty — it
-renders the full locked grid plus that single guiding line.
-
-**Game player** (`/games/:slug`) — added 2026-07-30; peer of the Lesson player
-and built the same way: its own layer over everything (`fixed inset-0 bg-base`),
-no app chrome, one thing on screen at a time. Anatomy: sticky `.lf-glass` HUD
-bar → the stage → nothing else. HUD, one row, every figure in `lf-number`:
-close pill (left) · ProgressBar (`primary` fill — round/target progress, not
-score) · score · lives as heart Icons, omitted ENTIRELY in `cheer` mode where
-there is no fail state (a permanently full heart row teaches a lie) · combo
-chip in `delight` while a combo is live, absent otherwise. The HUD is chrome:
-no palette tint. **During play the chrome carries ZERO papaya** — the papaya
-budget belongs to the one forward action on the overlays (Start / Resume /
-Continue), and while the simulation runs there is no forward action to offer.
-Stage: a `rounded-lg overflow-hidden` rectangle filled with the palette's stage
-fill (§Game visuals). Its internal logical resolution is FIXED — the simulation
-runs on integer logical units at a fixed tick, so layout may never feed back
-into it — and the whole stage is scaled UNIFORMLY to fit its box: letterboxed
-with the stage fill, never cropped in a gameplay-relevant area, never stretched
-non-uniformly. Resizing rescales; it never re-ticks and never re-lays-out the
-game.
-Mobile (<768px): the stage spans the column inside `px-5` and takes all height
-between the HUD and the bottom safe area; the pause control is a floating
-`.lf-glass` circular icon pill in the **bottom-right thumb zone** (≥44px),
-because a top HUD is out of thumb reach mid-game. Desktop (≥1024px): stage
-centered at `max-w-container px-8`, HUD stats spread along the bar instead of
-compressing, pause lives in the HUD and `Esc` also opens it. Canvas
-interactions are tap-first with ≥44px targets and every drag has a tap
-equivalent; pointer and keyboard controls are ADDITIONS, never the only input.
-Intro = concept recap + title + cast + the interactive tutorial in a ~720px
-reading column with one papaya Start pill.
-Pause overlay: a centered `.lf-glass` + `shadow-pop` panel over a scrim; the
-stage holds its last frame and is NOT blurred (never blur a large content
-area — §Elevation 4; the panel frosts only its own footprint). Resume is the
-one papaya pill; Restart, Exit and the sound toggle are secondary. Opening
-pause halts the tick loop and consumes no input.
-Interlude overlay: the between-round micro-exercise (`pick_one` / `true_false`
-/ `tap_all`) is CHROME, rendered in the Lesson player's answer grammar — a
-resting `surface` card in the ~720px column, tap-first option tiles ≥44px, no
-drag — so a kid never has to learn two answer grammars. Feedback is the same
-tier-tinted banner (`success-soft` / `warning-soft`) with a rationale that
-teaches and never scolds. One screen, one forward pill, tick loop stopped while
-it is up.
-Results: score ring + XP, then the stats row as the **Stat row grid** (2 / 3 /
-6 per §Layout → Grid Systems; a short last row stays short), then **one honest
-highlight line** — a single `lf-body` sentence derived from the run's real
-stats, `delight`-tinted at most, never papaya, and never invented praise: with
-nothing honest to celebrate it states the plain fact rather than "Amazing!".
-Cast celebration uses CharacterActor under Motion recipe 7 (`celebrate`/`dance`
-loop only while this overlay is up, and stop with it). Exactly one papaya pill
-(Continue / Play again); back-to-hub is secondary.
-
 **Staff sections (admin console, `/admin/*`)** — added 2026-07-20, rebuilt
 2026-07-21 (owner sign-off). **INTEGRATED into the app shell, NOT a separate
 back-office**: the admin surfaces render inside the normal Dashboard chrome
@@ -520,91 +405,6 @@ Access simply does not render (route + sidebar) for a plain admin.
 **Assessment / Profile / Catalog** — same grammar: bands, cards, pills,
 IconChips; a profile hero may use a navy band with a glass-deep identity card.
 
-### Game visuals — the canvas/chrome boundary (NON-NEGOTIABLE)
-
-Added 2026-07-30 with the Game Engine. Games are the only surface where
-generated raster art is a first-class visual, and the rule that keeps that art
-from eroding the design system is a hard geometric boundary: **the palette and
-the generated art live INSIDE the stage rectangle; everything outside it is
-chrome.**
-
-**Chrome** — HUD, pause/interlude/results overlays, hub cards, every button and
-chip — is built exactly like the rest of the app: closed color tokens, the
-`lf-*` type scale, Material Symbols icons, the Action Color Contract, pill and
-big-radius shapes, `.lf-glass` / `.lf-glass-deep` elevation, `components/ui/`
-kit parts. A game never ships its own button, its own color scale or its own
-card.
-
-**Canvas** — Prism-generated raster sprites (`game_sprite` / `game_background`
-purposes) plus shapes filled from the palette. Sprites are BY DEFINITION exempt
-from "Material Symbols is the only icon set": a sprite is content, not an icon.
-**That exemption stops at the canvas edge.** A sprite never becomes a HUD glyph,
-a card icon or a button affordance. The one place canvas art appears outside the
-stage is the hub poster's media area, where it is framed IMAGERY inside the card
-radius — never an icon.
-
-Rules that hold on both sides of the boundary:
-
-- **Figtree remains the only UI family — a game must NEVER import an arcade
-  display font.** This is precisely the failure v1 shipped: six v1 games each
-  `@import`ed their own Google Fonts from their own per-game CSS — `Press Start
-  2P` in `frontend/src/games/nam-vs-yum/nam-vs-yum.css`, plus Orbitron, Fredoka
-  One, Cinzel, Nunito and Patrick Hand across chronobloom, hacker-defense,
-  nectar-of-shadows, paper-coin and paper-detective — so the product had seven
-  type systems and therefore none. Arcade character here comes from **weight,
-  size, motion and color**: extrabold `lf-display-*` numerals, `lf-number`
-  tabular figures, the palette, and the press/pop recipes. Text drawn INSIDE the
-  canvas (score popups, item labels) is Figtree at `lf-*` sizes too.
-- **No text baked into generated art.** `illustrate` runs on the es-MX document
-  before the localize string-freeze and the sprite URLs then copy verbatim into
-  en-US and pt-BR, so one image serves all three locales — any word painted into
-  a sprite is a word that can never be translated. Labels render as text OVER
-  the art, never as part of it.
-- **Art must read at 1× on a 375px viewport.** A sprite whose meaning only
-  resolves at desktop size is a bug, not a detail.
-- **No raw hex anywhere** — not in a component, not in a manifest. A generated
-  `GameDocument` names a palette id from the closed set below and nothing else.
-
-#### `GAME_PALETTES` — CLOSED
-
-A palette is a NAME for a combination of tokens that already exist; it
-introduces no value. There are six ids and a manifest may name only these.
-
-Palette tokens must be **theme-stable**, for the same reason the navy band is
-identical in both modes: the readability of a simulation must not change when
-the user flips the theme. So `-soft` tokens are PROHIBITED in a palette — they
-invert between modes (light wells become dark wells) while the stage does not —
-exactly as `content-*` tokens are prohibited on the navy band. `inverse-surface`
-and `primary-strong` shift only *within* their own hue between modes
-(`#142563`→`#18265c` and `#375ce3`→`#456dff` in `index.css`), which is fine.
-
-| Palette id | Stage fill | Stage well | Canvas accent | Highlight | Ink on stage |
-|---|---|---|---|---|---|
-| `navy-papaya` *(default)* | `inverse` | `inverse-surface` | `accent` | `delight` | `on-inverse` / `on-inverse-muted` |
-| `forest-pear` | `success-strong` | `success` | `delight` | `warning` | `on-success` |
-| `ocean-blue` | `inverse-surface` | `inverse` | `accent` | `delight` | `on-inverse` / `on-inverse-muted` |
-| `sunset-papaya` | `accent-strong` | `accent` | `inverse` | `delight` | `on-accent` |
-| `violet-night` | `inverse` | `inverse-surface` | `primary-strong` | `delight` | `on-inverse` / `on-inverse-muted` |
-| `sand-clay` | `warning-strong` | `warning` | `inverse` | `delight` | `on-warning` |
-
-- **Highlight is `delight` in every palette but one.** Pear is the system's
-  celebration color and score/combo/win moments are celebration. `forest-pear`
-  is the exception: pear is already its canvas accent there, so its highlight is
-  `warning`.
-- **`delight` as a canvas accent is allowed; as a button fill it still is not.**
-  The Action Color Contract governs chrome — a tinted game object is not a
-  button.
-- **Two ids are mood labels the closed set cannot name literally, and we do NOT
-  add tokens to fix that.** There is no violet and no sand/clay token:
-  `violet-night` is realized as the deepest navy stage with a cool
-  `primary-strong` accent (its real functional value is a night canvas with no
-  papaya competing against chrome), and `sand-clay` from the `warning` family,
-  the closest warm earth tone the set has. Adding a hue is a token change
-  requiring owner sign-off — never a manifest's decision.
-- **The palette never leaves the stage.** HUD, overlays and hub cards are not
-  tinted by it. That is what keeps a papaya or terracotta stage from breaking
-  chrome contrast, and it is why chrome needs no per-palette variants.
-
 ## Do's and Don'ts
 
 - ✅ One papaya CTA per view; blue for links/info; pear only to celebrate.
@@ -614,7 +414,4 @@ and `primary-strong` shift only *within* their own hue between modes
 - ❌ No inset-shadow stacks, no 3D bottom-border buttons, no scale-on-hover
   buttons (lift is for cards only).
 - ❌ No emojis as icons (country flags in the language switcher are the one
-  exception). No new infinite animations — the simulation-driven game canvas is
-  the single carve-out (Motion recipe 9), and it ends when the game does.
-- ❌ No per-game fonts, color scales or components. A game skins its CANVAS
-  (palette + Prism sprites); it never skins the design system.
+  exception). No new infinite animations.

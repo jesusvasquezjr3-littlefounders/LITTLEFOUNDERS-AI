@@ -55,21 +55,17 @@ import {
   getSlotDetail,
   grantRoleChecked,
   isCourseStatus,
-  isGameStatus,
   isLessonStatus,
   listAdminCourses,
   listAdminUsers,
   listAudit,
-  listReviewGames,
   listReviewLessons,
   listRoleHolders,
   revokeRoleChecked,
   grantAdminPermissionChecked,
   revokeAdminPermissionChecked,
   setCourseStatus,
-  setGameStatus,
   setLessonStatus,
-  GENERATION_KINDS,
 } from '../services/adminData.js';
 
 /*
@@ -213,23 +209,9 @@ const TimelineQuerySchema = z.object({
   days: z.coerce.number().int().min(7).max(365).default(90),
 });
 
-/*
- * Forge (lessons) and Arcade (games) share the generation telemetry tables, so
- * every generation read is scoped to ONE pipeline — an average that mixes them
- * is wrong AND renders (services/adminData.ts). `kind` defaults to 'lessons',
- * which is exactly what these endpoints returned before Arcade existed, so no
- * existing caller changes behaviour. There is deliberately no "both" value: the
- * only thing it could mean for a cost or rubric mean is the contaminated number
- * this filter exists to prevent.
- */
-const GenerationKindSchema = z.object({
-  kind: z.enum(GENERATION_KINDS).default('lessons'),
-});
-
 const CoachQuerySchema = z.object({
   course: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
   track: z.string().min(1).max(200).regex(/^[A-Za-z0-9._-]+$/).optional(),
-  kind: z.enum(GENERATION_KINDS).default('lessons'),
 });
 
 const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
@@ -426,10 +408,8 @@ export function adminRouter(): Router {
   // role tables, zero client policies): how each agentic run behaved — per-slot
   // outcomes, judge rubrics, failure stages, cost, cache-hit — the permanent
   // record for "what failed / what can we optimize" evaluations.
-  router.get('/generation', async (req, res) => {
-    const q = GenerationKindSchema.safeParse(req.query);
-    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'kind must be one of lessons|games');
-    const overview = await getGenerationOverview(q.data.kind);
+  router.get('/generation', async (_req, res) => {
+    const overview = await getGenerationOverview();
     if (!overview) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load generation telemetry');
     ok(res, overview);
   });
@@ -453,19 +433,16 @@ export function adminRouter(): Router {
    * Rows older than 2 minutes are stale (the run process died) and are
    * excluded by the query.
    */
-  router.get('/generation/live', async (req, res) => {
-    const q = GenerationKindSchema.safeParse(req.query);
-    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'kind must be one of lessons|games');
-    const status = await getLiveGeneration(q.data.kind);
+  router.get('/generation/live', async (_req, res) => {
+    const status = await getLiveGeneration();
     if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load live generation status');
     ok(res, status);
   });
 
   /**
    * Cross-run analytics: cost, quality, and failure trends aggregated across
-   * all historic runs for a course (or platform-wide if no course is specified),
-   * scoped to ONE pipeline.
-   * Optional query params: ?course=financial-education&kind=lessons|games
+   * all historic runs for a course (or platform-wide if no course is specified).
+   * Optional query params: ?course=financial-education
    *
    * An invalid param is a 400, never a silently-ignored one: an admin query
    * string that validates loosely is how this file's audited param-handling
@@ -474,9 +451,9 @@ export function adminRouter(): Router {
   router.get('/generation/analytics', async (req, res) => {
     const q = CoachQuerySchema.safeParse(req.query);
     if (!q.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a valid slug (1-100 chars, lowercase letters, digits, hyphens); kind must be lessons|games');
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a valid slug (1-100 chars, lowercase letters, digits, hyphens)');
     }
-    const analytics = await getGenerationAnalytics(q.data.course, q.data.kind);
+    const analytics = await getGenerationAnalytics(q.data.course);
     if (!analytics) return fail(res, 502, DATA_UNAVAILABLE, 'No generation runs found for analysis');
     ok(res, analytics);
   });
@@ -486,14 +463,14 @@ export function adminRouter(): Router {
    * behaviour across runs — failure patterns, judge quality trends, cost
    * efficiency, and proposed improvements each tied to evidence. Surface of
    * the forge:coach improvement loop (Level 2) in the admin dashboard.
-   * Optional query: ?course=financial-education&track=trk-001&kind=lessons|games
+   * Optional query: ?course=financial-education&track=trk-001
    */
   router.get('/generation/coach', async (req, res) => {
     const q = CoachQuerySchema.safeParse(req.query);
     if (!q.success) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a slug (1-100, a-z0-9-), track must be 1-200 safe chars, kind must be lessons|games');
+      return fail(res, 400, 'VALIDATION_ERROR', 'course must be a slug (1-100, a-z0-9-), track must be 1-200 safe chars');
     }
-    const report = await getCoachReport(q.data.course, q.data.track, q.data.kind);
+    const report = await getCoachReport(q.data.course, q.data.track);
     if (!report) return fail(res, 502, DATA_UNAVAILABLE, 'No generation data available for coach analysis');
     ok(res, report);
   });
@@ -593,33 +570,6 @@ export function adminRouter(): Router {
     const done = await setLessonStatus(lessonId.data, status.data, authedUser(res).id);
     if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the lesson');
     ok(res, { id: lessonId.data, status: status.data });
-  });
-
-  /*
-   * Games review queue (GAME_ENGINE.md §9). Arcade lands every generated game
-   * at status='review' and never auto-publishes; this is the human layer of the
-   * three-layer §1.9 gate. Same authorization as the lesson queue above — the
-   * router-level requireRole(['admin','superadmin']) — and the same shape, so
-   * the console renders one moderation surface with two tabs.
-   *
-   * `/moderation/games` cannot collide with `/moderation/:lessonId/status`:
-   * different method (GET vs POST) and different segment count.
-   */
-  router.get('/moderation/games', async (_req, res) => {
-    const games = await listReviewGames();
-    if (!games) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the games review queue');
-    ok(res, { games });
-  });
-
-  router.post('/moderation/games/:gameId/status', async (req, res) => {
-    const gameId = z.string().uuid().safeParse(req.params.gameId);
-    const status = z.string().safeParse((req.body as { status?: unknown })?.status);
-    if (!gameId.success || !status.success || !isGameStatus(status.data)) {
-      return fail(res, 400, 'VALIDATION_ERROR', 'gameId must be a uuid and status one of draft|review|published|archived');
-    }
-    const done = await setGameStatus(gameId.data, status.data, authedUser(res).id);
-    if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the game');
-    ok(res, { id: gameId.data, status: status.data });
   });
 
   // ── Audit log ──────────────────────────────────────────────────────────────

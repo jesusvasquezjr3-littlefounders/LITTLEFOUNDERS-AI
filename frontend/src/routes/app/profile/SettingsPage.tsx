@@ -12,7 +12,7 @@ import { UserListItem, type ListedUser } from './UserListItem';
 
 /*
  * /profile/settings — personal data. `locale` is the user's language of
- * record (DB field): it drives lessons/games/content AND the UI. Email and
+ * record (DB field): it drives lesson content AND the UI. Email and
  * password changes stay disabled until Courier (email-server) ships.
  * Birth date is plain profile data for ANY user (distinct from Guardian's
  * verified adult birth_date used only for the Tutor upgrade).

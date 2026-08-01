@@ -16,7 +16,6 @@ SERVICES=(
   "filebase"
   "coursegen"
   "audiogen"
-  "gamegen"
   "parent-id-check"
   "email-server"
 )

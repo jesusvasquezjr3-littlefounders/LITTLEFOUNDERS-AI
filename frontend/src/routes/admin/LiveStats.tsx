@@ -26,8 +26,9 @@ const REAUTH_INTERVAL_MS = 10 * 60 * 1000;
 
 /*
  * The stage pills below are driven by the run's kind, NOT by a fixed list —
- * Forge (lessons) and Arcade (games) share these telemetry tables but have
- * different stages, so a hardcoded list dropped every game stage on the floor.
+ * these telemetry tables are shared across generation pipelines and a
+ * hardcoded stage list silently drops any pipeline whose stages differ (this
+ * bit Forge/Arcade before the Arcade game-generation pipeline was removed).
  * See GENERATION_STAGES in generationTypes.ts.
  */
 

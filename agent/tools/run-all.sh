@@ -4,7 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 SCRIPT="${1:?usage: run-all.sh <npm-script>}"
-SERVICES=(database backend frontend coursegen audiogen gamegen parent-id-check email-server)
+SERVICES=(database backend frontend coursegen audiogen parent-id-check email-server)
 
 FAILED=()
 for s in "${SERVICES[@]}"; do

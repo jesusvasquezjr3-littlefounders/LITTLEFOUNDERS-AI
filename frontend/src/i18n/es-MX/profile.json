@@ -66,7 +66,7 @@
     "usernameHint": "3-20 caracteres: letras, números y guion bajo. Será littlefounders.ai/@tú",
     "usernameInvalid": "Solo a-z, 0-9 y _ (3-20 caracteres)",
     "language": "Idioma",
-    "languageHint": "Tu idioma de registro — las lecciones, los juegos y la interfaz lo siguen.",
+    "languageHint": "Tu idioma de registro — las lecciones y la interfaz lo siguen.",
     "account": "Cuenta",
     "email": "Correo electrónico",
     "emailPasswordPending": "El cambio de correo y contraseña llega con nuestro servicio de email — muy pronto.",

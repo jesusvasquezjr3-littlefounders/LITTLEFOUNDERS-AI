@@ -1,21 +1,18 @@
 // Regression gate for `.github/workflows/backend-ci.yml` path filters.
 //
-// `npm test` here runs `contract:check` first (backend/package.json), and BOTH
-// parity scripts read files that live OUTSIDE backend/:
+// `npm test` here runs `contract:check` first (backend/package.json), and the
+// parity script reads files that live OUTSIDE backend/:
 //
-//   scripts/contract-check.ts       → frontend/src/lesson-engine
-//   scripts/game-contract-check.ts  → frontend/src/game-engine
-//                                   → frontend/src/components/characters/control/types.ts
+//   scripts/contract-check.ts → frontend/src/lesson-engine
 //
-// If a workflow path filter does not cover one of those roots, the drift the
-// script exists to catch becomes unreachable in CI: editing a mechanic's
-// simulate.ts under frontend/ triggers frontend CI and gamegen CI, but never
-// backend CI, so the backend's copy silently keeps the old shape. Zod strips
-// unknown keys by default, so the divergence is not rejected — the missing
-// field is DELETED during replay and the child is scored on a document that
-// is not the one they played.
+// If a workflow path filter does not cover that root, the drift the script
+// exists to catch becomes unreachable in CI: editing a lesson type under
+// frontend/ triggers frontend CI, but never backend CI, so the backend's copy
+// silently keeps the old shape. Zod strips unknown keys by default, so the
+// divergence is not rejected — the missing field is DELETED during replay and
+// the child is scored on a document that is not the one they played.
 //
-// This test derives the required roots FROM the scripts themselves (their
+// This test derives the required roots FROM the script itself (its
 // `path.resolve(here, …)` literals) rather than from a hand-maintained list,
 // so a newly added cross-package read fails here instead of quietly widening
 // the gap.

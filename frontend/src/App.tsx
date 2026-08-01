@@ -51,18 +51,6 @@ import { Suspense, lazy, useState } from 'react';
 const LessonLabPage = lazy(() => import('@/lesson-engine/lab/LessonLabPage'));
 const LessonViewPage = lazy(() => import('@/lesson-engine/lab/LessonViewPage'));
 
-/* Dev-only harness — the Game Engine QA surface (GAME_ENGINE.md §7/§10). Lazy +
- * DEV-gated so the lab (and every mechanic slice it eagerly loads) never reaches
- * production bundles. */
-const GameLabPage = lazy(() => import('@/game-engine/lab/GameLabPage'));
-
-/* The games product surface (GAME_ENGINE.md §8). BOTH lazy: the hub so its
- * catalog view is its own chunk, and the play route so the player, its overlays
- * and the mechanic chunk it pulls in never enter the main bundle — nobody
- * downloads a simulator to read the dashboard. */
-const GamesHubPage = lazy(() => import('@/routes/app/games/GamesHubPage'));
-const GameRoute = lazy(() => import('@/routes/app/games/GameRoute'));
-
 /** Both staff roles share the console; Roles & Access narrows to superadmin. */
 const STAFF = ['admin', 'superadmin'];
 
@@ -112,17 +100,6 @@ export function App() {
               }
             />
           ) : null}
-          {import.meta.env.DEV ? (
-            <Route
-              path="dev/game-lab"
-              element={
-                <Suspense fallback={null}>
-                  <GameLabPage />
-                </Suspense>
-              }
-            />
-          ) : null}
-
           {/* Marketing (marketing chrome) */}
           <Route element={<MarketingLayout />}>
             <Route index element={<Landing />} />
@@ -176,14 +153,6 @@ export function App() {
             <Route path="learn/:courseSlug" element={<CoursePage />} />
             <Route path="learn/:courseSlug/territory" element={<TerritoryPage />} />
             <Route path="tutor" element={<SectionComingSoon section="tutor" icon="smart_toy" />} />
-            <Route
-              path="games"
-              element={
-                <Suspense fallback={null}>
-                  <GamesHubPage />
-                </Suspense>
-              }
-            />
             <Route
               path="tasks"
               element={
@@ -245,20 +214,6 @@ export function App() {
             element={
               <RequireAuth>
                 <LessonRoute />
-              </RequireAuth>
-            }
-          />
-
-          {/* Game Player — the Lesson player's peer: its own fullscreen layer,
-              no app chrome (DESIGN.md Screen Recipes → Game player). Same
-              placement rule, deliberately outside the AppLayout route group. */}
-          <Route
-            path="games/:slug"
-            element={
-              <RequireAuth>
-                <Suspense fallback={null}>
-                  <GameRoute />
-                </Suspense>
               </RequireAuth>
             }
           />
