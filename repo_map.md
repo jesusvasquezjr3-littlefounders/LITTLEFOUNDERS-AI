@@ -139095,10 +139095,10 @@ export { Checkbox } from './Checkbox';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Back to course",
-  "emptyTitle": "This adventure is loading",
-  "emptyBody": "There are no adventures published for this course yet. Dina is preparing the first missions, check back soon!",
-  "state": {
-    "locked": "locked",
+  "chapter": "Chapter {{num}}",
+  "startLesson": "Start",
+  "continueLesson": "Continue",
+  "reviewLesson": "Review",
 ```
 
 ### frontend/src/i18n/en-US/lesson.json
@@ -139275,10 +139275,10 @@ export { Checkbox } from './Checkbox';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Volver al curso",
-  "emptyTitle": "Esta aventura está cargando",
-  "emptyBody": "Todavía no hay aventuras publicadas para este curso. Dina está preparando las primeras misiones, ¡vuelve pronto!",
-  "state": {
-    "locked": "bloqueado",
+  "chapter": "Capítulo {{num}}",
+  "startLesson": "Iniciar",
+  "continueLesson": "Continuar",
+  "reviewLesson": "Repasar",
 ```
 
 ### frontend/src/i18n/es-MX/lesson.json
@@ -139475,10 +139475,10 @@ import enErrors from './en-US/errors.json';
   "minutes_one": "{{count}} min",
   "minutes_other": "{{count}} min",
   "backToCourse": "Voltar ao curso",
-  "emptyTitle": "Esta aventura está carregando",
-  "emptyBody": "Ainda não há aventuras publicadas para este curso. A Dina está preparando as primeiras missões, volte em breve!",
-  "state": {
-    "locked": "bloqueado",
+  "chapter": "Capítulo {{num}}",
+  "startLesson": "Iniciar",
+  "continueLesson": "Continuar",
+  "reviewLesson": "Revisar",
 ```
 
 ### frontend/src/i18n/pt-BR/lesson.json
@@ -141979,7 +141979,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
-import { Card, Icon, LoadingOverlay } from '@/components/ui';
+import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
@@ -141992,21 +141992,21 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 ### frontend/src/routes/app/learn/LessonPathNode.tsx
 
 ```
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { cn } from '@/lib/utils'
-import { Icon } from '@/components/ui'
-import CharacterActor from '@/components/characters/control/CharacterActor'
-import type { CharacterId } from '@/components/characters/control/types'
-import { localizedText, type LessonNode } from './types'
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { Badge, Button, Icon } from '@/components/ui';
+import type { CharacterId } from '@/components/characters/control/types';
+import { localizedText, type LessonNode } from './types';
 
 /*
- * One 3D "candy" node on the winding lesson path — the v1 caminito look
- * (main: LessonPath.tsx TopicNode): a pressed-button circle with a fat
- * bottom border that squashes on :active, gold once passed, a pulsing ring
- * + bouncing "Start here" beacon on the current node, and an ambient canon
- * character floating beside wave-peak nodes. Appearance rules per DESIGN.md
+ * Brilliant.org-style Syllabus Item Row.
+ * Replaces the old Duolingo-style winding snake node with a structured,
+ * responsive syllabus card row featuring lesson status, duration, XP rewards,
+ * and high-contrast action CTAs.
+ */
+
 ```
 
 ### frontend/src/routes/app/learn/LessonRoute.tsx
@@ -142032,21 +142032,21 @@ import { createCoreGrader } from './coreGrader';
 ### frontend/src/routes/app/learn/SagaSection.tsx
 
 ```
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, IconChip, ProgressBar } from '@/components/ui';
-import type { CharacterId } from '@/components/characters/control/types';
 import { LessonPathNode } from './LessonPathNode';
 import { localizedText, type SagaNode } from './types';
 
 /*
- * One saga: icon chip + title + progress header, then its topics threaded
- * into ONE continuous winding lesson path — the v1 "caminito"
- * (main:frontend/src/components/lessons/LessonPath.tsx): nodes weave left
- * and right on a fixed wave pattern, connected by a fat rounded bezier
- * track drawn from the nodes' LIVE on-screen centers (getBoundingClientRect,
- * recomputed on resize/layout settle), with a dashed inner guide line and
- * canon characters decorating the wave peaks.
+ * Brilliant.org-style Saga/Module Section.
+ * Structured module card featuring a clean header with progress metrics,
+ * topic sub-headers, and vertical list of interactive syllabus lesson rows.
+ */
+
+interface SagaSectionProps {
+  saga: SagaNode;
+  locale: string;
 ```
 
 ### frontend/src/routes/app/learn/TerritoryPage.tsx

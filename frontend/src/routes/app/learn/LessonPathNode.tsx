@@ -1,112 +1,142 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import { cn } from '@/lib/utils'
-import { Icon } from '@/components/ui'
-import CharacterActor from '@/components/characters/control/CharacterActor'
-import type { CharacterId } from '@/components/characters/control/types'
-import { localizedText, type LessonNode } from './types'
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { Badge, Button, Icon } from '@/components/ui';
+import type { CharacterId } from '@/components/characters/control/types';
+import { localizedText, type LessonNode } from './types';
 
 /*
- * One 3D "candy" node on the winding lesson path — the v1 caminito look
- * (main: LessonPath.tsx TopicNode): a pressed-button circle with a fat
- * bottom border that squashes on :active, gold once passed, a pulsing ring
- * + bouncing "Start here" beacon on the current node, and an ambient canon
- * character floating beside wave-peak nodes. Appearance rules per DESIGN.md
- * tokens; the wave offset comes from SagaSection's fixed pattern.
+ * Brilliant.org-style Syllabus Item Row.
+ * Replaces the old Duolingo-style winding snake node with a structured,
+ * responsive syllabus card row featuring lesson status, duration, XP rewards,
+ * and high-contrast action CTAs.
  */
 
-const STATE_CLASSES: Record<LessonNode['state'], string> = {
-  // Gold for done (v1's amber), accent for current, primary outline for available.
-  passed: 'bg-warning text-on-warning border-b-warning-strong',
-  current: 'bg-accent text-on-accent border-b-accent-strong ring-4 ring-accent/30',
-  available: 'bg-surface text-primary border-2 border-primary border-b-[6px] border-b-primary',
-  locked: 'bg-surface-sunken text-content-faint border-b-outline',
-}
+const STATUS_ICONS: Record<LessonNode['state'], string> = {
+  passed: 'check_circle',
+  current: 'play_circle',
+  available: 'play_circle',
+  locked: 'lock',
+};
+
+const STATUS_BADGE_CLASSES: Record<LessonNode['state'], string> = {
+  passed: 'bg-success-soft text-success-strong border border-success/30',
+  current: 'bg-accent text-on-accent shadow-glass-sm',
+  available: 'bg-primary-soft text-primary border border-primary/30',
+  locked: 'bg-surface-sunken text-content-faint border border-outline/50',
+};
 
 interface LessonPathNodeProps {
-  lesson: LessonNode
-  locale: string
-  courseSlug: string
-  waveOffset: number
-  peakCharacter: CharacterId | null
-  peakSide: 'left' | 'right'
-  isNextLesson: boolean
-  registerRef?: (el: HTMLElement | null) => void
+  lesson: LessonNode;
+  locale: string;
+  courseSlug: string;
+  waveOffset?: number;
+  peakCharacter?: CharacterId | null;
+  peakSide?: 'left' | 'right';
+  isNextLesson: boolean;
+  registerRef?: (el: HTMLElement | null) => void;
 }
 
 export function LessonPathNode({
   lesson,
   locale,
   courseSlug,
-  waveOffset,
-  peakCharacter,
-  peakSide,
   isNextLesson,
   registerRef,
 }: LessonPathNodeProps) {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  // One-shot pop on mount only for the current lesson's ring (DESIGN.md §Motion
-  // recipe 3, .lf-pop) — never a re-triggering/looping pulse.
-  const [popped] = useState(isNextLesson)
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [popped] = useState(isNextLesson);
 
-  const clickable = lesson.state !== 'locked'
-  const title = localizedText(lesson.title, locale, lesson.slug)
+  const clickable = lesson.state !== 'locked';
+  const title = localizedText(lesson.title, locale, lesson.slug);
 
   function go() {
-    if (!clickable) return
-    navigate(`/learn/lesson/${lesson.id}`, { state: { courseSlug } })
+    if (!clickable) return;
+    navigate(`/learn/lesson/${lesson.id}`, { state: { courseSlug } });
   }
 
+  const isCurrent = lesson.state === 'current' || isNextLesson;
+  const ctaLabel = lesson.state === 'passed'
+    ? t('learn.reviewLesson')
+    : isCurrent
+    ? t('learn.continueLesson')
+    : t('learn.startLesson');
+
   return (
-    <div className="relative z-10 flex flex-col items-center" style={{ transform: `translateX(${waveOffset}px)` }}>
-      {isNextLesson && (
-        <span className="lf-float mb-1 rounded-full bg-accent px-3 py-1 lf-caption font-bold text-on-accent shadow-pop">
-          {t('learn.startHere')}
-        </span>
+    <button
+      ref={registerRef as React.Ref<HTMLButtonElement>}
+      type="button"
+      onClick={go}
+      disabled={!clickable}
+      aria-disabled={!clickable}
+      aria-label={`${title} — ${t(`learn.state.${lesson.state}`)}`}
+      className={cn(
+        'group relative flex w-full items-center justify-between gap-4 rounded-xl border p-4 shadow-glass-sm transition-all duration-200 text-left',
+        clickable ? 'cursor-pointer hover:border-primary/50 hover:bg-primary-soft/10 hover:shadow-glass' : 'cursor-not-allowed opacity-70 bg-surface-sunken/40 border-outline/40',
+        isCurrent ? 'border-primary/60 bg-gradient-to-r from-primary-soft/30 via-surface to-surface shadow-glass' : 'border-outline/60 bg-surface',
+        popped && 'lf-pop'
       )}
-      <div className="flex items-center gap-3">
-        <button
-          ref={registerRef as React.Ref<HTMLButtonElement>}
-          type="button"
-          onClick={go}
-          disabled={!clickable}
-          aria-label={`${title} — ${t(`learn.state.${lesson.state}`)}`}
+    >
+      {/* Left Icon & Lesson Details */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+        {/* Status Badge Tile */}
+        <div
           className={cn(
-            'relative flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-full border-b-[6px] shadow-glass-sm',
-            'transition-[transform,border-width] duration-100 disabled:cursor-not-allowed',
-            clickable && 'active:translate-y-[4px] active:border-b-[2px]',
-            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-            STATE_CLASSES[lesson.state],
-            popped && 'lf-pop',
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold transition-transform duration-200 group-hover:scale-105',
+            STATUS_BADGE_CLASSES[lesson.state]
           )}
         >
-          {/* Glass highlight (v1's inset shine) */}
-          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-2 h-3 w-6 rounded-full bg-white/35" />
-          {lesson.state === 'passed' && <Icon name="check" className="text-[30px]" />}
-          {lesson.state === 'locked' && <Icon name="lock" className="text-[20px]" />}
-          {(lesson.state === 'current' || lesson.state === 'available') && (
-            <Icon name="star" fill className="text-[28px]" />
-          )}
-        </button>
+          <Icon name={STATUS_ICONS[lesson.state]} className="!text-[22px]" aria-hidden />
+        </div>
 
-        {/* Ambient mascot on wave peaks (v1 decorated patternIndex 2/6). */}
-        {peakCharacter && (
-          <div
-            aria-hidden="true"
-            className={cn('pointer-events-none absolute hidden sm:block', peakSide === 'right' ? 'left-full ml-8' : 'right-full mr-8')}
-          >
-            <CharacterActor character={peakCharacter} emotion="happy" action="idle" size="sm" />
+        {/* Title & Metadata */}
+        <div className="flex flex-col gap-1 min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="lf-title truncate text-content group-hover:text-primary transition-colors">
+              {title}
+            </h4>
+            {isCurrent && (
+              <Badge className="bg-accent text-on-accent border-none font-bold">
+                {t('learn.startHere')}
+              </Badge>
+            )}
           </div>
+
+          <div className="flex items-center gap-2 text-content-muted lf-caption lf-number font-medium">
+            <span className="flex items-center gap-1">
+              <Icon name="schedule" className="!text-[14px]" />
+              {t('learn.minutes', { count: lesson.estimated_minutes })}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1 font-bold text-primary">
+              <Icon name="stars" className="!text-[14px]" />
+              {t('learn.xp', { xp: lesson.xp_total })}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Action Button */}
+      <div className="shrink-0">
+        {clickable ? (
+          <span
+            className={cn(
+              'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 py-2.5 lf-label font-bold shadow-glass-sm transition-all duration-200 group-hover:translate-x-0.5',
+              isCurrent ? 'bg-primary text-on-primary hover:bg-primary-strong' : 'border border-outline/70 bg-surface text-primary hover:border-primary/50'
+            )}
+          >
+            {ctaLabel}
+            <Icon name="arrow_forward" className="!text-[16px]" />
+          </span>
+        ) : (
+          <span className="lf-caption flex items-center gap-1 font-bold text-content-faint px-3 py-2 rounded-full bg-surface-sunken">
+            <Icon name="lock" className="!text-[14px]" />
+            {t('learn.locked')}
+          </span>
         )}
       </div>
-      <div className="mt-1.5 max-w-[190px] text-center">
-        <p className="lf-label truncate text-content">{title}</p>
-        <span className="lf-caption lf-number text-content-muted">
-          {t('learn.xp', { xp: lesson.xp_total })} · {t('learn.minutes', { count: lesson.estimated_minutes })}
-        </span>
-      </div>
-    </div>
-  )
+    </button>
+  );
 }
