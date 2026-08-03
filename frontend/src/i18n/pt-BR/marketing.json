@@ -7,66 +7,143 @@
     "loginCta": "Já tenho conta"
   },
   "hero": {
-    "titleLead": "Educação financeira,",
-    "titleHighlight": "aprendida fazendo",
-    "subtitle": "O LittleFounders transforma finanças e empreendedorismo em cursos interativos que seus filhos querem concluir, com segurança, orientação e participação da família.",
+    "titleLead": "Que aprender sobre dinheiro",
+    "titleHighlight": "pareça uma aventura",
+    "subtitle": "O LittleFounders transforma as primeiras escolhas sobre dinheiro, poupança e grandes ideias em experiências que as crianças querem explorar.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Como funciona",
-    "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
-    "logoAlt": "LittleFounders"
+    "ctaSecondary": "Conheça as lições",
+    "note": "Um espaço para aprender, imaginar e compartilhar em família.",
+    "imageAlt": "Uma família explora educação financeira com os personagens do LittleFounders",
+    "logoAlt": "LittleFounders",
+    "floatingCard": {
+      "title": "Pequenas escolhas, grandes ideias",
+      "body": "Cada aventura abre uma nova possibilidade."
+    }
   },
-  "problem": {
-    "title": "O problema é real. A solução também.",
-    "problemTitle": "O problema",
-    "problemBody": "Dinheiro é um dos assuntos mais importantes da vida, e um dos menos ensinados. A maioria das crianças cresce sem nunca praticar como poupar, planejar um orçamento ou construir algo próprio.",
-    "solutionTitle": "Nossa solução",
-    "solutionBody": "Lições curtas e altamente gamificadas, um tutor de IA que se adapta a cada criança, e tarefas em família com recompensas reais, tudo sob controle parental verificado."
+  "experience": {
+    "eyebrow": "Uma forma diferente de aprender",
+    "title": "A curiosidade é o começo",
+    "body": "As lições transformam perguntas do dia a dia em momentos para testar, pensar e descobrir o que as crianças podem fazer.",
+    "learn": {
+      "step": "01",
+      "title": "Explore uma ideia",
+      "body": "Comece com situações conhecidas que fazem o dinheiro ganhar sentido."
+    },
+    "build": {
+      "step": "02",
+      "title": "Teste suas escolhas",
+      "body": "Resolva desafios, compare opções e aprenda a confiar no seu raciocínio."
+    },
+    "share": {
+      "step": "03",
+      "title": "Leve para o seu mundo",
+      "body": "As ideias continuam vivas nas conversas e metas compartilhadas em casa."
+    }
+  },
+  "lessonPreview": {
+    "eyebrow": "Aprender parece diferente aqui",
+    "title": "Uma lição que convida a participar",
+    "body": "Não se trata de memorizar. Trata-se de encontrar uma resposta, receber incentivo e querer seguir para a próxima missão.",
+    "link": "Conheça a experiência das lições",
+    "card": {
+      "badge": "Aventura de poupança",
+      "progress": "Lição 2 de 3",
+      "prompt": "Se você quer guardar para uma meta especial, qual escolha ajuda mais?",
+      "options": {
+        "one": "Gastar tudo hoje",
+        "two": "Guardar uma parte",
+        "three": "Esquecer minha meta"
+      },
+      "feedback": "Uma escolha que aproxima você da sua meta!",
+      "reward": "Nova ideia desbloqueada"
+    }
   },
   "fact": {
+    "eyebrow": "Uma habilidade para a vida toda",
+    "heading": "As conversas sobre dinheiro podem começar cedo",
+    "intro": "Dar às crianças um lugar acolhedor para praticar hoje pode ajudá-las a se sentirem mais prontas para escolher e criar amanhã.",
     "stat": "1 em cada 3",
     "title": "Apenas 1 em cada 3 adultos no mundo tem educação financeira",
-    "body": "É o que mostra a S&P Global FinLit Survey, um dos maiores estudos sobre alfabetização financeira já realizados. Dois em cada três adultos não conseguem responder perguntas básicas sobre poupança, juros e risco. Acreditamos que a solução começa na infância.",
+    "body": "A S&P Global FinLit Survey mostra que muitas pessoas chegam à vida adulta sem ferramentas básicas para decisões financeiras. Acreditamos que a confiança pode começar na infância.",
     "source": "Fonte: S&P Global FinLit Survey"
   },
-  "motivation": {
-    "title": "As crianças já sonham grande. Nós as ajudamos a construir.",
-    "body1": "Toda criança que junta moedas em um pote já é uma pequena fundadora: tem uma meta, um plano e a paciência para chegar lá. O que falta é um guia que fale a língua dela.",
-    "body2": "O LittleFounders as encontra onde elas brincam: personagens que amam, missões que querem completar e uma família torcendo junto.",
-    "imageAlt": "Uma criança contando moedas ao lado do seu pote de economias"
-  },
-  "features": {
-    "title": "Aprendizado prático, em casa",
-    "subtitle": "Interaja diretamente com os conceitos de dinheiro. Nosso mundo tátil reduz a fricção de aprender e faz temas difíceis parecerem brincadeira.",
-    "f1": {
-      "title": "Gamificação",
-      "body": "Ganhe XP, mantenha sequências vivas e desbloqueie recompensas conforme os cursos avançam."
-    },
-    "f2": {
-      "title": "Tutor de IA",
-      "body": "Um tutor pessoal que se adapta a cada criança e dá dicas suaves, nunca só a resposta."
-    },
-    "f3": {
-      "title": "Lições interativas",
-      "body": "Sem aulas expositivas. Arraste, solte e construa seu caminho por cada conceito."
-    },
-    "f5": {
-      "title": "Tarefas em família",
-      "body": "Os pais atribuem tarefas e definem recompensas gamificadas; vários responsáveis verificados por família."
-    },
-    "f6": {
-      "title": "Seguro por design",
-      "body": "Vínculos de responsáveis verificados, conteúdo moderado e dados das crianças que nunca são vendidos nem compartilhados."
-    },
-    "f7": {
-      "title": "Desafios que ensinam",
-      "body": "Lições interativas em que cada decisão constrói habilidades reais de poupança, orçamento e investimento. Praticar também pode ser recompensador."
+  "family": {
+    "eyebrow": "Mais que uma tela",
+    "title": "Ideias que também encontram espaço em casa",
+    "body": "Quando uma criança descobre como poupar para algo que deseja, a conversa pode continuar à mesa, em uma meta ou na sua próxima grande ideia.",
+    "imageAlt": "Uma criança conta moedas ao lado de um pote de poupança",
+    "values": {
+      "short": "No seu ritmo",
+      "handsOn": "Na prática",
+      "growing": "Com confiança"
     }
   },
   "finalCta": {
-    "title": "Crie um pequeno founder",
-    "body": "Crie uma conta grátis em minutos. Sem cartão de crédito.",
-    "button": "Comece grátis",
-    "imageAlt": "Uma criança sorridente colocando uma moeda em um cofrinho com coroa"
+    "eyebrow": "A próxima ideia começa aqui",
+    "title": "Uma grande aventura pode começar com uma moeda",
+    "body": "Crie uma conta gratuita e descubra uma nova forma de aprender sobre dinheiro, metas e ideias que crescem.",
+    "imageAlt": "Uma criança coloca uma moeda em um cofrinho"
+  },
+  "howItWorks": {
+    "eyebrow": "Como as lições ganham vida",
+    "title": "Cada lição começa com uma pergunta",
+    "intro": "As aventuras do LittleFounders ajudam as crianças a explorar ideias sobre dinheiro e empreendedorismo por meio de desafios que parecem próximos, claros e divertidos.",
+    "cta": "Comece sua aventura",
+    "steps": {
+      "eyebrow": "Da curiosidade à confiança",
+      "title": "Três momentos para aprender fazendo",
+      "discover": {
+        "number": "01",
+        "title": "Descubra",
+        "body": "Conheça uma situação, história ou meta que desperta a curiosidade."
+      },
+      "practice": {
+        "number": "02",
+        "title": "Participe",
+        "body": "Toque, organize, compare e escolha enquanto a ideia ganha vida."
+      },
+      "celebrate": {
+        "number": "03",
+        "title": "Avance",
+        "body": "Cada pequena conquista incentiva mais aprendizado e uma nova tentativa."
+      }
+    },
+    "lesson": {
+      "eyebrow": "Dentro de uma lição",
+      "title": "Uma experiência breve que deixa espaço para pensar",
+      "body": "As lições convidam as crianças a experimentar escolhas e descobrir que aprender sobre dinheiro também pode ser criativo e emocionante.",
+      "moments": {
+        "stories": {
+          "title": "Histórias conhecidas",
+          "body": "Ideias que começam com metas, escolhas e momentos que as crianças reconhecem."
+        },
+        "choices": {
+          "title": "Desafios para resolver",
+          "body": "Pequenas ações que transformam uma pergunta em uma descoberta."
+        },
+        "wins": {
+          "title": "Progresso que se sente",
+          "body": "Cada passo torna visível tudo o que as crianças já conseguem fazer."
+        }
+      },
+      "card": {
+        "badge": "Missão de orçamento",
+        "progress": "Parte 2 de 3",
+        "prompt": "Sua meta custa 12 moedas. Qual combinação ajuda você a chegar lá?",
+        "answers": {
+          "one": "5 + 5",
+          "two": "10 + 2",
+          "three": "4 + 4",
+          "four": "3 + 3"
+        },
+        "feedback": "Você encontrou uma forma de chegar à sua meta!"
+      }
+    },
+    "closing": {
+      "eyebrow": "A próxima descoberta espera",
+      "title": "Aprender sobre dinheiro também pode parecer algo seu",
+      "body": "Dê o primeiro passo para aventuras que transformam a curiosidade de hoje em ideias para a vida toda."
+    }
   },
   "footer": {
     "tagline": "Aprenda, cresça e construa seu futuro.",
@@ -78,20 +155,20 @@
   },
   "comingSoon": {
     "badge": "Em breve",
-    "body": "Estamos construindo esta página. Volte logo, vai valer a pena."
+    "body": "Estamos preparando esta página. Volte em breve."
   },
   "pages": {
     "howItWorks": {
       "title": "Como funciona",
-      "description": "Cursos, tutor de IA e tarefas em família, como tudo se encaixa."
+      "description": "Conheça as lições do LittleFounders."
     },
     "families": {
       "title": "Famílias",
-      "description": "Controle parental, vários responsáveis, tarefas e recompensas, tudo o que as famílias podem fazer juntas."
+      "description": "Um espaço para acompanhar ideias, metas e aprendizados."
     },
     "faq": {
       "title": "Perguntas frequentes",
-      "description": "Respostas sobre contas, segurança, preços e mais."
+      "description": "Respostas para perguntas comuns."
     }
   },
   "languageSection": {
@@ -99,7 +176,7 @@
   },
   "legal": {
     "badge": "Em construção",
-    "body": "Este documento está sendo redigido. Enquanto isso, para qualquer dúvida escreva para:",
+    "body": "Este documento está sendo redigido. Para dúvidas, escreva para nós:",
     "terms": {
       "title": "Termos e Condições"
     },

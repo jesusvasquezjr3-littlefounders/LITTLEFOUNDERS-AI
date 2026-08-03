@@ -61,15 +61,15 @@ export function MarketingLayout() {
     <div className="min-h-screen bg-base text-content">
       {/* Sticky top app bar — frosted glass over the page (/DESIGN.md §Elevation) */}
       <header className="lf-glass sticky top-0 z-40 border-x-0 border-t-0">
-        <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-5 md:px-8">
+        <div className="mx-auto flex h-16 min-w-0 max-w-container items-center justify-between gap-2 px-4 sm:gap-4 sm:px-5 md:px-8">
           <Link
             to="/"
-            className="flex items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="flex shrink-0 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <img
               src="/logo-main-trimmed.png"
               alt={t('marketing.hero.logoAlt')}
-              className="h-9 w-auto sm:h-10"
+              className="h-8 w-auto sm:h-10"
             />
           </Link>
 
@@ -81,7 +81,7 @@ export function MarketingLayout() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
             <Dropdown
               compact
               value={(i18n.resolvedLanguage as Locale) ?? 'en-US'}

@@ -9973,11 +9973,11 @@ import { RequireRole } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
 import { ComingSoon } from '@/routes/marketing/ComingSoon';
+import { HowItWorks } from '@/routes/marketing/HowItWorks';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
-import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
 ```
 
 ### frontend/src/__tests__/AdminGenerationPage.test.tsx
@@ -10848,12 +10848,12 @@ export { Checkbox } from './Checkbox';
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Money skills,",
-    "titleHighlight": "learned by doing",
-    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into interactive courses your kids want to complete, safe, guided, and side by side with your family.",
+    "titleLead": "Let learning about money",
+    "titleHighlight": "feel like an adventure",
+    "subtitle": "LittleFounders turns early choices about money, saving, and big ideas into experiences kids want to explore.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "How it works",
-    "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
+    "ctaSecondary": "Explore the lessons",
+    "note": "A place to learn, imagine, and share as a family.",
 ```
 
 ### frontend/src/i18n/en-US/profile.json
@@ -11028,12 +11028,12 @@ export { Checkbox } from './Checkbox';
     "loginCta": "Ya tengo cuenta"
   },
   "hero": {
-    "titleLead": "Educación financiera,",
-    "titleHighlight": "aprendida haciendo",
-    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en cursos interactivos que tus hijos sí quieren terminar, seguros, guiados y en familia.",
+    "titleLead": "Que aprender sobre dinero",
+    "titleHighlight": "se sienta como una aventura",
+    "subtitle": "LittleFounders transforma las primeras decisiones sobre dinero, ahorro e ideas de negocio en experiencias que los niños quieren explorar.",
     "ctaPrimary": "Empieza gratis",
-    "ctaSecondary": "Cómo funciona",
-    "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
+    "ctaSecondary": "Descubre las lecciones",
+    "note": "Un espacio para aprender, imaginar y compartir en familia.",
 ```
 
 ### frontend/src/i18n/es-MX/profile.json
@@ -11228,12 +11228,12 @@ import enErrors from './en-US/errors.json';
     "loginCta": "Já tenho conta"
   },
   "hero": {
-    "titleLead": "Educação financeira,",
-    "titleHighlight": "aprendida fazendo",
-    "subtitle": "O LittleFounders transforma finanças e empreendedorismo em cursos interativos que seus filhos querem concluir, com segurança, orientação e participação da família.",
+    "titleLead": "Que aprender sobre dinheiro",
+    "titleHighlight": "pareça uma aventura",
+    "subtitle": "O LittleFounders transforma as primeiras escolhas sobre dinheiro, poupança e grandes ideias em experiências que as crianças querem explorar.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Como funciona",
-    "imageAlt": "Uma família aprendendo sobre dinheiro na mesa junto com os personagens do LittleFounders",
+    "ctaSecondary": "Conheça as lições",
+    "note": "Um espaço para aprender, imaginar e compartilhar em família.",
 ```
 
 ### frontend/src/i18n/pt-BR/profile.json
@@ -14561,6 +14561,26 @@ export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }
         <p className="lf-body mt-4 text-content-muted">{t('marketing.comingSoon.body')}</p>
 ```
 
+### frontend/src/routes/marketing/HowItWorks.tsx
+
+```
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { APP_HOME } from '@/routes/app/navConfig';
+import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+
+const LESSON_STEPS = [
+  { key: 'discover', icon: 'explore', tone: 'primary' },
+  { key: 'practice', icon: 'touch_app', tone: 'accent' },
+  { key: 'celebrate', icon: 'workspace_premium', tone: 'delight' },
+] as const;
+
+const LESSON_MOMENTS = [
+  { key: 'stories', icon: 'auto_stories' },
+  { key: 'choices', icon: 'account_tree' },
+```
+
 ### frontend/src/routes/marketing/Landing.tsx
 
 ```
@@ -14568,17 +14588,17 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { LOCALES, type Locale } from '@/i18n';
+import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 
-const LOCALE_FLAGS: Record<Locale, string> = {
-  'en-US': '🇺🇸',
-  'es-MX': '🇲🇽',
-  'pt-BR': '🇧🇷',
-};
+/* DESIGN.md §Screen Recipes → Landing. This is a marketing narrative, not a
+   product specification: invitation → learning experience → proof → CTA. */
 
-/* Composition per /DESIGN.md §Screen Recipes → Landing: full-bleed alternating
+const EXPERIENCE_ITEMS = [
+  { key: 'learn', icon: 'touch_app', tone: 'accent' },
+  { key: 'build', icon: 'lightbulb', tone: 'delight' },
+  { key: 'share', icon: 'forum', tone: 'success' },
+] as const;
+
 ```
 
 ### frontend/src/routes/marketing/LegalPage.tsx
