@@ -92,6 +92,90 @@ describe('localizeLesson (string-freeze)', () => {
     }
     expect((result.document.segments[0]!.payload as { body_md: string }).body_md).toBe(`EN:${'x'.repeat(3_997)}`);
   });
+
+  it('re-translates JUST the offending string, shorter, when a translation overflows a schema max-length (production 2026-08-03: "options.1.label: Too big <=60")', async () => {
+    const source = buildDocument();
+    source.segments = [
+      {
+        id: 's-tile',
+        type: 'picture_choice',
+        prompt_md: '¿Cuál moneda vale más?',
+        difficulty: 1,
+        xp: 10,
+        payload: {
+          options: [
+            { id: 'o1', icon: 'monetization_on', label: 'Moneda pequeña' },
+            { id: 'o2', icon: 'monetization_on', label: 'Moneda grande' },
+          ],
+        },
+        answer: { correct_option_id: 'o1' },
+      },
+    ] as never;
+
+    let call = 0;
+    const translate = vi.fn(async (req: ChatCompleteRequest): Promise<ChatCompleteResult> => {
+      call += 1;
+      const lastLine = req.messages[req.messages.length - 1]!.content.split('\n').pop()!;
+      const map = JSON.parse(lastLine) as Record<string, string>;
+      const out: Record<string, string> = {};
+      for (const [k, v] of Object.entries(map)) {
+        // First pass: translate everything, but blow the 60-char label cap on
+        // purpose for exactly ONE source string. Second pass (the corrective
+        // retry) returns a compliant one for just that string.
+        out[k] = call === 1 && v === 'Moneda pequeña' ? 'A very small commemorative coin, freshly minted today just for this stand' : `EN:${v}`;
+      }
+      return { content: JSON.stringify(out), promptTokens: 5, completionTokens: 5 };
+    });
+
+    const result = await localizeLesson(source, 'en-US', gateCtx, { translate: translate as never });
+
+    // Never threw, never fell back to salvage — the schema is satisfied.
+    const options = (result.document.segments[0]!.payload as { options: { label: string }[] }).options;
+    expect(options[0]!.label.length).toBeLessThanOrEqual(60);
+    expect(options[1]!.label.length).toBeLessThanOrEqual(60);
+    // Exactly one extra round-trip for the single offending label — not a
+    // full re-translation of the whole document.
+    expect(translate).toHaveBeenCalledTimes(2);
+    const retryUser = translate.mock.calls[1]![0].messages[1]!.content;
+    const retrySent = JSON.parse(retryUser) as Record<string, string>;
+    // Only the ONE broken key was re-sent, and re-sent as the ORIGINAL es-MX
+    // source (not the over-long failed translation) so the model isn't
+    // anchored on its own broken output.
+    expect(Object.keys(retrySent)).toHaveLength(1);
+    expect(Object.values(retrySent)[0]).toContain('Moneda');
+  });
+
+  it('falls back to the original es-MX string for a field that STILL overflows after every corrective retry — one field, not the whole lesson', async () => {
+    const source = buildDocument();
+    source.segments = [
+      {
+        id: 's-tile',
+        type: 'picture_choice',
+        prompt_md: '¿Cuál moneda vale más?',
+        difficulty: 1,
+        xp: 10,
+        payload: { options: [{ id: 'o1', icon: 'monetization_on', label: 'Moneda' }, { id: 'o2', icon: 'monetization_on', label: 'Otra' }] },
+        answer: { correct_option_id: 'o1' },
+      },
+    ] as never;
+    // Every attempt (initial + every corrective retry) keeps blowing the cap.
+    const translate = vi.fn(async (req: ChatCompleteRequest): Promise<ChatCompleteResult> => {
+      const lastLine = req.messages[req.messages.length - 1]!.content.split('\n').pop()!;
+      const map = JSON.parse(lastLine) as Record<string, string>;
+      const out: Record<string, string> = {};
+      for (const k of Object.keys(map)) out[k] = 'x'.repeat(200);
+      return { content: JSON.stringify(out), promptTokens: 5, completionTokens: 5 };
+    });
+
+    const result = await localizeLesson(source, 'en-US', gateCtx, { translate: translate as never });
+
+    // Never throws: the field that could never be shortened ships in its
+    // ORIGINAL es-MX text rather than losing the whole lesson.
+    const options = (result.document.segments[0]!.payload as { options: { label: string }[] }).options;
+    expect(options[0]!.label).toBe('Moneda');
+    // 1 initial + 3 corrective retries (MAX_REINJECT_ATTEMPTS).
+    expect(translate).toHaveBeenCalledTimes(4);
+  });
 });
 
 describe('translateTitle (topic titles — es-MX-only in curriculum YAML, filled in at publish time)', () => {
