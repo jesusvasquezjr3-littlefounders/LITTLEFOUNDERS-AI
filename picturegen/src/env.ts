@@ -46,6 +46,14 @@ const Env = z.object({
   PICTUREGEN_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
   // Max transport attempts per HTTP call (429/5xx retried with jittered backoff).
   PICTUREGEN_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(10).default(4),
+  // Caps in-flight calls to DashScope's image-generation endpoint (gen/concurrencyGate.ts).
+  // Forge callers each retry independently on 429 with their own backoff ladder
+  // (gen/backoff.ts) — without a shared gate, N concurrent Forge workers sustain
+  // pressure against the SAME per-minute quota, which defeats that ladder entirely
+  // (production incident 2026-08-03: a 4-slot run kept re-triggering 429s despite
+  // the ladder because nothing serialized the actual outbound calls). Default 1 =
+  // fully serialized; raise only once the account's real per-minute quota is known.
+  IMAGE_MAX_CONCURRENT_GENERATIONS: z.coerce.number().int().min(1).max(10).default(1),
 
   // Storage transcode — every generated image is re-encoded WebP at this
   // quality before the Depot upload (gen/transcode.ts: −96.9% vs the PNGs

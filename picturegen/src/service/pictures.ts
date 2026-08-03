@@ -7,6 +7,18 @@ import { findByHash, insertAsset, pictureAssetHash } from '../cache/pictureAsset
 import { uploadFile } from '../filebase/client.js';
 import { ImageError } from '../gen/errors.js';
 import { getConfig, judgeApiKey } from '../env.js';
+import { createConcurrencyGate, type ConcurrencyGate } from '../gen/concurrencyGate.js';
+
+/**
+ * ONE gate for the process's whole lifetime, sized from IMAGE_MAX_CONCURRENT_GENERATIONS.
+ * Lazy (not module-top-level) so it always reads the config that's live when the
+ * first request actually lands, never a value cached before env.ts validated.
+ */
+let imageGate: ConcurrencyGate | null = null;
+function getImageGate(limit: number): ConcurrencyGate {
+  if (!imageGate) imageGate = createConcurrencyGate(limit);
+  return imageGate;
+}
 
 /*
  * Prism's one job (COURSE_ENGINE.md consumers call this): turn a label into a
@@ -174,7 +186,10 @@ export async function generatePicture(
 
     // Generate, then ALWAYS download + re-upload (the provider URL is temporary).
       try {
-        image = await deps.generateImage(
+        // Serialized: N concurrent Forge callers must never all hammer DashScope
+        // at once (see IMAGE_MAX_CONCURRENT_GENERATIONS in env.ts) — each queued
+        // call still gets its own full retry/backoff ladder once it's its turn.
+        image = await getImageGate(config.IMAGE_MAX_CONCURRENT_GENERATIONS).run(() => deps.generateImage(
         { prompt: crafted.prompt, negativePrompt: crafted.negative },
         {
           apiBase: config.IMAGE_API_BASE,
@@ -184,7 +199,7 @@ export async function generatePicture(
           timeoutMs: config.PICTUREGEN_TIMEOUT_MS,
           maxAttempts: config.PICTUREGEN_MAX_ATTEMPTS,
         },
-        );
+        ));
       } catch (err) {
         // DashScope bills when the image is GENERATED; downloading its
         // temporary result URL happens after. A generated-but-undownloadable
