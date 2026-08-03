@@ -100,6 +100,7 @@ up on 4xx, and every needless re-request is a full paid generation
 | `FILEBASE_INTERNAL_KEY` | — | Required; sent as `x-internal-api-key` to Depot |
 | `PICTUREGEN_TIMEOUT_MS` | `120000` | Overall wall clock per image (submit + poll) |
 | `PICTUREGEN_MAX_ATTEMPTS` | `4` | Max transport attempts per HTTP call (429/5xx retried) |
+| `IMAGE_MAX_CONCURRENT_GENERATIONS` | `1` | Caps in-flight calls to DashScope's image endpoint (gen/concurrencyGate.ts) — stops concurrent callers from defeating each other's 429 backoff |
 | `VERIFY_MODEL` | `qwen-vl-plus` | Vision model that inspects every fresh image for readable text/numerals |
 | `PICTUREGEN_VERIFY_ATTEMPTS` | `3` | Judge→generate→verify attempts before `IMAGE_VERIFICATION_FAILED`; `0` disables |
 | `IMAGE_WEBP_QUALITY` | `82` | WebP quality for the storage transcode (every image is stored as WebP; −96.9% vs PNG measured) |
