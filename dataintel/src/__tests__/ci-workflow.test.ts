@@ -132,6 +132,17 @@ describe('dataintel CD workflow', () => {
     expect(yaml).toContain('RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}');
   });
 
+  it('build ships the DuckDB schema beside the compiled loader', () => {
+    // tsc compiles only .ts — the first production deploy served /health while
+    // initDb() warned ENOENT on /app/dist/db/schema.sql, leaving the whole
+    // warehouse silently dead. The build must copy the .sql asset into dist.
+    const pkg = JSON.parse(readFileSync(path.join(SERVICE_ROOT, 'package.json'), 'utf8')) as {
+      scripts?: Record<string, string>;
+    };
+    expect(pkg.scripts?.build).toContain('cp src/db/schema.sql dist/db/schema.sql');
+    expect(readFileSync(path.join(SERVICE_ROOT, 'src/db/schema.sql'), 'utf8')).toContain('CREATE');
+  });
+
   it('has isolated Railway runtime configuration and excludes the local DuckDB file', () => {
     const railway = JSON.parse(readFileSync(RAILWAY_CONFIG, 'utf8')) as {
       deploy?: { startCommand?: string; healthcheckPath?: string; restartPolicyType?: string };
