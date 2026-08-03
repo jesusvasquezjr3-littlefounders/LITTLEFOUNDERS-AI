@@ -24,7 +24,7 @@ import { getRegistryEntry } from '../registry'
 import MarkdownLite from '../core/MarkdownLite'
 import { NarrationProvider, narrationUnitId, useNarration, type AudioManifest } from './narration'
 import { StreakCelebration } from './StreakCelebration'
-import { playSfx } from './sfx'
+import { playSfx, playLessonBgm, stopLessonBgm } from './sfx'
 import { formatDuration, useCountUp, type ServerCompletion } from './completion'
 
 export interface LessonPlayerProps {
@@ -88,6 +88,14 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
   const entry = segment ? getRegistryEntry(segment.type) : undefined
   const verdict = segState?.verdict ?? null
 
+  // v1 lesson soundtrack: the background loop starts with the lesson and fades
+  // out (1500 ms, like v1's stopBGM) when the run ends or the player unmounts.
+  // The results effect below also stops it, mirroring v1's completion path.
+  useEffect(() => {
+    playLessonBgm()
+    return () => stopLessonBgm()
+  }, [])
+
   // Reset the draft, error and per-attempt timer on a new segment AND on every
   // retry (retries bumps). Clearing the draft on retry is what stops the stale
   // co-submit / keypad-append bugs and disables Comprobar until a fresh answer.
@@ -126,6 +134,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
     if (state.phase === 'results' && !completedRef.current) {
       completedRef.current = true
       narration.stop()
+      stopLessonBgm()
       secondsSpentRef.current = Math.max(1, Math.round((Date.now() - lessonStartRef.current) / 1000))
       // The results screen is reached on BOTH outcomes (hearts exhausted or a
       // score below threshold also finish the run), so lesson_complete must be

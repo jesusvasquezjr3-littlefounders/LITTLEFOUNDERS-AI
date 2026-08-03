@@ -111,7 +111,10 @@ frontend/
     email-templates/
     lottie/
     marketing/
-    sfx/
+    sounds/
+      auth/
+      edu/
+      ui/
   src/
     __tests__/
     auth/
@@ -12652,41 +12655,41 @@ export interface AudioManifest {
 ### frontend/src/lesson-engine/player/sfx.test.ts
 
 ```
-// Every SfxName must have its asset in /public/sfx — playSfx swallows load
-// errors by design (sound is enhancement, never a requirement), so a missing
-// or renamed file would fail SILENTLY in the app. This test is the only
-// guardrail that keeps the name↔asset contract honest.
+// Every mapped sound must have its asset in /public/sounds — playSfx and
+// playPlatformSound swallow load errors by design (sound is enhancement,
+// never a requirement), so a missing or renamed file would fail SILENTLY in
+// the app. These tests are the only guardrail keeping the name↔asset contract
+// honest. The volume pins protect v1 fidelity: v1 played one-shots at Howler
+// instance volume 0.15 under a 0.5 master (audible 0.075) and the lesson BGM
+// at 0.3 × 0.5 = 0.15 — see sfx.ts; "restoring" the raw numbers would double
+// the loudness v1 actually had.
 import { describe, expect, it } from 'vitest'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { BGM_SRC, BGM_VOLUME, SFX_SRC, SFX_VOLUME } from './sfx'
+import { PLATFORM_SOUND_SRC, PLATFORM_SOUND_VOLUME } from '../../lib/sound'
 
-const SFX_NAMES = [
-  'correct',
-  'perfect',
-  'tryagain',
-  'celebration',
-  'streak',
-  'flip',
+const PUBLIC_DIR = resolve(__dirname, '../../../public')
 ```
 
 ### frontend/src/lesson-engine/player/sfx.ts
 
 ```
-// Lesson-player sound effects — tiny, dependency-free. Assets live in
-// /public/sfx (app chrome, generated once with ElevenLabs sound-generation —
-// see the repo memory: ElevenLabs is for SOUND EFFECTS ONLY; narration/TTS is
-// qwen3-tts via Echo). Fire-and-forget: SFX must never block or interrupt the
-// narration Audio element (separate instances), and autoplay rejections are
-// swallowed — a missing sound is never an error a kid sees.
+// Lesson-player sound effects — tiny, dependency-free. Assets are the original
+// v1 LittleFounders sound set (rescued from v1 `main` @ f4d09ad,
+// /public/sounds), re-implemented at v1's AUDIBLE levels: v1 played one-shots
+// through Howler at instance volume 0.15 under a global Howler.volume(0.5)
+// master (SoundContext.tsx), so the audible product is 0.15 × 0.5 = 0.075.
+// The lesson background loop played at 0.3 × 0.5 = 0.15. HTMLAudioElement has
+// no master bus, so those effective products are set directly here — do not
+// "restore" the raw 0.15/0.3 numbers, they would be twice as loud as v1.
+// Fire-and-forget: SFX must never block or interrupt the narration Audio
+// element (separate instances), and autoplay rejections are swallowed — a
+// missing sound is never an error a kid sees.
 
 export type SfxName =
   | 'correct'
   | 'perfect'
-  | 'tryagain'
-  | 'celebration'
-  | 'streak'
-  | 'flip'
-  | 'match'
 ```
 
 ### frontend/src/lesson-engine/registry.test.tsx
@@ -12867,6 +12870,26 @@ import {
  * First-party usage beacon (/INSIGHTS.md). Batches closed-vocabulary events
  * to Core's POST /api/v1/events — never to Pulse, never to any third party.
  *
+```
+
+### frontend/src/lib/sound.ts
+
+```
+// Platform-wide UI sounds — the original v1 LittleFounders set (rescued from
+// v1 `main` @ f4d09ad, /public/sounds), at v1's audible level: one-shots
+// played at Howler instance volume 0.15 under the global Howler.volume(0.5)
+// master, so the effective product 0.15 × 0.5 = 0.075 is set directly here.
+// v1 contexts (SoundContext call sites): auth_success on login/signup/OAuth
+// success, auth_error on those failures, auth_bye on logout (TopNav), and
+// nav taps reused the ui tap asset (nav_slide → tap.mp3). Same fire-and-forget
+// contract as the lesson player's sfx.ts: autoplay rejections and missing
+// assets are swallowed — sound is enhancement, never a requirement.
+
+export type PlatformSoundName = 'auth_success' | 'auth_error' | 'auth_bye' | 'nav_tap'
+
+/** v1 one-shot audible level: instance 0.15 × Howler master 0.5. */
+export const PLATFORM_SOUND_VOLUME = 0.075
+
 ```
 
 ### frontend/src/lib/supabaseRealtime.ts
@@ -13593,6 +13616,7 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { playPlatformSound } from '@/lib/sound';
 import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
@@ -13601,7 +13625,6 @@ import { visibleAdminSections } from '@/routes/admin/adminNav';
 
 /*
  * App shell — /DESIGN.md §Screen Recipes → Dashboard. Desktop sidebar is
- * COLLAPSIBLE (288px ↔ 88px, minimal edge chevron, favicon as the collapsed
 ```
 
 ### frontend/src/routes/app/LearnPage.tsx
@@ -14350,6 +14373,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { AuthShell } from './AuthShell';
 
 /*
@@ -14358,7 +14382,6 @@ import { AuthShell } from './AuthShell';
  * We hand the tokens to the shared session context (same as email login) and go
  * to the app. Tokens are scrubbed from the URL/history immediately.
  */
-export function AuthCallbackPage() {
 ```
 
 ### frontend/src/routes/auth/AuthLayout.tsx
@@ -14448,6 +14471,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Icon } from '@/components/ui';
@@ -14458,7 +14482,6 @@ import { SocialAuth } from './SocialAuth';
 
 export function LoginPage() {
   const { t } = useTranslation();
-  const { login, getToken } = useAuth();
 ```
 
 ### frontend/src/routes/auth/SignupPage.tsx
@@ -14468,6 +14491,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
@@ -14478,7 +14502,6 @@ import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
-/*
 ```
 
 ### frontend/src/routes/auth/SocialAuth.tsx

@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
@@ -59,9 +60,11 @@ export function SignupPage() {
     });
     setSubmitting(false);
     if (error) {
+      playPlatformSound('auth_error');
       setErrorCode(error.code);
       return;
     }
+    playPlatformSound('auth_success');
     // configureInsights() is called explicitly with the FRESH value signup()
     // just resolved, rather than waiting for the next render's
     // useInsightsBeacon effect to pick it up from context — otherwise this

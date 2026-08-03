@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { AuthShell } from './AuthShell';
 
 /*
@@ -36,14 +37,17 @@ export function AuthCallbackPage() {
     window.history.replaceState(null, '', window.location.pathname);
 
     if (err || !accessToken || !refreshToken) {
+      playPlatformSound('auth_error');
       setFailed(true);
       return;
     }
     void completeOAuth({ accessToken, refreshToken, expiresIn }).then(({ error, newAccount, analyticsEnabled }) => {
       if (error) {
+        playPlatformSound('auth_error');
         setFailed(true);
         return;
       }
+      playPlatformSound('auth_success');
       /*
        * Social sign-in is a funnel path like any other, and it was the only
        * one that reported nothing. Google signups therefore never appeared as
