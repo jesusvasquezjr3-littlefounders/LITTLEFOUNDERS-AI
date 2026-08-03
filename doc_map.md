@@ -13,9 +13,12 @@
 | API envelope & conventions | /AGENTS.md §1.6 + agent/core/CONVENTIONS.md | — |
 | Naming | /AGENTS.md §1.7 + GLOSSARY.md | — |
 | i18n rules | /AGENTS.md §1.8; parity gate: agent/tools/check-i18n.sh | — |
-| Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response) | — |
+| Secrets | /AGENTS.md §1.10 + RUNBOOK.md (leak response); test-fixture placeholder convention: agent/core/CONVENTIONS.md | — |
+| Repo-wide CI gates (docs sync, secrets, i18n parity — no path filter) | .github/workflows/repo-gates.yml | all |
 | Transactional email (engine, delivery, deploy) | email-server/AGENTS.md · email-server/README.md · database/DEPLOYMENT.md (GoTrue wiring) | — |
 | Analytics, observability, system health, GA4 import | pulse/AGENTS.md (pins, upgrade, §1.9 boundary) · pulse/README.md (services, env, GA4 runbook) | — |
+| First-party learning/usage telemetry, kid consent, /admin/insights | /INSIGHTS.md | all |
+| Insights rollup refresh + retention prune (nightly) | .github/workflows/insights-maintenance.yml + /INSIGHTS.md | §6 |
 | Auth email templates + language selector | frontend/public/email-templates/README.md | all |
 | Social login (Google OAuth) | backend/README.md ("Social login") · backend/AGENTS.md | — |
 | Architecture decisions & sprint | ROADMAP.md | all |
@@ -31,7 +34,10 @@
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
-| Tutor IA (Oracle) — diseño futuro, NO implementado | `ORACLE.md` |
+| Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
+| AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
+| Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
+| Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |
 | Task templates | agent/prompts/templates/ | pick by task |
 | Multi-step procedures | agent/workflows/ | pick by job |
 | File locations | repo_map.md (generated — `npm run repo:map`) | — |
@@ -46,8 +52,8 @@
 | coursegen (Forge) | coursegen/AGENTS.md · lesson contract: /LESSON_ENGINE.md · pipeline spec: /COURSE_ENGINE.md |
 | audiogen (Echo) | audiogen/AGENTS.md |
 | picturegen (Prism) | picturegen/AGENTS.md |
-| gamegen (Arcade) | gamegen/AGENTS.md |
 | parent-id-check (Guardian) | parent-id-check/AGENTS.md |
 | email-server (Courier) | email-server/AGENTS.md · engine (Haraka→SES) + live wiring record: email-server/README.md · haraka/README.md · auth templates: frontend/public/email-templates/README.md |
 | filebase (Depot) | filebase/AGENTS.md |
+| dataintel (Data Intel) | dataintel/AGENTS.md · engine spec: /DATAINTEL.md |
 | pulse (Pulse) | pulse/AGENTS.md · pulse/README.md |

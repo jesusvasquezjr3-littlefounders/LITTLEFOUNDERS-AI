@@ -5,7 +5,7 @@ import { Card, Icon, ProgressBar, StatCard } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabaseRealtime';
 import { formatPct } from './generationI18n';
-import type { LiveRunHeartbeat } from './generationTypes';
+import { resolveGenerationKind, stagesForKind, type LiveRunHeartbeat } from './generationTypes';
 
 /*
  * Subscribes to generation_runs_live changes via Supabase Realtime (Postgres
@@ -17,16 +17,20 @@ import type { LiveRunHeartbeat } from './generationTypes';
 
 const STALE_MS = 2 * 60 * 1000;
 
-const STAGES = [
-  { key: 'pending', icon: 'pending' },
-  { key: 'planning', icon: 'psychology' },
-  { key: 'writing', icon: 'edit_note' },
-  { key: 'reviewing', icon: 'grading' },
-  { key: 'localizing', icon: 'translate' },
-  { key: 'illustrating', icon: 'image' },
-  { key: 'publishing', icon: 'cloud_upload' },
-  { key: 'published', icon: 'task_alt' },
-] as const;
+/**
+ * How often to hand Realtime a freshly minted JWT. Comfortably under Supabase's
+ * default 1 h access-token lifetime, so the socket is never authorized with a
+ * token that is about to expire.
+ */
+const REAUTH_INTERVAL_MS = 10 * 60 * 1000;
+
+/*
+ * The stage pills below are driven by the run's kind, NOT by a fixed list —
+ * these telemetry tables are shared across generation pipelines and a
+ * hardcoded stage list silently drops any pipeline whose stages differ (this
+ * bit Forge/Arcade before the Arcade game-generation pipeline was removed).
+ * See GENERATION_STAGES in generationTypes.ts.
+ */
 
 interface LiveStatsProps {
   onHeartbeat: (hb: LiveRunHeartbeat | null) => void;
@@ -40,6 +44,11 @@ function mapRow(row: Record<string, unknown>): LiveRunHeartbeat {
     trackId: row.track_id ? String(row.track_id) : null,
     courseSlug: String(row.course_slug ?? ''),
     register: String(row.register ?? 'kid'),
+    // `generation_runs_live` (migration 0018) has no `kind` column, so this is
+    // normally null and the kind is derived from the run-id namespace. Reading
+    // it anyway means the dashboard picks the column up for free if one lands,
+    // without preferring an empty string over the namespace fallback.
+    kind: typeof row.kind === 'string' && row.kind !== '' ? row.kind : null,
     activeSlots: Number(row.active_slots ?? 0),
     completedSlots: Number(row.completed_slots ?? 0),
     failedSlots: Number(row.failed_slots ?? 0),
@@ -91,6 +100,7 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
 
     let cancelled = false;
     let channel: ReturnType<typeof supabase.channel> | null = null;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
     async function subscribe() {
       const token = await getToken();
@@ -130,18 +140,55 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
         .subscribe((status) => {
           if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             setError(t('admin.generation.live.connectionLost'));
+            setConnected(false);
+            // Reconnect rather than sit there showing a stale banner. The
+            // usual cause is an expired JWT: Realtime authorizes ONCE at
+            // subscribe time, so a tab left open past the token's lifetime
+            // loses the channel permanently and then reports "no active run" —
+            // indistinguishable from a genuinely idle pipeline.
+            scheduleResubscribe();
           }
         });
     }
 
+    /** Tear the channel down and re-subscribe with a freshly minted token. */
+    function scheduleResubscribe(delayMs = 3000) {
+      if (cancelled) return;
+      if (retryTimer) clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => {
+        if (cancelled) return;
+        if (channel) {
+          supabase!.removeChannel(channel);
+          channel = null;
+        }
+        void subscribe();
+      }, delayMs);
+    }
+
     void subscribe();
+
+    /*
+     * Proactive re-auth. Supabase access tokens are short-lived (1 h by
+     * default) and `realtime.setAuth` pins whatever token was current when
+     * subscribe() ran. Without this, the Live Monitor is guaranteed to die on
+     * any admin tab left open longer than the token's lifetime.
+     */
+    const reauth = setInterval(() => {
+      void (async () => {
+        const fresh = await getToken();
+        if (!fresh || cancelled) return;
+        await supabase.realtime.setAuth(fresh);
+      })();
+    }, REAUTH_INTERVAL_MS);
 
     return () => {
       cancelled = true;
+      clearInterval(reauth);
+      if (retryTimer) clearTimeout(retryTimer);
       if (channel) supabase.removeChannel(channel);
       if (staleTimerRef.current) clearTimeout(staleTimerRef.current);
     };
-  }, [getToken, applyHeartbeat, onHeartbeat]);
+  }, [getToken, applyHeartbeat, onHeartbeat, t]);
 
   // Idle state
   if (!heartbeat) {
@@ -159,6 +206,7 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
     );
   }
 
+  const stages = stagesForKind(resolveGenerationKind(heartbeat));
   const total = heartbeat.completedSlots + heartbeat.failedSlots;
   const progressPct = heartbeat.totalSlots > 0 ? (total / heartbeat.totalSlots) * 100 : 0;
   const cachePct = heartbeat.tokensUsed > 0 ? (heartbeat.cachedTokens / heartbeat.tokensUsed) * 100 : 0;
@@ -207,9 +255,9 @@ export function LiveStats({ onHeartbeat, className }: LiveStatsProps) {
 
       {/* Stage breakdown pills */}
       <div className="flex flex-wrap gap-2">
-        {STAGES.map(({ key, icon }) => {
+        {stages.map(({ key, icon, terminal, idle }) => {
           const count = heartbeat.stageBreakdown[key] ?? 0;
-          const isActive = key !== 'published' && key !== 'pending' && count > 0;
+          const isActive = !terminal && !idle && count > 0;
           return (
             <div
               key={key}

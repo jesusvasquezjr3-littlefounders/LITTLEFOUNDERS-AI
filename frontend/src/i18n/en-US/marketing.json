@@ -7,69 +7,146 @@
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Money skills,",
-    "titleHighlight": "learned by playing",
-    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play — safe, guided, and side by side with your family.",
+    "titleLead": "Let learning about money",
+    "titleHighlight": "feel like an adventure",
+    "subtitle": "LittleFounders turns early choices about money, saving, and big ideas into experiences kids want to explore.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "How it works",
-    "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
-    "logoAlt": "LittleFounders"
+    "ctaSecondary": "Explore the lessons",
+    "note": "A place to learn, imagine, and share as a family.",
+    "imageAlt": "A family explores financial learning with the LittleFounders characters",
+    "logoAlt": "LittleFounders",
+    "floatingCard": {
+      "title": "Small choices, big ideas",
+      "body": "Every adventure opens a new possibility."
+    }
   },
-  "problem": {
-    "title": "The problem is real. So is the fix.",
-    "problemTitle": "The problem",
-    "problemBody": "Money is one of the most important subjects in life — and one of the least taught. Most kids grow into adults without ever practicing how to save, budget, or build something of their own.",
-    "solutionTitle": "Our solution",
-    "solutionBody": "Short, highly gamified lessons, an AI tutor that adapts to each child, minigames that make concepts stick, and family tasks with real rewards — all under verified parental control."
+  "experience": {
+    "eyebrow": "A different way to learn",
+    "title": "Curiosity is where it starts",
+    "body": "Lessons turn everyday questions into moments to try, think, and discover what kids can do.",
+    "learn": {
+      "step": "01",
+      "title": "Explore an idea",
+      "body": "Start with familiar situations that make money make sense."
+    },
+    "build": {
+      "step": "02",
+      "title": "Try your choices",
+      "body": "Solve challenges, compare options, and learn to trust your thinking."
+    },
+    "share": {
+      "step": "03",
+      "title": "Bring it into your world",
+      "body": "Ideas stay alive in the conversations and goals you share at home."
+    }
+  },
+  "lessonPreview": {
+    "eyebrow": "Learning looks different here",
+    "title": "A lesson that invites you in",
+    "body": "This is not about memorizing. It is about finding an answer, getting encouragement, and wanting to continue to the next mission.",
+    "link": "Explore the lesson experience",
+    "card": {
+      "badge": "Saving adventure",
+      "progress": "Lesson 2 of 3",
+      "prompt": "If you want to save for a special goal, which choice helps most?",
+      "options": {
+        "one": "Spend it all today",
+        "two": "Save a portion",
+        "three": "Forget my goal"
+      },
+      "feedback": "A choice that brings you closer to your goal!",
+      "reward": "New idea unlocked"
+    }
   },
   "fact": {
+    "eyebrow": "A skill for life",
+    "heading": "Money conversations can start early",
+    "intro": "Giving kids a welcoming place to practice today can help them feel more ready to choose and create tomorrow.",
     "stat": "1 in 3",
     "title": "Only 1 in 3 adults worldwide is financially literate",
-    "body": "That's the finding of the S&P Global FinLit Survey, one of the largest studies on financial literacy ever conducted. Two out of three adults can't answer basic questions about saving, interest, and risk. We believe the fix starts in childhood.",
+    "body": "The S&P Global FinLit Survey shows that many people reach adulthood without basic tools for financial decisions. We believe confidence can begin in childhood.",
     "source": "Source: S&P Global FinLit Survey"
   },
-  "motivation": {
-    "title": "Kids already dream big. We help them build.",
-    "body1": "Every kid saving coins in a jar is already a little founder — they have a goal, a plan, and the patience to get there. What they're missing is a guide that speaks their language.",
-    "body2": "LittleFounders meets them where they play: characters they love, quests they want to finish, and a family cheering them on.",
-    "imageAlt": "A child counting coins next to a savings jar"
-  },
-  "features": {
-    "title": "Hands-on learning, at home",
-    "subtitle": "Interact with money concepts directly. Our tactile world reduces the friction of learning and makes tough subjects feel like play.",
-    "f1": {
-      "title": "Gamification",
-      "body": "Earn XP, keep streaks alive, and unlock rewards as courses progress."
-    },
-    "f2": {
-      "title": "AI Tutor",
-      "body": "A personal tutor that adapts to each child and gives gentle hints — never just the answer."
-    },
-    "f3": {
-      "title": "Interactive lessons",
-      "body": "No lectures. Drag, drop, and build your way through every concept."
-    },
-    "f4": {
-      "title": "Learning games",
-      "body": "Minigames tied to each lesson so concepts stick through play."
-    },
-    "f5": {
-      "title": "Family tasks",
-      "body": "Parents assign tasks and set gamified rewards; several verified guardians per family."
-    },
-    "f6": {
-      "title": "Safe by design",
-      "body": "Verified guardian links, moderated content, and no child data ever sold or shared."
+  "family": {
+    "eyebrow": "More than a screen",
+    "title": "Ideas that find a place at home, too",
+    "body": "When a child discovers how to save for something they want, the conversation can continue at the table, in a goal, or in their next big idea.",
+    "imageAlt": "A child counts coins beside a savings jar",
+    "values": {
+      "short": "At their pace",
+      "handsOn": "Hands on",
+      "growing": "With confidence"
     }
   },
   "finalCta": {
-    "title": "Raise a little founder",
-    "body": "Create a free account in minutes. No credit card required.",
-    "button": "Start free",
-    "imageAlt": "A smiling child putting a coin into a crowned piggy bank"
+    "eyebrow": "Their next idea starts here",
+    "title": "A big adventure can start with one coin",
+    "body": "Create a free account and discover a new way to learn about money, goals, and ideas that grow.",
+    "imageAlt": "A child puts a coin into a piggy bank"
+  },
+  "howItWorks": {
+    "eyebrow": "How lessons come to life",
+    "title": "Every lesson starts with a question",
+    "intro": "LittleFounders adventures help kids explore ideas about money and entrepreneurship through challenges that feel familiar, clear, and fun.",
+    "cta": "Start your adventure",
+    "steps": {
+      "eyebrow": "From curiosity to confidence",
+      "title": "Three moments of learning by doing",
+      "discover": {
+        "number": "01",
+        "title": "Discover",
+        "body": "Meet a situation, story, or goal that sparks curiosity."
+      },
+      "practice": {
+        "number": "02",
+        "title": "Take part",
+        "body": "Touch, organize, compare, and choose as the idea comes alive."
+      },
+      "celebrate": {
+        "number": "03",
+        "title": "Move forward",
+        "body": "Every small win encourages more learning and another new try."
+      }
+    },
+    "lesson": {
+      "eyebrow": "Inside a lesson",
+      "title": "A short experience that leaves room to think",
+      "body": "Lessons invite kids to experiment with choices and discover that learning about money can be creative and exciting, too.",
+      "moments": {
+        "stories": {
+          "title": "Familiar stories",
+          "body": "Ideas that begin with goals, choices, and moments kids recognize."
+        },
+        "choices": {
+          "title": "Challenges to solve",
+          "body": "Small actions that turn a question into a discovery."
+        },
+        "wins": {
+          "title": "Progress you can feel",
+          "body": "Every step makes what kids can already do visible."
+        }
+      },
+      "card": {
+        "badge": "Budget mission",
+        "progress": "Part 2 of 3",
+        "prompt": "Your goal costs 12 coins. Which combination gets you there?",
+        "answers": {
+          "one": "5 + 5",
+          "two": "10 + 2",
+          "three": "4 + 4",
+          "four": "3 + 3"
+        },
+        "feedback": "You found a way to reach your goal!"
+      }
+    },
+    "closing": {
+      "eyebrow": "The next discovery is waiting",
+      "title": "Learning about money can feel like your own",
+      "body": "Take the first step toward adventures that turn today's curiosity into ideas for life."
+    }
   },
   "footer": {
-    "tagline": "Learn, play, and build your future.",
+    "tagline": "Learn, grow, and build your future.",
     "contactLabel": "Contact",
     "legalTitle": "Legal",
     "terms": "Terms & Conditions",
@@ -78,25 +155,28 @@
   },
   "comingSoon": {
     "badge": "Coming soon",
-    "body": "We're building this page. Come back shortly — it will be worth it."
+    "body": "We are preparing this page. Check back soon."
   },
   "pages": {
     "howItWorks": {
       "title": "How it works",
-      "description": "Courses, AI tutor, games, and family tasks — how it all fits together."
+      "description": "Explore LittleFounders lessons."
     },
     "families": {
       "title": "Families",
-      "description": "Parental controls, multiple guardians, tasks and rewards — everything families can do together."
+      "description": "A place to support ideas, goals, and learning."
     },
     "faq": {
       "title": "Frequently asked questions",
-      "description": "Answers about accounts, safety, pricing, and more."
+      "description": "Answers to common questions."
     }
+  },
+  "languageSection": {
+    "label": "Select your language"
   },
   "legal": {
     "badge": "Under construction",
-    "body": "This document is being drafted. For any questions in the meantime, write to us:",
+    "body": "This document is being drafted. For questions, write to us:",
     "terms": {
       "title": "Terms & Conditions"
     },

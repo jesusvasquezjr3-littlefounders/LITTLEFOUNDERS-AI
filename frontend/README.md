@@ -2,7 +2,7 @@
 
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
 
-**Mission:** The SPA — learn, tutor, games, tasks, profile.
+**Mission:** The SPA — learn, tutor, tasks, profile.
 **Port (dev):** 5173 · **Deploy:** Vercel
 
 ```bash

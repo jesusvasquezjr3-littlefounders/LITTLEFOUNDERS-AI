@@ -26,7 +26,7 @@
 | **follow** | A user→user edge in `follows` ("sígueme en LittleFounders"). Self-managed via RLS; counts are public profile data. |
 | **avatar** | The user's DiceBear **Avataaars** option set (`avatars.options`), rendered locally as SVG. Never an uploaded photo — same rule for covers (token-gradient presets only). |
 | **block** | A one-directional `blocks` edge that (a) prevents new `follows` rows between the pair in either direction (DB-enforced, `is_blocked()`) and (b) hides both public profiles from each other (mutual 404 — never reveals who blocked whom). Blocking clears any existing follow edge both ways. |
-| **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, streak days. One row per user (auto-created at signup), system-written only; zero until the lesson/game engines exist. |
+| **learning stats** | `learning_stats` — XP points, minutes learned, lessons completed, `streak_days` + `longest_streak` (0013). One row per user (auto-created at signup), system-written only (no client INSERT/UPDATE policy). Lessons write all of them. |
 
 ## Services & codenames
 
@@ -37,7 +37,6 @@
 | `frontend/` | — | The SPA |
 | `coursegen/` | **Forge** | Course & lesson generation (DeepSeek + Qwen) |
 | `audiogen/` | **Echo** | Lesson TTS audio, per-locale voices |
-| `gamegen/` | **Arcade** | Personalized educational minigames |
 | `parent-id-check/` | **Guardian** | Identity verification service |
 | `email-server/` | **Courier** | Transactional email — Haraka SMTP engine relaying to Amazon SES (open-source Resend replacement) |
 | `filebase/` | **Depot** | Media storage — lesson audio & generated images (content-addressed; public reads for PII-free media, internal-key writes) |
@@ -63,7 +62,7 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 
 ## Product sections
 
-`learn` (gamified courses) · `tutor` (live AI tutor) · `games` (concept-bound minigames) · `tasks` (parent-assigned, gamified rewards) · `profile` (DiceBear avatar + settings).
+`learn` (gamified courses) · `tutor` (live AI tutor) · `tasks` (parent-assigned, gamified rewards) · `profile` (DiceBear avatar + settings).
 
 ## Platform terms
 
@@ -74,6 +73,13 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **invariant** | A rule in /AGENTS.md §1.3/§1.9 that no prompt can override. |
 | **shared-type hub** | `database/types/` — generated TS types every service consumes; never hand-edited. |
 | **internal service** | Any service other than backend/frontend; reachable only service-to-service via `INTERNAL_API_KEY`. |
+| **delivery capture** | Courier's SMTP-side email logging: the `log_delivery` Haraka plugin reports each message on `hook_queue_ok` to `POST /api/v1/logs`, which writes `email_logs` (0021). GoTrue auth mail is submitted over SMTP :587 and never touches `POST /api/v1/send`, so this is the only path by which the platform's real mail is recorded. Fire-and-forget: a logging outage must never bounce a password reset. |
+| **Insights** | The first-party learning/usage telemetry system (/INSIGHTS.md): closed-vocabulary `learning_events` (0023), the parental consent gate, and the `/admin/insights` console. First-party forever — never Pulse, never a third-party AI API. |
+| **analytics consent** | The per-kid, guardian-granted permission row (`analytics_consents`) that gates ALL kid usage telemetry, fail-closed and auditable (revocation keeps the row). Surfaced as the "Share usage insights" toggle on the parent dashboard. |
+| **dataintel** (Data Intelligence) | The analytics warehouse service (port 4008). DuckDB-backed OLAP engine providing segmentation, forecasting, anomaly detection, churn prediction, path analysis, and experiment framework. Serves the AdminIntelPage console and `/api/v1/intel/*` endpoints proxied through Core. |
+| **DuckDB** | Embedded columnar OLAP database running in-process within the dataintel service. Provides 100-1000× faster analytical queries than Postgres row-store for aggregation workloads. Zero infrastructure — no separate server, no cloud warehouse. |
+| **Star schema** | The DuckDB data model — `fact_events` (event stream) joined to dimension tables (`dim_users`, `dim_sessions`, `dim_lessons`, `dim_time`). Enables fast multi-dimensional aggregation across any combination of role, locale, device, and time. |
+| **relayed** | The `email_logs.status` written by delivery capture — Haraka accepted the message and handed it to the SES relay. Distinct from `queued`, which means Courier accepted it on `POST /api/v1/send` and passed it to the adapter. Neither is an SES *delivery* confirmation; correlate `message_id` with SES logs for that. |
 | **team-mode skill** | An opt-in agent skill that must be proposed to the human before use (TEAM_PROTOCOL.md). |
 | **characters** | The four canonical mascots: **Dina, Liruf, Dr. Rho, Zara Vex**. |
 

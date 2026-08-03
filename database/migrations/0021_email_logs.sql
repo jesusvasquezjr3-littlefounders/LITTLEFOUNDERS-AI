@@ -1,23 +1,29 @@
 -- 0021_email_logs.sql — transactional email audit trail.
 --
--- NOT YET WIRED. This migration creates the destination schema only; as of
--- this commit NOTHING reads or writes it. Courier's delivery history is an
--- in-process ring buffer (email-server/src/services/emailLog.ts, 1000 entries)
--- which Core proxies through /api/v1/admin/emails/{logs,summary} — so the
--- admin dashboard's history is lost on every redeploy or restart of
--- email-server. This table is the durable replacement; the follow-up work is
--- to make Courier write here on dispatch and Core read here instead of the
--- buffer.
+-- Courier (email-server) writes one row per dispatched message via PostgREST
+-- with the service role (email-server/src/db/emailLogsRepo.ts). It replaces an
+-- in-process 1000-entry ring buffer that was wiped by every redeploy and every
+-- restart, which is why the admin dashboard used to render an empty table.
+-- The buffer survives only as the dev/test fallback when SUPABASE_URL and
+-- SUPABASE_SERVICE_ROLE_KEY are unset.
 --
--- Even once wired, GoTrue-initiated auth mail (confirmation / recovery /
--- magic-link / invite / email-change) will NOT appear: it goes straight to
--- Haraka over SMTP and never touches the Courier HTTP API. Only mail that
--- flows through POST /api/v1/send can be captured.
+-- TWO WRITERS reach this table, and the second one is the reason it exists:
+--   1. POST /api/v1/send — mail Courier dispatches on our behalf.
+--   2. POST /api/v1/logs — mail captured by the Haraka plugin
+--      (haraka/plugins/log_delivery.js) on hook_queue_ok. GoTrue's auth mail
+--      (confirmation / recovery / magic-link / invite / email-change) is
+--      submitted over SMTP :587 and NEVER touches the HTTP API, so without
+--      that plugin essentially none of the platform's real mail is recorded.
+--      Those rows carry template_type='auth' and status='relayed'.
+--
+-- message_id is the SMTP/provider Message-ID, i.e. the value to correlate with
+-- Amazon SES logs. user_id is FK-constrained to auth.users, so the writer must
+-- send NULL rather than a non-UUID or PostgREST rejects the whole row and the
+-- log line is silently lost.
 --
 -- Service-role-only posture like 0017/0018: RLS enabled, ZERO client policies.
--- Core will read this table through /api/v1/admin/emails (service role) and
--- email-server will write via service-role key. The browser never touches
--- Vault directly.
+-- Core reads this table through /api/v1/admin/emails (service role); the
+-- browser never touches Vault directly.
 
 create table if not exists email_logs (
   id            uuid primary key default gen_random_uuid(),

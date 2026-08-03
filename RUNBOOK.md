@@ -19,7 +19,7 @@ For a v2 production incident, prefer **rolling forward** (fix + redeploy via CD,
 2. Reproduce locally: `cd <service> && npm ci && npm run type-check && npm run lint && npm test`.
 3. Fix forward if < 30 min; otherwise revert the breaking commit. Never merge over red.
 
-## Supabase self-hosted on Railway (deployed 2026-07-17 — backup/restore still open, see below)
+## Supabase self-hosted on Railway (deployed 2026-07-17 — backup/restore verified, see below)
 
 - **Restart procedure:** `railway redeploy --service <name> --yes` (db, kong, auth, rest, realtime, storage, meta, supavisor, studio — all in Railway project `littlefounders-b2c`). Restart `db` first if the whole stack is down; the rest depend on it and will recover on their own restart-on-failure policy once `db` is healthy again. Check `railway logs --service <name>` for `FATAL`/crash-loop before assuming a redeploy will help.
 - **Backup: CONFIGURED 2026-07-17.** `.github/workflows/vault-backup.yml` runs daily (08:00 UTC, plus `workflow_dispatch` for on-demand runs) — `pg_dump -Fc` inside the `db` container via `railway ssh`, piped straight to `/data/backups/vault-<UTC timestamp>.dump` on **filebase's (Depot) Railway volume** (`railway ssh --service filebase`, writing to the container filesystem directly — not through filebase's HTTP API, which only accepts audio/image/JSON mime types by design). This is deliberately NOT a dedicated backup volume: `db` already uses its one allowed Railway volume for PGDATA, and creating a new service for this was blocked by Railway's expired trial at rollout time. filebase's volume is still a genuinely separate disk on a separate service, so a `db`-volume incident doesn't take out its own backups — but **revisit this once Railway billing is resolved; a dedicated backup volume is the better long-term shape.** 30-day retention (auto-pruned by the same workflow). Auth: a dedicated SSH keypair (`vault-backup-ci`, registered via `railway ssh keys add`) stored as the `RAILWAY_SSH_PRIVATE_KEY` repo secret — separate from any personal key.
@@ -73,9 +73,9 @@ through Kong returns 201/200/200.
    only add OOM risk — measure before capping any Node service; only cap if
    steady-state RSS is genuinely high (>~400 MB).
 3. ✅ **Scale-to-zero (Railway service → Settings → Serverless) — APPLIED** to
-   the 8 services with zero live-user traffic: `studio` (admin dashboard),
+   the 7 services with zero live-user traffic: `studio` (admin dashboard),
    `meta` (studio-only), `storage`/`supavisor`/`realtime` (deployed but unused
-   by app code), `coursegen`/`audiogen`/`gamegen` (operator-triggered
+   by app code), `coursegen`/`audiogen` (operator-triggered
    generation). They sleep after ~10-15 min idle and wake on first request;
    cold start is irrelevant for admin/generation and they receive no user
    traffic. Combined ~$8/mo → near-$0 while asleep.
@@ -168,9 +168,87 @@ it is DESTRUCTIVE.
 `bash scripts/local-stack.sh psql`, verified with
 `SELECT policyname FROM pg_policies WHERE tablename='lessons'`.
 
-**Rules until the migrate runner is fixed (open chip task_8fbe050a):**
-1. NEVER run `npm run db:migrate` on a database with data you care about —
-   apply NEW migrations individually: `local-stack.sh psql -v ON_ERROR_STOP=1 < migrations/NNNN_x.sql`.
-2. After ANY failed replay, AUDIT policies against the migrations:
-   `SELECT tablename, policyname FROM pg_policies ORDER BY 1,2;` vs
-   `grep -n "CREATE POLICY" database/migrations/*.sql`.
+**Resolution (2026-08-01):** `database/scripts/local-stack.sh migrate` now
+uses `public.schema_migrations` as an immutable filename + SHA-256 ledger. It
+wraps each new migration and its receipt in one transaction, rejects modified
+files, and refuses to touch a populated pre-ledger database. For such a legacy
+database, first inspect its verified high-water mark, then run exactly once:
+`npm run db:migrate -- --baseline NNNN`. The normal command afterwards applies
+only later migrations. This closes task_8fbe050a; it does not remove the need
+to audit RLS and real-user visibility after a prior failed historical replay.
+
+## Learner stats silently RESET to zero on lesson completion (failure mode closed 2026-07-28)
+
+**The highest-consequence entry in this file: it destroys user data, returns 200, and writes no log line.**
+
+**Symptom:** a learner finishes a lesson, the results screen looks normal, the request succeeds, and their XP / minutes / lessons-completed / streak drop to roughly the value of that one lesson. Parents see the kid's dashboard "reset". Nothing in Core's logs, nothing in `audit_logs`, no alert.
+
+**Cause:** `POST /api/v1/learn/lessons/:id/complete` is a read-modify-write over `learning_stats` — it reads the row, adds deltas, and PATCHes the result back as a blind overwrite (not `UPDATE ... SET x = x + n`). `getLearningStatsForUpdate` used to collapse a *failed* read into the same zeroed row it returns for "no progress yet", so one transient PostgREST failure (pooler blip, `db` restart, statement timeout) made the next PATCH write deltas-from-zero over the real totals. `backend/src/routes/learn.ts` is the only writer of `xp_points`; nothing repaired it afterwards.
+
+**Why it was silent:** the `rest()` helper in `backend/src/services/supabaseRest.ts` returns `null` for both a transport failure and a non-2xx response, and logs neither. `learning_stats` has no `updated_at` touch trigger (the column is a `DEFAULT now()` set at INSERT, and `patchLearningStats` does not set it), so the row itself carries no evidence of the overwrite. The only trace of this bug is the data.
+
+**Detect** — the loss leaves a signature, not a log. `learning_stats.xp_points` must equal `SUM(lesson_progress.xp_earned)` and `lessons_completed` must equal the count of passed lessons: the handler only ever adds the per-lesson delta, so any shortfall means stats were written from a zeroed base (or a PATCH failed after the `lesson_progress` upsert committed — also worth seeing).
+
+```sql
+SELECT ls.user_id, ls.xp_points, SUM(lp.xp_earned) AS xp_from_lessons,
+       ls.lessons_completed, COUNT(*) FILTER (WHERE lp.passed) AS passed_lessons
+FROM public.learning_stats ls
+JOIN public.lesson_progress lp ON lp.user_id = ls.user_id
+GROUP BY ls.user_id, ls.xp_points, ls.lessons_completed
+HAVING ls.xp_points < SUM(lp.xp_earned)
+    OR ls.lessons_completed < COUNT(*) FILTER (WHERE lp.passed);
+```
+
+Run it through `bash database/scripts/local-stack.sh psql` (args pass through) locally, or `railway ssh --service db` + `psql` in production. Zero rows = clean. **There is no confirmed production occurrence — but by construction this bug leaves nothing to find in logs, so run the query before concluding there wasn't one**, and after any `db`/pooler incident.
+
+**Recoverable vs NOT.** `lesson_progress` is written *before* the stats read, so it survives the reset:
+- `xp_points` → reconstructible as `SUM(lesson_progress.xp_earned)`.
+- `lessons_completed` → reconstructible as `COUNT(*) WHERE passed`.
+- `minutes_learned`, `streak_days`, `longest_streak`, `last_active_date` → **unrecoverable.** They exist in no other table and are derived from session timing Core never persists anywhere else. Losing them is permanent, per learner.
+
+**No repair job exists.** If the query returns rows, the reconstruction is a hand-written `UPDATE` from those two sums; leave the minutes/streak columns alone or agree a value with the owner — inventing a streak is worse than a visible zero.
+
+**Fix (2026-07-28):** `getLearningStatsForUpdate` now returns `LearningStatsForUpdateRow | null`, where `null` means *Vault did not answer* and is distinct from an empty result set (still legitimately zero — 0006's trigger creates a row per user). The completion route 502s on `null`; `lesson_progress` is already committed at that point, so the client just retries. Regression test in `backend/src/__tests__/learn.test.ts` faults only the `learning_stats` GET and asserts the row is untouched — it fails without the guard.
+
+**Prevention:** a read that feeds a blind overwrite MUST be able to say "I don't know". Never let a display-time default (`ZERO_STATS` and its kind) leak into a write path — a display can afford to guess, a write cannot.
+
+## Core deploys green but nothing is listening — healthcheck connection-refused, container never restarts (failure mode closed 2026-07-28)
+
+**Symptom:** `littlefounders-backend` shows a running container, `/health` gives connection-refused (not a 500 — nothing is bound to `$PORT`), the deploy healthcheck fails, and the container **never restarts**. Logs stop after the last startup line: no crash, no stack trace, no exit.
+
+**Cause:** `startServer()` awaited `redisClient.connect()` before `createApp().listen(PORT)`. node-redis applies its reconnect strategy to the INITIAL connect as well, so against an unreachable Redis that promise neither resolves nor rejects — it retries forever. `listen()` was never reached, the `catch`'s `process.exit(1)` was unreachable, and because the process stayed alive, `restartPolicyType: "ON_FAILURE"` (`backend/railway.json`) never fired. Trigger: any redeploy where the `Redis` service is still booting, or an outage on it.
+
+**Diagnose:** service "up" + `/health` refused + last log line is the pre-Redis one. Check the `Redis` service in the same Railway project before touching Core.
+
+**Fix (2026-07-28):** `listen()` happens FIRST; Redis connects in the background (`.then/.catch`, never awaited). A Redis outage now degrades rate limiting instead of preventing the service from serving at all.
+
+**On a deploy older than the fix:** restart/redeploy `Redis` first, *then* `railway redeploy --service littlefounders-backend --yes`. Redeploying Core alone does nothing while Redis is still unreachable — it will hang again.
+
+**Prevention:** nothing on the startup path may block `listen()` on a dependency the service can run degraded without. An `await` that retries forever is not error handling; it is a hang, and a hang defeats every restart policy you have.
+
+## Core answers 500 on every route — including /health — during a Redis outage (failure mode closed 2026-07-28)
+
+**Symptom:** every endpoint 500s, `/health` included, so Railway's healthcheck fails and Core is taken down or restart-looped — while the only broken dependency is the rate-limit store. Separately, a genuine 429 reached the SPA as an opaque network error instead of the envelope.
+
+**Cause:** three mounting/config mistakes in `backend/src/app.ts` + `backend/src/middleware/rateLimit.ts`:
+1. `express-rate-limit` defaults to fail-**closed** — a store error is forwarded to the error handler, which under our envelope handler becomes a 500. Mounted app-wide, that turns a Redis outage into a total outage.
+2. `/health` sat BELOW the limiter, so it both depended on Redis and consumed the caller's 200-req/15-min budget, which the platform's continuous polling can exhaust on its own.
+3. `cors` was mounted after the limiter, so the `RATE_LIMITED` envelope went out without `Access-Control-Allow-Origin` and the browser discarded it.
+
+**Fix (2026-07-28):** `passOnStoreError: true` on both limiters (fail open); `/health` mounted above the limiter; `cors` before it. Rate limiting is an availability control, not an authorization control — auth abuse stays bounded by GoTrue's own throttling. The same file now also honours `err.status`/`err.statusCode` (400 `VALIDATION_ERROR`, 413 `PAYLOAD_TOO_LARGE`) instead of flattening every malformed body into 500, so "500s everywhere" is a real signal again rather than the default answer.
+
+**Prevention:** `/health` must depend on nothing but the process itself — mount it above every app-wide middleware. Before adding any such middleware, answer explicitly what it does when its backing store is unreachable.
+
+## Depot crash-loops under normal traffic (unhandled stream error / dropped promise) (failure mode closed 2026-07-28)
+
+**Symptom:** `filebase` restarts repeatedly while learners are just playing lessons; audio and images fail mid-playback for **every** user, not only the one whose request triggered it. Railway shows repeated restarts, then — once `restartPolicyMaxRetries: 10` (`filebase/railway.json`) is spent — a service that stays down.
+
+**Cause:** two ways a single request could kill the process:
+1. `createReadStream(path).pipe(res)` with no `'error'` listener. The `stat()` before it only proves the file existed a moment ago; any later open/read failure (deleted mid-request, EACCES, EIO on the Railway volume) emits `'error'` on a listener-less stream = uncaught exception. Client aborts also leaked an open fd each.
+2. `void serve(...)` / `void handleUpload(...)` dropped the handler promise, so any rejection became an unhandled rejection — which Node 24 escalates to a process exit by default.
+
+**Diagnose:** the logs show the process dying on an `ENOENT`/`EIO` stack or an unhandled rejection, with **no** `[filebase] unhandled error:` line. That prefix means the envelope error handler caught it — i.e. it is NOT this bug.
+
+**Fix (2026-07-28):** `streamFile()` in `filebase/src/routes/download.ts` attaches `'error'` BEFORE piping (404 while headers are unsent, `res.destroy()` once bytes have gone out — a truncated transfer is honest, a silent 200 is not) and destroys the source on client `close`. Every handler in `download.ts` and `files.ts` now uses `.catch(next)`.
+
+**Prevention:** a stream piped to a response gets its `'error'` listener attached before the pipe, and an async Express handler is `.catch(next)` — never `void` — in every service. Both mistakes turn one bad request into a platform-wide outage, which is what makes them a rule rather than a review comment.

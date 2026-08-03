@@ -34,12 +34,12 @@
     "almost": {
       "v1": "Quase lá!",
       "v2": "Por pouco!",
-      "v3": "Bom raciocínio — mais um empurrão!"
+      "v3": "Bom raciocínio, mais um empurrão!"
     },
     "tryAgain": {
       "v1": "Vamos pensar juntos!",
       "v2": "Errar faz parte de aprender!",
-      "v3": "Nova pista desbloqueada — tente de novo!"
+      "v3": "Nova pista desbloqueada, tente de novo!"
     }
   },
   "results": {
@@ -128,7 +128,7 @@
       "bank": "Peças disponíveis",
       "slot": "Espaço {{index}}",
       "tapToRemove": "Toque uma peça colocada para devolvê-la",
-      "dragHint": "Arraste cada peça para o seu grupo — ou toque nela e depois no grupo.",
+      "dragHint": "Arraste cada peça para o seu grupo, ou toque nela e depois no grupo.",
       "matchPairs": {
         "help": "Toque uma à esquerda e depois seu par à direita. Toque em um par para desfazê-lo."
       },
@@ -235,8 +235,8 @@
       "continue": "Continuar",
       "tapToContinue": "Toque para continuar a história",
       "lineProgress": "Fala {{current}} de {{total}}",
-      "flipHint_one": "Toque para virar — falta {{count}} carta",
-      "flipHint_other": "Toque para virar — faltam {{count}} cartas",
+      "flipHint_one": "Toque para virar, falta {{count}} carta",
+      "flipHint_other": "Toque para virar, faltam {{count}} cartas",
       "allFlipped": "Você descobriu todas!",
       "gotIt": "Já entendi!",
       "review": "Quero revisar",

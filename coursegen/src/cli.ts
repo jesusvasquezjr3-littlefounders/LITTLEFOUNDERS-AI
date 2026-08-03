@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Forge CLI — the ONLY entry point that spends money (COURSE_ENGINE.md §4).
 // `npm run generate -- --course financial-education [--slots a1-s1-t1-l1,...]
-//   [--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>]
+//   [--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>]
 //   [--register kid|adult]`
 //
 // Operator-triggered only — never run by CI or any automatic process
@@ -21,6 +21,7 @@ interface CliOptions {
   slots?: string[];
   locales?: LessonLocale[];
   noImages?: boolean;
+  requireImages?: boolean;
   dryRun?: boolean;
   runId?: string;
   register?: Register;
@@ -63,7 +64,7 @@ function parseArgs(argv: string[]): CliOptions {
         const raw = argv[++i] ?? '';
         const list = raw.split(',').map((x) => x.trim()).filter(Boolean);
         if (list.length === 0) {
-          console.error(`generate: --locales was given but is empty — omit the flag for all locales, or pass a subset of ${LESSON_LOCALES.join('|')}.`);
+          console.error(`generate: --locales was given but is empty — omit the flag for all locales, or pass exactly ${LESSON_LOCALES.join('|')}.`);
           process.exit(1);
         }
         const bad = list.filter((l) => !(LESSON_LOCALES as readonly string[]).includes(l));
@@ -76,6 +77,9 @@ function parseArgs(argv: string[]): CliOptions {
       }
       case '--no-images':
         opts.noImages = true;
+        break;
+      case '--require-images':
+        opts.requireImages = true;
         break;
       case '--dry-run':
         opts.dryRun = true;
@@ -103,7 +107,7 @@ function parseArgs(argv: string[]): CliOptions {
 function printUsage(): void {
   console.error(
     'Usage: npm run generate -- --course <slug> [--slots a1-s1-t1-l1,...] ' +
-      '[--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run] [--run-id <id>] [--register kid|adult]',
+    '[--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run] [--run-id <id>] [--register kid|adult]',
   );
 }
 
@@ -113,12 +117,17 @@ async function main(): Promise<void> {
     printUsage();
     process.exit(1);
   }
+  if (opts.noImages && opts.requireImages) {
+    console.error('generate: --no-images and --require-images cannot be used together');
+    process.exit(1);
+  }
 
   const summary = await runGeneration({
     course: opts.course,
     slots: opts.slots,
     locales: opts.locales,
     noImages: opts.noImages,
+    requireImages: opts.requireImages,
     dryRun: opts.dryRun,
     runId: opts.runId,
     register: opts.register,
@@ -161,7 +170,7 @@ async function main(): Promise<void> {
     console.warn('  WARNING: published lessons but generated ZERO images — check PICTUREGEN_URL, or pass --no-images if that was intended.');
   }
   if (summary.salvagedSlots.length > 0) {
-    console.warn(`  SALVAGED (published SHORTER than the blueprint): ${summary.salvagedSlots.length}`);
+    console.warn(`  SALVAGED (REFUSED before review/publication): ${summary.salvagedSlots.length}`);
     for (const s of summary.salvagedSlots) console.warn(`    - ${s.slotId}: ${s.droppedSegments} segment(s) dropped`);
   }
   const cachePct = summary.tokensUsed > 0 ? ((summary.cachedTokens / summary.tokensUsed) * 100).toFixed(1) : '0.0';

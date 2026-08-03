@@ -19,6 +19,15 @@ const Env = z.object({
   QWEN_API_KEY: z.string().min(8).optional(),
   QWEN_BASE_URL: z.url().default('https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
   QWEN_JUDGE_MODEL: z.string().min(1).default('qwen3-max'),
+  /**
+   * Keeps an operator-triggered run live when DeepSeek has a transient outage.
+   * Strict string-boolean on purpose: `z.coerce.boolean()` is `Boolean(raw)`,
+   * so the string "false" (or "0"/"no") parsed as TRUE and an operator could
+   * not actually disable the PAID Qwen fallback. `z.stringbool()` accepts
+   * true/false/1/0/yes/no/on/off (case-insensitive) and REJECTS anything else
+   * (§1.14: reject, don't coerce).
+   */
+  FORGE_DEEPSEEK_FALLBACK_TO_QWEN: z.stringbool().default(true),
 
   // ---- Images (optional — module returns NOT_CONFIGURED when key is absent) ----
   // Prism (picturegen/) — the only image source. Unset = images not
@@ -26,6 +35,7 @@ const Env = z.object({
   // 2026-07-23: every Google image model returned quota-0 on the available key.
   PICTUREGEN_URL: z.url().optional(),
   PICTUREGEN_INTERNAL_KEY: z.string().min(16).optional(),
+  PICTUREGEN_MODEL: z.string().min(1).default('qwen-image-max'),
 
   // ---- Vault writes (publish stage) ----
   SUPABASE_URL: z.url().optional(),
@@ -58,9 +68,15 @@ const Env = z.object({
    * Prism generates images (slow by nature), Vault writes are fast.
    */
   FORGE_PICTUREGEN_TIMEOUT_MS: z.coerce.number().int().positive().default(180_000),
+  /** Must match Prism's maximum verifier attempts; reserve this worst case before one image request. */
+  FORGE_MAX_PICTUREGEN_IMAGES_PER_REQUEST: z.coerce.number().int().min(1).max(5).default(3),
   FORGE_VAULT_TIMEOUT_MS: z.coerce.number().int().positive().default(30_000),
   /** Per-LLM-call abort ceiling. Bump per-run for known-heavy lessons (a long ordering write exceeded 120s of reasoning on every attempt — measured 2026-07-26). */
   FORGE_CHAT_TIMEOUT_MS: z.coerce.number().int().positive().default(120_000),
+  /** Qwen needs more reasoning time when it is temporarily writing a full document, not judging one. */
+  FORGE_QWEN_FALLBACK_TIMEOUT_MS: z.coerce.number().int().positive().default(180_000),
+  /** Full-document ceiling includes hidden reasoning tokens; title-only calls retain their smaller explicit budget. */
+  FORGE_DOCUMENT_MAX_TOKENS: z.coerce.number().int().min(1024).max(65_536).default(16_384),
   /** Per-slot allowance used to scale the caps above with the enumerated work. */
   FORGE_MAX_TOKENS_PER_SLOT: z.coerce.number().int().positive().default(150_000),
   FORGE_MAX_USD_PER_SLOT: z.coerce.number().positive().default(0.25),
@@ -92,13 +108,13 @@ const Env = z.object({
    * Per IMAGE actually generated (a Prism cache hit costs nothing and is not
    * billed here). Image spend used to sit entirely outside the ledger and outside
    * every kill switch, so a mass run could bill tens of thousands of paid
-   * qwen-image generations with nothing metering or capping them — the single
+   * Qwen-Image generations with nothing metering or capping them — the single
    * largest uncapped cost in the pipeline. Default = the official Model Studio
-   * list price for qwen-image ($0.035/image, verified 2026-07-25; the earlier
-   * 0.02 default UNDERSTATED image spend by 43%), env-overridable like the
+   * international list price for qwen-image-max ($0.075/image, verified
+   * 2026-08-02); env-overridable like the
    * token costs.
    */
-  COST_QWEN_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.035),
+  COST_QWEN_IMAGE_PER_IMAGE: z.coerce.number().nonnegative().default(0.075),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;
@@ -129,6 +145,21 @@ export function requireGenerationKeys(): void {
     throw new Error(
       `Missing required env for generation: ${missing.join(', ')} (set them in coursegen/.env — never committed, §1.10)`,
     );
+  }
+}
+
+/**
+ * Opt-in production guard for a visual-first run. Keeping it separate from
+ * `requireGenerationKeys` preserves zero-cost text-only pilots while making a
+ * full production track fail BEFORE its first author call if Prism is absent.
+ */
+export function requirePictureGeneration(): void {
+  const c = getConfig();
+  const missing: string[] = [];
+  if (!c.PICTUREGEN_URL) missing.push('PICTUREGEN_URL');
+  if (!c.PICTUREGEN_INTERNAL_KEY) missing.push('PICTUREGEN_INTERNAL_KEY');
+  if (missing.length > 0) {
+    throw new Error(`Missing required env for --require-images: ${missing.join(', ')}`);
   }
 }
 

@@ -1,7 +1,7 @@
 ---
 template: new-endpoint
 inputs:
-  service: "backend | coursegen | audiogen | gamegen | parent-id-check | email-server"
+  service: "backend | coursegen | audiogen | parent-id-check | email-server"
   route: "e.g. /api/v1/guardian-links"
   method: "GET | POST | PATCH | DELETE"
   auth: "roles allowed, or 'internal' (INTERNAL_API_KEY) or 'public'"

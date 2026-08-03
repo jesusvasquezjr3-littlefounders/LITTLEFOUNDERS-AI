@@ -7,7 +7,6 @@
   "nav": {
     "learn": "Aprenda",
     "tutor": "Tutor IA",
-    "games": "Jogos",
     "tasks": "Tarefas",
     "lockedBadge": "Tutor",
     "lockedHint": "Desbloqueia quando sua conta se torna um Tutor verificado",
@@ -23,21 +22,29 @@
     "greeting": "Olá, {{name}}! Pronto para continuar construindo?",
     "greetingAnon": "Olá! Pronto para continuar construindo?",
     "title": "Seus cursos",
+    "subtitle": "Domine dinheiro, poupança e empreendedorismo do mundo real por meio de missões interativas.",
+    "resumeCta": "Continuar Missão",
+    "exploreCta": "Abrir Mapa do Curso",
+    "heroBadge": "Trilha de Aprendizado Interativa",
+    "featuredBadge": "Recomendado para você",
+    "continueLearning": "Continue aprendendo",
+    "startCourse": "Iniciar curso",
+    "browseTracks": "Explorar Trilhas de Aprendizado",
+    "filterAll": "Todas as trilhas",
+    "filterEntrepreneurship": "Empreendedorismo",
+    "filterFinance": "Educação Financeira",
+    "filterSaving": "Poupança e Investimento",
     "lessonCount_one": "{{count}} lição",
     "lessonCount_other": "{{count}} lições",
     "progressLabel": "{{passed}}/{{total}} lições",
     "emptyTitle": "Sua aventura está carregando",
-    "emptyBody": "Ainda não há cursos publicados. A Dina está preparando as primeiras missões — volte em breve!"
+    "emptyBody": "Ainda não há cursos publicados. A Dina está preparando as primeiras missões, volte em breve!"
   },
   "sections": {
     "soonBadge": "A caminho",
     "tutor": {
       "title": "Seu tutor pessoal com IA",
-      "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios — um tutor amigável que explica no seu ritmo chegará a este espaço."
-    },
-    "games": {
-      "title": "Jogos que ensinam de verdade",
-      "body": "Aqui vão morar minijogos conectados ao que você aprende nos seus cursos. Jogue, ganhe e suba de nível nas suas habilidades com dinheiro."
+      "body": "Pergunte qualquer coisa sobre dinheiro, poupança e negócios, um tutor amigável que explica no seu ritmo chegará a este espaço."
     },
     "tasks": {
       "title": "Tarefas e recompensas",

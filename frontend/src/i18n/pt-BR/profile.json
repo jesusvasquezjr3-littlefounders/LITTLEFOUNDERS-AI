@@ -6,7 +6,7 @@
   "settingsCta": "Configurações",
   "coverPicker": {
     "title": "Escolha sua capa",
-    "hint": "Apenas misturas de cores — sua capa é desenhada pelo app, nunca enviada."
+    "hint": "Apenas misturas de cores, sua capa é desenhada pelo app, nunca enviada."
   },
   "covers": {
     "aurora": "Aurora",
@@ -38,7 +38,7 @@
   },
   "avatarEditor": {
     "title": "Seu avatar",
-    "subtitle": "Deixe com a sua cara — ele aparece em todos os lugares onde seu perfil aparece",
+    "subtitle": "Deixe com a sua cara, ele aparece em todos os lugares onde seu perfil aparece",
     "back": "Voltar ao perfil",
     "randomize": "Surpreenda-me",
     "save": "Salvar meu visual",
@@ -66,10 +66,10 @@
     "usernameHint": "3-20 caracteres: letras, números e sublinhado. Será littlefounders.ai/@você",
     "usernameInvalid": "Apenas a-z, 0-9 e _ (3-20 caracteres)",
     "language": "Idioma",
-    "languageHint": "Seu idioma de registro — as lições, os jogos e a interface o seguem.",
+    "languageHint": "Seu idioma de registro, as lições e a interface o seguem.",
     "account": "Conta",
     "email": "E-mail",
-    "emailPasswordPending": "A troca de e-mail e senha chega com nosso serviço de e-mail — em breve.",
+    "emailPasswordPending": "A troca de e-mail e senha chega com nosso serviço de e-mail, em breve.",
     "save": "Salvar alterações",
     "saving": "Salvando…",
     "saved": "Salvo!",

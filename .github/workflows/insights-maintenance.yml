@@ -1,0 +1,85 @@
+name: Insights maintenance
+
+# Nightly rollup refresh + retention prune for the insights layer
+# (/INSIGHTS.md §6). Two jobs that MUST actually run, not merely be
+# documented:
+#
+#  1. refresh_insights_rollups() — rewrites the trailing 7 days of the
+#     accumulating rollup tables. The admin console reads the ROLLUP, not the
+#     raw table, so a skipped refresh shows stale numbers rather than slow
+#     ones. Only the recent window is rewritten; older rows are frozen.
+#  2. prune_learning_events(400) — deletes raw events beyond the retention
+#     window in genuinely committed batches (a PROCEDURE, hence CALL: a
+#     function cannot COMMIT), plus unconverted anonymous visitors with no
+#     remaining events. Rollup rows are never recomputed from pruned data, so
+#     day-grained history outlives the raw events it came from.
+#
+# ORDER MATTERS ONLY IN ONE DIRECTION: refresh first, so anything that aged
+# out today is rolled up before it is deleted.
+#
+# Mechanics mirror vault-backup.yml, including the lessons recorded there:
+# one `railway ssh` per command with args as DISTINCT TOKENS (never a quoted
+# script string — Railway space-joins and the remote re-parses), and a retry
+# around each call because Railway's SSH key-verification service has
+# transient account-wide outages.
+
+on:
+  schedule:
+    - cron: '30 7 * * *' # 07:30 UTC daily, an hour before the Vault backup
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  maintain:
+    name: Refresh rollups and prune beyond retention
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Install Railway CLI
+        run: npm i -g @railway/cli
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.RAILWAY_SSH_PRIVATE_KEY }}" > ~/.ssh/railway_key
+          chmod 600 ~/.ssh/railway_key
+          # Railway's SSH proxy host is ephemeral per session, not a fixed
+          # host worth pinning — a fresh runner has no cached host key.
+          cat <<'CONFIG' >> ~/.ssh/config
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+          CONFIG
+          chmod 600 ~/.ssh/config
+
+      - name: Refresh rollups + prune
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # SQL travels base64-encoded as a SINGLE argument: `railway ssh`
+          # space-joins its args and the remote shell re-parses them, so any
+          # statement containing spaces would be word-split into garbage.
+          run_sql() {
+            local sql="$1" label="$2" b64 out
+            b64=$(printf '%s' "$sql" | base64 | tr -d '\n')
+            for attempt in 1 2 3 4 5; do
+              if out=$(railway ssh --service db -i ~/.ssh/railway_key -- \
+                    sh -c "'echo $b64 | base64 -d | psql -U supabase_admin -d postgres -t -A -v ON_ERROR_STOP=1'" 2>&1); then
+                echo "$label: $out"
+                return 0
+              fi
+              echo "$label: attempt $attempt failed, retrying in 20s" >&2
+              sleep 20
+            done
+            echo "$label: FAILED after 5 attempts" >&2
+            return 1
+          }
+
+          run_sql 'SELECT refresh_insights_rollups();' 'rollup'
+          run_sql 'CALL prune_learning_events(400);' 'prune'
+          run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
+          run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'

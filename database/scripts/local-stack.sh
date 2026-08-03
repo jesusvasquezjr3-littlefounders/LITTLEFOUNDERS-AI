@@ -11,7 +11,8 @@
 #   local-stack.sh down      # stop containers (data kept)
 #   local-stack.sh nuke      # stop + delete ALL volumes (data gone; .env kept)
 #   local-stack.sh reset     # nuke → up → migrate  (the from-zero gate)
-#   local-stack.sh migrate   # apply database/migrations/*.sql in order
+#   local-stack.sh migrate   # apply only migrations not recorded in the ledger
+#   local-stack.sh migrate --baseline NNNN # record an independently verified legacy baseline
 #   local-stack.sh seed      # apply database/seeds/dev_seed.sql (DEV ONLY)
 #   local-stack.sh psql ...  # psql inside the db container (extra args pass through)
 #   local-stack.sh status    # docker compose ps
@@ -119,13 +120,113 @@ cmd_nuke() {
   fi
 }
 
-cmd_migrate() {
-  local f
+ledger_exists() {
+  psql_in_db -tA -c "select to_regclass('public.schema_migrations') is not null;" | tr -d '[:space:]'
+}
+
+application_schema_exists() {
+  psql_in_db -tA -c "select to_regclass('public.courses') is not null;" | tr -d '[:space:]'
+}
+
+ensure_migration_ledger() {
+  # This is operational metadata, not application content. It is deliberately
+  # RLS-with-zero-policies and inaccessible to every API role; only the local
+  # migration operator may read/write it through the database owner.
+  psql_in_db -q <<'SQL'
+CREATE TABLE IF NOT EXISTS public.schema_migrations (
+  filename text PRIMARY KEY,
+  checksum text NOT NULL,
+  applied_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.schema_migrations ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.schema_migrations FROM anon, authenticated, service_role;
+SQL
+}
+
+migration_checksum() {
+  shasum -a 256 "$1" | awk '{print $1}'
+}
+
+baseline_migrations() {
+  local through="$1"
+  local f filename number checksum
+
+  if ! [[ "$through" =~ ^[0-9]{4}$ ]]; then
+    echo "FAIL: --baseline needs a four-digit verified migration number (for example, 0030)" >&2
+    exit 1
+  fi
+  if [[ "$(application_schema_exists)" != "t" ]]; then
+    echo "FAIL: --baseline is only for a legacy database that already has the application schema" >&2
+    exit 1
+  fi
+
+  ensure_migration_ledger
+  if [[ "$(psql_in_db -tA -c 'select count(*) from public.schema_migrations;' | tr -d '[:space:]')" != "0" ]]; then
+    echo "FAIL: --baseline refuses a non-empty migration ledger" >&2
+    exit 1
+  fi
+
   for f in "$DB_DIR"/migrations/*.sql; do
-    echo "==> $(basename "$f")"
-    psql_in_db -q < "$f"
+    filename="$(basename "$f")"
+    number="${filename%%_*}"
+    if (( 10#$number > 10#$through )); then
+      continue
+    fi
+    checksum="$(migration_checksum "$f")"
+    psql_in_db -q -c "insert into public.schema_migrations (filename, checksum) values ('$filename', '$checksum');"
   done
-  echo "OK: all migrations applied"
+  echo "OK: legacy database baseline recorded through $through. Run 'npm run db:migrate' to apply later migrations."
+}
+
+cmd_migrate() {
+  if [[ "${1:-}" == "--baseline" ]]; then
+    if [[ $# -ne 2 ]]; then
+      echo "Usage: npm run db:migrate -- --baseline NNNN" >&2
+      exit 1
+    fi
+    baseline_migrations "$2"
+    return
+  fi
+  if [[ $# -ne 0 ]]; then
+    echo "Usage: npm run db:migrate [-- --baseline NNNN]" >&2
+    exit 1
+  fi
+
+  # Replaying the historical 0002 provisional schema after 0007 has replaced
+  # `lessons.course_id` drops the live RLS policy and then errors. Refuse to
+  # touch any legacy database until an operator records the independently
+  # verified high-water mark with --baseline.
+  if [[ "$(ledger_exists)" != "t" && "$(application_schema_exists)" == "t" ]]; then
+    echo "FAIL: legacy database has no migration ledger; refusing unsafe replay. Verify its high-water mark, then run 'npm run db:migrate -- --baseline NNNN'." >&2
+    exit 1
+  fi
+
+  ensure_migration_ledger
+
+  local f filename checksum recorded
+  for f in "$DB_DIR"/migrations/*.sql; do
+    filename="$(basename "$f")"
+    checksum="$(migration_checksum "$f")"
+    recorded="$(psql_in_db -tA -c "select checksum from public.schema_migrations where filename = '$filename';" | tr -d '[:space:]')"
+
+    if [[ -n "$recorded" ]]; then
+      if [[ "$recorded" != "$checksum" ]]; then
+        echo "FAIL: migration drift detected for $filename — applied migrations must never be edited" >&2
+        exit 1
+      fi
+      continue
+    fi
+
+    echo "==> $filename"
+    # One transaction covers the migration and its receipt. A failed file has
+    # no receipt and rolls back, so the next run is safe to retry.
+    {
+      printf 'BEGIN;\n'
+      sed -n '1,$p' "$f"
+      printf "\nINSERT INTO public.schema_migrations (filename, checksum) VALUES ('%s', '%s');\nCOMMIT;\n" "$filename" "$checksum"
+    } | psql_in_db -q
+  done
+  echo "OK: every migration is recorded and current"
 }
 
 cmd_seed() {
@@ -159,7 +260,7 @@ case "$CMD" in
   down)    cmd_down ;;
   nuke)    cmd_nuke ;;
   reset)   cmd_reset ;;
-  migrate) cmd_migrate ;;
+  migrate) cmd_migrate "$@" ;;
   seed)    cmd_seed ;;
   psql)    compose exec -T db psql -U "$MIGRATE_ROLE" -d postgres "$@" ;;
   status)  compose ps ;;

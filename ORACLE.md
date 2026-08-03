@@ -1,96 +1,95 @@
-# ORACLE.md — Tutor IA (diseño aprobado, NO implementado)
+# ORACLE.md — AI Tutor (approved design, NOT implemented)
 
-> **ESTADO: FUTURO.** El dueño decidió (2026-07-25) que la funcionalidad de
-> Tutor IA es demasiado compleja para desarrollarse de paso y requiere una
-> sesión dedicada. Este documento captura el diseño completo de la v1
-> ("Money Moments") tal como fue analizado, prototipado y luego REVERTIDO
-> (commit de revert sobre `67dfb6e` — ese commit contiene una implementación
-> de referencia completa y funcional si la sesión futura quiere partir de
-> ella con `git show`). Nada de lo aquí descrito existe en el código activo.
+> **STATUS: FUTURE.** The owner decided (2026-07-25) that the AI Tutor feature
+> is too complex to build in passing and needs a dedicated session. This
+> document captures the complete v1 design ("Money Moments") as it was
+> analyzed, prototyped, and then REVERTED (the revert commit sits on top of
+> `67dfb6e` — that commit holds a complete, working reference implementation
+> if the future session wants to start from it via `git show`). Nothing
+> described here exists in the active codebase.
 
-## Fundamento (análisis edtech 2026-07-25)
+## Rationale (edtech analysis 2026-07-25)
 
-Patrón origen: Google Labs *Little Language Lessons* — "Tiny Lesson": la
-SITUACIÓN real del aprendiz, no un nodo de currículo, como unidad de
-aprendizaje (transfer-appropriate processing). Su colección demuestra que el
-context-first engancha mejor que "elige la lección 37", y que TODO el
-artefacto puede generarse en un pase y moderarse ANTES de mostrarse.
+Source pattern: Google Labs *Little Language Lessons* — "Tiny Lesson": the
+learner's real SITUATION, not a curriculum node, as the unit of learning
+(transfer-appropriate processing). Their collection demonstrates that
+context-first engages better than "pick lesson 37", and that the WHOLE
+artifact can be generated in one pass and moderated BEFORE being shown.
 
-Adaptación crítica de seguridad (§1.9): el niño NUNCA escribe texto libre —
-elige de una **taxonomía cerrada y curada de situaciones**, así ningún dato
-del menor viaja a APIs de terceros. "Bajo demanda" en runtime = lectura de un
-pool pre-aprobado en Vault, cero IA sin filtrar frente a un niño, latencia
-cero.
+Critical safety adaptation (§1.9): the child NEVER writes free text — they
+pick from a **closed, curated taxonomy of situations**, so no data about the
+minor ever travels to third-party APIs. "On demand" at runtime means reading
+from a pre-approved pool in Vault: zero unfiltered AI in front of a child,
+zero latency.
 
-## Arquitectura v1 diseñada (Money Moments)
+## Designed v1 architecture (Money Moments)
 
-1. **Taxonomía de situaciones** — YAML curado por humanos, trilingüe A MANO
-   (un tianguis no es un yard sale ni una feira): 8 situaciones iniciales
-   (mesada, tiendita, tianguis, skin del juego, intercambio de cartas, venta
-   escolar, dinero de cumpleaños, meta de ahorro), cada una con `id`, `icon`,
-   `tiers` aplicables, `title`/`description` por locale.
-   Propuesta de ubicación: `coursegen/curriculum/money-moments/situations.yaml`.
+1. **Situation taxonomy** — human-curated YAML, trilingual BY HAND (a
+   *tianguis* is not a yard sale and not a *feira*): 8 initial situations
+   (allowance, corner store, *tianguis* street market, in-game skin, card
+   trade, school fundraiser sale, birthday money, savings goal), each with
+   `id`, `icon`, applicable `tiers`, and `title`/`description` per locale.
+   Proposed location: `coursegen/curriculum/money-moments/situations.yaml`.
 
-2. **Vault (migración nueva)** — dos tablas con postura service-role-only
-   (RLS sin políticas cliente, como `lesson_documents`):
+2. **Vault (new migration)** — two tables with the service-role-only posture
+   (RLS with no client policies, like `lesson_documents`):
    - `tutor_situations(id text pk, icon, title jsonb, description jsonb, tiers jsonb, position)`
    - `tutor_packs(id uuid, situation_id fk, tier, locale, pack jsonb,
      status review|published|archived, unique(situation_id, tier, locale))`
 
-3. **Contrato del pack** (Zod): `terms` (3-5 términos con definición en
-   palabras de niño), `phrases` (2-3 "qué decir/hacer" con su porqué),
-   `quick_check` (1 pregunta, EXACTAMENTE 3 opciones, UNA correcta,
-   `rationale_md` por opción — distractores = concepciones erróneas reales).
+3. **Pack contract** (Zod): `terms` (3-5 terms defined in kid words),
+   `phrases` (2-3 "what to say/do" items with the why behind each),
+   `quick_check` (1 question, EXACTLY 3 options, ONE correct, `rationale_md`
+   per option — distractors are real misconceptions).
 
-4. **Generación (Forge, offline)** — CLI `tutor:packs`:
-   - `--sync-situations` (gratis): YAML → `tutor_situations`.
-   - `--generate --confirm` (PAGADO, idempotente — un pack existente jamás se
-     re-paga): por cada situación×tier×locale faltante, DeepSeek con retry
-     correctivo (prompts estático-primero por la disciplina de prefix-cache) →
-     validación determinística (exactamente-una-correcta, ids únicos,
-     vocabulario prohibido del tier desde `taxonomy.yaml`, bandas de
-     legibilidad outlier como el gate 9) → upsert como `status='review'`.
-   - **Publicar es un flip HUMANO** — la misma compuerta bloqueante de
-     kid-safety que las lecciones (§1.9). Volumen inicial: 60 packs
-     (~centavos con el prefix-cache).
+4. **Generation (Forge, offline)** — `tutor:packs` CLI:
+   - `--sync-situations` (free): YAML → `tutor_situations`.
+   - `--generate --confirm` (PAID, idempotent — an existing pack is never
+     paid for twice): for every missing situation×tier×locale, DeepSeek with
+     corrective retry (static-first prompts, per the prefix-cache discipline)
+     → deterministic validation (exactly-one-correct, unique ids, the tier's
+     forbidden vocabulary from `taxonomy.yaml`, outlier readability bands like
+     gate 9) → upsert as `status='review'`.
+   - **Publishing is a HUMAN flip** — the same blocking kid-safety gate as
+     lessons (§1.9). Initial volume: 60 packs (~cents with the prefix cache).
 
 5. **Core** — `/api/v1/tutor`:
-   - `GET /situations`: picker con disponibilidad para el tier del caller
-     (derivado de `profiles.birth_date`: ≤7 tier1, ≤9 tier2, resto tier3;
-     desconocido → tier2) y su locale.
-   - `GET /situations/:id/pack`: escalera de resolución
-     exacto(tier,locale) → tier@es-MX → locale → cualquiera; packs en
-     `review` JAMÁS se sirven (pineado por test en el prototipo).
+   - `GET /situations`: picker with availability for the caller's tier
+     (derived from `profiles.birth_date`: ≤7 tier1, ≤9 tier2, rest tier3;
+     unknown → tier2) and their locale.
+   - `GET /situations/:id/pack`: resolution ladder
+     exact(tier,locale) → tier@es-MX → locale → any; packs in `review` are
+     NEVER served (pinned by a test in the prototype).
 
-6. **Frontend** — `/tutor` (reemplaza el ComingSoon): grid picker de
-   situaciones → vista de pack (términos, frases, reto rápido con reveal de
-   racional + reintentar; calificación client-side deliberada: es práctica,
-   sin XP, no amerita grading de servidor) → estado "en preparación" honesto
-   cuando el pack no está publicado.
+6. **Frontend** — `/tutor` (replaces the ComingSoon): situation picker grid →
+   pack view (terms, phrases, quick challenge with rationale reveal and
+   retry; grading is deliberately client-side: this is practice, carries no
+   XP, and does not warrant server-side grading) → an honest "in preparation"
+   state when the pack is not published.
 
-## Extensiones diseñadas para después de v1 (del análisis, no prototipadas)
+## Extensions designed for after v1 (from the analysis, not prototyped)
 
-- **Ancla por nodo** (patrón roadmap.sh): "ayúdame con ESTE topic" — la
-  conversación siempre scoped a un nodo del mapa con el micro_objective
-  inyectado server-side; jamás chat abierto como primera superficie.
-- **Prompt del tutor estilo LearnLM**: pedagogía como instrucciones de
-  sistema (aprendizaje activo, manejo de carga cognitiva, curiosidad,
-  metacognición) + arena de evaluación offline (comparaciones ciegas por
-  pares contra rúbrica) ANTES de exponer nada a un niño.
-- **Telemetría de demanda**: log de situaciones elegidas (solo category IDs,
-  jamás texto libre) → reporte "pedido pero débil en catálogo" para
-  planeación de contenido.
-- **Chat en vivo (v3+)**: exige moderación-antes-de-pantalla (stream a búfer
-  de moderación, no directo), límites de contexto §1.9 (age band + nombre de
-  pila máximo), rate limits y visibilidad parental de transcripciones.
+- **Per-node anchor** (roadmap.sh pattern): "help me with THIS topic" — the
+  conversation is always scoped to a map node with the micro_objective
+  injected server-side; never open chat as the first surface.
+- **LearnLM-style tutor prompt**: pedagogy as system instructions (active
+  learning, cognitive-load management, curiosity, metacognition) + an offline
+  evaluation arena (blind pairwise comparisons against a rubric) BEFORE
+  anything is exposed to a child.
+- **Demand telemetry**: log of chosen situations (category IDs only, never
+  free text) → a "requested but thin in the catalog" report for content
+  planning.
+- **Live chat (v3+)**: requires moderation-before-screen (stream into a
+  moderation buffer, not straight through), §1.9 context limits (age band +
+  first name at most), rate limits, and parental visibility of transcripts.
 
-## Reglas no negociables para la sesión futura
+## Non-negotiable rules for the future session
 
-1. Taxonomía CERRADA: el picker jamás evoluciona a caja de texto libre del
-   niño — ahí es exactamente donde se viola §1.9.
-2. Todo contenido kid-facing pasa validación + juez + publicación humana
-   ANTES de ser visible. Sin excepciones "porque es solo un tutor".
-3. Solo proveedores ya definidos en §1.2 (DeepSeek/Qwen). Nada nuevo.
-4. La implementación de referencia vive en `git show 67dfb6e` — úsala como
-   punto de partida, no como verdad: fue escrita en una sesión general y la
-   sesión dedicada debe re-evaluar cada decisión.
+1. CLOSED taxonomy: the picker never evolves into a free-text box for the
+   child — that is exactly where §1.9 gets violated.
+2. All kid-facing content passes validation + judge + human publication
+   BEFORE it is visible. No "it's only a tutor" exceptions.
+3. Only the providers already fixed in §1.2 (DeepSeek/Qwen). Nothing new.
+4. The reference implementation lives in `git show 67dfb6e` — use it as a
+   starting point, not as truth: it was written in a general session, and the
+   dedicated session must re-evaluate every decision.

@@ -3,6 +3,9 @@
     "name": "LittleFounders",
     "tagline": "Aprende, juega y construye tu futuro"
   },
+  "actions": {
+    "close": "Cerrar"
+  },
   "theme": {
     "toggle": "Tema",
     "auto": "Igual que el sistema",
@@ -37,13 +40,23 @@
     "viewTerritory": "Ver territorio",
     "back": "Volver a familia",
     "territoryTitle": "Su territorio",
-    "territorySubtitle": "Todo lo que enseña el curso — y cuánto ya es suyo.",
+    "territorySubtitle": "Todo lo que enseña el curso, y cuánto ya es suyo.",
     "territoryLoading": "Dibujando su territorio…",
     "stats": {
       "xp": "XP ganados",
       "lessons": "Lecciones completadas",
       "streak": "Racha de días",
       "longestStreak": "Mejor racha"
+    },
+    "insightsConsent": {
+      "label": "Compartir datos de uso",
+      "hint": "Ayuda a mejorar las lecciones con señales de uso. Puedes desactivarlo cuando quieras."
     }
+  },
+  "cookies": {
+    "title": "Usamos cookies propias",
+    "body": "Una cookie propia nos ayuda a ver qué páginas y campañas traen gente a LittleFounders. Se queda en nuestro dominio, sin redes publicitarias ni rastreo entre sitios. Puedes rechazarla y no se guarda nada.",
+    "accept": "Aceptar",
+    "decline": "Rechazar"
   }
 }

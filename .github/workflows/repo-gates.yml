@@ -1,0 +1,41 @@
+name: repo gates
+
+# The repo-wide invariants (/AGENTS.md §5) — deliberately WITHOUT a `paths:`
+# filter.
+#
+# These used to live only in database-ci.yml, which fires on `database/**`.
+# That made them unreachable for the exact commits they exist to catch: a
+# secret hardcoded in backend/, or an edit to AGENTS.md that was not mirrored
+# to CLAUDE.md, changes nothing under database/ and so ran no gate at all.
+#
+# Per-service CI still owns type-check/lint/test/build; this job owns the
+# checks that are about the repository as a whole.
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    name: docs sync + secrets + i18n parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # check-secrets.sh uses `git grep` over tracked files, so it needs the
+      # working tree — a blobless/partial checkout would silently scan nothing.
+      - uses: actions/checkout@v4
+
+      - name: AGENTS.md == CLAUDE.md
+        run: bash agent/tools/check-docs-sync.sh
+
+      - name: No credential patterns in tracked files
+        run: bash agent/tools/check-secrets.sh
+
+      # i18n parity is also enforced inside frontend CI, but only when
+      # frontend/** changes. A locale file edited on its own still has to pass.
+      - name: i18n 3-locale key parity + hardcoded-string scan
+        run: bash agent/tools/check-i18n.sh

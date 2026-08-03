@@ -7,7 +7,7 @@ import { localizedText, type AdventureNode } from './types';
  * One vertically-stacked adventure banner on the course map (DESIGN.md
  * Screen Recipes — no dedicated "Lesson map" recipe exists yet; this
  * composition follows the Dashboard/Lesson recipes' grammar: scene +
- * .lf-glass-deep chrome on a navy-equivalent illustrated band; documented
+ * .lf-glass-deep chrome on an inverse-equivalent illustrated band; documented
  * here per §0 Composition Fidelity since the recipe itself wasn't extended
  * (frontend/AGENTS.md forbids touching root docs from this task).
  */
@@ -49,10 +49,20 @@ export function AdventureBanner({ adventure, locale, expanded, onToggle }: Adven
       )}
 
       <div className="lf-glass-deep absolute inset-x-0 bottom-0 z-20 flex items-center justify-between gap-3 px-4 py-3 md:px-6 md:py-4">
-        <h2 className="lf-title text-on-inverse">{title}</h2>
-        <span className="lf-caption lf-number shrink-0 rounded-full bg-white/15 px-3 py-1 font-bold text-on-inverse">
-          {t('learn.lessonsProgress', { passed: adventure.progress.passed, total: adventure.progress.total })}
-        </span>
+        <h2 className="lf-title text-on-inverse flex items-center gap-2">
+          {title}
+        </h2>
+        <div className="flex items-center gap-2">
+          <span className="lf-caption lf-number shrink-0 rounded-full bg-white/15 px-3 py-1 font-bold text-on-inverse">
+            {t('learn.lessonsProgress', { passed: adventure.progress.passed, total: adventure.progress.total })}
+          </span>
+          {!locked && (
+            <Icon
+              name="expand_more"
+              className={`text-[20px] text-on-inverse transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+            />
+          )}
+        </div>
       </div>
     </>
   );

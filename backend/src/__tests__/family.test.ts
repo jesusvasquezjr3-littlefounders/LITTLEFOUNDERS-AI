@@ -44,7 +44,17 @@ describe('GET /api/v1/family/kids', () => {
   it('lists only VERIFIED kids with whitelisted fields', async () => {
     const res = await auth(request(createApp()).get('/api/v1/family/kids'));
     expect(res.status).toBe(200);
-    expect(res.body.data.kids).toEqual([{ userId: KID_ID, displayName: 'Niño Test', username: 'ninotest' }]);
+    // Deliberately an exact-shape assertion, not a subset match: this test is the
+    // PII whitelist for the family payload, so any field that appears here must be
+    // added on purpose.
+    expect(res.body.data.kids).toEqual([
+      {
+        userId: KID_ID,
+        displayName: 'Niño Test',
+        username: 'ninotest',
+        analyticsConsent: false,
+      },
+    ]);
   });
 
   it('403s for a non-parent role', async () => {
@@ -98,5 +108,26 @@ describe('GET /api/v1/family/kids/:kidId/courses/:slug/territory', () => {
   it('404s on an unknown course', async () => {
     const res = await auth(request(createApp()).get(`/api/v1/family/kids/${KID_ID}/courses/nope/territory`));
     expect(res.status).toBe(404);
+  });
+});
+
+describe('POST/DELETE /api/v1/family/kids/:kidId/analytics-consent — kidId validation', () => {
+  it('400s a non-uuid kidId on grant, without ever reaching the guardian-link lookup', async () => {
+    const res = await auth(request(createApp()).post('/api/v1/family/kids/not-a-uuid/analytics-consent'));
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('400s a non-uuid kidId on revoke, without ever reaching the guardian-link lookup', async () => {
+    const res = await auth(request(createApp()).delete('/api/v1/family/kids/not-a-uuid/analytics-consent'));
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('still 403s a well-formed but unlinked kidId (uuid shape alone is not authorization)', async () => {
+    const res = await auth(
+      request(createApp()).post(`/api/v1/family/kids/${STRANGER_KID}/analytics-consent`),
+    );
+    expect(res.status).toBe(403);
   });
 });

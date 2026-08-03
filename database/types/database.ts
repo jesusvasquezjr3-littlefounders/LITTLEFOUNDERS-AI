@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_permissions: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          permission: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          permission: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          permission?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_permissions_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_permissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       adventures: {
         Row: {
           age_tier: string
@@ -59,6 +95,98 @@ export type Database = {
           },
         ]
       }
+      analytics_consents: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: number
+          kid_user_id: string
+          revoked_at: string | null
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: never
+          kid_user_id: string
+          revoked_at?: string | null
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: never
+          kid_user_id?: string
+          revoked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_consents_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "analytics_consents_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      anon_visitors: {
+        Row: {
+          anon_id: string
+          converted_at: string | null
+          converted_user_id: string | null
+          device: string | null
+          first_seen_at: string
+          landing_route: string | null
+          last_seen_at: string
+          locale: string | null
+          referrer_class: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          anon_id: string
+          converted_at?: string | null
+          converted_user_id?: string | null
+          device?: string | null
+          first_seen_at?: string
+          landing_route?: string | null
+          last_seen_at?: string
+          locale?: string | null
+          referrer_class?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          anon_id?: string
+          converted_at?: string | null
+          converted_user_id?: string | null
+          device?: string | null
+          first_seen_at?: string
+          landing_route?: string | null
+          last_seen_at?: string
+          locale?: string | null
+          referrer_class?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anon_visitors_converted_user_id_fkey"
+            columns: ["converted_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -84,7 +212,15 @@ export type Database = {
           id?: never
           subject?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       avatars: {
         Row: {
@@ -105,7 +241,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "avatars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       blocks: {
         Row: {
@@ -123,7 +267,48 @@ export type Database = {
           blocker_id?: string
           created_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      course_release_verifications: {
+        Row: {
+          checks: Json
+          course_id: string
+          verified_at: string
+        }
+        Insert: {
+          checks?: Json
+          course_id: string
+          verified_at?: string
+        }
+        Update: {
+          checks?: Json
+          course_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_release_verifications_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: true
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       courses: {
         Row: {
@@ -161,6 +346,77 @@ export type Database = {
         }
         Relationships: []
       }
+      dataintel_sync_state: {
+        Row: {
+          last_event_id: number | null
+          last_synced_at: string
+          rows_synced: number | null
+          table_name: string
+          updated_at: string
+        }
+        Insert: {
+          last_event_id?: number | null
+          last_synced_at?: string
+          rows_synced?: number | null
+          table_name: string
+          updated_at?: string
+        }
+        Update: {
+          last_event_id?: number | null
+          last_synced_at?: string
+          rows_synced?: number | null
+          table_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      email_logs: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          locale: string | null
+          message_id: string | null
+          status: string
+          subject: string
+          template_type: string
+          to_address: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          locale?: string | null
+          message_id?: string | null
+          status?: string
+          subject: string
+          template_type?: string
+          to_address: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          locale?: string | null
+          message_id?: string | null
+          status?: string
+          subject?: string
+          template_type?: string
+          to_address?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       families: {
         Row: {
           created_at: string
@@ -180,7 +436,15 @@ export type Database = {
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "families_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       family_members: {
         Row: {
@@ -209,6 +473,20 @@ export type Database = {
             referencedRelation: "families"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "family_members_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "insights_family_engagement"
+            referencedColumns: ["family_id"]
+          },
+          {
+            foreignKeyName: "family_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       follows: {
@@ -227,76 +505,68 @@ export type Database = {
           followed_id?: string
           follower_id?: string
         }
-        Relationships: []
-      }
-      game_intents: {
-        Row: {
-          accepted: boolean
-          action_id: string
-          applied_at: string
-          id: number
-          intent: Json
-          rejection_code: string | null
-          session_id: string
-        }
-        Insert: {
-          accepted: boolean
-          action_id: string
-          applied_at?: string
-          id?: never
-          intent: Json
-          rejection_code?: string | null
-          session_id: string
-        }
-        Update: {
-          accepted?: boolean
-          action_id?: string
-          applied_at?: string
-          id?: never
-          intent?: Json
-          rejection_code?: string | null
-          session_id?: string
-        }
         Relationships: [
           {
-            foreignKeyName: "game_intents_session_id_fkey"
-            columns: ["session_id"]
+            foreignKeyName: "follows_followed_id_fkey"
+            columns: ["followed_id"]
             isOneToOne: false
-            referencedRelation: "game_sessions"
-            referencedColumns: ["id"]
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
-      game_sessions: {
+      generation_heartbeat_snapshots: {
         Row: {
-          game_id: string
-          id: string
-          pack_id: string
-          pack_version: number
-          seed: number
-          state: Json
-          updated_at: string
-          user_id: string
+          active_slots: number
+          cached_tokens: number
+          completed_slots: number
+          created_at: string
+          failed_slots: number
+          id: number
+          images_billed: number
+          images_generated: number
+          images_inherited: number
+          run_id: string
+          stage_breakdown: Json
+          tokens_used: number
+          usd_used: number
         }
         Insert: {
-          game_id?: string
-          id?: string
-          pack_id: string
-          pack_version: number
-          seed: number
-          state: Json
-          updated_at?: string
-          user_id: string
+          active_slots?: number
+          cached_tokens?: number
+          completed_slots?: number
+          created_at?: string
+          failed_slots?: number
+          id?: never
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          run_id: string
+          stage_breakdown?: Json
+          tokens_used?: number
+          usd_used?: number
         }
         Update: {
-          game_id?: string
-          id?: string
-          pack_id?: string
-          pack_version?: number
-          seed?: number
-          state?: Json
-          updated_at?: string
-          user_id?: string
+          active_slots?: number
+          cached_tokens?: number
+          completed_slots?: number
+          created_at?: string
+          failed_slots?: number
+          id?: never
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          run_id?: string
+          stage_breakdown?: Json
+          tokens_used?: number
+          usd_used?: number
         }
         Relationships: []
       }
@@ -342,6 +612,66 @@ export type Database = {
           run_id?: string
           summary?: Json
           tokens_used?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Relationships: []
+      }
+      generation_runs_live: {
+        Row: {
+          active_slots: number
+          cached_tokens: number
+          completed_slots: number
+          course_slug: string
+          failed_slots: number
+          images_billed: number
+          images_generated: number
+          images_inherited: number
+          register: string
+          run_id: string
+          stage_breakdown: Json
+          started_at: string
+          tokens_used: number
+          total_slots: number
+          track_id: string | null
+          updated_at: string
+          usd_used: number
+        }
+        Insert: {
+          active_slots?: number
+          cached_tokens?: number
+          completed_slots?: number
+          course_slug: string
+          failed_slots?: number
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          register?: string
+          run_id: string
+          stage_breakdown?: Json
+          started_at?: string
+          tokens_used?: number
+          total_slots?: number
+          track_id?: string | null
+          updated_at?: string
+          usd_used?: number
+        }
+        Update: {
+          active_slots?: number
+          cached_tokens?: number
+          completed_slots?: number
+          course_slug?: string
+          failed_slots?: number
+          images_billed?: number
+          images_generated?: number
+          images_inherited?: number
+          register?: string
+          run_id?: string
+          stage_breakdown?: Json
+          started_at?: string
+          tokens_used?: number
+          total_slots?: number
           track_id?: string | null
           updated_at?: string
           usd_used?: number
@@ -465,7 +795,175 @@ export type Database = {
           verification_status?: string
           verified_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "guardian_links_kid_user_id_fkey"
+            columns: ["kid_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "guardian_links_parent_user_id_fkey"
+            columns: ["parent_user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insights_daily_activity: {
+        Row: {
+          day: string
+          device: string
+          event: string
+          events: number
+          locale: string
+          role: string
+          route_class: string
+          sessions: number
+          total_value: number | null
+          users: number
+        }
+        Insert: {
+          day: string
+          device?: string
+          event: string
+          events: number
+          locale?: string
+          role: string
+          route_class?: string
+          sessions: number
+          total_value?: number | null
+          users: number
+        }
+        Update: {
+          day?: string
+          device?: string
+          event?: string
+          events?: number
+          locale?: string
+          role?: string
+          route_class?: string
+          sessions?: number
+          total_value?: number | null
+          users?: number
+        }
         Relationships: []
+      }
+      insights_daily_users: {
+        Row: {
+          day: string
+          role: string
+          sessions: number
+          users: number
+        }
+        Insert: {
+          day: string
+          role: string
+          sessions: number
+          users: number
+        }
+        Update: {
+          day?: string
+          role?: string
+          sessions?: number
+          users?: number
+        }
+        Relationships: []
+      }
+      insights_maintenance_log: {
+        Row: {
+          id: number
+          job: string
+          ran_at: string
+          removed: number
+          retain_days: number | null
+        }
+        Insert: {
+          id?: never
+          job: string
+          ran_at?: string
+          removed?: number
+          retain_days?: number | null
+        }
+        Update: {
+          id?: never
+          job?: string
+          ran_at?: string
+          removed?: number
+          retain_days?: number | null
+        }
+        Relationships: []
+      }
+      learning_events: {
+        Row: {
+          anon_id: string | null
+          created_at: string
+          device: string | null
+          event: string
+          id: number
+          lesson_id: string | null
+          locale: string | null
+          ordinal: number | null
+          referrer_class: string | null
+          role: string
+          route_class: string | null
+          segment_id: string | null
+          session_id: string | null
+          user_id: string | null
+          value: number | null
+        }
+        Insert: {
+          anon_id?: string | null
+          created_at?: string
+          device?: string | null
+          event: string
+          id?: never
+          lesson_id?: string | null
+          locale?: string | null
+          ordinal?: number | null
+          referrer_class?: string | null
+          role: string
+          route_class?: string | null
+          segment_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          value?: number | null
+        }
+        Update: {
+          anon_id?: string | null
+          created_at?: string
+          device?: string | null
+          event?: string
+          id?: never
+          lesson_id?: string | null
+          locale?: string | null
+          ordinal?: number | null
+          referrer_class?: string | null
+          role?: string
+          route_class?: string | null
+          segment_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_events_anon_id_fkey"
+            columns: ["anon_id"]
+            isOneToOne: false
+            referencedRelation: "anon_visitors"
+            referencedColumns: ["anon_id"]
+          },
+          {
+            foreignKeyName: "learning_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       learning_stats: {
         Row: {
@@ -498,13 +996,22 @@ export type Database = {
           user_id?: string
           xp_points?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "learning_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       lesson_documents: {
         Row: {
           answer_keys: Json
           audio: Json
           document: Json
+          illustration_style_version: string | null
           lesson_id: string
           locale: string
           schema_version: number
@@ -514,6 +1021,7 @@ export type Database = {
           answer_keys?: Json
           audio?: Json
           document: Json
+          illustration_style_version?: string | null
           lesson_id: string
           locale: string
           schema_version?: number
@@ -523,12 +1031,20 @@ export type Database = {
           answer_keys?: Json
           audio?: Json
           document?: Json
+          illustration_style_version?: string | null
           lesson_id?: string
           locale?: string
           schema_version?: number
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "lesson_documents_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
           {
             foreignKeyName: "lesson_documents_lesson_id_fkey"
             columns: ["lesson_id"]
@@ -574,8 +1090,22 @@ export type Database = {
             foreignKeyName: "lesson_progress_lesson_id_fkey"
             columns: ["lesson_id"]
             isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
             referencedRelation: "lessons"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -618,8 +1148,22 @@ export type Database = {
             foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
             columns: ["lesson_id"]
             isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
             referencedRelation: "lessons"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_segment_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -716,7 +1260,15 @@ export type Database = {
           user_id?: string
           verified_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "parent_verifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       picture_assets: {
         Row: {
@@ -785,7 +1337,15 @@ export type Database = {
           user_id?: string
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       sagas: {
         Row: {
@@ -830,6 +1390,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      schema_migrations: {
+        Row: {
+          applied_at: string
+          checksum: string
+          filename: string
+        }
+        Insert: {
+          applied_at?: string
+          checksum: string
+          filename: string
+        }
+        Update: {
+          applied_at?: string
+          checksum?: string
+          filename?: string
+        }
+        Relationships: []
       }
       speech_assets: {
         Row: {
@@ -909,11 +1487,32 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "tasks_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "tasks_family_id_fkey"
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "insights_family_engagement"
+            referencedColumns: ["family_id"]
           },
         ]
       }
@@ -992,11 +1591,327 @@ export type Database = {
           role?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
     }
     Views: {
-      [_ in never]: never
+      dataintel_events_sync: {
+        Row: {
+          anon_id: string | null
+          created_at: string | null
+          device: string | null
+          event: string | null
+          event_id: number | null
+          lesson_id: string | null
+          locale: string | null
+          ordinal: number | null
+          referrer_class: string | null
+          role: string | null
+          route_class: string | null
+          segment_id: string | null
+          session_id: string | null
+          user_id: string | null
+          value: number | null
+        }
+        Insert: {
+          anon_id?: string | null
+          created_at?: string | null
+          device?: string | null
+          event?: string | null
+          event_id?: number | null
+          lesson_id?: string | null
+          locale?: string | null
+          ordinal?: number | null
+          referrer_class?: string | null
+          role?: string | null
+          route_class?: string | null
+          segment_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          value?: number | null
+        }
+        Update: {
+          anon_id?: string | null
+          created_at?: string | null
+          device?: string | null
+          event?: string | null
+          event_id?: number | null
+          lesson_id?: string | null
+          locale?: string | null
+          ordinal?: number | null
+          referrer_class?: string | null
+          role?: string | null
+          route_class?: string | null
+          segment_id?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_events_anon_id_fkey"
+            columns: ["anon_id"]
+            isOneToOne: false
+            referencedRelation: "anon_visitors"
+            referencedColumns: ["anon_id"]
+          },
+          {
+            foreignKeyName: "learning_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      dataintel_lessons_sync: {
+        Row: {
+          course_id: string | null
+          lesson_id: string | null
+          segment_count: number | null
+          slug: string | null
+          title_en: string | null
+          title_es: string | null
+          title_pt: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adventures_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dataintel_sessions_sync: {
+        Row: {
+          device: string | null
+          duration_sec: number | null
+          ended_at: string | null
+          events_count: number | null
+          lessons_started: number | null
+          locale: string | null
+          referrer_class: string | null
+          session_id: string | null
+          started_at: string | null
+          surfaces: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      dataintel_users_sync: {
+        Row: {
+          created_at: string | null
+          lessons_completed: number | null
+          locale: string | null
+          longest_streak: number | null
+          minutes_learned: number | null
+          role: string | null
+          streak_days: number | null
+          user_id: string | null
+          xp_points: number | null
+        }
+        Relationships: []
+      }
+      insights_activation_funnel: {
+        Row: {
+          step: string | null
+          step_order: number | null
+          users: number | null
+        }
+        Relationships: []
+      }
+      insights_cohort_retention: {
+        Row: {
+          cohort_size: number | null
+          cohort_week: string | null
+          users: number | null
+          week_offset: number | null
+        }
+        Relationships: []
+      }
+      insights_engagement: {
+        Row: {
+          active_days_30d: number | null
+          engagement_score: number | null
+          lessons_completed: number | null
+          longest_streak: number | null
+          sessions_30d: number | null
+          streak_days: number | null
+          user_id: string | null
+          xp_points: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insights_family_engagement: {
+        Row: {
+          family_created_at: string | null
+          family_id: string | null
+          last_task_at: string | null
+          members: number | null
+          tasks_completed: number | null
+          tasks_created: number | null
+        }
+        Relationships: []
+      }
+      insights_feature_adoption: {
+        Row: {
+          events: number | null
+          first_at: string | null
+          last_at: string | null
+          role: string | null
+          route_class: string | null
+          sessions: number | null
+          users: number | null
+        }
+        Relationships: []
+      }
+      insights_learning_velocity: {
+        Row: {
+          avg_attempts: number | null
+          avg_score: number | null
+          first_completion_at: string | null
+          last_completion_at: string | null
+          lessons_passed: number | null
+          lessons_per_week: number | null
+          longest_streak: number | null
+          streak_days: number | null
+          user_id: string | null
+          xp_points: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insights_lesson_dropoff: {
+        Row: {
+          abandon_rate: number | null
+          abandons: number | null
+          avg_seconds_before_abandon: number | null
+          completions: number | null
+          lesson_id: string | null
+          lesson_slug: string | null
+          starts: number | null
+        }
+        Relationships: []
+      }
+      insights_segment_calibration: {
+        Row: {
+          attempts: number | null
+          avg_attempts_per_learner: number | null
+          avg_score: number | null
+          first_try_avg_score: number | null
+          hint_rate: number | null
+          last_attempt_at: string | null
+          learners: number | null
+          lesson_id: string | null
+          lesson_slug: string | null
+          lesson_title: Json | null
+          segment_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      insights_session_depth: {
+        Row: {
+          device: string | null
+          events: number | null
+          lessons_started: number | null
+          locale: string | null
+          reported_seconds: number | null
+          role: string | null
+          session_id: string | null
+          started_at: string | null
+          surfaces: number | null
+          visible_seconds: number | null
+        }
+        Relationships: []
+      }
+      insights_time_to_value: {
+        Row: {
+          activated_at: string | null
+          first_seen: string | null
+          hours_to_value: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      insights_today_activity: {
+        Row: {
+          day: string | null
+          device: string | null
+          event: string | null
+          events: number | null
+          locale: string | null
+          role: string | null
+          route_class: string | null
+          sessions: number | null
+          total_value: number | null
+          users: number | null
+        }
+        Relationships: []
+      }
+      insights_today_users: {
+        Row: {
+          day: string | null
+          role: string | null
+          sessions: number | null
+          users: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_retention_at_distance: {
@@ -1018,6 +1933,22 @@ export type Database = {
       }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
+      refresh_insights_rollups: {
+        Args: { window_days?: number }
+        Returns: string
+      }
+      release_course: {
+        Args: { p_course_id: string }
+        Returns: {
+          adventures_published: number
+          code: string
+          lessons_published: number
+          message: string
+          ok: boolean
+          sagas_published: number
+          topics_published: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

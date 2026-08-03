@@ -1,0 +1,13 @@
+# Deployment isolation for `railway up dataintel --path-as-root`.
+# Nixpacks reinstalls dependencies and rebuilds the service; only source and
+# manifests belong in the upload. The production DuckDB volume is mounted at
+# runtime and must never be replaced by a local development database.
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+duckdb/

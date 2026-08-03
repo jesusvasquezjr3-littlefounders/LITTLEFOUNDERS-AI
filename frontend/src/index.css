@@ -3,117 +3,166 @@
 @tailwind utilities;
 
 /*
- * Token implementation of /DESIGN.md (LittleFounders Arcade).
+ * Token implementation of /DESIGN.md (LittleFounders Liquid Glass).
  * CSS variables are the single source; tailwind.config.js references them.
  * RGB triplets so Tailwind opacity modifiers work.
  */
 @layer base {
   :root {
-    /* Neutrals */
-    --lf-base: 255 255 255;
+    /* Neutrals — slate scale */
+    --lf-base: 248 250 252; /* slate-50 */
     --lf-surface: 255 255 255;
-    --lf-surface-sunken: 242 242 242;
-    --lf-band: 236 240 255; /* blue-100 tinted section band */
-    --lf-content: 30 30 30; /* ink */
-    --lf-content-muted: 85 85 95;
-    --lf-content-faint: 130 130 142;
-    --lf-outline: 229 229 229;
+    --lf-surface-sunken: 241 245 249; /* slate-100 */
+    --lf-band: 238 242 255; /* indigo-50 tinted section band */
+    --lf-content: 15 23 42; /* slate-900 — ink */
+    --lf-content-muted: 71 85 105; /* slate-600 */
+    --lf-content-faint: 148 163 184; /* slate-400 */
+    --lf-outline: 226 232 240; /* slate-200 */
 
-    /* Inverse (navy band) — identical in light & dark, like the hero band */
-    --lf-inverse: 8 15 40; /* blue-950 */
-    --lf-inverse-surface: 20 37 99; /* blue-900 */
+    /* Inverse (slate band) — identical in light & dark, like the hero band */
+    --lf-inverse: 15 23 42; /* slate-900 */
+    --lf-inverse-surface: 30 41 59; /* slate-800 */
     --lf-on-inverse: 255 255 255;
-    --lf-on-inverse-muted: 236 240 255; /* blue-100 */
+    --lf-on-inverse-muted: 203 213 225; /* slate-300 */
 
-    /* Brand blue */
-    --lf-primary: 69 109 255; /* blue-500 */
-    --lf-primary-strong: 55 92 227; /* blue-600 */
-    --lf-primary-soft: 236 240 255; /* blue-100 */
+    /* Brand indigo — links, focus, selection, info */
+    --lf-primary: 79 70 229; /* indigo-600 */
+    --lf-primary-strong: 67 56 202; /* indigo-700 */
+    --lf-primary-soft: 238 242 255; /* indigo-50 */
     --lf-on-primary: 255 255 255;
 
     /* Ink action (secondary emphasis, pill tabs) */
-    --lf-secondary: 30 30 30;
-    --lf-secondary-soft: 242 242 242;
+    --lf-secondary: 15 23 42; /* slate-900 */
+    --lf-secondary-soft: 241 245 249; /* slate-100 */
     --lf-on-secondary: 255 255 255;
 
-    /* Papaya — THE call-to-action color */
-    --lf-accent: 255 119 92; /* papaya-500 */
-    --lf-accent-strong: 229 95 69; /* papaya-600 */
-    --lf-accent-soft: 255 240 237; /* papaya-100 */
-    --lf-on-accent: 8 15 40; /* dark text on papaya */
+    /* Indigo — THE call-to-action color */
+    --lf-accent: 79 70 229; /* indigo-600 */
+    --lf-accent-strong: 67 56 202; /* indigo-700 */
+    --lf-accent-soft: 238 242 255; /* indigo-50 */
+    --lf-on-accent: 255 255 255; /* white text on indigo */
 
-    /* Pear — celebration / delight highlights, never actions */
-    --lf-delight: 216 232 46; /* pear-500 */
-    --lf-delight-soft: 247 250 213; /* pear-200 */
-    --lf-on-delight: 30 30 30;
+    /* Violet — celebration / delight highlights, never actions */
+    --lf-delight: 139 92 246; /* violet-500 */
+    --lf-delight-soft: 237 233 254; /* violet-100 */
+    --lf-on-delight: 255 255 255;
 
-    --lf-success: 21 180 65; /* green-600 */
-    --lf-success-strong: 16 150 52;
-    --lf-success-soft: 223 247 230;
+    --lf-success: 5 150 105; /* emerald-600 */
+    --lf-success-strong: 4 120 87; /* emerald-700 */
+    --lf-success-soft: 236 253 245; /* emerald-50 */
     --lf-on-success: 255 255 255;
 
-    --lf-warning: 255 141 35; /* orange-500 */
-    --lf-warning-strong: 224 116 18;
-    --lf-warning-soft: 255 238 220;
-    --lf-on-warning: 30 30 30;
+    --lf-warning: 217 119 6; /* amber-600 */
+    --lf-warning-strong: 180 83 9; /* amber-700 */
+    --lf-warning-soft: 255 251 235; /* amber-50 */
+    --lf-on-warning: 255 255 255;
 
-    --lf-error: 186 26 26;
-    --lf-error-strong: 140 20 20;
-    --lf-error-soft: 255 218 214;
+    --lf-error: 220 38 38; /* red-600 */
+    --lf-error-strong: 185 28 28; /* red-700 */
+    --lf-error-soft: 254 242 242; /* red-50 */
     --lf-on-error: 255 255 255;
 
-    /* Liquid-glass elevation */
-    --lf-shadow-glass: 0 8px 32px rgba(8, 15, 40, 0.1);
-    --lf-shadow-glass-sm: 0 2px 12px rgba(8, 15, 40, 0.08);
-    --lf-shadow-pop: 0 16px 48px rgba(8, 15, 40, 0.18);
-    --lf-glass-border: rgba(255, 255, 255, 0.55);
+    /* Liquid glass — Apple-refined. Depth through layered light, not heavy shadows. */
+    --lf-glass-bg-opacity: 0.78;
+    --lf-glass-blur: 20px;
+    --lf-glass-blur-deep: 28px;
+    --lf-glass-saturate: 1.6;
+    --lf-glass-brightness: 1.04;
+    --lf-glass-border: rgba(255, 255, 255, 0.18);
+    --lf-glass-rim-light: rgba(255, 255, 255, 0.5);
 
-    /* Liquid Glass & Gaming Details */
-    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.25) 0%, transparent 55%);
-    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.06) 0deg, rgba(200,230,255,0.06) 90deg, rgba(230,200,255,0.06) 180deg, rgba(200,220,255,0.06) 270deg, rgba(210,210,255,0.06) 360deg);
-    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.1);
-    --lf-btn-inner-glow-hover: inset 0 2px 6px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.15);
+    /* Depth shadows — 5-layer atmospheric, no color tint, pure black at minimal alpha */
+    --lf-shadow-glass:
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 2px 4px rgba(0, 0, 0, 0.03),
+      0 4px 8px rgba(0, 0, 0, 0.03),
+      0 8px 16px rgba(0, 0, 0, 0.04),
+      0 16px 32px rgba(0, 0, 0, 0.06);
+    --lf-shadow-glass-sm:
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 2px 4px rgba(0, 0, 0, 0.04),
+      0 4px 8px rgba(0, 0, 0, 0.05);
+    --lf-shadow-pop:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 4px 8px rgba(0, 0, 0, 0.04),
+      0 8px 16px rgba(0, 0, 0, 0.06),
+      0 16px 32px rgba(0, 0, 0, 0.08),
+      0 32px 64px rgba(0, 0, 0, 0.12);
+
+    /* Caustic & mesh — barely-there atmosphere, never distracting */
+    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.22) 0%, transparent 55%);
+    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.04) 0deg, rgba(200,230,255,0.04) 90deg, rgba(230,200,255,0.04) 180deg, rgba(200,220,255,0.04) 270deg, rgba(210,210,255,0.04) 360deg);
+
+    /* Button — inner glow creates the glass-is-solid illusion */
+    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.06);
+    --lf-btn-inner-glow-hover: inset 0 2px 8px rgba(255,255,255,0.65), inset 0 -1px 2px rgba(0,0,0,0.08);
+    --lf-btn-hover-sheen: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, transparent 50%);
   }
 
   .dark {
-    --lf-base: 26 26 29; /* #1A1A1D */
-    --lf-surface: 17 27 64;
-    --lf-surface-sunken: 12 20 52;
-    --lf-band: 26 26 29;
-    --lf-content: 240 243 255;
-    --lf-content-muted: 197 206 238;
-    --lf-content-faint: 148 158 199;
-    --lf-outline: 43 56 108;
+    --lf-base: 10 14 26;
+    --lf-surface: 13 20 38;
+    --lf-surface-sunken: 7 11 20;
+    --lf-band: 10 14 26;
+    --lf-content: 248 250 252; /* slate-50 */
+    --lf-content-muted: 203 213 225; /* slate-300 */
+    --lf-content-faint: 148 163 184; /* slate-400 */
+    --lf-outline: 30 41 59; /* slate-800 */
 
-    --lf-inverse-surface: 24 38 92;
+    --lf-inverse-surface: 30 41 59; /* slate-800 */
 
-    --lf-primary: 116 145 255; /* blue-400 */
-    --lf-primary-strong: 69 109 255; /* blue-500 */
-    --lf-primary-soft: 26 39 96;
-    --lf-on-primary: 8 15 40;
+    --lf-primary: 129 140 248; /* indigo-400 */
+    --lf-primary-strong: 99 102 241; /* indigo-500 */
+    --lf-primary-soft: 49 46 129; /* indigo-900 */
+    --lf-on-primary: 255 255 255;
 
-    --lf-secondary: 240 243 255;
-    --lf-secondary-soft: 24 35 82;
-    --lf-on-secondary: 8 15 40;
+    --lf-secondary: 248 250 252; /* slate-50 */
+    --lf-secondary-soft: 15 23 42; /* slate-900 */
+    --lf-on-secondary: 255 255 255;
 
-    /* Accent/delight fills keep their light values (dark text on warm fills
-       reads fine on navy); only the -soft well tones darken. */
-    --lf-accent-soft: 62 30 26;
-    --lf-delight-soft: 42 47 16;
-    --lf-success-soft: 12 45 26;
-    --lf-warning-soft: 52 36 12;
-    --lf-error-soft: 58 20 20;
+    /* Accent/delight fills keep their light values (white text on solid fills
+       reads fine on dark); only the -soft well tones darken. */
+    --lf-accent-soft: 49 46 129; /* indigo-900 */
+    --lf-delight-soft: 46 16 101; /* violet-950 */
+    --lf-success-soft: 6 46 32; /* emerald-950 */
+    --lf-warning-soft: 66 30 6; /* amber-950 */
+    --lf-error-soft: 55 10 10; /* red-950 */
 
-    --lf-shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --lf-shadow-glass-sm: 0 2px 12px rgba(0, 0, 0, 0.35);
-    --lf-shadow-pop: 0 16px 48px rgba(0, 0, 0, 0.5);
-    --lf-glass-border: rgba(255, 255, 255, 0.12);
+    /* Liquid glass — Apple-refined (dark). Depth through darkness, not opacity. */
+    --lf-glass-bg-opacity: 0.78;
+    --lf-glass-blur: 20px;
+    --lf-glass-blur-deep: 28px;
+    --lf-glass-saturate: 1.6;
+    --lf-glass-brightness: 1.04;
+    --lf-glass-border: rgba(255, 255, 255, 0.06);
+    --lf-glass-rim-light: rgba(255, 255, 255, 0.08);
 
-    /* Liquid Glass & Gaming Details */
-    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.1) 0%, transparent 55%);
-    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.02) 0deg, rgba(200,230,255,0.02) 90deg, rgba(230,200,255,0.02) 180deg, rgba(200,220,255,0.02) 270deg, rgba(210,210,255,0.02) 360deg);
-    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.15), inset 0 -2px 4px rgba(0,0,0,0.4);
-    --lf-btn-inner-glow-hover: inset 0 2px 6px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.5);
+    /* Depth shadows — 5-layer atmospheric (dark mode) */
+    --lf-shadow-glass:
+      0 1px 2px rgba(0, 0, 0, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.15),
+      0 4px 8px rgba(0, 0, 0, 0.18),
+      0 8px 16px rgba(0, 0, 0, 0.2),
+      0 16px 32px rgba(0, 0, 0, 0.3);
+    --lf-shadow-glass-sm:
+      0 1px 2px rgba(0, 0, 0, 0.15),
+      0 2px 4px rgba(0, 0, 0, 0.18),
+      0 4px 8px rgba(0, 0, 0, 0.22);
+    --lf-shadow-pop:
+      0 1px 2px rgba(0, 0, 0, 0.2),
+      0 4px 8px rgba(0, 0, 0, 0.2),
+      0 8px 16px rgba(0, 0, 0, 0.25),
+      0 16px 32px rgba(0, 0, 0, 0.3),
+      0 32px 64px rgba(0, 0, 0, 0.45);
+
+    /* Caustic & mesh — even more restrained in the dark */
+    --lf-glass-caustic: radial-gradient(ellipse at 25% 15%, rgba(255,255,255,0.08) 0%, transparent 55%);
+    --lf-glass-mesh: conic-gradient(from 90deg at 50% 50%, rgba(210,210,255,0.015) 0deg, rgba(200,230,255,0.015) 90deg, rgba(230,200,255,0.015) 180deg, rgba(200,220,255,0.015) 270deg, rgba(210,210,255,0.015) 360deg);
+
+    /* Button inner glow — subtle on dark surfaces */
+    --lf-btn-inner-glow: inset 0 2px 4px rgba(255,255,255,0.12), inset 0 -1px 2px rgba(0,0,0,0.4);
+    --lf-btn-inner-glow-hover: inset 0 2px 8px rgba(255,255,255,0.22), inset 0 -1px 2px rgba(0,0,0,0.5);
+    --lf-btn-hover-sheen: linear-gradient(to bottom, rgba(255,255,255,0.06) 0%, transparent 50%);
   }
 
   :root {
@@ -153,57 +202,57 @@
  */
 @layer components {
   .lf-display-xl {
-    font-family: 'Figtree', system-ui, sans-serif;
-    font-size: 44px;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 37px;
     font-weight: 800;
     line-height: 1.08;
     letter-spacing: -0.03em;
     text-wrap: balance;
   }
   .lf-display-lg {
-    font-family: 'Figtree', system-ui, sans-serif;
-    font-size: 32px;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 27px;
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
   .lf-headline {
-    font-family: 'Figtree', system-ui, sans-serif;
-    font-size: 24px;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 32px;
+    line-height: 28px;
     letter-spacing: -0.01em;
     text-wrap: balance;
   }
   .lf-title {
-    font-family: 'Figtree', system-ui, sans-serif;
-    font-size: 18px;
+    font-family: 'Sora', system-ui, sans-serif;
+    font-size: 15px;
     font-weight: 700;
-    line-height: 26px;
+    line-height: 22px;
   }
   .lf-body-lg {
-    font-family: 'Figtree', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 18px;
     font-weight: 400;
     line-height: 29px;
     text-wrap: pretty;
   }
   .lf-body {
-    font-family: 'Figtree', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 16px;
     font-weight: 400;
     line-height: 25px;
     text-wrap: pretty;
   }
   .lf-label {
-    font-family: 'Figtree', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px;
     font-weight: 700;
     line-height: 20px;
   }
   .lf-caption {
-    font-family: 'Figtree', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 12px;
     font-weight: 500;
     line-height: 16px;
@@ -212,26 +261,52 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Liquid glass (/DESIGN.md §Elevation) — the ONLY translucency recipes.
+  /* Liquid glass — Apple-refined. Rim light + hairline edge + layered depth.
      .lf-glass = frosted panel on page surfaces (sticky header, dropdown,
-     mobile menu). .lf-glass-deep = frosted panel ON the navy band. */
+     mobile menu, cards). .lf-glass-deep = frosted panel ON the inverse band. */
   .lf-glass {
-    background-color: rgb(var(--lf-surface) / 0.72);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid var(--lf-glass-border);
+    background-color: rgb(var(--lf-surface) / var(--lf-glass-bg-opacity));
     background-image: var(--lf-glass-mesh);
     background-blend-mode: overlay;
-    box-shadow: var(--lf-shadow-glass);
+    -webkit-backdrop-filter: blur(var(--lf-glass-blur)) saturate(var(--lf-glass-saturate)) brightness(var(--lf-glass-brightness));
+    backdrop-filter: blur(var(--lf-glass-blur)) saturate(var(--lf-glass-saturate)) brightness(var(--lf-glass-brightness));
+    box-shadow:
+      inset 0 1px 0 var(--lf-glass-rim-light),
+      0 0 0 0.5px var(--lf-glass-border),
+      var(--lf-shadow-glass);
+    isolation: isolate;
+    transition: box-shadow var(--lf-dur-slow) var(--lf-ease), background-color var(--lf-dur-slow) var(--lf-ease);
+  }
+  .lf-glass:hover {
+    box-shadow:
+      inset 0 1px 0 var(--lf-glass-rim-light),
+      0 0 0 0.5px var(--lf-glass-border),
+      0 1px 2px rgba(0,0,0,0.04),
+      0 4px 8px rgba(0,0,0,0.04),
+      0 8px 16px rgba(0,0,0,0.05),
+      0 16px 32px rgba(0,0,0,0.08);
+  }
+  .dark .lf-glass:hover {
+    box-shadow:
+      inset 0 1px 0 var(--lf-glass-rim-light),
+      0 0 0 0.5px var(--lf-glass-border),
+      0 1px 2px rgba(0,0,0,0.2),
+      0 4px 8px rgba(0,0,0,0.22),
+      0 8px 16px rgba(0,0,0,0.25),
+      0 16px 32px rgba(0,0,0,0.35);
   }
   .lf-glass-deep {
-    background-color: rgb(255 255 255 / 0.08);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid rgb(255 255 255 / 0.14);
+    background-color: rgb(255 255 255 / 0.06);
     background-image: var(--lf-glass-caustic), var(--lf-glass-mesh);
     background-blend-mode: overlay, overlay;
-    box-shadow: var(--lf-shadow-pop);
+    -webkit-backdrop-filter: blur(var(--lf-glass-blur-deep)) saturate(var(--lf-glass-saturate));
+    backdrop-filter: blur(var(--lf-glass-blur-deep)) saturate(var(--lf-glass-saturate));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.12),
+      0 0 0 0.5px rgba(255,255,255,0.08),
+      var(--lf-shadow-pop);
+    isolation: isolate;
+    transition: box-shadow var(--lf-dur-slow) var(--lf-ease);
   }
   @supports not (backdrop-filter: blur(1px)) {
     .lf-glass {
@@ -421,24 +496,28 @@
 
   @media (min-width: 640px) {
     .lf-display-xl {
-      font-size: 56px;
+      font-size: 48px;
     }
     .lf-display-lg {
-      font-size: 38px;
+      font-size: 32px;
     }
   }
 
-  /* ── Gaming Button Global Enhancement ── */
+  /* ── Gaming Button — Apple-refined glass. Inner glow + hover sheen. ── */
   .lf-gaming-btn {
     box-shadow: var(--lf-btn-inner-glow), var(--lf-shadow-glass-sm);
     position: relative;
     overflow: hidden;
+    isolation: isolate;
+    transition:
+      box-shadow var(--lf-dur-base) var(--lf-ease),
+      transform var(--lf-dur-base) var(--lf-ease);
   }
   .lf-gaming-btn::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: var(--lf-glass-caustic);
+    background: var(--lf-btn-hover-sheen);
     opacity: 0;
     transition: opacity var(--lf-dur-base) var(--lf-ease);
     pointer-events: none;
@@ -451,10 +530,42 @@
   .lf-gaming-btn:hover::after {
     opacity: 1;
   }
-  /* Ensure button content is above the pseudo-element */
   .lf-gaming-btn > * {
     position: relative;
     z-index: 1;
+  }
+
+  /* ── Auth background — two-layer crossfade (GPU, no filter repaint) ── */
+  .auth-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+  .auth-bg-img-bw,
+  .auth-bg-img-color {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .auth-bg-img-bw {
+    filter: grayscale(100%) blur(8px) brightness(0.4);
+    z-index: 0;
+  }
+  .auth-bg-img-color {
+    filter: blur(4px) brightness(0.55);
+    opacity: 0;
+    transition: opacity 2s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 1;
+  }
+  .auth-bg:hover .auth-bg-img-color {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .auth-bg-img-color {
+      transition: none;
+    }
   }
 }
 

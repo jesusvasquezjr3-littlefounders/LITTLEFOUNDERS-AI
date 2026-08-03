@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { Card, Icon, LoadingOverlay } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { TerritoryProgressStrip, TerritoryView } from '@/routes/app/learn/TerritoryPage';
-import type { CourseTree } from '@/routes/app/learn/types';
+import { type CourseTree } from '@/routes/app/learn/types';
 
 /*
  * /family/:kidId/territory — a kid's territory through the parent's eyes:
@@ -85,7 +85,8 @@ export function KidTerritoryPage() {
       </header>
 
       {stats ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        /* Stat row grid (/DESIGN.md §Layout → Grid Systems: 2 / 3 / 6, gap-4 at every breakpoint). */
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           <Card className="p-4">
             <p className="lf-caption text-content-faint">{t('family.stats.xp')}</p>
             <p className="lf-title lf-number mt-1 text-primary">{stats.xpPoints}</p>

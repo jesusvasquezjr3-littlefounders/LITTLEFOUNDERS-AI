@@ -7,15 +7,38 @@
  * true or false rather than as a feeling. Every check below is deterministic and
  * re-runnable, so the same command answers the question the same way tomorrow.
  */
-import { runContractGate, runClarityGate } from './pipeline/gates.js';
-import { runGenerationQualityGate } from './pipeline/generationQuality.js';
+import { runAllGates } from './pipeline/gates.js';
 import { loadCourseCatalog } from './catalog/loader.js';
 import { checkProgression } from './catalog/progression.js';
+import { inspectIllustrationCoverage } from './pipeline/images.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from './pipeline/illustrationStyle.js';
 
 const COURSE = process.argv[2] ?? 'first-lemonade-stand';
 const S = process.env.SUPABASE_URL!, K = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const q = async (p: string) =>
   (await fetch(`${S}/rest/v1/${p}`, { headers: { apikey: K, Authorization: `Bearer ${K}` } })).json();
+
+async function attestCourseRelease(courseId: string, checks: readonly Check[]): Promise<boolean> {
+  try {
+    const res = await fetch(`${S}/rest/v1/course_release_verifications?on_conflict=course_id`, {
+      method: 'POST',
+      headers: {
+        apikey: K,
+        Authorization: `Bearer ${K}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify([{
+        course_id: courseId,
+        verified_at: new Date().toISOString(),
+        checks: checks.map((check) => ({ name: check.name, ok: check.ok, detail: check.detail })),
+      }]),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
 interface Check {
   name: string;
@@ -45,6 +68,7 @@ interface Check {
     document: { segments?: Array<{ id: string } & Record<string, unknown>> } & Record<string, unknown>;
     answer_keys: Record<string, unknown> | null;
     audio: { version?: unknown } | null;
+    illustration_style_version: string | null;
     lesson_id: string;
   }
   const course = (await q(`courses?select=id,slug,title,status&slug=eq.${COURSE}`)) as { id: string; slug: string }[];
@@ -53,19 +77,33 @@ interface Check {
     process.exit(1);
   }
   const adv = (await q(`adventures?select=id&course_id=eq.${course[0]!.id}`)) as { id: string }[];
-  const sagas = (await q(`sagas?select=id&adventure_id=in.(${adv.map((a) => a.id).join(',')})`)) as { id: string }[];
-  const topics = (await q(`topics?select=id,title&saga_id=in.(${sagas.map((s) => s.id).join(',')})`)) as {
+  const sagas = adv.length
+    ? ((await q(`sagas?select=id&adventure_id=in.(${adv.map((a) => a.id).join(',')})`)) as { id: string }[])
+    : [];
+  const topics = sagas.length
+    ? ((await q(`topics?select=id,title&saga_id=in.(${sagas.map((s) => s.id).join(',')})`)) as {
     id: string;
     title: unknown;
-  }[];
-  const lessons = (await q(
-    `lessons?select=id,slug,status&topic_id=in.(${topics.map((t) => t.id).join(',')})`,
-  )) as { id: string; slug: string; status: string }[];
-  const publishedLessons = lessons.filter((l) => l.status === 'published');
-  const docs = (await q(
-    `lesson_documents?select=locale,document,answer_keys,audio,lesson_id&lesson_id=in.(${publishedLessons.map((l) => l.id).join(',')})`,
-  )) as DocRow[];
+    }[])
+    : [];
+  const lessons = topics.length
+    ? ((await q(
+        `lessons?select=id,slug,status,topics!inner(sagas!inner(adventures!inner(age_tier)))&topic_id=in.(${topics.map((t) => t.id).join(',')})`,
+      )) as { id: string; slug: string; status: string; topics?: { sagas?: { adventures?: { age_tier?: string } } } }[])
+    : [];
+  // A human must run the acceptance check BEFORE release, while Forge's
+  // lessons are still `review`. Published lessons are included too so the
+  // command remains a useful post-release regression check.
+  const publishedLessons = lessons.filter((l) => l.status === 'review' || l.status === 'published');
+  const docs = publishedLessons.length
+    ? ((await q(
+        `lesson_documents?select=locale,document,answer_keys,audio,illustration_style_version,lesson_id&lesson_id=in.(${publishedLessons.map((l) => l.id).join(',')})`,
+      )) as DocRow[])
+    : [];
   const bySlug = new Map(publishedLessons.map((l) => [l.id, l.slug]));
+  const tierByLessonId = new Map(
+    publishedLessons.map((lesson) => [lesson.id, lesson.topics?.sagas?.adventures?.age_tier]),
+  );
 
   // Expected blueprint count from the catalog, so a MISSING lesson is caught.
   let blueprintCount = 0;
@@ -73,14 +111,20 @@ interface Check {
     for (const sg of a.data.sagas) for (const t of sg.topics) blueprintCount += t.lessons.length;
   }
   add(
-    'every blueprint produced a published lesson',
+    'every blueprint produced a release-ready lesson',
     publishedLessons.length === blueprintCount,
-    `${publishedLessons.length} published / ${blueprintCount} blueprints`,
+    `${publishedLessons.length} review-or-published / ${blueprintCount} blueprints`,
   );
   add(
-    'every published lesson has all 3 locales',
+    'every release-ready lesson has all 3 locales',
     docs.length === publishedLessons.length * 3,
     `${docs.length} documents / ${publishedLessons.length * 3} expected`,
+  );
+  const staleIllustrationStyle = docs.filter((d) => d.illustration_style_version !== FORGE_ILLUSTRATION_STYLE_VERSION);
+  add(
+    'every release-ready document uses the current illustration style',
+    staleIllustrationStyle.length === 0,
+    `${docs.length - staleIllustrationStyle.length}/${docs.length} documents use ${FORGE_ILLUSTRATION_STYLE_VERSION}`,
   );
 
   /*
@@ -101,7 +145,7 @@ interface Check {
     }
   }
 
-  // ---- gates over every published document ------------------------------------
+  // ---- gates over every release-ready document --------------------------------
   const gateFailures = new Map<string, string[]>();
   const excepted = new Set<string>();
   let cleanDocs = 0;
@@ -112,21 +156,48 @@ interface Check {
       ...d.document,
       segments: (d.document.segments || []).map((s) => (keys[s.id] ? { ...s, answer: keys[s.id] } : s)),
     };
-    const contract = runContractGate(merged);
     const problems: string[] = [];
-    if (!contract.ok || !contract.document) problems.push(...contract.problems.map((p) => `contract: ${p.message}`));
-    else {
-      problems.push(...runClarityGate(contract.document).map((p) => `clarity: ${p.message}`));
-      problems.push(...runGenerationQualityGate(contract.document).map((p) => `quality: ${p.message}`));
+    const tier = tierByLessonId.get(d.lesson_id);
+    if (!tier || !load.course.taxonomy || !load.course.facts) {
+      problems.push('release context: could not determine the lesson age tier, taxonomy, or facts');
+    } else {
+      const report = runAllGates(merged, {
+        taxonomy: load.course.taxonomy,
+        facts: load.course.facts,
+        tier,
+      });
+      problems.push(...report.problems.map((p) => `gate ${p.gate}: ${p.message}`));
     }
     if (problems.length === 0) cleanDocs++;
     else if (exceptions.has(slug)) excepted.add(slug);
     else gateFailures.set(`${slug} [${d.locale}]`, problems);
   }
   add(
-    'all published documents pass every gate',
+    'all release-ready documents pass every gate',
     gateFailures.size === 0,
     `${cleanDocs}/${docs.length} clean${excepted.size > 0 ? `, ${excepted.size} declared exception(s)` : ''}`,
+  );
+
+  // ---- visual-first delivery ------------------------------------------------
+  // A text-only `--no-images` pilot is useful and intentionally cheap, but it
+  // is NOT releasable kid-facing content. Count only the targets declared by
+  // images.ts; abstract/icon-first interactions remain valid without an image.
+  const visualGaps: string[] = [];
+  let requiredVisuals = 0;
+  let presentVisuals = 0;
+  for (const d of docs) {
+    const coverage = inspectIllustrationCoverage(d.document as never);
+    requiredVisuals += coverage.required;
+    presentVisuals += coverage.present;
+    if (coverage.missing.length > 0) {
+      const slug = bySlug.get(d.lesson_id) ?? d.lesson_id;
+      visualGaps.push(`${slug} [${d.locale}]: ${coverage.missing.length}`);
+    }
+  }
+  add(
+    'every planned visual target has an approved illustration',
+    visualGaps.length === 0,
+    `${presentVisuals}/${requiredVisuals} present${visualGaps.length > 0 ? `; missing in ${visualGaps.slice(0, 5).join(', ')}` : ''}`,
   );
 
   /*
@@ -208,6 +279,16 @@ interface Check {
 
   // ---- audio (informational: narration is a separate, deferred stage) ---------
   const withAudio = docs.filter((d) => d.audio?.version).length;
+
+  // ---- release attestation ----------------------------------------------------
+  // The release RPC refuses to make content visible unless a successful full
+  // verification exists after the latest document update. The attestation is
+  // operational metadata only; the later Core release click is the audited
+  // human approval for kid-facing content.
+  if (checks.every((check) => check.ok)) {
+    const attested = await attestCourseRelease(course[0]!.id, checks);
+    add('release verification attestation saved', attested, attested ? 'release gate unlocked until a document changes' : 'Vault did not accept the attestation');
+  }
 
   // ---- report ----------------------------------------------------------------
   console.log(`\n══ ACCEPTANCE CHECK — ${COURSE} ══`);

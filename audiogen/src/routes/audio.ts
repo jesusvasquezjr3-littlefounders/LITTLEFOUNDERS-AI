@@ -75,11 +75,23 @@ export function audioRouter(deps: AudioRouterDeps = {}): Router {
         .status(400)
         .json({ data: null, error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message ?? 'Invalid query' } });
     }
-    const row = await getLessonDocument(req.params.id as string, parsed.data.locale);
-    if (!row) {
-      return res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'No lesson document for that lesson_id/locale' } });
+    try {
+      const row = await getLessonDocument(req.params.id as string, parsed.data.locale);
+      if (!row) {
+        return res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'No lesson document for that lesson_id/locale' } });
+      }
+      return res.json({ data: row.audio, error: null });
+    } catch (err) {
+      // getLessonDocument throws on a Vault 5xx/network failure (§1.14 — a
+      // down Vault must never read as "manifest missing", so 404 stays
+      // reserved for a genuinely absent row). A down Vault is an upstream
+      // dependency failure, not an audiogen fault: answer 502 like the POST
+      // sibling, with the repo's upstream-failure code.
+      return res.status(502).json({
+        data: null,
+        error: { code: 'UPSTREAM_FAILED', message: err instanceof Error ? err.message : 'Vault read failed' },
+      });
     }
-    return res.json({ data: row.audio, error: null });
   });
 
   return router;

@@ -3,11 +3,11 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 
 beforeAll(() => {
-  process.env.INTERNAL_API_KEY = 'test-key';
+  process.env.INTERNAL_API_KEY = 'test-internal-key-0123456789';
 });
 
 const auth = (app: ReturnType<typeof createApp>, path: string) =>
-  request(app).get(path).set('x-internal-api-key', 'test-key');
+  request(app).get(path).set('x-internal-api-key', 'test-internal-key-0123456789');
 
 describe('GET /api/v1/logs', () => {
   it('defaults limit and offset when the query is empty', async () => {
@@ -59,7 +59,7 @@ describe('envelope error handler', () => {
   it('answers a malformed JSON body with a 400 envelope, not HTML', async () => {
     const res = await request(createApp())
       .post('/api/v1/send')
-      .set('x-internal-api-key', 'test-key')
+      .set('x-internal-api-key', 'test-internal-key-0123456789')
       .set('Content-Type', 'application/json')
       .send('{"to": broken');
     expect(res.status).toBe(400);

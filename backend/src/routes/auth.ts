@@ -5,6 +5,7 @@ import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
+import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
 import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
@@ -30,6 +31,8 @@ const SignupBody = z.object({
   displayName: z.string().trim().min(1).max(80),
   locale: z.enum(LOCALES).default('en-US'),
   parentIntent: z.boolean().default(false),
+  /** First-party visitor id (lf_aid) — links the signup to its acquisition source. */
+  anonId: z.string().uuid().optional(),
 });
 
 const LoginBody = z.object({
@@ -60,6 +63,15 @@ export function authRouter(): Router {
     }
     const { data, error } = await gotrue.signUp(parsed.data);
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+
+    // Attribution: which channel produced this signup (/INSIGHTS.md §7).
+    // Every fresh signup is `universal` by DB trigger, so this is an adult
+    // account by construction — a kid only ever becomes one later, via a
+    // verified guardian, and attributeSignup refuses kids regardless.
+    const newUserId = data.user?.id;
+    if (parsed.data.anonId && newUserId) {
+      void attributeSignup(parsed.data.anonId, newUserId, ['universal']);
+    }
 
     // Autoconfirm ON → session; OFF (prod) → email confirmation pending.
     const session = sessionPayload(data);
@@ -124,11 +136,43 @@ export function authRouter(): Router {
       getOwnAvatar(user.accessToken, user.id),
     ]);
     if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    const roleNames = roles.map((r) => r.role);
+    // Whether the usage beacon may transmit for this account (/INSIGHTS.md).
+    // Kids: only while guardian consent is active — fail-closed, so a Vault
+    // hiccup silences the beacon rather than defaulting it on. Adults are
+    // covered by the platform terms. The ingest route re-checks regardless;
+    // this flag exists so a kid's browser does not even TRANSMIT unconsented.
+    // Empty role set = unconfirmed (a lost RLS policy reads as [] here, not
+    // as an error) — the beacon stays OFF rather than defaulting to adult.
+    const analyticsEnabled = roleNames.length === 0
+      ? false
+      : roleNames.includes('kid')
+        ? (await hasActiveAnalyticsConsent(user.id)) === true
+        : true;
+    /*
+     * Was this account created just now?
+     *
+     * The OAuth landing has no other way to tell a first-ever Google sign-in
+     * from a returning one — GoTrue hands back an identical session either
+     * way — and without the distinction every social signup was invisible to
+     * the acquisition funnel. Core answers it from the profile row it has
+     * already fetched, so the client never has to guess.
+     *
+     * The window is generous relative to a redirect (seconds) and short
+     * relative to a return visit (hours at least). The failure mode if it is
+     * ever wrong is one event mislabelled between two funnel steps — never a
+     * data-loss or access decision.
+     */
+    const createdAt = profiles[0]?.created_at ? Date.parse(profiles[0].created_at) : NaN;
+    const newAccount = Number.isFinite(createdAt) && Date.now() - createdAt < 120_000;
+
     return ok(res, {
       user: { id: user.id, email: user.email },
       profile: profiles[0] ?? null,
-      roles: roles.map((r) => r.role),
+      roles: roleNames,
       avatarOptions: avatars?.[0]?.options ?? {},
+      analyticsEnabled,
+      newAccount,
     });
   });
 

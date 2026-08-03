@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { writeLessonDocument, stripNullValues, repairDocument, type WriteInput } from '../pipeline/write.js';
+import { writeLessonDocument, stripNullValues, repairDocument, renderSegmentMinimums, type WriteInput } from '../pipeline/write.js';
 import { buildFacts, buildTaxonomy, baseSegments } from './fixtures.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
 
@@ -77,6 +77,26 @@ describe('stripNullValues', () => {
   });
 });
 
+describe('renderSegmentMinimums', () => {
+  it('spells out collection minimums for the types present in a skeleton', () => {
+    expect(
+      renderSegmentMinimums([
+        { type: 'sort_buckets' },
+        { type: 'dialogue_choice' },
+        { type: 'story_scene' },
+      ]),
+    ).toContain('segment 1 (sort_buckets) payload.items MUST contain at least 4 entries');
+    expect(renderSegmentMinimums([{ type: 'dialogue_choice' }])).toContain('payload.turns MUST contain at least 2 entries');
+    expect(renderSegmentMinimums([{ type: 'story_scene' }])).toBe('');
+  });
+
+  it('points quiz_mcq at payload.options — the field its schema validates (it has no items field)', () => {
+    expect(renderSegmentMinimums([{ type: 'quiz_mcq' }])).toBe(
+      'segment 1 (quiz_mcq) payload.options MUST contain at least 3 entries',
+    );
+  });
+});
+
 describe('repairDocument — balance_scale subset-sum', () => {
   function balanceDoc(weights: number[], leftValues: number[]) {
     return {
@@ -109,6 +129,57 @@ describe('repairDocument — balance_scale subset-sum', () => {
     expect(() => repairDocument({ segments: [{ id: 'x', type: 'quiz_mcq', payload: {} }] })).not.toThrow();
     expect(() => repairDocument({ segments: [{ id: 'x', type: 'balance_scale', payload: { weights: 'nope' } }] })).not.toThrow();
     expect(() => repairDocument(null)).not.toThrow();
+  });
+});
+
+describe('repairDocument — presentation-token recovery', () => {
+  it('maps an unrenderable icon and strips decorative emoji from a graded payload', () => {
+    const doc = {
+      segments: [{
+        id: 's1',
+        type: 'would_you_rather',
+        payload: {
+          a: { text_md: 'Una fruta brillante ✨', icon: 'fruit' },
+          b: { text_md: 'Unos zapatos nuevos 👟', icon: 'shoes' },
+        },
+      }],
+    };
+
+    repairDocument(doc);
+
+    expect(doc.segments[0]!.payload.a.icon).toBe('nutrition');
+    expect(doc.segments[0]!.payload.b.icon).toBe('checkroom');
+    expect(doc.segments[0]!.payload.a.text_md).toBe('Una fruta brillante');
+    expect(doc.segments[0]!.payload.b.text_md).toBe('Unos zapatos nuevos');
+  });
+
+  it('uses the approved generic object mark for an unknown icon token', () => {
+    const doc = { segments: [{ id: 's1', type: 'quiz_mcq', payload: { icon: 'invented_icon' } }] };
+    repairDocument(doc);
+    expect(doc.segments[0]!.payload.icon).toBe('emoji_objects');
+  });
+
+  it('preserves ©/®/™ and never reduces an all-emoji payload string to an empty string', () => {
+    const doc = {
+      segments: [{
+        id: 's1',
+        type: 'quiz_mcq',
+        payload: {
+          options: [
+            { id: 'a', text_md: 'Marca ®' },
+            { id: 'b', text_md: '🎉✨' },
+            { id: 'c', text_md: 'hola 🎉' },
+          ],
+        },
+      }],
+    };
+
+    repairDocument(doc);
+
+    const options = doc.segments[0]!.payload.options;
+    expect(options[0]!.text_md).toBe('Marca ®'); // legal notation is text, not decoration
+    expect(options[1]!.text_md).toBe('🎉✨'); // falls back to the original — '' would fail min-length downstream
+    expect(options[2]!.text_md).toBe('hola'); // ordinary decoration still stripped
   });
 });
 
@@ -215,11 +286,12 @@ describe('writeLessonDocument', () => {
     expect(joined).toContain('too generic');
   });
 
-  it('salvages a document with one unsalvageable segment when corrective retries are exhausted', async () => {
+  it('salvages only after the final full-document retry is also invalid', async () => {
     const complete = vi.fn(
       async (): Promise<ChatCompleteResult> => ({
         // ALWAYS returns the same broken document — corrective retries never fix it,
-        // so write.ts must fall back to per-segment salvage.
+        // so write.ts can keep a diagnostic partial only AFTER its final
+        // complete-document retry.
         content: JSON.stringify(validDocumentJson(true)),
         promptTokens: 10,
         completionTokens: 10,
@@ -227,9 +299,30 @@ describe('writeLessonDocument', () => {
     );
     const result = await writeLessonDocument(baseInput(), { complete: complete as never });
     expect(result.salvaged).toBe(true);
+    expect(result.attempts).toBe(5); // four corrective attempts + one full last-resort retry
+    expect(complete).toHaveBeenCalledTimes(5);
     expect(result.droppedSegments).toBe(1);
+    expect(result.lastIssues).toContain('segments');
     expect(result.document.segments.length).toBe(baseSegments().length + 1); // +1 valid (s8), -1 dropped (s7)
     expect(result.document.segments.some((s) => s.id === 's7')).toBe(false);
+  });
+
+  it('uses the final full-document retry before considering a partial salvage', async () => {
+    let calls = 0;
+    const complete = vi.fn(async (): Promise<ChatCompleteResult> => {
+      calls += 1;
+      return {
+        content: JSON.stringify(calls <= 4 ? validDocumentJson(true) : validDocumentJson(false)),
+        promptTokens: 10,
+        completionTokens: 10,
+      };
+    });
+
+    const result = await writeLessonDocument(baseInput(), { complete: complete as never });
+
+    expect(result).toMatchObject({ salvaged: false, attempts: 5, droppedSegments: 0 });
+    expect(result.document.segments).toHaveLength(baseSegments().length);
+    expect(complete).toHaveBeenCalledTimes(5);
   });
 });
 

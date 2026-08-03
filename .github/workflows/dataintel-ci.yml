@@ -1,0 +1,45 @@
+name: dataintel CI
+
+# dataintel shipped without a workflow, so its whole suite had never run in CI.
+# A missing workflow is the one failure mode nothing surfaces: no job goes red,
+# because no job exists.
+#
+# The filters are deliberately narrow. Unlike backend/ and coursegen/, dataintel
+# imports nothing from database/types — it talks to Postgres over PostgREST and
+# owns its own DuckDB schema in src/db/, so no file outside dataintel/ takes part
+# in its type-check, lint or tests. Add a filter here the moment that stops being
+# true; dataintel/src/__tests__/ci-workflow.test.ts pins the rest of this file to
+# what dataintel/package.json actually defines.
+
+on:
+  push:
+    branches: [main, littlefounders_v2]
+    paths:
+      - 'dataintel/**'
+      - '.github/workflows/dataintel-ci.yml'
+  pull_request:
+    paths:
+      - 'dataintel/**'
+      - '.github/workflows/dataintel-ci.yml'
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: dataintel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: dataintel/package-lock.json
+      - run: npm ci
+      - run: npm run type-check
+      - run: npm run lint
+      # = vitest run (dataintel/package.json). The suite is self-contained:
+      # src/test-setup.ts supplies every env var and DUCKDB_PATH defaults to
+      # ':memory:', so no Postgres and no Redis are needed.
+      - run: npm test

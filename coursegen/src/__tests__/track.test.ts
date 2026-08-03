@@ -210,6 +210,13 @@ const baseOptions = () => ({
 });
 
 describe('runTrack', () => {
+  it('rejects a partial locale set before invoking a shard generator', async () => {
+    const generate = vi.fn();
+    await expect(runTrack({ ...baseOptions(), locales: ['es-MX'] }, { generate: generate as never }))
+      .rejects.toThrow(/exactly en-US, es-MX, pt-BR/);
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it('runs the shards sequentially, passes the REMAINING budget down, and writes the report', async () => {
     const generate = vi
       .fn()

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import i18n from '@/i18n';
 import { api } from '@/lib/api';
@@ -142,8 +142,12 @@ describe('CoursePage', () => {
     expect(await screen.findByText('Open Adventure')).toBeInTheDocument();
     expect(screen.getByText('Locked Adventure')).toBeInTheDocument();
 
-    // The open adventure auto-expands (nextLessonId lives inside it).
-    expect(screen.getByRole('button', { name: /Open Adventure/ })).toHaveAttribute('aria-expanded', 'true');
+    // The open adventure auto-expands (nextLessonId lives inside it). This is
+    // an EFFECT, so it can land a tick after the banner text appears — assert
+    // it with waitFor, not synchronously, or the test flakes ~1 run in 7.
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /Open Adventure/ })).toHaveAttribute('aria-expanded', 'true'),
+    );
 
     // Its lessons render, threaded with topic headers.
     expect(screen.getByText('What is money')).toBeInTheDocument();

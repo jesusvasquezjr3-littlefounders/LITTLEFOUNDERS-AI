@@ -2,7 +2,7 @@
 
 > **SYNC RULE:** `AGENTS.md` and `CLAUDE.md` are **byte-identical**. Any edit to one MUST be mirrored to the other in the same commit. Enforced by `agent/tools/check-docs-sync.sh` (run via `npm run docs:check`) and CI.
 >
-> **Last updated:** 2026-07-11 · **Language:** all project documentation is written in English.
+> **Last updated:** 2026-07-31 · **Language:** all project documentation is written in English.
 
 ---
 
@@ -62,7 +62,7 @@ On conflict: **fix the lower-priority document, never the higher one.**
 | Analytics & system health | **Pulse** self-hosted on Railway: Plausible CE (web analytics, ClickHouse+Postgres) + Umami v3 (behavioral) + Uptime Kuma (health). Pins live in Dockerfile `FROM` lines; Dependabot auto-bumps (patch automerge) — see `pulse/AGENTS.md` |
 | i18n locales | `en-US`, `es-MX`, `pt-BR` (en-US is the key source of truth) |
 | Theming | Light + dark mode, Tailwind `darkMode: 'class'` |
-| Package layout | 8 independent npm packages — **no workspaces** |
+| Package layout | 9 independent npm packages — **no workspaces** |
 
 ### §1.3 Schema invariants
 
@@ -94,17 +94,17 @@ Role upgrade paths: `universal → parent` (identity verification via Guardian),
 |---|---|---|---|---|
 | `database/` | Vault | Migrations, RLS, seeds, generated TS types (the shared-type hub) | — | Railway (Supabase stack) |
 | `backend/` | Core | The ONLY service the frontend calls: auth, roles, families, tasks, profiles | 4000 | Railway |
-| `frontend/` | — | SPA with the 5 product sections | 5173 | Vercel |
+| `frontend/` | — | SPA with the 4 product sections | 5173 | Vercel |
 | `coursegen/` | Forge | Course & lesson generation pipeline (DeepSeek + Qwen) | 4001 | Railway |
 | `audiogen/` | Echo | Lesson TTS audio, per-locale voices | 4002 | Railway |
-| `gamegen/` | Arcade | Personalized minigames bound to learn/ concepts | 4003 | Railway |
 | `parent-id-check/` | Guardian | Identity verification — the ONLY path to `kid`/`bigfounder` verified states | 4004 | Railway |
 | `email-server/` | Courier | Transactional email (open-source Resend replacement) | 4005 | Railway |
 | `filebase/` | Depot | Media storage: lesson audio & generated images (content-addressed, Railway volume) | 4006 | Railway |
 | `picturegen/` | Prism | The ONLY image-generation service: art-director judge (LF visual identity) + Qwen `qwen-image` + Depot storage + Vault cache (an identical request never hits the paid API twice) | 4007 | Railway |
+| `dataintel/` | Data Intel | Analytics warehouse: DuckDB OLAP, segmentation, forecasting, anomaly detection, experiments | 4008 | Railway |
 | `pulse/` | Pulse | Observability: self-hosted analytics (Plausible CE + Umami) + system health (Uptime Kuma) — pinned third-party stack, not a TS service | — | Railway (5 services) |
 
-Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `games/`, `tasks/`, `profile/`.
+Product sections (frontend routes): `learn/`, `tutor/` (AI tutor — codename Oracle), `tasks/`, `profile/`.
 
 Internal services (everything except `backend/` and `frontend/`) are called **service-to-service** with an `INTERNAL_API_KEY` header — never directly from the browser. Exception (by design): Depot's public file route serves world-readable, PII-free media (lesson audio/images) directly to the browser; every WRITE stays internal-key-only. Pulse exception (by design): only its two tracker scripts and Plausible's GA OAuth callback are browser-facing — all analytics/health DATA reads go through Core (`/api/v1/admin/*`), which holds the Pulse API tokens server-side. Realtime exception (by design): the browser subscribes directly to Supabase Realtime for **one** table, `generation_runs_live` — the admin Generation Live Monitor. It qualifies on three constraints that must all hold before any table is added to this exception: the table carries **zero PII** (run metadata, slot counts, cost totals), the subscription is authenticated with the user's Supabase JWT, and RLS restricts SELECT to `admin`/`superadmin` (migration `0019`). A table is only actually live once it is a member of the `supabase_realtime` publication (migration `0022`) — the RLS policy alone authorizes a subscription that then receives nothing. Engine specs: `/LESSON_ENGINE.md` (lesson runtime contract) and `/COURSE_ENGINE.md` (content hierarchy + generation pipeline).
 
@@ -138,7 +138,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 ### §1.9 Child safety & privacy — non-negotiable
 
 - **No PII of minors is ever sent to third-party AI APIs** (DeepSeek, Qwen, TTS). Maximum allowed context: age band + first name. No surnames, no locations, no photos, no free-text history that could identify a child.
-- AI tutor and gamegen output for kids passes **content moderation — non-optional**, before display.
+- AI tutor output for kids passes **content moderation — non-optional**, before display.
 - Parent visibility into kid activity is a **product invariant**, not a feature flag.
 - Default to COPPA-minded behavior: minimal data collection, parental consent gates, no dark patterns aimed at kids.
 
@@ -174,10 +174,12 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 
 ### §1.14 Software Quality & Robustness Policy — NON-NEGOTIABLE
 
-- **Strict Type & Data Validation:** All inputs, variables, and IDs must be validated rigorously at the edge (e.g., using Zod). These schemas must NEVER be bypassed or relaxed, even in testing environments. If an ID format is strict (like UUIDv4), mocks, tests, and seed data MUST use mathematically valid strings (no placeholder strings like `course-1`).
-- **Robust Internal Comparisons:** When comparing sensitive or critical internal values (like API keys or session identifiers) across services, ALWAYS use `crypto.timingSafeEqual` or equivalent constant-time comparison methods. This guarantees mathematical reliability and avoids execution-time discrepancies.
-- **Traffic & Origin Discipline:** Pre-flight checks (CORS) must be highly restrictive. The backend must explicitly whitelist ONLY the authorized SPA frontend origin, dropping unknown traffic immediately to maintain a clean execution environment.
-- **Rate-Limiting by Default:** All endpoints must implement strict rate-limiting policies to ensure platform stability and fair use. In testing environments, this should gracefully fall back to a `MemoryStore` to ensure tests run smoothly without requiring external services like Redis.
+- **Strict Type & Data Validation:** All inputs, variables, and IDs must be validated rigorously at the edge (e.g., using Zod). These schemas must NEVER be bypassed or relaxed, even in testing environments. If an ID format is strict (like UUIDv4), mocks, tests, and seed data MUST use mathematically valid strings (no placeholder strings like `course-1`). A fixture for a `min(16)` credential is therefore itself 16+ chars, which the secrets scanner would otherwise flag — so declare it a placeholder by starting the VALUE with `test`, `dev`, `fake`, `placeholder`, `replace`, `example` or `local` followed by `-` or `_` (the literal `replace-me` also passes). `agent/tools/check-secrets.sh` exempts exactly that set; anything else is treated as a real credential.
+- **Failure Must Be Distinguishable From Emptiness:** A function whose result is READ, MODIFIED and WRITTEN BACK must never collapse "the upstream did not answer" into a zero/empty default. Return `null` (or throw) and make the caller refuse. Defaulting is acceptable only for display-only reads. This is not a style preference: `getLearningStatsForUpdate` returning zeros on a transient PostgREST failure meant the next `PATCH` erased a child's XP, minutes, lessons and both streak columns behind a `200` — permanently, since those columns exist nowhere else.
+- **Robust Internal Comparisons:** Compare secrets in constant time on FIXED-WIDTH digests — `timingSafeEqual(sha256(provided), sha256(expected))`. Never guard `crypto.timingSafeEqual` with a JS string length pre-check: `String.length` counts UTF-16 code units while `Buffer.from()` yields UTF-8 bytes, so a same-character-length header carrying any byte ≥ `0x80` produces a longer buffer and `timingSafeEqual` THROWS `RangeError` — a 500 instead of a 401. Hashing also removes the key-length side channel the pre-check leaked.
+- **Traffic & Origin Discipline:** Pre-flight checks (CORS) must be highly restrictive. The backend must explicitly whitelist ONLY the authorized SPA frontend origin, dropping unknown traffic immediately to maintain a clean execution environment. CORS is mounted BEFORE the rate limiter so a `429` still carries `Access-Control-Allow-Origin` — otherwise the browser discards the `RATE_LIMITED` envelope and the user sees an opaque network error.
+- **Rate-Limiting by Default:** All endpoints must implement strict rate-limiting policies to ensure platform stability and fair use. In testing environments, this should gracefully fall back to a `MemoryStore` to ensure tests run smoothly without requiring external services like Redis. Rate limiting is an AVAILABILITY control, not an authorization one: it fails OPEN on a store error (`passOnStoreError: true`). A degraded limiter must never be able to take the platform down.
+- **Liveness Must Not Depend On Optional Infrastructure:** `GET /health` is mounted above the rate limiter and every optional dependency, and services open their listener BEFORE connecting to anything optional. A service that cannot serve `/health` fails its platform healthcheck, so coupling it to Redis turned a degraded limiter into a total outage — and awaiting a client that retries its initial connect forever (node-redis does) meant the listener never opened at all, leaving the process alive, unhealthy, and never restarted.
 
 ---
 
@@ -192,7 +194,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 | `database/AGENTS.md` | schema, migrations, RLS |
 | `backend/AGENTS.md` | API routes, auth, middleware |
 | `frontend/AGENTS.md` | components, routes, i18n, theming |
-| `coursegen/AGENTS.md` · `audiogen/AGENTS.md` · `gamegen/AGENTS.md` | generation pipelines |
+| `coursegen/AGENTS.md` · `audiogen/AGENTS.md` | generation pipelines |
 | `parent-id-check/AGENTS.md` | identity verification, PII handling |
 | `email-server/AGENTS.md` | email sending contract |
 | `pulse/AGENTS.md` | analytics & health stack (pins, upgrade protocol, §1.9 tracking boundary) |

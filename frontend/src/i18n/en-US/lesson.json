@@ -34,12 +34,12 @@
     "almost": {
       "v1": "So close!",
       "v2": "Almost there!",
-      "v3": "Good thinking — one more push!"
+      "v3": "Good thinking, one more push!"
     },
     "tryAgain": {
       "v1": "Let's think it through!",
       "v2": "Mistakes help us learn!",
-      "v3": "New clue unlocked — try again!"
+      "v3": "New clue unlocked, try again!"
     }
   },
   "results": {
@@ -56,7 +56,7 @@
     "glowTitle": "Today's superpower",
     "growTitle": "Your next quest",
     "glow": {
-      "effort": "You finished the whole lesson — every try makes you stronger.",
+      "effort": "You finished the whole lesson, every try makes you stronger.",
       "family": {
         "story": "Stories hold no secrets from you.",
         "choice": "You make decisions like a true founder.",
@@ -69,13 +69,13 @@
       }
     },
     "grow": {
-      "mastered": "You mastered it all — the next lesson awaits!",
+      "mastered": "You mastered it all, the next lesson awaits!",
       "family": {
         "story": "Take your time exploring the stories.",
         "choice": "Think each option through before choosing.",
         "input": "Double-check your numbers, no rush.",
         "arrange": "Find the order one step at a time.",
-        "money": "Count the money calmly — you’ve got this.",
+        "money": "Count the money calmly, you’ve got this.",
         "analyze": "Hunt for the hidden clues.",
         "storyplay": "Pick your path with care.",
         "maker": "Build your inventions piece by piece."
@@ -128,7 +128,7 @@
       "bank": "Available pieces",
       "slot": "Slot {{index}}",
       "tapToRemove": "Tap a placed piece to send it back",
-      "dragHint": "Drag each piece into its group — or tap it, then tap the group.",
+      "dragHint": "Drag each piece into its group, or tap it, then tap the group.",
       "matchPairs": {
         "help": "Tap one on the left, then its match on the right. Tap a pair to undo it."
       },
@@ -235,12 +235,12 @@
       "continue": "Continue",
       "tapToContinue": "Tap to continue the story",
       "lineProgress": "Line {{current}} of {{total}}",
-      "flipHint_one": "Tap to flip — {{count}} card left",
-      "flipHint_other": "Tap to flip — {{count}} cards left",
+      "flipHint_one": "Tap to flip, {{count}} card left",
+      "flipHint_other": "Tap to flip, {{count}} cards left",
       "allFlipped": "You discovered them all!",
       "gotIt": "I've got it!",
       "review": "I want to review",
-      "reviewHint": "Take your time — read and listen to the recap above, then continue when you’re ready.",
+      "reviewHint": "Take your time, read and listen to the recap above, then continue when you’re ready.",
       "whatDoesItMean": "What does “{{term}}” mean?",
       "noteTitle": "What does it mean?",
       "keepListening": "Keep listening"

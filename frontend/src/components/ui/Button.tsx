@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
  * 1px press (active:translate-y-px), color-shift hover. No scale, no 3D.
  *
  * Variant = the action's color, per the Action Color Contract (/DESIGN.md
- * §Colors): primary = the one main CTA (papaya), secondary = alternative/
+ * §Colors): primary = the one main CTA (indigo), secondary = alternative/
  * lower-emphasis (outlined glass), success = positive completion, danger =
  * destructive. Never pick a variant by taste — pick by what the action does.
  */

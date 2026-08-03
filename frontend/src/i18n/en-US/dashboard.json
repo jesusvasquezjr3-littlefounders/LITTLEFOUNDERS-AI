@@ -7,7 +7,6 @@
   "nav": {
     "learn": "Learn",
     "tutor": "AI Tutor",
-    "games": "Games",
     "tasks": "Tasks",
     "lockedBadge": "Tutor",
     "lockedHint": "Unlocks when your account becomes a verified Tutor",
@@ -23,21 +22,29 @@
     "greeting": "Hi, {{name}}! Ready to keep building?",
     "greetingAnon": "Hi! Ready to keep building?",
     "title": "Your courses",
+    "subtitle": "Master real-world money, saving, and entrepreneurship through gamified missions.",
+    "resumeCta": "Continue Mission",
+    "exploreCta": "Open Course Map",
+    "heroBadge": "Interactive Learning Path",
+    "featuredBadge": "Recommended for you",
+    "continueLearning": "Jump back in",
+    "startCourse": "Start learning",
+    "browseTracks": "Explore Learning Tracks",
+    "filterAll": "All Tracks",
+    "filterEntrepreneurship": "Entrepreneurship",
+    "filterFinance": "Financial Literacy",
+    "filterSaving": "Saving & Investment",
     "lessonCount_one": "{{count}} lesson",
     "lessonCount_other": "{{count}} lessons",
     "progressLabel": "{{passed}}/{{total}} lessons",
     "emptyTitle": "Your adventure is loading",
-    "emptyBody": "There are no published courses yet. Dina is preparing the first missions — check back soon!"
+    "emptyBody": "There are no published courses yet. Dina is preparing the first missions, check back soon!"
   },
   "sections": {
     "soonBadge": "On the way",
     "tutor": {
       "title": "Your personal AI tutor",
-      "body": "Ask anything about money, saving, and business — a friendly tutor that explains at your pace is coming to this space."
-    },
-    "games": {
-      "title": "Games that teach for real",
-      "body": "Minigames tied to what you learn in your courses will live here. Play, earn, and level up your money skills."
+      "body": "Ask anything about money, saving, and business, a friendly tutor that explains at your pace is coming to this space."
     },
     "tasks": {
       "title": "Tasks & rewards",

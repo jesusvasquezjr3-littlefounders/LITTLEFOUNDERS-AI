@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LOCALES, type Locale } from '@/i18n';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { playPlatformSound } from '@/lib/sound';
 import { Badge, Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { Avatar } from '@/components/Avatar';
 import { cn } from '@/lib/utils';
@@ -64,6 +65,7 @@ function SidebarItem({ item, roles, collapsed }: { item: NavItem; roles: string[
     <NavLink
       to={item.path}
       title={collapsed ? label : undefined}
+      onClick={() => playPlatformSound('nav_tap')}
       className={({ isActive }) =>
         cn(
           'motion-safe-press flex min-h-12 items-center gap-3 rounded-full transition-colors duration-150 active:translate-y-px',
@@ -101,6 +103,7 @@ function MobileTab({ item, roles }: { item: NavItem; roles: string[] }) {
   return (
     <NavLink
       to={item.path}
+      onClick={() => playPlatformSound('nav_tap')}
       className={({ isActive }) =>
         cn(
           'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-md transition-colors duration-150',
@@ -164,6 +167,7 @@ export function AppLayout() {
   }
 
   async function onLogout() {
+    playPlatformSound('auth_bye');
     await logout();
     navigate('/', { replace: true });
   }

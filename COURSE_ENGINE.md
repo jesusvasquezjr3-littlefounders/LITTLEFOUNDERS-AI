@@ -7,10 +7,12 @@
 > produces documents that validate against it, byte for byte.
 >
 > **Status:** v1 — hierarchy live in Vault (0007), pipeline implemented in
-> `coursegen/`, first course catalog authored (`financial-education`).
+> `coursegen/`, three production course catalogs authored (`financial-education`,
+> `entrepreneurship`, `investing`) with per-course competency graphs wired into
+> PLAN → WRITE → REVIEW prompts.
 > Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
 > never started by CI or by any automatic process (/AGENTS.md sign-off rule).
-> **Last updated:** 2026-07-27 · Language: English (project rule).
+> **Last updated:** 2026-08-02 · Language: English (project rule).
 
 ---
 
@@ -21,6 +23,10 @@
 | LF-Business coursegen | Two-call author protocol (PLAN → WRITE), palette prompt rendered from the type taxonomy, zod-gated corrective retries, deterministic plan repair before burning tokens, per-lesson checkpoint/resume, token budget kill-switch, cost ledger per call |
 | LF-Brain | Closed taxonomy YAML validated by schema, `catalog` as a coverage oracle (generation stops when every slot is filled, not at N megabytes), **Piaget vocabulary hard-gates**, `facts.yaml` canonical ground truth (never trust the model with a number), deterministic-first gate cascade, independent-provider judge to decorrelate errors |
 | LittleFounders v1 | The Adventures narrative spine (worlds as progression), curriculum blueprint fields (concept / objective / vocabulary / prior knowledge / micro-objective per lesson), and its FAILURES: hierarchy must be DB data (never hardcoded dicts), XP must be real, unlock rules must be server-computed in exactly one place |
+| [Duolingo method](https://blog.duolingo.com/duolingo-teaching-method/) + [spaced-repetition research](https://research.duolingo.com/papers/settles.acl16.pdf) | Compact interactive practice, evidence-driven review, and delayed retrieval rather than completion-as-mastery |
+| [Brilliant learning paths](https://brilliant.org/help/features/what-are-learning-paths/) | Foundation-before-transfer sequencing and explicit progress evidence for the responsible adult or educator |
+| [Little Language Lessons](https://blog.google/products-and-platforms/products/education/little-language-lessons/) | Contextual micro-practice is useful, but generated content remains inside structured contracts and independent validation |
+| [Understand Anything](https://github.com/Egonex-AI/Understand-Anything) + [Marble taxonomy](https://github.com/withmarbleapp/os-taxonomy) | Separate deterministic orchestration from semantic generation; use prerequisite-graph patterns only, never third-party taxonomy content or licenses as a hidden curriculum corpus |
 
 What Forge deliberately does NOT have: RAG over uploaded documents. Our niche
 advantage is that the **catalog + facts ARE the ground truth** — curated,
@@ -111,6 +117,31 @@ median, `suggested_families` lean on story/choice/arrange/money/storyplay,
 micro-objectives are RETRIEVAL objectives ("recuerda y aplica X sin re-enseñar").
 The plan/write prompts receive the source topics' concepts and objectives and
 the instruction "consolidate — never introduce new concepts".
+
+### §3.1a Executable competency graph
+
+`npm run graph:check` derives a stable DAG for every authored production
+course (or `npm run graph:check -- <course-slug>` for one course) before any
+provider call. Every topic becomes a competency node with
+its age tier, objective, vocabulary, fact anchors and observable evidence;
+teaching topics form the cold-start sequence, declared prerequisites become
+hard/soft edges, and review citations become retrieval edges. The check fails
+on a missing reference, duplicate, teaching topic without objective/vocabulary,
+retrieval node without a source, or any cycle. It is an inspection and
+validation layer, not a second content source or an inferred learner model.
+
+The graph is operational, not decorative: Forge derives a compact incoming-edge
+slice for each lesson topic and injects it into PLAN, WRITE and the independent
+REVIEW judge. Hard prerequisites constrain what may be assumed, sequence edges
+ground the opening in prior competencies, and retrieval edges require review
+lessons to revisit their cited sources. The catalog remains the sole authored
+curriculum authority; graph output is deliberately derived so an edit cannot
+make the two sources silently diverge.
+
+Current graph checks cover all three production courses. Financial Education
+contains 328 topic competencies (216 teaching, 112 retrieval) and 1,015
+validated edges; the other production courses are checked by the same loader
+and prompt contract before generation.
 
 **Totals:** tier1 adventures (1–5): 4 teaching sagas × 8 topics (6 teaching +
 2 review) + review saga × 6 topics = 152 lessons each. tier2 adventures (6–8)
@@ -272,18 +303,22 @@ flowchart TD
         NX -- yes --> S1
         NX -- no --> R["track-report.json + Vault telemetry (0017)"]
     end
-    R --> FLIP["db:publish-course<br/><b>HUMAN GATE (§1.9)</b> — review→published"]
-    FLIP --> VER["verify:course<br/><i>deterministic acceptance, free</i>"]
-    VER --> NAR["narrate:all --course slug<br/><i>Echo; speech_assets cache; partial failures stay pending; exit≠0 on any failure</i>"]
+    R --> VER["verify:course<br/><i>full deterministic acceptance + fresh Vault attestation, free</i>"]
+    VER --> FLIP["Core Content release<br/><b>HUMAN GATE (§1.9)</b> — atomic full hierarchy release"]
+    FLIP --> NAR["narrate:all --course slug<br/><i>Echo; speech_assets cache; partial failures stay pending; exit≠0 on any failure</i>"]
     NAR --> VER2[verify:course again — narrated count]
     VER2 --> COACH["forge:coach --track id<br/><i>free diagnosis + proposed deltas (human-applied)</i>"]
     COACH --> MARKET([course live in all 3 locales])
 ```
 
-The ONE human step in the chain is the publish flip — deliberate and
+The ONE human step in the chain is the Core release — deliberate and
 non-negotiable (§1.9: kid-facing content is human-moderated before display).
-Everything else runs unattended and fails LOUDLY (non-zero exits, halts, and
-Vault telemetry) instead of silently.
+It invokes Vault's `release_course` RPC, which holds the hierarchy in one
+transaction and rejects a missing locale, non-review-ready lesson, incomplete
+hierarchy, or verification older than the latest document change. Everything
+else runs unattended and fails LOUDLY (non-zero exits, halts, and Vault
+telemetry) instead of silently. The old `db:publish-course` shell helper is
+local-development-only and is not a production release path.
 
 ```
 validate  catalog + facts + taxonomy (Zod, offline)
@@ -296,7 +331,8 @@ plan      blueprint → segment skeleton    DeepSeek, temp 0.3, JSON mode
    ↓
 write     skeleton → full LessonDocument (es-MX first, the authoring locale)
           DeepSeek, temp 0.4, JSON mode, corrective retries (max 4) fed with
-          Zod issues; per-segment salvage before full regen. The prompt now
+          Zod issues; a final full-document recovery before diagnostic-only
+          salvage. The prompt now
           carries the CONTENT PLAYBOOK (§"Content quality" below) + the age-tier
           reasoning ceiling as its CREATIVE brief — the hard rules enforce
           FORMAT, the playbook enforces VALUE (a decision-driven, concrete,
@@ -394,20 +430,39 @@ images    OPTIONAL per slot: visual segments (picture_choice options,
           port 4007) — the platform's ONLY image service. Prism's
           art-director judge (Qwen chat) turns {label, context, purpose}
           into a detailed prompt carrying the LF illustration identity
-          (flat kid-friendly vector style, papaya/navy palette, complete
-          background scene — the frontend renders inside a rounded tile);
+          (modern, high-contrast educational vector style with clean geometric
+          forms; object tiles are centered on a pure white/transparent empty
+          background, while scenes use a complete setting);
           generation = official Qwen `qwen-image` on DashScope; a vision
           verifier (qwen-vl) then inspects the ACTUAL pixels for readable
-          text/numerals and regenerates on a hit (qwen-image's text bias
-          cannot be prompted away — mechanical guarantee, up to 3 attempts);
+          text/numerals or a person/character and regenerates on a hit
+          (qwen-image's text bias cannot be prompted away — mechanical
+          guarantee, up to 3 attempts). Object tiles additionally require a
+          pure-white edge-to-edge canvas: a deterministic border-pixel gate
+          rejects a colored backdrop, white-card inset, frame, or broad shadow;
           the clean asset lands in Depot and is indexed in Vault
           `picture_assets`, keyed on the REQUEST descriptor
           (sha256(model+size+style_version+purpose+label+context), computed
           BEFORE the judge) so an IDENTICAL request never hits the paid API
           twice. Forge just embeds the returned public URL.
           Skippable (--no-images) / PICTUREGEN_URL unset = clean skip —
-          icons remain the fallback, NEVER emojis. (Gemini discarded
+          icons remain the fallback, NEVER emojis. A no-image run is useful for
+          a bounded text pilot but is not releasable: `verify:course` counts
+          every target in this same per-type plan and requires it before the
+          human release can receive a fresh attestation. `--require-images`
+          is the production mode: it validates Prism configuration before any
+          author call and fails closed on an illustration error. (Gemini discarded
           2026-07-23: quota-0 on every Google image model.)
+          For a stored course, `images:backfill -- --reuse-only` is the zero-spend
+          remediation pass: it reuses a course-local object URL only when the
+          normalized label matches, never contacts Prism, and never reuses a
+          segment-level scene anchor whose context could be wrong. A release
+          still requires `verify:course` to report zero targets missing.
+          Published documents carry `illustration_style_version` (migration
+          `0032`); inheritance and backfill are style-aware and reject legacy
+          or NULL provenance, so a Prism identity change cannot silently reuse
+          an old asset. `verify:course` also requires the current style bundle
+          on every release-ready document.
    ↓
 publish   upsert lesson + 3 lesson_documents rows via service role;
           document/answer_keys split server-side; lesson lands as
@@ -444,8 +499,22 @@ speed_tap/memory_flip/lightning_round/flash_match/count_objects/measure_read
 are scored as automaticity practice (no leakage, story-grounded, meaningful
 items) rather than failed for not demanding multi-step reasoning.
 **Budget:** `FORGE_MAX_TOKENS_PER_RUN` + `FORGE_MAX_USD_PER_RUN` kill-switches
-checked before every call; every call logged to `runs/<id>/ledger.jsonl`
-(provider, model, tokens, est. USD). **Concurrency:** small pool
+are checked before every call; every call is logged to `runs/<id>/ledger.jsonl`
+(provider, model, tokens, est. USD). A completion that exhausts its output
+budget before emitting content is still logged from its provider-reported
+usage before the typed error is rethrown; it must never be mistaken for a free
+failure. Full-document calls use the operator-tunable
+`FORGE_DOCUMENT_MAX_TOKENS` ceiling (default 16,384) to leave room for hidden
+reasoning tokens. A fresh illustration request reserves Prism's configured
+worst-case verifier redraw count before network I/O and then records the
+exact count Prism reports, including rejected pixels with no usable URL. A fresh image also reserves its exact
+unit price before its Prism request, so concurrent workers cannot collectively
+cross the image budget. In `--require-images` mode, Forge also admits the
+whole remaining visual bundle before the first Prism request, reserving every
+missing target's worst-case redraw count and releasing that admission hold
+immediately. A small cap therefore fails before buying a partial, unreleasable
+lesson; it is an admission probe, not evidence that the cap can fund a complete
+visual candidate. **Concurrency:** small pool
 (`FORGE_CONCURRENCY`, default 2).
 
 **`--dry-run` spends NOTHING and destroys NOTHING** — it stops before every
@@ -575,6 +644,12 @@ All clients are raw `fetch` behind one `providers/` chokepoint with usage
 logging. Keys live ONLY in `coursegen/.env` (gitignored; §1.10). Model ids are
 env-overridable (`DEEPSEEK_MODEL`, `QWEN_JUDGE_MODEL`).
 
+Forge may temporarily use the already-required Qwen provider for an author call
+when DeepSeek has a retryable transport failure or a provider-local 402 balance
+failure. The fallback is ledgered, retains every gate and the independent review,
+and never bypasses human release. Invalid credentials, malformed requests, and
+billable empty completions remain fail-closed rather than failing over.
+
 Because DeepSeek/Qwen are "smaller" models, the prompts are the product:
 palette contracts are terse and exact (field names, cardinalities, per-type
 example fragments for the 10 most-error-prone types), MIX RULES are mandatory
@@ -587,10 +662,12 @@ either generated programmatically or re-verified programmatically.
 - No minor PII ever reaches a provider: prompts contain ONLY catalog/facts/
   canon content (age band, no names of real children — characters are the
   actors).
-- Deterministic kid-safety gates run BEFORE the LLM judge; the judge's
-  kid_safety dimension is a hard gate on top, and a human publish step is a
-  blocking gate on top of that. Three layers, none optional.
-- Generated lessons never auto-publish. `status='review'` → human → `published`.
+- Deterministic kid-safety gates run BEFORE the LLM judge; `verify:course`
+  reruns every deterministic gate across every complete locale bundle and
+  records a release attestation; the human Core release is the final blocking
+  gate. None is optional.
+- Generated lessons never auto-publish. `status='review'` → fresh verification
+  → human Core release → atomically `published` hierarchy.
 
 ## §7 What Echo consumes (contract)
 
@@ -605,7 +682,15 @@ locale default, so the map fills in incrementally with zero code changes.
 Encodes mono MP3 (small, quality-preserving), stores in filebase
 `lesson-audio`, and patches `audio_segment_id`s + an `audio` manifest into
 the lesson_documents row. Idempotent by (lesson, locale, segment, voice,
-text-hash) — a voice change alone re-narrates just that unit.
+text-hash) — a voice change alone re-narrates just that unit. Before any paid
+batch, `npm run narrate:all -- --course <slug> --dry-run` performs a free
+document/unit preflight and reports an upper-bound TTS call count; it never
+calls DashScope, uploads media, reads the global speech cache or writes Vault.
+For a bounded paid pilot, `AUDIOGEN_MAX_TTS_CALLS_PER_RUN` is an optional hard
+call ceiling. Echo reserves each call immediately before synthesis, refuses
+later units without contacting DashScope, and leaves incomplete lessons
+unversioned for safe retry; cache hits and speech-guard refusals do not consume
+the ceiling.
 
 ## §8 QA catalog — `coursegen/curriculum/first-lemonade-stand/`
 
@@ -620,4 +705,8 @@ and — once narrated — Echo end to end, plus every Core/frontend endpoint a
 real course would hit. `catalog:check` reports 0 errors and ~19 shape-quota
 WARNINGS by design (a compact QA catalog doesn't match real-course grammar —
 warnings, never errors, are the expected and correct outcome here). Run it
-first: `npm run generate -- --course first-lemonade-stand`.
+first: `npm run generate -- --course first-lemonade-stand`. Its committed local
+fixture is deliberately `draft` at the hierarchy levels and `review` at the
+lesson level: it remains inspectable by operators and the verifier, but cannot
+appear in the learner-facing published-course API. A QA corpus that fails a
+release gate is test evidence, never learner content.

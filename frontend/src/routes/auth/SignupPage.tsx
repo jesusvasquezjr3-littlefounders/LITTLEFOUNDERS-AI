@@ -1,13 +1,15 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
+import { playPlatformSound } from '@/lib/sound';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import type { Locale } from '@/i18n';
 import { Button, Icon } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { AuthShell } from './AuthShell';
+import { AuthSplit } from './AuthSplit';
 import { ErrorBanner } from './ErrorBanner';
 import { SocialAuth } from './SocialAuth';
 
@@ -18,7 +20,7 @@ import { SocialAuth } from './SocialAuth';
  */
 export function SignupPage() {
   const { t, i18n } = useTranslation();
-  const { signup } = useAuth();
+  const { signup, getToken } = useAuth();
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState('');
@@ -30,14 +32,26 @@ export function SignupPage() {
   const [errorCode, setErrorCode] = useState<string | null>(null);
   const [confirmationPending, setConfirmationPending] = useState(false);
 
+  const startedRef = useRef(false);
+
   const passwordTooShort = password.length > 0 && password.length < 8;
+
+  // Funnel step 2 (/INSIGHTS.md): fired once, when the visitor first engages
+  // with the form rather than merely landing on it — "started the signup" has
+  // to mean intent, or the funnel's biggest drop is an artefact of pageviews.
+  function markSignupStart() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    trackInsight('signup_start', { routeClass: 'marketing' });
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (password.length < 8) return;
+    trackInsight('signup_submit', { routeClass: 'marketing' });
     setSubmitting(true);
     setErrorCode(null);
-    const { error, confirmationRequired } = await signup({
+    const { error, confirmationRequired, analyticsEnabled } = await signup({
       email,
       password,
       displayName,
@@ -46,9 +60,21 @@ export function SignupPage() {
     });
     setSubmitting(false);
     if (error) {
+      playPlatformSound('auth_error');
       setErrorCode(error.code);
       return;
     }
+    playPlatformSound('auth_success');
+    // configureInsights() is called explicitly with the FRESH value signup()
+    // just resolved, rather than waiting for the next render's
+    // useInsightsBeacon effect to pick it up from context — otherwise this
+    // event sits in insights.ts's pre-consent buffer, where a later
+    // configureInsights() call can legitimately (and silently) discard it.
+    configureInsights({ enabled: analyticsEnabled, getToken });
+    // Funnel step 3 — the account exists (whether or not email confirmation
+    // is still pending; that is a separate, later gate).
+    trackInsight('signup_complete', { routeClass: 'marketing' });
+    void flushInsights();
     if (confirmationRequired) {
       setConfirmationPending(true);
       return;
@@ -58,19 +84,19 @@ export function SignupPage() {
 
   if (confirmationPending) {
     return (
-      <AuthShell title={t('auth.signup.confirmTitle')}>
+      <AuthSplit title={t('auth.signup.confirmTitle')}>
         <div className="flex flex-col items-center gap-4 text-center">
           <span className="flex h-14 w-14 items-center justify-center rounded-full bg-success-soft">
             <Icon name="mark_email_read" className="text-success-strong" />
           </span>
           <p className="lf-body text-content">{t('auth.signup.confirmBody', { email })}</p>
         </div>
-      </AuthShell>
+      </AuthSplit>
     );
   }
 
   return (
-    <AuthShell
+    <AuthSplit
       title={t('auth.signup.title')}
       subtitle={t('auth.signup.subtitle')}
       footer={
@@ -78,7 +104,7 @@ export function SignupPage() {
           {t('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
-            className="lf-label rounded-sm text-primary hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="lf-label rounded-sm text-[#ff775c] hover:text-[#e55f45] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff775c]"
           >
             {t('auth.signup.loginLink')}
           </Link>
@@ -86,7 +112,7 @@ export function SignupPage() {
       }
     >
       <SocialAuth />
-      <form onSubmit={(e) => void onSubmit(e)} noValidate className="flex flex-col gap-5">
+      <form onSubmit={(e) => void onSubmit(e)} onFocusCapture={markSignupStart} noValidate className="flex flex-col gap-5">
         {errorCode && <ErrorBanner code={errorCode} />}
         <Field
           label={t('auth.signup.displayName')}
@@ -141,6 +167,6 @@ export function SignupPage() {
         </Button>
         <p className="lf-caption text-center text-content-muted">{t('auth.signup.universalNote')}</p>
       </form>
-    </AuthShell>
+    </AuthSplit>
   );
 }

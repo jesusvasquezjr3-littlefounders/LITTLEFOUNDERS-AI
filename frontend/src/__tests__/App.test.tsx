@@ -19,13 +19,21 @@ beforeEach(async () => {
 });
 
 describe('Marketing site', () => {
-  it('renders the landing page with hero, pitch sections, and CTA', () => {
+  it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/learned by playing/);
-    expect(screen.getByText('The problem')).toBeInTheDocument();
-    expect(screen.getByText('Our solution')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/feel like an adventure/);
+    expect(screen.getByText('Curiosity is where it starts')).toBeInTheDocument();
+    expect(screen.getByText('A lesson that invites you in')).toBeInTheDocument();
     expect(screen.getByText('Source: S&P Global FinLit Survey')).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: 'Start free' }).length).toBeGreaterThan(0);
+  });
+
+  it('renders the lesson-focused how-it-works page', () => {
+    renderApp('/how-it-works');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Every lesson starts with a question/);
+    expect(screen.getByText('Three moments of learning by doing')).toBeInTheDocument();
+    expect(screen.getByText('A short experience that leaves room to think')).toBeInTheDocument();
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
   it('CTA links point to signup', () => {
@@ -92,6 +100,6 @@ describe('Marketing site', () => {
     fireEvent.click(trigger);
     fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
 
-    expect(await screen.findByText(/aprendida jugando/)).toBeInTheDocument();
+    expect(await screen.findByText(/se sienta como una aventura/)).toBeInTheDocument();
   });
 });

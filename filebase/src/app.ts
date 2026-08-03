@@ -20,7 +20,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/files', (req, res, next) => {
     const provided = req.get('x-internal-api-key') ?? '';
     const expected = config.INTERNAL_API_KEY;
-    if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
+    if (!crypto.timingSafeEqual(crypto.createHash('sha256').update(provided).digest(), crypto.createHash('sha256').update(expected).digest())) {
       res.status(401).json({ data: null, error: { code: 'UNAUTHORIZED', message: 'Invalid internal API key' } });
       return;
     }

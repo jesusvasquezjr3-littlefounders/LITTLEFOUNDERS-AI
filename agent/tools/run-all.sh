@@ -4,7 +4,11 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 
 SCRIPT="${1:?usage: run-all.sh <npm-script>}"
-SERVICES=(database backend frontend coursegen audiogen gamegen parent-id-check email-server)
+# Keep this list aligned with the TypeScript services in AGENTS.md §1.5. The
+# script intentionally skips services that do not define a requested npm
+# script, but it must still visit every service that can define one. Omitting
+# Prism/Depot/Data Intel made a green root gate weaker than their CI gates.
+SERVICES=(database backend frontend coursegen audiogen picturegen parent-id-check email-server filebase dataintel)
 
 FAILED=()
 for s in "${SERVICES[@]}"; do

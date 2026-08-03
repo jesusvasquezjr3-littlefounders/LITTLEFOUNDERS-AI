@@ -1,7 +1,16 @@
 import { Router } from 'express';
+import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { assembleCourseTree } from '../services/courseTree.js';
+import {
+  getConsentsForKids,
+  getRolesForGate,
+  grantAnalyticsConsent,
+  insertLearningEvents,
+  revokeAnalyticsConsent,
+  stampRole,
+} from '../services/insights.js';
 import {
   getAdventuresByCourseIds,
   getKidLearningStats,
@@ -44,13 +53,65 @@ export function familyRouter(): Router {
     const profiles = await getKidProfiles(links.map((l) => l.kid_user_id));
     if (!profiles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load kid profiles');
     const byId = new Map(profiles.map((p) => [p.user_id, p]));
+    // Consent state rides along so the dashboard can render the toggle
+    // without an extra round trip. A failed lookup FAILS the request like
+    // every sibling lookup above: rendering "off" while collection continues
+    // would mislead the parent in exactly the §1.9-sensitive direction.
+    const consents = await getConsentsForKids(links.map((l) => l.kid_user_id));
+    if (!consents) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load consent state');
     return ok(res, {
       kids: links.map((l) => ({
         userId: l.kid_user_id,
         displayName: byId.get(l.kid_user_id)?.display_name ?? null,
         username: byId.get(l.kid_user_id)?.username ?? null,
+        analyticsConsent: consents.get(l.kid_user_id) ?? false,
       })),
     });
+  });
+
+  /*
+   * Analytics consent for a kid — the §1.9 parental gate (/INSIGHTS.md).
+   * Grant and revoke are BOTH re-guarded by a verified guardian_links row
+   * for THIS caller; the consent row records who granted and when, and a
+   * revocation keeps the row (audit) while stopping collection immediately.
+   */
+  router.post('/kids/:kidId/analytics-consent', async (req, res) => {
+    const parsedKidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!parsedKidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const kidId = parsedKidId.data;
+    const user = authedUser(res);
+    const links = await getVerifiedKidLinks(user.id);
+    if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+    if (!links.some((l) => l.kid_user_id === kidId)) {
+      return fail(res, 403, 'FORBIDDEN', 'No verified guardian link for this kid');
+    }
+    const granted = await grantAnalyticsConsent(kidId, user.id);
+    if (granted === null) return fail(res, 502, DATA_UNAVAILABLE, 'Consent could not be stored');
+    // The PARENT's decision is itself family conduct. Subject is the parent;
+    // no kid identifier enters the row. Recorded only when the state actually
+    // changed — re-tapping an already-on toggle is not a new decision.
+    if (granted === 'changed') {
+      void insertLearningEvents([{ user_id: user.id, role: 'parent', event: 'consent_grant', route_class: 'family' }]);
+    }
+    return ok(res, { kidId, analyticsConsent: true });
+  });
+
+  router.delete('/kids/:kidId/analytics-consent', async (req, res) => {
+    const parsedKidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!parsedKidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    const kidId = parsedKidId.data;
+    const user = authedUser(res);
+    const links = await getVerifiedKidLinks(user.id);
+    if (!links) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load family links');
+    if (!links.some((l) => l.kid_user_id === kidId)) {
+      return fail(res, 403, 'FORBIDDEN', 'No verified guardian link for this kid');
+    }
+    const revoked = await revokeAnalyticsConsent(kidId);
+    if (revoked === null) return fail(res, 502, DATA_UNAVAILABLE, 'Consent could not be revoked');
+    if (revoked === 'changed') {
+      void insertLearningEvents([{ user_id: user.id, role: 'parent', event: 'consent_revoke', route_class: 'family' }]);
+    }
+    return ok(res, { kidId, analyticsConsent: false });
   });
 
   /** A kid's territory for one course: the SAME CourseTree shape the kid sees, computed from THEIR progress, plus a stats strip. */
@@ -83,8 +144,26 @@ export function familyRouter(): Router {
     const statsRows = await getKidLearningStats(kidId);
     if (!statsRows) return fail(res, 502, DATA_UNAVAILABLE, 'Stats unreachable');
 
+    // Server-side capture: a parent looking at a kid's territory IS the
+    // family-conduct signal (/INSIGHTS.md). The subject of the event is the
+    // CALLER, never the kid — no kid identifier enters the row. The caller
+    // goes through the SAME role policy as ingest: roles resolved with the
+    // service role, kid-wins stamping, and a kid-anomaly (kid+parent, a §1.3
+    // bug this codebase defends against elsewhere) records nothing rather
+    // than bypassing the consent gate under a hard-coded 'parent'.
+    // Fire-and-forget: telemetry must not add latency or failure modes here.
+    void (async () => {
+      const callerRoles = await getRolesForGate(user.id);
+      if (!callerRoles || callerRoles.length === 0 || callerRoles.includes('kid')) return;
+      const storedEvent = await insertLearningEvents([
+        { user_id: user.id, role: stampRole(callerRoles), event: 'territory_view', route_class: 'family' },
+      ]);
+      if (!storedEvent) console.warn('[backend] territory_view event dropped (Vault unavailable)');
+    })();
+
     const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, progress);
     const stats = statsRows[0] ?? null;
+
     return ok(res, {
       tree,
       stats: stats

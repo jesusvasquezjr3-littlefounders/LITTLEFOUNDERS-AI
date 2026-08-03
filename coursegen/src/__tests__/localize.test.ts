@@ -65,6 +65,33 @@ describe('localizeLesson (string-freeze)', () => {
     const sentContent = translate.mock.calls[0]![0].messages.map((m) => m.content).join('\n');
     expect(sentContent).not.toContain('correct_option_id');
   });
+
+  it('splits a large visible-string map into bounded atomic batches', async () => {
+    const source = buildDocument();
+    source.segments = Array.from({ length: 6 }, (_, index) => ({
+      id: `large-${index + 1}`,
+      type: 'story_scene',
+      prompt_md: 'Mira la isla.',
+      difficulty: 1,
+      xp: 0,
+      payload: { backdrop: 'base', body_md: 'x'.repeat(3_997) },
+    })) as never;
+    const translate = makeIdentityTranslateMock();
+
+    const result = await localizeLesson(source, 'en-US', gateCtx, { translate: translate as never });
+
+    expect(translate.mock.calls.length).toBeGreaterThan(1);
+    for (const [request] of translate.mock.calls) {
+      const lastLine = request.messages[request.messages.length - 1]!.content.split('\n').pop()!;
+      const batch = JSON.parse(lastLine) as Record<string, string>;
+      // A single exceptionally long string is kept whole; normal batches stay
+      // within the deterministic request budget.
+      if (Object.values(batch).every((value) => value.length <= 6_000)) {
+        expect(JSON.stringify(batch).length).toBeLessThanOrEqual(6_100);
+      }
+    }
+    expect((result.document.segments[0]!.payload as { body_md: string }).body_md).toBe(`EN:${'x'.repeat(3_997)}`);
+  });
 });
 
 describe('translateTitle (topic titles — es-MX-only in curriculum YAML, filled in at publish time)', () => {

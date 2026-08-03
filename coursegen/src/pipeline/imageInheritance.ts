@@ -55,14 +55,30 @@ export function normalizeLabel(raw: string): string {
 
 export type ImageInheritance = Map<string, string>;
 
+interface DocumentWithIllustrationStyle {
+  segments?: unknown;
+  illustration_style_version?: unknown;
+}
+
 /**
  * Indexes every OBJECT-level illustration in the given documents by normalized label.
  *
  * Segment-level `image_url` (the scene anchor) is skipped on purpose — see the header.
  * Documents are walked in order, and the first URL found for a label wins, so passing
  * the authoring locale first keeps the index deterministic.
+ *
+ * The index is label-keyed and locale-blind, so CALLERS choose the donor set.
+ * Safe donor scopes are: the same LESSON, any locale (one text-free image serves
+ * the lesson's three locale documents — the deliberate 1-image-per-3-locales
+ * design), or the same LOCALE, any lesson. Never index a whole course across
+ * locales in one pass: interlingual homographs ("Pan" es-MX = bread, "pan"
+ * en-US = frying pan) would attach the wrong object's art with no verifier in
+ * the path.
  */
-export function buildImageInheritance(documents: readonly LessonDocumentParsed[]): ImageInheritance {
+export function buildImageInheritance(
+  documents: readonly (LessonDocumentParsed & DocumentWithIllustrationStyle)[],
+  requiredStyleVersion?: string,
+): ImageInheritance {
   const index: ImageInheritance = new Map();
   const visit = (node: unknown): void => {
     if (Array.isArray(node)) {
@@ -83,8 +99,9 @@ export function buildImageInheritance(documents: readonly LessonDocumentParsed[]
   };
 
   for (const document of documents) {
+    if (requiredStyleVersion && document.illustration_style_version !== requiredStyleVersion) continue;
     // Only the segments carry illustrations; meta/scoring never do.
-    visit((document as unknown as { segments?: unknown }).segments);
+    visit(document.segments);
   }
   return index;
 }

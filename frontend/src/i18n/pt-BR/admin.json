@@ -20,7 +20,9 @@
     "analytics": "Analytics e Saúde",
     "generation": "Geração",
     "audit": "Auditoria",
-    "roles": "Papéis e acesso"
+    "roles": "Papéis e acesso",
+    "insights": "Insights",
+    "intel": "Intel Dados"
   },
   "overview": {
     "title": "Painel de administração",
@@ -42,11 +44,18 @@
     "details": "Detalhes",
     "healthUnavailable": "Monitor de saúde indisponível",
     "retentionTitle": "Retenção de aprendizagem",
-    "retentionSubtitle": "Pontuação na primeira tentativa em revisões espaçadas, por dias desde a última prática do conceito: o teste adiado sempre-ativo da plataforma.",
+    "retentionSubtitle": "Pontuações de primeira tentativa em revisões espaçadas, por dias desde a última prática.",
     "retentionBucket": "{{bucket}} dias",
     "retentionAttempts": "{{count}} respostas de revisão",
     "retentionWeakest": "Conceitos que se esquecem mais rápido",
-    "retentionEmpty": "Nenhuma revisão espaçada jogada ainda: a curva se desenha sozinha quando as crianças revisam."
+    "retentionEmpty": "Nenhuma revisão espaçada jogada ainda. A curva se desenha à medida que revisam lições.",
+    "quickActionsTitle": "Ações rápidas",
+    "quickActionsSubtitle": "Atalhos rápidos para operações principais da equipe.",
+    "navContentDesc": "Cursos e fila de revisão",
+    "navUsersDesc": "Diretório e funções",
+    "navEmailsDesc": "Histórico de envios",
+    "navGenDesc": "Geração de lições IA",
+    "navAnalyticsDesc": "Saúde e telemetria"
   },
   "content": {
     "title": "Conteúdo",
@@ -60,7 +69,20 @@
     "publish": "Publicar",
     "unpublish": "Despublicar",
     "archive": "Arquivar",
-    "empty": "Ainda não há cursos."
+    "empty": "Ainda não há cursos.",
+    "noMatch": "Nenhum curso corresponde aos critérios do filtro.",
+    "actionFailed": "Essa mudança não foi aplicada. Tente de novo.",
+    "totalCourses": "Total de cursos",
+    "liveCourses": "Cursos ao vivo",
+    "draftCourses": "Rascunhos e revisão",
+    "pendingModeration": "Pendentes de moderação",
+    "searchPlaceholder": "Buscar título, slug ou matéria do curso...",
+    "allStatuses": "Todos os status",
+    "tabs": {
+      "aria": "Visualizações de conteúdo",
+      "courses": "Cursos",
+      "lessons": "Fila de revisão de lições"
+    }
   },
   "users": {
     "title": "Usuários",
@@ -81,15 +103,32 @@
     "colRoles": "Papéis",
     "colLocale": "Idioma",
     "colJoined": "Cadastro",
-    "search": "Buscar nome ou @usuário",
-    "noMatch": "Nenhum usuário corresponde à sua busca.",
-    "empty": "Ainda não há usuários."
+    "colActions": "Ações",
+    "search": "Buscar nome, @usuário ou ID...",
+    "noMatch": "Nenhum usuário corresponde à sua busca ou filtro.",
+    "empty": "Ainda não há usuários.",
+    "totalUsers": "Total de usuários",
+    "kidsCount": "Crianças",
+    "parentsCount": "Tutores e pais",
+    "staffCount": "Membros da equipe",
+    "allRoles": "Todas as funções",
+    "modalTitle": "Detalhes do perfil do usuário",
+    "colUserId": "ID do usuário",
+    "colBirthDate": "Data de nascimento",
+    "colAge": "Idade calculada",
+    "copyId": "Copiar ID",
+    "copied": "Copiado!",
+    "viewDetail": "Ver detalhes",
+    "close": "Fechar"
   },
   "moderation": {
     "heading": "Fila de revisão",
-    "note": "Toda lição mostrada a crianças passa por esta revisão humana antes de ir ao ar (§1.9). Aprove para publicar, rejeite para voltar ao rascunho.",
+    "note": "Cada lição mostrada às crianças passa por esta revisão humana antes de ser publicada. Aprove para publicar ou rejeite para retornar a rascunho.",
     "approve": "Aprovar",
     "reject": "Rejeitar",
+    "preview": "Ver detalhes",
+    "previewTitle": "Visualização de moderação",
+    "colLessonId": "ID da lição",
     "empty": "Nada aguardando revisão. Tudo certo."
   },
   "audit": {
@@ -100,14 +139,27 @@
     "colActor": "Ator",
     "colSubject": "Assunto",
     "colDetail": "Detalhe",
-    "empty": "Ainda não há registros de auditoria."
+    "colActions": "Ações",
+    "empty": "Ainda não há registros de auditoria.",
+    "noMatch": "Nenhum registro corresponde à sua busca ou filtro.",
+    "totalEvents": "Total de eventos",
+    "uniqueActors": "Atores únicos",
+    "topAction": "Ação principal",
+    "searchPlaceholder": "Buscar ação, ID do ator ou assunto...",
+    "allActions": "Todas as ações",
+    "modalTitle": "Detalhes do registro de auditoria",
+    "colEventId": "ID do evento",
+    "copyActorId": "Copiar ID do ator",
+    "copied": "Copiado!",
+    "viewDetail": "Ver detalhes",
+    "close": "Fechar"
   },
   "roles": {
     "title": "Papéis e acesso",
     "subtitle": "Conceda e revogue papéis. Apenas superadmin.",
     "grantTitle": "Conceder um papel",
     "userId": "ID do usuário",
-    "userIdHint": "O UUID do usuário — clique num ID na tabela abaixo para preencher.",
+    "userIdHint": "O UUID do usuário, clique num ID na tabela abaixo para preencher.",
     "role": "Papel",
     "grant": "Conceder",
     "granted": "{{role}} concedido.",
@@ -117,7 +169,30 @@
     "colUsername": "Usuário",
     "colRoles": "Papéis",
     "colActions": "Revogar",
-    "empty": "Ainda não há portadores de papéis."
+    "empty": "Ainda não há portadores de papéis.",
+    "noMatch": "Nenhum usuário corresponde à sua busca ou filtro.",
+    "searchPlaceholder": "Buscar nome, @usuário ou ID...",
+    "allRoles": "Todas as funções",
+    "totalHolders": "Total de usuários com função",
+    "adminsCount": "Administradores",
+    "superadminsCount": "Superadministradores",
+    "privilegedCount": "Contas privilegiadas",
+    "manageAccess": "Gerenciar Acessos",
+    "accessControlTitle": "Controle de Acessos para {{name}}",
+    "accessControlDesc": "Ative ou desative permissões específicas para este perfil administrador.",
+    "permissions": {
+      "manage_users": "Gerenciar Usuários",
+      "manage_users_desc": "Pode gerenciar funções de usuário, famílias e perfis.",
+      "manage_content": "Gerenciar Conteúdo",
+      "manage_content_desc": "Pode editar cursos e lições.",
+      "view_analytics": "Ver Analíticas",
+      "view_analytics_desc": "Pode acessar métricas no DataIntel e Pulse.",
+      "manage_support": "Gerenciar Suporte",
+      "manage_support_desc": "Pode atender suporte e operações de usuário."
+    },
+    "permissionGranted": "Permissão concedida.",
+    "permissionRevoked": "Permissão revogada.",
+    "permissionFailed": "Não foi possível atualizar a permissão."
   },
   "analytics": {
     "title": "Analytics e Saúde",
@@ -132,7 +207,7 @@
       "12mo": "Últimos 12 meses"
     },
     "unavailableTitle": "Analytics indisponível",
-    "unavailableBody": "O Pulse não respondeu. O produto não é afetado — verifique os serviços do Pulse na Railway.",
+    "unavailableBody": "O Pulse não respondeu. O produto não é afetado, verifique os serviços do Pulse na Railway.",
     "web": {
       "title": "Analytics da web",
       "visitors": "Visitantes",
@@ -145,7 +220,7 @@
     },
     "behavior": {
       "title": "Comportamento (superfícies adultas)",
-      "scopeNote": "O Umami roda apenas em marketing e superfícies de responsáveis/admin — nunca em sessões de crianças (§1.9).",
+      "scopeNote": "O Umami roda apenas em marketing e superfícies de responsáveis/admin, nunca em sessões de crianças.",
       "pageviews": "Visualizações",
       "visitors": "Visitantes",
       "visits": "Visitas",
@@ -196,7 +271,7 @@
     "toolsTitle": "Exportações e controles",
     "reports": {
       "title": "Relatórios por equipe (PDF)",
-      "caption": "Relatórios PDF com marca e marca-d'água para cada equipe — gerados com o período e os filtros atuais.",
+      "caption": "Relatórios PDF com marca e marca-d'água para cada equipe, gerados com o período e os filtros atuais.",
       "failed": "Não foi possível gerar o relatório. Tente de novo.",
       "audiences": {
         "marketing": "Marketing",
@@ -217,25 +292,46 @@
       "commandLabel": "Aplique com",
       "copy": "Copiar",
       "copied": "Copiado",
-      "pending": "A lista editada ainda não foi aplicada — execute o comando e faça o redeploy do pulse-plausible.",
-      "note": "Espelho somente leitura: a aplicação vive na variável de ambiente IP_BLOCKLIST do pulse-plausible (aplicada no redeploy) — esta tela nunca a escreve."
+      "pending": "A lista editada ainda não foi aplicada, execute o comando e faça o redeploy do pulse-plausible.",
+      "note": "Espelho somente leitura: a aplicação vive na variável de ambiente IP_BLOCKLIST do pulse-plausible (aplicada no redeploy), esta tela nunca a escreve."
     }
   },
   "emails": {
     "title": "E-mails",
-    "subtitle": "Histórico de envio de e-mails transacionais — um registro estilo Resend.",
+    "subtitle": "Histórico de envio de e-mails transacionais, um registro estilo Resend.",
     "totalSent": "Total enviados",
+    "successRate": "Taxa de sucesso",
+    "activeTemplates": "Modelos ativos",
+    "topLocale": "Idioma principal",
+    "templatesBreakdown": "Detalhamento por modelo",
+    "localesBreakdown": "Detalhamento por idioma",
+    "searchPlaceholder": "Buscar destinatário ou assunto...",
+    "filterStatus": "Filtrar por status",
+    "filterTemplate": "Filtrar por modelo",
+    "allStatuses": "Todos os status",
+    "allTemplates": "Todos os modelos",
     "colTo": "Para",
     "colSubject": "Assunto",
     "colType": "Tipo",
     "colStatus": "Status",
     "colDate": "Enviado em",
+    "colActions": "Ações",
     "empty": "Nenhum e-mail enviado ainda.",
+    "noMatch": "Nenhum e-mail corresponde aos critérios do filtro.",
     "showing": "{{from}}–{{to}} de {{total}}",
     "prev": "Anterior",
     "next": "Próximo",
+    "modalTitle": "Detalhes do e-mail",
+    "colMessageId": "ID da mensagem",
+    "colUserId": "ID do usuário",
+    "colDetail": "Detalhes do envio",
+    "close": "Fechar",
+    "copyId": "Copiar ID",
+    "copied": "Copiado!",
+    "viewDetail": "Ver detalhes",
     "status": {
       "queued": "Na fila",
+      "relayed": "Retransmitido",
       "delivered": "Entregue",
       "failed": "Falhou"
     }
@@ -249,6 +345,10 @@
     "unavailableBody": "O Uptime Kuma não respondeu. Verifique o pulse-kuma na Railway.",
     "up": "No ar",
     "down": "Fora do ar",
+    "refreshTelemetry": "Atualizar telemetria",
+    "avgLatency": "Latência média",
+    "avgUptime": "Uptime médio 24h",
+    "monitoredServices": "Serviços monitorados",
     "columns": {
       "service": "Serviço",
       "status": "Status",
@@ -258,9 +358,9 @@
   },
   "generation": {
     "title": "Geração",
-    "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso — resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
+    "subtitle": "Como o pipeline agêntico se comportou em cada geração de curso, resultados, veredictos do juiz, etapas de falha, custo e eficiência de cache.",
     "loading": "Carregando telemetria de geração…",
-    "noData": "—",
+    "noData": "N/A",
     "secondsUnit": "s",
     "tabs": {
       "aria": "Visualizações de geração",
@@ -285,6 +385,9 @@
       "planning": "Planejando",
       "writing": "Escrevendo",
       "reviewing": "Julgando",
+      "authoring": "Redigindo",
+      "simulating": "Simulando",
+      "judging": "Julgando",
       "localizing": "Traduzindo",
       "illustrating": "Imagens",
       "publishing": "Publicando",
@@ -297,14 +400,29 @@
       "reviewed": "Julgando",
       "localized": "Traduzindo",
       "illustrated": "Imagens",
+      "planning": "Planejando",
+      "writing": "Escrevendo",
+      "reviewing": "Julgando",
+      "authoring": "Redigindo",
+      "simulating": "Simulando",
+      "judging": "Julgando",
+      "localizing": "Traduzindo",
+      "illustrating": "Imagens",
       "unknown": "Desconhecido"
+    },
+    "kinds": {
+      "filterLabel": "Pipeline",
+      "filterAria": "Filtrar execuções por pipeline",
+      "all": "Todos",
+      "lessons": "Lições",
+      "note": "Cada gráfico de custo, qualidade e falhas aqui fica restrito ao pipeline selecionado."
     },
     "history": {
       "runs": "Inspetor de execuções"
     },
     "tracks": "Execuções em massa (tracks)",
     "selectRun": "Selecione uma execução de geração",
-    "empty": "Ainda não há execuções registradas — a telemetria aparecerá aqui após a próxima geração.",
+    "empty": "Ainda não há execuções registradas, a telemetria aparecerá aqui após a próxima geração.",
     "runTitle": "Execução {{runId}}",
     "salvaged": "reduzida",
     "earlyStop": "parada antecipada",
@@ -324,11 +442,11 @@
     },
     "heatmap": {
       "title": "Falhas por etapa do pipeline",
-      "empty": "Sem falhas — todas as lições tentadas foram publicadas."
+      "empty": "Sem falhas, todas as lições tentadas foram publicadas."
     },
     "judge": {
       "title": "Dimensões do juiz ({{count}} avaliadas)",
-      "note": "O piso de ruído entre execuções é ±0.4 — leia como indícios de defeitos, não como pontuação a perseguir.",
+      "note": "O piso de ruído entre execuções é ±0.4, leia como indícios de defeitos, não como pontuação a perseguir.",
       "empty": "Não há rubricas do juiz registradas para esta execução."
     },
     "dims": {
@@ -340,7 +458,11 @@
       "feedback_quality": "Qualidade do feedback",
       "distractor_quality": "Qualidade dos distratores",
       "narrative_quality": "Qualidade narrativa",
-      "naturalness": "Naturalidade"
+      "naturalness": "Naturalidade",
+      "concept_fit": "Aderência ao conceito",
+      "fun_agency": "Diversão e agência",
+      "clarity": "Clareza",
+      "difficulty_fairness": "Dificuldade justa"
     },
     "duration": {
       "title": "Tempo real por lição (segundos)"
@@ -369,7 +491,7 @@
       "avgCacheHit": "% cache méd.",
       "costTrend": "Custo por lição publicada (USD)",
       "cacheTrend": "% de cache ao longo do tempo",
-      "qualityTrend": "Dimensões de qualidade — última execução de {{runs}}",
+      "qualityTrend": "Dimensões de qualidade, última execução de {{runs}}",
       "failureByStage": "Falhas por etapa do pipeline (todas as execuções)",
       "successRate": "Taxa de sucesso geral",
       "successRateDetail": "{{passed}} / {{total}} lições publicadas",
@@ -401,8 +523,8 @@
       "inherited": "herdadas",
       "billed": "cobradas",
       "actionsTitle": "Ações propostas",
-      "actionsNote": "Cada sugestão é respaldada por evidências. Aplique-as editando o playbook, prompts ou gates em um commit — o sistema nunca modifica automaticamente conteúdo infantil (§1.9).",
-      "allClear": "Sem problemas detectados — o pipeline está funcionando sem falhas.",
+      "actionsNote": "Cada sugestão é respaldada por evidências. Aplique-as editando o playbook ou prompts. O sistema nunca modifica automaticamente conteúdo infantil.",
+      "allClear": "Nenhum problema detectado. O pipeline está funcionando limpadamente.",
       "empty": "Ainda não há dados de geração para diagnóstico."
     },
     "slotDetail": {
@@ -437,7 +559,7 @@
       },
       "lowCache": {
         "title": "Taxa de cache criticamente baixa",
-        "detail": "{{pct}}% de cache — o prefixo de prompts pode ter mudado. A montagem estática-primeiro está quebrada ou o playbook mudou."
+        "detail": "{{pct}}% de cache, o prefixo de prompts pode ter mudado. A montagem estática-primeiro está quebrada ou o playbook mudou."
       },
       "highFailRate": {
         "title": "Taxa de falhas: {{rate}}%",
@@ -451,6 +573,370 @@
         "title": "Custo por lição disparou 2× acima da linha base",
         "detail": "Último: {{latest}} vs média: {{avg}}. A geração de imagens ou uso de tokens pode ter aumentado."
       }
+    }
+  },
+  "intel": {
+    "title": "Inteligência de Dados",
+    "subtitle": "Armazém de análises próprias, segmentação, previsão, detecção de anomalias e análise de experimentos.",
+    "tabs": {
+      "home": "Início",
+      "trends": "Tendências",
+      "funnels": "Funis",
+      "retention": "Retenção",
+      "segments": "Segmentos",
+      "people": "Pessoas",
+      "experiments": "Experimentos",
+      "alerts": "Alertas",
+      "settings": "Configurações"
+    },
+    "home": {
+      "kpiDau": "Usuários Ativos Diários",
+      "kpiEvents": "Eventos ({{days}}d)",
+      "kpiRetention": "Retenção Semana 1",
+      "kpiActivation": "Taxa de Ativação",
+      "kpiActivationHint": "Mediana: {{median}}h até primeira lição",
+      "sectionAdoption": "Adoção de Recursos",
+      "sectionAnomalies": "Anomalias Ativas",
+      "colRole": "Papel",
+      "colSurface": "Superfície",
+      "colUsers": "Usuários",
+      "colSessions": "Sessões",
+      "colEvents": "Eventos"
+    },
+    "trends": {
+      "title": "Explorador de Tendências",
+      "subtitle": "Análise de séries temporais para qualquer métrica em qualquer dimensão.",
+      "empty": "Selecione uma métrica para ver tendências.",
+      "metricDau": "Usuários Ativos Diários",
+      "metricWau": "Usuários Ativos Semanais",
+      "metricMau": "Usuários Ativos Mensais",
+      "metricEvents": "Volume de Eventos",
+      "metricUsers": "Usuários Totais",
+      "metricSessions": "Sessões",
+      "metricRetention": "Taxa de Retenção",
+      "metricActivation": "Taxa de Ativação",
+      "metricCompletion": "Lições Concluídas",
+      "granularityHour": "Por Hora",
+      "granularityDay": "Diário",
+      "granularityWeek": "Semanal",
+      "granularityMonth": "Mensal",
+      "current": "Atual",
+      "dauTitle": "DAU",
+      "sparklineHint": ""
+    },
+    "funnels": {
+      "title": "Análise de Funis",
+      "subtitle": "Acompanhe a progressão de usuários através de funis de conversão configuráveis.",
+      "empty": "Defina as etapas do funil para começar a análise.",
+      "stepVisited": "Visitou",
+      "stepSignup": "Cadastrou-se",
+      "stepCourse": "Abriu Curso",
+      "stepLesson": "Começou Lição",
+      "stepComplete": "Concluiu Lição",
+      "colStep": "Etapa",
+      "colUsers": "Usuários",
+      "colConversion": "Conversão",
+      "colDropoff": "Abandono"
+    },
+    "funnel": {
+      "title": "Funil de Conversão",
+      "subtitle": "Pessoas distintas que alcançam cada etapa do caminho de ativação.",
+      "stepTitle": "Detalhamento por Etapa",
+      "stepSubtitle": "Usuários e taxa de conversão em cada etapa.",
+      "colStep": "Etapa",
+      "colUsers": "Usuários",
+      "colConversion": "Conversão"
+    },
+    "retention": {
+      "title": "Retenção por Coortes",
+      "subtitle": "Matriz de retenção semanal por coorte mostrando usuários que retornam ao longo do tempo.",
+      "empty": "Ainda não há dados de coortes.",
+      "cohortTitle": "Curvas por Coorte",
+      "cohortSubtitle": "Coortes semanais, traçadas por quantos voltaram em cada semana seguinte.",
+      "heatmapTitle": "Matriz de Retenção",
+      "heatmapSubtitle": "As mesmas coortes em grade, células mais escuras seguraram mais gente.",
+      "colCohort": "Coorte",
+      "colSize": "Tamanho",
+      "colWeek": "Semana {{n}}"
+    },
+    "segments": {
+      "title": "Segmentos",
+      "subtitle": "Crie, salve e compare segmentos de usuários em todas as métricas.",
+      "empty": "Crie seu primeiro segmento para começar.",
+      "placeholder": "Os segmentos ainda não estão conectados",
+      "placeholderHint": "Segmentos salvos e comparação lado a lado chegam na próxima entrega do Data Intel.",
+      "create": "Novo Segmento",
+      "compare": "Comparar Segmentos",
+      "name": "Nome do Segmento",
+      "save": "Salvar Segmento",
+      "delete": "Excluir",
+      "filterRole": "Papel",
+      "filterDevice": "Dispositivo",
+      "filterLocale": "Idioma",
+      "filterSurface": "Superfície",
+      "opEq": "igual a",
+      "opNeq": "diferente de",
+      "opIn": "em",
+      "colName": "Nome",
+      "colUsers": "Usuários",
+      "colEngagement": "Engajamento",
+      "colRetention": "Retenção",
+      "colCreated": "Criado"
+    },
+    "people": {
+      "title": "Explorador de Pessoas",
+      "subtitle": "Perfis comportamentais por usuário com pontuação de engajamento e risco de abandono.",
+      "empty": "Nenhum dado de usuário disponível.",
+      "leaderboardTitle": "Ranking de Engajamento",
+      "leaderboardSubtitle": "Os aprendizes com maior pontuação composta de engajamento, amplitude, constância e profundidade.",
+      "churnTitle": "Distribuição do Risco de Abandono",
+      "churnSubtitle": "Como a população avaliada se divide entre risco alto, médio e baixo.",
+      "churnTableTitle": "Aprendizes em Risco",
+      "colScore": "Engajamento",
+      "colLessons": "Lições",
+      "colStreak": "Melhor Sequência",
+      "colSessions30d": "Sessões (30d)",
+      "colDays30d": "Dias Ativos (30d)",
+      "colChurn": "Risco de Abandono",
+      "colRisk": "Risco",
+      "colLastActive": "Última Atividade",
+      "colLessons30d": "Lições (30d)",
+      "riskHigh": "Alto",
+      "riskMedium": "Médio",
+      "riskLow": "Baixo"
+    },
+    "experiments": {
+      "title": "Experimentos",
+      "subtitle": "Gestão de testes A/B com análise de significância estatística.",
+      "empty": "Nenhum experimento configurado.",
+      "emptyHint": "Defina um experimento no dataintel para começar a dividir o tráfego e medir o ganho.",
+      "listTitle": "Experimentos em Andamento",
+      "listSubtitle": "Cada teste A/B configurado com sua atribuição de controle e variante.",
+      "create": "Novo Experimento",
+      "name": "Nome do Experimento",
+      "variantA": "Controle",
+      "variantB": "Variante",
+      "metric": "Métrica Principal",
+      "colName": "Nome",
+      "colStatus": "Status",
+      "colMetric": "Métrica",
+      "colControl": "Controle",
+      "colVariant": "Variante",
+      "status": {
+        "draft": "Rascunho",
+        "running": "Em Andamento",
+        "concluded": "Concluído"
+      },
+      "significance": "valor-p",
+      "confidence": "Confiança",
+      "winner": "Vencedor"
+    },
+    "alerts": {
+      "title": "Alertas",
+      "subtitle": "Monitoramento baseado em limiares com notificações por webhook e e-mail.",
+      "empty": "Nenhum alerta configurado.",
+      "emptyHint": "Adicione uma regra de limiar no dataintel para ser avisado quando uma métrica se mexer.",
+      "listTitle": "Alertas Configurados",
+      "listSubtitle": "Regras de limiar que vigiam o armazém, e por onde cada uma notifica.",
+      "create": "Novo Alerta",
+      "metric": "Métrica",
+      "condition": "Condição",
+      "threshold": "Limiar",
+      "channel": "Canal",
+      "colName": "Nome",
+      "colMetric": "Métrica",
+      "colCondition": "Condição",
+      "colThreshold": "Limiar",
+      "colChannel": "Canal",
+      "colStatus": "Status",
+      "channelWebhook": "Webhook",
+      "channelEmail": "E-mail",
+      "enabled": "Ativo",
+      "disabled": "Inativo",
+      "condAbove": "acima de",
+      "condBelow": "abaixo de",
+      "condChange": "% de mudança",
+      "cooldown": "Resfriamento (min)",
+      "statusActive": "Ativo",
+      "statusPaused": "Pausado",
+      "statusTriggered": "Disparado"
+    },
+    "settings": {
+      "title": "Configurações",
+      "subtitle": "Agendamento de exportações, retenção de dados e configuração de webhooks.",
+      "placeholder": "As configurações ainda não estão conectadas",
+      "placeholderHint": "Exportações agendadas, janelas de retenção e destinos de webhook chegam na próxima entrega do Data Intel.",
+      "exports": "Exportações Agendadas",
+      "exportCreate": "Agendar Exportação",
+      "retention": "Retenção de Dados",
+      "webhooks": "Webhooks",
+      "webhookUrl": "URL do Webhook",
+      "webhookTest": "Testar"
+    },
+    "filters": {
+      "period": "Período",
+      "metric": "Métrica",
+      "granularity": "Granularidade",
+      "role": "Papel",
+      "surface": "Superfície",
+      "device": "Dispositivo",
+      "locale": "Idioma",
+      "all": "Todos",
+      "days7": "7 dias",
+      "days30": "30 dias",
+      "days90": "90 dias",
+      "days365": "365 dias"
+    },
+    "export": {
+      "csv": "Exportar CSV",
+      "json": "Exportar JSON",
+      "comingSoon": "Exportação em breve",
+      "downloading": "Baixando…",
+      "note": "A exportação não inclui user_id nem anon_id. As sessões são rechaveadas por arquivo."
+    },
+    "retry": "Tentar novamente",
+    "kpi": {
+      "w1retention": "Retenção W1",
+      "activation": "Taxa de Ativação"
+    },
+    "adoption": {
+      "title": "Adoção de Recursos",
+      "subtitle": "Quais superfícies cada papel alcança.",
+      "current": "Usuários"
+    },
+    "anomalies": {
+      "title": "Anomalias Ativas",
+      "subtitle": "Valores atípicos estatísticos detectados na última varredura.",
+      "colMetric": "Métrica",
+      "colValue": "Valor",
+      "colExpected": "Esperado",
+      "colDeviation": "Z-Score",
+      "colStart": "Início"
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "Sinais próprios de aprendizado e uso, calibração, ritmo, famílias.",
+    "loading": "Carregando insights…",
+    "kpi": {
+      "consent": "Crianças com permissão",
+      "events": "Eventos ({{days}}d)",
+      "peakUsers": "Pico de usuários diários",
+      "activation": "Ativação"
+    },
+    "surfaces": {
+      "title": "Onde o tempo passa",
+      "empty": "Ainda não há eventos de navegação, o beacon preenche isso a cada sessão.",
+      "learn": "Aprender",
+      "tasks": "Tarefas",
+      "profile": "Perfil",
+      "tutor": "Tutor",
+      "family": "Família",
+      "admin": "Admin",
+      "marketing": "Marketing",
+      "other": "Outro"
+    },
+    "calibration": {
+      "title": "Calibração de exercícios",
+      "subtitle": "Primeiro os de mais tentativas por aprendiz. Muitas tentativas + muitas dicas + primeira tentativa baixa = o exercício está mal calibrado, não a criança.",
+      "empty": "Ainda não há tentativas avaliadas.",
+      "colLesson": "Lição",
+      "colSegment": "Segmento",
+      "colLearners": "Aprendizes",
+      "colAttempts": "Tentativas méd.",
+      "colHints": "Taxa de dicas",
+      "colFirstTry": "Primeira tentativa"
+    },
+    "tabs": {
+      "overview": "Panorama",
+      "acquisition": "Aquisição",
+      "learning": "Aprendizado",
+      "sessions": "Sessões"
+    },
+    "filters": {
+      "days": "Período",
+      "role": "Papel",
+      "event": "Evento",
+      "surface": "Superfície",
+      "locale": "Idioma",
+      "device": "Dispositivo",
+      "all": "Todos",
+      "apply": "Aplicar"
+    },
+    "export": {
+      "button": "Exportar",
+      "csv": "Baixar CSV",
+      "json": "Baixar JSON",
+      "hint": "Só comportamento e dimensões, exportações nunca levam identificador do aprendiz.",
+      "failed": "A exportação falhou, nada foi baixado.",
+      "complete": "{{rows}} linhas baixadas, a seleção completa.",
+      "capped": "{{rows}} linhas baixadas e o limite de segurança foi atingido, este arquivo NÃO é a seleção completa. Restrinja o período ou os filtros."
+    },
+    "cohorts": {
+      "title": "Retenção por coorte semanal",
+      "subtitle": "De quem apareceu pela primeira vez numa dada semana, quantos voltaram depois. O gráfico que diz se o produto retém.",
+      "empty": "Ainda não há histórico suficiente, as coortes se preenchem com as semanas.",
+      "week": "Semana",
+      "size": "Tamanho"
+    },
+    "funnel": {
+      "title": "Funil de ativação",
+      "subtitle": "Pessoas distintas que alcançam cada etapa. Onde o produto as perde.",
+      "empty": "Ainda não há dados de funil.",
+      "ofPrevious": "{{pct}} do anterior"
+    },
+    "velocity": {
+      "title": "Velocidade de aprendizado",
+      "subtitle": "Lições aprovadas por semana ativa, por aprendiz. Vem dos registros do próprio produto, então funciona independente do consentimento de telemetria.",
+      "empty": "Ainda não há lições concluídas.",
+      "colLearner": "Aprendiz",
+      "colPassed": "Aprovadas",
+      "colPerWeek": "Por semana",
+      "colScore": "Nota média",
+      "colAttempts": "Tentativas méd.",
+      "colStreak": "Sequência"
+    },
+    "dropoff": {
+      "title": "Abandono de lições",
+      "subtitle": "Primeiro a maior taxa de abandono, com quanto duraram antes de sair.",
+      "empty": "Ainda não há atividade de lições.",
+      "colLesson": "Lição",
+      "colStarts": "Inícios",
+      "colAbandons": "Abandonos",
+      "colRate": "Taxa de abandono",
+      "colSeconds": "Seg. méd. antes de sair"
+    },
+    "adoption": {
+      "title": "Adoção de recursos",
+      "subtitle": "Quais superfícies cada papel realmente alcança.",
+      "empty": "Ainda não há atividade por superfície.",
+      "colRole": "Papel",
+      "colSurface": "Superfície",
+      "colUsers": "Usuários",
+      "colSessions": "Sessões",
+      "colEvents": "Eventos"
+    },
+    "sessions": {
+      "title": "Profundidade de sessão",
+      "subtitle": "Quão substancial é uma visita: eventos, superfícies tocadas e tempo visível.",
+      "empty": "Ainda não há sessões registradas.",
+      "colWhen": "Quando",
+      "colRole": "Papel",
+      "colDevice": "Dispositivo",
+      "colEvents": "Eventos",
+      "colSurfaces": "Superfícies",
+      "colLessons": "Lições",
+      "colTime": "Tempo visível"
+    },
+    "engagement": {
+      "title": "Ranking de engajamento",
+      "subtitle": "Uma pontuação 0-100 comparável por aprendiz baseada em amplitude (lições), constância (sequência) e profundidade (dias ativos).",
+      "empty": "Ainda não há aprendizes pontuados.",
+      "colScore": "Pontuação",
+      "colLessons": "Lições",
+      "colStreak": "Melhor sequência",
+      "colSessions": "Sessões (30d)",
+      "colActiveDays": "Dias ativos (30d)"
     }
   }
 }

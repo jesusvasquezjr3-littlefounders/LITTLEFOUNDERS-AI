@@ -55,7 +55,7 @@ export function StatusBadge({ status }: { status: string }) {
   return <Badge className={tone[status] ?? 'bg-surface-sunken text-content-muted'}>{t(`admin.status.${status}`, status)}</Badge>;
 }
 
-/** Role → chip. superadmin gets the papaya accent so it reads as the top tier. */
+/** Role → chip. superadmin gets the indigo accent so it reads as the top tier. */
 export function RoleChip({ role }: { role: string }) {
   const { t } = useTranslation();
   const tone: Record<string, string> = {

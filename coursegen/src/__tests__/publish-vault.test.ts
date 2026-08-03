@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { resetConfigCache } from '../env.js';
 import { publishLessonSlot, type PublishInput } from '../pipeline/publish.js';
 import { buildDocument } from './fixtures.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 
 const localized = { 'en-US': 'x', 'es-MX': 'x', 'pt-BR': 'x' };
 
@@ -28,7 +29,11 @@ function samplePublishInput(): PublishInput {
       priorKnowledge: 'x',
     },
     lesson: { slug: 'lesson-1', position: 1, difficulty: 1, estimatedMinutes: 5, cast: ['dina'] },
-    documents: { 'es-MX': buildDocument() },
+    documents: {
+      'en-US': { ...buildDocument(), meta: { ...buildDocument().meta, locale: 'en-US' } },
+      'es-MX': buildDocument(),
+      'pt-BR': { ...buildDocument(), meta: { ...buildDocument().meta, locale: 'pt-BR' } },
+    },
   };
 }
 
@@ -97,10 +102,17 @@ describe('publishLessonSlot', () => {
     expect(Object.keys(body[0]!.answer_keys).length).toBeGreaterThan(0);
   });
 
-  it('throws when no documents are provided for the slot', async () => {
+  it('records the current illustration style so legacy art cannot be inherited silently', async () => {
+    await publishLessonSlot(samplePublishInput());
+    const documentsCall = fetchMock.mock.calls[5]!;
+    const body = JSON.parse((documentsCall[1] as RequestInit).body as string) as [{ illustration_style_version: string }];
+    expect(body[0]!.illustration_style_version).toBe(FORGE_ILLUSTRATION_STYLE_VERSION);
+  });
+
+  it('throws when the locale bundle is incomplete before any Vault write', async () => {
     const input = samplePublishInput();
-    input.documents = {};
-    await expect(publishLessonSlot(input)).rejects.toThrow(/no generated documents/);
+    input.documents = { 'es-MX': buildDocument() };
+    await expect(publishLessonSlot(input)).rejects.toThrow(/exactly all supported locales/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

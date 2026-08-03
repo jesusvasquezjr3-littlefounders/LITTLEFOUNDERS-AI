@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import {
   CheckpointStore,
+  RunLock,
   newRunCheckpoint,
   getSlot,
   setSlotState,
@@ -14,6 +15,17 @@ let dir: string;
 
 beforeEach(() => {
   dir = mkdtempSync(path.join(tmpdir(), 'forge-checkpoint-'));
+});
+
+describe('RunLock', () => {
+  it('excludes a concurrent process for the same run and releases cleanly', async () => {
+    const runDir = path.join(dir, 'locked-run');
+    const first = await RunLock.acquire(runDir, 'locked-run');
+    await expect(RunLock.acquire(runDir, 'locked-run')).rejects.toThrow(/already active/);
+    await first.release();
+    const second = await RunLock.acquire(runDir, 'locked-run');
+    await second.release();
+  });
 });
 
 afterEach(() => {

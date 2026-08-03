@@ -7,7 +7,6 @@
   "nav": {
     "learn": "Aprende",
     "tutor": "Tutor IA",
-    "games": "Juegos",
     "tasks": "Tareas",
     "lockedBadge": "Tutor",
     "lockedHint": "Se desbloquea cuando tu cuenta se convierte en Tutor verificado",
@@ -23,21 +22,29 @@
     "greeting": "¡Hola, {{name}}! ¿Listo para seguir construyendo?",
     "greetingAnon": "¡Hola! ¿Listo para seguir construyendo?",
     "title": "Tus cursos",
+    "subtitle": "Domina el dinero, el ahorro y el emprendimiento del mundo real a través de misiones interactivas.",
+    "resumeCta": "Continuar Misión",
+    "exploreCta": "Abrir Mapa de Curso",
+    "heroBadge": "Ruta de Aprendizaje Interactiva",
+    "featuredBadge": "Recomendado para ti",
+    "continueLearning": "Continúa tu aprendizaje",
+    "startCourse": "Iniciar curso",
+    "browseTracks": "Explorar Rutas de Aprendizaje",
+    "filterAll": "Todas las rutas",
+    "filterEntrepreneurship": "Emprendimiento",
+    "filterFinance": "Educación Financiera",
+    "filterSaving": "Ahorro e Inversión",
     "lessonCount_one": "{{count}} lección",
     "lessonCount_other": "{{count}} lecciones",
     "progressLabel": "{{passed}}/{{total}} lecciones",
     "emptyTitle": "Tu aventura está cargando",
-    "emptyBody": "Aún no hay cursos publicados. Dina está preparando las primeras misiones — ¡vuelve pronto!"
+    "emptyBody": "Aún no hay cursos publicados. Dina está preparando las primeras misiones, ¡vuelve pronto!"
   },
   "sections": {
     "soonBadge": "En camino",
     "tutor": {
       "title": "Tu tutor personal con IA",
-      "body": "Pregunta lo que sea sobre dinero, ahorro y negocios — un tutor amigable que explica a tu ritmo llegará a este espacio."
-    },
-    "games": {
-      "title": "Juegos que enseñan de verdad",
-      "body": "Aquí vivirán minijuegos conectados con lo que aprendes en tus cursos. Juega, gana y sube de nivel tus habilidades con el dinero."
+      "body": "Pregunta lo que sea sobre dinero, ahorro y negocios, un tutor amigable que explica a tu ritmo llegará a este espacio."
     },
     "tasks": {
       "title": "Tareas y recompensas",

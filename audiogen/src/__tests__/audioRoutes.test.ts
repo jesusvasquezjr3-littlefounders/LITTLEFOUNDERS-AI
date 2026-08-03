@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import express from 'express';
 import request from 'supertest';
-import { createApp } from '../app.js';
+import { createApp, envelopeErrorHandler } from '../app.js';
 import type { LessonDocument } from '../types/lessonDocument.js';
 import type { LessonDocumentRow } from '../db/lessonDocumentsRepo.js';
 
@@ -191,5 +192,72 @@ describe('GET /internal/v1/audio/lesson/:id', () => {
       .query({ locale: 'en-US' })
       .set('x-internal-api-key', KEY);
     expect(res.status).toBe(404);
+  });
+
+  it('answers 502 UPSTREAM_FAILED, never HTML, when the Vault read throws', async () => {
+    // getLessonDocument throws on a Vault 5xx (§1.14) — the route must catch
+    // it and answer 502 (upstream dependency failure, same convention as the
+    // POST sibling), never 404 (that would read as "manifest missing") and
+    // never an escaped HTML 500.
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('upstream boom', { status: 503 })));
+    const res = await request(createApp())
+      .get('/internal/v1/audio/lesson/lesson-1')
+      .query({ locale: 'en-US' })
+      .set('x-internal-api-key', KEY);
+    expect(res.status).toBe(502);
+    expect(res.headers['content-type']).toContain('application/json');
+    expect(res.body).toEqual({ data: null, error: { code: 'UPSTREAM_FAILED', message: expect.any(String) } });
+    expect(res.text).not.toContain('<html');
+  });
+});
+
+describe('envelope error middleware', () => {
+  it('answers a malformed JSON body with 400 VALIDATION_ERROR, not 500', async () => {
+    // express.json() forwards entity.parse.failed with statusCode 400 — a
+    // CLIENT error the middleware must honor instead of masking as INTERNAL.
+    const res = await request(createApp())
+      .post('/internal/v1/audio/lesson')
+      .set('x-internal-api-key', KEY)
+      .set('content-type', 'application/json')
+      .send('{"lesson_id":');
+    expect(res.status).toBe(400);
+    expect(res.headers['content-type']).toContain('application/json');
+    expect(res.body).toEqual({ data: null, error: { code: 'VALIDATION_ERROR', message: 'Malformed request body' } });
+  });
+
+  it('answers an oversized JSON body with 413 PAYLOAD_TOO_LARGE', async () => {
+    // express.json() default limit is 100kb → entity.too.large, statusCode 413.
+    const res = await request(createApp())
+      .post('/internal/v1/audio/lesson')
+      .set('x-internal-api-key', KEY)
+      .set('content-type', 'application/json')
+      .send(JSON.stringify({ lesson_id: 'x'.repeat(150 * 1024), locale: 'en-US' }));
+    expect(res.status).toBe(413);
+    expect(res.body).toEqual({ data: null, error: { code: 'PAYLOAD_TOO_LARGE', message: 'Request body too large' } });
+  });
+
+  it('keeps 500 INTERNAL for errors without a 4xx status, with a generic message', async () => {
+    // Status-less rejections (and 5xx-status ones) stay the last-resort §1.6
+    // envelope guarantee — never Express HTML, never err.message leakage.
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const scratch = express();
+    scratch.get('/boom', () => {
+      throw new Error('secret internals');
+    });
+    scratch.get('/upstream', () => {
+      throw Object.assign(new Error('bad gateway'), { status: 502 });
+    });
+    scratch.use(envelopeErrorHandler);
+    try {
+      for (const path of ['/boom', '/upstream']) {
+        const res = await request(scratch).get(path);
+        expect(res.status).toBe(500);
+        expect(res.headers['content-type']).toContain('application/json');
+        expect(res.body).toEqual({ data: null, error: { code: 'INTERNAL', message: 'Internal server error' } });
+        expect(res.text).not.toContain('secret internals');
+      }
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 });

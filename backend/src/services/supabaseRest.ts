@@ -53,6 +53,7 @@ export interface ProfileRow {
   locale: string;
   theme: string;
   cover: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface RoleRow {
@@ -61,7 +62,7 @@ export interface RoleRow {
 
 export function getOwnProfile(accessToken: string, userId: string): Promise<ProfileRow[] | null> {
   return rest<ProfileRow[]>(
-    `/profiles?user_id=eq.${eu(userId)}&select=user_id,display_name,username,locale,theme,cover`,
+    `/profiles?user_id=eq.${eu(userId)}&select=user_id,display_name,username,locale,theme,cover,created_at`,
     accessToken,
   );
 }
@@ -250,12 +251,30 @@ export interface LearningStatsForUpdateRow extends LearningStatsRow {
   last_active_date: string | null;
 }
 
-export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow> {
+/**
+ * Returns null when VAULT DID NOT ANSWER — never a zeroed row.
+ *
+ * This distinction is load-bearing and must not be "simplified" away. The one
+ * caller (POST /learn/lessons/:id/complete) does a read-modify-write:
+ * it adds deltas to what this returns and PATCHes the result back. If a
+ * transient PostgREST failure (a pooler blip, a restart, a statement timeout)
+ * were collapsed into ZERO_STATS the way the display-only readers above do,
+ * the very next PATCH would overwrite a learner's accumulated xp_points,
+ * minutes_learned, lessons_completed, streak_days and longest_streak with
+ * deltas-from-zero — silently, behind a 200 response. minutes_learned and both
+ * streak columns exist nowhere else, so that loss is permanent.
+ *
+ * An empty result set is still ZERO_STATS: the 0006 trigger guarantees every
+ * user has a row, so that branch is only a defensive default for a brand-new
+ * account, not a failure signal.
+ */
+export async function getLearningStatsForUpdate(userId: string): Promise<LearningStatsForUpdateRow | null> {
   const rows = await rest<LearningStatsForUpdateRow[]>(
     `/learning_stats?user_id=eq.${eu(userId)}&select=xp_points,minutes_learned,lessons_completed,streak_days,longest_streak,last_active_date`,
     serviceToken(),
   );
-  return rows?.[0] ?? { ...ZERO_STATS, last_active_date: null };
+  if (rows === null) return null;
+  return rows[0] ?? { ...ZERO_STATS, last_active_date: null };
 }
 
 // ── Follow / block lists (0006) ──────────────────────────────
@@ -678,18 +697,38 @@ export async function grantRole(userId: string, role: string, grantedBy: string)
   return res !== null;
 }
 
+export async function grantAdminPermission(userId: string, permission: string, grantedBy: string): Promise<boolean> {
+  const res = await rest<unknown>('/admin_permissions?on_conflict=user_id,permission', serviceToken(), {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal,resolution=ignore-duplicates' },
+    body: JSON.stringify({ user_id: userId, permission, granted_by: grantedBy }),
+  });
+  return res !== null;
+}
+
 export async function hasRole(userId: string, role: string): Promise<boolean> {
   const rows = await rest<RoleRow[]>(`/user_roles?user_id=eq.${eu(userId)}&role=eq.${role}&select=role`, serviceToken());
   return Array.isArray(rows) && rows.length > 0;
 }
 
-/** Append-only audit entry (no PII in detail — booleans/ids only). */
-export async function insertAuditLog(actorId: string, action: string, subject: string, detail: Record<string, unknown>): Promise<void> {
-  await rest<unknown>('/audit_logs', serviceToken(), {
+export async function revokeAdminPermission(userId: string, permission: string): Promise<boolean> {
+  const res = await restRaw(`/admin_permissions?user_id=eq.${eu(userId)}&permission=eq.${permission}`, serviceToken(), {
+    method: 'DELETE',
+    headers: { Prefer: 'return=minimal' },
+  });
+  return res.ok;
+}
+
+/** Append-only audit entry (no PII in detail — booleans/ids only). Returns
+ * whether the row landed: audit_logs is the only record of staff actions, so
+ * high-stakes callers must be able to detect (and loudly log) a lost trail. */
+export async function insertAuditLog(actorId: string, action: string, subject: string, detail: Record<string, unknown>): Promise<boolean> {
+  const res = await rest<unknown>('/audit_logs', serviceToken(), {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ actor_id: actorId, action, subject, detail }),
   });
+  return res !== null;
 }
 
 /**
@@ -763,3 +802,4 @@ export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promis
     `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
   );
 }
+

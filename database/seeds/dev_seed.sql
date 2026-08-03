@@ -67,6 +67,12 @@ VALUES
     ('00000000-0000-4000-a000-000000000006', 'admin', '00000000-0000-4000-a000-000000000007')
 ON CONFLICT DO NOTHING;
 
+INSERT INTO public.admin_permissions (user_id, permission, granted_by)
+VALUES
+    ('00000000-0000-4000-a000-000000000006', 'manage_content', '00000000-0000-4000-a000-000000000007'),
+    ('00000000-0000-4000-a000-000000000006', 'manage_users', '00000000-0000-4000-a000-000000000007')
+ON CONFLICT DO NOTHING;
+
 
 
 -- Demo published courses for the learn/ dashboard (0002 content skeleton is

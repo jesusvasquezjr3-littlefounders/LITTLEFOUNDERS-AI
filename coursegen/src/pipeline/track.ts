@@ -32,7 +32,7 @@ import { loadCourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
 import type { LessonLocale } from '../contract/core/types.js';
 import type { Register } from './register.js';
 import type { SlotState } from './checkpoint.js';
-import { enumerateSlots, runGeneration, type RunSummary } from './run.js';
+import { enumerateSlots, requireAllLessonLocales, runGeneration, type RunSummary } from './run.js';
 import { ingestTrackTelemetry } from '../vault/telemetry.js';
 
 export interface ShardPlan {
@@ -153,6 +153,7 @@ export interface TrackOptions {
   trackId: string;
   locales?: LessonLocale[];
   noImages?: boolean;
+  requireImages?: boolean;
   dryRun?: boolean;
   register?: Register;
   /** Global cumulative USD cap. Default: the same work-scaled formula a single whole-course run would get. */
@@ -200,6 +201,12 @@ function buildShardReport(
 }
 
 export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Promise<TrackReport> {
+  // Reject before catalog work, checkpoints, telemetry, or any shard can be
+  // created. `runGeneration` repeats this check as the paid-pipeline boundary.
+  requireAllLessonLocales(options.locales);
+  if (options.noImages && options.requireImages) {
+    throw new Error('generate:track: --no-images and --require-images cannot be used together');
+  }
   const generate = deps.generate ?? runGeneration;
   const config = getConfig();
   const loadResult = loadCourseCatalog(path.join(options.curriculumRoot, options.course));
@@ -248,6 +255,7 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
         slots: [shard.adventureSlug],
         locales: options.locales,
         noImages: options.noImages,
+        requireImages: options.requireImages,
         dryRun: options.dryRun,
         register: options.register,
         runId,

@@ -79,6 +79,9 @@ const Env = z.object({
     .transform((v) => v === 'true' || v === '1'),
   AUDIOGEN_CONCURRENCY: z.coerce.number().int().min(1).max(16).default(2),
   AUDIOGEN_MP3_BITRATE_KBPS: z.coerce.number().int().min(16).max(320).default(48),
+  // Optional hard ceiling for paid synthesis calls in one operator batch.
+  // Cache hits and speech-guard refusals do not consume a reservation.
+  AUDIOGEN_MAX_TTS_CALLS_PER_RUN: z.coerce.number().int().min(1).optional(),
 });
 
 export type Config = Readonly<z.infer<typeof Env>>;
@@ -154,4 +157,3 @@ export function voiceFor(character: string | undefined, locale: LessonLocale, co
   }
   return { voice: defaultVoiceFor(locale, config), model: config.TTS_MODEL };
 }
-

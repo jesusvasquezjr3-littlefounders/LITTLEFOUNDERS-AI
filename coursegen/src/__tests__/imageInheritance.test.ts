@@ -82,6 +82,14 @@ describe('buildImageInheritance — index the art a lesson already has', () => {
     expect(inheritedUrl(index, 'Limones')).toBe('https://img/first.png');
   });
 
+  it('does not inherit legacy art when a current style version is required', () => {
+    const legacy = { ...doc([{ id: 's1', type: 'picture_choice', payload: { options: [{ id: 'a', label: 'Limones', image_url: 'https://img/legacy.png' }] } }]), illustration_style_version: null };
+    const current = { ...doc([{ id: 's2', type: 'picture_choice', payload: { options: [{ id: 'a', label: 'Naranjas', image_url: 'https://img/current.png' }] } }]), illustration_style_version: 'v7-qwen-image-max-flat-vector+v8-qwen-image-max-object-white-flat-vector' };
+    const index = buildImageInheritance([legacy, current], 'v7-qwen-image-max-flat-vector+v8-qwen-image-max-object-white-flat-vector');
+    expect(inheritedUrl(index, 'Limones')).toBeUndefined();
+    expect(inheritedUrl(index, 'Naranjas')).toBe('https://img/current.png');
+  });
+
   it('is safe on an empty or imageless document', () => {
     expect(buildImageInheritance([]).size).toBe(0);
     expect(buildImageInheritance([doc([{ id: 's1', type: 'quiz_mcq', payload: { options: [{ id: 'a', text_md: 'x' }] } }])].map((d) => d)).size).toBe(0);

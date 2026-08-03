@@ -1,16 +1,41 @@
 name: backend CI
 
+# `npm test` here is not only vitest: backend's `test` script chains
+# `contract:check && vitest run`, and `contract:check` = `lesson-contract:check`,
+# which reads files that live OUTSIDE backend/.
+# So this workflow's path filters must cover them or the gate is only reachable
+# by an operator running it by hand.
+#
+#   lesson-contract:check  diffs backend/src/lesson-contract/ against its
+#                          originals in frontend/src/lesson-engine/.
+#
+# backend/src/lesson-contract/ is a COPY of the frontend originals (CLAUDE.md
+# §1.2: no workspaces), and a copy drifts. The drift is SILENT: Zod strips
+# unknown keys by default, so a field the frontend added and the backend copy
+# lacks is not rejected on the way in, it is DELETED. Grading then runs against
+# a document that is not the one the child was shown, with nothing logged
+# anywhere.
+#
+# Editing a lesson-engine module touches no backend file, so without this
+# frontend filter the only workflow that fires is frontend CI, which never
+# runs lesson-contract:check. Keep this list in sync with the
+# `path.resolve(here, …)` targets in backend/scripts/*.ts; the regression test
+# backend/src/__tests__/ciPathFilters.test.ts derives them and fails if a new
+# cross-package read is added without a matching filter.
+
 on:
   push:
     branches: [main, littlefounders_v2]
     paths:
       - 'backend/**'
       - 'database/types/**'
+      - 'frontend/src/lesson-engine/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
       - 'backend/**'
       - 'database/types/**'
+      - 'frontend/src/lesson-engine/**'
       - '.github/workflows/backend-ci.yml'
 
 jobs:
@@ -30,4 +55,6 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
+      # = contract:check (lesson parity) && vitest run (backend/package.json).
+      # If that chain is ever unbundled, add the checks back as explicit steps.
       - run: npm test

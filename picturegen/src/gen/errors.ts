@@ -7,8 +7,11 @@ export class ImageError extends Error {
       | 'IMAGE_PROVIDER_ERROR'
       | 'IMAGE_BAD_RESPONSE'
       | 'IMAGE_DOWNLOAD_FAILED'
-      | 'IMAGE_VERIFICATION_FAILED',
+      | 'IMAGE_VERIFICATION_FAILED'
+      | 'IMAGE_GENERATION_FAILED',
     message: string,
+    /** Fresh provider images known to have been created before this error. */
+    public readonly generatedImages = 0,
   ) {
     super(message);
     this.name = 'ImageError';

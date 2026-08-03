@@ -4,7 +4,9 @@
  * map to i18n keys `errors.api.<code>`.
  */
 
-const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
+// Exported for the ONE caller that cannot go through api(): the insights
+// beacon's pagehide flush needs `fetch(..., { keepalive: true })`.
+export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
 
 export interface ApiError {
   code: string;

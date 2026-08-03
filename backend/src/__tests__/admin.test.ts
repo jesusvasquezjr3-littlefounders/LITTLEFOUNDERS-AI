@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
 import { resetPulseForTests } from '../services/pulse.js';
+import { insertAuditLog } from '../services/supabaseRest.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 /*
@@ -198,7 +199,11 @@ const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', slug: 'l1', 
 const AUDIT = { id: 7, actor_id: ADMIN_ID, action: 'admin.course.set_status', subject: COURSE.id, detail: { status: 'published' }, created_at: '2026-07-20T00:00:00Z' };
 
 /** fetch stub over the service-role PostgREST surface + the auth role check. */
-function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { calls: { url: string; method: string; body?: string }[] }) {
+function stubData(
+  callerRole: 'admin' | 'superadmin' | 'universal',
+  capture?: { calls: { url: string; method: string; body?: string }[] },
+  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number } = {},
+) {
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -212,6 +217,17 @@ function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { 
         if (url.includes('user_id=in.(')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
         return Promise.resolve(jsonResponse(200, [{ role: 'admin' }, { role: 'universal' }])); // overview select=role
       }
+      if (url.includes('/rest/v1/rpc/release_course')) {
+        return Promise.resolve(jsonResponse(200, [{
+          ok: !options.releaseRefusal,
+          code: options.releaseRefusal?.code ?? 'RELEASED',
+          message: options.releaseRefusal?.message ?? 'Course hierarchy released.',
+          adventures_published: 1,
+          sagas_published: 1,
+          topics_published: 1,
+          lessons_published: 1,
+        }]));
+      }
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [PROFILE]));
       if (url.includes('/rest/v1/courses')) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
@@ -222,8 +238,12 @@ function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { 
         return Promise.resolve(jsonResponse(200, [REVIEW_LESSON]));
       }
       if (url.includes('/rest/v1/audit_logs')) {
-        if (method === 'POST') return Promise.resolve(new Response(null, { status: 204 }));
+        if (method === 'POST') return Promise.resolve(new Response(null, { status: options.auditInsertStatus ?? 204 }));
         return Promise.resolve(jsonResponse(200, [AUDIT]));
+      }
+      if (url.includes('/rest/v1/admin_permissions')) {
+        if (method === 'POST' || method === 'DELETE') return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, permission: 'manage_users' }]));
       }
       throw new Error(`admin.test data: unexpected fetch ${url}`);
     }),
@@ -261,7 +281,7 @@ describe('GET + POST /api/v1/admin/content', () => {
     expect(res.body.data.courses[0]).toMatchObject({ slug: 'money-basics', title: 'Money Basics', status: 'draft' });
   });
 
-  it('publishes a course (and audits it)', async () => {
+  it('releases a complete course atomically (and audits it)', async () => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture);
     const res = await request(createApp())
@@ -270,8 +290,62 @@ describe('GET + POST /api/v1/admin/content', () => {
       .send({ status: 'published' });
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ id: COURSE.id, status: 'published' });
-    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/rpc/release_course'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(false);
     expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(true);
+  });
+
+  // Each Vault refusal must reach the console as its own envelope code with
+  // the RPC's message intact — a single generic CONFLICT hid why a release
+  // was refused (and the UI could not map it to a specific i18n string).
+  it.each([
+    ['NOT_FOUND', 404, 'RELEASE_NOT_FOUND'],
+    ['ARCHIVED', 409, 'RELEASE_ARCHIVED'],
+    ['INCOMPLETE_HIERARCHY', 409, 'RELEASE_INCOMPLETE_HIERARCHY'],
+    ['LESSONS_NOT_REVIEWABLE', 409, 'RELEASE_LESSONS_NOT_REVIEWABLE'],
+    ['INCOMPLETE_LOCALES', 409, 'RELEASE_INCOMPLETE_LOCALES'],
+    ['VERIFICATION_REQUIRED', 409, 'RELEASE_VERIFICATION_REQUIRED'],
+  ])('maps the %s release refusal to %i %s', async (rpcCode, status, envelopeCode) => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { releaseRefusal: { code: rpcCode, message: `Refused: ${rpcCode}` } });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(status);
+    expect(res.body.error.code).toBe(envelopeCode);
+    expect(res.body.error.message).toBe(`Refused: ${rpcCode}`);
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(false);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(false);
+  });
+
+  it('degrades an unknown refusal code to the generic RELEASE_BLOCKED', async () => {
+    stubData('admin', undefined, { releaseRefusal: { code: 'FUTURE_RULE', message: 'A new gate refused it.' } });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('RELEASE_BLOCKED');
+    expect(res.body.error.message).toBe('A new gate refused it.');
+  });
+
+  it('still releases when the audit write fails, but logs the lost trail loudly', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      stubData('admin', undefined, { auditInsertStatus: 500 });
+      const res = await request(createApp())
+        .post(`/api/v1/admin/content/${COURSE.id}/status`)
+        .set('Authorization', staffAuth('admin'))
+        .send({ status: 'published' });
+      expect(res.status).toBe(200); // the release already committed in Vault
+      const logged = errorSpy.mock.calls.map((args) => args.join(' ')).join('\n');
+      expect(logged).toContain('admin.course.release');
+      expect(logged).toContain(`course=${COURSE.id}`);
+      expect(logged).toContain(`actor=${ADMIN_ID}`);
+    } finally {
+      errorSpy.mockRestore();
+    }
   });
 
   it('400s on an invalid status', async () => {
@@ -281,6 +355,17 @@ describe('GET + POST /api/v1/admin/content', () => {
       .set('Authorization', staffAuth('admin'))
       .send({ status: 'launched' });
     expect(res.status).toBe(400);
+  });
+});
+
+describe('insertAuditLog', () => {
+  it('reports whether the audit row landed (a lost trail must be detectable)', async () => {
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(null, { status: 204 }))));
+    await expect(insertAuditLog(ADMIN_ID, 'admin.course.release', COURSE.id, {})).resolves.toBe(true);
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve(new Response(null, { status: 500 }))));
+    await expect(insertAuditLog(ADMIN_ID, 'admin.course.release', COURSE.id, {})).resolves.toBe(false);
+    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('network down'))));
+    await expect(insertAuditLog(ADMIN_ID, 'admin.course.release', COURSE.id, {})).resolves.toBe(false);
   });
 });
 
@@ -376,5 +461,49 @@ describe('GET /api/v1/admin/learning/retention', () => {
     const res = await request(createApp()).get('/api/v1/admin/learning/retention').set('Authorization', authed());
     expect(res.status).toBe(502);
     expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+});
+
+describe('GET /api/v1/admin/intel/* (dataintel proxy)', () => {
+  it('forwards to the mount-relative dataintel path, not the doubled /api/v1/intel/api/v1/admin/intel/... path', async () => {
+    const intelCalls: { url: string; method: string }[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'admin' }]));
+        intelCalls.push({ url, method: (init?.method ?? 'GET').toUpperCase() });
+        return Promise.resolve(jsonResponse(200, { data: { segments: [] }, error: null }));
+      }),
+    );
+
+    const res = await request(createApp())
+      .get('/api/v1/admin/intel/segments?limit=5')
+      .set('Authorization', authed());
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ data: { segments: [] }, error: null });
+    expect(intelCalls).toHaveLength(1);
+    // Regression guard: a req.originalUrl-based path build re-prepends the
+    // full /api/v1/admin/intel prefix onto itself instead of stripping it.
+    expect(intelCalls[0].url).toBe('http://localhost:4008/api/v1/intel/segments?limit=5');
+  });
+
+  it('403s for a non-staff role without ever reaching dataintel', async () => {
+    const intelCalls: string[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: 'universal' }]));
+        intelCalls.push(url);
+        return Promise.resolve(jsonResponse(200, { data: null, error: null }));
+      }),
+    );
+
+    const res = await request(createApp()).get('/api/v1/admin/intel/segments').set('Authorization', authed());
+
+    expect(res.status).toBe(403);
+    expect(intelCalls).toHaveLength(0);
   });
 });

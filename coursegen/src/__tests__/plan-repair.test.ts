@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { planRepair, type PlanSkeleton } from '../pipeline/plan.js';
+import { MAX_SEGMENTS, planRepair, planSkeletonSchema, type PlanSkeleton } from '../pipeline/plan.js';
 import { resolveAllowedTypes } from '../pipeline/prompts/palette.js';
 import { buildTaxonomy } from './fixtures.js';
 
@@ -10,6 +10,10 @@ function skeleton(types: string[]): PlanSkeleton {
 }
 
 describe('planRepair', () => {
+  it('caps a model-authored lesson to the compact ten-segment learning rhythm', () => {
+    expect(MAX_SEGMENTS).toBe(10);
+    expect(planSkeletonSchema.safeParse(skeleton(Array.from({ length: 11 }, () => 'quiz_mcq'))).success).toBe(false);
+  });
   it('is deterministic: same input always produces the same output', () => {
     const input = skeleton(['quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq']);
     const a = planRepair(input, allowed, false);
@@ -36,6 +40,50 @@ describe('planRepair', () => {
     // debug_hunt is a maker type not allowed in tier1 — must be replaced.
     expect(repaired.segments.map((s) => s.type)).not.toContain('debug_hunt');
     for (const seg of repaired.segments) expect(allowed).toContain(seg.type);
+  });
+
+  it('demotes semantically incompatible type_answer and underspecified speed_tap briefs before authoring', () => {
+    const input: PlanSkeleton = {
+      segments: [
+        { type: 'story_scene', brief: 'Introduce the idea.' },
+        { type: 'type_answer', brief: 'Write a sentence about something you want.' },
+        { type: 'speed_tap', brief: 'Tap the examples before time runs out.' },
+        { type: 'quiz_mcq', brief: 'Choose the best example.' },
+        { type: 'needs_wants', brief: 'Sort the examples.' },
+        { type: 'true_false', brief: 'Decide whether it is true.' },
+        { type: 'match_pairs', brief: 'Match the ideas.' },
+        { type: 'coin_count', brief: 'Count the coins.' },
+      ],
+    };
+    const { skeleton: repaired, fixes } = planRepair(input, allowed, false);
+    expect(repaired.segments[1]!.type).toBe('quiz_mcq');
+    expect(repaired.segments[2]!.type).toBe('quiz_mcq');
+    expect(fixes.some((fix) => fix.includes('open-ended type_answer'))).toBe(true);
+    expect(fixes.some((fix) => fix.includes('underspecified speed_tap'))).toBe(true);
+  });
+
+  it('never re-introduces a semantically unfit type_answer/speed_tap while diversifying duplicates', () => {
+    // type_answer sits early in the unused pool, and every duplicate's brief is
+    // non-numeric: Rule 3 used to hand one of those briefs to type_answer AFTER
+    // the semantic-repair pass had already run, reintroducing the exact
+    // violation with nothing behind it to re-check.
+    const allowedWithTypeAnswer = ['story_scene', 'quiz_mcq', 'true_false', 'type_answer', 'match_pairs', 'sort_buckets', 'needs_wants'];
+    const input: PlanSkeleton = {
+      segments: [
+        { type: 'story_scene', brief: 'Introduce the idea.' },
+        { type: 'quiz_mcq', brief: 'Choose the best example.' },
+        { type: 'quiz_mcq', brief: 'Pick the idea that fits.' },
+        { type: 'quiz_mcq', brief: 'Decide which option helps.' },
+        { type: 'quiz_mcq', brief: 'Select the wiser plan.' },
+        { type: 'quiz_mcq', brief: 'Choose what Zara should do.' },
+        { type: 'quiz_mcq', brief: 'Pick the fair option.' },
+        { type: 'quiz_mcq', brief: 'Choose the honest answer.' },
+      ],
+    };
+    const { skeleton: repaired, fixes } = planRepair(input, allowedWithTypeAnswer, false);
+    expect(repaired.segments.map((s) => s.type)).not.toContain('type_answer');
+    expect(new Set(repaired.segments.map((s) => s.type)).size).toBeGreaterThanOrEqual(5);
+    expect(fixes.some((fix) => fix.includes('diversified duplicate'))).toBe(true);
   });
 
   it('ensures at least MIN_DISTINCT_TYPES distinct types', () => {

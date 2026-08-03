@@ -102,6 +102,38 @@ export class ProviderNotConfiguredError extends Error {
   }
 }
 
+/**
+ * The provider accepted and completed a request, but spent the entire output
+ * allowance on reasoning before emitting any usable content. Unlike a timeout,
+ * its reported usage is billable and must reach the run ledger before the
+ * pipeline decides whether to retry the slot.
+ */
+export class ProviderCompletionExhaustedError extends Error {
+  readonly provider: string;
+  readonly promptTokens: number;
+  readonly completionTokens: number;
+  readonly cachedPromptTokens: number;
+  readonly reasoningTokens?: number;
+  readonly retryable = false;
+
+  constructor(
+    provider: string,
+    usage: { promptTokens: number; completionTokens: number; cachedPromptTokens: number; reasoningTokens?: number },
+  ) {
+    super(
+      `${provider} returned NO content: the completion budget was exhausted before any output ` +
+        `(finish_reason=length${usage.reasoningTokens ? `, ${usage.reasoningTokens} reasoning tokens` : ''}). ` +
+        `This model reasons before answering — raise maxTokens for this call.`,
+    );
+    this.name = 'ProviderCompletionExhaustedError';
+    this.provider = provider;
+    this.promptTokens = usage.promptTokens;
+    this.completionTokens = usage.completionTokens;
+    this.cachedPromptTokens = usage.cachedPromptTokens;
+    this.reasoningTokens = usage.reasoningTokens;
+  }
+}
+
 export function isRetryableError(err: unknown): boolean {
   return (
     err instanceof ProviderHttpError ||

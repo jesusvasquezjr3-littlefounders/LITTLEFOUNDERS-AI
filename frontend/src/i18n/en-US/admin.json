@@ -20,7 +20,9 @@
     "analytics": "Analytics & Health",
     "generation": "Generation",
     "audit": "Audit log",
-    "roles": "Roles & Access"
+    "roles": "Roles & Access",
+    "insights": "Insights",
+    "intel": "Data Intel"
   },
   "overview": {
     "title": "Admin panel",
@@ -42,11 +44,18 @@
     "details": "Details",
     "healthUnavailable": "Health monitor unavailable",
     "retentionTitle": "Learning retention",
-    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced — the platform’s always-on delayed test.",
+    "retentionSubtitle": "First-try scores on spaced reviews, by days since the concept was last practiced.",
     "retentionBucket": "{{bucket}} days",
     "retentionAttempts": "{{count}} review answers",
     "retentionWeakest": "Concepts that decay fastest",
-    "retentionEmpty": "No spaced reviews played yet — the curve draws itself as kids replay review lessons."
+    "retentionEmpty": "No spaced reviews played yet. The curve draws itself as kids replay review lessons.",
+    "quickActionsTitle": "Quick actions",
+    "quickActionsSubtitle": "Fast shortcuts for common staff operations.",
+    "navContentDesc": "Courses & review queue",
+    "navUsersDesc": "Directory & roles",
+    "navEmailsDesc": "Delivery history",
+    "navGenDesc": "AI lesson generation",
+    "navAnalyticsDesc": "Health & telemetry"
   },
   "content": {
     "title": "Content",
@@ -60,7 +69,20 @@
     "publish": "Publish",
     "unpublish": "Unpublish",
     "archive": "Archive",
-    "empty": "No courses yet."
+    "empty": "No courses yet.",
+    "noMatch": "No courses match your filter criteria.",
+    "actionFailed": "That change didn't go through. Try again.",
+    "totalCourses": "Total courses",
+    "liveCourses": "Live courses",
+    "draftCourses": "Drafts & Review",
+    "pendingModeration": "Pending moderation",
+    "searchPlaceholder": "Search course title, slug, or subject...",
+    "allStatuses": "All statuses",
+    "tabs": {
+      "aria": "Content views",
+      "courses": "Courses",
+      "lessons": "Lesson Review Queue"
+    }
   },
   "users": {
     "title": "Users",
@@ -81,15 +103,32 @@
     "colRoles": "Roles",
     "colLocale": "Locale",
     "colJoined": "Joined",
-    "search": "Search name or @username",
-    "noMatch": "No users match your search.",
-    "empty": "No users yet."
+    "colActions": "Actions",
+    "search": "Search name, @username, or ID...",
+    "noMatch": "No users match your search or filter.",
+    "empty": "No users yet.",
+    "totalUsers": "Total users",
+    "kidsCount": "Kids",
+    "parentsCount": "Guardians & Parents",
+    "staffCount": "Staff members",
+    "allRoles": "All roles",
+    "modalTitle": "User Profile Detail",
+    "colUserId": "User ID",
+    "colBirthDate": "Birth date",
+    "colAge": "Calculated age",
+    "copyId": "Copy ID",
+    "copied": "Copied!",
+    "viewDetail": "View detail",
+    "close": "Close"
   },
   "moderation": {
     "heading": "Review queue",
-    "note": "Every lesson shown to children passes this human review before it goes live (§1.9). Approve to publish, reject to send back to draft.",
+    "note": "Every lesson shown to children passes this human review before going live. Approve to publish or reject to return to draft.",
     "approve": "Approve",
     "reject": "Reject",
+    "preview": "Preview detail",
+    "previewTitle": "Lesson Moderation Preview",
+    "colLessonId": "Lesson ID",
     "empty": "Nothing awaiting review. All clear."
   },
   "audit": {
@@ -100,14 +139,27 @@
     "colActor": "Actor",
     "colSubject": "Subject",
     "colDetail": "Detail",
-    "empty": "No audit entries yet."
+    "colActions": "Actions",
+    "empty": "No audit entries yet.",
+    "noMatch": "No audit logs match your search or filter.",
+    "totalEvents": "Total events",
+    "uniqueActors": "Unique actors",
+    "topAction": "Top action type",
+    "searchPlaceholder": "Search action, actor ID, or subject...",
+    "allActions": "All actions",
+    "modalTitle": "Audit Log Detail",
+    "colEventId": "Event ID",
+    "copyActorId": "Copy Actor ID",
+    "copied": "Copied!",
+    "viewDetail": "View detail",
+    "close": "Close"
   },
   "roles": {
     "title": "Roles & Access",
     "subtitle": "Grant and revoke roles. Superadmin only.",
     "grantTitle": "Grant a role",
     "userId": "User ID",
-    "userIdHint": "The user's UUID — click an ID in the table below to fill this.",
+    "userIdHint": "The user's UUID, click an ID in the table below to fill this.",
     "role": "Role",
     "grant": "Grant",
     "granted": "Granted {{role}}.",
@@ -117,7 +169,30 @@
     "colUsername": "Username",
     "colRoles": "Roles",
     "colActions": "Revoke",
-    "empty": "No role holders yet."
+    "empty": "No role holders yet.",
+    "noMatch": "No role holders match your search or filter.",
+    "searchPlaceholder": "Search name, @username, or ID...",
+    "allRoles": "All roles",
+    "totalHolders": "Total role holders",
+    "adminsCount": "Admins",
+    "superadminsCount": "Superadmins",
+    "privilegedCount": "Privileged accounts",
+    "manageAccess": "Manage Access",
+    "accessControlTitle": "Access Control for {{name}}",
+    "accessControlDesc": "Toggle specific permissions for this admin profile.",
+    "permissions": {
+      "manage_users": "Manage Users",
+      "manage_users_desc": "Can manage user roles, families, and profiles.",
+      "manage_content": "Manage Content",
+      "manage_content_desc": "Can edit courses and lessons.",
+      "view_analytics": "View Analytics",
+      "view_analytics_desc": "Can access metrics in DataIntel and Pulse.",
+      "manage_support": "Manage Support",
+      "manage_support_desc": "Can handle support and user operations."
+    },
+    "permissionGranted": "Permission granted.",
+    "permissionRevoked": "Permission revoked.",
+    "permissionFailed": "Could not update permission."
   },
   "analytics": {
     "title": "Analytics & Health",
@@ -132,7 +207,7 @@
       "12mo": "Last 12 months"
     },
     "unavailableTitle": "Analytics unavailable",
-    "unavailableBody": "Pulse didn't answer. The product is unaffected — check the Pulse services on Railway.",
+    "unavailableBody": "Pulse didn't answer. The product is unaffected, check the Pulse services on Railway.",
     "web": {
       "title": "Web analytics",
       "visitors": "Visitors",
@@ -145,7 +220,7 @@
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
-      "scopeNote": "Umami runs only on marketing and parent/admin surfaces — never on kid sessions (§1.9).",
+      "scopeNote": "Umami runs only on marketing and parent/admin surfaces, never on kid sessions.",
       "pageviews": "Pageviews",
       "visitors": "Visitors",
       "visits": "Visits",
@@ -196,7 +271,7 @@
     "toolsTitle": "Exports & controls",
     "reports": {
       "title": "Team reports (PDF)",
-      "caption": "Branded, watermarked PDF reports for each team — generated with the current period and filters.",
+      "caption": "Branded, watermarked PDF reports for each team, generated with the current period and filters.",
       "failed": "Could not generate the report. Try again.",
       "audiences": {
         "marketing": "Marketing",
@@ -217,25 +292,46 @@
       "commandLabel": "Apply with",
       "copy": "Copy",
       "copied": "Copied",
-      "pending": "Edited list not applied yet — run the command and redeploy pulse-plausible.",
-      "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy) — this screen never writes it."
+      "pending": "Edited list not applied yet, run the command and redeploy pulse-plausible.",
+      "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy), this screen never writes it."
     }
   },
   "emails": {
     "title": "Emails",
-    "subtitle": "Transactional email delivery history — a Resend-style audit trail.",
+    "subtitle": "Transactional email delivery history, a Resend-style audit trail.",
     "totalSent": "Total sent",
+    "successRate": "Success rate",
+    "activeTemplates": "Active templates",
+    "topLocale": "Top locale",
+    "templatesBreakdown": "Templates breakdown",
+    "localesBreakdown": "Locales breakdown",
+    "searchPlaceholder": "Search recipient or subject...",
+    "filterStatus": "Filter by status",
+    "filterTemplate": "Filter by template",
+    "allStatuses": "All statuses",
+    "allTemplates": "All templates",
     "colTo": "To",
     "colSubject": "Subject",
     "colType": "Type",
     "colStatus": "Status",
     "colDate": "Sent at",
+    "colActions": "Actions",
     "empty": "No emails sent yet.",
+    "noMatch": "No emails match your filter criteria.",
     "showing": "{{from}}–{{to}} of {{total}}",
     "prev": "Previous",
     "next": "Next",
+    "modalTitle": "Email Log Detail",
+    "colMessageId": "Message ID",
+    "colUserId": "User ID",
+    "colDetail": "Payload details",
+    "close": "Close",
+    "copyId": "Copy ID",
+    "copied": "Copied!",
+    "viewDetail": "View detail",
     "status": {
       "queued": "Queued",
+      "relayed": "Relayed",
       "delivered": "Delivered",
       "failed": "Failed"
     }
@@ -249,6 +345,10 @@
     "unavailableBody": "Uptime Kuma didn't answer. Check pulse-kuma on Railway.",
     "up": "Up",
     "down": "Down",
+    "refreshTelemetry": "Refresh telemetry",
+    "avgLatency": "Avg latency",
+    "avgUptime": "Average 24h uptime",
+    "monitoredServices": "Monitored services",
     "columns": {
       "service": "Service",
       "status": "Status",
@@ -258,9 +358,9 @@
   },
   "generation": {
     "title": "Generation",
-    "subtitle": "How the agentic pipeline behaved on every course generation — outcomes, judge verdicts, failure stages, cost and cache efficiency.",
+    "subtitle": "How the agentic pipeline behaved on every course generation, outcomes, judge verdicts, failure stages, cost and cache efficiency.",
     "loading": "Loading generation telemetry…",
-    "noData": "—",
+    "noData": "N/A",
     "secondsUnit": "s",
     "tabs": {
       "aria": "Generation views",
@@ -285,6 +385,9 @@
       "planning": "Planning",
       "writing": "Writing",
       "reviewing": "Judging",
+      "authoring": "Authoring",
+      "simulating": "Simulating",
+      "judging": "Judging",
       "localizing": "Localizing",
       "illustrating": "Images",
       "publishing": "Publishing",
@@ -297,14 +400,29 @@
       "reviewed": "Judging",
       "localized": "Localizing",
       "illustrated": "Images",
+      "planning": "Planning",
+      "writing": "Writing",
+      "reviewing": "Judging",
+      "authoring": "Authoring",
+      "simulating": "Simulating",
+      "judging": "Judging",
+      "localizing": "Localizing",
+      "illustrating": "Images",
       "unknown": "Unknown"
+    },
+    "kinds": {
+      "filterLabel": "Pipeline",
+      "filterAria": "Filter runs by pipeline",
+      "all": "All",
+      "lessons": "Lessons",
+      "note": "Every cost, quality and failure chart here is scoped to the selected pipeline."
     },
     "history": {
       "runs": "Run inspector"
     },
     "tracks": "Mass runs (tracks)",
     "selectRun": "Select a generation run",
-    "empty": "No generation runs recorded yet — telemetry appears here after the next coursegen run.",
+    "empty": "No generation runs recorded yet, telemetry appears here after the next coursegen run.",
     "runTitle": "Run {{runId}}",
     "salvaged": "salvaged",
     "earlyStop": "early stop",
@@ -324,11 +442,11 @@
     },
     "heatmap": {
       "title": "Failures by pipeline stage",
-      "empty": "No failures — every attempted lesson published."
+      "empty": "No failures, every attempted lesson published."
     },
     "judge": {
       "title": "Judge dimensions ({{count}} judged)",
-      "note": "Run-over-run noise floor is ±0.4 — read these as defect pointers, not as a score to chase.",
+      "note": "Run-over-run noise floor is ±0.4, read these as defect pointers, not as a score to chase.",
       "empty": "No judge rubrics recorded for this run."
     },
     "dims": {
@@ -340,7 +458,11 @@
       "feedback_quality": "Feedback quality",
       "distractor_quality": "Distractor quality",
       "narrative_quality": "Narrative quality",
-      "naturalness": "Naturalness"
+      "naturalness": "Naturalness",
+      "concept_fit": "Concept fit",
+      "fun_agency": "Fun & agency",
+      "clarity": "Clarity",
+      "difficulty_fairness": "Difficulty fairness"
     },
     "duration": {
       "title": "Wall-clock per lesson (seconds)"
@@ -369,7 +491,7 @@
       "avgCacheHit": "Avg cache hit",
       "costTrend": "Cost per published lesson (USD)",
       "cacheTrend": "Cache-hit % over time",
-      "qualityTrend": "Quality dimensions — latest run of {{runs}}",
+      "qualityTrend": "Quality dimensions, latest run of {{runs}}",
       "failureByStage": "Failures by pipeline stage (all runs)",
       "successRate": "Overall success rate",
       "successRateDetail": "{{passed}} / {{total}} lessons published",
@@ -401,8 +523,8 @@
       "inherited": "inherited",
       "billed": "billed",
       "actionsTitle": "Proposed actions",
-      "actionsNote": "Each suggestion is tied to evidence. Apply them by editing the playbook, prompts, or gates in a commit — the system never auto-modifies kid-facing content (§1.9).",
-      "allClear": "No issues detected — the pipeline is running clean.",
+      "actionsNote": "Each suggestion is tied to evidence. Apply them by updating the playbook or prompts. The system never auto-modifies kid-facing content.",
+      "allClear": "No issues detected. The pipeline is running clean.",
       "empty": "No generation data available for coach analysis yet."
     },
     "slotDetail": {
@@ -437,7 +559,7 @@
       },
       "lowCache": {
         "title": "Cache-hit rate critically low",
-        "detail": "{{pct}}% cache-hit — prompt prefix may have drifted. Static-first assembly is broken or the playbook changed."
+        "detail": "{{pct}}% cache-hit, prompt prefix may have drifted. Static-first assembly is broken or the playbook changed."
       },
       "highFailRate": {
         "title": "Failure rate: {{rate}}%",
@@ -451,6 +573,370 @@
         "title": "Cost per lesson spiked 2× above baseline",
         "detail": "Latest: {{latest}} vs average: {{avg}}. Image generation or token usage may have increased."
       }
+    }
+  },
+  "intel": {
+    "title": "Data Intelligence",
+    "subtitle": "First-party analytics warehouse, segmentation, forecasting, anomaly detection, and experiment analysis.",
+    "tabs": {
+      "home": "Home",
+      "trends": "Trends",
+      "funnels": "Funnels",
+      "retention": "Retention",
+      "segments": "Segments",
+      "people": "People",
+      "experiments": "Experiments",
+      "alerts": "Alerts",
+      "settings": "Settings"
+    },
+    "home": {
+      "kpiDau": "Daily Active Users",
+      "kpiEvents": "Events ({{days}}d)",
+      "kpiRetention": "Week 1 Retention",
+      "kpiActivation": "Activation Rate",
+      "kpiActivationHint": "Median: {{median}}h to first lesson",
+      "sectionAdoption": "Feature Adoption",
+      "sectionAnomalies": "Active Anomalies",
+      "colRole": "Role",
+      "colSurface": "Surface",
+      "colUsers": "Users",
+      "colSessions": "Sessions",
+      "colEvents": "Events"
+    },
+    "trends": {
+      "title": "Trends Explorer",
+      "subtitle": "Time-series analysis for any metric across any dimension.",
+      "empty": "Select a metric to view trends.",
+      "metricDau": "Daily Active Users",
+      "metricWau": "Weekly Active Users",
+      "metricMau": "Monthly Active Users",
+      "metricEvents": "Event Volume",
+      "metricUsers": "Total Users",
+      "metricSessions": "Sessions",
+      "metricRetention": "Retention Rate",
+      "metricActivation": "Activation Rate",
+      "metricCompletion": "Lesson Completions",
+      "granularityHour": "Hourly",
+      "granularityDay": "Daily",
+      "granularityWeek": "Weekly",
+      "granularityMonth": "Monthly",
+      "current": "Current",
+      "dauTitle": "DAU",
+      "sparklineHint": ""
+    },
+    "funnels": {
+      "title": "Funnel Analysis",
+      "subtitle": "Track user progression through configurable conversion funnels.",
+      "empty": "Define funnel steps to begin analysis.",
+      "stepVisited": "Visited",
+      "stepSignup": "Signed Up",
+      "stepCourse": "Opened Course",
+      "stepLesson": "Started Lesson",
+      "stepComplete": "Completed Lesson",
+      "colStep": "Step",
+      "colUsers": "Users",
+      "colConversion": "Conversion",
+      "colDropoff": "Drop-off"
+    },
+    "funnel": {
+      "title": "Conversion Funnel",
+      "subtitle": "Distinct users reaching each step of the activation path.",
+      "stepTitle": "Step Breakdown",
+      "stepSubtitle": "Users and conversion rate at every step.",
+      "colStep": "Step",
+      "colUsers": "Users",
+      "colConversion": "Conversion"
+    },
+    "retention": {
+      "title": "Cohort Retention",
+      "subtitle": "Weekly cohort retention matrix showing returning users over time.",
+      "empty": "No cohort data available yet.",
+      "cohortTitle": "Cohort Curves",
+      "cohortSubtitle": "Weekly cohorts, plotted by how many came back in each following week.",
+      "heatmapTitle": "Retention Matrix",
+      "heatmapSubtitle": "The same cohorts as a grid, darker cells held on to more users.",
+      "colCohort": "Cohort",
+      "colSize": "Size",
+      "colWeek": "Week {{n}}"
+    },
+    "segments": {
+      "title": "Segments",
+      "subtitle": "Create, save, and compare user segments across all metrics.",
+      "empty": "Create your first segment to begin.",
+      "placeholder": "Segments aren't wired up yet",
+      "placeholderHint": "Saved segments and side-by-side comparison land with the next Data Intel release.",
+      "create": "New Segment",
+      "compare": "Compare Segments",
+      "name": "Segment Name",
+      "save": "Save Segment",
+      "delete": "Delete",
+      "filterRole": "Role",
+      "filterDevice": "Device",
+      "filterLocale": "Locale",
+      "filterSurface": "Surface",
+      "opEq": "equals",
+      "opNeq": "not equals",
+      "opIn": "in",
+      "colName": "Name",
+      "colUsers": "Users",
+      "colEngagement": "Engagement",
+      "colRetention": "Retention",
+      "colCreated": "Created"
+    },
+    "people": {
+      "title": "People Explorer",
+      "subtitle": "Per-user behavioral profiles with engagement scoring and churn risk.",
+      "empty": "No user data available.",
+      "leaderboardTitle": "Engagement Leaderboard",
+      "leaderboardSubtitle": "Top learners by composite engagement score, breadth, consistency and depth.",
+      "churnTitle": "Churn Risk Distribution",
+      "churnSubtitle": "How the scored population splits across high, medium and low risk.",
+      "churnTableTitle": "At-Risk Learners",
+      "colScore": "Engagement",
+      "colLessons": "Lessons",
+      "colStreak": "Best Streak",
+      "colSessions30d": "Sessions (30d)",
+      "colDays30d": "Active Days (30d)",
+      "colChurn": "Churn Risk",
+      "colRisk": "Risk",
+      "colLastActive": "Last Active",
+      "colLessons30d": "Lessons (30d)",
+      "riskHigh": "High",
+      "riskMedium": "Medium",
+      "riskLow": "Low"
+    },
+    "experiments": {
+      "title": "Experiments",
+      "subtitle": "A/B test management with statistical significance analysis.",
+      "empty": "No experiments configured.",
+      "emptyHint": "Define an experiment in dataintel to start splitting traffic and measuring lift.",
+      "listTitle": "Running Experiments",
+      "listSubtitle": "Every configured A/B test with its control and variant assignment.",
+      "create": "New Experiment",
+      "name": "Experiment Name",
+      "variantA": "Control",
+      "variantB": "Variant",
+      "metric": "Primary Metric",
+      "colName": "Name",
+      "colStatus": "Status",
+      "colMetric": "Metric",
+      "colControl": "Control",
+      "colVariant": "Variant",
+      "status": {
+        "draft": "Draft",
+        "running": "Running",
+        "concluded": "Concluded"
+      },
+      "significance": "p-value",
+      "confidence": "Confidence",
+      "winner": "Winner"
+    },
+    "alerts": {
+      "title": "Alerts",
+      "subtitle": "Threshold-based monitoring with webhook and email notifications.",
+      "empty": "No alerts configured.",
+      "emptyHint": "Add a threshold rule in dataintel to get notified when a metric moves.",
+      "listTitle": "Configured Alerts",
+      "listSubtitle": "Threshold rules watching the warehouse, and where each one notifies.",
+      "create": "New Alert",
+      "metric": "Metric",
+      "condition": "Condition",
+      "threshold": "Threshold",
+      "channel": "Channel",
+      "colName": "Name",
+      "colMetric": "Metric",
+      "colCondition": "Condition",
+      "colThreshold": "Threshold",
+      "colChannel": "Channel",
+      "colStatus": "Status",
+      "channelWebhook": "Webhook",
+      "channelEmail": "Email",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "condAbove": "above",
+      "condBelow": "below",
+      "condChange": "% change",
+      "cooldown": "Cooldown (min)",
+      "statusActive": "Active",
+      "statusPaused": "Paused",
+      "statusTriggered": "Triggered"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Export schedules, data retention, and webhook configuration.",
+      "placeholder": "Settings aren't wired up yet",
+      "placeholderHint": "Export schedules, retention windows and webhook targets arrive with the next Data Intel release.",
+      "exports": "Scheduled Exports",
+      "exportCreate": "Schedule Export",
+      "retention": "Data Retention",
+      "webhooks": "Webhooks",
+      "webhookUrl": "Webhook URL",
+      "webhookTest": "Test"
+    },
+    "filters": {
+      "period": "Period",
+      "metric": "Metric",
+      "granularity": "Granularity",
+      "role": "Role",
+      "surface": "Surface",
+      "device": "Device",
+      "locale": "Locale",
+      "all": "All",
+      "days7": "7 days",
+      "days30": "30 days",
+      "days90": "90 days",
+      "days365": "365 days"
+    },
+    "export": {
+      "csv": "Export CSV",
+      "json": "Export JSON",
+      "comingSoon": "Export coming soon",
+      "downloading": "Downloading…",
+      "note": "Export carries no user_id or anon_id. Sessions are re-keyed per file."
+    },
+    "retry": "Retry",
+    "kpi": {
+      "w1retention": "W1 Retention",
+      "activation": "Activation Rate"
+    },
+    "adoption": {
+      "title": "Feature Adoption",
+      "subtitle": "Which surfaces each role actually reaches.",
+      "current": "Users"
+    },
+    "anomalies": {
+      "title": "Active Anomalies",
+      "subtitle": "Statistical outliers detected in the last scan.",
+      "colMetric": "Metric",
+      "colValue": "Value",
+      "colExpected": "Expected",
+      "colDeviation": "Z-Score",
+      "colStart": "Start"
+    }
+  },
+  "insights": {
+    "title": "Insights",
+    "subtitle": "First-party learning and usage signals, calibration, rhythm, families.",
+    "loading": "Loading insights…",
+    "kpi": {
+      "consent": "Kids opted in",
+      "events": "Events ({{days}}d)",
+      "peakUsers": "Peak daily users",
+      "activation": "Activation"
+    },
+    "surfaces": {
+      "title": "Where time goes",
+      "empty": "No navigation events yet, the beacon fills this in as sessions happen.",
+      "learn": "Learn",
+      "tasks": "Tasks",
+      "profile": "Profile",
+      "tutor": "Tutor",
+      "family": "Family",
+      "admin": "Admin",
+      "marketing": "Marketing",
+      "other": "Other"
+    },
+    "calibration": {
+      "title": "Exercise calibration",
+      "subtitle": "Highest attempts-per-learner first. High attempts + high hints + low first-try score = the exercise is mistuned, not the kid.",
+      "empty": "No graded attempts yet.",
+      "colLesson": "Lesson",
+      "colSegment": "Segment",
+      "colLearners": "Learners",
+      "colAttempts": "Avg attempts",
+      "colHints": "Hint rate",
+      "colFirstTry": "First-try score"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "acquisition": "Acquisition",
+      "learning": "Learning",
+      "sessions": "Sessions"
+    },
+    "filters": {
+      "days": "Period",
+      "role": "Role",
+      "event": "Event",
+      "surface": "Surface",
+      "locale": "Locale",
+      "device": "Device",
+      "all": "All",
+      "apply": "Apply"
+    },
+    "export": {
+      "button": "Export",
+      "csv": "Download CSV",
+      "json": "Download JSON",
+      "hint": "Behaviour + dimensions only, exports never carry a learner identifier.",
+      "failed": "Export failed, nothing was downloaded.",
+      "complete": "Downloaded {{rows}} rows, the complete selection.",
+      "capped": "Downloaded {{rows}} rows and stopped at the safety limit, this file is NOT the complete selection. Narrow the period or filters."
+    },
+    "cohorts": {
+      "title": "Weekly cohort retention",
+      "subtitle": "Of the people who first showed up in a given week, how many came back later. The chart that says whether the product holds anyone.",
+      "empty": "Not enough history yet, cohorts fill in as weeks pass.",
+      "week": "Week",
+      "size": "Size"
+    },
+    "funnel": {
+      "title": "Activation funnel",
+      "subtitle": "Distinct people reaching each step. Where the product loses them.",
+      "empty": "No funnel data yet.",
+      "ofPrevious": "{{pct}} of previous"
+    },
+    "velocity": {
+      "title": "Learning velocity",
+      "subtitle": "Lessons passed per active week, per learner. Built from the product's own records, so it works regardless of telemetry consent.",
+      "empty": "No completions yet.",
+      "colLearner": "Learner",
+      "colPassed": "Passed",
+      "colPerWeek": "Per week",
+      "colScore": "Avg score",
+      "colAttempts": "Avg attempts",
+      "colStreak": "Streak"
+    },
+    "dropoff": {
+      "title": "Lesson drop-off",
+      "subtitle": "Highest abandon rate first, with how long they lasted before quitting.",
+      "empty": "No lesson activity yet.",
+      "colLesson": "Lesson",
+      "colStarts": "Starts",
+      "colAbandons": "Abandons",
+      "colRate": "Abandon rate",
+      "colSeconds": "Avg sec before quit"
+    },
+    "adoption": {
+      "title": "Feature adoption",
+      "subtitle": "Which surfaces each role actually reaches.",
+      "empty": "No surface activity yet.",
+      "colRole": "Role",
+      "colSurface": "Surface",
+      "colUsers": "Users",
+      "colSessions": "Sessions",
+      "colEvents": "Events"
+    },
+    "sessions": {
+      "title": "Session depth",
+      "subtitle": "How substantial a visit is: events, surfaces touched, and visible time.",
+      "empty": "No sessions recorded yet.",
+      "colWhen": "When",
+      "colRole": "Role",
+      "colDevice": "Device",
+      "colEvents": "Events",
+      "colSurfaces": "Surfaces",
+      "colLessons": "Lessons",
+      "colTime": "Visible time"
+    },
+    "engagement": {
+      "title": "Engagement leaderboard",
+      "subtitle": "A comparable 0-100 score per learner based on breadth (lessons), consistency (streak), and depth (active days).",
+      "empty": "No learners scored yet.",
+      "colScore": "Score",
+      "colLessons": "Lessons",
+      "colStreak": "Best streak",
+      "colSessions": "Sessions (30d)",
+      "colActiveDays": "Active days (30d)"
     }
   }
 }

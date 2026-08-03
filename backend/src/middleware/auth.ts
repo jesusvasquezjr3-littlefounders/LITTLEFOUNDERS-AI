@@ -66,7 +66,7 @@ export function requireInternalKey(req: Request, res: Response, next: NextFuncti
   const provided = req.get('x-internal-api-key') ?? '';
   const expected = getConfig().INTERNAL_API_KEY;
   
-  if (provided.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
+  if (!crypto.timingSafeEqual(crypto.createHash('sha256').update(provided).digest(), crypto.createHash('sha256').update(expected).digest())) {
     fail(res, 403, 'FORBIDDEN', 'Invalid internal API key');
     return;
   }

@@ -128,7 +128,7 @@
       "bank": "Fichas disponibles",
       "slot": "Espacio {{index}}",
       "tapToRemove": "Toca una ficha colocada para regresarla",
-      "dragHint": "Arrastra cada ficha a su grupo — o tócala y luego toca el grupo.",
+      "dragHint": "Arrastra cada ficha a su grupo, o tócala y luego toca el grupo.",
       "matchPairs": {
         "help": "Toca una de la izquierda y luego su pareja de la derecha. Toca una pareja para deshacerla."
       },
@@ -235,8 +235,8 @@
       "continue": "Continuar",
       "tapToContinue": "Toca para seguir la historia",
       "lineProgress": "Línea {{current}} de {{total}}",
-      "flipHint_one": "Toca para voltear — falta {{count}} tarjeta",
-      "flipHint_other": "Toca para voltear — faltan {{count}} tarjetas",
+      "flipHint_one": "Toca para voltear, falta {{count}} tarjeta",
+      "flipHint_other": "Toca para voltear, faltan {{count}} tarjetas",
       "allFlipped": "¡Las descubriste todas!",
       "gotIt": "¡Ya lo tengo!",
       "review": "Quiero repasar",

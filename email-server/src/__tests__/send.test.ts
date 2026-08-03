@@ -3,14 +3,14 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 
 beforeAll(() => {
-  process.env.INTERNAL_API_KEY = 'test-key';
+  process.env.INTERNAL_API_KEY = 'test-internal-key-0123456789';
 });
 
 describe('POST /api/v1/send', () => {
   it('queues a valid email through the no-op adapter', async () => {
     const res = await request(createApp())
       .post('/api/v1/send')
-      .set('x-internal-api-key', 'test-key')
+      .set('x-internal-api-key', 'test-internal-key-0123456789')
       .send({ to: 'parent@example.com', subject: 'Welcome', text: 'Hi!' });
     expect(res.status).toBe(202);
     expect(res.body).toEqual({
@@ -22,7 +22,7 @@ describe('POST /api/v1/send', () => {
   it('rejects an invalid body with the error envelope', async () => {
     const res = await request(createApp())
       .post('/api/v1/send')
-      .set('x-internal-api-key', 'test-key')
+      .set('x-internal-api-key', 'test-internal-key-0123456789')
       .send({ to: 'not-an-email', subject: '' });
     expect(res.status).toBe(400);
     expect(res.body.data).toBeNull();

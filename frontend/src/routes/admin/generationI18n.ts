@@ -4,14 +4,17 @@
  * stage labels consistently in the user's locale.
  */
 
-/** Maps checkpoint failedFrom values → i18n key suffixes for stage labels. */
+/**
+ * Maps checkpoint failedFrom values → i18n key suffixes for stage labels.
+ * Every unmapped value collapses to `unknown`.
+ */
 const FAILED_FROM_TO_STAGE: Record<string, string> = {
   pending: 'pending',
   planned: 'planning',
-  written: 'writing',
-  reviewed: 'reviewing',
   localized: 'localizing',
   illustrated: 'illustrating',
+  written: 'writing',
+  reviewed: 'reviewing',
   unknown: 'unknown',
 };
 

@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-SERVICES=(backend frontend coursegen audiogen gamegen parent-id-check email-server filebase database)
+SERVICES=(backend frontend coursegen audiogen parent-id-check email-server filebase database)
 DEPS=(express zod typescript tsx vitest supertest eslint typescript-eslint react react-dom vite tailwindcss)
 
 TMP="$(mktemp)"

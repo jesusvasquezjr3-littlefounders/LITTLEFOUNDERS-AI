@@ -1,0 +1,537 @@
+import { query, execute, exec, isReady } from './duckdb.js';
+import { getConfig } from '../env.js';
+
+type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions';
+
+interface SyncState {
+  table_name: string;
+  last_event_id: number;
+  last_synced_at: string;
+  rows_synced: number;
+  last_error: string | null;
+}
+
+// ── Sync state management ──
+
+async function ensureSyncStateTable(): Promise<void> {
+  await exec(`
+    CREATE TABLE IF NOT EXISTS dataintel_sync_state (
+      table_name VARCHAR PRIMARY KEY,
+      last_event_id BIGINT NOT NULL DEFAULT 0,
+      last_synced_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      rows_synced BIGINT NOT NULL DEFAULT 0,
+      last_error VARCHAR
+    )
+  `);
+}
+
+async function getSyncState(tableName: string): Promise<SyncState | null> {
+  const rows = await query<SyncState>(
+    'SELECT * FROM dataintel_sync_state WHERE table_name = $1',
+    tableName,
+  );
+  return rows[0] ?? null;
+}
+
+async function upsertSyncState(
+  tableName: string,
+  lastEventId: number,
+  rowsSynced: number,
+): Promise<void> {
+  const existing = await getSyncState(tableName);
+  if (existing) {
+    await execute(
+      `UPDATE dataintel_sync_state
+       SET last_event_id = $1,
+           last_synced_at = CURRENT_TIMESTAMP,
+           rows_synced = rows_synced + $2
+       WHERE table_name = $3`,
+      lastEventId,
+      rowsSynced,
+      tableName,
+    );
+  } else {
+    await execute(
+      `INSERT INTO dataintel_sync_state (table_name, last_event_id, last_synced_at, rows_synced)
+       VALUES ($1, $2, CURRENT_TIMESTAMP, $3)`,
+      tableName,
+      lastEventId,
+      rowsSynced,
+    );
+  }
+}
+
+async function setSyncError(tableName: string, error: string): Promise<void> {
+  const existing = await getSyncState(tableName);
+  if (existing) {
+    await execute(
+      'UPDATE dataintel_sync_state SET last_error = $1, last_synced_at = CURRENT_TIMESTAMP WHERE table_name = $2',
+      error,
+      tableName,
+    );
+  } else {
+    await execute(
+      'INSERT INTO dataintel_sync_state (table_name, last_synced_at, last_error) VALUES ($1, CURRENT_TIMESTAMP, $2)',
+      tableName,
+      error,
+    );
+  }
+}
+
+// ── Vault API ──
+
+async function fetchFromVault<T = Record<string, unknown>>(
+  path: string,
+  params?: Record<string, string>,
+): Promise<T[]> {
+  const config = getConfig();
+  const url = new URL(`${config.SUPABASE_URL}/rest/v1/${path}`);
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      url.searchParams.set(k, v);
+    }
+  }
+  const res = await fetch(url.toString(), {
+    headers: {
+      'apikey': config.SUPABASE_SERVICE_ROLE_KEY,
+      'Authorization': `Bearer ${config.SUPABASE_SERVICE_ROLE_KEY}`,
+      'Accept': 'application/json',
+    },
+    signal: AbortSignal.timeout(30_000),
+  }).catch((err) => {
+    if (err instanceof DOMException && err.name === 'TimeoutError') {
+      throw new Error(`Vault request timed out after 30s: ${path}`);
+    }
+    throw err;
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => 'unable to read response body');
+    throw new Error(`Vault ${res.status}: ${text}`);
+  }
+  const data = (await res.json()) as T[];
+  return data;
+}
+
+// ── Mappers ──
+
+function mapEventRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    event_id: row.event_id ?? row.id,
+    user_id: row.user_id ?? null,
+    anon_id: row.anon_id ?? null,
+    session_id: row.session_id ?? null,
+    lesson_id: row.lesson_id ?? null,
+    segment_id: row.segment_id ?? null,
+    event_type: (row.event_type ?? row.event ?? ''),
+    role: row.role ?? null,
+    route_class: row.route_class ?? null,
+    device: row.device ?? null,
+    locale: row.locale ?? null,
+    referrer_class: row.referrer_class ?? null,
+    ordinal: row.ordinal ?? null,
+    value: row.value ?? null,
+    created_at: row.created_at ?? new Date().toISOString(),
+    ingested_at: row.ingested_at ?? null,
+  };
+}
+
+function mapUserRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    user_id: row.user_id ?? row.id,
+    role: row.role ?? null,
+    created_at: row.created_at ?? null,
+    locale: row.locale ?? null,
+    xp_points: row.xp_points ?? 0,
+    lessons_completed: row.lessons_completed ?? 0,
+    streak_days: row.streak_days ?? 0,
+    longest_streak: row.longest_streak ?? 0,
+  };
+}
+
+function mapLessonRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    lesson_id: row.lesson_id ?? row.id,
+    slug: row.slug ?? null,
+    title_en: row.title_en ?? null,
+    title_es: row.title_es ?? null,
+    title_pt: row.title_pt ?? null,
+    course_id: row.course_id ?? null,
+    segment_count: row.segment_count ?? 0,
+  };
+}
+
+function mapSessionRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    session_id: row.session_id ?? row.id,
+    user_id: row.user_id ?? null,
+    started_at: row.started_at ?? null,
+    ended_at: row.ended_at ?? null,
+    device: row.device ?? null,
+    locale: row.locale ?? null,
+    referrer_class: row.referrer_class ?? null,
+    events_count: row.events_count ?? 0,
+    surfaces: row.surfaces ?? 0,
+    lessons_started: row.lessons_started ?? 0,
+    duration_sec: row.duration_sec ?? null,
+  };
+}
+
+// ── Batch insert ──
+
+async function batchInsert(
+  table: string,
+  columns: readonly string[],
+  rows: Record<string, unknown>[],
+): Promise<void> {
+  if (rows.length === 0) return;
+
+  const colList = columns.join(', ');
+
+  for (const row of rows) {
+    const placeholders = columns.map((_, i) => `$${i + 1}`).join(', ');
+    const values = columns.map((col) => {
+      const v = row[col];
+      return v === undefined ? null : v;
+    });
+
+    await execute(
+      `INSERT OR IGNORE INTO ${table} (${colList}) VALUES (${placeholders})`,
+      ...values,
+    );
+  }
+}
+
+// ── Time dimension ──
+
+export async function generateTimeDimension(
+  startDate: string,
+  endDate: string,
+): Promise<number> {
+  const existing = await query<{ cnt: number }>(
+    'SELECT COUNT(*) AS cnt FROM dim_time WHERE date BETWEEN $1::DATE AND $2::DATE',
+    startDate,
+    endDate,
+  );
+  if ((existing[0]?.cnt ?? 0) > 0) return 0;
+
+  await exec(`
+    INSERT INTO dim_time (date, year, month, week, day_of_week, hour, is_weekend)
+    SELECT
+      d::DATE AS date,
+      EXTRACT(YEAR FROM d)::INTEGER AS year,
+      EXTRACT(MONTH FROM d)::INTEGER AS month,
+      EXTRACT(WEEK FROM d)::INTEGER AS week,
+      EXTRACT(ISODOW FROM d)::INTEGER AS day_of_week,
+      0 AS hour,
+      EXTRACT(ISODOW FROM d) IN (6, 7) AS is_weekend
+    FROM GENERATE_SERIES(
+      '${startDate}'::DATE,
+      '${endDate}'::DATE,
+      INTERVAL 1 DAY
+    ) AS t(d)
+    ON CONFLICT (date) DO NOTHING
+  `);
+
+  const result = await query<{ cnt: number }>('SELECT COUNT(*) AS cnt FROM dim_time');
+  return result[0]?.cnt ?? 0;
+}
+
+// ── Events sync (incremental) ──
+
+const EVENT_COLUMNS = [
+  'event_id',
+  'user_id',
+  'anon_id',
+  'session_id',
+  'lesson_id',
+  'segment_id',
+  'event_type',
+  'role',
+  'route_class',
+  'device',
+  'locale',
+  'referrer_class',
+  'ordinal',
+  'value',
+  'created_at',
+  'ingested_at',
+] as const;
+
+async function syncEventsTable(): Promise<{ rows: number; elapsed: number }> {
+  const start = Date.now();
+  const state = await getSyncState('learning_events');
+  let lastEventId: number = state?.last_event_id ?? 0;
+  let totalRows = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const params: Record<string, string> = {
+      event_id: `gt.${lastEventId}`,
+      order: 'event_id.asc',
+      limit: '1000',
+    };
+
+    const raw = await fetchFromVault<Record<string, unknown>>(
+      'dataintel_events_sync',
+      params,
+    );
+
+    if (raw.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    const mapped = raw.map(mapEventRow);
+
+    await exec('BEGIN TRANSACTION');
+    try {
+      await batchInsert('fact_events', EVENT_COLUMNS, mapped);
+      await exec('COMMIT');
+    } catch (err) {
+      await exec('ROLLBACK');
+      throw err;
+    }
+
+    const lastRow = mapped[mapped.length - 1];
+    const newId = (lastRow?.event_id as number) ?? lastEventId;
+    lastEventId = newId;
+    totalRows += mapped.length;
+
+    if (raw.length < 1000) {
+      hasMore = false;
+    }
+  }
+
+  if (totalRows > 0) {
+    await upsertSyncState('learning_events', lastEventId, totalRows);
+  }
+
+  return { rows: totalRows, elapsed: Date.now() - start };
+}
+
+// ── Dimension sync (full refresh) ──
+
+const USER_COLUMNS = [
+  'user_id',
+  'role',
+  'created_at',
+  'locale',
+  'xp_points',
+  'lessons_completed',
+  'streak_days',
+  'longest_streak',
+] as const;
+
+const LESSON_COLUMNS = [
+  'lesson_id',
+  'slug',
+  'title_en',
+  'title_es',
+  'title_pt',
+  'course_id',
+  'segment_count',
+] as const;
+
+const SESSION_COLUMNS = [
+  'session_id',
+  'user_id',
+  'started_at',
+  'ended_at',
+  'device',
+  'locale',
+  'referrer_class',
+  'events_count',
+  'surfaces',
+  'lessons_started',
+  'duration_sec',
+] as const;
+
+async function syncDimTable(
+  syncKey: TableName,
+  targetTable: string,
+  vaultPath: string,
+  mapper: (row: Record<string, unknown>) => Record<string, unknown>,
+  columns: readonly string[],
+  orderColumn: string,
+): Promise<{ rows: number; elapsed: number }> {
+  const start = Date.now();
+
+  await exec(`TRUNCATE TABLE ${targetTable}`);
+
+  let totalRows = 0;
+  let hasMore = true;
+  let offset = 0;
+  const limit = 5000;
+
+  while (hasMore) {
+    // Explicit ORDER BY is required for stable LIMIT/OFFSET pagination —
+    // without it Postgres/PostgREST make no ordering guarantee across
+    // separate requests, which can skip or duplicate rows between pages.
+    const params: Record<string, string> = {
+      limit: String(limit),
+      offset: String(offset),
+      order: `${orderColumn}.asc`,
+    };
+
+    const raw = await fetchFromVault<Record<string, unknown>>(vaultPath, params);
+
+    if (raw.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    const mapped = raw.map(mapper);
+
+    await exec('BEGIN TRANSACTION');
+    try {
+      await batchInsert(targetTable, columns, mapped);
+      await exec('COMMIT');
+    } catch (err) {
+      await exec('ROLLBACK');
+      throw err;
+    }
+
+    totalRows += mapped.length;
+    offset += limit;
+
+    if (raw.length < limit) {
+      hasMore = false;
+    }
+  }
+
+  await upsertSyncState(syncKey, 0, totalRows);
+
+  return { rows: totalRows, elapsed: Date.now() - start };
+}
+
+// ── Aggregates ──
+
+export async function refreshAggregates(): Promise<void> {
+  const state = await getSyncState('learning_events');
+  // DuckDB's Node driver returns TIMESTAMP columns as JS Date objects;
+  // interpolating one into a template literal calls its default
+  // Date#toString() ("Wed Jul 29 2026 19:27:41 GMT-0600 (...)"), which
+  // DuckDB's TIMESTAMP parser rejects outright — every refresh after the
+  // first successful sync threw a Conversion Error and never wrote a single
+  // aggregate row. Bound as a real parameter instead of interpolated text.
+  const lastSyncTime = state?.last_synced_at
+    ? new Date(state.last_synced_at).toISOString()
+    : null;
+
+  await execute(
+    `
+    INSERT INTO agg_daily_activity (day, role, event_type, route_class, device, locale, events, users, sessions, total_value)
+    SELECT
+      created_at::DATE AS day,
+      COALESCE(role, '') AS role,
+      event_type,
+      COALESCE(route_class, '') AS route_class,
+      COALESCE(device, '') AS device,
+      COALESCE(locale, '') AS locale,
+      COUNT(*) AS events,
+      COUNT(DISTINCT user_id) AS users,
+      COUNT(DISTINCT session_id) AS sessions,
+      SUM(COALESCE(value, 0)) AS total_value
+    FROM fact_events
+    WHERE $1::TIMESTAMP IS NULL OR created_at >= $1::TIMESTAMP
+    GROUP BY day, role, event_type, route_class, device, locale
+    ON CONFLICT (day, role, event_type, route_class, device, locale) DO UPDATE SET
+      events = EXCLUDED.events,
+      users = EXCLUDED.users,
+      sessions = EXCLUDED.sessions,
+      total_value = EXCLUDED.total_value
+  `,
+    lastSyncTime,
+  );
+
+  await exec(`
+    INSERT INTO agg_daily_users (day, role, users, sessions)
+    SELECT
+      day,
+      role,
+      SUM(DISTINCT events) FILTER (WHERE event_type NOT IN ('page_view', 'heartbeat')) AS users,
+      SUM(sessions) AS sessions
+    FROM agg_daily_activity
+    GROUP BY day, role
+    ON CONFLICT (day, role) DO UPDATE SET
+      users = EXCLUDED.users,
+      sessions = EXCLUDED.sessions
+  `);
+}
+
+// ── Public API ──
+
+export async function syncTable(
+  tableName: TableName,
+): Promise<{ rows: number; elapsed: number }> {
+  if (!isReady()) {
+    throw new Error('DuckDB is not ready — run initDb() first');
+  }
+
+  await ensureSyncStateTable();
+
+  try {
+    switch (tableName) {
+      case 'learning_events':
+        return await syncEventsTable();
+      case 'users':
+        return await syncDimTable(
+          'users',
+          'dim_users',
+          'dataintel_users_sync',
+          mapUserRow,
+          USER_COLUMNS,
+          'user_id',
+        );
+      case 'lessons':
+        return await syncDimTable(
+          'lessons',
+          'dim_lessons',
+          'dataintel_lessons_sync',
+          mapLessonRow,
+          LESSON_COLUMNS,
+          'lesson_id',
+        );
+      case 'sessions':
+        return await syncDimTable(
+          'sessions',
+          'dim_sessions',
+          'dataintel_sessions_sync',
+          mapSessionRow,
+          SESSION_COLUMNS,
+          'session_id',
+        );
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    await setSyncError(tableName, message).catch(() => {
+      /* ignore secondary error */
+    });
+    throw err;
+  }
+}
+
+export async function syncAll(): Promise<{
+  tables: Record<string, number>;
+  elapsed: number;
+}> {
+  const start = Date.now();
+  const tables: Record<string, number> = {};
+  const tableNames: TableName[] = [
+    'learning_events',
+    'users',
+    'lessons',
+    'sessions',
+  ];
+
+  for (const name of tableNames) {
+    try {
+      const result = await syncTable(name);
+      tables[name] = result.rows;
+    } catch {
+      tables[name] = -1;
+    }
+  }
+
+  return { tables, elapsed: Date.now() - start };
+}

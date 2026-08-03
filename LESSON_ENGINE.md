@@ -459,8 +459,8 @@ renders inert), no external lib. Anything else renders as literal text.
 
 ## §9 Character Control
 
-Lives in `frontend/src/components/characters/control/` — reusable platform-wide (games,
-tutor, empty states), not lesson-only. **Appearance is NON-NEGOTIABLE:** colors, shapes
+Lives in `frontend/src/components/characters/control/` — reusable platform-wide (tutor,
+empty states), not lesson-only. **Appearance is NON-NEGOTIABLE:** colors, shapes
 and composition of Dina, Liruf, Dr. Rho and Zara Vex are never altered; the rig only
 ADDS stable class hooks and wrapper-level animation.
 

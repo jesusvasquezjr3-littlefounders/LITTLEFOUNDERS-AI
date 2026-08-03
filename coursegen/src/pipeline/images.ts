@@ -1,7 +1,7 @@
 // images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Fills the lesson's
 // AI illustrations by asking Prism (picturegen/) for each one. Prism owns the
 // whole image concern: the art-director judge (LF visual identity), the
-// qwen-image generation, the pictorial verifier, Depot storage, and the cache
+// Qwen-Image generation, the pictorial verifier, Depot storage, and the cache
 // that guarantees an identical request never hits the paid API twice — Forge
 // only embeds the returned public URL.
 //
@@ -17,15 +17,23 @@
 // only NOT_CONFIGURED short-circuits the whole document. A lesson must never be
 // unpublishable just because an illustration failed.
 
-import type { UsageLedger } from '../providers/usage.js';
+import { BudgetExceededError, type UsageLedger } from '../providers/usage.js';
 import { inheritedUrl, type ImageInheritance } from './imageInheritance.js';
 import { requestPicture, type PicturePurpose } from '../providers/picturegen.js';
+import { billedImagesFromError } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
+import { getConfig } from '../env.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
 export interface IllustrateOptions {
   /** `--no-images` CLI flag. */
   skip?: boolean;
+  /**
+   * Production visual mode. A provider/configuration failure becomes a slot
+   * failure rather than silently retaining icon fallbacks. This is the only
+   * mode suitable for content that will later seek a release attestation.
+   */
+  required?: boolean;
   /**
    * Art already drawn for this lesson, indexed by normalized label
    * (`buildImageInheritance`). Consulted BEFORE any paid call: illustration is the
@@ -35,10 +43,17 @@ export interface IllustrateOptions {
    */
   inherit?: ImageInheritance;
   /**
+   * Never contact Prism. Existing object art can still be placed from `inherit`,
+   * while a target with no matching stored object intentionally remains empty.
+   * This makes a no-spend repair pass possible before deciding whether a new
+   * paid illustration is genuinely necessary. Scene anchors are never inherited.
+   */
+  reuseOnly?: boolean;
+  /**
    * Meters image spend so the run's budget kill switches actually bind. Image
    * generation used to be invisible to the ledger AND to FORGE_MAX_USD_PER_RUN,
    * which made it the largest uncapped cost in the pipeline — a mass run could bill
-   * tens of thousands of paid qwen-image calls with nothing stopping it. Only FRESH
+   * tens of thousands of paid Qwen-Image calls with nothing stopping it. Only FRESH
    * generations are billed; a Prism cache hit is free and recorded as 0.
    */
   ledger?: UsageLedger;
@@ -61,6 +76,18 @@ export interface IllustrateResult {
   skippedReason?: SkippedReason;
 }
 
+/**
+ * The deterministic result of asking whether a stored lesson has every visual
+ * that this module's illustration plan requires. It deliberately counts only
+ * plan-eligible targets: icon-only and abstract exercise families are valid
+ * without an AI image.
+ */
+export interface IllustrationCoverage {
+  required: number;
+  present: number;
+  missing: Array<{ segmentId: string; label: string; purpose: PicturePurpose }>;
+}
+
 /** One picture to fetch: what to draw, its role, and where the URL lands. */
 interface IllustrationTarget {
   /** Skip if this slot already has an image (idempotent re-runs / backfill). */
@@ -78,6 +105,53 @@ function plainLabel(md: string): string {
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, 80);
+}
+
+/*
+ * A tile prompt is not a general illustration brief. It renders exactly one
+ * literal object on a white canvas, so asking it to depict a concept
+ * ("Deseo"), a question, a sentence or a person/action invites Qwen to draw
+ * a text card or a character — both are deliberate Prism rejections. The
+ * authoring locale is es-MX; these conservative markers make the decision
+ * deterministic before any paid request. A false negative leaves the existing
+ * icon/text fallback, while a false positive costs redraws and produces a
+ * misleading visual, so the bias is intentionally toward skipping.
+ */
+const NON_LITERAL_TILE_WORDS = new Set([
+  'ahorro', 'ahorrar', 'gasto', 'gastar', 'deseo', 'desear', 'querer', 'quiero', 'tener', 'tengo',
+  'necesidad', 'necesito', 'precio', 'valor', 'dinero', 'cambio', 'decisión', 'elegir', 'elige',
+  'niño', 'niña', 'persona', 'mamá', 'papá', 'cliente', 'vendedor', 'ella', 'él', 'yo', 'mi', 'mis',
+  'ya', 'que', 'qué', 'cuál', 'como', 'cómo', 'cuando', 'porque', 'con', 'sin', 'para',
+  'compró', 'compra', 'mira', 'mirando', 'tiene', 'gustaría', 'prefieres', 'preferirías', 'significa',
+  'es', 'son',
+  // The final belt-and-braces image sweep runs after en-US/pt-BR localization.
+  // Keep the rejection vocabulary multilingual: otherwise a Spanish person/action
+  // label that was safely skipped before translation can become a paid English
+  // portrait request (which Prism must reject) afterwards.
+  'child', 'kid', 'boy', 'girl', 'person', 'people', 'mother', 'father', 'mom', 'dad', 'customer', 'seller',
+  'holding', 'holds', 'hold', 'looking', 'looks', 'wearing', 'wears', 'playing', 'plays', 'has', 'want', 'wants',
+  'need', 'needs', 'choose', 'chooses', 'decision', 'price', 'money',
+  'criança', 'crianca', 'menino', 'menina', 'pessoa', 'mãe', 'mae', 'pai', 'cliente', 'vendedor',
+  'segurando', 'segura', 'olhando', 'olha', 'vestindo', 'veste', 'brincando', 'brinca', 'tem', 'quer', 'precisa',
+  'escolhe', 'decisão', 'decisao', 'preço', 'preco', 'dinheiro',
+]);
+
+const LEADING_TILE_ARTICLES = new Set(['un', 'una', 'el', 'la', 'los', 'las']);
+
+/** Returns a safe single-object tile label, or no label for non-pictorial prose. */
+function literalObjectLabel(source: string | undefined): string | undefined {
+  if (!source) return undefined;
+  const value = plainLabel(source);
+  if (!value || /[?¿¡!.,:;\d$]/.test(value)) return undefined;
+  const words = value.split(/\s+/).filter(Boolean);
+  const normalizedWords = words.map((word) => word.toLocaleLowerCase('es-MX'));
+  while (LEADING_TILE_ARTICLES.has(normalizedWords[0] ?? '')) {
+    words.shift();
+    normalizedWords.shift();
+  }
+  if (words.length === 0 || words.length > 4) return undefined;
+  if (normalizedWords.some((word) => NON_LITERAL_TILE_WORDS.has(word))) return undefined;
+  return words.join(' ');
 }
 
 type AnyRecord = Record<string, unknown>;
@@ -103,11 +177,11 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
     if (!Array.isArray(arr)) return;
     for (const raw of arr) {
       const item = raw as AnyRecord;
-      const label = labelOf(item);
+      const label = literalObjectLabel(labelOf(item));
       if (!label) continue;
       t.push({
         has: () => typeof item[imageKey] === 'string' && (item[imageKey] as string).length > 0,
-        label: plainLabel(label),
+        label,
         purpose,
         apply: (url) => {
           item[imageKey] = url;
@@ -126,10 +200,12 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
       if (Array.isArray(p.pairs)) {
         for (const raw of p.pairs) {
           const pair = raw as AnyRecord;
-          if (typeof pair.a_md === 'string')
-            t.push({ has: () => typeof pair.a_image_url === 'string', label: plainLabel(pair.a_md), purpose: 'memory_card', apply: (u) => (pair.a_image_url = u) });
-          if (typeof pair.b_md === 'string')
-            t.push({ has: () => typeof pair.b_image_url === 'string', label: plainLabel(pair.b_md), purpose: 'memory_card', apply: (u) => (pair.b_image_url = u) });
+          const aLabel = literalObjectLabel(typeof pair.a_md === 'string' ? pair.a_md : undefined);
+          const bLabel = literalObjectLabel(typeof pair.b_md === 'string' ? pair.b_md : undefined);
+          if (aLabel)
+            t.push({ has: () => typeof pair.a_image_url === 'string', label: aLabel, purpose: 'memory_card', apply: (u) => (pair.a_image_url = u) });
+          if (bLabel)
+            t.push({ has: () => typeof pair.b_image_url === 'string', label: bLabel, purpose: 'memory_card', apply: (u) => (pair.b_image_url = u) });
         }
       }
       break;
@@ -167,8 +243,9 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
     case 'fair_trade':
       for (const key of ['offer_a', 'offer_b'] as const) {
         const offer = p[key] as AnyRecord | undefined;
-        if (offer && typeof offer.label === 'string')
-          t.push({ has: () => typeof offer.image_url === 'string', label: plainLabel(offer.label), purpose: 'option_card', apply: (u) => (offer.image_url = u) });
+        const offerLabel = literalObjectLabel(offer && typeof offer.label === 'string' ? offer.label : undefined);
+        if (offer && offerLabel)
+          t.push({ has: () => typeof offer.image_url === 'string', label: offerLabel, purpose: 'option_card', apply: (u) => (offer.image_url = u) });
       }
       break;
     case 'count_objects': {
@@ -177,21 +254,17 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
       // so the countables still illustrate instead of dropping to a glyph.
       const askLabel = typeof p.ask_label === 'string' ? p.ask_label : undefined;
       eachItem(p.scene, (i) => (typeof i.label === 'string' ? i.label : askLabel), 'item_card');
-      if (askLabel)
-        t.push({ has: () => typeof p.ask_image_url === 'string', label: plainLabel(askLabel), purpose: 'item_card', apply: (u) => (p.ask_image_url = u) });
+      const literalAskLabel = literalObjectLabel(askLabel);
+      if (literalAskLabel)
+        t.push({ has: () => typeof p.ask_image_url === 'string', label: literalAskLabel, purpose: 'item_card', apply: (u) => (p.ask_image_url = u) });
       break;
     }
-    case 'key_ideas':
-      eachItem(p.ideas, (i) => (typeof i.title === 'string' ? i.title : undefined), 'item_card');
-      break;
-    case 'concept_reveal':
-      eachItem(p.cards, (i) => (typeof i.front_md === 'string' ? i.front_md : undefined), 'item_card');
-      break;
     case 'would_you_rather':
       for (const key of ['a', 'b'] as const) {
         const side = p[key] as AnyRecord | undefined;
-        if (side && typeof side.text_md === 'string')
-          t.push({ has: () => typeof side.image_url === 'string', label: plainLabel(side.text_md), purpose: 'option_card', apply: (u) => (side.image_url = u) });
+        const sideLabel = literalObjectLabel(side && typeof side.text_md === 'string' ? side.text_md : undefined);
+        if (side && sideLabel)
+          t.push({ has: () => typeof side.image_url === 'string', label: sideLabel, purpose: 'option_card', apply: (u) => (side.image_url = u) });
       }
       break;
     case 'flash_match':
@@ -206,6 +279,31 @@ function planTargets(segment: { type: string; prompt_md: string; payload: AnyRec
       break;
   }
   return t;
+}
+
+/**
+ * Counts the paid image requests that a required visual run may need in the
+ * worst case. An object already present or safely inherited is free; every
+ * other target can consume all Prism verifier redraw attempts. This is
+ * deliberately conservative about Prism cache hits: the request descriptor
+ * includes context, so Forge cannot safely assume a hit without making the
+ * request it is deciding whether to admit.
+ */
+function maxFreshImageRequests(document: LessonDocumentParsed, inherit: ImageInheritance | undefined): number {
+  let count = 0;
+  for (const segment of document.segments as unknown as Array<{
+    type: string;
+    prompt_md: string;
+    payload: AnyRecord;
+    image_url?: string;
+  }>) {
+    for (const target of planTargets(segment)) {
+      if (!target.has() && !inheritedUrl(inherit, target.label)) count++;
+    }
+    const context = plainLabel(segment.prompt_md);
+    if (SCENE_ANCHOR_TYPES.has(segment.type) && !segment.image_url && context) count++;
+  }
+  return count;
 }
 
 /** Types that get a segment-level "scene anchor" (one establishing illustration
@@ -228,6 +326,41 @@ const SCENE_ANCHOR_TYPES = new Set([
   'eavesdrop',
 ]);
 
+/**
+ * Inspects a persisted document without requesting, changing, or billing for
+ * anything. This is intentionally shared by the release acceptance check and
+ * the generation stage so “visual coverage” has one definition everywhere.
+ */
+export function inspectIllustrationCoverage(document: LessonDocumentParsed): IllustrationCoverage {
+  const missing: IllustrationCoverage['missing'] = [];
+  let required = 0;
+  let present = 0;
+
+  for (const segment of document.segments as unknown as Array<{
+    id: string;
+    type: string;
+    prompt_md: string;
+    payload: AnyRecord;
+    image_url?: string;
+  }>) {
+    const targets = planTargets(segment);
+    for (const target of targets) {
+      required++;
+      if (target.has()) present++;
+      else missing.push({ segmentId: segment.id, label: target.label, purpose: target.purpose });
+    }
+
+    const ctx = plainLabel(segment.prompt_md);
+    if (SCENE_ANCHOR_TYPES.has(segment.type) && ctx) {
+      required++;
+      if (typeof segment.image_url === 'string' && segment.image_url.length > 0) present++;
+      else missing.push({ segmentId: segment.id, label: ctx, purpose: 'scene_anchor' });
+    }
+  }
+
+  return { required, present, missing };
+}
+
 export async function illustrateSegments(
   document: LessonDocumentParsed,
   options: IllustrateOptions = {},
@@ -240,6 +373,29 @@ export async function illustrateSegments(
   let generated = 0;
   let billed = 0;
   let inherited = 0;
+
+  /*
+   * Required visual mode is fail-closed. Do the full worst-case cost admission
+   * before the first image request, not target-by-target: otherwise a small
+   * pilot can pay for several partial tiles and only then discover it cannot
+   * finish a releasable visual bundle. The reservation is released immediately
+   * because it is an admission test, not an in-flight claim; each real request
+   * reserves itself below for concurrent-worker safety.
+   */
+  if (options.required && !options.reuseOnly && options.ledger) {
+    const maxRequests = maxFreshImageRequests(cloned, options.inherit);
+    if (maxRequests > 0) {
+      const admission = options.ledger.reserve({
+        provider: 'picturegen',
+        model: getConfig().PICTUREGEN_MODEL,
+        operation: 'image:required-coverage-admission',
+        promptTokens: 0,
+        completionTokens: 0,
+        images: maxRequests * getConfig().FORGE_MAX_PICTUREGEN_IMAGES_PER_REQUEST,
+      });
+      admission.release();
+    }
+  }
 
   // Fetch ONE target; returns the url or undefined (this single illustration
   // failed — its icon/text stays the fallback). Rethrows NotConfigured so the
@@ -254,28 +410,62 @@ export async function illustrateSegments(
       inherited++;
       return reused;
     }
+    if (options.reuseOnly) return undefined;
+    // Prism's visual verifier may reject and redraw up to its configured cap.
+    // Reserve that WORST CASE before the network call, then ledger the exact
+    // successful/rejected pixel count Prism reports. This keeps a concurrent
+    // visual pilot bounded even when a paid image never obtains a usable URL.
+    const reservation = options.ledger?.reserve({
+      provider: 'picturegen',
+      model: getConfig().PICTUREGEN_MODEL,
+      operation: `image:${purpose}`,
+      promptTokens: 0,
+      completionTokens: 0,
+      images: getConfig().FORGE_MAX_PICTUREGEN_IMAGES_PER_REQUEST,
+    });
     try {
-      // Budget FIRST: an image is a paid call, so it must respect the same kill
-      // switch as a token call rather than spending past it.
-      options.ledger?.checkBudget();
       const picture = await request({ label, context, purpose });
       generated++;
-      if (!picture.cached) {
-        billed++;
+      if (picture.generatedImages > 0) {
+        billed += picture.generatedImages;
         await options.ledger?.record({
           provider: 'picturegen',
-          model: 'qwen-image',
+          model: getConfig().PICTUREGEN_MODEL,
           operation: `image:${purpose}`,
           promptTokens: 0,
           completionTokens: 0,
-          images: 1,
+          images: picture.generatedImages,
         });
       }
       return picture.url;
     } catch (err) {
+      // billedImagesFromError also covers a FOREIGN terminal error (timeout /
+      // network TypeError) whose retry chain included billed 502 attempts —
+      // paid pixels must reach the ledger regardless of what error class the
+      // chain happened to end in.
+      const billedOnError = billedImagesFromError(err);
+      if (billedOnError > 0) {
+        billed += billedOnError;
+        await options.ledger?.record({
+          provider: 'picturegen',
+          model: getConfig().PICTUREGEN_MODEL,
+          operation: `image:${purpose}:rejected`,
+          promptTokens: 0,
+          completionTokens: 0,
+          images: billedOnError,
+        });
+      }
       if (err instanceof ProviderNotConfiguredError) throw err;
+      // A budget stop is the kill switch firing, NOT a per-image hiccup.
+      // Swallowing it here defeated FORGE_MAX_USD_PER_RUN entirely: the run
+      // kept walking every remaining target, paying for each one, and shipped
+      // lessons with silently missing illustrations instead of halting.
+      if (err instanceof BudgetExceededError) throw err;
+      if (options.required) throw err;
       console.warn(`images: skipping illustration for "${label}" — ${err instanceof Error ? err.message : String(err)}`);
       return undefined;
+    } finally {
+      reservation?.release();
     }
   }
 
@@ -298,6 +488,7 @@ export async function illustrateSegments(
     }
   } catch (err) {
     if (err instanceof ProviderNotConfiguredError) {
+      if (options.required) throw err;
       // Prism not configured — clean skip, return the UNMODIFIED original
       // document (icons/text stay the fallback); no point trying the rest.
       return { document, generated: 0, billed: 0, inherited, skippedReason: 'not-configured' };

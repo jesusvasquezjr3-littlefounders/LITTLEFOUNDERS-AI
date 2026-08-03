@@ -1,82 +1,82 @@
 ---
-name: LittleFounders Arcade
+name: LittleFounders Liquid Glass
 direction: >
-  Brilliant.org-style gaming clarity — confident extrabold type, a warm
-  papaya CTA on a deep navy/blue world, full pill buttons, big rounded
-  cards — fused with liquid glass: frosted translucent panels
-  (backdrop-blur + hairline light borders) for all floating chrome.
+  Premium glassmorphism aesthetic — confident bold type, a strong indigo CTA on
+  a slate/white world, full pill buttons, big rounded cards — rendered as
+  frosted liquid glass: translucent panels with backdrop-blur, subtle light
+  borders, and layered soft shadows for depth and premium feel.
 modes: [light, dark]              # both first-class, toggled via .dark on <html>
 
 colors:
   # Semantic tokens only in code (rgb triplets in index.css). Raw hex prohibited.
   # ── Light ──
-  base: "#ffffff"                 # page background
+  base: "#f8fafc"                 # page background (slate-50)
   surface: "#ffffff"              # cards, panels
-  surface-sunken: "#f2f2f2"       # wells, segmented controls, pill tracks
-  band: "#ecf0ff"                 # tinted full-bleed section band (blue-100)
-  content: "#1e1e1e"              # ink — primary text
-  content-muted: "#55555f"
-  content-faint: "#82828e"        # captions only — below the body contrast floor
-  outline: "#e5e5e5"              # hairline borders
-  primary: "#456dff"              # brand blue — links, focus, selection, info
-  primary-strong: "#375ce3"
-  primary-soft: "#ecf0ff"
+  surface-sunken: "#f1f5f9"       # wells, segmented controls (slate-100)
+  band: "#eef2ff"                 # tinted full-bleed section band (indigo-50)
+  content: "#0f172a"              # ink — primary text (slate-900)
+  content-muted: "#475569"
+  content-faint: "#94a3b8"        # captions only — below the body contrast floor
+  outline: "#e2e8f0"              # hairline borders (slate-200)
+  primary: "#4f46e5"              # brand indigo — links, focus, selection, info
+  primary-strong: "#4338ca"
+  primary-soft: "#eef2ff"
   on-primary: "#ffffff"
-  secondary: "#1e1e1e"            # ink action (active pill tabs)
-  secondary-soft: "#f2f2f2"
+  secondary: "#0f172a"            # ink action (active pill tabs)
+  secondary-soft: "#f1f5f9"
   on-secondary: "#ffffff"
-  accent: "#ff775c"               # papaya — THE call-to-action color
-  accent-strong: "#e55f45"
-  accent-soft: "#fff0ed"
-  on-accent: "#080f28"            # dark navy text on papaya, never white
-  delight: "#d8e82e"              # pear — celebration highlights, never actions
-  delight-soft: "#f7fad5"
-  on-delight: "#1e1e1e"
-  success: "#15b441"
-  success-strong: "#109634"
-  success-soft: "#dff7e6"
+  accent: "#4f46e5"               # indigo — THE call-to-action color
+  accent-strong: "#4338ca"
+  accent-soft: "#eef2ff"
+  on-accent: "#ffffff"            # white text on indigo
+  delight: "#8b5cf6"              # violet — celebration highlights, never actions
+  delight-soft: "#ede9fe"
+  on-delight: "#ffffff"
+  success: "#059669"
+  success-strong: "#047857"
+  success-soft: "#ecfdf5"
   on-success: "#ffffff"
-  warning: "#ff8d23"
-  warning-strong: "#e07412"
-  warning-soft: "#ffeedc"
-  on-warning: "#1e1e1e"
-  error: "#ba1a1a"
-  error-strong: "#8c1414"
-  error-soft: "#ffdad6"
+  warning: "#d97706"
+  warning-strong: "#b45309"
+  warning-soft: "#fffbeb"
+  on-warning: "#ffffff"
+  error: "#dc2626"
+  error-strong: "#b91c1c"
+  error-soft: "#fef2f2"
   on-error: "#ffffff"
-  # ── Inverse band (navy) — IDENTICAL in light and dark; the brand's stage ──
-  inverse: "#080f28"              # blue-950 — hero/fact/footer band fill
-  inverse-surface: "#142563"
+  # ── Inverse band (slate) — IDENTICAL in light and dark; the brand's stage ──
+  inverse: "#0f172a"              # slate-900 — hero/fact/footer band fill
+  inverse-surface: "#1e293b"
   on-inverse: "#ffffff"
-  on-inverse-muted: "#ecf0ff"
-  # ── Dark (the page becomes the navy world) ──
-  dark-base: "#080f28"
-  dark-surface: "#111b40"
-  dark-surface-sunken: "#0c1434"
-  dark-band: "#0e173a"
-  dark-content: "#f0f3ff"
-  dark-content-muted: "#c5ceee"
-  dark-content-faint: "#949ec7"
-  dark-outline: "#2b386c"
-  dark-primary: "#7491ff"         # blue-400 — lifted for contrast on navy
-  dark-primary-strong: "#456dff"
-  dark-primary-soft: "#1a2760"
-  dark-on-primary: "#080f28"
-  dark-secondary: "#f0f3ff"
-  dark-secondary-soft: "#182352"
-  dark-on-secondary: "#080f28"
+  on-inverse-muted: "#cbd5e1"
+  # ── Dark ──
+  dark-base: "#0a0e1a"
+  dark-surface: "#0d1426"
+  dark-surface-sunken: "#070b14"
+  dark-band: "#0a0e1a"
+  dark-content: "#f8fafc"
+  dark-content-muted: "#cbd5e1"
+  dark-content-faint: "#94a3b8"
+  dark-outline: "#1e293b"
+  dark-primary: "#818cf8"         # indigo-400 — lifted for contrast on dark
+  dark-primary-strong: "#6366f1"
+  dark-primary-soft: "#312e81"
+  dark-on-primary: "#ffffff"
+  dark-secondary: "#f8fafc"
+  dark-secondary-soft: "#0f172a"
+  dark-on-secondary: "#ffffff"
   # accent/delight/success/warning/error FILLS keep light values in dark mode;
   # only their -soft well tones darken (see index.css .dark block).
 
 typography:
-  family: "Figtree"               # the ONLY UI family; Google Fonts 400–800
+  family: "Inter"                 # the ONLY UI family; Google Fonts 400–700; Sora for display/headings
   code: "ui-monospace stack"      # `font-code` — ONLY for code CONTENT inside lessons (maker family, inline `code`); never UI chrome
   icons: "Material Symbols Outlined"    # the ONLY icon set (ligatures)
   scale:                          # CLOSED — use the lf-* classes, never ad-hoc sizes
-    lf-display-xl: {size: 44px (56px ≥sm), weight: 800, tracking: -0.03em, line-height: 1.08}
-    lf-display-lg: {size: 32px (38px ≥sm), weight: 800, tracking: -0.02em, line-height: 1.15}
-    lf-headline:   {size: 24px, weight: 700, tracking: -0.01em, line-height: 32px}
-    lf-title:      {size: 18px, weight: 700, line-height: 26px}
+    lf-display-xl: {size: 37px (48px ≥sm), weight: 800, tracking: -0.03em, line-height: 1.08}
+    lf-display-lg: {size: 27px (32px ≥sm), weight: 800, tracking: -0.02em, line-height: 1.15}
+    lf-headline:   {size: 20px, weight: 700, tracking: -0.01em, line-height: 28px}
+    lf-title:      {size: 15px, weight: 700, line-height: 22px}
     lf-body-lg:    {size: 18px, weight: 400, line-height: 29px}
     lf-body:       {size: 16px, weight: 400, line-height: 25px}
     lf-label:      {size: 14px, weight: 700, line-height: 20px}
@@ -90,12 +90,17 @@ rounded:                          # CLOSED
   xl: 32px                        # hero/banner cards
   full: 9999px                    # buttons, pills, badges, icon chips, tracks
 
-elevation:                        # liquid glass — CLOSED
-  shadow-glass: "0 8px 32px rgba(8,15,40,.10)"      # resting cards
-  shadow-glass-sm: "0 2px 12px rgba(8,15,40,.08)"   # buttons, small chrome
-  shadow-pop: "0 16px 48px rgba(8,15,40,.18)"       # floating panels
-  lf-glass: "surface/72% + blur(16px) saturate(1.4) + 1px light border"
-  lf-glass-deep: "white/8% + blur(16px) + white/14% border (on navy bands)"
+elevation:                        # liquid glass — Apple-refined. Depth through layered light.
+  glass-blur: 20px                  # standard backdrop blur
+  glass-blur-deep: 28px             # deep blur on inverse bands
+  glass-saturate: 1.6               # color pop through glass
+  glass-brightness: 1.04            # subtle light lift
+  glass-bg-opacity: 0.78            # light-mode panel fill
+  shadow-glass: "5-layer atmospheric 0.03—0.06 alpha, 32px max"
+  shadow-glass-sm: "3-layer atmospheric 0.03—0.05 alpha, 8px max"
+  shadow-pop: "5-layer atmospheric 0.04—0.12 alpha, 64px max"
+  lf-glass: "surface/78% + blur(20px) + mesh + rim-light(inset) + 0.5px edge + depth"
+  lf-glass-deep: "white/6% + caustic + mesh + blur(28px) + rim-light + edge + depth"
 
 layout:
   container-max: 1200px           # mx-auto max-w-container px-5 md:px-8
@@ -112,12 +117,12 @@ motion:                           # CLOSED 5-recipe system
   durations: {fast: 150ms, base: 200ms, slow: 300ms, page: 350ms, reveal: 550ms}
 ---
 
-# LittleFounders Arcade — Design System
+# LittleFounders Liquid Glass — Design System
 
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-07-12.
+> those files don't define. **Last updated:** 2026-08-01.
 
 ## §0 Composition Fidelity — PRIME RULE
 
@@ -128,11 +133,12 @@ commit that builds the screen.
 
 ## Overview
 
-LittleFounders Arcade reads like a premium learning game: calm white (or deep
-navy) pages, one loud warm CTA, extrabold tight headlines, everything pill- or
+LittleFounders Liquid Glass reads like a premium glassmorphism platform: calm
+slate pages, one confident indigo CTA, bold clean headlines, everything pill- or
 big-radius-rounded, and floating chrome rendered as **liquid glass** — frosted
-translucent panels that let the page glow through. It is minimal by default:
-color is spent on meaning (actions, states, celebration), never decoration.
+translucent panels with backdrop-blur, subtle light borders, and layered soft
+shadows that let the page glow through. It is minimal by default: color is spent
+on meaning (actions, states, celebration), never decoration.
 
 ## Colors
 
@@ -140,31 +146,34 @@ color is spent on meaning (actions, states, celebration), never decoration.
   etc. Raw hex anywhere in a component is a bug.
 - **Action Color Contract — NON-NEGOTIABLE.** A button's color is chosen by
   what the action DOES:
-  - `primary` variant → **papaya** (`accent`): the ONE main CTA per view.
-  - `secondary` variant → outlined glass pill: alternative / lower emphasis.
+  - `primary`/`accent` variant → **indigo** (`accent`): the ONE main CTA per view.
+  - `secondary` variant → outlined: alternative / lower emphasis.
   - `success` → positive completion. `danger` (`error`) → destructive.
-  - Blue (`primary` token) colors links, focus rings, selection, progress and
-    info — it is NOT the CTA fill. `delight` (pear) and `warning` are
-    decorative / status only — never button fills.
+  - Blue/indigo (`primary` token) colors links, focus rings, selection, progress
+    and info. `delight` (violet) and `warning` are decorative / status only —
+    never button fills.
 - **Section bands.** Pages are composed of full-bleed horizontal bands:
-  `base` (default) · `band` (tinted) · `inverse` (navy). The navy band is
+  `base` (default) · `band` (tinted) ·   `inverse` (slate). The inverse band is
   identical in both themes — it's the brand's stage. Never nest bands.
 - **Contrast floor (both modes) — text must never blur into its background:**
   body text ≥ 4.5:1 against its band; `content-faint` and
-  `on-inverse-muted/70` are caption-only. On navy bands, text uses
+  `on-inverse-muted/70` are caption-only. On inverse bands, text uses
   `on-inverse` / `on-inverse-muted` — never `content-*` tokens (they invert
-  with the theme; the band doesn't). On papaya/pear/orange fills, text is dark
+  with the theme; the band doesn't).   On indigo/violet/amber fills, text is dark (or white on saturated fills)
   (`on-accent`/`on-delight`/`on-warning`), never white. Every component styles
   its dark behavior at write time — semantic tokens give it free; anything
   hardcoded against a band must be eyeballed in both modes.
 
 ## Typography
 
-Figtree everywhere, through the closed `lf-*` classes only. Headlines are
+Inter everywhere (display: Sora), through the closed `lf-*` classes only. Headlines are, through the closed `lf-*` classes only. Headlines are
 extrabold and tight (`lf-display-*`); body stays regular with relaxed leading.
 Weight — not size or color — is the first hierarchy tool. Headlines balance
 their lines (`text-balance`, built into the classes); never uppercase body
 text.
+**End-User UI Cleanliness & Copy Protocol (NON-NEGOTIABLE):** The UI must be clean, direct, clear, and designed exclusively for the END USER.
+1. **Designed for End-Users:** Every title, label, hint, note, and button text must be written strictly for the end-user. NEVER include internal spec section numbers (e.g. `(§1.9)`, `(§1.3)`, `(0025)`), developer implementation notes, or system architecture citations in user-facing UI text, i18n files, or fallback states.
+2. **Clean & Minimalist Typography:** NEVER add AI-characteristic text artifacts such as double dashes (`--`), em-dashes (`—`), colons as prefix dividers, or filler punctuation in UI copy or empty state fallbacks. Keep text literal, functional, and visually clean.
 
 ## Layout — Responsive Adaptation (NON-NEGOTIABLE)
 
@@ -210,16 +219,20 @@ short last row beats an ad hoc one that's always full.
 
 ## Elevation & Depth — Liquid Glass
 
-Depth comes from translucency and light, not skeuomorphism:
+Depth comes from layered light, not heavy drop shadows. Every glass surface uses
+multiple shadow layers at very low opacity (0.02–0.08), building atmospheric
+depth that feels physical. A specular rim light (`inset 0 1px 0`) and a 0.5px
+hairline edge replace traditional borders.
 
-1. **Resting cards:** opaque `surface` + `border-outline/70` + `shadow-glass`.
-2. **Floating chrome** (sticky header, dropdown panels, mobile menu, toasts):
-   `.lf-glass` — frosted, blurred, hairline light border; `shadow-pop` when
-   detached from an edge.
-3. **On navy bands:** `.lf-glass-deep` — white-tinted frost with `white/14%`
-   border. This is the ONLY card treatment on `inverse`.
-4. Never stack glass on glass; never blur large scrolling content areas. A
-   `@supports` fallback to near-opaque surface is wired in index.css.
+1. **Resting cards:** translucent `surface/78%` + `blur(20px) saturate(1.6)` +
+   mesh texture + rim light + edge + 5-layer depth shadow. Hover deepens depth.
+2. **Floating chrome** (sticky header, dropdowns, mobile menu, toasts):
+   `.lf-glass` with the full recipe; `shadow-pop` when detached from an edge.
+3. **On inverse bands:** `.lf-glass-deep` — `white/6%` + `blur(28px)` +
+   caustic highlight + mesh + rim light + 5-layer depth.
+4. **Buttons:** `.lf-gaming-btn` — inner glow (inset top highlight + inset
+   bottom shadow) + button shadow + hover sheen sweep.
+5. Never stack glass on glass; `@supports` fallback to near-opaque surface.
 
 ## Motion — closed system
 
@@ -245,7 +258,7 @@ System recipes, tokens only (`--lf-ease`, `--lf-dur-*` with deliberate exception
    No new animations or visual states can be introduced without updating that document.
 
 `.lf-float` (hero illustration) is the only UNCONDITIONALLY infinite animation
-(lesson celebration loops are bounded by their overlay, per recipe 7).
+in CHROME (lesson celebration loops are bounded by their overlay, per recipe 7).
 Everything is reduced-motion safe (wired in index.css / rig.css).
 
 ## Shapes
@@ -293,22 +306,22 @@ for containers. Sharp corners prohibited.
 ## Screen Recipes
 
 **Marketing shell** — sticky `.lf-glass` header (h-16: logo · nav links ·
-locale Dropdown · ThemeToggle · papaya CTA pill) floating over the page;
-full-bleed navy footer (brand / legal / contact 3-col grid, links in
+locale Dropdown · ThemeToggle · indigo CTA pill) floating over the page;
+full-bleed inverse footer (brand / legal / contact 3-col grid, links in
 `on-inverse-muted` hover `on-inverse`).
 
-**Landing** — band sequence: ① navy hero (2-col: extrabold headline with a
-`text-accent` highlight line, `on-inverse-muted` subtitle, papaya CTA +
+**Landing** — band sequence: ① inverse hero (2-col: extrabold headline with a
+`text-accent` highlight line, `on-inverse-muted` subtitle, indigo CTA +
 glass-deep ghost CTA, floating illustration over a soft `primary/20` glow) →
 ② white problem/solution 2-card grid → ③ tinted `band` 6-feature card grid
-(circular IconChips) → ④ navy fact band with one `.lf-glass-deep` hero card
+(circular IconChips) → ④ inverse fact band with one `.lf-glass-deep` hero card
 (`delight` stat numeral) → ⑤ white motivation split (photo + copy) →
 ⑥ final CTA banner card.
 
 **Auth (login / signup / identity verification)** — trust surface: focused
 single centered column on `base` (max-w-md; verification forms max-w-2xl with
 `sm:grid-cols-2` field pairs), soft `primary/10` glow behind ONE resting card,
-`lf-display-lg` title + muted subtitle above the card, one papaya submit CTA,
+`lf-display-lg` title + muted subtitle above the card, one indigo submit CTA,
 cross-links in `primary`. Status outcomes (success / retry guidance) replace
 the card, never stack on it. Privacy notes render as a `primary-soft` inline
 strip with a shield icon — before the form, not fine print. A minimal utility
@@ -319,11 +332,11 @@ header.
 **Dashboard (app)** — 280px fixed sidebar (desktop, COLLAPSIBLE to the
 `sidebar-sm` 88px token via a minimal edge chevron; collapsed = favicon
 brand, icon-only pills w/ mini lock overlay, avatar + logout stacked) /
-frosted bottom tabs (mobile); white canvas; course cards `md:grid-cols-2
+elevated bottom tabs (mobile); white canvas; course cards `md:grid-cols-2
 lg:grid-cols-3` with ProgressBars. Sidebar anatomy (top to bottom): logo →
 nav pills from `routes/app/navConfig` (active = `primary-soft` pill + filled
 icon; role-locked items render LOCKED with a lock chip, never hidden) →
-upgrade card (`accent-soft`, one papaya CTA; only while the role is missing)
+upgrade card (`accent-soft`, one indigo CTA; only while the role is missing)
 → theme control (language is a DB setting in /profile/settings, not shell
 chrome) → user card (`surface-sunken`: Avataaars thumb linking /profile,
 name, @username, logout). Mobile: glass top bar (logo · theme · logout) +
@@ -334,16 +347,16 @@ section = one navConfig entry + one route.
 cover (`lib/coverPresets`, 10 presets — NEVER an uploaded image) with the
 avatar (DiceBear Avataaars via `components/Avatar`, local SVG render)
 overlapping `-mt-14/-mt-16` with `ring-4 ring-base`; own profile adds a
-papaya pencil badge on the avatar (→ /profile/avatar) and a glass "edit
+indigo pencil badge on the avatar (→ /profile/avatar) and a glass "edit
 cover" chip (inline preset-swatch grid in an `.lf-pop` card). Below: display
 name + Tutor badge, `primary` @username, member-since caption, secondary
 Settings pill; StatCard row is the **Stat row grid** (2/3/6, §Layout → Grid
 Systems: streak, lessons, XP, minutes learned, followers, following — the
-last two link out to their list pages); share-to-invite card with one papaya
+last two link out to their list pages); share-to-invite card with one indigo
 copy CTA (flips to `success` on copy). Avatar editor: sticky live-preview
 card (desktop) + option-section cards — color swatches as `rounded-full`
 chips, feature options as live Avataaars thumbnails, selected = `primary`
-ring; "Surprise me" secondary + one papaya save.
+ring; "Surprise me" secondary + one indigo save.
 
 **Followers / Following / Blocked (list rows)** — the **List rows** grid
 (§Layout → Grid Systems): single-column rows in one resting `Card`,
@@ -360,18 +373,15 @@ modal; true modals stay reserved for nothing in this app so far.
 app chrome. Anatomy: sticky `.lf-glass` header (close pill, ProgressBar,
 hearts/streak/XP chips) → focused single column (max-w ~720px) with ONE
 segment at a time — narrator strip (CharacterActor + speech card) above the
-exercise body — → bottom `.lf-glass` action bar (hint left, papaya
+exercise body — → bottom `.lf-glass` action bar (hint left, indigo
 Check/Continue right, thumb-reachable). Feedback replaces the action bar as a
 tier-tinted banner (`success-soft`/`warning-soft`/`error-soft`) with the
 reacting character, rationale, and Retry/Continue; explanations always teach,
-never scold. Intro = cast + title + objectives + one papaya start CTA;
+never scold. Intro = cast + title + objectives + one indigo start CTA;
 Results = score ring, XP/streak stat cards, cast celebration. Exercises build
 ONLY from `lesson-engine/core/primitives.tsx` (OptionCard, TokenChip,
 SunkenWell, BigIconTile, NumberPad, KidSlider, GentleTimerBar) so all 50+
 types stay uniform; interactions are tap-first, ≥44px, no drag-and-drop.
-
-**Games hub** — poster-style `rounded-lg` media cards in a
-`md:grid-cols-2 lg:grid-cols-3` grid, hover lift, papaya "Play" pills.
 
 **Staff sections (admin console, `/admin/*`)** — added 2026-07-20, rebuilt
 2026-07-21 (owner sign-off). **INTEGRATED into the app shell, NOT a separate
@@ -395,7 +405,7 @@ role distribution list, system-health chip strip), **Content** (courses
 **Audit log** (append-only **Data table**), and **Roles & Access**
 (**superadmin-only** — grant form + role-holders table with per-role revoke).
 Voice is quieter than the kid product: dense tables over spacious cards, no
-characters, no upsell, papaya only for a true CTA. Empty/unavailable states
+characters, no upsell, indigo only for a true CTA. Empty/unavailable states
 use the standard empty-state grammar (icon + title + caption in a resting
 card), never a blank pane. Responsive per §1.11: KPI grids go 2-col mobile →
 6-col desktop, Data tables collapse to stacked cards below `md:` (Table
@@ -403,11 +413,11 @@ component), the section sub-nav is the mobile section switcher. Roles &
 Access simply does not render (route + sidebar) for a plain admin.
 
 **Assessment / Profile / Catalog** — same grammar: bands, cards, pills,
-IconChips; a profile hero may use a navy band with a glass-deep identity card.
+IconChips; a profile hero may use a inverse band with a glass-deep identity card.
 
 ## Do's and Don'ts
 
-- ✅ One papaya CTA per view; blue for links/info; pear only to celebrate.
+- ✅ One indigo CTA per view; blue for links/info; violet only to celebrate.
 - ✅ Frosted glass for anything that floats; opaque cards for anything at rest.
 - ✅ Verify both themes and both breakpoints before closing any task.
 - ❌ No raw hex, no ad-hoc font sizes, no sharp corners, no native pickers.

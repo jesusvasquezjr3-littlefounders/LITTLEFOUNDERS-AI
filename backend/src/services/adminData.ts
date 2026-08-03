@@ -1,4 +1,4 @@
-import { grantRole, insertAuditLog, revokeRole, serviceRest } from './supabaseRest.js';
+import { grantRole, grantAdminPermission, insertAuditLog, revokeRole, revokeAdminPermission, serviceRest } from './supabaseRest.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Every read here is service-role
@@ -141,16 +141,62 @@ export function isCourseStatus(s: string): s is CourseStatus {
   return (COURSE_STATUSES as readonly string[]).includes(s);
 }
 
-/** Flip a course's publish state (the review→published human gate, §1.9). Audited. */
-export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<boolean> {
+/** `blocked` carries the RPC's refusal verbatim so the route can map each
+ * distinct cause (archived vs missing locale vs stale verification…) to its
+ * own envelope error instead of one generic message. */
+export type CourseStatusResult =
+  | { outcome: 'ok' }
+  | { outcome: 'blocked'; code: string; message: string }
+  | { outcome: 'unavailable' };
+
+interface CourseReleaseRow {
+  ok: boolean;
+  code: string;
+  message: string;
+  adventures_published: number;
+  sagas_published: number;
+  topics_published: number;
+  lessons_published: number;
+}
+
+/**
+ * A publish click is a human approval, but it must release the complete
+ * hierarchy atomically. Directly PATCHing courses.status left every child in
+ * draft/review, making the course appear released to staff while remaining
+ * invisible to learners. The Vault RPC preflights locale completeness and
+ * lesson readiness before any state changes; this layer supplies the audit.
+ */
+export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusResult> {
+  if (status === 'published') {
+    const rows = await serviceRest<CourseReleaseRow[]>('/rpc/release_course', {
+      method: 'POST',
+      body: JSON.stringify({ p_course_id: courseId }),
+    });
+    const release = rows?.[0];
+    if (!release) return { outcome: 'unavailable' };
+    if (!release.ok) return { outcome: 'blocked', code: release.code, message: release.message };
+    const audited = await insertAuditLog(actorId, 'admin.course.release', courseId, {
+      adventuresPublished: release.adventures_published,
+      sagasPublished: release.sagas_published,
+      topicsPublished: release.topics_published,
+      lessonsPublished: release.lessons_published,
+    });
+    if (!audited) {
+      // The release transaction already committed, so this must not become a
+      // user-facing failure — but a whole-course release without its audit row
+      // has to be detectable, and audit_logs is the only record of it.
+      console.error(`[backend] audit write FAILED for admin.course.release course=${courseId} actor=${actorId}`);
+    }
+    return { outcome: 'ok' };
+  }
   const res = await serviceRest<unknown>(`/courses?id=eq.${encodeURIComponent(courseId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ status }),
   });
-  if (res === null) return false;
+  if (res === null) return { outcome: 'unavailable' };
   await insertAuditLog(actorId, 'admin.course.set_status', courseId, { status });
-  return true;
+  return { outcome: 'ok' };
 }
 
 // ── Moderation (lesson review gate) ──────────────────────────────────────────
@@ -221,6 +267,7 @@ export interface AdminRoleHolder {
   displayName: string;
   username: string | null;
   roles: string[];
+  permissions: string[];
 }
 
 /** Everyone who holds a STAFF or upgraded role (not the universal baseline). */
@@ -231,18 +278,27 @@ export async function listRoleHolders(): Promise<AdminRoleHolder[] | null> {
   if (!rows) return null;
   if (rows.length === 0) return [];
   const ids = [...new Set(rows.map((r) => r.user_id))].join(',');
-  const profiles = await serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
-    `/profiles?user_id=in.(${ids})&select=user_id,display_name,username`,
-  );
-  if (!profiles) return null;
+  const [profiles, perms] = await Promise.all([
+    serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
+      `/profiles?user_id=in.(${ids})&select=user_id,display_name,username`,
+    ),
+    serviceRest<{ user_id: string; permission: string }[]>(
+      `/admin_permissions?user_id=in.(${ids})&select=user_id,permission`,
+    ),
+  ]);
+  if (!profiles || !perms) return null;
   const pByUser = new Map(profiles.map((p) => [p.user_id, p]));
   const byUser = new Map<string, string[]>();
+  const permsByUser = new Map<string, string[]>();
   for (const r of rows) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
+  for (const p of perms) permsByUser.set(p.user_id, [...(permsByUser.get(p.user_id) ?? []), p.permission]);
+  
   return [...byUser.entries()].map(([userId, roles]) => ({
     userId,
     displayName: pByUser.get(userId)?.display_name ?? '—',
     username: pByUser.get(userId)?.username ?? null,
     roles,
+    permissions: permsByUser.get(userId) ?? [],
   }));
 }
 
@@ -262,6 +318,16 @@ export async function grantRoleChecked(userId: string, role: string, actorId: st
 
 export async function revokeRoleChecked(userId: string, role: string): Promise<RoleMutationResult> {
   const ok = await revokeRole(userId, role);
+  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
+}
+
+export async function grantAdminPermissionChecked(userId: string, permission: string, actorId: string): Promise<RoleMutationResult> {
+  const ok = await grantAdminPermission(userId, permission, actorId);
+  return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
+}
+
+export async function revokeAdminPermissionChecked(userId: string, permission: string): Promise<RoleMutationResult> {
+  const ok = await revokeAdminPermission(userId, permission);
   return ok ? { ok: true } : { ok: false, code: 'DB_REJECTED' };
 }
 
@@ -320,6 +386,31 @@ export async function getLearningRetention(): Promise<LearningRetention | null> 
 
 // ── Generation telemetry (0017) ─────────────────────────────────────────────
 
+/*
+ * Forge (`coursegen/`) is the only pipeline that writes generation telemetry
+ * (generation_runs / generation_slots / generation_runs_live /
+ * generation_heartbeat_snapshots) now that Arcade (games) has been removed.
+ * Every aggregation here reads the tables as lesson-only — no kind marker, no
+ * cross-pipeline scoping.
+ */
+
+/** Judge rubric dimensions — a CLOSED set. `kid_safety` is the hard floor. */
+const RUBRIC_DIMENSIONS: readonly string[] = [
+  'kid_safety',
+  'age_fit',
+  'concreteness',
+  'pedagogy',
+  'cognitive_engagement',
+  'feedback_quality',
+  'distractor_quality',
+  'narrative_quality',
+  'naturalness',
+];
+
+export function rubricDimensions(): readonly string[] {
+  return RUBRIC_DIMENSIONS;
+}
+
 export interface GenerationRunListItem {
   runId: string;
   trackId: string | null;
@@ -358,6 +449,7 @@ interface GenerationRunRow {
   track_id: string | null;
   course_slug: string;
   register: string;
+  params?: Record<string, unknown> | null;
   summary: {
     published?: string[];
     alreadyDone?: string[];
@@ -393,6 +485,8 @@ function mapRunRow(r: GenerationRunRow): GenerationRunListItem {
   };
 }
 
+const OVERVIEW_RUN_LIMIT = 20;
+
 /**
  * The Generation console's landing data: recent tracks + recent runs from the
  * 0017 telemetry tables (written by coursegen at the end of every non-dry
@@ -416,7 +510,8 @@ export async function getGenerationOverview(): Promise<GenerationOverview | null
       }[]
     >('/generation_tracks?select=track_id,course_slug,budget_usd,halted,report,updated_at&order=updated_at.desc&limit=10'),
     serviceRest<GenerationRunRow[]>(
-      '/generation_runs?select=run_id,track_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at&order=updated_at.desc&limit=20',
+      '/generation_runs?select=run_id,track_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,updated_at' +
+        `&order=updated_at.desc&limit=${OVERVIEW_RUN_LIMIT}`,
     ),
   ]);
   if (!tracks || !runs) return null;
@@ -432,7 +527,7 @@ export async function getGenerationOverview(): Promise<GenerationOverview | null
       shards: t.report.shards?.length ?? 0,
       updatedAt: t.updated_at,
     })),
-    runs: runs.map(mapRunRow),
+    runs: runs.map(mapRunRow).slice(0, OVERVIEW_RUN_LIMIT),
   };
 }
 
@@ -603,7 +698,10 @@ export interface GenerationAnalytics {
 
 const ANALYTICS_LIMIT = 50;
 
-export async function getGenerationAnalytics(courseSlug?: string): Promise<GenerationAnalytics | null> {
+/** Cross-run cost/quality/failure trends for Forge's lesson-generation runs. */
+export async function getGenerationAnalytics(
+  courseSlug?: string,
+): Promise<GenerationAnalytics | null> {
   const filter = courseSlug
     ? `&course_slug=eq.${encodeURIComponent(courseSlug)}`
     : '';
@@ -660,7 +758,7 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
     }
   }
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const dims = rubricDimensions();
   const qualityTrend: GenerationAnalytics['qualityTrend'] = [];
   for (const r of filtered) {
     const runSlots = slotsByRun.get(r.run_id) ?? [];
@@ -721,14 +819,18 @@ export async function getGenerationAnalytics(courseSlug?: string): Promise<Gener
     rate: allAttempted > 0 ? (allPublished / allAttempted) * 100 : 0,
   };
 
-  // Cost forecast: based on published lesson cost average across runs
-  const costPerLessonAvg = allPublished > 0 ? totalCost / allPublished : null;
+  /*
+   * Cost forecast, from the published-lesson cost average across runs. The
+   * per-course projection multiplies by the units a typical course holds —
+   * ~500 lessons (the Forge track size).
+   */
+  const costPerUnitAvg = allPublished > 0 ? totalCost / allPublished : null;
+  const UNITS_PER_COURSE = 500;
   let costForecast: GenerationAnalytics['costForecast'] = null;
-  if (costPerLessonAvg !== null && allPublished > 5) {
-    // Estimate for a typical course (~500 lessons)
+  if (costPerUnitAvg !== null && allPublished > 5) {
     costForecast = {
-      perLesson: costPerLessonAvg,
-      perCourse: costPerLessonAvg * 500,
+      perLesson: costPerUnitAvg,
+      perCourse: costPerUnitAvg * UNITS_PER_COURSE,
       basedOn: allPublished,
     };
   }
@@ -778,15 +880,19 @@ export interface CoachReport {
 
 const COACH_LIMIT = 20;
 
-export async function getCoachReport(courseSlug?: string, trackId?: string): Promise<CoachReport | null> {
+export async function getCoachReport(
+  courseSlug?: string,
+  trackId?: string,
+): Promise<CoachReport | null> {
   let filter = courseSlug ? `&course_slug=eq.${encodeURIComponent(courseSlug)}` : '';
   if (trackId) filter += `&track_id=eq.${encodeURIComponent(trackId)}`;
 
-  const runs = await serviceRest<
+  const allRuns = await serviceRest<
     {
       run_id: string;
       track_id: string | null;
       course_slug: string;
+      params?: Record<string, unknown> | null;
       summary: {
         published?: string[];
         failed?: { slotId: string; error: string; failedFrom?: string }[];
@@ -806,10 +912,12 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
       updated_at: string;
     }[]
   >(
-    `/generation_runs?select=run_id,track_id,course_slug,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at` +
+    `/generation_runs?select=run_id,track_id,course_slug,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at` +
       `&order=updated_at.desc&limit=${COACH_LIMIT}${filter}`,
   );
-  if (!runs || runs.length === 0) return null;
+  if (!allRuns) return null;
+  const runs = allRuns.slice(0, COACH_LIMIT);
+  if (runs.length === 0) return null;
 
   let totalPublished = 0;
   let totalFailed = 0;
@@ -861,7 +969,7 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
   );
   const judged = slots?.filter((s) => s.rubric) ?? [];
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
+  const dims = rubricDimensions();
   const dimensionMeans: Record<string, number | null> = {};
   const dimensionMins: Record<string, number | null> = {};
   for (const dim of dims) {
@@ -879,15 +987,20 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
     if (s.early_stopped) earlyStops++;
   }
 
-  // Worst lessons: lowest kid_safety or age_fit scores
+  /*
+   * Worst lessons: the hard floor (`kid_safety`) plus Forge's "is this pitched
+   * right for the age band" dimension, `age_fit`.
+   */
+  const fitDim = 'age_fit';
   const worstLessons = judged
     .map((s) => {
       const r = s.rubric ?? {};
       const kidSafety = typeof r.kid_safety === 'number' ? r.kid_safety : 5;
-      const ageFit = typeof r.age_fit === 'number' ? r.age_fit : 5;
+      const rawFit = r[fitDim];
+      const fit = typeof rawFit === 'number' ? rawFit : 5;
       const low: string[] = [];
       if (kidSafety < 5) low.push(`kid_safety=${kidSafety}`);
-      if (ageFit < 4) low.push(`age_fit=${ageFit}`);
+      if (fit < 4) low.push(`${fitDim}=${fit}`);
       return { slotId: s.slot_id, dims: low };
     })
     .filter((s) => s.dims.length > 0)
@@ -909,11 +1022,13 @@ export async function getCoachReport(courseSlug?: string, trackId?: string): Pro
     const m = dimensionMeans[d];
     return typeof m === 'number' && m < 3.5;
   });
+  const playbookFile = 'contentPlaybook.ts';
+  const unitPlural = 'lecciones';
   for (const dim of judgeDimLow) {
     actions.push({
       tag: `judge:${dim}`,
-      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del content playbook (contentPlaybook.ts) y los anchors del juez en review.ts.`,
-      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} lecciones evaluadas (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
+      proposal: `La dimensión '${dim}' promedia ${dimensionMeans[dim]?.toFixed(2)}/5. Revisar la sección correspondiente del playbook (${playbookFile}) y los anchors del juez.`,
+      evidence: `Media de ${dim}: ${dimensionMeans[dim]?.toFixed(2)}/5 sobre ${judged.length} ${unitPlural} evaluados (mín: ${dimensionMins[dim]?.toFixed(2)}).`,
     });
   }
   const topStage = [...heatmap.entries()].sort((a, b) => b[1] - a[1])[0];
@@ -1131,6 +1246,7 @@ export async function compareRuns(runIdA: string, runIdB: string): Promise<RunCo
       run_id: string;
       course_slug: string;
       register: string;
+      params?: Record<string, unknown> | null;
       summary: {
         published?: string[];
         failed?: { slotId: string; error: string; failedFrom?: string }[];
@@ -1145,13 +1261,12 @@ export async function compareRuns(runIdA: string, runIdB: string): Promise<RunCo
       updated_at: string;
     }[]
   >(
-    `/generation_runs?run_id=in.(${encodeURIComponent(runIdA)},${encodeURIComponent(runIdB)})&select=run_id,course_slug,register,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at`,
+    `/generation_runs?run_id=in.(${encodeURIComponent(runIdA)},${encodeURIComponent(runIdB)})&select=run_id,course_slug,register,params,summary,tokens_used,usd_used,cached_tokens,images_generated,images_billed,images_inherited,updated_at`,
   );
   if (!rows || rows.length < 2) return null;
 
-  const dims = ['kid_safety', 'age_fit', 'concreteness', 'pedagogy', 'cognitive_engagement', 'feedback_quality', 'distractor_quality', 'narrative_quality', 'naturalness'];
-
   const runs = await Promise.all(rows.map(async (r) => {
+    const dims = rubricDimensions();
     const slots = await serviceRest<
       { rubric: Record<string, number | string> | null }[]
     >(

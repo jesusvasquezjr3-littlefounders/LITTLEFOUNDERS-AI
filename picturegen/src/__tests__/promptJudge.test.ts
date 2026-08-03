@@ -1,5 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
-import { craftImagePrompt, fallbackPrompt, LF_VISUAL_IDENTITY, PICTORIAL_CLAUSE } from '../judge/promptJudge.js';
+import {
+  BASE_NEGATIVE_CORE,
+  baseNegativeFor,
+  craftImagePrompt,
+  fallbackPrompt,
+  LF_VISUAL_IDENTITY,
+  mergeNegative,
+  OBJECT_TILE_NEGATIVE_EXTENSION,
+  OBJECT_TILE_PURPOSES,
+  PICTORIAL_CLAUSE,
+  PICTURE_PURPOSES,
+} from '../judge/promptJudge.js';
+import { MAX_NEGATIVE_PROMPT_CHARS } from '../gen/qwenImageClient.js';
 
 const opts = { apiBase: 'https://judge.example/v1', apiKey: 'k', model: 'qwen-plus' };
 
@@ -12,12 +24,16 @@ describe('craftImagePrompt', () => {
     const fetchImpl = vi
       .fn()
       .mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: 'A sunny lemonade stand with a jar of coins', negative: 'text, watermark' })));
-    const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'lesson_option' }, { ...opts, fetchImpl });
-    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins' + PICTORIAL_CLAUSE);
+    const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'generic' }, { ...opts, fetchImpl });
+    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins.' + PICTORIAL_CLAUSE);
     // Judge negatives EXTEND the non-negotiable base list (no text/logos).
     expect(crafted.negative).toContain('logo');
     expect(crafted.negative).toContain('watermark');
     expect(crafted.negative?.endsWith('text, watermark')).toBe(true);
+    // Non-tile purposes must never receive anti-scenery/anti-background terms
+    // that fight their own positive prompt.
+    expect(crafted.negative).not.toContain('scenery');
+    expect(crafted.negative).not.toContain('background');
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
@@ -39,6 +55,38 @@ describe('craftImagePrompt', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
+  it('uses no art-director network call for a constrained object tile', async () => {
+    const fetchImpl = vi.fn();
+    const crafted = await craftImagePrompt({ label: 'Helado', purpose: 'item_card' }, { ...opts, fetchImpl });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(crafted.prompt).toContain('Single object: Helado');
+    expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+    expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
+    expect(crafted.prompt).toContain('clean geometric shapes');
+    expect(crafted.prompt).toContain('No other objects, text, logo or people');
+    expect(crafted.prompt).not.toContain('LittleFounders');
+    expect(crafted.prompt).not.toContain('colored backdrop');
+    expect(crafted.negative).toContain('3d render');
+    expect(crafted.prompt).not.toContain('reserve Purely');
+    expect(crafted.negative).toContain('person');
+    // Tiles DO get the anti-scenery / non-white-canvas extension.
+    expect(crafted.negative).toContain('scenery');
+    expect(crafted.negative).toContain('gray background');
+  });
+
+  it('keeps every object-tile purpose on the same white-canvas contract', async () => {
+    const purposes = ['item_card', 'option_card', 'lesson_option', 'memory_card'] as const;
+    for (const purpose of purposes) {
+      const fetchImpl = vi.fn();
+      const crafted = await craftImagePrompt({ label: 'Moneda', purpose }, { ...opts, fetchImpl });
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+      expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
+      expect(crafted.prompt).not.toContain('LittleFounders');
+    }
+  });
+
   it('falls back when the judge returns unparseable JSON twice', async () => {
     const fetchImpl = vi.fn().mockResolvedValue(chatResponse(200, 'not json at all'));
     const crafted = await craftImagePrompt({ label: 'a market stall' }, { ...opts, fetchImpl });
@@ -51,6 +99,107 @@ describe('craftImagePrompt', () => {
     const fetchImpl = vi.fn().mockRejectedValue(new Error('ECONNREFUSED'));
     const crafted = await craftImagePrompt({ label: 'coins' }, { ...opts, fetchImpl });
     expect(crafted.prompt).toContain('coins');
+  });
+});
+
+describe('OBJECT_TILE_PURPOSES — single source of truth', () => {
+  it('pins membership to exactly the four tile purposes', () => {
+    // service/pictures.ts imports this set for its cache-key collapse; the
+    // membership is a cache-correctness invariant, so it is pinned here.
+    expect([...OBJECT_TILE_PURPOSES].sort()).toEqual(['item_card', 'lesson_option', 'memory_card', 'option_card']);
+  });
+
+  it('every tile purpose is a valid picture purpose', () => {
+    for (const purpose of OBJECT_TILE_PURPOSES) {
+      expect(PICTURE_PURPOSES).toContain(purpose);
+    }
+  });
+});
+
+describe('baseNegativeFor — purpose-aware base negative', () => {
+  it('keeps both variants well under the 500-char provider cap', () => {
+    // The core must leave a real remainder for judge extras inside the
+    // DashScope cap; the tile variant never receives judge extras (tiles skip
+    // the judge) but must still fit whole.
+    expect(BASE_NEGATIVE_CORE.length).toBeLessThanOrEqual(300);
+    expect(baseNegativeFor('item_card').length).toBeLessThanOrEqual(450);
+    expect(baseNegativeFor('item_card')).toBe(`${BASE_NEGATIVE_CORE}, ${OBJECT_TILE_NEGATIVE_EXTENSION}`);
+  });
+
+  it('sends the common core (people / 3D / text / watermark) to EVERY purpose', () => {
+    for (const purpose of PICTURE_PURPOSES) {
+      const negative = baseNegativeFor(purpose);
+      for (const term of ['person', 'people', 'child', 'face', 'mascot', '3d render', 'photorealistic', 'text', 'letters', 'logo', 'watermark']) {
+        expect(negative).toContain(term);
+      }
+    }
+  });
+
+  it('covers rendered digits and captions for EVERY purpose (recorded live failure: "10 peces + 10 peces")', () => {
+    for (const purpose of PICTURE_PURPOSES) {
+      const negative = baseNegativeFor(purpose);
+      for (const term of ['captions', 'words', 'numbers', 'numerals']) {
+        expect(negative).toContain(term);
+      }
+    }
+  });
+
+  it('tile negative negates scenery and non-white canvases (gray/off-white/cream/colored)', () => {
+    for (const purpose of OBJECT_TILE_PURPOSES) {
+      const negative = baseNegativeFor(purpose);
+      expect(negative).toContain('scenery');
+      for (const term of ['gray background', 'off-white background', 'cream background', 'colored background']) {
+        expect(negative).toContain(term);
+      }
+    }
+  });
+
+  it('scene purposes get the core but NO anti-scenery / anti-background terms', () => {
+    for (const purpose of ['scene_anchor', 'scene', 'outcome', 'generic'] as const) {
+      const negative = baseNegativeFor(purpose);
+      expect(negative).toBe(BASE_NEGATIVE_CORE);
+      // A wide establishing scene's positive prompt demands scenery and a
+      // complete background — the negative must never fight it.
+      expect(negative).not.toContain('scenery');
+      expect(negative).not.toContain('background');
+    }
+  });
+
+  it('an undefined purpose behaves as generic (core only)', () => {
+    expect(baseNegativeFor(undefined)).toBe(BASE_NEGATIVE_CORE);
+  });
+});
+
+describe('mergeNegative — provider cap budgeting', () => {
+  it('returns the purpose base unchanged without judge extras', () => {
+    expect(mergeNegative()).toBe(BASE_NEGATIVE_CORE);
+    expect(mergeNegative('   ')).toBe(BASE_NEGATIVE_CORE);
+    expect(mergeNegative(undefined, 'item_card')).toBe(baseNegativeFor('item_card'));
+  });
+
+  it('appends judge extras whole when they fit the remaining budget', () => {
+    const merged = mergeNegative('blurry, scary', 'scene');
+    expect(merged).toBe(`${BASE_NEGATIVE_CORE}, blurry, scary`);
+    expect(merged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
+  });
+
+  it('truncates over-budget judge extras at a comma boundary, never mid-token — for both base variants', () => {
+    const terms = Array.from({ length: 40 }, (_, i) => `judgeterm${String(i).padStart(2, '0')}`);
+    for (const purpose of ['scene', 'item_card'] as const) {
+      const base = baseNegativeFor(purpose);
+      const merged = mergeNegative(terms.join(', '), purpose);
+      expect(merged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
+      expect(merged.startsWith(`${base}, `)).toBe(true);
+      const kept = merged.slice(base.length + 2).split(', ');
+      expect(kept.length).toBeGreaterThan(0);
+      // Every surviving extra is a whole term — the clip point is a comma.
+      expect(kept).toEqual(terms.slice(0, kept.length));
+    }
+  });
+
+  it('drops an extra that cannot fit rather than slicing it', () => {
+    expect(mergeNegative('x'.repeat(600))).toBe(BASE_NEGATIVE_CORE);
+    expect(mergeNegative('x'.repeat(600), 'memory_card')).toBe(baseNegativeFor('memory_card'));
   });
 });
 

@@ -13,35 +13,24 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import type { LiveRunHeartbeat } from './generationTypes';
+import {
+  resolveGenerationKind,
+  stagesForKind,
+  type GenerationStageDescriptor,
+  type LiveRunHeartbeat,
+} from './generationTypes';
 
 /*
- * /admin/generation live flow visualization. Shows the 7-stage Forge pipeline
- * as an interactive React Flow canvas. Nodes are colored by slot activity:
- * gray (idle), papaya pulse (active), green (all done), red (has failures).
+ * /admin/generation live flow visualization. Shows the active run's pipeline as
+ * an interactive React Flow canvas. Nodes are colored by slot activity: gray
+ * (idle), indigo pulse (active), green (all done).
+ *
+ * The stage list is PER-KIND (see generationTypes.ts): these telemetry tables
+ * are shared across generation pipelines but not the stage vocabulary, so the
+ * list is derived from the run rather than hardcoded (a hardcoded Forge list
+ * once rendered a live Arcade game run — since removed — as a row of empty
+ * pills).
  */
-
-const STAGES = [
-  'pending',
-  'planning',
-  'writing',
-  'reviewing',
-  'localizing',
-  'illustrating',
-  'publishing',
-  'published',
-] as const;
-
-const STAGE_ICONS: Record<string, string> = {
-  pending: 'pending',
-  planning: 'psychology',
-  writing: 'edit_note',
-  reviewing: 'grading',
-  localizing: 'translate',
-  illustrating: 'image',
-  publishing: 'cloud_upload',
-  published: 'task_alt',
-};
 
 const NODE_W = 140;
 const NODE_H = 72;
@@ -101,46 +90,77 @@ interface PipelineFlowProps {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function buildNodes(t: (key: string, opts?: Record<string, unknown>) => string, breakdown: Record<string, number>): Node[] {
-  return STAGES.map((stage, i) => {
-    const isTerminal = stage === 'published';
-    const isFirst = i === 0;
-    return {
-      id: stage,
-      type: 'pipeline',
-      position: { x: START_X + i * (NODE_W + NODE_GAP), y: 60 },
-      data: {
-        stage,
-        label: t(`admin.generation.stages.${stage}`, { defaultValue: stage }),
-        icon: STAGE_ICONS[stage] ?? 'circle',
-        count: breakdown[stage] ?? 0,
-        active: false,
-        terminal: isTerminal,
-      } satisfies PipelineNodeData,
-      sourcePosition: isFirst ? undefined : Position.Right,
-      targetPosition: isFirst ? undefined : Position.Left,
-    };
-  });
-}
+type Translate = (key: string, opts?: Record<string, unknown>) => string;
 
-function buildEdges(): Edge[] {
-  return STAGES.slice(0, -1).map((_, i) => ({
-    id: `e-${STAGES[i]}-${STAGES[i + 1]}`,
-    source: STAGES[i]!,
-    target: STAGES[i + 1]!,
-    animated: false,
-    style: { stroke: 'var(--color-outline)', strokeWidth: 2 },
+function buildNodes(t: Translate, stages: readonly GenerationStageDescriptor[]): Node[] {
+  return stages.map((stage, i) => ({
+    id: stage.key,
+    type: 'pipeline',
+    position: { x: START_X + i * (NODE_W + NODE_GAP), y: 60 },
+    data: {
+      stage: stage.key,
+      // Every label comes from i18n — the stage key is only a last-resort
+      // developer fallback, never a shipped user-facing string.
+      label: t(`admin.generation.stages.${stage.key}`, { defaultValue: stage.key }),
+      icon: stage.icon,
+      count: 0,
+      active: false,
+      terminal: stage.terminal === true,
+    } satisfies PipelineNodeData,
+    sourcePosition: i === 0 ? undefined : Position.Right,
+    targetPosition: i === 0 ? undefined : Position.Left,
   }));
 }
+
+function buildEdges(stages: readonly GenerationStageDescriptor[]): Edge[] {
+  const edges: Edge[] = [];
+  // Indexed reads are guarded: noUncheckedIndexedAccess types them as possibly
+  // undefined and the pipeline list is data-driven now.
+  for (let i = 0; i < stages.length - 1; i += 1) {
+    const from = stages[i];
+    const to = stages[i + 1];
+    if (!from || !to) continue;
+    edges.push({
+      id: `e-${from.key}-${to.key}`,
+      source: from.key,
+      target: to.key,
+      animated: false,
+      style: { stroke: 'var(--color-outline)', strokeWidth: 2 },
+    });
+  }
+  return edges;
+}
+
+/** True when the rendered graph already matches this stage list, in order. */
+function matchesStages(nodes: readonly Node[], stages: readonly GenerationStageDescriptor[]): boolean {
+  return nodes.length === stages.length && stages.every((s, i) => nodes[i]?.id === s.key);
+}
+
+/**
+ * Stable identity for "no heartbeat yet". Shared across every render so the
+ * effect's dependency only changes when a real breakdown arrives.
+ */
+const EMPTY_BREAKDOWN: Record<string, number> = {};
 
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
   const { t } = useTranslation();
-  const breakdown = heartbeat?.stageBreakdown ?? {};
+  // MUST be the module-level constant, never a fresh `{}`. The effect below
+  // depends on `breakdown`, so a new object literal per render made the
+  // dependency change every time: setNodes → re-render → new {} → setNodes …
+  // an unbreakable loop in the page's DEFAULT state (no active run).
+  const breakdown = heartbeat?.stageBreakdown ?? EMPTY_BREAKDOWN;
 
-  const initialNodes = useMemo<Node[]>(() => buildNodes(t, breakdown), [t]);
-  const initialEdges = useMemo<Edge[]>(() => buildEdges(), []);
+  // Same footgun class as EMPTY_BREAKDOWN: `stages` is a hook dependency, so it
+  // MUST be referentially stable. `stagesForKind` returns the module-level array
+  // for the kind — it never allocates — and `resolveGenerationKind` returns a
+  // primitive, so neither changes identity between renders of the same run.
+  const kind = resolveGenerationKind(heartbeat);
+  const stages = stagesForKind(kind);
+
+  const initialNodes = useMemo<Node[]>(() => buildNodes(t, stages), [t, stages]);
+  const initialEdges = useMemo<Edge[]>(() => buildEdges(stages), [stages]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges] = useEdgesState(initialEdges);
@@ -149,26 +169,44 @@ export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
   // because setNodes/setEdges are side effects. useMemo on non-pure functions causes
   // infinite render loops (setState → re-render → useMemo → setState → …).
   useEffect(() => {
-    setNodes((nds) =>
-      nds.map((n) => {
+    setNodes((nds) => {
+      // A run of a different kind carries a different stage list, so rebuild the
+      // graph from scratch; otherwise patch the existing nodes in place and keep
+      // React Flow's per-node state.
+      const aligned = matchesStages(nds, stages);
+      const base = aligned ? nds : buildNodes(t, stages);
+      // Bail out when nothing actually changed: returning the SAME array makes
+      // React skip the re-render entirely. Belt and braces against this effect
+      // ever becoming self-triggering again (every poll delivers a fresh
+      // stageBreakdown object even when the numbers are identical).
+      let changed = !aligned;
+      const next = base.map((n, i) => {
+        const stage = stages[i];
         const count = breakdown[n.id] ?? 0;
-        const active = n.id !== 'published' && n.id !== 'pending' && count > 0;
-        const terminal = n.id === 'published';
+        const active = stage !== undefined && !stage.terminal && !stage.idle && count > 0;
+        const terminal = stage?.terminal === true;
+        const prev = n.data as unknown as PipelineNodeData;
+        if (prev.count === count && prev.active === active && prev.terminal === terminal) return n;
+        changed = true;
         return {
           ...n,
-          data: {
-            ...(n.data as unknown as PipelineNodeData),
-            count,
-            active,
-            terminal,
-          } satisfies PipelineNodeData,
+          data: { ...prev, count, active, terminal } satisfies PipelineNodeData,
         };
-      }),
-    );
-    setEdges((eds) =>
-      eds.map((e) => {
+      });
+      return changed ? next : nds;
+    });
+    setEdges((eds) => {
+      const aligned =
+        eds.length === Math.max(stages.length - 1, 0) &&
+        eds.every((e, i) => e.source === stages[i]?.key);
+      const base = aligned ? eds : buildEdges(stages);
+      let changed = !aligned;
+      const next = base.map((e) => {
         const count = breakdown[e.source] ?? 0;
         const active = count > 0;
+        const sameLabel = e.label === (active ? String(count) : undefined);
+        if (e.animated === active && sameLabel) return e;
+        changed = true;
         return {
           ...e,
           animated: active,
@@ -184,9 +222,10 @@ export function PipelineFlow({ heartbeat, className }: PipelineFlowProps) {
           labelBgStyle: { fill: 'var(--color-surface-sunken)', rx: 8, ry: 8 },
           labelBgPadding: [6, 3] as [number, number],
         };
-      }),
-    );
-  }, [breakdown, setNodes, setEdges]);
+      });
+      return changed ? next : eds;
+    });
+  }, [breakdown, stages, t, setNodes, setEdges]);
 
   return (
     <div

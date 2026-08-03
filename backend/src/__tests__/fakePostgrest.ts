@@ -5,7 +5,9 @@
  * hand-sequencing every fetch() call per test would be unreadable). Supports
  * just enough of the query-string dialect services/supabaseRest.ts actually
  * emits: `eq.`, `in.(...)`, `select=` / `order=` / `on_conflict=` (ignored
- * for filtering), plus GET/POST/PATCH.
+ * for filtering), `limit=` / `offset=` (applied — the insights export pages
+ * with them, and a fake that silently ignored them made a broken pager look
+ * correct), plus GET/POST/PATCH.
  */
 
 export type FakeRow = Record<string, unknown>;
@@ -19,10 +21,23 @@ function matchesFilters(row: FakeRow, params: URLSearchParams): boolean {
     } else if (value.startsWith('in.(') && value.endsWith(')')) {
       const list = value.slice(4, -1).split(',');
       if (!list.includes(String(row[key]))) return false;
+    } else if (value === 'is.null') {
+      // analytics_consents active-consent lookups filter on revoked_at=is.null.
+      if (row[key] !== null && row[key] !== undefined) return false;
     }
-    // Other operators (or=, etc.) aren't used by learn.ts — ignored.
+    // Other operators (or=, etc.) aren't used by the routes under test — ignored.
   }
   return true;
+}
+
+/** PostgREST applies offset then limit; the export's truncation probe needs both. */
+function applyRange(rows: FakeRow[], params: URLSearchParams): FakeRow[] {
+  const offset = Number(params.get('offset') ?? '0');
+  const limit = params.get('limit');
+  const start = Number.isFinite(offset) && offset > 0 ? offset : 0;
+  const sliced = start > 0 ? rows.slice(start) : rows;
+  const n = limit === null ? NaN : Number(limit);
+  return Number.isFinite(n) && n >= 0 ? sliced.slice(0, n) : sliced;
 }
 
 function respond(status: number, body: unknown, minimal = false): Response {
@@ -47,11 +62,24 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
     const rows = db[table];
 
     if (method === 'GET') {
-      return respond(200, rows.filter((r) => matchesFilters(r, params)));
+      const matched = rows.filter((r) => matchesFilters(r, params));
+      return respond(200, applyRange(matched, params));
+    }
+
+    if (method === 'HEAD') {
+      // count=exact consumers read Content-Range, never a body.
+      const n = rows.filter((r) => matchesFilters(r, params)).length;
+      return new Response(null, { status: 200, headers: { 'Content-Range': `0-${Math.max(0, n - 1)}/${n}` } });
     }
 
     if (method === 'POST') {
-      const body = init?.body ? (JSON.parse(String(init.body)) as FakeRow) : {};
+      const parsed = init?.body ? (JSON.parse(String(init.body)) as FakeRow | FakeRow[]) : {};
+      // Batch inserts (learning_events) POST an array — one row each.
+      if (Array.isArray(parsed)) {
+        rows.push(...parsed);
+        return prefer.includes('return=minimal') ? respond(201, null, true) : respond(201, parsed);
+      }
+      const body = parsed;
       const onConflict = params.get('on_conflict');
       if (onConflict) {
         const keys = onConflict.split(',');

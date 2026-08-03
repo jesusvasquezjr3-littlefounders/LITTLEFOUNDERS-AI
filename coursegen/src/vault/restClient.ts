@@ -52,8 +52,9 @@ async function vaultRest<T>(path: string, init: RestInit = {}): Promise<RestResu
  * sagas/topics omit `status`, so a re-run never clobbers an operator's prior
  * 'published' flip — but LESSONS explicitly include `status: 'review'`
  * (publish.ts), so REGENERATING a published lesson downgrades it to review on
- * purpose: new kid-facing content always re-enters the human publish gate
- * (§1.9 / COURSE_ENGINE.md §6). Re-flip with db:publish-course after a regen.
+ * purpose: new kid-facing content always re-enters the human release gate
+ * (§1.9 / COURSE_ENGINE.md §6). Re-run verification, then release through
+ * Core after a regeneration.
  */
 export async function vaultUpsert<T>(table: string, rows: readonly unknown[], onConflict: string): Promise<T[]> {
   if (rows.length === 0) return [];

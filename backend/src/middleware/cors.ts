@@ -27,6 +27,18 @@ export function cors(req: Request, res: Response, next: NextFunction): void {
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization,Content-Type');
+    /*
+     * A cross-origin response's custom headers are invisible to JS unless
+     * they are named here — only the CORS-safelisted set comes through by
+     * default. Without this the insights export's truncation signal existed
+     * on the wire and could never be read by the page that requested it,
+     * which is the same as not having it: the console would present a clipped
+     * file as complete. Response-only metadata, no credentials implied.
+     */
+    res.setHeader(
+      'Access-Control-Expose-Headers',
+      'X-LF-Export-Rows,X-LF-Export-Truncated,X-LF-Export-Next-Offset,X-LF-Export-Token',
+    );
     res.setHeader('Access-Control-Max-Age', '86400');
   }
 

@@ -25,6 +25,7 @@ import {
 } from './schema.js';
 import { ALL_TYPES } from '../contract/registry.js';
 import { checkProgression } from './progression.js';
+import { buildCompetencyGraph, checkCompetencyGraph } from './competencyGraph.js';
 
 export interface LoadIssue {
   level: 'error' | 'warning';
@@ -518,6 +519,15 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
         }
       }
     }
+  }
+
+  const competencyGraph = buildCompetencyGraph(course);
+  for (const graphIssue of checkCompetencyGraph(competencyGraph)) {
+    issues.push({
+      level: graphIssue.level,
+      file: catalogPath,
+      message: `competency graph/${graphIssue.code}: ${graphIssue.message}`,
+    });
   }
 
   const ok = issues.every((i) => i.level !== 'error');

@@ -8,13 +8,13 @@
 ## Register
 
 product — app UI (design serves the product). Marketing pages exist but the
-platform surface (auth, dashboard, learn/tutor/games/tasks/profile) is the
+platform surface (auth, dashboard, learn/tutor/tasks/profile) is the
 primary register.
 
 ## Who / What / Why
 
 Financial-literacy learning platform for families. Kids learn money skills
-through gamified courses, an AI tutor, and minigames; parents (Tutors) manage
+through gamified courses and an AI tutor; parents (Tutors) manage
 kid accounts, assign real-world tasks with rewards, and keep full visibility.
 Six roles; everyone signs up as `universal` (zero friction), upgrades are
 verification-gated (Guardian service). Locales: en-US, es-MX, pt-BR. Light +
@@ -22,7 +22,7 @@ dark, desktop + mobile — all four are product invariants.
 
 ## Brand personality
 
-"LittleFounders Arcade" — premium learning game: Brilliant.org-style clarity,
+"LittleFounders Learning Platform" — premium course experience: Brilliant.org-style clarity,
 one loud papaya CTA per view, extrabold tight Figtree headlines, pills and big
 radii, liquid-glass floating chrome. Minimal by default; color is spent on
 meaning, never decoration. Kid-friendly without being childish.
