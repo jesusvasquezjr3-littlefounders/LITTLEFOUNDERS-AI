@@ -60,8 +60,11 @@ describe('craftImagePrompt', () => {
     const crafted = await craftImagePrompt({ label: 'Helado', purpose: 'item_card' }, { ...opts, fetchImpl });
 
     expect(fetchImpl).not.toHaveBeenCalled();
-    expect(crafted.prompt).toContain('Single object: Helado');
-    expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+    // 'silhouette' is banned from the tile prompt: qwen-image-max reads it as
+    // monochrome-icon-on-a-dark-field (live 46% tile failure on the inversion).
+    expect(crafted.prompt).not.toContain('silhouette');
+    expect(crafted.prompt).toContain('Single brightly colored object: Helado');
+    expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling the entire canvas to all four edges');
     expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
     expect(crafted.prompt).toContain('clean geometric shapes');
     expect(crafted.prompt).toContain('No other objects, text, logo or people');
@@ -81,7 +84,7 @@ describe('craftImagePrompt', () => {
       const fetchImpl = vi.fn();
       const crafted = await craftImagePrompt({ label: 'Moneda', purpose }, { ...opts, fetchImpl });
       expect(fetchImpl).not.toHaveBeenCalled();
-      expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+      expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling the entire canvas to all four edges');
       expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
       expect(crafted.prompt).not.toContain('LittleFounders');
     }
@@ -120,9 +123,9 @@ describe('baseNegativeFor — purpose-aware base negative', () => {
   it('keeps both variants well under the 500-char provider cap', () => {
     // The core must leave a real remainder for judge extras inside the
     // DashScope cap; the tile variant never receives judge extras (tiles skip
-    // the judge) but must still fit whole.
+    // the judge) so it may use nearly the whole cap, but must still fit whole.
     expect(BASE_NEGATIVE_CORE.length).toBeLessThanOrEqual(300);
-    expect(baseNegativeFor('item_card').length).toBeLessThanOrEqual(450);
+    expect(baseNegativeFor('item_card').length).toBeLessThanOrEqual(500);
     expect(baseNegativeFor('item_card')).toBe(`${BASE_NEGATIVE_CORE}, ${OBJECT_TILE_NEGATIVE_EXTENSION}`);
   });
 
@@ -183,18 +186,22 @@ describe('mergeNegative — provider cap budgeting', () => {
     expect(merged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
   });
 
-  it('truncates over-budget judge extras at a comma boundary, never mid-token — for both base variants', () => {
+  it('truncates over-budget judge extras at a comma boundary, never mid-token', () => {
     const terms = Array.from({ length: 40 }, (_, i) => `judgeterm${String(i).padStart(2, '0')}`);
-    for (const purpose of ['scene', 'item_card'] as const) {
-      const base = baseNegativeFor(purpose);
-      const merged = mergeNegative(terms.join(', '), purpose);
-      expect(merged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
-      expect(merged.startsWith(`${base}, `)).toBe(true);
-      const kept = merged.slice(base.length + 2).split(', ');
-      expect(kept.length).toBeGreaterThan(0);
-      // Every surviving extra is a whole term — the clip point is a comma.
-      expect(kept).toEqual(terms.slice(0, kept.length));
-    }
+    const base = baseNegativeFor('scene');
+    const merged = mergeNegative(terms.join(', '), 'scene');
+    expect(merged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
+    expect(merged.startsWith(`${base}, `)).toBe(true);
+    const kept = merged.slice(base.length + 2).split(', ');
+    expect(kept.length).toBeGreaterThan(0);
+    // Every surviving extra is a whole term — the clip point is a comma.
+    expect(kept).toEqual(terms.slice(0, kept.length));
+    // The tile variant fills nearly the whole cap (and deterministic tiles
+    // never carry judge extras): extras that cannot fit are dropped WHOLE.
+    const tileMerged = mergeNegative(terms.join(', '), 'item_card');
+    expect(tileMerged.length).toBeLessThanOrEqual(MAX_NEGATIVE_PROMPT_CHARS);
+    expect(tileMerged.startsWith(baseNegativeFor('item_card'))).toBe(true);
+    expect(tileMerged).not.toContain('judgeterm0'.slice(0, -1) + '…');
   });
 
   it('drops an extra that cannot fit rather than slicing it', () => {

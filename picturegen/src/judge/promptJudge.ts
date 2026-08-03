@@ -179,6 +179,12 @@ export const BASE_NEGATIVE_CORE =
  */
 export const OBJECT_TILE_NEGATIVE_EXTENSION =
   'scenery, colored background, gradient background, gray background, off-white background, cream background, ' +
+  // black/dark canvas was never negated in ANY prior list, and qwen-image-max
+  // sometimes reads the positive prompt's "pure white #FFFFFF" as the OBJECT
+  // color, rendering a white silhouette on a solid black field (reproduced
+  // live: 'Carrito de juguete' → 665/665 border pixels at channel 0). The
+  // production run failed ~46% of tile targets on exactly this inversion.
+  'black background, dark background, white silhouette on dark, ' +
   'border, frame, inset card, shadow, reflection';
 
 /** The non-negotiable base negative for a purpose: common core everywhere, plus the tile-only extension. */
@@ -263,8 +269,12 @@ export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptio
   if (OBJECT_TILE_PURPOSES.has(input.purpose ?? 'generic')) {
     return {
       prompt: finalizePrompt(
-        `Single object: ${input.label}. Centered, fully visible, bold simple silhouette. ` +
-          `Solid pure white #FFFFFF background filling all four edges. ` +
+        // "silhouette" is deliberately ABSENT: qwen-image-max reads it as
+        // monochrome-icon-on-a-dark-field and renders a white shape on a black
+        // canvas or black inset panel (reproduced live with 'Carrito de
+        // juguete'; ~46% of production tile targets failed on the inversion).
+        `Single brightly colored object: ${input.label}. Centered, fully visible, bold and simple. ` +
+          `Solid pure white #FFFFFF background filling the entire canvas to all four edges — no panel, no card, no dark field. ` +
           `Flat 2D animated vector illustration with clean geometric shapes, crisp high contrast, soft rounded forms and bright educational colors. ` +
           `No other objects, text, logo or people.`,
       ),
