@@ -62,11 +62,29 @@ export const CONSOLIDATION_INSTRUCTION =
   'CONSOLIDATION LESSON: retrieval and application ONLY — never introduce a concept absent from the sources.';
 export const INTERLEAVE_INSTRUCTION = 'Interleave at least 2 distinct source topics within this lesson plan.';
 
-/** COURSE_ENGINE.md §3.1/§4 — connect-to-prior. Never a cold restart. */
+/**
+ * COURSE_ENGINE.md §3.1/§4 — connect-to-prior. Never a cold restart.
+ *
+ * Production incident 2026-08-03: the judge's concreteness dimension kept
+ * failing lessons whose opener DID mention the prior lesson — e.g. "como
+ * hiciste al emparejar tus objetos en la isla" — but only as narrative flavor
+ * ("a vague callback [that] doesn't REINVOKE or BUILD ON the mechanic — it
+ * just references it narratively", per judge notes). The old wording ("must
+ * reference or build on this") let the model satisfy the weaker half of that
+ * either/or. The judge's actual bar is the STRONGER half only: an explicit
+ * RETRIEVAL moment that makes the child reapply the same skill, not a
+ * reference to the prior scene/characters/setting. Spell that out instead of
+ * leaving it to be inferred.
+ */
 export function connectToPriorInstruction(prior: string): string {
   return (
-    `CONNECT TO PRIOR: this lesson must OPEN by explicitly linking to what was just learned — "${prior}". ` +
-    'Do NOT restart cold or generic; the first story segment must reference or build on this.'
+    `CONNECT TO PRIOR: this lesson must OPEN with an EXPLICIT RETRIEVAL of the specific skill from the prior lesson's ` +
+    `micro-objective — "${prior}" — NOT a narrative callback to the prior scene/characters/setting. ` +
+    'A retrieval moment makes the child ACTIVELY REAPPLY that same skill right now (e.g. a direct recall line like ' +
+    '"Recuerda: la última vez emparejaste X con Y — ¿qué harías con estos dos?", or the first exercise re-exercising ' +
+    'the same mechanic before moving on). Merely mentioning that something happened before ("como hiciste en la isla", ' +
+    '"recuerdas cuando...") WITHOUT making the child redo or restate the skill itself does NOT satisfy this rule — ' +
+    'the callback must be functional, not decorative.'
   );
 }
 
