@@ -22,7 +22,7 @@ dark, desktop + mobile — all four are product invariants.
 
 ## Brand personality
 
-"LittleFounders Arcade" — premium learning game: Brilliant.org-style clarity,
+"LittleFounders Learning Platform" — premium course experience: Brilliant.org-style clarity,
 one loud papaya CTA per view, extrabold tight Figtree headlines, pills and big
 radii, liquid-glass floating chrome. Minimal by default; color is spent on
 meaning, never decoration. Kid-friendly without being childish.

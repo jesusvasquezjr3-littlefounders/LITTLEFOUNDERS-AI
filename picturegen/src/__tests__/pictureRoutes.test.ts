@@ -10,16 +10,16 @@ import type { PictureAssetRow } from '../cache/pictureAssetsRepo.js';
 const KEY = 'test-internal-key-0123456789'; // matches test-setup.ts INTERNAL_API_KEY
 const CRAFTED_PROMPT = 'A cheerful jar of coins on a sunny lemonade stand';
 
-// Config defaults exercised by the service (env.ts): model qwen-image, size 1024*1024.
+// Config defaults exercised by the service (env.ts): model qwen-image-max, size 1328*1328.
 // Cache key hashes the REQUEST descriptor (purpose | label | context), never the
 // judged prompt — the judge is nondeterministic, so a prompt-keyed cache never hits.
-const HIT_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v4 | generic | a jar of coins | ');
-const MISS_HASH = pictureAssetHash('qwen-image', '1024*1024', 'v4 | lesson_option | a jar of coins | saving up');
+const HIT_HASH = pictureAssetHash('qwen-image-max', '1328*1328', 'v7-qwen-image-max-flat-vector | generic | a jar of coins | ');
+const MISS_HASH = pictureAssetHash('qwen-image-max', '1328*1328', 'v8-qwen-image-max-object-white-flat-vector | lesson_option | a jar of coins | saving up');
 
 const storedRow: PictureAssetRow = {
   id: '11111111-1111-4111-8111-111111111111',
   prompt_hash: HIT_HASH,
-  model: 'qwen-image',
+  model: 'qwen-image-max',
   prompt: CRAFTED_PROMPT,
   url: 'https://depot.example/files/lesson-images/abc.png',
   file_id: 'lesson-images/abc.png',
@@ -83,7 +83,7 @@ describe('POST /api/v1/pictures — cache HIT', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
-      data: { url: storedRow.url, file_id: storedRow.file_id, prompt: storedRow.prompt, model: 'qwen-image', cached: true },
+      data: { url: storedRow.url, file_id: storedRow.file_id, prompt: storedRow.prompt, model: 'qwen-image-max', cached: true, generated_images: 0 },
       error: null,
     });
     // Cache-first invariant: a hit spends ZERO paid API calls — including the judge.
@@ -105,11 +105,12 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text, watermark' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: realPng, contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('clean');
+    const verifyPictorial = vi.fn().mockResolvedValue({ verdict: 'clean', hasText: false, hasPerson: false, hasNonWhiteBackground: false });
+    const verifyWhiteCanvas = vi.fn().mockResolvedValue('clean');
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
-    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, uploadFile, insertAsset } } });
+    const app = createApp({ pictures: { generatePicture: { craftImagePrompt, findByHash, generateImage, verifyPictorial, verifyWhiteCanvas, uploadFile, insertAsset } } });
     const res = await request(app)
       .post('/api/v1/pictures')
       .set('x-internal-api-key', KEY)
@@ -117,6 +118,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data.cached).toBe(false);
+    expect(res.body.data.generated_images).toBe(1);
     expect(res.body.data.url).toBe(uploadResult.url);
     expect(res.body.data.file_id).toBe(uploadResult.id);
     expect(res.body.error).toBeNull();
@@ -124,7 +126,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     expect(findByHash).toHaveBeenCalledWith(MISS_HASH);
     expect(generateImage).toHaveBeenCalledWith(
       { prompt: CRAFTED_PROMPT, negativePrompt: 'text, watermark' },
-      expect.objectContaining({ model: 'qwen-image', size: '1024*1024' }),
+      expect.objectContaining({ model: 'qwen-image-max', size: '1328*1328' }),
     );
     // The verifier saw the ORIGINAL PNG bytes (webp support never has to be proven).
     expect(verifyPictorial).toHaveBeenCalledWith(realPng, 'image/png', expect.any(Object));
@@ -140,14 +142,14 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     );
     const uploadedBytes = uploadFile.mock.calls[0]?.[0] as Buffer;
     expect(uploadedBytes.subarray(8, 12).toString('ascii')).toBe('WEBP');
-    expect(insertAsset).toHaveBeenCalledWith(expect.objectContaining({ prompt_hash: MISS_HASH, model: 'qwen-image', prompt: CRAFTED_PROMPT }));
+      expect(insertAsset).toHaveBeenCalledWith(expect.objectContaining({ prompt_hash: MISS_HASH, model: 'qwen-image-max', prompt: CRAFTED_PROMPT }));
   });
 
   it('stores the ORIGINAL bytes when the transcode cannot decode them — a paid generation is never lost', async () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([1, 2, 3]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('clean');
+    const verifyPictorial = vi.fn().mockResolvedValue({ verdict: 'clean', hasText: false, hasPerson: false, hasNonWhiteBackground: false });
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
@@ -173,11 +175,11 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('boom', { status: 500 })));
 
     const fbPrompt = fallbackPrompt({ label: 'a piggy bank', context: 'saving money', purpose: 'generic' }).prompt;
-    const fbHash = pictureAssetHash('qwen-image', '1024*1024', 'v4 | generic | a piggy bank | saving money');
+    const fbHash = pictureAssetHash('qwen-image-max', '1328*1328', 'v7-qwen-image-max-flat-vector | generic | a piggy bank | saving money');
 
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([7]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('clean');
+    const verifyPictorial = vi.fn().mockResolvedValue({ verdict: 'clean', hasText: false, hasPerson: false, hasNonWhiteBackground: false });
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
@@ -199,7 +201,9 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValueOnce('defect').mockResolvedValueOnce('clean');
+    const verifyPictorial = vi.fn()
+      .mockResolvedValueOnce({ verdict: 'defect', hasText: true, hasPerson: false, hasNonWhiteBackground: false })
+      .mockResolvedValueOnce({ verdict: 'clean', hasText: false, hasPerson: false, hasNonWhiteBackground: false });
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 
@@ -221,7 +225,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('defect');
+    const verifyPictorial = vi.fn().mockResolvedValue({ verdict: 'defect', hasText: true, hasPerson: false, hasNonWhiteBackground: false });
     const uploadFile = vi.fn();
     const insertAsset = vi.fn();
 
@@ -234,6 +238,8 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     // re-request a terminal failure — up to 12 paid generations per target.
     expect(res.status).toBe(422);
     expect(res.body).toEqual({ data: null, error: { code: 'IMAGE_VERIFICATION_FAILED', message: expect.any(String) } });
+    expect(res.body.error.message).toContain('text');
+    expect(res.headers['x-picturegen-generated-images']).toBe('3');
     // PICTUREGEN_VERIFY_ATTEMPTS default = 3 attempts, all verified, none stored.
     expect(generateImage).toHaveBeenCalledTimes(3);
     expect(verifyPictorial).toHaveBeenCalledTimes(3);
@@ -245,7 +251,7 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     const craftImagePrompt = vi.fn().mockResolvedValue({ prompt: CRAFTED_PROMPT, negative: 'text' });
     const findByHash = vi.fn().mockResolvedValue(null);
     const generateImage = vi.fn().mockResolvedValue({ bytes: Buffer.from([9]), contentType: 'image/png' });
-    const verifyPictorial = vi.fn().mockResolvedValue('unavailable');
+    const verifyPictorial = vi.fn().mockResolvedValue({ verdict: 'unavailable', hasText: null, hasPerson: null, hasNonWhiteBackground: null });
     const uploadFile = vi.fn().mockResolvedValue(uploadResult);
     const insertAsset = vi.fn().mockImplementation(async (r: PictureAssetRow) => ({ ...storedRow, ...r }));
 

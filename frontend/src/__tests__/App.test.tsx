@@ -21,7 +21,7 @@ beforeEach(async () => {
 describe('Marketing site', () => {
   it('renders the landing page with hero, pitch sections, and CTA', () => {
     renderApp();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/learned by playing/);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/learned by doing/);
     expect(screen.getByText('The problem')).toBeInTheDocument();
     expect(screen.getByText('Our solution')).toBeInTheDocument();
     expect(screen.getByText('Source: S&P Global FinLit Survey')).toBeInTheDocument();
@@ -92,6 +92,6 @@ describe('Marketing site', () => {
     fireEvent.click(trigger);
     fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
 
-    expect(await screen.findByText(/aprendida jugando/)).toBeInTheDocument();
+    expect(await screen.findByText(/aprendida haciendo/)).toBeInTheDocument();
   });
 });

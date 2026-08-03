@@ -9,10 +9,18 @@ import type { UsageLedger } from '../providers/usage.js';
 import { resolveAllowedTypes, renderPalette } from './prompts/palette.js';
 import { TYPE_TO_FAMILY, CONTENT_TYPES, MONEY_TYPES, FLOW_TYPES, type FamilyName } from '../contract/registry.js';
 import type { TaxonomyFile } from '../catalog/schema.js';
+import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 
 export const MIN_SEGMENTS = 8;
-export const MAX_SEGMENTS = 14;
+/*
+ * A 10-minute lesson must feel compact, and the full-document author must be
+ * able to complete every planned segment without salvage. The old 14-segment
+ * ceiling produced saturated lessons and repeatedly encouraged a model to
+ * drop the tail of its own blueprint. Ten is enough for story, retrieval,
+ * application and reflection while keeping one author response tractable.
+ */
+export const MAX_SEGMENTS = 10;
 export const MIN_DISTINCT_TYPES = 5;
 export const MAX_STORYPLAY_FLOWS = 1;
 const MAX_PLAN_ATTEMPTS = 3;
@@ -80,6 +88,38 @@ export function renderReviewSourcesBlock(sources: readonly ReviewSourceSummary[]
     .join('\n');
 }
 
+/** Render the per-topic graph slice after the stable prompt prefix. */
+export function renderCompetencyGraphBlock(context: CompetencyPromptContext): string {
+  const current = [
+    `CURRENT COMPETENCY [${context.current.topicPath}] (${context.current.role})`,
+    `concept: ${context.current.concept}`,
+    `objective: ${context.current.objective}`,
+    `vocabulary: ${context.current.vocabulary.join(', ') || '(none)'}`,
+    `evidence: ${context.current.evidence}`,
+  ].join('\n');
+  const incoming = context.incoming.length === 0
+    ? 'No earlier competency edge; this is a graph root and must establish the concept from first principles.'
+    : context.incoming
+        .map(
+          (edge, index) =>
+            `${index + 1}. [${edge.kind}/${edge.strength}] ${edge.source.topicPath} — ${edge.source.concept}\n` +
+            `   objective: ${edge.source.objective}\n` +
+            `   vocabulary: ${edge.source.vocabulary.join(', ') || '(none)'}\n` +
+            `   why: ${edge.reason}`,
+        )
+        .join('\n');
+  return [
+    'COMPETENCY GRAPH CONTEXT (deterministic; do not invent or skip these edges):',
+    current,
+    'EARLIER COMPETENCIES CONNECTED TO THIS TOPIC:',
+    incoming,
+    'GRAPH AUTHORING RULES:',
+    '- Respect every hard edge: do not assume a concept the learner has not encountered; briefly bridge it or keep the exercise within the prerequisite boundary.',
+    '- Use sequence edges to connect the opening to prior learning without restarting cold.',
+    '- For retrieval edges, retrieve and apply the cited competency; do not introduce a new concept in a review lesson.',
+  ].join('\n');
+}
+
 export interface PlanContext {
   tier: string;
   taxonomy: TaxonomyFile;
@@ -100,6 +140,8 @@ export interface PlanContext {
   };
   /** Present only for review_spaced/review_interleaved/review_quest topics. */
   review?: PlanReviewContext;
+  /** Derived per-topic competency graph context; authored YAML remains the source of truth. */
+  competency?: CompetencyPromptContext;
   /**
    * Connect-to-prior (COURSE_ENGINE.md §3.1/§4): the previous slot's
    * micro_objective in the linear walk — same topic's previous lesson, or
@@ -150,6 +192,24 @@ function anyRepairCandidate(allowed: ReadonlySet<string>, exclude: ReadonlySet<s
   return first ?? Array.from(allowed)[0] ?? 'quiz_mcq';
 }
 
+const NUMERIC_TYPE_ANSWER_MARKERS = /\b(?:cu[aá]nt[oa]s?|total|suma|resultado|calcula|n[uú]mero|pesos?|monedas?|\d+)\b/i;
+const SPEED_TAP_ITEM_COUNT_MARKER = /\b(?:[6-9]|1[0-4]|seis|siete|ocho|nueve|diez|once|doce|trece|catorce)\b/i;
+
+function repairSemanticTypeConstraints(segments: PlanSegment[], allowed: ReadonlySet<string>, fixes: string[]): void {
+  for (const segment of segments) {
+    if (segment.type === 'type_answer' && !NUMERIC_TYPE_ANSWER_MARKERS.test(segment.brief)) {
+      const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
+      fixes.push(`replaced open-ended type_answer with "${replacement}" because its brief is not numeric applied practice`);
+      segment.type = replacement;
+    }
+    if (segment.type === 'speed_tap' && !SPEED_TAP_ITEM_COUNT_MARKER.test(segment.brief)) {
+      const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
+      fixes.push(`replaced underspecified speed_tap with "${replacement}" because its brief does not require 6-14 items`);
+      segment.type = replacement;
+    }
+  }
+}
+
 /**
  * Deterministic MIX RULES repair (COURSE_ENGINE.md §4):
  *  1. Every segment.type must be in the allowed palette.
@@ -176,6 +236,13 @@ export function planRepair(
     fixes.push(`replaced disallowed type "${seg.type}" with "${replacement}"`);
     seg.type = replacement;
   }
+
+  // Type-specific minimums and interaction semantics are part of the plan,
+  // not something the writer can safely infer after spending a full response.
+  // A prose/open-answer brief cannot satisfy type_answer's numeric contract,
+  // and speed_tap is not a five-item recap; demote either to a simple choice
+  // exercise before authoring rather than buying a predictable invalid draft.
+  repairSemanticTypeConstraints(segments, allowed, fixes);
 
   // Rule 2: first segment must be `story` family.
   const firstIsStory = segments.length > 0 && CONTENT_TYPES.includes(segments[0]!.type);
@@ -267,6 +334,8 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     'PREMISE QUALITY STARTS HERE: each `brief` must name a CONCRETE, kid-real micro-situation with a decision and a stake — a named character (dina/liruf/rho/zara), a real thing with a price, a choice to make ("Zara debe decidir si sube el precio de la limonada con más clientela"). NEVER a generic "practica la suma" / "pregunta sobre el ahorro". A boring brief produces a boring exercise.',
     `Use at least ${MIN_DISTINCT_TYPES} DISTINCT segment types across the lesson.`,
     `At most ${MAX_STORYPLAY_FLOWS} segment(s) from the storyplay family (flows are long — do not overload a single lesson).`,
+    '`type_answer` is NUMERIC applied practice only: use it only for a one-step calculation whose brief names the exact number the child will type. Never plan it for an open-ended sentence, opinion, vocabulary definition, or reflection; use a choice/input type that matches that task instead.',
+    '`speed_tap` briefs MUST explicitly call for 6-14 short items and a concrete matching rule; never use it for a two-to-five-example recap.',
     'Ramp difficulty roughly low→high across the lesson (the WRITE stage assigns exact difficulty 1-5 per segment).',
     'Use ONLY the type ids listed in the PALETTE — nothing else.',
   ]
@@ -304,6 +373,8 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     `Suggested families: ${ctx.lesson.suggestedFamilies.join(', ') || '(none specified)'}`,
   ].join('\n');
 
+  const competencyBlock = ctx.competency ? `\n\n${renderCompetencyGraphBlock(ctx.competency)}` : '';
+
   const reviewBlock = ctx.review
     ? [
         '',
@@ -323,6 +394,7 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     '',
     'LESSON CONTEXT:',
     context,
+    competencyBlock,
     reviewBlock,
   ].join('\n');
 

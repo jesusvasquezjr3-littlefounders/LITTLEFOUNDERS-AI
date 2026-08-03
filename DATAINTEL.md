@@ -5,8 +5,11 @@
 > detection, churn prediction, path analysis, experiments, and the admin
 > intelligence console.
 >
-> Status: SHIPPED 2026-07-29. Service `dataintel/` (port 4008), DuckDB
-> in-process, sync pipeline, 40 analytical endpoints, 9-tab admin console.
+> Status: SHIPPED 2026-07-29; production handoff contract completed 2026-08-02.
+> Service `dataintel/` (port 4008), DuckDB in-process, sync pipeline, 40
+> analytical endpoints, 9-tab admin console. Railway deployment still requires
+> the operator to create/verify the service and set its internal variables;
+> local preflight intentionally reports that external state until reconciled.
 
 ## 1. Why this exists
 

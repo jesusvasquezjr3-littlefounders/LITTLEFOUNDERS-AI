@@ -4,7 +4,7 @@ import { findByHash, insertAsset, pictureAssetHash, type PictureAssetRow } from 
 const row: PictureAssetRow = {
   id: '11111111-1111-4111-8111-111111111111',
   prompt_hash: 'abc',
-  model: 'qwen-image',
+  model: 'qwen-image-max',
   prompt: 'a jar of coins',
   url: 'https://depot.example/files/lesson-images/abc.png',
   file_id: 'lesson-images/abc.png',
@@ -22,13 +22,13 @@ afterEach(() => {
 
 describe('pictureAssetHash', () => {
   it('is deterministic and keyed on model + size + prompt', () => {
-    const a = pictureAssetHash('qwen-image', '1024*1024', 'a jar of coins');
-    const b = pictureAssetHash('qwen-image', '1024*1024', 'a jar of coins');
+    const a = pictureAssetHash('qwen-image-max', '1024*1024', 'a jar of coins');
+    const b = pictureAssetHash('qwen-image-max', '1024*1024', 'a jar of coins');
     expect(a).toBe(b);
     expect(a).toHaveLength(64); // sha256 hex
 
-    expect(pictureAssetHash('qwen-image', '1024*1024', 'a lemon')).not.toBe(a);
-    expect(pictureAssetHash('qwen-image', '512*512', 'a jar of coins')).not.toBe(a);
+    expect(pictureAssetHash('qwen-image-max', '1024*1024', 'a lemon')).not.toBe(a);
+    expect(pictureAssetHash('qwen-image-max', '512*512', 'a jar of coins')).not.toBe(a);
     expect(pictureAssetHash('other-model', '1024*1024', 'a jar of coins')).not.toBe(a);
   });
 });

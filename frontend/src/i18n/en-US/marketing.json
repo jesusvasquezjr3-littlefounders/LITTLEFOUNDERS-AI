@@ -8,8 +8,8 @@
   },
   "hero": {
     "titleLead": "Money skills,",
-    "titleHighlight": "learned by playing",
-    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into a game your kids actually want to play, safe, guided, and side by side with your family.",
+    "titleHighlight": "learned by doing",
+    "subtitle": "LittleFounders turns financial literacy and entrepreneurship into interactive courses your kids want to complete, safe, guided, and side by side with your family.",
     "ctaPrimary": "Start free",
     "ctaSecondary": "How it works",
     "imageAlt": "A family learning about money together at the table with the LittleFounders characters",
@@ -58,8 +58,8 @@
       "body": "Verified guardian links, moderated content, and no child data ever sold or shared."
     },
     "f7": {
-      "title": "Gaming that teaches",
-      "body": "Interactive games where every tap builds real skills, saving, budgeting, investing. Real learning disguised as play."
+      "title": "Challenges that teach",
+      "body": "Interactive lessons where every decision builds real skills in saving, budgeting, and investing. Practice that feels rewarding."
     }
   },
   "finalCta": {
@@ -69,7 +69,7 @@
     "imageAlt": "A smiling child putting a coin into a crowned piggy bank"
   },
   "footer": {
-    "tagline": "Learn, play, and build your future.",
+    "tagline": "Learn, grow, and build your future.",
     "contactLabel": "Contact",
     "legalTitle": "Legal",
     "terms": "Terms & Conditions",

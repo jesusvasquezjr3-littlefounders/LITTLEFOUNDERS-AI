@@ -7,7 +7,8 @@ import { z } from 'zod';
  *
  * Prism (picturegen) is the platform's ONLY image-generation service — the
  * visual sibling of Echo (audiogen). Two DashScope surfaces are configured:
- *   1. the async text-to-image endpoint (IMAGE_*), and
+ *   1. the model-selected image endpoint (synchronous for qwen-image-max;
+ *      legacy qwen-image variants use async submit/poll), and
  *   2. an OpenAI-compatible chat endpoint (JUDGE_*) used by the art-director
  *      judge to craft the illustration prompt.
  */
@@ -17,12 +18,14 @@ const Env = z.object({
   // Service-to-service auth (/AGENTS.md §1.5) — validates inbound x-internal-api-key.
   INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
 
-  // Image provider — Qwen-Image on DashScope async text2image. Decision
+  // Image provider — Qwen-Image-Max on DashScope's synchronous multimodal
+  // endpoint. Legacy Qwen-Image variants use async text2image. Decision
   // RESOLVED (AGENTS.md): Gemini was discarded (image models quota-0).
   IMAGE_API_BASE: z.url().default('https://dashscope-intl.aliyuncs.com'),
   IMAGE_API_KEY: z.string().min(1, 'IMAGE_API_KEY is required'),
-  IMAGE_MODEL: z.string().min(1).default('qwen-image'),
-  IMAGE_SIZE: z.string().min(1).default('1024*1024'),
+  IMAGE_MODEL: z.string().min(1).default('qwen-image-max'),
+  // qwen-image-max supports fixed preset sizes; 1328*1328 is its square preset.
+  IMAGE_SIZE: z.string().min(1).default('1328*1328'),
 
   // Art-director judge — OpenAI-compatible chat (DashScope compatible-mode).
   // JUDGE_API_KEY is optional; it falls back to IMAGE_API_KEY (same account).
@@ -46,7 +49,7 @@ const Env = z.object({
 
   // Storage transcode — every generated image is re-encoded WebP at this
   // quality before the Depot upload (gen/transcode.ts: −96.9% vs the PNGs
-  // qwen-image serves, measured on the live corpus 2026-07-25). The verifier
+  // Qwen-Image serves, measured on the live corpus 2026-07-25). The verifier
   // always inspects the ORIGINAL bytes, so this never affects verification.
   IMAGE_WEBP_QUALITY: z.coerce.number().int().min(1).max(100).default(82),
 

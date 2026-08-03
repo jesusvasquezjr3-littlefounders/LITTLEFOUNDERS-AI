@@ -1,15 +1,17 @@
 // write stage — skeleton → full LessonDocument (COURSE_ENGINE.md §4).
 // DeepSeek, temp 0.4, JSON mode, es-MX first (the authoring locale).
 // Corrective retries (max 4) feed truncated Zod issues back to the model;
-// if those are exhausted, per-segment salvage keeps whatever segments DID
-// validate (dropping the rest, if ≥6 survive incl ≥1 graded); if salvage
-// also fails, one last-resort regen at temp 0.2 is the final attempt.
+// if those are exhausted, one last-resort regen at temp 0.2 gets a final
+// chance to fulfill the entire blueprint. Per-segment salvage is diagnostics
+// only and happens after that final complete-document attempt.
 
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
+import { getConfig } from '../env.js';
 import {
   effectiveDifficulty,
   renderReviewSourcesBlock,
+  renderCompetencyGraphBlock,
   CONSOLIDATION_INSTRUCTION,
   INTERLEAVE_INSTRUCTION,
   connectToPriorInstruction,
@@ -30,6 +32,34 @@ import { withCorrectiveRetry, safeJsonParse, formatZodIssues, CorrectiveRetryExh
 
 const MAX_WRITE_ATTEMPTS = 4;
 const MIN_SALVAGE_SEGMENTS = 6;
+
+/*
+ * Keep the schema's smallest interactive collections visible beside the
+ * skeleton. The shape examples intentionally use tiny placeholders, so a
+ * reasoning model can otherwise copy a one-item example into a field whose
+ * real schema requires several choices. This is a prompt aid only: Zod and
+ * the deterministic gates remain the authority.
+ */
+const SEGMENT_MINIMUMS: Readonly<Record<string, ReadonlyArray<readonly [string, number]>>> = {
+  sort_buckets: [['payload.items', 4]],
+  needs_wants: [['payload.items', 4]],
+  dialogue_choice: [['payload.turns', 2], ['payload.turns[].replies', 2]],
+  quiz_mcq: [['payload.items', 3]],
+  picture_choice: [['payload.options', 2]],
+  choice: [['payload.options', 2]],
+};
+
+export function renderSegmentMinimums(segments: readonly PlanSegmentLike[]): string {
+  return segments
+    .flatMap((segment, index) =>
+      (SEGMENT_MINIMUMS[segment.type] ?? []).map(
+        ([path, minimum]) => `segment ${index + 1} (${segment.type}) ${path} MUST contain at least ${minimum} entries`,
+      ),
+    )
+    .join('; ');
+}
+
+type PlanSegmentLike = { type: string };
 const WRITE_ISSUE_TRUNCATE = 6;
 
 export interface WriteInput {
@@ -58,6 +88,8 @@ export interface WriteResult {
   attempts: number;
   salvaged: boolean;
   droppedSegments: number;
+  /** Bounded schema/gate feedback from the final failed full-document attempt. */
+  lastIssues?: string;
 }
 
 export interface WriteDeps {
@@ -96,7 +128,7 @@ const BASE_HARD_RULES = [
   'icon / art.icon / ask_icon / a_icon / b_icon values MUST come from the ALLOWED ICONS list included below — never any other name, never an invented one ("lemonade", "piggy_bank", "counter_1" all fail validation and kill the lesson). When unsure, prefer a plain, common glyph from the list.',
   'fill_blank segments ONLY: `payload.text_md` MUST contain a `{{1}}`, `{{2}}`… marker (matching each `answer.gaps[].gap` number, 1-indexed, in order) at the exact point each blank belongs — one marker per gap, no exceptions.',
   'savings_goal segments ONLY: OMIT `answer.correct` entirely — the grader computes it automatically as ceil(`payload.goal` / weekly) from `payload.goal`/`payload.weekly_options`. If you do include it, every key must be the exact string form of one of the `weekly_options` numbers (e.g. "20"), never a label like "weeks". CRITICAL: `payload.goal` must be the FULL amount the child divides — the prompt must NOT say part of it is "already saved"/"ya tiene $X" (the grader ignores any pre-saved amount, so the on-screen-correct answer would be graded wrong). If some is already saved, set `goal` to the REMAINING amount. And keep the UNIT consistent: the widget counts weeks — the prompt must say "semanas", not "domingos"/"días"/other unit.',
-  'IMAGES ARE FILLED AUTOMATICALLY — NEVER invent any `image_url` / `a_image_url` / `b_image_url` / `ask_image_url` (no "https://example.com/…" or any placeholder). OMIT every image_url field entirely; a later stage generates a real AI illustration for each concrete object from the item\'s text/label. Your job for the visual is to give each concrete item a SHORT, LITERAL object name (see below) and a valid `icon` fallback from the ALLOWED ICONS list.',
+  'IMAGES ARE FILLED AUTOMATICALLY — NEVER invent any `image_url` / `a_image_url` / `b_image_url` / `ask_image_url` (no "https://example.com/…" or any placeholder). OMIT every image_url field entirely; a later stage generates a real AI illustration only for a SHORT, LITERAL noun phrase (at most four words: "concha brillante", "barco pirata"). Never use a concept ("deseo"), question, price, sentence, action, person or character as an image label: retain the icon/text fallback for those. For picture_choice and other visual tiles, design the option labels as concrete objects whenever the visual is needed. Use a valid `icon` fallback from the ALLOWED ICONS list in every case.',
   'type_answer segments ONLY: the accepted answer MUST be the NUMBER that RESULTS from a one-step calculation the child performs — NEVER a vocabulary word and NEVER a definition-recall question ("¿Cómo se llama…?"), which the judge fails as memorization. E.g. "Liruf vendió 3 vasos de 5 pesos. ¿Cuántos pesos juntó?" → `answer.accept: ["15"]`. Put the numbers needed in prompt_md, and NEVER state or hint the resulting number in prompt_md/hints/explanation. (If a word answer is truly wanted, use a different type — type_answer here is applied arithmetic.)',
   'count_objects segments ONLY (REQUIRED): give EACH `payload.scene[]` item a short `label` naming the object to draw and count (e.g. "moneda", "vaso de limonada", "limón"), and set `payload.ask_label` to the object the child must count. These labels are MANDATORY — they drive the real illustration + accessibility; omitting any of them fails the gate and the lesson regenerates.',
   'order_steps segments ONLY: if EVERY entry in `payload.items` belongs in the sequence, OMIT `payload.slots` entirely. If you include a distractor item that should NOT be placed (e.g. an extra step that doesn\'t belong), you MUST set `payload.slots` to the exact count of items that DO belong — which must equal `answer.order.length` exactly. Getting this wrong makes the exercise unwinnable (every submission scores 0). rank_choices and timeline_order have NO distractor support — `answer.order` there must include EVERY item/event, no exceptions.',
@@ -137,6 +169,7 @@ const BASE_HARD_RULES = [
   'balance_scale segments ONLY: let leftSum = sum of every `left_fixed[].value`. `payload.weights` (3-8 entries) MUST contain SOME SUBSET of its `value`s that adds up to EXACTLY leftSum (it is re-checked programmatically) — e.g. if leftSum=8, weights could be [5,3,2,4] (5+3=8) or [2,2,4,6] (2+2+4=8); pick the weight values DELIBERATELY to satisfy this, never at random.',
   'Every number you use MUST come from the FACTS block below or be exact arithmetic the blueprint implies — never invent a fact. All arithmetic in `answer` fields must be EXACTLY correct (it is re-executed programmatically and will be rejected if wrong).',
   'story family segments (story_dialogue, story_scene, key_ideas, concept_reveal, checkpoint) carry NO `answer` field and xp:0.',
+  'NON-GRADED story-family segments (especially `checkpoint`) MUST end `prompt_md` as an outcome-neutral statement or imperative, NEVER a direct question: there is no input control and a question is therefore unfair. Put reflection in `payload.recap_md` as a statement (e.g. "Recuerda comparar antes de elegir.") rather than "¿Qué elegirías?".',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
   'Write in es-MX, warm and encouraging, at a reading level appropriate for the stated age tier. Never mock a wrong answer (P3).',
   // LF-Brain finding (COURSE_ENGINE.md §4 "gate" stage 6 / judge concreteness):
@@ -189,6 +222,7 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
   const skeletonText = input.skeleton.segments
     .map((s, i) => `${i + 1}. type="${s.type}" — ${s.brief}`)
     .join('\n');
+  const minimumsText = renderSegmentMinimums(input.skeleton.segments);
 
   // The model otherwise has to guess each type's `payload`/`answer` field
   // names from nothing but its name — it guesses inconsistently, and
@@ -220,6 +254,9 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
         renderReviewSourcesBlock(input.ctx.review.sources),
       ].join('\n')
     : '';
+  const competencyBlock = input.ctx.competency
+    ? [``, renderCompetencyGraphBlock(input.ctx.competency)].join('\n')
+    : '';
 
   // Static-first assembly — see the prefix-cache note above renderBaseHardRules.
   const user = [
@@ -248,6 +285,7 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     `Narrative beat: ${input.ctx.lesson.narrativeBeat}`,
     `Lesson slug: ${input.slug}`,
     `Subject: ${input.subject}`,
+    competencyBlock,
     reviewBlock,
     '',
     'FACTS (the ONLY source of numbers, besides pure arithmetic):',
@@ -255,6 +293,13 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     '',
     'SEGMENT SKELETON (expand each into a full segment, in order):',
     skeletonText,
+    ...(minimumsText
+      ? [
+          '',
+          'SCHEMA MINIMUMS FOR THIS SKELETON (mandatory; these are counts, not suggestions):',
+          minimumsText,
+        ]
+      : []),
     '',
     'EXACT JSON SHAPE per type used above (field names/nesting/enum options are LAW — never invent, rename, or move a field; `payload`/`answer` sit alongside `id`/`type`/`prompt_md`/`difficulty`/`xp`/`hints`/`narrator` at the segment\'s top level, never nested inside each other):',
     shapeExamplesText,
@@ -338,12 +383,73 @@ export function repairDocument(node: unknown): unknown {
    */
   if (doc.schema_version !== 1) doc.schema_version = 1;
   for (const seg of doc.segments as Array<Record<string, unknown>>) {
+    repairPresentationTokens(seg);
     if (seg?.type === 'balance_scale') repairBalanceScale(seg);
     else if (seg?.type === 'interest_peek') repairInterestPeek(seg);
     else if (seg?.type === 'savings_goal') repairSavingsGoal(seg);
     else if (seg?.type === 'measure_read') repairMeasureRead(seg);
   }
   return node;
+}
+
+/*
+ * Icon fields are renderer tokens, not authored learning content. Models still
+ * occasionally emit a sensible English noun outside our deliberately curated
+ * Material Symbols palette (for example `fruit` or `shoes`); that would render
+ * as raw text. Map the recurring nouns to approved equivalents and use a
+ * truthful generic object fallback for every other unknown token. Likewise,
+ * emojis in graded payload text are decoration rather than semantics and are
+ * forbidden by the render-quality gate, so remove them before validation
+ * instead of spending another full-document completion on presentation-only
+ * cleanup.
+ */
+const ICON_REPAIRS: Readonly<Record<string, string>> = {
+  fruit: 'nutrition',
+  shoes: 'checkroom',
+  shoe: 'checkroom',
+  money: 'attach_money',
+  coin: 'monetization_on',
+  coins: 'monetization_on',
+  book: 'menu_book',
+  pencil: 'brush',
+  toy: 'toys',
+  bicycle: 'toys',
+};
+
+const EMOJI_TOKEN_RE = /\p{Extended_Pictographic}(?:\uFE0F|\u20E3)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\u20E3)?)*\s*/gu;
+
+function stripPayloadEmojis(node: unknown): void {
+  if (Array.isArray(node)) {
+    node.forEach(stripPayloadEmojis);
+    return;
+  }
+  if (!node || typeof node !== 'object') return;
+  const record = node as Record<string, unknown>;
+  for (const [key, value] of Object.entries(record)) {
+    if (typeof value === 'string') record[key] = value.replace(EMOJI_TOKEN_RE, '').trim();
+    else stripPayloadEmojis(value);
+  }
+}
+
+function repairPresentationTokens(seg: Record<string, unknown>): void {
+  const visit = (node: unknown): void => {
+    if (Array.isArray(node)) {
+      node.forEach(visit);
+      return;
+    }
+    if (!node || typeof node !== 'object') return;
+    const record = node as Record<string, unknown>;
+    for (const [key, value] of Object.entries(record)) {
+      if ((key === 'icon' || key === 'ask_icon' || key.endsWith('_icon')) && typeof value === 'string' && !ICON_PALETTE.has(value)) {
+        record[key] = ICON_REPAIRS[value.toLowerCase()] ?? 'emoji_objects';
+      } else {
+        visit(value);
+      }
+    }
+  };
+
+  visit(seg.payload);
+  if (typeof seg.type === 'string' && GRADED_TYPES.includes(seg.type)) stripPayloadEmojis(seg.payload);
 }
 
 /**
@@ -530,7 +636,7 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
           // implicit default silently truncates mid-string instead of
           // erroring — surfaced live 2026-07-14 as "invalid JSON:
           // Unterminated string" on a content-heavy balance_scale lesson.
-          { messages, temperature: 0.4, jsonMode: true, maxTokens: 8192 },
+          { messages, temperature: 0.4, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
           { operation: 'write', ledger: deps.ledger },
         );
         return result.content;
@@ -568,18 +674,13 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
     if (!(err instanceof CorrectiveRetryExhaustedError)) throw err;
   }
 
-  // Corrective retries exhausted — try salvaging whatever segments DID validate.
-  if (lastRawJson) {
-    const salvage = trySalvage(lastRawJson);
-    if (salvage) {
-      return { document: salvage.document, attempts: MAX_WRITE_ATTEMPTS, salvaged: true, droppedSegments: salvage.dropped };
-    }
-  }
-
-  // Last resort: one regen at a lower, more literal temperature.
+  // Corrective retries exhausted — give the author one final chance to return
+  // the COMPLETE blueprint. Do not let a partial salvage skip this recovery:
+  // release candidates refuse shortened documents, while a clean full redraw
+  // can still satisfy every planned segment.
   const messages = buildWriteMessages(input, factsBlock, lastIssues);
   const result = await complete(
-    { messages, temperature: 0.2, jsonMode: true, maxTokens: 8192 },
+    { messages, temperature: 0.2, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
     { operation: 'write-last-resort', ledger: deps.ledger },
   );
   const json = safeJsonParse(result.content);
@@ -590,20 +691,25 @@ export async function writeLessonDocument(input: WriteInput, deps: WriteDeps = {
       return { document: parsed.data, attempts: MAX_WRITE_ATTEMPTS + 1, salvaged: false, droppedSegments: 0 };
     }
     lastIssues = formatZodIssues(parsed.error.issues, WRITE_ISSUE_TRUNCATE);
-    const salvage = trySalvage(json.value);
-    if (salvage) {
-      return {
-        document: salvage.document,
-        attempts: MAX_WRITE_ATTEMPTS + 1,
-        salvaged: true,
-        droppedSegments: salvage.dropped,
-      };
-    }
   } else {
     lastIssues = `invalid JSON: ${json.error}`;
   }
 
+  // Keep a validated partial document only as failure diagnostics. run.ts
+  // refuses it before review/publication, but exposing the dropped count makes
+  // the author-quality defect observable rather than silently discarding it.
+  const salvage = json.ok ? trySalvage(json.value) : lastRawJson ? trySalvage(lastRawJson) : null;
+  if (salvage) {
+    return {
+      document: salvage.document,
+      attempts: MAX_WRITE_ATTEMPTS + 1,
+      salvaged: true,
+      droppedSegments: salvage.dropped,
+      lastIssues,
+    };
+  }
+
   throw new Error(
-    `write stage: exhausted corrective retries, per-segment salvage, and the last-resort regen. Last issues: ${lastIssues ?? 'unknown'}`,
+    `write stage: exhausted corrective retries, a full last-resort regen, and diagnostic salvage. Last issues: ${lastIssues ?? 'unknown'}`,
   );
 }

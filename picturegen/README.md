@@ -2,7 +2,7 @@
 
 > Part of LittleFounders v2. Read [/AGENTS.md](../AGENTS.md) first; domain rules in [AGENTS.md](AGENTS.md).
 
-**Mission:** The platform's ONLY image-generation service (the visual sibling of Echo/audiogen). Consumers (coursegen/Forge today) POST a label; Prism art-directs a prompt, generates the illustration on DashScope (Qwen-Image), stores it in Depot, indexes it in Vault — and is **cache-first**: an identical request never pays the image API twice.
+**Mission:** The platform's ONLY image-generation service (the visual sibling of Echo/audiogen). Consumers (coursegen/Forge today) POST a label; Prism art-directs a prompt, generates the illustration on DashScope (`qwen-image-max`), stores it in Depot, indexes it in Vault — and is **cache-first**: an identical request never pays the image API twice.
 **Port (dev):** 4007 · **Deploy:** Railway · **Access:** internal only (`x-internal-api-key`)
 
 ```bash
@@ -17,12 +17,14 @@ npm test
 On `POST /api/v1/pictures`, Prism asks the **art-director judge** (an
 OpenAI-compatible chat model) to craft one detailed English illustration
 prompt that depicts the label clearly for a child and enforces the
-LittleFounders visual identity. It hashes `(model, size, prompt)` and looks
+LittleFounders visual identity. Before judging, it hashes the stable request
+descriptor `(model, size, style version, purpose, label, context)` and looks
 that up in `picture_assets`:
 
 - **HIT** → returns the stored asset, `cached: true`, with **zero paid API calls**.
-- **MISS** → submits the DashScope async text-to-image task, polls until it
-  succeeds, **downloads the temporary result URL** (never persists it),
+- **MISS** → calls the model-selected DashScope image endpoint (synchronous for
+  `qwen-image-max`; legacy Qwen models use submit/poll), **downloads the
+  temporary result URL** (never persists it),
   re-uploads the bytes to Depot (bucket `lesson-images`, public), inserts the
   row in Vault (on-conflict re-select, so concurrent duplicates are safe), and
   returns `cached: false`.
@@ -39,7 +41,7 @@ Every response uses the `{ data, error }` envelope (/AGENTS.md §1.6).
 | Method | Path | Body | Description |
 |---|---|---|---|
 | GET | `/health` | — | Service health envelope |
-| POST | `/api/v1/pictures` | `{ label, context?, purpose? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached }` |
+| POST | `/api/v1/pictures` | `{ label, context?, purpose? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached, generated_images }` |
 
 `label` (1–120 chars) is the subject. `context` (≤2000 chars, optional) grounds
 it in the lesson. `purpose` ∈ `lesson_option | option_card | item_card |
@@ -47,6 +49,13 @@ scene_anchor | memory_card | outcome | scene | generic` (default `generic`)
 picks the per-purpose art direction — the structural role decides the
 composition, so a thumbnail option tile and a wide establishing scene are not
 the same picture.
+
+Object-tile purposes (`item_card`, `option_card`, `lesson_option`,
+`memory_card`) are centered literal objects on a pure-white, edge-to-edge
+canvas, rendered as strict two-dimensional flat vectors (never 3D, plastic,
+or photorealistic). Prism's deterministic edge-pixel checker treats a colored canvas,
+white-card inset, frame, or broad shadow as a terminal visual defect for these
+purposes; setting-based scene purposes are intentionally exempt.
 
 Adding a purpose is **cache-safe** — `purpose` is part of the request hash,
 so new values mint new keys and never invalidate stored art. A new purpose must
@@ -74,8 +83,8 @@ up on 4xx, and every needless re-request is a full paid generation
 | `INTERNAL_API_KEY` | — | Required; validates inbound `x-internal-api-key` |
 | `IMAGE_API_BASE` | `https://dashscope-intl.aliyuncs.com` | DashScope base (no path) |
 | `IMAGE_API_KEY` | — | Required; DashScope key |
-| `IMAGE_MODEL` | `qwen-image` | Official Qwen image model — provider decision RESOLVED (AGENTS.md) |
-| `IMAGE_SIZE` | `1024*1024` | Passed as `parameters.size` |
+| `IMAGE_MODEL` | `qwen-image-max` | Official Qwen image model — explicit local model selection (AGENTS.md) |
+| `IMAGE_SIZE` | `1328*1328` | Square preset supported by `qwen-image-max`, passed as `parameters.size` |
 | `JUDGE_API_BASE` | DashScope `compatible-mode/v1` | OpenAI-compatible chat |
 | `JUDGE_API_KEY` | unset | Optional; falls back to `IMAGE_API_KEY` |
 | `JUDGE_MODEL` | `qwen-plus` | Art-director judge model |
@@ -106,8 +115,9 @@ Depot `lesson-images` went **1.5 GB → 51 MB**.
 ## Cost warning
 
 `POST /api/v1/pictures` calls the paid DashScope image API **only on a cache
-miss**. The cache (`picture_assets`, keyed on `sha256(model size prompt)`) is
-the whole point — a re-requested asset is free.
+miss**. The cache (`picture_assets`, keyed on the stable request descriptor,
+not a nondeterministic judge prompt) is the whole point — an identical
+re-requested asset is free.
 
 ## Dependency note
 

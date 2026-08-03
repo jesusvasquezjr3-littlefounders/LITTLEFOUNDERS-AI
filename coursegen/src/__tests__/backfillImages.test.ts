@@ -5,8 +5,9 @@ import {
   type BackfillDocRow,
   type BackfillWriteBody,
 } from '../scripts/backfill-images.js';
-import type { IllustrateResult } from '../pipeline/images.js';
+import { illustrateSegments, type IllustrateResult } from '../pipeline/images.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 
 // The orchestration under test never parses or inspects the document — it only
 // routes it through illustrate → writeDocument. Tiny tagged objects are enough
@@ -16,7 +17,7 @@ function doc(tag: string): LessonDocumentParsed {
 }
 
 function row(lessonId: string, locale: string, document: LessonDocumentParsed): BackfillDocRow {
-  return { lessonId, lessonSlug: `slug-${lessonId}`, locale, document };
+  return { lessonId, lessonSlug: `slug-${lessonId}`, locale, illustrationStyleVersion: FORGE_ILLUSTRATION_STYLE_VERSION, document };
 }
 
 /** An illustrate fake that reports N generated images and returns a distinct illustrated doc. */
@@ -46,7 +47,7 @@ describe('backfillImages orchestration', () => {
       { courseSlug: 'financial-education' },
     );
 
-    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, skipped: 1, notConfigured: false });
+    expect(summary).toEqual({ scanned: 3, patched: 2, imagesGenerated: 3, imagesInherited: 0, imagesPlaced: 3, skipped: 1, notConfigured: false });
     // Only a and c were written — b (0 images) was not.
     expect(writeDocument).toHaveBeenCalledTimes(2);
     expect(writeDocument.mock.calls.map((call) => call[0].lessonId)).toEqual(['a', 'c']);
@@ -90,7 +91,7 @@ describe('backfillImages orchestration', () => {
     expect(illustrate).toHaveBeenCalledTimes(2);
     expect(writeDocument).not.toHaveBeenCalled(); // dry-run: zero writes
     // patched still counts what WOULD be written, so the operator sees the impact.
-    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, skipped: 0, notConfigured: false });
+    expect(summary).toEqual({ scanned: 2, patched: 2, imagesGenerated: 4, imagesInherited: 0, imagesPlaced: 4, skipped: 0, notConfigured: false });
   });
 
   it('exits cleanly on a fully quota-exhausted run — every document skipped, nothing patched', async () => {
@@ -111,7 +112,7 @@ describe('backfillImages orchestration', () => {
     );
 
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, skipped: 2, notConfigured: false });
+    expect(summary).toEqual({ scanned: 2, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 2, notConfigured: false });
   });
 
   it('short-circuits the whole pass (and never writes) when Prism is NOT_CONFIGURED', async () => {
@@ -134,7 +135,7 @@ describe('backfillImages orchestration', () => {
     // Stopped after the first doc's not-configured result: no writes, nothing scanned.
     expect(illustrate).toHaveBeenCalledTimes(1);
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, skipped: 0, notConfigured: true });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: true });
     expect(log).toHaveBeenCalledWith(expect.stringContaining('Prism (PICTUREGEN_URL) not configured'));
   });
 
@@ -149,6 +150,31 @@ describe('backfillImages orchestration', () => {
 
     expect(illustrate).not.toHaveBeenCalled();
     expect(writeDocument).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, skipped: 0, notConfigured: false });
+    expect(summary).toEqual({ scanned: 0, patched: 0, imagesGenerated: 0, imagesInherited: 0, imagesPlaced: 0, skipped: 0, notConfigured: false });
+  });
+
+  it('builds a deterministic course-local index and patches inherited art without any Prism request', async () => {
+    const donor = {
+      segments: [{ id: 'source', type: 'picture_choice', prompt_md: 'Elige.', payload: { options: [{ label: 'Limones', image_url: 'https://depot/limones.webp' }] } }],
+    } as unknown as LessonDocumentParsed;
+    const recipient = {
+      segments: [{ id: 'target', type: 'picture_choice', prompt_md: 'Elige.', payload: { options: [{ label: 'Limones' }] } }],
+    } as unknown as LessonDocumentParsed;
+    const request = vi.fn();
+    const writeDocument = vi.fn<BackfillDeps['writeDocument']>().mockResolvedValue(undefined);
+
+    const summary = await backfillImages(
+      {
+        listDocuments: async () => [row('source', 'es-MX', donor), row('target', 'es-MX', recipient)],
+        illustrate: (document, options) => illustrateSegments(document, options, { request: request as never }),
+        writeDocument,
+      },
+      { courseSlug: 'c', reuseOnly: true },
+    );
+
+    expect(request).not.toHaveBeenCalled();
+    expect(summary).toEqual({ scanned: 2, patched: 1, imagesGenerated: 0, imagesInherited: 1, imagesPlaced: 1, skipped: 1, notConfigured: false });
+    expect(writeDocument).toHaveBeenCalledTimes(1);
+    expect(writeDocument.mock.calls[0]![0].lessonId).toBe('target');
   });
 });

@@ -12,9 +12,18 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 2. **Never edit an applied migration** — write a delta migration.
 3. Idempotent DDL: `IF NOT EXISTS` everywhere.
 4. **RLS in the same migration** as every `CREATE TABLE` (`npm test` gates this).
-5. Verify locally: `npm run db:reset` twice — both must succeed.
-6. Regenerate types after schema changes: `npm run db:types` → commit `types/database.ts`.
-7. Applying anything to production is a BOUNDARIES action — human sign-off first.
+5. The local runner records every applied file in `public.schema_migrations`
+   with its SHA-256 checksum. It applies a new file and its receipt in one
+   transaction, refuses checksum drift, and never replays a recorded file.
+   A legacy database without the ledger must be independently inspected and
+   baselined once via `npm run db:migrate -- --baseline NNNN`; never infer a
+   high-water mark and never replay historical migrations over it. The
+   operator runner's remote `sh -c` transport is covered by a local no-write
+   integration test in `scripts/railway-migrate.test.mjs`.
+6. Verify locally: `npm run db:reset` twice — both must succeed (or use an
+   isolated disposable stack; never nuke a shared development database).
+7. Regenerate types after schema changes: `npm run db:types` → commit `types/database.ts`.
+8. Applying anything to production is a BOUNDARIES action — human sign-off first.
 
 ## Invariants owned here (DB-level enforcement of /AGENTS.md §1.3)
 
@@ -26,6 +35,9 @@ The schema of record: migrations, RLS policies, seeds, and the generated TS type
 - Profile identity (`0005`): `profiles.username` (unique, `^[a-z0-9_]{3,20}$`), `profiles.cover` = jsonb PRESET config and `avatars.options` = DiceBear option sets — **no image/binary storage exists for covers or avatars, NON-NEGOTIABLE**. `follows` edges are self-managed via RLS (you only write rows where you are the follower); public exposure of profile fields happens ONLY through Core's whitelisted endpoint, never by loosening profiles RLS.
 - `0002_content_skeleton.sql` is **PROVISIONAL** — its `lessons` table was superseded by `0007_course_hierarchy.sql`'s real hierarchy (`courses → adventures → sagas → topics → lessons → lesson_documents`, COURSE_ENGINE.md §2); `courses` itself was kept and extended, not dropped.
 - `lesson_documents` (`0007`) has **NO RLS SELECT policy at all, by design** — RLS is row-level, not column-level, so any policy that exposed the row to authenticated clients would also expose `answer_keys` (server-only) sitting right next to the client-safe `document` on the same row. Zero permissive policies = deny to `authenticated`/`anon`; only the service role (Core, which bypasses RLS) may read this table, and Core is responsible for stripping `answer_keys` before serving `document` to a browser. Never add a client SELECT policy here — split the answer key out of the table first if that ever needs to change.
+- Production course release (`0031`): `course_release_verifications` is service-role-only, RLS-with-zero-policies operational metadata. Forge writes it only after a successful full `verify:course`; `release_course(course_id)` is service-role-only and is the sole production bulk-release path through Core. It locks the hierarchy, rejects missing descendants, non-review-ready lessons, incomplete three-locale documents, and verification older than the latest document update, then publishes the entire hierarchy atomically. `scripts/publish-course.sh` is local-development-only and must never become a production bypass.
+- Illustration style provenance (`0032`): `lesson_documents.illustration_style_version` records the Forge visual identity used for the stored media. `NULL` is legacy/unknown and is never eligible for Forge's zero-cost image inheritance; a style bump therefore cannot silently reattach obsolete art to a new release.
+- Game feature retirement (`0033`): the never-shipped `games`, `game_documents`, `game_attempts` and `game_progress` tables, the `learning_events.game_id` column, and game event/route vocabulary are removed by a forward-only delta. Historical migrations `0027`–`0029` remain immutable audit history; no active service or production route may depend on them.
 - `adventures.age_tier` (`0007`, widened `0008`): `tier1` | `tier2` | `tier3` — tier3 (ages 10-12) is reserved for the Inversiones course only (COURSE_ENGINE.md §3.1b); `courses.requires` (`0008`) is the course-level prerequisite edge, a jsonb array of prerequisite course slugs.
 - Spaced-review projection (`0016`): `topics.kind` + `topics.review_of` (raw catalog slug paths, resolved at query time) are persisted by coursegen's publish — the catalog stays the source of truth. The `admin_retention_*` functions are the always-on retention instrument; EXECUTE is revoked from client roles, only Core (service role) may call them.
 - Generation caches `picture_assets` (`0014`, Prism) and `speech_assets` (`0015`, Echo): service-role-only posture — **RLS enabled with ZERO policies, on purpose**. Browsers never read these tables (they get plain public Depot URLs embedded in lesson documents/manifests); only the owning service writes. Both guarantee "an identical paid-API request never pays twice" via a unique request-hash column; the asset BYTES live in Depot, these rows only map request → asset.

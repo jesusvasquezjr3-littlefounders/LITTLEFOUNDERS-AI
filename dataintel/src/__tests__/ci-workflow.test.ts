@@ -18,6 +18,9 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(here, '../../..');
 const SERVICE_ROOT = path.resolve(here, '../..');
 const WORKFLOW = path.join(REPO_ROOT, '.github/workflows/dataintel-ci.yml');
+const CD_WORKFLOW = path.join(REPO_ROOT, '.github/workflows/dataintel-cd.yml');
+const RAILWAY_CONFIG = path.join(SERVICE_ROOT, 'railway.json');
+const RAILWAY_IGNORE = path.join(SERVICE_ROOT, '.railwayignore');
 
 /**
  * The `paths:` list under each `on:` trigger. Hand-rolled because dataintel
@@ -106,5 +109,32 @@ describe('dataintel CI workflow', () => {
       .filter((name): name is string => name !== undefined);
     expect(invoked.length).toBeGreaterThan(0);
     expect(invoked.filter((name) => !defined.includes(name))).toEqual([]);
+  });
+});
+
+describe('dataintel CD workflow', () => {
+  const yaml = readFileSync(CD_WORKFLOW, 'utf8');
+
+  it('deploys only after the matching successful CI workflow on main', () => {
+    expect(yaml).toContain('workflows: ["dataintel CI"]');
+    expect(yaml).toContain('branches: [main]');
+    expect(yaml).toContain("if: github.event.workflow_run.conclusion == 'success'");
+  });
+
+  it('deploys the service from the repository root with the shared Railway secret', () => {
+    expect(yaml).toContain('railway up dataintel --path-as-root --service dataintel --ci');
+    expect(yaml).toContain('RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}');
+  });
+
+  it('has isolated Railway runtime configuration and excludes the local DuckDB file', () => {
+    const railway = JSON.parse(readFileSync(RAILWAY_CONFIG, 'utf8')) as {
+      deploy?: { startCommand?: string; healthcheckPath?: string; restartPolicyType?: string };
+    };
+    expect(railway.deploy?.startCommand).toBe('npm run start');
+    expect(railway.deploy?.healthcheckPath).toBe('/health');
+    expect(railway.deploy?.restartPolicyType).toBe('ON_FAILURE');
+    const ignore = readFileSync(RAILWAY_IGNORE, 'utf8');
+    expect(ignore).toContain('duckdb/');
+    expect(ignore).toContain('.env');
   });
 });

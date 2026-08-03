@@ -473,6 +473,29 @@ describe('GET /api/v1/intel/export/jobs', () => {
     );
     expect(readOk(res.status)).toBe(true);
   });
+
+  it('lists a job created by the export endpoint', async () => {
+    const created = await auth(
+      request(createApp())
+        .post('/api/v1/intel/export/jobs')
+        .send({ filters: { eventType: 'lesson_complete' }, format: 'json' }),
+    );
+    expect(created.status).toBe(201);
+
+    const listed = await auth(
+      request(createApp()).get('/api/v1/intel/export/jobs?limit=10'),
+    );
+    expect(listed.status).toBe(200);
+    expect(listed.body.error).toBeNull();
+    const job = listed.body.data.find(
+      (entry: { jobId?: string }) => entry.jobId === created.body.data.jobId,
+    );
+    expect(job).toMatchObject({
+      jobId: created.body.data.jobId,
+      status: 'pending',
+    });
+    expect(job).not.toHaveProperty('rows');
+  });
 });
 
 describe('GET /api/v1/intel/export/jobs/:jobId', () => {

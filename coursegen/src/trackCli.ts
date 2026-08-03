@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Forge track CLI — mass generation over a whole course, sharded per adventure
 // (COURSE_ENGINE.md §4). `npm run generate:track -- --course financial-education
-//   [--track-id <id>] [--locales es-MX,en-US,pt-BR] [--no-images] [--dry-run]
+//   [--track-id <id>] [--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run]
 //   [--register kid|adult] [--budget-usd 350] [--shard-passes 3]`
 //
 // Operator-triggered only — never run by CI or any automatic process
@@ -22,6 +22,7 @@ interface CliOptions {
   trackId?: string;
   locales?: LessonLocale[];
   noImages?: boolean;
+  requireImages?: boolean;
   dryRun?: boolean;
   register?: Register;
   budgetUsd?: number;
@@ -56,7 +57,7 @@ function parseArgs(argv: string[]): CliOptions {
         const raw = argv[++i] ?? '';
         const list = raw.split(',').map((x) => x.trim()).filter(Boolean);
         if (list.length === 0) {
-          console.error(`generate:track: --locales was given but is empty — omit the flag for all locales, or pass a subset of ${LESSON_LOCALES.join('|')}.`);
+          console.error(`generate:track: --locales was given but is empty — omit the flag for all locales, or pass exactly ${LESSON_LOCALES.join('|')}.`);
           process.exit(1);
         }
         const bad = list.filter((l) => !(LESSON_LOCALES as readonly string[]).includes(l));
@@ -69,6 +70,9 @@ function parseArgs(argv: string[]): CliOptions {
       }
       case '--no-images':
         opts.noImages = true;
+        break;
+      case '--require-images':
+        opts.requireImages = true;
         break;
       case '--dry-run':
         opts.dryRun = true;
@@ -123,7 +127,7 @@ function printReport(report: TrackReport): void {
       console.warn(`    WARNING: shard published lessons with ZERO images — check PICTUREGEN_URL.`);
     }
     if (s.salvaged.length > 0) {
-      console.warn(`    SALVAGED (published shorter than blueprint): ${s.salvaged.map((x) => x.slotId).join(', ')}`);
+      console.warn(`    SALVAGED (refused before review/publication): ${s.salvaged.map((x) => x.slotId).join(', ')}`);
     }
   }
   const heat = Object.entries(report.failureHeatmap).sort((a, b) => b[1] - a[1]);
@@ -151,8 +155,12 @@ async function main(): Promise<void> {
   if (!opts.course) {
     console.error(
       'Usage: npm run generate:track -- --course <slug> [--track-id <id>] [--locales es-MX,en-US,pt-BR] ' +
-        '[--no-images] [--dry-run] [--register kid|adult] [--budget-usd <n>] [--shard-passes <n>]',
+      '[--no-images|--require-images] [--dry-run] [--register kid|adult] [--budget-usd <n>] [--shard-passes <n>]',
     );
+    process.exit(1);
+  }
+  if (opts.noImages && opts.requireImages) {
+    console.error('generate:track: --no-images and --require-images cannot be used together');
     process.exit(1);
   }
   const trackId = opts.trackId ?? `${opts.course}-track-${new Date().toISOString().slice(0, 10)}`;
@@ -162,6 +170,7 @@ async function main(): Promise<void> {
     trackId,
     locales: opts.locales,
     noImages: opts.noImages,
+    requireImages: opts.requireImages,
     dryRun: opts.dryRun,
     register: opts.register,
     budgetUsd: opts.budgetUsd,

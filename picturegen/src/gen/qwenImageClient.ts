@@ -2,9 +2,11 @@ import { computeWaitMs, isRateLimitStatus, isRetryableStatus, parseRetryAfterMs,
 import { ImageError } from './errors.js';
 
 /*
- * DashScope (Qwen-Image) async text-to-image client — the ONE seam every
- * paid image call goes through (swapping providers later = replacing this
- * module, not the service above it). Three legs, all behind the same seam:
+ * DashScope (Qwen-Image) text-to-image client — the ONE seam every paid image
+ * call goes through (swapping providers later = replacing this module, not
+ * the service above it). It selects the provider contract from the model:
+ * qwen-image-max uses the synchronous multimodal endpoint, while legacy
+ * qwen-image/qwen-image-plus use the async submit → poll workflow:
  *
  *   1. SUBMIT  POST {base}/api/v1/services/aigc/text2image/image-synthesis
  *              header X-DashScope-Async: enable
@@ -73,6 +75,22 @@ interface TaskStatusBody {
   output?: { task_status?: string; message?: string; results?: { url?: string }[] };
 }
 
+interface SyncResponseBody {
+  output?: {
+    choices?: {
+      message?: { content?: { image?: string }[] };
+    }[];
+  };
+  code?: string;
+  message?: string;
+}
+
+const MAX_NEGATIVE_PROMPT_CHARS = 500;
+
+function isSynchronousModel(model: string): boolean {
+  return model === 'qwen-image-max' || model.startsWith('qwen-image-max-');
+}
+
 export async function generateImage(input: GenerateImageInput, opts: QwenImageClientOptions): Promise<GeneratedImage> {
   const o: ResolvedOptions = {
     apiBase: opts.apiBase,
@@ -87,8 +105,36 @@ export async function generateImage(input: GenerateImageInput, opts: QwenImageCl
     deadline: Date.now() + (opts.timeoutMs ?? DEFAULT_TIMEOUT_MS),
   };
 
+  if (isSynchronousModel(o.model)) return generateSynchronousImage(input, o);
   const taskId = await submitTask(input, o);
   const url = await pollTask(taskId, o);
+  return downloadImage(url, o.fetchImpl);
+}
+
+async function generateSynchronousImage(input: GenerateImageInput, o: ResolvedOptions): Promise<GeneratedImage> {
+  const body = await requestJson<SyncResponseBody>(
+    `${o.apiBase}/api/v1/services/aigc/multimodal-generation/generation`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${o.apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: o.model,
+        input: { messages: [{ role: 'user', content: [{ text: input.prompt }] }] },
+        parameters: {
+          ...(input.negativePrompt ? { negative_prompt: input.negativePrompt.slice(0, MAX_NEGATIVE_PROMPT_CHARS) } : {}),
+          prompt_extend: false,
+          watermark: false,
+          n: 1,
+          size: o.size,
+        },
+      }),
+    },
+    o,
+  );
+  const url = body.output?.choices?.[0]?.message?.content?.[0]?.image;
+  if (!url) {
+    throw new ImageError('IMAGE_BAD_RESPONSE', `DashScope sync response had no image URL${body.message ? `: ${body.message}` : ''}`);
+  }
   return downloadImage(url, o.fetchImpl);
 }
 
@@ -102,12 +148,12 @@ async function submitTask(input: GenerateImageInput, o: ResolvedOptions): Promis
         'Content-Type': 'application/json',
         'X-DashScope-Async': 'enable',
       },
-      body: JSON.stringify({
-        model: o.model,
-        input: {
-          prompt: input.prompt,
-          ...(input.negativePrompt ? { negative_prompt: input.negativePrompt } : {}),
-        },
+        body: JSON.stringify({
+          model: o.model,
+          input: {
+            prompt: input.prompt,
+            ...(input.negativePrompt ? { negative_prompt: input.negativePrompt.slice(0, MAX_NEGATIVE_PROMPT_CHARS) } : {}),
+          },
         parameters: { n: 1, size: o.size },
       }),
     },

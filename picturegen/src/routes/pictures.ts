@@ -16,7 +16,7 @@ export interface PicturesRouterDeps {
 
 /*
  * Which failures are worth retrying, expressed as the HTTP status the caller
- * reads. Retrying a terminal failure costs a full paid qwen-image generation
+ * reads. Retrying a terminal failure costs a full paid Qwen-Image generation
  * per attempt and can never succeed:
  *   IMAGE_TIMEOUT / IMAGE_RATE_LIMITED / IMAGE_PROVIDER_ERROR — upstream is
  *     briefly unhappy; the same request later may well work.  → 502
@@ -48,10 +48,14 @@ export function picturesRouter(deps: PicturesRouterDeps = {}): Router {
       // Surface the provider's typed failure code straight through the envelope
       // (e.g. IMAGE_PROVIDER_ERROR); anything else is a generic generation fault.
       const code = err instanceof ImageError ? err.code : 'IMAGE_GENERATION_FAILED';
+      // Internal-only accounting signal. A request that generated then rejected
+      // pixels is billable even though no URL can be returned; Forge reads this
+      // header before propagating the terminal error to its budget ledger.
+      res.set('x-picturegen-generated-images', String(err instanceof ImageError ? err.generatedImages : 0));
       // The STATUS is a retry instruction, not decoration: coursegen's
       // withTransportRetry retries 5xx and gives up on 4xx. Answering 502 for
       // everything made Forge re-request terminal failures — up to 12 paid
-      // qwen-image generations per target for a result that will never differ,
+      // Qwen-Image generations per target for a result that will never differ,
       // none of them metered against the budget. Only genuinely transient
       // faults may keep the retryable status.
       return res.status(retryable(code) ? 502 : 422).json({

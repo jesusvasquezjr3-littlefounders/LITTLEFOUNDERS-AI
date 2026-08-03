@@ -12,6 +12,30 @@ facts:
     label_es: "Billetes de México (subconjunto QA)"
     verified: true
     notes: "Subconjunto reducido para pruebas."
+  # The QA course is authored in es-MX but localized documents exercise the
+  # locale currency remap. Keep the gate's factual source complete for the
+  # USD/BRL coin_count and make_change variants too; values mirror the
+  # production financial-education catalog's canonical denomination entries.
+  usd.denominations.coins:
+    value: [0.01, 0.05, 0.10, 0.25]
+    unit: USD
+    label_es: "Monedas de Estados Unidos (subconjunto QA)"
+    verified: true
+  usd.denominations.bills:
+    value: [1, 2, 5, 10, 20, 50, 100]
+    unit: USD
+    label_es: "Billetes de Estados Unidos (subconjunto QA)"
+    verified: true
+  brl.denominations.coins:
+    value: [0.05, 0.10, 0.25, 0.50, 1]
+    unit: BRL
+    label_es: "Moedas do Brasil (subconjunto QA)"
+    verified: true
+  brl.denominations.bills:
+    value: [2, 5, 10, 20, 50, 100, 200]
+    unit: BRL
+    label_es: "Notas do Brasil (subconjunto QA)"
+    verified: true
   qa.reference_price.toy:
     value: 80
     unit: MXN

@@ -1,4 +1,4 @@
-// Manual trigger: `npm run narrate:all [-- --course <slug>]` — same batch as
+// Manual trigger: `npm run narrate:all [-- --course <slug>] [--dry-run]` — same batch as
 // AUDIOGEN_RUN_ON_START, runnable on demand without restarting the service.
 // Operator-opt-in, paid. Exit codes are MEANINGFUL (2026-07-26 fire-and-forget
 // audit): 0 = every pending lesson fully narrated; 1 = any unit/lesson failure
@@ -17,7 +17,10 @@ function parseCourse(argv: string[]): string | undefined {
   return value;
 }
 
-runBatchNarration(parseCourse(process.argv.slice(2)))
+const argv = process.argv.slice(2);
+const dryRun = argv.includes('--dry-run');
+
+runBatchNarration(parseCourse(argv), { dryRun })
   .then((summary) => {
     process.exit(summary.lessonErrors > 0 || summary.unitFailures > 0 ? 1 : 0);
   })

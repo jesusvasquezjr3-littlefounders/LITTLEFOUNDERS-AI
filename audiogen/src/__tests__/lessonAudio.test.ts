@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { narrateLesson } from '../service/lessonAudio.js';
 import { contentHash } from '../narrate/types.js';
 import { resetConfigCache } from '../env.js';
+import { TtsCallBudget } from '../ttsBudget.js';
 import type { LessonDocument } from '../types/lessonDocument.js';
 import type { LessonDocumentRow, AudioUnitEntry } from '../db/lessonDocumentsRepo.js';
 
@@ -314,6 +315,20 @@ describe('narrateLesson', () => {
   });
 
   describe('partial failures stay retryable (fire-and-forget contract, 2026-07-26)', () => {
+    it('stops before synthesis when the paid TTS call ceiling is exhausted', async () => {
+      const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
+      const deps = makeDeps(row);
+
+      const summary = await narrateLesson('lesson-1', 'en-US', deps, { ttsBudget: new TtsCallBudget(1) });
+
+      expect(deps.synthesizeSpeech).toHaveBeenCalledTimes(1);
+      expect(summary?.generated).toBe(1);
+      expect(summary?.failed).toHaveLength(3);
+      expect(summary?.failed.every((failure) => failure.reason.includes('budget exhausted'))).toBe(true);
+      const manifest = deps.patchLessonDocumentAudio.mock.calls[0]?.[3] as { version?: number };
+      expect(manifest.version).toBeUndefined();
+    });
+
     it('writes the manifest WITHOUT version when any unit failed — the row stays in the pending set', async () => {
       const row: LessonDocumentRow = { lesson_id: 'lesson-1', locale: 'en-US', document: fixtureDocument(), audio: null };
       const deps = makeDeps(row);

@@ -103,7 +103,7 @@ export async function getExportJob(
 ): Promise<ExportJob | null> {
   try {
     const rows = await query<ExportJobRow>(
-      `SELECT job_id, status, filters, format, created_at, completed_at, download_url, row_count, error
+      `SELECT job_id, status, filters, format, created_at, completed_at, download_url, rows AS row_count, error
        FROM export_jobs
        WHERE job_id = $1`,
       jobId,
@@ -126,7 +126,7 @@ export async function listExportJobs(
     await execute(ENSURE_EXPORTS_TABLE);
 
     const rows = await query<ExportJobRow>(
-      `SELECT job_id, status, filters, format, created_at, completed_at, download_url, row_count, error
+      `SELECT job_id, status, filters, format, created_at, completed_at, download_url, rows AS row_count, error
        FROM export_jobs
        ORDER BY created_at DESC
        LIMIT $1`,

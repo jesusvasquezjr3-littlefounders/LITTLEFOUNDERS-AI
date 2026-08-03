@@ -45,6 +45,27 @@ describe('UsageLedger', () => {
     const ledger = new UsageLedger(dir);
     expect(() => ledger.checkBudget()).not.toThrow();
   });
+
+  it('reserves known image cost so concurrent workers cannot collectively exceed the dollar ceiling', async () => {
+    const ledger = new UsageLedger(dir);
+    const oneImage = estimateCostUsd({ provider: 'picturegen', promptTokens: 0, completionTokens: 0, images: 1 });
+    await ledger.hydrate({ maxUsd: oneImage });
+    const first = ledger.reserve({
+      provider: 'picturegen', model: 'qwen-image-max', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1,
+    });
+
+    // The first call has not written a ledger line yet, but it already owns the
+    // entire budget. A second worker must be rejected before its network call.
+    expect(() => ledger.reserve({
+      provider: 'picturegen', model: 'qwen-image-max', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1,
+    })).toThrow(BudgetExceededError);
+
+    first.release();
+    const afterRelease = ledger.reserve({
+      provider: 'picturegen', model: 'qwen-image-max', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1,
+    });
+    afterRelease.release();
+  });
 });
 
 describe('estimateCostUsd', () => {

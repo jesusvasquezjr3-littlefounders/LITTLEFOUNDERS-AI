@@ -7,7 +7,8 @@
 
 import { vaultPatch, vaultSelect, vaultUpsert } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
-import type { LessonLocale } from '../contract/core/types.js';
+import { LESSON_LOCALES, type LessonLocale } from '../contract/core/types.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from './illustrationStyle.js';
 
 export interface ClientSafeSegment {
   [key: string]: unknown;
@@ -106,8 +107,26 @@ export interface PublishInput {
     estimatedMinutes: number;
     cast: string[];
   };
-  /** One entry per locale successfully generated for this slot — at least one required. */
+  /** The full, atomically releasable locale bundle for this slot. */
   documents: Partial<Record<LessonLocale, LessonDocumentParsed>>;
+}
+
+/**
+ * A lesson is an atomic three-locale release unit. Allowing the pipeline to
+ * persist a subset produced a run that could exit successfully while making a
+ * course unreleasable for two of its supported locales. The release gate in
+ * Vault is defense in depth; reject the bad unit before any hierarchy write.
+ */
+export function requireCompleteLocaleSet(documents: PublishInput['documents']): asserts documents is Record<LessonLocale, LessonDocumentParsed> {
+  const missing = LESSON_LOCALES.filter((locale) => !documents[locale]);
+  const unexpected = Object.keys(documents).filter((locale) => !(LESSON_LOCALES as readonly string[]).includes(locale));
+  if (missing.length > 0 || unexpected.length > 0) {
+    const details = [
+      missing.length > 0 ? `missing: ${missing.join(', ')}` : '',
+      unexpected.length > 0 ? `unexpected: ${unexpected.join(', ')}` : '',
+    ].filter(Boolean).join('; ');
+    throw new Error(`publish: slot documents must contain exactly all supported locales (${LESSON_LOCALES.join(', ')}; ${details})`);
+  }
 }
 
 interface RowWithId {
@@ -148,6 +167,7 @@ async function migrateSlugIfRenamed(
 }
 
 export async function publishLessonSlot(input: PublishInput): Promise<PublishResult> {
+  requireCompleteLocaleSet(input.documents);
   const localeEntries = Object.entries(input.documents).filter(
     (entry): entry is [LessonLocale, LessonDocumentParsed] => entry[1] !== undefined,
   );
@@ -255,6 +275,7 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
       schema_version: 1,
       document: clientDocument,
       answer_keys: answerKeys,
+      illustration_style_version: FORGE_ILLUSTRATION_STYLE_VERSION,
       // New/changed text invalidates any prior narration: reset the manifest
       // so Echo's batch (which only picks rows with audio->>version null)
       // re-narrates this document instead of leaving stale clips attached.

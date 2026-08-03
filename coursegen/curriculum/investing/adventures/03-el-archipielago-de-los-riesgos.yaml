@@ -1838,7 +1838,7 @@ sagas:
       difficulty: 3
       suggested_families:
       - choice
-      - story
+      - analyze
   - position: 2
     slug: como-se-siente-perder-algo
     title_es: Cómo se siente perder algo

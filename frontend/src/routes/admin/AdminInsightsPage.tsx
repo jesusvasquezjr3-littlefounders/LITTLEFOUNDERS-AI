@@ -278,7 +278,6 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
   const locale = i18n.resolvedLanguage ?? 'en-US';
 
   const totalEvents = data.activity.reduce((a, e) => a + e.events, 0);
-  const kidEvents = data.activity.filter((e) => e.role === 'kid').reduce((a, e) => a + e.events, 0);
   /*
    * Peak daily users comes from the dedicated daily-users rollup, never from
    * summing activity[].users.
@@ -301,8 +300,6 @@ function Body({ data, tab, days, nf, pf }: { data: Bundle; tab: Tab; days: numbe
   const activationPct = data.ttv.length > 0
     ? data.ttv.filter((r) => r.activated_at !== null).length / data.ttv.length
     : null;
-  const ttvHours = data.ttv.map((r) => r.hours_to_value).filter((h): h is number => h !== null).sort((a, b) => a - b);
-  const medianTtv = ttvHours.length > 0 ? Math.round(ttvHours[Math.floor(ttvHours.length / 2)]!) : null;
 
   if (tab === 'overview') {
     return (
@@ -495,16 +492,6 @@ function Select({ value, onChange, options }: { value: string; onChange: (v: str
       className="lf-body min-h-11 rounded-md border border-outline bg-surface px-3 text-content focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
-  );
-}
-
-function Kpi({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <Card className="flex flex-col gap-1 p-4">
-      <p className="lf-caption text-content-muted">{label}</p>
-      <p className="lf-display text-content">{value}</p>
-      <p className="lf-caption text-content-faint">{hint}</p>
-    </Card>
   );
 }
 

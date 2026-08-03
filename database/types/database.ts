@@ -284,6 +284,32 @@ export type Database = {
           },
         ]
       }
+      course_release_verifications: {
+        Row: {
+          checks: Json
+          course_id: string
+          verified_at: string
+        }
+        Insert: {
+          checks?: Json
+          course_id: string
+          verified_at?: string
+        }
+        Update: {
+          checks?: Json
+          course_id?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_release_verifications_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: true
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           created_at: string
@@ -493,187 +519,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      game_attempts: {
-        Row: {
-          created_at: string
-          duration_seconds: number
-          game_id: string
-          id: string
-          run_id: string
-          score: number
-          stats: Json
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          duration_seconds: number
-          game_id: string
-          id?: string
-          run_id: string
-          score: number
-          stats?: Json
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          duration_seconds?: number
-          game_id?: string
-          id?: string
-          run_id?: string
-          score?: number
-          stats?: Json
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "game_attempts_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "games"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "game_attempts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "dataintel_users_sync"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      game_documents: {
-        Row: {
-          document: Json
-          game_id: string
-          locale: string
-          schema_version: number
-          updated_at: string
-          validation: Json
-        }
-        Insert: {
-          document: Json
-          game_id: string
-          locale: string
-          schema_version?: number
-          updated_at?: string
-          validation?: Json
-        }
-        Update: {
-          document?: Json
-          game_id?: string
-          locale?: string
-          schema_version?: number
-          updated_at?: string
-          validation?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "game_documents_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      game_progress: {
-        Row: {
-          best_score: number
-          game_id: string
-          last_played_at: string | null
-          passed: boolean
-          plays: number
-          updated_at: string
-          user_id: string
-          xp_earned: number
-        }
-        Insert: {
-          best_score?: number
-          game_id: string
-          last_played_at?: string | null
-          passed?: boolean
-          plays?: number
-          updated_at?: string
-          user_id: string
-          xp_earned?: number
-        }
-        Update: {
-          best_score?: number
-          game_id?: string
-          last_played_at?: string | null
-          passed?: boolean
-          plays?: number
-          updated_at?: string
-          user_id?: string
-          xp_earned?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "game_progress_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "games"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "game_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "dataintel_users_sync"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      games: {
-        Row: {
-          created_at: string
-          estimated_minutes: number
-          id: string
-          mechanic: string
-          position: number
-          slug: string
-          status: string
-          tier: number
-          title: Json
-          topic_id: string
-          xp_max: number
-        }
-        Insert: {
-          created_at?: string
-          estimated_minutes?: number
-          id?: string
-          mechanic: string
-          position: number
-          slug: string
-          status?: string
-          tier: number
-          title?: Json
-          topic_id: string
-          xp_max?: number
-        }
-        Update: {
-          created_at?: string
-          estimated_minutes?: number
-          id?: string
-          mechanic?: string
-          position?: number
-          slug?: string
-          status?: string
-          tier?: number
-          title?: Json
-          topic_id?: string
-          xp_max?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "games_topic_id_fkey"
-            columns: ["topic_id"]
-            isOneToOne: false
-            referencedRelation: "topics"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -1057,7 +902,6 @@ export type Database = {
           created_at: string
           device: string | null
           event: string
-          game_id: string | null
           id: number
           lesson_id: string | null
           locale: string | null
@@ -1075,7 +919,6 @@ export type Database = {
           created_at?: string
           device?: string | null
           event: string
-          game_id?: string | null
           id?: never
           lesson_id?: string | null
           locale?: string | null
@@ -1093,7 +936,6 @@ export type Database = {
           created_at?: string
           device?: string | null
           event?: string
-          game_id?: string | null
           id?: never
           lesson_id?: string | null
           locale?: string | null
@@ -1169,6 +1011,7 @@ export type Database = {
           answer_keys: Json
           audio: Json
           document: Json
+          illustration_style_version: string | null
           lesson_id: string
           locale: string
           schema_version: number
@@ -1178,6 +1021,7 @@ export type Database = {
           answer_keys?: Json
           audio?: Json
           document: Json
+          illustration_style_version?: string | null
           lesson_id: string
           locale: string
           schema_version?: number
@@ -1187,6 +1031,7 @@ export type Database = {
           answer_keys?: Json
           audio?: Json
           document?: Json
+          illustration_style_version?: string | null
           lesson_id?: string
           locale?: string
           schema_version?: number
@@ -1545,6 +1390,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      schema_migrations: {
+        Row: {
+          applied_at: string
+          checksum: string
+          filename: string
+        }
+        Insert: {
+          applied_at?: string
+          checksum: string
+          filename: string
+        }
+        Update: {
+          applied_at?: string
+          checksum?: string
+          filename?: string
+        }
+        Relationships: []
       }
       speech_assets: {
         Row: {
@@ -2073,6 +1936,18 @@ export type Database = {
       refresh_insights_rollups: {
         Args: { window_days?: number }
         Returns: string
+      }
+      release_course: {
+        Args: { p_course_id: string }
+        Returns: {
+          adventures_published: number
+          code: string
+          lessons_published: number
+          message: string
+          ok: boolean
+          sagas_published: number
+          topics_published: number
+        }[]
       }
     }
     Enums: {

@@ -8,8 +8,8 @@
   },
   "hero": {
     "titleLead": "Educación financiera,",
-    "titleHighlight": "aprendida jugando",
-    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en un juego que tus hijos sí quieren jugar, seguro, guiado y en familia.",
+    "titleHighlight": "aprendida haciendo",
+    "subtitle": "LittleFounders convierte las finanzas y el emprendimiento en cursos interactivos que tus hijos sí quieren terminar, seguros, guiados y en familia.",
     "ctaPrimary": "Empieza gratis",
     "ctaSecondary": "Cómo funciona",
     "imageAlt": "Una familia aprendiendo sobre dinero en la mesa junto a los personajes de LittleFounders",
@@ -58,8 +58,8 @@
       "body": "Vínculos de tutor verificados, contenido moderado y datos de los niños que jamás se venden ni se comparten."
     },
     "f7": {
-      "title": "Juegos que enseñan de verdad",
-      "body": "Juegos interactivos donde cada toque construye habilidades reales: ahorro, presupuestos, inversión. Aprendizaje real disfrazado de diversión."
+      "title": "Retos que sí enseñan",
+      "body": "Lecciones interactivas donde cada decisión construye habilidades reales de ahorro, presupuesto e inversión. Practicar también puede emocionar."
     }
   },
   "finalCta": {
@@ -69,7 +69,7 @@
     "imageAlt": "Un niño sonriente metiendo una moneda en una alcancía con corona"
   },
   "footer": {
-    "tagline": "Aprende, juega y construye tu futuro.",
+    "tagline": "Aprende, crece y construye tu futuro.",
     "contactLabel": "Contacto",
     "legalTitle": "Legal",
     "terms": "Términos y Condiciones",

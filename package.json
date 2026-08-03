@@ -15,6 +15,10 @@
     "secrets:check": "bash agent/tools/check-secrets.sh",
     "i18n:check": "bash agent/tools/check-i18n.sh",
     "deps:check": "bash agent/tools/check-dep-drift.sh",
+    "git:diff-check": "git diff --check",
+    "release:readiness": "bash agent/tools/release-readiness.sh",
+    "production:preflight": "bash agent/tools/railway-preflight.sh",
+    "production:preflight:test": "node agent/tools/railway-preflight.test.mjs",
     "test:all": "bash agent/tools/run-all.sh test",
     "typecheck:all": "bash agent/tools/run-all.sh type-check",
     "lint:all": "bash agent/tools/run-all.sh lint"

@@ -87,7 +87,16 @@ export async function getLessonDocument(lessonId: string, locale: LessonLocale):
   const res = await rest<LessonDocumentRow[]>(
     `/lesson_documents?lesson_id=eq.${encodeURIComponent(lessonId)}&locale=eq.${encodeURIComponent(locale)}&select=lesson_id,locale,document,audio`,
   );
-  if (!res.ok || !res.body) return null;
+  // An empty successful response means the requested row does not exist; a
+  // Vault error is operationally different and must reach the caller. Turning
+  // a 5xx/network failure into null made the batch look like a clean 404 and
+  // could report zero work while the database was unavailable.
+  if (!res.ok) {
+    throw new Error(`getLessonDocument: Vault query failed (HTTP ${res.status || 'network error'})`);
+  }
+  if (!res.body) {
+    throw new Error('getLessonDocument: Vault returned an invalid empty response');
+  }
   return res.body[0] ?? null;
 }
 

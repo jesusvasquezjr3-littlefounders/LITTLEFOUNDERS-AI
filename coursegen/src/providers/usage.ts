@@ -62,10 +62,23 @@ export class BudgetExceededError extends Error {
   }
 }
 
+/**
+ * A pending known-cost operation. Reservations make a dollar ceiling bind even
+ * when several workers have reached a provider call before any response is
+ * written to the ledger. Call `release()` in a `finally` block; it is safe to
+ * call more than once.
+ */
+export interface BudgetReservation {
+  release(): void;
+}
+
 export class UsageLedger {
   private totalTokens = 0;
   private totalUsd = 0;
   private totalImages = 0;
+  /** Cost of provider calls that were admitted but have not yet settled. */
+  private reservedUsd = 0;
+  private reservedTokens = 0;
   /** Reporting-only counter (subset of totalTokens) — NEVER feeds checkBudget. */
   private totalCachedTokens = 0;
   private readonly filePath: string;
@@ -175,6 +188,54 @@ export class UsageLedger {
     if (this.totalUsd >= maxUsd) {
       throw new BudgetExceededError('usd', this.totalUsd, maxUsd);
     }
+  }
+
+  /**
+   * Admit a provider operation whose maximum bill is known before the request.
+   *
+   * Image generation is priced per image, so a fresh Prism request has an
+   * exact upper bound of one `COST_QWEN_IMAGE_PER_IMAGE`. A normal preflight
+   * check cannot see other in-flight requests: N workers can all observe the
+   * same $0 total, start N images, and collectively overshoot a tiny pilot
+   * budget. Reserving first closes that race. Cached responses release their
+   * reservation with no ledger entry; fresh responses record their actual
+   * image and then release it.
+   *
+   * LLM completions deliberately do not use this method: their bill is only
+   * known after the provider reports actual token usage. Treating maxTokens as
+   * a reservation would make realistic runs artificially fail-closed. Their
+   * normal preflight + durable ledger guard remains unchanged.
+   */
+  reserve(record: UsageRecord): BudgetReservation {
+    const c = getConfig();
+    const maxTokens = this.maxTokens ?? c.FORGE_MAX_TOKENS_PER_RUN;
+    const maxUsd = this.maxUsd ?? c.FORGE_MAX_USD_PER_RUN;
+    const tokenCost = record.promptTokens + record.completionTokens;
+    const usdCost = estimateCostUsd(record);
+    const projectedTokens = this.totalTokens + this.reservedTokens + tokenCost;
+    const projectedUsd = this.totalUsd + this.reservedUsd + usdCost;
+
+    // Unlike checkBudget's "already at the limit" predicate, equality is safe
+    // here: this exact final request may consume the final allowed cent. The
+    // NEXT reservation will be rejected because its projection is greater.
+    if (projectedTokens > maxTokens) {
+      throw new BudgetExceededError('tokens', this.totalTokens + this.reservedTokens, maxTokens);
+    }
+    if (projectedUsd > maxUsd) {
+      throw new BudgetExceededError('usd', this.totalUsd + this.reservedUsd, maxUsd);
+    }
+
+    this.reservedTokens += tokenCost;
+    this.reservedUsd += usdCost;
+    let released = false;
+    return {
+      release: () => {
+        if (released) return;
+        released = true;
+        this.reservedTokens -= tokenCost;
+        this.reservedUsd -= usdCost;
+      },
+    };
   }
 
   async record(record: UsageRecord): Promise<void> {

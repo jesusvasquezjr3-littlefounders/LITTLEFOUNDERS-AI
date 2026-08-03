@@ -17,6 +17,7 @@ const params = (over: Partial<RunParams> = {}): RunParams => ({
   course: 'first-lemonade-stand',
   locales: ['es-MX', 'en-US', 'pt-BR'],
   noImages: false,
+  requireImages: false,
   register: 'kid',
   ...over,
 });
@@ -117,8 +118,8 @@ describe('image spend is metered and capped like every other paid call', () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
     const ledger = new UsageLedger(dir);
     await ledger.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
-    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
-    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image-max', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image-max', operation: 'image:item_card', promptTokens: 0, completionTokens: 0, images: 1 });
     expect(ledger.images).toBe(2);
     expect(ledger.usd).toBeGreaterThan(0);
   });
@@ -128,7 +129,7 @@ describe('image spend is metered and capped like every other paid call', () => {
     const ledger = new UsageLedger(dir);
     await ledger.hydrate({ maxTokens: 1_000_000, maxUsd: 0.03 });
     // Default price is $0.02/image, so two images exceed a $0.03 cap.
-    await ledger.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:option_card', promptTokens: 0, completionTokens: 0, images: 2 });
+    await ledger.record({ provider: 'picturegen', model: 'qwen-image-max', operation: 'image:option_card', promptTokens: 0, completionTokens: 0, images: 2 });
     expect(() => ledger.checkBudget()).toThrow(/usd/);
   });
 
@@ -136,7 +137,7 @@ describe('image spend is metered and capped like every other paid call', () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
     const first = new UsageLedger(dir);
     await first.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
-    await first.record({ provider: 'picturegen', model: 'qwen-image', operation: 'image:scene_anchor', promptTokens: 0, completionTokens: 0, images: 3 });
+    await first.record({ provider: 'picturegen', model: 'qwen-image-max', operation: 'image:scene_anchor', promptTokens: 0, completionTokens: 0, images: 3 });
     const resumed = new UsageLedger(dir);
     await resumed.hydrate({ maxTokens: 1_000_000, maxUsd: 100 });
     expect(resumed.images).toBe(3);

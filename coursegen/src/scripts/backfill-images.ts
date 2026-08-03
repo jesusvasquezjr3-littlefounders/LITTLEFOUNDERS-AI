@@ -2,12 +2,12 @@
 // images:backfill — an operator CLI that fills in missing illustrations on
 // ALREADY-PUBLISHED (or in-review) lessons, without regenerating any content.
 //
-//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--dry-run]
+//   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run]
 //
 // For every lesson_document of a published-or-review lesson in the course, it
 // runs the EXISTING `illustrateSegments()` (pipeline/images.ts) over the STORED
-// client-safe `document`, which fills `image_url` on picture_choice options and
-// memory_flip card sides that lack one, and PATCHes ONLY the `document` column
+// client-safe `document`, which fills every target in the shared per-type
+// illustration plan that lacks one, and PATCHes ONLY the `document` column
 // back via PostgREST.
 //
 // Invariants (mirrors the images stage — COURSE_ENGINE.md §4, AGENTS.md §8d):
@@ -16,8 +16,9 @@
 //    are never read or rewritten (structuredClone inside illustrateSegments
 //    preserves every other field; the PATCH body is `{ document }` and nothing
 //    else). `answer_keys` is never read or written.
-//  - No GEMINI_API_KEY → a clean full skip ("GEMINI_API_KEY not configured"),
-//    exit 0. Per-option failures (429 limit:0 quota, HTTP, network) are already
+//  - No Prism configuration → a clean full skip, exit 0. `--reuse-only` never
+//    asks Prism at all. Per-target provider failures in the normal mode
+//    (rate limit, HTTP, network) are already
 //    log-and-continue inside illustrateSegments — icons stay the fallback.
 //  - A document that gained ZERO images is NOT patched (no-op write avoidance).
 //  - Exit 0 on any clean run (even all-skipped / quota-exhausted); exit 1 only
@@ -27,7 +28,9 @@
 // reimplements it.
 
 import { pathToFileURL } from 'node:url';
-import { illustrateSegments, type IllustrateResult } from '../pipeline/images.js';
+import { illustrateSegments, type IllustrateOptions, type IllustrateResult } from '../pipeline/images.js';
+import { buildImageInheritance, type ImageInheritance } from '../pipeline/imageInheritance.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 import { vaultSelect, vaultPatch } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
@@ -38,6 +41,8 @@ export interface BackfillDocRow {
   /** For readable per-document log lines; falls back to lessonId. */
   lessonSlug: string;
   locale: string;
+  /** Null/undefined means legacy art and is never eligible as a free donor. */
+  illustrationStyleVersion?: string | null;
   /** The STORED client-safe document, passed straight to illustrateSegments (never re-parsed/stripped). */
   document: LessonDocumentParsed;
 }
@@ -51,7 +56,7 @@ export interface BackfillDeps {
   /** Fetch every lesson_document to consider for a course slug. */
   listDocuments: (courseSlug: string) => Promise<BackfillDocRow[]>;
   /** The images stage over one document. In production this is `illustrateSegments`. */
-  illustrate: (document: LessonDocumentParsed) => Promise<IllustrateResult>;
+  illustrate: (document: LessonDocumentParsed, options: Pick<IllustrateOptions, 'inherit' | 'reuseOnly'>) => Promise<IllustrateResult>;
   /** Persist the illustrated document — PATCHes ONLY `body.document`. */
   writeDocument: (row: BackfillDocRow, body: BackfillWriteBody) => Promise<void>;
   /** Per-document progress lines. Defaults to a no-op (tests stay quiet). */
@@ -67,6 +72,13 @@ export interface BackfillOptions {
   locale?: string;
   /** Run the full illustration pass but skip every Vault write. */
   dryRun?: boolean;
+  /**
+   * Reuse only already-approved object art from this course. This makes no
+   * request to Prism and therefore incurs no image-generation spend. Targets
+   * without an exact normalized-label match, including all scene anchors, are
+   * intentionally left for a later paid, fail-closed pass.
+   */
+  reuseOnly?: boolean;
 }
 
 export interface BackfillSummary {
@@ -75,9 +87,13 @@ export interface BackfillSummary {
   /** Documents that gained ≥1 image (== documents written, unless dry-run). */
   patched: number;
   imagesGenerated: number;
-  /** Documents processed that gained no new image (quota exhausted or nothing illustratable). */
+  /** Existing object illustrations placed from another stored document, free. */
+  imagesInherited: number;
+  /** Generated + inherited images; this is what determines whether a document is patched. */
+  imagesPlaced: number;
+  /** Documents processed that gained no new image (no matching art or nothing illustratable). */
   skipped: number;
-  /** True when Gemini has no API key — the whole pass is skipped, cleanly. */
+  /** True when Prism is not configured — the whole pass is skipped, cleanly. */
   notConfigured: boolean;
 }
 
@@ -87,15 +103,30 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
     scanned: 0,
     patched: 0,
     imagesGenerated: 0,
+    imagesInherited: 0,
+    imagesPlaced: 0,
     skipped: 0,
     notConfigured: false,
   };
 
   const allRows = await deps.listDocuments(opts.courseSlug);
   const rows = opts.locale ? allRows.filter((r) => r.locale === opts.locale) : allRows;
+  // Source order is explicit so the first matching object is deterministic.
+  // The authoring locale comes first, then stable lesson and locale order.
+  const sourceRows = [...allRows].sort((a, b) =>
+    (a.locale === 'es-MX' ? 0 : 1) - (b.locale === 'es-MX' ? 0 : 1)
+      || a.lessonSlug.localeCompare(b.lessonSlug)
+      || a.locale.localeCompare(b.locale),
+  );
+  const inherit: ImageInheritance = buildImageInheritance(
+    sourceRows
+      .filter((row) => row.illustrationStyleVersion === FORGE_ILLUSTRATION_STYLE_VERSION)
+      .map((row) => ({ ...row.document, illustration_style_version: row.illustrationStyleVersion })),
+    FORGE_ILLUSTRATION_STYLE_VERSION,
+  );
 
   for (const row of rows) {
-    const result = await deps.illustrate(row.document);
+    const result = await deps.illustrate(row.document, { inherit, reuseOnly: opts.reuseOnly });
 
     // No API key at all: illustrateSegments returns 'not-configured' and the
     // ORIGINAL document untouched. Every remaining doc would do the same, so
@@ -108,14 +139,17 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
 
     summary.scanned++;
     summary.imagesGenerated += result.generated;
+    summary.imagesInherited += result.inherited ?? 0;
+    const placed = result.generated + (result.inherited ?? 0);
+    summary.imagesPlaced += placed;
 
-    if (result.generated > 0) {
+    if (placed > 0) {
       summary.patched++;
       if (!opts.dryRun) {
         // ONLY the document column — never `audio`, never `answer_keys`.
         await deps.writeDocument(row, { document: result.document });
       }
-      log(`  + ${row.lessonSlug} [${row.locale}]: ${result.generated} image(s)${opts.dryRun ? ' (dry-run, not written)' : ' patched'}`);
+      log(`  + ${row.lessonSlug} [${row.locale}]: ${placed} image(s) (${result.generated} generated, ${result.inherited ?? 0} reused)${opts.dryRun ? ' (dry-run, not written)' : ' patched'}`);
     } else {
       // No-op write avoidance: nothing gained → nothing patched.
       summary.skipped++;
@@ -139,6 +173,7 @@ interface LessonDocRow {
   lesson_id: string;
   locale: string;
   document: LessonDocumentParsed;
+  illustration_style_version: string | null;
 }
 
 /** `in.(a,b,c)` — callers guarantee a non-empty list (never emit `in.()`). */
@@ -186,13 +221,14 @@ async function listCourseDocuments(courseSlug: string): Promise<BackfillDocRow[]
   const rows: BackfillDocRow[] = [];
   for (const batch of chunk(lessonIds, 100)) {
     const docs = await vaultSelect<LessonDocRow>(
-      `/lesson_documents?lesson_id=${inFilter(batch)}&select=lesson_id,locale,document`,
+      `/lesson_documents?lesson_id=${inFilter(batch)}&select=lesson_id,locale,document,illustration_style_version`,
     );
     for (const d of docs) {
       rows.push({
         lessonId: d.lesson_id,
         lessonSlug: slugById.get(d.lesson_id) ?? d.lesson_id,
         locale: d.locale,
+        illustrationStyleVersion: d.illustration_style_version,
         document: d.document,
       });
     }
@@ -213,6 +249,7 @@ interface CliOptions {
   course?: string;
   locale?: string;
   dryRun?: boolean;
+  reuseOnly?: boolean;
 }
 
 function parseArgs(argv: string[]): CliOptions {
@@ -229,6 +266,9 @@ function parseArgs(argv: string[]): CliOptions {
       case '--dry-run':
         opts.dryRun = true;
         break;
+      case '--reuse-only':
+        opts.reuseOnly = true;
+        break;
       default:
         console.error(`images:backfill — unknown argument "${arg}"`);
         process.exit(1);
@@ -240,28 +280,30 @@ function parseArgs(argv: string[]): CliOptions {
 async function main(): Promise<void> {
   const opts = parseArgs(process.argv.slice(2));
   if (!opts.course) {
-    console.error('Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--dry-run]');
+    console.error('Usage: npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run]');
     process.exit(1);
   }
   const courseSlug = opts.course;
   const dryRun = opts.dryRun ?? false;
 
-  console.log(`images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
+  console.log(`images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
 
   const summary = await backfillImages(
     {
       listDocuments: listCourseDocuments,
-      illustrate: (document) => illustrateSegments(document),
+      illustrate: (document, options) => illustrateSegments(document, options),
       writeDocument: patchLessonDocument,
       log: (line) => console.log(line),
     },
-    { courseSlug, locale: opts.locale, dryRun },
+    { courseSlug, locale: opts.locale, dryRun, reuseOnly: opts.reuseOnly },
   );
 
   console.log('');
   console.log(`  documents scanned:  ${summary.scanned}`);
   console.log(`  ${dryRun ? 'would patch:       ' : 'patched:           '} ${summary.patched}`);
   console.log(`  images generated:   ${summary.imagesGenerated}`);
+  console.log(`  images reused:      ${summary.imagesInherited}`);
+  console.log(`  images placed:      ${summary.imagesPlaced}`);
   console.log(`  skipped (no image): ${summary.skipped}`);
   if (summary.notConfigured) {
     console.log('  NOTE: Prism (PICTUREGEN_URL) not configured — images stage skipped entirely (icons remain the fallback)');

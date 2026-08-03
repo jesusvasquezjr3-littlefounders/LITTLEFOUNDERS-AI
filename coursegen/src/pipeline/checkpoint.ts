@@ -4,7 +4,7 @@
 // the CLI with the same --course/--slots: each stage in run.ts checks the
 // slot's current state and no-ops past whatever already succeeded.
 
-import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rename, open, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
@@ -64,6 +64,8 @@ export interface RunParams {
   course: string;
   locales: string[];
   noImages: boolean;
+  /** Production mode: an image failure must fail the slot, never fall back. */
+  requireImages: boolean;
   register: string;
 }
 
@@ -91,6 +93,7 @@ export function describeParamMismatch(stored: RunParams | undefined, current: Ru
   const b = [...current.locales].sort().join(',');
   if (a !== b) diffs.push(`locales ${a || '(none)'} → ${b || '(none)'}`);
   if (stored.noImages !== current.noImages) diffs.push(`noImages ${stored.noImages} → ${current.noImages}`);
+  if (stored.requireImages !== current.requireImages) diffs.push(`requireImages ${stored.requireImages} → ${current.requireImages}`);
   if (stored.register !== current.register) diffs.push(`register ${stored.register} → ${current.register}`);
   return diffs.length > 0 ? diffs.join('; ') : null;
 }
@@ -176,5 +179,44 @@ export class CheckpointStore {
     const tmpPath = `${this.filePath}.tmp-${process.pid}-${randomUUID()}`;
     await writeFile(tmpPath, json, 'utf8');
     await rename(tmpPath, this.filePath);
+  }
+}
+
+/** Cross-process exclusion for a run directory; concurrent writers corrupt resume semantics. */
+export class RunLock {
+  private constructor(private readonly lockPath: string) {}
+
+  static async acquire(runDir: string, runId: string): Promise<RunLock> {
+    const lockPath = path.join(runDir, '.run.lock');
+    await mkdir(runDir, { recursive: true });
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const handle = await open(lockPath, 'wx');
+        await handle.writeFile(JSON.stringify({ pid: process.pid, runId, startedAt: new Date().toISOString() }));
+        await handle.close();
+        return new RunLock(lockPath);
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
+        const raw = await readFile(lockPath, 'utf8').catch(() => '');
+        let owner: { pid?: unknown; runId?: unknown } = {};
+        try { owner = JSON.parse(raw || '{}') as { pid?: unknown; runId?: unknown }; } catch { /* corrupt lock is stale */ }
+        const pid = typeof owner.pid === 'number' ? owner.pid : null;
+        let active = false;
+        if (pid !== null) {
+          try { process.kill(pid, 0); active = true; } catch { /* stale owner */ }
+        }
+        if (active) {
+          throw new Error(`run "${runId}" is already active in process ${pid}; wait for it to finish or use a different --run-id.`);
+        }
+        await unlink(lockPath).catch(() => undefined);
+      }
+    }
+    throw new Error(`could not acquire run lock for "${runId}"`);
+  }
+
+  async release(): Promise<void> {
+    await unlink(this.lockPath).catch((err: NodeJS.ErrnoException) => {
+      if (err.code !== 'ENOENT') throw err;
+    });
   }
 }

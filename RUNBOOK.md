@@ -19,7 +19,7 @@ For a v2 production incident, prefer **rolling forward** (fix + redeploy via CD,
 2. Reproduce locally: `cd <service> && npm ci && npm run type-check && npm run lint && npm test`.
 3. Fix forward if < 30 min; otherwise revert the breaking commit. Never merge over red.
 
-## Supabase self-hosted on Railway (deployed 2026-07-17 — backup/restore still open, see below)
+## Supabase self-hosted on Railway (deployed 2026-07-17 — backup/restore verified, see below)
 
 - **Restart procedure:** `railway redeploy --service <name> --yes` (db, kong, auth, rest, realtime, storage, meta, supavisor, studio — all in Railway project `littlefounders-b2c`). Restart `db` first if the whole stack is down; the rest depend on it and will recover on their own restart-on-failure policy once `db` is healthy again. Check `railway logs --service <name>` for `FATAL`/crash-loop before assuming a redeploy will help.
 - **Backup: CONFIGURED 2026-07-17.** `.github/workflows/vault-backup.yml` runs daily (08:00 UTC, plus `workflow_dispatch` for on-demand runs) — `pg_dump -Fc` inside the `db` container via `railway ssh`, piped straight to `/data/backups/vault-<UTC timestamp>.dump` on **filebase's (Depot) Railway volume** (`railway ssh --service filebase`, writing to the container filesystem directly — not through filebase's HTTP API, which only accepts audio/image/JSON mime types by design). This is deliberately NOT a dedicated backup volume: `db` already uses its one allowed Railway volume for PGDATA, and creating a new service for this was blocked by Railway's expired trial at rollout time. filebase's volume is still a genuinely separate disk on a separate service, so a `db`-volume incident doesn't take out its own backups — but **revisit this once Railway billing is resolved; a dedicated backup volume is the better long-term shape.** 30-day retention (auto-pruned by the same workflow). Auth: a dedicated SSH keypair (`vault-backup-ci`, registered via `railway ssh keys add`) stored as the `RAILWAY_SSH_PRIVATE_KEY` repo secret — separate from any personal key.
@@ -168,12 +168,14 @@ it is DESTRUCTIVE.
 `bash scripts/local-stack.sh psql`, verified with
 `SELECT policyname FROM pg_policies WHERE tablename='lessons'`.
 
-**Rules until the migrate runner is fixed (open chip task_8fbe050a):**
-1. NEVER run `npm run db:migrate` on a database with data you care about —
-   apply NEW migrations individually: `local-stack.sh psql -v ON_ERROR_STOP=1 < migrations/NNNN_x.sql`.
-2. After ANY failed replay, AUDIT policies against the migrations:
-   `SELECT tablename, policyname FROM pg_policies ORDER BY 1,2;` vs
-   `grep -n "CREATE POLICY" database/migrations/*.sql`.
+**Resolution (2026-08-01):** `database/scripts/local-stack.sh migrate` now
+uses `public.schema_migrations` as an immutable filename + SHA-256 ledger. It
+wraps each new migration and its receipt in one transaction, rejects modified
+files, and refuses to touch a populated pre-ledger database. For such a legacy
+database, first inspect its verified high-water mark, then run exactly once:
+`npm run db:migrate -- --baseline NNNN`. The normal command afterwards applies
+only later migrations. This closes task_8fbe050a; it does not remove the need
+to audit RLS and real-user visibility after a prior failed historical replay.
 
 ## Learner stats silently RESET to zero on lesson completion (failure mode closed 2026-07-28)
 

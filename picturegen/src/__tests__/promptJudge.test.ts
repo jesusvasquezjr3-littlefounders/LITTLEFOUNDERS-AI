@@ -12,8 +12,8 @@ describe('craftImagePrompt', () => {
     const fetchImpl = vi
       .fn()
       .mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: 'A sunny lemonade stand with a jar of coins', negative: 'text, watermark' })));
-    const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'lesson_option' }, { ...opts, fetchImpl });
-    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins' + PICTORIAL_CLAUSE);
+    const crafted = await craftImagePrompt({ label: 'a jar of coins', purpose: 'generic' }, { ...opts, fetchImpl });
+    expect(crafted.prompt).toBe('A sunny lemonade stand with a jar of coins.' + PICTORIAL_CLAUSE);
     // Judge negatives EXTEND the non-negotiable base list (no text/logos).
     expect(crafted.negative).toContain('logo');
     expect(crafted.negative).toContain('watermark');
@@ -37,6 +37,35 @@ describe('craftImagePrompt', () => {
     expect(crafted.prompt).toContain(LF_VISUAL_IDENTITY.slice(0, 300));
     // HTTP error retried up to the 2-attempt ceiling before falling back.
     expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses no art-director network call for a constrained object tile', async () => {
+    const fetchImpl = vi.fn();
+    const crafted = await craftImagePrompt({ label: 'Helado', purpose: 'item_card' }, { ...opts, fetchImpl });
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(crafted.prompt).toContain('Single object: Helado');
+    expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+    expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
+    expect(crafted.prompt).toContain('clean geometric shapes');
+    expect(crafted.prompt).toContain('No other objects, text, logo or people');
+    expect(crafted.prompt).not.toContain('LittleFounders');
+    expect(crafted.prompt).not.toContain('colored backdrop');
+    expect(crafted.negative).toContain('3d render');
+    expect(crafted.prompt).not.toContain('reserve Purely');
+    expect(crafted.negative).toContain('person');
+  });
+
+  it('keeps every object-tile purpose on the same white-canvas contract', async () => {
+    const purposes = ['item_card', 'option_card', 'lesson_option', 'memory_card'] as const;
+    for (const purpose of purposes) {
+      const fetchImpl = vi.fn();
+      const crafted = await craftImagePrompt({ label: 'Moneda', purpose }, { ...opts, fetchImpl });
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling all four edges');
+      expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
+      expect(crafted.prompt).not.toContain('LittleFounders');
+    }
   });
 
   it('falls back when the judge returns unparseable JSON twice', async () => {

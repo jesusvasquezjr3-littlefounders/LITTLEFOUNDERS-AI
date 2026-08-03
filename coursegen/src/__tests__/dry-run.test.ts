@@ -105,6 +105,18 @@ afterEach(() => {
 });
 
 describe('runGeneration --dry-run', () => {
+  it('rejects a partial locale bundle before touching providers or checkpoints', async () => {
+    await expect(runGeneration({
+      course: 'dry-course',
+      locales: ['es-MX'],
+      dryRun: true,
+      runId: 'partial-locale',
+      curriculumRoot,
+      runsRoot,
+    })).rejects.toThrow(/exactly en-US, es-MX, pt-BR/);
+    expect(() => readFileSync(path.join(runsRoot, 'partial-locale', 'checkpoint.json'), 'utf8')).toThrow();
+  });
+
   it('NEVER clobbers in-progress checkpoint data, and reports prior publishes as alreadyDone (not published)', async () => {
     /*
      * The 2026-07-26 adversarial review reproduced both defects: (a) the first
@@ -125,7 +137,7 @@ describe('runGeneration --dry-run', () => {
         course: 'dry-course',
         startedAt: '2026-07-26T00:00:00.000Z',
         updatedAt: '2026-07-26T00:00:00.000Z',
-        params: { course: 'dry-course', locales: ['es-MX', 'en-US', 'pt-BR'], noImages: false, register: 'kid' },
+        params: { course: 'dry-course', locales: ['es-MX', 'en-US', 'pt-BR'], noImages: false, requireImages: false, register: 'kid' },
         slots: {
           'adv-1/saga-1/topic-1/lesson-1': {
             slotId: 'adv-1/saga-1/topic-1/lesson-1',
@@ -169,6 +181,7 @@ describe('runGeneration --dry-run', () => {
       course: 'dry-course',
       dryRun: true,
       runId: 'dry-1',
+      requireImages: true,
       curriculumRoot,
       runsRoot,
     });

@@ -14,6 +14,7 @@ import { buildTaxonomy, buildFacts, buildDocument } from './fixtures.js';
 import type { AdventureFile } from '../catalog/schema.js';
 import type { LoadedAdventure } from '../catalog/loader.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
+import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
 
 function lesson(position: number, slug: string, microObjective: string) {
   return { position, slug, micro_objective: microObjective, narrative_beat: 'x', difficulty: 1 as const, suggested_families: ['story'] };
@@ -145,6 +146,31 @@ function joinedMessages(req: ChatCompleteRequest): string {
   return req.messages.map((m) => m.content).join(' ');
 }
 
+const graphPromptContext: CompetencyPromptContext = {
+  current: {
+    topicPath: 'adv/saga/current',
+    role: 'teaching',
+    objective: 'Explicar una decisión de ahorro',
+    concept: 'Ahorro con una meta',
+    vocabulary: ['meta', 'ahorro'],
+    evidence: 'graded_lesson_completion',
+  },
+  incoming: [
+    {
+      kind: 'prerequisite',
+      strength: 'hard',
+      reason: 'La meta necesita reconocer primero qué significa guardar dinero.',
+      source: {
+        topicPath: 'adv/saga/prior',
+        role: 'teaching',
+        objective: 'Reconocer el ahorro',
+        concept: 'Guardar dinero',
+        vocabulary: ['guardar'],
+      },
+    },
+  ],
+};
+
 describe('planLesson prompt — connect-to-prior', () => {
   it('includes the connect-to-prior instruction with the exact prior text when ctx.prior is set', async () => {
     const complete = vi.fn(
@@ -164,6 +190,17 @@ describe('planLesson prompt — connect-to-prior', () => {
     await planLesson(basePlanContext(), { complete: complete as never });
     const joined = joinedMessages(complete.mock.calls[0]![0] as ChatCompleteRequest);
     expect(joined).not.toContain('CONNECT TO PRIOR');
+  });
+
+  it('injects the derived competency graph into the PLAN prompt', async () => {
+    const complete = vi.fn(
+      async (): Promise<ChatCompleteResult> => ({ content: JSON.stringify(validSkeletonJson()), promptTokens: 1, completionTokens: 1 }),
+    );
+    await planLesson({ ...basePlanContext(), competency: graphPromptContext }, { complete: complete as never });
+    const joined = joinedMessages(complete.mock.calls[0]![0] as ChatCompleteRequest);
+    expect(joined).toContain('COMPETENCY GRAPH CONTEXT');
+    expect(joined).toContain('adv/saga/prior');
+    expect(joined).toContain('La meta necesita reconocer primero');
   });
 });
 
@@ -201,5 +238,24 @@ describe('writeLessonDocument prompt — connect-to-prior', () => {
     await writeLessonDocument(input, { complete: complete as never });
     const joined = joinedMessages(complete.mock.calls[0]![0] as ChatCompleteRequest);
     expect(joined).not.toContain('CONNECT TO PRIOR');
+  });
+
+  it('injects the derived competency graph into the WRITE prompt', async () => {
+    const complete = vi.fn(
+      async (): Promise<ChatCompleteResult> => ({ content: JSON.stringify(buildDocument()), promptTokens: 10, completionTokens: 10 }),
+    );
+    const input: WriteInput = {
+      ctx: { ...basePlanContext(), competency: graphPromptContext },
+      skeleton: { segments: [{ type: 'story_scene', brief: 'intro' }] },
+      facts: buildFacts(),
+      locale: 'es-MX',
+      slug: 'test-lesson',
+      subject: 'money',
+    };
+    await writeLessonDocument(input, { complete: complete as never });
+    const joined = joinedMessages(complete.mock.calls[0]![0] as ChatCompleteRequest);
+    expect(joined).toContain('COMPETENCY GRAPH CONTEXT');
+    expect(joined).toContain('adv/saga/prior');
+    expect(joined).toContain('Guardar dinero');
   });
 });

@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "engines": { "node": "24.x" },
   "scripts": {
-    "test": "node scripts/check-migrations.mjs",
+    "test": "node scripts/check-migrations.mjs && node scripts/railway-migrate.test.mjs",
     "db:sync": "bash scripts/sync-supabase.sh",
     "db:up": "bash scripts/local-stack.sh up",
     "db:down": "bash scripts/local-stack.sh down",
@@ -19,6 +19,7 @@
     "db:export-course": "bash scripts/export-course-fixture.sh",
     "db:import-course": "bash scripts/import-course-fixture.sh",
     "db:status": "bash scripts/local-stack.sh status",
-    "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts"
+    "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts",
+    "db:railway:migrate": "bash scripts/railway-migrate.sh"
   }
 }

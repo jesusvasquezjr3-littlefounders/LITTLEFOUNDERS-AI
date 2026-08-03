@@ -7,6 +7,7 @@
 
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
+import { getConfig } from '../env.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 import { runVocabularyGate, NON_VISIBLE_KEYS, type GateProblem, type GateContext } from './gates.js';
@@ -97,6 +98,36 @@ export class LocalizeVocabError extends Error {
 }
 
 const MAX_TRANSLATE_ATTEMPTS = 3;
+/*
+ * A complete lesson can expose well over a hundred learner-facing strings.
+ * Asking a reasoning model to reproduce the whole map in one JSON response
+ * made otherwise valid translations run into the completion ceiling; a retry
+ * then repeated the same oversized request and could strand an approved
+ * document at the `reviewed` checkpoint. Keep each response small enough to
+ * be auditable and resumable. This is input-character budget, rather than a
+ * token estimate, because it is deterministic and preserves each string as a
+ * single atomic value.
+ */
+const MAX_TRANSLATE_BATCH_CHARS = 6_000;
+
+function splitTranslationBatches(indexMap: Record<string, string>): Array<Record<string, string>> {
+  const batches: Array<Record<string, string>> = [];
+  let batch: Record<string, string> = {};
+  let batchChars = 2; // `{}`
+
+  for (const [key, value] of Object.entries(indexMap)) {
+    const entryChars = JSON.stringify({ [key]: value }).length;
+    if (Object.keys(batch).length > 0 && batchChars + entryChars > MAX_TRANSLATE_BATCH_CHARS) {
+      batches.push(batch);
+      batch = {};
+      batchChars = 2;
+    }
+    batch[key] = value;
+    batchChars += entryChars;
+  }
+  if (Object.keys(batch).length > 0) batches.push(batch);
+  return batches;
+}
 
 function buildTranslateMessages(
   indexMap: Record<string, string>,
@@ -172,36 +203,37 @@ export async function localizeLesson(
     indexMap[String(i)] = entry.value;
   });
 
-  const { data: translatedMap } = await withCorrectiveRetry<Record<string, string>>({
-    maxAttempts: MAX_TRANSLATE_ATTEMPTS,
-    callModel: async (issues) => {
-      const messages = buildTranslateMessages(indexMap, targetLocale, issues, deps.registerToneEs);
-      const result = await translate(
-        // See write.ts's write-stage comment: a full document's translated
-        // string map can run long enough to hit DeepSeek's implicit
-        // max_tokens default and silently truncate mid-string.
-        { messages, temperature: 0.3, jsonMode: true, maxTokens: 8192 },
-        { operation: 'localize', ledger: deps.ledger },
-      );
-      return result.content;
-    },
-    parse: (raw) => {
-      const json = safeJsonParse(raw);
-      if (!json.ok) return { ok: false, issues: `invalid JSON: ${json.error}` };
-      if (typeof json.value !== 'object' || json.value === null || Array.isArray(json.value)) {
-        return { ok: false, issues: 'expected a flat JSON object of key→translated string' };
-      }
-      const record = json.value as Record<string, unknown>;
-      const expectedKeys = Object.keys(indexMap);
-      const missing = expectedKeys.filter((k) => !(k in record));
-      if (missing.length > 0) return { ok: false, issues: `missing keys: ${missing.slice(0, 10).join(', ')}` };
-      const nonString = expectedKeys.filter((k) => typeof record[k] !== 'string');
-      if (nonString.length > 0) return { ok: false, issues: `non-string values at keys: ${nonString.slice(0, 10).join(', ')}` };
-      const out: Record<string, string> = {};
-      for (const k of expectedKeys) out[k] = record[k] as string;
-      return { ok: true, data: out };
-    },
-  });
+  const translatedMap: Record<string, string> = {};
+  for (const batch of splitTranslationBatches(indexMap)) {
+    const { data } = await withCorrectiveRetry<Record<string, string>>({
+      maxAttempts: MAX_TRANSLATE_ATTEMPTS,
+      callModel: async (issues) => {
+        const messages = buildTranslateMessages(batch, targetLocale, issues, deps.registerToneEs);
+        const result = await translate(
+          { messages, temperature: 0.3, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
+          { operation: 'localize', ledger: deps.ledger },
+        );
+        return result.content;
+      },
+      parse: (raw) => {
+        const json = safeJsonParse(raw);
+        if (!json.ok) return { ok: false, issues: `invalid JSON: ${json.error}` };
+        if (typeof json.value !== 'object' || json.value === null || Array.isArray(json.value)) {
+          return { ok: false, issues: 'expected a flat JSON object of key→translated string' };
+        }
+        const record = json.value as Record<string, unknown>;
+        const expectedKeys = Object.keys(batch);
+        const missing = expectedKeys.filter((k) => !(k in record));
+        if (missing.length > 0) return { ok: false, issues: `missing keys: ${missing.slice(0, 10).join(', ')}` };
+        const nonString = expectedKeys.filter((k) => typeof record[k] !== 'string');
+        if (nonString.length > 0) return { ok: false, issues: `non-string values at keys: ${nonString.slice(0, 10).join(', ')}` };
+        const out: Record<string, string> = {};
+        for (const k of expectedKeys) out[k] = record[k] as string;
+        return { ok: true, data: out };
+      },
+    });
+    Object.assign(translatedMap, data);
+  }
 
   extracted.forEach((entry, i) => {
     setAtPath(cloned, entry.path, translatedMap[String(i)] ?? entry.value);

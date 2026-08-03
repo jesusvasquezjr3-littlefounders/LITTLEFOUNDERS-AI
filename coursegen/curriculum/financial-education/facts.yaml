@@ -52,7 +52,7 @@ facts:
     notes: "USD subunit is decimal cents; used only in later locale-specific exercises, not adventures 1-4 (es-MX authoring locale defaults to MXN)."
 
   usd.denominations.bills:
-    value: [1, 5, 10, 20, 50, 100]
+    value: [1, 2, 5, 10, 20, 50, 100]
     unit: USD
     label_es: "Billetes de Estados Unidos"
     verified: true

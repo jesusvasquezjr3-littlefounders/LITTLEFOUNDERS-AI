@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { completeQwen } from '../providers/qwen.js';
 import { completeDeepSeek } from '../providers/deepseek.js';
 import type { UsageLedger } from '../providers/usage.js';
+import { getConfig } from '../env.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import { runAllGates, type GateContext } from './gates.js';
 import { repairDocument, stripNullValues } from './write.js';
@@ -21,6 +22,8 @@ import { CONTENT_PLAYBOOK, JUDGE_PLAYBOOK_ANCHORS } from './contentPlaybook.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 import { TYPE_TO_SCHEMA } from '../contract/registry.js';
 import { shapeExample } from './shapeExample.js';
+import { renderCompetencyGraphBlock } from './plan.js';
+import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
 
 // 3 (was 2): the content-playbook judge is strict on engagement AND age-fit at
 // once, and a single revise often fixes one while regressing the other (e.g.
@@ -166,6 +169,7 @@ async function judgeDocument(
   judge: typeof completeQwen,
   ledger: UsageLedger | undefined,
   priorMicroObjective?: string | null,
+  competency?: CompetencyPromptContext,
 ): Promise<ReviewRubric> {
   // PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the judge's
   // rubric/calibrations are ~66% of the prompt and byte-identical across the
@@ -224,6 +228,7 @@ async function judgeDocument(
     ...(priorLine ? [priorLine, ''] : []),
     'LESSON DOCUMENT:',
     JSON.stringify(document),
+    ...(competency ? ['', renderCompetencyGraphBlock(competency)] : []),
   ].join('\n');
 
   const { data } = await withCorrectiveRetry<ReviewRubric>({
@@ -299,7 +304,10 @@ async function reviseDocument(
         { role: 'user' as const, content: issues ? `${user}\n\nYour previous JSON was invalid: ${issues}. Resend the FULL corrected JSON.` : user },
       ];
       // Same silent-truncation risk as write.ts: revise resends the FULL document.
-      const result = await author({ messages, temperature: 0.4, jsonMode: true, maxTokens: 8192 }, { operation: 'revise', ledger });
+      const result = await author(
+        { messages, temperature: 0.4, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
+        { operation: 'revise', ledger },
+      );
       return result.content;
     },
     parse: (raw) => {
@@ -324,6 +332,8 @@ export interface ReviewDeps {
   author?: typeof completeDeepSeek;
   /** null = this IS the course's first lesson (exempt from connect-to-prior); string = the actual prior micro-objective; undefined = unknown (legacy). */
   priorMicroObjective?: string | null;
+  /** Derived graph slice used to judge prerequisite continuity and retrieval fidelity. */
+  competency?: CompetencyPromptContext;
   /** A type-coverage / practice harness (catalog `standalone: true`): relaxes
    *  the age_fit floor, because it exercises EVERY type on one fixed tier and a
    *  type that's inherently a different tier (interest_peek/compound growth on a
@@ -347,7 +357,7 @@ export async function reviewLesson(
   const author = deps.author ?? completeDeepSeek;
 
   let current = document;
-  let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
+  let rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective, deps.competency);
   let cycles = 0;
   let earlyStopped = false;
   /*
@@ -372,7 +382,7 @@ export async function reviewLesson(
       continue;
     }
     current = gateReport.document;
-    rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective);
+    rubric = await judgeDocument(current, judge, deps.ledger, deps.priorMicroObjective, deps.competency);
     if (!passesJudgeGate(rubric, current, deps.standalone)) {
       /*
        * A revise that improved NO failing dimension is a doomed trajectory:

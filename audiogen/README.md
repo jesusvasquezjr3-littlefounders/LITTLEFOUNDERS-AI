@@ -128,7 +128,18 @@ flash model 400s on cloned voice ids. `voiceFor()` already pairs them.
 batch path (`AUDIOGEN_RUN_ON_START=true` or `npm run narrate:all`) all call
 the paid DashScope TTS API. `AUDIOGEN_RUN_ON_START` defaults to `false` and
 batch-narrating a whole catalog is a BOUNDARIES-tier action — trigger it
-deliberately, not as a side effect of booting the service.
+deliberately, not as a side effect of booting the service. Use
+`npm run narrate:all -- --course financial-education --dry-run` first: the
+preflight reads pending documents, counts narratable units, reports manifest
+entries that may be reusable and estimates the remaining TTS calls. It makes
+zero DashScope, Depot, speech-cache or Vault-write calls and does not require a
+TTS API key. For a low-cost pilot, set
+`AUDIOGEN_MAX_TTS_CALLS_PER_RUN=12` (or another approved call ceiling); Echo
+reserves a call immediately before synthesis, refuses later units without
+contacting DashScope, and leaves the lesson unversioned so it remains safely
+retryable. Cache hits and speech-guard refusals do not consume the ceiling.
+The live batch still rechecks hashes/voices and the global cache, so the
+preflight estimate is intentionally an upper bound rather than a spend promise.
 
 ## Dependency note
 

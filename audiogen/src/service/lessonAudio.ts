@@ -14,6 +14,7 @@ import { contentHash } from '../narrate/types.js';
 import { encodeMp3 } from '../tts/mp3.js';
 import { parseWav } from '../tts/wav.js';
 import { runPool } from '../concurrency/pool.js';
+import type { TtsCallBudget } from '../ttsBudget.js';
 import type { LessonDocument } from '../types/lessonDocument.js';
 
 export interface NarrateLessonFailure {
@@ -28,6 +29,10 @@ export interface NarrateLessonSummary {
   /** Served from the GLOBAL speech_assets cache — zero paid TTS calls. */
   cached: number;
   failed: NarrateLessonFailure[];
+}
+
+export interface NarrateLessonOptions {
+  ttsBudget?: TtsCallBudget;
 }
 
 /** Injectable seams for tests — defaults are the real network/DB/codec calls. */
@@ -65,6 +70,7 @@ export async function narrateLesson(
   lessonId: string,
   locale: LessonLocale,
   overrides: Partial<NarrateLessonDeps> = {},
+  options: NarrateLessonOptions = {},
 ): Promise<NarrateLessonSummary | null> {
   const deps = { ...defaultDeps, ...overrides };
   const config = getConfig();
@@ -131,6 +137,12 @@ export async function narrateLesson(
         voice,
       };
       cached += 1;
+      return;
+    }
+
+    if (options.ttsBudget && !options.ttsBudget.tryReserve()) {
+      failed.push({ unit_id: unit.unit_id, reason: 'TTS call budget exhausted before synthesis' });
+      if (prior) finalUnits[unit.unit_id] = prior;
       return;
     }
 

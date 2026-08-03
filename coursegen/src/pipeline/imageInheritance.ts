@@ -55,6 +55,11 @@ export function normalizeLabel(raw: string): string {
 
 export type ImageInheritance = Map<string, string>;
 
+interface DocumentWithIllustrationStyle {
+  segments?: unknown;
+  illustration_style_version?: unknown;
+}
+
 /**
  * Indexes every OBJECT-level illustration in the given documents by normalized label.
  *
@@ -62,7 +67,10 @@ export type ImageInheritance = Map<string, string>;
  * Documents are walked in order, and the first URL found for a label wins, so passing
  * the authoring locale first keeps the index deterministic.
  */
-export function buildImageInheritance(documents: readonly LessonDocumentParsed[]): ImageInheritance {
+export function buildImageInheritance(
+  documents: readonly (LessonDocumentParsed & DocumentWithIllustrationStyle)[],
+  requiredStyleVersion?: string,
+): ImageInheritance {
   const index: ImageInheritance = new Map();
   const visit = (node: unknown): void => {
     if (Array.isArray(node)) {
@@ -83,8 +91,9 @@ export function buildImageInheritance(documents: readonly LessonDocumentParsed[]
   };
 
   for (const document of documents) {
+    if (requiredStyleVersion && document.illustration_style_version !== requiredStyleVersion) continue;
     // Only the segments carry illustrations; meta/scoring never do.
-    visit((document as unknown as { segments?: unknown }).segments);
+    visit(document.segments);
   }
   return index;
 }

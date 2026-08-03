@@ -3,16 +3,19 @@
 // pool, and the budget kill switches (COURSE_ENGINE.md §4).
 
 import path from 'node:path';
-import { getConfig, requireGenerationKeys } from '../env.js';
+import { getConfig, requireGenerationKeys, requirePictureGeneration } from '../env.js';
 import { loadCourseCatalog, resolveReviewSources, type CourseCatalog, type LoadedAdventure } from '../catalog/loader.js';
+import { buildCompetencyGraph, getCompetencyPromptContext, type CompetencyGraph } from '../catalog/competencyGraph.js';
 import type { AdventureFile, CatalogFile, TaxonomyFile } from '../catalog/schema.js';
 import { LESSON_LOCALES } from '../contract/core/types.js';
 import { UsageLedger, BudgetExceededError } from '../providers/usage.js';
 import { isFatalProviderError } from '../providers/errors.js';
 import { vaultSelect } from '../vault/restClient.js';
 import { buildImageInheritance } from './imageInheritance.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from './illustrationStyle.js';
 import {
   CheckpointStore,
+  RunLock,
   newRunCheckpoint,
   getSlot,
   setSlotState,
@@ -88,6 +91,8 @@ export interface RunOptions {
   slots?: string[];
   locales?: LessonLocale[];
   noImages?: boolean;
+  /** Fail early/closed on any missing or failed planned illustration. */
+  requireImages?: boolean;
   dryRun?: boolean;
   runId?: string;
   curriculumRoot: string;
@@ -113,6 +118,20 @@ export interface RunDeps {
 const DEFAULT_LOCALES: LessonLocale[] = ['es-MX', 'en-US', 'pt-BR'];
 const AUTHORING_LOCALE: LessonLocale = 'es-MX';
 
+/** A production lesson always ships as one complete locale bundle. */
+export function requireAllLessonLocales(locales: readonly LessonLocale[] | undefined): LessonLocale[] {
+  const selected = locales ?? DEFAULT_LOCALES;
+  const missing = LESSON_LOCALES.filter((locale) => !selected.includes(locale));
+  const duplicates = selected.filter((locale, index) => selected.indexOf(locale) !== index);
+  if (missing.length > 0 || selected.length !== LESSON_LOCALES.length || duplicates.length > 0) {
+    throw new Error(
+      `generate: each run must include exactly ${LESSON_LOCALES.join(', ')}. ` +
+        'Partial locale runs cannot publish a releasable lesson bundle.',
+    );
+  }
+  return [...selected];
+}
+
 async function promisePool<T>(items: T[], concurrency: number, worker: (item: T) => Promise<void>): Promise<void> {
   let index = 0;
   const size = Math.max(1, Math.min(concurrency, items.length || 1));
@@ -136,6 +155,7 @@ function buildPlanContext(
   catalog: CatalogFile,
   taxonomy: TaxonomyFile,
   register: ReturnType<typeof resolveRegister>,
+  competencyGraph: CompetencyGraph,
 ): PlanContext {
   const review =
     slot.topic.kind !== 'teaching' && slot.topic.review_of
@@ -169,6 +189,10 @@ function buildPlanContext(
       suggestedFamilies: slot.lesson.suggested_families,
     },
     review,
+    competency: getCompetencyPromptContext(
+      competencyGraph,
+      `${slot.adventure.slug}/${slot.saga.slug}/${slot.topic.slug}`,
+    ),
     prior: slot.priorMicroObjective,
     register: { fullPalette: register.fullPalette, toneDirectiveEs: register.toneDirectiveEs },
   };
@@ -207,14 +231,19 @@ export interface ProcessSlotOutcome {
  */
 async function previousArtDocuments(courseSlug: string, lessonSlug: string): Promise<LessonDocumentParsed[]> {
   try {
-    const rows = await vaultSelect<{ locale: string; document: unknown }>(
-      `/lesson_documents?select=locale,document,lessons!inner(slug,topics!inner(sagas!inner(adventures!inner(courses!inner(slug)))))` +
+    const rows = await vaultSelect<{ locale: string; document: unknown; illustration_style_version: string | null }>(
+      `/lesson_documents?select=locale,document,illustration_style_version,lessons!inner(slug,topics!inner(sagas!inner(adventures!inner(courses!inner(slug)))))` +
         `&lessons.slug=eq.${encodeURIComponent(lessonSlug)}` +
         `&lessons.topics.sagas.adventures.courses.slug=eq.${encodeURIComponent(courseSlug)}`,
     );
     // Authoring locale first so `buildImageInheritance`'s first-wins rule is stable.
     const ordered = [...rows].sort((a, b) => (a.locale === AUTHORING_LOCALE ? -1 : b.locale === AUTHORING_LOCALE ? 1 : 0));
-    return ordered.map((r) => r.document as LessonDocumentParsed);
+    return ordered
+      .filter((r) => r.illustration_style_version === FORGE_ILLUSTRATION_STYLE_VERSION)
+      .map((r) => ({
+        ...(r.document as LessonDocumentParsed),
+        illustration_style_version: r.illustration_style_version,
+      })) as LessonDocumentParsed[];
   } catch {
     return [];
   }
@@ -228,6 +257,7 @@ async function processSlot(
   options: RunOptions,
   ledger: UsageLedger,
   register: ReturnType<typeof resolveRegister>,
+  competencyGraph: CompetencyGraph,
   rubricLog?: RubricLog,
   live?: LiveTelemetry,
 ): Promise<ProcessSlotOutcome> {
@@ -281,7 +311,7 @@ async function processSlot(
 
     // ---- plan ----
     let current = getSlot(checkpoint, slot.slotId);
-    const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy, register);
+    const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy, register, competencyGraph);
     let skeleton = current.data?.skeleton as PlanSkeleton | undefined;
     if (!skeleton || current.state === 'pending' || current.state === 'failed') {
       // QA/authoring override (COURSE_ENGINE.md §4 addendum): forced_types
@@ -299,8 +329,9 @@ async function processSlot(
     current = getSlot(checkpoint, slot.slotId);
     let documents = (current.data?.documents as Partial<Record<LessonLocale, LessonDocumentParsed>>) ?? {};
     if (!documents[AUTHORING_LOCALE]) {
-      // `salvaged`/`droppedSegments` were returned by write and never read, so a
-      // lesson that lost up to 8 of 14 planned segments published as a clean success.
+      // A salvage indicates that the author did not fulfill its approved
+      // blueprint. It is recorded for diagnostics, then refused below: a
+      // shortened lesson is never a valid release candidate.
       const writeResult = await writeLessonDocument(
         {
           ctx: planCtx,
@@ -319,9 +350,10 @@ async function processSlot(
       salvaged = salvaged || writeResult.salvaged;
       droppedSegments += writeResult.droppedSegments;
       if (writeResult.salvaged) {
-        console.warn(
-          `[forge] slot ${slot.slotId}: write SALVAGED — ${writeResult.droppedSegments} planned segment(s) dropped. ` +
-            `The lesson is shorter than its blueprint.`,
+        throw new Error(
+          `write salvage dropped ${writeResult.droppedSegments} planned segment(s); ` +
+            `refusing to publish a lesson shorter than its approved blueprint. ` +
+            `Final issues: ${writeResult.lastIssues ?? 'unavailable'}`,
         );
       }
       // Opt-in dual-persona recap (blueprint `recap_dialogue: true`): a short
@@ -359,6 +391,7 @@ async function processSlot(
         // false-fails otherwise-excellent standalone lessons.
         priorMicroObjective: course.catalog.course.standalone ? null : (slot.priorMicroObjective ?? null),
         standalone: course.catalog.course.standalone ?? false,
+        competency: planCtx.competency,
       });
       documents = { ...documents, [AUTHORING_LOCALE]: reviewResult.document };
       checkpoint = setSlotState(checkpoint, slot.slotId, 'reviewed', { data: { skeleton, documents, rubric: reviewResult.rubric } });
@@ -387,8 +420,16 @@ async function processSlot(
        */
       const inherit = options.noImages
         ? undefined
-        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
-      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, { skip: options.noImages, ledger, inherit });
+        : buildImageInheritance(
+            await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug),
+            FORGE_ILLUSTRATION_STYLE_VERSION,
+          );
+      const illustratedSource = await illustrateSegments(documents[AUTHORING_LOCALE]!, {
+        skip: options.noImages,
+        required: options.requireImages,
+        ledger,
+        inherit,
+      });
       documents = { ...documents, [AUTHORING_LOCALE]: illustratedSource.document };
       // Image outcomes must LEAVE this function. They used to be destructured away,
       // so an unconfigured or down Prism published a visual-first curriculum with
@@ -421,14 +462,22 @@ async function processSlot(
       // RESUME this stage may run without the earlier one having run at all.
       const localeInherit = options.noImages
         ? undefined
-        : buildImageInheritance(await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug));
+        : buildImageInheritance(
+            await previousArtDocuments(course.catalog.course.slug, slot.lesson.slug),
+            FORGE_ILLUSTRATION_STYLE_VERSION,
+          );
       // Belt-and-braces sweep: anything still missing an image_url (a locale
       // document restored from an older checkpoint, a per-locale regen) gets
       // filled here. With the pre-localize illustration above this loop makes
       // ZERO Prism calls on the happy path — and Prism's cache would dedupe
       // identical prompts anyway.
       for (const locale of Object.keys(documents) as LessonLocale[]) {
-        const illustrated = await illustrateSegments(documents[locale]!, { skip: options.noImages, ledger, inherit: localeInherit });
+        const illustrated = await illustrateSegments(documents[locale]!, {
+          skip: options.noImages,
+          required: options.requireImages,
+          ledger,
+          inherit: localeInherit,
+        });
         documents = { ...documents, [locale]: illustrated.document };
         imagesGenerated += illustrated.generated ?? 0;
         imagesBilled += illustrated.billed ?? 0;
@@ -687,7 +736,7 @@ export interface RunSummary {
   imagesInherited: number;
   /** Distinct reasons illustration was skipped (e.g. 'not-configured'). */
   imageSkipReasons: string[];
-  /** Lessons published SHORTER than their blueprint because write had to salvage. */
+  /** Slots whose author response was shorter than its blueprint and was refused. */
   salvagedSlots: { slotId: string; droppedSegments: number }[];
   stoppedOnBudget: boolean;
   tokensUsed: number;
@@ -701,7 +750,14 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   // before every paid stage), so it must not demand paid-API keys either —
   // validating a catalog/enumeration is exactly the kind of thing an operator
   // does on a machine without credentials.
-  if (!options.dryRun) requireGenerationKeys();
+  const locales = requireAllLessonLocales(options.locales);
+  if (options.noImages && options.requireImages) {
+    throw new Error('generate: --no-images and --require-images cannot be used together');
+  }
+  if (!options.dryRun) {
+    requireGenerationKeys();
+    if (options.requireImages) requirePictureGeneration();
+  }
   const config = getConfig();
   const courseDir = path.join(options.curriculumRoot, options.course);
   const loadResult = loadCourseCatalog(courseDir);
@@ -709,6 +765,10 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
   if (errors.length > 0) {
     throw new Error(`generate: catalog failed to load — ${errors.map((e) => e.message).join('; ')}`);
   }
+  const competencyGraph = buildCompetencyGraph(loadResult.course);
+  // `loadCourseCatalog` already runs the graph validator. Keep generation tied
+  // to the same derived graph object so prompts cannot silently diverge from
+  // the preflight graph check.
 
   const runId = options.runId ?? `${options.course}-${new Date().toISOString().replace(/[:.]/g, '-')}`;
   const runDir = path.join(options.runsRoot, runId);
@@ -724,8 +784,9 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
    */
   const runParams: RunParams = {
     course: options.course,
-    locales: [...(options.locales ?? LESSON_LOCALES)],
+    locales,
     noImages: options.noImages === true,
+    requireImages: options.requireImages === true,
     register: options.register ?? 'kid',
   };
   const loaded = await store.load();
@@ -793,6 +854,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     register: options.register ?? 'kid',
     totalSlots: slots.length,
   });
+  const runLock = await RunLock.acquire(runDir, runId);
 
   try {
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
@@ -823,7 +885,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       // run (rethrown by processSlot), so retries never blow past the
       // kill-switches.
       const slotStartedAt = Date.now();
-      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
+      let outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live);
       let attempt = 1;
       while (outcome.state === 'failed' && attempt < config.FORGE_SLOT_ATTEMPTS && !stoppedOnBudget) {
         attempt++;
@@ -838,7 +900,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
             `${prep === 'resumed' ? 'resuming from checkpoint stage' : 'regenerating from scratch'}: ${outcome.error?.slice(0, 160)}`,
         );
         await store.save(checkpoint);
-        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, rubricLog, live);
+        outcome = await processSlot(slot, loadResult.course, checkpoint, store, options, ledger, register, competencyGraph, rubricLog, live);
       }
       outcome.durationMs = Date.now() - slotStartedAt;
       slotOutcomes.push(outcome);
@@ -867,6 +929,8 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       await live.finish().catch(() => {});
       throw err;
     }
+  } finally {
+    await runLock.release();
   }
 
   /*

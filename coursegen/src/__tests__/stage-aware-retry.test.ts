@@ -10,7 +10,7 @@ import { prepareSlotForAttempt } from '../pipeline/run.js';
  * rejected the draft, write exhausted) keep the measured from-scratch behavior.
  */
 
-const params: RunParams = { course: 'c', locales: ['es-MX', 'en-US', 'pt-BR'], noImages: false, register: 'kid' };
+const params: RunParams = { course: 'c', locales: ['es-MX', 'en-US', 'pt-BR'], noImages: false, requireImages: false, register: 'kid' };
 
 function failedCheckpoint(failedFrom: string, withData = true) {
   let cp = newRunCheckpoint('r1', 'c', params);

@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 
 /*
- * Storage transcode — qwen-image serves ~900 KB 1024×1024 PNGs; WebP q82 cuts
+ * Storage transcode — Qwen-Image serves ~900 KB 1024×1024 PNGs; WebP q82 cuts
  * them to 15–99 KB (−96.9% measured across the live corpus, visually verified
  * transparent at 1:1 on the most detailed image, 2026-07-25). At course scale
  * that is the difference between a 1.5 GB and a 47 MB image catalog, and a

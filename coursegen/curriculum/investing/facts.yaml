@@ -47,7 +47,7 @@ facts:
     verified: true
 
   usd.denominations.bills:
-    value: [1, 5, 10, 20, 50, 100]
+    value: [1, 2, 5, 10, 20, 50, 100]
     unit: USD
     label_es: "Billetes de Estados Unidos"
     verified: true

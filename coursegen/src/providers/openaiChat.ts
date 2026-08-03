@@ -4,7 +4,13 @@
 // chokepoint with usage logging."
 
 import { getConfig } from '../env.js';
-import { ProviderHttpError, ProviderNetworkError, ProviderTimeoutError, parseRetryAfter } from './errors.js';
+import {
+  ProviderCompletionExhaustedError,
+  ProviderHttpError,
+  ProviderNetworkError,
+  ProviderTimeoutError,
+  parseRetryAfter,
+} from './errors.js';
 import { withTransportRetry } from './retry.js';
 
 export interface ChatMessage {
@@ -57,6 +63,51 @@ interface OpenAiChatResponse {
   };
 }
 
+/**
+ * `fetch()` resolving only proves that the provider sent response headers. A
+ * reasoning provider can still leave the JSON body open indefinitely. Race the
+ * body read against the SAME absolute deadline as the connection so a slot
+ * cannot park beyond its configured timeout after headers arrive.
+ */
+function awaitWithinDeadline<T>(
+  pending: Promise<T>,
+  controller: AbortController,
+  deadlineAt: number,
+  providerName: string,
+  timeoutMs: number,
+): Promise<T> {
+  const remainingMs = deadlineAt - Date.now();
+  if (remainingMs <= 0) throw new ProviderTimeoutError(providerName, timeoutMs);
+
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      controller.abort();
+      reject(new ProviderTimeoutError(providerName, timeoutMs));
+    }, remainingMs);
+    void pending.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err: unknown) => {
+        clearTimeout(timer);
+        if (controller.signal.aborted) reject(new ProviderTimeoutError(providerName, timeoutMs));
+        else reject(err);
+      },
+    );
+  });
+}
+
+function readResponseTextWithinDeadline(
+  response: Response,
+  controller: AbortController,
+  deadlineAt: number,
+  providerName: string,
+  timeoutMs: number,
+): Promise<string> {
+  return awaitWithinDeadline(response.text(), controller, deadlineAt, providerName, timeoutMs);
+}
+
 export async function openAiCompatibleComplete(
   cfg: OpenAiCompatibleConfig,
   req: ChatCompleteRequest,
@@ -67,42 +118,67 @@ export async function openAiCompatibleComplete(
   // attempt of the first track run — a per-run env bump is the sanctioned
   // mop-up move for known-heavy lessons, never a code edit.
   const timeoutMs = cfg.timeoutMs ?? getConfig().FORGE_CHAT_TIMEOUT_MS;
+  // A retry ladder must share the caller's ceiling. Before this deadline, a
+  // four-attempt transport retry could turn a configured 300 s write limit
+  // into twenty minutes (four full timeouts), parking a single-slot pilot
+  // without a checkpoint transition.
+  const deadlineAt = Date.now() + timeoutMs;
 
   return withTransportRetry(async () => {
+    const remainingMs = deadlineAt - Date.now();
+    if (remainingMs <= 0) throw new ProviderTimeoutError(cfg.providerName, timeoutMs);
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timer = setTimeout(() => controller.abort(), remainingMs);
     try {
       let res: Response;
       try {
-        res = await fetch(`${cfg.baseUrl}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${cfg.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: cfg.model,
-            messages: req.messages,
-            temperature: req.temperature,
-            ...(req.maxTokens ? { max_tokens: req.maxTokens } : {}),
-            ...(req.jsonMode ? { response_format: { type: 'json_object' } } : {}),
+        res = await awaitWithinDeadline(
+          fetch(`${cfg.baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${cfg.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: cfg.model,
+              messages: req.messages,
+              temperature: req.temperature,
+              ...(req.maxTokens ? { max_tokens: req.maxTokens } : {}),
+              ...(req.jsonMode ? { response_format: { type: 'json_object' } } : {}),
+            }),
+            signal: controller.signal,
           }),
-          signal: controller.signal,
-        });
+          controller,
+          deadlineAt,
+          cfg.providerName,
+          timeoutMs,
+        );
       } catch (err) {
         if (controller.signal.aborted) throw new ProviderTimeoutError(cfg.providerName, timeoutMs);
         throw new ProviderNetworkError(cfg.providerName, err);
       }
 
       if (!res.ok) {
-        const body = await res.text().catch(() => '');
+        let body = '';
+        try {
+          body = await readResponseTextWithinDeadline(res, controller, deadlineAt, cfg.providerName, timeoutMs);
+        } catch (err) {
+          if (err instanceof ProviderTimeoutError) throw err;
+        }
         // Pass the provider's own Retry-After through: on a 429 it is the only
         // authoritative answer to when the per-minute quota resets.
         throw new ProviderHttpError(cfg.providerName, res.status, body, parseRetryAfter(res.headers.get('retry-after')));
       }
 
-      const json = (await res.json()) as OpenAiChatResponse;
+      const body = await readResponseTextWithinDeadline(res, controller, deadlineAt, cfg.providerName, timeoutMs);
+      const json = JSON.parse(body) as OpenAiChatResponse;
       const content = json.choices?.[0]?.message?.content ?? '';
+      const promptTokens = json.usage?.prompt_tokens ?? 0;
+      const completionTokens = json.usage?.completion_tokens ?? 0;
+      const cachedPromptTokens = Math.min(
+        json.usage?.prompt_cache_hit_tokens ?? json.usage?.prompt_tokens_details?.cached_tokens ?? 0,
+        promptTokens,
+      );
       /*
        * EMPTY CONTENT + finish_reason 'length' IS ALWAYS A BUG, NEVER AN ANSWER.
        *
@@ -121,28 +197,31 @@ export async function openAiCompatibleComplete(
        */
       const finishReason = json.choices?.[0]?.finish_reason;
       if (content.trim().length === 0 && finishReason === 'length') {
-        const reasoning = json.usage?.completion_tokens_details?.reasoning_tokens;
-        throw new Error(
-          `${cfg.providerName} returned NO content: the completion budget was exhausted before any output ` +
-            `(finish_reason=length${reasoning ? `, ${reasoning} reasoning tokens` : ''}). ` +
-            `This model reasons before answering — raise maxTokens for this call.`,
-        );
+        throw new ProviderCompletionExhaustedError(cfg.providerName, {
+          promptTokens,
+          completionTokens,
+          cachedPromptTokens,
+          reasoningTokens: json.usage?.completion_tokens_details?.reasoning_tokens,
+        });
       }
-      const promptTokens = json.usage?.prompt_tokens ?? 0;
       return {
         content,
         promptTokens,
-        completionTokens: json.usage?.completion_tokens ?? 0,
+        completionTokens,
         // Clamp to promptTokens: cached tokens are a SUBSET of the prompt on
         // both providers, and the pricing subtraction in usage.ts relies on
         // cached <= prompt holding.
-        cachedPromptTokens: Math.min(
-          json.usage?.prompt_cache_hit_tokens ?? json.usage?.prompt_tokens_details?.cached_tokens ?? 0,
-          promptTokens,
-        ),
+        cachedPromptTokens,
       };
     } finally {
       clearTimeout(timer);
     }
+  }, {
+    sleep: async (requestedMs) => {
+      const remainingMs = deadlineAt - Date.now();
+      if (remainingMs <= 0) throw new ProviderTimeoutError(cfg.providerName, timeoutMs);
+      await new Promise<void>((resolve) => setTimeout(resolve, Math.min(requestedMs, remainingMs)));
+      if (Date.now() >= deadlineAt) throw new ProviderTimeoutError(cfg.providerName, timeoutMs);
+    },
   });
 }

@@ -550,8 +550,9 @@ export function adminRouter(): Router {
     if (!courseId.success || !status.success || !isCourseStatus(status.data)) {
       return fail(res, 400, 'VALIDATION_ERROR', 'courseId must be a uuid and status one of draft|published|archived');
     }
-    const done = await setCourseStatus(courseId.data, status.data, authedUser(res).id);
-    if (!done) return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
+    const outcome = await setCourseStatus(courseId.data, status.data, authedUser(res).id);
+    if (outcome === 'blocked') return fail(res, 409, 'CONFLICT', 'Course release is blocked until every lesson is review-ready and has all supported locales');
+    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
     ok(res, { id: courseId.data, status: status.data });
   });
 

@@ -198,7 +198,11 @@ const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', slug: 'l1', 
 const AUDIT = { id: 7, actor_id: ADMIN_ID, action: 'admin.course.set_status', subject: COURSE.id, detail: { status: 'published' }, created_at: '2026-07-20T00:00:00Z' };
 
 /** fetch stub over the service-role PostgREST surface + the auth role check. */
-function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { calls: { url: string; method: string; body?: string }[] }) {
+function stubData(
+  callerRole: 'admin' | 'superadmin' | 'universal',
+  capture?: { calls: { url: string; method: string; body?: string }[] },
+  options: { releaseBlocked?: boolean } = {},
+) {
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
@@ -211,6 +215,17 @@ function stubData(callerRole: 'admin' | 'superadmin' | 'universal', capture?: { 
         if (url.includes('role=neq.universal')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
         if (url.includes('user_id=in.(')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
         return Promise.resolve(jsonResponse(200, [{ role: 'admin' }, { role: 'universal' }])); // overview select=role
+      }
+      if (url.includes('/rest/v1/rpc/release_course')) {
+        return Promise.resolve(jsonResponse(200, [{
+          ok: !options.releaseBlocked,
+          code: options.releaseBlocked ? 'VERIFICATION_REQUIRED' : 'RELEASED',
+          message: options.releaseBlocked ? 'Verification required.' : 'Course hierarchy released.',
+          adventures_published: 1,
+          sagas_published: 1,
+          topics_published: 1,
+          lessons_published: 1,
+        }]));
       }
       if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [PROFILE]));
       if (url.includes('/rest/v1/courses')) {
@@ -265,7 +280,7 @@ describe('GET + POST /api/v1/admin/content', () => {
     expect(res.body.data.courses[0]).toMatchObject({ slug: 'money-basics', title: 'Money Basics', status: 'draft' });
   });
 
-  it('publishes a course (and audits it)', async () => {
+  it('releases a complete course atomically (and audits it)', async () => {
     const capture = { calls: [] as { url: string; method: string; body?: string }[] };
     stubData('admin', capture);
     const res = await request(createApp())
@@ -274,8 +289,21 @@ describe('GET + POST /api/v1/admin/content', () => {
       .send({ status: 'published' });
     expect(res.status).toBe(200);
     expect(res.body.data).toEqual({ id: COURSE.id, status: 'published' });
-    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/rpc/release_course'))).toBe(true);
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(false);
     expect(capture.calls.some((c) => c.method === 'POST' && c.url.includes('/audit_logs'))).toBe(true);
+  });
+
+  it('refuses a publication when the Vault release preflight blocks it', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture, { releaseBlocked: true });
+    const res = await request(createApp())
+      .post(`/api/v1/admin/content/${COURSE.id}/status`)
+      .set('Authorization', staffAuth('admin'))
+      .send({ status: 'published' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('CONFLICT');
+    expect(capture.calls.some((c) => c.method === 'PATCH' && c.url.includes('/courses'))).toBe(false);
   });
 
   it('400s on an invalid status', async () => {

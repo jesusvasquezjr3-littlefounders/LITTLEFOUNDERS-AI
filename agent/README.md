@@ -40,6 +40,19 @@ npm run deps:check      # pinned-major drift across the 8 packages
 npm run test:all        # vitest in every service
 npm run typecheck:all   # tsc --noEmit in every service
 npm run lint:all        # eslint in every service
+npm run release:readiness -- financial-education  # all gates + zero-spend course/audio dry-runs
+npm run production:preflight                         # Railway inventory/config; read-only
+npm run production:preflight:test                    # fake-Railway regression test; no remote access
 ```
+
+`release:readiness` is the final local release-candidate check. It also
+regenerates `repo_map.md`, verifies the diff, validates the competency graph,
+and deliberately performs no deployment, migration, publication, or paid API
+call.
+
+`production:preflight` is an operator-only, read-only Railway check. It lists
+required services, verifies an active `RUNNING` instance, and classifies
+required variables by presence/state without printing their values; it must
+pass before the production migration handoff.
 
 **Stamping a new service:** `bash agent/tools/new-service.sh <name> <port>` then follow `workflows/service-scaffold.md`.

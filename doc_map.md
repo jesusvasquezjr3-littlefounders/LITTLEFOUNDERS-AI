@@ -34,6 +34,7 @@
 | Human-sign-off boundaries | agent/core/BOUNDARIES.md | all |
 | Lesson Engine (taxonomy, document contract, grading, session, Character Control) | LESSON_ENGINE.md | all |
 | Course Engine (hierarchy, curriculum catalog, generation pipeline, gates, providers) | COURSE_ENGINE.md | all |
+| Forge production-readiness audit and research synthesis | COURSEGEN_AUDIT_2026-08-01.md | all |
 | AI tutor (Oracle) — approved design, NOT implemented | ORACLE.md | all |
 | Analytics warehouse (DuckDB, segmentation, forecasting, experiments) | /DATAINTEL.md · dataintel/AGENTS.md | all |
 | Data intelligence console (/admin/intel) | /DATAINTEL.md | §7 |

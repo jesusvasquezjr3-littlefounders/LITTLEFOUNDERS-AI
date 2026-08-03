@@ -6,8 +6,9 @@
 > `database/DEPLOYMENT.md`. Any production change is a BOUNDARIES action
 > (`agent/core/BOUNDARIES.md`) — human sign-off first.
 >
-> **Last verified:** 2026-07-18 · production live, 17 services (Courier/email-server
-> now live), est. ~$12/mo (Courier is a small always-warm service).
+> **Last reviewed:** 2026-08-02 · the reviewed application set includes Prism
+> (picturegen) and Data Intel (dataintel); their production service instances
+> still require the operator handoff described in `database/DEPLOYMENT.md`.
 
 ---
 
@@ -19,7 +20,7 @@
 | Core (backend) | **Railway** (project `littlefounders-b2c`) | the ONLY service the SPA calls | `api-b2c.littlefounders.ai` |
 | Vault gateway | **Railway** — Kong | Supabase self-hosted stack entrypoint | `auth-b2c.littlefounders.ai` |
 | Media (Depot) | **Railway** — filebase | PII-free media reads; internal writes | `media-b2c.littlefounders.ai` |
-| Internal services | **Railway** — coursegen, audiogen, parent-id-check, email-server | service-to-service only | **no public domain (private networking only)** |
+| Internal services | **Railway** — coursegen, audiogen, picturegen, parent-id-check, email-server, dataintel | service-to-service only | **no public domain (private networking only)** |
 | Vault internals | **Railway** — db, auth, rest, realtime, storage, meta, supavisor, studio | reached only via Kong / private net | no public domain |
 | Cache/limit | **Railway** — Redis | rate-limit store | no public domain |
 
@@ -170,7 +171,7 @@ decision, every deploy is an **upload authenticated by a token secret**:
 | Tier | Scale-down (auto) | Scale-up (under load) |
 |---|---|---|
 | Frontend (Vercel) | ✅ automatic (CDN + serverless) | ✅ automatic |
-| Idle Railway services (studio, meta, storage, supavisor, realtime, coursegen, audiogen) | ✅ **Serverless scale-to-zero** (sleep after ~10-15 min idle, wake on request) | on request (cold start) |
+| Idle Railway services (studio, meta, storage, supavisor, realtime, coursegen, audiogen, picturegen, dataintel) | ✅ **Serverless scale-to-zero** (sleep after ~10-15 min idle, wake on request) | on request (cold start) |
 | Hot-path Railway services (kong, auth, rest, db, backend, Redis, filebase, parent-id-check) | — (kept always-warm) | **manual but trivial** — see below |
 | Postgres (db) | — | vertical only (bigger instance); no read-replicas/HA yet |
 

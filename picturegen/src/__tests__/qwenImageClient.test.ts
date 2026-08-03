@@ -46,6 +46,29 @@ describe('generateImage', () => {
     expect(image.bytes).toEqual(Buffer.from([1, 2, 3, 4]));
   });
 
+  it('uses the synchronous multimodal endpoint for qwen-image-max', async () => {
+    const fetchImpl = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+      if (url.includes('multimodal-generation')) {
+        const request = JSON.parse(String(init?.body)) as { model: string; input: { messages: { content: { text: string }[] }[] }; parameters: { n: number; size: string; negative_prompt?: string } };
+        expect(request.model).toBe('qwen-image-max');
+        expect(request.input.messages[0]?.content[0]?.text).toBe(input.prompt);
+        expect(request.parameters.n).toBe(1);
+        expect(request.parameters.size).toBe('1328*1328');
+        expect(request.parameters.negative_prompt?.length).toBeLessThanOrEqual(500);
+        return jsonResponse(200, { output: { choices: [{ message: { content: [{ image: 'https://img.example/max.png' }] } }] } });
+      }
+      return imageResponse();
+    });
+
+    const image = await generateImage(
+      { ...input, negativePrompt: 'x'.repeat(700) },
+      { ...baseOpts, model: 'qwen-image-max', size: '1328*1328', fetchImpl },
+    );
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(image.bytes).toEqual(Buffer.from([1, 2, 3, 4]));
+  });
+
   it('waits through PENDING/RUNNING before SUCCEEDED', async () => {
     let pollCalls = 0;
     const fetchImpl = vi.fn();

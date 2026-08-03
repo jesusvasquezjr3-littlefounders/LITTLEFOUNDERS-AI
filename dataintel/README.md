@@ -102,10 +102,15 @@ Dataintel runs on Railway as a standalone service (port 4008). It depends on:
 - **DuckDB** — embedded analytical DB, file persisted on Railway volume
 
 ```bash
-# Railway deploy (container-based)
-railway up --service dataintel
+# Railway deploy (container-based; upload only dataintel/)
+railway up dataintel --path-as-root --service dataintel --ci
 ```
 
-Volume mount: `/app/duckdb/` → `dataintel-duckdb` (Railway volume, 2 GB).
+Attach a 2 GB Railway volume named `dataintel-duckdb` at `/app/duckdb/` and set
+`DUCKDB_PATH=/app/duckdb/dataintel.db`. The service's `railway.json` owns the
+healthcheck/restart contract and `.railwayignore` excludes local DuckDB files
+and secrets from the upload. The GitHub CD workflow runs this exact command
+only after `dataintel CI` succeeds on `main`.
+
 The DuckDB file is the only persistent state — everything else is derived
 from Vault on the next sync.

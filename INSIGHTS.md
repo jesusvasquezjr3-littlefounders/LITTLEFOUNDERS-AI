@@ -86,13 +86,10 @@ Core /api/v1/admin/insights/* — 12 routes (admin/superadmin): calibration, act
 ## 4. Event vocabulary (closed — mirror of the 0025 CHECK)
 
 **Every event in the enum is emitted by real code.** A declared-but-unwired
-event is how a dashboard silently lies with an empty series, so 0025 deleted
-the three that nothing could produce (`video_play`, `game_complete`,
-`task_complete` — there is no video, and Tasks is a placeholder surface).
-`game_open`/`game_start`/`game_complete` returned when the Game Engine shipped
-and were retired again as dead vocabulary when it was removed 2026-07-31
-(WALKTHROUGH.md) — an event returns only in the same commit as the feature
-that emits it, and leaves in the same commit that feature does.
+event is how a dashboard silently lies with an empty series, so the current
+schema contains only the first-party learning, family, profile, tutor and task
+signals that the platform emits. An event returns only in the same commit as
+the feature that emits it.
 
 | Group | Events | Emitted by |
 |---|---|---|

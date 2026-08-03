@@ -141,16 +141,50 @@ export function isCourseStatus(s: string): s is CourseStatus {
   return (COURSE_STATUSES as readonly string[]).includes(s);
 }
 
-/** Flip a course's publish state (the review→published human gate, §1.9). Audited. */
-export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<boolean> {
+export type CourseStatusOutcome = 'ok' | 'blocked' | 'unavailable';
+
+interface CourseReleaseRow {
+  ok: boolean;
+  code: string;
+  message: string;
+  adventures_published: number;
+  sagas_published: number;
+  topics_published: number;
+  lessons_published: number;
+}
+
+/**
+ * A publish click is a human approval, but it must release the complete
+ * hierarchy atomically. Directly PATCHing courses.status left every child in
+ * draft/review, making the course appear released to staff while remaining
+ * invisible to learners. The Vault RPC preflights locale completeness and
+ * lesson readiness before any state changes; this layer supplies the audit.
+ */
+export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusOutcome> {
+  if (status === 'published') {
+    const rows = await serviceRest<CourseReleaseRow[]>('/rpc/release_course', {
+      method: 'POST',
+      body: JSON.stringify({ p_course_id: courseId }),
+    });
+    const release = rows?.[0];
+    if (!release) return 'unavailable';
+    if (!release.ok) return 'blocked';
+    await insertAuditLog(actorId, 'admin.course.release', courseId, {
+      adventuresPublished: release.adventures_published,
+      sagasPublished: release.sagas_published,
+      topicsPublished: release.topics_published,
+      lessonsPublished: release.lessons_published,
+    });
+    return 'ok';
+  }
   const res = await serviceRest<unknown>(`/courses?id=eq.${encodeURIComponent(courseId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ status }),
   });
-  if (res === null) return false;
+  if (res === null) return 'unavailable';
   await insertAuditLog(actorId, 'admin.course.set_status', courseId, { status });
-  return true;
+  return 'ok';
 }
 
 // ── Moderation (lesson review gate) ──────────────────────────────────────────
