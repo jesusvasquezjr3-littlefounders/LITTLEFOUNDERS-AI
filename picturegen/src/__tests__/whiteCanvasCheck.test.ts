@@ -61,14 +61,49 @@ describe('verifyWhiteCanvas', () => {
 
   it('accepts a large centered object that crosses the inset ring on one side', async () => {
     // A tall/wide object may legitimately reach past the ring on ONE side —
-    // the ring only rejects when a substantial fraction of its samples are
-    // non-white (a panel crosses all four sides; an object corner does not).
+    // the check rejects only when the ring's CORNER arcs are dirty (a panel
+    // covers all four corners; an object edge does not).
     const blob = await sharp({ create: { width: 120, height: 160, channels: 4, background: '#2f6fed' } }).png().toBuffer();
     const bigObject = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
       .composite([{ input: blob, left: 140, top: 190 }])
       .png()
       .toBuffer();
     await expect(verifyWhiteCanvas(bigObject)).resolves.toBe('clean');
+  });
+
+  it('accepts a large centered ROUND object that crosses the ring on all four sides', async () => {
+    // The production false-positive class that made the first full-ring
+    // version reject ~88% of good tiles (fe-prod-20260803 ledger): a good
+    // tile whose object spans ~76% of the frame crosses a 12%-inset ring
+    // through its BULK on every side — but its rounded shape never reaches
+    // the ring's corner arcs, which is what the check now measures.
+    const circle = Buffer.from(
+      '<svg width="400" height="400"><circle cx="200" cy="200" r="152" fill="#e8590c"/></svg>',
+    );
+    const bigRound = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
+      .composite([{ input: circle, left: 0, top: 0 }])
+      .png()
+      .toBuffer();
+    await expect(verifyWhiteCanvas(bigRound)).resolves.toBe('clean');
+  });
+
+  it('tolerates a single NEAR-white border pixel (compression noise), not a gross one', async () => {
+    // Live false positive: a good tile rejected for ONE border pixel at 231
+    // of 665 sampled. Near-white (>=210, low spread) within 1% is noise …
+    const nearWhite = await sharp({ create: { width: 1, height: 1, channels: 4, background: { r: 231, g: 231, b: 228, alpha: 1 } } }).png().toBuffer();
+    const noisy = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
+      .composite([{ input: nearWhite, left: 201, top: 0 }])
+      .png()
+      .toBuffer();
+    await expect(verifyWhiteCanvas(noisy)).resolves.toBe('clean');
+    // … while a single GROSS pixel (an object or color crossing the edge)
+    // still rejects.
+    const gross = await sharp({ create: { width: 1, height: 1, channels: 4, background: { r: 120, g: 180, b: 240, alpha: 1 } } }).png().toBuffer();
+    const crossed = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
+      .composite([{ input: gross, left: 201, top: 0 }])
+      .png()
+      .toBuffer();
+    await expect(verifyWhiteCanvas(crossed)).resolves.toBe('defect');
   });
 
   it('fails open when bytes are not a decodable image', async () => {
