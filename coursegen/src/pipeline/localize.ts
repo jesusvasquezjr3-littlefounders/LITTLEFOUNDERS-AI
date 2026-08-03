@@ -48,6 +48,11 @@ function setAtPath(root: unknown, path: readonly PathSegment[], value: string): 
   cursor[path[path.length - 1]!] = value;
 }
 
+function pathsEqual(a: readonly PathSegment[], b: readonly PropertyKey[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((seg, i) => seg === b[i]);
+}
+
 // ISO currency enum (money schemas) mapped to the target locale's play currency.
 const ISO_CURRENCY = new Set(['MXN', 'USD', 'BRL']);
 const LOCALE_CURRENCY: Record<'en-US' | 'pt-BR', { code: string; word: string }> = {
@@ -172,6 +177,38 @@ function buildTranslateMessages(
   return messages;
 }
 
+/**
+ * Feedback for re-injection fixups (localizeLesson) — one entry per
+ * translated string whose re-injected value broke the document schema (the
+ * "LENGTH" instruction in buildTranslateMessages is a soft ask; this is the
+ * hard corrective loop for when the model exceeds it anyway).
+ */
+const MAX_REINJECT_ATTEMPTS = 3;
+
+function buildShortenMessages(
+  sourceMap: Record<string, string>,
+  feedback: ReadonlyMap<number, string>,
+  targetLocale: LessonLocale,
+  toneDirectiveEs?: string,
+) {
+  const localeName = targetLocale === 'en-US' ? 'English (US)' : 'Brazilian Portuguese (pt-BR)';
+  const audienceLine = toneDirectiveEs
+    ? `This content targets ADULT learners, not children — preserve that register. Source-language (es-MX) tone directive: ${toneDirectiveEs}`
+    : "Keep the warm, encouraging, age-appropriate register (this is children's content).";
+  const feedbackLines = Object.keys(sourceMap).map((key) => `key "${key}": previous translation ${feedback.get(Number(key)) ?? 'failed validation'}`);
+  const system = [
+    `You translate financial-literacy content from Mexican Spanish (es-MX) into ${localeName} for LittleFounders. ${audienceLine}`,
+    `Your PREVIOUS translation of these ${Object.keys(sourceMap).length} string(s) failed validation:`,
+    feedbackLines.join('\n'),
+    'Translate them again, SHORTER this time — drop filler words, use the most compact natural phrasing — while preserving the meaning and every {{n}} gap marker. Every output value MUST fit the stated limit.',
+    'Output ONLY a strict flat JSON object mapping each input key to its shorter translation — same keys, nothing else.',
+  ].join('\n');
+  return [
+    { role: 'system' as const, content: system },
+    { role: 'user' as const, content: JSON.stringify(sourceMap) },
+  ];
+}
+
 export interface LocalizeResult {
   document: LessonDocumentParsed;
   targetLocale: LessonLocale;
@@ -241,7 +278,72 @@ export async function localizeLesson(
   remapCurrency(cloned, targetLocale);
   (cloned as { meta: { locale: string } }).meta.locale = targetLocale;
 
-  const parsed = lessonDocumentSchema.safeParse(cloned);
+  let parsed = lessonDocumentSchema.safeParse(cloned);
+  /*
+   * Re-injection can break the document schema even when the translation
+   * response itself was valid JSON (the corrective loop above only checks
+   * "same keys, string values") — the LENGTH instruction in
+   * buildTranslateMessages is a soft ask, and the model routinely runs long
+   * anyway (production: "options.1.label: Too big: expected string to have
+   * <=60 characters"). Before this fix, ANY such overflow threw immediately
+   * and cost the WHOLE lesson a from-scratch regen (replan + rewrite +
+   * rejudge) over a single translated string — the mildest possible mistake
+   * treated as the most expensive possible failure. Fix ONLY the strings
+   * that actually broke, by index, same corrective-feedback shape as write.ts.
+   */
+  for (let attempt = 1; !parsed.success && attempt <= MAX_REINJECT_ATTEMPTS; attempt++) {
+    const feedback = new Map<number, string>();
+    for (const issue of parsed.error.issues) {
+      const index = extracted.findIndex((e) => pathsEqual(e.path, issue.path));
+      if (index === -1) continue; // a path we never translated is a different bug — surface it below, not here.
+      const current = translatedMap[String(index)] ?? '';
+      const detail =
+        issue.code === 'too_big' && 'maximum' in issue && typeof issue.maximum === 'number'
+          ? `is too long: ${current.length} characters, must be at most ${issue.maximum}`
+          : issue.message;
+      feedback.set(index, detail);
+    }
+    if (feedback.size === 0) break; // nothing here a re-translate can fix.
+
+    const sourceMap: Record<string, string> = {};
+    for (const index of feedback.keys()) sourceMap[String(index)] = extracted[index]!.value;
+    const messages = buildShortenMessages(sourceMap, feedback, targetLocale, deps.registerToneEs);
+    const result = await translate(
+      { messages, temperature: 0.3, jsonMode: true, maxTokens: getConfig().FORGE_DOCUMENT_MAX_TOKENS },
+      { operation: 'localize', ledger: deps.ledger },
+    );
+    const json = safeJsonParse(result.content);
+    if (json.ok && typeof json.value === 'object' && json.value !== null && !Array.isArray(json.value)) {
+      const record = json.value as Record<string, unknown>;
+      for (const index of feedback.keys()) {
+        const value = record[String(index)];
+        if (typeof value === 'string') {
+          translatedMap[String(index)] = value;
+          setAtPath(cloned, extracted[index]!.path, value);
+        }
+      }
+    }
+    remapCurrency(cloned, targetLocale);
+    parsed = lessonDocumentSchema.safeParse(cloned);
+  }
+
+  if (!parsed.success) {
+    /*
+     * Last resort: any field STILL failing after the corrective retries falls
+     * back to its ORIGINAL es-MX source string — guaranteed to satisfy the
+     * schema (it already did, in the source language). One field shipping
+     * untranslated is a far smaller defect than losing the whole lesson to a
+     * paid from-scratch regen over a length overflow.
+     */
+    for (const issue of parsed.error.issues) {
+      const index = extracted.findIndex((e) => pathsEqual(e.path, issue.path));
+      if (index === -1) continue;
+      setAtPath(cloned, extracted[index]!.path, extracted[index]!.value);
+    }
+    remapCurrency(cloned, targetLocale);
+    parsed = lessonDocumentSchema.safeParse(cloned);
+  }
+
   if (!parsed.success) {
     throw new Error(`localize: re-injected ${targetLocale} document failed contract validation: ${formatZodIssues(parsed.error.issues)}`);
   }
