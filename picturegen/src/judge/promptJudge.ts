@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_NEGATIVE_PROMPT_CHARS, truncateAtCommaBoundary } from '../gen/qwenImageClient.js';
 
 /*
  * The ART-DIRECTOR JUDGE. Given a bare {label, context?, purpose?} it asks an
@@ -69,8 +70,15 @@ const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
  * to invent a child eating it, then spend three paid verification retries.
  * A deterministic object-only prompt is safer, cheaper and more consistent
  * across sibling options; wide scenes still use the art-director model.
+ *
+ * SINGLE SOURCE OF TRUTH for "which purposes are object tiles". The service
+ * layer (service/pictures.ts) imports this same set to collapse the tile
+ * cache key — an invariant that is only correct while cache-key collapsing
+ * and deterministic-prompt selection agree on membership. Never redeclare
+ * this set elsewhere: drift between two copies would serve a cross-context
+ * wrong image straight from cache.
  */
-const DETERMINISTIC_OBJECT_TILE_PURPOSES = new Set<PicturePurpose>([
+export const OBJECT_TILE_PURPOSES: ReadonlySet<PicturePurpose> = new Set<PicturePurpose>([
   'item_card',
   'option_card',
   'lesson_option',
@@ -137,15 +145,48 @@ function userMessage(input: JudgeInput): string {
  * live inspection (2026-07-23) caught Qwen-Image inventing a fake brand logo
  * with lettering ("Founters") on an otherwise perfect illustration — text and
  * logos are exactly what a children's lesson tile must never contain, and the
- * judge's own negative can't be trusted to always include them.
+ * judge's own negative can't be trusted to always include them. Rendered
+ * digits/captions are a RECORDED live failure mode too ("10 peces + 10
+ * peces"), so caption/word/number coverage is part of this core, for every
+ * purpose.
+ *
+ * DashScope caps negative_prompt at MAX_NEGATIVE_PROMPT_CHARS (500), so this
+ * list is (a) COMPRESSED to umbrella terms so it fits well under the cap with
+ * room left for judge extras, and (b) PRIORITY-ORDERED — no-people, then
+ * anti-3D/photorealism, then no-text — because anything past the cap is
+ * clipped from the tail. An earlier 789-char version was sliced mid-token at
+ * the cap, silently amputating the entire no-people and anti-3D blocks and
+ * every judge-supplied negative.
+ *
+ * The base negative is PURPOSE-AWARE: this core reaches every purpose, while
+ * the anti-scenery / anti-background / anti-framing terms live in
+ * OBJECT_TILE_NEGATIVE_EXTENSION and reach object tiles ONLY. Scene purposes
+ * (scene_anchor/scene/outcome/generic) explicitly demand a wide establishing
+ * scene with a complete background — sending them "scenery" or a background
+ * negation would directly fight their own positive prompt.
  */
-export const BASE_NEGATIVE =
-  'text, letters, words, captions, typography, logo, brand name, wordmark, watermark, signature, signage, labels, numbers overlay, ' +
-  'sign with writing, signboard text, price tag, chalkboard writing, coin inscriptions, engraved letters, engraved numbers, ' +
-  'colored background, gray background, off-white background, cream background, gradient background, patterned background, scenery behind the object, ' +
-  'horizon line, floor, tabletop, room, sky, wall, vignette, border, frame, inset panel, rounded card, cast shadow, drop shadow, reflection, ' +
-  'person, people, human, man, woman, child, kid, boy, girl, face, hands, character, mascot, cartoon character, humanoid figure, ' +
-  '3d render, photorealistic, realistic materials, clay, plastic toy render, painterly shading, soft focus, cinematic depth of field';
+export const BASE_NEGATIVE_CORE =
+  'person, people, human, child, face, hands, mascot, cartoon character, ' +
+  '3d render, photorealistic, clay, plastic, painterly, soft focus, depth of field, ' +
+  'text, letters, typography, captions, words, numbers, numerals, ' +
+  'logo, wordmark, watermark, signage, price tag, coin engraving';
+
+/**
+ * Extra negatives for the four object-tile purposes only: their contract is
+ * ONE object on a pure-white edge-to-edge canvas, so scenery, any non-white
+ * canvas (including the neutral gray/off-white/cream drifts seen live) and
+ * framing/shadow decorations are defects — for tiles, and only for tiles.
+ */
+export const OBJECT_TILE_NEGATIVE_EXTENSION =
+  'scenery, colored background, gradient background, gray background, off-white background, cream background, ' +
+  'border, frame, inset card, shadow, reflection';
+
+/** The non-negotiable base negative for a purpose: common core everywhere, plus the tile-only extension. */
+export function baseNegativeFor(purpose?: PicturePurpose): string {
+  return OBJECT_TILE_PURPOSES.has(purpose ?? 'generic')
+    ? `${BASE_NEGATIVE_CORE}, ${OBJECT_TILE_NEGATIVE_EXTENSION}`
+    : BASE_NEGATIVE_CORE;
+}
 
 /**
  * Appended IN CODE to every final prompt (judge-crafted or fallback) — not
@@ -169,23 +210,33 @@ export function finalizePrompt(body: string): string {
   return `${terminal}${PICTORIAL_CLAUSE}`;
 }
 
-/** Merge the judge's negative (if any) with the non-negotiable base list. */
-export function mergeNegative(judgeNegative?: string): string {
+/**
+ * Merge the judge's negative (if any) with the non-negotiable, purpose-aware
+ * base list, budgeted against the provider cap: the base always survives
+ * whole, and judge extras fill the remainder, truncated only at a comma
+ * boundary (never mid-token) — an extra that cannot fit is dropped, not
+ * sliced.
+ */
+export function mergeNegative(judgeNegative?: string, purpose?: PicturePurpose): string {
+  const base = baseNegativeFor(purpose);
   const extra = (judgeNegative ?? '').trim();
-  return extra ? `${BASE_NEGATIVE}, ${extra}` : BASE_NEGATIVE;
+  if (!extra) return base;
+  const budget = MAX_NEGATIVE_PROMPT_CHARS - base.length - ', '.length;
+  const clipped = budget > 0 ? truncateAtCommaBoundary(extra, budget) : '';
+  return clipped ? `${base}, ${clipped}` : base;
 }
 
 export function fallbackPrompt(input: JudgeInput): CraftedPrompt {
   const context = (input.context ?? '').slice(0, 160).trim();
   const head = context ? `${input.label} — ${context}.` : `${input.label}.`;
-  return { prompt: finalizePrompt(`${head} ${LF_VISUAL_IDENTITY}`), negative: BASE_NEGATIVE };
+  return { prompt: finalizePrompt(`${head} ${LF_VISUAL_IDENTITY}`), negative: baseNegativeFor(input.purpose) };
 }
 
 interface ChatResponse {
   choices?: { message?: { content?: string } }[];
 }
 
-function parseCrafted(content: string | null | undefined): CraftedPrompt | null {
+function parseCrafted(content: string | null | undefined, purpose?: PicturePurpose): CraftedPrompt | null {
   if (!content) return null;
   let raw: unknown;
   try {
@@ -197,9 +248,9 @@ function parseCrafted(content: string | null | undefined): CraftedPrompt | null 
   if (!parsed.success) return null;
   return {
     prompt: finalizePrompt(parsed.data.prompt),
-    // The base no-text/no-logo list is non-negotiable — the judge's negative
-    // only ever EXTENDS it.
-    negative: mergeNegative(parsed.data.negative),
+    // The purpose-aware base no-text/no-logo list is non-negotiable — the
+    // judge's negative only ever EXTENDS it.
+    negative: mergeNegative(parsed.data.negative, purpose),
   };
 }
 
@@ -209,7 +260,7 @@ function parseCrafted(content: string | null | undefined): CraftedPrompt | null 
  * `fallbackPrompt`, it never throws.
  */
 export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptions): Promise<CraftedPrompt> {
-  if (DETERMINISTIC_OBJECT_TILE_PURPOSES.has(input.purpose ?? 'generic')) {
+  if (OBJECT_TILE_PURPOSES.has(input.purpose ?? 'generic')) {
     return {
       prompt: finalizePrompt(
         `Single object: ${input.label}. Centered, fully visible, bold simple silhouette. ` +
@@ -217,7 +268,7 @@ export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptio
           `Flat 2D animated vector illustration with clean geometric shapes, crisp high contrast, soft rounded forms and bright educational colors. ` +
           `No other objects, text, logo or people.`,
       ),
-      negative: BASE_NEGATIVE,
+      negative: baseNegativeFor(input.purpose),
     };
   }
   const fetchImpl = opts.fetchImpl ?? fetch;
@@ -249,7 +300,7 @@ export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptio
       if (!res.ok) continue; // HTTP error → retry, then fall back.
 
       const json = (await res.json().catch(() => null)) as ChatResponse | null;
-      const crafted = parseCrafted(json?.choices?.[0]?.message?.content);
+      const crafted = parseCrafted(json?.choices?.[0]?.message?.content, input.purpose);
       if (crafted) return crafted;
       // Unparseable JSON → try once more, then fall back.
     } catch {

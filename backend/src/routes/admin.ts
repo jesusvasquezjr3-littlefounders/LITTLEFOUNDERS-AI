@@ -538,6 +538,19 @@ export function adminRouter(): Router {
   });
 
   // ── Content (course publish gate) ──────────────────────────────────────────
+  // Vault's release_course refusal codes → §1.6 envelope errors, one distinct
+  // SCREAMING_SNAKE code per cause so the console (errors.api.<CODE>) can tell
+  // an archived course from a missing locale. Unknown future RPC codes degrade
+  // to the generic RELEASE_BLOCKED rather than crashing the route.
+  const RELEASE_REFUSALS: Record<string, { status: number; code: string }> = {
+    NOT_FOUND: { status: 404, code: 'RELEASE_NOT_FOUND' },
+    ARCHIVED: { status: 409, code: 'RELEASE_ARCHIVED' },
+    INCOMPLETE_HIERARCHY: { status: 409, code: 'RELEASE_INCOMPLETE_HIERARCHY' },
+    LESSONS_NOT_REVIEWABLE: { status: 409, code: 'RELEASE_LESSONS_NOT_REVIEWABLE' },
+    INCOMPLETE_LOCALES: { status: 409, code: 'RELEASE_INCOMPLETE_LOCALES' },
+    VERIFICATION_REQUIRED: { status: 409, code: 'RELEASE_VERIFICATION_REQUIRED' },
+  };
+
   router.get('/content', async (_req, res) => {
     const courses = await listAdminCourses();
     if (!courses) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load content');
@@ -550,9 +563,12 @@ export function adminRouter(): Router {
     if (!courseId.success || !status.success || !isCourseStatus(status.data)) {
       return fail(res, 400, 'VALIDATION_ERROR', 'courseId must be a uuid and status one of draft|published|archived');
     }
-    const outcome = await setCourseStatus(courseId.data, status.data, authedUser(res).id);
-    if (outcome === 'blocked') return fail(res, 409, 'CONFLICT', 'Course release is blocked until every lesson is review-ready and has all supported locales');
-    if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
+    const result = await setCourseStatus(courseId.data, status.data, authedUser(res).id);
+    if (result.outcome === 'blocked') {
+      const refusal = RELEASE_REFUSALS[result.code] ?? { status: 409, code: 'RELEASE_BLOCKED' };
+      return fail(res, refusal.status, refusal.code, result.message);
+    }
+    if (result.outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the course');
     ok(res, { id: courseId.data, status: status.data });
   });
 

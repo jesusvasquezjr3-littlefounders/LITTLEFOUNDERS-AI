@@ -43,10 +43,21 @@ declare
   v_sagas integer := 0;
   v_topics integer := 0;
   v_lessons integer := 0;
+  v_documents integer := 0;
   v_ineligible_lessons integer := 0;
   v_incomplete_locale_lessons integer := 0;
   v_last_document_update timestamptz;
   v_verified_at timestamptz;
+  v_adventures_after integer := 0;
+  v_adventures_unpublished integer := 0;
+  v_sagas_after integer := 0;
+  v_sagas_unpublished integer := 0;
+  v_topics_after integer := 0;
+  v_topics_unpublished integer := 0;
+  v_lessons_after integer := 0;
+  v_lessons_unpublished integer := 0;
+  v_documents_after integer := 0;
+  v_last_document_update_after timestamptz;
 begin
   select c.status
     into v_course_status
@@ -68,6 +79,11 @@ begin
   -- Without these row locks, a concurrent Forge document update could land
   -- after `max(updated_at)` is read but before the hierarchy becomes visible,
   -- bypassing the fresh-verification requirement for that new content.
+  -- Row locks only cover rows that exist at lock time: a concurrent INSERT is
+  -- invisible to them, and under READ COMMITTED each publishing UPDATE takes
+  -- a fresh snapshot. The publishing UPDATEs below therefore carry the same
+  -- qualification predicates as the preflight, and a post-publish recount
+  -- raises (rolling the whole transaction back) if the content set changed.
   perform 1 from public.adventures a where a.course_id = p_course_id for update;
   perform 1
   from public.sagas s
@@ -113,6 +129,14 @@ begin
 
   select count(*)::integer into v_lessons
   from public.lessons l
+  join public.topics t on t.id = l.topic_id
+  join public.sagas s on s.id = t.saga_id
+  join public.adventures a on a.id = s.adventure_id
+  where a.course_id = p_course_id;
+
+  select count(*)::integer into v_documents
+  from public.lesson_documents d
+  join public.lessons l on l.id = d.lesson_id
   join public.topics t on t.id = l.topic_id
   join public.sagas s on s.id = t.saga_id
   join public.adventures a on a.id = s.adventure_id
@@ -171,6 +195,12 @@ begin
     return;
   end if;
 
+  -- Publish only rows that satisfy the preflighted qualification predicates.
+  -- A lesson Forge inserted after the preflight is either unqualified (stays
+  -- unpublished, caught by the recount below) or qualified-but-uncounted
+  -- (changes the totals, also caught below); an unverified row can never go
+  -- live either way. Eligible lesson statuses are 'review' or 'published'
+  -- (preflight), so `status = 'review'` is the exact transition set.
   update public.lessons l
   set status = 'published'
   from public.topics t, public.sagas s, public.adventures a
@@ -178,7 +208,12 @@ begin
     and t.saga_id = s.id
     and s.adventure_id = a.id
     and a.course_id = p_course_id
-    and l.status <> 'published';
+    and l.status = 'review'
+    and (
+      select count(*) filter (where d.locale in ('en-US', 'es-MX', 'pt-BR'))
+      from public.lesson_documents d
+      where d.lesson_id = l.id
+    ) = 3;
   get diagnostics lessons_published = row_count;
 
   update public.topics t
@@ -187,7 +222,12 @@ begin
   where t.saga_id = s.id
     and s.adventure_id = a.id
     and a.course_id = p_course_id
-    and t.status <> 'published';
+    and t.status <> 'published'
+    and not exists (
+      select 1 from public.lessons l
+      where l.topic_id = t.id
+        and l.status <> 'published'
+    );
   get diagnostics topics_published = row_count;
 
   update public.sagas s
@@ -195,14 +235,84 @@ begin
   from public.adventures a
   where s.adventure_id = a.id
     and a.course_id = p_course_id
-    and s.status <> 'published';
+    and s.status <> 'published'
+    and not exists (
+      select 1 from public.topics t
+      where t.saga_id = s.id
+        and t.status <> 'published'
+    );
   get diagnostics sagas_published = row_count;
 
   update public.adventures a
   set status = 'published'
   where a.course_id = p_course_id
-    and a.status <> 'published';
+    and a.status <> 'published'
+    and not exists (
+      select 1 from public.sagas s
+      where s.adventure_id = a.id
+        and s.status <> 'published'
+    );
   get diagnostics adventures_published = row_count;
+
+  -- Recount against the preflight totals before the course row flips. Any
+  -- mismatch means the content set changed concurrently (rows inserted after
+  -- the preflight, or rows the qualified updates refused): the release must
+  -- fail loudly and roll back atomically rather than publish a partial or
+  -- unverified hierarchy. Locked existing documents cannot change, so a moved
+  -- max(updated_at) or document count also proves a concurrent insert.
+  select count(*)::integer,
+         count(*) filter (where l.status <> 'published')::integer
+    into v_lessons_after, v_lessons_unpublished
+  from public.lessons l
+  join public.topics t on t.id = l.topic_id
+  join public.sagas s on s.id = t.saga_id
+  join public.adventures a on a.id = s.adventure_id
+  where a.course_id = p_course_id;
+
+  select count(*)::integer,
+         count(*) filter (where t.status <> 'published')::integer
+    into v_topics_after, v_topics_unpublished
+  from public.topics t
+  join public.sagas s on s.id = t.saga_id
+  join public.adventures a on a.id = s.adventure_id
+  where a.course_id = p_course_id;
+
+  select count(*)::integer,
+         count(*) filter (where s.status <> 'published')::integer
+    into v_sagas_after, v_sagas_unpublished
+  from public.sagas s
+  join public.adventures a on a.id = s.adventure_id
+  where a.course_id = p_course_id;
+
+  select count(*)::integer,
+         count(*) filter (where a.status <> 'published')::integer
+    into v_adventures_after, v_adventures_unpublished
+  from public.adventures a
+  where a.course_id = p_course_id;
+
+  select count(*)::integer, max(d.updated_at)
+    into v_documents_after, v_last_document_update_after
+  from public.lesson_documents d
+  join public.lessons l on l.id = d.lesson_id
+  join public.topics t on t.id = l.topic_id
+  join public.sagas s on s.id = t.saga_id
+  join public.adventures a on a.id = s.adventure_id
+  where a.course_id = p_course_id;
+
+  if v_lessons_after <> v_lessons or v_lessons_unpublished > 0
+     or v_topics_after <> v_topics or v_topics_unpublished > 0
+     or v_sagas_after <> v_sagas or v_sagas_unpublished > 0
+     or v_adventures_after <> v_adventures or v_adventures_unpublished > 0
+     or v_documents_after <> v_documents
+     or v_last_document_update_after is distinct from v_last_document_update then
+    raise exception 'release_course: concurrent content change detected for course % (adventures %/%, sagas %/%, topics %/%, lessons %/%, documents %/%); release rolled back',
+      p_course_id,
+      v_adventures_after, v_adventures,
+      v_sagas_after, v_sagas,
+      v_topics_after, v_topics,
+      v_lessons_after, v_lessons,
+      v_documents_after, v_documents;
+  end if;
 
   update public.courses
   set status = 'published'

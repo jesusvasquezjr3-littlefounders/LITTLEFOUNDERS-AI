@@ -141,7 +141,13 @@ export function isCourseStatus(s: string): s is CourseStatus {
   return (COURSE_STATUSES as readonly string[]).includes(s);
 }
 
-export type CourseStatusOutcome = 'ok' | 'blocked' | 'unavailable';
+/** `blocked` carries the RPC's refusal verbatim so the route can map each
+ * distinct cause (archived vs missing locale vs stale verification…) to its
+ * own envelope error instead of one generic message. */
+export type CourseStatusResult =
+  | { outcome: 'ok' }
+  | { outcome: 'blocked'; code: string; message: string }
+  | { outcome: 'unavailable' };
 
 interface CourseReleaseRow {
   ok: boolean;
@@ -160,31 +166,37 @@ interface CourseReleaseRow {
  * invisible to learners. The Vault RPC preflights locale completeness and
  * lesson readiness before any state changes; this layer supplies the audit.
  */
-export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusOutcome> {
+export async function setCourseStatus(courseId: string, status: CourseStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
     const rows = await serviceRest<CourseReleaseRow[]>('/rpc/release_course', {
       method: 'POST',
       body: JSON.stringify({ p_course_id: courseId }),
     });
     const release = rows?.[0];
-    if (!release) return 'unavailable';
-    if (!release.ok) return 'blocked';
-    await insertAuditLog(actorId, 'admin.course.release', courseId, {
+    if (!release) return { outcome: 'unavailable' };
+    if (!release.ok) return { outcome: 'blocked', code: release.code, message: release.message };
+    const audited = await insertAuditLog(actorId, 'admin.course.release', courseId, {
       adventuresPublished: release.adventures_published,
       sagasPublished: release.sagas_published,
       topicsPublished: release.topics_published,
       lessonsPublished: release.lessons_published,
     });
-    return 'ok';
+    if (!audited) {
+      // The release transaction already committed, so this must not become a
+      // user-facing failure — but a whole-course release without its audit row
+      // has to be detectable, and audit_logs is the only record of it.
+      console.error(`[backend] audit write FAILED for admin.course.release course=${courseId} actor=${actorId}`);
+    }
+    return { outcome: 'ok' };
   }
   const res = await serviceRest<unknown>(`/courses?id=eq.${encodeURIComponent(courseId)}`, {
     method: 'PATCH',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ status }),
   });
-  if (res === null) return 'unavailable';
+  if (res === null) return { outcome: 'unavailable' };
   await insertAuditLog(actorId, 'admin.course.set_status', courseId, { status });
-  return 'ok';
+  return { outcome: 'ok' };
 }
 
 // ── Moderation (lesson review gate) ──────────────────────────────────────────

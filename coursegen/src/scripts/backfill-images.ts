@@ -21,6 +21,10 @@
 //    (rate limit, HTTP, network) are already
 //    log-and-continue inside illustrateSegments — icons stay the fallback.
 //  - A document that gained ZERO images is NOT patched (no-op write avoidance).
+//  - A PAID run (neither --reuse-only nor --dry-run) first verifies Prism's
+//    advertised illustration style version against this build (the same
+//    GET /health handshake pipeline/run.ts enforces) and hard-fails on a
+//    mismatch or an unverifiable probe — BEFORE any paid call.
 //  - Exit 0 on any clean run (even all-skipped / quota-exhausted); exit 1 only
 //    on an unexpected error (bad slug, Vault HTTP failure, …).
 //
@@ -31,6 +35,8 @@ import { pathToFileURL } from 'node:url';
 import { illustrateSegments, type IllustrateOptions, type IllustrateResult } from '../pipeline/images.js';
 import { buildImageInheritance, type ImageInheritance } from '../pipeline/imageInheritance.js';
 import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
+import { fetchPrismStyleVersion, type PrismStyleProbe } from '../providers/picturegen.js';
+import { getConfig } from '../env.js';
 import { vaultSelect, vaultPatch } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
@@ -59,6 +65,12 @@ export interface BackfillDeps {
   illustrate: (document: LessonDocumentParsed, options: Pick<IllustrateOptions, 'inherit' | 'reuseOnly'>) => Promise<IllustrateResult>;
   /** Persist the illustrated document — PATCHes ONLY `body.document`. */
   writeDocument: (row: BackfillDocRow, body: BackfillWriteBody) => Promise<void>;
+  /**
+   * Prism GET /health style probe (production: `fetchPrismStyleVersion`).
+   * Undefined means Prism is not configured — the probe is skipped and the
+   * pass short-circuits cleanly on the first not-configured illustrate result.
+   */
+  probeStyleVersion?: () => Promise<PrismStyleProbe>;
   /** Per-document progress lines. Defaults to a no-op (tests stay quiet). */
   log?: (line: string) => void;
 }
@@ -99,6 +111,36 @@ export interface BackfillSummary {
 
 export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions): Promise<BackfillSummary> {
   const log = deps.log ?? (() => undefined);
+
+  /*
+   * Style-version handshake — same preflight pipeline/run.ts enforces before a
+   * paid generation run. A paid backfill asks Prism for FRESH art and PATCHes
+   * it into stored documents WITHOUT touching their illustration_style_version
+   * stamp, so drifted deployments would smuggle a different approved visual
+   * generation into already-stamped lessons (and poison the inheritance index
+   * and Prism's cache). Verify BEFORE any paid call and fail CLOSED on an
+   * unverifiable probe — this entry point exists only for deliberate paid
+   * repair, so there is no unrequired-images soft path here. Skipped when no
+   * drift can land in Vault: --reuse-only never contacts Prism at all, and
+   * --dry-run never PATCHes a document.
+   */
+  if (!opts.reuseOnly && !opts.dryRun && deps.probeStyleVersion) {
+    const probe = await deps.probeStyleVersion();
+    if ('unavailable' in probe) {
+      throw new Error(
+        `images:backfill — could not verify Prism's illustration style version (${probe.unavailable}); ` +
+          `refusing a paid backfill. Use --reuse-only or --dry-run to proceed without patched paid art.`,
+      );
+    }
+    if (probe.styleVersion !== FORGE_ILLUSTRATION_STYLE_VERSION) {
+      throw new Error(
+        `images:backfill — illustration style-version mismatch: Prism /health advertises "${probe.styleVersion}" ` +
+          `but this Forge build expects "${FORGE_ILLUSTRATION_STYLE_VERSION}". Align the two deployments before a ` +
+          `paid backfill: drifted art would be PATCHed into documents whose illustration_style_version stamp is untouched.`,
+      );
+    }
+  }
+
   const summary: BackfillSummary = {
     scanned: 0,
     patched: 0,
@@ -118,15 +160,46 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
       || a.lessonSlug.localeCompare(b.lessonSlug)
       || a.locale.localeCompare(b.locale),
   );
-  const inherit: ImageInheritance = buildImageInheritance(
-    sourceRows
-      .filter((row) => row.illustrationStyleVersion === FORGE_ILLUSTRATION_STYLE_VERSION)
-      .map((row) => ({ ...row.document, illustration_style_version: row.illustrationStyleVersion })),
-    FORGE_ILLUSTRATION_STYLE_VERSION,
-  );
+  const donorRows = sourceRows.filter((row) => row.illustrationStyleVersion === FORGE_ILLUSTRATION_STYLE_VERSION);
+
+  /*
+   * Donor scoping — interlingual homographs. A single course-wide, label-only
+   * index let an es-MX "Pan" (bread) donate its image to an en-US "pan"
+   * (frying pan) tile in a DIFFERENT lesson: label equality across locales is
+   * not object equality, and no verifier sits in this path. Two donor scopes
+   * remain safe and are kept:
+   *   - the SAME lesson, any locale — the deliberate 1-image-per-3-locales
+   *     design (illustrations carry no text; the three locale documents of one
+   *     lesson depict the same objects);
+   *   - the same LOCALE, any lesson — same language, same word, same object.
+   * Same-lesson art wins over same-locale art when a label exists in both.
+   */
+  const toIndexable = (row: BackfillDocRow) => ({ ...row.document, illustration_style_version: row.illustrationStyleVersion });
+  const lessonIndexes = new Map<string, ImageInheritance>();
+  const localeIndexes = new Map<string, ImageInheritance>();
+  const inheritFor = (row: BackfillDocRow): ImageInheritance => {
+    let lessonIndex = lessonIndexes.get(row.lessonId);
+    if (!lessonIndex) {
+      lessonIndex = buildImageInheritance(
+        donorRows.filter((r) => r.lessonId === row.lessonId).map(toIndexable),
+        FORGE_ILLUSTRATION_STYLE_VERSION,
+      );
+      lessonIndexes.set(row.lessonId, lessonIndex);
+    }
+    let localeIndex = localeIndexes.get(row.locale);
+    if (!localeIndex) {
+      localeIndex = buildImageInheritance(
+        donorRows.filter((r) => r.locale === row.locale).map(toIndexable),
+        FORGE_ILLUSTRATION_STYLE_VERSION,
+      );
+      localeIndexes.set(row.locale, localeIndex);
+    }
+    // Map construction lets later entries win, so lesson-scoped donors override.
+    return new Map([...localeIndex, ...lessonIndex]);
+  };
 
   for (const row of rows) {
-    const result = await deps.illustrate(row.document, { inherit, reuseOnly: opts.reuseOnly });
+    const result = await deps.illustrate(row.document, { inherit: inheritFor(row), reuseOnly: opts.reuseOnly });
 
     // No API key at all: illustrateSegments returns 'not-configured' and the
     // ORIGINAL document untouched. Every remaining doc would do the same, so
@@ -288,11 +361,18 @@ async function main(): Promise<void> {
 
   console.log(`images:backfill — course "${courseSlug}"${opts.locale ? ` [${opts.locale} only]` : ''}${opts.reuseOnly ? ' (reuse-only — no Prism calls)' : ''}${dryRun ? ' (dry-run — no Vault writes)' : ''}`);
 
+  // Probe only when Prism is actually configured (same gate as pipeline/run.ts):
+  // an unconfigured Prism means zero paid calls, and the pass already
+  // short-circuits cleanly on the first not-configured illustrate result.
+  const config = getConfig();
+  const prismConfigured = Boolean(config.PICTUREGEN_URL && config.PICTUREGEN_INTERNAL_KEY);
+
   const summary = await backfillImages(
     {
       listDocuments: listCourseDocuments,
       illustrate: (document, options) => illustrateSegments(document, options),
       writeDocument: patchLessonDocument,
+      probeStyleVersion: prismConfigured ? fetchPrismStyleVersion : undefined,
       log: (line) => console.log(line),
     },
     { courseSlug, locale: opts.locale, dryRun, reuseOnly: opts.reuseOnly },

@@ -85,7 +85,38 @@ interface SyncResponseBody {
   message?: string;
 }
 
-const MAX_NEGATIVE_PROMPT_CHARS = 500;
+/**
+ * DashScope caps `negative_prompt` at 500 characters. The judge layer budgets
+ * its merged negative against this same constant so the non-negotiable base
+ * terms always arrive intact; the clamp below is the last-resort guard.
+ */
+export const MAX_NEGATIVE_PROMPT_CHARS = 500;
+
+/**
+ * Keeps whole comma-separated terms within `maxChars` — a mid-token slice
+ * ("photorea") guides the model toward nothing, so truncation only ever
+ * happens at a comma boundary. Returns '' when not even the first term fits.
+ */
+export function truncateAtCommaBoundary(list: string, maxChars: number): string {
+  if (list.length <= maxChars) return list;
+  const terms = list.split(',').map((term) => term.trim()).filter((term) => term.length > 0);
+  const kept: string[] = [];
+  let length = 0;
+  for (const term of terms) {
+    const nextLength = kept.length === 0 ? term.length : length + 2 + term.length;
+    if (nextLength > maxChars) break;
+    kept.push(term);
+    length = nextLength;
+  }
+  return kept.join(', ');
+}
+
+function clampNegativePrompt(negative: string): string {
+  const clamped = truncateAtCommaBoundary(negative, MAX_NEGATIVE_PROMPT_CHARS);
+  // A single comma-less over-long term degrades to a hard slice — an imperfect
+  // fragment still beats sending nothing under the provider cap.
+  return clamped.length > 0 ? clamped : negative.slice(0, MAX_NEGATIVE_PROMPT_CHARS);
+}
 
 function isSynchronousModel(model: string): boolean {
   return model === 'qwen-image-max' || model.startsWith('qwen-image-max-');
@@ -121,7 +152,7 @@ async function generateSynchronousImage(input: GenerateImageInput, o: ResolvedOp
         model: o.model,
         input: { messages: [{ role: 'user', content: [{ text: input.prompt }] }] },
         parameters: {
-          ...(input.negativePrompt ? { negative_prompt: input.negativePrompt.slice(0, MAX_NEGATIVE_PROMPT_CHARS) } : {}),
+          ...(input.negativePrompt ? { negative_prompt: clampNegativePrompt(input.negativePrompt) } : {}),
           prompt_extend: false,
           watermark: false,
           n: 1,
@@ -152,7 +183,7 @@ async function submitTask(input: GenerateImageInput, o: ResolvedOptions): Promis
           model: o.model,
           input: {
             prompt: input.prompt,
-            ...(input.negativePrompt ? { negative_prompt: input.negativePrompt.slice(0, MAX_NEGATIVE_PROMPT_CHARS) } : {}),
+            ...(input.negativePrompt ? { negative_prompt: clampNegativePrompt(input.negativePrompt) } : {}),
           },
         parameters: { n: 1, size: o.size },
       }),

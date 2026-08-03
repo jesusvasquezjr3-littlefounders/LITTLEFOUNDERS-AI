@@ -58,6 +58,13 @@ be reported as an empty narration batch. Echo also now exposes a no-spend
 `narrate:all --dry-run` preflight that counts pending units and estimates the
 upper-bound TTS calls before a live audio batch is authorized.
 
+[Post-audit correction, 2026-08-02: a read-only production probe verified
+Vault at migration `0022` exactly — the "last recorded `0011`" above was a
+stale ledger value, not the live state. With the repo now shipping
+`0001`–`0033`, the unapplied delta `railway-migrate.sh` must apply is
+`0023`–`0033`. The original text is preserved unchanged as the audit-day
+snapshot.]
+
 ## Verification boundary
 
 Forge type-check, lint, unit tests, build, contract parity, catalog checks and

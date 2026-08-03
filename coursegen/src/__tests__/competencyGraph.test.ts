@@ -46,7 +46,32 @@ describe('Financial Education competency graph', () => {
         { from: 'b', to: 'a', kind: 'prerequisite', strength: 'hard', reason: 'B is required before A.' },
       ],
     };
-    expect(checkCompetencyGraph(graph).some((issue) => issue.code === 'competency-cycle')).toBe(true);
+    const cycle = checkCompetencyGraph(graph).find((issue) => issue.code === 'competency-cycle');
+    expect(cycle).toBeDefined();
+    // The gate hard-blocks generation, so the message must NAME the trapped
+    // nodes — "there is a cycle" with zero ids on a 328-node graph is undebuggable.
+    expect(cycle!.message).toContain('a');
+    expect(cycle!.message).toContain('b');
+    expect(cycle!.message).toMatch(/involving: a, b$/);
+  });
+
+  it('caps the named cycle nodes at 10 with an overflow count', () => {
+    const ids = Array.from({ length: 12 }, (_, i) => `n${String(i).padStart(2, '0')}`);
+    const graph: CompetencyGraph = {
+      courseSlug: 'test-course',
+      nodes: ids.map((id) => ({
+        id, topicPath: id, ageTier: 'tier1', role: 'teaching', titleEs: id, objective: `Objetivo ${id}`, concept: id, vocabulary: [id], factRefs: [], evidence: 'graded_lesson_completion',
+      })),
+      edges: ids.map((id, i) => ({
+        from: id, to: ids[(i + 1) % ids.length]!, kind: 'prerequisite', strength: 'hard', reason: 'Cycle edge.',
+      })),
+    };
+    const cycle = checkCompetencyGraph(graph).find((issue) => issue.code === 'competency-cycle');
+    expect(cycle).toBeDefined();
+    expect(cycle!.message).toContain('n00');
+    expect(cycle!.message).toContain('n09');
+    expect(cycle!.message).not.toContain('n10');
+    expect(cycle!.message).toContain('(+2 more)');
   });
 
   it('fails a review node that does not retrieve a declared source', () => {

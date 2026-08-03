@@ -64,8 +64,13 @@ export interface RunParams {
   course: string;
   locales: string[];
   noImages: boolean;
-  /** Production mode: an image failure must fail the slot, never fall back. */
-  requireImages: boolean;
+  /**
+   * Production mode: an image failure must fail the slot, never fall back.
+   * Optional because checkpoints written before the flag existed have no key —
+   * that era could not require images, so absent ≙ false. run.ts always
+   * materializes a boolean for new checkpoints.
+   */
+  requireImages?: boolean;
   register: string;
 }
 
@@ -93,7 +98,13 @@ export function describeParamMismatch(stored: RunParams | undefined, current: Ru
   const b = [...current.locales].sort().join(',');
   if (a !== b) diffs.push(`locales ${a || '(none)'} → ${b || '(none)'}`);
   if (stored.noImages !== current.noImages) diffs.push(`noImages ${stored.noImages} → ${current.noImages}`);
-  if (stored.requireImages !== current.requireImages) diffs.push(`requireImages ${stored.requireImages} → ${current.requireImages}`);
+  // Normalize BOTH sides: a legacy checkpoint lacking the key must compare equal
+  // to a plain (requireImages: false) resume, or every pre-flag run with
+  // published slots is permanently unresumable — "re-run with the original
+  // parameters" would be unachievable, since the original run had no such flag.
+  const storedRequireImages = stored.requireImages ?? false;
+  const currentRequireImages = current.requireImages ?? false;
+  if (storedRequireImages !== currentRequireImages) diffs.push(`requireImages ${storedRequireImages} → ${currentRequireImages}`);
   if (stored.register !== current.register) diffs.push(`register ${stored.register} → ${current.register}`);
   return diffs.length > 0 ? diffs.join('; ') : null;
 }

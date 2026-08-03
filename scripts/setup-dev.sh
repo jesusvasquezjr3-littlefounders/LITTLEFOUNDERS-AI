@@ -9,6 +9,9 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}==> LittleFounders v2 - Local Dev Setup${NC}"
 
+# Every top-level npm package in the repo (pulse/ is a pinned third-party
+# stack, not an npm package). agent/tools/repo-consistency.test.mjs pins this
+# list against the directories that actually carry a package.json.
 SERVICES=(
   "backend"
   "frontend"
@@ -16,8 +19,10 @@ SERVICES=(
   "filebase"
   "coursegen"
   "audiogen"
+  "picturegen"
   "parent-id-check"
   "email-server"
+  "dataintel"
 )
 
 # 1. Install dependencies and setup .env files

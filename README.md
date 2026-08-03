@@ -32,7 +32,7 @@ TypeScript + Express (ESM, Node 24) on every service · React 18 + Vite + Tailwi
 
 ## Quickstart (Automated Local Setup)
 
-To set up the entire workspace, install dependencies for all 9 microservices, provision the Supabase database, and load the test users and QA courses, run:
+To set up the entire workspace, install dependencies for all 10 npm packages (every service plus the frontend), provision the Supabase database, and load the test users and QA courses, run:
 
 ```bash
 npm run setup

@@ -19,8 +19,15 @@ const Env = z.object({
   QWEN_API_KEY: z.string().min(8).optional(),
   QWEN_BASE_URL: z.url().default('https://dashscope-intl.aliyuncs.com/compatible-mode/v1'),
   QWEN_JUDGE_MODEL: z.string().min(1).default('qwen3-max'),
-  /** Keeps an operator-triggered run live when DeepSeek has a transient outage. */
-  FORGE_DEEPSEEK_FALLBACK_TO_QWEN: z.coerce.boolean().default(true),
+  /**
+   * Keeps an operator-triggered run live when DeepSeek has a transient outage.
+   * Strict string-boolean on purpose: `z.coerce.boolean()` is `Boolean(raw)`,
+   * so the string "false" (or "0"/"no") parsed as TRUE and an operator could
+   * not actually disable the PAID Qwen fallback. `z.stringbool()` accepts
+   * true/false/1/0/yes/no/on/off (case-insensitive) and REJECTS anything else
+   * (§1.14: reject, don't coerce).
+   */
+  FORGE_DEEPSEEK_FALLBACK_TO_QWEN: z.stringbool().default(true),
 
   // ---- Images (optional — module returns NOT_CONFIGURED when key is absent) ----
   // Prism (picturegen/) — the only image source. Unset = images not

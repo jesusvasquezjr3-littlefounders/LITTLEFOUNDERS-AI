@@ -240,7 +240,18 @@ export function checkCompetencyGraph(graph: CompetencyGraph): CompetencyGraphIss
     }
   }
   if (visited !== graph.nodes.length) {
-    issues.push({ level: 'error', code: 'competency-cycle', message: 'competency prerequisites/retrieval contain a cycle' });
+    // Name the trapped nodes: this gate hard-blocks generation, and on a
+    // 300+ node graph "there is a cycle" with zero ids is undebuggable. Every
+    // node whose indegree never drained is inside — or downstream of — a
+    // cycle. Deterministic (authored node order), capped at 10.
+    const trapped = graph.nodes.filter((node) => (incoming.get(node.id) ?? 0) > 0).map((node) => node.id);
+    const shown = trapped.slice(0, 10).join(', ');
+    const overflow = trapped.length > 10 ? ` (+${trapped.length - 10} more)` : '';
+    issues.push({
+      level: 'error',
+      code: 'competency-cycle',
+      message: `competency prerequisites/retrieval contain a cycle involving: ${shown}${overflow}`,
+    });
   }
 
   const retrieval = graph.nodes.filter((node) => node.role === 'retrieval');

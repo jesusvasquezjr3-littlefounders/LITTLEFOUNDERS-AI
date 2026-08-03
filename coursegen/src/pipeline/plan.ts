@@ -89,7 +89,7 @@ export function renderReviewSourcesBlock(sources: readonly ReviewSourceSummary[]
 }
 
 /** Render the per-topic graph slice after the stable prompt prefix. */
-export function renderCompetencyGraphBlock(context: CompetencyPromptContext): string {
+export function renderCompetencyGraphBlock(context: CompetencyPromptContext, emptyIncomingLine?: string): string {
   const current = [
     `CURRENT COMPETENCY [${context.current.topicPath}] (${context.current.role})`,
     `concept: ${context.current.concept}`,
@@ -98,7 +98,7 @@ export function renderCompetencyGraphBlock(context: CompetencyPromptContext): st
     `evidence: ${context.current.evidence}`,
   ].join('\n');
   const incoming = context.incoming.length === 0
-    ? 'No earlier competency edge; this is a graph root and must establish the concept from first principles.'
+    ? (emptyIncomingLine ?? 'No earlier competency edge; this is a graph root and must establish the concept from first principles.')
     : context.incoming
         .map(
           (edge, index) =>
@@ -118,6 +118,39 @@ export function renderCompetencyGraphBlock(context: CompetencyPromptContext): st
     '- Use sequence edges to connect the opening to prior learning without restarting cold.',
     '- For retrieval edges, retrieve and apply the cited competency; do not introduce a new concept in a review lesson.',
   ].join('\n');
+}
+
+/**
+ * The competency block a prompt actually sends. For review lessons the graph
+ * derives one retrieval edge per `review_of` source and resolveReviewSources
+ * renders those SAME topics in the SOURCE TOPICS block — so the retrieval edges
+ * duplicated 100% of the source material (measured 21,754 chars of repeated
+ * text on a 48-edge review prompt, resent on every retry) for zero information
+ * gain. Retrieval edges whose source topic already appears in the review
+ * sources are omitted; prerequisite/sequence edges and unmatched retrieval
+ * edges survive. Block ORDER in the prompt is untouched (prefix-cache
+ * discipline), and non-review lessons render exactly as before.
+ */
+export function renderCompetencyBlockForPrompt(
+  competency: CompetencyPromptContext | undefined,
+  review: PlanReviewContext | undefined,
+): string | undefined {
+  if (!competency) return undefined;
+  if (!review) return renderCompetencyGraphBlock(competency);
+  const sourcePaths = new Set(review.sources.map((source) => source.path));
+  const incoming = competency.incoming.filter(
+    (edge) => !(edge.kind === 'retrieval' && sourcePaths.has(edge.source.topicPath)),
+  );
+  if (incoming.length === competency.incoming.length) return renderCompetencyGraphBlock(competency);
+  if (incoming.length === 0) {
+    // Never let the deduped block claim "graph root / first principles" — that
+    // would contradict the consolidation directive the review lesson carries.
+    return renderCompetencyGraphBlock(
+      { ...competency, incoming },
+      'Every incoming retrieval edge cites a topic already listed under SOURCE TOPICS below — retrieve from that block; this topic is NOT a graph root.',
+    );
+  }
+  return renderCompetencyGraphBlock({ ...competency, incoming });
 }
 
 export interface PlanContext {
@@ -195,14 +228,21 @@ function anyRepairCandidate(allowed: ReadonlySet<string>, exclude: ReadonlySet<s
 const NUMERIC_TYPE_ANSWER_MARKERS = /\b(?:cu[aá]nt[oa]s?|total|suma|resultado|calcula|n[uú]mero|pesos?|monedas?|\d+)\b/i;
 const SPEED_TAP_ITEM_COUNT_MARKER = /\b(?:[6-9]|1[0-4]|seis|siete|ocho|nueve|diez|once|doce|trece|catorce)\b/i;
 
+/** Types whose interaction contract constrains which briefs can honestly author them. */
+function briefFitsType(type: string, brief: string): boolean {
+  if (type === 'type_answer') return NUMERIC_TYPE_ANSWER_MARKERS.test(brief);
+  if (type === 'speed_tap') return SPEED_TAP_ITEM_COUNT_MARKER.test(brief);
+  return true;
+}
+
 function repairSemanticTypeConstraints(segments: PlanSegment[], allowed: ReadonlySet<string>, fixes: string[]): void {
   for (const segment of segments) {
-    if (segment.type === 'type_answer' && !NUMERIC_TYPE_ANSWER_MARKERS.test(segment.brief)) {
+    if (segment.type === 'type_answer' && !briefFitsType(segment.type, segment.brief)) {
       const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
       fixes.push(`replaced open-ended type_answer with "${replacement}" because its brief is not numeric applied practice`);
       segment.type = replacement;
     }
-    if (segment.type === 'speed_tap' && !SPEED_TAP_ITEM_COUNT_MARKER.test(segment.brief)) {
+    if (segment.type === 'speed_tap' && !briefFitsType(segment.type, segment.brief)) {
       const replacement = allowed.has('quiz_mcq') ? 'quiz_mcq' : anyRepairCandidate(allowed);
       fixes.push(`replaced underspecified speed_tap with "${replacement}" because its brief does not require 6-14 items`);
       segment.type = replacement;
@@ -299,11 +339,16 @@ export function planRepair(
         seenOnce.add(seg.type);
         continue; // keep the first (last-scanned) occurrence of each type
       }
-      const replacement = unused.shift();
-      if (!replacement) break;
-      fixes.push(`diversified duplicate "${seg.type}" at position ${i + 1} into "${replacement}"`);
-      seg.type = replacement;
-      used.add(replacement);
+      // Semantic fit is re-checked HERE because this rule runs AFTER
+      // repairSemanticTypeConstraints: handing a duplicate's untouched brief to
+      // type_answer/speed_tap would reintroduce the exact violation that pass
+      // just removed, with nothing behind it to re-check.
+      const candidateIndex = unused.findIndex((t) => briefFitsType(t, seg.brief));
+      if (candidateIndex === -1) continue; // no unused type fits this brief — try the next duplicate
+      const [replacement] = unused.splice(candidateIndex, 1);
+      fixes.push(`diversified duplicate "${seg.type}" at position ${i + 1} into "${replacement!}"`);
+      seg.type = replacement!;
+      used.add(replacement!);
     }
   }
 
@@ -373,7 +418,8 @@ function buildPlanMessages(ctx: PlanContext, paletteText: string, issues: string
     `Suggested families: ${ctx.lesson.suggestedFamilies.join(', ') || '(none specified)'}`,
   ].join('\n');
 
-  const competencyBlock = ctx.competency ? `\n\n${renderCompetencyGraphBlock(ctx.competency)}` : '';
+  const renderedCompetency = renderCompetencyBlockForPrompt(ctx.competency, ctx.review);
+  const competencyBlock = renderedCompetency ? `\n\n${renderedCompetency}` : '';
 
   const reviewBlock = ctx.review
     ? [

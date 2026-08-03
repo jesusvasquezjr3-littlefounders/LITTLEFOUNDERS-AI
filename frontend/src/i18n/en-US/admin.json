@@ -71,6 +71,7 @@
     "archive": "Archive",
     "empty": "No courses yet.",
     "noMatch": "No courses match your filter criteria.",
+    "actionFailed": "That change didn't go through. Try again.",
     "totalCourses": "Total courses",
     "liveCourses": "Live courses",
     "draftCourses": "Drafts & Review",
@@ -819,15 +820,9 @@
     "loading": "Loading insights…",
     "kpi": {
       "consent": "Kids opted in",
-      "consentHint": "Guardian consent gates every kid signal.",
       "events": "Events ({{days}}d)",
-      "eventsHint": "{{kid}} from kid sessions",
       "peakUsers": "Peak daily users",
-      "peakUsersHint": "Busiest single day in the window.",
-      "tasks": "Task completion",
-      "tasksHint": "{{done}} of {{total}} family tasks done",
-      "activation": "Activation",
-      "activationHint": "Reached a first completed lesson · median {{hours}}h to get there"
+      "activation": "Activation"
     },
     "surfaces": {
       "title": "Where time goes",

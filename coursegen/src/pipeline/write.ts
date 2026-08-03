@@ -11,7 +11,7 @@ import { getConfig } from '../env.js';
 import {
   effectiveDifficulty,
   renderReviewSourcesBlock,
-  renderCompetencyGraphBlock,
+  renderCompetencyBlockForPrompt,
   CONSOLIDATION_INSTRUCTION,
   INTERLEAVE_INSTRUCTION,
   connectToPriorInstruction,
@@ -44,7 +44,10 @@ const SEGMENT_MINIMUMS: Readonly<Record<string, ReadonlyArray<readonly [string, 
   sort_buckets: [['payload.items', 4]],
   needs_wants: [['payload.items', 4]],
   dialogue_choice: [['payload.turns', 2], ['payload.turns[].replies', 2]],
-  quiz_mcq: [['payload.items', 3]],
+  // quiz_mcq answers live in payload.options (schema: min 2, max 6) — it has no
+  // `items` field, and directing the model at one would author a silently
+  // stripped key while omitting the required options.
+  quiz_mcq: [['payload.options', 3]],
   picture_choice: [['payload.options', 2]],
   choice: [['payload.options', 2]],
 };
@@ -254,9 +257,8 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
         renderReviewSourcesBlock(input.ctx.review.sources),
       ].join('\n')
     : '';
-  const competencyBlock = input.ctx.competency
-    ? [``, renderCompetencyGraphBlock(input.ctx.competency)].join('\n')
-    : '';
+  const renderedCompetency = renderCompetencyBlockForPrompt(input.ctx.competency, input.ctx.review);
+  const competencyBlock = renderedCompetency ? [``, renderedCompetency].join('\n') : '';
 
   // Static-first assembly — see the prefix-cache note above renderBaseHardRules.
   const user = [
@@ -418,6 +420,18 @@ const ICON_REPAIRS: Readonly<Record<string, string>> = {
 
 const EMOJI_TOKEN_RE = /\p{Extended_Pictographic}(?:\uFE0F|\u20E3)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\u20E3)?)*\s*/gu;
 
+/** \u00A9/\u00AE/\u2122 are Extended_Pictographic but they are legal-notation TEXT, never decoration. */
+const TEXTUAL_PICTOGRAPHS = new Set(['\u00A9', '\u00AE', '\u2122']);
+
+function stripEmojiTokens(value: string): string {
+  const stripped = value
+    .replace(EMOJI_TOKEN_RE, (token) => (TEXTUAL_PICTOGRAPHS.has(token.replace(/\uFE0F/gu, '').trimEnd()) ? token : ''))
+    .trim();
+  // An all-emoji string keeps its original text: collapsing it to '' would turn
+  // a presentation-only cleanup into a min-length Zod failure downstream.
+  return stripped.length > 0 ? stripped : value.trim();
+}
+
 function stripPayloadEmojis(node: unknown): void {
   if (Array.isArray(node)) {
     node.forEach(stripPayloadEmojis);
@@ -426,7 +440,7 @@ function stripPayloadEmojis(node: unknown): void {
   if (!node || typeof node !== 'object') return;
   const record = node as Record<string, unknown>;
   for (const [key, value] of Object.entries(record)) {
-    if (typeof value === 'string') record[key] = value.replace(EMOJI_TOKEN_RE, '').trim();
+    if (typeof value === 'string') record[key] = stripEmojiTokens(value);
     else stripPayloadEmojis(value);
   }
 }

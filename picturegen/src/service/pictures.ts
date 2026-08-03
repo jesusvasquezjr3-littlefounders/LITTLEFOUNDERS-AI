@@ -1,4 +1,4 @@
-import { craftImagePrompt, type PicturePurpose } from '../judge/promptJudge.js';
+import { craftImagePrompt, OBJECT_TILE_PURPOSES, type PicturePurpose } from '../judge/promptJudge.js';
 import { generateImage } from '../gen/qwenImageClient.js';
 import { transcodeToWebp } from '../gen/transcode.js';
 import { verifyPictorial } from '../verify/pictorialCheck.js';
@@ -72,19 +72,45 @@ export const STYLE_VERSION = 'v7-qwen-image-max-flat-vector';
 /** Object tiles also inherit the flat-vector identity while retaining white-canvas rules. */
 export const OBJECT_TILE_STYLE_VERSION = 'v8-qwen-image-max-object-white-flat-vector';
 
-const OBJECT_TILE_PURPOSES = new Set<PicturePurpose>([
-  'item_card',
-  'option_card',
-  'lesson_option',
-  'memory_card',
-]);
-
+/**
+ * Object-tile membership is IMPORTED from the judge (OBJECT_TILE_PURPOSES in
+ * judge/promptJudge.ts) — the same set that selects the deterministic
+ * label-only tile prompt. The tile cache-key collapse below is only correct
+ * while both decisions agree, so the set is deliberately one shared constant:
+ * a locally-maintained copy that drifted would serve a cross-context wrong
+ * image straight from cache.
+ */
 function isObjectTile(purpose: PicturePurpose): boolean {
   return OBJECT_TILE_PURPOSES.has(purpose);
 }
 
 function styleVersionFor(purpose: PicturePurpose): string {
   return isObjectTile(purpose) ? OBJECT_TILE_STYLE_VERSION : STYLE_VERSION;
+}
+
+/**
+ * Canonical purpose token for the object-tile cache key. The four tile
+ * purposes share ONE deterministic, label-only prompt (promptJudge skips the
+ * art director and ignores context entirely), so "Limones" as an item_card in
+ * lesson A and as a memory_card in lesson B is byte-for-byte the same paid
+ * DashScope request. The key therefore collapses purpose to this token and
+ * drops context — keying on either billed the identical request once per
+ * (purpose, context) pair. Re-keying orphans any pre-existing tile cache rows
+ * (acceptable: production has generated nothing yet).
+ */
+const OBJECT_TILE_CACHE_TOKEN = 'object_tile';
+
+/** Tile prompts embed the label modulo surrounding whitespace; normalize so equivalent labels share one asset. */
+function normalizeTileLabel(label: string): string {
+  return label.trim().replace(/\s+/g, ' ');
+}
+
+/** Stable per-request cache descriptor — hashed together with (model, size) into the cache key. */
+export function requestCacheDescriptor(req: GeneratePictureRequest): string {
+  if (isObjectTile(req.purpose)) {
+    return `${styleVersionFor(req.purpose)} | ${OBJECT_TILE_CACHE_TOKEN} | ${normalizeTileLabel(req.label)}`;
+  }
+  return `${styleVersionFor(req.purpose)} | ${req.purpose} | ${req.label} | ${req.context ?? ''}`;
 }
 
 const EXT_BY_MIME: Record<string, string> = {
@@ -107,23 +133,21 @@ export async function generatePicture(
   const deps = { ...defaultDeps, ...overrides };
   const config = getConfig();
 
-  // 1. Cache key over the REQUEST (model, size, label, context, purpose) —
-  //    computed BEFORE the judge. The judge is an LLM: two identical requests
-  //    produce two slightly different prompts, so hashing the judged prompt
-  //    made every repeat a cache MISS (caught live on the first smoke test —
-  //    the same request generated twice). Hashing the request is what makes
-  //    "an identical request never hits a paid API twice" true, and a HIT now
-  //    skips the judge call too.
+  // 1. Cache key over the REQUEST — computed BEFORE the judge. The judge is
+  //    an LLM: two identical requests produce two slightly different prompts,
+  //    so hashing the judged prompt made every repeat a cache MISS (caught
+  //    live on the first smoke test — the same request generated twice).
+  //    Hashing the request is what makes "an identical request never hits a
+  //    paid API twice" true, and a HIT now skips the judge call too. Object
+  //    tiles hash only (style version, tile token, label): their prompt is
+  //    deterministic and label-only, so purpose/context must not fragment the
+  //    key (see requestCacheDescriptor).
   // STYLE_VERSION folds the global illustration style (identity brief + base
   // negative) into the cache key: bumping it invalidates every cached asset so
   // a style change regenerates the catalog instead of serving stale art.
-  // v2 = enforced BASE_NEGATIVE (no text/logos — first live batch leaked a
+  // v2 = enforced base negative list (no text/logos — first live batch leaked a
   // fake brand wordmark).
-  const hash = pictureAssetHash(
-    config.IMAGE_MODEL,
-    config.IMAGE_SIZE,
-    `${styleVersionFor(req.purpose)} | ${req.purpose} | ${req.label} | ${req.context ?? ''}`,
-  );
+  const hash = pictureAssetHash(config.IMAGE_MODEL, config.IMAGE_SIZE, requestCacheDescriptor(req));
 
   // 2. Cache-first: a hit returns the stored asset with ZERO paid API calls.
   const hit = await deps.findByHash(hash);
@@ -149,17 +173,25 @@ export async function generatePicture(
     );
 
     // Generate, then ALWAYS download + re-upload (the provider URL is temporary).
-      image = await deps.generateImage(
-      { prompt: crafted.prompt, negativePrompt: crafted.negative },
-      {
-        apiBase: config.IMAGE_API_BASE,
-        apiKey: config.IMAGE_API_KEY,
-        model: config.IMAGE_MODEL,
-        size: config.IMAGE_SIZE,
-        timeoutMs: config.PICTUREGEN_TIMEOUT_MS,
-        maxAttempts: config.PICTUREGEN_MAX_ATTEMPTS,
-      },
-      );
+      try {
+        image = await deps.generateImage(
+        { prompt: crafted.prompt, negativePrompt: crafted.negative },
+        {
+          apiBase: config.IMAGE_API_BASE,
+          apiKey: config.IMAGE_API_KEY,
+          model: config.IMAGE_MODEL,
+          size: config.IMAGE_SIZE,
+          timeoutMs: config.PICTUREGEN_TIMEOUT_MS,
+          maxAttempts: config.PICTUREGEN_MAX_ATTEMPTS,
+        },
+        );
+      } catch (err) {
+        // DashScope bills when the image is GENERATED; downloading its
+        // temporary result URL happens after. A generated-but-undownloadable
+        // image is still a paid generation and must reach the billable count.
+        if (err instanceof ImageError && err.code === 'IMAGE_DOWNLOAD_FAILED') generatedImages += 1;
+        throw err;
+      }
       generatedImages += 1;
 
       if (config.PICTUREGEN_VERIFY_ATTEMPTS === 0) break; // verification disabled

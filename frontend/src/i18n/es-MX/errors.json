@@ -20,6 +20,13 @@
     "PULSE_UNCONFIGURED": "Las analíticas no están configuradas en este despliegue.",
     "UPSTREAM_FAILED": "Un servicio interno no respondió.",
     "ROLE_REJECTED": "La base de datos rechazó ese cambio de rol (invariantes de rol).",
-    "DATA_UNAVAILABLE": "No se pudieron cargar esos datos."
+    "DATA_UNAVAILABLE": "No se pudieron cargar esos datos.",
+    "RELEASE_NOT_FOUND": "Ese curso ya no existe.",
+    "RELEASE_ARCHIVED": "Este curso está archivado: restáuralo a borrador antes de publicarlo.",
+    "RELEASE_INCOMPLETE_HIERARCHY": "Este curso necesita al menos una aventura, una saga, un tema y una lección antes del lanzamiento.",
+    "RELEASE_LESSONS_NOT_REVIEWABLE": "Cada lección debe estar en revisión o ya publicada antes del lanzamiento.",
+    "RELEASE_INCOMPLETE_LOCALES": "Cada lección necesita sus documentos en en-US, es-MX y pt-BR antes del lanzamiento.",
+    "RELEASE_VERIFICATION_REQUIRED": "Ejecuta la verificación del curso en Forge después del último cambio de contenido y vuelve a publicar.",
+    "RELEASE_BLOCKED": "La verificación previa al lanzamiento rechazó este curso."
   }
 }

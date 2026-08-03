@@ -1,21 +1,26 @@
 /**
  * Local integration test for railway-migrate.sh.
  *
- * The fake Railway executable forwards the received `sh -c` payload to a fake
- * psql binary. This proves that the remote base64/psql pipeline is executable
- * without contacting Railway or mutating a database.
+ * The fake Railway executable mimics the live CLI 5.30.3 transport contract
+ * verified in production: the remote command arrives as ONE positional
+ * argument and the remote exit status NEVER propagates (local exit is always
+ * 0). The fake psql answers each query family from env knobs, so every
+ * scenario runs without contacting Railway or mutating a database. Because
+ * the transport exit code is worthless, the runner must judge success from
+ * psql output alone — these scenarios pin that contract.
  */
-import { chmodSync, mkdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { chmodSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 
 const scriptsDir = dirname(fileURLToPath(import.meta.url));
+const dbDir = dirname(scriptsDir);
 const runner = join(scriptsDir, 'railway-migrate.sh');
 const fixtureRoot = join(tmpdir(), `littlefounders-railway-migrate-${process.pid}-${Date.now()}`);
 const binDir = join(fixtureRoot, 'bin');
-const callsLog = join(fixtureRoot, 'psql-calls.log');
 const keyPath = join(fixtureRoot, 'test-railway-key');
 
 mkdirSync(binDir, { recursive: true });
@@ -24,18 +29,29 @@ writeFileSync(keyPath, 'test-key');
 writeFileSync(
   join(binDir, 'railway'),
   `#!/usr/bin/env node
+import { appendFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-const separator = process.argv.indexOf('--');
-if (separator === -1) process.exit(2);
-const command = process.argv.slice(separator + 1);
-const result = spawnSync(command[0], command.slice(1), {
-  env: process.env,
-  encoding: 'utf8',
-  stdio: ['inherit', 'pipe', 'pipe'],
-});
-process.stdout.write(result.stdout ?? '');
-process.stderr.write(result.stderr ?? '');
-process.exit(result.status ?? 1);
+const args = process.argv.slice(2);
+appendFileSync(process.env.RAILWAY_FAKE_ARGS, JSON.stringify(args) + '\\n');
+// Mimic CLI 5.30.3: the legacy \`-- sh -c\` shape word-splits and never reaches
+// psql, and even that failure exits 0 locally.
+if (args.includes('--')) {
+  process.stderr.write('sh: usage: printf FORMAT [ARGUMENT ...]\\n');
+  process.exit(0);
+}
+let command = null;
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === 'ssh') continue;
+  if (args[i] === '--service' || args[i] === '-i') { i += 1; continue; }
+  command = args[i];
+}
+if (command !== null) {
+  const result = spawnSync('sh', ['-c', command], { env: process.env, encoding: 'utf8' });
+  process.stdout.write(result.stdout ?? '');
+  process.stderr.write(result.stderr ?? '');
+}
+// The remote exit status is NOT propagated — always exit 0, like the real CLI.
+process.exit(0);
 `,
 );
 
@@ -45,43 +61,258 @@ writeFileSync(
 import { appendFileSync, readFileSync } from 'node:fs';
 const sql = readFileSync(0, 'utf8');
 appendFileSync(process.env.RAILWAY_FAKE_CALLS, sql + '\\n---\\n');
-if (sql.includes("to_regclass('public.schema_migrations')")) {
-  process.stdout.write('absent|-1|present\\n');
+const mode = process.env.RAILWAY_FAKE_PSQL_MODE ?? 'ok';
+if (mode === 'error') {
+  process.stderr.write('psql:<stdin>:1: ERROR:  boom\\n');
+  process.exit(1);
+}
+if (mode === 'silent') {
+  // Exit 0 with no sentinel: the exact lie the production transport told.
+  process.exit(0);
+}
+const lines = [];
+if (sql.includes("to_regclass('public.schema_migrations') IS NULL THEN 'absent'")) {
+  lines.push(process.env.RAILWAY_FAKE_LEDGER ?? 'absent|-1|present');
+} else if (sql.includes("'baseline-ok'")) {
+  lines.push(process.env.RAILWAY_FAKE_SIGNATURE ?? 'baseline-ok');
+} else if (sql.includes('SELECT checksum FROM public.schema_migrations')) {
+  const match = sql.match(/filename = '([^']+)'/);
+  const receipts = JSON.parse(process.env.RAILWAY_FAKE_RECEIPTS ?? '{}');
+  if (match && receipts[match[1]]) lines.push(receipts[match[1]]);
+} else if (sql.includes('SELECT count(*) FROM public.schema_migrations;')) {
+  lines.push(process.env.RAILWAY_FAKE_COUNT ?? '0');
+}
+for (const line of lines) process.stdout.write(line + '\\n');
+process.stdout.write('LF_MIGRATION_OK\\n');
+if (mode === 'notice-after-sentinel') {
+  // psql NOTICEs travel on stderr unbuffered, and the CLI's channel
+  // forwarding can deliver them AFTER the sentinel in the runner's 2>&1
+  // merge (the fake railway writes stdout then stderr, reproducing exactly
+  // that ordering). 0024/0033 DO emit NOTICEs on the production path.
+  process.stderr.write('psql:<stdin>:12: NOTICE:  relation "anon_visitors" already exists, skipping\\n');
+}
+if (mode === 'error-after-sentinel') {
+  // An ERROR line must refuse even though the sentinel already printed.
+  process.stderr.write('psql:<stdin>:12: ERROR:  deadlock detected\\n');
 }
 `,
 );
 chmodSync(join(binDir, 'railway'), 0o755);
 chmodSync(join(binDir, 'psql'), 0o755);
 
-const result = spawnSync('bash', [runner, '--dry-run', '--baseline', '0011'], {
-  cwd: dirname(scriptsDir),
-  env: {
-    ...process.env,
-    PATH: `${binDir}:${process.env.PATH ?? ''}`,
-    RAILWAY_TOKEN: 'test-railway-token',
-    RAILWAY_SSH_KEY_PATH: keyPath,
-    RAILWAY_FAKE_CALLS: callsLog,
-  },
-  encoding: 'utf8',
-});
+const migrationFiles = readdirSync(join(dbDir, 'migrations'))
+  .filter((f) => /^\d{4}_[a-z0-9_]+\.sql$/.test(f))
+  .sort();
+const checksums = Object.fromEntries(
+  migrationFiles.map((f) => [
+    f,
+    createHash('sha256').update(readFileSync(join(dbDir, 'migrations', f))).digest('hex'),
+  ]),
+);
+
+let scenarioIndex = 0;
+function run(args, envOverrides = {}) {
+  scenarioIndex += 1;
+  const callsLog = join(fixtureRoot, `psql-calls-${scenarioIndex}.log`);
+  const argsLog = join(fixtureRoot, `railway-args-${scenarioIndex}.log`);
+  const result = spawnSync('bash', [runner, ...args], {
+    cwd: dbDir,
+    env: {
+      ...process.env,
+      PATH: `${binDir}:${process.env.PATH ?? ''}`,
+      RAILWAY_TOKEN: 'test-railway-token',
+      RAILWAY_SSH_KEY_PATH: keyPath,
+      RAILWAY_SSH_ATTEMPTS: '1',
+      RAILWAY_SSH_RETRY_SECONDS: '0',
+      RAILWAY_FAKE_CALLS: callsLog,
+      RAILWAY_FAKE_ARGS: argsLog,
+      ...envOverrides,
+    },
+    encoding: 'utf8',
+  });
+  const calls = existsSync(callsLog) ? readFileSync(callsLog, 'utf8') : '';
+  const railwayArgs = existsSync(argsLog) ? readFileSync(argsLog, 'utf8') : '';
+  return { ...result, calls, railwayArgs };
+}
+
+function assert(condition, scenario, message, result) {
+  if (condition) return;
+  throw new Error(
+    `${scenario}: ${message}\n--- status ---\n${result.status}\n--- stdout ---\n${result.stdout}\n--- stderr ---\n${result.stderr}`,
+  );
+}
 
 try {
-  if (result.status !== 0) {
-    throw new Error(`runner exited ${result.status}: ${result.stdout}\n${result.stderr}`);
+  // 0. Static DDL cross-check. The fake psql answers signature probes from an
+  //    env knob without ever executing the SQL — exactly the blind spot that
+  //    let a probe naming a table NO migration creates ship green
+  //    (generation_run_snapshots; 0020 creates generation_heartbeat_snapshots),
+  //    which made every real `--baseline 0022` run refuse against a correct
+  //    production database. So: every to_regclass('public.X') target in the
+  //    runner's baseline signature map, and every one in DEPLOYMENT.md's
+  //    operator signature table, must be an object the migrations actually
+  //    create (the schema_migrations ledger is created by the runner itself).
+  {
+    const staticResult = { status: 'static', stdout: '', stderr: '' };
+    const runnerSource = readFileSync(runner, 'utf8');
+    const allMigrationSql = migrationFiles
+      .map((f) => readFileSync(join(dbDir, 'migrations', f), 'utf8'))
+      .join('\n');
+    const createdByMigrations = (name) =>
+      new RegExp(`create\\s+table\\s+(if\\s+not\\s+exists\\s+)?(public\\.)?${name}\\b`, 'i').test(allMigrationSql) ||
+      new RegExp(`create\\s+(or\\s+replace\\s+)?function\\s+(public\\.)?${name}\\b`, 'i').test(allMigrationSql) ||
+      new RegExp(`alter\\s+publication\\s+\\w+\\s+add\\s+table\\s+(public\\.)?${name}\\b`, 'i').test(allMigrationSql);
+
+    const probeMap = runnerSource.match(/baseline_signature_sql\(\) \{[\s\S]*?\n\}/);
+    assert(Boolean(probeMap), 'probe-map-ddl', 'baseline_signature_sql() not found in railway-migrate.sh', staticResult);
+    const probeTargets = [...probeMap[0].matchAll(/to_regclass\('public\.([a-z_]+)'\)/g)].map((m) => m[1]);
+    assert(probeTargets.length >= 8, 'probe-map-ddl', `expected the probe map to name at least 8 to_regclass targets, found ${probeTargets.length}`, staticResult);
+    for (const target of probeTargets) {
+      assert(createdByMigrations(target), 'probe-map-ddl', `signature probe names public.${target}, but no migration creates it — a real baseline run would refuse against a correct database`, staticResult);
+    }
+
+    const deploymentDoc = readFileSync(join(dbDir, 'DEPLOYMENT.md'), 'utf8');
+    const docTargets = [...deploymentDoc.matchAll(/to_regclass\('public\.([a-z_]+)'\)/g)].map((m) => m[1]);
+    assert(docTargets.length >= 10, 'deployment-doc-ddl', `expected DEPLOYMENT.md's signature table to name at least 10 to_regclass targets, found ${docTargets.length}`, staticResult);
+    for (const target of docTargets) {
+      if (target === 'schema_migrations') {
+        assert(runnerSource.includes('CREATE TABLE IF NOT EXISTS public.schema_migrations'), 'deployment-doc-ddl', 'the ledger row expects railway-migrate.sh to create public.schema_migrations', staticResult);
+        continue;
+      }
+      assert(createdByMigrations(target), 'deployment-doc-ddl', `DEPLOYMENT.md's operator signature table names public.${target}, but no migration creates it — it would mislead the mandated re-verification`, staticResult);
+    }
   }
-  if (!existsSync(callsLog)) throw new Error('fake psql was never reached');
-  const calls = readFileSync(callsLog, 'utf8');
-  if (!calls.includes("to_regclass('public.schema_migrations')")) {
-    throw new Error('preflight SQL did not reach fake psql');
+
+  // 1. Dry-run against the verified production shape: absent ledger, baseline
+  //    0022. Must pass the signature probe and enumerate exactly 0023–0033.
+  {
+    const r = run(['--dry-run', '--baseline', '0022']);
+    assert(r.status === 0, 'dry-run-0022', 'runner should exit 0', r);
+    assert(r.stdout.includes('signature probe passed'), 'dry-run-0022', 'baseline signature probe did not pass', r);
+    assert(r.stdout.includes('DRY RUN — no ledger or migration SQL will be written.'), 'dry-run-0022', 'dry-run guard output missing', r);
+    assert(r.stdout.includes('pending 0023_') && r.stdout.includes('pending 0033_'), 'dry-run-0022', 'expected pending range 0023–0033', r);
+    assert(!r.stdout.includes('pending 0022_'), 'dry-run-0022', 'baselined 0022 must not be pending', r);
+    assert(!r.stdout.includes('applied '), 'dry-run-0022', 'dry-run reported an applied migration', r);
+    const transportCalls = r.railwayArgs.trim().split('\n').map((l) => JSON.parse(l));
+    for (const argv of transportCalls) {
+      assert(!argv.includes('--'), 'dry-run-0022', 'transport must not use the broken `-- sh -c` shape', r);
+      const command = argv[argv.length - 1];
+      assert(/^echo [A-Za-z0-9+/=]+ \| base64 -d \| psql /.test(command), 'dry-run-0022', 'remote pipeline must be one positional argument', r);
+    }
+    assert(r.calls.includes("to_regclass('public.schema_migrations')"), 'dry-run-0022', 'preflight SQL did not reach fake psql', r);
+    assert(r.calls.includes("pg_publication_tables"), 'dry-run-0022', 'signature probe SQL did not reach fake psql', r);
   }
-  if (!result.stdout.includes('DRY RUN — no ledger or migration SQL will be written.')) {
-    throw new Error('dry-run guard output is missing');
+
+  // 2. Confirm-production apply: transaction wrapping, per-file receipt, and
+  //    a sentinel terminating every payload so success is output-verified.
+  {
+    const r = run(['--confirm-production', '--baseline', '0022'], { RAILWAY_FAKE_COUNT: '33' });
+    assert(r.status === 0, 'confirm-apply', 'runner should exit 0', r);
+    assert(r.stdout.includes('Recorded immutable baseline through 0022.'), 'confirm-apply', 'baseline receipts were not recorded', r);
+    assert(r.stdout.includes('applied 0023_') && r.stdout.includes('applied 0033_'), 'confirm-apply', 'apply range 0023–0033 missing', r);
+    assert(!r.stdout.includes('applied 0022_'), 'confirm-apply', 'baselined 0022 must not be re-applied', r);
+    assert(r.stdout.includes('OK: production migration ledger is current (33 receipt(s))'), 'confirm-apply', 'postflight receipt count missing', r);
+    const payloads = r.calls.split('\n---\n');
+    const baselinePayload = payloads.find((p) => p.includes('refusing baseline: schema_migrations is not empty'));
+    assert(Boolean(baselinePayload), 'confirm-apply', 'baseline payload must refuse a non-empty ledger', r);
+    assert(baselinePayload.includes("VALUES ('0001_identity.sql'") && baselinePayload.includes("VALUES ('0022_realtime_publication.sql'"), 'confirm-apply', 'baseline receipts must cover 0001–0022', r);
+    assert(!baselinePayload.includes("VALUES ('0023_"), 'confirm-apply', 'baseline receipts must stop at 0022', r);
+    const applyPayload = payloads.find((p) => p.includes("VALUES ('0023_learning_insights.sql'") && !p.includes('refusing baseline'));
+    assert(Boolean(applyPayload), 'confirm-apply', 'apply payload for 0023 missing', r);
+    assert(applyPayload.startsWith('BEGIN;') && applyPayload.includes('COMMIT;'), 'confirm-apply', 'apply payload must be one wrapped transaction', r);
+    assert(applyPayload.includes(`'${checksums['0023_learning_insights.sql']}'`), 'confirm-apply', 'apply receipt must carry the real checksum', r);
+    assert(applyPayload.trimEnd().endsWith('\\echo LF_MIGRATION_OK'), 'confirm-apply', 'every payload must end with the success sentinel', r);
   }
-  if (!result.stdout.includes('pending 0012_') || !result.stdout.includes('pending 0033_')) {
-    throw new Error('dry-run did not enumerate the expected migration range');
+
+  // 3. Sentinel-missing refusal: fake psql exits 0 but prints nothing — the
+  //    exact lie the production transport told. Must hard-refuse.
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'silent' });
+    assert(r.status !== 0, 'sentinel-missing', 'runner must refuse a sentinel-free success', r);
+    assert(r.stderr.includes('success sentinel missing'), 'sentinel-missing', 'refusal must name the missing sentinel', r);
   }
-  if (result.stdout.includes('applied ')) throw new Error('dry-run reported an applied migration');
-  console.log('railway-migrate integration OK — remote pipeline executed in a no-write fake Railway session');
+
+  // 4. ERROR-printing psql (transport still exits 0): must hard-refuse.
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error' });
+    assert(r.status !== 0, 'psql-error', 'runner must refuse on psql ERROR output', r);
+    assert(r.stderr.includes('remote psql reported an error'), 'psql-error', 'refusal must name the psql error', r);
+  }
+
+  // 4b. NOTICE-after-sentinel must pass: success judgment is order-independent
+  //     because psql NOTICEs (stderr, unbuffered) can be forwarded after the
+  //     sentinel across the CLI's channels. A trailing NOTICE landing after a
+  //     COMMITTED apply must not turn into a spurious refusal, and captured
+  //     query results (signature probe, postflight count) must survive the
+  //     NOTICE noise unparsed-into.
+  {
+    const r = run(['--confirm-production', '--baseline', '0022'], {
+      RAILWAY_FAKE_PSQL_MODE: 'notice-after-sentinel',
+      RAILWAY_FAKE_COUNT: '33',
+    });
+    assert(r.status === 0, 'notice-after-sentinel', 'a NOTICE after the sentinel must not refuse a successful run', r);
+    assert(r.stdout.includes('signature probe passed'), 'notice-after-sentinel', 'signature probe result must survive NOTICE interleaving', r);
+    assert(r.stdout.includes('applied 0023_') && r.stdout.includes('applied 0033_'), 'notice-after-sentinel', 'apply range must complete despite trailing NOTICEs', r);
+    assert(r.stdout.includes('OK: production migration ledger is current (33 receipt(s))'), 'notice-after-sentinel', 'postflight count must survive NOTICE filtering', r);
+  }
+
+  // 4c. ERROR co-present with the sentinel must still refuse — the sentinel
+  //     never outvotes an ERROR line, whatever order they arrive in.
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_PSQL_MODE: 'error-after-sentinel' });
+    assert(r.status !== 0, 'error-with-sentinel', 'ERROR output must refuse even when the sentinel printed', r);
+    assert(r.stderr.includes('remote psql reported an error'), 'error-with-sentinel', 'refusal must name the psql error', r);
+  }
+
+  // 5. Checksum drift: a recorded receipt that no longer matches the local
+  //    file refuses before anything else happens to that file.
+  {
+    const receipts = { ...checksums, '0023_learning_insights.sql': 'deadbeef' };
+    const r = run(['--dry-run'], {
+      RAILWAY_FAKE_LEDGER: 'present|33|present',
+      RAILWAY_FAKE_RECEIPTS: JSON.stringify(receipts),
+    });
+    assert(r.status !== 0, 'checksum-drift', 'runner must refuse checksum drift', r);
+    assert(r.stderr.includes('migration drift detected for 0023_learning_insights.sql'), 'checksum-drift', 'drift refusal must name the file', r);
+  }
+
+  // 6. Ledger present with matching receipts: every file skips, nothing pends.
+  {
+    const r = run(['--dry-run'], {
+      RAILWAY_FAKE_LEDGER: 'present|33|present',
+      RAILWAY_FAKE_RECEIPTS: JSON.stringify(checksums),
+    });
+    assert(r.status === 0, 'ledger-skip', 'runner should exit 0', r);
+    assert(r.stdout.includes('skip 0001_identity.sql (recorded)') && r.stdout.includes('skip 0033_retire_unused_game_schema.sql (recorded)'), 'ledger-skip', 'recorded files must skip', r);
+    assert(!r.stdout.includes('pending '), 'ledger-skip', 'no file may be pending with full receipts', r);
+  }
+
+  // 7. Baseline guards.
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'present|11|present' });
+    assert(r.status !== 0 && r.stderr.includes('do not baseline a non-empty ledger'), 'baseline-nonempty-ledger', 'must refuse baselining an existing ledger', r);
+  }
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_LEDGER: 'absent|-1|absent' });
+    assert(r.status !== 0 && r.stderr.includes('only valid for an existing application schema'), 'baseline-missing-schema', 'must refuse baselining a schemaless database', r);
+  }
+  {
+    const r = run(['--dry-run', '--baseline', '9999']);
+    assert(r.status !== 0 && r.stderr.includes('newer than the latest local migration'), 'baseline-too-new', 'must refuse a baseline newer than local files', r);
+  }
+
+  // 8. Baseline signature probe: refuse a mismatched database and refuse a
+  //    baseline the signature map does not know.
+  {
+    const r = run(['--dry-run', '--baseline', '0022'], { RAILWAY_FAKE_SIGNATURE: 'found-later-objects' });
+    assert(r.status !== 0 && r.stderr.includes('signature probe refused: found-later-objects'), 'signature-refuse', 'must refuse a failed signature probe', r);
+  }
+  {
+    const r = run(['--dry-run', '--baseline', '0015']);
+    assert(r.status !== 0 && r.stderr.includes('has no signature-object map'), 'signature-unmapped', 'must refuse an unmapped baseline', r);
+  }
+
+  console.log('railway-migrate integration OK — 12 transport scenarios + static probe-map/DEPLOYMENT.md DDL cross-checks: transport shape, order-independent sentinel verification, apply receipts, drift/skip, baseline guards, signature probe');
 } finally {
   rmSync(fixtureRoot, { recursive: true, force: true });
 }

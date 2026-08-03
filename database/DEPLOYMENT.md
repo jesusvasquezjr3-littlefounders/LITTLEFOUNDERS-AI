@@ -54,7 +54,7 @@ released 2026-07-09). One version string reproduces the whole stack anywhere.
 
 **GoTrue → Courier email wiring (2026-07-18):** `GOTRUE_SMTP_HOST=email-server.railway.internal`, `GOTRUE_SMTP_PORT=587`, `GOTRUE_SMTP_USER`/`PASS` empty (internal private-IP relay, not password auth), `GOTRUE_SMTP_ADMIN_EMAIL=noreply@littlefounders.ai`, `GOTRUE_SMTP_SENDER_NAME=LittleFounders`. Auth mail (confirmation / recovery / magic-link / invite / email-change) renders from **branded, trilingual** templates hosted at `https://littlefounders.ai/email-templates/*.html` (wired via `GOTRUE_MAILER_TEMPLATES_*` + `GOTRUE_MAILER_SUBJECTS_*`; language follows the user's registration locale — see `frontend/public/email-templates/README.md`). **Google social login is LIVE (2026-07-20):** `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true` + `CLIENT_ID` + `SECRET` + `REDIRECT_URI` all set (client "LittleFounders v2 (GoTrue)", Google Cloud project `littlefounders-auth`); verified end-to-end against production.
 
-**Migrations:** The initial production rollout applied `0001` through `0011` in order via `railway ssh --service db -- psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1`, with no seeds. (`0011_oauth_bootstrap` teaches `handle_new_user()` to derive `display_name` from an OAuth provider's `full_name`/`name` metadata — verified applied in prod.) The current release worktree contains `0012` through `0033` (including the atomic course release gate, illustration-style provenance, and retired game schema), and those deltas are **not production-ready until the migration handoff below is completed**.
+**Migrations:** The initial production rollout applied `0001` through `0011` in order via `railway ssh --service db -- psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1`, with no seeds. `0012`–`0022` were applied to production on 2026-07-28 (before the PR #25 merge — see the WALKTHROUGH decision log). **Production's live high-water mark is `0022` exactly, with no `public.schema_migrations` ledger** — verified 2026-08-02 by read-only signature-object probe (0022 objects present, 0023+ absent, no ledger). The current release worktree contains `0023` through `0033` (including the atomic course release gate, illustration-style provenance, and retired game schema) as the unapplied delta, and those deltas are **not production-ready until the migration handoff below is completed**.
 
 ### Current release migration handoff (pending production sign-off)
 
@@ -65,7 +65,35 @@ the production Vault:
    as a substitute for a database restore point.
 2. Independently inspect the live high-water mark and whether
    `public.schema_migrations` exists. The recorded rollout state above is a
-   starting point, not permission to baseline by assumption.
+   starting point, not permission to baseline by assumption. The last such
+   inspection: **verified 2026-08-02 by read-only signature-object probe
+   (0022 objects present, 0023+ absent, no ledger)**. Re-verify with the
+   signature-object table below before applying — each row is a read-only
+   probe an operator can run over `railway ssh --service db` with `psql`:
+
+   | Migration | Probe object | Expected at baseline 0022 |
+   |---|---|---|
+   | 0013 | `learning_stats.longest_streak` column (`information_schema.columns`) | present |
+   | 0014 | `to_regclass('public.picture_assets')` | present |
+   | 0015 | `to_regclass('public.speech_assets')` | present |
+   | 0017 | `to_regclass('public.generation_runs')` | present |
+   | 0018 | `to_regclass('public.generation_runs_live')` | present |
+   | 0020 | `to_regclass('public.generation_heartbeat_snapshots')` | present |
+   | 0021 | `to_regclass('public.email_logs')` | present |
+   | 0022 | rows in `pg_publication_tables` for `supabase_realtime` | present (non-empty) |
+   | 0023 | `to_regclass('public.learning_events')` | absent |
+   | 0024 | `to_regclass('public.anon_visitors')` | absent |
+   | 0026 | `to_regclass('public.dataintel_sync_state')` | absent |
+   | 0027 | `to_regclass('public.games')` | absent |
+   | 0030 | `to_regclass('public.admin_permissions')` | absent |
+   | 0031 | `to_regclass('public.course_release_verifications')` | absent |
+   | 0032 | `lesson_documents.illustration_style_version` column | absent |
+   | ledger | `to_regclass('public.schema_migrations')` | absent |
+
+   `railway-migrate.sh` re-runs the load-bearing subset of these probes
+   automatically before accepting `--baseline 0022` and refuses on any
+   mismatch; the table exists so the operator can verify independently
+   first, not so the check can be skipped.
 3. Run the read-only service/configuration preflight from the repository root:
 
    ```bash
@@ -83,24 +111,29 @@ the production Vault:
 
    ```bash
    RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/railway_key \
-     npm --prefix database run db:railway:migrate -- --dry-run --baseline 0011
+     npm --prefix database run db:railway:migrate -- --dry-run --baseline 0022
    ```
 
-   Supply `--baseline 0011` only if the live inspection proves that exact
-   high-water mark. The dry-run must list `0012`–`0033` and must not create the
-   ledger or modify a row.
+   Supply `--baseline 0022` only if the live inspection proves that exact
+   high-water mark (the 2026-08-02 probe above did). The dry-run must list
+   `0023`–`0033` and must not create the ledger or modify a row.
 5. After human review of the dry-run and backup, apply the same plan with the
    explicit mutation flag:
 
    ```bash
    RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/railway_key \
      npm --prefix database run db:railway:migrate -- \
-       --confirm-production --baseline 0011
+       --confirm-production --baseline 0022
    ```
 
    `railway-migrate.sh` records immutable SHA-256 receipts, applies one file
    per transaction, refuses checksum drift, retries transient SSH failures,
-   and never seeds or drops production data.
+   and never seeds or drops production data. The Railway CLI transport does
+   not propagate the remote exit status, so the runner verifies every
+   statement batch from psql output (the success sentinel present anywhere
+   plus the absence of `ERROR:` — order-independent, because psql NOTICEs on
+   stderr can be forwarded after the sentinel) and hard-refuses anything
+   ambiguous.
 6. Verify the postflight receipt count, `public.lesson_documents.illustration_style_version`,
    and the service-role-only `release_course` function. Then deploy the
    reviewed service commit and verify the `/health` chain before any paid

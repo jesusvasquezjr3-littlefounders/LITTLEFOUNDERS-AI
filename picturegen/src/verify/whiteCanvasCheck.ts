@@ -24,15 +24,25 @@ function isWhiteOrTransparent(pixel: Buffer, offset: number): boolean {
  */
 export async function verifyWhiteCanvas(bytes: Buffer): Promise<WhiteCanvasVerdict> {
   try {
-    const { data, info } = await sharp(bytes).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    // Force sRGB before ensureAlpha(): ensureAlpha preserves colourspace, so a
+    // grayscale PNG decoded to 2 channels and the channel guard below waved a
+    // solid-gray canvas — the exact defect class this checker exists for —
+    // through as 'unavailable'.
+    const { data, info } = await sharp(bytes).toColourspace('srgb').ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     if (info.width < 2 || info.height < 2 || info.channels < 4) return 'unavailable';
     const step = Math.max(1, Math.floor(Math.min(info.width, info.height) / 128));
+    // The stride can skip the final column/row (leaving the bottom-right
+    // corner unsampled), so both endpoints are pinned explicitly.
+    const xs = new Set<number>([info.width - 1]);
+    for (let x = 0; x < info.width; x += step) xs.add(x);
+    const ys = new Set<number>([info.height - 1]);
+    for (let y = 0; y < info.height; y += step) ys.add(y);
     const coordinates = new Set<number>();
-    for (let x = 0; x < info.width; x += step) {
+    for (const x of xs) {
       coordinates.add(x);
       coordinates.add((info.height - 1) * info.width + x);
     }
-    for (let y = 0; y < info.height; y += step) {
+    for (const y of ys) {
       coordinates.add(y * info.width);
       coordinates.add(y * info.width + info.width - 1);
     }

@@ -66,6 +66,14 @@ interface DocumentWithIllustrationStyle {
  * Segment-level `image_url` (the scene anchor) is skipped on purpose — see the header.
  * Documents are walked in order, and the first URL found for a label wins, so passing
  * the authoring locale first keeps the index deterministic.
+ *
+ * The index is label-keyed and locale-blind, so CALLERS choose the donor set.
+ * Safe donor scopes are: the same LESSON, any locale (one text-free image serves
+ * the lesson's three locale documents — the deliberate 1-image-per-3-locales
+ * design), or the same LOCALE, any lesson. Never index a whole course across
+ * locales in one pass: interlingual homographs ("Pan" es-MX = bread, "pan"
+ * en-US = frying pan) would attach the wrong object's art with no verifier in
+ * the path.
  */
 export function buildImageInheritance(
   documents: readonly (LessonDocumentParsed & DocumentWithIllustrationStyle)[],

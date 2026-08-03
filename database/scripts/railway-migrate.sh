@@ -30,6 +30,9 @@ Options:
   --baseline NNNN          Required only when the remote ledger is absent.
                            The operator must have independently verified that
                            production is exactly at this migration number.
+                           The runner additionally verifies a read-only
+                           signature-object probe for the requested baseline
+                           and refuses baselines it has no signature map for.
   --confirm-production     Authorize remote schema mutation for this run.
   --dry-run                Inspect the remote ledger and list pending files;
                            never creates a ledger or applies SQL.
@@ -100,26 +103,116 @@ while IFS= read -r migration; do
 done < <(find "$MIGRATIONS_DIR" -maxdepth 1 -type f -name '[0-9][0-9][0-9][0-9]_*.sql' -print | sort)
 (( ${#MIGRATION_FILES[@]} > 0 )) || fail "no migration files found in $MIGRATIONS_DIR"
 
+# The Railway CLI transport lies about failure (verified live against CLI
+# 5.30.3): `railway ssh --service db -- sh -c "exit 42"` exits 0 locally, and
+# the `-- sh -c` word-split shape never even reaches psql. Success is
+# therefore judged from psql OUTPUT — every payload must print this sentinel,
+# and any 'ERROR:' or missing sentinel is a hard refusal. The judgment is
+# ORDER-INDEPENDENT on purpose: psql NOTICEs travel on stderr (unbuffered),
+# so across the CLI's forwarded channels a NOTICE can land AFTER the sentinel
+# in the 2>&1 merge (0024/0033 DO blocks genuinely NOTICE on the production
+# path). With ON_ERROR_STOP=1 and the sentinel as the final statement, the
+# sentinel cannot print if any earlier statement failed — so presence anywhere
+# plus the absence of an ERROR line is airtight.
+SENTINEL="LF_MIGRATION_OK"
+
 remote_sql() {
-  local sql="$1" label="${2:-query}" b64 output attempt
+  local sql="$1" label="${2:-query}" b64 output status attempt
+  sql="$sql
+\\echo $SENTINEL"
   b64="$(printf '%s' "$sql" | base64 | tr -d '\n')"
   for ((attempt = 1; attempt <= ATTEMPTS; attempt++)); do
-    # Pass the remote pipeline as one argument to `sh -c`. Do not wrap the
-    # entire command in literal single quotes: Railway forwards those quotes
-    # to the remote shell, which would treat the pipeline as a string instead
-    # of executing base64/psql.
-    if output="$(railway ssh --service "$SERVICE" -i "$SSH_KEY" -- \
-      sh -c "printf '%s' '$b64' | base64 -d | psql -U $MIGRATE_ROLE -d postgres -t -A -v ON_ERROR_STOP=1" 2>&1)"; then
-      printf '%s' "$output"
-      return 0
+    # The remote pipeline must be ONE positional argument (the proven-working
+    # shape). psql reads the decoded SQL as a script via `-f -`, so with
+    # ON_ERROR_STOP=1 the trailing \echo sentinel only prints if every prior
+    # statement succeeded.
+    status=0
+    output="$(railway ssh --service "$SERVICE" -i "$SSH_KEY" \
+      "echo $b64 | base64 -d | psql -U $MIGRATE_ROLE -d postgres -t -A -v ON_ERROR_STOP=1 -f -" 2>&1)" || status=$?
+    if ((status != 0)); then
+      # A non-zero LOCAL exit is a genuine transport failure (the CLI could
+      # not run at all) — the only case that is safe to retry.
+      if ((attempt == ATTEMPTS)); then
+        echo "$output" >&2
+        fail "$label failed after $ATTEMPTS Railway SSH attempts"
+      fi
+      echo "$label: SSH attempt $attempt failed; retrying in ${RETRY_SECONDS}s" >&2
+      sleep "$RETRY_SECONDS"
+      continue
     fi
-    if ((attempt == ATTEMPTS)); then
+    if printf '%s\n' "$output" | grep -q 'ERROR:'; then
       echo "$output" >&2
-      fail "$label failed after $ATTEMPTS Railway SSH attempts"
+      fail "$label: remote psql reported an error"
     fi
-    echo "$label: SSH attempt $attempt failed; retrying in ${RETRY_SECONDS}s" >&2
-    sleep "$RETRY_SECONDS"
+    if ! printf '%s\n' "$output" | grep -Fq "$SENTINEL"; then
+      # Exit 0 with no sentinel is exactly how a dropped or lying transport
+      # presents. Retrying could re-run SQL whose fate is unknown, so refuse.
+      # Presence ANYWHERE (not "last line") is deliberate: a psql NOTICE can
+      # be forwarded after the sentinel and must not fail a committed run.
+      echo "$output" >&2
+      fail "$label: success sentinel missing from remote output (transport exit codes are untrustworthy); refusing to continue"
+    fi
+    # The captured query result is what remains after dropping the sentinel
+    # and psql's stderr chatter (NOTICE/WARNING and their attachment lines),
+    # which the channel merge can interleave anywhere relative to real rows.
+    printf '%s\n' "$output" \
+      | grep -Fvx "$SENTINEL" \
+      | grep -Ev '^(psql:[^ ]* )?(NOTICE|WARNING|DETAIL|HINT|CONTEXT):' \
+      || true
+    return 0
   done
+}
+
+# Data-driven signature-object map for --baseline sanity. Each verified
+# baseline pairs objects its migration set must have created (present) with
+# the first objects a later migration would create (absent). Probes are
+# read-only and print a single token. Extend only with an independently
+# verified probe; DEPLOYMENT.md records the 2026-08-02 evidence for 0022.
+baseline_signature_sql() {
+  case "$1" in
+    0011)
+      cat <<'SQL'
+SELECT CASE
+  WHEN to_regclass('public.courses') IS NULL
+    OR to_regclass('public.audit_logs') IS NULL
+    THEN 'missing-baseline-objects'
+  WHEN to_regclass('public.picture_assets') IS NOT NULL
+    OR EXISTS (SELECT 1 FROM information_schema.columns
+               WHERE table_schema = 'public' AND table_name = 'learning_stats'
+                 AND column_name = 'longest_streak')
+    THEN 'found-later-objects'
+  ELSE 'baseline-ok'
+END;
+SQL
+      ;;
+    0022)
+      cat <<'SQL'
+SELECT CASE
+  WHEN to_regclass('public.picture_assets') IS NULL
+    OR to_regclass('public.speech_assets') IS NULL
+    OR to_regclass('public.generation_runs') IS NULL
+    OR to_regclass('public.generation_runs_live') IS NULL
+    OR to_regclass('public.generation_heartbeat_snapshots') IS NULL
+    OR to_regclass('public.email_logs') IS NULL
+    OR NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public' AND table_name = 'learning_stats'
+                     AND column_name = 'longest_streak')
+    OR NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public' AND table_name = 'topics'
+                     AND column_name = 'review_of')
+    OR NOT EXISTS (SELECT 1 FROM pg_publication_tables
+                   WHERE pubname = 'supabase_realtime')
+    THEN 'missing-baseline-objects'
+  WHEN to_regclass('public.learning_events') IS NOT NULL
+    THEN 'found-later-objects'
+  ELSE 'baseline-ok'
+END;
+SQL
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }
 
 checksum_for() {
@@ -148,7 +241,12 @@ if [[ "$ledger_state" == "absent" ]]; then
   [[ -n "$BASELINE" ]] || fail "remote ledger is absent; provide --baseline NNNN only after independently verifying production's high-water mark"
   [[ "$courses_state" == "present" ]] || fail "--baseline is only valid for an existing application schema"
   [[ "$BASELINE" != "0000" ]] || fail "baseline must identify an applied migration"
-  echo "Remote ledger is absent; requested baseline: $BASELINE (course schema present)."
+  signature_sql="$(baseline_signature_sql "$BASELINE")" \
+    || fail "--baseline $BASELINE has no signature-object map; add an independently verified probe to baseline_signature_sql before using it"
+  signature_state="$(remote_sql "$signature_sql" "baseline signature $BASELINE" | tr -d '[:space:]')"
+  [[ "$signature_state" == "baseline-ok" ]] \
+    || fail "baseline $BASELINE signature probe refused: ${signature_state:-no-output} (production does not match the requested high-water mark)"
+  echo "Remote ledger is absent; requested baseline: $BASELINE (course schema present, signature probe passed)."
 else
   [[ -z "$BASELINE" ]] || fail "remote ledger already exists; do not baseline a non-empty ledger"
   echo "Remote migration ledger has $ledger_count receipt(s)."

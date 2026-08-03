@@ -32,6 +32,7 @@ export function AdminContentPage() {
   const moderationData = useAdminData<{ lessons: ReviewLesson[] }>('/admin/moderation');
   const mutate = useAdminMutation();
   const [busy, setBusy] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('courses');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -66,17 +67,29 @@ export function AdminContentPage() {
     });
   }, [courses, search, statusFilter]);
 
+  // The backend refuses a publish with a distinct error code per cause (e.g.
+  // RELEASE_VERIFICATION_REQUIRED) — it must reach the admin, not be dropped.
   async function setCourseStatus(id: string, status: string) {
     setBusy(id);
-    await mutate(`/admin/content/${id}/status`, { status });
-    await coursesData.reload();
+    setActionError(null);
+    const res = await mutate(`/admin/content/${id}/status`, { status });
+    if (res.error) {
+      setActionError(t(`errors.api.${res.error.code}`, { defaultValue: t('admin.content.actionFailed') }));
+    } else {
+      await coursesData.reload();
+    }
     setBusy(null);
   }
 
   async function decide(id: string, status: 'published' | 'draft') {
     setBusy(id);
-    await mutate(`/admin/moderation/${id}/status`, { status });
-    await moderationData.reload();
+    setActionError(null);
+    const res = await mutate(`/admin/moderation/${id}/status`, { status });
+    if (res.error) {
+      setActionError(t(`errors.api.${res.error.code}`, { defaultValue: t('admin.content.actionFailed') }));
+    } else {
+      await moderationData.reload();
+    }
     if (previewLesson?.id === id) setPreviewLesson(null);
     setBusy(null);
   }
@@ -170,6 +183,17 @@ export function AdminContentPage() {
             );
           })}
         </nav>
+
+        {/* Last action outcome — a refused publish must be visible, never silent */}
+        {actionError && (
+          <div
+            role="alert"
+            className="flex items-center gap-2 rounded-xl bg-error-soft p-3 lf-caption font-semibold text-error-strong"
+          >
+            <Icon name="error" className="shrink-0 !text-[18px]" />
+            {actionError}
+          </div>
+        )}
 
         {/* ── Courses Tab ── */}
         {tab === 'courses' && (

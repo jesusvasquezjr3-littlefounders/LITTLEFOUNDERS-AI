@@ -62,6 +62,30 @@ describe('planRepair', () => {
     expect(fixes.some((fix) => fix.includes('underspecified speed_tap'))).toBe(true);
   });
 
+  it('never re-introduces a semantically unfit type_answer/speed_tap while diversifying duplicates', () => {
+    // type_answer sits early in the unused pool, and every duplicate's brief is
+    // non-numeric: Rule 3 used to hand one of those briefs to type_answer AFTER
+    // the semantic-repair pass had already run, reintroducing the exact
+    // violation with nothing behind it to re-check.
+    const allowedWithTypeAnswer = ['story_scene', 'quiz_mcq', 'true_false', 'type_answer', 'match_pairs', 'sort_buckets', 'needs_wants'];
+    const input: PlanSkeleton = {
+      segments: [
+        { type: 'story_scene', brief: 'Introduce the idea.' },
+        { type: 'quiz_mcq', brief: 'Choose the best example.' },
+        { type: 'quiz_mcq', brief: 'Pick the idea that fits.' },
+        { type: 'quiz_mcq', brief: 'Decide which option helps.' },
+        { type: 'quiz_mcq', brief: 'Select the wiser plan.' },
+        { type: 'quiz_mcq', brief: 'Choose what Zara should do.' },
+        { type: 'quiz_mcq', brief: 'Pick the fair option.' },
+        { type: 'quiz_mcq', brief: 'Choose the honest answer.' },
+      ],
+    };
+    const { skeleton: repaired, fixes } = planRepair(input, allowedWithTypeAnswer, false);
+    expect(repaired.segments.map((s) => s.type)).not.toContain('type_answer');
+    expect(new Set(repaired.segments.map((s) => s.type)).size).toBeGreaterThanOrEqual(5);
+    expect(fixes.some((fix) => fix.includes('diversified duplicate'))).toBe(true);
+  });
+
   it('ensures at least MIN_DISTINCT_TYPES distinct types', () => {
     const input = skeleton(['story_scene', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq', 'quiz_mcq']);
     const { skeleton: repaired } = planRepair(input, allowed, false);

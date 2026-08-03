@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import express from 'express';
 import { getConfig } from './env.js';
 import { picturesRouter, type PicturesRouterDeps } from './routes/pictures.js';
+import { OBJECT_TILE_STYLE_VERSION, STYLE_VERSION } from './service/pictures.js';
 
 export const SERVICE = 'picturegen';
 export const VERSION = '0.1.0';
@@ -17,7 +18,12 @@ export function createApp(deps: AppDeps = {}): express.Express {
   app.use(express.json({ limit: '256kb' }));
 
   app.get('/health', (_req, res) => {
-    res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
+    // style_version lets Forge preflight-assert its hardcoded illustration
+    // style constant against what Prism actually produces before a paid run.
+    res.json({
+      data: { service: SERVICE, version: VERSION, status: 'ok', style_version: `${STYLE_VERSION}+${OBJECT_TILE_STYLE_VERSION}` },
+      error: null,
+    });
   });
 
   // Everything under /api/v1 is service-to-service only (/AGENTS.md §1.5),

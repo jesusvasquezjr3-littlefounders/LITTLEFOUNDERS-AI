@@ -18,8 +18,10 @@ On `POST /api/v1/pictures`, Prism asks the **art-director judge** (an
 OpenAI-compatible chat model) to craft one detailed English illustration
 prompt that depicts the label clearly for a child and enforces the
 LittleFounders visual identity. Before judging, it hashes the stable request
-descriptor `(model, size, style version, purpose, label, context)` and looks
-that up in `picture_assets`:
+descriptor `(model, size, style version, purpose, label, context)` — for the
+four object-tile purposes the descriptor collapses to
+`(model, size, tile style version, label)`, because their deterministic prompt
+depends only on the label — and looks that up in `picture_assets`:
 
 - **HIT** → returns the stored asset, `cached: true`, with **zero paid API calls**.
 - **MISS** → calls the model-selected DashScope image endpoint (synchronous for
@@ -40,7 +42,7 @@ Every response uses the `{ data, error }` envelope (/AGENTS.md §1.6).
 
 | Method | Path | Body | Description |
 |---|---|---|---|
-| GET | `/health` | — | Service health envelope |
+| GET | `/health` | — | Service health envelope; `data.style_version` is `STYLE_VERSION+OBJECT_TILE_STYLE_VERSION` so Forge can preflight-assert its style constant before a paid run |
 | POST | `/api/v1/pictures` | `{ label, context?, purpose? }` | Cache-first: get-or-generate an illustration. Returns `{ url, file_id, prompt, model, cached, generated_images }` |
 
 `label` (1–120 chars) is the subject. `context` (≤2000 chars, optional) grounds
@@ -57,9 +59,13 @@ or photorealistic). Prism's deterministic edge-pixel checker treats a colored ca
 white-card inset, frame, or broad shadow as a terminal visual defect for these
 purposes; setting-based scene purposes are intentionally exempt.
 
-Adding a purpose is **cache-safe** — `purpose` is part of the request hash,
-so new values mint new keys and never invalidate stored art. A new purpose must
-therefore NEVER bump `STYLE_VERSION`.
+Adding a purpose is **cache-safe** — a non-tile `purpose` is part of the
+request hash, so new values mint new keys and never invalidate stored art. A
+new purpose must therefore NEVER bump `STYLE_VERSION`. The four object-tile
+purposes are the exception by design: they share one deterministic label-only
+prompt, so their cache key collapses purpose (to a single `object_tile` token)
+and drops context — the same label is generated and billed exactly once across
+all of them.
 
 ### Failure statuses — a retry instruction for the caller
 

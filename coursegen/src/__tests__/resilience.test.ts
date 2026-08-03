@@ -47,6 +47,15 @@ describe('checkpoint: a resume must be provably compatible', () => {
   it('treats a params-less (legacy) checkpoint as unknown, never as a match', () => {
     expect(describeParamMismatch(undefined, params())).toContain('predates');
   });
+
+  it('treats a legacy checkpoint LACKING requireImages as false, so a plain resume is not permanently blocked', () => {
+    // Checkpoints written before requireImages existed have no key at all —
+    // that era could not require images, so absent must equal false.
+    const legacy = params();
+    delete (legacy as { requireImages?: boolean }).requireImages;
+    expect(describeParamMismatch(legacy, params({ requireImages: false }))).toBeNull();
+    expect(describeParamMismatch(legacy, params({ requireImages: true }))).toContain('requireImages');
+  });
 });
 
 describe('checkpoint: dry-run is not done', () => {
@@ -128,7 +137,7 @@ describe('image spend is metered and capped like every other paid call', () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'forge-img-'));
     const ledger = new UsageLedger(dir);
     await ledger.hydrate({ maxTokens: 1_000_000, maxUsd: 0.03 });
-    // Default price is $0.02/image, so two images exceed a $0.03 cap.
+    // Default price is $0.075/image, so two images exceed a $0.03 cap.
     await ledger.record({ provider: 'picturegen', model: 'qwen-image-max', operation: 'image:option_card', promptTokens: 0, completionTokens: 0, images: 2 });
     expect(() => ledger.checkBudget()).toThrow(/usd/);
   });

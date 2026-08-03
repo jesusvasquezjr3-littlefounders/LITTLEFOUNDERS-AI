@@ -50,6 +50,10 @@ to apply only later files. Production uses `scripts/railway-migrate.sh`:
 `--dry-run` inspects the remote ledger without writing, while
 `--confirm-production` is required for mutation. A legacy production Vault must
 receive an explicit, independently verified `--baseline NNNN`; the script
-records that baseline and applies every later migration in order, one
-transaction per file. Never baseline by guesswork; production application
+refuses the baseline unless a read-only signature-object probe of the live
+schema matches it, then records the baseline and applies every later migration
+in order, one transaction per file. The Railway CLI does not propagate the
+remote exit status, so the runner verifies every batch from psql output (a
+trailing success sentinel plus the absence of `ERROR:`) and hard-refuses
+anything ambiguous. Never baseline by guesswork; production application
 remains a human-approved operation under [DEPLOYMENT.md](DEPLOYMENT.md).

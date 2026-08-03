@@ -36,6 +36,32 @@ describe('getConfig', () => {
   });
 });
 
+describe('FORGE_DEEPSEEK_FALLBACK_TO_QWEN — strict string-boolean (§1.14)', () => {
+  it.each<[string, boolean]>([
+    ['false', false],
+    ['0', false],
+    ['no', false],
+    ['FALSE', false],
+    ['true', true],
+    ['1', true],
+    ['yes', true],
+  ])('parses %j as %s — z.coerce.boolean() read every non-empty string (including "false") as true', (raw, expected) => {
+    process.env.FORGE_DEEPSEEK_FALLBACK_TO_QWEN = raw;
+    resetConfigCache();
+    expect(getConfig().FORGE_DEEPSEEK_FALLBACK_TO_QWEN).toBe(expected);
+  });
+
+  it('REJECTS a value that is neither truthy nor falsy instead of silently coercing it', () => {
+    process.env.FORGE_DEEPSEEK_FALLBACK_TO_QWEN = 'banana';
+    resetConfigCache();
+    expect(() => getConfig()).toThrow();
+  });
+
+  it('defaults to true when unset', () => {
+    expect(getConfig().FORGE_DEEPSEEK_FALLBACK_TO_QWEN).toBe(true);
+  });
+});
+
 describe('requireGenerationKeys', () => {
   it('throws a clear error listing missing keys', () => {
     expect(() => requireGenerationKeys()).toThrow(/DEEPSEEK_API_KEY.*QWEN_API_KEY|QWEN_API_KEY.*DEEPSEEK_API_KEY/);

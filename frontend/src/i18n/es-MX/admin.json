@@ -71,6 +71,7 @@
     "archive": "Archivar",
     "empty": "Aún no hay cursos.",
     "noMatch": "Ningún curso coincide con los criterios de filtro.",
+    "actionFailed": "Ese cambio no se aplicó. Inténtalo de nuevo.",
     "totalCourses": "Total de cursos",
     "liveCourses": "Cursos en vivo",
     "draftCourses": "Borradores y revisión",
@@ -819,15 +820,9 @@
     "loading": "Cargando insights…",
     "kpi": {
       "consent": "Niños con permiso",
-      "consentHint": "El consentimiento del tutor abre cada señal infantil.",
       "events": "Eventos ({{days}}d)",
-      "eventsHint": "{{kid}} de sesiones infantiles",
       "peakUsers": "Pico de usuarios diarios",
-      "peakUsersHint": "El día más activo del periodo.",
-      "tasks": "Tareas completadas",
-      "tasksHint": "{{done}} de {{total}} tareas familiares hechas",
-      "activation": "Activación",
-      "activationHint": "Llegaron a su primera lección completada · mediana {{hours}}h en lograrlo"
+      "activation": "Activación"
     },
     "surfaces": {
       "title": "Dónde pasa el tiempo",

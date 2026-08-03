@@ -33,6 +33,7 @@ import { RubricLog } from './rubricLog.js';
 import { ingestRunTelemetry } from '../vault/telemetry.js';
 import { LiveTelemetry } from './liveTelemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
+import { fetchPrismStyleVersion } from '../providers/picturegen.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
 import { generateRecapLines, appendRecapSegment } from './recapDialogue.js';
@@ -759,6 +760,37 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     if (options.requireImages) requirePictureGeneration();
   }
   const config = getConfig();
+  /*
+   * Style-version handshake. FORGE_ILLUSTRATION_STYLE_VERSION is a hand-kept
+   * copy of Prism's STYLE_VERSION+OBJECT_TILE_STYLE_VERSION composite; if the
+   * two deployments drift, this run would inherit and cache art from a
+   * DIFFERENT approved visual generation. Prism advertises the composite on
+   * GET /health (free, read-only), so a real run with images verifies it
+   * BEFORE any paid call. Skipped in dry-run (fully offline by contract),
+   * under --no-images, and when Prism is not configured — release-readiness
+   * runs offline and must stay green.
+   */
+  if (!options.dryRun && !options.noImages && config.PICTUREGEN_URL && config.PICTUREGEN_INTERNAL_KEY) {
+    const probe = await fetchPrismStyleVersion();
+    if ('styleVersion' in probe) {
+      if (probe.styleVersion !== FORGE_ILLUSTRATION_STYLE_VERSION) {
+        throw new Error(
+          `generate: illustration style-version mismatch — Prism /health advertises "${probe.styleVersion}" ` +
+            `but this Forge build expects "${FORGE_ILLUSTRATION_STYLE_VERSION}". Align the two deployments before ` +
+            `a paid run: drifted art would poison the inheritance index and Prism's cache.`,
+        );
+      }
+    } else if (options.requireImages) {
+      // A production visual run must not spend a cent unverified.
+      throw new Error(
+        `generate: could not verify Prism's illustration style version for --require-images (${probe.unavailable}).`,
+      );
+    } else {
+      console.warn(
+        `[forge] could not verify Prism's illustration style version (${probe.unavailable}) — continuing; image failures remain per-slot.`,
+      );
+    }
+  }
   const courseDir = path.join(options.curriculumRoot, options.course);
   const loadResult = loadCourseCatalog(courseDir);
   const errors = loadResult.issues.filter((i) => i.level === 'error');

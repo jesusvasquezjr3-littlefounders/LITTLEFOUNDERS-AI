@@ -23,7 +23,10 @@ only, constant-time compared.
 
 An identical request must **NEVER** hit the paid image API twice. Every
 generation is keyed by `sha256(model size "STYLE_VERSION | purpose | label |
-context")` in `picture_assets` (UNIQUE `prompt_hash`) — the key hashes the
+context")` — for the four object-tile purposes the descriptor collapses to
+`"OBJECT_TILE_STYLE_VERSION | object_tile | label"` (their deterministic
+prompt depends only on the label, so purpose/context must not fragment the
+key) — in `picture_assets` (UNIQUE `prompt_hash`) — the key hashes the
 **REQUEST descriptor, computed BEFORE the judge**, never the judged prompt.
 (The judge is an LLM: two identical requests craft two slightly different
 prompts, so a prompt-keyed cache never hits — caught live on the first smoke
@@ -39,10 +42,14 @@ separate discriminator: `OBJECT_TILE_STYLE_VERSION` invalidates only the four
 object-tile purpose keys and leaves setting-based scenes as cache hits.
 
 **Adding a `PICTURE_PURPOSES` value is cache-safe — never bump `STYLE_VERSION`
-for one.** `purpose` is already a component of the hashed request descriptor, so
-a new value can only mint keys nothing has stored; every existing asset keeps
+for one.** A non-tile `purpose` is a component of the hashed request descriptor,
+so a new value can only mint keys nothing has stored; every existing asset keeps
 its key and stays a HIT. Bumping `STYLE_VERSION` "to be safe" would re-pay for
-the entire catalog to obtain byte-identical-looking art.
+the entire catalog to obtain byte-identical-looking art. The object-tile
+purposes are the deliberate exception: they collapse to one `object_tile`
+key component (same label = same paid request = one asset), so adding a
+purpose to `DETERMINISTIC_OBJECT_TILE_PURPOSES`/`OBJECT_TILE_PURPOSES` merges
+its keys into the shared tile keyspace instead of minting new ones.
 
 **Strengthening a defect-exclusion clause is also cache-safe.** Changing the
 no-text/no-people language in `PICTORIAL_CLAUSE` or `BASE_NEGATIVE` does not

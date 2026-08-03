@@ -89,6 +89,12 @@ describe('renderSegmentMinimums', () => {
     expect(renderSegmentMinimums([{ type: 'dialogue_choice' }])).toContain('payload.turns MUST contain at least 2 entries');
     expect(renderSegmentMinimums([{ type: 'story_scene' }])).toBe('');
   });
+
+  it('points quiz_mcq at payload.options — the field its schema validates (it has no items field)', () => {
+    expect(renderSegmentMinimums([{ type: 'quiz_mcq' }])).toBe(
+      'segment 1 (quiz_mcq) payload.options MUST contain at least 3 entries',
+    );
+  });
 });
 
 describe('repairDocument — balance_scale subset-sum', () => {
@@ -151,6 +157,29 @@ describe('repairDocument — presentation-token recovery', () => {
     const doc = { segments: [{ id: 's1', type: 'quiz_mcq', payload: { icon: 'invented_icon' } }] };
     repairDocument(doc);
     expect(doc.segments[0]!.payload.icon).toBe('emoji_objects');
+  });
+
+  it('preserves ©/®/™ and never reduces an all-emoji payload string to an empty string', () => {
+    const doc = {
+      segments: [{
+        id: 's1',
+        type: 'quiz_mcq',
+        payload: {
+          options: [
+            { id: 'a', text_md: 'Marca ®' },
+            { id: 'b', text_md: '🎉✨' },
+            { id: 'c', text_md: 'hola 🎉' },
+          ],
+        },
+      }],
+    };
+
+    repairDocument(doc);
+
+    const options = doc.segments[0]!.payload.options;
+    expect(options[0]!.text_md).toBe('Marca ®'); // legal notation is text, not decoration
+    expect(options[1]!.text_md).toBe('🎉✨'); // falls back to the original — '' would fail min-length downstream
+    expect(options[2]!.text_md).toBe('hola'); // ordinary decoration still stripped
   });
 });
 

@@ -12,7 +12,8 @@ import path from 'node:path';
 import { stringify } from 'yaml';
 import { loadCourseCatalog, resolveReviewSources } from '../catalog/loader.js';
 import { topicBlueprintSchema, sagaBlueprintSchema, reviewOfPathSchema } from '../catalog/schema.js';
-import { planLesson, type PlanContext } from '../pipeline/plan.js';
+import { planLesson, renderCompetencyBlockForPrompt, type PlanContext } from '../pipeline/plan.js';
+import type { CompetencyPromptContext } from '../catalog/competencyGraph.js';
 import { writeLessonDocument, type WriteInput } from '../pipeline/write.js';
 import { buildFacts, buildTaxonomy, buildDocument } from './fixtures.js';
 import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
@@ -417,6 +418,78 @@ describe('planLesson prompt — review context', () => {
     expect(joined).not.toContain('CONSOLIDATION LESSON');
     expect(joined).not.toContain('SOURCE_CONCEPT_ONE');
     expect(joined).toContain('Target difficulty: 5/5'); // uncapped
+  });
+});
+
+describe('renderCompetencyBlockForPrompt — retrieval edges never duplicate SOURCE TOPICS', () => {
+  function edge(kind: 'retrieval' | 'prerequisite', topicPath: string, concept: string): CompetencyPromptContext['incoming'][number] {
+    return {
+      kind,
+      strength: kind === 'retrieval' ? 'soft' : 'hard',
+      reason: 'x',
+      source: { topicPath, role: 'teaching', objective: `${concept} objective`, concept, vocabulary: ['moneda'] },
+    };
+  }
+
+  function competency(incoming: CompetencyPromptContext['incoming']): CompetencyPromptContext {
+    return {
+      current: { topicPath: 'adv-1/saga-2/review-1', role: 'retrieval', objective: 'x', concept: 'x', vocabulary: [], evidence: 'graded_lesson_completion' },
+      incoming,
+    };
+  }
+
+  const review = reviewPlanContext('review_spaced').review;
+
+  it('omits retrieval edges already covered by the review sources while prerequisite and unmatched edges survive', () => {
+    const rendered = renderCompetencyBlockForPrompt(
+      competency([
+        edge('retrieval', 'adv-1/saga-1/topic-1', 'RETRIEVAL_DUP'), // duplicates source 1
+        edge('prerequisite', 'adv-1/saga-1/topic-1', 'PREREQ_KEPT'), // same topic, but a prerequisite — kept
+        edge('retrieval', 'adv-1/saga-9/topic-9', 'RETRIEVAL_KEPT'), // not a review source — kept
+      ]),
+      review,
+    );
+    expect(rendered).toBeDefined();
+    expect(rendered).not.toContain('RETRIEVAL_DUP');
+    expect(rendered).toContain('PREREQ_KEPT');
+    expect(rendered).toContain('RETRIEVAL_KEPT');
+  });
+
+  it('never renders a fully-deduped review block as a "graph root" — it points at SOURCE TOPICS instead', () => {
+    const rendered = renderCompetencyBlockForPrompt(
+      competency([edge('retrieval', 'adv-1/saga-1/topic-1', 'RETRIEVAL_DUP'), edge('retrieval', 'adv-1/saga-1/topic-2', 'RETRIEVAL_DUP_TWO')]),
+      review,
+    );
+    expect(rendered).not.toContain('RETRIEVAL_DUP');
+    expect(rendered).not.toContain('graph root and must establish the concept from first principles');
+    expect(rendered).toContain('SOURCE TOPICS');
+  });
+
+  it('leaves a non-review lesson completely untouched', () => {
+    const ctx = competency([edge('retrieval', 'adv-1/saga-1/topic-1', 'RETRIEVAL_ANY')]);
+    expect(renderCompetencyBlockForPrompt(ctx, undefined)).toContain('RETRIEVAL_ANY');
+  });
+
+  it('drops the duplicated retrieval edges from the actual plan prompt, keeping the sources block', async () => {
+    const ctx: PlanContext = {
+      ...reviewPlanContext('review_spaced'),
+      competency: competency([
+        edge('retrieval', 'adv-1/saga-1/topic-1', 'RETRIEVAL_DUP'),
+        edge('prerequisite', 'adv-1/saga-1/topic-2', 'PREREQ_KEPT'),
+      ]),
+    };
+    const complete = vi.fn(
+      async (): Promise<ChatCompleteResult> => ({
+        content: JSON.stringify(validSkeletonJson()),
+        promptTokens: 1,
+        completionTokens: 1,
+      }),
+    );
+    await planLesson(ctx, { complete: complete as never });
+    const joined = joinedMessages(complete.mock.calls[0]![0] as ChatCompleteRequest);
+    expect(joined).not.toContain('RETRIEVAL_DUP');
+    expect(joined).toContain('PREREQ_KEPT');
+    expect(joined).toContain('SOURCE_CONCEPT_ONE'); // the material still reaches the prompt — exactly once
   });
 });
 

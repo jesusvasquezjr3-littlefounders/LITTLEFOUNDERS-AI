@@ -719,13 +719,16 @@ export async function revokeAdminPermission(userId: string, permission: string):
   return res.ok;
 }
 
-/** Append-only audit entry (no PII in detail — booleans/ids only). */
-export async function insertAuditLog(actorId: string, action: string, subject: string, detail: Record<string, unknown>): Promise<void> {
-  await rest<unknown>('/audit_logs', serviceToken(), {
+/** Append-only audit entry (no PII in detail — booleans/ids only). Returns
+ * whether the row landed: audit_logs is the only record of staff actions, so
+ * high-stakes callers must be able to detect (and loudly log) a lost trail. */
+export async function insertAuditLog(actorId: string, action: string, subject: string, detail: Record<string, unknown>): Promise<boolean> {
+  const res = await rest<unknown>('/audit_logs', serviceToken(), {
     method: 'POST',
     headers: { Prefer: 'return=minimal' },
     body: JSON.stringify({ actor_id: actorId, action, subject, detail }),
   });
+  return res !== null;
 }
 
 /**

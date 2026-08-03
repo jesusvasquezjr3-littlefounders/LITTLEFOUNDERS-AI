@@ -1,8 +1,9 @@
 import { getLessonDocument, listPendingLessonDocuments, type LessonDocumentRow } from './db/lessonDocumentsRepo.js';
 import { extractNarratables } from './narrate/extractNarratables.js';
 import { auditSpeechText, isBlocked } from './narrate/speechGuard.js';
+import { contentHash } from './narrate/types.js';
 import { narrateLesson } from './service/lessonAudio.js';
-import { getConfig } from './env.js';
+import { getConfig, voiceFor } from './env.js';
 import { TtsCallBudget } from './ttsBudget.js';
 
 /*
@@ -14,7 +15,9 @@ import { TtsCallBudget } from './ttsBudget.js';
  *
  * One lesson's failure never aborts the batch, but failures are NEVER
  * silent: the summary tallies them and callers turn a non-zero tally into a
- * non-zero exit (narrate:all). `courseSlug` scopes the batch to one course.
+ * non-zero exit (narrate:all). The one deliberate stop: an exhausted TTS call
+ * budget ends the run — remaining rows are skipped untouched and tallied in
+ * `budgetSkippedLessons`. `courseSlug` scopes the batch to one course.
  * `--dry-run` uses the same pending query and document extractor but never
  * calls TTS, Depot, speech_assets, or a PATCH; it is the audio equivalent of
  * Forge's free catalog dry-run.
@@ -52,12 +55,19 @@ export interface BatchNarrationSummary {
   dryRun: boolean;
   /** Narratable units inspected by the free audio preflight. */
   unitsInspected: number;
-  /** Existing manifest entries that may be reusable after a live hash/voice check. */
+  /** Manifest entries whose hash still matches the current text/voice/model — the live run reuses them for free. */
   manifestEntriesPresent: number;
-  /** Upper-bound TTS calls after existing manifest entries and guard blocks. */
+  /**
+   * Upper-bound TTS calls: inspected units minus hash-matching manifest
+   * entries and guard blocks. Stale-hash entries (edited document, changed
+   * voice map) count as PAID — the live run re-synthesizes them. Only global
+   * speech_assets cache hits can bring actual spend below this number.
+   */
   estimatedTtsCalls: number;
   /** Units rejected by the deterministic speech guard; these cost zero. */
   guardBlocked: number;
+  /** Pending rows never touched (no Vault read, no manifest PATCH) because the TTS call budget ran out first. */
+  budgetSkippedLessons: number;
 }
 
 export async function runBatchNarration(
@@ -85,9 +95,10 @@ export async function runBatchNarration(
     manifestEntriesPresent: 0,
     estimatedTtsCalls: 0,
     guardBlocked: 0,
+    budgetSkippedLessons: 0,
   };
 
-  for (const row of pending) {
+  for (const [index, row] of pending.entries()) {
     if (dryRun) {
       try {
         const documentRow = await deps.getLessonDocument(row.lesson_id, row.locale);
@@ -102,6 +113,20 @@ export async function runBatchNarration(
         console.error(`[audiogen] preflight failed for lesson=${row.lesson_id} locale=${row.locale}:`, err);
       }
       continue;
+    }
+    // Budget exhausted → stop the batch entirely instead of grinding through
+    // every remaining row (Vault read + manifest PATCH + one noise failure per
+    // un-cached unit — thousands of entries against a production set, burying
+    // the real failures). Untouched rows stay pending; the skip is tallied
+    // once below so it is visible, never silent (§1.12). A row already inside
+    // narrateLesson when the budget runs dry keeps the per-unit behavior.
+    if (ttsBudget && ttsBudget.remainingCalls === 0) {
+      summary.budgetSkippedLessons = pending.length - index;
+      summary.lessonsAttempted -= summary.budgetSkippedLessons;
+      console.warn(
+        `[audiogen] TTS call budget exhausted — leaving ${summary.budgetSkippedLessons} pending lesson(s) untouched (no Vault reads, no manifest writes); re-run narrate:all to continue.`,
+      );
+      break;
     }
     try {
       const result = await deps.narrateLesson(row.lesson_id, row.locale, {}, { ttsBudget });
@@ -128,7 +153,7 @@ export async function runBatchNarration(
   if (dryRun) {
     console.log(
       `[audiogen] preflight summary: ${summary.lessonsAttempted} pending lesson(s), ` +
-        `${summary.unitsInspected} units inspected, ${summary.manifestEntriesPresent} manifest entries potentially reusable, ` +
+        `${summary.unitsInspected} units inspected, ${summary.manifestEntriesPresent} reusable manifest entries (hash-checked), ` +
         `${summary.estimatedTtsCalls} estimated TTS call(s), ${summary.guardBlocked} guard-blocked unit(s), ` +
         `${summary.lessonErrors} lesson error(s) — zero paid calls and zero writes`,
     );
@@ -137,7 +162,7 @@ export async function runBatchNarration(
       `[audiogen] batch summary: ${summary.lessonsAttempted} attempted, ` +
         `${summary.generated} generated, ${summary.reused} reused, ${summary.cached} cache hits, ` +
         `${summary.unitFailures} unit failure(s), ${summary.incompleteLessons} lesson(s) left pending, ` +
-        `${summary.lessonErrors} lesson error(s)`,
+        `${summary.lessonErrors} lesson error(s), ${summary.budgetSkippedLessons} lesson(s) skipped for budget`,
     );
   }
   if (summary.incompleteLessons > 0) {
@@ -147,26 +172,35 @@ export async function runBatchNarration(
 }
 
 function inspectPendingRow(row: LessonDocumentRow, summary: BatchNarrationSummary): void {
+  const config = getConfig();
   const units = extractNarratables(row.document);
   const manifestUnits = row.audio?.units ?? {};
-  let manifestEntries = 0;
+  let reusableEntries = 0;
   let guardBlocked = 0;
 
   for (const unit of units) {
-    if (manifestUnits[unit.unit_id]) {
-      manifestEntries++;
+    // Same reuse test as the live path (lessonAudio.ts): a manifest entry is
+    // free ONLY while its hash matches contentHash(text, voice, model) under
+    // the CURRENT voice map. A stale hash — edited document, re-registered
+    // character voice — makes the live run re-synthesize, so it is a paid call
+    // here too; merely-present entries used to be credited as free, which made
+    // the "upper bound" claim false.
+    const { voice, model } = voiceFor(unit.character, row.locale, config);
+    const prior = manifestUnits[unit.unit_id];
+    if (prior && prior.hash === contentHash(unit.text, voice, model)) {
+      reusableEntries++;
       continue;
     }
     if (isBlocked(auditSpeechText(unit.text, row.locale))) guardBlocked++;
   }
 
   summary.unitsInspected += units.length;
-  summary.manifestEntriesPresent += manifestEntries;
+  summary.manifestEntriesPresent += reusableEntries;
   summary.guardBlocked += guardBlocked;
-  summary.estimatedTtsCalls += units.length - manifestEntries - guardBlocked;
+  summary.estimatedTtsCalls += units.length - reusableEntries - guardBlocked;
   console.log(
     `[audiogen] preflight lesson=${row.lesson_id} locale=${row.locale} ` +
-      `units=${units.length} manifest_entries=${manifestEntries} ` +
-      `guard_blocked=${guardBlocked} estimated_tts=${units.length - manifestEntries - guardBlocked}`,
+      `units=${units.length} reusable_manifest_entries=${reusableEntries} ` +
+      `guard_blocked=${guardBlocked} estimated_tts=${units.length - reusableEntries - guardBlocked}`,
   );
 }

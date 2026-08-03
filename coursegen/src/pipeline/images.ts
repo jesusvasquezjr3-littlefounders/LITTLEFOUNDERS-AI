@@ -20,7 +20,7 @@
 import { BudgetExceededError, type UsageLedger } from '../providers/usage.js';
 import { inheritedUrl, type ImageInheritance } from './imageInheritance.js';
 import { requestPicture, type PicturePurpose } from '../providers/picturegen.js';
-import { PicturegenGenerationError } from '../providers/picturegen.js';
+import { billedImagesFromError } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
 import { getConfig } from '../env.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
@@ -439,15 +439,20 @@ export async function illustrateSegments(
       }
       return picture.url;
     } catch (err) {
-      if (err instanceof PicturegenGenerationError && err.generatedImages > 0) {
-        billed += err.generatedImages;
+      // billedImagesFromError also covers a FOREIGN terminal error (timeout /
+      // network TypeError) whose retry chain included billed 502 attempts —
+      // paid pixels must reach the ledger regardless of what error class the
+      // chain happened to end in.
+      const billedOnError = billedImagesFromError(err);
+      if (billedOnError > 0) {
+        billed += billedOnError;
         await options.ledger?.record({
           provider: 'picturegen',
           model: getConfig().PICTUREGEN_MODEL,
           operation: `image:${purpose}:rejected`,
           promptTokens: 0,
           completionTokens: 0,
-          images: err.generatedImages,
+          images: billedOnError,
         });
       }
       if (err instanceof ProviderNotConfiguredError) throw err;

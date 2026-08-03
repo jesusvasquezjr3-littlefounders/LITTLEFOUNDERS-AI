@@ -1,9 +1,11 @@
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { stringify } from 'yaml';
+import { resetConfigCache } from '../env.js';
 import { runGeneration } from '../pipeline/run.js';
+import { FORGE_ILLUSTRATION_STYLE_VERSION } from '../pipeline/illustrationStyle.js';
 
 /*
  * --dry-run must spend NOTHING (2026-07-26 orchestration review). It used to
@@ -199,5 +201,67 @@ describe('runGeneration --dry-run', () => {
       slots: Record<string, { state: string }>;
     };
     expect(Object.values(checkpoint.slots).map((s) => s.state)).toEqual(['dry-run', 'dry-run']);
+  });
+});
+
+describe('Prism style-version handshake at run preflight', () => {
+  const HANDSHAKE_ENV_KEYS = ['DEEPSEEK_API_KEY', 'QWEN_API_KEY', 'PICTUREGEN_URL', 'PICTUREGEN_INTERNAL_KEY'] as const;
+  let envSnapshot: Record<string, string | undefined>;
+
+  beforeEach(() => {
+    envSnapshot = Object.fromEntries(HANDSHAKE_ENV_KEYS.map((k) => [k, process.env[k]]));
+    process.env.DEEPSEEK_API_KEY = 'test-deepseek-key';
+    process.env.QWEN_API_KEY = 'test-qwen-key';
+    process.env.PICTUREGEN_URL = 'https://prism.test:4007';
+    process.env.PICTUREGEN_INTERNAL_KEY = 'test-internal-picture-key';
+    resetConfigCache();
+  });
+
+  afterEach(() => {
+    for (const k of HANDSHAKE_ENV_KEYS) {
+      if (envSnapshot[k] === undefined) delete process.env[k];
+      else process.env[k] = envSnapshot[k];
+    }
+    resetConfigCache();
+    vi.unstubAllGlobals();
+  });
+
+  function healthEnvelope(styleVersion: string): Response {
+    return new Response(
+      JSON.stringify({ data: { service: 'picturegen', version: '0.0.0', status: 'ok', style_version: styleVersion }, error: null }),
+      { status: 200, headers: { 'content-type': 'application/json' } },
+    );
+  }
+
+  it('refuses a real run on a style-version mismatch BEFORE any provider call', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(healthEnvelope('v0-drifted-style'));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      runGeneration({ course: 'dry-course', runId: 'style-mismatch', curriculumRoot, runsRoot }),
+    ).rejects.toThrow(/style-version mismatch/);
+
+    // The single fetch is the free /health GET — nothing paid ever ran.
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0]![0])).toBe('https://prism.test:4007/health');
+    expect(() => readFileSync(path.join(runsRoot, 'style-mismatch', 'checkpoint.json'), 'utf8')).toThrow();
+  });
+
+  it('refuses a --require-images run when the style version cannot be verified', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')));
+
+    await expect(
+      runGeneration({ course: 'dry-course', runId: 'style-unverified', requireImages: true, curriculumRoot, runsRoot }),
+    ).rejects.toThrow(/could not verify Prism's illustration style version/);
+  });
+
+  it('NEVER calls /health under --dry-run — dry-run stays fully offline', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(healthEnvelope(FORGE_ILLUSTRATION_STYLE_VERSION));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const summary = await runGeneration({ course: 'dry-course', dryRun: true, runId: 'style-dry', curriculumRoot, runsRoot });
+
+    expect(summary.dryRun).toHaveLength(2);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

@@ -69,6 +69,31 @@ describe('generateImage', () => {
     expect(image.bytes).toEqual(Buffer.from([1, 2, 3, 4]));
   });
 
+  it('clamps an over-cap negative prompt at a comma boundary, never mid-token', async () => {
+    const terms = Array.from({ length: 60 }, (_, i) => `negativeterm${String(i).padStart(2, '0')}`);
+    let sentNegative: string | undefined;
+    const fetchImpl = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+      if (url.includes('multimodal-generation')) {
+        const request = JSON.parse(String(init?.body)) as { parameters: { negative_prompt?: string } };
+        sentNegative = request.parameters.negative_prompt;
+        return jsonResponse(200, { output: { choices: [{ message: { content: [{ image: 'https://img.example/max.png' }] } }] } });
+      }
+      return imageResponse();
+    });
+
+    await generateImage(
+      { ...input, negativePrompt: terms.join(', ') },
+      { ...baseOpts, model: 'qwen-image-max', size: '1328*1328', fetchImpl },
+    );
+
+    expect(sentNegative?.length).toBeLessThanOrEqual(500);
+    const sentTerms = (sentNegative ?? '').split(', ');
+    expect(sentTerms.length).toBeGreaterThan(0);
+    expect(sentTerms.length).toBeLessThan(terms.length);
+    // The clamp keeps whole terms only — the tail is a complete term, not a fragment.
+    expect(sentTerms).toEqual(terms.slice(0, sentTerms.length));
+  });
+
   it('waits through PENDING/RUNNING before SUCCEEDED', async () => {
     let pollCalls = 0;
     const fetchImpl = vi.fn();

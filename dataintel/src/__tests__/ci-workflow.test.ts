@@ -121,6 +121,12 @@ describe('dataintel CD workflow', () => {
     expect(yaml).toContain("if: github.event.workflow_run.conclusion == 'success'");
   });
 
+  it('pins a CI workflow name that dataintel-ci.yml actually declares', () => {
+    // `workflow_run` matches by workflow NAME. Renaming CI without this pin
+    // orphans deployment forever — nothing goes red, because nothing runs.
+    expect(readFileSync(WORKFLOW, 'utf8')).toMatch(/^name: dataintel CI$/m);
+  });
+
   it('deploys the service from the repository root with the shared Railway secret', () => {
     expect(yaml).toContain('railway up dataintel --path-as-root --service dataintel --ci');
     expect(yaml).toContain('RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}');
