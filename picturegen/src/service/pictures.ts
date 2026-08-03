@@ -1,4 +1,4 @@
-import { craftImagePrompt, OBJECT_TILE_PURPOSES, type PicturePurpose } from '../judge/promptJudge.js';
+import { craftImagePrompt, OBJECT_TILE_PURPOSES, type PicturePurpose, type PreviousImageDefect } from '../judge/promptJudge.js';
 import { generateImage } from '../gen/qwenImageClient.js';
 import { transcodeToWebp } from '../gen/transcode.js';
 import { verifyPictorial } from '../verify/pictorialCheck.js';
@@ -177,10 +177,19 @@ export async function generatePicture(
   let generatedImages = 0;
   let crafted!: Awaited<ReturnType<typeof craftImagePrompt>>;
   let image!: Awaited<ReturnType<typeof generateImage>>;
+  // Every attempt used to re-send the SAME (or, off the judge, only randomly
+  // varied) instruction regardless of why the last paid attempt failed — three
+  // paid rolls of the dice against the identical prompt (production cost
+  // concern 2026-08-03: object tiles routinely burned all of
+  // PICTUREGEN_VERIFY_ATTEMPTS on the same non-white-background/text/person
+  // defect). Carrying the last verdict into the next attempt's prompt lets it
+  // reinforce EXACTLY the constraint that broke instead of hoping randomness
+  // fixes it — see reinforcementFor() in judge/promptJudge.ts.
+  let previousDefect: PreviousImageDefect | undefined;
   try {
     for (let attempt = 1; attempt <= maxTries; attempt += 1) {
     crafted = await deps.craftImagePrompt(
-      { label: req.label, context: req.context, purpose: req.purpose },
+      { label: req.label, context: req.context, purpose: req.purpose, previousDefect },
       { apiBase: config.JUDGE_API_BASE, apiKey: judgeApiKey(config), model: config.JUDGE_MODEL },
     );
 
@@ -219,6 +228,11 @@ export async function generatePicture(
           model: config.VERIFY_MODEL,
         });
       if (inspection.verdict !== 'defect') break; // clean, or verifier unavailable (accept unverified)
+      previousDefect = {
+        nonWhiteBackground: whiteCanvas === 'defect',
+        text: inspection.hasText === true,
+        person: inspection.hasPerson === true,
+      };
       if (attempt === maxTries) {
       // Every attempt rendered a defect (readable text or a person). Fail the
       // request WITHOUT caching — the caller falls back to its icon, and a
