@@ -71,3 +71,6 @@ audiogen/src/samples/
 .agents/
 .claude/
 .codex/
+
+# Production database dumps (PII + credential hashes — never commit)
+/database/backups/

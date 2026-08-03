@@ -90,7 +90,12 @@ done
 [[ "$BASELINE" == "" || "$BASELINE" =~ ^[0-9]{4}$ ]] || fail "--baseline must be a four-digit migration number"
 [[ "$CONFIRM" == true || "$DRY_RUN" == true ]] || fail "refusing remote mutation without --confirm-production (or use --dry-run)"
 command -v railway >/dev/null 2>&1 || fail "Railway CLI is not installed"
-[[ -n "${RAILWAY_TOKEN:-}" ]] || fail "RAILWAY_TOKEN is not set"
+# Auth: a headless run supplies RAILWAY_TOKEN; an interactive operator session
+# is equally valid when the CLI already holds a logged-in session. The intent
+# of this guard is "Railway auth exists", not "a token specifically".
+if [[ -z "${RAILWAY_TOKEN:-}" ]]; then
+  railway whoami >/dev/null 2>&1 || fail "RAILWAY_TOKEN is not set and no logged-in Railway CLI session was found"
+fi
 [[ -f "$SSH_KEY" ]] || fail "SSH key not found: $SSH_KEY"
 [[ "$SERVICE" =~ ^[A-Za-z0-9._-]+$ ]] || fail "Railway service name contains unsupported characters"
 [[ "$MIGRATE_ROLE" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fail "MIGRATE_ROLE contains unsupported characters"
@@ -232,7 +237,17 @@ if [[ -n "$BASELINE" ]]; then
   ((10#$BASELINE <= 10#$latest_number)) || fail "--baseline $BASELINE is newer than the latest local migration $latest_number"
 fi
 
-remote_state="$(remote_sql "SELECT CASE WHEN to_regclass('public.schema_migrations') IS NULL THEN 'absent' ELSE 'present' END || '|' || CASE WHEN to_regclass('public.schema_migrations') IS NULL THEN '-1' ELSE (SELECT count(*)::text FROM public.schema_migrations) END || '|' || CASE WHEN to_regclass('public.courses') IS NULL THEN 'absent' ELSE 'present' END;" 'preflight')"
+# The ledger count must not appear as a scalar subquery next to the
+# to_regclass() guard: PostgreSQL plans every CASE arm, so the query itself
+# ERRORs on a database where public.schema_migrations does not exist — which
+# is exactly the pre-baseline production state this preflight must handle.
+# psql \gset/\if splits it into two exact phases in one round-trip instead.
+remote_state="$(remote_sql "SELECT (to_regclass('public.schema_migrations') IS NOT NULL) AS has_ledger \gset
+\if :has_ledger
+SELECT 'present|' || count(*)::text || '|' || CASE WHEN to_regclass('public.courses') IS NULL THEN 'absent' ELSE 'present' END FROM public.schema_migrations;
+\else
+SELECT 'absent|-1|' || CASE WHEN to_regclass('public.courses') IS NULL THEN 'absent' ELSE 'present' END;
+\endif" 'preflight')"
 IFS='|' read -r ledger_state ledger_count courses_state <<<"$remote_state"
 [[ "$ledger_state" == "absent" || "$ledger_state" == "present" ]] || fail "unexpected remote ledger state: $remote_state"
 [[ "$courses_state" == "absent" || "$courses_state" == "present" ]] || fail "unexpected remote schema state: $remote_state"

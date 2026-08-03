@@ -71,7 +71,11 @@ if (mode === 'silent') {
   process.exit(0);
 }
 const lines = [];
-if (sql.includes("to_regclass('public.schema_migrations') IS NULL THEN 'absent'")) {
+if (sql.includes('AS has_ledger') && sql.includes('\\\\if :has_ledger')) {
+  // The preflight is now a psql \\gset/\\if two-phase script (a scalar
+  // subquery beside to_regclass ERRORed on ledger-less databases — the real
+  // pre-baseline production state). The fake answers with the same single
+  // state|count|courses line the runner parses.
   lines.push(process.env.RAILWAY_FAKE_LEDGER ?? 'absent|-1|present');
 } else if (sql.includes("'baseline-ok'")) {
   lines.push(process.env.RAILWAY_FAKE_SIGNATURE ?? 'baseline-ok');
