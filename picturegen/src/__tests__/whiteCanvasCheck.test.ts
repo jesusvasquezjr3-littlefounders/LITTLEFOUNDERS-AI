@@ -47,6 +47,30 @@ describe('verifyWhiteCanvas', () => {
     await expect(verifyWhiteCanvas(cornered)).resolves.toBe('defect');
   });
 
+  it('rejects the inset-panel dodge: a dark card centered on a clean white margin', async () => {
+    // Reproduced live: a white toy-car icon on a solid black panel whose white
+    // margins passed the border-only check. The panel here covers the central
+    // 76% (edges at 12% in), so the inset ring crosses it on all four sides.
+    const panel = await sharp({ create: { width: 304, height: 304, channels: 4, background: '#111111' } }).png().toBuffer();
+    const dodge = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
+      .composite([{ input: panel, left: 48, top: 48 }])
+      .png()
+      .toBuffer();
+    await expect(verifyWhiteCanvas(dodge)).resolves.toBe('defect');
+  });
+
+  it('accepts a large centered object that crosses the inset ring on one side', async () => {
+    // A tall/wide object may legitimately reach past the ring on ONE side —
+    // the ring only rejects when a substantial fraction of its samples are
+    // non-white (a panel crosses all four sides; an object corner does not).
+    const blob = await sharp({ create: { width: 120, height: 160, channels: 4, background: '#2f6fed' } }).png().toBuffer();
+    const bigObject = await sharp({ create: { width: 400, height: 400, channels: 4, background: 'white' } })
+      .composite([{ input: blob, left: 140, top: 190 }])
+      .png()
+      .toBuffer();
+    await expect(verifyWhiteCanvas(bigObject)).resolves.toBe('clean');
+  });
+
   it('fails open when bytes are not a decodable image', async () => {
     await expect(verifyWhiteCanvas(Buffer.from([1, 2, 3]))).resolves.toBe('unavailable');
   });
