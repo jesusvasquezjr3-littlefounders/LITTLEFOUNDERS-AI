@@ -105,6 +105,60 @@ describe('craftImagePrompt', () => {
   });
 });
 
+describe('craftImagePrompt — previousDefect reinforcement (retry cost fix 2026-08-03)', () => {
+  it('reinforces the exact defect for an object tile (deterministic path)', async () => {
+    const clean = await craftImagePrompt({ label: 'Helado', purpose: 'item_card' }, opts);
+    const retried = await craftImagePrompt(
+      { label: 'Helado', purpose: 'item_card', previousDefect: { nonWhiteBackground: true } },
+      opts,
+    );
+    expect(retried.prompt).not.toBe(clean.prompt);
+    expect(retried.prompt).toContain('RETRY');
+    expect(retried.prompt).toContain('flat pure white #FFFFFF');
+    expect(retried.prompt).not.toContain('readable text');
+    expect(retried.prompt).not.toContain('person or character');
+  });
+
+  it('combines multiple simultaneous defects into one tile prompt', async () => {
+    const retried = await craftImagePrompt(
+      { label: 'Moneda', purpose: 'memory_card', previousDefect: { text: true, person: true } },
+      opts,
+    );
+    expect(retried.prompt).toContain('readable text, letters, or numerals');
+    expect(retried.prompt).toContain('person or character');
+    expect(retried.prompt).not.toContain('flat pure white #FFFFFF');
+  });
+
+  it('sends the defect reinforcement to the art-director judge for non-tile purposes', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: 'A sunny lemonade stand', negative: 'blurry' })));
+    await craftImagePrompt(
+      { label: 'a lemonade stand', purpose: 'scene', previousDefect: { text: true } },
+      { ...opts, fetchImpl },
+    );
+    const [, requestInit] = fetchImpl.mock.calls[0] as [string, RequestInit];
+    const body = JSON.parse(requestInit.body as string) as { messages: { role: string; content: string }[] };
+    const userContent = body.messages.find((m) => m.role === 'user')?.content ?? '';
+    expect(userContent).toContain('RETRY');
+    expect(userContent).toContain('readable text, letters, or numerals');
+  });
+
+  it('reinforces the fallback prompt too, so a judge outage on a retry still learns from the defect', () => {
+    const clean = fallbackPrompt({ label: 'a piggy bank' });
+    const retried = fallbackPrompt({ label: 'a piggy bank', previousDefect: { person: true } });
+    expect(retried.prompt).not.toBe(clean.prompt);
+    expect(retried.prompt).toContain('person or character');
+  });
+
+  it('adds no reinforcement text when there is no previous defect', async () => {
+    const withNoDefect = await craftImagePrompt({ label: 'Helado', purpose: 'item_card', previousDefect: undefined }, opts);
+    const withEmptyDefect = await craftImagePrompt({ label: 'Helado', purpose: 'item_card', previousDefect: {} }, opts);
+    expect(withNoDefect.prompt).toBe(withEmptyDefect.prompt);
+    expect(withNoDefect.prompt).not.toContain('RETRY');
+  });
+});
+
 describe('OBJECT_TILE_PURPOSES — single source of truth', () => {
   it('pins membership to exactly the four tile purposes', () => {
     // service/pictures.ts imports this set for its cache-key collapse; the

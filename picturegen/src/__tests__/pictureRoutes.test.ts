@@ -275,6 +275,14 @@ describe('POST /api/v1/pictures — cache MISS', () => {
     // Only the CLEAN image is uploaded and cached.
     expect(uploadFile).toHaveBeenCalledTimes(1);
     expect(insertAsset).toHaveBeenCalledTimes(1);
+    // Retry cost fix (2026-08-03): the first attempt carries no defect hint,
+    // but the second re-sends the EXACT defect the first attempt's verifier
+    // caught — so the retry's prompt can reinforce it instead of blindly
+    // re-rolling the same instruction.
+    expect(craftImagePrompt.mock.calls[0]![0]).toEqual(expect.objectContaining({ previousDefect: undefined }));
+    expect(craftImagePrompt.mock.calls[1]![0]).toEqual(
+      expect.objectContaining({ previousDefect: { nonWhiteBackground: false, text: true, person: false } }),
+    );
   });
 
   it('fails with IMAGE_VERIFICATION_FAILED and caches NOTHING when every attempt renders text', async () => {

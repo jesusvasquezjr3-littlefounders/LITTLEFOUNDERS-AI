@@ -85,10 +85,28 @@ export const OBJECT_TILE_PURPOSES: ReadonlySet<PicturePurpose> = new Set<Picture
   'memory_card',
 ]);
 
+/**
+ * What the verifier caught on the IMMEDIATELY PRIOR paid attempt for this same
+ * request, if any. Every attempt used to send the exact same (or, for the
+ * judge path, only randomly-varied) prompt regardless of why the last one
+ * failed — three paid rolls of the dice against the SAME instruction, with no
+ * attempt learning from the last (production cost concern 2026-08-03: object
+ * tiles alone repeatedly burned all 3 PICTUREGEN_VERIFY_ATTEMPTS on
+ * non-white-background/text/person defects). Feeding the specific defect back
+ * lets the next attempt's prompt reinforce EXACTLY the constraint that broke,
+ * the same corrective-feedback idea already used for the writer's Zod issues.
+ */
+export interface PreviousImageDefect {
+  nonWhiteBackground?: boolean;
+  text?: boolean;
+  person?: boolean;
+}
+
 export interface JudgeInput {
   label: string;
   context?: string;
   purpose?: PicturePurpose;
+  previousDefect?: PreviousImageDefect;
 }
 
 export interface CraftedPrompt {
@@ -129,10 +147,40 @@ const SYSTEM_PROMPT = [
   `Reply with STRICT JSON only, no prose, shaped exactly: {"prompt": string, "negative": string}. "prompt" <= ${MAX_PROMPT_CHARS} characters. "negative" lists things to avoid (e.g. "text, letters, watermark, logo, blurry, scary").`,
 ].join('\n');
 
+/**
+ * One reinforcing instruction per defect the verifier caught on the prior
+ * paid attempt for this SAME request. Stated as an instruction for THIS
+ * attempt (not a description of what went wrong) — a positive-prompt model
+ * reads whatever text it's given as content to consider, so "this time do X"
+ * is safer than dwelling on the failure. Multiple defects concatenate.
+ */
+function reinforcementFor(defect: PreviousImageDefect | undefined): string {
+  if (!defect) return '';
+  const lines: string[] = [];
+  if (defect.nonWhiteBackground) {
+    lines.push(
+      'RETRY: the previous attempt left color, shading, or a panel touching the canvas edge — this time the background MUST be flat pure white #FFFFFF reaching literally every pixel of all four edges, with nothing else touching the border.',
+    );
+  }
+  if (defect.text) {
+    lines.push(
+      'RETRY: the previous attempt rendered readable text, letters, or numerals — this time draw the object with absolutely no markings, labels, signage, or symbols anywhere in the frame.',
+    );
+  }
+  if (defect.person) {
+    lines.push(
+      'RETRY: the previous attempt drew a person or character — this time depict ONLY the object and setting, with no human figure, face, hands, or character anywhere in the frame.',
+    );
+  }
+  return lines.join(' ');
+}
+
 function userMessage(input: JudgeInput): string {
   const purpose = input.purpose ?? 'generic';
   const lines = [`Label: ${input.label}`, `Purpose: ${PURPOSE_GUIDANCE[purpose]}`];
   if (input.context && input.context.trim()) lines.push(`Lesson context: ${input.context.trim()}`);
+  const reinforcement = reinforcementFor(input.previousDefect);
+  if (reinforcement) lines.push(reinforcement);
   return lines.join('\n');
 }
 
@@ -235,7 +283,14 @@ export function mergeNegative(judgeNegative?: string, purpose?: PicturePurpose):
 export function fallbackPrompt(input: JudgeInput): CraftedPrompt {
   const context = (input.context ?? '').slice(0, 160).trim();
   const head = context ? `${input.label} — ${context}.` : `${input.label}.`;
-  return { prompt: finalizePrompt(`${head} ${LF_VISUAL_IDENTITY}`), negative: baseNegativeFor(input.purpose) };
+  // LF_VISUAL_IDENTITY alone (1100+ chars) already overflows BODY_MAX and gets
+  // clipped by finalizePrompt — anything appended AFTER it never survives.
+  // The reinforcement is the more time-critical instruction on a retry, so it
+  // goes BEFORE the identity block, not after, or it would always be silently
+  // truncated away.
+  const reinforcement = reinforcementFor(input.previousDefect);
+  const body = reinforcement ? `${head} ${reinforcement} ${LF_VISUAL_IDENTITY}` : `${head} ${LF_VISUAL_IDENTITY}`;
+  return { prompt: finalizePrompt(body), negative: baseNegativeFor(input.purpose) };
 }
 
 interface ChatResponse {
@@ -267,6 +322,7 @@ function parseCrafted(content: string | null | undefined, purpose?: PicturePurpo
  */
 export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptions): Promise<CraftedPrompt> {
   if (OBJECT_TILE_PURPOSES.has(input.purpose ?? 'generic')) {
+    const reinforcement = reinforcementFor(input.previousDefect);
     return {
       prompt: finalizePrompt(
         // "silhouette" is deliberately ABSENT: qwen-image-max reads it as
@@ -276,7 +332,8 @@ export async function craftImagePrompt(input: JudgeInput, opts: PromptJudgeOptio
         `Single brightly colored object: ${input.label}. Centered, fully visible, bold and simple. ` +
           `Solid pure white #FFFFFF background filling the entire canvas to all four edges — no panel, no card, no dark field. ` +
           `Flat 2D animated vector illustration with clean geometric shapes, crisp high contrast, soft rounded forms and bright educational colors. ` +
-          `No other objects, text, logo or people.`,
+          `No other objects, text, logo or people.` +
+          (reinforcement ? ` ${reinforcement}` : ''),
       ),
       negative: baseNegativeFor(input.purpose),
     };
