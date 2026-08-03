@@ -120,6 +120,7 @@ const BASE_HARD_RULES = [
   'Segments with difficulty >= 3 MUST include at least one `hints` entry (max 2, progressive).',
   'Every WRONG option in choice/analyze-style segments MUST carry `rationale_md` explaining why it is tempting but incorrect (P7). Correct options may omit it.',
   'narrator.character and meta.cast use ONLY: dina, liruf, rho, zara. Never any other name.',
+  'NEVER introduce a generic, unnamed bystander ("un isleño", "a villager", "otro niño", "someone") as a second party in a scene or decision — a trading partner, a disagreeing neighbor, the other half of a trade, ALWAYS gets one of the 4 canonical names (whichever is not already occupied in that scene). The judge treats an anonymous stand-in as weak grounding and fails the lesson on concreteness even when everything else is right — a named character costs nothing extra and always satisfies it.',
   'meta.cast MUST list EVERY one of those 4 names that appears ANYWHERE in the document (any narrator.character, any payload character/dialogue field) — no omissions, no extras.',
   'meta.locale = "es-MX", meta.subject as given, meta.slug as given, scoring.hearts = null, scoring.pass_threshold = 70, scoring.hint_penalty_pct = 10, scoring.max_attempts = 2.',
   'Whenever you write `explanation_md` (optional, but if present): at least 40 characters, AND it must contain a specific number, OR one of dina/liruf/rho/zara by name, OR a word/phrase that also appears in that same segment\'s `payload` — a generic "¡Muy bien! Elegiste la opción correcta." is REJECTED.',
