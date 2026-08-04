@@ -24,6 +24,7 @@ import { billedImagesFromError } from '../providers/picturegen.js';
 import { ProviderNotConfiguredError } from '../providers/errors.js';
 import { getConfig } from '../env.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
+import { characterIdSchema } from '../contract/core/schemaBase.js';
 
 export interface IllustrateOptions {
   /** `--no-images` CLI flag. */
@@ -151,6 +152,13 @@ const NON_LITERAL_TILE_WORDS = new Set([
   'ajudar', 'ajuda', 'ajudo', 'trabalhar', 'trabalho', 'trabalha', 'esforço', 'esforco', 'orgulho', 'orgulhoso', 'orgulhosa',
   'equipe', 'tarefa', 'tarefas', 'cumprir', 'cumpro', 'cumpre', 'conquista', 'rosto', 'rostos', 'cansado', 'cansada',
   'compartilhar', 'compartilho', 'compartilha', 'arrumar', 'arrumo', 'arruma',
+  // Naming a canon character (production incident 2026-08-04, "semillas de
+  // esfuerzo" unit): an option label like "Rho sigue amarrando" or "Liruf ya
+  // terminó" names WHO is doing something rather than WHAT object to draw — no
+  // verb-vocabulary list can cover the open-ended space of actions a character
+  // might be doing, so reject on the character name itself instead. Locale-
+  // invariant proper nouns, so one entry covers es-MX/en-US/pt-BR alike.
+  ...characterIdSchema.options,
 ]);
 
 const LEADING_TILE_ARTICLES = new Set(['un', 'una', 'el', 'la', 'los', 'las']);
