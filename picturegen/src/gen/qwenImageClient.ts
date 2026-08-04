@@ -118,8 +118,16 @@ function clampNegativePrompt(negative: string): string {
   return clamped.length > 0 ? clamped : negative.slice(0, MAX_NEGATIVE_PROMPT_CHARS);
 }
 
+/*
+ * Per DashScope's Qwen-Image API docs (2026-08): the `/multimodal-generation/
+ * generation` synchronous endpoint serves qwen-image-max, qwen-image-plus,
+ * qwen-image, AND the qwen-image-2.0 family (both the standard and -pro
+ * tiers) — the async `/text2image/image-synthesis` submit+poll workflow is
+ * ONLY for qwen-image-plus/qwen-image. So max AND the whole 2.0 generation
+ * are synchronous; only the two legacy names fall through to async below.
+ */
 function isSynchronousModel(model: string): boolean {
-  return model === 'qwen-image-max' || model.startsWith('qwen-image-max-');
+  return model === 'qwen-image-max' || model.startsWith('qwen-image-max-') || model.startsWith('qwen-image-2.0');
 }
 
 export async function generateImage(input: GenerateImageInput, opts: QwenImageClientOptions): Promise<GeneratedImage> {

@@ -69,6 +69,26 @@ describe('generateImage', () => {
     expect(image.bytes).toEqual(Buffer.from([1, 2, 3, 4]));
   });
 
+  it.each(['qwen-image-2.0', 'qwen-image-2.0-pro'])(
+    'uses the synchronous multimodal endpoint for the %s generation too (confirmed same DashScope contract as qwen-image-max)',
+    async (model) => {
+      const fetchImpl = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
+        if (url.includes('multimodal-generation')) {
+          const request = JSON.parse(String(init?.body)) as { model: string };
+          expect(request.model).toBe(model);
+          return jsonResponse(200, { output: { choices: [{ message: { content: [{ image: 'https://img.example/2.0.png' }] } }] } });
+        }
+        return imageResponse();
+      });
+
+      const image = await generateImage(input, { ...baseOpts, model, size: '1328*1328', fetchImpl });
+
+      // ONE call: no submit/poll round-trip, same as qwen-image-max.
+      expect(fetchImpl).toHaveBeenCalledTimes(2); // generate + download
+      expect(image.bytes).toEqual(Buffer.from([1, 2, 3, 4]));
+    },
+  );
+
   it('clamps an over-cap negative prompt at a comma boundary, never mid-token', async () => {
     const terms = Array.from({ length: 60 }, (_, i) => `negativeterm${String(i).padStart(2, '0')}`);
     let sentNegative: string | undefined;
