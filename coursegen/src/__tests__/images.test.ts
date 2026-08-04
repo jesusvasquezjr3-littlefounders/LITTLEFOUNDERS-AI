@@ -101,6 +101,25 @@ describe('illustrateSegments (via Prism/picturegen)', () => {
     expect(inspectIllustrationCoverage(doc)).toMatchObject({ required: 2, present: 1 });
   });
 
+  it('excludes effort/chore/teamwork/pride option labels from the tile plan — they have no literal object referent and a tile can only depict one by drawing a person (production incident 2026-08-04, "semillas de esfuerzo" unit)', () => {
+    const doc = docWith({
+      ...pictureChoiceSeg(),
+      payload: {
+        options: [
+          { id: 'o1', icon: 'chores', label: 'Ayudar en casa' },
+          { id: 'o2', icon: 'group', label: 'Trabajar en equipo' },
+          { id: 'o3', icon: 'mood', label: 'Cara de orgullo' },
+          { id: 'o4', icon: 'savings', label: 'Alcancía' },
+        ],
+      },
+    });
+    const coverage = inspectIllustrationCoverage(doc);
+
+    // Only the literal object survives; the three action/emotion labels skip
+    // cleanly to the icon/text fallback instead of reaching a doomed tile prompt.
+    expect(coverage.missing).toEqual([{ segmentId: 'pc1', label: 'Alcancía', purpose: 'option_card' }]);
+  });
+
   it('skips cleanly and returns the original document unmodified when --no-images is passed', async () => {
     const doc = docWith(pictureChoiceSeg());
     const request = vi.fn();

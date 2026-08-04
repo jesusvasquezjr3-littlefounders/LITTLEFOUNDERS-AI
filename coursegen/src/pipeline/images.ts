@@ -124,6 +124,17 @@ const NON_LITERAL_TILE_WORDS = new Set([
   'ya', 'que', 'qué', 'cuál', 'como', 'cómo', 'cuando', 'porque', 'con', 'sin', 'para',
   'compró', 'compra', 'mira', 'mirando', 'tiene', 'gustaría', 'prefieres', 'preferirías', 'significa',
   'es', 'son',
+  // Effort/chore/teamwork content ("semillas de esfuerzo" unit, financial-education
+  // production run 2026-08-04): these labels have no literal object referent —
+  // rendering them as a tile guarantees a drawn person acting or feeling the
+  // emotion (a still-life canvas has no other way to depict "pride" or "team").
+  // The filter's own bias is toward skipping (comment above), so widening it here
+  // is the correct fix, not a symptom to work around in the image prompt.
+  'ayudar', 'ayuda', 'ayudo', 'ayudamos', 'trabajar', 'trabajo', 'trabaja', 'trabajamos', 'trabajando',
+  'esfuerzo', 'esforzarse', 'esforzarme', 'orgullo', 'orgulloso', 'orgullosa', 'equipo', 'tarea', 'tareas',
+  'cumplir', 'cumplo', 'cumple', 'cumplimos', 'terminar', 'termino', 'termina', 'terminamos', 'terminada', 'terminado',
+  'logré', 'logro', 'logra', 'logramos', 'cara', 'caras', 'cansado', 'cansada', 'canso', 'cansa',
+  'compartir', 'comparto', 'comparte', 'compartimos', 'ordenar', 'ordeno', 'ordena', 'ordenamos', 'solo', 'sola',
   // The final belt-and-braces image sweep runs after en-US/pt-BR localization.
   // Keep the rejection vocabulary multilingual: otherwise a Spanish person/action
   // label that was safely skipped before translation can become a paid English
@@ -131,9 +142,15 @@ const NON_LITERAL_TILE_WORDS = new Set([
   'child', 'kid', 'boy', 'girl', 'person', 'people', 'mother', 'father', 'mom', 'dad', 'customer', 'seller',
   'holding', 'holds', 'hold', 'looking', 'looks', 'wearing', 'wears', 'playing', 'plays', 'has', 'want', 'wants',
   'need', 'needs', 'choose', 'chooses', 'decision', 'price', 'money',
+  'help', 'helps', 'helping', 'work', 'works', 'working', 'effort', 'proud', 'pride', 'team', 'chore', 'chores',
+  'finish', 'finishes', 'finished', 'achieve', 'achieved', 'achievement', 'face', 'faces', 'tired',
+  'share', 'shares', 'sharing', 'tidy', 'tidies', 'tidying',
   'criança', 'crianca', 'menino', 'menina', 'pessoa', 'mãe', 'mae', 'pai', 'cliente', 'vendedor',
   'segurando', 'segura', 'olhando', 'olha', 'vestindo', 'veste', 'brincando', 'brinca', 'tem', 'quer', 'precisa',
   'escolhe', 'decisão', 'decisao', 'preço', 'preco', 'dinheiro',
+  'ajudar', 'ajuda', 'ajudo', 'trabalhar', 'trabalho', 'trabalha', 'esforço', 'esforco', 'orgulho', 'orgulhoso', 'orgulhosa',
+  'equipe', 'tarefa', 'tarefas', 'cumprir', 'cumpro', 'cumpre', 'conquista', 'rosto', 'rostos', 'cansado', 'cansada',
+  'compartilhar', 'compartilho', 'compartilha', 'arrumar', 'arrumo', 'arruma',
 ]);
 
 const LEADING_TILE_ARTICLES = new Set(['un', 'una', 'el', 'la', 'los', 'las']);
