@@ -37,12 +37,12 @@ describe('craftImagePrompt', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
-  it('clamps an over-long judge prompt to 800 chars', async () => {
+  it('clamps an over-long judge prompt to the cap', async () => {
     const long = 'lemon '.repeat(300); // ~1800 chars
     const fetchImpl = vi.fn().mockResolvedValue(chatResponse(200, JSON.stringify({ prompt: long })));
     const crafted = await craftImagePrompt({ label: 'lemons' }, { ...opts, fetchImpl });
     expect(crafted.prompt.endsWith(PICTORIAL_CLAUSE)).toBe(true);
-    expect(crafted.prompt.length).toBeLessThanOrEqual(800);
+    expect(crafted.prompt.length).toBeLessThanOrEqual(1000);
   });
 
   it('falls back deterministically on a judge HTTP error', async () => {
@@ -67,12 +67,17 @@ describe('craftImagePrompt', () => {
     expect(crafted.prompt).toContain('Solid pure white #FFFFFF background filling the entire canvas to all four edges');
     expect(crafted.prompt).toContain('Flat 2D animated vector illustration');
     expect(crafted.prompt).toContain('clean geometric shapes');
-    expect(crafted.prompt).toContain('No other objects, text, logo or people');
+    expect(crafted.prompt).toContain('alone in the frame');
     expect(crafted.prompt).not.toContain('LittleFounders');
     expect(crafted.prompt).not.toContain('colored backdrop');
     expect(crafted.negative).toContain('3d render');
     expect(crafted.prompt).not.toContain('reserve Purely');
+    // Exclusions live in the NEGATIVE prompt (this checks that channel); the
+    // positive "prompt" text deliberately never names the excluded category
+    // by word — see reinforcementFor()'s docstring for why.
     expect(crafted.negative).toContain('person');
+    expect(crafted.prompt).not.toContain('people');
+    expect(crafted.prompt).not.toContain('person');
     // Tiles DO get the anti-scenery / non-white-canvas extension.
     expect(crafted.negative).toContain('scenery');
     expect(crafted.negative).toContain('gray background');
@@ -114,9 +119,11 @@ describe('craftImagePrompt — previousDefect reinforcement (retry cost fix 2026
     );
     expect(retried.prompt).not.toBe(clean.prompt);
     expect(retried.prompt).toContain('RETRY');
-    expect(retried.prompt).toContain('flat pure white #FFFFFF');
-    expect(retried.prompt).not.toContain('readable text');
-    expect(retried.prompt).not.toContain('person or character');
+    expect(retried.prompt).toContain('flat pure white');
+    expect(retried.prompt).not.toContain('unmarked object');
+    // The reinforcement itself never names the excluded category — see
+    // reinforcementFor()'s docstring (naming it re-primes the model toward it).
+    expect(retried.prompt).not.toContain('person');
   });
 
   it('combines multiple simultaneous defects into one tile prompt', async () => {
@@ -124,9 +131,9 @@ describe('craftImagePrompt — previousDefect reinforcement (retry cost fix 2026
       { label: 'Moneda', purpose: 'memory_card', previousDefect: { text: true, person: true } },
       opts,
     );
-    expect(retried.prompt).toContain('readable text, letters, or numerals');
-    expect(retried.prompt).toContain('person or character');
-    expect(retried.prompt).not.toContain('flat pure white #FFFFFF');
+    expect(retried.prompt).toContain('unmarked object');
+    expect(retried.prompt).toContain('empty room');
+    expect(retried.prompt).not.toContain('flat pure white');
   });
 
   it('sends the defect reinforcement to the art-director judge for non-tile purposes', async () => {
@@ -141,14 +148,15 @@ describe('craftImagePrompt — previousDefect reinforcement (retry cost fix 2026
     const body = JSON.parse(requestInit.body as string) as { messages: { role: string; content: string }[] };
     const userContent = body.messages.find((m) => m.role === 'user')?.content ?? '';
     expect(userContent).toContain('RETRY');
-    expect(userContent).toContain('readable text, letters, or numerals');
+    expect(userContent).toContain('unmarked object');
   });
 
   it('reinforces the fallback prompt too, so a judge outage on a retry still learns from the defect', () => {
     const clean = fallbackPrompt({ label: 'a piggy bank' });
     const retried = fallbackPrompt({ label: 'a piggy bank', previousDefect: { person: true } });
     expect(retried.prompt).not.toBe(clean.prompt);
-    expect(retried.prompt).toContain('person or character');
+    expect(retried.prompt).toContain('empty room');
+    expect(retried.prompt).not.toContain('person');
   });
 
   it('adds no reinforcement text when there is no previous defect', async () => {
