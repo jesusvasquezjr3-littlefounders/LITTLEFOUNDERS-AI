@@ -239,6 +239,17 @@ describe('runTrack', () => {
     expect(onDisk.totals.published).toBe(5);
   });
 
+  it('skips a named shard entirely via --skip-shards — not attempted, not in the report (operator escape hatch for stubborn residuals surviving a redeploy)', async () => {
+    const generate = vi.fn().mockResolvedValueOnce(summary({ runId: 'trk--adv-two', published: ['c'], slotsEnumerated: 3, usdUsed: 4 }));
+
+    const report = await runTrack({ ...baseOptions(), skipShards: ['adv-one'] }, { generate: generate as never });
+
+    expect(generate).toHaveBeenCalledTimes(1);
+    expect(generate.mock.calls[0]?.[0]).toMatchObject({ runId: 'trk--adv-two', slots: ['adv-two'] });
+    expect(report.shards).toHaveLength(1);
+    expect(report.shards[0]?.adventure).toBe('adv-two');
+  });
+
   it('halts the track on a fatal provider error — the next shard is never started', async () => {
     const generate = vi
       .fn()

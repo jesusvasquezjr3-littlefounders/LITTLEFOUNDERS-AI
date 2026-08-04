@@ -2,7 +2,7 @@
 // Forge track CLI — mass generation over a whole course, sharded per adventure
 // (COURSE_ENGINE.md §4). `npm run generate:track -- --course financial-education
 //   [--track-id <id>] [--locales es-MX,en-US,pt-BR] [--no-images|--require-images] [--dry-run]
-//   [--register kid|adult] [--budget-usd 350] [--shard-passes 3]`
+//   [--register kid|adult] [--budget-usd 350] [--shard-passes 3] [--skip-shards slug1,slug2]`
 //
 // Operator-triggered only — never run by CI or any automatic process
 // (/AGENTS.md sign-off rule, BOUNDARIES.md #8). Re-running with the same
@@ -27,6 +27,7 @@ interface CliOptions {
   register?: Register;
   budgetUsd?: number;
   shardPasses?: number;
+  skipShards?: string[];
 }
 
 /**
@@ -104,6 +105,16 @@ function parseArgs(argv: string[]): CliOptions {
         opts.shardPasses = value;
         break;
       }
+      case '--skip-shards': {
+        const raw = argv[++i] ?? '';
+        const list = raw.split(',').map((x) => x.trim()).filter(Boolean);
+        if (list.length === 0) {
+          console.error('generate:track: --skip-shards was given but is empty — pass a comma-separated list of adventure slugs.');
+          process.exit(1);
+        }
+        opts.skipShards = list;
+        break;
+      }
       default:
         console.error(`generate:track: unknown argument "${arg}"`);
         process.exit(1);
@@ -155,7 +166,8 @@ async function main(): Promise<void> {
   if (!opts.course) {
     console.error(
       'Usage: npm run generate:track -- --course <slug> [--track-id <id>] [--locales es-MX,en-US,pt-BR] ' +
-      '[--no-images|--require-images] [--dry-run] [--register kid|adult] [--budget-usd <n>] [--shard-passes <n>]',
+      '[--no-images|--require-images] [--dry-run] [--register kid|adult] [--budget-usd <n>] [--shard-passes <n>] ' +
+      '[--skip-shards slug1,slug2]',
     );
     process.exit(1);
   }
@@ -175,6 +187,7 @@ async function main(): Promise<void> {
     register: opts.register,
     budgetUsd: opts.budgetUsd,
     shardPasses: opts.shardPasses,
+    skipShards: opts.skipShards,
     curriculumRoot: path.join(PACKAGE_ROOT, 'curriculum'),
     runsRoot: path.join(PACKAGE_ROOT, 'runs'),
   });

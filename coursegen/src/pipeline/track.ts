@@ -160,6 +160,18 @@ export interface TrackOptions {
   budgetUsd?: number;
   /** Max invocations per shard (first pass + resumes). Default 3. */
   shardPasses?: number;
+  /**
+   * Adventure slugs to exclude from this invocation entirely — not attempted,
+   * not counted in totals, not in the report. Every process restart re-enters
+   * the shard loop from the FIRST shard (`pass` is invocation-local, not
+   * persisted), so a shard that is already good-enough (published its
+   * reachable slots, only stubborn per-slot failures left) gets its residual
+   * failures re-attempted on every redeploy instead of the track moving on to
+   * shards with actual unattempted work. This is an operator escape hatch for
+   * exactly that: skip the already-handled shard now, mop it up later with
+   * `generate -- --slots <id>` (same recovery path `mopUp` already points to).
+   */
+  skipShards?: string[];
   curriculumRoot: string;
   runsRoot: string;
 }
@@ -216,7 +228,8 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
   }
 
   const allSlots = enumerateSlots(loadResult.course.adventures);
-  const shards = planShards(loadResult.course.adventures).filter((s) => s.slotCount > 0);
+  const skipShards = new Set(options.skipShards ?? []);
+  const shards = planShards(loadResult.course.adventures).filter((s) => s.slotCount > 0 && !skipShards.has(s.adventureSlug));
   const shardPasses = Math.max(1, options.shardPasses ?? 3);
   const budgetUsd =
     options.budgetUsd ?? Math.max(config.FORGE_MAX_USD_PER_RUN, allSlots.length * config.FORGE_MAX_USD_PER_SLOT);
@@ -226,6 +239,9 @@ export async function runTrack(options: TrackOptions, deps: TrackDeps = {}): Pro
     `[track] ${options.trackId}: ${shards.length} shard(s) over ${allSlots.length} slot(s), ` +
       `global budget $${budgetUsd.toFixed(2)}, up to ${shardPasses} pass(es) per shard`,
   );
+  if (skipShards.size > 0) {
+    console.log(`[track] skipping this invocation (operator --skip-shards): ${[...skipShards].join(', ')}`);
+  }
 
   /** Spend of ADVANCED/finished shards; the active shard's spend lives in its own run ledger. */
   let spentUsd = 0;
