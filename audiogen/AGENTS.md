@@ -20,6 +20,35 @@ Contract: `POST TTS_API_URL` with `{ model, input: { text, voice, language_type 
 `TTS_BAD_RESPONSE` error. Retries ONLY on 429/5xx, jittered backoff 0.5–8s,
 max 4 attempts; everything else fails fast without retry.
 
+### Future evaluation — NOT actioned (flagged 2026-08-03/04)
+
+Alibaba shipped a newer generation, **Qwen-Audio-3.0-TTS** (Flash + Plus
+tiers, released 2026-07-20 — about two weeks before this note), during the
+same session that swapped `picturegen`'s image model to `qwen-image-2.0`
+(same vendor's next generation) for a real cost + defect-rate win. TTS was
+evaluated for the same reason but **deliberately left unchanged** — the risk
+profile is different from the image swap:
+
+- The image swap was a same-contract, same-endpoint model-name change
+  (verified against Alibaba's docs before touching code) — low risk, easy
+  rollback.
+- Qwen-Audio-3.0-TTS's non-realtime/batch mode appears (per public docs, not
+  yet verified against a live call) to return audio as a **streaming/chunked
+  response**, not the single JSON body with `output.audio.url` this client
+  parses. If that holds, swapping `TTS_MODEL` alone would NOT work —
+  `dashscopeClient.ts`'s response handling would need real rework, and a
+  bad swap breaks narration for every course, not just one image tile.
+- Pricing (public, unverified against an official Alibaba pricing page —
+  none was found with per-character TTS numbers at evaluation time):
+  Qwen-Audio-3.0-TTS Flash ≈ $15/1M characters, Plus ≈ $27.59/1M characters.
+  No confirmed current price for `qwen3-tts-flash` to compare against.
+
+**Before the next new-course generation run**: confirm the exact
+Qwen-Audio-3.0-TTS non-realtime response shape against a live test call (not
+just docs), decide whether `dashscopeClient.ts` needs a second response-shape
+branch or a straight replacement, and get a real `qwen3-tts-flash` price to
+compare against. Do this as its own scoped task, not a mid-run swap.
+
 ## Speech normalization (before synthesis)
 
 `src/narrate/normalizeForSpeech.ts` is the last transform before text hits DashScope, run inside `extractNarratables` with the document locale in hand. It exists because the Qwen3-TTS API does NOT (verified against the Model Studio docs, 2026-07):
