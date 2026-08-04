@@ -120,6 +120,22 @@ describe('illustrateSegments (via Prism/picturegen)', () => {
     expect(coverage.missing).toEqual([{ segmentId: 'pc1', label: 'Alcancía', purpose: 'option_card' }]);
   });
 
+  it('excludes option labels that NAME a canon character regardless of the verb used — the open-ended action-verb space cannot be vocabulary-listed exhaustively (production incident 2026-08-04: "Rho sigue amarrando" bypassed the effort/chore word list entirely)', () => {
+    const doc = docWith({
+      ...pictureChoiceSeg(),
+      payload: {
+        options: [
+          { id: 'o1', icon: 'hourglass_empty', label: 'Rho sigue amarrando' },
+          { id: 'o2', icon: 'emoji_objects', label: 'Liruf terminó primero' },
+          { id: 'o3', icon: 'savings', label: 'Alcancía' },
+        ],
+      },
+    });
+    const coverage = inspectIllustrationCoverage(doc);
+
+    expect(coverage.missing).toEqual([{ segmentId: 'pc1', label: 'Alcancía', purpose: 'option_card' }]);
+  });
+
   it('skips cleanly and returns the original document unmodified when --no-images is passed', async () => {
     const doc = docWith(pictureChoiceSeg());
     const request = vi.fn();
