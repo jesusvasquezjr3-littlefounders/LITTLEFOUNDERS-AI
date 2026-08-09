@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
 
@@ -32,20 +32,38 @@ interface TableProps<Row> {
 export function Table<Row>({ columns, rows, rowKey, onRowClick, className }: TableProps<Row>) {
   const primary = columns.find((c) => c.primary) ?? columns[0];
   const rest = columns.filter((c) => c !== primary);
+  const activateRow = (row: Row, event: MouseEvent<HTMLElement>) => {
+    if (!onRowClick) return;
+    const target = event.target;
+    if (target instanceof HTMLElement && target.closest('button, a, input, select, textarea')) return;
+    onRowClick(row);
+  };
 
   return (
     <div className={className}>
       {/* Mobile: stacked card-per-row */}
       <ul className="flex flex-col gap-3 md:hidden" role="list">
         {rows.map((row) => (
-          <li key={rowKey(row)} className={cn(onRowClick && 'cursor-pointer')} onClick={() => onRowClick?.(row)}>
-            <Card className="p-4">
-              <div className="lf-label text-content">{primary?.cell(row)}</div>
-              <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">
+          <li
+            key={rowKey(row)}
+            className={cn('min-w-0', onRowClick && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary')}
+            onClick={(event) => activateRow(row, event)}
+            onKeyDown={(event) => {
+              if (event.target instanceof HTMLElement && event.target.closest('button, a, input, select, textarea')) return;
+              if (onRowClick && (event.key === 'Enter' || event.key === ' ')) {
+                event.preventDefault();
+                onRowClick(row);
+              }
+            }}
+            tabIndex={onRowClick ? 0 : undefined}
+          >
+            <Card className="min-w-0 p-4">
+              <div className="min-w-0 lf-label text-content">{primary?.cell(row)}</div>
+              <dl className="mt-3 grid min-w-0 grid-cols-1 gap-y-2">
                 {rest.map((col) => (
-                  <div key={col.key} className="flex items-baseline justify-between gap-2">
-                    <dt className="lf-caption text-content-muted">{col.header}</dt>
-                    <dd className={cn('lf-body-sm text-content', col.numeric && 'lf-number')}>{col.cell(row)}</dd>
+                  <div key={col.key} className="grid min-w-0 grid-cols-[minmax(5rem,auto)_minmax(0,1fr)] items-start gap-3">
+                    <dt className="min-w-0 break-words lf-caption text-content-muted">{col.header}</dt>
+                    <dd className={cn('min-w-0 max-w-full break-words text-right lf-body-sm text-content', col.numeric && 'lf-number')}>{col.cell(row)}</dd>
                   </div>
                 ))}
               </dl>
@@ -76,7 +94,7 @@ export function Table<Row>({ columns, rows, rowKey, onRowClick, className }: Tab
                 <tr
                   key={rowKey(row)}
                   className={cn('border-b border-outline/60 last:border-b-0', onRowClick && 'cursor-pointer hover:bg-surface-sunken transition-colors')}
-                  onClick={() => onRowClick?.(row)}
+                  onClick={(event) => activateRow(row, event)}
                 >
                   {columns.map((col) => (
                     <td

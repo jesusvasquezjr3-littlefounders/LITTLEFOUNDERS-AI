@@ -149,7 +149,7 @@ export function AdminDialog({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={cn('lf-glass flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-xl p-5 shadow-pop sm:max-h-[calc(100dvh-3rem)] sm:p-7', className)}
+        className={cn('lf-glass flex max-h-[calc(100dvh-2rem)] min-w-0 w-full max-w-4xl flex-col overflow-x-hidden overflow-y-auto rounded-xl p-5 shadow-pop sm:max-h-[calc(100dvh-3rem)] sm:p-7', className)}
       >
         <div className="flex items-start justify-between gap-4 border-b border-outline/50 pb-4">
           <h2 className="lf-title font-bold text-content">{title}</h2>

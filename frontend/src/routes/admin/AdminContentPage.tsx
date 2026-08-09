@@ -104,7 +104,7 @@ function CourseDetailDialog({
   const lessons = course.lessonsByStatus;
   return (
     <AdminDialog title={t('admin.content.courseDetailTitle')} onClose={onClose}>
-      <div className="flex flex-col gap-6 pt-5">
+      <div className="flex min-w-0 flex-col gap-6 pt-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -220,7 +220,7 @@ function LessonReviewDialog({
 
   return (
     <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}>
-      <div className="flex flex-col gap-6 pt-5">
+      <div className="flex min-w-0 flex-col gap-6 pt-5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="lf-display-sm text-content">{detail.title}</h3>
@@ -413,7 +413,7 @@ export function AdminContentPage() {
               <p className="lf-caption mt-1 text-content-muted">{t('admin.content.coursesHelper')}</p>
             </div>
             <Card className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <div className="relative min-w-[240px] flex-1">
+              <div className="relative min-w-0 flex-1 basis-full sm:basis-auto">
                 <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted" />
                 <input type="text" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('admin.content.searchPlaceholder')} className="w-full rounded-full border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50" />
               </div>
@@ -422,7 +422,7 @@ export function AdminContentPage() {
                 {STATUS_FILTERS.map((status) => <button key={status} type="button" onClick={() => setStatusFilter(status)} className={cn('min-h-11 shrink-0 rounded-full px-3 lf-caption font-bold', statusFilter === status ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content')}>{t(`admin.status.${status}`, status)}</button>)}
               </div>
             </Card>
-            {contentData.data.state === 'error' ? <Unavailable code={contentData.data.code} /> : contentData.data.state === 'ready' ? filteredCourses.length === 0 ? <AdminEmpty icon="menu_book" message={courses.length === 0 ? t('admin.content.empty') : t('admin.content.noMatch')} /> : <Table columns={courseColumns} rows={filteredCourses} rowKey={(course) => course.id} /> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
+            {contentData.data.state === 'error' ? <Unavailable code={contentData.data.code} /> : contentData.data.state === 'ready' ? filteredCourses.length === 0 ? <AdminEmpty icon="menu_book" message={courses.length === 0 ? t('admin.content.empty') : t('admin.content.noMatch')} /> : <Table columns={courseColumns} rows={filteredCourses} rowKey={(course) => course.id} onRowClick={setCourseDetail} /> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
           </section>
         )}
 

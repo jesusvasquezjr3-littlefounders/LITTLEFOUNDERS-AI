@@ -212,7 +212,7 @@ describe('AdminContentPage — human review surfaces', () => {
   it('opens a course inspector with hierarchy and readiness metadata', async () => {
     renderPage();
     await flushPromises();
-    fireEvent.click(screen.getAllByText('admin.content.viewDetail')[0]!);
+    fireEvent.click(screen.getByRole('row', { name: /Money Basics/ }));
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.courseDetailTitle');
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.hierarchySummary');
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.lessonBreakdown');
