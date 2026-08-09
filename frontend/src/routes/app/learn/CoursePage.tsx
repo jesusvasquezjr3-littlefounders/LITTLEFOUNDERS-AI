@@ -10,12 +10,12 @@ import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
-import { findAdventureForLesson, localizedText, type CourseTree } from './types';
+import { findAdventureForLesson, findLesson, localizedText, type CourseTree } from './types';
 
 /*
- * /learn/:courseSlug — Brilliant.org-style Course Detail & Interactive Syllabus.
- * Desktop (≥1024px): Pinned Hero Header & vertical-stretching Plan de Estudios sidebar.
- * Lessons list scrolls top-to-bottom under sticky headers.
+ * /learn/:courseSlug — guided course path. The learner sees the course promise,
+ * one clear next action, and an expandable syllabus that can be explored at
+ * their own pace. The server-derived tree remains the only source of progress.
  */
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
@@ -119,11 +119,12 @@ export function CoursePage() {
   }
 
   const courseTitle = localizedText(tree.course.title, locale, tree.course.slug);
+  const nextLesson = findLesson(tree, tree.nextLessonId);
 
   return (
     <div className="flex flex-col gap-6">
       {/* Sticky Fixed Top Course Hero Header */}
-      <div className="sticky top-0 z-30 pt-1 pb-2 backdrop-blur-md bg-background/85 transition-all">
+      <div className="sticky top-0 z-30 bg-base/90 pb-2 pt-1 backdrop-blur-md">
         <Reveal>
           <header className="rounded-xl border border-outline/60 bg-gradient-to-r from-surface via-surface/95 to-primary-soft/30 p-5 shadow-glass md:p-6">
             <div className="mb-2">
@@ -147,12 +148,15 @@ export function CoursePage() {
                   </Badge>
                 </div>
                 <h1 className="lf-display-lg text-content">{courseTitle}</h1>
+                {localizedText(tree.course.description, locale) && (
+                  <p className="lf-body max-w-2xl text-content-muted">{localizedText(tree.course.description, locale)}</p>
+                )}
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
                 <Link
                   to={`/learn/${tree.course.slug}/territory`}
-                  className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-all hover:bg-primary hover:text-on-primary hover:border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="lf-label flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft/60 px-5 font-bold text-primary shadow-glass-sm transition-[background-color,border-color,color] duration-150 hover:border-primary hover:bg-primary hover:text-on-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
                   <Icon name="map" className="text-[18px]" aria-hidden />
                   {t('learn.territory.open')}
@@ -163,20 +167,49 @@ export function CoursePage() {
         </Reveal>
       </div>
 
-      {/* Main Layout: Sticky Pinned Sidebar & Scrolling Lessons Column */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
-        {/* Left Pinned Sticky Sidebar ("Plan de Estudios" — Stretches to Fill Bottom Space) */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-[128px] lg:h-[calc(100vh-140px)] z-20 flex flex-col">
-          <Card className="flex h-full flex-col justify-between p-6 border-outline/60 shadow-glass overflow-hidden">
+      {/* Main Layout: readable syllabus plus a compact, sticky orientation rail on desktop. */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <main className="order-2 flex min-w-0 flex-col gap-6 lg:order-1">
+          {tree.adventures.map((adventure, idx) => {
+            const isOpen = adventure.id === openAdventureId;
+            return (
+              <Reveal key={adventure.id} delay={(idx % 3) * 60}>
+                <div className="flex flex-col overflow-hidden rounded-xl border border-outline/60 bg-surface shadow-glass">
+                  <AdventureBanner
+                    adventure={adventure}
+                    locale={locale}
+                    expanded={isOpen}
+                    onToggle={() => setOpenAdventureId(isOpen ? null : adventure.id)}
+                  />
+                  {isOpen && adventure.state !== 'locked' && (
+                    <div className="flex flex-col gap-6 border-t border-outline/50 p-4 md:p-6">
+                      {adventure.sagas.map((saga) => (
+                        <SagaSection
+                          key={saga.id}
+                          saga={saga}
+                          locale={locale}
+                          courseSlug={courseSlug}
+                          nextLessonId={tree.nextLessonId}
+                          registerNodeRef={registerNodeRef}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Reveal>
+            );
+          })}
+        </main>
+
+        <aside className="order-1 flex flex-col lg:sticky lg:top-24 lg:order-2">
+          <Card className="flex flex-col gap-5 border-outline/60 p-5 shadow-glass">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline/50 bg-primary-soft/40">
                 <CharacterActor character="dina" emotion="happy" action="idle" size="sm" />
               </div>
               <div className="flex flex-col gap-1 min-w-0">
                 <h3 className="lf-title text-content truncate">{courseTitle}</h3>
-                <span className="lf-caption font-bold text-content-muted">
-                  {t('learn.syllabus')}
-                </span>
+                <span className="lf-caption font-bold text-content-muted">{t('learn.syllabus')}</span>
               </div>
             </div>
 
@@ -195,10 +228,30 @@ export function CoursePage() {
               </span>
             </div>
 
-            {/* Quick Chapter Jump Navigation — Stretches Vertically to Fill Bottom Space */}
-            <div className="mt-3 flex flex-1 flex-col gap-2 pt-3 border-t border-outline/50 min-h-0">
+            {nextLesson && (
+              <div className="flex flex-col gap-3 rounded-lg border border-primary/30 bg-primary-soft/50 p-4">
+                <div className="flex items-center gap-2 text-primary">
+                  <Icon name="play_circle" className="!text-[18px]" aria-hidden />
+                  <span className="lf-caption font-bold uppercase tracking-[0.08em]">{t('learn.nextLesson')}</span>
+                </div>
+                <p className="lf-title break-words text-content">{localizedText(nextLesson.title, locale, nextLesson.slug)}</p>
+                <p className="lf-caption text-content-muted">
+                  {t('learn.lessonMeta', { minutes: nextLesson.estimated_minutes, xp: nextLesson.xp_total })}
+                </p>
+                <Link
+                  to={`/learn/lesson/${nextLesson.id}`}
+                  state={{ courseSlug }}
+                  className="lf-label inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-accent px-4 py-2 text-on-accent shadow-glass-sm transition-colors duration-150 hover:bg-accent-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  {nextLesson.state === 'passed' ? t('learn.reviewLesson') : t('learn.continueLesson')}
+                  <Icon name="arrow_forward" className="!text-[16px]" aria-hidden />
+                </Link>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2 border-t border-outline/50 pt-4">
               <h4 className="lf-label text-content-muted">{t('learn.chapters')}</h4>
-              <div className="flex flex-1 flex-col gap-1.5 overflow-y-auto pr-1">
+              <div className="flex max-h-64 flex-col gap-1.5 overflow-y-auto pr-1">
                 {tree.adventures.map((adventure, idx) => {
                   const isCurrentOpen = adventure.id === openAdventureId;
                   const isAdvCompleted = adventure.state === 'completed';
@@ -236,39 +289,6 @@ export function CoursePage() {
             </div>
           </Card>
         </aside>
-
-        {/* Right Main Column: Scrollable Lessons Syllabus */}
-        <main className="lg:col-span-8 flex flex-col gap-6">
-          {tree.adventures.map((adventure, idx) => {
-            const isOpen = adventure.id === openAdventureId;
-            return (
-              <Reveal key={adventure.id} delay={(idx % 3) * 60}>
-                <div className="flex flex-col rounded-xl border border-outline/60 bg-surface shadow-glass overflow-hidden">
-                  <AdventureBanner
-                    adventure={adventure}
-                    locale={locale}
-                    expanded={isOpen}
-                    onToggle={() => setOpenAdventureId(isOpen ? null : adventure.id)}
-                  />
-                  {isOpen && adventure.state !== 'locked' && (
-                    <div className="p-4 md:p-6 border-t border-outline/50 flex flex-col gap-6">
-                      {adventure.sagas.map((saga) => (
-                        <SagaSection
-                          key={saga.id}
-                          saga={saga}
-                          locale={locale}
-                          courseSlug={courseSlug}
-                          nextLessonId={tree.nextLessonId}
-                          registerNodeRef={registerNodeRef}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Reveal>
-            );
-          })}
-        </main>
       </div>
 
       {/* Floating Action Portal for Active Lesson */}

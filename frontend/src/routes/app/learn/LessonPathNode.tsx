@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -7,10 +6,9 @@ import type { CharacterId } from '@/components/characters/control/types';
 import { localizedText, type LessonNode } from './types';
 
 /*
- * Brilliant.org-style Syllabus Item Row.
- * Replaces the old Duolingo-style winding snake node with a structured,
- * responsive syllabus card row featuring lesson status, duration, XP rewards,
- * and high-contrast action CTAs.
+ * Learner-first syllabus row. The action remains visible on desktop and drops
+ * below the lesson metadata on narrow screens so long localized titles never
+ * compete with a squeezed button.
  */
 
 const STATUS_ICONS: Record<LessonNode['state'], string> = {
@@ -47,8 +45,6 @@ export function LessonPathNode({
 }: LessonPathNodeProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [popped] = useState(isNextLesson);
-
   const clickable = lesson.state !== 'locked';
   const title = localizedText(lesson.title, locale, lesson.slug);
 
@@ -71,12 +67,12 @@ export function LessonPathNode({
       onClick={go}
       disabled={!clickable}
       aria-disabled={!clickable}
-      aria-label={`${title} — ${t(`learn.state.${lesson.state}`)}`}
+      aria-label={`${title}, ${t(`learn.state.${lesson.state}`)}`}
       className={cn(
-        'group relative flex w-full items-center justify-between gap-4 rounded-xl border p-4 shadow-glass-sm transition-all duration-200 text-left',
+        'group relative flex w-full flex-col items-stretch justify-between gap-4 rounded-xl border p-4 text-left shadow-glass-sm transition-[border-color,background-color,box-shadow,transform] duration-200 sm:flex-row sm:items-center',
         clickable ? 'cursor-pointer hover:border-primary/50 hover:bg-primary-soft/10 hover:shadow-glass' : 'cursor-not-allowed opacity-70 bg-surface-sunken/40 border-outline/40',
         isCurrent ? 'border-primary/60 bg-gradient-to-r from-primary-soft/30 via-surface to-surface shadow-glass' : 'border-outline/60 bg-surface',
-        popped && 'lf-pop'
+        isNextLesson && 'lf-pop'
       )}
     >
       {/* Left Icon & Lesson Details */}
@@ -84,7 +80,7 @@ export function LessonPathNode({
         {/* Status Badge Tile */}
         <div
           className={cn(
-            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold transition-transform duration-200 group-hover:scale-105',
+            'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold',
             STATUS_BADGE_CLASSES[lesson.state]
           )}
         >
@@ -94,7 +90,7 @@ export function LessonPathNode({
         {/* Title & Metadata */}
         <div className="flex flex-col gap-1 min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="lf-title truncate text-content group-hover:text-primary transition-colors">
+            <h4 className="lf-title break-words text-content transition-colors duration-150 group-hover:text-primary">
               {title}
             </h4>
             {isCurrent && (
@@ -119,11 +115,11 @@ export function LessonPathNode({
       </div>
 
       {/* Right Action Button */}
-      <div className="shrink-0">
+      <div className="shrink-0 self-start sm:self-auto">
         {clickable ? (
           <span
             className={cn(
-              'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 py-2.5 lf-label font-bold shadow-glass-sm transition-all duration-200 group-hover:translate-x-0.5',
+              'inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full px-5 py-2.5 lf-label font-bold shadow-glass-sm transition-[border-color,background-color,color,transform] duration-200 group-hover:translate-x-0.5',
               isCurrent ? 'bg-primary text-on-primary hover:bg-primary-strong' : 'border border-outline/70 bg-surface text-primary hover:border-primary/50'
             )}
           >

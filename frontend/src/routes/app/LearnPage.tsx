@@ -9,9 +9,9 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
 /*
- * learn/ — the universal user's home (Brilliant.org-inspired course catalog).
- * Features a prominent "Featured / Jump Back In" hero banner, interactive
- * learning track filter pills, and a 3-column liquid glass course card grid.
+ * learn/ — the learner's home. The composition follows Brilliant's strongest
+ * learning pattern: make the next useful action obvious, then keep discovery
+ * calm and secondary. Course progress remains server-derived.
  */
 
 interface Course {
@@ -87,8 +87,22 @@ export function LearnPage() {
 
   // Determine the featured course (first in-progress course or first available course)
   const featuredCourse = state.status === 'ready' && state.courses.length > 0
-    ? (state.courses.find((c) => c.progress.passed > 0 && c.progress.passed < c.progress.total) ?? state.courses[0])
+    ? (state.courses.find((c) => c.progress.passed > 0 && c.progress.passed < c.progress.total)
+      ?? state.courses.find((c) => c.progress.passed < c.progress.total)
+      ?? state.courses[0])
     : null;
+  const featuredIsCompleted = Boolean(featuredCourse && featuredCourse.progress.total > 0 && featuredCourse.progress.passed === featuredCourse.progress.total);
+
+  const learningSnapshot = state.status === 'ready'
+    ? state.courses.reduce(
+        (summary, course) => ({
+          coursesStarted: summary.coursesStarted + (course.progress.passed > 0 ? 1 : 0),
+          lessonsPassed: summary.lessonsPassed + course.progress.passed,
+          lessonsTotal: summary.lessonsTotal + course.progress.total,
+        }),
+        { coursesStarted: 0, lessonsPassed: 0, lessonsTotal: 0 },
+      )
+    : { coursesStarted: 0, lessonsPassed: 0, lessonsTotal: 0 };
 
   const filteredCourses = state.status === 'ready'
     ? state.courses.filter((course) => {
@@ -98,9 +112,10 @@ export function LearnPage() {
     : [];
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       {/* Top Welcome Header */}
       <header className="flex flex-col gap-2">
+        <span className="lf-caption font-bold uppercase tracking-[0.12em] text-primary">{t('dashboard.learn.eyebrow')}</span>
         <h1 className="lf-display-lg text-content">
           {firstName ? t('dashboard.learn.greeting', { name: firstName }) : t('dashboard.learn.greetingAnon')}
         </h1>
@@ -119,13 +134,18 @@ export function LearnPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="lf-caption flex items-center gap-1.5 rounded-full bg-accent-soft px-3 py-1 font-bold text-accent-strong">
                     <Icon name="bolt" className="!text-[14px]" />
-                    {featuredCourse.progress.passed > 0 ? t('dashboard.learn.continueLearning') : t('dashboard.learn.featuredBadge')}
+                    {featuredIsCompleted
+                      ? t('dashboard.learn.completedCourse')
+                      : featuredCourse.progress.passed > 0
+                      ? t('dashboard.learn.continueLearning')
+                      : t('dashboard.learn.featuredBadge')}
                   </span>
                   <Badge>
                     {t('dashboard.learn.lessonCount', { count: featuredCourse.lessonCount })}
                   </Badge>
                 </div>
 
+                <p className="lf-label text-content-muted">{t('dashboard.learn.nextStep')}</p>
                 <h2 className="lf-display-lg text-content">
                   {featuredCourse.title[locale] ?? featuredCourse.title['en-US'] ?? featuredCourse.slug}
                 </h2>
@@ -144,7 +164,11 @@ export function LearnPage() {
                 <div className="mt-3">
                   <Link to={`/learn/${featuredCourse.slug}`}>
                     <Button className="group">
-                      {featuredCourse.progress.passed > 0 ? t('dashboard.learn.resumeCta') : t('dashboard.learn.startCourse')}
+                      {featuredIsCompleted
+                        ? t('dashboard.learn.reviewCourse')
+                        : featuredCourse.progress.passed > 0
+                        ? t('dashboard.learn.resumeCta')
+                        : t('dashboard.learn.startCourse')}
                       <Icon name="arrow_forward" className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5" />
                     </Button>
                   </Link>
@@ -162,10 +186,33 @@ export function LearnPage() {
         </Reveal>
       )}
 
+      {state.status === 'ready' && state.courses.length > 0 && (
+        <section aria-label={t('dashboard.learn.snapshotTitle')} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
+            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotProgress')}</p>
+            <p className="lf-headline lf-number mt-1 text-content">{learningSnapshot.lessonsPassed}/{learningSnapshot.lessonsTotal}</p>
+            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotLessons')}</p>
+          </div>
+          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
+            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotStarted')}</p>
+            <p className="lf-headline lf-number mt-1 text-content">{learningSnapshot.coursesStarted}</p>
+            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotCourses')}</p>
+          </div>
+          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
+            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotFocus')}</p>
+            <p className="lf-headline mt-1 text-content">{featuredCourse ? (featuredCourse.progress.passed === featuredCourse.progress.total ? t('dashboard.learn.snapshotComplete') : t('dashboard.learn.snapshotContinue')) : t('dashboard.learn.snapshotReady')}</p>
+            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotFocusHint')}</p>
+          </div>
+        </section>
+      )}
+
       {/* Course Catalog & Category Filter Section */}
       <section aria-busy={state.status === 'loading'} className="flex flex-col gap-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <h2 className="lf-headline text-content">{t('dashboard.learn.browseTracks')}</h2>
+          <div>
+            <h2 className="lf-headline text-content">{t('dashboard.learn.browseTracks')}</h2>
+            <p className="lf-body mt-1 text-content-muted">{t('dashboard.learn.browseTracksHint')}</p>
+          </div>
 
           {/* Brilliant-Style Track Filter Pills */}
           <div
@@ -219,7 +266,7 @@ export function LearnPage() {
           </Card>
         )}
 
-        {/* Brilliant-Style 3-Column Course Cards Grid */}
+        {/* A deliberate card grid keeps discovery scannable without hiding the learner's next action. */}
         {state.status === 'ready' && filteredCourses.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredCourses.map((course, index) => {
@@ -227,7 +274,11 @@ export function LearnPage() {
               const categoryKey = COURSE_CATEGORIES[course.slug] ?? 'entrepreneurship';
               const isStarted = course.progress.passed > 0;
               const isCompleted = course.progress.passed === course.progress.total && course.progress.total > 0;
-              const ctaText = isStarted ? t('dashboard.learn.resumeCta') : t('dashboard.learn.exploreCta');
+              const ctaText = isCompleted
+                ? t('dashboard.learn.reviewCourse')
+                : isStarted
+                ? t('dashboard.learn.resumeCta')
+                : t('dashboard.learn.exploreCta');
 
               const categoryLabel = categoryKey === 'entrepreneurship'
                 ? t('dashboard.learn.filterEntrepreneurship')
@@ -241,7 +292,7 @@ export function LearnPage() {
                     to={`/learn/${course.slug}`}
                     className="group block h-full rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                   >
-                    <Card interactive className="relative flex h-full flex-col overflow-hidden transition-all duration-300">
+                    <Card interactive className="relative flex h-full flex-col overflow-hidden">
                       {/* Top Glow Accent Bar */}
                       <div className={`absolute inset-x-0 top-0 h-1.5 ${TONE_BAR_CLASSES[tone] ?? 'bg-primary'}`} />
 
@@ -259,7 +310,7 @@ export function LearnPage() {
                         </div>
                       </div>
 
-                      <h3 className="lf-title mt-4 text-content group-hover:text-primary transition-colors">
+                      <h3 className="lf-title mt-4 text-content transition-colors duration-150 group-hover:text-primary">
                         {course.title[locale] ?? course.title['en-US'] ?? course.slug}
                       </h3>
 
@@ -275,7 +326,7 @@ export function LearnPage() {
                             <Icon name={isCompleted ? 'emoji_events' : 'rocket_launch'} className={`!text-[16px] ${TONE_TEXT_CLASSES[tone] ?? 'text-primary'}`} />
                             {t('dashboard.learn.progressLabel', { passed: course.progress.passed, total: course.progress.total })}
                           </span>
-                          <span className="lf-label flex items-center gap-1 text-primary group-hover:translate-x-0.5 transition-transform duration-200">
+                          <span className="lf-label flex items-center gap-1 text-primary transition-transform duration-200 group-hover:translate-x-0.5">
                             {ctaText}
                             <Icon name="arrow_forward" className="!text-[16px]" />
                           </span>

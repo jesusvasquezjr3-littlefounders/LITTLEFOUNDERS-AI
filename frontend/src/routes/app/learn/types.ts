@@ -97,3 +97,17 @@ export function findAdventureForLesson(tree: CourseTree, lessonId: string): stri
   }
   return null
 }
+
+/** Find a lesson in the server-derived course tree without creating a second data source. */
+export function findLesson(tree: CourseTree, lessonId: string | null): LessonNode | null {
+  if (!lessonId) return null
+  for (const adventure of tree.adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) {
+        const lesson = topic.lessons.find((candidate) => candidate.id === lessonId)
+        if (lesson) return lesson
+      }
+    }
+  }
+  return null
+}

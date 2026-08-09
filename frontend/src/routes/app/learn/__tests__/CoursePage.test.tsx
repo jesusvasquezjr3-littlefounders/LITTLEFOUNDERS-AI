@@ -5,6 +5,7 @@ import i18n from '@/i18n';
 import { api } from '@/lib/api';
 import type { CourseTree } from '../types';
 import { CoursePage } from '../CoursePage';
+import { TerritoryView } from '../TerritoryPage';
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 // getToken must be a STABLE reference — the page's fetch effect depends on it
@@ -153,7 +154,7 @@ describe('CoursePage', () => {
     expect(screen.getByText('What is money')).toBeInTheDocument();
     expect(screen.getByText('Saving basics')).toBeInTheDocument();
     expect(screen.getByText('Lesson One')).toBeInTheDocument();
-    expect(screen.getByText('Lesson Two')).toBeInTheDocument();
+    expect(screen.getAllByText('Lesson Two')).toHaveLength(2);
     expect(screen.getByText('Lesson Three')).toBeInTheDocument();
 
     // Current lesson gets the "start here" call-out.
@@ -171,6 +172,7 @@ describe('CoursePage', () => {
 
     // Floating "go to my lesson" pill shows when there's a next lesson.
     expect(screen.getByRole('button', { name: 'Go to my lesson' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Continue/ })).toHaveAttribute('href', '/learn/lesson/lesson-current');
   });
 
   it('shows an error banner when the tree fetch fails', async () => {
@@ -188,5 +190,15 @@ describe('CoursePage', () => {
     renderCoursePage();
 
     expect(await screen.findByText('This adventure is loading')).toBeInTheDocument();
+  });
+
+  it('turns playable territory topics into direct lesson links', () => {
+    render(
+      <MemoryRouter>
+        <TerritoryView tree={fixtureTree} locale="en-US" courseSlug="money-basics" />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole('link', { name: /What is money/ })).toHaveAttribute('href', '/learn/lesson/lesson-current');
   });
 });

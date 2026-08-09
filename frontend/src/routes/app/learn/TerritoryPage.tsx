@@ -32,38 +32,58 @@ const STATE_META: Record<TopicState, { icon: string; tone: string; labelKey: str
   'not-started': { icon: 'circle', tone: 'text-content-faint', labelKey: 'learn.territory.state.notStarted' },
 };
 
-function TopicChip({ topic, locale, linkTo }: { topic: TopicNode; locale: string; linkTo: string }) {
+function TopicChip({ topic, locale, courseSlug, fallbackLinkTo }: { topic: TopicNode; locale: string; courseSlug?: string; fallbackLinkTo?: string }) {
   const { t } = useTranslation();
   const meta = STATE_META[topic.state];
   const passed = topic.lessons.filter((l) => l.state === 'passed').length;
   const isReviewKind = topic.kind !== 'teaching';
+  const firstPlayableLesson = courseSlug
+    ? (topic.lessons.find((lesson) => lesson.state === 'current' || lesson.state === 'available')
+      ?? topic.lessons.find((lesson) => lesson.state === 'passed')
+      ?? null)
+    : null;
+  const linkTo = firstPlayableLesson ? `/learn/lesson/${firstPlayableLesson.id}` : fallbackLinkTo;
+  const content = (
+    <>
+      <Icon name={meta.icon} className={cn('shrink-0 text-[22px]', meta.tone)} aria-hidden />
+      <span className="min-w-0 flex-1">
+        <span className="lf-label block break-words text-content">{localizedText(topic.title, locale)}</span>
+        <span className="lf-caption text-content-faint">
+          {isReviewKind
+            ? t('learn.territory.reviewTopic')
+            : t('learn.territory.lessonCount', { passed, total: topic.lessons.length })}
+        </span>
+      </span>
+      {topic.state === 'review-due' ? (
+        <span className="lf-caption shrink-0 rounded-full bg-warning-soft px-2 py-0.5 font-bold text-warning-strong">
+          {t('learn.territory.reviewDueBadge')}
+        </span>
+      ) : null}
+      {firstPlayableLesson ? <Icon name="arrow_forward" className="shrink-0 text-[18px] text-primary" aria-hidden /> : null}
+    </>
+  );
 
   return (
     <li>
-      <Link
-        to={linkTo}
-        className={cn(
-          'flex min-h-11 items-center gap-2.5 rounded-lg border border-outline/60 bg-surface px-3 py-2.5 shadow-glass-sm',
-          'transition-[border-color,transform] duration-150 hover:border-primary/60 active:translate-y-px',
-          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-          topic.state === 'review-due' && 'border-warning/60 bg-warning-soft/30',
-        )}
-      >
-        <Icon name={meta.icon} className={cn('shrink-0 text-[22px]', meta.tone)} aria-hidden />
-        <span className="min-w-0 flex-1">
-          <span className="lf-label block truncate text-content">{localizedText(topic.title, locale)}</span>
-          <span className="lf-caption text-content-faint">
-            {isReviewKind
-              ? t('learn.territory.reviewTopic')
-              : t('learn.territory.lessonCount', { passed, total: topic.lessons.length })}
-          </span>
-        </span>
-        {topic.state === 'review-due' ? (
-          <span className="lf-caption shrink-0 rounded-full bg-warning-soft px-2 py-0.5 font-bold text-warning-strong">
-            {t('learn.territory.reviewDueBadge')}
-          </span>
-        ) : null}
-      </Link>
+      {linkTo ? (
+        <Link
+          to={linkTo}
+          state={courseSlug ? { courseSlug } : undefined}
+          className={cn(
+            'flex min-h-11 items-center gap-2.5 rounded-lg border border-outline/60 bg-surface px-3 py-2.5 shadow-glass-sm',
+            'transition-[border-color,transform] duration-150 hover:border-primary/60 active:translate-y-px',
+            'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
+            topic.state === 'review-due' && 'border-warning/60 bg-warning-soft/30',
+          )}
+        >
+          {content}
+        </Link>
+      ) : (
+        <div className="flex min-h-11 items-center gap-2.5 rounded-lg border border-dashed border-outline/60 bg-surface-sunken/40 px-3 py-2.5 opacity-75">
+          {content}
+          <Icon name="lock" className="shrink-0 text-[16px] text-content-faint" aria-hidden />
+        </div>
+      )}
     </li>
   );
 }
@@ -94,8 +114,8 @@ export function TerritoryPage() {
   if (state.status === 'error') return <ErrorBanner code={state.code} />;
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 py-6 md:px-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 md:px-6">
+      <header className="flex flex-col gap-5 rounded-xl border border-outline/60 bg-surface p-5 shadow-glass md:p-6">
         <div>
           <Link to={`/learn/${courseSlug}`} className="lf-caption flex items-center gap-1 font-bold text-primary hover:underline">
             <Icon name="arrow_back" className="text-[16px]" aria-hidden /> {t('learn.territory.back')}
@@ -104,8 +124,16 @@ export function TerritoryPage() {
           <p className="lf-body text-content-muted">{t('learn.territory.subtitle')}</p>
         </div>
         <TerritoryProgressStrip tree={state.tree} />
+        <div className="flex flex-wrap gap-2" aria-label={t('learn.territory.legendLabel')}>
+          {(Object.entries(STATE_META) as Array<[TopicState, (typeof STATE_META)[TopicState]]>).map(([stateKey, meta]) => (
+            <span key={stateKey} className="lf-caption inline-flex items-center gap-1.5 rounded-full bg-surface-sunken px-3 py-1 font-semibold text-content-muted">
+              <Icon name={meta.icon} className={cn('!text-[15px]', meta.tone)} aria-hidden />
+              {t(meta.labelKey)}
+            </span>
+          ))}
+        </div>
       </header>
-      <TerritoryView tree={state.tree} locale={locale} chipLinkTo={`/learn/${courseSlug}`} />
+      <TerritoryView tree={state.tree} locale={locale} courseSlug={courseSlug} />
     </div>
   );
 }
@@ -117,7 +145,7 @@ export function TerritoryProgressStrip({ tree }: { tree: CourseTree }) {
     .flatMap((a) => a.sagas.flatMap((s) => s.topics))
     .filter((topic) => topic.state === 'review-due').length;
   return (
-    <div className="w-full max-w-xs">
+    <div className="w-full lg:max-w-xs">
       <ProgressBar value={tree.course.progress.pct} label={t('learn.territory.progress')} />
       <p className="lf-caption mt-1 text-content-faint">
         {t('learn.territory.progressLabel', { passed: tree.course.progress.passed, total: tree.course.progress.total })}
@@ -128,7 +156,7 @@ export function TerritoryProgressStrip({ tree }: { tree: CourseTree }) {
 }
 
 /** The territory itself — adventure bands, saga columns, topic chips. Pure render of a CourseTree (kid AND parent surfaces). */
-export function TerritoryView({ tree, locale, chipLinkTo }: { tree: CourseTree; locale: string; chipLinkTo: string }) {
+export function TerritoryView({ tree, locale, courseSlug, chipLinkTo }: { tree: CourseTree; locale: string; courseSlug?: string; chipLinkTo?: string }) {
   const { t } = useTranslation();
   return (
     <>
@@ -159,7 +187,7 @@ export function TerritoryView({ tree, locale, chipLinkTo }: { tree: CourseTree; 
                   </h3>
                   <ul className="flex flex-col gap-2">
                     {saga.topics.map((topic) => (
-                      <TopicChip key={topic.id} topic={topic} locale={locale} linkTo={chipLinkTo} />
+                      <TopicChip key={topic.id} topic={topic} locale={locale} courseSlug={courseSlug} fallbackLinkTo={chipLinkTo} />
                     ))}
                   </ul>
                 </section>
