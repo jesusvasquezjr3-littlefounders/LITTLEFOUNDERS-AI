@@ -42,6 +42,12 @@ export function BreakdownCard({
   );
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
+  const pct = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'percent', maximumFractionDigits: 1 });
+  const duration = (seconds: number) => {
+    const total = Math.round(seconds);
+    const minutes = Math.floor(total / 60);
+    return minutes > 0 ? `${minutes}m ${total % 60}s` : `${total}s`;
+  };
   const display = (label: string) =>
     dimension === 'country' ? countryLabel(label, i18n.resolvedLanguage) : label || undefined;
 
@@ -73,6 +79,18 @@ export function BreakdownCard({
       header: t('admin.analytics.web.pageviews'),
       numeric: true,
       cell: (r) => nf.format(r.pageviews),
+    },
+    {
+      key: 'bounceRate',
+      header: t('admin.analytics.web.bounceRate'),
+      numeric: true,
+      cell: (r) => pct.format(r.bounceRate / 100),
+    },
+    {
+      key: 'visitDuration',
+      header: t('admin.analytics.web.visitDuration'),
+      numeric: true,
+      cell: (r) => duration(r.visitDuration),
     },
   ];
 

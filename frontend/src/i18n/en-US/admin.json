@@ -404,8 +404,24 @@
     "toolsTitle": "Exports & controls",
     "reports": {
       "title": "Team reports (PDF)",
-      "caption": "Branded, watermarked PDF reports for each team, generated with the current period and filters.",
+      "caption": "Decision-ready PDF reports with a logo header, trend chart, audience concentration, and detailed tables using the current period and filters.",
       "failed": "Could not generate the report. Try again.",
+      "audienceLabel": "Report view",
+      "includesTitle": "Included in every report",
+      "includes": {
+        "summary": "Executive KPI summary",
+        "trend": "Daily traffic chart",
+        "segments": "Audience concentration bars",
+        "tables": "Detailed breakdown tables"
+      },
+      "descriptions": {
+        "marketing": "Acquisition sources, channels, campaigns, countries, and referrers.",
+        "sales": "Acquisition, entry paths, countries, devices, and conversion context.",
+        "frontend": "Pages, entry and exit paths, devices, browsers, and operating systems.",
+        "full": "The complete analytics view with every available dimension."
+      },
+      "currentSelection": "Ready to export: {{audience}}",
+      "download": "Download report",
       "audiences": {
         "marketing": "Marketing",
         "sales": "Sales",

@@ -404,8 +404,24 @@
     "toolsTitle": "Exportações e controles",
     "reports": {
       "title": "Relatórios por equipe (PDF)",
-      "caption": "Relatórios PDF com marca e marca-d'água para cada equipe, gerados com o período e os filtros atuais.",
+      "caption": "Relatórios PDF prontos para decisão, com cabeçalho de marca, gráfico de tendência, concentração de audiência e tabelas detalhadas usando o período e filtros atuais.",
       "failed": "Não foi possível gerar o relatório. Tente de novo.",
+      "audienceLabel": "Visão do relatório",
+      "includesTitle": "Inclui em cada relatório",
+      "includes": {
+        "summary": "Resumo executivo de KPIs",
+        "trend": "Gráfico diário de tráfego",
+        "segments": "Barras de concentração da audiência",
+        "tables": "Tabelas detalhadas de detalhamentos"
+      },
+      "descriptions": {
+        "marketing": "Fontes de aquisição, canais, campanhas, países e referências.",
+        "sales": "Aquisição, caminhos de entrada, países, dispositivos e contexto de conversão.",
+        "frontend": "Páginas, caminhos de entrada e saída, dispositivos, navegadores e sistemas operacionais.",
+        "full": "A visão analítica completa com todas as dimensões disponíveis."
+      },
+      "currentSelection": "Pronto para exportar: {{audience}}",
+      "download": "Baixar relatório",
       "audiences": {
         "marketing": "Marketing",
         "sales": "Vendas",

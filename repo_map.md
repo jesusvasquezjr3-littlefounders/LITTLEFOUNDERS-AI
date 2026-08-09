@@ -13688,13 +13688,33 @@ export function FilterBar({
   filters,
 ```
 
+### frontend/src/routes/admin/analytics/ReportExportCard.test.tsx
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { ReportExportCard } from './ReportExportCard';
+
+const { mockGetToken, mockFetch } = vi.hoisted(() => ({
+  mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+  mockFetch: vi.fn(),
+}));
+
+vi.mock('@/auth/AuthContext', () => ({ useAuth: () => ({ getToken: mockGetToken }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, values?: Record<string, string>) => values?.audience ? `${key} ${values.audience}` : key,
+    i18n: { resolvedLanguage: 'en-US' },
+  }),
+```
+
 ### frontend/src/routes/admin/analytics/ReportExportCard.tsx
 
 ```
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Card, Icon } from '@/components/ui';
+import { Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
 import { AdminAction } from '../adminShared';
 import { API_BASE_URL, type Period } from './analyticsShared';
 
