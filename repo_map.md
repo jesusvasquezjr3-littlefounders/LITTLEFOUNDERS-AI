@@ -8,7 +8,6 @@
 ```
 .github/
   workflows/
-.obsidian/
 agent/
   core/
     checklists/
@@ -724,76 +723,6 @@ name: Vault backup
 # service was blocked by an expired Railway trial at rollout time
 # (2026-07-17, see RUNBOOK.md). Revisit once billing/plan allows a properly
 # separate, dedicated backup volume.
-```
-
-### .obsidian/app.json
-
-```
-{}```
-
-### .obsidian/appearance.json
-
-```
-{}```
-
-### .obsidian/core-plugins.json
-
-```
-{
-  "file-explorer": true,
-  "global-search": true,
-  "switcher": true,
-  "graph": true,
-  "backlink": true,
-  "canvas": true,
-  "outgoing-link": true,
-  "tag-pane": true,
-  "footnotes": false,
-  "properties": true,
-  "page-preview": true,
-  "daily-notes": true,
-  "templates": true,
-  "note-composer": true,
-```
-
-### .obsidian/graph.json
-
-```
-{
-  "collapse-filter": true,
-  "search": "",
-  "showTags": false,
-  "showAttachments": false,
-  "hideUnresolved": false,
-  "showOrphans": true,
-  "collapse-color-groups": true,
-  "colorGroups": [],
-  "collapse-display": false,
-  "showArrow": false,
-  "textFadeMultiplier": 0,
-  "nodeSizeMultiplier": 1,
-  "lineSizeMultiplier": 1,
-  "collapse-forces": true,
-```
-
-### .obsidian/workspace.json
-
-```
-{
-  "main": {
-    "id": "86056ec06ce28741",
-    "type": "split",
-    "children": [
-      {
-        "id": "6e869652cbcf6481",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "c16e6168aca15519",
-            "type": "leaf",
-            "state": {
-              "type": "empty",
-              "state": {},
 ```
 
 ### AGENTS.md
@@ -13422,21 +13351,21 @@ interface SnapshotData {
 ### frontend/src/routes/admin/SignupTimeline.tsx
 
 ```
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Area, AreaChart, Brush, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import type { TooltipProps } from 'recharts';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Card } from '@/components/ui';
-import { cn } from '@/lib/utils';
 
 interface Day {
   date: string;
   count: number;
 }
 
-const PERIODS = [
-  { days: 30, key: '30d' },
-  { days: 90, key: '90d' },
+interface Range {
+  startIndex: number;
 ```
 
 ### frontend/src/routes/admin/SlotDetailModal.tsx
@@ -13517,6 +13446,26 @@ const USERS = [
     userId: '11111111-1111-4111-8111-111111111111',
     displayName: 'Admin User',
     username: 'admin_user',
+```
+
+### frontend/src/routes/admin/__tests__/SignupTimeline.test.tsx
+
+```
+import type { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { SignupTimeline } from '../SignupTimeline';
+
+const { mockApi, mockGetToken } = vi.hoisted(() => ({
+  mockApi: vi.fn(),
+  mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+}));
+
+vi.mock('@/lib/api', () => ({ api: mockApi }));
+
+vi.mock('@/auth/AuthContext', () => ({
+  useAuth: () => ({ getToken: mockGetToken }),
+}));
 ```
 
 ### frontend/src/routes/admin/adminNav.ts

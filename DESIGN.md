@@ -297,9 +297,14 @@ for containers. Sharp corners prohibited.
   (`success-soft`/`error-soft`), figures as `lf-number`. Never used on
   kid/parent product surfaces.
 - **TrendChart** (console-only) — minimal inline SVG area/line chart for
-  timeseries: `primary` stroke, `primary/10` fill, no axes chrome beyond
-  first/last `lf-caption` labels; height ≤ 160px; renders from data, never a
-  third-party chart lib.
+  compact timeseries: `primary` stroke, `primary/10` fill, no axes chrome
+  beyond first/last `lf-caption` labels; height ≤ 160px; renders from data.
+- **Interactive area chart** (console-only) — for a continuous, high-density
+  time series where an admin must inspect a value and zoom a date range in
+  place. Recharts is allowed only for this interaction class: one primary
+  series, `primary` stroke with a restrained `primary` area fill, quiet axes,
+  a data tooltip, and a touch-capable range brush. Never add fixed range tabs
+  when the brush provides direct range control.
 - **Characters** — Dina, Liruf, Dr. Rho, Zara Vex (canonical; no new mascots
   without sign-off).
 
