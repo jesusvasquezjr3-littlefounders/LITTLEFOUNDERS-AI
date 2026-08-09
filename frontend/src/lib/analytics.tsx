@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
+import { hasCookieConsent } from '@/lib/visitor';
 
 /*
  * Pulse tracker mounting — the §1.9 fence, enforced in ONE place.
  *
  * Plausible: cookieless, no PII, no persistent identifiers, raw IP/UA never
  * stored (verified against its data policy before adoption — WALKTHROUGH.md
- * 2026-07-20). Safe for every surface INCLUDING kid traffic, so it mounts
- * unconditionally when configured. Uses Plausible's new-format per-site
+ * 2026-07-20). It mounts on adult product surfaces without a consent cookie;
+ * public marketing surfaces wait for explicit optional consent. It never
+ * mounts on kid sessions. Uses Plausible's new-format per-site
  * script (`/js/pa-<id>.js` + `plausible.init()`, v3.2.x): the site domain is
  * baked into the hashed file (no data-domain), and autoCapturePageviews is on
  * by default so SPA route changes track via its History hook — no manual
@@ -35,8 +37,8 @@ import { useAuth } from '@/auth/AuthContext';
  *     page_views are fired MANUALLY (send_page_view:false), so GA4 can never
  *     observe an app/kid pathname even if its script stays resident across an SPA
  *     navigation out of the marketing area.
- * COOKIE NOTE: GA4 uses cookies; a marketing-site consent banner (Consent Mode)
- * is the correct follow-up for EU/UK visitors — tracked in WALKTHROUGH.md.
+ * COOKIE NOTE: GA4 uses cookies and is mounted only after explicit optional
+ * consent. Revoking that choice removes the script and known GA4 cookies.
  *
  * Plausible/Umami self-track SPA navigations; env-unset (local dev) = no-op.
  */
@@ -122,14 +124,22 @@ function mountGa4(): void {
   window.gtag('config', GA4_ID, { send_page_view: false });
 }
 
-export function AnalyticsScripts() {
+export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: number }) {
   const { session, roles, meLoaded } = useAuth();
   const { pathname } = useLocation();
 
-  // Plausible — every surface, once.
+  // Public guest measurement is optional and starts only after the visitor's
+  // cookie decision. Signed-in adult product measurement follows its existing
+  // product consent boundary; kid sessions are never mounted here.
   useEffect(() => {
-    mountPlausible();
-  }, []);
+    const guestMarketing = session === null && isMarketingPath(pathname);
+    if (guestMarketing && !hasCookieConsent()) {
+      ejectScript('lf-plausible');
+      return;
+    }
+    const adultProduct = session != null && meLoaded && roles.some((r) => ['parent', 'admin', 'superadmin'].includes(r));
+    if (guestMarketing || adultProduct) mountPlausible();
+  }, [session, meLoaded, pathname, roles, consentVersion]);
 
   // Umami — adult surfaces only; kid sessions eject unconditionally.
   useEffect(() => {
@@ -141,7 +151,7 @@ export function AnalyticsScripts() {
 
     const shouldMount =
       !isKid &&
-      ((isGuest && isMarketingPath(pathname)) || (session != null && meLoaded && isAdultSurfaceUser));
+      ((isGuest && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isAdultSurfaceUser));
 
     if (shouldMount) {
       mountScript('lf-umami', UMAMI_SRC, { 'website-id': UMAMI_WEBSITE_ID });
@@ -153,14 +163,17 @@ export function AnalyticsScripts() {
   // GA4 — public marketing pages only, never app/kid (module header §1.9 scope).
   useEffect(() => {
     if (!GA4_ID) return;
-    const onMarketing = isMarketingPath(pathname) && !roles.includes('kid');
+    const onMarketing = isMarketingPath(pathname) && !roles.includes('kid') && hasCookieConsent();
     // Re-assert the hard kill-switch every route change: GA4 stays fully inert
     // off marketing paths / for kids, even if its script is already resident.
     (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = !onMarketing;
-    if (!onMarketing) return;
+    if (!onMarketing) {
+      ejectScript('lf-ga4');
+      return;
+    }
     mountGa4();
     window.gtag?.('event', 'page_view', { page_path: pathname });
-  }, [pathname, roles]);
+  }, [pathname, roles, consentVersion]);
 
   return null;
 }

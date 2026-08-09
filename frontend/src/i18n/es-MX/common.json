@@ -54,9 +54,25 @@
     }
   },
   "cookies": {
-    "title": "Usamos cookies propias",
-    "body": "Una cookie propia nos ayuda a ver qué páginas y campañas traen gente a LittleFounders. Se queda en nuestro dominio, sin redes publicitarias ni rastreo entre sitios. Puedes rechazarla y no se guarda nada.",
-    "accept": "Aceptar",
-    "decline": "Rechazar"
+    "eyebrow": "Preferencias de privacidad",
+    "title": "Tu privacidad importa",
+    "body": "Usamos tecnologías necesarias para que LittleFounders funcione. Con tu permiso, la medición opcional nos ayuda a entender qué contenidos y campañas mejoran la experiencia. Puedes aceptar, rechazar o configurar estas opciones.",
+    "configure": "Configurar preferencias",
+    "manage": "Preferencias de cookies",
+    "preferencesTitle": "Elige qué compartes",
+    "preferencesIntro": "Tus decisiones se aplican a este navegador y puedes cambiarlas en cualquier momento. Rechazar las tecnologías opcionales no afecta tu acceso a LittleFounders.",
+    "necessaryTitle": "Tecnologías necesarias",
+    "necessaryDescription": "Se usan para seguridad, navegación, idioma y para recordar tu elección de privacidad. No se pueden desactivar porque el sitio no funcionaría de forma confiable sin ellas.",
+    "attributionTitle": "Atribución propia",
+    "attributionDescription": "Un identificador anónimo en nuestro dominio nos ayuda a entender qué páginas públicas y campañas llevan personas a LittleFounders. No se vende ni se comparte con redes publicitarias.",
+    "analyticsTitle": "Medición opcional",
+    "analyticsDescription": "La medición enfocada en privacidad y, cuando la habilitas, Google Analytics nos ayudan a evaluar páginas públicas y mejorar el producto. No usamos estas herramientas para personalizar publicidad dentro de la experiencia de aprendizaje.",
+    "privacyNote": "Para conocer todos los detalles, incluida la conservación, los proveedores y cómo retirar tu consentimiento, consulta nuestro",
+    "privacyLink": "Aviso de privacidad",
+    "alwaysOn": "Siempre activa",
+    "optional": "Opcional",
+    "acceptOptional": "Aceptar opcionales",
+    "rejectOptional": "Rechazar opcionales",
+    "close": "Cerrar preferencias"
   }
 }

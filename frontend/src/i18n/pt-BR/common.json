@@ -54,9 +54,25 @@
     }
   },
   "cookies": {
-    "title": "Usamos cookies próprios",
-    "body": "Um cookie próprio nos ajuda a ver quais páginas e campanhas trazem pessoas ao LittleFounders. Fica no nosso domínio, sem redes de anúncios nem rastreamento entre sites. Você pode recusar e nada é armazenado.",
-    "accept": "Aceitar",
-    "decline": "Recusar"
+    "eyebrow": "Preferências de privacidade",
+    "title": "Sua privacidade importa",
+    "body": "Usamos tecnologias necessárias para manter o LittleFounders funcionando. Com sua permissão, a medição opcional nos ajuda a entender quais conteúdos e campanhas melhoram a experiência. Você pode aceitar, recusar ou configurar essas opções.",
+    "configure": "Configurar preferências",
+    "manage": "Preferências de cookies",
+    "preferencesTitle": "Escolha o que compartilhar",
+    "preferencesIntro": "Suas escolhas se aplicam a este navegador e podem ser alteradas a qualquer momento. Recusar tecnologias opcionais não afeta seu acesso ao LittleFounders.",
+    "necessaryTitle": "Tecnologias necessárias",
+    "necessaryDescription": "Usadas para segurança, navegação, idioma e para lembrar sua escolha de privacidade. Não podem ser desativadas porque o site não funcionaria de forma confiável sem elas.",
+    "attributionTitle": "Atribuição própria",
+    "attributionDescription": "Um identificador anônimo em nosso domínio ajuda a entender quais páginas públicas e campanhas levam pessoas ao LittleFounders. Ele não é vendido nem compartilhado com redes de anúncios.",
+    "analyticsTitle": "Medição opcional",
+    "analyticsDescription": "A medição focada em privacidade e, quando ativado, o Google Analytics nos ajudam a avaliar páginas públicas e melhorar o produto. Essas ferramentas não são usadas para personalizar publicidade dentro da experiência de aprendizagem.",
+    "privacyNote": "Para todos os detalhes, incluindo retenção, provedores e como retirar o consentimento, leia nosso",
+    "privacyLink": "Aviso de privacidade",
+    "alwaysOn": "Sempre ativa",
+    "optional": "Opcional",
+    "acceptOptional": "Aceitar opcionais",
+    "rejectOptional": "Recusar opcionais",
+    "close": "Fechar preferências"
   }
 }

@@ -6,6 +6,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 
 /* Composition per /DESIGN.md §Screen Recipes → Marketing shell. */
 
@@ -156,6 +157,9 @@ export function MarketingLayout() {
                 >
                   {t('marketing.footer.terms')}
                 </Link>
+              </li>
+              <li>
+                <CookiePreferencesButton />
               </li>
               <li>
                 <Link

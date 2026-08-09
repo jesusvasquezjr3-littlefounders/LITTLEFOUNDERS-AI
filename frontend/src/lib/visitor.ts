@@ -46,6 +46,15 @@ function deleteCookie(name: string): void {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${cookieDomain()}`;
 }
 
+/** Remove cookies written by the optional GA4 script when consent is revoked. */
+function deleteOptionalAnalyticsCookies(): void {
+  const names = document.cookie
+    .split(';')
+    .map((entry) => entry.trim().split('=')[0])
+    .filter((name): name is string => typeof name === 'string' && (name === '_ga' || name === '_gid' || name === '_gat' || name.startsWith('_ga_')));
+  for (const name of names) deleteCookie(name);
+}
+
 export type CookieConsent = 'granted' | 'denied' | 'unset';
 
 export function getCookieConsent(): CookieConsent {
@@ -60,7 +69,10 @@ export function hasCookieConsent(): boolean {
 /** Record the visitor's choice. Declining deletes the identity immediately. */
 export function setCookieConsent(choice: 'granted' | 'denied'): void {
   writeCookie(CONSENT_COOKIE, choice, MAX_AGE_DAYS);
-  if (choice === 'denied') deleteCookie(COOKIE);
+  if (choice === 'denied') {
+    deleteCookie(COOKIE);
+    deleteOptionalAnalyticsCookies();
+  }
 }
 
 /** The visitor id, minted on first consented visit. Null when not consented. */

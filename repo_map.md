@@ -1054,6 +1054,7 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 ## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
 
+- The public cookie experience now uses a layered, equal-choice preferences dialog: necessary technologies are explained separately from optional first-party attribution and measurement, settings remain reachable from the marketing footer, privacy links to a usable cookie-controls section, and rejecting optional technologies removes the first-party identifier plus known GA4 cookies. Public tracker scripts are gated by the consent state and react immediately to accept/reject changes; kid surfaces remain outside the optional tracking path.
 - `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
 - Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
 - Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
@@ -1062,7 +1063,6 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 ## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
 
 - `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.
-- Course inventory rows expose the hierarchy and release metadata an admin needs to make a decision: description, subject, status, adventure/saga/topic/lesson counts, lesson status breakdown, creation date, and release-gate context. Course publication continues through Core's existing atomic release preconditions.
 ```
 
 ### agent/README.md
@@ -10365,19 +10365,19 @@ interface AvatarProps {
 ```
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { Button, Icon } from '@/components/ui';
 import { getCookieConsent, isMarketingRoute, setCookieConsent } from '@/lib/visitor';
 
+const OPEN_PREFERENCES_EVENT = 'lf:open-cookie-preferences';
+
 /*
- * First-party cookie consent (/INSIGHTS.md §7).
- *
- * Shown once, on marketing surfaces only, until the visitor chooses. The two
- * choices are equally weighted and equally easy — no pre-ticked box, no
- * "accept" styled as the only way forward, no cookie wall. That is both the
- * §1.9 "no dark patterns" rule and the only version that survives an
+ * Public cookie choices are deliberately separate from guardian analytics
+ * consent. This surface governs guest marketing technologies; a child's
+ * behavioural collection is still decided by the verified guardian flow.
+ */
 ```
 
 ### frontend/src/components/characters/DinaCharacter.tsx
@@ -12939,18 +12939,18 @@ import { makerSchemas } from './families/maker/register'
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
+import { hasCookieConsent } from '@/lib/visitor';
 
 /*
  * Pulse tracker mounting — the §1.9 fence, enforced in ONE place.
  *
  * Plausible: cookieless, no PII, no persistent identifiers, raw IP/UA never
  * stored (verified against its data policy before adoption — WALKTHROUGH.md
- * 2026-07-20). Safe for every surface INCLUDING kid traffic, so it mounts
- * unconditionally when configured. Uses Plausible's new-format per-site
+ * 2026-07-20). It mounts on adult product surfaces without a consent cookie;
+ * public marketing surfaces wait for explicit optional consent. It never
+ * mounts on kid sessions. Uses Plausible's new-format per-site
  * script (`/js/pa-<id>.js` + `plausible.init()`, v3.2.x): the site domain is
  * baked into the hashed file (no data-domain), and autoCapturePageviews is on
- * by default so SPA route changes track via its History hook — no manual
- * pageview calls. VITE_PLAUSIBLE_SRC is the per-site script URL from
 ```
 
 ### frontend/src/lib/api.ts
@@ -13146,6 +13146,26 @@ export function cn(...inputs: ClassValue[]): string {
     .map(String)
     .join(' ');
 }
+```
+
+### frontend/src/lib/visitor.test.ts
+
+```
+import { beforeEach, describe, expect, it } from 'vitest';
+import { getCookieConsent, setCookieConsent } from './visitor';
+
+function clearCookies(): void {
+  for (const name of ['lf_cc', 'lf_aid', '_ga', '_gid', '_gat', '_ga_TEST', 'lf_other']) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  }
+}
+
+describe('visitor cookie consent', () => {
+  beforeEach(() => {
+    clearCookies();
+  });
+
+  it('starts unset and records an explicit decision', () => {
 ```
 
 ### frontend/src/lib/visitor.ts
@@ -15005,6 +15025,7 @@ const EXPERIENCE_ITEMS = [
 
 ```
 import { useTranslation } from 'react-i18next';
+import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 import { Badge, Card } from '@/components/ui';
 
 const CONTACT_EMAIL = 'informame@littlefounders.ai';
@@ -15016,9 +15037,8 @@ export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
       <h1 className="lf-display-lg">{t(`marketing.legal.${doc}.title`)}</h1>
       <Card hero className="mt-10 text-center">
-        <Badge className="bg-warning-soft text-warning-strong">{t('marketing.legal.badge')}</Badge>
-        <p className="lf-body mt-4 text-content-muted">{t('marketing.legal.body')}</p>
-        <a
+        {doc === 'privacy' ? (
+          <div className="text-left">
 ```
 
 ### frontend/src/routes/marketing/MarketingLayout.tsx
@@ -15032,13 +15052,13 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Dropdown, Icon, ThemeToggle, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
 
 /* Composition per /DESIGN.md §Screen Recipes → Marketing shell. */
 
 const NAV_LINKS = [
   { to: '/how-it-works', key: 'howItWorks' },
   { to: '/families', key: 'families' },
-  { to: '/faq', key: 'faq' },
 ```
 
 ### frontend/src/test-setup.ts

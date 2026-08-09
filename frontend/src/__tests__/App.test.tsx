@@ -72,10 +72,11 @@ describe('Marketing site', () => {
     expect(screen.getByText('Coming soon')).toBeInTheDocument();
   });
 
-  it('renders under-construction legal pages', () => {
+  it('renders the privacy notice with cookie controls', () => {
     renderApp('/legal/privacy');
     expect(screen.getByRole('heading', { name: 'Privacy Notice' })).toBeInTheDocument();
-    expect(screen.getByText('Under construction')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cookies and measurement' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Cookie preferences' })).toHaveLength(2);
   });
 
   it('no app-shell routes exist (removed until built for real)', () => {

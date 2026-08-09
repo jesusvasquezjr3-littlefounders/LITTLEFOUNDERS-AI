@@ -277,7 +277,7 @@ of non-converting visitors. It is written down rather than quietly tolerated.
   command per call with args as distinct tokens, each wrapped in a 5x/20 s
   retry.
 
-## 7. Acquisition layer — first-party cookie (2026-07-29)
+## 7. Acquisition layer — first-party cookie (2026-08-09)
 
 The product could not answer "which channel produces signups" at all. It can
 now, without a single third-party tracker.
@@ -287,10 +287,18 @@ now, without a single third-party tracker.
   expiry. It is sent to Core in the request BODY, not as a Cookie header:
   Core's CORS deliberately runs credentials-off, and analytics is not a good
   enough reason to weaken that.
-- **`lf_cc`** — the consent record. The banner shows once, on marketing
-  surfaces, with Accept and Decline at equal weight (no pre-tick, no cookie
-  wall — §1.9 "no dark patterns"). **Declining DELETES `lf_aid`**; nothing is
-  minted and nothing is sent.
+- **`lf_cc`** — the consent record. The marketing notice explains the purpose
+  of each category and gives equal-weight actions to accept optional
+  technologies, reject them, or open detailed preferences. Necessary
+  technologies are always on; first-party attribution and measurement are
+  optional and off until selected. There is no pre-tick and no cookie wall —
+  §1.9 "no dark patterns".
+- **Revocation is real.** Settings remain available from the public footer.
+  Rejecting optional technologies immediately deletes `lf_aid` and known GA4
+  cookies, removes the optional tracker scripts, and prevents them from being
+  remounted until consent is granted again. GA4 is never mounted before
+  explicit optional consent; Plausible and Umami keep their existing
+  role/surface privacy gates.
 - **Landing snapshot.** UTM parameters and the external referrer exist only
   on the landing URL, so `captureLandingContext()` runs in `main.tsx` before
   React mounts and stores a first-touch snapshot in sessionStorage. Capturing

@@ -54,9 +54,25 @@
     }
   },
   "cookies": {
-    "title": "We use our own cookies",
-    "body": "A first-party cookie helps us see which pages and campaigns bring people to LittleFounders. It stays on our domain, no ad networks, no cross-site tracking. You can decline and nothing is stored.",
-    "accept": "Accept",
-    "decline": "Decline"
+    "eyebrow": "Privacy choices",
+    "title": "Your privacy matters",
+    "body": "We use necessary technologies to keep LittleFounders working. With your permission, optional measurement helps us understand which content and campaigns improve the experience. You can accept, reject or configure these choices.",
+    "configure": "Configure preferences",
+    "manage": "Cookie preferences",
+    "preferencesTitle": "Choose what you share",
+    "preferencesIntro": "Your choices apply to this browser and can be changed at any time. Rejecting optional technologies does not affect access to LittleFounders.",
+    "necessaryTitle": "Necessary technologies",
+    "necessaryDescription": "Used for security, navigation, language and remembering your privacy choice. These cannot be switched off because the site would not work reliably without them.",
+    "attributionTitle": "First-party attribution",
+    "attributionDescription": "An anonymous identifier on our domain helps us understand which public pages and campaigns lead people to LittleFounders. It is not sold or shared with ad networks.",
+    "analyticsTitle": "Optional measurement",
+    "analyticsDescription": "Privacy-focused measurement and, when enabled, Google Analytics help us evaluate public pages and improve the product. These tools are not used to personalize advertising inside the learning experience.",
+    "privacyNote": "For the full details, including retention, providers and how to withdraw consent, read our",
+    "privacyLink": "Privacy Notice",
+    "alwaysOn": "Always on",
+    "optional": "Optional",
+    "acceptOptional": "Accept optional",
+    "rejectOptional": "Reject optional",
+    "close": "Close preferences"
   }
 }

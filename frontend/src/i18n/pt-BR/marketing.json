@@ -181,7 +181,13 @@
       "title": "Termos e Condições"
     },
     "privacy": {
-      "title": "Aviso de Privacidade"
+      "title": "Aviso de Privacidade",
+      "cookiesTitle": "Cookies e medição",
+      "cookiesBody": "A LittleFounders usa tecnologias necessárias para manter o site seguro e funcionando. A atribuição própria e a medição com foco em privacidade só são ativadas depois que você escolhe permiti-las. O Google Analytics é carregado somente quando a medição opcional está ativada e fica limitado às páginas públicas.",
+      "controlsTitle": "Você tem o controle",
+      "controlsBody": "Você pode mudar sua escolha a qualquer momento em Preferências de cookies no rodapé. Ao rejeitar as tecnologias opcionais, o identificador próprio de visitante e os cookies de medição conhecidos são removidos deste navegador.",
+      "contactTitle": "Dúvidas sobre privacidade",
+      "contactBody": "Para dúvidas sobre este aviso ou suas escolhas, escreva para:"
     }
   }
 }

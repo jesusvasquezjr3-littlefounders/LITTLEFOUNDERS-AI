@@ -181,7 +181,13 @@
       "title": "Terms & Conditions"
     },
     "privacy": {
-      "title": "Privacy Notice"
+      "title": "Privacy Notice",
+      "cookiesTitle": "Cookies and measurement",
+      "cookiesBody": "LittleFounders uses necessary technologies to keep the site secure and working. Optional first-party attribution and privacy-focused measurement are enabled only after you choose them. Google Analytics is loaded only when optional measurement is enabled and is limited to public pages.",
+      "controlsTitle": "Your controls",
+      "controlsBody": "You can change your choice at any time from Cookie preferences in the footer. Rejecting optional technologies removes the first-party visitor identifier and known measurement cookies from this browser.",
+      "contactTitle": "Questions about privacy",
+      "contactBody": "For questions about this notice or your choices, contact us at:"
     }
   }
 }

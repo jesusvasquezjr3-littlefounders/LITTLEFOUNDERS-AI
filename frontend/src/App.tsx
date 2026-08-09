@@ -77,7 +77,7 @@ export function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AnalyticsScripts />
+        <AnalyticsScripts consentVersion={consentVersion} />
         <InsightsBeacon consentVersion={consentVersion} />
         <CookieConsentBanner onDecision={() => setConsentVersion((v) => v + 1)} />
         <Routes>
