@@ -14,6 +14,7 @@ C6='\033[1;36m' # Light Cyan
 C7='\033[1;35m' # Light Purple
 C8='\033[1;34m' # Light Blue
 C9='\033[1;32m' # Light Green
+C10='\033[0;31m' # Red
 NC='\033[0m'    # No Color
 
 echo "==> Starting all LittleFounders services..."
@@ -41,6 +42,8 @@ start_service "audiogen" "$C4" "AUDIOGEN"
 start_service "parent-id-check" "$C6" "GUARDIAN"
 start_service "email-server" "$C7" "EMAIL"
 start_service "filebase" "$C8" "DEPOT"
+start_service "picturegen" "$C9" "PRISM"
+start_service "dataintel" "$C10" "DATAINTEL"
 
 # Wait for all background jobs to finish (they won't unless they crash or user presses Ctrl+C)
 wait
