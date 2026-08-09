@@ -314,7 +314,24 @@
       "visitDuration": "Visit duration",
       "trend": "Daily visitors",
       "trendAria": "Daily visitors over the selected period",
-      "trendEmpty": "No traffic recorded in this period yet."
+      "trendEmpty": "No traffic recorded in this period yet.",
+      "chartSubtitle": "Explore volume, compare the selected metric, and drag the lower timeline to zoom.",
+      "metricAria": "Analytics trend metric",
+      "rangeAria": "Analytics trend range",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "rangeall": "All",
+      "chartRange": "{{start}} to {{end}}",
+      "dailyAverage": "Daily average",
+      "pagesPerVisitor": "Pages per visitor",
+      "chartChange": "First to last day",
+      "average": "Range average",
+      "peakDay": "Peak day",
+      "chartSummaryAria": "Summary for the selected analytics range",
+      "chartOverviewAria": "Full analytics trend overview",
+      "chartZoomHint": "Drag the handles in the lower timeline to focus on a smaller window.",
+      "signalsAria": "Web analytics signals"
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
@@ -322,7 +339,10 @@
       "pageviews": "Pageviews",
       "visitors": "Visitors",
       "visits": "Visits",
-      "bounces": "Bounces"
+      "bounces": "Bounces",
+      "averageTime": "Average time per visit",
+      "bounceRate": "Behavior bounce rate",
+      "signalsAria": "Behavior analytics signals"
     },
     "filters": {
       "dimensionLabel": "Filter by",
@@ -353,6 +373,8 @@
       "title": "Breakdowns",
       "empty": "No data for this period.",
       "filterBy": "Filter by {{value}}",
+      "explorerTitle": "Explore more dimensions",
+      "explorerSubtitle": "Referrers, regions, and UTM attribution remain available when you need deeper analysis.",
       "cards": {
         "page": "Top pages",
         "source": "Top sources",
@@ -365,6 +387,19 @@
         "exit_page": "Exit pages",
         "utm_campaign": "Campaigns"
       }
+    },
+    "geo": {
+      "sectionTitle": "Audience geography",
+      "sectionSubtitle": "See where visitors come from and focus the full console on a country with one click.",
+      "title": "Global reach",
+      "subtitle": "Visitor concentration by country for the selected period.",
+      "mapAria": "World map showing visitor concentration by country",
+      "topCountries": "Top countries",
+      "totalVisitorsLabel": "visitors across reported countries",
+      "moreVisitors": "Larger points mean more visitors",
+      "low": "Lower",
+      "high": "Higher",
+      "filterHint": "Select a country to add it as a global filter."
     },
     "toolsTitle": "Exports & controls",
     "reports": {

@@ -58,6 +58,14 @@ export const BREAKDOWN_CARDS: { dimension: DimensionKey; icon: string }[] = [
   { dimension: 'utm_campaign', icon: 'campaign' },
 ];
 
+/** Lower-frequency dimensions live behind an expandable explorer so the first view stays decision-oriented. */
+export const SECONDARY_BREAKDOWN_CARDS: { dimension: DimensionKey; icon: string }[] = [
+  { dimension: 'region', icon: 'map' },
+  { dimension: 'referrer', icon: 'link' },
+  { dimension: 'utm_source', icon: 'source' },
+  { dimension: 'utm_medium', icon: 'tune' },
+];
+
 /** Dimensions offered in the manual filter builder (row clicks cover the rest). */
 export const BUILDER_DIMENSIONS: DimensionKey[] = ['country', 'source', 'device', 'browser', 'page', 'channel'];
 

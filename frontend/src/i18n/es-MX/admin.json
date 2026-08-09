@@ -314,7 +314,24 @@
       "visitDuration": "Duración de visita",
       "trend": "Visitantes por día",
       "trendAria": "Visitantes diarios en el periodo seleccionado",
-      "trendEmpty": "Aún no hay tráfico registrado en este periodo."
+      "trendEmpty": "Aún no hay tráfico registrado en este periodo.",
+      "chartSubtitle": "Explora el volumen, compara la métrica y arrastra la línea inferior para ampliar.",
+      "metricAria": "Métrica de tendencia analítica",
+      "rangeAria": "Rango de tendencia analítica",
+      "range7d": "7D",
+      "range30d": "30D",
+      "range90d": "90D",
+      "rangeall": "Todo",
+      "chartRange": "{{start}} a {{end}}",
+      "dailyAverage": "Promedio diario",
+      "pagesPerVisitor": "Páginas por visitante",
+      "chartChange": "Del primer al último día",
+      "average": "Promedio del rango",
+      "peakDay": "Día pico",
+      "chartSummaryAria": "Resumen del rango analítico seleccionado",
+      "chartOverviewAria": "Vista general completa de la tendencia analítica",
+      "chartZoomHint": "Arrastra los controles de la línea inferior para enfocarte en una ventana más pequeña.",
+      "signalsAria": "Señales de analítica web"
     },
     "behavior": {
       "title": "Comportamiento (superficies adultas)",
@@ -322,7 +339,10 @@
       "pageviews": "Páginas vistas",
       "visitors": "Visitantes",
       "visits": "Visitas",
-      "bounces": "Rebotes"
+      "bounces": "Rebotes",
+      "averageTime": "Tiempo promedio por visita",
+      "bounceRate": "Tasa de rebote de comportamiento",
+      "signalsAria": "Señales de comportamiento"
     },
     "filters": {
       "dimensionLabel": "Filtrar por",
@@ -353,6 +373,8 @@
       "title": "Desgloses",
       "empty": "Sin datos en este periodo.",
       "filterBy": "Filtrar por {{value}}",
+      "explorerTitle": "Explorar más dimensiones",
+      "explorerSubtitle": "Las referencias, regiones y atribución UTM quedan disponibles para análisis más profundo.",
       "cards": {
         "page": "Páginas top",
         "source": "Fuentes top",
@@ -365,6 +387,19 @@
         "exit_page": "Páginas de salida",
         "utm_campaign": "Campañas"
       }
+    },
+    "geo": {
+      "sectionTitle": "Geografía de la audiencia",
+      "sectionSubtitle": "Observa de dónde vienen los visitantes y enfoca toda la consola en un país con un clic.",
+      "title": "Alcance global",
+      "subtitle": "Concentración de visitantes por país en el periodo seleccionado.",
+      "mapAria": "Mapamundi con concentración de visitantes por país",
+      "topCountries": "Países principales",
+      "totalVisitorsLabel": "visitantes entre los países reportados",
+      "moreVisitors": "Los puntos grandes representan más visitantes",
+      "low": "Menor",
+      "high": "Mayor",
+      "filterHint": "Selecciona un país para agregarlo como filtro global."
     },
     "toolsTitle": "Exportaciones y controles",
     "reports": {

@@ -8,7 +8,6 @@ import {
   Icon,
   StatCard,
   Table,
-  TrendChart,
   type DropdownOption,
   type TableColumn,
 } from '@/components/ui';
@@ -18,6 +17,7 @@ import {
   BREAKDOWN_CARDS,
   PERIODS,
   filtersToQuery,
+  SECONDARY_BREAKDOWN_CARDS,
   type AnalyticsFilter,
   type BehaviorData,
   type DimensionKey,
@@ -29,6 +29,8 @@ import { FilterBar } from './analytics/FilterBar';
 import { BreakdownCard } from './analytics/BreakdownCard';
 import { ReportExportCard } from './analytics/ReportExportCard';
 import { ExclusionsCard } from './analytics/ExclusionsCard';
+import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
+import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
 function UnavailableCard({ title, body }: { title: string; body: string }) {
   return (
@@ -67,12 +69,32 @@ export function AnalyticsHealthPage() {
   }, [reloadOverview, reloadBehavior, reloadHealth]);
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
+  const nfDecimal = new Intl.NumberFormat(i18n.resolvedLanguage, { maximumFractionDigits: 1 });
   const nfCompact = new Intl.NumberFormat(i18n.resolvedLanguage, { notation: 'compact', maximumFractionDigits: 1 });
   const pct = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'percent', maximumFractionDigits: 1 });
   const secondsFmt = (s: number) => {
     const m = Math.floor(s / 60);
     return m > 0 ? `${m}m ${Math.round(s % 60)}s` : `${Math.round(s)}s`;
   };
+
+  const webSignals = useMemo(() => {
+    if (overview.state !== 'ready') return null;
+    const { aggregate, timeseries } = overview.data;
+    const dailyVisitors = timeseries.length ? aggregate.visitors / timeseries.length : 0;
+    const pagesPerVisitor = aggregate.visitors > 0 ? aggregate.pageviews / aggregate.visitors : 0;
+    const first = timeseries[0]?.visitors ?? 0;
+    const last = timeseries[timeseries.length - 1]?.visitors ?? 0;
+    return { dailyVisitors, pagesPerVisitor, change: last - first };
+  }, [overview]);
+
+  const behaviorSignals = useMemo(() => {
+    if (behavior.state !== 'ready') return null;
+    const { visits, bounces, totaltime } = behavior.data;
+    return {
+      bounceRate: visits > 0 ? bounces / visits : 0,
+      averageTime: visits > 0 ? totaltime / visits : 0,
+    };
+  }, [behavior]);
 
   const periodOptions: DropdownOption<Period>[] = PERIODS.map((p) => ({
     value: p,
@@ -189,7 +211,7 @@ export function AnalyticsHealthPage() {
           />
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
               <StatCard
                 dense
                 className="shadow-glass border border-outline/50"
@@ -216,24 +238,28 @@ export function AnalyticsHealthPage() {
                 icon={<Icon name="timer" />}
                 value={overview.state === 'ready' ? secondsFmt(overview.data.aggregate.visit_duration) : '…'}
                 label={t('admin.analytics.web.visitDuration')}
-                className="col-span-2 md:col-span-3 lg:col-span-3 shadow-glass border border-outline/50"
+                className="shadow-glass border border-outline/50"
               />
             </div>
-
-            <Card className="p-5 shadow-glass border border-outline/50">
-              <p className="lf-label text-content-muted font-bold">{t('admin.analytics.web.trend')}</p>
-              {overview.state === 'ready' && overview.data.timeseries.length > 0 ? (
-                <TrendChart
-                  className="mt-3"
-                  ariaLabel={t('admin.analytics.web.trendAria')}
-                  points={overview.data.timeseries.map((d) => ({ label: d.date, value: d.visitors }))}
-                />
-              ) : (
-                <p className="lf-caption mt-3 text-content-faint">{t('admin.analytics.web.trendEmpty')}</p>
-              )}
-            </Card>
+            {webSignals && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label={t('admin.analytics.web.signalsAria')}>
+                <SignalCard icon="today" label={t('admin.analytics.web.dailyAverage')} value={nf.format(Math.round(webSignals.dailyVisitors))} />
+                <SignalCard icon="layers" label={t('admin.analytics.web.pagesPerVisitor')} value={nfDecimal.format(webSignals.pagesPerVisitor)} />
+                <SignalCard icon="trending_up" label={t('admin.analytics.web.chartChange')} value={`${webSignals.change >= 0 ? '+' : ''}${nf.format(webSignals.change)}`} valueClassName={webSignals.change >= 0 ? 'text-success' : 'text-error'} />
+              </div>
+            )}
+            {overview.state === 'ready' ? <AnalyticsTrendChart data={overview.data.timeseries} /> : <Card className="flex min-h-64 items-center justify-center"><p className="lf-caption text-content-faint">{t('admin.loading')}</p></Card>}
           </>
         )}
+      </section>
+
+      {/* ── Geography and audience composition ── */}
+      <section aria-labelledby="admin-geography" className="flex flex-col gap-4">
+        <div>
+          <h2 id="admin-geography" className="lf-headline font-bold text-content">{t('admin.analytics.geo.sectionTitle')}</h2>
+          <p className="lf-caption mt-1 text-content-faint">{t('admin.analytics.geo.sectionSubtitle')}</p>
+        </div>
+        <AnalyticsGeoMap period={period} filterQuery={filterQuery} onFilter={addFilter} />
       </section>
 
       {/* ── Behavioral (Umami) ── */}
@@ -248,7 +274,8 @@ export function AnalyticsHealthPage() {
             body={t(`errors.api.${behavior.code}`, { defaultValue: t('admin.analytics.unavailableBody') })}
           />
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+          <>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             <StatCard
               dense
               icon={<Icon name="ads_click" />}
@@ -279,9 +306,16 @@ export function AnalyticsHealthPage() {
               value={behavior.state === 'ready' ? nfCompact.format(behavior.data.bounces) : '…'}
               label={t('admin.analytics.behavior.bounces')}
               tone="accent"
-              className="col-span-2 md:col-span-3 lg:col-span-3 shadow-glass border border-outline/50"
+              className="shadow-glass border border-outline/50"
             />
           </div>
+          {behaviorSignals && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" aria-label={t('admin.analytics.behavior.signalsAria')}>
+              <SignalCard icon="speed" label={t('admin.analytics.behavior.averageTime')} value={secondsFmt(behaviorSignals.averageTime)} />
+              <SignalCard icon="donut_large" label={t('admin.analytics.behavior.bounceRate')} value={pct.format(behaviorSignals.bounceRate)} />
+            </div>
+          )}
+          </>
         )}
       </section>
 
@@ -302,6 +336,17 @@ export function AnalyticsHealthPage() {
             />
           ))}
         </div>
+        <details className="group rounded-lg border border-outline/50 bg-surface-sunken/20 p-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-md text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [&::-webkit-details-marker]:hidden">
+            <span className="flex items-center gap-2"><Icon name="manage_search" className="!text-[21px] text-primary" /><span><span className="lf-title block">{t('admin.analytics.breakdowns.explorerTitle')}</span><span className="lf-caption text-content-muted">{t('admin.analytics.breakdowns.explorerSubtitle')}</span></span></span>
+            <Icon name="expand_more" className="!text-[22px] text-content-muted transition-transform group-open:rotate-180" />
+          </summary>
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {SECONDARY_BREAKDOWN_CARDS.map((c) => (
+              <BreakdownCard key={c.dimension} dimension={c.dimension} icon={c.icon} period={period} filterQuery={filterQuery} onFilter={addFilter} />
+            ))}
+          </div>
+        </details>
       </section>
 
       {/* ── Exports & controls ── */}
@@ -344,5 +389,14 @@ export function AnalyticsHealthPage() {
         )}
       </section>
     </AdminPage>
+  );
+}
+
+function SignalCard({ icon, label, value, valueClassName }: { icon: string; label: string; value: string; valueClassName?: string }) {
+  return (
+    <Card className="flex items-center gap-3 border border-outline/40 p-4">
+      <Icon name={icon} className="!text-[22px] text-primary" />
+      <div className="min-w-0"><p className="lf-caption truncate text-content-muted">{label}</p><p className={cn('lf-number mt-1', valueClassName ?? 'text-content')}>{value}</p></div>
+    </Card>
   );
 }
