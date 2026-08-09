@@ -44,6 +44,29 @@ const TRACK_ROW = {
   updated_at: '2026-07-26T02:00:00Z',
 };
 
+const LIVE_UPDATED_AT = new Date(Date.now() - 30_000).toISOString();
+
+const LIVE_ROW = {
+  run_id: 'live-run-1',
+  track_id: null,
+  course_slug: 'first-lemonade-stand',
+  register: 'kid',
+  active_slots: 2,
+  completed_slots: 4,
+  failed_slots: 1,
+  skipped_slots: 1,
+  total_slots: 8,
+  stage_breakdown: { writing: 2, published: 4, failed: 1, skipped: 1 },
+  tokens_used: 250_000,
+  usd_used: '0.8750',
+  cached_tokens: 100_000,
+  images_generated: 8,
+  images_billed: 3,
+  images_inherited: 5,
+  started_at: LIVE_UPDATED_AT,
+  updated_at: LIVE_UPDATED_AT,
+};
+
 const SLOT_ROWS = [
   {
     slot_id: 'a/s/t/l1',
@@ -85,6 +108,7 @@ function stubGeneration(callerRole: 'admin' | 'universal', opts: { vaultDown?: b
       if (url.includes('/rest/v1/user_roles')) return Promise.resolve(jsonResponse(200, [{ role: callerRole }]));
       if (opts.vaultDown) return Promise.resolve(new Response('upstream down', { status: 503 }));
       if (url.includes('/rest/v1/generation_tracks')) return Promise.resolve(jsonResponse(200, [TRACK_ROW]));
+      if (url.includes('/rest/v1/generation_runs_live')) return Promise.resolve(jsonResponse(200, [LIVE_ROW]));
       if (url.includes('/rest/v1/generation_runs')) return Promise.resolve(jsonResponse(200, opts.emptyRun ? [] : [RUN_ROW]));
       if (url.includes('/rest/v1/generation_slots')) return Promise.resolve(jsonResponse(200, SLOT_ROWS));
       throw new Error(`admin-generation.test: unexpected fetch ${url}`);
@@ -175,6 +199,28 @@ describe('GET /api/v1/admin/generation/runs/:runId', () => {
   it('502s an unknown run id (Vault answered, no row)', async () => {
     stubGeneration('admin', { emptyRun: true });
     const res = await request(createApp()).get('/api/v1/admin/generation/runs/nope').set('Authorization', auth());
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
+  });
+});
+
+describe('GET /api/v1/admin/generation/live', () => {
+  it('hydrates active runs with exact processed counters and numeric cost', async () => {
+    stubGeneration('admin');
+    const res = await request(createApp()).get('/api/v1/admin/generation/live').set('Authorization', auth());
+    expect(res.status).toBe(200);
+    expect(res.body.data.activeRuns[0]).toMatchObject({
+      runId: 'live-run-1',
+      completedSlots: 4,
+      failedSlots: 1,
+      skippedSlots: 1,
+      usdUsed: 0.875,
+    });
+  });
+
+  it('returns DATA_UNAVAILABLE when live telemetry cannot be read', async () => {
+    stubGeneration('admin', { vaultDown: true });
+    const res = await request(createApp()).get('/api/v1/admin/generation/live').set('Authorization', auth());
     expect(res.status).toBe(502);
     expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });

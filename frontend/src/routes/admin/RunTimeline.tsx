@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { Card, Icon, TrendChart } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { TrendPoint } from '@/components/ui';
+import { processedSlots } from './generationTypes';
 
 /*
  * Run timeline — plots the progression curve of a generation run from
@@ -18,6 +19,7 @@ interface SnapshotData {
     id: number;
     completedSlots: number;
     failedSlots: number;
+    skippedSlots: number;
     stageBreakdown: Record<string, number>;
     tokensUsed: number;
     usdUsed: number;
@@ -81,7 +83,7 @@ export function RunTimeline({ runId, className }: RunTimelineProps) {
 
   const completedPoints: TrendPoint[] = snaps.map((s) => ({
     label: timeFmt.format(new Date(s.createdAt)),
-    value: s.completedSlots + s.failedSlots,
+    value: processedSlots(s),
   }));
 
   const costPoints: TrendPoint[] = snaps.map((s) => ({

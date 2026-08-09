@@ -886,9 +886,19 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     register: options.register ?? 'kid',
     totalSlots: slots.length,
   });
+  live.seedCompleted(
+    Object.values(checkpoint.slots)
+      .filter((slot) => slot.state === 'published')
+      .map((slot) => slot.slotId),
+  );
+  live.setCost(ledger.tokens, ledger.usd, ledger.cachedTokens);
   const runLock = await RunLock.acquire(runDir, runId);
 
   try {
+    // Establish a visible initial heartbeat before the first paid stage. This
+    // makes the monitor discoverable even when the browser opens after the
+    // process started or Realtime is unavailable.
+    if (!options.dryRun) await live.flush();
     await promisePool(slots, config.FORGE_CONCURRENCY, async (slot) => {
       if (stoppedOnBudget) return;
       /*
@@ -946,7 +956,10 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
       else if (outcome.state === 'failed')
         failed.push({ slotId: outcome.slotId, error: outcome.error ?? 'unknown error', failedFrom: outcome.failedFrom });
       else if (outcome.state === 'dry-run') dryRun.push(outcome.slotId);
-      else skipped.push({ slotId: outcome.slotId, reason: outcome.error ?? 'skipped' });
+      else {
+        live.markSkipped(outcome.slotId);
+        skipped.push({ slotId: outcome.slotId, reason: outcome.error ?? 'skipped' });
+      }
       // Push latest cost data to the live heartbeat after each slot finishes.
       live.setCost(ledger.tokens, ledger.usd, ledger.cachedTokens);
       await live.flush();

@@ -572,9 +572,16 @@
       "since": "desde {{time}}",
       "polling": "Conectando…",
       "realtime": "Ao vivo (Realtime)",
+      "automatic": "Atualização automática",
+      "degraded": "Atualização de fallback ativa",
       "connectionLost": "Conexão em tempo real perdida",
+      "unavailableTitle": "Status ao vivo indisponível",
+      "unavailableNote": "O monitor continuará tentando. O histórico de execuções permanece disponível.",
+      "activeRuns": "{{count}} execuções ativas",
+      "selectRun": "Selecione uma execução ativa",
       "progress": "{{completed}} / {{total}} lições processadas",
-      "progressAria": "Progresso geral da execução"
+      "progressAria": "Progresso geral da execução",
+      "breakdown": "Publicadas {{published}}, com falha {{failed}}, ignoradas {{skipped}}"
     },
     "stages": {
       "pending": "Pendente",
@@ -587,7 +594,8 @@
       "localizing": "Traduzindo",
       "illustrating": "Imagens",
       "publishing": "Publicando",
-      "published": "Publicado"
+      "published": "Publicado",
+      "skipped": "Ignoradas"
     },
     "failedFromLabels": {
       "pending": "Pendente",
@@ -627,6 +635,8 @@
       "failed": "falhas",
       "cost": "custo",
       "tokens": "tokens",
+      "processed": "processadas",
+      "skipped": "ignoradas",
       "cacheHit": "cache",
       "images": "imagens cobradas+herdadas"
     },

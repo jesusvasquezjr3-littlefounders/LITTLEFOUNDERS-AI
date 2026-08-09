@@ -863,6 +863,7 @@ export interface LiveRunHeartbeat {
   activeSlots: number;
   completedSlots: number;
   failedSlots: number;
+  skippedSlots: number;
   totalSlots: number;
   stageBreakdown: Record<string, number>;
   tokensUsed: number;
@@ -879,6 +880,11 @@ export interface LiveGenerationStatus {
   activeRuns: LiveRunHeartbeat[];
 }
 
+function liveNumber(value: number | string | null | undefined): number {
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+}
+
 export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> {
   const rows = await serviceRest<
     {
@@ -889,6 +895,7 @@ export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> 
       active_slots: number;
       completed_slots: number;
       failed_slots: number;
+      skipped_slots: number;
       total_slots: number;
       stage_breakdown: Record<string, number>;
       tokens_used: number;
@@ -912,17 +919,18 @@ export async function getLiveGeneration(): Promise<LiveGenerationStatus | null> 
       trackId: r.track_id,
       courseSlug: r.course_slug,
       register: r.register,
-      activeSlots: r.active_slots,
-      completedSlots: r.completed_slots,
-      failedSlots: r.failed_slots,
-      totalSlots: r.total_slots,
-      stageBreakdown: r.stage_breakdown,
-      tokensUsed: r.tokens_used,
-      usdUsed: Number(r.usd_used),
-      cachedTokens: r.cached_tokens,
-      imagesGenerated: r.images_generated,
-      imagesBilled: r.images_billed,
-      imagesInherited: r.images_inherited,
+      activeSlots: liveNumber(r.active_slots),
+      completedSlots: liveNumber(r.completed_slots),
+      failedSlots: liveNumber(r.failed_slots),
+      skippedSlots: liveNumber(r.skipped_slots),
+      totalSlots: liveNumber(r.total_slots),
+      stageBreakdown: r.stage_breakdown ?? {},
+      tokensUsed: liveNumber(r.tokens_used),
+      usdUsed: liveNumber(r.usd_used),
+      cachedTokens: liveNumber(r.cached_tokens),
+      imagesGenerated: liveNumber(r.images_generated),
+      imagesBilled: liveNumber(r.images_billed),
+      imagesInherited: liveNumber(r.images_inherited),
       startedAt: r.started_at,
       updatedAt: r.updated_at,
     })),
@@ -1330,6 +1338,7 @@ export interface HeartbeatSnapshot {
   activeSlots: number;
   completedSlots: number;
   failedSlots: number;
+  skippedSlots: number;
   stageBreakdown: Record<string, number>;
   tokensUsed: number;
   usdUsed: number;
@@ -1348,6 +1357,7 @@ export async function getHeartbeatSnapshots(runId: string): Promise<HeartbeatSna
       active_slots: number;
       completed_slots: number;
       failed_slots: number;
+      skipped_slots: number;
       stage_breakdown: Record<string, number>;
       tokens_used: number;
       usd_used: number | string;
@@ -1364,16 +1374,17 @@ export async function getHeartbeatSnapshots(runId: string): Promise<HeartbeatSna
   return rows.map((r) => ({
     id: r.id,
     runId: r.run_id,
-    activeSlots: r.active_slots,
-    completedSlots: r.completed_slots,
-    failedSlots: r.failed_slots,
-    stageBreakdown: r.stage_breakdown,
-    tokensUsed: r.tokens_used,
-    usdUsed: Number(r.usd_used),
-    cachedTokens: r.cached_tokens,
-    imagesGenerated: r.images_generated,
-    imagesBilled: r.images_billed,
-    imagesInherited: r.images_inherited,
+    activeSlots: liveNumber(r.active_slots),
+    completedSlots: liveNumber(r.completed_slots),
+    failedSlots: liveNumber(r.failed_slots),
+    skippedSlots: liveNumber(r.skipped_slots),
+    stageBreakdown: r.stage_breakdown ?? {},
+    tokensUsed: liveNumber(r.tokens_used),
+    usdUsed: liveNumber(r.usd_used),
+    cachedTokens: liveNumber(r.cached_tokens),
+    imagesGenerated: liveNumber(r.images_generated),
+    imagesBilled: liveNumber(r.images_billed),
+    imagesInherited: liveNumber(r.images_inherited),
     createdAt: r.created_at,
   }));
 }

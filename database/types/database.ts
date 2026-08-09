@@ -93,6 +93,13 @@ export type Database = {
             referencedRelation: "courses"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "adventures_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
+          },
         ]
       }
       analytics_consents: {
@@ -307,6 +314,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "courses"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_release_verifications_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
           },
         ]
       }
@@ -1849,6 +1863,10 @@ export type Database = {
       dataintel_lessons_sync: {
         Row: {
           course_id: string | null
+          course_slug: string | null
+          course_title_en: string | null
+          course_title_es: string | null
+          course_title_pt: string | null
           lesson_id: string | null
           segment_count: number | null
           slug: string | null
@@ -1856,15 +1874,7 @@ export type Database = {
           title_es: string | null
           title_pt: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "adventures_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       dataintel_sessions_sync: {
         Row: {

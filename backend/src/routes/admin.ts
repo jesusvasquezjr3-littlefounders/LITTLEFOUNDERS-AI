@@ -443,9 +443,12 @@ export function adminRouter(): Router {
 
   /**
    * Live heartbeat for currently-active generation runs (0018). The admin
-   * dashboard polls this every ~2s while a run is active to render the live
-   * flow visualization — it shows slot progress per stage, cost, and image
-   * counts as they happen, not just after the fact (0017's post-mortem view).
+   * dashboard hydrates and polls this every few seconds while a run is active
+   * to render the live flow visualization. Supabase Realtime may accelerate
+   * updates in the browser, but this Core response remains the reliable
+   * baseline when a subscription is unavailable or starts after the INSERT.
+   * It shows slot progress per stage, cost, and image counts as they happen,
+   * not just after the fact (0017's post-mortem view).
    * Rows older than 2 minutes are stale (the run process died) and are
    * excluded by the query.
    */

@@ -572,9 +572,16 @@
       "since": "since {{time}}",
       "polling": "Connecting…",
       "realtime": "Live (Realtime)",
+      "automatic": "Automatic refresh",
+      "degraded": "Fallback refresh active",
       "connectionLost": "Realtime connection lost",
+      "unavailableTitle": "Live status unavailable",
+      "unavailableNote": "The monitor will keep trying. Historical runs remain available in Run History.",
+      "activeRuns": "{{count}} active runs",
+      "selectRun": "Select an active run",
       "progress": "{{completed}} / {{total}} lessons processed",
-      "progressAria": "Overall run progress"
+      "progressAria": "Overall run progress",
+      "breakdown": "Published {{published}}, failed {{failed}}, skipped {{skipped}}"
     },
     "stages": {
       "pending": "Pending",
@@ -587,7 +594,8 @@
       "localizing": "Localizing",
       "illustrating": "Images",
       "publishing": "Publishing",
-      "published": "Published"
+      "published": "Published",
+      "skipped": "Skipped"
     },
     "failedFromLabels": {
       "pending": "Pending",
@@ -627,6 +635,8 @@
       "failed": "failed",
       "cost": "cost",
       "tokens": "tokens",
+      "processed": "processed",
+      "skipped": "skipped",
       "cacheHit": "cache hit",
       "images": "images billed+inherited"
     },

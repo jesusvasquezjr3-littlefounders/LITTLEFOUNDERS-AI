@@ -64,6 +64,7 @@ export const GENERATION_STAGES: Record<GenerationKind, readonly GenerationStageD
     { key: 'illustrating', icon: 'image' },
     { key: 'publishing', icon: 'cloud_upload' },
     { key: 'published', icon: 'task_alt', terminal: true },
+    { key: 'skipped', icon: 'skip_next', terminal: true },
   ],
 };
 
@@ -91,6 +92,7 @@ export interface LiveRunHeartbeat {
   activeSlots: number;
   completedSlots: number;
   failedSlots: number;
+  skippedSlots: number;
   totalSlots: number;
   stageBreakdown: Record<string, number>;
   tokensUsed: number;
@@ -105,6 +107,10 @@ export interface LiveRunHeartbeat {
 
 export interface LiveGenerationStatus {
   activeRuns: LiveRunHeartbeat[];
+}
+
+export function processedSlots(heartbeat: Pick<LiveRunHeartbeat, 'completedSlots' | 'failedSlots' | 'skippedSlots'>): number {
+  return heartbeat.completedSlots + heartbeat.failedSlots + heartbeat.skippedSlots;
 }
 
 export interface GenerationAnalytics {

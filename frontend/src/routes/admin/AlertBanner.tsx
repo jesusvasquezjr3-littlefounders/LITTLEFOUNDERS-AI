@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Card, Badge, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { LiveRunHeartbeat, GenerationAnalytics } from './generationTypes';
+import { processedSlots, type LiveRunHeartbeat, type GenerationAnalytics } from './generationTypes';
 import { formatPct } from './generationI18n';
 
 /*
@@ -28,11 +28,12 @@ function computeAlerts(
 
   // ── Live alerts ──────────────────────────────────────────────────────────
   if (heartbeat) {
+    const processed = processedSlots(heartbeat);
     const progressPct = heartbeat.totalSlots > 0
-      ? ((heartbeat.completedSlots + heartbeat.failedSlots) / heartbeat.totalSlots) * 100
+      ? (processed / heartbeat.totalSlots) * 100
       : 0;
-    const failRate = heartbeat.completedSlots + heartbeat.failedSlots > 0
-      ? heartbeat.failedSlots / (heartbeat.completedSlots + heartbeat.failedSlots)
+    const failRate = processed > 0
+      ? heartbeat.failedSlots / processed
       : 0;
 
     // Cost overrun alert (live)
@@ -60,12 +61,12 @@ function computeAlerts(
     }
 
     // High failure rate
-    if (failRate > 0.3 && heartbeat.completedSlots + heartbeat.failedSlots > 5) {
+    if (failRate > 0.3 && processed > 5) {
       alerts.push({
         id: 'live-failrate',
         severity: 'critical',
         message: t('admin.generation.alerts.highFailRate.title', { rate: formatPct(failRate * 100, locale) }),
-        detail: t('admin.generation.alerts.highFailRate.detail', { failed: heartbeat.failedSlots, total: heartbeat.completedSlots + heartbeat.failedSlots }),
+        detail: t('admin.generation.alerts.highFailRate.detail', { failed: heartbeat.failedSlots, total: processed }),
       });
     }
   }

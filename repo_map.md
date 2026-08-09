@@ -935,14 +935,14 @@ Knowing learner behavior — patterns, drop-off, rhythm, family dynamics — is
 > document captures the complete v1 design ("Money Moments") as it was
 > analyzed, prototyped, and then REVERTED (the revert commit sits on top of
 > `67dfb6e` — that commit holds a complete, working reference implementation
-> if the future session wants to start from it via `git show`). Nothing
-> described here exists in the active codebase.
+> if the future session wants to start from it via `git show`). The
+> Data Intel → Core personalization boundary is now specified below and is
+> ready for the future Tutor implementation, but no active Tutor surface
+> consumes it yet.
 
 ## Rationale (edtech analysis 2026-07-25)
 
 Source pattern: Google Labs *Little Language Lessons* — "Tiny Lesson": the
-learner's real SITUATION, not a curriculum node, as the unit of learning
-(transfer-appropriate processing). Their collection demonstrates that
 ```
 
 ### PRODUCT.md
@@ -1061,7 +1061,7 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 - The next intelligence contract is now locally implemented: event retries are idempotent, client timestamps are bounded, and server-authoritative attempts carry only closed pedagogical context. DuckDB derives explainable mastery/review state and anonymized skill health, while `/admin/intel` visibly reports sync freshness and evidence coverage before presenting learning conclusions. Runtime experiments record a treatment only after it rendered. Core exposes an own-learner boundary for the future Tutor; the Tutor itself remains intentionally unimplemented.
 - The learning console now has a decision-oriented command center rather than a single skill table. The warehouse retains localized course catalog context, computes course/lesson/UUID-only learner summaries from authoritative attempts and explicit lifecycle events, and labels every finding as awaiting, limited or sufficient evidence. Staff can expand course, lesson and learner summaries in a full-viewport dialog; empty data remains explicitly empty while the published catalog stays inspectable.
 
-## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
+## Current State (2026-08-09) — Admin generation monitor made production-resilient locally
 
 ```
 
@@ -5201,6 +5201,26 @@ function docWith(segment: unknown) {
 }
 ```
 
+### coursegen/src/__tests__/liveTelemetry.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { resetConfigCache } from '../env.js';
+import { LiveTelemetry } from '../pipeline/liveTelemetry.js';
+
+const mocks = vi.hoisted(() => ({
+  vaultUpsert: vi.fn(async () => []),
+}));
+
+vi.mock('../vault/restClient.js', () => ({ vaultUpsert: mocks.vaultUpsert }));
+
+beforeEach(() => {
+  process.env.SUPABASE_URL = 'https://vault.example.com';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = 'srv-test-key';
+  resetConfigCache();
+  mocks.vaultUpsert.mockClear();
+```
+
 ### coursegen/src/__tests__/localize.test.ts
 
 ```
@@ -7657,6 +7677,26 @@ SELECT
   l.title->>'en-US' AS title_en,
   l.title->>'es-MX' AS title_es,
   l.title->>'pt-BR' AS title_pt,
+```
+
+### database/migrations/0038_generation_live_accuracy.sql
+
+```
+-- 0038_generation_live_accuracy.sql — make live generation progress complete
+-- and resume-safe. The live monitor must distinguish successful, failed and
+-- skipped terminal slots; otherwise a resumed run can report false progress
+-- or remain active forever after a slot was intentionally skipped.
+
+ALTER TABLE public.generation_runs_live
+  ADD COLUMN IF NOT EXISTS skipped_slots integer NOT NULL DEFAULT 0;
+
+ALTER TABLE public.generation_heartbeat_snapshots
+  ADD COLUMN IF NOT EXISTS skipped_slots integer NOT NULL DEFAULT 0;
+
+COMMENT ON COLUMN public.generation_runs_live.skipped_slots IS
+  'Terminal slots skipped without publication; included in processed progress.';
+
+COMMENT ON COLUMN public.generation_heartbeat_snapshots.skipped_slots IS
 ```
 
 ### database/package.json
@@ -13291,7 +13331,7 @@ import {
 ### frontend/src/routes/admin/AdminGenerationPage.tsx
 
 ```
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, Table, TrendChart, type DropdownOption, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -13410,7 +13450,7 @@ interface User {
 import { useTranslation } from 'react-i18next';
 import { Card, Badge, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import type { LiveRunHeartbeat, GenerationAnalytics } from './generationTypes';
+import { processedSlots, type LiveRunHeartbeat, type GenerationAnalytics } from './generationTypes';
 import { formatPct } from './generationI18n';
 
 /*
@@ -13490,18 +13530,18 @@ import { failedFromI18nKey, formatPct } from './generationI18n';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { Card, Icon, ProgressBar, StatCard } from '@/components/ui';
+import { api } from '@/lib/api';
+import { Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { getSupabaseClient } from '@/lib/supabaseRealtime';
 import { formatPct } from './generationI18n';
-import { resolveGenerationKind, stagesForKind, type LiveRunHeartbeat } from './generationTypes';
+import { processedSlots, resolveGenerationKind, stagesForKind, type LiveGenerationStatus, type LiveRunHeartbeat } from './generationTypes';
 
 /*
- * Subscribes to generation_runs_live changes via Supabase Realtime (Postgres
- * CDC — migration 0019). Replaces the previous 2s polling with true push-based
- * updates: the dashboard receives heartbeats the instant coursegen writes them
- * to Vault. Falls back to idle state when the row is DELETEd (run finished) or
- * when Supabase is not configured.
+ * Live Monitor data flow:
+ *   1. Core hydrates the current state and polls as the reliable baseline.
+ *   2. Supabase Realtime accelerates updates when it is configured and healthy.
+ *   3. Realtime failure never hides a heartbeat that Core can still provide.
 ```
 
 ### frontend/src/routes/admin/PipelineFlow.tsx
@@ -13554,6 +13594,7 @@ import { api } from '@/lib/api';
 import { Card, Icon, TrendChart } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { TrendPoint } from '@/components/ui';
+import { processedSlots } from './generationTypes';
 
 /*
  * Run timeline — plots the progression curve of a generation run from
@@ -13561,7 +13602,6 @@ import type { TrendPoint } from '@/components/ui';
  * activity over time so the team can see how the run evolved.
  */
 
-interface SnapshotData {
 ```
 
 ### frontend/src/routes/admin/SignupTimeline.tsx
@@ -13702,6 +13742,26 @@ const USERS = [
     userId: '11111111-1111-4111-8111-111111111111',
     displayName: 'Admin User',
     username: 'admin_user',
+```
+
+### frontend/src/routes/admin/__tests__/LiveStats.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import { LiveStats, mapRow } from '../LiveStats';
+
+const { mockApi, mockGetToken, mockOnHeartbeat } = vi.hoisted(() => ({
+  mockApi: vi.fn(),
+  mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+  mockOnHeartbeat: vi.fn(),
+}));
+
+vi.mock('@/lib/api', () => ({ api: mockApi }));
+vi.mock('@/auth/AuthContext', () => ({
+  useAuth: () => ({ getToken: mockGetToken }),
+}));
+vi.mock('@/lib/supabaseRealtime', () => ({
 ```
 
 ### frontend/src/routes/admin/__tests__/SignupTimeline.test.tsx

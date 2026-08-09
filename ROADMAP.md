@@ -124,6 +124,7 @@ Next, in Jesús's stated order of interest:
 - **Admin Generation Dashboard v2 (2026-07-27 — Phase 1 + 2 shipped):**
   - ✅ Phase 1 (backend + coursegen): Live telemetry (0018), `liveTelemetry.ts`, Core endpoints `/admin/generation/live` + `/admin/generation/analytics`.
   - ✅ Phase 2 (frontend): React Flow interactive canvas (`PipelineFlow.tsx`), live stats panel with 2s polling (`LiveStats.tsx`), cross-run analytics charts (`AnalyticsCharts.tsx`), three-tab layout (Live Monitor / Run History / Analytics) in `/admin/generation`. i18n in 3 locales.
+- **Admin Generation live-monitor hardening (2026-08-09 — local only):** Core `/admin/generation/live` is now the authoritative hydration and polling baseline, with optional Realtime acceleration instead of a Realtime-only contract. Forge publishes an initial heartbeat before paid work, seeds completed slots on resume, recomputes terminal counters idempotently, and includes skipped slots in processed progress. Migration `0038_generation_live_accuracy.sql` adds the persisted skipped-slot counters to live rows and snapshots. Frontend tests cover the no-Realtime production path and coursegen tests cover exact terminal accounting. This remains local-only while production generation is active; deploy the migration before the code.
 - **Admin dashboard hardening (2026-07-28 — shipped):**
   - ✅ Content + Moderation merged into single unified page (`/admin/content`).
   - ✅ Admin Users stats bar — role/local/age group distributions with charts.

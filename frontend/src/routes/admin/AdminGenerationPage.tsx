@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, Table, TrendChart, type DropdownOption, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -59,9 +59,15 @@ function slotLeaf(slotId: string): string {
 
 export function AdminGenerationPage() {
   const { t } = useTranslation();
-  const { data: overview } = useAdminData<GenerationOverview>('/admin/generation');
+  const { data: overview, reload: reloadOverview } = useAdminData<GenerationOverview>('/admin/generation');
   const [tab, setTab] = useState<Tab>('live');
   const [liveHeartbeat, setLiveHeartbeat] = useState<LiveRunHeartbeat | null>(null);
+
+  // History and analytics are snapshots. Refresh them whenever an operator
+  // opens those tabs so a just-finished run is immediately inspectable.
+  useEffect(() => {
+    if (tab !== 'live') void reloadOverview();
+  }, [reloadOverview, tab]);
 
   const handleHeartbeat = useCallback((hb: LiveRunHeartbeat | null) => {
     setLiveHeartbeat(hb);
@@ -128,7 +134,7 @@ export function AdminGenerationPage() {
 function LiveTab({ heartbeat, onHeartbeat }: { heartbeat: LiveRunHeartbeat | null; onHeartbeat: (hb: LiveRunHeartbeat | null) => void }) {
   return (
     <div className="space-y-5">
-      <PipelineFlow heartbeat={heartbeat} />
+      {heartbeat && <PipelineFlow heartbeat={heartbeat} />}
       <LiveStats onHeartbeat={onHeartbeat} />
     </div>
   );

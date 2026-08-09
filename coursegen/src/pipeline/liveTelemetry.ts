@@ -21,6 +21,7 @@ const STATE_TO_LIVE_STAGE: Record<string, string> = {
   published: 'published',
   'dry-run': 'completed',
   failed: 'failed',
+  skipped: 'skipped',
 };
 
 function telemetryConfigured(): boolean {
@@ -52,13 +53,16 @@ export class LiveTelemetry {
   private slotStages = new Map<string, string>();
   private completedCount = 0;
   private failedCount = 0;
+  private skippedCount = 0;
   private tokensUsed = 0;
   private usdUsed = 0;
   private cachedTokens = 0;
   private imagesGenerated = 0;
   private imagesBilled = 0;
   private imagesInherited = 0;
-  private dirty = false;
+  // Publish the initial heartbeat even before the first stage transition.
+  // Otherwise a run with zero tokens at startup has no row to hydrate.
+  private dirty = true;
 
   constructor(heartbeat: LiveHeartbeat) {
     this.runId = heartbeat.runId;
@@ -68,17 +72,37 @@ export class LiveTelemetry {
     this.totalSlots = heartbeat.totalSlots;
   }
 
+  /** Seed the live state with work completed by an earlier invocation. */
+  seedCompleted(slotIds: readonly string[]): void {
+    for (const slotId of slotIds) this.slotStages.set(slotId, 'published');
+    this.recomputeTerminalCounts();
+    this.dirty = true;
+  }
+
   /** Called by processSlot after every successful stage transition. */
   onTransition(slotId: string, checkpointState: SlotState): void {
     const stage = STATE_TO_LIVE_STAGE[checkpointState] ?? checkpointState;
-    if (stage === 'published' || stage === 'completed') {
-      this.completedCount++;
-    }
-    if (stage === 'failed') {
-      this.failedCount++;
-    }
     this.slotStages.set(slotId, stage);
+    this.recomputeTerminalCounts();
     this.dirty = true;
+  }
+
+  /** Record a terminal slot that was intentionally skipped. */
+  markSkipped(slotId: string): void {
+    this.slotStages.set(slotId, 'skipped');
+    this.recomputeTerminalCounts();
+    this.dirty = true;
+  }
+
+  private recomputeTerminalCounts(): void {
+    this.completedCount = 0;
+    this.failedCount = 0;
+    this.skippedCount = 0;
+    for (const stage of this.slotStages.values()) {
+      if (stage === 'published' || stage === 'completed') this.completedCount++;
+      else if (stage === 'failed') this.failedCount++;
+      else if (stage === 'skipped') this.skippedCount++;
+    }
   }
 
   /** Called periodically with the latest ledger totals. */
@@ -114,7 +138,7 @@ export class LiveTelemetry {
     for (const [, stage] of this.slotStages) {
       stageBreakdown[stage] = (stageBreakdown[stage] ?? 0) + 1;
     }
-    const active = this.totalSlots - this.completedCount - this.failedCount;
+    const active = this.totalSlots - this.completedCount - this.failedCount - this.skippedCount;
     return {
       run_id: this.runId,
       track_id: this.trackId ?? null,
@@ -123,6 +147,7 @@ export class LiveTelemetry {
       active_slots: Math.max(0, active),
       completed_slots: this.completedCount,
       failed_slots: this.failedCount,
+      skipped_slots: this.skippedCount,
       total_slots: this.totalSlots,
       stage_breakdown: stageBreakdown,
       tokens_used: this.tokensUsed,
@@ -184,6 +209,7 @@ export class LiveTelemetry {
             active_slots: row.active_slots,
             completed_slots: row.completed_slots,
             failed_slots: row.failed_slots,
+            skipped_slots: row.skipped_slots,
             stage_breakdown: row.stage_breakdown,
             tokens_used: row.tokens_used,
             usd_used: row.usd_used,
