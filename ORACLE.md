@@ -5,8 +5,10 @@
 > document captures the complete v1 design ("Money Moments") as it was
 > analyzed, prototyped, and then REVERTED (the revert commit sits on top of
 > `67dfb6e` — that commit holds a complete, working reference implementation
-> if the future session wants to start from it via `git show`). Nothing
-> described here exists in the active codebase.
+> if the future session wants to start from it via `git show`). The
+> Data Intel → Core personalization boundary is now specified below and is
+> ready for the future Tutor implementation, but no active Tutor surface
+> consumes it yet.
 
 ## Rationale (edtech analysis 2026-07-25)
 
@@ -21,6 +23,134 @@ pick from a **closed, curated taxonomy of situations**, so no data about the
 minor ever travels to third-party APIs. "On demand" at runtime means reading
 from a pre-approved pool in Vault: zero unfiltered AI in front of a child,
 zero latency.
+
+## Data Intel personalization contract (future integration)
+
+This section is the implementation contract for connecting Oracle to the
+learning-intelligence system. It is intentionally narrower than the admin
+console: the Tutor must receive a learner's derived state, not the warehouse,
+raw behavioural history, or another learner's data.
+
+### Current readiness
+
+Data Intel already materializes an explainable state per learner and skill:
+
+- `skillKey` — stable course/topic skill identity.
+- `courseId` and `topicId` — curriculum context when available.
+- `masteryProbability` — estimated mastery in `[0, 1]`.
+- `uncertainty` — confidence limitation in `[0, 1]`; higher means less certainty.
+- `evidenceCount` — number of authoritative learning records behind the state.
+- `firstPracticedAt`, `lastPracticedAt`, and `reviewDueAt` — learning timeline.
+- `recommendedAction` — one of `remediate`, `practice`, `retrieve`, or
+  `continue`.
+- `reasonCode` — a closed, explainable reason for the recommendation.
+
+Core exposes this through the authenticated, caller-only route:
+
+```text
+GET /api/v1/learn/personalization
+```
+
+The response contains the highest-priority recommendation plus the learner's
+derived skill states. Core calls Data Intel with the service-to-service key,
+validates the response, and ensures the caller can receive only their own
+state. The future Tutor must call Core, never Data Intel or DuckDB directly.
+
+This is a prepared boundary, not a completed Tutor integration. The active
+Tutor route and model runtime do not yet exist, and the current local Data
+Intel migration/deployment handoff must be completed before this contract is
+available in production.
+
+### Runtime context allowed for a Tutor request
+
+Core may combine the derived state with the minimum context required to answer
+the current request:
+
+1. authenticated learner identity, role, locale, and age band;
+2. the current published course/topic/lesson context;
+3. the relevant skill state and its evidence/uncertainty;
+4. a closed learner intent or situation identifier;
+5. safe product settings needed for language, accessibility, and difficulty.
+
+For a minor, raw name, surname, location, email, answer text, free-form
+history, and unrelated family data must not be sent to a third-party model.
+The model must not receive raw `learning_events`, raw attempt rows, full
+session histories, or another learner's state. The server must derive a small
+Tutor context object first, then validate it before model invocation.
+
+### Personalization behavior
+
+The Tutor should use the state as pedagogical guidance, never as an
+unquestionable diagnosis:
+
+| State signal | Tutor behavior |
+|---|---|
+| `remediate` | Re-explain the prerequisite with a simpler example and a short guided check. |
+| `practice` | Offer another closed, scaffolded practice item with immediate feedback. |
+| `retrieve` | Schedule or suggest retrieval practice before introducing new complexity. |
+| `continue` | Advance while preserving a light comprehension check. |
+| High uncertainty or low evidence | Ask a short diagnostic check and avoid claiming mastery or failure. |
+| Review due | Prefer spaced retrieval over repeating the exact same item. |
+
+The Tutor must not silently lower a learner's access, label them, or make a
+high-stakes decision from a single score. Mastery probability, uncertainty,
+and evidence count must be passed to the pedagogical policy together so the
+system distinguishes "weak evidence" from "weak performance".
+
+### Closed feedback loop
+
+The future implementation should follow this sequence:
+
+```text
+Learner request
+  → Core authenticates and resolves safe context
+  → Core reads /learn/personalization
+  → Tutor policy selects a pedagogical strategy
+  → approved Tutor content/model response is moderated
+  → learner receives the explanation or practice
+  → authoritative grading/progress writes new evidence
+  → Data Intel recomputes skill state
+```
+
+Any new Tutor telemetry must use a closed event vocabulary, bounded numeric
+or identifier fields, idempotency keys, and the existing consent gate. Adding
+an event requires a migration, Core emission path, tests, and documentation;
+the Tutor must never create an arbitrary JSON or free-text analytics channel.
+The useful learning outcome remains the server-authoritative attempt record,
+not a model's interpretation of what the learner typed.
+
+### Safety, privacy, and failure posture
+
+- A child-facing Tutor requires moderation before display, rate limits, audit
+  logging, and a safe fallback when Data Intel or the model is unavailable.
+- The Tutor must be transparent when evidence is absent or insufficient and
+  fall back to a baseline diagnostic flow rather than inventing a profile.
+- Parent visibility into a child's learning activity remains mandatory.
+- Consent revocation must stop consent-gated behavioural telemetry; it must
+  not be bypassed by the Tutor or by a second analytics path.
+- No raw minor PII or free-form child content may leave LittleFounders' own
+  infrastructure. Any future live-chat design needs a separate review under
+  §1.9 and the moderation-before-screen rule.
+- A failed personalization read is not equivalent to an empty state. Core
+  must return an explicit degraded response or use a safe generic Tutor mode;
+  it must not treat an unavailable warehouse as zero mastery.
+
+### Production acceptance checklist
+
+Before enabling personalized Tutor behavior, a future implementation must
+prove all of the following:
+
+- the current Vault migrations and Data Intel service are deployed and synced;
+- Core's route authenticates the caller, validates the envelope, and prevents
+  cross-user access;
+- the model context contains only the approved fields above;
+- no raw answers, free text, session replay, or minor PII enters the model;
+- low-evidence and unavailable-data paths are tested separately;
+- content moderation, refusal, rate limiting, timeout, and fallback behavior
+  are tested;
+- parent visibility and consent revocation are tested end to end;
+- personalization is evaluated with offline pedagogical tests and a staged
+  experiment before broad release.
 
 ## Designed v1 architecture (Money Moments)
 

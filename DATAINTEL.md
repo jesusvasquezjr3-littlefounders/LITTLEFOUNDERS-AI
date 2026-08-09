@@ -187,6 +187,31 @@ evidence count, review due time and a closed recommended action. Core exposes a
 learner only their own state, which leaves a safe, first-party contract ready
 for the future Tutor without granting it raw DuckDB or behavioral history.
 
+### Tutor integration boundary (future)
+
+The future Tutor must consume learning intelligence through Core's
+caller-only `GET /api/v1/learn/personalization` route. Core authenticates the
+learner, calls Data Intel with the internal service key, validates the
+response, and returns only that learner's derived skill states plus the
+highest-priority explainable recommendation. The Tutor must never call Data
+Intel or DuckDB directly and must never receive raw `fact_events`, raw
+`fact_segment_attempts`, another learner's state, or free-text analytics.
+
+The safe Tutor context is assembled by Core from the learner's role/age band,
+locale, current published curriculum context, relevant skill state,
+uncertainty, evidence count, review timing, and closed learner intent. A high
+uncertainty or low-evidence state is a request for a diagnostic check, not a
+claim that the learner has failed. An unavailable warehouse is a degraded
+dependency, not zero mastery; Core must return an explicit failure or use a
+generic Tutor fallback.
+
+The intelligence loop is deliberately one-way at the service boundary:
+authoritative learning writes enter Vault, Data Intel derives explainable
+states, and Core brokers the minimum context to the future Tutor. Any new
+Tutor telemetry requires a closed event/migration contract and the existing
+consent gate. For the full pedagogical, privacy, moderation, and production
+acceptance contract, see `/ORACLE.md`.
+
 ### Dimension tables
 
 **`dim_users`** — one row per user:
