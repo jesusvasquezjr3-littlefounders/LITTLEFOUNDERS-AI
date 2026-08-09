@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
-import { AdminAction, AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
 
 interface AuditEntry {
   id: number;
@@ -174,32 +174,10 @@ export function AdminAuditPage() {
 
         {/* Audit Detail Inspector Modal */}
         {selectedEntry && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-150"
-            onClick={() => setSelectedEntry(null)}
-          >
-            <div
-              className="w-full max-w-xl bg-surface border border-outline rounded-2xl p-6 shadow-glass flex flex-col gap-5 max-h-[85vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between gap-4 pb-3 border-b border-outline/50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-primary-soft text-primary">
-                    <Icon name="history" className="!text-[24px]" />
-                  </div>
-                  <div>
-                    <h2 className="lf-title text-content font-bold">{t('admin.audit.modalTitle')}</h2>
-                    <p className="lf-caption text-content-muted mt-0.5">{dtf.format(new Date(selectedEntry.createdAt))}</p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedEntry(null)}
-                  className="p-1 rounded-full text-content-muted hover:text-content hover:bg-surface-sunken transition-colors"
-                >
-                  <Icon name="close" className="!text-[20px]" />
-                </button>
+          <AdminDialog title={t('admin.audit.modalTitle')} onClose={() => setSelectedEntry(null)} className="max-w-xl gap-5">
+              <div className="flex items-center gap-3 border-b border-outline/50 pb-3">
+                <Icon name="history" className="!text-[24px] text-primary" />
+                <p className="lf-caption text-content-muted">{dtf.format(new Date(selectedEntry.createdAt))}</p>
               </div>
 
               {/* Actor ID Copier Banner */}
@@ -251,8 +229,7 @@ export function AdminAuditPage() {
                   {t('admin.audit.close')}
                 </AdminAction>
               </div>
-            </div>
-          </div>
+          </AdminDialog>
         )}
       </div>
     </AdminPage>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Dropdown, Field, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
-import { AdminAction, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
 interface Holder {
   userId: string;
@@ -249,30 +249,8 @@ export function AdminRolesPage() {
 
         {/* ── ADMIN PERMISSIONS MODAL ── */}
         {selectedAdmin && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm animate-in fade-in duration-150">
-            <div
-              className="fixed inset-0"
-              onClick={() => setSelectedAdmin(null)}
-            />
-            <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-surface shadow-glass border border-outline flex flex-col gap-0 z-10">
-              {/* Header */}
-              <div className="border-b border-outline/50 bg-surface-sunken p-5">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="lf-title font-bold text-content">
-                      {t('admin.roles.accessControlTitle', { name: selectedAdmin.displayName })}
-                    </h3>
-                    <p className="mt-1 lf-caption text-content-muted">{t('admin.roles.accessControlDesc')}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedAdmin(null)}
-                    className="rounded-full p-1.5 text-content-muted hover:bg-surface hover:text-content transition-colors"
-                  >
-                    <Icon name="close" className="!text-[20px]" />
-                  </button>
-                </div>
-              </div>
+          <AdminDialog title={t('admin.roles.accessControlTitle', { name: selectedAdmin.displayName })} onClose={() => setSelectedAdmin(null)} className="max-w-md gap-0">
+              <p className="border-b border-outline/50 px-5 py-4 lf-caption text-content-muted">{t('admin.roles.accessControlDesc')}</p>
 
               {/* Body - Toggles */}
               <div className="p-5 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
@@ -323,8 +301,7 @@ export function AdminRolesPage() {
                   {t('admin.audit.close')}
                 </Button>
               </div>
-            </div>
-          </div>
+          </AdminDialog>
         )}
       </div>
     </AdminPage>

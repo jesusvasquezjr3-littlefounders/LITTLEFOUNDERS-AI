@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
-import { AdminAction, AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import { cn } from '@/lib/utils';
 
 interface EmailEntry {
@@ -357,40 +357,15 @@ export function AdminEmailDashboard() {
             </div>
           )}
 
-          {/* Email Detail Inspector Modal */}
-          {selectedEntry && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-150"
-              onClick={() => setSelectedEntry(null)}
-            >
-              <div
-                className="w-full max-w-2xl bg-surface border border-outline rounded-2xl p-6 shadow-glass flex flex-col gap-5 max-h-[85vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Modal Header */}
-                <div className="flex items-start justify-between gap-4 pb-3 border-b border-outline/50">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-primary-soft text-primary">
-                      <Icon name="mail" className="!text-[24px]" />
-                    </div>
-                    <div>
-                      <h2 className="lf-title text-content font-bold">{t('admin.emails.modalTitle')}</h2>
-                      <p className="lf-caption text-content-muted mt-0.5">{selectedEntry.to}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge className={STATUS_TONES[selectedEntry.status] ?? 'bg-surface-sunken text-content-muted'}>
-                      {t(`admin.emails.status.${selectedEntry.status}`, selectedEntry.status)}
-                    </Badge>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedEntry(null)}
-                      className="p-1 rounded-full text-content-muted hover:text-content hover:bg-surface-sunken transition-colors"
-                      aria-label={t('admin.emails.close')}
-                    >
-                      <Icon name="close" className="!text-[20px]" />
-                    </button>
-                  </div>
+        {/* Email Detail Inspector Modal */}
+        {selectedEntry && (
+            <AdminDialog title={t('admin.emails.modalTitle')} onClose={() => setSelectedEntry(null)} className="max-w-2xl gap-5">
+                <div className="flex flex-wrap items-center gap-3 border-b border-outline/50 pb-3">
+                  <Icon name="mail" className="!text-[24px] text-primary" />
+                  <span className="lf-caption text-content-muted">{selectedEntry.to}</span>
+                  <Badge className={STATUS_TONES[selectedEntry.status] ?? 'bg-surface-sunken text-content-muted'}>
+                    {t(`admin.emails.status.${selectedEntry.status}`, selectedEntry.status)}
+                  </Badge>
                 </div>
 
                 {/* Message ID Copier Banner */}
@@ -452,8 +427,7 @@ export function AdminEmailDashboard() {
                     {t('admin.emails.close')}
                   </AdminAction>
                 </div>
-              </div>
-            </div>
+            </AdminDialog>
           )}
         </div>
       )}

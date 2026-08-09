@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
@@ -50,7 +51,7 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
     onDecision?.(choice === 'granted');
   }
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-live="polite"
@@ -72,7 +73,8 @@ export function CookieConsentBanner({ onDecision }: { onDecision?: (granted: boo
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

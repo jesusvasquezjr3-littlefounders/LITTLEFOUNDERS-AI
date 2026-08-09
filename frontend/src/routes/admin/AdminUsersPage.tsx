@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { AdminAction, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 import { SignupTimeline } from './SignupTimeline';
 
 interface User {
@@ -308,34 +308,10 @@ export function AdminUsersPage() {
 
         {/* User Detail Inspector Modal */}
         {selectedUser && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-150"
-            onClick={() => setSelectedUser(null)}
-          >
-            <div
-              className="w-full max-w-lg bg-surface border border-outline rounded-2xl p-6 shadow-glass flex flex-col gap-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between gap-4 pb-3 border-b border-outline/50">
-                <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-primary-soft text-primary">
-                    <Icon name="person" className="!text-[26px]" />
-                  </div>
-                  <div>
-                    <h2 className="lf-title text-content font-bold">{selectedUser.displayName}</h2>
-                    {selectedUser.username && (
-                      <p className="lf-caption text-content-muted font-mono">@{selectedUser.username}</p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedUser(null)}
-                  className="p-1 rounded-full text-content-muted hover:text-content hover:bg-surface-sunken transition-colors"
-                >
-                  <Icon name="close" className="!text-[20px]" />
-                </button>
+          <AdminDialog title={selectedUser.displayName} onClose={() => setSelectedUser(null)} className="max-w-lg gap-5">
+              <div className="flex items-center gap-3 border-b border-outline/50 pb-3">
+                <Icon name="person" className="!text-[26px] text-primary" />
+                {selectedUser.username && <p className="lf-caption text-content-muted font-mono">@{selectedUser.username}</p>}
               </div>
 
               {/* User ID Copy Banner */}
@@ -389,8 +365,7 @@ export function AdminUsersPage() {
                   {t('admin.users.close')}
                 </AdminAction>
               </div>
-            </div>
-          </div>
+          </AdminDialog>
         )}
       </div>
     </AdminPage>

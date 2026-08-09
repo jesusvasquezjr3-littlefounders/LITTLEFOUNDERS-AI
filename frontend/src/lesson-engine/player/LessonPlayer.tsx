@@ -3,6 +3,7 @@
 // one segment at a time, earned celebration, results screen.
 
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { trackInsight } from '@/lib/insights'
 import { cn } from '@/lib/utils'
@@ -477,10 +478,11 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-base">
       {children}
-    </div>
+    </div>,
+    document.body,
   )
 }
 

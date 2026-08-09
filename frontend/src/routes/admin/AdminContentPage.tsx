@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge, Button, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
@@ -217,7 +216,7 @@ function LessonReviewDialog({
     />
   );
 
-  if (playing) return createPortal(player, document.body);
+  if (playing) return player;
 
   return (
     <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}>
