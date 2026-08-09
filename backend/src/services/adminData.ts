@@ -1,4 +1,5 @@
 import { stripAnswers } from './lessonDocument.js';
+import { z } from 'zod';
 import {
   countServiceRows,
   getLessonDocumentLocales,
@@ -497,61 +498,233 @@ export interface AdminAuditEntry {
   createdAt: string;
 }
 
-export async function listAudit(limit = 50, offset = 0): Promise<AdminAuditEntry[] | null> {
-  const rows = await serviceRest<
-    { id: number; actor_id: string | null; action: string; subject: string; detail: Record<string, unknown>; created_at: string }[]
-  >(`/audit_logs?select=id,actor_id,action,subject,detail,created_at&order=id.desc&limit=${limit}&offset=${offset}`);
-  if (!rows) return null;
-  return rows.map((r) => ({
-    id: r.id,
-    actorId: r.actor_id,
-    action: r.action,
-    subject: r.subject,
-    detail: r.detail,
-    createdAt: r.created_at,
-  }));
+export interface AdminAuditQuery {
+  limit: number;
+  offset: number;
+  action?: string;
+  actorId?: string;
+  subject?: string;
+  from?: string;
+  to?: string;
+}
+
+export interface AdminAuditPage {
+  entries: AdminAuditEntry[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+function auditFilters(query: AdminAuditQuery): string {
+  const filters = [
+    query.action ? `&action=eq.${encodeURIComponent(query.action)}` : '',
+    query.actorId ? `&actor_id=eq.${encodeURIComponent(query.actorId)}` : '',
+    query.subject ? `&subject=eq.${encodeURIComponent(query.subject)}` : '',
+    query.from ? `&created_at=gte.${encodeURIComponent(`${query.from}T00:00:00.000Z`)}` : '',
+    query.to ? `&created_at=lt.${encodeURIComponent(`${query.to}T23:59:59.999Z`)}` : '',
+  ];
+  return filters.join('');
+}
+
+export async function listAudit(query: AdminAuditQuery): Promise<AdminAuditPage | null> {
+  const filters = auditFilters(query);
+  const listPath = `/audit_logs?select=id,actor_id,action,subject,detail,created_at${filters}&order=id.desc&limit=${query.limit}&offset=${query.offset}`;
+  const countPath = `/audit_logs?select=id${filters}`;
+  const [rows, total] = await Promise.all([
+    serviceRest<
+      { id: number; actor_id: string | null; action: string; subject: string; detail: Record<string, unknown>; created_at: string }[]
+    >(listPath),
+    countServiceRows(countPath),
+  ]);
+  if (!rows || total === null) return null;
+  return {
+    entries: rows.map((r) => ({
+      id: r.id,
+      actorId: r.actor_id,
+      action: r.action,
+      subject: r.subject,
+      detail: r.detail,
+      createdAt: r.created_at,
+    })),
+    total,
+    limit: query.limit,
+    offset: query.offset,
+  };
 }
 
 // ── Roles & Access (superadmin) ──────────────────────────────────────────────
+
+export const ADMIN_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
+
+export interface RoleAssignment {
+  role: string;
+  grantedAt: string | null;
+  grantedBy: string | null;
+}
+
+export interface PermissionAssignment {
+  permission: string;
+  grantedAt: string | null;
+  grantedBy: string | null;
+}
 
 export interface AdminRoleHolder {
   userId: string;
   displayName: string;
   username: string | null;
+  locale: string | null;
+  createdAt: string | null;
   roles: string[];
   permissions: string[];
+  roleAssignments: RoleAssignment[];
+  permissionAssignments: PermissionAssignment[];
+  lastChangedAt: string | null;
+}
+
+export interface AdminRolesSummary {
+  totalHolders: number;
+  totalRoleAssignments: number;
+  totalPermissionAssignments: number;
+  roleCounts: Record<string, number>;
+  permissionCounts: Record<string, number>;
+  lastChangedAt: string | null;
+}
+
+export interface AdminRolesData {
+  holders: AdminRoleHolder[];
+  summary: AdminRolesSummary;
+}
+
+export interface AdminRoleCandidate {
+  userId: string;
+  displayName: string;
+  username: string | null;
+  locale: string | null;
+  createdAt: string | null;
+  roles: string[];
+}
+
+/** Searchable, read-only target list for safe role grants. */
+export async function findRoleCandidates(query: string, limit: number): Promise<AdminRoleCandidate[] | null> {
+  // PostgREST uses `*` as the `ilike` wildcard. Escape user-supplied asterisks
+  // after URL encoding so the directory search cannot widen its predicate.
+  const encoded = encodeURIComponent(query).replaceAll('*', '%2A');
+  const profilePath = z.string().uuid().safeParse(query).success
+    ? `/profiles?user_id=eq.${encoded}&select=user_id,display_name,username,locale,created_at&limit=${limit}`
+    : `/profiles?or=(display_name.ilike.*${encoded}*,username.ilike.*${encoded}*)&select=user_id,display_name,username,locale,created_at&limit=${limit}`;
+  const profiles = await serviceRest<{
+    user_id: string;
+    display_name: string;
+    username: string | null;
+    locale?: string | null;
+    created_at?: string | null;
+  }[]>(profilePath);
+  if (!profiles) return null;
+  if (profiles.length === 0) return [];
+  const ids = profiles.map((profile) => profile.user_id).join(',');
+  const roles = await serviceRest<{ user_id: string; role: string }[]>(
+    `/user_roles?user_id=in.(${ids})&select=user_id,role&order=user_id.asc,role.asc`,
+  );
+  if (!roles) return null;
+  const rolesByUser = new Map<string, string[]>();
+  for (const row of roles) rolesByUser.set(row.user_id, [...(rolesByUser.get(row.user_id) ?? []), row.role]);
+  return profiles.map((profile) => ({
+    userId: profile.user_id,
+    displayName: profile.display_name,
+    username: profile.username,
+    locale: profile.locale ?? null,
+    createdAt: profile.created_at ?? null,
+    roles: rolesByUser.get(profile.user_id) ?? [],
+  }));
 }
 
 /** Everyone who holds a STAFF or upgraded role (not the universal baseline). */
-export async function listRoleHolders(): Promise<AdminRoleHolder[] | null> {
-  const rows = await serviceRest<{ user_id: string; role: string }[]>(
-    "/user_roles?role=neq.universal&select=user_id,role&order=user_id.asc",
+export async function listRoleHolders(): Promise<AdminRolesData | null> {
+  const rows = await serviceRest<{ user_id: string; role: string; granted_at?: string | null; granted_by?: string | null }[]>(
+    "/user_roles?role=neq.universal&select=user_id,role,granted_at,granted_by&order=user_id.asc,role.asc",
   );
   if (!rows) return null;
-  if (rows.length === 0) return [];
+  if (rows.length === 0) {
+    return {
+      holders: [],
+      summary: {
+        totalHolders: 0,
+        totalRoleAssignments: 0,
+        totalPermissionAssignments: 0,
+        roleCounts: {},
+        permissionCounts: {},
+        lastChangedAt: null,
+      },
+    };
+  }
   const ids = [...new Set(rows.map((r) => r.user_id))].join(',');
   const [profiles, perms] = await Promise.all([
-    serviceRest<{ user_id: string; display_name: string; username: string | null }[]>(
-      `/profiles?user_id=in.(${ids})&select=user_id,display_name,username`,
+    serviceRest<{ user_id: string; display_name: string; username: string | null; locale?: string | null; created_at?: string | null }[]>(
+      `/profiles?user_id=in.(${ids})&select=user_id,display_name,username,locale,created_at`,
     ),
-    serviceRest<{ user_id: string; permission: string }[]>(
-      `/admin_permissions?user_id=in.(${ids})&select=user_id,permission`,
+    serviceRest<{ user_id: string; permission: string; granted_at?: string | null; granted_by?: string | null }[]>(
+      `/admin_permissions?user_id=in.(${ids})&select=user_id,permission,granted_at,granted_by`,
     ),
   ]);
   if (!profiles || !perms) return null;
   const pByUser = new Map(profiles.map((p) => [p.user_id, p]));
-  const byUser = new Map<string, string[]>();
-  const permsByUser = new Map<string, string[]>();
-  for (const r of rows) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
-  for (const p of perms) permsByUser.set(p.user_id, [...(permsByUser.get(p.user_id) ?? []), p.permission]);
-  
-  return [...byUser.entries()].map(([userId, roles]) => ({
-    userId,
-    displayName: pByUser.get(userId)?.display_name ?? '—',
-    username: pByUser.get(userId)?.username ?? null,
-    roles,
-    permissions: permsByUser.get(userId) ?? [],
-  }));
+  const assignmentsByUser = new Map<string, RoleAssignment[]>();
+  const permissionAssignmentsByUser = new Map<string, PermissionAssignment[]>();
+  for (const r of rows) {
+    assignmentsByUser.set(r.user_id, [
+      ...(assignmentsByUser.get(r.user_id) ?? []),
+      { role: r.role, grantedAt: r.granted_at ?? null, grantedBy: r.granted_by ?? null },
+    ]);
+  }
+  for (const p of perms) {
+    permissionAssignmentsByUser.set(p.user_id, [
+      ...(permissionAssignmentsByUser.get(p.user_id) ?? []),
+      { permission: p.permission, grantedAt: p.granted_at ?? null, grantedBy: p.granted_by ?? null },
+    ]);
+  }
+
+  const holders = [...assignmentsByUser.entries()].map(([userId, roleAssignments]) => {
+    const permissionAssignments = permissionAssignmentsByUser.get(userId) ?? [];
+    const timestamps = [...roleAssignments, ...permissionAssignments]
+      .map((assignment) => assignment.grantedAt)
+      .filter((value): value is string => Boolean(value))
+      .sort()
+      .reverse();
+    const profile = pByUser.get(userId);
+    return {
+      userId,
+      displayName: profile?.display_name ?? '—',
+      username: profile?.username ?? null,
+      locale: profile?.locale ?? null,
+      createdAt: profile?.created_at ?? null,
+      roles: roleAssignments.map((assignment) => assignment.role),
+      permissions: permissionAssignments.map((assignment) => assignment.permission),
+      roleAssignments,
+      permissionAssignments,
+      lastChangedAt: timestamps[0] ?? null,
+    };
+  });
+  const roleCounts: Record<string, number> = {};
+  const permissionCounts: Record<string, number> = {};
+  for (const row of rows) roleCounts[row.role] = (roleCounts[row.role] ?? 0) + 1;
+  for (const row of perms) permissionCounts[row.permission] = (permissionCounts[row.permission] ?? 0) + 1;
+  const allTimestamps = [...rows, ...perms]
+    .map((row) => row.granted_at)
+    .filter((value): value is string => Boolean(value))
+    .sort()
+    .reverse();
+
+  return {
+    holders,
+    summary: {
+      totalHolders: holders.length,
+      totalRoleAssignments: rows.length,
+      totalPermissionAssignments: perms.length,
+      roleCounts,
+      permissionCounts,
+      lastChangedAt: allTimestamps[0] ?? null,
+    },
+  };
 }
 
 export interface RoleMutationResult {

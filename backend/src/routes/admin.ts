@@ -56,6 +56,8 @@ import {
   getSignupTimeline,
   getSlotDetail,
   grantRoleChecked,
+  ADMIN_PERMISSIONS,
+  findRoleCandidates,
   isCourseStatus,
   isLessonStatus,
   listAdminCourses,
@@ -238,12 +240,22 @@ const RoleMutationSchema = z.object({
 
 const AdminPermissionMutationSchema = z.object({
   userId: z.string().uuid(),
-  permission: z.string().min(2),
+  permission: z.enum(ADMIN_PERMISSIONS),
 });
 
 const AuditQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+  action: z.string().trim().min(1).max(100).optional(),
+  actorId: z.string().uuid().optional(),
+  subject: z.string().trim().min(1).max(200).optional(),
+  from: z.string().date().optional(),
+  to: z.string().date().optional(),
+});
+
+const RoleCandidateQuerySchema = z.object({
+  q: z.string().trim().min(2).max(100),
+  limit: z.coerce.number().int().min(1).max(20).default(10),
 });
 // Run ids are operator-chosen (`<track-id>--<adventure-slug>` or a default
 // timestamp id) — constrain to a safe charset, never interpolate raw.
@@ -619,19 +631,30 @@ export function adminRouter(): Router {
   // ── Audit log ──────────────────────────────────────────────────────────────
   router.get('/audit', async (req, res) => {
     const q = AuditQuerySchema.safeParse(req.query);
-    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0');
-    const entries = await listAudit(q.data.limit, q.data.offset);
-    if (!entries) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the audit log');
-    ok(res, { entries, limit: q.data.limit, offset: q.data.offset });
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0, and valid audit filters are required');
+    if (q.data.from && q.data.to && q.data.from > q.data.to) {
+      return fail(res, 400, 'VALIDATION_ERROR', 'from must be earlier than or equal to to');
+    }
+    const page = await listAudit(q.data);
+    if (!page) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the audit log');
+    ok(res, page);
   });
 
   // ── Roles & Access (superadmin only — §1.4) ────────────────────────────────
   const superadminOnly = requireRole(['superadmin']);
 
   router.get('/roles', superadminOnly, async (_req, res) => {
-    const holders = await listRoleHolders();
-    if (!holders) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load role holders');
-    ok(res, { holders });
+    const roles = await listRoleHolders();
+    if (!roles) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load role holders');
+    ok(res, roles);
+  });
+
+  router.get('/roles/candidates', superadminOnly, async (req, res) => {
+    const parsed = RoleCandidateQuerySchema.safeParse(req.query);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'q must contain at least 2 characters and limit must be 1-20');
+    const candidates = await findRoleCandidates(parsed.data.q, parsed.data.limit);
+    if (!candidates) return fail(res, 502, DATA_UNAVAILABLE, 'Could not search users for role assignment');
+    ok(res, { candidates });
   });
 
   router.post('/roles/grant', superadminOnly, async (req, res) => {
@@ -647,6 +670,9 @@ export function adminRouter(): Router {
   router.post('/roles/revoke', superadminOnly, async (req, res) => {
     const parsed = RoleMutationSchema.safeParse(req.body);
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'userId (uuid) + role required');
+    if (parsed.data.role === 'superadmin' && parsed.data.userId === authedUser(res).id) {
+      return fail(res, 409, 'ROLE_REJECTED', 'A superadmin cannot revoke their own superadmin access');
+    }
     const result = await revokeRoleChecked(parsed.data.userId, parsed.data.role);
     if (!result.ok) return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
     ok(res, { userId: parsed.data.userId, role: parsed.data.role, revoked: true });

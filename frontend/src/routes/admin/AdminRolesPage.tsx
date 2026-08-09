@@ -1,134 +1,184 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Dropdown, Field, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
+
+interface Assignment {
+  role: string;
+  grantedAt: string | null;
+  grantedBy: string | null;
+}
+
+interface PermissionAssignment {
+  permission: string;
+  grantedAt: string | null;
+  grantedBy: string | null;
+}
 
 interface Holder {
   userId: string;
   displayName: string;
   username: string | null;
+  locale: string | null;
+  createdAt: string | null;
   roles: string[];
   permissions: string[];
+  roleAssignments: Assignment[];
+  permissionAssignments: PermissionAssignment[];
+  lastChangedAt: string | null;
+}
+
+interface Candidate {
+  userId: string;
+  displayName: string;
+  username: string | null;
+  locale: string | null;
+  createdAt: string | null;
+  roles: string[];
+}
+
+interface RolesData {
+  holders: Holder[];
+  summary: {
+    totalHolders: number;
+    totalRoleAssignments: number;
+    totalPermissionAssignments: number;
+    roleCounts: Record<string, number>;
+    permissionCounts: Record<string, number>;
+    lastChangedAt: string | null;
+  };
 }
 
 const GRANTABLE = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
 type Grantable = (typeof GRANTABLE)[number];
-
 const ADMIN_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
 type AdminPerm = (typeof ADMIN_PERMISSIONS)[number];
 
-export function AdminRolesPage() {
-  const { t } = useTranslation();
-  const { data, reload } = useAdminData<{ holders: Holder[] }>('/admin/roles');
-  const mutate = useAdminMutation();
+function formatDate(value: string | null, language: string | undefined, empty: string): string {
+  return value ? new Intl.DateTimeFormat(language, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : empty;
+}
 
+export function AdminRolesPage() {
+  const { t, i18n } = useTranslation();
+  const { getToken } = useAuth();
+  const { data, reload } = useAdminData<RolesData>('/admin/roles');
+  const mutate = useAdminMutation();
   const [userId, setUserId] = useState('');
   const [role, setRole] = useState<Grantable>('admin');
   const [msg, setMsg] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
-
-  // Search & Role Filter
   const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState<string>('all');
-
-  // Modal State
+  const [roleFilter, setRoleFilter] = useState('all');
   const [selectedAdmin, setSelectedAdmin] = useState<Holder | null>(null);
   const [permMsg, setPermMsg] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null);
   const [permBusy, setPermBusy] = useState(false);
+  const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
+  const [candidateQuery, setCandidateQuery] = useState('');
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [candidateLoading, setCandidateLoading] = useState(false);
+  const [pendingRevoke, setPendingRevoke] = useState<{ userId: string; displayName: string; role: string } | null>(null);
 
-  const roleOptions: DropdownOption<Grantable>[] = GRANTABLE.map((r) => ({ value: r, label: t(`roles.${r}`, r) }));
-  const holders = useMemo(() => (data.state === 'ready' ? data.data.holders : []), [data]);
-
-  // Statistics
-  const totalHolders = holders.length;
-  const adminsCount = useMemo(() => holders.filter((h) => h.roles.includes('admin')).length, [holders]);
-  const superadminsCount = useMemo(() => holders.filter((h) => h.roles.includes('superadmin')).length, [holders]);
-  const privilegedCount = useMemo(() => holders.filter((h) => h.permissions && h.permissions.length > 0).length, [holders]);
-
-  // Filtered Holders
+  const roleOptions: DropdownOption<Grantable>[] = GRANTABLE.map((value) => ({ value, label: t(`roles.${value}`, value) }));
+  const rolesData = data.state === 'ready' ? data.data : null;
+  const holders = rolesData?.holders ?? [];
+  const summary = rolesData?.summary;
   const filteredHolders = useMemo(() => {
-    return holders.filter((h) => {
-      const q = search.trim().toLowerCase();
-      const matchesSearch =
-        !q ||
-        h.displayName.toLowerCase().includes(q) ||
-        (h.username && h.username.toLowerCase().includes(q)) ||
-        h.userId.toLowerCase().includes(q);
-
-      const matchesRole = roleFilter === 'all' || h.roles.includes(roleFilter);
-      return matchesSearch && matchesRole;
+    const q = search.trim().toLowerCase();
+    return holders.filter((holder) => {
+      const matchesSearch = !q || [holder.displayName, holder.username ?? '', holder.userId].some((value) => value.toLowerCase().includes(q));
+      return matchesSearch && (roleFilter === 'all' || holder.roles.includes(roleFilter));
     });
-  }, [holders, search, roleFilter]);
+  }, [holders, roleFilter, search]);
+
+  useEffect(() => {
+    if (!candidateDialogOpen) return;
+    const query = candidateQuery.trim();
+    if (query.length < 2) {
+      setCandidates([]);
+      setCandidateLoading(false);
+      return;
+    }
+    let active = true;
+    const timer = window.setTimeout(() => {
+      setCandidateLoading(true);
+      void (async () => {
+        const token = await getToken();
+        const result = await api<{ candidates: Candidate[] }>(`/admin/roles/candidates?q=${encodeURIComponent(query)}&limit=10`, { token });
+        if (!active) return;
+        setCandidateLoading(false);
+        setCandidates(result.error ? [] : result.data.candidates);
+      })();
+    }, 250);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, [candidateDialogOpen, candidateQuery, getToken]);
 
   async function grant() {
     if (!userId.trim()) return;
     setBusy(true);
     setMsg(null);
-    const res = await mutate('/admin/roles/grant', { userId: userId.trim(), role });
+    const result = await mutate('/admin/roles/grant', { userId: userId.trim(), role });
     setBusy(false);
-    if (res.error) {
-      setMsg({ tone: 'err', text: t(`errors.api.${res.error.code}`, { defaultValue: t('admin.roles.grantFailed') }) });
-    } else {
-      setMsg({ tone: 'ok', text: t('admin.roles.granted', { role: t(`roles.${role}`, role) }) });
-      setUserId('');
-      await reload();
+    if (result.error) {
+      setMsg({ tone: 'err', text: t(`errors.api.${result.error.code}`, { defaultValue: t('admin.roles.grantFailed') }) });
+      return;
     }
-  }
-
-  async function revoke(uid: string, r: string) {
-    setBusy(true);
-    await mutate('/admin/roles/revoke', { userId: uid, role: r });
-    setBusy(false);
+    setMsg({ tone: 'ok', text: t('admin.roles.granted', { role: t(`roles.${role}`, role) }) });
+    setUserId('');
     await reload();
   }
 
-  async function togglePermission(admin: Holder, perm: AdminPerm, currentlyHas: boolean) {
+  async function revoke(uid: string, selectedRole: string) {
+    setBusy(true);
+    setMsg(null);
+    const result = await mutate('/admin/roles/revoke', { userId: uid, role: selectedRole });
+    setBusy(false);
+    setPendingRevoke(null);
+    if (result.error) {
+      setMsg({ tone: 'err', text: t(`errors.api.${result.error.code}`, { defaultValue: t('admin.roles.revokeFailed') }) });
+      return;
+    }
+    setMsg({ tone: 'ok', text: t('admin.roles.revoked', { role: t(`roles.${selectedRole}`, selectedRole) }) });
+    await reload();
+  }
+
+  async function togglePermission(holder: Holder, permission: AdminPerm, currentlyHas: boolean) {
     setPermBusy(true);
     setPermMsg(null);
     const endpoint = currentlyHas ? '/admin/roles/permissions/revoke' : '/admin/roles/permissions/grant';
-    const res = await mutate(endpoint, { userId: admin.userId, permission: perm });
+    const result = await mutate(endpoint, { userId: holder.userId, permission });
     setPermBusy(false);
-
-    if (res.error) {
+    if (result.error) {
       setPermMsg({ tone: 'err', text: t('admin.roles.permissionFailed') });
-    } else {
-      setPermMsg({ tone: 'ok', text: currentlyHas ? t('admin.roles.permissionRevoked') : t('admin.roles.permissionGranted') });
-      await reload();
-      setSelectedAdmin((prev) => {
-        if (!prev) return prev;
-        const newPerms = currentlyHas
-          ? prev.permissions.filter((p) => p !== perm)
-          : [...prev.permissions, perm];
-        return { ...prev, permissions: newPerms };
-      });
+      return;
     }
+    setPermMsg({ tone: 'ok', text: currentlyHas ? t('admin.roles.permissionRevoked') : t('admin.roles.permissionGranted') });
+    await reload();
+    setSelectedAdmin((previous) => {
+      if (!previous) return previous;
+      const permissions = currentlyHas ? previous.permissions.filter((item) => item !== permission) : [...previous.permissions, permission];
+      return { ...previous, permissions };
+    });
   }
 
   const columns: TableColumn<Holder>[] = [
-    { key: 'name', header: t('admin.roles.colName'), primary: true, cell: (h) => <span className="font-semibold text-content">{h.displayName}</span> },
-    { key: 'username', header: t('admin.roles.colUsername'), cell: (h) => (h.username ? <span className="lf-caption text-content-muted">@{h.username}</span> : null) },
-    { key: 'id', header: 'ID', cell: (h) => <button type="button" title={h.userId} onClick={() => setUserId(h.userId)} className="lf-caption font-mono text-content-muted hover:text-primary transition-colors">{h.userId.slice(0, 8)}…</button> },
-    { key: 'roles', header: t('admin.roles.colRoles'), cell: (h) => <span className="flex flex-wrap gap-1">{h.roles.map((r) => <RoleChip key={r} role={r} />)}</span> },
+    { key: 'name', header: t('admin.roles.colName'), primary: true, cell: (holder) => <span className="font-semibold text-content">{holder.displayName}</span> },
+    { key: 'username', header: t('admin.roles.colUsername'), cell: (holder) => holder.username ? <span className="lf-caption text-content-muted">@{holder.username}</span> : <span className="text-content-faint">{t('admin.roles.emptyValue')}</span> },
+    { key: 'id', header: t('admin.roles.colUserId'), cell: (holder) => <button type="button" title={holder.userId} onClick={() => setUserId(holder.userId)} className="lf-caption font-mono text-content-muted transition-colors hover:text-primary">{holder.userId.slice(0, 8)}…</button> },
+    { key: 'roles', header: t('admin.roles.colRoles'), cell: (holder) => <span className="flex flex-wrap gap-1">{holder.roles.map((item) => <RoleChip key={item} role={item} />)}</span> },
+    { key: 'permissions', header: t('admin.roles.colPermissions'), cell: (holder) => <span className="lf-caption text-content-muted">{holder.permissions.length ? t('admin.roles.permissionCount', { count: holder.permissions.length }) : t('admin.roles.noPermissions')}</span> },
+    { key: 'changed', header: t('admin.roles.colLastChanged'), cell: (holder) => <span className="lf-caption text-content-muted">{formatDate(holder.lastChangedAt, i18n.resolvedLanguage, t('admin.roles.notAvailable'))}</span> },
     {
       key: 'actions',
       header: t('admin.roles.colActions'),
-      cell: (h) => (
+      cell: (holder) => (
         <span className="flex flex-wrap items-center gap-1.5">
-          {h.roles.map((r) => (
-            <AdminAction key={r} tone="danger" icon="remove" onClick={() => void revoke(h.userId, r)} disabled={busy}>
-              {t(`roles.${r}`, r)}
-            </AdminAction>
-          ))}
-          {h.roles.includes('admin') && (
-            <button
-              type="button"
-              onClick={() => setSelectedAdmin(h)}
-              className="flex items-center gap-1 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1 text-xs font-bold text-primary transition-all hover:bg-primary hover:text-surface active:scale-95"
-            >
-              <Icon name="tune" className="!text-[14px]" />
-              {t('admin.roles.manageAccess')}
-            </button>
-          )}
+          {holder.roles.map((item) => <AdminAction key={item} tone="danger" icon="remove" onClick={() => setPendingRevoke({ userId: holder.userId, displayName: holder.displayName, role: item })} disabled={busy}>{t(`roles.${item}`, item)}</AdminAction>)}
+          {holder.roles.some((item) => item === 'admin' || item === 'superadmin') && <AdminAction tone="primary" icon="tune" onClick={() => { setPermMsg(null); setSelectedAdmin(holder); }}>{t('admin.roles.manageAccess')}</AdminAction>}
         </span>
       ),
     },
@@ -137,172 +187,55 @@ export function AdminRolesPage() {
   return (
     <AdminPage titleKey="admin.roles.title" subtitleKey="admin.roles.subtitle">
       <div className="flex flex-col gap-6">
-        {/* ── KPI STATS HEADER ── */}
-        {data.state === 'ready' && (
+        {summary && (
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard
-              icon={<Icon name="group" className="!text-[24px]" />}
-              value={totalHolders.toString()}
-              label={t('admin.roles.totalHolders')}
-              tone="primary"
-            />
-            <StatCard
-              icon={<Icon name="admin_panel_settings" className="!text-[24px]" />}
-              value={adminsCount.toString()}
-              label={t('admin.roles.adminsCount')}
-              tone="secondary"
-            />
-            <StatCard
-              icon={<Icon name="shield_person" className="!text-[24px]" />}
-              value={superadminsCount.toString()}
-              label={t('admin.roles.superadminsCount')}
-              tone="accent"
-            />
-            <StatCard
-              icon={<Icon name="key" className="!text-[24px]" />}
-              value={privilegedCount.toString()}
-              label={t('admin.roles.privilegedCount')}
-              tone="primary"
-            />
+            <StatCard icon={<Icon name="group" className="!text-[24px]" />} value={summary.totalHolders.toLocaleString(i18n.resolvedLanguage)} label={t('admin.roles.totalHolders')} tone="primary" />
+            <StatCard icon={<Icon name="admin_panel_settings" className="!text-[24px]" />} value={summary.totalRoleAssignments.toLocaleString(i18n.resolvedLanguage)} label={t('admin.roles.roleAssignments')} tone="secondary" />
+            <StatCard icon={<Icon name="shield_person" className="!text-[24px]" />} value={(summary.roleCounts.superadmin ?? 0).toLocaleString(i18n.resolvedLanguage)} label={t('admin.roles.superadminsCount')} tone="accent" />
+            <StatCard icon={<Icon name="key" className="!text-[24px]" />} value={summary.totalPermissionAssignments.toLocaleString(i18n.resolvedLanguage)} label={t('admin.roles.permissionAssignments')} tone="primary" />
           </div>
         )}
 
-        {/* ── GRANT FORM CARD ── */}
-        <Card className="flex flex-col gap-4 p-5 sm:p-6 shadow-glass border border-outline/50">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="p-2 rounded-xl bg-primary-soft text-primary">
-              <Icon name="verified_user" className="!text-[20px]" />
+        {summary && (
+          <Card className="grid gap-5 border border-outline/50 p-5 shadow-glass lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <div className="mb-3 flex items-center justify-between gap-3"><h2 className="lf-title font-bold text-content">{t('admin.roles.roleDistribution')}</h2><span className="lf-caption text-content-muted">{t('admin.roles.distributionHint')}</span></div>
+              <div className="flex flex-col gap-3">
+                {GRANTABLE.map((item) => {
+                  const count = summary.roleCounts[item] ?? 0;
+                  const width = summary.totalRoleAssignments ? Math.max(4, (count / summary.totalRoleAssignments) * 100) : 4;
+                  return <div key={item}><div className="mb-1 flex justify-between gap-3"><span className="lf-caption font-semibold text-content">{t(`roles.${item}`, item)}</span><span className="lf-caption text-content-muted">{count}</span></div><div className="h-2 rounded-full bg-surface-sunken"><div className="h-2 rounded-full bg-primary" style={{ width: `${width}%` }} /></div></div>;
+                })}
+              </div>
             </div>
-            <h2 className="lf-title font-bold text-content">{t('admin.roles.grantTitle')}</h2>
-          </div>
+            <div className="rounded-xl border border-outline/40 bg-surface-sunken/40 p-4"><span className="lf-caption text-content-muted">{t('admin.roles.lastChange')}</span><p className="mt-1 lf-label font-bold text-content">{formatDate(summary.lastChangedAt, i18n.resolvedLanguage, t('admin.roles.notAvailable'))}</p><p className="mt-2 lf-caption text-content-muted">{t('admin.roles.auditHint')}</p></div>
+          </Card>
+        )}
+
+        <Card className="flex flex-col gap-4 border border-outline/50 p-5 shadow-glass sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2"><div className="rounded-xl bg-primary-soft p-2 text-primary"><Icon name="verified_user" className="!text-[20px]" /></div><h2 className="lf-title font-bold text-content">{t('admin.roles.grantTitle')}</h2></div><AdminAction tone="primary" icon="person_search" onClick={() => setCandidateDialogOpen(true)}>{t('admin.roles.findUser')}</AdminAction></div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-            <Field
-              label={t('admin.roles.userId')}
-              hint={t('admin.roles.userIdHint')}
-              placeholder="00000000-0000-4000-8000-000000000000"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="flex-1"
-            />
-            <div className="flex flex-col gap-1.5 w-full sm:w-48">
-              <span className="lf-label text-content-muted">{t('admin.roles.role')}</span>
-              <Dropdown value={role} options={roleOptions} onChange={setRole} ariaLabel={t('admin.roles.role')} align="left" />
-            </div>
-            <Button onClick={() => void grant()} disabled={busy || !userId.trim()} className="px-6 h-[42px]">
-              {t('admin.roles.grant')}
-            </Button>
+            <Field label={t('admin.roles.userId')} hint={t('admin.roles.userIdHint')} placeholder={t('admin.roles.userIdPlaceholder')} value={userId} onChange={(event) => setUserId(event.target.value)} className="flex-1" />
+            <div className="flex w-full flex-col gap-1.5 sm:w-48"><span className="lf-label text-content-muted">{t('admin.roles.role')}</span><Dropdown value={role} options={roleOptions} onChange={setRole} ariaLabel={t('admin.roles.role')} align="left" /></div>
+            <Button onClick={() => void grant()} disabled={busy || !userId.trim()} className="h-[42px] px-6">{t('admin.roles.grant')}</Button>
           </div>
-          {msg && (
-            <p className={`lf-caption flex items-center gap-1.5 ${msg.tone === 'ok' ? 'text-success-strong' : 'text-error-strong'}`}>
-              <Icon name={msg.tone === 'ok' ? 'check_circle' : 'error'} className="!text-[16px]" /> {msg.text}
-            </p>
-          )}
+          {msg && <p className={`lf-caption flex items-center gap-1.5 ${msg.tone === 'ok' ? 'text-success-strong' : 'text-error-strong'}`}><Icon name={msg.tone === 'ok' ? 'check_circle' : 'error'} className="!text-[16px]" /> {msg.text}</p>}
         </Card>
 
-        {/* ── SEARCH & ROLE FILTER BAR ── */}
-        <Card className="flex flex-wrap items-center justify-between gap-3 p-4 shadow-glass border border-outline/50">
-          <div className="relative flex-1 min-w-[240px]">
-            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted pointer-events-none" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('admin.roles.searchPlaceholder')}
-              className="w-full pl-9 pr-4 py-2 text-sm rounded-full bg-surface-sunken border border-outline/40 text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-            />
-          </div>
-
-          <div className="flex gap-1 overflow-x-auto">
-            {['all', 'superadmin', 'admin', 'bigfounder', 'parent', 'kid'].map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRoleFilter(r)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  roleFilter === r
-                    ? 'bg-primary text-surface shadow-sm'
-                    : 'bg-surface-sunken text-content-muted hover:text-content'
-                }`}
-              >
-                {r === 'all' ? t('admin.roles.allRoles') : t(`roles.${r}`, r)}
-              </button>
-            ))}
-          </div>
+        <Card className="flex flex-col gap-3 border border-outline/50 p-4 shadow-glass lg:flex-row lg:items-end lg:justify-between">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5"><label htmlFor="roles-search" className="lf-label text-content">{t('admin.roles.searchLabel')}</label><div className="relative"><Icon name="search" className="pointer-events-none absolute left-3 top-1/2 !text-[18px] -translate-y-1/2 text-content-muted" /><input id="roles-search" type="text" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('admin.roles.searchPlaceholder')} className="w-full rounded-full border border-outline/40 bg-surface-sunken py-2 pl-9 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50" /></div></div>
+          <div className="flex gap-1 overflow-x-auto">{['all', ...GRANTABLE].map((item) => <button key={item} type="button" onClick={() => setRoleFilter(item)} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-bold transition-all ${roleFilter === item ? 'bg-primary text-surface shadow-sm' : 'bg-surface-sunken text-content-muted hover:text-content'}`}>{item === 'all' ? t('admin.roles.allRoles') : t(`roles.${item}`, item)}</button>)}</div>
         </Card>
 
-        {/* ── HOLDERS TABLE ── */}
-        <div className="flex flex-col gap-3">
-          <h2 className="lf-title font-bold text-content">{t('admin.roles.holdersTitle')}</h2>
-
-          {data.state === 'error' ? (
-            <Unavailable code={data.code} />
-          ) : data.state === 'ready' ? (
-            filteredHolders.length === 0 ? (
-              <AdminEmpty icon="admin_panel_settings" message={holders.length === 0 ? t('admin.roles.empty') : t('admin.roles.noMatch')} />
-            ) : (
-              <Table columns={columns} rows={filteredHolders} rowKey={(h) => h.userId} />
-            )
-          ) : (
-            <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
-          )}
+        <div className="flex flex-col gap-3"><div className="flex flex-wrap items-end justify-between gap-2"><div><h2 className="lf-title font-bold text-content">{t('admin.roles.holdersTitle')}</h2><p className="lf-caption text-content-muted">{t('admin.roles.holdersDescription')}</p></div><span className="lf-caption text-content-muted">{t('admin.roles.matchCount', { count: filteredHolders.length })}</span></div>
+          {data.state === 'error' ? <Unavailable code={data.code} /> : data.state === 'ready' ? filteredHolders.length === 0 ? <AdminEmpty icon="admin_panel_settings" message={holders.length === 0 ? t('admin.roles.empty') : t('admin.roles.noMatch')} /> : <Table columns={columns} rows={filteredHolders} rowKey={(holder) => holder.userId} /> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
         </div>
 
-        {/* ── ADMIN PERMISSIONS MODAL ── */}
-        {selectedAdmin && (
-          <AdminDialog title={t('admin.roles.accessControlTitle', { name: selectedAdmin.displayName })} onClose={() => setSelectedAdmin(null)} className="max-w-md gap-0">
-              <p className="border-b border-outline/50 px-5 py-4 lf-caption text-content-muted">{t('admin.roles.accessControlDesc')}</p>
+        {selectedAdmin && <AdminDialog title={t('admin.roles.accessControlTitle', { name: selectedAdmin.displayName })} onClose={() => setSelectedAdmin(null)} className="max-w-2xl gap-0"><div className="border-b border-outline/50 px-5 py-4"><p className="lf-caption text-content-muted">{t('admin.roles.accessControlDesc')}</p><div className="mt-3 flex flex-wrap gap-1.5">{selectedAdmin.roles.map((item) => <RoleChip key={item} role={item} />)}</div></div><div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]"><div className="flex flex-col gap-3">{ADMIN_PERMISSIONS.map((permission) => { const hasPermission = selectedAdmin.permissions.includes(permission); return <div key={permission} className="flex items-center justify-between gap-4 rounded-xl border border-outline/40 bg-surface-sunken/40 p-4"><div className="min-w-0 pr-2"><span className="lf-label font-bold text-content">{t(`admin.roles.permissions.${permission}`)}</span><span className="mt-0.5 block lf-caption text-content-muted">{t(`admin.roles.permissions.${permission}_desc`)}</span></div><button type="button" role="switch" aria-checked={hasPermission} disabled={permBusy} onClick={() => void togglePermission(selectedAdmin, permission, hasPermission)} className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${hasPermission ? 'bg-success' : 'bg-outline'} ${permBusy ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}><span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface shadow transition-transform ${hasPermission ? 'translate-x-5' : 'translate-x-0'}`} /></button></div>; })}{permMsg && <div className={`flex items-center justify-center gap-2 rounded-xl p-2.5 lf-caption font-semibold ${permMsg.tone === 'ok' ? 'bg-success-soft text-success-strong' : 'bg-error-soft text-error-strong'}`}><Icon name={permMsg.tone === 'ok' ? 'check_circle' : 'error'} className="!text-[16px]" />{permMsg.text}</div>}</div><div className="rounded-xl border border-outline/40 bg-surface-sunken/40 p-4"><h3 className="lf-label font-bold text-content">{t('admin.roles.assignmentHistory')}</h3><div className="mt-3 flex flex-col gap-3">{selectedAdmin.roleAssignments.map((assignment) => <div key={assignment.role} className="border-b border-outline/30 pb-2 last:border-0"><div className="flex items-center justify-between gap-2"><RoleChip role={assignment.role} /><span className="lf-caption text-content-muted">{formatDate(assignment.grantedAt, i18n.resolvedLanguage, t('admin.roles.notAvailable'))}</span></div><p className="mt-1 lf-caption text-content-muted">{assignment.grantedBy ? t('admin.roles.grantedBy', { id: assignment.grantedBy.slice(0, 8) }) : t('admin.roles.systemAssignment')}</p></div>)}</div></div></div><div className="flex justify-end border-t border-outline/50 bg-surface-sunken p-4"><Button onClick={() => setSelectedAdmin(null)} variant="secondary" className="px-6">{t('admin.close')}</Button></div></AdminDialog>}
 
-              {/* Body - Toggles */}
-              <div className="p-5 flex flex-col gap-4 max-h-[60vh] overflow-y-auto">
-                {ADMIN_PERMISSIONS.map((perm) => {
-                  const hasPerm = selectedAdmin.permissions.includes(perm);
-                  return (
-                    <div key={perm} className="flex items-center justify-between gap-4 rounded-xl border border-outline/40 bg-surface-sunken/40 p-4">
-                      <div className="flex flex-col min-w-0 pr-2">
-                        <span className="lf-label text-content font-bold">
-                          {t(`admin.roles.permissions.${perm}`)}
-                        </span>
-                        <span className="lf-caption text-content-muted mt-0.5">
-                          {t(`admin.roles.permissions.${perm}_desc`)}
-                        </span>
-                      </div>
+        {candidateDialogOpen && <AdminDialog title={t('admin.roles.candidateTitle')} onClose={() => setCandidateDialogOpen(false)} className="max-w-3xl gap-5"><p className="lf-caption text-content-muted">{t('admin.roles.candidateDescription')}</p><Field label={t('admin.roles.candidateSearchLabel')} value={candidateQuery} onChange={(event) => setCandidateQuery(event.target.value)} placeholder={t('admin.roles.candidateSearchPlaceholder')} autoFocus /><div className="min-h-40">{candidateLoading ? <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} /> : candidateQuery.trim().length < 2 ? <AdminEmpty icon="person_search" message={t('admin.roles.candidateSearchHint')} /> : candidates.length === 0 ? <AdminEmpty icon="person_off" message={t('admin.roles.candidateEmpty')} /> : <Table columns={[{ key: 'name', header: t('admin.roles.colName'), primary: true, cell: (candidate) => <div><span className="font-semibold text-content">{candidate.displayName}</span><span className="mt-0.5 block lf-caption text-content-muted">{candidate.username ? `@${candidate.username}` : candidate.userId}</span></div> }, { key: 'roles', header: t('admin.roles.colRoles'), cell: (candidate) => <span className="flex flex-wrap gap-1">{candidate.roles.length ? candidate.roles.map((item) => <RoleChip key={item} role={item} />) : <span className="lf-caption text-content-muted">{t('admin.roles.noRoles')}</span>}</span> }, { key: 'action', header: t('admin.roles.colActions'), cell: (candidate) => <AdminAction tone="primary" icon="check" onClick={() => { setUserId(candidate.userId); setCandidateDialogOpen(false); }}>{t('admin.roles.useUser')}</AdminAction> }]} rows={candidates} rowKey={(candidate) => candidate.userId} />}</div></AdminDialog>}
 
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={hasPerm}
-                        disabled={permBusy}
-                        onClick={() => void togglePermission(selectedAdmin, perm, hasPerm)}
-                        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                          hasPerm ? 'bg-success' : 'bg-outline'
-                        } ${permBusy ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-surface shadow transition-transform ${
-                            hasPerm ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  );
-                })}
-
-                {permMsg && (
-                  <div className={`mt-2 flex items-center justify-center gap-2 rounded-xl p-2.5 lf-caption font-semibold ${permMsg.tone === 'ok' ? 'bg-success-soft text-success-strong' : 'bg-error-soft text-error-strong'}`}>
-                    <Icon name={permMsg.tone === 'ok' ? 'check_circle' : 'error'} className="!text-[16px]" />
-                    {permMsg.text}
-                  </div>
-                )}
-              </div>
-
-              {/* Footer */}
-              <div className="border-t border-outline/50 bg-surface-sunken p-4 flex justify-end">
-                <Button onClick={() => setSelectedAdmin(null)} variant="secondary" className="px-6">
-                  {t('admin.audit.close')}
-                </Button>
-              </div>
-          </AdminDialog>
-        )}
+        {pendingRevoke && <AdminDialog title={t('admin.roles.confirmRevokeTitle')} onClose={() => setPendingRevoke(null)} className="max-w-md gap-5"><div className="rounded-xl border border-error/30 bg-error-soft p-4"><p className="lf-label font-bold text-content">{t('admin.roles.confirmRevokeBody', { name: pendingRevoke.displayName, role: t(`roles.${pendingRevoke.role}`, pendingRevoke.role) })}</p><p className="mt-2 lf-caption text-content-muted">{t('admin.roles.confirmRevokeHint')}</p></div><div className="flex flex-wrap justify-end gap-2"><AdminAction tone="neutral" onClick={() => setPendingRevoke(null)}>{t('admin.close')}</AdminAction><AdminAction tone="danger" icon="remove" onClick={() => void revoke(pendingRevoke.userId, pendingRevoke.role)} disabled={busy}>{t('admin.roles.confirmRevoke')}</AdminAction></div></AdminDialog>}
       </div>
     </AdminPage>
   );

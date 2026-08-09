@@ -2,6 +2,12 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Admin governance surfaces expanded locally
+
+- `/admin/audit` now uses exact server-side totals and filtered pagination, so the console no longer confuses a bounded page with the complete append-only history. Its expanded inspector exposes immutable event metadata and a read-only payload, while search, action filtering, range controls, and refresh are designed for human investigation.
+- `/admin/roles` now exposes exact assignment and permission totals, role distribution, assignment provenance, last-change metadata, and a full-viewport history view. Superadmins can search the directory before granting access, revoke roles only after confirmation, and cannot accidentally revoke their own `superadmin` role. Permission mutations are constrained to the database's closed permission vocabulary.
+- This establishes the administrative governance philosophy for future surfaces: exact numbers from the source of truth, enough context to make a decision, expansion for detail instead of cramped grids, fixed viewport overlays for detached work, explicit confirmation for high-impact mutations, and an append-only trail for accountability. The changes are local-only while the production generation process is active; no push was performed.
+
 ## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
 
 - The public cookie experience now uses a layered, equal-choice preferences dialog: necessary technologies are explained separately from optional first-party attribution and measurement, settings remain reachable from the marketing footer, privacy links to a usable cookie-controls section, and rejecting optional technologies removes the first-party identifier plus known GA4 cookies. Public tracker scripts are gated by the consent state and react immediately to accept/reject changes; kid surfaces remain outside the optional tracking path.

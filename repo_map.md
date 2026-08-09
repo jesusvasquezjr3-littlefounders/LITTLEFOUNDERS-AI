@@ -1052,17 +1052,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Admin governance surfaces expanded locally
+
+- `/admin/audit` now uses exact server-side totals and filtered pagination, so the console no longer confuses a bounded page with the complete append-only history. Its expanded inspector exposes immutable event metadata and a read-only payload, while search, action filtering, range controls, and refresh are designed for human investigation.
+- `/admin/roles` now exposes exact assignment and permission totals, role distribution, assignment provenance, last-change metadata, and a full-viewport history view. Superadmins can search the directory before granting access, revoke roles only after confirmation, and cannot accidentally revoke their own `superadmin` role. Permission mutations are constrained to the database's closed permission vocabulary.
+- This establishes the administrative governance philosophy for future surfaces: exact numbers from the source of truth, enough context to make a decision, expansion for detail instead of cramped grids, fixed viewport overlays for detached work, explicit confirmation for high-impact mutations, and an append-only trail for accountability. The changes are local-only while the production generation process is active; no push was performed.
+
 ## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
 
 - The public cookie experience now uses a layered, equal-choice preferences dialog: necessary technologies are explained separately from optional first-party attribution and measurement, settings remain reachable from the marketing footer, privacy links to a usable cookie-controls section, and rejecting optional technologies removes the first-party identifier plus known GA4 cookies. Public tracker scripts are gated by the consent state and react immediately to accept/reject changes; kid surfaces remain outside the optional tracking path.
 - `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
 - Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
-- Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
-- The next intelligence contract is now locally implemented: event retries are idempotent, client timestamps are bounded, and server-authoritative attempts carry only closed pedagogical context. DuckDB derives explainable mastery/review state and anonymized skill health, while `/admin/intel` visibly reports sync freshness and evidence coverage before presenting learning conclusions. Runtime experiments record a treatment only after it rendered. Core exposes an own-learner boundary for the future Tutor; the Tutor itself remains intentionally unimplemented.
-- The learning console now has a decision-oriented command center rather than a single skill table. The warehouse retains localized course catalog context, computes course/lesson/UUID-only learner summaries from authoritative attempts and explicit lifecycle events, and labels every finding as awaiting, limited or sufficient evidence. Staff can expand course, lesson and learner summaries in a full-viewport dialog; empty data remains explicitly empty while the published catalog stays inspectable.
-
-## Current State (2026-08-09) — Admin generation monitor made production-resilient locally
-
 ```
 
 ### agent/README.md
@@ -3685,6 +3685,7 @@ import {
 
 ```
 import { stripAnswers } from './lessonDocument.js';
+import { z } from 'zod';
 import {
   countServiceRows,
   getLessonDocumentLocales,
@@ -3698,7 +3699,6 @@ import {
 
 /*
  * Staff-console data plane (routes/admin.ts). Every read here is service-role
- * and platform-wide (all users' rows) — the console's job — so it is gated by
 ```
 
 ### backend/src/services/analyticsReport.ts
@@ -13273,7 +13273,7 @@ createRoot(document.getElementById('root')!).render(
 ```
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
+import { Badge, Card, Dropdown, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable, useAdminData } from './adminShared';
 
 interface AuditEntry {
@@ -13285,7 +13285,7 @@ interface AuditEntry {
   createdAt: string;
 }
 
-function shortId(id: string | null): string | null {
+interface AuditPage {
 ```
 
 ### frontend/src/routes/admin/AdminContentPage.tsx
@@ -13407,21 +13407,21 @@ interface Health {
 ### frontend/src/routes/admin/AdminRolesPage.tsx
 
 ```
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Dropdown, Field, Icon, StatCard, Table, type DropdownOption, type TableColumn } from '@/components/ui';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, RoleChip, Unavailable, useAdminData, useAdminMutation } from './adminShared';
 
-interface Holder {
-  userId: string;
-  displayName: string;
-  username: string | null;
-  roles: string[];
-  permissions: string[];
+interface Assignment {
+  role: string;
+  grantedAt: string | null;
+  grantedBy: string | null;
 }
 
-const GRANTABLE = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
-type Grantable = (typeof GRANTABLE)[number];
+interface PermissionAssignment {
+  permission: string;
 ```
 
 ### frontend/src/routes/admin/AdminUsersPage.tsx
@@ -13682,6 +13682,26 @@ vi.mock('@/lib/api', () => ({ api: mockApi }));
 
 vi.mock('@/auth/AuthContext', () => ({
   useAuth: () => ({ roles: ['admin'], getToken: mockGetToken }),
+```
+
+### frontend/src/routes/admin/__tests__/AdminGovernancePages.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { AdminAuditPage } from '../AdminAuditPage';
+import { AdminRolesPage } from '../AdminRolesPage';
+
+const { mockApi, mockGetToken } = vi.hoisted(() => ({
+  mockApi: vi.fn(),
+  mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+}));
+
+const USER_ID = '11111111-1111-4111-8111-111111111111';
+const AUDIT_ENTRY = {
+  id: 42,
+  actorId: USER_ID,
 ```
 
 ### frontend/src/routes/admin/__tests__/AdminInsightsPage.test.tsx

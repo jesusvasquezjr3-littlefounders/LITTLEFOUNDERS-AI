@@ -494,6 +494,26 @@ describe('GET /api/v1/admin/audit', () => {
     const res = await request(createApp()).get('/api/v1/admin/audit?limit=10').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
     expect(res.body.data.entries[0]).toMatchObject({ id: 7, action: 'admin.course.set_status' });
+    expect(res.body.data.total).toBe(1);
+  });
+
+  it('validates date filters and forwards exact filters to the source of truth', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp())
+      .get('/api/v1/admin/audit?action=admin.course.set_status&from=2026-07-01&to=2026-07-31')
+      .set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    const auditCalls = capture.calls.filter((call) => call.url.includes('/rest/v1/audit_logs'));
+    expect(auditCalls.some((call) => call.url.includes('action=eq.admin.course.set_status'))).toBe(true);
+    expect(auditCalls.length).toBe(2);
+  });
+
+  it('rejects an inverted audit date range', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get('/api/v1/admin/audit?from=2026-08-02&to=2026-08-01').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 });
 
@@ -537,6 +557,32 @@ describe('Roles & Access (superadmin-only)', () => {
       .set('Authorization', staffAuth('superadmin'))
       .send({ userId: '55555555-5555-4555-8555-555555555555', role: 'wizard' });
     expect(res.status).toBe(400);
+  });
+
+  it('400s on an unknown permission', async () => {
+    stubData('superadmin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/permissions/grant')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: '55555555-5555-4555-8555-555555555555', permission: 'everything' });
+    expect(res.status).toBe(400);
+  });
+
+  it('offers a read-only candidate search for grants', async () => {
+    stubData('superadmin');
+    const res = await request(createApp()).get('/api/v1/admin/roles/candidates?q=Staff').set('Authorization', staffAuth('superadmin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.candidates[0]).toMatchObject({ userId: ADMIN_ID, displayName: 'Staff' });
+  });
+
+  it('prevents a superadmin from revoking their own top-level access', async () => {
+    stubData('superadmin');
+    const res = await request(createApp())
+      .post('/api/v1/admin/roles/revoke')
+      .set('Authorization', staffAuth('superadmin'))
+      .send({ userId: ADMIN_ID, role: 'superadmin' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ROLE_REJECTED');
   });
 
   it('revokes a role for a superadmin', async () => {

@@ -83,6 +83,13 @@ npm run lesson-contract:check  # lesson-contract/ vs frontend/src/lesson-engine
 | GET | /api/v1/admin/generation/runs/:runId | Bearer + admin/superadmin | One run's full record: RunSummary + params + per-slot outcomes (state, failure stage, salvage, duration, judge rubric, revise cycles, early-stop). `runId` validated `^[A-Za-z0-9._-]{1,200}$` → 400 `VALIDATION_ERROR`; unknown id or Vault down → 502 `DATA_UNAVAILABLE` |
 | GET | /api/v1/admin/users | Bearer + admin/superadmin | All platform users with roles, locale, join date, birth date. Service-role reads profiles + user_roles for unprivileged access. 502 `DATA_UNAVAILABLE` |
 | GET | /api/v1/admin/users/timeline | Bearer + admin/superadmin | Signup counts per day: `?days=7-365` (default 90, Zod-validated). Fills zero-count days. 502 `DATA_UNAVAILABLE` |
+| GET | /api/v1/admin/audit | Bearer + admin/superadmin | Exact, paginated append-only audit history: `?limit=1-200&offset=0+`, optional action, actor UUID, subject, and date bounds |
+| GET | /api/v1/admin/roles | Bearer + superadmin | Role and permission holders with exact assignment summaries, provenance, and last-change metadata |
+| GET | /api/v1/admin/roles/candidates | Bearer + superadmin | Read-only directory search for safe role grants: `?q=<name-or-uuid>&limit=1-20` |
+| POST | /api/v1/admin/roles/grant | Bearer + superadmin | Grant one validated role; DB invariants and the audit trigger remain authoritative |
+| POST | /api/v1/admin/roles/revoke | Bearer + superadmin | Revoke one validated role after an explicit staff confirmation; self-revocation of `superadmin` is rejected |
+| POST | /api/v1/admin/roles/permissions/grant | Bearer + superadmin | Grant one closed-vocabulary admin permission |
+| POST | /api/v1/admin/roles/permissions/revoke | Bearer + superadmin | Revoke one closed-vocabulary admin permission |
 | GET | /api/v1/admin/emails/logs | Bearer + admin/superadmin | Paginated and filtered email history proxied from Courier: `?limit=1-200&offset=0+`, optional `q`, `status`, and `templateType`. Core validates email-server response shape with Zod before forwarding. 502 `DATA_UNAVAILABLE` |
 | GET | /api/v1/admin/emails/summary | Bearer + admin/superadmin | Exact email aggregate: `{ total, statuses, templates, locales, trend }`. Optional `days=7-365` controls the daily trend window. Proxied from Courier, response shape validated. 502 `DATA_UNAVAILABLE` |
 
