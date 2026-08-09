@@ -55,12 +55,26 @@ const LESSON_DETAIL = {
     {
       locale: 'en-US',
       schemaVersion: 1,
-      audio: {},
+      audio: {
+        units: {
+          'story-1.prompt': { url: 'https://media.example.test/lesson-audio/story-1.mp3', duration_ms: 2400, voice: 'Dina' },
+        },
+      },
       document: {
         schema_version: 1,
         meta: { slug: 'needs-and-wants', title: 'Needs and Wants', locale: 'en-US', subject: 'money', estimated_minutes: 8, objectives: [], cast: [] },
         scoring: { pass_threshold: 70, hint_penalty_pct: 0, max_attempts: 3, hearts: null },
-        segments: [],
+        segments: [
+          {
+            id: 'story-1',
+            type: 'story_scene',
+            prompt_md: 'Think about the things you need each day.',
+            difficulty: 1,
+            xp: 0,
+            audio_segment_id: 'story-1.prompt',
+            payload: { body_md: 'Food and a home are needs.', art: { image_url: 'https://media.example.test/lesson-images/needs.webp' } },
+          },
+        ],
       },
     },
   ],
@@ -240,5 +254,41 @@ describe('AdminContentPage — human review surfaces', () => {
     const playerLayer = document.body.querySelector('div.fixed.inset-0.z-50');
     expect(playerLayer).not.toBeNull();
     expect(playerLayer?.parentElement).toBe(document.body);
+  });
+
+  it('exposes read-only components, media, and JSON for human supervision', async () => {
+    mockApi.mockImplementation((path: string) => {
+      if (path === '/admin/content') return apiOk({ courses: [COURSE], summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } } });
+      if (path === '/admin/moderation') return apiOk({ lessons: [REVIEW_LESSON], total: 1 });
+      if (path === `/admin/moderation/${REVIEW_LESSON.id}`) return apiOk(LESSON_DETAIL);
+      return apiOk({});
+    });
+    renderPage();
+    await flushPromises();
+    fireEvent.click(screen.getByRole('tab', { name: /admin\.content\.tabs\.lessons/ }));
+    fireEvent.click(screen.getByText('admin.moderation.preview'));
+    await flushPromises();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'admin.moderation.inspectorTabs.components' }));
+    expect(screen.getByText('Think about the things you need each day.')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Think about the things you need each day.'));
+    expect(screen.getByText('admin.moderation.componentData')).toBeInTheDocument();
+    expect(screen.getByText('admin.moderation.componentAudio')).toBeInTheDocument();
+
+    const componentDialog = screen.getAllByRole('dialog').at(1);
+    if (!componentDialog) throw new Error('component dialog not rendered');
+    fireEvent.click(within(componentDialog).getByLabelText('admin.close'));
+    fireEvent.click(screen.getByRole('tab', { name: 'admin.moderation.inspectorTabs.media' }));
+    expect(screen.getByText('admin.moderation.audioTitle')).toBeInTheDocument();
+    expect(screen.getByText('story-1.prompt')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('segments[0].payload.art'));
+    expect(screen.getByText('admin.moderation.imagePreviewTitle')).toBeInTheDocument();
+
+    const imageDialog = screen.getAllByRole('dialog').at(1);
+    if (!imageDialog) throw new Error('image dialog not rendered');
+    fireEvent.click(within(imageDialog).getByLabelText('admin.close'));
+    fireEvent.click(screen.getByRole('tab', { name: 'admin.moderation.inspectorTabs.json' }));
+    expect(screen.getByText('admin.moderation.jsonTitle')).toBeInTheDocument();
+    expect(screen.getByText(/"audio_segment_id": "story-1\.prompt"/)).toBeInTheDocument();
   });
 });

@@ -72,6 +72,84 @@ const PREVIEW_GRADER: Grader = {
   },
 };
 
+const INSPECTOR_TABS = [
+  { key: 'review', icon: 'play_circle' },
+  { key: 'components', icon: 'view_list' },
+  { key: 'media', icon: 'perm_media' },
+  { key: 'json', icon: 'data_object' },
+] as const;
+type InspectorTab = (typeof INSPECTOR_TABS)[number]['key'];
+
+interface MediaAsset {
+  id: string;
+  kind: 'audio' | 'image';
+  label: string;
+  url: string;
+  durationMs?: number;
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
+}
+
+function asText(value: unknown): string | null {
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function collectImageAssets(document: Record<string, unknown>): MediaAsset[] {
+  const seenUrls = new Set<string>();
+  const seenValues = new WeakSet<object>();
+  const assets: MediaAsset[] = [];
+  const visit = (value: unknown, path: string) => {
+    const record = asRecord(value);
+    if (record) {
+      if (seenValues.has(record)) return;
+      seenValues.add(record);
+      for (const [key, child] of Object.entries(record)) {
+        const imageUrl = key === 'image_url' ? asText(child) : null;
+        if (imageUrl && !seenUrls.has(imageUrl)) {
+          seenUrls.add(imageUrl);
+          assets.push({ id: `image:${assets.length}`, kind: 'image', label: path, url: imageUrl });
+        }
+        visit(child, `${path}.${key}`);
+      }
+      return;
+    }
+    if (Array.isArray(value)) value.forEach((item, index) => visit(item, `${path}[${index}]`));
+  };
+  visit(document.segments, 'segments');
+  return assets;
+}
+
+function collectAudioAssets(audio: Record<string, unknown>): MediaAsset[] {
+  const units = asRecord(audio.units);
+  if (!units) return [];
+  return Object.entries(units).flatMap(([unitId, unit]) => {
+    const entry = asRecord(unit);
+    const url = asText(entry?.url);
+    if (!url) return [];
+    return [{
+      id: `audio:${unitId}`,
+      kind: 'audio' as const,
+      label: unitId,
+      url,
+      durationMs: typeof entry?.duration_ms === 'number' ? entry.duration_ms : undefined,
+    }];
+  });
+}
+
+function formatDuration(durationMs: number | undefined): string | null {
+  if (!durationMs || durationMs < 0) return null;
+  const seconds = Math.round(durationMs / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+function segmentRows(document: Record<string, unknown>): Record<string, unknown>[] {
+  return Array.isArray(document.segments)
+    ? document.segments.flatMap((segment) => asRecord(segment) ? [segment] : [])
+    : [];
+}
+
 function formatDate(value: string, locale: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
@@ -83,6 +161,84 @@ function Metric({ label, value, tone = 'text-content' }: { label: string; value:
       <p className="lf-caption text-content-muted">{label}</p>
       <p className={cn('lf-number lf-title mt-1 font-bold', tone)}>{value}</p>
     </div>
+  );
+}
+
+function InspectorTabButton({
+  tab,
+  active,
+  onSelect,
+}: {
+  tab: (typeof INSPECTOR_TABS)[number];
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={active}
+      onClick={onSelect}
+      className={cn(
+        'flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        active ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content',
+      )}
+    >
+      <Icon name={tab.icon} className="!text-[18px]" />
+      {t(`admin.moderation.inspectorTabs.${tab.key}`)}
+    </button>
+  );
+}
+
+function ImageAssetDialog({ asset, onClose }: { asset: MediaAsset; onClose: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <AdminDialog title={t('admin.moderation.imagePreviewTitle')} onClose={onClose} className="max-w-5xl">
+      <div className="flex flex-col gap-4 pt-5">
+        <p className="lf-caption break-all text-content-muted">{asset.label}</p>
+        <div className="flex min-h-64 items-center justify-center rounded-lg bg-surface-sunken p-4">
+          <img src={asset.url} alt={t('admin.moderation.imagePreviewAlt', { label: asset.label })} className="max-h-[68dvh] max-w-full rounded-md object-contain" />
+        </div>
+      </div>
+    </AdminDialog>
+  );
+}
+
+function ComponentDetailDialog({
+  segment,
+  audioByUnit,
+  onClose,
+}: {
+  segment: Record<string, unknown>;
+  audioByUnit: Map<string, MediaAsset>;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const id = asText(segment.id) ?? t('admin.moderation.unnamedComponent');
+  const audioUnit = asText(segment.audio_segment_id);
+  const audio = audioUnit ? audioByUnit.get(audioUnit) : undefined;
+  return (
+    <AdminDialog title={t('admin.moderation.componentDetailTitle', { id })} onClose={onClose} className="max-w-4xl">
+      <div className="flex flex-col gap-5 pt-5">
+        <div className="flex flex-wrap gap-2">
+          {asText(segment.type) && <Badge className="bg-primary-soft text-primary">{asText(segment.type)}</Badge>}
+          {typeof segment.difficulty === 'number' && <Badge className="bg-surface-sunken text-content-muted">{t('admin.content.difficultyShort', { count: segment.difficulty })}</Badge>}
+          {typeof segment.xp === 'number' && <Badge className="bg-surface-sunken text-content-muted">{t('admin.content.xp')}: {segment.xp}</Badge>}
+        </div>
+        {audio && (
+          <section className="rounded-lg bg-surface-sunken/60 p-4">
+            <h3 className="lf-label font-bold text-content">{t('admin.moderation.componentAudio')}</h3>
+            <p className="lf-caption mt-1 text-content-muted">{audio.label}</p>
+            <audio className="mt-3 w-full" controls preload="metadata" src={audio.url} />
+          </section>
+        )}
+        <section>
+          <h3 className="lf-label font-bold text-content">{t('admin.moderation.componentData')}</h3>
+          <pre className="mt-3 max-h-[52dvh] overflow-auto rounded-lg bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(segment, null, 2)}</pre>
+        </section>
+      </div>
+    </AdminDialog>
   );
 }
 
@@ -187,10 +343,17 @@ function LessonReviewDialog({
   const { t, i18n } = useTranslation();
   const detailData = useAdminData<LessonDetail>(`/admin/moderation/${lessonId}`);
   const [playing, setPlaying] = useState(false);
+  const [inspectorTab, setInspectorTab] = useState<InspectorTab>('review');
+  const [selectedImage, setSelectedImage] = useState<MediaAsset | null>(null);
+  const [selectedComponent, setSelectedComponent] = useState<Record<string, unknown> | null>(null);
   const detail = detailData.data.state === 'ready' ? detailData.data.data : null;
   const documentRow = detail?.documents.find((row) => row.locale === locale) ?? detail?.documents[0];
   const segmentCount = Array.isArray(documentRow?.document.segments) ? documentRow.document.segments.length : 0;
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);
+  const components = documentRow ? segmentRows(documentRow.document) : [];
+  const audioAssets = documentRow ? collectAudioAssets(documentRow.audio) : [];
+  const imageAssets = documentRow ? collectImageAssets(documentRow.document) : [];
+  const audioByUnit = new Map(audioAssets.map((asset) => [asset.label, asset]));
 
   if (detailData.data.state === 'loading') {
     return <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}><div className="py-16 text-center lf-body-sm text-content-muted">{t('admin.loading')}</div></AdminDialog>;
@@ -219,8 +382,9 @@ function LessonReviewDialog({
   if (playing) return player;
 
   return (
-    <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}>
-      <div className="flex min-w-0 flex-col gap-6 pt-5">
+    <>
+      <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose} className="max-w-6xl">
+        <div className="flex min-w-0 flex-col gap-6 pt-5">
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="lf-display-sm text-content">{detail.title}</h3>
@@ -230,7 +394,7 @@ function LessonReviewDialog({
           <p className="lf-body-sm mt-3 text-content-muted">{detail.courseTitle} / {detail.adventureTitle} / {detail.sagaTitle} / {detail.topicTitle}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           <Metric label={t('admin.content.subject')} value={detail.subject} />
           <Metric label={t('admin.content.difficulty')} value={detail.difficulty} />
           <Metric label={t('admin.content.xp')} value={nf.format(detail.xpTotal)} />
@@ -238,7 +402,11 @@ function LessonReviewDialog({
           <Metric label={t('admin.content.segments')} value={nf.format(segmentCount)} />
         </div>
 
-        <div className="flex flex-col gap-3 rounded-lg bg-surface-sunken/60 p-4">
+          <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-1" role="tablist" aria-label={t('admin.moderation.inspectorTabs.aria')}>
+            {INSPECTOR_TABS.map((tab) => <InspectorTabButton key={tab.key} tab={tab} active={inspectorTab === tab.key} onSelect={() => setInspectorTab(tab.key)} />)}
+          </div>
+
+          {inspectorTab === 'review' && <div className="flex flex-col gap-3 rounded-lg bg-surface-sunken/60 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h4 className="lf-label font-bold text-content">{t('admin.moderation.renderTitle')}</h4>
@@ -251,7 +419,11 @@ function LessonReviewDialog({
                   type="button"
                   role="tab"
                   aria-selected={row.locale === documentRow.locale}
-                  onClick={() => onLocaleChange(row.locale)}
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setSelectedComponent(null);
+                    onLocaleChange(row.locale);
+                  }}
                   className={cn('min-h-11 rounded-full px-3 py-2 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', row.locale === documentRow.locale ? 'bg-primary text-on-primary' : 'bg-surface text-content-muted hover:text-content')}
                 >
                   {row.locale}
@@ -266,17 +438,110 @@ function LessonReviewDialog({
               {t('admin.moderation.renderLesson')}
             </Button>
           </div>
-        </div>
+          </div>}
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-outline/50 pt-5">
+          {inspectorTab === 'components' && (
+            <section>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.componentsTitle')}</h4>
+                  <p className="lf-caption mt-1 text-content-muted">{t('admin.moderation.componentsDescription')}</p>
+                </div>
+                <span className="lf-number lf-caption text-content-muted">{nf.format(components.length)}</span>
+              </div>
+              {components.length === 0 ? (
+                <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noComponents')}</div>
+              ) : (
+                <div className="mt-3 grid gap-2">
+                  {components.map((segment, index) => {
+                    const id = asText(segment.id) ?? `${index + 1}`;
+                    const title = asText(segment.title) ?? asText(segment.prompt_md) ?? id;
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setSelectedComponent(segment)}
+                        className="flex min-h-11 w-full items-center gap-3 rounded-lg bg-surface p-3 text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                      >
+                        <span className="lf-number flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-soft lf-caption font-bold text-primary">{index + 1}</span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate lf-label text-content">{title}</span>
+                          <span className="mt-0.5 block truncate lf-caption text-content-muted">{asText(segment.type) ?? t('admin.moderation.unknownComponent')}</span>
+                        </span>
+                        <Icon name="chevron_right" className="shrink-0 text-content-muted" />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          )}
+
+          {inspectorTab === 'media' && (
+            <section className="grid gap-5 lg:grid-cols-2">
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.audioTitle')}</h4>
+                  <span className="lf-number lf-caption text-content-muted">{nf.format(audioAssets.length)}</span>
+                </div>
+                {audioAssets.length === 0 ? <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noAudio')}</div> : (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {audioAssets.map((asset) => (
+                      <div key={asset.id} className="rounded-lg bg-surface-sunken/60 p-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="min-w-0 break-all lf-caption font-bold text-content">{asset.label}</p>
+                          {formatDuration(asset.durationMs) && <Badge className="bg-surface text-content-muted">{formatDuration(asset.durationMs)}</Badge>}
+                        </div>
+                        <audio className="mt-3 w-full" controls preload="metadata" src={asset.url} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.imagesTitle')}</h4>
+                  <span className="lf-number lf-caption text-content-muted">{nf.format(imageAssets.length)}</span>
+                </div>
+                {imageAssets.length === 0 ? <div className="mt-3 rounded-lg bg-surface-sunken/60 p-5 text-center lf-caption text-content-muted">{t('admin.moderation.noImages')}</div> : (
+                  <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {imageAssets.map((asset) => (
+                      <button key={asset.id} type="button" onClick={() => setSelectedImage(asset)} className="group min-w-0 overflow-hidden rounded-lg bg-surface text-left shadow-glass-sm transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                        <img src={asset.url} alt="" className="aspect-square w-full object-cover" loading="lazy" />
+                        <span className="block truncate px-2 py-2 lf-caption text-content-muted">{asset.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {inspectorTab === 'json' && (
+            <section>
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div>
+                  <h4 className="lf-label font-bold text-content">{t('admin.moderation.jsonTitle')}</h4>
+                  <p className="lf-caption mt-1 text-content-muted">{t('admin.moderation.jsonSafeNote')}</p>
+                </div>
+                <Badge className="bg-surface-sunken text-content-muted">{documentRow.locale}</Badge>
+              </div>
+              <pre className="mt-3 max-h-[56dvh] overflow-auto rounded-lg bg-surface-sunken p-4 font-code text-xs leading-relaxed text-content">{JSON.stringify(documentRow.document, null, 2)}</pre>
+            </section>
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-outline/50 pt-5">
           <p className="lf-caption text-content-muted">{t('admin.moderation.reviewMeta', { date: formatDate(detail.createdAt, i18n.resolvedLanguage ?? 'en-US'), locales: detail.locales.join(', ') || t('admin.moderation.noLocales') })}</p>
           <div className="flex flex-wrap gap-2">
             <AdminAction tone="danger" icon="undo" onClick={() => void decide('draft')} disabled={busy}>{t('admin.moderation.reject')}</AdminAction>
             <AdminAction tone="success" icon="check" onClick={() => void decide('published')} disabled={busy}>{t('admin.moderation.approve')}</AdminAction>
           </div>
+          </div>
         </div>
-      </div>
-    </AdminDialog>
+      </AdminDialog>
+      {selectedImage && <ImageAssetDialog asset={selectedImage} onClose={() => setSelectedImage(null)} />}
+      {selectedComponent && <ComponentDetailDialog segment={selectedComponent} audioByUnit={audioByUnit} onClose={() => setSelectedComponent(null)} />}
+    </>
   );
 }
 

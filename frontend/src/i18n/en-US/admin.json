@@ -165,7 +165,30 @@
     "previewStart": "Start preview",
     "previewNext": "Next preview",
     "colLessonId": "Lesson ID",
-    "empty": "Nothing awaiting review. All clear."
+    "empty": "Nothing awaiting review. All clear.",
+    "inspectorTabs": {
+      "aria": "Lesson inspection views",
+      "review": "Review",
+      "components": "Components",
+      "media": "Media",
+      "json": "JSON"
+    },
+    "componentsTitle": "Lesson components",
+    "componentsDescription": "Open a component to inspect its safe data and linked audio.",
+    "noComponents": "This lesson has no components to inspect.",
+    "unknownComponent": "Unknown component",
+    "unnamedComponent": "Unnamed component",
+    "componentDetailTitle": "Component {{id}}",
+    "componentAudio": "Linked audio",
+    "componentData": "Component data",
+    "audioTitle": "Audio files",
+    "noAudio": "No audio files are attached for this locale.",
+    "imagesTitle": "Images",
+    "noImages": "No images are referenced by this locale.",
+    "imagePreviewTitle": "Image preview",
+    "imagePreviewAlt": "Lesson image from {{label}}",
+    "jsonTitle": "Lesson document JSON",
+    "jsonSafeNote": "Read-only client-safe document. Answer keys are never shown."
   },
   "audit": {
     "title": "Audit log",

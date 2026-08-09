@@ -165,7 +165,30 @@
     "previewStart": "Iniciar prévia",
     "previewNext": "Próxima prévia",
     "colLessonId": "ID da lição",
-    "empty": "Nada aguardando revisão. Tudo certo."
+    "empty": "Nada aguardando revisão. Tudo certo.",
+    "inspectorTabs": {
+      "aria": "Visualizações de inspeção da lição",
+      "review": "Revisão",
+      "components": "Componentes",
+      "media": "Mídia",
+      "json": "JSON"
+    },
+    "componentsTitle": "Componentes da lição",
+    "componentsDescription": "Abra um componente para inspecionar seus dados seguros e o áudio vinculado.",
+    "noComponents": "Esta lição não tem componentes para inspecionar.",
+    "unknownComponent": "Componente desconhecido",
+    "unnamedComponent": "Componente sem nome",
+    "componentDetailTitle": "Componente {{id}}",
+    "componentAudio": "Áudio vinculado",
+    "componentData": "Dados do componente",
+    "audioTitle": "Arquivos de áudio",
+    "noAudio": "Não há arquivos de áudio para este idioma.",
+    "imagesTitle": "Imagens",
+    "noImages": "Não há imagens referenciadas para este idioma.",
+    "imagePreviewTitle": "Visualização ampliada da imagem",
+    "imagePreviewAlt": "Imagem da lição de {{label}}",
+    "jsonTitle": "JSON do documento da lição",
+    "jsonSafeNote": "Documento seguro e somente leitura. As respostas nunca são exibidas."
   },
   "audit": {
     "title": "Auditoria",
