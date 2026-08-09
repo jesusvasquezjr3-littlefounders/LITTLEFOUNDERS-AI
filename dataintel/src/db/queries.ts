@@ -408,7 +408,12 @@ export function segmentMetricsQuery(
 ): QueryResult {
   const { sql: whereClause, params } = buildWhere(filters);
   const where = whereClause ? `AND ${whereClause.replace('WHERE ', '')}` : '';
-  const col = assertIdentifier(metric);
+  // Segment metrics are authoritative grade facts. The historical caller
+  // accepted arbitrary event columns and queried the nonexistent
+  // `segment_answer` event, producing an empty or failing result that looked
+  // like a real metric. Score is the sole supported measure at this grain.
+  void metric;
+  const col = 'score';
 
   const sql = `\
     SELECT
@@ -416,14 +421,13 @@ export function segmentMetricsQuery(
       segment_id,
       COUNT(*) AS attempts,
       COUNT(DISTINCT user_id) AS learners,
-      AVG(value) AS avg_value,
-      MIN(value) AS min_value,
-      MAX(value) AS max_value,
-      MEDIAN(value) AS median_value,
+      AVG(score) AS avg_value,
+      MIN(score) AS min_value,
+      MAX(score) AS max_value,
+      MEDIAN(score) AS median_value,
       AVG(${col}) AS metric_avg
-    FROM fact_events
-    WHERE event_type = 'segment_answer'
-      AND user_id IS NOT NULL
+    FROM fact_segment_attempts
+    WHERE user_id IS NOT NULL
       ${where}
     GROUP BY lesson_id, segment_id
     ORDER BY metric_avg ASC`;

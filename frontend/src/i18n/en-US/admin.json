@@ -1030,7 +1030,31 @@
     "colHints": "Hint use",
     "colFirstTry": "First attempt score",
     "unavailable": "Not enough data",
-    "minutes": "{{count}} min"
+    "minutes": "{{count}} min",
+    "readinessTitle": "Evidence readiness",
+    "readinessSubtitle": "Trust checks for the data behind learning and Tutor recommendations.",
+    "readinessReady": "Ready to interpret",
+    "readinessAttention": "Needs attention",
+    "readinessUnavailable": "Warehouse quality signals are unavailable. Treat learning findings as unverified until the sync recovers.",
+    "idempotency": "Retry-safe events",
+    "eventContext": "Learning event context",
+    "skillContext": "Skill-tagged attempts",
+    "versionContext": "Versioned lesson attempts",
+    "syncedRows": "{{count}} synced rows",
+    "syncError": "Last sync failed",
+    "fresh": "Fresh",
+    "stale": "Stale",
+    "skillHealthTitle": "Content effectiveness by skill",
+    "skillHealthSubtitle": "Prioritizes instructional review only after enough independent learner evidence exists.",
+    "colSkill": "Skill",
+    "colPriority": "Priority",
+    "colMastery": "Estimated mastery",
+    "colLowMastery": "Below mastery",
+    "priority": {
+      "review": "Review content",
+      "monitor": "Monitor",
+      "insufficient_evidence": "Need more evidence"
+    }
     }
   },
   "insights": {

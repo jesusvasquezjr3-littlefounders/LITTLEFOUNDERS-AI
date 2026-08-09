@@ -158,6 +158,42 @@ interface IntelAlert {
   createdAt: string;
 }
 
+interface IntelQualityReport {
+  generatedAt: string;
+  freshness: Array<{
+    source: string;
+    lastSyncedAt: string | null;
+    rowsSynced: number;
+    lastError: string | null;
+    stale: boolean;
+  }>;
+  events: {
+    total: number;
+    idempotencyCoveragePct: number;
+    contextCoveragePct: number;
+    lateArrivalPct: number;
+  };
+  attempts: {
+    total: number;
+    skillCoveragePct: number;
+    timingCoveragePct: number;
+    documentVersionCoveragePct: number;
+  };
+}
+
+interface IntelSkillHealth {
+  skillKey: string;
+  courseId: string | null;
+  topicId: string | null;
+  learners: number;
+  attempts: number;
+  avgMasteryProbability: number;
+  lowMasteryPct: number;
+  avgSecondsPerAttempt: number | null;
+  hintRate: number;
+  priority: 'review' | 'monitor' | 'insufficient_evidence';
+}
+
 interface IntelBundle {
   consent: { kidsTotal: number; kidsConsented: number } | null;
   summary: IntelSummary | null;
@@ -172,6 +208,8 @@ interface IntelBundle {
   anomalies: IntelAnomaly[] | null;
   experiments: IntelExperiment[] | null;
   alerts: IntelAlert[] | null;
+  quality: IntelQualityReport | null;
+  skillHealth: IntelSkillHealth[] | null;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; data: IntelBundle };
@@ -617,6 +655,64 @@ function LearningTab({ data, t, nf, pf }: { data: IntelBundle; t: (k: string, op
 
   return (
     <div className="flex flex-col gap-6">
+      <Card className="flex flex-col gap-5 p-5">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="lf-title text-content">{t('admin.intel.learning.readinessTitle')}</h3>
+            <p className="lf-caption mt-0.5 text-content-muted">{t('admin.intel.learning.readinessSubtitle')}</p>
+          </div>
+          <Badge className={data.quality?.freshness.some((source) => source.stale || source.lastError) ? 'bg-warning-soft text-warning-strong' : 'bg-success-soft text-success-strong'}>
+            {data.quality?.freshness.some((source) => source.stale || source.lastError)
+              ? t('admin.intel.learning.readinessAttention')
+              : t('admin.intel.learning.readinessReady')}
+          </Badge>
+        </div>
+        {data.quality ? (
+          <>
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <StatCard dense icon={<Icon name="verified" />} label={t('admin.intel.learning.idempotency')} value={pf.format(data.quality.events.idempotencyCoveragePct / 100)} />
+              <StatCard dense icon={<Icon name="account_tree" />} label={t('admin.intel.learning.eventContext')} value={pf.format(data.quality.events.contextCoveragePct / 100)} />
+              <StatCard dense icon={<Icon name="psychology" />} label={t('admin.intel.learning.skillContext')} value={pf.format(data.quality.attempts.skillCoveragePct / 100)} />
+              <StatCard dense icon={<Icon name="history_edu" />} label={t('admin.intel.learning.versionContext')} value={pf.format(data.quality.attempts.documentVersionCoveragePct / 100)} />
+            </div>
+            <div className="grid gap-2 md:grid-cols-2">
+              {data.quality.freshness.map((source) => (
+                <div key={source.source} className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-outline/60 bg-surface-sunken/40 px-3 py-2">
+                  <div className="min-w-0">
+                    <p className="lf-label truncate text-content">{source.source}</p>
+                    <p className="lf-caption truncate text-content-muted">
+                      {source.lastError ? t('admin.intel.learning.syncError') : t('admin.intel.learning.syncedRows', { count: nf.format(source.rowsSynced) })}
+                    </p>
+                  </div>
+                  <Badge className={source.stale || source.lastError ? 'bg-warning-soft text-warning-strong' : 'bg-success-soft text-success-strong'}>
+                    {source.stale || source.lastError ? t('admin.intel.learning.stale') : t('admin.intel.learning.fresh')}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="lf-caption text-content-muted">{t('admin.intel.learning.readinessUnavailable')}</p>
+        )}
+      </Card>
+
+      <ChartCard title={t('admin.intel.learning.skillHealthTitle')} subtitle={t('admin.intel.learning.skillHealthSubtitle')}>
+        {data.skillHealth && data.skillHealth.length > 0 ? (
+          <Table<IntelSkillHealth>
+            rows={data.skillHealth}
+            rowKey={(row) => row.skillKey}
+            columns={[
+              { key: 'skill', header: t('admin.intel.learning.colSkill'), cell: (row) => row.skillKey, primary: true },
+              { key: 'priority', header: t('admin.intel.learning.colPriority'), cell: (row) => <Badge className={row.priority === 'review' ? 'bg-error-soft text-error-strong' : row.priority === 'monitor' ? 'bg-warning-soft text-warning-strong' : 'bg-surface-sunken text-content-muted'}>{t(`admin.intel.learning.priority.${row.priority}`)}</Badge> },
+              { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
+              { key: 'mastery', header: t('admin.intel.learning.colMastery'), cell: (row) => pf.format(row.avgMasteryProbability), numeric: true },
+              { key: 'lowMastery', header: t('admin.intel.learning.colLowMastery'), cell: (row) => pf.format(row.lowMasteryPct / 100), numeric: true },
+              { key: 'hints', header: t('admin.intel.learning.colHints'), cell: (row) => pf.format(row.hintRate), numeric: true },
+            ] satisfies TableColumn<IntelSkillHealth>[]}
+          />
+        ) : <EmptyChartIcon name="psychology" />}
+      </ChartCard>
+
       <ChartCard title={t('admin.intel.learning.dropoffTitle')} subtitle={t('admin.intel.learning.dropoffSubtitle')}>
         {data.dropoff && data.dropoff.length > 0 ? (
           <Table<IntelDropoffEntry>
@@ -869,7 +965,7 @@ export function AdminIntelPage() {
     const [
       summaryR, trendsR, anomaliesR,
       funnelR, cohortsR, dropoffR, calibrationR,
-      engagementR, churnR, sessionsR, experimentsR, alertsR, consentR,
+      engagementR, churnR, sessionsR, experimentsR, alertsR, consentR, qualityR, skillHealthR,
     ] = await Promise.allSettled([
       get<IntelSummary>(`/admin/intel/metrics/summary?days=${days}`),
       get<IntelTrendPoint[]>(`/admin/intel/metrics/trends?metric=dau&granularity=day&days=${days}`),
@@ -884,6 +980,8 @@ export function AdminIntelPage() {
       get<IntelExperiment[]>('/admin/intel/experiments'),
       get<IntelAlert[]>('/admin/intel/alerts'),
       get<{ consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=1'),
+      get<IntelQualityReport>('/admin/intel/quality'),
+      get<{ skills: IntelSkillHealth[] }>('/admin/intel/learning/content-health?limit=50'),
     ]);
 
     const unwrap = <T,>(r: PromiseSettledResult<{ ok: true; data: T } | { ok: false; code: string }>): T | null => {
@@ -910,6 +1008,8 @@ export function AdminIntelPage() {
         sessions: unwrap<IntelSessionEntry[]>(sessionsR),
         experiments: unwrap<IntelExperiment[]>(experimentsR),
         alerts: unwrap<IntelAlert[]>(alertsR),
+        quality: unwrap<IntelQualityReport>(qualityR),
+        skillHealth: unwrap<{ skills: IntelSkillHealth[] }>(skillHealthR)?.skills ?? null,
       },
     });
   }, [getToken, days]);

@@ -8,6 +8,8 @@ export interface Experiment {
   metric: string;
   variantA: string;
   variantB: string;
+  surface: string;
+  target: string;
   segmentFilter?: Record<string, unknown>;
   createdAt: string;
   startedAt?: string;
@@ -22,6 +24,8 @@ export interface ExperimentResults {
   confidence: number;
   winner: 'A' | 'B' | null;
   significant: boolean;
+  exposedUsers: number;
+  sampleRatioMismatch: boolean;
 }
 
 type StoredExperiment = {
@@ -31,6 +35,8 @@ type StoredExperiment = {
   metric: string;
   variant_a: string;
   variant_b: string;
+  surface: string;
+  target: string;
   segment_filter: string | null;
   created_at: string;
   started_at: string | null;
@@ -41,7 +47,17 @@ type AssignmentRow = {
   experiment_id: string;
   user_id: string;
   variant: string;
+  assigned_at: string;
 };
+
+type ExposureRow = AssignmentRow & { exposed_at: string | Date };
+
+export interface RuntimeAssignment {
+  experimentId: string;
+  variant: 'A' | 'B';
+  surface: string;
+  target: string;
+}
 
 type UserMetricRow = {
   user_id: string;
@@ -56,6 +72,8 @@ CREATE TABLE IF NOT EXISTS experiments (
   metric TEXT NOT NULL,
   variant_a TEXT NOT NULL,
   variant_b TEXT NOT NULL,
+  surface TEXT NOT NULL DEFAULT 'learn',
+  target TEXT NOT NULL DEFAULT 'default',
   segment_filter TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   started_at TIMESTAMP,
@@ -71,6 +89,29 @@ CREATE TABLE IF NOT EXISTS experiment_assignments (
   PRIMARY KEY (experiment_id, user_id)
 )`;
 
+const ENSURE_EXPOSURES = `\
+CREATE TABLE IF NOT EXISTS experiment_exposures (
+  experiment_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  variant TEXT NOT NULL CHECK (variant IN ('A', 'B')),
+  exposed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (experiment_id, user_id)
+)`;
+
+async function ensureExperimentSchema(): Promise<void> {
+  await execute(ENSURE_EXPERIMENTS);
+  await execute(ENSURE_ASSIGNMENTS);
+  await execute(ENSURE_EXPOSURES);
+  // Persistent DuckDB files may have been created before runtime targeting.
+  // DuckDB cannot add a constrained column to an existing table. Fresh tables
+  // carry the constraints in CREATE TABLE; legacy files receive nullable
+  // columns which this backfill and the application boundary normalize.
+  await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS surface TEXT');
+  await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS target TEXT');
+  await execute("UPDATE experiments SET surface = 'learn' WHERE surface IS NULL");
+  await execute("UPDATE experiments SET target = 'default' WHERE target IS NULL");
+}
+
 function rowToExperiment(r: StoredExperiment): Experiment {
   return {
     id: r.id,
@@ -79,6 +120,8 @@ function rowToExperiment(r: StoredExperiment): Experiment {
     metric: r.metric,
     variantA: r.variant_a,
     variantB: r.variant_b,
+    surface: r.surface ?? 'learn',
+    target: r.target ?? 'default',
     segmentFilter: r.segment_filter
       ? (JSON.parse(r.segment_filter) as Record<string, unknown>)
       : undefined,
@@ -101,21 +144,25 @@ export async function createExperiment(
   metric: string,
   variantA: string,
   variantB: string,
+  surface = 'learn',
+  target = 'default',
 ): Promise<Experiment | null> {
   try {
-    await execute(ENSURE_EXPERIMENTS);
+    await ensureExperimentSchema();
 
     const experimentId = id();
     const createdAt = now();
 
     await execute(
-      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, created_at)
-       VALUES (?, ?, 'draft', ?, ?, ?, ?)`,
+      `INSERT INTO experiments (id, name, status, metric, variant_a, variant_b, surface, target, created_at)
+       VALUES (?, ?, 'draft', ?, ?, ?, ?, ?, ?)`,
       experimentId,
       name,
       metric,
       variantA,
       variantB,
+      surface,
+      target,
       createdAt,
     );
 
@@ -126,6 +173,8 @@ export async function createExperiment(
       metric,
       variantA,
       variantB,
+      surface,
+      target,
       createdAt,
     };
   } catch (err) {
@@ -136,7 +185,7 @@ export async function createExperiment(
 
 export async function startExperiment(id: string): Promise<boolean> {
   try {
-    await execute(ENSURE_EXPERIMENTS);
+    await ensureExperimentSchema();
 
     const rows = await query<StoredExperiment>(
       'SELECT * FROM experiments WHERE id = ?',
@@ -169,7 +218,7 @@ export async function concludeExperiment(
   id: string,
 ): Promise<Experiment | null> {
   try {
-    await execute(ENSURE_EXPERIMENTS);
+    await ensureExperimentSchema();
 
     const rows = await query<StoredExperiment>(
       'SELECT * FROM experiments WHERE id = ?',
@@ -201,7 +250,7 @@ export async function concludeExperiment(
 
 export async function listExperiments(): Promise<Experiment[] | null> {
   try {
-    await execute(ENSURE_EXPERIMENTS);
+    await ensureExperimentSchema();
 
     const rows = await query<StoredExperiment>(
       'SELECT * FROM experiments ORDER BY created_at DESC',
@@ -220,7 +269,7 @@ export async function assignVariant(
   variant: 'A' | 'B',
 ): Promise<boolean> {
   try {
-    await execute(ENSURE_ASSIGNMENTS);
+    await ensureExperimentSchema();
 
     await execute(
       `INSERT OR REPLACE INTO experiment_assignments (experiment_id, user_id, variant, assigned_at)
@@ -238,12 +287,94 @@ export async function assignVariant(
   }
 }
 
+/** Stable, deterministic allocation. The same learner never flips variants. */
+function deterministicVariant(experimentId: string, userId: string): 'A' | 'B' {
+  const digest = crypto.createHash('sha256').update(`${experimentId}:${userId}`).digest();
+  return (digest[0] ?? 0) % 2 === 0 ? 'A' : 'B';
+}
+
+/** Returns active assignments for an actual product surface and target. */
+export async function getRuntimeAssignments(
+  userId: string,
+  surface: string,
+  target: string,
+): Promise<RuntimeAssignment[] | null> {
+  try {
+    await ensureExperimentSchema();
+    const experiments = await query<StoredExperiment>(
+      `SELECT * FROM experiments
+       WHERE status = 'running' AND surface = ? AND target = ?
+       ORDER BY started_at ASC`,
+      surface,
+      target,
+    );
+    const assignments: RuntimeAssignment[] = [];
+    for (const experiment of experiments) {
+      const existing = await query<AssignmentRow>(
+        'SELECT experiment_id, user_id, variant, assigned_at FROM experiment_assignments WHERE experiment_id = ? AND user_id = ?',
+        experiment.id,
+        userId,
+      );
+      const variant = existing[0]?.variant === 'B'
+        ? 'B'
+        : existing[0]?.variant === 'A'
+          ? 'A'
+          : deterministicVariant(experiment.id, userId);
+      if (existing.length === 0) {
+        await execute(
+          `INSERT OR IGNORE INTO experiment_assignments (experiment_id, user_id, variant, assigned_at)
+           VALUES (?, ?, ?, ?)`,
+          experiment.id,
+          userId,
+          variant,
+          now(),
+        );
+      }
+      assignments.push({ experimentId: experiment.id, variant, surface, target });
+    }
+    return assignments;
+  } catch (err) {
+    console.error('[dataintel][experiments] getRuntimeAssignments failed:', err);
+    return null;
+  }
+}
+
+/**
+ * Records exposure only after the product actually rendered the assigned
+ * treatment. Assignment alone is not causal evidence and is never used as a
+ * substitute for exposure in experiment results.
+ */
+export async function recordRuntimeExposure(
+  userId: string,
+  experimentId: string,
+  surface: string,
+  target: string,
+): Promise<RuntimeAssignment | null> {
+  const assignments = await getRuntimeAssignments(userId, surface, target);
+  if (assignments === null) return null;
+  const assignment = assignments.find((item) => item.experimentId === experimentId);
+  if (!assignment) return null;
+  try {
+    await execute(
+      `INSERT OR IGNORE INTO experiment_exposures (experiment_id, user_id, variant, exposed_at)
+       VALUES (?, ?, ?, ?)`,
+      experimentId,
+      userId,
+      assignment.variant,
+      now(),
+    );
+    return assignment;
+  } catch (err) {
+    console.error('[dataintel][experiments] recordRuntimeExposure failed:', err);
+    return null;
+  }
+}
+
 export async function getExperimentResults(
   id: string,
 ): Promise<ExperimentResults | null> {
   try {
-    await execute(ENSURE_EXPERIMENTS);
-    await execute(ENSURE_ASSIGNMENTS);
+    await ensureExperimentSchema();
 
     const expRows = await query<StoredExperiment>(
       'SELECT * FROM experiments WHERE id = ?',
@@ -256,8 +387,8 @@ export async function getExperimentResults(
 
     const experiment = rowToExperiment(expRows[0]!);
 
-    const assignments = await query<AssignmentRow>(
-      'SELECT * FROM experiment_assignments WHERE experiment_id = ?',
+    const assignments = await query<ExposureRow>(
+      'SELECT * FROM experiment_exposures WHERE experiment_id = ?',
       id,
     );
 
@@ -269,7 +400,7 @@ export async function getExperimentResults(
     const userMetricsB: number[] = [];
 
     for (const a of assignments) {
-      const val = await getUserMetricValue(a.user_id, experiment.metric);
+      const val = await getUserMetricValue(a.user_id, experiment.metric, a.exposed_at);
       if (val !== null) {
         if (a.variant === 'A') {
           userMetricsA.push(val);
@@ -311,6 +442,8 @@ export async function getExperimentResults(
       confidence,
       winner,
       significant,
+      exposedUsers: assignments.length,
+      sampleRatioMismatch: Math.abs(statsA.users - statsB.users) / Math.max(1, statsA.users + statsB.users) > 0.1,
     };
   } catch (err) {
     console.error('[dataintel][experiments] getResults failed:', err);
@@ -333,11 +466,20 @@ export async function getExperimentResults(
 async function getUserMetricValue(
   userId: string,
   metric: string,
+  exposedAt: string | Date,
 ): Promise<number | null> {
+  // node-duckdb returns TIMESTAMP columns as Date instances, while all
+  // insertions use ISO strings. Normalize at this boundary and force the
+  // parameter's SQL type; otherwise the native binder can compare a timestamp
+  // to an opaque JS value and quietly return an all-zero experiment.
+  const exposureBoundary = new Date(exposedAt).toISOString();
   if (metric === 'dau' || metric === 'users') {
     const rows = await query<{ metric_value: number }>(
-      `SELECT CASE WHEN EXISTS (SELECT 1 FROM fact_events WHERE user_id = ?) THEN 1 ELSE 0 END AS metric_value`,
-      userId,
+      `SELECT CASE WHEN EXISTS (
+        SELECT 1 FROM fact_events
+        WHERE user_id = ? AND created_at >= CAST(? AS TIMESTAMP)
+      ) THEN 1 ELSE 0 END AS metric_value`,
+      userId, exposureBoundary,
     );
     return rows.length > 0 ? Number(rows[0]!.metric_value) : null;
   }
@@ -348,9 +490,9 @@ async function getUserMetricValue(
   const rows = await query<UserMetricRow>(
     `SELECT user_id, ${aggExpression} AS metric_value
      FROM fact_events
-     WHERE user_id = ?
+     WHERE user_id = ? AND created_at >= CAST(? AS TIMESTAMP)
      GROUP BY user_id`,
-    userId,
+    userId, exposureBoundary,
   );
 
   return rows.length > 0 && rows[0]!.metric_value !== undefined

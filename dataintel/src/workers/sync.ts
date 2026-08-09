@@ -1,4 +1,5 @@
 import { syncAll, refreshAggregates } from '../db/sync.js';
+import { refreshLearnerSkillStates } from '../services/learning.js';
 import { getConfig } from '../env.js';
 import { isReady } from '../db/duckdb.js';
 
@@ -29,6 +30,7 @@ async function runSync(): Promise<void> {
     console.log('[dataintel] Starting sync...');
     const result = await syncAll();
     await refreshAggregates();
+    await refreshLearnerSkillStates();
     console.log(
       `[dataintel] Sync complete:`,
       result.tables,

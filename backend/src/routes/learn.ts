@@ -13,6 +13,7 @@ import { verdictFrom } from '../lesson-contract/core/types.js';
 import { assembleCourseTree, findLessonNode, summarizeCourseTree, type CourseTree } from '../services/courseTree.js';
 import { findGradingSegment, gradedSegmentIds, pickLessonLocale, stripAnswers, xpBySegmentId } from '../services/lessonDocument.js';
 import { isCalendarDate, isFirstActivityToday, nextStreak } from '../services/streak.js';
+import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import {
   countSegmentAttempts,
   getAdventureById,
@@ -78,6 +79,7 @@ async function loadCourseTree(accessToken: string, userId: string, course: Cours
 
 interface LessonContext {
   lessonRow: { id: string; slug: string; title: Record<string, unknown>; difficulty: number; xp_total: number; estimated_minutes: number };
+  topic: { id: string; slug: string };
   course: CourseHierarchyRow;
   tree: CourseTree;
 }
@@ -97,12 +99,51 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
   const tree = await loadCourseTree(accessToken, userId, course);
   if (!tree) return 'unreachable';
   if (!findLessonNode(tree, lessonId)) return 'not_found';
-  return { lessonRow: lesson, course, tree };
+  return { lessonRow: lesson, topic, course, tree };
 }
 
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth);
+
+  // Future Tutor-ready boundary. It returns only the caller's derived skill
+  // state, never raw events, answers, or another learner's data.
+  router.get('/personalization', async (_req, res) => {
+    const user = authedUser(res);
+    const states = await getOwnLearnerIntelligence(user.id);
+    if (states === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learning intelligence unavailable');
+    return ok(res, {
+      recommendation: states[0] ?? null,
+      states,
+    });
+  });
+
+  const ExperimentExposureBody = z.object({
+    experiment_id: z.string().uuid(),
+    surface: z.enum(['learn', 'tasks', 'profile', 'tutor']),
+    target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
+  });
+
+  // A treatment is recorded only after it rendered. Kid experimentation uses
+  // the same active guardian analytics consent as behavioural measurement.
+  router.post('/experiments/exposure', async (req, res) => {
+    const parsed = ExperimentExposureBody.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid exposure');
+    const user = authedUser(res);
+    const roles = await getRolesForGate(user.id);
+    if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
+    if (roles.includes('kid') && await hasActiveAnalyticsConsent(user.id) !== true) {
+      return ok(res, { recorded: false }, 202);
+    }
+    const exposure = await recordExperimentExposure({
+      userId: user.id,
+      experimentId: parsed.data.experiment_id,
+      surface: parsed.data.surface,
+      target: parsed.data.target,
+    });
+    if (exposure === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Experiment exposure unavailable');
+    return ok(res, { recorded: true, ...exposure });
+  });
 
   // 1. GET /courses — published courses + rollup progress for the caller.
   router.get('/courses', async (_req, res) => {
@@ -188,6 +229,7 @@ export function learnRouter(): Router {
     // (authoritative), so a hint actually lowers the score and a reload can't
     // launder it (0012). Optional; defaults to 0.
     hints_used: z.number().int().min(0).max(10).optional(),
+    time_spent_seconds: z.number().int().min(0).max(7200).optional(),
   });
 
   router.post('/lessons/:id/grade', async (req, res) => {
@@ -252,7 +294,30 @@ export function learnRouter(): Router {
       verdict.reveal = outcome.reveal;
     }
 
-    const recorded = await insertSegmentAttempt(user.id, lessonId, segmentId, serverAttemptNumber, verdict.score, runId, hintsUsed);
+    const diagnosticCode = hintsUsed > 0
+      ? 'hint_assisted'
+      : serverAttemptNumber > 1 && verdict.correct
+        ? 'retry_recovery'
+        : verdict.correct
+          ? undefined
+          : 'initial_incorrect';
+    const recorded = await insertSegmentAttempt(
+      user.id,
+      lessonId,
+      segmentId,
+      serverAttemptNumber,
+      verdict.score,
+      runId,
+      hintsUsed,
+      {
+        timeSpentSeconds: parsed.data.time_spent_seconds,
+        courseId: ctx.course.id,
+        topicId: ctx.topic.id,
+        skillKey: `${ctx.course.slug}/${ctx.topic.slug}`.toLowerCase(),
+        documentUpdatedAt: picked.updated_at,
+        diagnosticCode,
+      },
+    );
     if (!recorded) return fail(res, 502, 'INTERNAL', 'Could not record the attempt');
 
     return ok(res, { verdict });

@@ -31,6 +31,7 @@ export function createCoreGrader(
       const body: Record<string, unknown> = { segment_id: segmentId, answer, attempt_number: meta.attempt_number };
       if (runId) body.run_id = runId;
       if (typeof meta.hints_used === 'number') body.hints_used = meta.hints_used;
+      if (typeof meta.time_spent_seconds === 'number') body.time_spent_seconds = meta.time_spent_seconds;
       const { data, error } = await api<{ verdict: Verdict }>(`/learn/lessons/${lessonId}/grade`, {
         method: 'POST',
         token,

@@ -81,6 +81,10 @@ Routes under `/api/v1` require `x-internal-api-key: <INTERNAL_API_KEY>`
 | POST | `/api/v1/intel/paths/sankey` | Sankey diagram data | implemented |
 | POST/GET | `/api/v1/intel/experiments*` | Experiment CRUD + results | implemented |
 | POST/GET/PATCH/DELETE | `/api/v1/intel/alerts*` | Alert rule CRUD + history | implemented |
+| GET | `/api/v1/intel/learning/states/:userId` | Explainable learner skill state (Core only) | implemented |
+| GET | `/api/v1/intel/learning/content-health` | Aggregated instructional evidence | implemented |
+| GET | `/api/v1/intel/quality` | Warehouse freshness and coverage | implemented |
+| POST | `/api/v1/intel/runtime/experiments/*` | Assignment and rendered-treatment exposure (Core only) | implemented |
 
 Lesson calibration reads Core's authoritative `lesson_segment_attempts` facts,
 not browser `segment_submit` telemetry. The activation funnel can join an

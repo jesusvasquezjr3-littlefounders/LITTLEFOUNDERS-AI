@@ -21,10 +21,6 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; tree: CourseTree };
 
 export function CoursePage() {
-  useEffect(() => {
-    trackInsight('course_open', { routeClass: 'learn' });
-  }, []);
-
   const { t, i18n } = useTranslation();
   const { courseSlug = '' } = useParams();
   const { getToken } = useAuth();
@@ -78,6 +74,13 @@ export function CoursePage() {
     pendingScrollRef.current = false;
     scrollToNext(state.tree.nextLessonId);
   }, [openAdventureId, state, scrollToNext]);
+
+  useEffect(() => {
+    if (state.status !== 'ready') return;
+    // Course identity makes funnel and content-friction analysis actionable.
+    // The beacon is consent-gated, so this remains a no-op for unconsented kids.
+    trackInsight('course_open', { routeClass: 'learn', courseId: state.tree.course.id });
+  }, [state]);
 
   const registerNodeRef = useCallback((lessonId: string, el: HTMLElement | null) => {
     if (el) nodeRefs.current.set(lessonId, el);

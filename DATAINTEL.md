@@ -120,6 +120,12 @@ domain:
 | Experiments | POST | `/intel/experiments/:id/start` | Start |
 | Experiments | GET | `/intel/experiments/:id/results` | Results |
 | Experiments | POST | `/intel/experiments/:id/conclude` | Conclude |
+| Learning state | GET | `/intel/learning/states/:userId` | Derived learner skill states (Core only) |
+| Learning state | GET | `/intel/learning/recommendation/:userId` | Highest-priority explainable next action (Core only) |
+| Content health | GET | `/intel/learning/content-health` | Aggregated instructional priorities, no learner identity |
+| Data quality | GET | `/intel/quality` | Sync freshness and context/coverage checks |
+| Experiment runtime | POST | `/intel/runtime/experiments/assignments` | Sticky surface assignment (Core only) |
+| Experiment runtime | POST | `/intel/runtime/experiments/exposure` | Rendered-treatment exposure (Core only) |
 | Alerts | POST | `/intel/alerts` | Create |
 | Alerts | GET | `/intel/alerts` | List |
 | Alerts | PATCH | `/intel/alerts/:id` | Update status |
@@ -147,10 +153,13 @@ DuckDB stores a star schema optimized for analytical queries:
 
 **`fact_events`** — one row per learning event, denormalized for fast scans:
 - `event_id` (BIGINT, PK)
+- `client_event_id` (UUID, nullable, retry-safe source identifier)
+- `event_version` and `occurred_at` (schema/freshness observability)
 - `user_id` (UUID, nullable)
 - `anon_id` (UUID, nullable)
 - `session_id` (UUID, nullable)
 - `lesson_id` (UUID, nullable)
+- `course_id`, `experiment_id`, `experiment_variant` (nullable closed context)
 - `segment_id` (VARCHAR, nullable)
 - `event_type` (VARCHAR NOT NULL — one of the closed-enum event names)
 - `role` (VARCHAR, nullable)
@@ -164,10 +173,17 @@ DuckDB stores a star schema optimized for analytical queries:
 - `ingested_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
 
 **`fact_segment_attempts`** — authoritative Core attempt records, not browser
-telemetry. It contains only `attempt_id`, `user_id`, `lesson_id`, `segment_id`,
-`attempt_number`, `score`, `hints_used` and `created_at`. Calibration uses this
-fact so a missing browser beacon never becomes a fabricated zero score, hint
-rate or first-attempt result.
+telemetry. It contains `attempt_id`, `user_id`, lesson/course/topic and closed
+skill context, `segment_id`, `attempt_number`, `score`, `hints_used`, bounded
+attempt time, lesson-document timestamp, diagnostic code and `created_at`.
+Calibration uses this fact so a missing browser beacon never becomes a
+fabricated zero score, hint rate or first-attempt result.
+
+**`learner_skill_states`** — a recomputed, explainable Beta-posterior state
+per learner and skill. It stores only derived mastery probability, uncertainty,
+evidence count, review due time and a closed recommended action. Core exposes a
+learner only their own state, which leaves a safe, first-party contract ready
+for the future Tutor without granting it raw DuckDB or behavioral history.
 
 ### Dimension tables
 
@@ -275,7 +291,7 @@ only decision-ready surfaces:
 | Home | KPI cards, consent coverage and feature adoption breakdown |
 | Trends | Exact event, DAU, user and session time series |
 | Funnels | First-party adult acquisition funnel and learner activation steps |
-| Learning | Explicit lesson abandonment plus server-authoritative exercise calibration |
+| Learning | Data readiness, aggregated skill effectiveness, explicit abandonment and authoritative calibration |
 | Retention | Weekly cohort retention matrix with heatmap |
 | People | Top learners engagement leaderboard + churn risk table |
 | Experiments | Active/completed experiments list with control vs variant results |
@@ -297,6 +313,9 @@ interval (dashboard cards) and on tab switch (detail views).
 - A per-child PII surface — the churn at-risk endpoint returns user IDs
   only; Core applies its own role-based access controls before rendering
   names. No child name, email, or location leaves dataintel.
+- A fake predictive model — mastery is an interpretable posterior and churn is
+  a deterministic re-engagement prioritization until we have labeled outcomes,
+  adequate sample size and a separately validated/calibrated model.
 - A replacement for INSIGHTS.md — INSIGHTS owns the COLLECTION contract
   (what is recorded, under which consent); DATAINTEL owns the INTELLIGENCE
   contract (what is learned from it).

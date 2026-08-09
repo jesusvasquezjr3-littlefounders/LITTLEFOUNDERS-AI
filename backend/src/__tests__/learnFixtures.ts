@@ -111,6 +111,7 @@ export function makeDb(userId: string): FakeDb {
         lesson_id: LESSON_1_ID,
         locale: 'en-US',
         schema_version: 1,
+        updated_at: '2026-08-09T00:00:00.000Z',
         document: lessonDocument('en-US'),
         answer_keys: { 'quiz-1': { correct_option_id: 'a' } },
         audio: {
@@ -123,6 +124,7 @@ export function makeDb(userId: string): FakeDb {
         lesson_id: LESSON_1_ID,
         locale: 'es-MX',
         schema_version: 1,
+        updated_at: '2026-08-09T00:00:00.000Z',
         document: lessonDocument('es-MX'),
         answer_keys: { 'quiz-1': { correct_option_id: 'a' } },
         audio: {},
@@ -134,6 +136,7 @@ export function makeDb(userId: string): FakeDb {
         lesson_id: LESSON_2_ID,
         locale: 'en-US',
         schema_version: 1,
+        updated_at: '2026-08-09T00:00:00.000Z',
         document: {
           schema_version: 1,
           meta: { slug: 'lesson-2', title: 'Lesson Two', locale: 'en-US', subject: 'money', estimated_minutes: 5, objectives: ['x'], cast: ['dina'] },

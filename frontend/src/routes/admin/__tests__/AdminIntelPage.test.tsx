@@ -66,6 +66,17 @@ function apiDefault(path: string) {
   if (path.startsWith('/admin/intel/alerts')) {
     return apiOk([]);
   }
+  if (path.startsWith('/admin/intel/quality')) {
+    return apiOk({
+      generatedAt: '2026-08-09T00:00:00.000Z',
+      freshness: [{ source: 'attempts', lastSyncedAt: '2026-08-09T00:00:00.000Z', rowsSynced: 12, lastError: null, stale: false }],
+      events: { total: 20, idempotencyCoveragePct: 100, contextCoveragePct: 100, lateArrivalPct: 0 },
+      attempts: { total: 12, skillCoveragePct: 100, timingCoveragePct: 100, documentVersionCoveragePct: 100 },
+    });
+  }
+  if (path.startsWith('/admin/intel/learning/content-health')) {
+    return apiOk({ skills: [] });
+  }
   if (path.startsWith('/admin/intel/segments')) {
     return apiOk([]);
   }
@@ -163,6 +174,14 @@ describe('AdminIntelPage — layout', () => {
     renderPage();
     await flushPromises();
     expect(screen.getByRole('heading', { level: 1, name: 'admin.intel.title' })).toBeInTheDocument();
+  });
+
+  it('shows evidence readiness before presenting learning recommendations', async () => {
+    renderPage();
+    await flushPromises();
+    fireEvent.click(screen.getByText('admin.intel.tabs.learning'));
+    expect(screen.getByText('admin.intel.learning.readinessTitle')).toBeInTheDocument();
+    expect(screen.getByText('admin.intel.learning.skillHealthTitle')).toBeInTheDocument();
   });
 
   it('renders all intelligence workspace tabs', async () => {

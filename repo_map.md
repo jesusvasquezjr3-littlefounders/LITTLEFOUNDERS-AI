@@ -1057,12 +1057,12 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 - `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
 - Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
 - Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
+- The next intelligence contract is now locally implemented: event retries are idempotent, client timestamps are bounded, and server-authoritative attempts carry only closed pedagogical context. DuckDB derives explainable mastery/review state and anonymized skill health, while `/admin/intel` visibly reports sync freshness and evidence coverage before presenting learning conclusions. Runtime experiments record a treatment only after it rendered. Core exposes an own-learner boundary for the future Tutor; the Tutor itself remains intentionally unimplemented.
 
 ## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
 
 - `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.
 - Course inventory rows expose the hierarchy and release metadata an admin needs to make a decision: description, subject, status, adventure/saga/topic/lesson counts, lesson status breakdown, creation date, and release-gate context. Course publication continues through Core's existing atomic release preconditions.
-- The lesson review queue now returns a complete review set with course hierarchy, difficulty, XP, duration, creation date, and locale coverage. A new detail route strips answer keys and embeds the actual Lesson Engine player in an app-level centered overlay; preview navigation is non-grading and emits no learner telemetry.
 ```
 
 ### agent/README.md
@@ -3053,7 +3053,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
+import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
 
 let db: FakeDb;
 let userId: string;
@@ -3764,7 +3764,7 @@ export interface GotrueUser {
 ### backend/src/services/insights.ts
 
 ```
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { serviceRest } from './supabaseRest.js';
@@ -3779,6 +3779,26 @@ import { serviceRest } from './supabaseRest.js';
  *    cannot answer the consent question, the events are DROPPED — we never
  *    record first and ask later.
  *  - The event vocabulary is closed (mirrors the DB CHECK constraints), and
+```
+
+### backend/src/services/learningIntel.ts
+
+```
+import { z } from 'zod';
+import { getConfig } from '../config.js';
+
+const ActionSchema = z.enum(['remediate', 'practice', 'retrieve', 'continue']);
+const StateSchema = z.object({
+  skillKey: z.string().min(1).max(128),
+  courseId: z.string().uuid().nullable(),
+  topicId: z.string().uuid().nullable(),
+  masteryProbability: z.number().min(0).max(1),
+  uncertainty: z.number().min(0).max(1),
+  evidenceCount: z.number().int().nonnegative(),
+  firstPracticedAt: z.string().datetime().nullable(),
+  lastPracticedAt: z.string().datetime().nullable(),
+  reviewDueAt: z.string().datetime().nullable(),
+  recommendedAction: ActionSchema,
 ```
 
 ### backend/src/services/lessonDocument.ts
@@ -7599,6 +7619,26 @@ FROM public.anon_visitors av
 WHERE av.converted_user_id IS NOT NULL
 ```
 
+### database/migrations/0036_learning_intelligence_contract.sql
+
+```
+-- 0036_learning_intelligence_contract.sql
+--
+-- Makes learning evidence reproducible and decision-ready without opening a
+-- free-text telemetry channel. Behavioural events remain consent-gated; the
+-- grading record remains Core-authored and therefore authoritative.
+
+-- ── Authoritative attempt context ─────────────────────────────────────────
+-- A grade alone cannot distinguish a quick confident answer from a long,
+-- scaffolded recovery. These fields are written only by Core alongside the
+-- already-authoritative score; no learner answer or free text is stored.
+ALTER TABLE public.lesson_segment_attempts
+  ADD COLUMN IF NOT EXISTS time_spent_seconds integer,
+  ADD COLUMN IF NOT EXISTS course_id uuid,
+  ADD COLUMN IF NOT EXISTS topic_id uuid,
+  ADD COLUMN IF NOT EXISTS skill_key text,
+```
+
 ### database/package.json
 
 ```
@@ -8157,6 +8197,7 @@ import {
   assignVariant,
   createExperiment,
   getExperimentResults,
+  recordRuntimeExposure,
   startExperiment,
 } from '../services/experiments.js';
 
@@ -8164,7 +8205,6 @@ import {
  * getExperimentResults() had two confirmed bugs that both make a real
  * effect report as "no difference":
  *
- * 1. normCDF() returned 1 - true_p instead of true_p, so a large,
 ```
 
 ### dataintel/src/__tests__/health.test.ts
@@ -8205,6 +8245,26 @@ const auth = (req: request.Test) => req.set('x-internal-api-key', KEY);
 const readOk = (status: number) => status === 200 || status === 502;
 
 /** Write endpoints return 201 on success, or 502/500 when the backing
+```
+
+### dataintel/src/__tests__/learning-intelligence.test.ts
+
+```
+import { randomUUID } from 'node:crypto';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { execute, initDb } from '../db/duckdb.js';
+import { getDataQualityReport } from '../services/dataQuality.js';
+import {
+  getLearnerRecommendation,
+  getLearnerSkillStates,
+  getSkillHealth,
+  refreshLearnerSkillStates,
+} from '../services/learning.js';
+
+describe('learning intelligence', () => {
+  const learnerId = randomUUID();
+  const courseId = randomUUID();
+  const topicId = randomUUID();
 ```
 
 ### dataintel/src/__tests__/pedagogical-signals.test.ts
@@ -8292,19 +8352,19 @@ function assertIdentifier(col: string): string {
 ```
 CREATE TABLE IF NOT EXISTS fact_events (
   event_id BIGINT PRIMARY KEY,
+  client_event_id UUID,
+  event_version SMALLINT,
+  occurred_at TIMESTAMP,
   user_id UUID,
   anon_id UUID,
   session_id UUID,
   lesson_id UUID,
+  course_id UUID,
   segment_id VARCHAR,
+  experiment_id UUID,
+  experiment_variant VARCHAR,
   event_type VARCHAR NOT NULL,
   role VARCHAR,
-  route_class VARCHAR,
-  device VARCHAR,
-  locale VARCHAR,
-  referrer_class VARCHAR,
-  ordinal INTEGER,
-  value DOUBLE,
 ```
 
 ### dataintel/src/db/sync.test.ts
@@ -8561,6 +8621,26 @@ export interface ChurnRiskEntry {
 export interface ChurnFactor {
 ```
 
+### dataintel/src/services/dataQuality.ts
+
+```
+import { query } from '../db/duckdb.js';
+
+export interface DataQualityReport {
+  generatedAt: string;
+  freshness: Array<{
+    source: string;
+    lastSyncedAt: string | null;
+    rowsSynced: number;
+    lastError: string | null;
+    stale: boolean;
+  }>;
+  events: {
+    total: number;
+    idempotencyCoveragePct: number;
+    contextCoveragePct: number;
+```
+
 ### dataintel/src/services/experiments.ts
 
 ```
@@ -8574,11 +8654,11 @@ export interface Experiment {
   metric: string;
   variantA: string;
   variantB: string;
+  surface: string;
+  target: string;
   segmentFilter?: Record<string, unknown>;
   createdAt: string;
   startedAt?: string;
-  concludedAt?: string;
-}
 ```
 
 ### dataintel/src/services/exports.ts
@@ -8639,6 +8719,26 @@ export interface FunnelStep {
 }
 
 interface ActivationFunnelRow {
+```
+
+### dataintel/src/services/learning.ts
+
+```
+import { exec, query } from '../db/duckdb.js';
+
+export type RecommendedAction = 'remediate' | 'practice' | 'retrieve' | 'continue';
+
+export interface LearnerSkillState {
+  skillKey: string;
+  courseId: string | null;
+  topicId: string | null;
+  masteryProbability: number;
+  uncertainty: number;
+  evidenceCount: number;
+  firstPracticedAt: string | null;
+  lastPracticedAt: string | null;
+  reviewDueAt: string | null;
+  recommendedAction: RecommendedAction;
 ```
 
 ### dataintel/src/services/lessons.ts
@@ -8796,6 +8896,7 @@ export function stopAlertWorker(): void {
 
 ```
 import { syncAll, refreshAggregates } from '../db/sync.js';
+import { refreshLearnerSkillStates } from '../services/learning.js';
 import { getConfig } from '../env.js';
 import { isReady } from '../db/duckdb.js';
 
@@ -8809,7 +8910,6 @@ export function startSyncWorker(): void {
 
   timer = setInterval(() => void runSync(), config.SYNC_INTERVAL_MS);
 }
-
 ```
 
 ### dataintel/tsconfig.json

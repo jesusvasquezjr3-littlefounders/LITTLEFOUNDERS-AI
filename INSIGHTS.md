@@ -109,7 +109,16 @@ what the product does not otherwise see.
 Every row also carries `session_id`, `ordinal` (position within the session),
 `device`, `locale` and `referrer_class` — which is what makes any of the
 above segmentable, and what turns "what happened before they quit" into an
-index scan.
+index scan. Since 0036 it additionally carries a retry-safe `client_event_id`,
+bounded `occurred_at`, schema `event_version`, and closed content/experiment
+context where applicable. Core ignores duplicate client IDs and rejects clocks
+more than 30 days old or 5 minutes ahead, so delayed delivery is observable
+without allowing a client to rewrite cohorts or experiment windows.
+
+Authoritative attempts now retain `course_id`, `topic_id`, a closed `skill_key`,
+wall-clock attempt time, lesson-document timestamp and a small diagnostic code.
+They are product facts rather than browser telemetry, and feed explainable
+mastery/review state; no answer text, typed response or session replay is added.
 
 ## 5. Consent lifecycle
 

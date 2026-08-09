@@ -1030,7 +1030,31 @@
     "colHints": "Uso de dicas",
     "colFirstTry": "Nota da primeira tentativa",
     "unavailable": "Dados insuficientes",
-    "minutes": "{{count}} min"
+    "minutes": "{{count}} min",
+    "readinessTitle": "Prontidão da evidência",
+    "readinessSubtitle": "Verificações de confiança para os dados por trás das recomendações de aprendizagem e do Tutor.",
+    "readinessReady": "Pronta para interpretar",
+    "readinessAttention": "Precisa de atenção",
+    "readinessUnavailable": "Os sinais de qualidade do armazém não estão disponíveis. Trate os achados de aprendizagem como não verificados até a sincronização se recuperar.",
+    "idempotency": "Eventos seguros em novas tentativas",
+    "eventContext": "Contexto de eventos de aprendizagem",
+    "skillContext": "Tentativas marcadas por habilidade",
+    "versionContext": "Tentativas com versão da lição",
+    "syncedRows": "{{count}} linhas sincronizadas",
+    "syncError": "A última sincronização falhou",
+    "fresh": "Atualizado",
+    "stale": "Desatualizado",
+    "skillHealthTitle": "Eficácia do conteúdo por habilidade",
+    "skillHealthSubtitle": "Prioriza a revisão instrucional somente depois de haver evidência independente suficiente de aprendizes.",
+    "colSkill": "Habilidade",
+    "colPriority": "Prioridade",
+    "colMastery": "Domínio estimado",
+    "colLowMastery": "Baixo domínio",
+    "priority": {
+      "review": "Revisar conteúdo",
+      "monitor": "Monitorar",
+      "insufficient_evidence": "Precisa de mais evidência"
+    }
     }
   },
   "insights": {

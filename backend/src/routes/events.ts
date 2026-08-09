@@ -13,6 +13,7 @@ import {
   getRolesForGate,
   hasActiveAnalyticsConsent,
   insertLearningEvents,
+  serverEventId,
   stampRole,
   upsertAnonVisitor,
   type LearningEventInsert,
@@ -64,6 +65,7 @@ const EventBody = z.object({
   event: z.enum(RECORDABLE_EVENTS),
   routeClass: z.enum(ROUTE_CLASSES).optional(),
   lessonId: z.string().uuid().optional(),
+  courseId: z.string().uuid().optional(),
   // Content-id charset (mirrors the 0023 CHECK) — a length cap alone would
   // leave a free-text channel into a table §1.9 promises has none.
   segmentId: z.string().regex(/^[A-Za-z0-9._-]{1,64}$/).optional(),
@@ -73,9 +75,16 @@ const EventBody = z.object({
   locale: z.enum(LOCALES).optional(),
   referrerClass: z.enum(REFERRER_CLASSES).optional(),
   ordinal: z.number().int().min(1).max(100_000).optional(),
+  clientEventId: z.string().uuid().optional(),
+  eventVersion: z.number().int().min(1).max(99).optional(),
+  occurredAt: z.string().datetime({ offset: true }).optional(),
+  experimentId: z.string().uuid().optional(),
+  experimentVariant: z.enum(['A', 'B']).optional(),
 });
 
 const LABEL = /^[A-Za-z0-9._-]{1,64}$/;
+const MAX_EVENT_AGE_MS = 30 * 24 * 60 * 60 * 1_000;
+const MAX_CLOCK_SKEW_MS = 5 * 60 * 1_000;
 
 const BatchBody = z.object({
   events: z.array(z.unknown()).min(1).max(25),
@@ -107,7 +116,25 @@ function toRow(e: z.infer<typeof EventBody>): Omit<LearningEventInsert, 'role'> 
     locale: e.locale ?? null,
     referrer_class: e.referrerClass ?? null,
     ordinal: e.ordinal ?? null,
+    client_event_id: e.clientEventId ?? serverEventId(),
+    event_version: e.eventVersion ?? 1,
+    occurred_at: e.occurredAt ?? new Date().toISOString(),
+    course_id: e.courseId ?? null,
+    experiment_id: e.experimentId ?? null,
+    experiment_variant: e.experimentVariant ?? null,
   };
+}
+
+/**
+ * Client time is useful for late-arrival monitoring, but accepting arbitrary
+ * historical/future timestamps would poison cohorts and experiment windows.
+ * A missing timestamp is always stamped by Core at ingestion.
+ */
+function hasPlausibleOccurrenceTime(event: z.infer<typeof EventBody>): boolean {
+  if (!event.occurredAt) return true;
+  const occurredAt = new Date(event.occurredAt).getTime();
+  const now = Date.now();
+  return occurredAt >= now - MAX_EVENT_AGE_MS && occurredAt <= now + MAX_CLOCK_SKEW_MS;
 }
 
 export function eventsRouter(): Router {
@@ -146,6 +173,7 @@ export function eventsRouter(): Router {
       for (const raw of parsed.data.events) {
         const e = EventBody.safeParse(raw);
         if (!e.success) continue;
+        if (!hasPlausibleOccurrenceTime(e.data)) continue;
         // An anonymous caller may only speak about acquisition surfaces.
         // Anything else would be an unidentified — possibly kid — session
         // reporting product behaviour outside the consent gate.
@@ -155,8 +183,8 @@ export function eventsRouter(): Router {
       }
       if (rows.length === 0) return ok(res, { accepted: 0 }, 202);
       const storedAnon = await insertLearningEvents(rows);
-      if (!storedAnon) return fail(res, 502, 'DATA_UNAVAILABLE', 'Events could not be stored');
-      return ok(res, { accepted: rows.length }, 202);
+      if (storedAnon === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Events could not be stored');
+      return ok(res, { accepted: storedAnon }, 202);
     }
 
     // Authenticated path. requireAuth is applied as real middleware on this
@@ -183,12 +211,13 @@ export function eventsRouter(): Router {
     for (const raw of parsed.data.events) {
       const e = EventBody.safeParse(raw);
       if (!e.success) continue; // drop the bad apple, keep the batch
+      if (!hasPlausibleOccurrenceTime(e.data)) continue;
       rows.push({ ...toRow(e.data), user_id: user.id, anon_id: null, role });
     }
 
     if (rows.length === 0) return ok(res, { accepted: 0 }, 202);
     const stored = await insertLearningEvents(rows);
-    if (!stored) return fail(res, 502, 'DATA_UNAVAILABLE', 'Events could not be stored');
+    if (stored === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Events could not be stored');
 
     /*
      * CLOSE THE ATTRIBUTION LOOP HERE, not only in /auth/signup.
@@ -209,7 +238,7 @@ export function eventsRouter(): Router {
     if (parsed.data.anonId && rows.some((r) => r.event === 'signup_complete' || r.event === 'login_complete')) {
       void attributeSignup(parsed.data.anonId, user.id, roles);
     }
-    return ok(res, { accepted: rows.length }, 202);
+    return ok(res, { accepted: stored }, 202);
   });
 
   return router;

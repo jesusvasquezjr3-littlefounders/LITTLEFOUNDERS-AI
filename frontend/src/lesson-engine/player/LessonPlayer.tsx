@@ -132,7 +132,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
   // finest-grained learning signal the platform has.
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
-    if (!preview) trackInsight('segment_view', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
+    if (!preview) trackInsight('segment_view', { lessonId, segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
   }, [preview, state.phase, segment])
 
   useEffect(() => {
@@ -203,6 +203,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
       setGradeError(false)
       try {
         trackInsight('segment_submit', {
+          lessonId,
           segmentId: segment.id.slice(0, 64),
           routeClass: 'learn',
           value: (segState?.attempts ?? 0) + 1,
@@ -352,13 +353,13 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
               </div>
               <div className="flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
                 <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
-                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} preview={preview} />
+                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
               </div>
             </div>
           ) : (
             <div className="flex items-start gap-2">
               <MarkdownLite text={segment.prompt_md} className="lf-headline min-w-0 flex-1 text-content" />
-              <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} preview={preview} />
+              <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} lessonId={lessonId} preview={preview} />
             </div>
           )}
 
@@ -409,8 +410,9 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
             segIndex={state.index}
             reaction={reaction}
             done={Boolean(segState?.done)}
+            lessonId={lessonId}
             onRetry={() => {
-              trackInsight('segment_retry', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
+              trackInsight('segment_retry', { lessonId, segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
               dispatch({ type: 'RETRY' })
             }}
             onNext={handleNext}
@@ -430,6 +432,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, p
                   onClick={() => {
                     const hintIndex = segState?.hintsShown ?? 0
                     trackInsight('hint_open', {
+                      lessonId,
                       segmentId: segment.id.slice(0, 64),
                       routeClass: 'learn',
                       value: hintIndex + 1,
@@ -487,7 +490,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 /** Speaker button — visible only when Echo narrated this unit. Doubles as the fallback when autoplay was refused. */
-function NarrationReplayButton({ unitId, preview = false }: { unitId: string; preview?: boolean }) {
+function NarrationReplayButton({ unitId, lessonId, preview = false }: { unitId: string; lessonId?: string; preview?: boolean }) {
   const { t } = useTranslation()
   const narration = useNarration()
   if (!narration.has(unitId)) return null
@@ -497,7 +500,7 @@ function NarrationReplayButton({ unitId, preview = false }: { unitId: string; pr
       onClick={() => {
         // A deliberate replay is an audio-engagement signal (/INSIGHTS.md).
         // No-op for unconsented kids; segment_id is a content id, never text.
-        if (!preview) trackInsight('audio_replay', { segmentId: unitId.slice(0, 64), routeClass: 'learn' })
+        if (!preview) trackInsight('audio_replay', { lessonId, segmentId: unitId.slice(0, 64), routeClass: 'learn' })
         narration.play(unitId)
       }}
       aria-label={t('lesson.audio.replay')}
@@ -583,6 +586,7 @@ function FeedbackBanner({
   segIndex,
   reaction,
   done,
+  lessonId,
   onRetry,
   onNext,
 }: {
@@ -591,6 +595,7 @@ function FeedbackBanner({
   segIndex: number
   reaction: Reaction | null
   done: boolean
+  lessonId?: string
   onRetry: () => void
   onNext: () => void
 }) {
@@ -645,6 +650,7 @@ function FeedbackBanner({
   useEffect(() => {
     if (!teachingMd) return
     trackInsight('explanation_view', {
+      lessonId,
       segmentId: segment.id.slice(0, 64),
       routeClass: 'learn',
       value: explanationAudible ? 1 : 0,
@@ -679,7 +685,7 @@ function FeedbackBanner({
           {teachingMd ? (
             <div className="flex items-start gap-2">
               <MarkdownLite text={teachingMd} className="lf-body min-w-0 flex-1 text-content-muted" />
-              {explanationAudible ? <NarrationReplayButton unitId={explanationUnit} /> : null}
+              {explanationAudible ? <NarrationReplayButton unitId={explanationUnit} lessonId={lessonId} /> : null}
             </div>
           ) : null}
         </div>

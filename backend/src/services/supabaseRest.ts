@@ -568,12 +568,13 @@ export interface LessonDocumentRow {
   answer_keys: Json;
   /** Echo's narration manifest — `{version, voice_profile, units: {unit_id: {url, duration_ms, …}}}`, `{}` until narrated. */
   audio: Json;
+  updated_at: string;
 }
 
 /** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback (LESSON_ENGINE.md §3). */
 export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
   return rest<LessonDocumentRow[]>(
-    `/lesson_documents?lesson_id=eq.${eu(lessonId)}&select=lesson_id,locale,schema_version,document,answer_keys,audio`,
+    `/lesson_documents?lesson_id=eq.${eu(lessonId)}&select=lesson_id,locale,schema_version,document,answer_keys,audio,updated_at`,
     serviceToken(),
   );
 }
@@ -629,6 +630,14 @@ export async function insertSegmentAttempt(
   score: number,
   runId?: string,
   hintsUsed = 0,
+  context?: {
+    timeSpentSeconds?: number;
+    courseId: string;
+    topicId: string;
+    skillKey: string;
+    documentUpdatedAt: string;
+    diagnosticCode?: 'initial_incorrect' | 'hint_assisted' | 'retry_recovery';
+  },
 ): Promise<boolean> {
   const res = await rest<unknown>('/lesson_segment_attempts', serviceToken(), {
     method: 'POST',
@@ -641,6 +650,14 @@ export async function insertSegmentAttempt(
       score,
       ...(runId ? { run_id: runId } : {}),
       hints_used: hintsUsed,
+      ...(context?.timeSpentSeconds !== undefined ? { time_spent_seconds: context.timeSpentSeconds } : {}),
+      ...(context ? {
+        course_id: context.courseId,
+        topic_id: context.topicId,
+        skill_key: context.skillKey,
+        document_updated_at: context.documentUpdatedAt,
+        ...(context.diagnosticCode ? { diagnostic_code: context.diagnosticCode } : {}),
+      } : {}),
     }),
   });
   return res !== null;

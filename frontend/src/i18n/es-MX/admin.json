@@ -1030,7 +1030,31 @@
     "colHints": "Uso de ayudas",
     "colFirstTry": "Calificación del primer intento",
     "unavailable": "Datos insuficientes",
-    "minutes": "{{count}} min"
+    "minutes": "{{count}} min",
+    "readinessTitle": "Preparación de la evidencia",
+    "readinessSubtitle": "Verificaciones de confianza para los datos detrás de las recomendaciones de aprendizaje y Tutor.",
+    "readinessReady": "Lista para interpretar",
+    "readinessAttention": "Requiere atención",
+    "readinessUnavailable": "Las señales de calidad del almacén no están disponibles. Trata los hallazgos de aprendizaje como no verificados hasta que se recupere la sincronización.",
+    "idempotency": "Eventos seguros ante reintentos",
+    "eventContext": "Contexto de eventos de aprendizaje",
+    "skillContext": "Intentos etiquetados por habilidad",
+    "versionContext": "Intentos con versión de lección",
+    "syncedRows": "{{count}} filas sincronizadas",
+    "syncError": "Falló la última sincronización",
+    "fresh": "Actualizado",
+    "stale": "Desactualizado",
+    "skillHealthTitle": "Efectividad del contenido por habilidad",
+    "skillHealthSubtitle": "Prioriza revisar la instrucción solo cuando existe evidencia independiente suficiente de aprendices.",
+    "colSkill": "Habilidad",
+    "colPriority": "Prioridad",
+    "colMastery": "Dominio estimado",
+    "colLowMastery": "Bajo dominio",
+    "priority": {
+      "review": "Revisar contenido",
+      "monitor": "Monitorear",
+      "insufficient_evidence": "Falta evidencia"
+    }
     }
   },
   "insights": {

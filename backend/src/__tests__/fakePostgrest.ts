@@ -76,8 +76,26 @@ export function createFakeFetch(db: FakeDb): typeof fetch {
       const parsed = init?.body ? (JSON.parse(String(init.body)) as FakeRow | FakeRow[]) : {};
       // Batch inserts (learning_events) POST an array — one row each.
       if (Array.isArray(parsed)) {
-        rows.push(...parsed);
-        return prefer.includes('return=minimal') ? respond(201, null, true) : respond(201, parsed);
+        const onConflict = params.get('on_conflict');
+        if (!onConflict) {
+          rows.push(...parsed);
+          return prefer.includes('return=minimal') ? respond(201, null, true) : respond(201, parsed);
+        }
+        const keys = onConflict.split(',');
+        const inserted: FakeRow[] = [];
+        for (const body of parsed) {
+          const idxExisting = rows.findIndex((r) => keys.every((key) => r[key] === body[key]));
+          if (idxExisting >= 0) {
+            if (prefer.includes('merge-duplicates')) {
+              rows[idxExisting] = { ...rows[idxExisting], ...body };
+              inserted.push(rows[idxExisting]!);
+            }
+            continue;
+          }
+          rows.push(body);
+          inserted.push(body);
+        }
+        return prefer.includes('return=minimal') ? respond(201, null, true) : respond(201, inserted);
       }
       const body = parsed;
       const onConflict = params.get('on_conflict');

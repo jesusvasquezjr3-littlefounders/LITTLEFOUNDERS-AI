@@ -60,7 +60,14 @@ interface QueuedEvent {
   locale?: 'en-US' | 'es-MX' | 'pt-BR';
   referrerClass?: ReferrerClass;
   ordinal?: number;
+  /** Beacon-generated idempotency key, never caller supplied. */
+  clientEventId?: string;
+  eventVersion?: number;
+  occurredAt?: string;
+  courseId?: string;
 }
+
+type InsightFields = Omit<QueuedEvent, 'event' | 'clientEventId' | 'eventVersion' | 'occurredAt'>;
 
 const MAX_QUEUE = 100;
 const MAX_BATCH = 25;
@@ -88,6 +95,21 @@ let identityMode: 'anon' | 'auth' | null = null;
 
 function newSessionId(): string | null {
   return globalThis.crypto?.randomUUID?.() ?? null;
+}
+
+function newEventId(): string | undefined {
+  return globalThis.crypto?.randomUUID?.();
+}
+
+/** Build the immutable transport envelope once, before a retry can happen. */
+function stampEvent(event: InsightEvent, fields: InsightFields): QueuedEvent {
+  return {
+    event,
+    ...fields,
+    clientEventId: newEventId(),
+    eventVersion: 1,
+    occurredAt: new Date().toISOString(),
+  };
 }
 
 /** Ambient dimensions applied to every subsequent event. */
@@ -229,7 +251,7 @@ export function rebaseSessionStart(): void {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export function trackInsight(event: InsightEvent, fields: Omit<QueuedEvent, 'event'> = {}): void {
+export function trackInsight(event: InsightEvent, fields: InsightFields = {}): void {
   if (configured && !enabled) return;
   // Clamp at the source: one out-of-range value must never be able to spoil
   // a batch (the server is per-event tolerant too — belt and braces).
@@ -239,18 +261,17 @@ export function trackInsight(event: InsightEvent, fields: Omit<QueuedEvent, 'eve
   }
   // Not configured yet: hold, do not drop and do not send.
   if (!configured) {
-    pending.push({ event, ...fields });
+    pending.push(stampEvent(event, fields));
     if (pending.length > MAX_BATCH) pending = pending.slice(-MAX_BATCH);
     return;
   }
   ordinal += 1;
-  queue.push({
+  queue.push(stampEvent(event, {
     ...ambient,
     sessionId: sessionId ?? undefined,
     ordinal,
     ...fields,
-    event,
-  });
+  }));
   if (queue.length > MAX_QUEUE) queue = queue.slice(-MAX_QUEUE);
   if (queue.length >= MAX_BATCH) void flushInsights();
 }

@@ -5,6 +5,7 @@ import {
   assignVariant,
   createExperiment,
   getExperimentResults,
+  recordRuntimeExposure,
   startExperiment,
 } from '../services/experiments.js';
 
@@ -30,7 +31,7 @@ async function seedUserEvents(userId: string, count: number): Promise<void> {
   for (let i = 0; i < count; i++) {
     await execute(
       `INSERT INTO fact_events (event_id, user_id, event_type, created_at)
-       VALUES (?, ?, 'nav_view', CURRENT_TIMESTAMP)`,
+       VALUES (?, ?, 'nav_view', CURRENT_TIMESTAMP + INTERVAL 1 SECOND)`,
       nextEventId++,
       userId,
     );
@@ -46,15 +47,24 @@ describe('getExperimentResults — statistical correctness', () => {
     const variantAUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
     const variantBUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
 
-    // A: ~4 events/user. B: ~20 events/user — a huge, unambiguous effect.
-    for (const u of variantAUsers) await seedUserEvents(u, 4 + Math.floor(Math.random() * 2));
-    for (const u of variantBUsers) await seedUserEvents(u, 19 + Math.floor(Math.random() * 3));
-
     const exp = await createExperiment('events-diff', 'events', 'control', 'treatment');
     expect(exp).not.toBeNull();
     await startExperiment(exp!.id);
     for (const u of variantAUsers) await assignVariant(exp!.id, u, 'A');
     for (const u of variantBUsers) await assignVariant(exp!.id, u, 'B');
+    // Assignment is not evidence. The result must use an actual exposure,
+    // then only activity that happened after that treatment rendered.
+    for (const u of [...variantAUsers, ...variantBUsers]) {
+      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default')).not.toBeNull();
+    }
+    // Keep test ordering unambiguous across DuckDB timestamp precisions.
+    await execute(
+      "UPDATE experiment_exposures SET exposed_at = CURRENT_TIMESTAMP - INTERVAL 1 SECOND WHERE experiment_id = ?",
+      exp!.id,
+    );
+    // A: ~4 events/user. B: ~20 events/user — a huge, unambiguous effect.
+    for (const u of variantAUsers) await seedUserEvents(u, 4 + Math.floor(Math.random() * 2));
+    for (const u of variantBUsers) await seedUserEvents(u, 19 + Math.floor(Math.random() * 3));
 
     const results = await getExperimentResults(exp!.id);
     expect(results).not.toBeNull();
@@ -71,14 +81,20 @@ describe('getExperimentResults — statistical correctness', () => {
     const variantAUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
     const variantBUsers = [randomUUID(), randomUUID(), randomUUID(), randomUUID(), randomUUID()];
 
-    await seedUserEvents(variantAUsers[0]!, 1);
-    for (const u of variantBUsers) await seedUserEvents(u, 1);
-
     const exp = await createExperiment('activation-diff', 'users', 'control', 'treatment');
     expect(exp).not.toBeNull();
     await startExperiment(exp!.id);
     for (const u of variantAUsers) await assignVariant(exp!.id, u, 'A');
     for (const u of variantBUsers) await assignVariant(exp!.id, u, 'B');
+    for (const u of [...variantAUsers, ...variantBUsers]) {
+      expect(await recordRuntimeExposure(u, exp!.id, 'learn', 'default')).not.toBeNull();
+    }
+    await execute(
+      "UPDATE experiment_exposures SET exposed_at = CURRENT_TIMESTAMP - INTERVAL 1 SECOND WHERE experiment_id = ?",
+      exp!.id,
+    );
+    await seedUserEvents(variantAUsers[0]!, 1);
+    for (const u of variantBUsers) await seedUserEvents(u, 1);
 
     const results = await getExperimentResults(exp!.id);
     expect(results).not.toBeNull();

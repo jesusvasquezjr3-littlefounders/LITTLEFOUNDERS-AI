@@ -117,11 +117,17 @@ async function fetchFromVault<T = Record<string, unknown>>(
 function mapEventRow(row: Record<string, unknown>): Record<string, unknown> {
   return {
     event_id: row.event_id ?? row.id,
+    client_event_id: row.client_event_id ?? null,
+    event_version: row.event_version ?? 1,
+    occurred_at: row.occurred_at ?? row.created_at ?? new Date().toISOString(),
     user_id: row.user_id ?? null,
     anon_id: row.anon_id ?? null,
     session_id: row.session_id ?? null,
     lesson_id: row.lesson_id ?? null,
+    course_id: row.course_id ?? null,
     segment_id: row.segment_id ?? null,
+    experiment_id: row.experiment_id ?? null,
+    experiment_variant: row.experiment_variant ?? null,
     event_type: (row.event_type ?? row.event ?? ''),
     role: row.role ?? null,
     route_class: row.route_class ?? null,
@@ -181,10 +187,16 @@ function mapAttemptRow(row: Record<string, unknown>): Record<string, unknown> {
     attempt_id: row.attempt_id ?? row.id,
     user_id: row.user_id ?? null,
     lesson_id: row.lesson_id ?? null,
+    course_id: row.course_id ?? null,
+    topic_id: row.topic_id ?? null,
+    skill_key: row.skill_key ?? null,
     segment_id: row.segment_id ?? null,
     attempt_number: row.attempt_number ?? 0,
     score: row.score ?? 0,
     hints_used: row.hints_used ?? 0,
+    time_spent_seconds: row.time_spent_seconds ?? null,
+    document_updated_at: row.document_updated_at ?? null,
+    diagnostic_code: row.diagnostic_code ?? null,
     created_at: row.created_at ?? new Date().toISOString(),
   };
 }
@@ -261,11 +273,17 @@ export async function generateTimeDimension(
 
 const EVENT_COLUMNS = [
   'event_id',
+  'client_event_id',
+  'event_version',
+  'occurred_at',
   'user_id',
   'anon_id',
   'session_id',
   'lesson_id',
+  'course_id',
   'segment_id',
+  'experiment_id',
+  'experiment_variant',
   'event_type',
   'role',
   'route_class',
@@ -368,8 +386,9 @@ const SESSION_COLUMNS = [
 ] as const;
 
 const ATTEMPT_COLUMNS = [
-  'attempt_id', 'user_id', 'lesson_id', 'segment_id', 'attempt_number',
-  'score', 'hints_used', 'created_at',
+  'attempt_id', 'user_id', 'lesson_id', 'course_id', 'topic_id', 'skill_key',
+  'segment_id', 'attempt_number', 'score', 'hints_used', 'time_spent_seconds',
+  'document_updated_at', 'diagnostic_code', 'created_at',
 ] as const;
 
 const ANON_CONVERSION_COLUMNS = ['anon_id', 'user_id', 'converted_at'] as const;

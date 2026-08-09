@@ -899,12 +899,18 @@ export type Database = {
       learning_events: {
         Row: {
           anon_id: string | null
+          client_event_id: string | null
+          course_id: string | null
           created_at: string
           device: string | null
           event: string
+          event_version: number
+          experiment_id: string | null
+          experiment_variant: string | null
           id: number
           lesson_id: string | null
           locale: string | null
+          occurred_at: string | null
           ordinal: number | null
           referrer_class: string | null
           role: string
@@ -916,12 +922,18 @@ export type Database = {
         }
         Insert: {
           anon_id?: string | null
+          client_event_id?: string | null
+          course_id?: string | null
           created_at?: string
           device?: string | null
           event: string
+          event_version?: number
+          experiment_id?: string | null
+          experiment_variant?: string | null
           id?: never
           lesson_id?: string | null
           locale?: string | null
+          occurred_at?: string | null
           ordinal?: number | null
           referrer_class?: string | null
           role: string
@@ -933,12 +945,18 @@ export type Database = {
         }
         Update: {
           anon_id?: string | null
+          client_event_id?: string | null
+          course_id?: string | null
           created_at?: string
           device?: string | null
           event?: string
+          event_version?: number
+          experiment_id?: string | null
+          experiment_variant?: string | null
           id?: never
           lesson_id?: string | null
           locale?: string | null
+          occurred_at?: string | null
           ordinal?: number | null
           referrer_class?: string | null
           role?: string
@@ -1119,35 +1137,53 @@ export type Database = {
       lesson_segment_attempts: {
         Row: {
           attempt_number: number
+          course_id: string | null
           created_at: string
+          diagnostic_code: string | null
+          document_updated_at: string | null
           hints_used: number
           id: string
           lesson_id: string
           run_id: string | null
           score: number
           segment_id: string
+          skill_key: string | null
+          time_spent_seconds: number | null
+          topic_id: string | null
           user_id: string
         }
         Insert: {
           attempt_number: number
+          course_id?: string | null
           created_at?: string
+          diagnostic_code?: string | null
+          document_updated_at?: string | null
           hints_used?: number
           id?: string
           lesson_id: string
           run_id?: string | null
           score: number
           segment_id: string
+          skill_key?: string | null
+          time_spent_seconds?: number | null
+          topic_id?: string | null
           user_id: string
         }
         Update: {
           attempt_number?: number
+          course_id?: string | null
           created_at?: string
+          diagnostic_code?: string | null
+          document_updated_at?: string | null
           hints_used?: number
           id?: string
           lesson_id?: string
           run_id?: string | null
           score?: number
           segment_id?: string
+          skill_key?: string | null
+          time_spent_seconds?: number | null
+          topic_id?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1647,31 +1683,49 @@ export type Database = {
         Row: {
           attempt_id: string | null
           attempt_number: number | null
+          course_id: string | null
           created_at: string | null
+          diagnostic_code: string | null
+          document_updated_at: string | null
           hints_used: number | null
           lesson_id: string | null
           score: number | null
           segment_id: string | null
+          skill_key: string | null
+          time_spent_seconds: number | null
+          topic_id: string | null
           user_id: string | null
         }
         Insert: {
           attempt_id?: string | null
           attempt_number?: number | null
+          course_id?: string | null
           created_at?: string | null
+          diagnostic_code?: string | null
+          document_updated_at?: string | null
           hints_used?: number | null
           lesson_id?: string | null
           score?: number | null
           segment_id?: string | null
+          skill_key?: string | null
+          time_spent_seconds?: number | null
+          topic_id?: string | null
           user_id?: string | null
         }
         Update: {
           attempt_id?: string | null
           attempt_number?: number | null
+          course_id?: string | null
           created_at?: string | null
+          diagnostic_code?: string | null
+          document_updated_at?: string | null
           hints_used?: number | null
           lesson_id?: string | null
           score?: number | null
           segment_id?: string | null
+          skill_key?: string | null
+          time_spent_seconds?: number | null
+          topic_id?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -1701,12 +1755,18 @@ export type Database = {
       dataintel_events_sync: {
         Row: {
           anon_id: string | null
+          client_event_id: string | null
+          course_id: string | null
           created_at: string | null
           device: string | null
           event: string | null
           event_id: number | null
+          event_version: number | null
+          experiment_id: string | null
+          experiment_variant: string | null
           lesson_id: string | null
           locale: string | null
+          occurred_at: string | null
           ordinal: number | null
           referrer_class: string | null
           role: string | null
@@ -1718,12 +1778,18 @@ export type Database = {
         }
         Insert: {
           anon_id?: string | null
+          client_event_id?: string | null
+          course_id?: string | null
           created_at?: string | null
           device?: string | null
           event?: string | null
           event_id?: number | null
+          event_version?: number | null
+          experiment_id?: string | null
+          experiment_variant?: string | null
           lesson_id?: string | null
           locale?: string | null
+          occurred_at?: string | null
           ordinal?: number | null
           referrer_class?: string | null
           role?: string | null
@@ -1735,12 +1801,18 @@ export type Database = {
         }
         Update: {
           anon_id?: string | null
+          client_event_id?: string | null
+          course_id?: string | null
           created_at?: string | null
           device?: string | null
           event?: string | null
           event_id?: number | null
+          event_version?: number | null
+          experiment_id?: string | null
+          experiment_variant?: string | null
           lesson_id?: string | null
           locale?: string | null
+          occurred_at?: string | null
           ordinal?: number | null
           referrer_class?: string | null
           role?: string | null

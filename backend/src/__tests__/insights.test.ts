@@ -94,6 +94,31 @@ describe('POST /api/v1/events', () => {
     }
   });
 
+  it('deduplicates retried client events and reports the exact accepted count', async () => {
+    const event = {
+      event: 'lesson_start',
+      lessonId: '44444444-4444-4444-8444-444444444444',
+      clientEventId: '55555555-5555-4555-8555-555555555555',
+      occurredAt: new Date().toISOString(),
+    };
+    const app = createApp();
+    const first = await postEvents(app, ADULT_ID, [event]);
+    const retry = await postEvents(app, ADULT_ID, [event]);
+    expect(first.body.data.accepted).toBe(1);
+    expect(retry.body.data.accepted).toBe(0);
+    expect(db.learning_events).toHaveLength(1);
+  });
+
+  it('drops timestamps outside the bounded client-clock window', async () => {
+    const res = await postEvents(createApp(), ADULT_ID, [{
+      event: 'nav_view',
+      occurredAt: '2000-01-01T00:00:00.000Z',
+    }]);
+    expect(res.status).toBe(202);
+    expect(res.body.data.accepted).toBe(0);
+    expect(db.learning_events).toHaveLength(0);
+  });
+
   it('DROPS kid events when no consent exists — acknowledged, zero recorded', async () => {
     const res = await postEvents(createApp(), KID_ID, [{ event: 'lesson_start', lessonId: '44444444-4444-4444-8444-444444444444' }]);
     expect(res.status).toBe(202);

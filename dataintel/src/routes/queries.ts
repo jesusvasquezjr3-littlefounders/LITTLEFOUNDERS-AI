@@ -14,6 +14,8 @@ import * as experiments from '../services/experiments.js';
 import * as alerts from '../services/alerts.js';
 import * as lessons from '../services/lessons.js';
 import * as sessions from '../services/sessions.js';
+import * as learning from '../services/learning.js';
+import * as dataQuality from '../services/dataQuality.js';
 
 // ── Reusable Zod schemas ─────────────────────────────────────────────
 
@@ -76,7 +78,17 @@ const experimentSchema = z.object({
   metric: metricSchema,
   variantA: z.string().min(1).max(100),
   variantB: z.string().min(1).max(100),
+  surface: z.enum(['learn', 'tasks', 'profile', 'tutor']).default('learn'),
+  target: z.string().regex(/^[a-z0-9._-]{1,64}$/).default('default'),
 });
+
+const runtimeAssignmentSchema = z.object({
+  userId: z.string().uuid(),
+  surface: z.enum(['learn', 'tasks', 'profile', 'tutor']),
+  target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
+});
+
+const runtimeExposureSchema = runtimeAssignmentSchema.extend({ experimentId: z.string().uuid() });
 
 const alertSchema = z.object({
   name: z.string().min(1).max(200),
@@ -101,6 +113,8 @@ const segmentDefSchema = z.object({
   name: z.string().min(1).max(200),
   filters: z.array(segmentFilterSchema).min(1).max(20),
 });
+
+const userIdParamSchema = z.object({ userId: z.string().uuid() });
 
 // ── Router ───────────────────────────────────────────────────────────
 
@@ -501,14 +515,62 @@ export function intelRouter(): Router {
     }
   });
 
+  // ═══ Learning intelligence and data quality ════════════════════════════
+
+  router.get('/learning/states/:userId', async (req, res) => {
+    try {
+      const { userId } = userIdParamSchema.parse(req.params);
+      const result = await learning.getLearnerSkillStates(userId);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learning state unavailable');
+      return ok(res, { states: result });
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  router.get('/learning/recommendation/:userId', async (req, res) => {
+    try {
+      const { userId } = userIdParamSchema.parse(req.params);
+      const result = await learning.getLearnerRecommendation(userId);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learning recommendation unavailable');
+      return ok(res, { recommendation: result ?? null });
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  router.get('/learning/content-health', async (req, res) => {
+    try {
+      const limit = limitSchema.default(50).parse(req.query.limit ?? '50');
+      const result = await learning.getSkillHealth(limit);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Content health unavailable');
+      return ok(res, { skills: result });
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  router.get('/quality', async (_req, res) => {
+    try {
+      const result = await dataQuality.getDataQualityReport();
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Data quality unavailable');
+      return ok(res, result);
+    } catch (err) {
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
   // ═══ Experiments ═══════════════════════════════════════════════════
 
   router.post('/experiments', async (req, res) => {
     try {
       const parsed = experimentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
-      const { name, metric, variantA, variantB } = parsed.data;
-      const result = await experiments.createExperiment(name, metric, variantA, variantB);
+      const { name, metric, variantA, variantB, surface, target } = parsed.data;
+      const result = await experiments.createExperiment(name, metric, variantA, variantB, surface, target);
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Failed to create experiment');
       return ok(res, result, 201);
     } catch (err) {
@@ -557,6 +619,37 @@ export function intelRouter(): Router {
       const result = await experiments.listExperiments();
       if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Experiments list unavailable');
       return ok(res, result);
+    } catch (err) {
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  // Core only. Product code requests an assignment before rendering a test,
+  // then records exposure after the treatment exists on screen.
+  router.post('/runtime/experiments/assignments', async (req, res) => {
+    try {
+      const parsed = runtimeAssignmentSchema.safeParse(req.body);
+      if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
+      const result = await experiments.getRuntimeAssignments(parsed.data.userId, parsed.data.surface, parsed.data.target);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Experiment assignment unavailable');
+      return ok(res, { assignments: result });
+    } catch (err) {
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  router.post('/runtime/experiments/exposure', async (req, res) => {
+    try {
+      const parsed = runtimeExposureSchema.safeParse(req.body);
+      if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
+      const result = await experiments.recordRuntimeExposure(
+        parsed.data.userId,
+        parsed.data.experimentId,
+        parsed.data.surface,
+        parsed.data.target,
+      );
+      if (result === null) return fail(res, 404, 'NOT_FOUND', 'Running experiment assignment not found');
+      return ok(res, { assignment: result });
     } catch (err) {
       return fail(res, 500, 'INTERNAL', (err as Error).message);
     }

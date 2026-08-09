@@ -3,7 +3,7 @@ import request from 'supertest';
 import { createApp } from '../app.js';
 import { mintToken } from './helpers.js';
 import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
-import { COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
+import { COURSE_ID, COURSE_SLUG, LESSON_1_ID, LESSON_2_ID, makeDb } from './learnFixtures.js';
 
 let db: FakeDb;
 let userId: string;
@@ -189,6 +189,24 @@ describe('POST /api/v1/learn/lessons/:id/grade', () => {
     const row = db.lesson_segment_attempts.find((r) => r.segment_id === 'quiz-1');
     expect(row?.score).toBe(90);
     expect(row?.hints_used).toBe(1);
+  });
+
+  it('records grade timing and closed pedagogical context for intelligence processing', async () => {
+    const res = await auth(request(createApp()).post(`/api/v1/learn/lessons/${LESSON_1_ID}/grade`)).send({
+      segment_id: 'quiz-1',
+      answer: { option_id: 'b' },
+      attempt_number: 1,
+      time_spent_seconds: 42,
+    });
+    expect(res.status).toBe(200);
+    const row = db.lesson_segment_attempts.find((attempt) => attempt.segment_id === 'quiz-1');
+    expect(row).toMatchObject({
+      time_spent_seconds: 42,
+      course_id: COURSE_ID,
+      skill_key: 'financial-education/topic-1',
+      diagnostic_code: 'initial_incorrect',
+    });
+    expect(row?.document_updated_at).toBeDefined();
   });
 
   it('run-scopes the attempt cap: a fresh run_id starts every segment over', async () => {

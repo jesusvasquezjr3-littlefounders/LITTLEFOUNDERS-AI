@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { serviceRest } from './supabaseRest.js';
@@ -84,17 +84,39 @@ export interface LearningEventInsert {
   locale?: EventLocale | null;
   referrer_class?: ReferrerClass | null;
   ordinal?: number | null;
+  client_event_id?: string;
+  event_version?: number;
+  occurred_at?: string;
+  course_id?: string | null;
+  experiment_id?: string | null;
+  experiment_variant?: 'A' | 'B' | null;
 }
 
-/** Batch insert. True on success; telemetry loss is reported, never retried here. */
-export async function insertLearningEvents(rows: LearningEventInsert[]): Promise<boolean> {
-  if (rows.length === 0) return true;
-  const res = await serviceRest<unknown>('/learning_events', {
+/**
+ * Batch insert with a client idempotency key. A retry must not inflate a
+ * decision metric. PostgREST returns only inserted rows, making `accepted`
+ * truthful even when a pagehide retry races a normal flush.
+ */
+export async function insertLearningEvents(rows: LearningEventInsert[]): Promise<number | null> {
+  if (rows.length === 0) return 0;
+  const stampedRows = rows.map((row) => ({
+    ...row,
+    client_event_id: row.client_event_id ?? serverEventId(),
+    event_version: row.event_version ?? 1,
+    occurred_at: row.occurred_at ?? new Date().toISOString(),
+  }));
+  const res = await serviceRest<unknown[]>('/learning_events?on_conflict=client_event_id', {
     method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify(rows),
+    headers: { Prefer: 'return=representation,resolution=ignore-duplicates' },
+    body: JSON.stringify(stampedRows),
   });
-  return res !== null;
+  return res === null ? null : res.length;
+}
+
+/** Legacy/manual clients have no browser-generated id. They remain accepted,
+ * but current beacon events always carry their own idempotency key. */
+export function serverEventId(): string {
+  return randomUUID();
 }
 
 // ── Consent ─────────────────────────────────────────────────
