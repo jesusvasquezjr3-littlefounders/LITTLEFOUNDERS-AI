@@ -96,17 +96,6 @@ export function LearnPage() {
   const featuredIsCompleted = Boolean(featuredCourse && featuredCourse.progress.total > 0 && featuredCourse.progress.passed === featuredCourse.progress.total);
   const featuredBadgeAsset = featuredCourse ? courseBadgeAsset(featuredCourse.badgeAsset, featuredCourse.slug) : null;
 
-  const learningSnapshot = state.status === 'ready'
-    ? state.courses.reduce(
-        (summary, course) => ({
-          coursesStarted: summary.coursesStarted + (course.progress.passed > 0 ? 1 : 0),
-          lessonsPassed: summary.lessonsPassed + course.progress.passed,
-          lessonsTotal: summary.lessonsTotal + course.progress.total,
-        }),
-        { coursesStarted: 0, lessonsPassed: 0, lessonsTotal: 0 },
-      )
-    : { coursesStarted: 0, lessonsPassed: 0, lessonsTotal: 0 };
-
   const filteredCourses = state.status === 'ready'
     ? state.courses.filter((course) => {
         if (activeFilter === 'all') return true;
@@ -191,26 +180,6 @@ export function LearnPage() {
             </div>
           </div>
         </Reveal>
-      )}
-
-      {state.status === 'ready' && state.courses.length > 0 && (
-        <section aria-label={t('dashboard.learn.snapshotTitle')} className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
-            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotProgress')}</p>
-            <p className="lf-headline lf-number mt-1 text-content">{learningSnapshot.lessonsPassed}/{learningSnapshot.lessonsTotal}</p>
-            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotLessons')}</p>
-          </div>
-          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
-            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotStarted')}</p>
-            <p className="lf-headline lf-number mt-1 text-content">{learningSnapshot.coursesStarted}</p>
-            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotCourses')}</p>
-          </div>
-          <div className="rounded-lg border border-outline/60 bg-surface p-4 shadow-glass-sm">
-            <p className="lf-caption font-bold uppercase tracking-[0.08em] text-content-faint">{t('dashboard.learn.snapshotFocus')}</p>
-            <p className="lf-headline mt-1 text-content">{featuredCourse ? (featuredCourse.progress.passed === featuredCourse.progress.total ? t('dashboard.learn.snapshotComplete') : t('dashboard.learn.snapshotContinue')) : t('dashboard.learn.snapshotReady')}</p>
-            <p className="lf-caption mt-1 text-content-muted">{t('dashboard.learn.snapshotFocusHint')}</p>
-          </div>
-        </section>
       )}
 
       {/* Course Catalog & Category Filter Section */}

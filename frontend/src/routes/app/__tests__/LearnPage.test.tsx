@@ -63,7 +63,9 @@ describe('LearnPage', () => {
     expect(allTracks).toHaveAttribute('aria-pressed', 'true');
     expect(allTracks).toHaveClass('bg-accent', 'text-on-accent');
     expect(allTracks).not.toHaveClass('bg-secondary');
-    expect(view.container.querySelector('img[src="/course-badges/financial-education.png"]')).toBeInTheDocument();
+    expect(view.container.querySelector('.lf-course-badge')).toBeInTheDocument();
+    expect(screen.queryByText('Learning snapshot')).not.toBeInTheDocument();
+    expect(screen.queryByText('lessons completed')).not.toBeInTheDocument();
 
     fireEvent.click(entrepreneurship);
 
