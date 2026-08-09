@@ -105,6 +105,10 @@ CREATE TABLE IF NOT EXISTS dim_lessons (
   title_es VARCHAR,
   title_pt VARCHAR,
   course_id UUID,
+  course_slug VARCHAR,
+  course_title_en VARCHAR,
+  course_title_es VARCHAR,
+  course_title_pt VARCHAR,
   segment_count INTEGER
 );
 
@@ -179,3 +183,7 @@ ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS skill_key VARCHAR;
 ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS time_spent_seconds INTEGER;
 ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS document_updated_at TIMESTAMP;
 ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS diagnostic_code VARCHAR;
+ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_slug VARCHAR;
+ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_en VARCHAR;
+ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_es VARCHAR;
+ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_pt VARCHAR;

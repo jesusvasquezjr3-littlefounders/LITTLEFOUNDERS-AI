@@ -1059,10 +1059,10 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 - Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
 - Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
 - The next intelligence contract is now locally implemented: event retries are idempotent, client timestamps are bounded, and server-authoritative attempts carry only closed pedagogical context. DuckDB derives explainable mastery/review state and anonymized skill health, while `/admin/intel` visibly reports sync freshness and evidence coverage before presenting learning conclusions. Runtime experiments record a treatment only after it rendered. Core exposes an own-learner boundary for the future Tutor; the Tutor itself remains intentionally unimplemented.
+- The learning console now has a decision-oriented command center rather than a single skill table. The warehouse retains localized course catalog context, computes course/lesson/UUID-only learner summaries from authoritative attempts and explicit lifecycle events, and labels every finding as awaiting, limited or sufficient evidence. Staff can expand course, lesson and learner summaries in a full-viewport dialog; empty data remains explicitly empty while the published catalog stays inspectable.
 
 ## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
 
-- `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.
 ```
 
 ### agent/README.md
@@ -7639,6 +7639,26 @@ ALTER TABLE public.lesson_segment_attempts
   ADD COLUMN IF NOT EXISTS skill_key text,
 ```
 
+### database/migrations/0037_dataintel_course_catalog_context.sql
+
+```
+-- 0037_dataintel_course_catalog_context.sql
+--
+-- Preserves published course metadata alongside each lesson in the read-only
+-- Data Intel catalog feed. DuckDB remains a derived warehouse; this only
+-- gives staff enough context to interpret course- and lesson-level evidence.
+
+DROP VIEW IF EXISTS public.dataintel_lessons_sync;
+
+CREATE OR REPLACE VIEW public.dataintel_lessons_sync AS
+SELECT
+  l.id AS lesson_id,
+  l.slug,
+  l.title->>'en-US' AS title_en,
+  l.title->>'es-MX' AS title_es,
+  l.title->>'pt-BR' AS title_pt,
+```
+
 ### database/package.json
 
 ```
@@ -8256,6 +8276,8 @@ import { execute, initDb } from '../db/duckdb.js';
 import { getDataQualityReport } from '../services/dataQuality.js';
 import {
   getLearnerRecommendation,
+  getLearnerLearningDetail,
+  getLearningOverview,
   getLearnerSkillStates,
   getSkillHealth,
   refreshLearnerSkillStates,
@@ -8263,8 +8285,6 @@ import {
 
 describe('learning intelligence', () => {
   const learnerId = randomUUID();
-  const courseId = randomUUID();
-  const topicId = randomUUID();
 ```
 
 ### dataintel/src/__tests__/pedagogical-signals.test.ts
@@ -13315,7 +13335,7 @@ import { api } from '@/lib/api';
 import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
 import type { DropdownOption, TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ComposedChart,

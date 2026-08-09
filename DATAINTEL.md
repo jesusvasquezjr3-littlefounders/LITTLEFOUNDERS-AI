@@ -123,6 +123,8 @@ domain:
 | Learning state | GET | `/intel/learning/states/:userId` | Derived learner skill states (Core only) |
 | Learning state | GET | `/intel/learning/recommendation/:userId` | Highest-priority explainable next action (Core only) |
 | Content health | GET | `/intel/learning/content-health` | Aggregated instructional priorities, no learner identity |
+| Learning command center | GET | `/intel/learning/overview?days=30&limit=100` | Course, lesson, learner and daily evidence summaries, without learner PII |
+| Learner learning detail | GET | `/intel/learning/learners/:userId?days=30&limit=100` | Staff-brokered learning detail, course/lesson feedback and explainable skill states |
 | Data quality | GET | `/intel/quality` | Sync freshness and context/coverage checks |
 | Experiment runtime | POST | `/intel/runtime/experiments/assignments` | Sticky surface assignment (Core only) |
 | Experiment runtime | POST | `/intel/runtime/experiments/exposure` | Rendered-treatment exposure (Core only) |
@@ -291,7 +293,7 @@ only decision-ready surfaces:
 | Home | KPI cards, consent coverage and feature adoption breakdown |
 | Trends | Exact event, DAU, user and session time series |
 | Funnels | First-party adult acquisition funnel and learner activation steps |
-| Learning | Data readiness, aggregated skill effectiveness, explicit abandonment and authoritative calibration |
+| Learning | Course, lesson and learner evidence directory; catalog context stays visible before evidence arrives, while evidence thresholds prevent early signals from being mistaken for a content decision |
 | Retention | Weekly cohort retention matrix with heatmap |
 | People | Top learners engagement leaderboard + churn risk table |
 | Experiments | Active/completed experiments list with control vs variant results |
@@ -299,6 +301,16 @@ only decision-ready surfaces:
 
 The page polls dataintel's endpoints through Core's proxy on a 60-second
 interval (dashboard cards) and on tab switch (detail views).
+
+The Learning command center deliberately combines two truths. Published
+catalog metadata is useful on day one, so courses and lessons remain browsable
+before a learner creates evidence. Pedagogical recommendations, however, are
+only labelled `sufficient` after at least 20 attempts from five independent
+learners. Earlier data remains visible as `limited`; a missing attempt stream
+is `awaiting_evidence`, never a zero score or a healthy-content claim. The
+warehouse returns UUID-only learner profiles. Core applies the staff role gate,
+and the frontend resolves an existing staff-authorized display name only for
+that administrative session.
 
 ## 8. What this must never become
 

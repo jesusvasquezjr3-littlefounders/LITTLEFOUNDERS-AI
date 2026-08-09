@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { Button, Card, Icon, Dropdown, Badge, StatCard, Table, LoadingOverlay } from '@/components/ui';
 import type { DropdownOption, TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
-import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ComposedChart,
@@ -194,6 +194,103 @@ interface IntelSkillHealth {
   priority: 'review' | 'monitor' | 'insufficient_evidence';
 }
 
+type EvidenceStatus = 'awaiting_evidence' | 'limited' | 'sufficient';
+type AttentionStatus = 'awaiting_evidence' | 'monitor' | 'review' | 'healthy';
+
+interface IntelLearningTrendPoint {
+  date: string;
+  attempts: number;
+  learners: number;
+  avgScore: number | null;
+  firstTryAvgScore: number | null;
+}
+
+interface IntelCourseHealth {
+  courseId: string;
+  courseSlug: string | null;
+  courseTitleEn: string | null;
+  courseTitleEs: string | null;
+  courseTitlePt: string | null;
+  lessons: number;
+  segments: number;
+  learners: number;
+  attempts: number;
+  avgScore: number | null;
+  firstTryAvgScore: number | null;
+  hintRate: number | null;
+  retryRate: number | null;
+  avgSecondsPerAttempt: number | null;
+  starts: number;
+  completions: number;
+  abandons: number;
+  abandonRate: number | null;
+  evidenceStatus: EvidenceStatus;
+  attention: AttentionStatus;
+}
+
+interface IntelLessonHealth extends IntelCourseHealth {
+  lessonId: string;
+  lessonSlug: string | null;
+  lessonTitleEn: string | null;
+  lessonTitleEs: string | null;
+  lessonTitlePt: string | null;
+}
+
+interface IntelLearnerProfile {
+  userId: string;
+  role: string | null;
+  coursesTouched: number;
+  lessonsTouched: number;
+  attempts: number;
+  avgScore: number | null;
+  firstTryAvgScore: number | null;
+  hintRate: number | null;
+  retryRate: number | null;
+  avgMasteryProbability: number | null;
+  skillsNeedingSupport: number;
+  recommendedAction: 'remediate' | 'practice' | 'retrieve' | 'continue' | null;
+  lastActiveAt: string | null;
+  evidenceStatus: EvidenceStatus;
+}
+
+interface IntelLearningOverview {
+  snapshot: {
+    courses: number;
+    lessons: number;
+    attempts: number;
+    learners: number;
+    avgScore: number | null;
+    firstTryAvgScore: number | null;
+    hintRate: number | null;
+    retryRate: number | null;
+    avgSecondsPerAttempt: number | null;
+    evidenceStatus: EvidenceStatus;
+  };
+  trends: IntelLearningTrendPoint[];
+  courses: IntelCourseHealth[];
+  lessons: IntelLessonHealth[];
+  learners: IntelLearnerProfile[];
+}
+
+interface IntelLearnerDetail {
+  profile: IntelLearnerProfile | null;
+  trends: IntelLearningTrendPoint[];
+  courses: IntelCourseHealth[];
+  lessons: IntelLessonHealth[];
+  states: Array<{
+    skillKey: string;
+    masteryProbability: number;
+    evidenceCount: number;
+    recommendedAction: 'remediate' | 'practice' | 'retrieve' | 'continue';
+  }>;
+}
+
+interface IntelAdminUser {
+  userId: string;
+  displayName: string;
+  username: string | null;
+}
+
 interface IntelBundle {
   consent: { kidsTotal: number; kidsConsented: number } | null;
   summary: IntelSummary | null;
@@ -210,6 +307,8 @@ interface IntelBundle {
   alerts: IntelAlert[] | null;
   quality: IntelQualityReport | null;
   skillHealth: IntelSkillHealth[] | null;
+  learningOverview: IntelLearningOverview | null;
+  users: IntelAdminUser[] | null;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; data: IntelBundle };
@@ -648,105 +747,241 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
 /*  Learning tab                                                       */
 /* ------------------------------------------------------------------ */
 
-function LearningTab({ data, t, nf, pf }: { data: IntelBundle; t: (k: string, options?: Record<string, unknown>) => string; nf: Intl.NumberFormat; pf: Intl.NumberFormat }) {
-  const duration = (seconds: number | null) => seconds === null
+function EvidenceBadge({ status, t }: { status: EvidenceStatus; t: (key: string) => string }) {
+  const tone = status === 'sufficient'
+    ? 'bg-success-soft text-success-strong'
+    : status === 'limited'
+      ? 'bg-warning-soft text-warning-strong'
+      : 'bg-surface-sunken text-content-muted';
+  return <Badge className={tone}>{t(`admin.intel.learning.evidence.${status}`)}</Badge>;
+}
+
+function AttentionBadge({ status, t }: { status: AttentionStatus; t: (key: string) => string }) {
+  const tone = status === 'review'
+    ? 'bg-error-soft text-error-strong'
+    : status === 'healthy'
+      ? 'bg-success-soft text-success-strong'
+      : status === 'monitor'
+        ? 'bg-warning-soft text-warning-strong'
+        : 'bg-surface-sunken text-content-muted';
+  return <Badge className={tone}>{t(`admin.intel.learning.attention.${status}`)}</Badge>;
+}
+
+function CatalogDetailDialog({ item, kind, onClose, t, nf, pf }: {
+  item: IntelCourseHealth | IntelLessonHealth;
+  kind: 'course' | 'lesson';
+  onClose: () => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
+  nf: Intl.NumberFormat;
+  pf: Intl.NumberFormat;
+}) {
+  const isLesson = kind === 'lesson';
+  const title = isLesson
+    ? (item as IntelLessonHealth).lessonTitleEn || (item as IntelLessonHealth).lessonSlug || t('admin.intel.learning.untitledLesson')
+    : item.courseTitleEn || item.courseSlug || t('admin.intel.learning.untitledCourse');
+  const metric = (value: number | null, format: 'number' | 'percent' = 'number') => value === null
     ? t('admin.intel.learning.unavailable')
-    : t('admin.intel.learning.minutes', { count: Math.round(seconds / 60) });
+    : format === 'percent' ? pf.format(value / 100) : nf.format(value);
+  return (
+    <AdminDialog title={title} onClose={onClose} className="max-w-5xl">
+      <div className="flex flex-col gap-6 pt-5">
+        <div className="flex flex-wrap items-center gap-2">
+          <AttentionBadge status={item.attention} t={t} />
+          <EvidenceBadge status={item.evidenceStatus} t={t} />
+          <Badge className="bg-surface-sunken text-content-muted">{isLesson ? t('admin.intel.learning.lesson') : t('admin.intel.learning.course')}</Badge>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCard dense icon={<Icon name="groups" />} label={t('admin.intel.learning.colLearners')} value={nf.format(item.learners)} />
+          <StatCard dense icon={<Icon name="assignment_turned_in" />} label={t('admin.intel.learning.attemptsLabel')} value={nf.format(item.attempts)} />
+          <StatCard dense icon={<Icon name="grade" />} label={t('admin.intel.learning.colScore')} value={metric(item.avgScore, 'percent')} />
+          <StatCard dense icon={<Icon name="tips_and_updates" />} label={t('admin.intel.learning.colHints')} value={item.hintRate === null ? t('admin.intel.learning.unavailable') : pf.format(item.hintRate)} />
+        </div>
+        <Card className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.colFirstTry')}</p><p className="lf-number mt-1 text-content">{metric(item.firstTryAvgScore, 'percent')}</p></div>
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.retryRate')}</p><p className="lf-number mt-1 text-content">{item.retryRate === null ? t('admin.intel.learning.unavailable') : pf.format(item.retryRate)}</p></div>
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.colAbandon')}</p><p className="lf-number mt-1 text-content">{item.abandonRate === null ? t('admin.intel.learning.unavailable') : pf.format(item.abandonRate / 100)}</p></div>
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.colStarts')}</p><p className="lf-number mt-1 text-content">{nf.format(item.starts)}</p></div>
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.colCompleted')}</p><p className="lf-number mt-1 text-content">{nf.format(item.completions)}</p></div>
+          <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.avgTime')}</p><p className="lf-number mt-1 text-content">{item.avgSecondsPerAttempt === null ? t('admin.intel.learning.unavailable') : t('admin.intel.learning.seconds', { count: Math.round(item.avgSecondsPerAttempt) })}</p></div>
+        </Card>
+        <p className="lf-caption text-content-muted">{t(`admin.intel.learning.evidenceHint.${item.evidenceStatus}`)}</p>
+      </div>
+    </AdminDialog>
+  );
+}
+
+function LearningTab({ data, t, nf, pf, onInspectLearner }: {
+  data: IntelBundle;
+  t: (k: string, options?: Record<string, unknown>) => string;
+  nf: Intl.NumberFormat;
+  pf: Intl.NumberFormat;
+  onInspectLearner: (userId: string) => void;
+}) {
+  const [directory, setDirectory] = useState<'courses' | 'lessons' | 'learners'>('courses');
+  const [detail, setDetail] = useState<{ kind: 'course' | 'lesson'; item: IntelCourseHealth | IntelLessonHealth } | null>(null);
+  const overview = data.learningOverview;
+  const usersById = useMemo(() => new Map((data.users ?? []).map((user) => [user.userId, user])), [data.users]);
+  const score = (value: number | null) => value === null ? t('admin.intel.learning.unavailable') : pf.format(value / 100);
+
+  if (!overview || !overview.snapshot) return <Unavailable code="DATA_UNAVAILABLE" />;
+
+  const snapshotTone = overview.snapshot.evidenceStatus === 'sufficient' ? 'secondary' : overview.snapshot.evidenceStatus === 'limited' ? 'accent' : 'primary';
+  const directoryButtons: Array<{ key: 'courses' | 'lessons' | 'learners'; icon: string }> = [
+    { key: 'courses', icon: 'menu_book' },
+    { key: 'lessons', icon: 'article' },
+    { key: 'learners', icon: 'groups' },
+  ];
 
   return (
     <div className="flex flex-col gap-6">
-      <Card className="flex flex-col gap-5 p-5">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h3 className="lf-title text-content">{t('admin.intel.learning.readinessTitle')}</h3>
-            <p className="lf-caption mt-0.5 text-content-muted">{t('admin.intel.learning.readinessSubtitle')}</p>
+      <Card className="relative overflow-hidden p-5 sm:p-6">
+        <div className="absolute -right-8 -top-10 h-40 w-40 rounded-full bg-primary-soft blur-3xl" aria-hidden />
+        <div className="relative flex flex-col gap-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="lf-label text-primary">{t('admin.intel.learning.commandKicker')}</p>
+              <h2 className="lf-headline mt-1 text-content">{t('admin.intel.learning.commandTitle')}</h2>
+              <p className="lf-body-sm mt-2 text-content-muted">{t('admin.intel.learning.commandSubtitle')}</p>
+            </div>
+            <EvidenceBadge status={overview.snapshot.evidenceStatus} t={t} />
           </div>
-          <Badge className={data.quality?.freshness.some((source) => source.stale || source.lastError) ? 'bg-warning-soft text-warning-strong' : 'bg-success-soft text-success-strong'}>
-            {data.quality?.freshness.some((source) => source.stale || source.lastError)
-              ? t('admin.intel.learning.readinessAttention')
-              : t('admin.intel.learning.readinessReady')}
-          </Badge>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard dense tone={snapshotTone} icon={<Icon name="account_tree" />} label={t('admin.intel.learning.catalogCourses')} value={nf.format(overview.snapshot.courses)} />
+            <StatCard dense tone={snapshotTone} icon={<Icon name="article" />} label={t('admin.intel.learning.catalogLessons')} value={nf.format(overview.snapshot.lessons)} />
+            <StatCard dense tone={snapshotTone} icon={<Icon name="assignment_turned_in" />} label={t('admin.intel.learning.attemptsLabel')} value={nf.format(overview.snapshot.attempts)} />
+            <StatCard dense tone={snapshotTone} icon={<Icon name="groups" />} label={t('admin.intel.learning.activeLearners')} value={nf.format(overview.snapshot.learners)} />
+          </div>
+          <p className="lf-caption text-content-muted">{t(`admin.intel.learning.evidenceHint.${overview.snapshot.evidenceStatus}`)}</p>
         </div>
-        {data.quality ? (
-          <>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <StatCard dense icon={<Icon name="verified" />} label={t('admin.intel.learning.idempotency')} value={pf.format(data.quality.events.idempotencyCoveragePct / 100)} />
-              <StatCard dense icon={<Icon name="account_tree" />} label={t('admin.intel.learning.eventContext')} value={pf.format(data.quality.events.contextCoveragePct / 100)} />
-              <StatCard dense icon={<Icon name="psychology" />} label={t('admin.intel.learning.skillContext')} value={pf.format(data.quality.attempts.skillCoveragePct / 100)} />
-              <StatCard dense icon={<Icon name="history_edu" />} label={t('admin.intel.learning.versionContext')} value={pf.format(data.quality.attempts.documentVersionCoveragePct / 100)} />
-            </div>
-            <div className="grid gap-2 md:grid-cols-2">
-              {data.quality.freshness.map((source) => (
-                <div key={source.source} className="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-outline/60 bg-surface-sunken/40 px-3 py-2">
-                  <div className="min-w-0">
-                    <p className="lf-label truncate text-content">{source.source}</p>
-                    <p className="lf-caption truncate text-content-muted">
-                      {source.lastError ? t('admin.intel.learning.syncError') : t('admin.intel.learning.syncedRows', { count: nf.format(source.rowsSynced) })}
-                    </p>
-                  </div>
-                  <Badge className={source.stale || source.lastError ? 'bg-warning-soft text-warning-strong' : 'bg-success-soft text-success-strong'}>
-                    {source.stale || source.lastError ? t('admin.intel.learning.stale') : t('admin.intel.learning.fresh')}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <p className="lf-caption text-content-muted">{t('admin.intel.learning.readinessUnavailable')}</p>
-        )}
       </Card>
 
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_minmax(18rem,0.75fr)]">
+        <ChartCard title={t('admin.intel.learning.pulseTitle')} subtitle={t('admin.intel.learning.pulseSubtitle')}>
+          {overview.trends.length > 0 ? (
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer>
+                <ComposedChart data={overview.trends} margin={{ left: 4, right: 8 }}>
+                  <defs><linearGradient id="learningAttemptFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={SVG_PRIMARY} stopOpacity={0.3} /><stop offset="100%" stopColor={SVG_PRIMARY} stopOpacity={0} /></linearGradient></defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="volume" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={38} />
+                  <YAxis yAxisId="score" orientation="right" domain={[0, 100]} tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={38} />
+                  <Tooltip content={<CustomTooltip />} /><Legend />
+                  <Area yAxisId="volume" type="monotone" dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} stroke={SVG_PRIMARY} fill="url(#learningAttemptFill)" strokeWidth={2.5} />
+                  <Line yAxisId="score" type="monotone" dataKey="avgScore" name={t('admin.intel.learning.colScore')} stroke={SVG_SUCCESS} strokeWidth={2.5} dot={false} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          ) : <EmptyChartIcon name="monitoring" />}
+        </ChartCard>
+        <Card className="flex flex-col gap-4 p-5">
+          <div><h3 className="lf-title text-content">{t('admin.intel.learning.readinessTitle')}</h3><p className="lf-caption mt-1 text-content-muted">{t('admin.intel.learning.readinessSubtitle')}</p></div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.colScore')}</span><span className="lf-number text-content">{score(overview.snapshot.avgScore)}</span></div>
+            <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.colFirstTry')}</span><span className="lf-number text-content">{score(overview.snapshot.firstTryAvgScore)}</span></div>
+            <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.colHints')}</span><span className="lf-number text-content">{overview.snapshot.hintRate === null ? t('admin.intel.learning.unavailable') : pf.format(overview.snapshot.hintRate)}</span></div>
+            <div className="flex items-center justify-between gap-3"><span className="lf-caption text-content-muted">{t('admin.intel.learning.retryRate')}</span><span className="lf-number text-content">{overview.snapshot.retryRate === null ? t('admin.intel.learning.unavailable') : pf.format(overview.snapshot.retryRate)}</span></div>
+          </div>
+          {data.quality ? <p className="lf-caption border-t border-outline/60 pt-3 text-content-muted">{t('admin.intel.learning.syncCoverage', { count: nf.format(data.quality.attempts.total) })}</p> : null}
+        </Card>
+      </div>
+
+      <ChartCard title={t('admin.intel.learning.directoryTitle')} subtitle={t('admin.intel.learning.directorySubtitle')}>
+        <div className="mb-4 flex gap-1.5 overflow-x-auto rounded-xl border border-outline/30 bg-surface-sunken p-1">
+          {directoryButtons.map(({ key, icon }) => <button key={key} type="button" onClick={() => setDirectory(key)} className={cn('flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-1.5 lf-caption font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary', directory === key ? 'bg-surface text-content shadow-glass-sm' : 'text-content-muted hover:text-content')}><Icon name={icon} className="!text-[17px]" />{t(`admin.intel.learning.directory.${key}`)}</button>)}
+        </div>
+        {directory === 'courses' ? <Table<IntelCourseHealth> rows={overview.courses} rowKey={(row) => row.courseId} onRowClick={(item) => setDetail({ kind: 'course', item })} columns={[
+          { key: 'course', header: t('admin.intel.learning.course'), primary: true, cell: (row) => <div><p>{row.courseTitleEn || row.courseSlug || t('admin.intel.learning.untitledCourse')}</p><p className="lf-caption text-content-muted">{t('admin.intel.learning.lessonsCount', { count: row.lessons })}</p></div> },
+          { key: 'attention', header: t('admin.intel.learning.colPriority'), cell: (row) => <AttentionBadge status={row.attention} t={t} /> },
+          { key: 'evidence', header: t('admin.intel.learning.evidenceLabel'), cell: (row) => <EvidenceBadge status={row.evidenceStatus} t={t} /> },
+          { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
+          { key: 'score', header: t('admin.intel.learning.colScore'), cell: (row) => score(row.avgScore), numeric: true },
+          { key: 'attempts', header: t('admin.intel.learning.attemptsLabel'), cell: (row) => nf.format(row.attempts), numeric: true },
+          { key: 'open', header: t('admin.intel.learning.colDetail'), cell: (row) => <AdminAction icon="open_in_full" onClick={() => setDetail({ kind: 'course', item: row })}>{t('admin.intel.learning.inspect')}</AdminAction> },
+        ] satisfies TableColumn<IntelCourseHealth>[]} /> : null}
+        {directory === 'lessons' ? <Table<IntelLessonHealth> rows={overview.lessons} rowKey={(row) => row.lessonId} onRowClick={(item) => setDetail({ kind: 'lesson', item })} columns={[
+          { key: 'lesson', header: t('admin.intel.learning.colLesson'), primary: true, cell: (row) => <div><p>{row.lessonTitleEn || row.lessonSlug || t('admin.intel.learning.untitledLesson')}</p><p className="lf-caption text-content-muted">{row.courseTitleEn || row.courseSlug || t('admin.intel.learning.untitledCourse')}</p></div> },
+          { key: 'attention', header: t('admin.intel.learning.colPriority'), cell: (row) => <AttentionBadge status={row.attention} t={t} /> },
+          { key: 'evidence', header: t('admin.intel.learning.evidenceLabel'), cell: (row) => <EvidenceBadge status={row.evidenceStatus} t={t} /> },
+          { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
+          { key: 'first', header: t('admin.intel.learning.colFirstTry'), cell: (row) => score(row.firstTryAvgScore), numeric: true },
+          { key: 'open', header: t('admin.intel.learning.colDetail'), cell: (row) => <AdminAction icon="open_in_full" onClick={() => setDetail({ kind: 'lesson', item: row })}>{t('admin.intel.learning.inspect')}</AdminAction> },
+        ] satisfies TableColumn<IntelLessonHealth>[]} /> : null}
+        {directory === 'learners' ? <Table<IntelLearnerProfile> rows={overview.learners} rowKey={(row) => row.userId} onRowClick={(row) => onInspectLearner(row.userId)} columns={[
+          { key: 'learner', header: t('admin.intel.learning.learner'), primary: true, cell: (row) => <div><p>{usersById.get(row.userId)?.displayName || usersById.get(row.userId)?.username || t('admin.intel.learning.privateLearner')}</p><p className="lf-caption text-content-muted">{row.role || t('admin.intel.learning.roleUnavailable')}</p></div> },
+          { key: 'action', header: t('admin.intel.learning.recommendation'), cell: (row) => row.recommendedAction ? <Badge className="bg-primary-soft text-primary">{t(`admin.intel.learning.action.${row.recommendedAction}`)}</Badge> : <EvidenceBadge status={row.evidenceStatus} t={t} /> },
+          { key: 'mastery', header: t('admin.intel.learning.colMastery'), cell: (row) => row.avgMasteryProbability === null ? t('admin.intel.learning.unavailable') : pf.format(row.avgMasteryProbability), numeric: true },
+          { key: 'support', header: t('admin.intel.learning.supportSkills'), cell: (row) => nf.format(row.skillsNeedingSupport), numeric: true },
+          { key: 'attempts', header: t('admin.intel.learning.attemptsLabel'), cell: (row) => nf.format(row.attempts), numeric: true },
+          { key: 'open', header: t('admin.intel.learning.colDetail'), cell: (row) => <AdminAction icon="person_search" onClick={() => onInspectLearner(row.userId)}>{t('admin.intel.learning.inspect')}</AdminAction> },
+        ] satisfies TableColumn<IntelLearnerProfile>[]} /> : null}
+      </ChartCard>
+
       <ChartCard title={t('admin.intel.learning.skillHealthTitle')} subtitle={t('admin.intel.learning.skillHealthSubtitle')}>
-        {data.skillHealth && data.skillHealth.length > 0 ? (
-          <Table<IntelSkillHealth>
-            rows={data.skillHealth}
-            rowKey={(row) => row.skillKey}
-            columns={[
-              { key: 'skill', header: t('admin.intel.learning.colSkill'), cell: (row) => row.skillKey, primary: true },
-              { key: 'priority', header: t('admin.intel.learning.colPriority'), cell: (row) => <Badge className={row.priority === 'review' ? 'bg-error-soft text-error-strong' : row.priority === 'monitor' ? 'bg-warning-soft text-warning-strong' : 'bg-surface-sunken text-content-muted'}>{t(`admin.intel.learning.priority.${row.priority}`)}</Badge> },
-              { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
-              { key: 'mastery', header: t('admin.intel.learning.colMastery'), cell: (row) => pf.format(row.avgMasteryProbability), numeric: true },
-              { key: 'lowMastery', header: t('admin.intel.learning.colLowMastery'), cell: (row) => pf.format(row.lowMasteryPct / 100), numeric: true },
-              { key: 'hints', header: t('admin.intel.learning.colHints'), cell: (row) => pf.format(row.hintRate), numeric: true },
-            ] satisfies TableColumn<IntelSkillHealth>[]}
-          />
-        ) : <EmptyChartIcon name="psychology" />}
+        {data.skillHealth && data.skillHealth.length > 0 ? <Table<IntelSkillHealth> rows={data.skillHealth} rowKey={(row) => row.skillKey} columns={[
+          { key: 'skill', header: t('admin.intel.learning.colSkill'), cell: (row) => row.skillKey, primary: true },
+          { key: 'priority', header: t('admin.intel.learning.colPriority'), cell: (row) => <Badge className={row.priority === 'review' ? 'bg-error-soft text-error-strong' : row.priority === 'monitor' ? 'bg-warning-soft text-warning-strong' : 'bg-surface-sunken text-content-muted'}>{t(`admin.intel.learning.priority.${row.priority}`)}</Badge> },
+          { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
+          { key: 'mastery', header: t('admin.intel.learning.colMastery'), cell: (row) => pf.format(row.avgMasteryProbability), numeric: true },
+          { key: 'hints', header: t('admin.intel.learning.colHints'), cell: (row) => pf.format(row.hintRate), numeric: true },
+        ] satisfies TableColumn<IntelSkillHealth>[]} /> : <EmptyChartIcon name="psychology" />}
       </ChartCard>
-
-      <ChartCard title={t('admin.intel.learning.dropoffTitle')} subtitle={t('admin.intel.learning.dropoffSubtitle')}>
-        {data.dropoff && data.dropoff.length > 0 ? (
-          <Table<IntelDropoffEntry>
-            rows={data.dropoff}
-            rowKey={(row) => row.lesson_id}
-            columns={[
-              { key: 'lesson', header: t('admin.intel.learning.colLesson'), cell: (row) => row.title_en || row.lesson_slug, primary: true },
-              { key: 'starts', header: t('admin.intel.learning.colStarts'), cell: (row) => nf.format(row.starts), numeric: true },
-              { key: 'completions', header: t('admin.intel.learning.colCompleted'), cell: (row) => nf.format(row.completions), numeric: true },
-              { key: 'abandon', header: t('admin.intel.learning.colAbandon'), cell: (row) => pf.format(row.abandon_rate / 100), numeric: true },
-              { key: 'duration', header: t('admin.intel.learning.colTime'), cell: (row) => duration(row.avg_seconds_before_abandon), numeric: true },
-            ] satisfies TableColumn<IntelDropoffEntry>[]}
-          />
-        ) : <EmptyChartIcon name="trending_down" />}
-      </ChartCard>
-
-      <ChartCard title={t('admin.intel.learning.calibrationTitle')} subtitle={t('admin.intel.learning.calibrationSubtitle')}>
-        {data.calibration && data.calibration.length > 0 ? (
-          <Table<IntelCalibrationEntry>
-            rows={data.calibration}
-            rowKey={(row) => `${row.lesson_id}:${row.segment_id}`}
-            columns={[
-              { key: 'lesson', header: t('admin.intel.learning.colLesson'), cell: (row) => row.lesson_slug, primary: true },
-              { key: 'segment', header: t('admin.intel.learning.colSegment'), cell: (row) => row.segment_id },
-              { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
-              { key: 'score', header: t('admin.intel.learning.colScore'), cell: (row) => pf.format(row.avg_score / 100), numeric: true },
-              { key: 'attempts', header: t('admin.intel.learning.colAttempts'), cell: (row) => nf.format(row.avg_attempts_per_learner), numeric: true },
-              { key: 'hints', header: t('admin.intel.learning.colHints'), cell: (row) => row.hint_rate === null ? t('admin.intel.learning.unavailable') : pf.format(row.hint_rate), numeric: true },
-              { key: 'firstTry', header: t('admin.intel.learning.colFirstTry'), cell: (row) => row.first_try_avg_score === null ? t('admin.intel.learning.unavailable') : pf.format(row.first_try_avg_score / 100), numeric: true },
-            ] satisfies TableColumn<IntelCalibrationEntry>[]}
-          />
-        ) : <EmptyChartIcon name="school" />}
-      </ChartCard>
+      {detail ? <CatalogDetailDialog item={detail.item} kind={detail.kind} onClose={() => setDetail(null)} t={t} nf={nf} pf={pf} /> : null}
     </div>
+  );
+}
+
+function LearnerDetailDialog({ detail, learner, loading, onClose, t, nf, pf }: {
+  detail: IntelLearnerDetail | null;
+  learner: IntelAdminUser | undefined;
+  loading: boolean;
+  onClose: () => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
+  nf: Intl.NumberFormat;
+  pf: Intl.NumberFormat;
+}) {
+  const title = learner?.displayName || learner?.username || t('admin.intel.learning.privateLearner');
+  const profile = detail?.profile;
+  return (
+    <AdminDialog title={title} onClose={onClose} className="max-w-6xl">
+      <div className="flex flex-col gap-6 pt-5">
+        {loading ? <div className="flex min-h-48 items-center justify-center"><Icon name="progress_activity" className="animate-spin text-primary" /></div> : profile ? <>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard dense icon={<Icon name="assignment_turned_in" />} label={t('admin.intel.learning.attemptsLabel')} value={nf.format(profile.attempts)} />
+            <StatCard dense icon={<Icon name="grade" />} label={t('admin.intel.learning.colScore')} value={profile.avgScore === null ? t('admin.intel.learning.unavailable') : pf.format(profile.avgScore / 100)} />
+            <StatCard dense icon={<Icon name="psychology" />} label={t('admin.intel.learning.colMastery')} value={profile.avgMasteryProbability === null ? t('admin.intel.learning.unavailable') : pf.format(profile.avgMasteryProbability)} />
+            <StatCard dense icon={<Icon name="support" />} label={t('admin.intel.learning.supportSkills')} value={nf.format(profile.skillsNeedingSupport)} />
+          </div>
+          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.8fr)]">
+            <ChartCard title={t('admin.intel.learning.learnerPulseTitle')} subtitle={t('admin.intel.learning.learnerPulseSubtitle')}>
+              {detail.trends.length > 0 ? <div className="h-[260px] w-full"><ResponsiveContainer><ComposedChart data={detail.trends}><CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" vertical={false} /><XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} /><YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} /><Tooltip content={<CustomTooltip />} /><Bar dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} fill={SVG_PRIMARY} radius={[4, 4, 0, 0]} /></ComposedChart></ResponsiveContainer></div> : <EmptyChartIcon name="monitoring" />}
+            </ChartCard>
+            <Card className="flex flex-col gap-3 p-5">
+              <div><p className="lf-label text-content">{t('admin.intel.learning.recommendation')}</p><p className="lf-caption mt-1 text-content-muted">{t('admin.intel.learning.recommendationHint')}</p></div>
+              {profile.recommendedAction ? <Badge className="w-fit bg-primary-soft text-primary">{t(`admin.intel.learning.action.${profile.recommendedAction}`)}</Badge> : <EvidenceBadge status={profile.evidenceStatus} t={t} />}
+              <div className="border-t border-outline/60 pt-3"><p className="lf-caption text-content-muted">{t('admin.intel.learning.firstTry')}</p><p className="lf-number mt-1 text-content">{profile.firstTryAvgScore === null ? t('admin.intel.learning.unavailable') : pf.format(profile.firstTryAvgScore / 100)}</p></div>
+              <div><p className="lf-caption text-content-muted">{t('admin.intel.learning.colHints')}</p><p className="lf-number mt-1 text-content">{profile.hintRate === null ? t('admin.intel.learning.unavailable') : pf.format(profile.hintRate)}</p></div>
+            </Card>
+          </div>
+          <div className="grid gap-6 xl:grid-cols-2">
+            <ChartCard title={t('admin.intel.learning.learnerCoursesTitle')} subtitle={t('admin.intel.learning.learnerCoursesSubtitle')}>
+              {detail.courses.length ? <Table<IntelCourseHealth> rows={detail.courses} rowKey={(row) => row.courseId} columns={[
+                { key: 'course', header: t('admin.intel.learning.course'), primary: true, cell: (row) => row.courseTitleEn || row.courseSlug || t('admin.intel.learning.untitledCourse') },
+                { key: 'score', header: t('admin.intel.learning.colScore'), numeric: true, cell: (row) => row.avgScore === null ? t('admin.intel.learning.unavailable') : pf.format(row.avgScore / 100) },
+                { key: 'attempts', header: t('admin.intel.learning.attemptsLabel'), numeric: true, cell: (row) => nf.format(row.attempts) },
+              ] satisfies TableColumn<IntelCourseHealth>[]} /> : <EmptyChartIcon name="menu_book" />}
+            </ChartCard>
+            <ChartCard title={t('admin.intel.learning.learnerSkillsTitle')} subtitle={t('admin.intel.learning.learnerSkillsSubtitle')}>
+              {detail.states.length ? <Table<typeof detail.states[number]> rows={detail.states} rowKey={(row) => row.skillKey} columns={[
+                { key: 'skill', header: t('admin.intel.learning.colSkill'), primary: true, cell: (row) => row.skillKey },
+                { key: 'mastery', header: t('admin.intel.learning.colMastery'), numeric: true, cell: (row) => pf.format(row.masteryProbability) },
+                { key: 'action', header: t('admin.intel.learning.recommendation'), cell: (row) => <Badge className="bg-primary-soft text-primary">{t(`admin.intel.learning.action.${row.recommendedAction}`)}</Badge> },
+              ] satisfies TableColumn<typeof detail.states[number]>[]} /> : <EmptyChartIcon name="psychology" />}
+            </ChartCard>
+          </div>
+        </> : <AdminEmpty icon="psychology" message={t('admin.intel.learning.learnerNoEvidence')} />}
+      </div>
+    </AdminDialog>
   );
 }
 
@@ -951,6 +1186,9 @@ export function AdminIntelPage() {
   const [tab, setTab] = useState<Tab>(() => searchParams.get('focus') === 'learning' ? 'learning' : 'home');
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [days, setDays] = useState(30);
+  const [selectedLearnerId, setSelectedLearnerId] = useState<string | null>(null);
+  const [learnerDetail, setLearnerDetail] = useState<IntelLearnerDetail | null>(null);
+  const [learnerDetailLoading, setLearnerDetailLoading] = useState(false);
 
   const load = useCallback(async () => {
     setState({ status: 'loading' });
@@ -965,7 +1203,7 @@ export function AdminIntelPage() {
     const [
       summaryR, trendsR, anomaliesR,
       funnelR, cohortsR, dropoffR, calibrationR,
-      engagementR, churnR, sessionsR, experimentsR, alertsR, consentR, qualityR, skillHealthR,
+      engagementR, churnR, sessionsR, experimentsR, alertsR, consentR, qualityR, skillHealthR, learningOverviewR, usersR,
     ] = await Promise.allSettled([
       get<IntelSummary>(`/admin/intel/metrics/summary?days=${days}`),
       get<IntelTrendPoint[]>(`/admin/intel/metrics/trends?metric=dau&granularity=day&days=${days}`),
@@ -982,6 +1220,8 @@ export function AdminIntelPage() {
       get<{ consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=1'),
       get<IntelQualityReport>('/admin/intel/quality'),
       get<{ skills: IntelSkillHealth[] }>('/admin/intel/learning/content-health?limit=50'),
+      get<IntelLearningOverview>(`/admin/intel/learning/overview?days=${days}&limit=100`),
+      get<{ users: IntelAdminUser[] }>('/admin/users'),
     ]);
 
     const unwrap = <T,>(r: PromiseSettledResult<{ ok: true; data: T } | { ok: false; code: string }>): T | null => {
@@ -1010,11 +1250,23 @@ export function AdminIntelPage() {
         alerts: unwrap<IntelAlert[]>(alertsR),
         quality: unwrap<IntelQualityReport>(qualityR),
         skillHealth: unwrap<{ skills: IntelSkillHealth[] }>(skillHealthR)?.skills ?? null,
+        learningOverview: unwrap<IntelLearningOverview>(learningOverviewR),
+        users: unwrap<{ users: IntelAdminUser[] }>(usersR)?.users ?? null,
       },
     });
   }, [getToken, days]);
 
   useEffect(() => { void load(); }, [load]);
+
+  const inspectLearner = useCallback(async (userId: string) => {
+    setSelectedLearnerId(userId);
+    setLearnerDetail(null);
+    setLearnerDetailLoading(true);
+    const token = await getToken();
+    const result = await api<IntelLearnerDetail>(`/admin/intel/learning/learners/${userId}?days=${days}&limit=100`, { token });
+    setLearnerDetail(result.error ? null : result.data);
+    setLearnerDetailLoading(false);
+  }, [days, getToken]);
 
   const nf = useMemo(() => new Intl.NumberFormat(i18n.resolvedLanguage), [i18n.resolvedLanguage]);
   const pf = useMemo(() => new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'percent', maximumFractionDigits: 0 }), [i18n.resolvedLanguage]);
@@ -1062,11 +1314,12 @@ export function AdminIntelPage() {
           {tab === 'home' && <HomeTab data={state.data} days={days} t={t} nf={nf} pf={pf} />}
           {tab === 'trends' && <TrendsTab data={state.data} t={t} />}
           {tab === 'funnels' && <FunnelsTab data={state.data} t={t} pf={pf} />}
-          {tab === 'learning' && <LearningTab data={state.data} t={t} nf={nf} pf={pf} />}
+          {tab === 'learning' && <LearningTab data={state.data} t={t} nf={nf} pf={pf} onInspectLearner={inspectLearner} />}
           {tab === 'retention' && <RetentionTab data={state.data} t={t} pf={pdf} />}
           {tab === 'people' && <PeopleTab data={state.data} t={t} pf={pf} />}
           {tab === 'experiments' && <ExperimentsTab data={state.data} t={t} />}
           {tab === 'alerts' && <AlertsTab data={state.data} t={t} />}
+          {selectedLearnerId ? <LearnerDetailDialog detail={learnerDetail} loading={learnerDetailLoading} learner={state.data.users?.find((user) => user.userId === selectedLearnerId)} onClose={() => { setSelectedLearnerId(null); setLearnerDetail(null); }} t={t} nf={nf} pf={pf} /> : null}
         </>
       )}
     </AdminPage>

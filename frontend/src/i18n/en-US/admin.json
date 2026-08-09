@@ -1054,7 +1054,71 @@
       "review": "Review content",
       "monitor": "Monitor",
       "insufficient_evidence": "Need more evidence"
-    }
+    },
+    "commandKicker": "Learning operations",
+    "commandTitle": "Turn learning evidence into clear next actions",
+    "commandSubtitle": "Inspect each published course, lesson, and learner profile without confusing an empty dataset with a healthy one.",
+    "catalogCourses": "Published courses",
+    "catalogLessons": "Published lessons",
+    "attemptsLabel": "Graded attempts",
+    "activeLearners": "Learners with evidence",
+    "pulseTitle": "Learning pulse",
+    "pulseSubtitle": "Attempt volume and average score over the selected period.",
+    "directoryTitle": "Learning evidence directory",
+    "directorySubtitle": "Open a row for the complete evidence summary. Metrics stay unavailable until enough independent evidence exists.",
+    "directory": {
+      "courses": "Courses",
+      "lessons": "Lessons",
+      "learners": "Learners"
+    },
+    "evidenceLabel": "Evidence",
+    "evidence": {
+      "awaiting_evidence": "Awaiting evidence",
+      "limited": "Limited evidence",
+      "sufficient": "Sufficient evidence"
+    },
+    "evidenceHint": {
+      "awaiting_evidence": "The catalog is ready, but no graded attempts have reached this view yet.",
+      "limited": "Early signals are visible. Keep monitoring until more independent learners contribute evidence.",
+      "sufficient": "Enough independent evidence is available to prioritize instructional follow-up."
+    },
+    "attention": {
+      "awaiting_evidence": "Awaiting evidence",
+      "monitor": "Monitor",
+      "review": "Review content",
+      "healthy": "Healthy"
+    },
+    "course": "Course",
+    "lesson": "Lesson",
+    "learner": "Learner",
+    "untitledCourse": "Untitled course",
+    "untitledLesson": "Untitled lesson",
+    "lessonsCount": "{{count}} lessons",
+    "colDetail": "Detail",
+    "inspect": "Inspect",
+    "retryRate": "Retry rate",
+    "avgTime": "Average time",
+    "seconds": "{{count}} sec",
+    "syncCoverage": "{{count}} authoritative attempts currently available in the warehouse.",
+    "privateLearner": "Learner profile",
+    "roleUnavailable": "Role unavailable",
+    "recommendation": "Recommended next action",
+    "recommendationHint": "Derived from authoritative grades and interpretable skill evidence.",
+    "supportSkills": "Skills needing support",
+    "firstTry": "First attempt score",
+    "action": {
+      "remediate": "Start remediation",
+      "practice": "Practice again",
+      "retrieve": "Schedule retrieval",
+      "continue": "Continue"
+    },
+    "learnerPulseTitle": "Practice timeline",
+    "learnerPulseSubtitle": "Graded attempts recorded during the selected period.",
+    "learnerCoursesTitle": "Course feedback",
+    "learnerCoursesSubtitle": "Where this learner has produced authoritative evidence.",
+    "learnerSkillsTitle": "Skill feedback",
+    "learnerSkillsSubtitle": "Interpretable mastery state and the next learning action.",
+    "learnerNoEvidence": "No learning evidence is available for this profile in the selected period."
     }
   },
   "insights": {

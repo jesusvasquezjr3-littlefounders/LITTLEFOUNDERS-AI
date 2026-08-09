@@ -211,6 +211,35 @@ describe('GET /api/v1/intel/lessons/calibration', () => {
   });
 });
 
+describe('GET /api/v1/intel/learning/overview', () => {
+  it('rejects an invalid evidence window', async () => {
+    const res = await auth(
+      request(createApp()).get('/api/v1/intel/learning/overview?days=0'),
+    );
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns the standard envelope for a valid evidence window', async () => {
+    const res = await auth(
+      request(createApp()).get('/api/v1/intel/learning/overview?days=30&limit=100'),
+    );
+    expect(res.body).toHaveProperty('data');
+    expect(res.body).toHaveProperty('error');
+    expect(readOk(res.status)).toBe(true);
+  });
+});
+
+describe('GET /api/v1/intel/learning/learners/:userId', () => {
+  it('rejects a malformed learner identifier', async () => {
+    const res = await auth(
+      request(createApp()).get('/api/v1/intel/learning/learners/not-a-uuid?days=30'),
+    );
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+});
+
 // ── Sessions ──────────────────────────────────────────────────────────
 
 describe('GET /api/v1/intel/sessions/depth', () => {

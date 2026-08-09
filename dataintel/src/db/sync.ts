@@ -162,6 +162,10 @@ function mapLessonRow(row: Record<string, unknown>): Record<string, unknown> {
     title_es: row.title_es ?? null,
     title_pt: row.title_pt ?? null,
     course_id: row.course_id ?? null,
+    course_slug: row.course_slug ?? null,
+    course_title_en: row.course_title_en ?? null,
+    course_title_es: row.course_title_es ?? null,
+    course_title_pt: row.course_title_pt ?? null,
     segment_count: row.segment_count ?? 0,
   };
 }
@@ -368,6 +372,10 @@ const LESSON_COLUMNS = [
   'title_es',
   'title_pt',
   'course_id',
+  'course_slug',
+  'course_title_en',
+  'course_title_es',
+  'course_title_pt',
   'segment_count',
 ] as const;
 

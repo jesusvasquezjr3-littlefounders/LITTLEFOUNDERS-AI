@@ -1054,7 +1054,71 @@
       "review": "Revisar contenido",
       "monitor": "Monitorear",
       "insufficient_evidence": "Falta evidencia"
-    }
+    },
+    "commandKicker": "Operación de aprendizaje",
+    "commandTitle": "Convierte la evidencia de aprendizaje en acciones claras",
+    "commandSubtitle": "Revisa cada curso, lección y perfil de aprendizaje publicado sin confundir un conjunto vacío con una señal saludable.",
+    "catalogCourses": "Cursos publicados",
+    "catalogLessons": "Lecciones publicadas",
+    "attemptsLabel": "Intentos calificados",
+    "activeLearners": "Aprendices con evidencia",
+    "pulseTitle": "Pulso de aprendizaje",
+    "pulseSubtitle": "Volumen de intentos y calificación promedio durante el periodo seleccionado.",
+    "directoryTitle": "Directorio de evidencia de aprendizaje",
+    "directorySubtitle": "Abre una fila para ver el resumen completo. Las métricas permanecen no disponibles hasta contar con evidencia independiente suficiente.",
+    "directory": {
+      "courses": "Cursos",
+      "lessons": "Lecciones",
+      "learners": "Aprendices"
+    },
+    "evidenceLabel": "Evidencia",
+    "evidence": {
+      "awaiting_evidence": "Esperando evidencia",
+      "limited": "Evidencia limitada",
+      "sufficient": "Evidencia suficiente"
+    },
+    "evidenceHint": {
+      "awaiting_evidence": "El catálogo está listo, pero aún no llegan intentos calificados a esta vista.",
+      "limited": "Las señales iniciales son visibles. Mantén el seguimiento hasta reunir evidencia de más aprendices independientes.",
+      "sufficient": "Hay evidencia independiente suficiente para priorizar el seguimiento pedagógico."
+    },
+    "attention": {
+      "awaiting_evidence": "Esperando evidencia",
+      "monitor": "Monitorear",
+      "review": "Revisar contenido",
+      "healthy": "Saludable"
+    },
+    "course": "Curso",
+    "lesson": "Lección",
+    "learner": "Aprendiz",
+    "untitledCourse": "Curso sin título",
+    "untitledLesson": "Lección sin título",
+    "lessonsCount": "{{count}} lecciones",
+    "colDetail": "Detalle",
+    "inspect": "Inspeccionar",
+    "retryRate": "Tasa de reintentos",
+    "avgTime": "Tiempo promedio",
+    "seconds": "{{count}} seg",
+    "syncCoverage": "{{count}} intentos autoritativos están disponibles actualmente en el almacén.",
+    "privateLearner": "Perfil de aprendiz",
+    "roleUnavailable": "Rol no disponible",
+    "recommendation": "Siguiente acción recomendada",
+    "recommendationHint": "Se deriva de calificaciones autoritativas y evidencia interpretable por habilidad.",
+    "supportSkills": "Habilidades que requieren apoyo",
+    "firstTry": "Calificación del primer intento",
+    "action": {
+      "remediate": "Iniciar refuerzo",
+      "practice": "Practicar otra vez",
+      "retrieve": "Programar recuperación",
+      "continue": "Continuar"
+    },
+    "learnerPulseTitle": "Línea de práctica",
+    "learnerPulseSubtitle": "Intentos calificados registrados durante el periodo seleccionado.",
+    "learnerCoursesTitle": "Retroalimentación por curso",
+    "learnerCoursesSubtitle": "Dónde este aprendiz ha generado evidencia autoritativa.",
+    "learnerSkillsTitle": "Retroalimentación por habilidad",
+    "learnerSkillsSubtitle": "Estado de dominio interpretable y la siguiente acción de aprendizaje.",
+    "learnerNoEvidence": "No hay evidencia de aprendizaje disponible para este perfil durante el periodo seleccionado."
     }
   },
   "insights": {

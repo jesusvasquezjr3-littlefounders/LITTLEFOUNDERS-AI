@@ -77,6 +77,17 @@ function apiDefault(path: string) {
   if (path.startsWith('/admin/intel/learning/content-health')) {
     return apiOk({ skills: [] });
   }
+  if (path.startsWith('/admin/intel/learning/overview')) {
+    return apiOk({
+      snapshot: {
+        courses: 1, lessons: 2, attempts: 0, learners: 0,
+        avgScore: null, firstTryAvgScore: null, hintRate: null, retryRate: null,
+        avgSecondsPerAttempt: null, evidenceStatus: 'awaiting_evidence',
+      },
+      trends: [], courses: [], lessons: [], learners: [],
+    });
+  }
+  if (path.startsWith('/admin/users')) return apiOk({ users: [] });
   if (path.startsWith('/admin/intel/segments')) {
     return apiOk([]);
   }
@@ -263,7 +274,7 @@ describe('AdminIntelPage — tab switching', () => {
     renderPage();
     await flushPromises();
     fireEvent.click(screen.getByText('admin.intel.tabs.learning'));
-    expect(screen.getByText('admin.intel.learning.dropoffTitle')).toBeInTheDocument();
+    expect(screen.getByText('admin.intel.learning.directoryTitle')).toBeInTheDocument();
   });
 
   it('switches to People tab on click', async () => {

@@ -553,6 +553,33 @@ export function intelRouter(): Router {
     }
   });
 
+  router.get('/learning/overview', async (req, res) => {
+    try {
+      const days = daysSchema.parse(req.query.days ?? '30');
+      const limit = limitSchema.default(100).parse(req.query.limit ?? '100');
+      const result = await learning.getLearningOverview(days, limit);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learning overview unavailable');
+      return ok(res, result);
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
+  router.get('/learning/learners/:userId', async (req, res) => {
+    try {
+      const { userId } = userIdParamSchema.parse(req.params);
+      const days = daysSchema.parse(req.query.days ?? '30');
+      const limit = limitSchema.default(100).parse(req.query.limit ?? '100');
+      const result = await learning.getLearnerLearningDetail(userId, days, limit);
+      if (result === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Learner learning detail unavailable');
+      return ok(res, result);
+    } catch (err) {
+      if (err instanceof z.ZodError) return fail(res, 400, 'VALIDATION_ERROR', err.message);
+      return fail(res, 500, 'INTERNAL', (err as Error).message);
+    }
+  });
+
   router.get('/quality', async (_req, res) => {
     try {
       const result = await dataQuality.getDataQualityReport();

@@ -4,6 +4,8 @@ import { execute, initDb } from '../db/duckdb.js';
 import { getDataQualityReport } from '../services/dataQuality.js';
 import {
   getLearnerRecommendation,
+  getLearnerLearningDetail,
+  getLearningOverview,
   getLearnerSkillStates,
   getSkillHealth,
   refreshLearnerSkillStates,
@@ -72,5 +74,39 @@ describe('learning intelligence', () => {
       documentVersionCoveragePct: expect.any(Number),
     });
     expect(report!.freshness).toContainEqual(expect.objectContaining({ source: 'attempts', stale: false }));
+  });
+
+  it('keeps course, lesson, and learner feedback contextual and evidence-labelled', async () => {
+    await execute(
+      `INSERT INTO dim_lessons (
+        lesson_id, slug, title_en, title_es, title_pt, course_id, course_slug,
+        course_title_en, course_title_es, course_title_pt, segment_count
+      ) VALUES (?, 'saving-basics', 'Saving basics', 'Fundamentos de ahorro', 'Fundamentos de poupança', ?, 'money',
+        'Money habits', 'Hábitos de dinero', 'Hábitos financeiros', 3)`,
+      lessonId,
+      courseId,
+    );
+
+    const overview = await getLearningOverview(30, 100);
+    expect(overview).not.toBeNull();
+    expect(overview!.snapshot).toMatchObject({ courses: expect.any(Number), lessons: expect.any(Number), attempts: expect.any(Number) });
+    expect(overview!.courses).toContainEqual(expect.objectContaining({
+      courseId,
+      courseSlug: 'money',
+      courseTitleEn: 'Money habits',
+      evidenceStatus: 'limited',
+    }));
+    expect(overview!.lessons).toContainEqual(expect.objectContaining({
+      lessonId,
+      lessonTitleEn: 'Saving basics',
+      evidenceStatus: 'limited',
+    }));
+    expect(overview!.learners).toContainEqual(expect.objectContaining({ userId: learnerId, attempts: 3 }));
+
+    const detail = await getLearnerLearningDetail(learnerId, 30, 100);
+    expect(detail).not.toBeNull();
+    expect(detail!.profile).toMatchObject({ userId: learnerId, recommendedAction: 'remediate' });
+    expect(detail!.courses).toContainEqual(expect.objectContaining({ courseId, attempts: 3 }));
+    expect(detail!.lessons).toContainEqual(expect.objectContaining({ lessonId, attempts: 3 }));
   });
 });
