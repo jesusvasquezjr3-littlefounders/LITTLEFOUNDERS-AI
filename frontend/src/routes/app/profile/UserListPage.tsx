@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, IconChip } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
 
@@ -68,7 +68,12 @@ export function UserListPage({
   return (
     <div className="mx-auto max-w-xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="lf-display-lg text-content">{title}</h1>
+        <div className="flex items-center gap-3">
+          <IconChip tone="primary" size="md">
+            <Icon name="group" />
+          </IconChip>
+          <h1 className="lf-display-lg text-content">{title}</h1>
+        </div>
         <Link
           to={backPath}
           className="lf-label inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -98,7 +103,7 @@ export function UserListPage({
         )}
 
         {users && users.length > 0 && (
-          <Card className="flex flex-col gap-1 p-2">
+          <Card className="flex flex-col gap-1 p-2 sm:p-3">
             {users.map((u) => (
               <UserListItem
                 key={u.userId}

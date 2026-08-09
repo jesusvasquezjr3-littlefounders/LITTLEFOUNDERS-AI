@@ -25,15 +25,16 @@ export function ProfileHero({
   return (
     <div>
       <div
-        className="relative h-36 rounded-xl sm:h-48"
+        className="relative h-36 overflow-hidden rounded-xl shadow-glass sm:h-48"
         style={{ backgroundImage: coverCss(cover) }}
         role="img"
         aria-hidden="true"
       >
+        <div className="absolute inset-0 bg-gradient-to-t from-inverse/35 via-transparent to-white/5" aria-hidden="true" />
         {coverAction && <div className="absolute bottom-3 right-3">{coverAction}</div>}
       </div>
       <div className="relative -mt-14 ml-5 h-28 w-28 sm:-mt-16 sm:ml-8 sm:h-32 sm:w-32">
-        <Avatar options={avatarOptions} seed={seed} className="h-full w-full bg-surface ring-4 ring-base" />
+        <Avatar options={avatarOptions} seed={seed} className="h-full w-full bg-surface shadow-glass ring-4 ring-base" />
         {avatarAction && <div className="absolute -bottom-1 -right-1">{avatarAction}</div>}
       </div>
     </div>

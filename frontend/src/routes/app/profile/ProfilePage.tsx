@@ -132,25 +132,35 @@ export function ProfilePage() {
       />
 
       {pickingCover && (
-        <Card className="lf-pop mt-4 p-4">
-          <p className="lf-label text-content">{t('profile.coverPicker.title')}</p>
-          <p className="lf-caption mt-1 text-content-muted">{t('profile.coverPicker.hint')}</p>
-          <div className="mt-3 grid grid-cols-5 gap-2 sm:grid-cols-10">
+        <Card className="lf-pop mt-4 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <Icon className="mt-0.5 text-primary" name="palette" aria-hidden />
+            <div>
+              <p className="lf-label text-content">{t('profile.coverPicker.title')}</p>
+              <p className="lf-caption mt-1 text-content-muted">{t('profile.coverPicker.hint')}</p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-5 gap-2 sm:grid-cols-10">
             {COVER_PRESETS.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 aria-label={t(`profile.covers.${p.id}`)}
+                aria-pressed={(data.cover as { preset?: string }).preset === p.id}
                 title={t(`profile.covers.${p.id}`)}
                 disabled={savingCover !== null}
                 onClick={() => void chooseCover(p.id)}
                 className={
-                  'motion-safe-press h-12 rounded-md transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ' +
+                  'motion-safe-press flex h-12 items-center justify-center rounded-md transition-[box-shadow,transform] duration-150 hover:-translate-y-0.5 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ' +
                   ((data.cover as { preset?: string }).preset === p.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-base' : '')
                 }
                 style={{ backgroundImage: p.css }}
               >
-                {savingCover === p.id && <Icon name="progress_activity" className="animate-spin text-on-inverse" />}
+                {savingCover === p.id ? (
+                  <Icon name="progress_activity" className="animate-spin text-on-inverse" aria-hidden />
+                ) : (data.cover as { preset?: string }).preset === p.id ? (
+                  <Icon name="check" className="text-on-inverse" aria-hidden />
+                ) : null}
               </button>
             ))}
           </div>
@@ -185,27 +195,24 @@ export function ProfilePage() {
         </Link>
       </div>
 
-      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <section aria-label={t('profile.stats.title')} className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
         <StatCard icon={<LottieIcon name="streak" value={data.learningStats.streakDays} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.streakDays)} label={t('profile.stats.streak')} />
         <StatCard icon={<LottieIcon name="lesson" value={data.learningStats.lessonsCompleted} activated={isActivated} className="w-10 h-10 scale-125" />} tone="primary" value={String(data.learningStats.lessonsCompleted)} label={t('profile.stats.lessons')} />
         <StatCard icon={<LottieIcon name="gold-coin" value={data.learningStats.xpPoints} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.learningStats.xpPoints)} label={t('profile.stats.xp')} />
         <StatCard icon={<LottieIcon name="time" value={data.learningStats.minutesLearned} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.learningStats.minutesLearned)} label={t('profile.stats.minutesLearned')} />
-      </section>
-
-      <div className="mt-4 grid grid-cols-2 gap-4">
         <Link
           to="/profile/followers"
-          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base block"
+          className="block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="followers" value={data.followers} activated={isActivated} className="w-10 h-10 scale-125" />} tone="secondary" value={String(data.followers)} label={t('profile.stats.followers')} />
         </Link>
         <Link
           to="/profile/following"
-          className="rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base block"
+          className="block rounded-lg transition-transform duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base"
         >
           <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
         </Link>
-      </div>
+      </section>
 
       {/* Share / invite */}
       <Card className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

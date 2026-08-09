@@ -146,6 +146,7 @@ frontend/
         __tests__/
         analytics/
       app/
+        __tests__/
         family/
         learn/
           __tests__/
@@ -13738,6 +13739,26 @@ export function SectionComingSoon({ section, icon }: { section: 'tutor' | 'tasks
   const { t } = useTranslation();
 ```
 
+### frontend/src/routes/app/__tests__/LearnPage.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import i18n from '@/i18n';
+import { api } from '@/lib/api';
+import { LearnPage } from '../LearnPage';
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+vi.mock('@/auth/AuthContext', () => {
+  const getToken = async () => 'token-123';
+  return { useAuth: () => ({ getToken, profile: { display_name: 'Alex Rivera' } }) };
+});
+vi.mock('@/components/characters/control/CharacterActor', () => ({ default: () => <div aria-hidden="true" /> }));
+vi.mock('@/components/characters/DinaCharacter', () => ({ DinaCharacter: () => <div aria-hidden="true" /> }));
+
+```
+
 ### frontend/src/routes/app/family/FamilyPage.tsx
 
 ```
@@ -14232,7 +14253,7 @@ import {
   type CatalogKey,
 } from '@/lib/avatarOptions';
 import { Avatar } from '@/components/Avatar';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, IconChip } from '@/components/ui';
 ```
 
 ### frontend/src/routes/app/profile/FollowersPage.tsx
@@ -14385,7 +14406,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
-import { Button, Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Button, Card, Dropdown, Icon, IconChip, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
@@ -14423,7 +14444,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, IconChip } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
 

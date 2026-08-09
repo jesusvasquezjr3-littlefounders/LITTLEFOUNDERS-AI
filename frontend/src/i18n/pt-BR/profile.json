@@ -39,6 +39,7 @@
   "avatarEditor": {
     "title": "Seu avatar",
     "subtitle": "Deixe com a sua cara, ele aparece em todos os lugares onde seu perfil aparece",
+    "preview": "Prévia ao vivo",
     "back": "Voltar ao perfil",
     "randomize": "Surpreenda-me",
     "save": "Salvar meu visual",
@@ -59,6 +60,7 @@
   },
   "settings": {
     "title": "Configurações",
+    "intro": "Personalize sua identidade e mantenha as preferências da conta atualizadas.",
     "back": "Voltar ao perfil",
     "identity": "Sua identidade",
     "displayName": "Nome",

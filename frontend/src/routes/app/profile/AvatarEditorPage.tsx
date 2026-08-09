@@ -12,7 +12,7 @@ import {
   type CatalogKey,
 } from '@/lib/avatarOptions';
 import { Avatar } from '@/components/Avatar';
-import { Button, Card, Icon } from '@/components/ui';
+import { Button, Card, Icon, IconChip } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { cn } from '@/lib/utils';
 
@@ -107,10 +107,17 @@ export function AvatarEditorPage() {
 
       {errorCode && <div className="mt-4"><ErrorBanner code={errorCode} /></div>}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[320px_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         {/* Live preview — sticky on desktop */}
         <div className="lg:sticky lg:top-10 lg:self-start">
-          <Card className="flex flex-col items-center gap-5 py-8">
+          <Card hero className="relative flex flex-col items-center gap-5 overflow-hidden py-8">
+            <div className="absolute inset-x-0 top-0 h-24 bg-primary-soft/60" aria-hidden="true" />
+            <div className="relative flex flex-col items-center gap-3">
+              <IconChip tone="primary" size="md">
+                <Icon name="visibility" />
+              </IconChip>
+              <p className="lf-label text-content">{t('profile.avatarEditor.preview')}</p>
+            </div>
             <Avatar options={options} seed={userId} className="h-44 w-44 bg-surface-sunken" />
             <Button variant="secondary" className="gap-2 px-5 py-2.5" onClick={() => setOptions((o) => ({ seed: o.seed ?? userId, ...randomAvatarOptions() }))}>
               <Icon name="casino" />
@@ -166,6 +173,7 @@ export function AvatarEditorPage() {
                     <button
                       key={value}
                       type="button"
+                      aria-label={value}
                       aria-pressed={isSelected(section, value)}
                       onClick={() => choose(section, value)}
                       className={cn(

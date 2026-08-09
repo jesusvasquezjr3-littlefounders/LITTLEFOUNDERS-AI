@@ -5,7 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { trackInsight } from '@/lib/insights';
 import { LOCALES, type Locale } from '@/i18n';
-import { Button, Card, Dropdown, Icon, type DropdownOption } from '@/components/ui';
+import { Button, Card, Dropdown, Icon, IconChip, type DropdownOption } from '@/components/ui';
 import { Field } from '@/components/ui/Field';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { UserListItem, type ListedUser } from './UserListItem';
@@ -120,9 +120,17 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="lf-display-lg text-content">{t('profile.settings.title')}</h1>
+    <div className="mx-auto max-w-4xl">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <IconChip tone="primary" size="md" className="mt-1">
+            <Icon name="settings" />
+          </IconChip>
+          <div>
+            <h1 className="lf-display-lg text-content">{t('profile.settings.title')}</h1>
+            <p className="lf-body mt-1 max-w-xl text-content-muted">{t('profile.settings.intro')}</p>
+          </div>
+        </div>
         <Link
           to="/profile"
           className="lf-label inline-flex min-h-11 items-center gap-1 rounded-full px-3 text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
@@ -132,10 +140,10 @@ export function SettingsPage() {
         </Link>
       </div>
 
-      <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 flex flex-col gap-6">
-        {errorCode && <ErrorBanner code={errorCode} />}
+      <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
+        {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}
 
-        <Card className="flex flex-col gap-5" aria-busy={!loaded}>
+        <Card className="flex h-full flex-col gap-5" aria-busy={!loaded}>
           <h2 className="lf-title text-content">{t('profile.settings.identity')}</h2>
           <Field
             label={t('profile.settings.displayName')}
@@ -170,7 +178,7 @@ export function SettingsPage() {
           </div>
         </Card>
 
-        <Card className="flex flex-col gap-5">
+        <Card className="flex h-full flex-col gap-5">
           <h2 className="lf-title text-content">{t('profile.settings.account')}</h2>
           <Field label={t('profile.settings.email')} value={session?.user.email ?? ''} disabled readOnly />
           <div className="flex items-start gap-3 rounded-md bg-surface-sunken px-4 py-3">
@@ -179,7 +187,7 @@ export function SettingsPage() {
           </div>
         </Card>
 
-        <Card className="flex flex-col gap-4">
+        <Card className="flex flex-col gap-4 lg:col-span-2">
           <h2 className="lf-title text-content">{t('profile.settings.blockedTitle')}</h2>
           {blocked === null && (
             <div className="flex flex-col gap-2" aria-busy="true">
@@ -220,7 +228,7 @@ export function SettingsPage() {
           type="submit"
           disabled={saving || !loaded || !displayName.trim() || usernameInvalid || birthDateInvalid}
           variant={saved ? 'success' : 'primary'}
-          className="gap-2"
+          className="gap-2 lg:col-span-2 lg:justify-self-start"
         >
           <Icon name={saved ? 'check' : saving ? 'progress_activity' : 'save'} className={saving ? 'animate-spin' : undefined} />
           {saved ? t('profile.settings.saved') : saving ? t('profile.settings.saving') : t('profile.settings.save')}

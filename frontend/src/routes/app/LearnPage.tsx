@@ -168,7 +168,11 @@ export function LearnPage() {
           <h2 className="lf-headline text-content">{t('dashboard.learn.browseTracks')}</h2>
 
           {/* Brilliant-Style Track Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div
+            className="flex flex-wrap items-center gap-2"
+            role="group"
+            aria-label={t('dashboard.learn.filterLabel')}
+          >
             {(['all', 'entrepreneurship', 'finance', 'saving'] as FilterCategory[]).map((cat) => {
               const isActive = activeFilter === cat;
               const labelKey = cat === 'all'
@@ -184,12 +188,14 @@ export function LearnPage() {
                   key={cat}
                   type="button"
                   onClick={() => setActiveFilter(cat)}
-                  className={`lf-label rounded-full px-4 py-2 transition-all duration-200 ${
+                  aria-pressed={isActive}
+                  className={`lf-label inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 py-2 transition-[background-color,border-color,color,box-shadow,transform] duration-200 active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-base ${
                     isActive
-                      ? 'bg-secondary text-on-secondary shadow-glass-sm font-bold'
+                      ? 'bg-accent text-on-accent shadow-glass-sm font-bold hover:bg-accent-strong'
                       : 'border border-outline/70 bg-surface text-content-muted hover:border-primary/50 hover:text-content font-medium'
                   }`}
                 >
+                  {isActive && <Icon name="check" className="!text-[16px]" aria-hidden />}
                   {t(labelKey)}
                 </button>
               );
