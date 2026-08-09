@@ -154,23 +154,20 @@ CREATE TABLE IF NOT EXISTS dataintel_sync_state (
   last_error VARCHAR
 );
 
-CREATE INDEX IF NOT EXISTS idx_fact_events_user_time  ON fact_events(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_event_time ON fact_events(event_type, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_session    ON fact_events(session_id, ordinal);
-CREATE INDEX IF NOT EXISTS idx_fact_events_created     ON fact_events(created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_role        ON fact_events(role, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_route       ON fact_events(route_class, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_device      ON fact_events(device, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_locale      ON fact_events(locale, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_occurred    ON fact_events(occurred_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_experiment  ON fact_events(experiment_id, experiment_variant, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_segment_time ON fact_segment_attempts(lesson_id, segment_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_user_time ON fact_segment_attempts(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_skill_time ON fact_segment_attempts(user_id, skill_key, created_at);
-CREATE INDEX IF NOT EXISTS idx_skill_states_action ON learner_skill_states(recommended_action, review_due_at);
-CREATE INDEX IF NOT EXISTS idx_anon_conversions_user ON dim_anon_conversions(user_id);
-
--- `CREATE TABLE IF NOT EXISTS` does not update persistent DuckDB files.
+-- SCHEMA EVOLUTION — must run BEFORE the indexes below (production incident
+-- 2026-08-09). `CREATE TABLE IF NOT EXISTS` does not update a persistent DuckDB
+-- file: on a warehouse that already exists (the Railway volume survives every
+-- deploy) a column ADDED to a definition above is silently NOT created, because
+-- the whole CREATE is skipped. These ALTERs are what actually add it.
+--
+-- Ordering is load-bearing, not cosmetic. This block used to sit at the END of
+-- the file, AFTER the CREATE INDEX statements — so `idx_fact_events_occurred`
+-- ran against a table whose `occurred_at` did not exist yet and raised a Binder
+-- Error, which `initDb` catches as "non-fatal": the service stayed up answering
+-- /health while duckdb was down and sync was permanently dead. A column added
+-- to a pre-existing table above MUST get an ALTER here in the same commit, and
+-- nothing that references a new column may be placed above this block.
+-- Keep semicolons out of these comments — the runner splits statements on them.
 ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS client_event_id UUID;
 ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS event_version SMALLINT;
 ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS occurred_at TIMESTAMP;
@@ -187,3 +184,19 @@ ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_slug VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_en VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_es VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_pt VARCHAR;
+
+CREATE INDEX IF NOT EXISTS idx_fact_events_user_time  ON fact_events(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_event_time ON fact_events(event_type, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_session    ON fact_events(session_id, ordinal);
+CREATE INDEX IF NOT EXISTS idx_fact_events_created     ON fact_events(created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_role        ON fact_events(role, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_route       ON fact_events(route_class, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_device      ON fact_events(device, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_locale      ON fact_events(locale, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_occurred    ON fact_events(occurred_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_experiment  ON fact_events(experiment_id, experiment_variant, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_segment_time ON fact_segment_attempts(lesson_id, segment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_user_time ON fact_segment_attempts(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_skill_time ON fact_segment_attempts(user_id, skill_key, created_at);
+CREATE INDEX IF NOT EXISTS idx_skill_states_action ON learner_skill_states(recommended_action, review_due_at);
+CREATE INDEX IF NOT EXISTS idx_anon_conversions_user ON dim_anon_conversions(user_id);
