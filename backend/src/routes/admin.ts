@@ -147,6 +147,10 @@ const EmailLogsQuerySchema = z.object({
   templateType: z.string().trim().max(64).optional(),
 });
 
+const EmailSummaryQuerySchema = z.object({
+  days: z.coerce.number().int().min(7).max(365).default(30),
+});
+
 const EmailTrendPointSchema = z.object({
   date: z.string().date(),
   count: z.number().int().min(0),
@@ -685,10 +689,13 @@ export function adminRouter(): Router {
     }
   });
 
-  router.get('/emails/summary', async (_req, res) => {
+  router.get('/emails/summary', async (req, res) => {
+    const q = EmailSummaryQuerySchema.safeParse(req.query);
+    if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'days 7-365');
     const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
     try {
-      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs/summary`, {
+      const query = new URLSearchParams({ days: String(q.data.days) });
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs/summary?${query.toString()}`, {
         headers: { 'x-internal-api-key': INTERNAL_API_KEY },
         signal: AbortSignal.timeout(10_000),
       });

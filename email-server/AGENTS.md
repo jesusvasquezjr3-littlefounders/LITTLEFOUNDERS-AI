@@ -28,7 +28,7 @@ The engine is **[Haraka](https://haraka.github.io/)** (MIT, semver ≥1.0, Node/
 - **Logging must never break sending.** `emailLogsRepo` wraps `getConfig()` in a try/catch and swallows every transport error: a Vault outage degrades the audit trail, it does not fail a password-reset dispatch. The Haraka plugin is fire-and-forget with a 2 s timeout for the same reason.
 - **`user_id` must be a real UUID or NULL** — the column is FK-constrained to `auth.users(id)`, so PostgREST rejects the entire row on anything else and the log line vanishes silently.
 - All `/api/v1/*` routes require `INTERNAL_API_KEY` (middleware scope widened from `/api/v1/send` to `/api/v1` on 2026-07-28). `/health` is deliberately outside this scope.
-- Query params on `/logs` and `/logs/summary` are Zod-validated at the edge. `/logs` supports server-side search and status/template filters so the admin console never searches only the visible page.
+- Query params on `/logs` and `/logs/summary` are Zod-validated at the edge. `/logs` supports server-side search and status/template filters so the admin console never searches only the visible page. `/logs/summary?days=7-365` provides exact daily trend windows for administrative analysis.
 - **One worker.** `haraka/config/smtp.ini` pins `nodes=1` — Haraka, like Kong's nginx, defaults to one worker per CPU, the pattern that ballooned the Railway memory bill.
 - **Always-warm.** GoTrue fires auth mail at random user times, so this service must NOT scale-to-zero.
 - No PII beyond what the email itself requires; no minor PII in email bodies to third parties (§1.9). SES is a data sub-processor — keep bodies minimal.

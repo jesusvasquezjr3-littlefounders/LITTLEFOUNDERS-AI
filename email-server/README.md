@@ -33,7 +33,7 @@ Both processes run in one container, supervised by [`src/index.ts`](src/index.ts
 | POST | /api/v1/send | `{ to, subject, html?, text?, templateType?, locale?, userId? }` → `202 { data: { id, status: "queued" }, error: null }`. Requires `x-internal-api-key`. Recorded in `email_logs`. |
 | POST | /api/v1/logs | `{ messageId, to, subject?, status?, templateType?, locale?, userId?, detail? }` → `202 { data: { recorded, messageId }, error: null }`. Delivery capture for the SMTP path — called by the `log_delivery` Haraka plugin so GoTrue auth mail reaches the admin console. Requires `x-internal-api-key`. |
 | GET | /api/v1/logs | Query: `?limit=1-200&offset=0+`, optional `q`, `status`, and `templateType`. Newest-first page `{ entries, total }` from `email_logs`. Returns `502 DATA_UNAVAILABLE` rather than serving partial production history when Vault cannot answer. Requires `x-internal-api-key`. |
-| GET | /api/v1/logs/summary | Returns exact `{ total, statuses, templates, locales, trend }` aggregate, with a 30-day daily trend. If the trend cannot be calculated, the exact aggregate is returned without `trend`; if the durable store cannot answer, returns `502 DATA_UNAVAILABLE`. Requires `x-internal-api-key`.
+| GET | /api/v1/logs/summary | Query: optional `?days=7-365`, default 30. Returns exact `{ total, statuses, templates, locales, trend }` aggregate with the requested daily trend. If the trend cannot be calculated, the exact aggregate is returned without `trend`; if the durable store cannot answer, returns `502 DATA_UNAVAILABLE`. Requires `x-internal-api-key`.
 
 ## Environment
 

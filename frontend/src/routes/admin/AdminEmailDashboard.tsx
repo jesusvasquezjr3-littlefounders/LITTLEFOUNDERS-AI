@@ -3,7 +3,13 @@ import { useTranslation } from 'react-i18next';
 import {
   Area,
   AreaChart,
+  Bar,
+  Brush,
   CartesianGrid,
+  ComposedChart,
+  Label,
+  ReferenceDot,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -34,6 +40,17 @@ interface EmailTrendPoint {
   count: number;
 }
 
+interface EmailChartPoint extends EmailTrendPoint {
+  cumulative: number;
+  value: number;
+  volume: number;
+}
+
+interface EmailChartRange {
+  startIndex: number;
+  endIndex: number;
+}
+
 interface EmailSummary {
   total: number;
   statuses: Record<string, number>;
@@ -48,7 +65,15 @@ interface LogsResponse {
 }
 
 const EMAIL_PAGE_SIZE = 25;
+const EMAIL_TREND_DAYS = 365;
 const STATUS_KEYS = ['queued', 'relayed', 'delivered', 'failed'] as const;
+const EMAIL_RANGE_PRESETS: Array<{ key: '7d' | '30d' | '90d' | '1y' | 'all'; days: number | null }> = [
+  { key: '7d', days: 7 },
+  { key: '30d', days: 30 },
+  { key: '90d', days: 90 },
+  { key: '1y', days: 365 },
+  { key: 'all', days: null },
+];
 
 const STATUS_TONES: Record<string, string> = {
   queued: 'bg-warning-soft text-warning-strong',
@@ -72,62 +97,172 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function EmailTrend({ points, locale }: { points: EmailTrendPoint[]; locale: string }) {
+function validChartRange(range: EmailChartRange, length: number): EmailChartRange {
+  const last = Math.max(length - 1, 0);
+  const startIndex = Math.min(Math.max(range.startIndex, 0), last);
+  const endIndex = Math.min(Math.max(range.endIndex, startIndex), last);
+  return { startIndex, endIndex };
+}
+
+function toChartDate(date: string): Date {
+  return new Date(`${date}T12:00:00`);
+}
+
+function EmailActivityChart({ points, locale }: { points: EmailTrendPoint[]; locale: string }) {
   const { t } = useTranslation();
-  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }), [locale]);
+  const [range, setRange] = useState<EmailChartRange>({ startIndex: 0, endIndex: 0 });
+  const [metric, setMetric] = useState<'daily' | 'cumulative'>('daily');
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', year: 'numeric' }), [locale]);
+  const axisDateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }), [locale]);
   const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
-  const max = Math.max(...points.map((point) => point.count), 1);
+  const fullPoints = useMemo<EmailChartPoint[]>(() => {
+    let cumulative = 0;
+    return points.map((point) => {
+      cumulative += point.count;
+      return { ...point, cumulative, value: metric === 'daily' ? point.count : cumulative, volume: point.count };
+    });
+  }, [metric, points]);
+  useEffect(() => {
+    setRange({ startIndex: 0, endIndex: Math.max(fullPoints.length - 1, 0) });
+  }, [fullPoints.length]);
+
+  const selectedRange = validChartRange(range, fullPoints.length);
+  const visibleData = useMemo(
+    () => fullPoints.slice(selectedRange.startIndex, selectedRange.endIndex + 1),
+    [fullPoints, selectedRange.endIndex, selectedRange.startIndex],
+  );
+  const summary = useMemo(() => {
+    const emails = visibleData.reduce((total, point) => total + point.count, 0);
+    const peak = visibleData.reduce((highest, point) => Math.max(highest, point.count), 0);
+    return { emails, peak, average: visibleData.length ? emails / visibleData.length : 0 };
+  }, [visibleData]);
+  const chartSummary = useMemo(() => {
+    const values = visibleData.map((point) => point.value);
+    return {
+      average: values.length ? values.reduce((total, value) => total + value, 0) / values.length : 0,
+      max: Math.max(...values, 1),
+      maxVolume: Math.max(...visibleData.map((point) => point.volume), 1),
+    };
+  }, [visibleData]);
+  const rangeStart = fullPoints[selectedRange.startIndex];
+  const rangeEnd = fullPoints[selectedRange.endIndex];
+  const rangeLabel = rangeStart && rangeEnd
+    ? t('admin.emails.chartRange', { start: dateFormat.format(toChartDate(rangeStart.date)), end: dateFormat.format(toChartDate(rangeEnd.date)) })
+    : '';
+  const latestPoint = visibleData[visibleData.length - 1];
+  const firstPoint = visibleData[0];
+  const change = latestPoint && firstPoint ? latestPoint.count - firstPoint.count : 0;
+  const selectedPreset = selectedRange.startIndex === 0 && selectedRange.endIndex === fullPoints.length - 1
+    ? 'all'
+    : EMAIL_RANGE_PRESETS.find((preset) => preset.days !== null && selectedRange.startIndex === Math.max(fullPoints.length - preset.days, 0))?.key ?? 'all';
+  const averageStop = `${Math.max(0, Math.min(100, (1 - chartSummary.average / chartSummary.max) * 100))}%`;
+
+  function selectPreset(preset: (typeof EMAIL_RANGE_PRESETS)[number]['key']) {
+    const days = EMAIL_RANGE_PRESETS.find((item) => item.key === preset)?.days;
+    setRange({
+      startIndex: days === null || days === undefined ? 0 : Math.max(fullPoints.length - days, 0),
+      endIndex: Math.max(fullPoints.length - 1, 0),
+    });
+  }
+
   const tooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (!active || !payload?.length || !label) return null;
+    const point = payload.find((item) => item.dataKey === 'value')?.payload as EmailChartPoint | undefined;
+    if (!point) return null;
     return (
       <div className="lf-glass rounded-lg border border-outline/50 bg-surface p-3 shadow-pop">
-        <p className="lf-caption text-content-muted">{dateFormat.format(new Date(`${label}T12:00:00`))}</p>
-        <p className="lf-number mt-1 text-content">{numberFormat.format(Number(payload[0]?.value ?? 0))}</p>
-        <p className="lf-caption text-content-muted">{t('admin.emails.trendCount')}</p>
+        <p className="lf-caption text-content-muted">{dateFormat.format(toChartDate(label))}</p>
+        <p className="lf-number mt-1 text-content">{numberFormat.format(point.value)}</p>
+        <p className="lf-caption text-content-muted">{t(metric === 'daily' ? 'admin.emails.dailyVolume' : 'admin.emails.cumulativeVolume')}</p>
+        <p className="lf-caption mt-2 text-content-faint">{numberFormat.format(point.count)} {t('admin.emails.dailyVolume').toLowerCase()}</p>
       </div>
     );
   };
 
   return (
-    <div className="h-64 w-full" role="img" aria-label={t('admin.emails.trendAria')}>
-      <ResponsiveContainer>
-        <AreaChart data={points} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id="emailTrendFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.34} />
-              <stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid stroke="rgb(var(--lf-outline))" strokeDasharray="3 3" vertical={false} />
-          <XAxis
-            dataKey="date"
-            axisLine={false}
-            tickLine={false}
-            minTickGap={28}
-            tick={{ className: 'fill-content-faint', fontSize: 11 }}
-            tickFormatter={(date: string) => dateFormat.format(new Date(`${date}T12:00:00`))}
-          />
-          <YAxis
-            allowDecimals={false}
-            axisLine={false}
-            tickLine={false}
-            domain={[0, max]}
-            width={34}
-            tick={{ className: 'fill-content-faint', fontSize: 11 }}
-          />
-          <Tooltip content={tooltip} cursor={{ stroke: 'rgb(var(--lf-primary))', strokeWidth: 1 }} />
-          <Area
-            type="monotone"
-            dataKey="count"
-            name={t('admin.emails.trendCount')}
-            stroke="rgb(var(--lf-primary))"
-            strokeWidth={2.5}
-            fill="url(#emailTrendFill)"
-            dot={false}
-            isAnimationActive={false}
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col gap-4" role="img" aria-label={t('admin.emails.trendAria')}>
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+        <div className="flex items-center gap-2 rounded-xl border border-outline/40 bg-surface-sunken p-1" role="group" aria-label={t('admin.emails.chartMetricAria')}>
+          {(['daily', 'cumulative'] as const).map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={metric === item}
+              onClick={() => setMetric(item)}
+              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${metric === item ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+            >
+              {t(item === 'daily' ? 'admin.emails.metricDaily' : 'admin.emails.metricCumulative')}
+            </button>
+          ))}
+        </div>
+        <div className="flex min-w-0 flex-col gap-1 xl:items-end">
+          <span className="lf-caption text-content-muted">{rangeLabel}</span>
+          <span className="lf-caption text-content-faint">{t('admin.emails.chartDataSource')}</span>
+        </div>
+      </div>
+
+      <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/50 p-2 sm:flex-row sm:items-center sm:justify-between sm:p-2.5">
+        <div className="flex min-w-max items-center gap-1 overflow-x-auto" role="group" aria-label={t('admin.emails.chartRangeAria')}>
+          {EMAIL_RANGE_PRESETS.map((preset) => (
+            <button
+              key={preset.key}
+              type="button"
+              aria-pressed={selectedPreset === preset.key}
+              onClick={() => selectPreset(preset.key)}
+              className={`min-h-10 rounded-lg px-3 text-sm font-semibold transition-colors ${selectedPreset === preset.key ? 'bg-content text-surface shadow-sm' : 'text-content-muted hover:bg-surface hover:text-content'}`}
+            >
+              {t(`admin.emails.range${preset.key}`)}
+            </button>
+          ))}
+        </div>
+        <span className="lf-caption whitespace-nowrap px-2 text-content-faint">{t('admin.emails.chartZoom')}</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={t('admin.emails.chartSummaryAria')}>
+        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartEmails')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.emails)}</p></div>
+        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartDailyAverage')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.average)}</p></div>
+        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartPeak')}</p><p className="lf-number mt-1 text-content">{numberFormat.format(summary.peak)}</p></div>
+        <div className="rounded-xl border border-outline/30 bg-surface-sunken/40 p-3"><p className="lf-caption text-content-muted">{t('admin.emails.chartChange')}</p><p className={`lf-number mt-1 ${change >= 0 ? 'text-success' : 'text-error'}`}>{change >= 0 ? '+' : ''}{numberFormat.format(change)}</p></div>
+      </div>
+
+      <div className="rounded-xl border border-outline/40 bg-surface-sunken/30 p-2 sm:p-3">
+        <div className="h-80 w-full sm:h-96">
+          <ResponsiveContainer>
+            <ComposedChart data={visibleData} margin={{ top: 16, right: 8, left: -12, bottom: 4 }}>
+              <defs>
+                <linearGradient id="emailActivityLine" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgb(var(--lf-success))" />
+                  <stop offset={averageStop} stopColor="rgb(var(--lf-success))" />
+                  <stop offset={averageStop} stopColor="rgb(var(--lf-error))" />
+                  <stop offset="100%" stopColor="rgb(var(--lf-error))" />
+                </linearGradient>
+                <linearGradient id="emailActivityFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="rgb(var(--lf-outline))" strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="date" axisLine={false} tickLine={false} minTickGap={36} tick={{ className: 'fill-content-faint', fontSize: 11 }} tickFormatter={(date: string) => axisDateFormat.format(toChartDate(date))} />
+              <YAxis yAxisId="value" allowDecimals={false} axisLine={false} tickLine={false} orientation="right" width={42} domain={[0, chartSummary.max]} tick={{ className: 'fill-content-faint', fontSize: 11 }} />
+              <YAxis yAxisId="volume" hide domain={[0, chartSummary.maxVolume]} />
+              <Tooltip content={tooltip} cursor={{ stroke: 'rgb(var(--lf-primary))', strokeWidth: 1 }} />
+              <Bar yAxisId="volume" dataKey="volume" fill="rgb(var(--lf-primary))" fillOpacity={0.18} barSize={4} isAnimationActive={false} />
+              <Area yAxisId="value" type="monotone" dataKey="value" name={t(metric === 'daily' ? 'admin.emails.dailyVolume' : 'admin.emails.cumulativeVolume')} stroke={metric === 'daily' ? 'url(#emailActivityLine)' : 'rgb(var(--lf-primary))'} strokeWidth={2.5} fill="url(#emailActivityFill)" dot={false} isAnimationActive={false} />
+              <ReferenceLine yAxisId="value" y={chartSummary.average} stroke="rgb(var(--lf-content-muted))" strokeDasharray="2 5" strokeOpacity={0.7}><Label value={t('admin.emails.chartAverage')} position="insideTopLeft" fill="rgb(var(--lf-content-muted))" fontSize={11} /></ReferenceLine>
+              {latestPoint && <ReferenceDot yAxisId="value" x={latestPoint.date} y={latestPoint.value} r={4} fill="rgb(var(--lf-accent))" stroke="rgb(var(--lf-surface))" strokeWidth={2} label={{ value: numberFormat.format(latestPoint.value), position: 'right', fill: 'rgb(var(--lf-content))', fontSize: 12, fontWeight: 700 }} />}
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="mt-2 h-24 w-full border-t border-outline/30 pt-2" aria-label={t('admin.emails.chartOverviewAria')}>
+          <ResponsiveContainer>
+            <AreaChart data={fullPoints} margin={{ top: 3, right: 8, left: -12, bottom: 0 }}>
+              <defs><linearGradient id="emailActivityOverview" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.28} /><stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} /></linearGradient></defs>
+              <Area type="monotone" dataKey={metric === 'daily' ? 'count' : 'cumulative'} stroke="rgb(var(--lf-primary))" strokeWidth={1.5} fill="url(#emailActivityOverview)" dot={false} isAnimationActive={false} />
+              <Brush dataKey="date" height={28} startIndex={selectedRange.startIndex} endIndex={selectedRange.endIndex} travellerWidth={12} stroke="rgb(var(--lf-primary))" fill="rgb(var(--lf-surface-sunken))" tickFormatter={() => ''} onChange={({ startIndex, endIndex }) => setRange({ startIndex: startIndex ?? 0, endIndex: endIndex ?? Math.max(fullPoints.length - 1, 0) })} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }
@@ -177,7 +312,7 @@ export function AdminEmailDashboard() {
   const loadSummary = useCallback(async () => {
     setLoadingSummary(true);
     const token = await getToken();
-    const result = await api<EmailSummary>('/admin/emails/summary', { token });
+    const result = await api<EmailSummary>(`/admin/emails/summary?days=${EMAIL_TREND_DAYS}`, { token });
     if (result.error) {
       setSummaryError(result.error.code);
     } else {
@@ -192,11 +327,16 @@ export function AdminEmailDashboard() {
   useEffect(() => { setPage(0); }, [search, statusFilter, templateFilter]);
 
   const totalPages = Math.max(1, Math.ceil(total / EMAIL_PAGE_SIZE));
-  const successCount = (summary?.statuses.relayed ?? 0) + (summary?.statuses.delivered ?? 0);
+  const successCount = (summary?.statuses?.relayed ?? 0) + (summary?.statuses?.delivered ?? 0);
   const successRate = summary && summary.total > 0 ? percentFormat.format(successCount / summary.total) : t('admin.emails.noData');
-  const failedCount = summary?.statuses.failed ?? 0;
-  const queuedCount = summary?.statuses.queued ?? 0;
+  const failedCount = summary?.statuses?.failed ?? 0;
+  const queuedCount = summary?.statuses?.queued ?? 0;
+  const failureRate = summary && summary.total > 0 ? percentFormat.format(failedCount / summary.total) : t('admin.emails.noData');
   const activeTemplatesCount = Object.keys(summary?.templates ?? {}).length;
+  const statusBreakdownKeys = useMemo(() => [
+    ...STATUS_KEYS,
+    ...Object.keys(summary?.statuses ?? {}).filter((status) => !STATUS_KEYS.includes(status as (typeof STATUS_KEYS)[number])).sort(),
+  ], [summary?.statuses]);
   const topLocale = useMemo(() => {
     const locales = Object.entries(summary?.locales ?? {});
     if (locales.length === 0) return t('admin.emails.noData');
@@ -224,8 +364,8 @@ export function AdminEmailDashboard() {
 
   const statusOptions = useMemo<DropdownOption<string>[]>(() => [
     { value: 'all', label: t('admin.emails.allStatuses') },
-    ...STATUS_KEYS.map((value) => ({ value, label: t(`admin.emails.status.${value}`) })),
-  ], [t]);
+    ...statusBreakdownKeys.map((value) => ({ value, label: t(`admin.emails.status.${value}`, value) })),
+  ], [statusBreakdownKeys, t]);
 
   const filteredDescription = search.trim() || statusFilter !== 'all' || templateFilter !== 'all'
     ? t('admin.emails.filteredResults', { count: total })
@@ -278,10 +418,11 @@ export function AdminEmailDashboard() {
           )}
 
           {summary && (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
               <StatCard icon={<Icon name="mail" className="!text-[24px]" />} value={numberFormat.format(summary.total)} label={t('admin.emails.totalSent')} tone="primary" />
               <StatCard icon={<Icon name="check_circle" className="!text-[24px]" />} value={successRate} label={t('admin.emails.successRate')} tone="secondary" />
               <StatCard icon={<Icon name="error" className="!text-[24px]" />} value={numberFormat.format(failedCount)} label={t('admin.emails.failed')} tone="primary" />
+              <StatCard icon={<Icon name="report" className="!text-[24px]" />} value={failureRate} label={t('admin.emails.failureRate')} tone="accent" />
               <StatCard icon={<Icon name="schedule" className="!text-[24px]" />} value={numberFormat.format(queuedCount)} label={t('admin.emails.pending')} tone="accent" />
               <StatCard icon={<Icon name="layers" className="!text-[24px]" />} value={numberFormat.format(activeTemplatesCount)} label={t('admin.emails.activeTemplates')} tone="primary" />
             </div>
@@ -295,9 +436,9 @@ export function AdminEmailDashboard() {
                     <h2 className="lf-title text-content">{t('admin.emails.trendTitle')}</h2>
                     <p className="lf-caption mt-1 text-content-muted">{t('admin.emails.trendSubtitle')}</p>
                   </div>
-                  <Badge className="self-start bg-surface-sunken text-content-muted">{t('admin.emails.last30Days')}</Badge>
+                  <Badge className="self-start bg-surface-sunken text-content-muted">{t('admin.emails.chartWindow')}</Badge>
                 </div>
-                {summary.trend === undefined ? <AdminEmpty icon="cloud_off" message={t('admin.emails.trendUnavailable')} /> : summary.trend.length > 0 ? <EmailTrend points={summary.trend} locale={locale} /> : <AdminEmpty icon="show_chart" message={t('admin.emails.trendEmpty')} />}
+                {summary.trend === undefined ? <AdminEmpty icon="cloud_off" message={t('admin.emails.trendUnavailable')} /> : summary.trend.length > 0 ? <EmailActivityChart points={summary.trend} locale={locale} /> : <AdminEmpty icon="show_chart" message={t('admin.emails.trendEmpty')} />}
               </Card>
 
               <Card className="flex flex-col gap-4 p-4 sm:p-5">
@@ -309,13 +450,13 @@ export function AdminEmailDashboard() {
                   <Icon name="fact_check" className="text-primary" />
                 </div>
                 <div className="flex flex-col gap-3">
-                  {STATUS_KEYS.map((status) => {
-                    const count = summary.statuses[status] ?? 0;
+                  {statusBreakdownKeys.map((status) => {
+                    const count = summary.statuses?.[status] ?? 0;
                     const pct = summary.total ? count / summary.total : 0;
                     return (
                       <div key={status} className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between gap-3">
-                          <span className="lf-caption text-content-muted">{t(`admin.emails.status.${status}`)}</span>
+                      <span className="lf-caption text-content-muted">{t(`admin.emails.status.${status}`, status)}</span>
                           <span className="lf-caption font-semibold text-content">{numberFormat.format(count)} · {percentFormat.format(pct)}</span>
                         </div>
                         <ProgressBar value={pct * 100} tone={status === 'failed' ? 'accent' : 'primary'} label={t(`admin.emails.status.${status}`)} />
@@ -410,8 +551,8 @@ export function AdminEmailDashboard() {
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-outline bg-surface-sunken/40">
-                      {[t('admin.emails.colTo'), t('admin.emails.colSubject'), t('admin.emails.colType'), t('admin.emails.colStatus'), t('admin.emails.colDate'), t('admin.emails.colActions')].map((label, index) => (
-                        <th key={label} className={cn('lf-label px-4 py-3 text-content-muted', index === 5 && 'text-right')}>{label}</th>
+                      {[t('admin.emails.colTo'), t('admin.emails.colSubject'), t('admin.emails.colType'), t('admin.emails.colLocale'), t('admin.emails.colStatus'), t('admin.emails.colDate'), t('admin.emails.colActions')].map((label, index) => (
+                        <th key={label} className={cn('lf-label px-4 py-3 text-content-muted', index === 6 && 'text-right')}>{label}</th>
                       ))}
                     </tr>
                   </thead>
@@ -427,6 +568,7 @@ export function AdminEmailDashboard() {
                         <td className="lf-body max-w-[220px] truncate px-4 py-3 font-medium">{entry.to}</td>
                         <td className="lf-body max-w-[260px] truncate px-4 py-3 text-content-muted">{entry.subject || t('admin.emails.noSubject')}</td>
                         <td className="px-4 py-3"><Badge className="bg-surface-sunken text-content-muted">{entry.templateType}</Badge></td>
+                        <td className="lf-caption px-4 py-3 font-mono text-content-muted">{entry.locale || t('admin.emails.noData')}</td>
                         <td className="px-4 py-3"><StatusBadge status={entry.status} /></td>
                         <td className="lf-caption whitespace-nowrap px-4 py-3 text-content-muted">{formatDate(entry.createdAt, locale, t('admin.emails.noData'))}</td>
                         <td className="px-4 py-3 text-right"><AdminAction tone="neutral" icon="visibility" onClick={() => setSelectedEntry(entry)}>{t('admin.emails.viewDetail')}</AdminAction></td>
@@ -447,7 +589,7 @@ export function AdminEmailDashboard() {
                       <StatusBadge status={entry.status} />
                     </div>
                     <div className="flex items-center justify-between gap-3 border-t border-outline/30 pt-3">
-                      <span className="lf-caption font-mono text-content-muted">{entry.templateType}</span>
+                      <span className="lf-caption font-mono text-content-muted">{entry.templateType} · {entry.locale || t('admin.emails.noData')}</span>
                       <span className="lf-caption text-content-faint">{formatDate(entry.createdAt, locale, t('admin.emails.noData'), 'short')}</span>
                     </div>
                   </button>

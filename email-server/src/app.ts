@@ -28,6 +28,10 @@ const LogsQuery = z.object({
   templateType: z.string().trim().max(64).optional(),
 });
 
+const LogsSummaryQuery = z.object({
+  days: z.coerce.number().int().min(7).max(365).default(30),
+});
+
 /*
  * What the Haraka SMTP plugin reports for mail it relayed (GoTrue auth mail).
  * `to` is NOT z.string().email() here on purpose: this records what the relay
@@ -123,8 +127,16 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
     res.json({ data: logs, error: null });
   });
 
-  app.get('/api/v1/logs/summary', async (_req, res) => {
-    const summary = await getEmailSummary();
+  app.get('/api/v1/logs/summary', async (req, res) => {
+    const parsed = LogsSummaryQuery.safeParse(req.query);
+    if (!parsed.success) {
+      res.status(400).json({
+        data: null,
+        error: { code: 'VALIDATION_ERROR', message: parsed.error.issues[0]?.message ?? 'Invalid query' },
+      });
+      return;
+    }
+    const summary = await getEmailSummary(parsed.data.days);
     if (!summary) {
       res.status(502).json({ data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Email statistics unavailable' } });
       return;

@@ -25,8 +25,14 @@ vi.mock('react-i18next', () => ({
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   AreaChart: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
+  ComposedChart: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
   Area: () => <g data-testid="email-area" />,
+  Bar: () => null,
+  Brush: () => null,
   CartesianGrid: () => null,
+  Label: () => null,
+  ReferenceDot: () => null,
+  ReferenceLine: ({ children }: { children?: ReactNode }) => <g>{children}</g>,
   Tooltip: () => null,
   XAxis: () => null,
   YAxis: () => null,
@@ -58,7 +64,7 @@ beforeEach(() => {
   mockGetToken.mockResolvedValue('fake-token');
   mockApi.mockImplementation((path: string) => {
     if (path.startsWith('/admin/emails/logs')) return Promise.resolve({ data: { entries, total: 1 }, error: null });
-    if (path === '/admin/emails/summary') return Promise.resolve({ data: summary, error: null });
+    if (path.startsWith('/admin/emails/summary')) return Promise.resolve({ data: summary, error: null });
     return Promise.resolve({ data: {}, error: null });
   });
 });
@@ -77,10 +83,11 @@ describe('AdminEmailDashboard', () => {
 
     await waitFor(() => expect(screen.getByText('admin.emails.totalSent')).toBeInTheDocument());
     expect(screen.getByText('admin.emails.trendTitle')).toBeInTheDocument();
-    expect(screen.getByTestId('email-area')).toBeInTheDocument();
+    expect(screen.getAllByTestId('email-area').length).toBeGreaterThan(0);
     expect(screen.getAllByText('parent@example.com').length).toBeGreaterThan(0);
     expect(document.querySelector('select')).toBeNull();
     expect(mockApi).toHaveBeenCalledWith(expect.stringContaining('/admin/emails/logs?limit=25&offset=0'), { token: 'fake-token' });
+    expect(mockApi).toHaveBeenCalledWith('/admin/emails/summary?days=365', { token: 'fake-token' });
   });
 
   it('sends status filters to the server instead of filtering only the visible page', async () => {

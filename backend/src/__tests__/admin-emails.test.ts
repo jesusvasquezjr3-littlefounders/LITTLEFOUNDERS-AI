@@ -69,4 +69,19 @@ describe('admin email proxy', () => {
     expect(res.status).toBe(200);
     expect(calls.some((url) => url.startsWith('http://email-server.railway.internal:4005/'))).toBe(true);
   });
+
+  it('forwards the requested trend window to Courier', async () => {
+    const calls: string[] = [];
+    vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL) => {
+      const url = String(input);
+      calls.push(url);
+      if (url.includes('/rest/v1/user_roles')) return Promise.resolve(new Response(JSON.stringify([{ role: 'admin' }]), { status: 200 }));
+      if (url.includes('/api/v1/logs/summary')) return Promise.resolve(new Response(JSON.stringify({ data: { total: 0, statuses: {}, templates: {}, locales: {}, trend: [] }, error: null }), { status: 200 }));
+      throw new Error(`unexpected fetch: ${url}`);
+    }));
+
+    const res = await request(createApp()).get('/api/v1/admin/emails/summary?days=365').set('Authorization', auth());
+    expect(res.status).toBe(200);
+    expect(new URL(calls.find((url) => url.includes('/api/v1/logs/summary'))!).searchParams.get('days')).toBe('365');
+  });
 });

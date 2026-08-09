@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Icon } from './Icon';
 
@@ -28,6 +29,14 @@ interface DropdownProps<T extends string> {
   align?: 'left' | 'right';
 }
 
+interface FloatingPosition {
+  top: number;
+  left?: number;
+  right?: number;
+  minWidth: number;
+  placement: 'top' | 'bottom';
+}
+
 export function Dropdown<T extends string>({
   value,
   options,
@@ -40,12 +49,46 @@ export function Dropdown<T extends string>({
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLUListElement>(null);
+  const [position, setPosition] = useState<FloatingPosition | null>(null);
   const selected = options.find((o) => o.value === value) ?? options[0];
+
+  useLayoutEffect(() => {
+    if (!open || !rootRef.current) return;
+
+    const updatePosition = () => {
+      const rect = rootRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const gap = 8;
+      const panelHeight = Math.min(240, window.innerHeight - gap * 2);
+      const spaceBelow = window.innerHeight - rect.bottom - gap;
+      const spaceAbove = rect.top - gap;
+      const resolvedPlacement = placement === 'top'
+        ? (spaceAbove >= Math.min(panelHeight, 240) || spaceAbove > spaceBelow ? 'top' : 'bottom')
+        : (spaceBelow >= Math.min(panelHeight, 240) || spaceBelow >= spaceAbove ? 'bottom' : 'top');
+
+      setPosition({
+        top: resolvedPlacement === 'top' ? rect.top - gap : rect.bottom + gap,
+        ...(align === 'left' ? { left: Math.max(gap, rect.left) } : { right: Math.max(gap, window.innerWidth - rect.right) }),
+        minWidth: rect.width,
+        placement: resolvedPlacement,
+      });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [align, open, placement]);
 
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (!rootRef.current?.contains(target) && !panelRef.current?.contains(target)) setOpen(false);
     };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
@@ -76,15 +119,20 @@ export function Dropdown<T extends string>({
         <Icon name="expand_more" className={cn('text-[16px] transition-all', open && 'rotate-180')} />
       </button>
 
-      {open && (
+      {open && position && createPortal(
         <ul
+          ref={panelRef}
           role="listbox"
           aria-label={ariaLabel}
-          className={cn(
-            'lf-pop lf-glass absolute z-50 min-w-full max-h-60 overflow-y-auto rounded-md py-1 shadow-pop',
-            placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2',
-            align === 'left' ? 'left-0' : 'right-0'
-          )}
+          style={{
+            top: position.top,
+            left: position.left,
+            right: position.right,
+            minWidth: position.minWidth,
+            maxHeight: Math.min(240, window.innerHeight - 16),
+            transform: position.placement === 'top' ? 'translateY(-100%)' : undefined,
+          }}
+          className="lf-pop lf-glass fixed z-[100] max-w-[calc(100vw-1rem)] overflow-y-auto rounded-md py-1 shadow-pop"
         >
           {options.map((option) => (
             <li key={option.value} role="presentation">
@@ -108,7 +156,8 @@ export function Dropdown<T extends string>({
               </button>
             </li>
           ))}
-        </ul>
+        </ul>,
+        document.body,
       )}
     </div>
   );

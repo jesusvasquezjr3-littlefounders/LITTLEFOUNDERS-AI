@@ -193,7 +193,7 @@ export async function listEmailLogs(opts: { limit: number; offset: number; q?: s
  * one HEAD-style count per distinct value stays cheap, and the table is
  * append-only and will grow without bound.
  */
-export async function summarizeEmailLogs(): Promise<EmailLogSummary | null> {
+export async function summarizeEmailLogs(days = 30): Promise<EmailLogSummary | null> {
   const total = await countWhere('');
   if (total === null) return null;
 
@@ -204,15 +204,15 @@ export async function summarizeEmailLogs(): Promise<EmailLogSummary | null> {
   ]);
   if (!statuses || !templates || !locales) return null;
 
-  const trend = await summarizeDailyTrend();
+  const trend = await summarizeDailyTrend(days);
   return { total, statuses, templates, locales, ...(trend ? { trend } : {}) };
 }
 
 /** Exact 30-day totals, one count query per UTC day so high-volume mail is not sampled. */
-async function summarizeDailyTrend(): Promise<NonNullable<EmailLogSummary['trend']> | null> {
+async function summarizeDailyTrend(days: number): Promise<NonNullable<EmailLogSummary['trend']> | null> {
   const today = new Date();
-  const dates = Array.from({ length: 30 }, (_, index) => {
-    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (29 - index)));
+  const dates = Array.from({ length: days }, (_, index) => {
+    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (days - 1 - index)));
     return { date, key: date.toISOString().slice(0, 10) };
   });
   const counts = await Promise.all(dates.map(async ({ date, key }) => {

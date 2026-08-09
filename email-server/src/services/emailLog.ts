@@ -158,9 +158,9 @@ export async function getEmailLogs(opts: { limit?: number; offset?: number; q?: 
 }
 
 /** Aggregate counts. Durable history when available, buffer otherwise. */
-export async function getEmailSummary(): Promise<EmailLogSummary | null> {
+export async function getEmailSummary(days = 30): Promise<EmailLogSummary | null> {
   if (isVaultConfigured()) {
-    const summary = await summarizeEmailLogs();
+    const summary = await summarizeEmailLogs(days);
     if (summary) return summary;
     console.warn('[courier] email_logs summary failed — refusing to serve partial statistics');
     return null;
@@ -176,13 +176,13 @@ export async function getEmailSummary(): Promise<EmailLogSummary | null> {
       locales[e.locale] = (locales[e.locale] ?? 0) + 1;
     }
   }
-  return { total: entries.length, statuses, templates, locales, trend: buildTrend(entries) };
+  return { total: entries.length, statuses, templates, locales, trend: buildTrend(entries, days) };
 }
 
-function buildTrend(source: EmailLogEntry[]): EmailTrendPoint[] {
+function buildTrend(source: EmailLogEntry[], days: number): EmailTrendPoint[] {
   const today = new Date();
   const points: EmailTrendPoint[] = [];
-  for (let daysAgo = 29; daysAgo >= 0; daysAgo -= 1) {
+  for (let daysAgo = days - 1; daysAgo >= 0; daysAgo -= 1) {
     const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - daysAgo));
     const dateKey = date.toISOString().slice(0, 10);
     points.push({

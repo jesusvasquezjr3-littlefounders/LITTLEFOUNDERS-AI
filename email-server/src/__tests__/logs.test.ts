@@ -68,6 +68,12 @@ describe('GET /api/v1/logs/summary', () => {
     expect(res.body.data).toBeTypeOf('object');
     expect(res.body.data.trend).toHaveLength(30);
   });
+
+  it('accepts a longer exact trend window for analysis', async () => {
+    const res = await auth(createApp(), '/api/v1/logs/summary?days=90');
+    expect(res.status).toBe(200);
+    expect(res.body.data.trend).toHaveLength(90);
+  });
 });
 
 describe('envelope error handler', () => {

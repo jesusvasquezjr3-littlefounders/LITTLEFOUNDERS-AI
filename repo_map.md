@@ -9139,7 +9139,7 @@ import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/e
  * restarts us). The admin dashboard therefore showed an empty table in
  * production almost all of the time.
  *
- * The ring buffer survives as the fallback: SUPABASE_URL and
+ * The ring buffer survives as the development fallback: SUPABASE_URL and
  * SUPABASE_SERVICE_ROLE_KEY are optional, so `npm run dev` and `npm test` need
 ```
 
@@ -10444,7 +10444,8 @@ interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'typ
 
 ```
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Icon } from './Icon';
 
@@ -10457,7 +10458,6 @@ export interface DropdownOption<T extends string> {
   value: T;
   label: string;
   prefix?: ReactNode; // e.g. a flag emoji
-}
 ```
 
 ### frontend/src/components/ui/Field.tsx
@@ -13076,16 +13076,16 @@ import { useTranslation } from 'react-i18next';
 import {
   Area,
   AreaChart,
+  Bar,
+  Brush,
   CartesianGrid,
+  ComposedChart,
+  Label,
+  ReferenceDot,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis,
-} from 'recharts';
-import type { TooltipProps } from 'recharts';
-import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
-import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
 ```
 
 ### frontend/src/routes/admin/AdminGenerationPage.tsx
