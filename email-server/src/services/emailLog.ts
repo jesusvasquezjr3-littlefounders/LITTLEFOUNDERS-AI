@@ -13,10 +13,11 @@ import { insertEmailLog, isVaultConfigured, listEmailLogs, summarizeEmailLogs } 
  *                              reaches the relay over SMTP and never touches
  *                              our HTTP API.
  *
- * Reads prefer the durable `email_logs` table (0021) and fall back to the
- * in-process ring buffer when Vault is unconfigured (dev/test) or unreachable.
- * The buffer alone was the old behaviour and is not sufficient in production:
- * it is wiped by every redeploy and every restart.
+ * Reads prefer the durable `email_logs` table (0021). The in-process ring
+ * buffer is used only when Vault is unconfigured (dev/test); a configured
+ * Vault outage is surfaced as DATA_UNAVAILABLE so production never presents
+ * partial history as complete. The buffer alone was the old behaviour and is
+ * not sufficient in production: it is wiped by every redeploy and restart.
  */
 
 export interface EmailLogEntry {
@@ -51,7 +52,13 @@ export interface EmailLogSummary {
   total: number;
   statuses: Record<string, number>;
   templates: Record<string, number>;
-  locales?: Record<string, number>;
+  locales: Record<string, number>;
+  trend?: EmailTrendPoint[];
+}
+
+export interface EmailTrendPoint {
+  date: string;
+  count: number;
 }
 
 
@@ -122,26 +129,41 @@ export async function recordEmail(
 }
 
 /** Newest-first page. Durable history when available, buffer otherwise. */
-export async function getEmailLogs(opts: { limit?: number; offset?: number } = {}): Promise<EmailLogPage> {
+export async function getEmailLogs(opts: { limit?: number; offset?: number; q?: string; status?: string; templateType?: string } = {}): Promise<EmailLogPage | null> {
   const limit = Math.min(opts.limit ?? 50, 200);
   const offset = opts.offset ?? 0;
+  const filters = { q: opts.q?.trim().toLowerCase(), status: opts.status, templateType: opts.templateType };
 
   if (isVaultConfigured()) {
-    const page = await listEmailLogs({ limit, offset });
+    const page = await listEmailLogs({ limit, offset, ...filters });
     if (page) return page;
-    console.warn('[courier] email_logs read failed — falling back to the in-memory buffer');
+    console.warn('[courier] email_logs read failed — refusing to serve partial history');
+    return null;
   }
 
-  const newestFirst = entries.slice().reverse();
+  const newestFirst = entries
+    .slice()
+    .reverse()
+    .filter((entry) => {
+      const matchesSearch = !filters.q
+        || entry.to.toLowerCase().includes(filters.q)
+        || entry.subject.toLowerCase().includes(filters.q)
+        || entry.id.toLowerCase().includes(filters.q)
+        || entry.messageId.toLowerCase().includes(filters.q);
+      return matchesSearch
+        && (!filters.status || entry.status === filters.status)
+        && (!filters.templateType || entry.templateType === filters.templateType);
+    });
   return { entries: newestFirst.slice(offset, offset + limit), total: newestFirst.length };
 }
 
 /** Aggregate counts. Durable history when available, buffer otherwise. */
-export async function getEmailSummary(): Promise<EmailLogSummary> {
+export async function getEmailSummary(): Promise<EmailLogSummary | null> {
   if (isVaultConfigured()) {
     const summary = await summarizeEmailLogs();
     if (summary) return summary;
-    console.warn('[courier] email_logs summary failed — falling back to the in-memory buffer');
+    console.warn('[courier] email_logs summary failed — refusing to serve partial statistics');
+    return null;
   }
 
   const statuses: Record<string, number> = {};
@@ -154,7 +176,21 @@ export async function getEmailSummary(): Promise<EmailLogSummary> {
       locales[e.locale] = (locales[e.locale] ?? 0) + 1;
     }
   }
-  return { total: entries.length, statuses, templates, locales };
+  return { total: entries.length, statuses, templates, locales, trend: buildTrend(entries) };
+}
+
+function buildTrend(source: EmailLogEntry[]): EmailTrendPoint[] {
+  const today = new Date();
+  const points: EmailTrendPoint[] = [];
+  for (let daysAgo = 29; daysAgo >= 0; daysAgo -= 1) {
+    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - daysAgo));
+    const dateKey = date.toISOString().slice(0, 10);
+    points.push({
+      date: dateKey,
+      count: source.filter((entry) => entry.createdAt.slice(0, 10) === dateKey).length,
+    });
+  }
+  return points;
 }
 
 /** Test-only: drop the in-process buffer so cases start from a known state. */

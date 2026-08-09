@@ -164,7 +164,7 @@ paid course run. Values are intentionally not stored in this repository.
 | `picturegen` | `IMAGE_API_KEY`, `INTERNAL_API_KEY` | DashScope image credential; shared service-to-service key |
 | `audiogen` | `TTS_API_KEY` | DashScope Qwen3-TTS credential; voice map remains reviewed/operator-owned |
 | `dataintel` | `INTERNAL_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `REDIS_URL`, `DUCKDB_PATH` | Shared internal key; Vault gateway/service role; Railway Redis; persistent volume path `/app/duckdb/dataintel.db` |
-| `littlefounders-backend` | `DATAINTEL_URL`, `DATAINTEL_INTERNAL_KEY` | Data Intel's Railway private URL; same shared key as Data Intel's `INTERNAL_API_KEY` |
+| `littlefounders-backend` | `EMAIL_SERVER_URL`, `DATAINTEL_URL`, `DATAINTEL_INTERNAL_KEY` | Courier's Railway private URL, Data Intel's Railway private URL, and their matching internal keys. Core defaults Courier to `http://email-server.railway.internal:4005` in production when `EMAIL_SERVER_URL` is omitted. |
 
 Deploy `dataintel` with `.github/workflows/dataintel-cd.yml` (after its CI
 workflow succeeds), attach the documented DuckDB volume, and verify

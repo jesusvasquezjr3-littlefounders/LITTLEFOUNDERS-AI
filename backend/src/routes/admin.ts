@@ -142,6 +142,14 @@ const EmailLogsSchema = z.object({
 const EmailLogsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+  q: z.string().trim().max(200).optional(),
+  status: z.string().trim().max(32).optional(),
+  templateType: z.string().trim().max(64).optional(),
+});
+
+const EmailTrendPointSchema = z.object({
+  date: z.string().date(),
+  count: z.number().int().min(0),
 });
 
 const EmailSummarySchema = z.object({
@@ -149,6 +157,7 @@ const EmailSummarySchema = z.object({
   statuses: z.record(z.string(), z.number().int().min(0)),
   templates: z.record(z.string(), z.number().int().min(0)),
   locales: z.record(z.string(), z.number().int().min(0)).optional(),
+  trend: z.array(EmailTrendPointSchema).optional(),
 });
 
 const InsightsCalibrationQuerySchema = z.object({
@@ -658,7 +667,11 @@ export function adminRouter(): Router {
     if (!q.success) return fail(res, 400, 'VALIDATION_ERROR', 'limit 1-200, offset >= 0');
     const { EMAIL_SERVER_URL, INTERNAL_API_KEY } = getConfig();
     try {
-      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs?limit=${q.data.limit}&offset=${q.data.offset}`, {
+      const query = new URLSearchParams({ limit: String(q.data.limit), offset: String(q.data.offset) });
+      if (q.data.q) query.set('q', q.data.q);
+      if (q.data.status) query.set('status', q.data.status);
+      if (q.data.templateType) query.set('templateType', q.data.templateType);
+      const r = await fetch(`${EMAIL_SERVER_URL}/api/v1/logs?${query.toString()}`, {
         headers: { 'x-internal-api-key': INTERNAL_API_KEY },
         signal: AbortSignal.timeout(10_000),
       });

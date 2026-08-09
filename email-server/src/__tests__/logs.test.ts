@@ -24,6 +24,20 @@ describe('GET /api/v1/logs', () => {
     expect(res.body.error).toBeNull();
   });
 
+  it('filters the fallback history server-side by search, status, and template', async () => {
+    const app = createApp();
+    await request(app).post('/api/v1/logs').set('x-internal-api-key', 'test-internal-key-0123456789')
+      .send({ messageId: 'welcome-1', to: 'parent@example.com', subject: 'Welcome', templateType: 'auth', status: 'relayed' });
+    await request(app).post('/api/v1/logs').set('x-internal-api-key', 'test-internal-key-0123456789')
+      .send({ messageId: 'reset-1', to: 'other@example.com', subject: 'Reset', templateType: 'recovery', status: 'failed' });
+
+    const res = await request(app).get('/api/v1/logs?q=parent&status=relayed&templateType=auth')
+      .set('x-internal-api-key', 'test-internal-key-0123456789');
+    expect(res.status).toBe(200);
+    expect(res.body.data.total).toBe(1);
+    expect(res.body.data.entries[0].messageId).toBe('welcome-1');
+  });
+
   // Regression: these used to be bare z.parse(), so a bad value threw inside
   // the handler and Express answered 500 text/html with a stack trace —
   // violating the §1.6 envelope and leaking absolute paths.
@@ -52,6 +66,7 @@ describe('GET /api/v1/logs/summary', () => {
     expect(res.status).toBe(200);
     expect(res.body.error).toBeNull();
     expect(res.body.data).toBeTypeOf('object');
+    expect(res.body.data.trend).toHaveLength(30);
   });
 });
 

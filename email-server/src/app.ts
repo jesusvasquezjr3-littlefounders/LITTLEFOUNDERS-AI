@@ -23,6 +23,9 @@ const SendBody = z.object({
 const LogsQuery = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
   offset: z.coerce.number().int().min(0).default(0),
+  q: z.string().trim().max(200).optional(),
+  status: z.string().trim().max(32).optional(),
+  templateType: z.string().trim().max(64).optional(),
 });
 
 /*
@@ -112,11 +115,21 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
       });
       return;
     }
-    res.json({ data: await getEmailLogs(parsed.data), error: null });
+    const logs = await getEmailLogs(parsed.data);
+    if (!logs) {
+      res.status(502).json({ data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Email history unavailable' } });
+      return;
+    }
+    res.json({ data: logs, error: null });
   });
 
   app.get('/api/v1/logs/summary', async (_req, res) => {
-    res.json({ data: await getEmailSummary(), error: null });
+    const summary = await getEmailSummary();
+    if (!summary) {
+      res.status(502).json({ data: null, error: { code: 'DATA_UNAVAILABLE', message: 'Email statistics unavailable' } });
+      return;
+    }
+    res.json({ data: summary, error: null });
   });
 
   app.use((_req, res) => {

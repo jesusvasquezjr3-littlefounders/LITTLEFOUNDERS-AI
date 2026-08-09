@@ -1,9 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import type { TooltipProps } from 'recharts';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
-import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
+import { AdminAction, AdminDialog, AdminEmpty, AdminPage } from './adminShared';
 import { cn } from '@/lib/utils';
 
 interface EmailEntry {
@@ -19,12 +29,26 @@ interface EmailEntry {
   createdAt: string;
 }
 
+interface EmailTrendPoint {
+  date: string;
+  count: number;
+}
+
 interface EmailSummary {
   total: number;
   statuses: Record<string, number>;
   templates: Record<string, number>;
   locales?: Record<string, number>;
+  trend?: EmailTrendPoint[];
 }
+
+interface LogsResponse {
+  entries: EmailEntry[];
+  total: number;
+}
+
+const EMAIL_PAGE_SIZE = 25;
+const STATUS_KEYS = ['queued', 'relayed', 'delivered', 'failed'] as const;
 
 const STATUS_TONES: Record<string, string> = {
   queued: 'bg-warning-soft text-warning-strong',
@@ -33,11 +57,88 @@ const STATUS_TONES: Record<string, string> = {
   failed: 'bg-error-soft text-error-strong',
 };
 
+function formatDate(value: string, locale: string, fallback: string, dateStyle: 'medium' | 'short' = 'medium'): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return fallback;
+  return new Intl.DateTimeFormat(locale, { dateStyle, timeStyle: dateStyle === 'short' ? undefined : 'short' }).format(date);
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
+  return (
+    <Badge className={STATUS_TONES[status] ?? 'bg-surface-sunken text-content-muted'}>
+      {t(`admin.emails.status.${status}`, status)}
+    </Badge>
+  );
+}
+
+function EmailTrend({ points, locale }: { points: EmailTrendPoint[]; locale: string }) {
+  const { t } = useTranslation();
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }), [locale]);
+  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const max = Math.max(...points.map((point) => point.count), 1);
+  const tooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+    if (!active || !payload?.length || !label) return null;
+    return (
+      <div className="lf-glass rounded-lg border border-outline/50 bg-surface p-3 shadow-pop">
+        <p className="lf-caption text-content-muted">{dateFormat.format(new Date(`${label}T12:00:00`))}</p>
+        <p className="lf-number mt-1 text-content">{numberFormat.format(Number(payload[0]?.value ?? 0))}</p>
+        <p className="lf-caption text-content-muted">{t('admin.emails.trendCount')}</p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-64 w-full" role="img" aria-label={t('admin.emails.trendAria')}>
+      <ResponsiveContainer>
+        <AreaChart data={points} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
+          <defs>
+            <linearGradient id="emailTrendFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.34} />
+              <stop offset="100%" stopColor="rgb(var(--lf-primary))" stopOpacity={0.03} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid stroke="rgb(var(--lf-outline))" strokeDasharray="3 3" vertical={false} />
+          <XAxis
+            dataKey="date"
+            axisLine={false}
+            tickLine={false}
+            minTickGap={28}
+            tick={{ className: 'fill-content-faint', fontSize: 11 }}
+            tickFormatter={(date: string) => dateFormat.format(new Date(`${date}T12:00:00`))}
+          />
+          <YAxis
+            allowDecimals={false}
+            axisLine={false}
+            tickLine={false}
+            domain={[0, max]}
+            width={34}
+            tick={{ className: 'fill-content-faint', fontSize: 11 }}
+          />
+          <Tooltip content={tooltip} cursor={{ stroke: 'rgb(var(--lf-primary))', strokeWidth: 1 }} />
+          <Area
+            type="monotone"
+            dataKey="count"
+            name={t('admin.emails.trendCount')}
+            stroke="rgb(var(--lf-primary))"
+            strokeWidth={2.5}
+            fill="url(#emailTrendFill)"
+            dot={false}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 export function AdminEmailDashboard() {
   const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [loadingLogs, setLoadingLogs] = useState(true);
+  const [loadingSummary, setLoadingSummary] = useState(true);
+  const [logsError, setLogsError] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
   const [entries, setEntries] = useState<EmailEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [summary, setSummary] = useState<EmailSummary | null>(null);
@@ -47,179 +148,220 @@ export function AdminEmailDashboard() {
   const [templateFilter, setTemplateFilter] = useState<string>('all');
   const [selectedEntry, setSelectedEntry] = useState<EmailEntry | null>(null);
   const [copiedId, setCopiedId] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
 
-  const PER_PAGE = 25;
+  const locale = i18n.resolvedLanguage ?? 'en-US';
+  const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale]);
+  const percentFormat = useMemo(() => new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 1 }), [locale]);
+  const dateFormat = useMemo(() => new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }), [locale]);
 
-  const load = useCallback(async (p: number) => {
-    setLoading(true);
+  const loadLogs = useCallback(async () => {
+    setLoadingLogs(true);
     const token = await getToken();
-    const [logsRes, summaryRes] = await Promise.all([
-      api<{ entries: EmailEntry[]; total: number }>(`/admin/emails/logs?limit=${PER_PAGE}&offset=${p * PER_PAGE}`, { token }),
-      api<EmailSummary>('/admin/emails/summary', { token }),
-    ]);
-    if (logsRes.error) { setErrorCode(logsRes.error.code); setLoading(false); return; }
-    setEntries(logsRes.data.entries);
-    setTotal(logsRes.data.total);
-    if (!summaryRes.error) setSummary(summaryRes.data);
-    setErrorCode(null);
-    setLoading(false);
-  }, [getToken]);
-
-  useEffect(() => { void load(page); }, [load, page]);
-
-  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-  const df = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'short' });
-
-  // Calculated Stats
-  const successRate = useMemo(() => {
-    if (!summary || summary.total === 0) return '100';
-    const relayed = summary.statuses['relayed'] ?? 0;
-    const delivered = summary.statuses['delivered'] ?? 0;
-    const successful = relayed + delivered;
-    return Math.min(100, Math.round((successful / summary.total) * 100)).toString();
-  }, [summary]);
-
-  const activeTemplatesCount = useMemo(() => {
-    if (!summary?.templates) return 0;
-    return Object.keys(summary.templates).length;
-  }, [summary]);
-
-  const topLocale = useMemo(() => {
-    if (!summary?.locales || Object.keys(summary.locales).length === 0) return '—';
-    let best = '—';
-    let max = -1;
-    for (const [loc, count] of Object.entries(summary.locales)) {
-      if (count > max) {
-        max = count;
-        best = loc;
-      }
+    const query = new URLSearchParams({ limit: String(EMAIL_PAGE_SIZE), offset: String(page * EMAIL_PAGE_SIZE) });
+    const trimmedSearch = search.trim();
+    if (trimmedSearch) query.set('q', trimmedSearch);
+    if (statusFilter !== 'all') query.set('status', statusFilter);
+    if (templateFilter !== 'all') query.set('templateType', templateFilter);
+    const result = await api<LogsResponse>(`/admin/emails/logs?${query.toString()}`, { token });
+    if (result.error) {
+      setLogsError(result.error.code);
+    } else {
+      setEntries(result.data.entries);
+      setTotal(result.data.total);
+      setLogsError(null);
     }
-    return best;
-  }, [summary]);
+    setLoadingLogs(false);
+  }, [getToken, page, reloadKey, search, statusFilter, templateFilter]);
+
+  const loadSummary = useCallback(async () => {
+    setLoadingSummary(true);
+    const token = await getToken();
+    const result = await api<EmailSummary>('/admin/emails/summary', { token });
+    if (result.error) {
+      setSummaryError(result.error.code);
+    } else {
+      setSummary(result.data);
+      setSummaryError(null);
+    }
+    setLoadingSummary(false);
+  }, [getToken, reloadKey]);
+
+  useEffect(() => { void loadLogs(); }, [loadLogs]);
+  useEffect(() => { void loadSummary(); }, [loadSummary]);
+  useEffect(() => { setPage(0); }, [search, statusFilter, templateFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(total / EMAIL_PAGE_SIZE));
+  const successCount = (summary?.statuses.relayed ?? 0) + (summary?.statuses.delivered ?? 0);
+  const successRate = summary && summary.total > 0 ? percentFormat.format(successCount / summary.total) : t('admin.emails.noData');
+  const failedCount = summary?.statuses.failed ?? 0;
+  const queuedCount = summary?.statuses.queued ?? 0;
+  const activeTemplatesCount = Object.keys(summary?.templates ?? {}).length;
+  const topLocale = useMemo(() => {
+    const locales = Object.entries(summary?.locales ?? {});
+    if (locales.length === 0) return t('admin.emails.noData');
+    return locales.sort((a, b) => b[1] - a[1])[0]?.[0] ?? t('admin.emails.noData');
+  }, [summary?.locales, t]);
 
   const templateBreakdown = useMemo(() => {
-    if (!summary?.templates || summary.total === 0) return [];
+    if (!summary || summary.total === 0) return [];
     return Object.entries(summary.templates)
       .sort((a, b) => b[1] - a[1])
-      .map(([name, count]) => ({
-        name,
-        count,
-        pct: Math.round((count / summary.total) * 100),
-      }));
+      .map(([name, count]) => ({ name, count, pct: count / summary.total }));
   }, [summary]);
 
   const localeBreakdown = useMemo(() => {
-    if (!summary?.locales || summary.total === 0) return [];
-    return Object.entries(summary.locales)
+    if (!summary || summary.total === 0) return [];
+    return Object.entries(summary.locales ?? {})
       .sort((a, b) => b[1] - a[1])
-      .map(([name, count]) => ({
-        name,
-        count,
-        pct: Math.round((count / summary.total) * 100),
-      }));
+      .map(([name, count]) => ({ name, count, pct: count / summary.total }));
   }, [summary]);
 
-  const availableTemplates = useMemo(() => {
-    if (!summary?.templates) return [];
-    return Object.keys(summary.templates).sort();
-  }, [summary]);
+  const templateOptions = useMemo<DropdownOption<string>[]>(() => [
+    { value: 'all', label: t('admin.emails.allTemplates') },
+    ...Object.keys(summary?.templates ?? {}).sort().map((value) => ({ value, label: value })),
+  ], [summary?.templates, t]);
 
-  // Client-side filtering over current page entries
-  const filteredEntries = useMemo(() => {
-    return entries.filter((e) => {
-      const q = search.trim().toLowerCase();
-      const matchesSearch =
-        !q ||
-        e.to.toLowerCase().includes(q) ||
-        e.subject.toLowerCase().includes(q) ||
-        e.id.toLowerCase().includes(q) ||
-        (e.messageId && e.messageId.toLowerCase().includes(q));
+  const statusOptions = useMemo<DropdownOption<string>[]>(() => [
+    { value: 'all', label: t('admin.emails.allStatuses') },
+    ...STATUS_KEYS.map((value) => ({ value, label: t(`admin.emails.status.${value}`) })),
+  ], [t]);
 
-      const matchesStatus = statusFilter === 'all' || e.status === statusFilter;
-      const matchesTemplate = templateFilter === 'all' || e.templateType === templateFilter;
-      return matchesSearch && matchesStatus && matchesTemplate;
-    });
-  }, [entries, search, statusFilter, templateFilter]);
+  const filteredDescription = search.trim() || statusFilter !== 'all' || templateFilter !== 'all'
+    ? t('admin.emails.filteredResults', { count: total })
+    : t('admin.emails.showing', { from: total ? page * EMAIL_PAGE_SIZE + 1 : 0, to: Math.min((page + 1) * EMAIL_PAGE_SIZE, total), total: numberFormat.format(total) });
 
   const handleCopyId = useCallback((id: string) => {
     void navigator.clipboard.writeText(id);
     setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
+    window.setTimeout(() => setCopiedId(false), 2000);
   }, []);
 
+  const refresh = () => setReloadKey((value) => value + 1);
+  const bothUnavailable = Boolean(logsError && summaryError);
+
   return (
-    <AdminPage titleKey="admin.emails.title" subtitleKey="admin.emails.subtitle">
-      {errorCode ? (
-        <Unavailable code={errorCode} />
+    <AdminPage titleKey="admin.emails.title" subtitleKey="admin.emails.subtitle" actions={(
+      <AdminAction tone="neutral" icon="refresh" onClick={refresh}>{t('admin.emails.refresh')}</AdminAction>
+    )}>
+      {bothUnavailable ? (
+        <Card className="flex flex-col items-center gap-3 p-8 text-center">
+          <Icon name="cloud_off" className="!text-[40px] text-content-faint" />
+          <div>
+            <p className="lf-label text-content">{t('admin.emails.loadErrorTitle')}</p>
+            <p className="lf-caption mt-1 max-w-md text-content-muted">{t('admin.emails.loadErrorBody')}</p>
+          </div>
+          <AdminAction tone="primary" icon="refresh" onClick={refresh}>{t('admin.emails.retry')}</AdminAction>
+        </Card>
       ) : (
         <div className="flex flex-col gap-6">
-          {/* KPI Header Grid */}
+          {(logsError || summaryError) && (
+            <Card className="flex flex-col gap-3 border border-warning/40 bg-warning-soft/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <Icon name="warning" className="mt-0.5 text-warning-strong" />
+                <div>
+                  <p className="lf-label text-content">{t('admin.emails.partialErrorTitle')}</p>
+                  <p className="lf-caption mt-1 text-content-muted">
+                    {logsError ? t('admin.emails.logsUnavailable') : t('admin.emails.summaryUnavailable')}
+                  </p>
+                </div>
+              </div>
+              <AdminAction tone="neutral" icon="refresh" onClick={refresh}>{t('admin.emails.retry')}</AdminAction>
+            </Card>
+          )}
+
+          {loadingSummary && !summary && (
+            <Card className="flex items-center justify-center gap-2 p-8 text-content-muted">
+              <Icon name="progress_activity" className="animate-spin" />
+              <span className="lf-caption">{t('admin.loading')}</span>
+            </Card>
+          )}
+
           {summary && (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard
-                icon={<Icon name="mail" className="!text-[24px]" />}
-                value={summary.total.toLocaleString()}
-                label={t('admin.emails.totalSent')}
-                tone="primary"
-              />
-              <StatCard
-                icon={<Icon name="check_circle" className="!text-[24px]" />}
-                value={`${successRate}%`}
-                label={t('admin.emails.successRate')}
-                tone="secondary"
-              />
-              <StatCard
-                icon={<Icon name="layers" className="!text-[24px]" />}
-                value={activeTemplatesCount.toString()}
-                label={t('admin.emails.activeTemplates')}
-                tone="accent"
-              />
-              <StatCard
-                icon={<Icon name="language" className="!text-[24px]" />}
-                value={topLocale}
-                label={t('admin.emails.topLocale')}
-                tone="primary"
-              />
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              <StatCard icon={<Icon name="mail" className="!text-[24px]" />} value={numberFormat.format(summary.total)} label={t('admin.emails.totalSent')} tone="primary" />
+              <StatCard icon={<Icon name="check_circle" className="!text-[24px]" />} value={successRate} label={t('admin.emails.successRate')} tone="secondary" />
+              <StatCard icon={<Icon name="error" className="!text-[24px]" />} value={numberFormat.format(failedCount)} label={t('admin.emails.failed')} tone="primary" />
+              <StatCard icon={<Icon name="schedule" className="!text-[24px]" />} value={numberFormat.format(queuedCount)} label={t('admin.emails.pending')} tone="accent" />
+              <StatCard icon={<Icon name="layers" className="!text-[24px]" />} value={numberFormat.format(activeTemplatesCount)} label={t('admin.emails.activeTemplates')} tone="primary" />
             </div>
           )}
 
-          {/* Visual Breakdown Cards (Templates & Locales) */}
+          {summary && (
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.75fr)]">
+              <Card className="flex min-w-0 flex-col gap-4 p-4 sm:p-5">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h2 className="lf-title text-content">{t('admin.emails.trendTitle')}</h2>
+                    <p className="lf-caption mt-1 text-content-muted">{t('admin.emails.trendSubtitle')}</p>
+                  </div>
+                  <Badge className="self-start bg-surface-sunken text-content-muted">{t('admin.emails.last30Days')}</Badge>
+                </div>
+                {summary.trend === undefined ? <AdminEmpty icon="cloud_off" message={t('admin.emails.trendUnavailable')} /> : summary.trend.length > 0 ? <EmailTrend points={summary.trend} locale={locale} /> : <AdminEmpty icon="show_chart" message={t('admin.emails.trendEmpty')} />}
+              </Card>
+
+              <Card className="flex flex-col gap-4 p-4 sm:p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="lf-title text-content">{t('admin.emails.statusBreakdown')}</h2>
+                    <p className="lf-caption mt-1 text-content-muted">{t('admin.emails.statusBreakdownSubtitle')}</p>
+                  </div>
+                  <Icon name="fact_check" className="text-primary" />
+                </div>
+                <div className="flex flex-col gap-3">
+                  {STATUS_KEYS.map((status) => {
+                    const count = summary.statuses[status] ?? 0;
+                    const pct = summary.total ? count / summary.total : 0;
+                    return (
+                      <div key={status} className="flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="lf-caption text-content-muted">{t(`admin.emails.status.${status}`)}</span>
+                          <span className="lf-caption font-semibold text-content">{numberFormat.format(count)} · {percentFormat.format(pct)}</span>
+                        </div>
+                        <ProgressBar value={pct * 100} tone={status === 'failed' ? 'accent' : 'primary'} label={t(`admin.emails.status.${status}`)} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            </div>
+          )}
+
           {summary && (templateBreakdown.length > 0 || localeBreakdown.length > 0) && (
             <div className="grid gap-4 md:grid-cols-2">
               {templateBreakdown.length > 0 && (
-                <Card className="flex flex-col gap-3 p-5 shadow-glass border border-outline/50">
-                  <div className="flex items-center justify-between">
-                    <h3 className="lf-label font-bold text-content">{t('admin.emails.templatesBreakdown')}</h3>
-                    <Badge className="bg-surface-sunken text-content-muted text-xs font-mono">{templateBreakdown.length}</Badge>
+                <Card className="flex flex-col gap-3 p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="lf-title text-content">{t('admin.emails.templatesBreakdown')}</h2>
+                    <Badge className="bg-surface-sunken text-content-muted">{numberFormat.format(templateBreakdown.length)}</Badge>
                   </div>
-                  <div className="flex flex-col gap-3 mt-1">
-                    {templateBreakdown.slice(0, 5).map((item) => (
+                  <div className="flex flex-col gap-3">
+                    {templateBreakdown.slice(0, 6).map((item) => (
                       <div key={item.name} className="flex flex-col gap-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="font-mono text-content">{item.name}</span>
-                          <span className="text-content-muted font-mono">{item.count} ({item.pct}%)</span>
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="lf-caption truncate font-mono text-content">{item.name}</span>
+                          <span className="lf-caption shrink-0 text-content-muted">{numberFormat.format(item.count)} · {percentFormat.format(item.pct)}</span>
                         </div>
-                        <ProgressBar value={item.pct} tone="primary" label={item.name} />
+                        <ProgressBar value={item.pct * 100} label={item.name} />
                       </div>
                     ))}
                   </div>
                 </Card>
               )}
-
               {localeBreakdown.length > 0 && (
-                <Card className="flex flex-col gap-3 p-5 shadow-glass border border-outline/50">
-                  <div className="flex items-center justify-between">
-                    <h3 className="lf-label font-bold text-content">{t('admin.emails.localesBreakdown')}</h3>
-                    <Badge className="bg-surface-sunken text-content-muted text-xs font-mono">{localeBreakdown.length}</Badge>
+                <Card className="flex flex-col gap-3 p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="lf-title text-content">{t('admin.emails.localesBreakdown')}</h2>
+                    <Badge className="bg-surface-sunken text-content-muted">{topLocale}</Badge>
                   </div>
-                  <div className="flex flex-col gap-3 mt-1">
-                    {localeBreakdown.slice(0, 5).map((item) => (
+                  <div className="flex flex-col gap-3">
+                    {localeBreakdown.slice(0, 6).map((item) => (
                       <div key={item.name} className="flex flex-col gap-1">
-                        <div className="flex justify-between text-xs">
-                          <span className="font-mono text-content">{item.name}</span>
-                          <span className="text-content-muted font-mono">{item.count} ({item.pct}%)</span>
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="lf-caption font-mono text-content">{item.name}</span>
+                          <span className="lf-caption text-content-muted">{numberFormat.format(item.count)} · {percentFormat.format(item.pct)}</span>
                         </div>
-                        <ProgressBar value={item.pct} tone="accent" label={item.name} />
+                        <ProgressBar value={item.pct * 100} tone="accent" label={item.name} />
                       </div>
                     ))}
                   </div>
@@ -228,205 +370,132 @@ export function AdminEmailDashboard() {
             </div>
           )}
 
-          {/* Filter & Search Bar */}
-          <Card className="flex flex-wrap items-center justify-between gap-3 p-4 shadow-glass border border-outline/50">
-            <div className="relative flex-1 min-w-[240px]">
-              <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t('admin.emails.searchPlaceholder')}
-                className="w-full pl-9 pr-4 py-2 text-sm rounded-full bg-surface-sunken border border-outline/40 text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              {/* Status Pills */}
-              <div className="flex gap-1 bg-surface-sunken p-1 rounded-full border border-outline/30 overflow-x-auto">
-                <button
-                  type="button"
-                  onClick={() => setStatusFilter('all')}
-                  className={cn(
-                    'px-3 py-1 text-xs font-bold rounded-full transition-colors whitespace-nowrap',
-                    statusFilter === 'all' ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content'
-                  )}
-                >
-                  {t('admin.emails.allStatuses')}
-                </button>
-                {['queued', 'relayed', 'delivered', 'failed'].map((st) => (
-                  <button
-                    key={st}
-                    type="button"
-                    onClick={() => setStatusFilter(st)}
-                    className={cn(
-                      'px-3 py-1 text-xs font-bold rounded-full transition-colors whitespace-nowrap',
-                      statusFilter === st ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content'
-                    )}
-                  >
-                    {t(`admin.emails.status.${st}`, st)}
-                    {summary?.statuses[st] !== undefined && (
-                      <span className="ml-1 opacity-70">({summary.statuses[st]})</span>
-                    )}
-                  </button>
-                ))}
+          <Card className="flex flex-col gap-3 p-3 sm:p-4">
+            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+              <div className="relative min-w-0 flex-1 xl:max-w-xl">
+                <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted" />
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={t('admin.emails.searchPlaceholder')}
+                  aria-label={t('admin.emails.searchLabel')}
+                  className="min-h-11 w-full rounded-full border border-outline/40 bg-surface-sunken pl-10 pr-4 text-sm text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
               </div>
-
-              {/* Template Select */}
-              {availableTemplates.length > 0 && (
-                <select
-                  value={templateFilter}
-                  onChange={(e) => setTemplateFilter(e.target.value)}
-                  aria-label={t('admin.emails.filterTemplate')}
-                  className="px-3 py-2 text-xs font-bold rounded-full bg-surface-sunken border border-outline/40 text-content focus:outline-none focus:ring-2 focus:ring-primary/50"
-                >
-                  <option value="all">{t('admin.emails.allTemplates')}</option>
-                  {availableTemplates.map((tmpl) => (
-                    <option key={tmpl} value={tmpl}>{tmpl}</option>
-                  ))}
-                </select>
+              <div className="flex flex-wrap items-center gap-2">
+                <Dropdown value={statusFilter} options={statusOptions} onChange={setStatusFilter} ariaLabel={t('admin.emails.filterStatus')} />
+                {templateOptions.length > 1 && <Dropdown value={templateFilter} options={templateOptions} onChange={setTemplateFilter} ariaLabel={t('admin.emails.filterTemplate')} />}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-outline/30 pt-3">
+              <p className="lf-caption text-content-muted">{filteredDescription}</p>
+              {(search || statusFilter !== 'all' || templateFilter !== 'all') && (
+                <AdminAction tone="neutral" icon="filter_alt_off" onClick={() => { setSearch(''); setStatusFilter('all'); setTemplateFilter('all'); }}>
+                  {t('admin.emails.clearFilters')}
+                </AdminAction>
               )}
             </div>
           </Card>
 
-          {/* Logs Table */}
-          {loading ? (
+          {loadingLogs && entries.length === 0 ? (
             <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />
-          ) : filteredEntries.length === 0 ? (
-            <AdminEmpty icon="mail" message={entries.length === 0 ? t('admin.emails.empty') : t('admin.emails.noMatch')} />
+          ) : logsError ? (
+            <AdminEmpty icon="cloud_off" message={t('admin.emails.logsUnavailable')} />
+          ) : entries.length === 0 ? (
+            <AdminEmpty icon="mail" message={total === 0 ? t('admin.emails.empty') : t('admin.emails.noMatch')} />
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="overflow-x-auto rounded-xl border border-outline/50 bg-surface shadow-glass">
+              <div className="hidden overflow-x-auto rounded-xl border border-outline/50 bg-surface shadow-glass md:block">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="border-b border-outline bg-surface-sunken/40">
-                      <th className="lf-label py-3 px-4 text-content-muted">{t('admin.emails.colTo')}</th>
-                      <th className="lf-label py-3 px-4 text-content-muted">{t('admin.emails.colSubject')}</th>
-                      <th className="lf-label py-3 px-4 text-content-muted">{t('admin.emails.colType')}</th>
-                      <th className="lf-label py-3 px-4 text-content-muted">{t('admin.emails.colStatus')}</th>
-                      <th className="lf-label py-3 px-4 text-content-muted">{t('admin.emails.colDate')}</th>
-                      <th className="lf-label py-3 px-4 text-content-muted text-right">{t('admin.emails.colActions')}</th>
+                      {[t('admin.emails.colTo'), t('admin.emails.colSubject'), t('admin.emails.colType'), t('admin.emails.colStatus'), t('admin.emails.colDate'), t('admin.emails.colActions')].map((label, index) => (
+                        <th key={label} className={cn('lf-label px-4 py-3 text-content-muted', index === 5 && 'text-right')}>{label}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-outline/50">
-                    {filteredEntries.map((e) => (
+                    {entries.map((entry) => (
                       <tr
-                        key={e.id}
-                        onClick={() => setSelectedEntry(e)}
-                        className="hover:bg-surface-sunken/60 cursor-pointer transition-colors duration-150"
+                        key={entry.id}
+                        tabIndex={0}
+                        onClick={() => setSelectedEntry(entry)}
+                        onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') setSelectedEntry(entry); }}
+                        className="cursor-pointer transition-colors duration-150 hover:bg-surface-sunken/60 focus-visible:bg-surface-sunken/60 focus-visible:outline-none"
                       >
-                        <td className="lf-body py-3 px-4 font-medium">{e.to}</td>
-                        <td className="lf-body py-3 px-4 max-w-[260px] truncate text-content-muted">{e.subject}</td>
-                        <td className="py-3 px-4">
-                          <Badge className="bg-surface-sunken text-content-muted text-xs font-mono">{e.templateType}</Badge>
-                        </td>
-                        <td className="py-3 px-4">
-                          <Badge className={STATUS_TONES[e.status] ?? 'bg-surface-sunken text-content-muted'}>
-                            {t(`admin.emails.status.${e.status}`, e.status)}
-                          </Badge>
-                        </td>
-                        <td className="lf-caption py-3 px-4 text-content-muted">
-                          {df.format(new Date(e.createdAt))}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <AdminAction
-                            tone="neutral"
-                            icon="visibility"
-                            onClick={() => setSelectedEntry(e)}
-                          >
-                            {t('admin.emails.viewDetail')}
-                          </AdminAction>
-                        </td>
+                        <td className="lf-body max-w-[220px] truncate px-4 py-3 font-medium">{entry.to}</td>
+                        <td className="lf-body max-w-[260px] truncate px-4 py-3 text-content-muted">{entry.subject || t('admin.emails.noSubject')}</td>
+                        <td className="px-4 py-3"><Badge className="bg-surface-sunken text-content-muted">{entry.templateType}</Badge></td>
+                        <td className="px-4 py-3"><StatusBadge status={entry.status} /></td>
+                        <td className="lf-caption whitespace-nowrap px-4 py-3 text-content-muted">{formatDate(entry.createdAt, locale, t('admin.emails.noData'))}</td>
+                        <td className="px-4 py-3 text-right"><AdminAction tone="neutral" icon="visibility" onClick={() => setSelectedEntry(entry)}>{t('admin.emails.viewDetail')}</AdminAction></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
+              <div className="grid gap-3 md:hidden">
+                {entries.map((entry) => (
+                  <button key={entry.id} type="button" onClick={() => setSelectedEntry(entry)} className="lf-glass flex min-h-11 flex-col gap-3 rounded-xl p-4 text-left transition-colors hover:bg-surface-sunken/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="lf-body truncate font-semibold text-content">{entry.to}</p>
+                        <p className="lf-caption mt-1 truncate text-content-muted">{entry.subject || t('admin.emails.noSubject')}</p>
+                      </div>
+                      <StatusBadge status={entry.status} />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 border-t border-outline/30 pt-3">
+                      <span className="lf-caption font-mono text-content-muted">{entry.templateType}</span>
+                      <span className="lf-caption text-content-faint">{formatDate(entry.createdAt, locale, t('admin.emails.noData'), 'short')}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
               {totalPages > 1 && (
-                <div className="flex items-center justify-between pt-2">
-                  <p className="lf-caption text-content-muted">
-                    {t('admin.emails.showing', { from: page * PER_PAGE + 1, to: Math.min((page + 1) * PER_PAGE, total), total })}
-                  </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="lf-caption text-content-muted">{filteredDescription}</p>
                   <div className="flex gap-2">
-                    <AdminAction tone="neutral" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>{t('admin.emails.prev')}</AdminAction>
-                    <AdminAction tone="neutral" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}>{t('admin.emails.next')}</AdminAction>
+                    <AdminAction tone="neutral" disabled={page === 0} onClick={() => setPage((value) => value - 1)}>{t('admin.emails.prev')}</AdminAction>
+                    <AdminAction tone="neutral" disabled={page >= totalPages - 1} onClick={() => setPage((value) => value + 1)}>{t('admin.emails.next')}</AdminAction>
                   </div>
                 </div>
               )}
             </div>
           )}
 
-        {/* Email Detail Inspector Modal */}
-        {selectedEntry && (
+          {selectedEntry && (
             <AdminDialog title={t('admin.emails.modalTitle')} onClose={() => setSelectedEntry(null)} className="max-w-2xl gap-5">
-                <div className="flex flex-wrap items-center gap-3 border-b border-outline/50 pb-3">
-                  <Icon name="mail" className="!text-[24px] text-primary" />
-                  <span className="lf-caption text-content-muted">{selectedEntry.to}</span>
-                  <Badge className={STATUS_TONES[selectedEntry.status] ?? 'bg-surface-sunken text-content-muted'}>
-                    {t(`admin.emails.status.${selectedEntry.status}`, selectedEntry.status)}
-                  </Badge>
+              <div className="flex flex-wrap items-center gap-3 border-b border-outline/50 pb-3">
+                <Icon name="mail" className="!text-[24px] text-primary" />
+                <span className="lf-caption text-content-muted">{selectedEntry.to}</span>
+                <StatusBadge status={selectedEntry.status} />
+              </div>
+              <div className="flex flex-col gap-3 rounded-xl border border-outline/40 bg-surface-sunken/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <span className="lf-caption block text-content-muted">{t('admin.emails.colMessageId')}</span>
+                  <span className="block truncate font-mono text-xs font-semibold text-content">{selectedEntry.messageId || selectedEntry.id}</span>
                 </div>
-
-                {/* Message ID Copier Banner */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-surface-sunken/60 border border-outline/40">
-                  <div className="flex flex-col min-w-0 pr-2">
-                    <span className="lf-caption text-content-muted">{t('admin.emails.colMessageId')}</span>
-                    <span className="font-mono text-xs text-content truncate font-semibold">
-                      {selectedEntry.messageId || selectedEntry.id}
-                    </span>
-                  </div>
-                  <AdminAction
-                    tone={copiedId ? 'success' : 'neutral'}
-                    icon={copiedId ? 'check' : 'content_copy'}
-                    onClick={() => handleCopyId(selectedEntry.messageId || selectedEntry.id)}
-                  >
-                    {copiedId ? t('admin.emails.copied') : t('admin.emails.copyId')}
-                  </AdminAction>
+                <AdminAction tone={copiedId ? 'success' : 'neutral'} icon={copiedId ? 'check' : 'content_copy'} onClick={() => handleCopyId(selectedEntry.messageId || selectedEntry.id)}>
+                  {copiedId ? t('admin.emails.copied') : t('admin.emails.copyId')}
+                </AdminAction>
+              </div>
+              <div className="grid grid-cols-2 gap-4 rounded-xl border border-outline/30 bg-surface-sunken/30 p-4 sm:grid-cols-3">
+                <div><span className="lf-caption block text-content-muted">{t('admin.emails.colType')}</span><span className="lf-caption mt-1 block font-mono text-content">{selectedEntry.templateType}</span></div>
+                <div><span className="lf-caption block text-content-muted">{t('admin.emails.topLocale')}</span><span className="lf-caption mt-1 block font-mono text-content">{selectedEntry.locale || t('admin.emails.noData')}</span></div>
+                <div><span className="lf-caption block text-content-muted">{t('admin.emails.colUserId')}</span><span className="lf-caption mt-1 block truncate font-mono text-content">{selectedEntry.userId || t('admin.emails.noData')}</span></div>
+                <div className="col-span-2 sm:col-span-3"><span className="lf-caption block text-content-muted">{t('admin.emails.colSubject')}</span><span className="lf-body mt-1 block text-content">{selectedEntry.subject || t('admin.emails.noSubject')}</span></div>
+                <div className="col-span-2 sm:col-span-3"><span className="lf-caption block text-content-muted">{t('admin.emails.colDate')}</span><span className="lf-caption mt-1 block font-mono text-content">{dateFormat.format(new Date(selectedEntry.createdAt))}</span></div>
+              </div>
+              {Object.keys(selectedEntry.detail).length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="lf-caption font-bold text-content">{t('admin.emails.colDetail')}</span>
+                  <pre className="max-h-56 overflow-x-auto rounded-xl border border-outline/40 bg-surface-sunken p-4 font-mono text-xs leading-relaxed text-content-muted">{JSON.stringify(selectedEntry.detail, null, 2)}</pre>
                 </div>
-
-                {/* Grid Metadata */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-surface-sunken/30 border border-outline/30 text-sm">
-                  <div>
-                    <span className="lf-caption text-content-muted block">{t('admin.emails.colType')}</span>
-                    <Badge className="bg-surface text-content-muted text-xs font-mono mt-1">{selectedEntry.templateType}</Badge>
-                  </div>
-                  <div>
-                    <span className="lf-caption text-content-muted block">{t('admin.emails.topLocale')}</span>
-                    <span className="font-mono text-content font-bold mt-1 block">{selectedEntry.locale || '—'}</span>
-                  </div>
-                  <div>
-                    <span className="lf-caption text-content-muted block">{t('admin.emails.colUserId')}</span>
-                    <span className="font-mono text-xs text-content-muted truncate mt-1 block" title={selectedEntry.userId}>
-                      {selectedEntry.userId || '—'}
-                    </span>
-                  </div>
-                  <div className="col-span-2 sm:col-span-3">
-                    <span className="lf-caption text-content-muted block">{t('admin.emails.colSubject')}</span>
-                    <span className="lf-body text-content font-medium mt-0.5 block">{selectedEntry.subject}</span>
-                  </div>
-                  <div className="col-span-2 sm:col-span-3">
-                    <span className="lf-caption text-content-muted block">{t('admin.emails.colDate')}</span>
-                    <span className="lf-caption text-content font-mono mt-0.5 block">{df.format(new Date(selectedEntry.createdAt))}</span>
-                  </div>
-                </div>
-
-                {/* Detail Payload Inspector */}
-                {selectedEntry.detail && Object.keys(selectedEntry.detail).length > 0 && (
-                  <div className="flex flex-col gap-2">
-                    <span className="lf-caption font-bold text-content">{t('admin.emails.colDetail')}</span>
-                    <pre className="p-4 rounded-xl bg-surface-sunken text-xs font-mono text-content-muted border border-outline/40 overflow-x-auto max-h-48 leading-relaxed">
-                      {JSON.stringify(selectedEntry.detail, null, 2)}
-                    </pre>
-                  </div>
-                )}
-
-                {/* Footer button */}
-                <div className="flex justify-end pt-2">
-                  <AdminAction tone="neutral" onClick={() => setSelectedEntry(null)}>
-                    {t('admin.emails.close')}
-                  </AdminAction>
-                </div>
+              )}
+              <div className="flex justify-end pt-2"><AdminAction tone="neutral" onClick={() => setSelectedEntry(null)}>{t('admin.emails.close')}</AdminAction></div>
             </AdminDialog>
           )}
         </div>

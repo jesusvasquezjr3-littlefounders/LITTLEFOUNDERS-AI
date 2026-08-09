@@ -11,9 +11,10 @@ import type { EmailLogEntry, EmailLogSummary, EmailLogPage } from '../services/e
  * restarts us). The admin dashboard therefore showed an empty table in
  * production almost all of the time.
  *
- * The ring buffer survives as the fallback: SUPABASE_URL and
+ * The ring buffer survives as the development fallback: SUPABASE_URL and
  * SUPABASE_SERVICE_ROLE_KEY are optional, so `npm run dev` and `npm test` need
- * no database and behave exactly as before.
+ * no database and behave exactly as before. A configured Vault outage is
+ * returned to the caller instead of being hidden by partial in-memory data.
  *
  * Posture matches 0017/0018: RLS is on with ZERO client policies, so the
  * service role is the only access path and the browser reaches this data only
@@ -166,10 +167,17 @@ function isUuid(v: string | undefined): v is string {
 }
 
 /** Newest-first page of durable history, or null if Vault did not answer. */
-export async function listEmailLogs(opts: { limit: number; offset: number }): Promise<EmailLogPage | null> {
+export async function listEmailLogs(opts: { limit: number; offset: number; q?: string; status?: string; templateType?: string }): Promise<EmailLogPage | null> {
   const { limit, offset } = opts;
+  const filters: string[] = [];
+  if (opts.q) {
+    const value = opts.q.replace(/[\\,*()]/g, '');
+    if (value) filters.push(`or=${encodeURIComponent(`(to_address.ilike.*${value}*,subject.ilike.*${value}*,message_id.ilike.*${value}*)`)}`);
+  }
+  if (opts.status) filters.push(`status=eq.${encodeURIComponent(opts.status)}`);
+  if (opts.templateType) filters.push(`template_type=eq.${encodeURIComponent(opts.templateType)}`);
   const res = await rest<EmailLogRow[]>(
-    `/email_logs?select=${SELECT}&order=created_at.desc&limit=${limit}&offset=${offset}`,
+    `/email_logs?select=${SELECT}&order=created_at.desc&limit=${limit}&offset=${offset}${filters.length ? `&${filters.join('&')}` : ''}`,
     { headers: { Prefer: 'count=exact' } },
   );
   if (!res.ok || !res.body) return null;
@@ -196,7 +204,25 @@ export async function summarizeEmailLogs(): Promise<EmailLogSummary | null> {
   ]);
   if (!statuses || !templates || !locales) return null;
 
-  return { total, statuses, templates, locales };
+  const trend = await summarizeDailyTrend();
+  return { total, statuses, templates, locales, ...(trend ? { trend } : {}) };
+}
+
+/** Exact 30-day totals, one count query per UTC day so high-volume mail is not sampled. */
+async function summarizeDailyTrend(): Promise<NonNullable<EmailLogSummary['trend']> | null> {
+  const today = new Date();
+  const dates = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - (29 - index)));
+    return { date, key: date.toISOString().slice(0, 10) };
+  });
+  const counts = await Promise.all(dates.map(async ({ date, key }) => {
+    const next = new Date(date);
+    next.setUTCDate(next.getUTCDate() + 1);
+    const filter = `&created_at=gte.${encodeURIComponent(date.toISOString())}&created_at=lt.${encodeURIComponent(next.toISOString())}`;
+    return { date: key, count: await countWhere(filter) };
+  }));
+  if (counts.some(({ count }) => count === null)) return null;
+  return counts.map(({ date, count }) => ({ date, count: count as number }));
 }
 
 /** Row count matching a PostgREST filter, via a 0-row request + count=exact. */
@@ -224,7 +250,8 @@ async function countByColumn(column: 'status' | 'template_type' | 'locale'): Pro
 
   const out: Record<string, number> = {};
   for (const [value, count] of counts) {
-    if (count !== null) out[value] = count;
+    if (count === null) return null;
+    out[value] = count;
   }
   return out;
 }

@@ -2785,6 +2785,26 @@ export default tseslint.config(
 //     subset of the frontend original (the React/ComponentType registry
 ```
 
+### backend/src/__tests__/admin-emails.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { resetConfigForTests } from '../config.js';
+import { mintToken } from './helpers.js';
+
+const ADMIN_ID = '22222222-2222-4222-8222-222222222222';
+const INTERNAL_KEY = 'test-internal-key-0123456789';
+
+const emailResponse = {
+  entries: [],
+  total: 0,
+};
+
+beforeEach(() => {
+```
+
 ### backend/src/__tests__/admin-generation.test.ts
 
 ```
@@ -3195,6 +3215,7 @@ import { z } from 'zod';
  * process.env in test-setup before the first getConfig() call.
  */
 const Env = z.object({
+  NODE_ENV: z.enum(['development', 'test', 'production']).catch('development'),
   PORT: z.coerce.number().int().positive().default(4000),
   FRONTEND_URL: z.url().default('http://localhost:5173'),
 
@@ -3202,7 +3223,6 @@ const Env = z.object({
   SUPABASE_URL: z.url(),
   SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  SUPABASE_JWT_SECRET: z.string().min(16),
 ```
 
 ### backend/src/index.ts
@@ -13053,19 +13073,19 @@ import {
 ```
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import type { TooltipProps } from 'recharts';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Card, Icon, ProgressBar, StatCard } from '@/components/ui';
-import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
-import { cn } from '@/lib/utils';
-
-interface EmailEntry {
-  id: string;
-  messageId?: string;
-  to: string;
-  subject: string;
-  status: string;
-  templateType: string;
+import { Badge, Card, Dropdown, Icon, ProgressBar, StatCard, type DropdownOption } from '@/components/ui';
 ```
 
 ### frontend/src/routes/admin/AdminGenerationPage.tsx
@@ -13353,19 +13373,19 @@ interface SnapshotData {
 ```
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Area, AreaChart, Brush, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import type { TooltipProps } from 'recharts';
-import { useAuth } from '@/auth/AuthContext';
-import { api } from '@/lib/api';
-import { Card } from '@/components/ui';
-
-interface Day {
-  date: string;
-  count: number;
-}
-
-interface Range {
-  startIndex: number;
+import {
+  Area,
+  AreaChart,
+  Bar,
+  Brush,
+  CartesianGrid,
+  ComposedChart,
+  Label,
+  ReferenceDot,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
 ```
 
 ### frontend/src/routes/admin/SlotDetailModal.tsx
@@ -13406,6 +13426,26 @@ const fakeToken = 'fake-token';
  *  vi.mock calls are hoisted above imports, so these MUST be vi.hoisted. */
 const { mockGetToken, mockApi } = vi.hoisted(() => ({
   mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+```
+
+### frontend/src/routes/admin/__tests__/AdminEmailDashboard.test.tsx
+
+```
+import type { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { AdminEmailDashboard } from '../AdminEmailDashboard';
+
+const { mockApi, mockGetToken } = vi.hoisted(() => ({
+  mockApi: vi.fn(),
+  mockGetToken: vi.fn().mockResolvedValue('fake-token'),
+}));
+
+vi.mock('@/lib/api', () => ({ api: mockApi }));
+
+vi.mock('@/auth/AuthContext', () => ({
+  useAuth: () => ({ roles: ['admin'], getToken: mockGetToken }),
 ```
 
 ### frontend/src/routes/admin/__tests__/AdminIntelPage.test.tsx
