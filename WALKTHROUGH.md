@@ -2,6 +2,13 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
+
+- `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.
+- Course inventory rows expose the hierarchy and release metadata an admin needs to make a decision: description, subject, status, adventure/saga/topic/lesson counts, lesson status breakdown, creation date, and release-gate context. Course publication continues through Core's existing atomic release preconditions.
+- The lesson review queue now returns a complete review set with course hierarchy, difficulty, XP, duration, creation date, and locale coverage. A new detail route strips answer keys and embeds the actual Lesson Engine player in an app-level centered overlay; preview navigation is non-grading and emits no learner telemetry.
+- The shared admin dialog applies the full-page fixed-overlay rule with internal scrolling, and the frontend remains responsive at the required mobile and desktop breakpoints. This work is intentionally local-only while the production course-generation process is active; no push was performed.
+
 ## Current State (2026-08-03) — Production handoff EXECUTED; only provider credentials remain
 
 - The production migration handoff prescribed below was executed for real on 2026-08-03, in DEPLOYMENT.md order: fresh verified `pg_dump` backup (77 tables, all 18 profiles confirmed inside, archived under the now-gitignored `database/backups/`), independent signature-object re-verification, dry-run listing exactly `0023`–`0033`, then the confirmed apply — **33 immutable receipts in `public.schema_migrations`**. Postflight probes green: `release_course(uuid)` EXECUTE-restricted to service_role/admin roles, `lesson_documents.illustration_style_version` present, game tables retired, `route_class` constraint clean.
@@ -476,6 +483,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 ## Known Issues
 
 - **Admin overview KPIs were counting role rows and a capped audit sample (RESOLVED 2026-08-08)** — `/admin/overview` now uses unique primary-role buckets, paged identity/role reads, exact PostgREST status counts, and an exact audit total; an unavailable count fails the whole overview instead of rendering a false zero.
+- **Admin content totals and lesson review were capped and too shallow (RESOLVED 2026-08-08)** — `/admin/content` and `/admin/moderation` now page through all rows, return exact status summaries and hierarchy metadata, and expose a rendered answer-stripped lesson preview with centered full-page overlays.
 - **Postgres backups run daily but on a shared/interim disk** (filebase's Railway volume, not a dedicated one) — works and is drilled, but Railway's billing block should be resolved and a proper dedicated backup volume created when possible (RUNBOOK.md).
 - **`TTS_API_KEY` in production is a placeholder** (`REPLACE_WITH_REAL_DASHSCOPE_KEY`) — audiogen boots and passes `/health`, but any real narration call will fail until a real DashScope key is set.
 - **Email confirmation is real (RESOLVED 2026-07-18)** — Courier is live and `GOTRUE_MAILER_AUTOCONFIRM=false`; signups now require confirming a real mailbox, with branded trilingual mail delivered via Amazon SES.

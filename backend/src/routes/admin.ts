@@ -43,6 +43,8 @@ import type { PlausibleFilter } from '../services/pulse.js';
 import { insertAuditLog } from '../services/supabaseRest.js';
 import {
   getAdminOverview,
+  getAdminContentSummary,
+  getReviewLessonDetail,
   getCoachReport,
   compareRuns,
   getGenerationAnalytics,
@@ -552,9 +554,9 @@ export function adminRouter(): Router {
   };
 
   router.get('/content', async (_req, res) => {
-    const courses = await listAdminCourses();
-    if (!courses) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load content');
-    ok(res, { courses });
+    const [courses, summary] = await Promise.all([listAdminCourses(), getAdminContentSummary()]);
+    if (!courses || !summary) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load content');
+    ok(res, { courses, summary });
   });
 
   router.post('/content/:courseId/status', async (req, res) => {
@@ -576,7 +578,15 @@ export function adminRouter(): Router {
   router.get('/moderation', async (_req, res) => {
     const lessons = await listReviewLessons();
     if (!lessons) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the review queue');
-    ok(res, { lessons });
+    ok(res, { lessons, total: lessons.length });
+  });
+
+  router.get('/moderation/:lessonId', async (req, res) => {
+    const lessonId = z.string().uuid().safeParse(req.params.lessonId);
+    if (!lessonId.success) return fail(res, 400, 'VALIDATION_ERROR', 'lessonId must be a uuid');
+    const lesson = await getReviewLessonDetail(lessonId.data);
+    if (!lesson) return fail(res, 404, 'NOT_FOUND', 'Lesson not found');
+    ok(res, lesson);
   });
 
   router.post('/moderation/:lessonId/status', async (req, res) => {

@@ -1,4 +1,14 @@
-import { countServiceRows, grantRole, grantAdminPermission, insertAuditLog, revokeRole, revokeAdminPermission, serviceRest } from './supabaseRest.js';
+import { stripAnswers } from './lessonDocument.js';
+import {
+  countServiceRows,
+  getLessonDocumentLocales,
+  grantRole,
+  grantAdminPermission,
+  insertAuditLog,
+  revokeRole,
+  revokeAdminPermission,
+  serviceRest,
+} from './supabaseRest.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Every read here is service-role
@@ -152,24 +162,138 @@ export interface AdminCourse {
   id: string;
   slug: string;
   title: string;
+  description: string;
   subject: string;
   status: string;
   position: number;
+  createdAt: string;
+  adventureCount: number;
+  sagaCount: number;
+  topicCount: number;
+  lessonCount: number;
+  lessonsByStatus: Record<string, number>;
+}
+
+interface CourseHierarchyRows {
+  courses: {
+    id: string;
+    slug: string;
+    title: Localized;
+    description: Localized;
+    subject: string;
+    status: string;
+    position: number;
+    created_at: string;
+  }[];
+  adventures: { id: string; course_id: string; title: Localized; status: string }[];
+  sagas: { id: string; adventure_id: string; title: Localized; status: string }[];
+  topics: { id: string; saga_id: string; title: Localized; status: string }[];
+  lessons: {
+    id: string;
+    topic_id: string;
+    slug: string;
+    title: Localized;
+    difficulty: number;
+    xp_total: number;
+    estimated_minutes: number;
+    status: string;
+    created_at: string;
+  }[];
+}
+
+async function loadCourseHierarchyRows(): Promise<CourseHierarchyRows | null> {
+  const [courses, adventures, sagas, topics, lessons] = await Promise.all([
+    listAllServiceRows<CourseHierarchyRows['courses'][number]>(
+      '/courses?select=id,slug,title,description,subject,status,position,created_at&order=position.asc,id.asc',
+    ),
+    listAllServiceRows<CourseHierarchyRows['adventures'][number]>(
+      '/adventures?select=id,course_id,title,status&order=course_id.asc,id.asc',
+    ),
+    listAllServiceRows<CourseHierarchyRows['sagas'][number]>(
+      '/sagas?select=id,adventure_id,title,status&order=adventure_id.asc,id.asc',
+    ),
+    listAllServiceRows<CourseHierarchyRows['topics'][number]>(
+      '/topics?select=id,saga_id,title,status&order=saga_id.asc,id.asc',
+    ),
+    listAllServiceRows<CourseHierarchyRows['lessons'][number]>(
+      '/lessons?select=id,topic_id,slug,title,difficulty,xp_total,estimated_minutes,status,created_at&order=topic_id.asc,position.asc,id.asc',
+    ),
+  ]);
+  if (!courses || !adventures || !sagas || !topics || !lessons) return null;
+  return { courses, adventures, sagas, topics, lessons };
+}
+
+function hierarchyIndexes(rows: CourseHierarchyRows) {
+  const adventureById = new Map(rows.adventures.map((row) => [row.id, row]));
+  const sagaById = new Map(rows.sagas.map((row) => [row.id, row]));
+  const topicById = new Map(rows.topics.map((row) => [row.id, row]));
+  const courseById = new Map(rows.courses.map((row) => [row.id, row]));
+  const courseForLesson = (lesson: CourseHierarchyRows['lessons'][number]) => {
+    const topic = topicById.get(lesson.topic_id);
+    const saga = topic ? sagaById.get(topic.saga_id) : undefined;
+    const adventure = saga ? adventureById.get(saga.adventure_id) : undefined;
+    return adventure ? courseById.get(adventure.course_id) : undefined;
+  };
+  return { adventureById, sagaById, topicById, courseById, courseForLesson };
 }
 
 export async function listAdminCourses(): Promise<AdminCourse[] | null> {
-  const rows = await serviceRest<
-    { id: string; slug: string; title: Localized; subject: string; status: string; position: number }[]
-  >('/courses?select=id,slug,title,subject,status,position&order=position.asc');
+  const rows = await loadCourseHierarchyRows();
   if (!rows) return null;
-  return rows.map((c) => ({
-    id: c.id,
-    slug: c.slug,
-    title: pickTitle(c.title),
-    subject: c.subject,
-    status: c.status,
-    position: c.position,
-  }));
+  return rows.courses.map((course) => {
+    const adventures = rows.adventures.filter((row) => row.course_id === course.id);
+    const adventureIds = new Set(adventures.map((row) => row.id));
+    const sagas = rows.sagas.filter((row) => adventureIds.has(row.adventure_id));
+    const sagaIds = new Set(sagas.map((row) => row.id));
+    const topics = rows.topics.filter((row) => sagaIds.has(row.saga_id));
+    const topicIds = new Set(topics.map((row) => row.id));
+    const lessons = rows.lessons.filter((row) => topicIds.has(row.topic_id));
+    const lessonsByStatus: Record<string, number> = {};
+    for (const lesson of lessons) lessonsByStatus[lesson.status] = (lessonsByStatus[lesson.status] ?? 0) + 1;
+    return {
+      id: course.id,
+      slug: course.slug,
+      title: pickTitle(course.title),
+      description: pickTitle(course.description),
+      subject: course.subject,
+      status: course.status,
+      position: course.position,
+      createdAt: course.created_at,
+      adventureCount: adventures.length,
+      sagaCount: sagas.length,
+      topicCount: topics.length,
+      lessonCount: lessons.length,
+      lessonsByStatus,
+    };
+  });
+}
+
+export interface AdminContentSummary {
+  courses: { total: number; published: number; draft: number; archived: number };
+  lessons: { total: number; published: number; review: number; draft: number; archived: number };
+}
+
+export async function getAdminContentSummary(): Promise<AdminContentSummary | null> {
+  const [courses, lessons] = await Promise.all([
+    countStatuses('courses', COURSE_STATUS_ORDER),
+    countStatuses('lessons', LESSON_STATUS_ORDER),
+  ]);
+  if (!courses || !lessons) return null;
+  return {
+    courses: {
+      total: Object.values(courses).reduce((sum, count) => sum + count, 0),
+      published: courses.published ?? 0,
+      draft: courses.draft ?? 0,
+      archived: courses.archived ?? 0,
+    },
+    lessons: {
+      total: Object.values(lessons).reduce((sum, count) => sum + count, 0),
+      published: lessons.published ?? 0,
+      review: lessons.review ?? 0,
+      draft: lessons.draft ?? 0,
+      archived: lessons.archived ?? 0,
+    },
+  };
 }
 
 const COURSE_STATUSES = ['draft', 'published', 'archived'] as const;
@@ -243,14 +367,98 @@ export interface AdminReviewLesson {
   slug: string;
   title: string;
   status: string;
+  courseTitle: string;
+  subject: string;
+  adventureTitle: string;
+  sagaTitle: string;
+  topicTitle: string;
+  difficulty: number;
+  xpTotal: number;
+  estimatedMinutes: number;
+  createdAt: string;
+  locales: string[];
 }
 
 export async function listReviewLessons(): Promise<AdminReviewLesson[] | null> {
-  const rows = await serviceRest<{ id: string; slug: string; title: Localized; status: string }[]>(
-    '/lessons?status=eq.review&select=id,slug,title,status&order=slug.asc',
+  const rows = await loadCourseHierarchyRows();
+  const documents = await listAllServiceRows<{ lesson_id: string; locale: string }>(
+    '/lesson_documents?select=lesson_id,locale&order=lesson_id.asc,locale.asc',
   );
-  if (!rows) return null;
-  return rows.map((l) => ({ id: l.id, slug: l.slug, title: pickTitle(l.title), status: l.status }));
+  if (!rows || !documents) return null;
+  const { adventureById, sagaById, topicById, courseForLesson } = hierarchyIndexes(rows);
+  const localesByLesson = new Map<string, string[]>();
+  for (const document of documents) localesByLesson.set(document.lesson_id, [...(localesByLesson.get(document.lesson_id) ?? []), document.locale]);
+  return rows.lessons
+    .filter((lesson) => lesson.status === 'review')
+    .sort((a, b) => a.slug.localeCompare(b.slug))
+    .map((lesson) => {
+      const topic = topicById.get(lesson.topic_id);
+      const saga = topic ? sagaById.get(topic.saga_id) : undefined;
+      const adventure = saga ? adventureById.get(saga.adventure_id) : undefined;
+      const course = courseForLesson(lesson);
+      return {
+        id: lesson.id,
+        slug: lesson.slug,
+        title: pickTitle(lesson.title),
+        status: lesson.status,
+        courseTitle: pickTitle(course?.title ?? null),
+        subject: course?.subject ?? 'mixed',
+        adventureTitle: pickTitle(adventure?.title ?? null),
+        sagaTitle: pickTitle(saga?.title ?? null),
+        topicTitle: pickTitle(topic?.title ?? null),
+        difficulty: lesson.difficulty,
+        xpTotal: lesson.xp_total,
+        estimatedMinutes: lesson.estimated_minutes,
+        createdAt: lesson.created_at,
+        locales: localesByLesson.get(lesson.id) ?? [],
+      };
+    });
+}
+
+export interface AdminLessonDocument {
+  locale: string;
+  schemaVersion: number;
+  document: Record<string, unknown>;
+  audio: Record<string, unknown>;
+}
+
+export interface AdminReviewLessonDetail extends AdminReviewLesson {
+  documents: AdminLessonDocument[];
+}
+
+export async function getReviewLessonDetail(lessonId: string): Promise<AdminReviewLessonDetail | null> {
+  const rows = await loadCourseHierarchyRows();
+  const documents = await getLessonDocumentLocales(lessonId);
+  if (!rows || !documents) return null;
+  const lesson = rows.lessons.find((row) => row.id === lessonId);
+  if (!lesson) return null;
+  const { adventureById, sagaById, topicById, courseForLesson } = hierarchyIndexes(rows);
+  const topic = topicById.get(lesson.topic_id);
+  const saga = topic ? sagaById.get(topic.saga_id) : undefined;
+  const adventure = saga ? adventureById.get(saga.adventure_id) : undefined;
+  const course = courseForLesson(lesson);
+  return {
+    id: lesson.id,
+    slug: lesson.slug,
+    title: pickTitle(lesson.title),
+    status: lesson.status,
+    courseTitle: pickTitle(course?.title ?? null),
+    subject: course?.subject ?? 'mixed',
+    adventureTitle: pickTitle(adventure?.title ?? null),
+    sagaTitle: pickTitle(saga?.title ?? null),
+    topicTitle: pickTitle(topic?.title ?? null),
+    difficulty: lesson.difficulty,
+    xpTotal: lesson.xp_total,
+    estimatedMinutes: lesson.estimated_minutes,
+    createdAt: lesson.created_at,
+    locales: documents.map((document) => document.locale),
+    documents: documents.map((document) => ({
+      locale: document.locale,
+      schemaVersion: document.schema_version,
+      document: stripAnswers(document.document),
+      audio: document.audio,
+    })),
+  };
 }
 
 const LESSON_STATUSES = ['draft', 'review', 'published', 'archived'] as const;

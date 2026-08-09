@@ -23,6 +23,47 @@ const COURSE = {
   subject: 'financial',
   status: 'draft',
   position: 1,
+  description: 'A practical introduction to money.',
+  createdAt: '2026-07-12T00:00:00Z',
+  adventureCount: 1,
+  sagaCount: 1,
+  topicCount: 1,
+  lessonCount: 1,
+  lessonsByStatus: { review: 1 },
+};
+
+const REVIEW_LESSON = {
+  id: '44444444-4444-4444-8444-444444444444',
+  slug: 'needs-and-wants',
+  title: 'Needs and Wants',
+  status: 'review',
+  courseTitle: 'Money Basics',
+  subject: 'money',
+  adventureTitle: 'The Money Trail',
+  sagaTitle: 'First Steps',
+  topicTitle: 'Needs and Wants',
+  difficulty: 2,
+  xpTotal: 20,
+  estimatedMinutes: 8,
+  createdAt: '2026-07-13T00:00:00Z',
+  locales: ['en-US', 'es-MX'],
+};
+
+const LESSON_DETAIL = {
+  ...REVIEW_LESSON,
+  documents: [
+    {
+      locale: 'en-US',
+      schemaVersion: 1,
+      audio: {},
+      document: {
+        schema_version: 1,
+        meta: { slug: 'needs-and-wants', title: 'Needs and Wants', locale: 'en-US', subject: 'money', estimated_minutes: 8, objectives: [], cast: [] },
+        scoring: { pass_threshold: 70, hint_penalty_pct: 0, max_attempts: 3, hearts: null },
+        segments: [],
+      },
+    },
+  ],
 };
 
 function apiOk<T>(data: T) {
@@ -31,10 +72,10 @@ function apiOk<T>(data: T) {
 
 function apiDefault(path: string) {
   if (path.startsWith('/admin/content') && !path.includes('/status')) {
-    return apiOk({ courses: [COURSE] });
+    return apiOk({ courses: [COURSE], summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } } });
   }
   if (path.startsWith('/admin/moderation')) {
-    return apiOk({ lessons: [] });
+    return apiOk({ lessons: [], total: 0 });
   }
   return apiOk({});
 }
@@ -164,5 +205,34 @@ describe('AdminContentPage — publish outcome', () => {
     clickPublish();
     await flushPromises();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('AdminContentPage — human review surfaces', () => {
+  it('opens a course inspector with hierarchy and readiness metadata', async () => {
+    renderPage();
+    await flushPromises();
+    fireEvent.click(screen.getAllByText('admin.content.viewDetail')[0]!);
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.courseDetailTitle');
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.hierarchySummary');
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.lessonBreakdown');
+  });
+
+  it('opens the lesson inspector with a render action and review metadata', async () => {
+    mockApi.mockImplementation((path: string) => {
+      if (path === '/admin/content') return apiOk({ courses: [COURSE], summary: { courses: { total: 1, published: 0, draft: 1, archived: 0 }, lessons: { total: 1, published: 0, review: 1, draft: 0, archived: 0 } } });
+      if (path === '/admin/moderation') return apiOk({ lessons: [REVIEW_LESSON], total: 1 });
+      if (path === `/admin/moderation/${REVIEW_LESSON.id}`) return apiOk(LESSON_DETAIL);
+      return apiOk({});
+    });
+    renderPage();
+    await flushPromises();
+    fireEvent.click(screen.getByRole('tab', { name: /admin\.content\.tabs\.lessons/ }));
+    expect(screen.getByText('Needs and Wants')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('admin.moderation.preview'));
+    await flushPromises();
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.moderation.renderTitle');
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.moderation.renderLesson');
+    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.difficulty');
   });
 });

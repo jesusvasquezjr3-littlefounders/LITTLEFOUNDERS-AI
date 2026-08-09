@@ -39,6 +39,10 @@ export interface LessonPlayerProps {
   grader: Grader
   /** Echo's narration manifest for this locale (Core serves it with the document). Absent/empty = silent lesson. */
   audio?: AudioManifest | null
+  /** Staff review mode renders the lesson without grading or learner telemetry. */
+  preview?: boolean
+  previewStartLabel?: string
+  previewNextLabel?: string
   onExit: () => void
   /**
    * Fired once on reaching results. May resolve the server's completion
@@ -59,15 +63,24 @@ interface Reaction extends CharacterReaction {
   key: number
 }
 
-export function LessonPlayer({ document: doc, lessonId, grader, audio, onExit, onComplete }: LessonPlayerProps) {
+export function LessonPlayer({ document: doc, lessonId, grader, audio, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete }: LessonPlayerProps) {
   return (
     <NarrationProvider manifest={audio}>
-      <LessonPlayerInner document={doc} lessonId={lessonId} grader={grader} onExit={onExit} onComplete={onComplete} />
+      <LessonPlayerInner
+        document={doc}
+        lessonId={lessonId}
+        grader={grader}
+        preview={preview}
+        previewStartLabel={previewStartLabel}
+        previewNextLabel={previewNextLabel}
+        onExit={onExit}
+        onComplete={onComplete}
+      />
     </NarrationProvider>
   )
 }
 
-function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
+function LessonPlayerInner({ document: doc, lessonId, grader, preview = false, previewStartLabel, previewNextLabel, onExit, onComplete }: Omit<LessonPlayerProps, 'audio'>) {
   const { t } = useTranslation()
   const reducer = useMemo(() => createSessionReducer(doc), [doc])
   const [state, dispatch] = useReducer(reducer, doc, initialSession)
@@ -92,9 +105,10 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
   // out (1500 ms, like v1's stopBGM) when the run ends or the player unmounts.
   // The results effect below also stops it, mirroring v1's completion path.
   useEffect(() => {
+    if (preview) return
     playLessonBgm()
     return () => stopLessonBgm()
-  }, [])
+  }, [preview])
 
   // Reset the draft, error and per-attempt timer on a new segment AND on every
   // retry (retries bumps). Clearing the draft on retry is what stops the stale
@@ -117,8 +131,8 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
   // finest-grained learning signal the platform has.
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
-    trackInsight('segment_view', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
-  }, [state.phase, segment])
+    if (!preview) trackInsight('segment_view', { segmentId: segment.id.slice(0, 64), routeClass: 'learn' })
+  }, [preview, state.phase, segment])
 
   useEffect(() => {
     if (state.phase !== 'playing' || !segment) return
@@ -178,6 +192,12 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
   const submit = useCallback(
     async (answer: unknown) => {
       if (!segment) return
+      if (preview) {
+        setReaction(null)
+        if (state.index >= doc.segments.length - 1) onExit()
+        else dispatch({ type: 'NEXT' })
+        return
+      }
       dispatch({ type: 'SUBMIT' })
       setGradeError(false)
       try {
@@ -209,7 +229,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
         setGradeError(true)
       }
     },
-    [segment, segState, grader, react, state.streak],
+    [doc.segments.length, onExit, preview, segment, segState, grader, react, state.index, state.streak],
   )
 
   if (state.phase === 'intro') {
@@ -220,9 +240,10 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
           onStart={() => {
             lessonStartRef.current = Date.now()
             dispatch({ type: 'BEGIN' })
-            react('lesson_start')
+            if (!preview) react('lesson_start')
           }}
           onExit={onExit}
+          startLabel={previewStartLabel}
         />
       </Shell>
     )
@@ -273,7 +294,8 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
 
   const handleNext = () => {
     setReaction(null)
-    dispatch({ type: 'NEXT' })
+    if (preview && state.index >= doc.segments.length - 1) onExit()
+    else dispatch({ type: 'NEXT' })
   }
 
   return (
@@ -329,13 +351,13 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
               </div>
               <div className="flex min-w-0 flex-1 items-start gap-2 rounded-lg rounded-bl-sm border border-outline/70 bg-surface px-4 py-3 shadow-glass-sm">
                 <MarkdownLite text={segment.prompt_md} className="lf-title min-w-0 flex-1 text-content" />
-                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
+                <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} preview={preview} />
               </div>
             </div>
           ) : (
             <div className="flex items-start gap-2">
               <MarkdownLite text={segment.prompt_md} className="lf-headline min-w-0 flex-1 text-content" />
-              <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} />
+              <NarrationReplayButton unitId={narrationUnitId(segment.id, 'prompt')} preview={preview} />
             </div>
           )}
 
@@ -395,6 +417,12 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
         ) : (
           <div className="lf-glass shadow-pop">
             <div className="mx-auto flex max-w-[720px] items-center justify-between gap-3 px-4 py-3 md:px-0">
+              {preview ? (
+                <Button variant="primary" onClick={handleNext} className="ml-auto">
+                  {previewNextLabel ?? t('lesson.continue')}
+                  <Icon name="arrow_forward" className="ml-1 text-[18px]" />
+                </Button>
+              ) : <>
               {!isContent && hintsAvailable > 0 ? (
                 <Button
                   variant="secondary"
@@ -419,6 +447,7 @@ function LessonPlayerInner({ document: doc, lessonId, grader, onExit, onComplete
               ) : (
                 <span />
               )}
+              </>}
               {isContent ? (
                 // Only show the footer Continuar once the content segment is
                 // done. While it's being consumed the content component owns
@@ -456,7 +485,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 /** Speaker button — visible only when Echo narrated this unit. Doubles as the fallback when autoplay was refused. */
-function NarrationReplayButton({ unitId }: { unitId: string }) {
+function NarrationReplayButton({ unitId, preview = false }: { unitId: string; preview?: boolean }) {
   const { t } = useTranslation()
   const narration = useNarration()
   if (!narration.has(unitId)) return null
@@ -466,7 +495,7 @@ function NarrationReplayButton({ unitId }: { unitId: string }) {
       onClick={() => {
         // A deliberate replay is an audio-engagement signal (/INSIGHTS.md).
         // No-op for unconsented kids; segment_id is a content id, never text.
-        trackInsight('audio_replay', { segmentId: unitId.slice(0, 64), routeClass: 'learn' })
+        if (!preview) trackInsight('audio_replay', { segmentId: unitId.slice(0, 64), routeClass: 'learn' })
         narration.play(unitId)
       }}
       aria-label={t('lesson.audio.replay')}
@@ -481,10 +510,12 @@ function IntroScreen({
   doc,
   onStart,
   onExit,
+  startLabel,
 }: {
   doc: LessonDocument
   onStart: () => void
   onExit: () => void
+  startLabel?: string
 }) {
   const { t } = useTranslation()
   // "Retos" counts INTERACTIVE segments, not xp>0: content types carry xp:0,
@@ -536,7 +567,7 @@ function IntroScreen({
           </span>
         </div>
         <Button variant="primary" onClick={onStart} className="px-10">
-          {t('lesson.intro.start')}
+          {startLabel ?? t('lesson.intro.start')}
           <Icon name="arrow_forward" className="ml-1 text-[18px]" />
         </Button>
       </div>

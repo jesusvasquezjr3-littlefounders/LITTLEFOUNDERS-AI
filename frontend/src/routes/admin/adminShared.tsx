@@ -107,6 +107,67 @@ export function AdminAction({
   );
 }
 
+/**
+ * Full-viewport staff dialog. Detached review surfaces must not inherit the
+ * page scroll position: the backdrop owns the viewport and only the dialog
+ * body scrolls when its content is taller than the screen.
+ */
+export function AdminDialog({
+  title,
+  onClose,
+  children,
+  className,
+}: {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+  className?: string;
+}) {
+  const { t } = useTranslation();
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-base/80 p-4 backdrop-blur-sm sm:p-6"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className={cn('lf-glass flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-y-auto rounded-xl p-5 shadow-pop sm:max-h-[calc(100dvh-3rem)] sm:p-7', className)}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-outline/50 pb-4">
+          <h2 className="lf-title font-bold text-content">{title}</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('admin.close')}
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-full text-content-muted transition-colors hover:bg-surface-sunken hover:text-content focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <Icon name="close" />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function Unavailable({ code }: { code: string }) {
   const { t } = useTranslation();
   return (

@@ -195,8 +195,16 @@ describe('GET /api/v1/admin/health/services', () => {
 
 const PROFILE = { user_id: ADMIN_ID, display_name: 'Staff', username: 'staff', locale: 'en-US', created_at: '2026-07-12T00:00:00Z' };
 const SECOND_USER_ID = '66666666-6666-4666-8666-666666666666';
-const COURSE = { id: '33333333-3333-4333-8333-333333333333', slug: 'money-basics', title: { 'en-US': 'Money Basics' }, subject: 'financial', status: 'draft', position: 1 };
-const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', slug: 'l1', title: { 'en-US': 'Lesson 1' }, status: 'review' };
+const ADVENTURE_ID = '77777777-7777-4777-8777-777777777777';
+const SAGA_ID = '88888888-8888-4888-8888-888888888888';
+const TOPIC_ID = '99999999-9999-4999-8999-999999999999';
+const COURSE = { id: '33333333-3333-4333-8333-333333333333', slug: 'money-basics', title: { 'en-US': 'Money Basics' }, description: { 'en-US': 'A practical introduction to money.' }, subject: 'money', status: 'draft', position: 1, created_at: '2026-07-12T00:00:00Z' };
+const ADVENTURE = { id: ADVENTURE_ID, course_id: COURSE.id, title: { 'en-US': 'The Money Trail' }, status: 'draft' };
+const SAGA = { id: SAGA_ID, adventure_id: ADVENTURE_ID, title: { 'en-US': 'First Steps' }, status: 'draft' };
+const TOPIC = { id: TOPIC_ID, saga_id: SAGA_ID, title: { 'en-US': 'Needs and Wants' }, status: 'draft' };
+const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', topic_id: TOPIC_ID, slug: 'l1', title: { 'en-US': 'Lesson 1' }, difficulty: 2, xp_total: 20, estimated_minutes: 8, status: 'review', created_at: '2026-07-13T00:00:00Z' };
+const OVERFLOW_LESSON = { ...REVIEW_LESSON, id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', slug: 'l1001', title: { 'en-US': 'Lesson 1001' } };
+const LESSON_DOCUMENT = { lesson_id: REVIEW_LESSON.id, locale: 'en-US', schema_version: 1, document: { schema_version: 1, meta: { slug: 'l1', title: 'Lesson 1', locale: 'en-US', subject: 'money', estimated_minutes: 8, objectives: ['Understand needs'], cast: [] }, scoring: { pass_threshold: 70, hint_penalty_pct: 0, max_attempts: 3, hearts: null }, segments: [] }, answer_keys: {}, audio: {} };
 const AUDIT = { id: 7, actor_id: ADMIN_ID, action: 'admin.course.set_status', subject: COURSE.id, detail: { status: 'published' }, created_at: '2026-07-20T00:00:00Z' };
 
 type OverviewStub = {
@@ -204,6 +212,7 @@ type OverviewStub = {
   roles?: { user_id: string; role: string }[];
   counts?: { courses?: Record<string, number>; lessons?: Record<string, number>; audit?: number };
   countFailure?: 'courses' | 'lessons' | 'audit_logs';
+  lessonOverflow?: boolean;
 };
 
 /** fetch stub over the service-role PostgREST surface + the auth role check. */
@@ -260,10 +269,19 @@ function stubData(
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
         return Promise.resolve(jsonResponse(200, [COURSE]));
       }
+      if (url.includes('/rest/v1/adventures')) return Promise.resolve(jsonResponse(200, [ADVENTURE]));
+      if (url.includes('/rest/v1/sagas')) return Promise.resolve(jsonResponse(200, [SAGA]));
+      if (url.includes('/rest/v1/topics')) return Promise.resolve(jsonResponse(200, [TOPIC]));
       if (url.includes('/rest/v1/lessons')) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
+        if (options.overview?.lessonOverflow && url.includes('order=topic_id')) {
+          const offset = Number(new URL(url).searchParams.get('offset') ?? '0');
+          if (offset === 0) return Promise.resolve(jsonResponse(200, Array.from({ length: 1000 }, () => REVIEW_LESSON)));
+          if (offset === 1000) return Promise.resolve(jsonResponse(200, [OVERFLOW_LESSON]));
+        }
         return Promise.resolve(jsonResponse(200, [REVIEW_LESSON]));
       }
+      if (url.includes('/rest/v1/lesson_documents')) return Promise.resolve(jsonResponse(200, [LESSON_DOCUMENT]));
       if (url.includes('/rest/v1/audit_logs')) {
         if (method === 'POST') return Promise.resolve(new Response(null, { status: options.auditInsertStatus ?? 204 }));
         return Promise.resolve(jsonResponse(200, [AUDIT]));
@@ -335,6 +353,15 @@ describe('GET + POST /api/v1/admin/content', () => {
     const res = await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
     expect(res.body.data.courses[0]).toMatchObject({ slug: 'money-basics', title: 'Money Basics', status: 'draft' });
+    expect(res.body.data.courses[0]).toMatchObject({ lessonCount: 1, topicCount: 1 });
+    expect(res.body.data.summary.lessons.total).toBe(1);
+  });
+
+  it('fails closed when an exact content total is unavailable', async () => {
+    stubData('admin', undefined, { overview: { countFailure: 'lessons' } });
+    const res = await request(createApp()).get('/api/v1/admin/content').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(502);
+    expect(res.body.error.code).toBe('DATA_UNAVAILABLE');
   });
 
   it('releases a complete course atomically (and audits it)', async () => {
@@ -431,6 +458,24 @@ describe('GET /api/v1/admin/moderation', () => {
     const res = await request(createApp()).get('/api/v1/admin/moderation').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
     expect(res.body.data.lessons[0]).toMatchObject({ slug: 'l1', status: 'review' });
+    expect(res.body.data.lessons[0]).toMatchObject({ courseTitle: 'Money Basics', topicTitle: 'Needs and Wants', locales: ['en-US'] });
+    expect(res.body.data.total).toBe(1);
+  });
+
+  it('returns the client-safe lesson document for human preview', async () => {
+    stubData('admin');
+    const res = await request(createApp()).get(`/api/v1/admin/moderation/${REVIEW_LESSON.id}`).set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.documents[0]).toMatchObject({ locale: 'en-US', schemaVersion: 1 });
+    expect(res.body.data.documents[0].document).not.toHaveProperty('answer_keys');
+  });
+
+  it('loads every review lesson past PostgREST’s 1,000-row page', async () => {
+    stubData('admin', undefined, { overview: { lessonOverflow: true } });
+    const res = await request(createApp()).get('/api/v1/admin/moderation').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.total).toBe(1001);
+    expect(res.body.data.lessons.at(-1)).toMatchObject({ slug: 'l1001' });
   });
 });
 
