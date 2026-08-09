@@ -1,12 +1,13 @@
-import { grantRole, grantAdminPermission, insertAuditLog, revokeRole, revokeAdminPermission, serviceRest } from './supabaseRest.js';
+import { countServiceRows, grantRole, grantAdminPermission, insertAuditLog, revokeRole, revokeAdminPermission, serviceRest } from './supabaseRest.js';
 
 /*
  * Staff-console data plane (routes/admin.ts). Every read here is service-role
  * and platform-wide (all users' rows) — the console's job — so it is gated by
  * requireRole(['admin','superadmin']) at the route, and role mutations gate
  * further on superadmin (§1.4). No minor PII leaves the platform; these are
- * internal reads for staff. Counts are computed in JS (young platform, small
- * tables); revisit with PostgREST count headers if the row counts grow large.
+ * internal reads for staff. Overview status totals use PostgREST exact counts;
+ * identity/role rows are paged so the dashboard never silently stops at the
+ * default 1,000-row response limit.
  */
 
 type Localized = Record<string, string> | null;
@@ -17,37 +18,73 @@ function pickTitle(title: Localized): string {
   return title['en-US'] ?? title['es-MX'] ?? title['pt-BR'] ?? Object.values(title)[0] ?? '—';
 }
 
-function tally(rows: { status?: string; role?: string }[], key: 'status' | 'role'): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const r of rows) {
-    const k = r[key];
-    if (k) out[k] = (out[k] ?? 0) + 1;
-  }
-  return out;
-}
-
 // ── Overview ────────────────────────────────────────────────────────────────
 
+const ROLE_ORDER = ['superadmin', 'admin', 'bigfounder', 'parent', 'kid', 'universal'] as const;
+const COURSE_STATUS_ORDER = ['published', 'draft', 'archived'] as const;
+const LESSON_STATUS_ORDER = ['published', 'review', 'draft', 'archived'] as const;
+const OVERVIEW_PAGE_SIZE = 1000;
+
+async function listAllServiceRows<T>(path: string): Promise<T[] | null> {
+  const rows: T[] = [];
+  for (let offset = 0; ; offset += OVERVIEW_PAGE_SIZE) {
+    const page = await serviceRest<T[]>(`${path}&limit=${OVERVIEW_PAGE_SIZE}&offset=${offset}`);
+    if (!page) return null;
+    rows.push(...page);
+    if (page.length < OVERVIEW_PAGE_SIZE) return rows;
+  }
+}
+
+async function countStatuses(table: 'courses' | 'lessons', statuses: readonly string[]): Promise<Record<string, number> | null> {
+  const counts = await Promise.all(
+    statuses.map(async (status) => [status, await countServiceRows(`/${table}?status=eq.${status}&select=id`)] as const),
+  );
+  if (counts.some(([, count]) => count === null)) return null;
+  const result: Record<string, number> = {};
+  for (const [status, count] of counts) result[status] = count as number;
+  return result;
+}
+
+function primaryRole(roleRows: string[]): (typeof ROLE_ORDER)[number] {
+  return ROLE_ORDER.find((role) => roleRows.includes(role)) ?? 'universal';
+}
+
 export interface AdminOverview {
-  users: { total: number; byRole: Record<string, number> };
+  users: { total: number; byRole: Record<string, number>; staff: number };
   content: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
-  audit: { recent: number };
+  audit: { total: number };
 }
 
 export async function getAdminOverview(): Promise<AdminOverview | null> {
-  const [profiles, roles, courses, lessons, audit] = await Promise.all([
-    serviceRest<{ user_id: string }[]>('/profiles?select=user_id'),
-    serviceRest<{ role: string }[]>('/user_roles?select=role'),
-    serviceRest<{ status: string }[]>('/courses?select=status'),
-    serviceRest<{ status: string }[]>('/lessons?select=status'),
-    serviceRest<{ id: number }[]>('/audit_logs?select=id&order=id.desc&limit=500'),
+  const [profiles, roles, courses, lessons, auditTotal] = await Promise.all([
+    listAllServiceRows<{ user_id: string }>('/profiles?select=user_id&order=user_id.asc'),
+    listAllServiceRows<{ user_id: string; role: string }>('/user_roles?select=user_id,role&order=user_id.asc,role.asc'),
+    countStatuses('courses', COURSE_STATUS_ORDER),
+    countStatuses('lessons', LESSON_STATUS_ORDER),
+    countServiceRows('/audit_logs?select=id'),
   ]);
-  if (!profiles || !roles || !courses || !lessons || !audit) return null;
-  const lessonsByStatus = tally(lessons, 'status');
+  if (!profiles || !roles || !courses || !lessons || auditTotal === null) return null;
+
+  const profileIds = new Set(profiles.map((profile) => profile.user_id));
+  const rolesByUser = new Map<string, string[]>();
+  for (const row of roles) {
+    if (profileIds.has(row.user_id)) rolesByUser.set(row.user_id, [...(rolesByUser.get(row.user_id) ?? []), row.role]);
+  }
+
+  // A person can hold multiple role rows (universal is retained on upgrades).
+  // The overview is a people distribution, so each profile belongs to exactly
+  // one highest-privilege bucket, matching /admin/users.
+  const byRole: Record<string, number> = {};
+  for (const profile of profiles) {
+    const role = primaryRole(rolesByUser.get(profile.user_id) ?? []);
+    byRole[role] = (byRole[role] ?? 0) + 1;
+  }
+  const staff = (byRole.admin ?? 0) + (byRole.superadmin ?? 0);
+
   return {
-    users: { total: profiles.length, byRole: tally(roles, 'role') },
-    content: { courses: tally(courses, 'status'), lessons: lessonsByStatus, reviewQueue: lessonsByStatus.review ?? 0 },
-    audit: { recent: audit.length },
+    users: { total: profiles.length, byRole, staff },
+    content: { courses, lessons, reviewQueue: lessons.review ?? 0 },
+    audit: { total: auditTotal },
   };
 }
 

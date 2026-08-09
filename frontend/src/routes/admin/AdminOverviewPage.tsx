@@ -6,9 +6,9 @@ import { cn } from '@/lib/utils';
 import { AdminPage, RoleChip, Unavailable, useAdminData } from './adminShared';
 
 interface Overview {
-  users: { total: number; byRole: Record<string, number> };
+  users: { total: number; byRole: Record<string, number>; staff: number };
   content: { courses: Record<string, number>; lessons: Record<string, number>; reviewQueue: number };
-  audit: { recent: number };
+  audit: { total: number };
 }
 interface Health {
   summary: { total: number; down: number };
@@ -71,7 +71,7 @@ export function AdminOverviewPage() {
 
   const nf = new Intl.NumberFormat();
   const o = data.state === 'ready' ? data.data : null;
-  const staffCount = (o?.users.byRole.admin ?? 0) + (o?.users.byRole.superadmin ?? 0);
+  const staffCount = o?.users.staff ?? 0;
 
   const quickActions = [
     { key: 'content', path: '/admin/content', icon: 'menu_book', desc: t('admin.overview.navContentDesc') },
@@ -94,7 +94,7 @@ export function AdminOverviewPage() {
             <StatCard dense icon={<Icon name="school" />} value={o ? nf.format(o.content.courses.published ?? 0) : '…'} label={t('admin.overview.kpiCoursesLive')} className="shadow-glass border border-outline/50" />
             <StatCard dense tone="accent" icon={<Icon name="gpp_maybe" />} value={o ? nf.format(o.content.reviewQueue) : '…'} label={t('admin.overview.kpiReview')} className="shadow-glass border border-outline/50" />
             <StatCard dense icon={<Icon name="menu_book" />} value={o ? nf.format(o.content.lessons.published ?? 0) : '…'} label={t('admin.overview.kpiLessonsLive')} className="shadow-glass border border-outline/50" />
-            <StatCard dense icon={<Icon name="history" />} value={o ? nf.format(o.audit.recent) : '…'} label={t('admin.overview.kpiAudit')} className="shadow-glass border border-outline/50" />
+            <StatCard dense icon={<Icon name="history" />} value={o ? nf.format(o.audit.total) : '…'} label={t('admin.overview.kpiAudit')} className="shadow-glass border border-outline/50" />
           </div>
 
           {/* Quick Staff Action Shortcuts Hub */}

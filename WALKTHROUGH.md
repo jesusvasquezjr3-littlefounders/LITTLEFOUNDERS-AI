@@ -475,6 +475,7 @@ v2 total reset executed on branch `littlefounders_v2`; v1 preserved on `main`. *
 
 ## Known Issues
 
+- **Admin overview KPIs were counting role rows and a capped audit sample (RESOLVED 2026-08-08)** — `/admin/overview` now uses unique primary-role buckets, paged identity/role reads, exact PostgREST status counts, and an exact audit total; an unavailable count fails the whole overview instead of rendering a false zero.
 - **Postgres backups run daily but on a shared/interim disk** (filebase's Railway volume, not a dedicated one) — works and is drilled, but Railway's billing block should be resolved and a proper dedicated backup volume created when possible (RUNBOOK.md).
 - **`TTS_API_KEY` in production is a placeholder** (`REPLACE_WITH_REAL_DASHSCOPE_KEY`) — audiogen boots and passes `/health`, but any real narration call will fail until a real DashScope key is set.
 - **Email confirmation is real (RESOLVED 2026-07-18)** — Courier is live and `GOTRUE_MAILER_AUTOCONFIRM=false`; signups now require confirming a real mailbox, with branded trilingual mail delivered via Amazon SES.

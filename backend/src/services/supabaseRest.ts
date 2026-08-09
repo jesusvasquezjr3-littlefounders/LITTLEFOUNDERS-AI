@@ -173,12 +173,23 @@ export function getAvatarByUserId(userId: string): Promise<AvatarRow[] | null> {
   return rest<AvatarRow[]>(`/avatars?user_id=eq.${eu(userId)}&select=options`, serviceToken());
 }
 
-async function countRows(pathWithFilter: string): Promise<number> {
+/**
+ * Return an exact PostgREST row count, preserving upstream failures as null.
+ * Dashboard KPIs must never turn an unavailable count into a believable zero.
+ */
+export async function countServiceRows(pathWithFilter: string): Promise<number | null> {
   const res = await restRaw(pathWithFilter, serviceToken(), {
     headers: { Prefer: 'count=exact', Range: '0-0' },
   });
-  const total = res.contentRange?.split('/')[1];
-  return total && total !== '*' ? Number(total) : 0;
+  if (!res.ok) return null;
+  const total = res.contentRange?.split('/').pop();
+  if (!total || total === '*' || !/^\d+$/.test(total)) return null;
+  const parsed = Number(total);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+async function countRows(pathWithFilter: string): Promise<number> {
+  return (await countServiceRows(pathWithFilter)) ?? 0;
 }
 
 export async function getFollowCounts(userId: string): Promise<{ followers: number; following: number }> {
@@ -802,4 +813,3 @@ export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promis
     `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
   );
 }
-

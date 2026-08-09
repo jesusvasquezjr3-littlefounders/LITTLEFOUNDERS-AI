@@ -194,28 +194,55 @@ describe('GET /api/v1/admin/health/services', () => {
 // ── Console data panels (service-role reads + mutations) ─────────────────────
 
 const PROFILE = { user_id: ADMIN_ID, display_name: 'Staff', username: 'staff', locale: 'en-US', created_at: '2026-07-12T00:00:00Z' };
+const SECOND_USER_ID = '66666666-6666-4666-8666-666666666666';
 const COURSE = { id: '33333333-3333-4333-8333-333333333333', slug: 'money-basics', title: { 'en-US': 'Money Basics' }, subject: 'financial', status: 'draft', position: 1 };
 const REVIEW_LESSON = { id: '44444444-4444-4444-8444-444444444444', slug: 'l1', title: { 'en-US': 'Lesson 1' }, status: 'review' };
 const AUDIT = { id: 7, actor_id: ADMIN_ID, action: 'admin.course.set_status', subject: COURSE.id, detail: { status: 'published' }, created_at: '2026-07-20T00:00:00Z' };
+
+type OverviewStub = {
+  profiles?: { user_id: string; display_name?: string; username?: string; locale?: string; created_at?: string }[];
+  roles?: { user_id: string; role: string }[];
+  counts?: { courses?: Record<string, number>; lessons?: Record<string, number>; audit?: number };
+  countFailure?: 'courses' | 'lessons' | 'audit_logs';
+};
 
 /** fetch stub over the service-role PostgREST surface + the auth role check. */
 function stubData(
   callerRole: 'admin' | 'superadmin' | 'universal',
   capture?: { calls: { url: string; method: string; body?: string }[] },
-  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number } = {},
+  options: { releaseRefusal?: { code: string; message: string }; auditInsertStatus?: number; overview?: OverviewStub } = {},
 ) {
+  const overviewProfiles = options.overview?.profiles ?? [PROFILE];
+  const overviewRoles = options.overview?.roles ?? [{ user_id: ADMIN_ID, role: 'admin' }, { user_id: ADMIN_ID, role: 'universal' }];
+  const overviewCounts = {
+    courses: { draft: 1, published: 0, archived: 0, ...options.overview?.counts?.courses },
+    lessons: { draft: 0, review: 1, published: 0, archived: 0, ...options.overview?.counts?.lessons },
+    audit: options.overview?.counts?.audit ?? 1,
+  };
+
   vi.stubGlobal(
     'fetch',
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       const method = (init?.method ?? 'GET').toUpperCase();
       capture?.calls.push({ url, method, body: init?.body as string | undefined });
+      const headers = new Headers(init?.headers);
+      if (headers.get('Prefer')?.includes('count=exact')) {
+        if (options.overview?.countFailure && url.includes(`/${options.overview.countFailure}`)) {
+          return Promise.resolve(jsonResponse(503, { message: 'upstream unavailable' }));
+        }
+        let total = 0;
+        if (url.includes('/courses')) total = overviewCounts.courses[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
+        if (url.includes('/lessons')) total = overviewCounts.lessons[decodeURIComponent(new URL(url).searchParams.get('status')?.replace('eq.', '') ?? '')] ?? 0;
+        if (url.includes('/audit_logs')) total = overviewCounts.audit;
+        return Promise.resolve(new Response('[]', { status: 200, headers: { 'Content-Range': `0-0/${total}` } }));
+      }
       if (url.includes('/rest/v1/user_roles')) {
         if (method === 'POST' || method === 'DELETE') return Promise.resolve(new Response(null, { status: 204 }));
         if (url.includes('user_id=eq.')) return Promise.resolve(jsonResponse(200, [{ role: callerRole }])); // auth check
         if (url.includes('role=neq.universal')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
         if (url.includes('user_id=in.(')) return Promise.resolve(jsonResponse(200, [{ user_id: ADMIN_ID, role: 'admin' }]));
-        return Promise.resolve(jsonResponse(200, [{ role: 'admin' }, { role: 'universal' }])); // overview select=role
+        return Promise.resolve(jsonResponse(200, overviewRoles));
       }
       if (url.includes('/rest/v1/rpc/release_course')) {
         return Promise.resolve(jsonResponse(200, [{
@@ -228,7 +255,7 @@ function stubData(
           lessons_published: 1,
         }]));
       }
-      if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, [PROFILE]));
+      if (url.includes('/rest/v1/profiles')) return Promise.resolve(jsonResponse(200, overviewProfiles));
       if (url.includes('/rest/v1/courses')) {
         if (method === 'PATCH') return Promise.resolve(new Response(null, { status: 204 }));
         return Promise.resolve(jsonResponse(200, [COURSE]));
@@ -259,8 +286,37 @@ describe('GET /api/v1/admin/overview', () => {
     const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
     expect(res.body.data.users.total).toBe(1);
+    expect(res.body.data.users.staff).toBe(1);
     expect(res.body.data.content.reviewQueue).toBe(1); // the stubbed lesson is status='review'
-    expect(res.body.data.audit.recent).toBe(1);
+    expect(res.body.data.audit.total).toBe(1);
+  });
+
+  it('counts people once, pages roles, and uses the exact audit total', async () => {
+    const secondProfile = { user_id: SECOND_USER_ID, display_name: 'Second', username: 'second', locale: 'en-US', created_at: '2026-07-13T00:00:00Z' };
+    stubData('admin', undefined, {
+      overview: {
+        profiles: [PROFILE, secondProfile],
+        roles: [
+          { user_id: ADMIN_ID, role: 'universal' },
+          { user_id: ADMIN_ID, role: 'admin' },
+          { user_id: SECOND_USER_ID, role: 'universal' },
+          { user_id: SECOND_USER_ID, role: 'superadmin' },
+        ],
+        counts: { courses: { published: 42 }, lessons: { review: 17, published: 99 }, audit: 1250 },
+      },
+    });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(res.body.data.users).toEqual({ total: 2, byRole: { admin: 1, superadmin: 1 }, staff: 2 });
+    expect(res.body.data.content).toMatchObject({ courses: { published: 42, draft: 1, archived: 0 }, lessons: { review: 17, published: 99 }, reviewQueue: 17 });
+    expect(res.body.data.audit.total).toBe(1250);
+  });
+
+  it('fails closed when an exact KPI count is unavailable', async () => {
+    stubData('admin', undefined, { overview: { countFailure: 'audit_logs' } });
+    const res = await request(createApp()).get('/api/v1/admin/overview').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(502);
+    expect(res.body.data).toBeNull();
   });
 });
 
