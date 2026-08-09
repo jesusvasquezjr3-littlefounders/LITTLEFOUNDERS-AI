@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Badge, Button, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import LessonPlayer from '@/lesson-engine/player/LessonPlayer';
@@ -216,7 +217,7 @@ function LessonReviewDialog({
     />
   );
 
-  if (playing) return player;
+  if (playing) return createPortal(player, document.body);
 
   return (
     <AdminDialog title={t('admin.moderation.previewTitle')} onClose={onClose}>
@@ -346,11 +347,10 @@ export function AdminContentPage() {
       cell: (course) => (
         <div className="min-w-0">
           <p className="truncate font-bold text-content">{course.title}</p>
-          <p className="lf-caption mt-0.5 truncate text-content-muted">{course.description}</p>
+          <p className="lf-caption mt-0.5 truncate text-content-muted">{course.subject}</p>
         </div>
       ),
     },
-    { key: 'subject', header: t('admin.content.colSubject'), cell: (course) => <Badge className="bg-surface-sunken text-content-muted">{course.subject}</Badge> },
     { key: 'status', header: t('admin.content.colStatus'), cell: (course) => <StatusBadge status={course.status} /> },
     {
       key: 'structure',
@@ -367,12 +367,7 @@ export function AdminContentPage() {
       key: 'actions',
       header: t('admin.content.colActions'),
       cell: (course) => (
-        <div className="flex flex-wrap justify-end gap-1.5">
-          <AdminAction tone="neutral" icon="visibility" onClick={() => setCourseDetail(course)}>{t('admin.content.viewDetail')}</AdminAction>
-          {course.status !== 'published' && <AdminAction tone="success" icon="publish" onClick={() => void setCourseStatus(course.id, 'published')} disabled={busy === course.id}>{t('admin.content.publish')}</AdminAction>}
-          {course.status === 'published' && <AdminAction tone="neutral" icon="unpublished" onClick={() => void setCourseStatus(course.id, 'draft')} disabled={busy === course.id}>{t('admin.content.unpublish')}</AdminAction>}
-          {course.status !== 'archived' && <AdminAction tone="neutral" icon="archive" onClick={() => void setCourseStatus(course.id, 'archived')} disabled={busy === course.id}>{t('admin.content.archive')}</AdminAction>}
-        </div>
+        <AdminAction tone="neutral" icon="visibility" onClick={() => setCourseDetail(course)}>{t('admin.content.viewDetail')}</AdminAction>
       ),
     },
   ];
@@ -435,7 +430,7 @@ export function AdminContentPage() {
               </div>
               <p className="lf-caption mt-1 max-w-3xl text-content-muted">{t('admin.moderation.note')}</p>
             </div>
-            {moderationData.data.state === 'error' ? <Unavailable code={moderationData.data.code} /> : moderationData.data.state === 'ready' ? reviewLessons.length === 0 ? <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} /> : <ul className="flex flex-col gap-3">{reviewLessons.map((lesson) => <li key={lesson.id}><Card className="flex flex-col gap-4 p-4 sm:p-5"><div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="lf-label font-bold text-content">{lesson.title}</p><StatusBadge status={lesson.status} /></div><p className="lf-number lf-caption mt-1 text-content-muted">{lesson.slug}</p><p className="lf-caption mt-2 text-content-muted">{lesson.courseTitle} / {lesson.adventureTitle} / {lesson.sagaTitle} / {lesson.topicTitle}</p></div><div className="flex flex-wrap gap-2 lg:justify-end"><Badge className="bg-surface-sunken text-content-muted">{lesson.subject}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.difficultyShort', { count: lesson.difficulty })}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.minutes', { count: lesson.estimatedMinutes })}</Badge></div></div><div className="flex flex-col gap-3 border-t border-outline/40 pt-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex flex-wrap gap-3 lf-caption text-content-muted"><span>{t('admin.content.xp')}: <span className="lf-number font-bold text-content">{nf.format(lesson.xpTotal)}</span></span><span>{t('admin.content.locales')}: <span className="font-bold text-content">{lesson.locales.join(', ') || t('admin.moderation.noLocales')}</span></span></div><div className="flex flex-wrap gap-2"><AdminAction tone="neutral" icon="visibility" onClick={() => { setLessonLocale('es-MX'); setLessonDetailId(lesson.id); }}>{t('admin.moderation.preview')}</AdminAction><AdminAction tone="success" icon="check" onClick={() => void decideLesson(lesson.id, 'published')} disabled={busy === lesson.id}>{t('admin.moderation.approve')}</AdminAction><AdminAction tone="danger" icon="undo" onClick={() => void decideLesson(lesson.id, 'draft')} disabled={busy === lesson.id}>{t('admin.moderation.reject')}</AdminAction></div></div></Card></li>)}</ul> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
+            {moderationData.data.state === 'error' ? <Unavailable code={moderationData.data.code} /> : moderationData.data.state === 'ready' ? reviewLessons.length === 0 ? <AdminEmpty icon="task_alt" message={t('admin.moderation.empty')} /> : <ul className="flex flex-col gap-3">{reviewLessons.map((lesson) => <li key={lesson.id}><Card className="flex flex-col gap-3 p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><p className="truncate lf-label font-bold text-content">{lesson.title}</p><StatusBadge status={lesson.status} /></div><p className="lf-caption mt-1 text-content-muted">{lesson.courseTitle} / {lesson.topicTitle}</p></div><AdminAction tone="neutral" icon="visibility" onClick={() => { setLessonLocale('es-MX'); setLessonDetailId(lesson.id); }}>{t('admin.moderation.preview')}</AdminAction></div><div className="flex flex-wrap gap-2"><Badge className="bg-surface-sunken text-content-muted">{lesson.subject}</Badge><Badge className="bg-surface-sunken text-content-muted">{t('admin.content.locales')}: {lesson.locales.length}</Badge></div></Card></li>)}</ul> : <AdminEmpty icon="hourglass_empty" message={t('admin.loading')} />}
           </section>
         )}
       </div>

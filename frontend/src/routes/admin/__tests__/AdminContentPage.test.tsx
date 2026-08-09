@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminContentPage } from '../AdminContentPage';
 
@@ -130,10 +130,10 @@ function flushPromises() {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
-/** The Table renders each row twice (mobile card + desktop table, §1.11), so
- * the publish action matches two nodes — click the first. */
+/** Publication is deliberately disclosed inside the expanded course view. */
 function clickPublish() {
-  const el = screen.getAllByText('admin.content.publish')[0];
+  fireEvent.click(screen.getByRole('row', { name: /Money Basics/ }));
+  const el = within(screen.getByRole('dialog')).getByText('admin.content.publish');
   if (!el) throw new Error('publish action not rendered');
   fireEvent.click(el);
 }
@@ -213,9 +213,11 @@ describe('AdminContentPage — human review surfaces', () => {
     renderPage();
     await flushPromises();
     fireEvent.click(screen.getByRole('row', { name: /Money Basics/ }));
-    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.courseDetailTitle');
-    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.hierarchySummary');
-    expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.lessonBreakdown');
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent('admin.content.courseDetailTitle');
+    expect(dialog).toHaveTextContent('admin.content.hierarchySummary');
+    expect(dialog).toHaveTextContent('admin.content.lessonBreakdown');
+    expect(dialog.parentElement?.parentElement).toBe(document.body);
   });
 
   it('opens the lesson inspector with a render action and review metadata', async () => {
@@ -234,5 +236,9 @@ describe('AdminContentPage — human review surfaces', () => {
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.moderation.renderTitle');
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.moderation.renderLesson');
     expect(screen.getByRole('dialog')).toHaveTextContent('admin.content.difficulty');
+    fireEvent.click(screen.getByText('admin.moderation.renderLesson'));
+    const playerLayer = document.body.querySelector('div.fixed.inset-0.z-50');
+    expect(playerLayer).not.toBeNull();
+    expect(playerLayer?.parentElement).toBe(document.body);
   });
 });
