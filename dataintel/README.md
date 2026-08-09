@@ -82,6 +82,11 @@ Routes under `/api/v1` require `x-internal-api-key: <INTERNAL_API_KEY>`
 | POST/GET | `/api/v1/intel/experiments*` | Experiment CRUD + results | implemented |
 | POST/GET/PATCH/DELETE | `/api/v1/intel/alerts*` | Alert rule CRUD + history | implemented |
 
+Lesson calibration reads Core's authoritative `lesson_segment_attempts` facts,
+not browser `segment_submit` telemetry. The activation funnel can join an
+adult's first-party anonymous visit to a conversion through a service-only
+view; kid accounts are excluded from that link by the source query.
+
 ## Env vars
 
 | Var | Default | Notes |

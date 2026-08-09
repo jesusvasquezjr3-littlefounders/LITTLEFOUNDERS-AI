@@ -36,6 +36,8 @@ pipeline to a remote warehouse.
 ```
 Vault (Postgres) ─── sync worker (5min) ──► DuckDB (in-process, columnar)
 learning_events                              fact_events
+lesson_segment_attempts                      fact_segment_attempts
+anon_visitors (adult links only)             dim_anon_conversions
 analytics_consents                           dim_users / dim_lessons / dim_sessions
 user_roles                                   agg_daily_activity / agg_daily_users
 lessons / lesson_progress / learning_stats   segments / experiments / alerts / anomalies
@@ -73,7 +75,7 @@ against DuckDB on every request, never that the dashboard shows an error.
 | Sync | Incremental pull from Vault PostgREST every SYNC_INTERVAL_MS (5 min) |
 | Cache | Redis — ETag-based, 5 min TTL, fail-open |
 | Auth | Internal `x-internal-api-key` (SHA-256 digest comparison) |
-| Frontend | AdminIntelPage — 9-tab console, recharts-powered |
+| Frontend | AdminIntelPage — unified decision console, recharts-powered |
 | Proxy | Core `/api/v1/admin/intel/*` — JWT role gate + internal-key forward |
 
 ## 4. Endpoints (40)
@@ -124,25 +126,18 @@ domain:
 | Alerts | DELETE | `/intel/alerts/:id` | Delete |
 | Alerts | GET | `/intel/alerts/:id/history` | Firing history |
 
-Export responses carry `X-LF-Export-Rows`, `X-LF-Export-Truncated`, and
-`X-LF-Export-Next-Offset` headers so a truncated file is declared, never silent
-(the same contract as INSIGHTS.md §8).
+`POST /intel/export/events` returns a paginated JSON envelope with `truncated`
+and `nextOffset`. Its allowlisted filters are dimensions only; it omits
+event and identity IDs (`event_id`, `user_id`, `anon_id`), and turns `session_id` into a newly salted
+`session_ref` for every response so exports cannot be joined longitudinally.
 
-**The `metric` query param is not one enum with uniform support.** Nine values
-are accepted at the Zod edge somewhere in this service (`dau`, `wau`, `mau`,
-`events`, `users`, `sessions`, `retention`, `activation`, `completions`), but
-`/anomalies`, `/anomalies/:date/resolve`, and `/forecast` only genuinely
-support `events`, `dau`, `users`, `sessions` — the only four with a column in
-the hourly/daily bucket rollup these three queries run off of. `wau`/`mau`/
-`retention`/`activation`/`completions` need a dedicated cohort or rolling-
-window query, not a flat bucket aggregate, and are rejected with `400
-VALIDATION_ERROR` on those three routes rather than failing opaquely inside
-DuckDB (fixed 2026-07-30 — previously 8 of the 9 documented values, including
-the default-looking `events`, threw a raw "column not found" error surfaced
-as a 502). `/metrics/compare` and `/metrics/trends` DO support the full nine
-via `metrics.ts`'s own `METRIC_COLUMN` pre-resolution (with `retention`/
-`activation`/`completions` approximated as `users`/`users`/`event_count`
-respectively — a known simplification, not a precise per-metric computation).
+**Flat time-series metrics are deliberately narrow.** Trends, comparisons,
+anomalies, forecasts, alerts and experiments accept only `events`, `dau`,
+`users` and `sessions`: each has an exact event-fact definition. Retention,
+activation and completions use different cohorts or denominators and are
+answered only by their dedicated endpoints; the service rejects a false
+relabeling with `400 VALIDATION_ERROR` rather than presenting an approximation
+as a precise statistic.
 
 ## 5. DuckDB star schema
 
@@ -167,6 +162,12 @@ DuckDB stores a star schema optimized for analytical queries:
 - `value` (DOUBLE, nullable — numeric payload: score, attempt number, hint depth, seconds)
 - `created_at` (TIMESTAMP NOT NULL)
 - `ingested_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+
+**`fact_segment_attempts`** — authoritative Core attempt records, not browser
+telemetry. It contains only `attempt_id`, `user_id`, `lesson_id`, `segment_id`,
+`attempt_number`, `score`, `hints_used` and `created_at`. Calibration uses this
+fact so a missing browser beacon never becomes a fabricated zero score, hint
+rate or first-attempt result.
 
 ### Dimension tables
 
@@ -211,6 +212,12 @@ DuckDB stores a star schema optimized for analytical queries:
 - `hour` (INTEGER, nullable)
 - `is_weekend` (BOOLEAN, nullable)
 
+**`dim_anon_conversions`** — minimal first-party adult acquisition link:
+`anon_id`, `user_id`, `converted_at`. Its Vault view excludes every kid role;
+it only lets the activation funnel join an adult's permitted marketing visit
+to a later account conversion. It must never be used to create a child
+behavioural profile.
+
 ### Aggregate tables (materialized by the sync worker)
 
 **`agg_daily_activity`** — one row per (day, role, event_type, route_class, device, locale):
@@ -225,10 +232,10 @@ DuckDB stores a star schema optimized for analytical queries:
 - `users` (BIGINT NOT NULL DEFAULT 0)
 - `sessions` (BIGINT NOT NULL DEFAULT 0)
 
-The aggregate tables are ACCUMULATING, not materialized views. The sync worker
-appends new rows for the trailing window; older rows are frozen and outlive the
-raw events they were computed from — the same retention guarantee as
-INSIGHTS.md §6.
+The trailing seven days are recomputed directly at reporting grain on every
+sync. Distinct users and sessions are never summed from lower-grain event
+groups, which would over-count the same person. Older rows are retained as
+historical aggregates after the raw-event window expires.
 
 ## 6. Workers
 
@@ -258,31 +265,31 @@ implemented):
 
 ## 7. Frontend — AdminIntelPage
 
-The admin intelligence console lives at `/admin/intel` (gated behind
-`admin`/`superadmin` via `<RequireRole role={STAFF}>`). Nine tabs, all
-recharts-powered:
+The unified admin intelligence console lives at `/admin/intel` (gated behind
+`admin`/`superadmin` via `<RequireRole role={STAFF}>`). Existing
+`/admin/insights` bookmarks redirect to the learning evidence tab. It exposes
+only decision-ready surfaces:
 
 | Tab | Description |
 |---|---|
-| Home | KPI cards (DAU, MAU, active learners, consent coverage) + feature adoption breakdown |
-| Trends | DAU/WAU/MAU time-series charts with date-range selector |
-| Funnels | Activation funnel steps (visited → signup → course → lesson → completion) with conversion rates |
+| Home | KPI cards, consent coverage and feature adoption breakdown |
+| Trends | Exact event, DAU, user and session time series |
+| Funnels | First-party adult acquisition funnel and learner activation steps |
+| Learning | Explicit lesson abandonment plus server-authoritative exercise calibration |
 | Retention | Weekly cohort retention matrix with heatmap |
-| Segments | Segment CRUD and management |
 | People | Top learners engagement leaderboard + churn risk table |
 | Experiments | Active/completed experiments list with control vs variant results |
 | Alerts | Alert rules CRUD with firing history |
-| Settings | Date-range and refresh-interval preferences |
 
 The page polls dataintel's endpoints through Core's proxy on a 60-second
 interval (dashboard cards) and on tab switch (detail views).
 
 ## 8. What this must never become
 
-- A replacement for the consent gate — kid data in DuckDB is a replica of
-  already-consented data from Vault. The consent boolean is synced and
-  queries filter on it; a revoked consent that hasn't synced yet shows
-  stale-consented data for at most one sync interval, never permanently.
+- A replacement for the consent gate — kid behavioural events reach DuckDB
+  only after Core has passed the active guardian-consent gate. A revocation
+  stops subsequent browser telemetry at both client and Core; DuckDB is never
+  an authorization decision point.
 - A third-party data pipeline — DuckDB runs in-process, never sends data
   outside the platform. No cloud warehouse, no ETL service, no external API.
 - A free-text analytics channel — all queries are parameterized SQL against

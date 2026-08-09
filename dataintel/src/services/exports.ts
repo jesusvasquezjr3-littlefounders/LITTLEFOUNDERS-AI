@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { query, execute } from '../db/duckdb.js';
 import { exportQuery } from '../db/queries.js';
 
@@ -39,7 +40,41 @@ interface ExportJobRow {
 }
 
 interface ExportEventRow {
-  [key: string]: unknown;
+  session_id: string | null;
+  lesson_id: string | null;
+  segment_id: string | null;
+  event_type: string;
+  role: string | null;
+  route_class: string | null;
+  device: string | null;
+  locale: string | null;
+  referrer_class: string | null;
+  ordinal: number | null;
+  value: number | null;
+  created_at: string;
+  ingested_at: string | null;
+  lesson_slug: string | null;
+  lesson_title: string | null;
+}
+
+const EXPORT_FILTER_KEYS = new Set([
+  'event_type', 'role', 'route_class', 'device', 'locale', 'lesson_id', 'segment_id',
+]);
+
+function hasOnlyAllowedFilters(filters: Record<string, unknown>): boolean {
+  return Object.keys(filters).every((key) => EXPORT_FILTER_KEYS.has(key));
+}
+
+function exportRow(row: ExportEventRow, salt: string): Record<string, unknown> {
+  const { session_id: sessionId, ...safeRow } = row;
+  return {
+    ...safeRow,
+    // A stable session ID is still a pseudonymous identifier. Re-key it for
+    // every response so exports cannot be joined into a longitudinal profile.
+    session_ref: sessionId
+      ? crypto.createHash('sha256').update(`${salt}:${sessionId}`).digest('hex')
+      : null,
+  };
 }
 
 function rowToJob(r: ExportJobRow): ExportJob {
@@ -150,6 +185,7 @@ export async function exportEvents(
   nextOffset: number | null;
 } | null> {
   try {
+    if (!hasOnlyAllowedFilters(filters)) return null;
     const fetchLimit = limit + 1;
     const { sql, params } = exportQuery(filters, fetchLimit, offset);
     const rows = await query<ExportEventRow>(sql, ...params);
@@ -159,8 +195,9 @@ export async function exportEvents(
       rows.pop();
     }
 
+    const salt = crypto.randomUUID();
     return {
-      rows: rows as Record<string, unknown>[],
+      rows: rows.map((row) => exportRow(row, salt)),
       truncated,
       nextOffset: truncated ? offset + limit : null,
     };

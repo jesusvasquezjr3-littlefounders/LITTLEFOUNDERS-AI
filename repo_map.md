@@ -1052,17 +1052,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
+
+- `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
+- Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
+- Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
+
 ## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
 
 - `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.
 - Course inventory rows expose the hierarchy and release metadata an admin needs to make a decision: description, subject, status, adventure/saga/topic/lesson counts, lesson status breakdown, creation date, and release-gate context. Course publication continues through Core's existing atomic release preconditions.
 - The lesson review queue now returns a complete review set with course hierarchy, difficulty, XP, duration, creation date, and locale coverage. A new detail route strips answer keys and embeds the actual Lesson Engine player in an app-level centered overlay; preview navigation is non-grading and emits no learner telemetry.
-- The shared admin dialog applies the full-page fixed-overlay rule with internal scrolling, and the frontend remains responsive at the required mobile and desktop breakpoints. This work is intentionally local-only while the production course-generation process is active; no push was performed.
-
-## Current State (2026-08-03) — Production handoff EXECUTED; only provider credentials remain
-
-- The production migration handoff prescribed below was executed for real on 2026-08-03, in DEPLOYMENT.md order: fresh verified `pg_dump` backup (77 tables, all 18 profiles confirmed inside, archived under the now-gitignored `database/backups/`), independent signature-object re-verification, dry-run listing exactly `0023`–`0033`, then the confirmed apply — **33 immutable receipts in `public.schema_migrations`**. Postflight probes green: `release_course(uuid)` EXECUTE-restricted to service_role/admin roles, `lesson_documents.illustration_style_version` present, game tables retired, `route_class` constraint clean.
-- Executing the runner against the real pre-baseline database caught two defects the fake-psql harness structurally cannot see, both fixed and pinned before any mutation: the preflight's scalar subquery ERRORed on a ledger-less database (PostgreSQL plans every CASE arm — now a psql `\gset`/`\if` two-phase script), and the RAILWAY_TOKEN guard rejected a logged-in interactive CLI session (now accepts either). A third landed post-deploy: `tsc` does not copy `.sql` assets, so dataintel's first container served `/health` while `initDb()` warned ENOENT and the warehouse sat silently dead — the build now ships `dist/db/schema.sql` and the CI test pins it.
 ```
 
 ### agent/README.md
@@ -7559,6 +7559,46 @@ DELETE FROM public.learning_events
 WHERE event IN ('game_open', 'game_start', 'game_complete');
 ```
 
+### database/migrations/0034_dataintel_pedagogical_signals.sql
+
+```
+-- 0034_dataintel_pedagogical_signals.sql
+-- DuckDB calibrates content from Core's server-authoritative grading records.
+-- Browser events describe navigation and effort, but do not contain grades.
+
+CREATE OR REPLACE VIEW public.dataintel_attempts_sync AS
+SELECT
+  a.id AS attempt_id,
+  a.user_id,
+  a.lesson_id,
+  a.segment_id,
+  a.attempt_number,
+  a.score,
+  a.hints_used,
+  a.created_at
+FROM public.lesson_segment_attempts a
+```
+
+### database/migrations/0035_dataintel_anonymous_conversion_sync.sql
+
+```
+-- 0035_dataintel_anonymous_conversion_sync.sql
+--
+-- Provides Data Intel with the minimal, first-party attribution link needed
+-- to calculate an accurate adult acquisition funnel. The source table is
+-- intentionally restricted to already-approved adult conversions: children
+-- never receive an anonymous-to-account link (0024) and therefore cannot be
+-- joined across pre-consent browsing and an account in DuckDB.
+
+CREATE OR REPLACE VIEW public.dataintel_anon_conversions_sync AS
+SELECT
+  av.anon_id,
+  av.converted_user_id AS user_id,
+  av.converted_at
+FROM public.anon_visitors av
+WHERE av.converted_user_id IS NOT NULL
+```
+
 ### database/package.json
 
 ```
@@ -8167,6 +8207,26 @@ const readOk = (status: number) => status === 200 || status === 502;
 /** Write endpoints return 201 on success, or 502/500 when the backing
 ```
 
+### dataintel/src/__tests__/pedagogical-signals.test.ts
+
+```
+import { randomUUID } from 'node:crypto';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { execute, initDb } from '../db/duckdb.js';
+import { refreshAggregates } from '../db/sync.js';
+import { getLessonDropoff, getSegmentCalibration } from '../services/lessons.js';
+import { getActivationFunnel } from '../services/funnel.js';
+import { getCohortRetention } from '../services/retention.js';
+import { exportEvents } from '../services/exports.js';
+
+describe('pedagogical signals', () => {
+  const lessonId = randomUUID();
+  const learnerA = randomUUID();
+  const learnerB = randomUUID();
+  const sessionA = randomUUID();
+  const sessionB = randomUUID();
+```
+
 ### dataintel/src/app.ts
 
 ```
@@ -8273,7 +8333,7 @@ describe('refreshAggregates — survives a populated last_synced_at', () => {
 import { query, execute, exec, isReady } from './duckdb.js';
 import { getConfig } from '../env.js';
 
-type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions';
+type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions' | 'attempts' | 'anon_conversions';
 
 interface SyncState {
   table_name: string;
@@ -8524,6 +8584,7 @@ export interface Experiment {
 ### dataintel/src/services/exports.ts
 
 ```
+import crypto from 'node:crypto';
 import { query, execute } from '../db/duckdb.js';
 import { exportQuery } from '../db/queries.js';
 
@@ -8538,7 +8599,6 @@ CREATE TABLE IF NOT EXISTS export_jobs (
   download_url VARCHAR,
   rows INTEGER,
   error VARCHAR
-)`;
 ```
 
 ### dataintel/src/services/forecasting.ts
@@ -8597,7 +8657,7 @@ export interface DropoffEntry {
   starts: number;
   completions: number;
   abandon_rate: number;
-  avg_seconds_before_abandon: number;
+  avg_seconds_before_abandon: number | null;
 }
 ```
 
@@ -13111,27 +13171,24 @@ import { failedFromI18nKey, formatPct, formatFixed } from './generationI18n';
 ### frontend/src/routes/admin/AdminInsightsPage.tsx
 
 ```
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/auth/AuthContext';
-import { BASE_URL, api } from '@/lib/api';
-import { Button, Card, Icon, StatCard } from '@/components/ui';
-import { cn } from '@/lib/utils';
-import { AdminEmpty, AdminPage, Unavailable } from './adminShared';
+import { Navigate } from 'react-router-dom';
 
-/*
- * /admin/insights — knowing the end user from FIRST-PARTY data (/INSIGHTS.md).
- *
- * Four tabs, ordered by the question they answer:
- *   Overview    — is the product healthy right now (consent coverage, volume)
- *   Acquisition — where do people come from and where do they fall off
- *   Learning    — are they actually learning, and which content is mistuned
+/**
+ * Compatibility entry point for existing admin bookmarks. Learning and
+ * behavioural intelligence now lives in one consent-aware console.
+ */
+export function AdminInsightsPage() {
+  return <Navigate to="/admin/intel?focus=learning" replace />;
+}
+
+export default AdminInsightsPage;
 ```
 
 ### frontend/src/routes/admin/AdminIntelPage.tsx
 
 ```
 import { Component, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
@@ -13145,7 +13202,6 @@ import {
 } from 'recharts';
 import type { TooltipProps } from 'recharts';
 
-/*
 ```
 
 ### frontend/src/routes/admin/AdminOverviewPage.tsx
@@ -13446,6 +13502,26 @@ vi.mock('@/lib/api', () => ({ api: mockApi }));
 
 vi.mock('@/auth/AuthContext', () => ({
   useAuth: () => ({ roles: ['admin'], getToken: mockGetToken }),
+```
+
+### frontend/src/routes/admin/__tests__/AdminInsightsPage.test.tsx
+
+```
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { AdminInsightsPage } from '../AdminInsightsPage';
+
+describe('AdminInsightsPage', () => {
+  it('keeps existing insight bookmarks on the unified learning console', () => {
+    render(
+      <MemoryRouter initialEntries={['/admin/insights']}>
+        <Routes>
+          <Route path="/admin/insights" element={<AdminInsightsPage />} />
+          <Route path="/admin/intel" element={<p>Learning intelligence</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
 ```
 
 ### frontend/src/routes/admin/__tests__/AdminIntelPage.test.tsx

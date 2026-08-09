@@ -17,6 +17,30 @@ CREATE TABLE IF NOT EXISTS fact_events (
   ingested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Server-authoritative lesson attempts. These are intentionally separate
+-- from consent-gated behavioural events: grades are product records written
+-- by Core, not browser telemetry, and are the reliable source for
+-- pedagogical calibration.
+CREATE TABLE IF NOT EXISTS fact_segment_attempts (
+  attempt_id UUID PRIMARY KEY,
+  user_id UUID NOT NULL,
+  lesson_id UUID NOT NULL,
+  segment_id VARCHAR NOT NULL,
+  attempt_number INTEGER NOT NULL,
+  score DOUBLE NOT NULL,
+  hints_used INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL
+);
+
+-- First-party anonymous-to-account links for adult acquisition analysis.
+-- The source view excludes child accounts by construction, so this does not
+-- create a cross-session behavioural profile for a child.
+CREATE TABLE IF NOT EXISTS dim_anon_conversions (
+  anon_id UUID PRIMARY KEY,
+  user_id UUID NOT NULL,
+  converted_at TIMESTAMP NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS dim_sessions (
   session_id UUID PRIMARY KEY,
   user_id UUID,
@@ -92,3 +116,6 @@ CREATE INDEX IF NOT EXISTS idx_fact_events_role        ON fact_events(role, crea
 CREATE INDEX IF NOT EXISTS idx_fact_events_route       ON fact_events(route_class, created_at);
 CREATE INDEX IF NOT EXISTS idx_fact_events_device      ON fact_events(device, created_at);
 CREATE INDEX IF NOT EXISTS idx_fact_events_locale      ON fact_events(locale, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_segment_time ON fact_segment_attempts(lesson_id, segment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_user_time ON fact_segment_attempts(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_anon_conversions_user ON dim_anon_conversions(user_id);

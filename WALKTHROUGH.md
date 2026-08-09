@@ -2,6 +2,12 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
+
+- `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
+- Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
+- Privacy boundaries remain strict: no child anonymous-to-account linking, no free text or replay, no third-party analytics pipeline, and direct event exports omit user and anonymous IDs while minting a per-response session reference.
+
 ## Current State (2026-08-08) — Admin content catalog and human review rebuilt locally
 
 - `/admin/content` now uses exact, paged Core reads instead of the PostgREST 1,000-row ceiling. Course and lesson totals, status buckets, hierarchy counts, and the review queue fail closed when an upstream count is unavailable, so the admin never sees a fabricated zero or a capped number.

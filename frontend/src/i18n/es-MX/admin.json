@@ -23,7 +23,7 @@
     "audit": "Auditoría",
     "roles": "Roles y acceso",
     "insights": "Insights",
-    "intel": "Intel Datos"
+    "intel": "Inteligencia de aprendizaje"
   },
   "overview": {
     "title": "Panel de administración",
@@ -772,12 +772,13 @@
     }
   },
   "intel": {
-    "title": "Inteligencia de Datos",
-    "subtitle": "Almacén de analíticas propias, segmentación, predicción, detección de anomalías y análisis de experimentos.",
+    "title": "Inteligencia de aprendizaje",
+    "subtitle": "Evidencia con consentimiento sobre producto, retención y aprendizaje para tomar mejores decisiones.",
     "tabs": {
       "home": "Inicio",
       "trends": "Tendencias",
-      "funnels": "Embudos",
+    "funnels": "Embudos",
+    "learning": "Aprendizaje",
       "retention": "Retención",
       "segments": "Segmentos",
       "people": "Personas",
@@ -785,7 +786,10 @@
       "alerts": "Alertas",
       "settings": "Configuración"
     },
-    "home": {
+  "home": {
+    "consentTitle": "Cobertura de analítica de aprendizaje",
+    "consentHint": "El consentimiento mantiene el límite para telemetría conductual infantil. Las calificaciones autoritativas permanecen dentro del producto.",
+    "consentPending": "Cargando",
       "kpiDau": "Usuarios Activos Diarios",
       "kpiEvents": "Eventos ({{days}}d)",
       "kpiRetention": "Retención Semana 1",
@@ -820,7 +824,7 @@
       "dauTitle": "DAU",
       "sparklineHint": ""
     },
-    "funnels": {
+  "funnels": {
       "title": "Análisis de Embudos",
       "subtitle": "Sigue la progresión de usuarios a través de embudos de conversión configurables.",
       "empty": "Define los pasos del embudo para comenzar el análisis.",
@@ -1008,6 +1012,25 @@
       "colExpected": "Esperado",
       "colDeviation": "Z-Score",
       "colStart": "Inicio"
+    },
+    "learning": {
+    "dropoffTitle": "Abandono de lecciones",
+    "dropoffSubtitle": "Dónde salen los aprendices de una lección, medido a partir de inicios y abandonos explícitos.",
+    "calibrationTitle": "Calibración de ejercicios",
+    "calibrationSubtitle": "Las calificaciones autoritativas de Core revelan cuándo el contenido es muy difícil, muy fácil o requiere una explicación más clara.",
+    "colLesson": "Lección",
+    "colStarts": "Inicios",
+    "colCompleted": "Completadas",
+    "colAbandon": "Abandono",
+    "colTime": "Tiempo antes de salir",
+    "colSegment": "Ejercicio",
+    "colLearners": "Aprendices",
+    "colScore": "Calificación promedio",
+    "colAttempts": "Intentos por aprendiz",
+    "colHints": "Uso de ayudas",
+    "colFirstTry": "Calificación del primer intento",
+    "unavailable": "Datos insuficientes",
+    "minutes": "{{count}} min"
     }
   },
   "insights": {

@@ -123,7 +123,7 @@ export function cohortRetentionQuery(weeks: number): QueryResult {
     WITH first_appearance AS (
       SELECT
         user_id,
-        MIN(created_at::DATE) AS cohort_week
+        date_trunc('week', MIN(created_at))::DATE AS cohort_week
       FROM fact_events
       WHERE user_id IS NOT NULL
       GROUP BY user_id
@@ -137,7 +137,7 @@ export function cohortRetentionQuery(weeks: number): QueryResult {
     ),
     cohort_sizes AS (
       SELECT
-        date_trunc('week', cohort_week)::DATE AS cohort,
+        cohort_week AS cohort,
         COUNT(DISTINCT user_id) AS size
       FROM first_appearance
       GROUP BY cohort
@@ -145,12 +145,12 @@ export function cohortRetentionQuery(weeks: number): QueryResult {
     SELECT
       fa.cohort_week AS cohort,
       cs.size AS cohort_size,
-      ((wa.active_week - fa.cohort_week) / 7)::INTEGER AS week_number,
+      date_diff('week', fa.cohort_week, wa.active_week) AS week_number,
       COUNT(DISTINCT fa.user_id) AS retained_users,
       ROUND(COUNT(DISTINCT fa.user_id) * 100.0 / NULLIF(cs.size, 0), 2) AS retention_pct
     FROM first_appearance fa
     JOIN weekly_activity wa ON fa.user_id = wa.user_id
-    JOIN cohort_sizes cs ON date_trunc('week', fa.cohort_week)::DATE = cs.cohort
+    JOIN cohort_sizes cs ON fa.cohort_week = cs.cohort
     WHERE wa.active_week >= fa.cohort_week
       AND fa.cohort_week >= CURRENT_DATE - INTERVAL '${weeks}' WEEK
     GROUP BY fa.cohort_week, cs.size, week_number
@@ -162,15 +162,16 @@ export function activationFunnelQuery(): QueryResult {
   const sql = `\
     WITH steps AS (
       SELECT
-        user_id,
+        COALESCE(fe.user_id::VARCHAR, ac.user_id::VARCHAR, fe.anon_id::VARCHAR) AS identity_id,
         MAX(CASE WHEN event_type = 'page_view'         THEN 1 ELSE 0 END) AS visited,
         MAX(CASE WHEN event_type = 'signup_start'      THEN 1 ELSE 0 END) AS started_signup,
         MAX(CASE WHEN event_type = 'signup_complete'   THEN 1 ELSE 0 END) AS completed_signup,
         MAX(CASE WHEN event_type = 'lesson_start'      THEN 1 ELSE 0 END) AS started_lesson,
         MAX(CASE WHEN event_type = 'lesson_complete'   THEN 1 ELSE 0 END) AS completed_lesson
-      FROM fact_events
-      WHERE user_id IS NOT NULL
-      GROUP BY user_id
+      FROM fact_events fe
+      LEFT JOIN dim_anon_conversions ac ON fe.anon_id = ac.anon_id
+      WHERE fe.user_id IS NOT NULL OR fe.anon_id IS NOT NULL
+      GROUP BY identity_id
     )
     SELECT 'visited'          AS step, COUNT(*) FILTER (WHERE visited = 1)          AS users FROM steps
     UNION ALL
@@ -187,39 +188,35 @@ export function activationFunnelQuery(): QueryResult {
 
 export function lessonDropoffQuery(limit: number): QueryResult {
   const sql = `\
-    WITH lesson_starts AS (
+    WITH lesson_activity AS (
       SELECT
         l.lesson_id,
         l.slug,
         l.title_en,
-        COUNT(*) AS starts
+        COUNT(*) FILTER (WHERE fe.event_type = 'lesson_start') AS starts,
+        COUNT(*) FILTER (WHERE fe.event_type = 'lesson_abandon') AS abandons,
+        COUNT(*) FILTER (WHERE fe.event_type = 'lesson_complete') AS completes,
+        AVG(fe.value) FILTER (WHERE fe.event_type = 'lesson_abandon') AS avg_seconds_before_abandon
       FROM fact_events fe
       JOIN dim_lessons l ON fe.lesson_id = l.lesson_id
-      WHERE fe.event_type = 'lesson_start'
+      WHERE fe.event_type IN ('lesson_start', 'lesson_abandon', 'lesson_complete')
       GROUP BY l.lesson_id, l.slug, l.title_en
-    ),
-    lesson_completes AS (
-      SELECT
-        l.lesson_id,
-        COUNT(*) AS completes
-      FROM fact_events fe
-      JOIN dim_lessons l ON fe.lesson_id = l.lesson_id
-      WHERE fe.event_type = 'lesson_complete'
-      GROUP BY l.lesson_id
     )
     SELECT
-      ls.slug,
-      ls.title_en,
-      ls.starts,
-      COALESCE(lc.completes, 0) AS completes,
+      lesson_id,
+      slug,
+      title_en,
+      starts,
+      abandons,
+      completes,
       CASE
-        WHEN ls.starts > 0
-        THEN ROUND((1.0 - COALESCE(lc.completes, 0)::DOUBLE / ls.starts::DOUBLE) * 100, 2)
+        WHEN starts > 0
+        THEN ROUND(abandons::DOUBLE * 100 / starts::DOUBLE, 2)
         ELSE NULL
       END AS dropoff_pct,
-      ls.starts - COALESCE(lc.completes, 0) AS dropped_users
-    FROM lesson_starts ls
-    LEFT JOIN lesson_completes lc ON ls.lesson_id = lc.lesson_id
+      avg_seconds_before_abandon
+    FROM lesson_activity
+    WHERE starts > 0
     ORDER BY dropoff_pct DESC NULLS LAST
     LIMIT $1`;
   return { sql, params: [limit] };
@@ -236,26 +233,28 @@ export function segmentCalibrationQuery(
         segment_id,
         COUNT(*) AS attempts,
         COUNT(DISTINCT user_id) AS learners,
-        SUM(CASE WHEN value > 0.5 THEN 1 ELSE 0 END) AS successes,
-        AVG(value) AS avg_score
-      FROM fact_events
-      WHERE event_type = 'segment_answer'
-        AND user_id IS NOT NULL
+        AVG(score) AS avg_score,
+        AVG(CASE WHEN hints_used > 0 THEN 1.0 ELSE 0.0 END) AS hint_rate,
+        AVG(score) FILTER (WHERE attempt_number = 1) AS first_try_avg_score
+      FROM fact_segment_attempts
       GROUP BY lesson_id, segment_id
       HAVING COUNT(DISTINCT user_id) >= $1
     )
     SELECT
+      sa.lesson_id,
       dl.slug AS lesson_slug,
       dl.title_en AS lesson_title,
       sa.segment_id,
       sa.learners,
       sa.attempts,
       ROUND(sa.avg_score, 4) AS avg_score,
-      ROUND(sa.successes::DOUBLE / NULLIF(sa.attempts, 0)::DOUBLE, 4) AS success_rate,
+      ROUND(sa.attempts::DOUBLE / NULLIF(sa.learners, 0)::DOUBLE, 4) AS avg_attempts_per_learner,
+      ROUND(sa.hint_rate, 4) AS hint_rate,
+      ROUND(sa.first_try_avg_score, 4) AS first_try_avg_score,
       CASE
-        WHEN sa.avg_score >= 0.85 THEN 'mastery'
-        WHEN sa.avg_score >= 0.65 THEN 'proficient'
-        WHEN sa.avg_score >= 0.40 THEN 'developing'
+        WHEN sa.avg_score >= 85 THEN 'mastery'
+        WHEN sa.avg_score >= 65 THEN 'proficient'
+        WHEN sa.avg_score >= 40 THEN 'developing'
         ELSE 'needs_revision'
       END AS calibration
     FROM segment_attempts sa
@@ -788,16 +787,31 @@ export function exportQuery(
   limit: number,
   offset: number,
 ): QueryResult {
-  const { sql: whereClause, params } = buildWhere(filters);
-  const where = whereClause || '';
+  const allowedFilters = new Set([
+    'event_type', 'role', 'route_class', 'device', 'locale', 'lesson_id', 'segment_id',
+  ]);
+  const entries = Object.entries(filters).filter(
+    ([key, value]) => allowedFilters.has(key) && value !== undefined && value !== null,
+  );
+  const params: unknown[] = [];
+  const clauses: string[] = [];
+  for (const [key, value] of entries) {
+    const column = `fe.${key}`;
+    if (Array.isArray(value)) {
+      const start = params.length + 1;
+      params.push(...value);
+      clauses.push(`${column} IN (${value.map((_, index) => `$${start + index}`).join(', ')})`);
+    } else {
+      params.push(value);
+      clauses.push(`${column} = $${params.length}`);
+    }
+  }
+  const where = clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '';
   const offsetIdx = params.length + 1;
   const limitIdx = params.length + 2;
 
   const sql = `\
     SELECT
-      fe.event_id,
-      fe.user_id,
-      fe.anon_id,
       fe.session_id,
       fe.lesson_id,
       fe.segment_id,

@@ -78,9 +78,10 @@ SQL views/tables (14 across 0023-0025 — full list: §6 rollups, §8 console, �
   insights_today_activity · insights_today_users
         ▼
 Core /api/v1/admin/insights/* — 12 routes (admin/superadmin): calibration, activity,
-  cohorts, funnel, velocity, dropoff, adoption, sessions, export, timetovalue, engagement, families
+cohorts, funnel, velocity, dropoff, adoption, sessions, export, timetovalue, engagement, families
         ▼
-/admin/insights  ·  4-tab console (learning / behaviour / family / acquisition)
+/admin/insights  ·  compatibility redirect to /admin/intel?focus=learning
+/admin/intel     ·  unified learning and product intelligence console
 ```
 
 ## 4. Event vocabulary (closed — mirror of the 0025 CHECK)
@@ -306,7 +307,9 @@ now, without a single third-party tracker.
 
 ## 8. What the console answers (0024)
 
-Four tabs over six SQL views, all aggregated in Postgres:
+The collection contract remains in Core and the canonical SQL views. The
+admin presentation is unified in `/admin/intel`; `/admin/insights` stays only
+as a safe compatibility route for existing links. Its decision surfaces are:
 
 | Tab | Answers |
 |---|---|

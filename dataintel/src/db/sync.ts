@@ -1,7 +1,7 @@
 import { query, execute, exec, isReady } from './duckdb.js';
 import { getConfig } from '../env.js';
 
-type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions';
+type TableName = 'learning_events' | 'users' | 'lessons' | 'sessions' | 'attempts' | 'anon_conversions';
 
 interface SyncState {
   table_name: string;
@@ -176,6 +176,27 @@ function mapSessionRow(row: Record<string, unknown>): Record<string, unknown> {
   };
 }
 
+function mapAttemptRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    attempt_id: row.attempt_id ?? row.id,
+    user_id: row.user_id ?? null,
+    lesson_id: row.lesson_id ?? null,
+    segment_id: row.segment_id ?? null,
+    attempt_number: row.attempt_number ?? 0,
+    score: row.score ?? 0,
+    hints_used: row.hints_used ?? 0,
+    created_at: row.created_at ?? new Date().toISOString(),
+  };
+}
+
+function mapAnonConversionRow(row: Record<string, unknown>): Record<string, unknown> {
+  return {
+    anon_id: row.anon_id,
+    user_id: row.user_id,
+    converted_at: row.converted_at,
+  };
+}
+
 // ── Batch insert ──
 
 async function batchInsert(
@@ -346,6 +367,13 @@ const SESSION_COLUMNS = [
   'duration_sec',
 ] as const;
 
+const ATTEMPT_COLUMNS = [
+  'attempt_id', 'user_id', 'lesson_id', 'segment_id', 'attempt_number',
+  'score', 'hints_used', 'created_at',
+] as const;
+
+const ANON_CONVERSION_COLUMNS = ['anon_id', 'user_id', 'converted_at'] as const;
+
 async function syncDimTable(
   syncKey: TableName,
   targetTable: string,
@@ -407,55 +435,49 @@ async function syncDimTable(
 // ── Aggregates ──
 
 export async function refreshAggregates(): Promise<void> {
-  const state = await getSyncState('learning_events');
-  // DuckDB's Node driver returns TIMESTAMP columns as JS Date objects;
-  // interpolating one into a template literal calls its default
-  // Date#toString() ("Wed Jul 29 2026 19:27:41 GMT-0600 (...)"), which
-  // DuckDB's TIMESTAMP parser rejects outright — every refresh after the
-  // first successful sync threw a Conversion Error and never wrote a single
-  // aggregate row. Bound as a real parameter instead of interpolated text.
-  const lastSyncTime = state?.last_synced_at
-    ? new Date(state.last_synced_at).toISOString()
-    : null;
+  // Recompute a bounded trailing window. Summing per-event counts inflates
+  // distinct users and sessions, so both rollups calculate at their reporting
+  // grain directly from the event fact table.
+  await exec('DELETE FROM agg_daily_activity WHERE day >= CURRENT_DATE - INTERVAL 7 DAY');
+  await exec('DELETE FROM agg_daily_users WHERE day >= CURRENT_DATE - INTERVAL 7 DAY');
 
-  await execute(
-    `
+  await exec(`
     INSERT INTO agg_daily_activity (day, role, event_type, route_class, device, locale, events, users, sessions, total_value)
     SELECT
       created_at::DATE AS day,
-      COALESCE(role, '') AS role,
+      COALESCE(role, 'unknown') AS role,
       event_type,
       COALESCE(route_class, '') AS route_class,
       COALESCE(device, '') AS device,
       COALESCE(locale, '') AS locale,
       COUNT(*) AS events,
-      COUNT(DISTINCT user_id) AS users,
+      COUNT(DISTINCT COALESCE(user_id::VARCHAR, anon_id::VARCHAR)) AS users,
       COUNT(DISTINCT session_id) AS sessions,
       SUM(COALESCE(value, 0)) AS total_value
     FROM fact_events
-    WHERE $1::TIMESTAMP IS NULL OR created_at >= $1::TIMESTAMP
+    WHERE created_at >= CURRENT_DATE - INTERVAL 7 DAY
     GROUP BY day, role, event_type, route_class, device, locale
-    ON CONFLICT (day, role, event_type, route_class, device, locale) DO UPDATE SET
-      events = EXCLUDED.events,
-      users = EXCLUDED.users,
-      sessions = EXCLUDED.sessions,
-      total_value = EXCLUDED.total_value
-  `,
-    lastSyncTime,
-  );
+  `);
 
   await exec(`
     INSERT INTO agg_daily_users (day, role, users, sessions)
     SELECT
-      day,
-      role,
-      SUM(DISTINCT events) FILTER (WHERE event_type NOT IN ('page_view', 'heartbeat')) AS users,
-      SUM(sessions) AS sessions
-    FROM agg_daily_activity
+      created_at::DATE AS day,
+      COALESCE(role, 'unknown') AS role,
+      COUNT(DISTINCT COALESCE(user_id::VARCHAR, anon_id::VARCHAR)) AS users,
+      COUNT(DISTINCT session_id) AS sessions
+    FROM fact_events
+    WHERE created_at >= CURRENT_DATE - INTERVAL 7 DAY
     GROUP BY day, role
-    ON CONFLICT (day, role) DO UPDATE SET
-      users = EXCLUDED.users,
-      sessions = EXCLUDED.sessions
+    UNION ALL
+    SELECT
+      created_at::DATE AS day,
+      '' AS role,
+      COUNT(DISTINCT COALESCE(user_id::VARCHAR, anon_id::VARCHAR)) AS users,
+      COUNT(DISTINCT session_id) AS sessions
+    FROM fact_events
+    WHERE created_at >= CURRENT_DATE - INTERVAL 7 DAY
+    GROUP BY day
   `);
 }
 
@@ -501,6 +523,24 @@ export async function syncTable(
           SESSION_COLUMNS,
           'session_id',
         );
+      case 'attempts':
+        return await syncDimTable(
+          'attempts',
+          'fact_segment_attempts',
+          'dataintel_attempts_sync',
+          mapAttemptRow,
+          ATTEMPT_COLUMNS,
+          'attempt_id',
+        );
+      case 'anon_conversions':
+        return await syncDimTable(
+          'anon_conversions',
+          'dim_anon_conversions',
+          'dataintel_anon_conversions_sync',
+          mapAnonConversionRow,
+          ANON_CONVERSION_COLUMNS,
+          'anon_id',
+        );
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
@@ -522,6 +562,8 @@ export async function syncAll(): Promise<{
     'users',
     'lessons',
     'sessions',
+    'attempts',
+    'anon_conversions',
   ];
 
   for (const name of tableNames) {

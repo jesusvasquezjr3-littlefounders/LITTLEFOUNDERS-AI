@@ -124,13 +124,14 @@ describe('GET /api/v1/intel/metrics/compare — metric/column resolution', () =>
     expect(sessionsRes.status).toBe(200);
   });
 
-  it('still accepts metric=completions (getComparison pre-resolves all 9 metrics itself, unlike forecast/anomalies)', async () => {
+  it('rejects metric=completions instead of relabelling all events as completions', async () => {
     const res = await auth(
       request(createApp()).get(
         `/api/v1/intel/metrics/compare?metric=completions&currentStart=${currentStart}&currentEnd=${currentEnd}&previousStart=${previousStart}&previousEnd=${previousEnd}`,
       ),
     );
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 });
 

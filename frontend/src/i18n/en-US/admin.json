@@ -23,7 +23,7 @@
     "audit": "Audit log",
     "roles": "Roles & Access",
     "insights": "Insights",
-    "intel": "Data Intel"
+    "intel": "Learning intelligence"
   },
   "overview": {
     "title": "Admin panel",
@@ -772,12 +772,13 @@
     }
   },
   "intel": {
-    "title": "Data Intelligence",
-    "subtitle": "First-party analytics warehouse, segmentation, forecasting, anomaly detection, and experiment analysis.",
+    "title": "Learning intelligence",
+    "subtitle": "Consent-aware product, retention, and learning evidence for better decisions.",
     "tabs": {
       "home": "Home",
       "trends": "Trends",
-      "funnels": "Funnels",
+    "funnels": "Funnels",
+    "learning": "Learning",
       "retention": "Retention",
       "segments": "Segments",
       "people": "People",
@@ -785,7 +786,10 @@
       "alerts": "Alerts",
       "settings": "Settings"
     },
-    "home": {
+  "home": {
+    "consentTitle": "Learning analytics coverage",
+    "consentHint": "Consent remains the boundary for kid behavioural telemetry. Authoritative grades stay inside the product.",
+    "consentPending": "Loading",
       "kpiDau": "Daily Active Users",
       "kpiEvents": "Events ({{days}}d)",
       "kpiRetention": "Week 1 Retention",
@@ -820,7 +824,7 @@
       "dauTitle": "DAU",
       "sparklineHint": ""
     },
-    "funnels": {
+  "funnels": {
       "title": "Funnel Analysis",
       "subtitle": "Track user progression through configurable conversion funnels.",
       "empty": "Define funnel steps to begin analysis.",
@@ -1008,6 +1012,25 @@
       "colExpected": "Expected",
       "colDeviation": "Z-Score",
       "colStart": "Start"
+    },
+    "learning": {
+    "dropoffTitle": "Lesson abandonment",
+    "dropoffSubtitle": "Where learners leave a lesson, measured from explicit starts and abandons.",
+    "calibrationTitle": "Exercise calibration",
+    "calibrationSubtitle": "Authoritative Core grades reveal where content is too difficult, too easy, or needs clearer teaching.",
+    "colLesson": "Lesson",
+    "colStarts": "Starts",
+    "colCompleted": "Completed",
+    "colAbandon": "Abandoned",
+    "colTime": "Time before exit",
+    "colSegment": "Exercise",
+    "colLearners": "Learners",
+    "colScore": "Average score",
+    "colAttempts": "Attempts per learner",
+    "colHints": "Hint use",
+    "colFirstTry": "First attempt score",
+    "unavailable": "Not enough data",
+    "minutes": "{{count}} min"
     }
   },
   "insights": {

@@ -957,6 +957,13 @@ export type Database = {
             referencedColumns: ["anon_id"]
           },
           {
+            foreignKeyName: "learning_events_anon_id_fkey"
+            columns: ["anon_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_anon_conversions_sync"
+            referencedColumns: ["anon_id"]
+          },
+          {
             foreignKeyName: "learning_events_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1610,6 +1617,87 @@ export type Database = {
       }
     }
     Views: {
+      dataintel_anon_conversions_sync: {
+        Row: {
+          anon_id: string | null
+          converted_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          anon_id?: string | null
+          converted_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          anon_id?: string | null
+          converted_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anon_visitors_converted_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      dataintel_attempts_sync: {
+        Row: {
+          attempt_id: string | null
+          attempt_number: number | null
+          created_at: string | null
+          hints_used: number | null
+          lesson_id: string | null
+          score: number | null
+          segment_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          attempt_id?: string | null
+          attempt_number?: number | null
+          created_at?: string | null
+          hints_used?: number | null
+          lesson_id?: string | null
+          score?: number | null
+          segment_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          attempt_id?: string | null
+          attempt_number?: number | null
+          created_at?: string | null
+          hints_used?: number | null
+          lesson_id?: string | null
+          score?: number | null
+          segment_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_segment_attempts_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_segment_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       dataintel_events_sync: {
         Row: {
           anon_id: string | null
@@ -1668,6 +1756,13 @@ export type Database = {
             columns: ["anon_id"]
             isOneToOne: false
             referencedRelation: "anon_visitors"
+            referencedColumns: ["anon_id"]
+          },
+          {
+            foreignKeyName: "learning_events_anon_id_fkey"
+            columns: ["anon_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_anon_conversions_sync"
             referencedColumns: ["anon_id"]
           },
           {

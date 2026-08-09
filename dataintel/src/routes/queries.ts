@@ -19,7 +19,10 @@ import * as sessions from '../services/sessions.js';
 
 const daysSchema = z.coerce.number().int().min(1).max(365).default(30);
 const limitSchema = z.coerce.number().int().min(1).max(1000);
-const metricSchema = z.enum(['dau', 'wau', 'mau', 'events', 'users', 'sessions', 'retention', 'activation', 'completions']);
+// Flat time-series features only accept metrics that have an exact event-fact
+// definition. Retention, activation and completions have different cohorts or
+// denominators, so silently mapping them to users/events would be false.
+const metricSchema = z.enum(['events', 'dau', 'users', 'sessions']);
 // Anomaly detection, forecasting and period-comparison run off a flat
 // per-bucket (hour/day) rollup of fact_events — only these four metrics
 // have a column in that rollup. wau/mau/retention/activation/completions
@@ -42,13 +45,23 @@ const compareSegmentsSchema = z.object({
   segmentB: z.string().uuid(),
 });
 
+const exportFiltersSchema = z.object({
+  event_type: z.union([z.string(), z.array(z.string())]).optional(),
+  role: z.union([z.string(), z.array(z.string())]).optional(),
+  route_class: z.union([z.string(), z.array(z.string())]).optional(),
+  device: z.union([z.string(), z.array(z.string())]).optional(),
+  locale: z.union([z.string(), z.array(z.string())]).optional(),
+  lesson_id: z.union([z.string().uuid(), z.array(z.string().uuid())]).optional(),
+  segment_id: z.union([z.string(), z.array(z.string())]).optional(),
+}).strict();
+
 const exportJobSchema = z.object({
-  filters: z.record(z.string(), z.unknown()),
+  filters: exportFiltersSchema,
   format: z.enum(['csv', 'json', 'parquet']).default('json'),
 });
 
 const exportEventsSchema = z.object({
-  filters: z.record(z.string(), z.unknown()).optional().default({}),
+  filters: exportFiltersSchema.optional().default({}),
   limit: z.number().int().min(1).max(10000).default(1000),
   offset: z.number().int().min(0).default(0),
 });
@@ -124,10 +137,6 @@ export function intelRouter(): Router {
 
   router.get('/metrics/compare', async (req, res) => {
     try {
-      // Unlike /anomalies and /forecast, getComparison() pre-resolves all 9
-      // metrics (including retention/activation/completions, approximately)
-      // via its own METRIC_COLUMN map before ever reaching compareQuery, so
-      // the full metricSchema is genuinely supported here.
       const metric = metricSchema.parse(req.query.metric);
       const currentStart = z.string().datetime().parse(req.query.currentStart);
       const currentEnd = z.string().datetime().parse(req.query.currentEnd);

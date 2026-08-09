@@ -130,11 +130,9 @@ interface EngagementRow {
 
 const METRIC_COLUMN: Record<string, string> = {
   dau: 'users',
+  users: 'users',
   events: 'event_count',
   sessions: 'sessions',
-  retention: 'users',
-  activation: 'users',
-  completions: 'event_count',
 };
 
 export async function getMetricsSummary(days: number): Promise<MetricsSummary | null> {
@@ -262,7 +260,8 @@ export async function getTrend(
   days: number,
 ): Promise<TrendPoint[] | null> {
   try {
-    const column = METRIC_COLUMN[metric] ?? metric;
+    const column = METRIC_COLUMN[metric];
+    if (!column) return null;
     const { sql, params } = trendQuery(column, granularity, days);
     const rows = await query<TrendRow>(sql, ...params);
 
@@ -284,7 +283,8 @@ export async function getComparison(
   previousEnd: string,
 ): Promise<CompareResult | null> {
   try {
-    const column = METRIC_COLUMN[metric] ?? metric;
+    const column = METRIC_COLUMN[metric];
+    if (!column) return null;
     const { sql, params } = compareQuery(
       column,
       currentStart,

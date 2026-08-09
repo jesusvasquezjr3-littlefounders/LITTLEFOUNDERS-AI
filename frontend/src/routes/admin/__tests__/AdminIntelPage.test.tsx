@@ -165,18 +165,17 @@ describe('AdminIntelPage — layout', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'admin.intel.title' })).toBeInTheDocument();
   });
 
-  it('renders all nine tab buttons', async () => {
+  it('renders all intelligence workspace tabs', async () => {
     renderPage();
     await flushPromises();
     expect(screen.getByText('admin.intel.tabs.home')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.trends')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.funnels')).toBeInTheDocument();
+    expect(screen.getByText('admin.intel.tabs.learning')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.retention')).toBeInTheDocument();
-    expect(screen.getByText('admin.intel.tabs.segments')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.people')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.experiments')).toBeInTheDocument();
     expect(screen.getByText('admin.intel.tabs.alerts')).toBeInTheDocument();
-    expect(screen.getByText('admin.intel.tabs.settings')).toBeInTheDocument();
   });
 
   it('renders page content', async () => {
@@ -241,11 +240,11 @@ describe('AdminIntelPage — tab switching', () => {
     expect(screen.getByText('admin.intel.retention.cohortTitle')).toBeInTheDocument();
   });
 
-  it('switches to Segments tab on click', async () => {
+  it('switches to the learning evidence tab on click', async () => {
     renderPage();
     await flushPromises();
-    fireEvent.click(screen.getByText('admin.intel.tabs.segments'));
-    expect(screen.getByText('admin.intel.segments.placeholder')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('admin.intel.tabs.learning'));
+    expect(screen.getByText('admin.intel.learning.dropoffTitle')).toBeInTheDocument();
   });
 
   it('switches to People tab on click', async () => {
@@ -267,13 +266,6 @@ describe('AdminIntelPage — tab switching', () => {
     await flushPromises();
     fireEvent.click(screen.getByText('admin.intel.tabs.alerts'));
     expect(screen.getByText('admin.intel.alerts.empty')).toBeInTheDocument();
-  });
-
-  it('switches to Settings tab on click', async () => {
-    renderPage();
-    await flushPromises();
-    fireEvent.click(screen.getByText('admin.intel.tabs.settings'));
-    expect(screen.getByText('admin.intel.settings.placeholder')).toBeInTheDocument();
   });
 
   it('switches back to Home tab', async () => {
@@ -301,19 +293,6 @@ describe('AdminIntelPage — empty states', () => {
     expect(screen.getByText('admin.intel.alerts.empty')).toBeInTheDocument();
   });
 
-  it('shows placeholder for Segments tab', async () => {
-    renderPage();
-    await flushPromises();
-    fireEvent.click(screen.getByText('admin.intel.tabs.segments'));
-    expect(screen.getByText('admin.intel.segments.placeholder')).toBeInTheDocument();
-  });
-
-  it('shows placeholder for Settings tab', async () => {
-    renderPage();
-    await flushPromises();
-    fireEvent.click(screen.getByText('admin.intel.tabs.settings'));
-    expect(screen.getByText('admin.intel.settings.placeholder')).toBeInTheDocument();
-  });
 });
 
 describe('AdminIntelPage — accessibility', () => {

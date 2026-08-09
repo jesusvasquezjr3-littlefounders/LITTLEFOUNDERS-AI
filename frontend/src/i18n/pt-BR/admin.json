@@ -23,7 +23,7 @@
     "audit": "Auditoria",
     "roles": "Papéis e acesso",
     "insights": "Insights",
-    "intel": "Intel Dados"
+    "intel": "Inteligência de aprendizagem"
   },
   "overview": {
     "title": "Painel de administração",
@@ -772,12 +772,13 @@
     }
   },
   "intel": {
-    "title": "Inteligência de Dados",
-    "subtitle": "Armazém de análises próprias, segmentação, previsão, detecção de anomalias e análise de experimentos.",
+    "title": "Inteligência de aprendizagem",
+    "subtitle": "Evidências com consentimento sobre produto, retenção e aprendizagem para decisões melhores.",
     "tabs": {
       "home": "Início",
       "trends": "Tendências",
-      "funnels": "Funis",
+    "funnels": "Funis",
+    "learning": "Aprendizagem",
       "retention": "Retenção",
       "segments": "Segmentos",
       "people": "Pessoas",
@@ -785,7 +786,10 @@
       "alerts": "Alertas",
       "settings": "Configurações"
     },
-    "home": {
+  "home": {
+    "consentTitle": "Cobertura da análise de aprendizagem",
+    "consentHint": "O consentimento mantém o limite para telemetria comportamental infantil. As notas autoritativas permanecem dentro do produto.",
+    "consentPending": "Carregando",
       "kpiDau": "Usuários Ativos Diários",
       "kpiEvents": "Eventos ({{days}}d)",
       "kpiRetention": "Retenção Semana 1",
@@ -820,7 +824,7 @@
       "dauTitle": "DAU",
       "sparklineHint": ""
     },
-    "funnels": {
+  "funnels": {
       "title": "Análise de Funis",
       "subtitle": "Acompanhe a progressão de usuários através de funis de conversão configuráveis.",
       "empty": "Defina as etapas do funil para começar a análise.",
@@ -1008,6 +1012,25 @@
       "colExpected": "Esperado",
       "colDeviation": "Z-Score",
       "colStart": "Início"
+    },
+    "learning": {
+    "dropoffTitle": "Abandono de lições",
+    "dropoffSubtitle": "Onde os aprendizes saem de uma lição, medido a partir de inícios e abandonos explícitos.",
+    "calibrationTitle": "Calibração de exercícios",
+    "calibrationSubtitle": "As notas autoritativas do Core revelam quando o conteúdo está difícil demais, fácil demais ou precisa de uma explicação mais clara.",
+    "colLesson": "Lição",
+    "colStarts": "Inícios",
+    "colCompleted": "Concluídas",
+    "colAbandon": "Abandono",
+    "colTime": "Tempo antes de sair",
+    "colSegment": "Exercício",
+    "colLearners": "Aprendizes",
+    "colScore": "Nota média",
+    "colAttempts": "Tentativas por aprendiz",
+    "colHints": "Uso de dicas",
+    "colFirstTry": "Nota da primeira tentativa",
+    "unavailable": "Dados insuficientes",
+    "minutes": "{{count}} min"
     }
   },
   "insights": {

@@ -478,7 +478,7 @@ describe('GET /api/v1/intel/export/jobs', () => {
     const created = await auth(
       request(createApp())
         .post('/api/v1/intel/export/jobs')
-        .send({ filters: { eventType: 'lesson_complete' }, format: 'json' }),
+        .send({ filters: { event_type: 'lesson_complete' }, format: 'json' }),
     );
     expect(created.status).toBe(201);
 

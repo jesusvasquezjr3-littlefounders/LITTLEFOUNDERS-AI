@@ -1,4 +1,5 @@
 import { Component, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
@@ -15,15 +16,15 @@ import type { TooltipProps } from 'recharts';
 /*
  * /admin/intel — full analytics dashboard powered by the dataintel service.
  * Core proxies dataintel at /api/v1/admin/intel/*; every endpoint is called
- * via api() with token auth. Nine tabs: Home, Trends, Funnels, Retention,
- * Segments, People, Experiments, Alerts, Settings.
+ * via api() with token auth. The workspace prioritizes decision-ready
+ * evidence rather than exposing unfinished configuration surfaces.
  */
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type Tab = 'home' | 'trends' | 'funnels' | 'retention' | 'segments' | 'people' | 'experiments' | 'alerts' | 'settings';
+type Tab = 'home' | 'trends' | 'funnels' | 'learning' | 'retention' | 'people' | 'experiments' | 'alerts';
 
 interface IntelSummary {
   dau: number;
@@ -74,7 +75,7 @@ interface IntelDropoffEntry {
   starts: number;
   completions: number;
   abandon_rate: number;
-  avg_seconds_before_abandon: number;
+  avg_seconds_before_abandon: number | null;
 }
 
 interface IntelCalibrationEntry {
@@ -85,8 +86,8 @@ interface IntelCalibrationEntry {
   learners: number;
   avg_score: number;
   avg_attempts_per_learner: number;
-  hint_rate: number;
-  first_try_avg_score: number;
+  hint_rate: number | null;
+  first_try_avg_score: number | null;
 }
 
 interface IntelEngagementEntry {
@@ -157,13 +158,8 @@ interface IntelAlert {
   createdAt: string;
 }
 
-interface IntelSegment {
-  id?: string;
-  name: string;
-  filters: { field: string; op: 'eq' | 'neq' | 'in'; value: string | string[] }[];
-}
-
 interface IntelBundle {
+  consent: { kidsTotal: number; kidsConsented: number } | null;
   summary: IntelSummary | null;
   trends: IntelTrendPoint[] | null;
   funnel: IntelFunnelStep[] | null;
@@ -176,7 +172,6 @@ interface IntelBundle {
   anomalies: IntelAnomaly[] | null;
   experiments: IntelExperiment[] | null;
   alerts: IntelAlert[] | null;
-  segments: IntelSegment[] | null;
 }
 
 type LoadState = { status: 'loading' } | { status: 'error'; code: string } | { status: 'ready'; data: IntelBundle };
@@ -229,8 +224,6 @@ const PERIOD_OPTIONS: DropdownOption<string>[] = [
 
 const METRIC_KEYS: DropdownOption<string>[] = [
   { value: 'dau', label: '' },
-  { value: 'wau', label: '' },
-  { value: 'mau', label: '' },
   { value: 'events', label: '' },
   { value: 'users', label: '' },
   { value: 'sessions', label: '' },
@@ -246,12 +239,11 @@ const TABS_WITH_ICONS: { key: Tab; icon: string }[] = [
   { key: 'home', icon: 'space_dashboard' },
   { key: 'trends', icon: 'trending_up' },
   { key: 'funnels', icon: 'filter_alt' },
+  { key: 'learning', icon: 'school' },
   { key: 'retention', icon: 'grid_view' },
-  { key: 'segments', icon: 'pie_chart' },
   { key: 'people', icon: 'groups' },
   { key: 'experiments', icon: 'science' },
   { key: 'alerts', icon: 'notifications' },
-  { key: 'settings', icon: 'settings' },
 ];
 
 const CHURN_COLORS: Record<string, string> = {
@@ -312,6 +304,16 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
         <StatCard dense icon={<Icon name="calendar_month" />} tone="accent" value={data.summary ? pf.format(data.summary.week1Retention / 100) : ''} label={t('admin.intel.kpi.w1retention')} className="shadow-glass border border-outline/50" />
         <StatCard dense icon={<Icon name="rocket_launch" />} value={data.summary ? pf.format(data.summary.activationRate / 100) : ''} label={t('admin.intel.kpi.activation')} className="shadow-glass border border-outline/50" />
       </div>
+
+      <Card className="flex flex-col gap-2 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="lf-label text-content">{t('admin.intel.home.consentTitle')}</p>
+          <p className="lf-caption mt-1 text-content-muted">{t('admin.intel.home.consentHint')}</p>
+        </div>
+        <p className="lf-display-sm tabular-nums text-primary">
+          {data.consent ? `${nf.format(data.consent.kidsConsented)} / ${nf.format(data.consent.kidsTotal)}` : t('admin.intel.home.consentPending')}
+        </p>
+      </Card>
 
       <ChartCard title={t(`${'admin.intel.trends.dauTitle'}`) || `DAU (${days}d)`} subtitle={String(t('admin.intel.trends.sparklineHint'))}>
         {data.trends && data.trends.length > 0 ? (
@@ -605,16 +607,50 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
 }
 
 /* ------------------------------------------------------------------ */
-/*  Segments tab                                                       */
+/*  Learning tab                                                       */
 /* ------------------------------------------------------------------ */
 
-function SegmentsTab({ t }: { t: (k: string) => string }) {
+function LearningTab({ data, t, nf, pf }: { data: IntelBundle; t: (k: string, options?: Record<string, unknown>) => string; nf: Intl.NumberFormat; pf: Intl.NumberFormat }) {
+  const duration = (seconds: number | null) => seconds === null
+    ? t('admin.intel.learning.unavailable')
+    : t('admin.intel.learning.minutes', { count: Math.round(seconds / 60) });
+
   return (
-    <Card className="flex flex-col items-center gap-2 py-12 text-center">
-      <Icon name="group_work" className="!text-[40px] text-content-faint" />
-      <p className="lf-label text-content">{t('admin.intel.segments.placeholder')}</p>
-      <p className="lf-caption max-w-sm text-content-muted">{t('admin.intel.segments.placeholderHint')}</p>
-    </Card>
+    <div className="flex flex-col gap-6">
+      <ChartCard title={t('admin.intel.learning.dropoffTitle')} subtitle={t('admin.intel.learning.dropoffSubtitle')}>
+        {data.dropoff && data.dropoff.length > 0 ? (
+          <Table<IntelDropoffEntry>
+            rows={data.dropoff}
+            rowKey={(row) => row.lesson_id}
+            columns={[
+              { key: 'lesson', header: t('admin.intel.learning.colLesson'), cell: (row) => row.title_en || row.lesson_slug, primary: true },
+              { key: 'starts', header: t('admin.intel.learning.colStarts'), cell: (row) => nf.format(row.starts), numeric: true },
+              { key: 'completions', header: t('admin.intel.learning.colCompleted'), cell: (row) => nf.format(row.completions), numeric: true },
+              { key: 'abandon', header: t('admin.intel.learning.colAbandon'), cell: (row) => pf.format(row.abandon_rate / 100), numeric: true },
+              { key: 'duration', header: t('admin.intel.learning.colTime'), cell: (row) => duration(row.avg_seconds_before_abandon), numeric: true },
+            ] satisfies TableColumn<IntelDropoffEntry>[]}
+          />
+        ) : <EmptyChartIcon name="trending_down" />}
+      </ChartCard>
+
+      <ChartCard title={t('admin.intel.learning.calibrationTitle')} subtitle={t('admin.intel.learning.calibrationSubtitle')}>
+        {data.calibration && data.calibration.length > 0 ? (
+          <Table<IntelCalibrationEntry>
+            rows={data.calibration}
+            rowKey={(row) => `${row.lesson_id}:${row.segment_id}`}
+            columns={[
+              { key: 'lesson', header: t('admin.intel.learning.colLesson'), cell: (row) => row.lesson_slug, primary: true },
+              { key: 'segment', header: t('admin.intel.learning.colSegment'), cell: (row) => row.segment_id },
+              { key: 'learners', header: t('admin.intel.learning.colLearners'), cell: (row) => nf.format(row.learners), numeric: true },
+              { key: 'score', header: t('admin.intel.learning.colScore'), cell: (row) => pf.format(row.avg_score / 100), numeric: true },
+              { key: 'attempts', header: t('admin.intel.learning.colAttempts'), cell: (row) => nf.format(row.avg_attempts_per_learner), numeric: true },
+              { key: 'hints', header: t('admin.intel.learning.colHints'), cell: (row) => row.hint_rate === null ? t('admin.intel.learning.unavailable') : pf.format(row.hint_rate), numeric: true },
+              { key: 'firstTry', header: t('admin.intel.learning.colFirstTry'), cell: (row) => row.first_try_avg_score === null ? t('admin.intel.learning.unavailable') : pf.format(row.first_try_avg_score / 100), numeric: true },
+            ] satisfies TableColumn<IntelCalibrationEntry>[]}
+          />
+        ) : <EmptyChartIcon name="school" />}
+      </ChartCard>
+    </div>
   );
 }
 
@@ -809,27 +845,14 @@ function AlertsTab({ data, t }: { data: IntelBundle; t: (k: string) => string })
 }
 
 /* ------------------------------------------------------------------ */
-/*  Settings tab                                                       */
-/* ------------------------------------------------------------------ */
-
-function SettingsTab({ t }: { t: (k: string) => string }) {
-  return (
-    <Card className="flex flex-col items-center gap-2 py-12 text-center">
-      <Icon name="settings" className="!text-[40px] text-content-faint" />
-      <p className="lf-label text-content">{t('admin.intel.settings.placeholder')}</p>
-      <p className="lf-caption max-w-sm text-content-muted">{t('admin.intel.settings.placeholderHint')}</p>
-    </Card>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  Main page component                                                */
 /* ------------------------------------------------------------------ */
 
 export function AdminIntelPage() {
   const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
-  const [tab, setTab] = useState<Tab>('home');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState<Tab>(() => searchParams.get('focus') === 'learning' ? 'learning' : 'home');
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [days, setDays] = useState(30);
 
@@ -846,7 +869,7 @@ export function AdminIntelPage() {
     const [
       summaryR, trendsR, anomaliesR,
       funnelR, cohortsR, dropoffR, calibrationR,
-      engagementR, churnR, sessionsR, experimentsR, alertsR, segmentsR,
+      engagementR, churnR, sessionsR, experimentsR, alertsR, consentR,
     ] = await Promise.allSettled([
       get<IntelSummary>(`/admin/intel/metrics/summary?days=${days}`),
       get<IntelTrendPoint[]>(`/admin/intel/metrics/trends?metric=dau&granularity=day&days=${days}`),
@@ -860,7 +883,7 @@ export function AdminIntelPage() {
       get<IntelSessionEntry[]>(`/admin/intel/sessions/depth?days=${days}&limit=200`),
       get<IntelExperiment[]>('/admin/intel/experiments'),
       get<IntelAlert[]>('/admin/intel/alerts'),
-      get<IntelSegment[]>('/admin/intel/segments'),
+      get<{ consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=1'),
     ]);
 
     const unwrap = <T,>(r: PromiseSettledResult<{ ok: true; data: T } | { ok: false; code: string }>): T | null => {
@@ -874,6 +897,7 @@ export function AdminIntelPage() {
     setState({
       status: 'ready',
       data: {
+        consent: unwrap<{ consent: { kidsTotal: number; kidsConsented: number } }>(consentR)?.consent ?? null,
         summary: summaryData,
         trends: unwrap<IntelTrendPoint[]>(trendsR),
         anomalies: unwrap<IntelAnomaly[]>(anomaliesR),
@@ -886,7 +910,6 @@ export function AdminIntelPage() {
         sessions: unwrap<IntelSessionEntry[]>(sessionsR),
         experiments: unwrap<IntelExperiment[]>(experimentsR),
         alerts: unwrap<IntelAlert[]>(alertsR),
-        segments: unwrap<IntelSegment[]>(segmentsR),
       },
     });
   }, [getToken, days]);
@@ -906,11 +929,6 @@ export function AdminIntelPage() {
           <span className="lf-caption text-content-muted">{t('admin.intel.filters.period')}</span>
           <Dropdown value={String(days)} options={PERIOD_OPTIONS} onChange={(v) => setDays(Number(v))} ariaLabel={t('admin.intel.filters.period')} />
         </label>
-        <div className="ml-auto flex items-end gap-2">
-          <Badge className="bg-surface-sunken text-content-faint">
-            {t('admin.intel.export.comingSoon')}
-          </Badge>
-        </div>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-xl border border-outline/30">
@@ -920,7 +938,7 @@ export function AdminIntelPage() {
             type="button"
             onClick={() => setTab(k)}
             className={cn(
-              'flex items-center gap-1.5 min-h-10 shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
+              'flex items-center gap-1.5 min-h-11 shrink-0 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all duration-150',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
               tab === k ? 'bg-surface text-content shadow-glass-sm border border-outline/30 font-bold' : 'text-content-muted hover:text-content',
             )}
@@ -944,12 +962,11 @@ export function AdminIntelPage() {
           {tab === 'home' && <HomeTab data={state.data} days={days} t={t} nf={nf} pf={pf} />}
           {tab === 'trends' && <TrendsTab data={state.data} t={t} />}
           {tab === 'funnels' && <FunnelsTab data={state.data} t={t} pf={pf} />}
+          {tab === 'learning' && <LearningTab data={state.data} t={t} nf={nf} pf={pf} />}
           {tab === 'retention' && <RetentionTab data={state.data} t={t} pf={pdf} />}
-          {tab === 'segments' && <SegmentsTab t={t} />}
           {tab === 'people' && <PeopleTab data={state.data} t={t} pf={pf} />}
           {tab === 'experiments' && <ExperimentsTab data={state.data} t={t} />}
           {tab === 'alerts' && <AlertsTab data={state.data} t={t} />}
-          {tab === 'settings' && <SettingsTab t={t} />}
         </>
       )}
     </AdminPage>

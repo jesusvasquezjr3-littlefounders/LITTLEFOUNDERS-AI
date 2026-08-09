@@ -11,7 +11,7 @@ export interface DropoffEntry {
   starts: number;
   completions: number;
   abandon_rate: number;
-  avg_seconds_before_abandon: number;
+  avg_seconds_before_abandon: number | null;
 }
 
 export interface CalibrationEntry {
@@ -22,28 +22,34 @@ export interface CalibrationEntry {
   learners: number;
   avg_score: number;
   avg_attempts_per_learner: number;
-  hint_rate: number;
-  first_try_avg_score: number;
+  hint_rate: number | null;
+  first_try_avg_score: number | null;
+  calibration: 'mastery' | 'proficient' | 'developing' | 'needs_revision';
 }
 
 interface DropoffRow {
+  lesson_id: string;
   slug: string;
   title_en: string;
   starts: number;
+  abandons: number;
   completes: number;
   dropoff_pct: number | null;
-  dropped_users: number;
+  avg_seconds_before_abandon: number | null;
 }
 
 interface CalibrationRow {
+  lesson_id: string;
   lesson_slug: string;
   lesson_title: string;
   segment_id: string;
   learners: number;
   attempts: number;
   avg_score: number;
-  success_rate: number;
-  calibration: string;
+  avg_attempts_per_learner: number;
+  hint_rate: number | null;
+  first_try_avg_score: number | null;
+  calibration: CalibrationEntry['calibration'];
 }
 
 export async function getLessonDropoff(
@@ -54,13 +60,13 @@ export async function getLessonDropoff(
     const rows = await query<DropoffRow>(sql, ...params);
 
     return rows.map((r) => ({
-      lesson_id: r.slug,
+      lesson_id: r.lesson_id,
       lesson_slug: r.slug,
       title_en: r.title_en,
       starts: Number(r.starts),
       completions: Number(r.completes),
       abandon_rate: r.dropoff_pct !== null ? Number(r.dropoff_pct) : 0,
-      avg_seconds_before_abandon: 0,
+      avg_seconds_before_abandon: r.avg_seconds_before_abandon !== null ? Number(r.avg_seconds_before_abandon) : null,
     }));
   } catch (err) {
     console.error('[dataintel][lessons] getLessonDropoff failed:', err);
@@ -77,18 +83,16 @@ export async function getSegmentCalibration(
     const rows = await query<CalibrationRow>(sql, ...params);
 
     return rows.map((r) => ({
-      lesson_id: r.lesson_slug,
+      lesson_id: r.lesson_id,
       lesson_slug: r.lesson_slug,
       segment_id: r.segment_id,
       attempts: Number(r.attempts),
       learners: Number(r.learners),
       avg_score: Number(r.avg_score),
-      avg_attempts_per_learner:
-        Number(r.learners) > 0
-          ? Math.round((Number(r.attempts) / Number(r.learners)) * 100) / 100
-          : 0,
-      hint_rate: 0,
-      first_try_avg_score: 0,
+      avg_attempts_per_learner: Number(r.avg_attempts_per_learner),
+      hint_rate: r.hint_rate !== null ? Number(r.hint_rate) : null,
+      first_try_avg_score: r.first_try_avg_score !== null ? Number(r.first_try_avg_score) : null,
+      calibration: r.calibration,
     }));
   } catch (err) {
     console.error('[dataintel][lessons] getSegmentCalibration failed:', err);
