@@ -24,8 +24,13 @@ vi.mock('react-i18next', () => ({
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   AreaChart: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
+  ComposedChart: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
   Area: () => <g data-testid="signup-area" />,
+  Bar: () => null,
   CartesianGrid: () => null,
+  Label: () => null,
+  ReferenceDot: () => null,
+  ReferenceLine: ({ children }: { children?: ReactNode }) => <g>{children}</g>,
   Tooltip: () => null,
   XAxis: () => null,
   YAxis: () => null,
@@ -53,7 +58,7 @@ describe('SignupTimeline', () => {
   it('loads continuous history and exposes the interactive area chart', async () => {
     render(<SignupTimeline />);
 
-    await waitFor(() => expect(screen.getByTestId('signup-area')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getAllByTestId('signup-area').length).toBeGreaterThan(0));
     expect(mockApi).toHaveBeenCalledWith('/admin/users/timeline?days=365', { token: 'fake-token' });
     expect(screen.queryByText('admin.users.timelinePeriods.30d')).not.toBeInTheDocument();
     expect(screen.getByText('9')).toBeInTheDocument();
