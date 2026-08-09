@@ -39,12 +39,19 @@ describe('LearnPage', () => {
             lessonCount: 4,
             progress: { passed: 0, total: 4, pct: 0 },
           },
+          {
+            id: 'course-financial-education',
+            slug: 'financial-education',
+            title: { 'en-US': 'Financial Education' },
+            lessonCount: 4,
+            progress: { passed: 0, total: 4, pct: 0 },
+          },
         ],
       },
       error: null,
     });
 
-    render(
+    const view = render(
       <MemoryRouter>
         <LearnPage />
       </MemoryRouter>,
@@ -56,6 +63,7 @@ describe('LearnPage', () => {
     expect(allTracks).toHaveAttribute('aria-pressed', 'true');
     expect(allTracks).toHaveClass('bg-accent', 'text-on-accent');
     expect(allTracks).not.toHaveClass('bg-secondary');
+    expect(view.container.querySelector('img[src="/course-badges/financial-education.png"]')).toBeInTheDocument();
 
     fireEvent.click(entrepreneurship);
 

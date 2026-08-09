@@ -27,6 +27,16 @@ const COURSE_ICONS: Record<string, string> = {
   'saving-superpowers': 'savings',
   'first-business': 'storefront',
   'first-lemonade-stand': 'local_drink',
+  'financial-education': 'account_balance',
+  entrepreneurship: 'rocket_launch',
+  investing: 'trending_up',
+};
+
+const COURSE_BADGES: Record<string, string> = {
+  'first-lemonade-stand': '/course-badges/first-lemonade-stand.png',
+  'financial-education': '/course-badges/financial-education.png',
+  entrepreneurship: '/course-badges/entrepreneurship.png',
+  investing: '/course-badges/investing.png',
 };
 
 const COURSE_TONES: Record<string, 'primary' | 'secondary' | 'accent' | 'warning' | 'success' | 'delight'> = {
@@ -34,6 +44,9 @@ const COURSE_TONES: Record<string, 'primary' | 'secondary' | 'accent' | 'warning
   'saving-superpowers': 'success',
   'first-business': 'accent',
   'first-lemonade-stand': 'delight',
+  'financial-education': 'warning',
+  entrepreneurship: 'accent',
+  investing: 'success',
 };
 
 const COURSE_CATEGORIES: Record<string, 'entrepreneurship' | 'finance' | 'saving'> = {
@@ -41,6 +54,9 @@ const COURSE_CATEGORIES: Record<string, 'entrepreneurship' | 'finance' | 'saving
   'first-business': 'entrepreneurship',
   'money-basics': 'finance',
   'saving-superpowers': 'saving',
+  'financial-education': 'finance',
+  entrepreneurship: 'entrepreneurship',
+  investing: 'saving',
 };
 
 const TONE_BAR_CLASSES: Record<string, string> = {
@@ -297,8 +313,19 @@ export function LearnPage() {
                       <div className={`absolute inset-x-0 top-0 h-1.5 ${TONE_BAR_CLASSES[tone] ?? 'bg-primary'}`} />
 
                       <div className="flex items-start justify-between gap-3 pt-2">
-                        <IconChip tone={tone} size="lg">
-                          <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} className="text-[26px]" />
+                        <IconChip tone={tone} size="lg" className={COURSE_BADGES[course.slug] ? 'overflow-hidden p-1.5' : undefined}>
+                          {COURSE_BADGES[course.slug] ? (
+                            <img
+                              src={COURSE_BADGES[course.slug]}
+                              alt=""
+                              aria-hidden="true"
+                              className="h-full w-full object-contain"
+                              draggable="false"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} className="text-[26px]" />
+                          )}
                         </IconChip>
                         <div className="flex flex-col items-end gap-1.5">
                           <Badge>

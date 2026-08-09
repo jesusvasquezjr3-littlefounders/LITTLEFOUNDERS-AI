@@ -108,6 +108,7 @@ filebase/
     routes/
 frontend/
   public/
+    course-badges/
     email-templates/
     lottie/
     marketing/
@@ -14118,9 +14119,9 @@ import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 
 /*
- * learn/ — the universal user's home (Brilliant.org-inspired course catalog).
- * Features a prominent "Featured / Jump Back In" hero banner, interactive
- * learning track filter pills, and a 3-column liquid glass course card grid.
+ * learn/ — the learner's home. The composition follows Brilliant's strongest
+ * learning pattern: make the next useful action obvious, then keep discovery
+ * calm and secondary. Course progress remains server-derived.
  */
 ```
 
@@ -14239,7 +14240,7 @@ import CharacterActor from '@/components/characters/control/CharacterActor';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
-import { findAdventureForLesson, localizedText, type CourseTree } from './types';
+import { findAdventureForLesson, findLesson, localizedText, type CourseTree } from './types';
 
 /*
 ```
@@ -14247,7 +14248,6 @@ import { findAdventureForLesson, localizedText, type CourseTree } from './types'
 ### frontend/src/routes/app/learn/LessonPathNode.tsx
 
 ```
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -14256,12 +14256,13 @@ import type { CharacterId } from '@/components/characters/control/types';
 import { localizedText, type LessonNode } from './types';
 
 /*
- * Brilliant.org-style Syllabus Item Row.
- * Replaces the old Duolingo-style winding snake node with a structured,
- * responsive syllabus card row featuring lesson status, duration, XP rewards,
- * and high-contrast action CTAs.
+ * Learner-first syllabus row. The action remains visible on desktop and drops
+ * below the lesson metadata on narrow screens so long localized titles never
+ * compete with a squeezed button.
  */
 
+const STATUS_ICONS: Record<LessonNode['state'], string> = {
+  passed: 'check_circle',
 ```
 
 ### frontend/src/routes/app/learn/LessonRoute.tsx
@@ -14334,6 +14335,7 @@ import i18n from '@/i18n';
 import { api } from '@/lib/api';
 import type { CourseTree } from '../types';
 import { CoursePage } from '../CoursePage';
+import { TerritoryView } from '../TerritoryPage';
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 // getToken must be a STABLE reference — the page's fetch effect depends on it
@@ -14341,7 +14343,6 @@ vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 // function per render would re-fire the effect forever.
 vi.mock('@/auth/AuthContext', () => {
   const getToken = async () => 'token-123';
-  return { useAuth: () => ({ getToken }) };
 ```
 
 ### frontend/src/routes/app/learn/__tests__/LessonRoute.test.tsx
