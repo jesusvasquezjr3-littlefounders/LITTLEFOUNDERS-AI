@@ -110,19 +110,26 @@ export interface AdminUser {
   roles: string[];
 }
 
-export async function listAdminUsers(limit = 100): Promise<AdminUser[] | null> {
-  const profiles = await serviceRest<
-    { user_id: string; display_name: string; username: string | null; locale: string; created_at: string; birth_date: string | null }[]
-  >(`/profiles?select=user_id,display_name,username,locale,created_at,birth_date&order=created_at.desc&limit=${limit}`);
+export async function listAdminUsers(): Promise<AdminUser[] | null> {
+  const profiles = await listAllServiceRows<{
+    user_id: string;
+    display_name: string;
+    username: string | null;
+    locale: string;
+    created_at: string;
+    birth_date: string | null;
+  }>('/profiles?select=user_id,display_name,username,locale,created_at,birth_date&order=created_at.desc');
   if (!profiles) return null;
   if (profiles.length === 0) return [];
-  const ids = profiles.map((p) => p.user_id).join(',');
-  const roleRows = await serviceRest<{ user_id: string; role: string }[]>(
-    `/user_roles?user_id=in.(${ids})&select=user_id,role`,
+  const roleRows = await listAllServiceRows<{ user_id: string; role: string }>(
+    '/user_roles?select=user_id,role&order=user_id.asc,role.asc',
   );
   if (!roleRows) return null;
+  const profileIds = new Set(profiles.map((profile) => profile.user_id));
   const byUser = new Map<string, string[]>();
-  for (const r of roleRows) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
+  for (const r of roleRows) {
+    if (profileIds.has(r.user_id)) byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]);
+  }
   return profiles.map((p) => ({
     userId: p.user_id,
     displayName: p.display_name,

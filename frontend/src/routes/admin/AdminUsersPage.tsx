@@ -16,23 +16,28 @@ interface User {
 }
 
 const ROLE_ORDER = ['superadmin', 'admin', 'bigfounder', 'parent', 'kid', 'universal'] as const;
-const LOCALE_LABELS: Record<string, string> = { 'en-US': 'English', 'es-MX': 'Español', 'pt-BR': 'Português' };
+const LOCALE_ORDER = ['en-US', 'es-MX', 'pt-BR'] as const;
 const LOCALE_COLORS: Record<string, string> = { 'en-US': 'bg-primary', 'es-MX': 'bg-accent', 'pt-BR': 'bg-success' };
 
-function ageGroup(birthDate: string | null): string | null {
+function calculateExactAge(birthDate: string | null, today = new Date()): number | null {
   if (!birthDate) return null;
-  const age = Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+  const [year, month, day] = birthDate.split('-').map(Number);
+  if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) return null;
+  let age = today.getFullYear() - year;
+  const birthdayPassed = today.getMonth() + 1 > month || (today.getMonth() + 1 === month && today.getDate() >= day);
+  if (!birthdayPassed) age -= 1;
+  return age >= 0 ? age : null;
+}
+
+function ageGroup(birthDate: string | null): string | null {
+  const age = calculateExactAge(birthDate);
+  if (age === null) return null;
   if (age < 6) return 'lt6';
   if (age <= 8) return '6-8';
   if (age <= 10) return '9-10';
   if (age <= 12) return '11-12';
   if (age <= 17) return '13-17';
   return '18+';
-}
-
-function calculateExactAge(birthDate: string | null): number | null {
-  if (!birthDate) return null;
-  return Math.floor((Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
 }
 
 interface Stats {
@@ -76,9 +81,10 @@ export function AdminUsersPage() {
   const [q, setQ] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [copiedId, setCopiedId] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const df = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'short' });
+  const birthDf = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium' });
   const nf = useMemo(() => new Intl.NumberFormat(i18n.resolvedLanguage), [i18n.resolvedLanguage]);
 
   const usersList = useMemo(() => (data.state === 'ready' ? data.data.users : []), [data]);
@@ -103,14 +109,23 @@ export function AdminUsersPage() {
     });
   }, [data.state, usersList, q, roleFilter]);
 
-  const handleCopyId = useCallback((id: string) => {
-    void navigator.clipboard.writeText(id);
-    setCopiedId(true);
-    setTimeout(() => setCopiedId(false), 2000);
+  const handleCopyId = useCallback(async (id: string) => {
+    try {
+      await navigator.clipboard.writeText(id);
+      setCopiedId(id);
+      window.setTimeout(() => setCopiedId((current) => (current === id ? null : current)), 2000);
+    } catch {
+      setCopiedId(null);
+    }
   }, []);
 
   const columns: TableColumn<User>[] = [
-    { key: 'name', header: t('admin.users.colName'), primary: true, cell: (u) => u.displayName },
+    {
+      key: 'name',
+      header: t('admin.users.colName'),
+      primary: true,
+      cell: (u) => <span className={cn(!u.displayName && 'text-content-muted')}>{u.displayName || t('admin.users.unnamed')}</span>,
+    },
     { key: 'username', header: t('admin.users.colUsername'), cell: (u) => (u.username ? <span className="lf-number text-content-muted">@{u.username}</span> : null) },
     {
       key: 'roles',
@@ -194,21 +209,17 @@ export function AdminUsersPage() {
             <Card className="flex flex-col gap-3 p-4 sm:p-5 shadow-glass border border-outline/50">
               <h3 className="lf-label text-content-muted font-bold">{t('admin.users.statsLocales')}</h3>
               <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-sunken">
-                {Object.entries(LOCALE_LABELS)
-                  .filter(([k]) => stats.locales[k])
-                  .map(([k]) => (
+                {LOCALE_ORDER.filter((k) => stats.locales[k]).map((k) => (
                     <div key={k} className={cn('h-full', LOCALE_COLORS[k] ?? 'bg-primary')} style={{ width: `${((stats.locales[k] ?? 0) / Math.max(stats.total, 1)) * 100}%` }} />
-                  ))}
+                ))}
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-1">
-                {Object.entries(LOCALE_LABELS)
-                  .filter(([k]) => stats.locales[k])
-                  .map(([k, label]) => (
+                {LOCALE_ORDER.filter((k) => stats.locales[k]).map((k) => (
                     <span key={k} className="lf-caption flex items-center gap-1.5 text-content-muted">
                       <span className={cn('inline-block h-2 w-2 rounded-full', LOCALE_COLORS[k] ?? 'bg-primary')} />
-                      {label} <span className="font-bold text-content">{nf.format(stats.locales[k] ?? 0)}</span>
+                      {t(`admin.users.locales.${k}`, k)} <span className="font-bold text-content">{nf.format(stats.locales[k] ?? 0)}</span>
                     </span>
-                  ))}
+                ))}
               </div>
             </Card>
 
@@ -224,14 +235,14 @@ export function AdminUsersPage() {
                           className="w-full rounded-t-sm bg-accent"
                           style={{ height: `${Math.max((v / Math.max(...Object.values(stats.ages), 1)) * 100, 8)}%` }}
                         />
-                        <span className="lf-caption text-content-faint text-xs font-mono">{k}</span>
+                        <span className="lf-caption text-content-faint text-xs font-mono">{t(`admin.users.ageGroups.${k}`, k)}</span>
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-x-3 gap-y-1">
                     {Object.entries(stats.ages).map(([k, v]) => (
                       <span key={k} className="lf-caption text-content-muted">
-                        {k}: <span className="font-bold text-content">{nf.format(v)}</span>
+                        {t(`admin.users.ageGroups.${k}`, k)}: <span className="font-bold text-content">{nf.format(v)}</span>
                       </span>
                     ))}
                   </div>
@@ -248,24 +259,25 @@ export function AdminUsersPage() {
 
         {/* Search & Role Filter Bar */}
         <Card className="flex flex-wrap items-center justify-between gap-3 p-4 shadow-glass border border-outline/50">
-          <div className="relative flex-1 min-w-[240px]">
+          <div className="relative min-w-[min(100%,240px)] flex-1">
             <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 !text-[18px] text-content-muted pointer-events-none" />
             <input
               type="text"
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              aria-label={t('admin.users.searchLabel')}
               placeholder={t('admin.users.search')}
               className="w-full pl-9 pr-4 py-2 text-sm rounded-full bg-surface-sunken border border-outline/40 text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
 
-          <div className="flex gap-1 bg-surface-sunken p-1 rounded-full border border-outline/30 overflow-x-auto">
+          <div className="flex max-w-full gap-1 overflow-x-auto rounded-full border border-outline/30 bg-surface-sunken p-1">
             <button
               type="button"
               onClick={() => setRoleFilter('all')}
               className={cn(
-                'px-3 py-1 text-xs font-bold rounded-full transition-colors whitespace-nowrap',
-                roleFilter === 'all' ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content'
+                'min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold transition-colors',
+                roleFilter === 'all' ? 'bg-content text-base shadow-sm' : 'text-content-muted hover:text-content'
               )}
             >
               {t('admin.users.allRoles')}
@@ -276,8 +288,8 @@ export function AdminUsersPage() {
                 type="button"
                 onClick={() => setRoleFilter(r)}
                 className={cn(
-                  'px-3 py-1 text-xs font-bold rounded-full transition-colors whitespace-nowrap',
-                  roleFilter === r ? 'bg-surface text-content shadow-sm' : 'text-content-muted hover:text-content'
+                  'min-h-11 whitespace-nowrap rounded-full px-3 text-xs font-bold transition-colors',
+                  roleFilter === r ? 'bg-content text-base shadow-sm' : 'text-content-muted hover:text-content'
                 )}
               >
                 {t(`roles.${r}`, r)}
@@ -286,6 +298,16 @@ export function AdminUsersPage() {
                 )}
               </button>
             ))}
+          </div>
+          <div className="flex w-full items-center justify-between gap-3 border-t border-outline/30 pt-3">
+            <p className="lf-caption text-content-muted">
+              {t('admin.users.resultCount', { visible: nf.format(filteredRows.length), total: nf.format(usersList.length) })}
+            </p>
+            {(q || roleFilter !== 'all') && (
+              <AdminAction tone="neutral" icon="filter_alt_off" onClick={() => { setQ(''); setRoleFilter('all'); }}>
+                {t('admin.users.clearFilters')}
+              </AdminAction>
+            )}
           </div>
         </Card>
 
@@ -300,6 +322,7 @@ export function AdminUsersPage() {
               columns={columns}
               rows={filteredRows}
               rowKey={(u) => u.userId}
+              onRowClick={(u) => setSelectedUser(u)}
             />
           )
         ) : (
@@ -308,63 +331,73 @@ export function AdminUsersPage() {
 
         {/* User Detail Inspector Modal */}
         {selectedUser && (
-          <AdminDialog title={selectedUser.displayName} onClose={() => setSelectedUser(null)} className="max-w-lg gap-5">
-              <div className="flex items-center gap-3 border-b border-outline/50 pb-3">
-                <Icon name="person" className="!text-[26px] text-primary" />
+          <AdminDialog
+            title={selectedUser.displayName || t('admin.users.unnamed')}
+            onClose={() => setSelectedUser(null)}
+            className="max-w-2xl gap-5"
+          >
+            <div className="flex flex-wrap items-center gap-3 border-b border-outline/50 pb-4">
+              <Icon name="person" className="!text-[28px] text-primary" />
+              <div className="min-w-0">
+                <p className="lf-body-sm text-content-muted">{t('admin.users.profileSnapshot')}</p>
                 {selectedUser.username && <p className="lf-caption text-content-muted font-mono">@{selectedUser.username}</p>}
               </div>
+              {selectedUser.roles[0] && <RoleChip role={selectedUser.roles[0]} />}
+            </div>
 
-              {/* User ID Copy Banner */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-surface-sunken/60 border border-outline/40">
-                <div className="flex flex-col min-w-0 pr-2">
+            <div className="flex flex-col gap-4">
+              <p className="lf-body-sm max-w-2xl text-content-muted">{t('admin.users.detailReadOnly')}</p>
+
+              <div className="grid gap-3 rounded-xl bg-surface-sunken/40 p-4 sm:grid-cols-2">
+                <div className="min-w-0 sm:col-span-2">
                   <span className="lf-caption text-content-muted">{t('admin.users.colUserId')}</span>
-                  <span className="font-mono text-xs text-content truncate font-semibold">{selectedUser.userId}</span>
-                </div>
-                <AdminAction
-                  tone={copiedId ? 'success' : 'neutral'}
-                  icon={copiedId ? 'check' : 'content_copy'}
-                  onClick={() => handleCopyId(selectedUser.userId)}
-                >
-                  {copiedId ? t('admin.users.copied') : t('admin.users.copyId')}
-                </AdminAction>
-              </div>
-
-              {/* Grid Profile Details */}
-              <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-surface-sunken/30 border border-outline/30 text-sm">
-                <div className="col-span-2">
-                  <span className="lf-caption text-content-muted block mb-1">{t('admin.users.colRoles')}</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedUser.roles.map((r) => (
-                      <RoleChip key={r} role={r} />
-                    ))}
+                  <div className="mt-1 flex min-w-0 items-center justify-between gap-3">
+                    <span className="min-w-0 truncate font-mono text-xs font-semibold text-content">{selectedUser.userId}</span>
+                    <AdminAction
+                      tone={copiedId === selectedUser.userId ? 'success' : 'neutral'}
+                      icon={copiedId === selectedUser.userId ? 'check' : 'content_copy'}
+                      onClick={() => { void handleCopyId(selectedUser.userId); }}
+                    >
+                      {copiedId === selectedUser.userId ? t('admin.users.copied') : t('admin.users.copyId')}
+                    </AdminAction>
                   </div>
                 </div>
                 <div>
-                  <span className="lf-caption text-content-muted block">{t('admin.users.colLocale')}</span>
-                  <Badge className="bg-surface text-content-muted text-xs font-mono mt-1">{selectedUser.locale}</Badge>
+                  <span className="lf-caption text-content-muted">{t('admin.users.colRoles')}</span>
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {selectedUser.roles.length ? selectedUser.roles.map((r) => <RoleChip key={r} role={r} />) : <span className="lf-caption text-content-muted">{t('admin.users.notAvailable')}</span>}
+                  </div>
                 </div>
                 <div>
-                  <span className="lf-caption text-content-muted block">{t('admin.users.colAge')}</span>
-                  <span className="lf-body text-content font-bold mt-0.5 block">
-                    {calculateExactAge(selectedUser.birthDate) !== null ? `${calculateExactAge(selectedUser.birthDate)} yrs` : '—'}
+                  <span className="lf-caption text-content-muted">{t('admin.users.colLocale')}</span>
+                  <Badge className="mt-1 bg-surface text-content-muted text-xs font-mono">{selectedUser.locale}</Badge>
+                </div>
+                <div>
+                  <span className="lf-caption text-content-muted">{t('admin.users.colAge')}</span>
+                  <span className="lf-body mt-1 block font-bold text-content">
+                    {calculateExactAge(selectedUser.birthDate) !== null
+                      ? t('admin.users.ageYears', { count: calculateExactAge(selectedUser.birthDate) ?? 0 })
+                      : t('admin.users.notAvailable')}
                   </span>
                 </div>
                 <div>
-                  <span className="lf-caption text-content-muted block">{t('admin.users.colBirthDate')}</span>
-                  <span className="lf-caption text-content font-mono mt-0.5 block">{selectedUser.birthDate || '—'}</span>
+                  <span className="lf-caption text-content-muted">{t('admin.users.colBirthDate')}</span>
+                  <span className="lf-caption mt-1 block font-mono text-content">
+                    {selectedUser.birthDate ? birthDf.format(new Date(`${selectedUser.birthDate}T12:00:00`)) : t('admin.users.notAvailable')}
+                  </span>
                 </div>
-                <div>
-                  <span className="lf-caption text-content-muted block">{t('admin.users.colJoined')}</span>
-                  <span className="lf-caption text-content font-mono mt-0.5 block">{df.format(new Date(selectedUser.createdAt))}</span>
+                <div className="sm:col-span-2">
+                  <span className="lf-caption text-content-muted">{t('admin.users.colJoined')}</span>
+                  <span className="lf-caption mt-1 block font-mono text-content">{df.format(new Date(selectedUser.createdAt))}</span>
                 </div>
               </div>
+            </div>
 
-              {/* Modal Footer */}
-              <div className="flex justify-end pt-2">
-                <AdminAction tone="neutral" onClick={() => setSelectedUser(null)}>
-                  {t('admin.users.close')}
-                </AdminAction>
-              </div>
+            <div className="flex justify-end pt-1">
+              <AdminAction tone="neutral" onClick={() => setSelectedUser(null)}>
+                {t('admin.users.close')}
+              </AdminAction>
+            </div>
           </AdminDialog>
         )}
       </div>

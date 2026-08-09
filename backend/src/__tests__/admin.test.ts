@@ -343,7 +343,16 @@ describe('GET /api/v1/admin/users', () => {
     stubData('admin');
     const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
     expect(res.status).toBe(200);
-    expect(res.body.data.users[0]).toMatchObject({ userId: ADMIN_ID, displayName: 'Staff', roles: ['admin'] });
+    expect(res.body.data.users[0]).toMatchObject({ userId: ADMIN_ID, displayName: 'Staff', roles: ['admin', 'universal'] });
+  });
+
+  it('uses paged upstream reads so the directory and its statistics are not capped at 100 users', async () => {
+    const capture = { calls: [] as { url: string; method: string; body?: string }[] };
+    stubData('admin', capture);
+    const res = await request(createApp()).get('/api/v1/admin/users').set('Authorization', staffAuth('admin'));
+    expect(res.status).toBe(200);
+    expect(capture.calls.some(({ url }) => url.includes('/profiles') && url.includes('limit=1000'))).toBe(true);
+    expect(capture.calls.some(({ url }) => url.includes('/user_roles') && url.includes('limit=1000'))).toBe(true);
   });
 });
 
