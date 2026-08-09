@@ -29,6 +29,13 @@
     "xp": "Puntos XP",
     "minutesLearned": "Minutos aprendidos"
   },
+  "badges": {
+    "title": "Insignias de cursos",
+    "subtitle": "Logros que obtienes al completar todas las lecciones de un curso.",
+    "completed": "Completado",
+    "emptyOwn": "Completa un curso y tu primera insignia aparecerá aquí.",
+    "emptyPublic": "Aún no tiene insignias de cursos."
+  },
   "share": {
     "title": "Invita a tus amigos",
     "text": "Sígueme en LittleFounders y aprendamos juntos → littlefounders.ai/@{{username}}",

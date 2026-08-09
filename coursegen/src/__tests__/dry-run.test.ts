@@ -42,6 +42,7 @@ function writeCourse(courseDir: string): void {
       schema_version: 1,
       course: {
         slug: 'dry-course',
+        badge_asset: 'course-badges/dry-course.png',
         subject: 'money',
         title: { 'en-US': 'T', 'es-MX': 'P', 'pt-BR': 'T' },
         description: { 'en-US': 'd', 'es-MX': 'd', 'pt-BR': 'd' },

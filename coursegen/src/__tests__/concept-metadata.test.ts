@@ -148,6 +148,7 @@ function catalogFixture(files: string[]) {
     schema_version: 1,
     course: {
       slug: 'test-course',
+      badge_asset: 'course-badges/test-course.png',
       subject: 'money',
       title: { 'en-US': 'Test', 'es-MX': 'Prueba', 'pt-BR': 'Teste' },
       description: { 'en-US': 'd', 'es-MX': 'd', 'pt-BR': 'd' },

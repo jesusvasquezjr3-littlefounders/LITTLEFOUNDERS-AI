@@ -36,6 +36,7 @@ describe('GET /api/v1/learn/courses', () => {
         title: { 'en-US': 'Financial Education' },
         lessonCount: 2,
         subject: 'money',
+        badgeAsset: 'course-badges/financial-education.png',
         adventureCount: 1,
         progress: { passed: 0, total: 2, pct: 0 },
       },

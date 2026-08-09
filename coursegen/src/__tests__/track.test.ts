@@ -185,6 +185,7 @@ beforeEach(() => {
       schema_version: 1,
       course: {
         slug: 'test-course',
+        badge_asset: 'course-badges/test-course.png',
         subject: 'money',
         title: { 'en-US': 'T', 'es-MX': 'P', 'pt-BR': 'T' },
         description: { 'en-US': 'd', 'es-MX': 'd', 'pt-BR': 'd' },

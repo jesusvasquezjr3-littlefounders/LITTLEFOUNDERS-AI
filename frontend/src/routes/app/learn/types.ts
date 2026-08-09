@@ -69,6 +69,7 @@ export interface CourseTree {
     title: Json
     description: Json
     subject: string
+    badgeAsset?: string | null
     progress: ProgressShape
   }
   adventures: AdventureNode[]

@@ -113,48 +113,48 @@ ON CONFLICT (id) DO UPDATE SET
 -- financial-education: the first real content hierarchy (COURSE_ENGINE.md §2/§3).
 -- course -> archipielago-del-trueque (adventure) -> 2 sagas -> 2 topics each -> 2 lessons each.
 -- position=1: first course of the real sequence (0008, COURSE_ENGINE.md §3.1b).
-INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires)
+INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires, badge_asset)
 VALUES (
   '40000000-0000-4000-a000-000000000001', 'financial-education',
   $j${"en-US":"Financial Education","es-MX":"Educación Financiera","pt-BR":"Educação Financeira"}$j$::jsonb,
   $j${"en-US":"Learn what money is, how it works, and how to make it work for you.","es-MX":"Aprende qué es el dinero, cómo funciona y cómo hacerlo trabajar para ti.","pt-BR":"Aprenda o que é dinheiro, como funciona e como fazê-lo trabalhar para você."}$j$::jsonb,
-  'money', 'published', 1, '[]'::jsonb
+  'money', 'published', 1, '[]'::jsonb, 'course-badges/financial-education.png'
 )
 ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title, description = EXCLUDED.description,
   subject = EXCLUDED.subject, status = EXCLUDED.status, position = EXCLUDED.position,
-  requires = EXCLUDED.requires;
+  requires = EXCLUDED.requires, badge_asset = EXCLUDED.badge_asset;
 
 -- entrepreneurship: second course of the real sequence (0008, COURSE_ENGINE.md
 -- §3.1b) — status='draft': catalog/pipeline not run yet, invisible to clients
 -- (courses_select_published requires status='published') until Forge
 -- generates it and a human publishes (COURSE_ENGINE §4/§6).
-INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires)
+INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires, badge_asset)
 VALUES (
   '40000000-0000-4000-a000-000000000002', 'entrepreneurship',
   $j${"en-US":"Entrepreneurship","es-MX":"Emprendimiento","pt-BR":"Empreendedorismo"}$j$::jsonb,
   $j${"en-US":"Learn how to turn an idea into something real that people want.","es-MX":"Aprende cómo convertir una idea en algo real que la gente quiera.","pt-BR":"Aprenda como transformar uma ideia em algo real que as pessoas queiram."}$j$::jsonb,
-  'economics', 'draft', 2, '["financial-education"]'::jsonb
+  'economics', 'draft', 2, '["financial-education"]'::jsonb, 'course-badges/entrepreneurship.png'
 )
 ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title, description = EXCLUDED.description,
   subject = EXCLUDED.subject, status = EXCLUDED.status, position = EXCLUDED.position,
-  requires = EXCLUDED.requires;
+  requires = EXCLUDED.requires, badge_asset = EXCLUDED.badge_asset;
 
 -- investing: third course of the real sequence (0008, COURSE_ENGINE.md §3.1b)
 -- — status='draft', same invisible-until-published rule; requires both prior
 -- courses (tier3 content only, 10-12yo).
-INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires)
+INSERT INTO public.courses (id, slug, title, description, subject, status, position, requires, badge_asset)
 VALUES (
   '40000000-0000-4000-a000-000000000003', 'investing',
   $j${"en-US":"Investing","es-MX":"Inversiones","pt-BR":"Investimentos"}$j$::jsonb,
   $j${"en-US":"Learn how money can grow over time by putting it to work wisely.","es-MX":"Aprende cómo el dinero puede crecer con el tiempo al ponerlo a trabajar con sabiduría.","pt-BR":"Aprenda como o dinheiro pode crescer com o tempo ao colocá-lo para trabalhar com sabedoria."}$j$::jsonb,
-  'money', 'draft', 3, '["financial-education", "entrepreneurship"]'::jsonb
+  'money', 'draft', 3, '["financial-education", "entrepreneurship"]'::jsonb, 'course-badges/investing.png'
 )
 ON CONFLICT (id) DO UPDATE SET
   title = EXCLUDED.title, description = EXCLUDED.description,
   subject = EXCLUDED.subject, status = EXCLUDED.status, position = EXCLUDED.position,
-  requires = EXCLUDED.requires;
+  requires = EXCLUDED.requires, badge_asset = EXCLUDED.badge_asset;
 
 INSERT INTO public.adventures (id, course_id, position, slug, title, description, narrative_arc, theme, age_tier, status)
 VALUES (

@@ -2,6 +2,7 @@ schema_version: 1
 
 course:
   slug: entrepreneurship
+  badge_asset: course-badges/entrepreneurship.png
   subject: economics
   title:
     en-US: "Entrepreneurship"

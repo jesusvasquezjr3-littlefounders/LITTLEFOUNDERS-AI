@@ -29,6 +29,13 @@
     "xp": "XP points",
     "minutesLearned": "Minutes learned"
   },
+  "badges": {
+    "title": "Course badges",
+    "subtitle": "Milestones you earned by completing every lesson in a course.",
+    "completed": "Completed",
+    "emptyOwn": "Complete a course and your first badge will appear here.",
+    "emptyPublic": "No course badges yet."
+  },
   "share": {
     "title": "Invite your friends",
     "text": "Follow me on LittleFounders and let's learn together → littlefounders.ai/@{{username}}",

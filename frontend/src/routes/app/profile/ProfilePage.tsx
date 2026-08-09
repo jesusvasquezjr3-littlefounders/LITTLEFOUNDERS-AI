@@ -7,6 +7,8 @@ import { COVER_PRESETS } from '@/lib/coverPresets';
 import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
+import { CourseBadgeCollection } from './CourseBadgeCollection';
+import type { CourseBadge } from '@/lib/courseBadges';
 
 /*
  * /profile — the user's own public identity: gradient cover (presets ONLY —
@@ -33,6 +35,7 @@ interface OwnProfile {
   followers: number;
   following: number;
   learningStats: LearningStats;
+  courseBadges?: CourseBadge[];
 }
 
 export function ProfilePage() {
@@ -213,6 +216,8 @@ export function ProfilePage() {
           <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
         </Link>
       </section>
+
+      <CourseBadgeCollection badges={data.courseBadges ?? []} isOwn />
 
       {/* Share / invite */}
       <Card className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

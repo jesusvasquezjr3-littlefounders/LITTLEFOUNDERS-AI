@@ -108,6 +108,8 @@ export const catalogFileSchema = z.object({
   schema_version: z.literal(1),
   course: z.object({
     slug: slugSchema,
+    /** Required visual identity contract: every planned course owns its badge asset. */
+    badge_asset: z.string().regex(/^course-badges\/[a-z0-9-]+\.png$/),
     subject: z.string().min(1).max(40),
     title: localized(160),
     description: localized(600),

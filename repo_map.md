@@ -803,7 +803,7 @@ change set:
 > PLAN → WRITE → REVIEW prompts.
 > Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
 > never started by CI or by any automatic process (/AGENTS.md sign-off rule).
-> **Last updated:** 2026-08-02 · Language: English (project rule).
+> **Last updated:** 2026-08-09 · Language: English (project rule).
 ```
 
 ### DATAINTEL.md
@@ -1001,9 +1001,9 @@ Forge keeps DeepSeek as the preferred author and Qwen as the independent judge. 
 
 Prism's generated-art identity is strict two-dimensional flat educational vector illustration. Its global and object-tile cache discriminators are versioned for a visual-identity change, so new candidate requests never reuse earlier 3D-looking art; only defect-exclusion-only hardening preserves cache reuse.
 
-## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
-
-### Day 1 — Reset & agent environment ✅ DONE
+Course identity is also content-governed: every new course must ship with a
+developer-provided badge asset whose catalog path matches its course slug.
+Forge rejects incomplete metadata, Vault blocks publication without a badge,
 ```
 
 ### RUNBOOK.md
@@ -1053,17 +1053,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Course badge identity and public completion collection
+
+- Every new course now has a mandatory `course.badge_asset` in its Forge catalog. The path must match `course-badges/<course-slug>.png`, and the developer supplies the corresponding read-only asset under `frontend/public/course-badges/`. Forge validation fails on missing or mismatched metadata; Vault prevents a published course from omitting its badge.
+- Core now carries the badge identity through course summaries, course trees, the featured Learn course and both own and public profile payloads. A public profile shows the course badges earned by that user, while an incomplete course never appears in the collection because completion is derived from every non-archived lesson having a passed server-side progress record.
+- The featured course and course orientation views now compose the badge with Dina instead of presenting a generic character square. This work remains local-only while production course generation is active; no push was performed.
+
 ## Current State (2026-08-09) — Admin governance surfaces expanded locally
 
 - `/admin/audit` now uses exact server-side totals and filtered pagination, so the console no longer confuses a bounded page with the complete append-only history. Its expanded inspector exposes immutable event metadata and a read-only payload, while search, action filtering, range controls, and refresh are designed for human investigation.
 - `/admin/roles` now exposes exact assignment and permission totals, role distribution, assignment provenance, last-change metadata, and a full-viewport history view. Superadmins can search the directory before granting access, revoke roles only after confirmation, and cannot accidentally revoke their own `superadmin` role. Permission mutations are constrained to the database's closed permission vocabulary.
 - This establishes the administrative governance philosophy for future surfaces: exact numbers from the source of truth, enough context to make a decision, expansion for detail instead of cramped grids, fixed viewport overlays for detached work, explicit confirmation for high-impact mutations, and an append-only trail for accountability. The changes are local-only while the production generation process is active; no push was performed.
-
-## Current State (2026-08-09) — Unified learning intelligence rebuilt locally
-
-- The public cookie experience now uses a layered, equal-choice preferences dialog: necessary technologies are explained separately from optional first-party attribution and measurement, settings remain reachable from the marketing footer, privacy links to a usable cookie-controls section, and rejecting optional technologies removes the first-party identifier plus known GA4 cookies. Public tracker scripts are gated by the consent state and react immediately to accept/reject changes; kid surfaces remain outside the optional tracking path.
-- `/admin/insights` is now a compatibility redirect into `/admin/intel?focus=learning`, leaving one focused decision console instead of two conflicting dashboards. The new Learning evidence tab combines explicit lesson abandonment with server-authoritative segment-attempt calibration; unavailable signals stay unavailable instead of being displayed as zero.
-- Data Intel now syncs `lesson_segment_attempts` and an adult-only first-party conversion dimension. Daily distinct-user rollups are computed directly rather than summed, cohorts use week boundaries consistently, and flat time-series APIs reject metrics that lack an exact denominator. A focused DuckDB regression suite covers grades, abandonment duration, aggregate identity counting, cohort boundaries, adult conversion attribution and export de-identification.
 ```
 
 ### agent/README.md
@@ -3654,12 +3654,12 @@ import {
   deleteFollow,
   findProfileByUsername,
   getAvatarByUserId,
+  getCompletedCourseBadgesByUserId,
   getFollowCounts,
   getFullOwnProfile,
   getLearningStats,
   getLearningStatsByUserId,
   getOwnAvatar,
-  hasRole,
 ```
 
 ### backend/src/routes/verification.ts
@@ -4155,6 +4155,7 @@ schema_version: 1
 
 course:
   slug: entrepreneurship
+  badge_asset: course-badges/entrepreneurship.png
   subject: economics
   title:
     en-US: "Entrepreneurship"
@@ -4165,7 +4166,6 @@ course:
     es-MX: "Una aventura que continúa después de Educación Financiera, donde los niños convierten ideas en pequeños negocios reales: detectan problemas, hacen cosas con cuidado, entienden a sus clientes y ponen precios justos."
     pt-BR: "Uma aventura que continua depois de Educação Financeira, onde as crianças transformam ideias em pequenos negócios reais: identificam problemas, fazem coisas com cuidado, entendem seus clientes e definem preços justos."
   authoring_locale: es-MX
-  # Course-level prerequisite edge (COURSE_ENGINE.md §3.1b) — Emprendimiento
 ```
 
 ### coursegen/curriculum/entrepreneurship/facts.yaml
@@ -4375,6 +4375,7 @@ schema_version: 1
 
 course:
   slug: financial-education
+  badge_asset: course-badges/financial-education.png
   subject: money
   title:
     en-US: "Financial Education"
@@ -4385,7 +4386,6 @@ course:
     es-MX: "Una aventura de dos años que enseña a los niños qué es el dinero, cómo ganarlo, ahorrarlo y gastarlo con inteligencia."
     pt-BR: "Uma aventura de dois anos que ensina às crianças o que é o dinheiro, como ganhá-lo, poupá-lo e gastá-lo com inteligência."
   authoring_locale: es-MX
-
 ```
 
 ### coursegen/curriculum/financial-education/facts.yaml
@@ -4460,12 +4460,12 @@ schema_version: 1
 # content. Only comments like this one and the docs say so.
 course:
   slug: first-lemonade-stand
+  badge_asset: course-badges/first-lemonade-stand.png
   subject: mixed
   title:
     en-US: "My First Lemonade Stand"
     es-MX: "Mi Primer Puesto de Limonada"
     pt-BR: "Minha Primeira Banca de Limonada"
-  description:
 ```
 
 ### coursegen/curriculum/first-lemonade-stand/facts.yaml
@@ -4675,6 +4675,7 @@ schema_version: 1
 
 course:
   slug: investing
+  badge_asset: course-badges/investing.png
   subject: money
   title:
     en-US: "Investing"
@@ -4685,7 +4686,6 @@ course:
     es-MX: "Una aventura para niños que ya saben cómo funciona el dinero y cómo construir algo propio — ahora aprenden cómo el tiempo, la paciencia y el riesgo inteligente pueden hacer crecer lo que ahorran, y cómo reconocer las trampas que se disfrazan de oportunidades."
     pt-BR: "Uma aventura para crianças que já sabem como o dinheiro funciona e como construir algo próprio — agora aprendem como o tempo, a paciência e o risco inteligente podem fazer crescer o que economizam, e como reconhecer as armadilhas que se disfarçam de oportunidades."
   authoring_locale: es-MX
-  # COURSE_ENGINE.md §3.1b — course-level prerequisite edge for future
 ```
 
 ### coursegen/curriculum/investing/facts.yaml
@@ -7698,6 +7698,26 @@ COMMENT ON COLUMN public.generation_runs_live.skipped_slots IS
   'Terminal slots skipped without publication; included in processed progress.';
 
 COMMENT ON COLUMN public.generation_heartbeat_snapshots.skipped_slots IS
+```
+
+### database/migrations/0039_course_badges.sql
+
+```
+-- 0039_course_badges.sql — course identity and completed-course badges.
+-- Every planned course declares its own badge in the Forge catalog. The
+-- database keeps the public asset path with the course so clients do not need
+-- a second course-to-art mapping.
+
+ALTER TABLE public.courses
+    ADD COLUMN IF NOT EXISTS badge_asset text;
+
+UPDATE public.courses
+SET badge_asset = CASE slug
+    WHEN 'first-lemonade-stand' THEN 'course-badges/first-lemonade-stand.png'
+    WHEN 'financial-education' THEN 'course-badges/financial-education.png'
+    WHEN 'entrepreneurship' THEN 'course-badges/entrepreneurship.png'
+    WHEN 'investing' THEN 'course-badges/investing.png'
+    ELSE badge_asset
 ```
 
 ### database/package.json
@@ -13054,6 +13074,26 @@ export interface AvatarOptions {
   facialHairProbability?: number;
 ```
 
+### frontend/src/lib/courseBadges.ts
+
+```
+/**
+ * Badge assets are declared by each course in Forge and persisted by Core.
+ * These known paths keep older local fixtures and archived UI snapshots
+ * renderable until they receive the new database column.
+ */
+export const COURSE_BADGE_FALLBACKS: Record<string, string> = {
+  'first-lemonade-stand': '/course-badges/first-lemonade-stand.png',
+  'financial-education': '/course-badges/financial-education.png',
+  entrepreneurship: '/course-badges/entrepreneurship.png',
+  investing: '/course-badges/investing.png',
+};
+
+export function courseBadgeAsset(asset: string | null | undefined, slug: string): string | null {
+  const source = asset ?? COURSE_BADGE_FALLBACKS[slug] ?? null;
+  if (!source) return null;
+```
+
 ### frontend/src/lib/coverPresets.ts
 
 ```
@@ -14117,12 +14157,12 @@ import { Badge, Button, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Revea
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { courseBadgeAsset } from '@/lib/courseBadges';
 
 /*
  * learn/ — the learner's home. The composition follows Brilliant's strongest
  * learning pattern: make the next useful action obvious, then keep discovery
  * calm and secondary. Course progress remains server-derived.
- */
 ```
 
 ### frontend/src/routes/app/SectionComingSoon.tsx
@@ -14234,6 +14274,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { courseBadgeAsset } from '@/lib/courseBadges';
 import { trackInsight } from '@/lib/insights';
 import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
@@ -14242,7 +14283,6 @@ import { AdventureBanner } from './AdventureBanner';
 import { SagaSection } from './SagaSection';
 import { findAdventureForLesson, findLesson, localizedText, type CourseTree } from './types';
 
-/*
 ```
 
 ### frontend/src/routes/app/learn/LessonPathNode.tsx
@@ -14662,6 +14702,26 @@ import { Avatar } from '@/components/Avatar';
 import { Button, Card, Icon, IconChip } from '@/components/ui';
 ```
 
+### frontend/src/routes/app/profile/CourseBadgeCollection.tsx
+
+```
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Badge, Card, Icon, IconChip } from '@/components/ui';
+import { courseBadgeAsset, type CourseBadge } from '@/lib/courseBadges';
+
+function BadgeArtwork({ asset, slug }: { asset: string; slug: string }) {
+  const [failed, setFailed] = useState(false);
+  const source = courseBadgeAsset(asset, slug);
+
+  if (!source || failed) {
+    return <Icon name="workspace_premium" className="text-[28px]" />;
+  }
+
+  return (
+    <img
+```
+
 ### frontend/src/routes/app/profile/FollowersPage.tsx
 
 ```
@@ -14734,12 +14794,12 @@ import { COVER_PRESETS } from '@/lib/coverPresets';
 import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
+import { CourseBadgeCollection } from './CourseBadgeCollection';
+import type { CourseBadge } from '@/lib/courseBadges';
 
 /*
  * /profile — the user's own public identity: gradient cover (presets ONLY —
  * uploads don't exist), Avataaars with an explicit edit indicator, gamified
- * learning stats, share-to-invite, and the door to /profile/settings.
- */
 ```
 
 ### frontend/src/routes/app/profile/PublicFollowersPage.tsx
@@ -14794,12 +14854,12 @@ import { APP_HOME } from '@/routes/app/navConfig';
 import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
+import { CourseBadgeCollection } from './CourseBadgeCollection';
+import type { CourseBadge } from '@/lib/courseBadges';
 
 /*
  * /@username — public profile (session required by routing). Shows exactly
  * what Core whitelists: name, @username, avatar, cover, member-since,
- * counts, Tutor badge, and public learning stats. Follow/unfollow and
- * blocking both live here.
 ```
 
 ### frontend/src/routes/app/profile/SettingsPage.tsx

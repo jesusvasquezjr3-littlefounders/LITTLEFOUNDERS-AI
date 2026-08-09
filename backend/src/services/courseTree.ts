@@ -16,6 +16,7 @@ export interface CourseRowLite {
   title: Json;
   description: Json;
   subject: string;
+  badge_asset?: string | null;
 }
 
 export interface AdventureRowLite {
@@ -134,6 +135,7 @@ export interface CourseTree {
     title: Json;
     description: Json;
     subject: string;
+    badgeAsset: string | null;
     progress: ProgressShape;
   };
   adventures: AdventureNode[];
@@ -278,6 +280,7 @@ export function assembleCourseTree(
       title: course.title,
       description: course.description,
       subject: course.subject,
+      badgeAsset: course.badge_asset ?? null,
       progress: progressOf(
         flatLessons.map((l) => l.id),
         passedLessonIds,
@@ -293,6 +296,7 @@ export interface CourseSummary {
   slug: string;
   title: Json;
   subject: string;
+  badgeAsset: string | null;
   adventureCount: number;
   lessonCount: number;
   progress: ProgressShape;
@@ -305,6 +309,7 @@ export function summarizeCourseTree(course: CourseRowLite, tree: CourseTree): Co
     slug: course.slug,
     title: course.title,
     subject: course.subject,
+    badgeAsset: course.badge_asset ?? null,
     adventureCount: tree.adventures.length,
     lessonCount: tree.course.progress.total,
     progress: tree.course.progress,

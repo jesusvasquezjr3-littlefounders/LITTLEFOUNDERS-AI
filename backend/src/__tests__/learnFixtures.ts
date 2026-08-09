@@ -64,6 +64,7 @@ export function makeDb(userId: string): FakeDb {
         title: { 'en-US': 'Financial Education' },
         description: {},
         subject: 'money',
+        badge_asset: 'course-badges/financial-education.png',
         status: 'published',
         position: 1,
       },

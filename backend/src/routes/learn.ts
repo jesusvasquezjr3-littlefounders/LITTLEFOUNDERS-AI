@@ -162,6 +162,7 @@ export function learnRouter(): Router {
         title: summary.title,
         lessonCount: summary.lessonCount,
         subject: summary.subject,
+        badgeAsset: summary.badgeAsset,
         adventureCount: summary.adventureCount,
         progress: summary.progress,
       });

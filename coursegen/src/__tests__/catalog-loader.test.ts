@@ -32,6 +32,7 @@ function catalogFixture() {
     schema_version: 1,
     course: {
       slug: 'test-course',
+      badge_asset: 'course-badges/test-course.png',
       subject: 'money',
       title: { 'en-US': 'Test', 'es-MX': 'Prueba', 'pt-BR': 'Teste' },
       description: { 'en-US': 'd', 'es-MX': 'd', 'pt-BR': 'd' },
@@ -125,6 +126,18 @@ describe('loadCourseCatalog', () => {
     const result = loadCourseCatalog(courseDir);
     expect(result.ok).toBe(false);
     expect(result.issues.some((i) => i.message.includes('not found'))).toBe(true);
+  });
+
+  it('requires the course badge to use the course slug', () => {
+    writeCourse({
+      catalog: {
+        ...catalogFixture(),
+        course: { ...catalogFixture().course, badge_asset: 'course-badges/other-course.png' },
+      },
+    });
+    const result = loadCourseCatalog(courseDir);
+    expect(result.ok).toBe(false);
+    expect(result.issues.some((i) => i.message.includes('badge_asset'))).toBe(true);
   });
 
   it('errors on an unresolved fact_ref', () => {

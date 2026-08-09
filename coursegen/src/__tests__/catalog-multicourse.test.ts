@@ -85,6 +85,7 @@ function catalogFixture(slug: string, opts: { requires?: string[] } = {}) {
     schema_version: 1,
     course: {
       slug,
+      badge_asset: `course-badges/${slug}.png`,
       subject: 'money',
       title: localized3(slug),
       description: localized3('d'),

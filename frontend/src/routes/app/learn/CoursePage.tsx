@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
+import { courseBadgeAsset } from '@/lib/courseBadges';
 import { trackInsight } from '@/lib/insights';
 import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
@@ -120,6 +121,7 @@ export function CoursePage() {
 
   const courseTitle = localizedText(tree.course.title, locale, tree.course.slug);
   const nextLesson = findLesson(tree, tree.nextLessonId);
+  const badgeAsset = courseBadgeAsset(tree.course.badgeAsset, tree.course.slug);
 
   return (
     <div className="flex flex-col gap-6">
@@ -204,8 +206,21 @@ export function CoursePage() {
         <aside className="order-1 flex flex-col lg:sticky lg:top-24 lg:order-2">
           <Card className="flex flex-col gap-5 border-outline/60 p-5 shadow-glass">
             <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-outline/50 bg-primary-soft/40">
-                <CharacterActor character="dina" emotion="happy" action="idle" size="sm" />
+              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-outline/50 bg-primary-soft/40">
+                {badgeAsset ? (
+                  <img
+                    src={badgeAsset}
+                    alt=""
+                    loading="lazy"
+                    className="absolute inset-1 h-14 w-14 object-contain opacity-80"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Icon name="workspace_premium" className="!text-[32px] text-primary" aria-hidden />
+                )}
+                <div className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full border border-surface bg-surface/95 shadow-glass-sm">
+                  <CharacterActor character="dina" emotion="happy" action="idle" size="fill" />
+                </div>
               </div>
               <div className="flex flex-col gap-1 min-w-0">
                 <h3 className="lf-title text-content truncate">{courseTitle}</h3>

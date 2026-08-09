@@ -2,6 +2,7 @@ schema_version: 1
 
 course:
   slug: investing
+  badge_asset: course-badges/investing.png
   subject: money
   title:
     en-US: "Investing"

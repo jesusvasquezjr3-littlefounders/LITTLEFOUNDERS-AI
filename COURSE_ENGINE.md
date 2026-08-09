@@ -12,7 +12,7 @@
 > PLAN → WRITE → REVIEW prompts.
 > Generation runs are OPERATOR-TRIGGERED (CLI) and cost real money — they are
 > never started by CI or by any automatic process (/AGENTS.md sign-off rule).
-> **Last updated:** 2026-08-02 · Language: English (project rule).
+> **Last updated:** 2026-08-09 · Language: English (project rule).
 
 ---
 
@@ -80,6 +80,29 @@ Lives in `coursegen/curriculum/<course-slug>/`, YAML, Zod-validated
   difficulty, narrative_beat }`. **8×4×6×4 ≈ 768 lesson slots ≈ one lesson a
   day for ~2 years.** The catalog is the STOP CONDITION: a run is complete
   when every slot has a published document ×3 locales, never before.
+
+### §3.0 Course badge identity (mandatory release contract)
+
+Every planned course MUST define its own badge in `catalog.yaml`:
+
+```yaml
+course:
+  slug: financial-education
+  badge_asset: course-badges/financial-education.png
+```
+
+The value must be exactly `course-badges/<course-slug>.png`. The developer
+supplies the corresponding asset in `frontend/public/course-badges/`; Forge's
+`catalog:check` fails when the field is missing or does not match the slug.
+Core persists the asset path with the course and exposes it to Learn and public
+profiles. A published course must have a non-null badge path in Vault.
+
+The badge is not merely decoration: it is the stable course identity shown on
+course cards, the featured-course composition, course orientation, and a
+learner's public completion collection. Core grants the completion badge only
+after every currently non-archived lesson in that course has a passed
+`lesson_progress` record. Badge assets are read-only media; replacing one is a
+deliberate product change and must preserve the stable slug/path contract.
 
 ### §3.1 Spaced-review layer (pedagogy: spacing effect + retrieval practice + interleaving)
 

@@ -7,6 +7,7 @@ import {
   deleteFollow,
   findProfileByUsername,
   getAvatarByUserId,
+  getCompletedCourseBadgesByUserId,
   getFollowCounts,
   getFullOwnProfile,
   getLearningStats,
@@ -123,6 +124,15 @@ function statsShape(s: LearningStatsRow) {
   return { xpPoints: s.xp_points, minutesLearned: s.minutes_learned, lessonsCompleted: s.lessons_completed, streakDays: s.streak_days, lastActiveDate: s.last_active_date ?? null };
 }
 
+function courseBadgesShape(rows: Awaited<ReturnType<typeof getCompletedCourseBadgesByUserId>>) {
+  return rows.map((row) => ({
+    slug: row.course_slug,
+    title: row.course_title,
+    badgeAsset: row.badge_asset,
+    completedAt: row.completed_at,
+  }));
+}
+
 /** /api/v1/profile — the signed-in user's own profile + social lists. */
 export function ownProfileRouter(): Router {
   const router = Router();
@@ -130,11 +140,12 @@ export function ownProfileRouter(): Router {
 
   router.get('/', async (_req, res) => {
     const user = authedUser(res);
-    const [profiles, avatars, counts, stats] = await Promise.all([
+    const [profiles, avatars, counts, stats, completedBadges] = await Promise.all([
       getFullOwnProfile(user.accessToken, user.id),
       getOwnAvatar(user.accessToken, user.id),
       getFollowCounts(user.id),
       getLearningStats(user.accessToken, user.id),
+      getCompletedCourseBadgesByUserId(user.id),
     ]);
     if (!profiles?.[0]) return fail(res, 502, 'INTERNAL', 'Profile unreachable');
     return ok(res, {
@@ -146,6 +157,7 @@ export function ownProfileRouter(): Router {
       followers: counts.followers,
       following: counts.following,
       learningStats: statsShape(stats),
+      courseBadges: courseBadgesShape(completedBadges),
     });
   });
 
@@ -228,12 +240,13 @@ export function publicProfilesRouter(): Router {
     const user = authedUser(res);
     const profile = await resolveVisible(req.params.username.toLowerCase(), user.id);
     if (!profile) return fail(res, 404, 'NOT_FOUND', 'No such profile');
-    const [avatars, counts, following, tutor, stats] = await Promise.all([
+    const [avatars, counts, following, tutor, stats, completedBadges] = await Promise.all([
       getAvatarByUserId(profile.user_id),
       getFollowCounts(profile.user_id),
       isFollowing(user.id, profile.user_id),
       hasRole(profile.user_id, 'parent'),
       getLearningStatsByUserId(profile.user_id),
+      getCompletedCourseBadgesByUserId(profile.user_id),
     ]);
     return ok(res, {
       ...publicShape(profile, avatars?.[0]?.options ?? {}),
@@ -243,6 +256,7 @@ export function publicProfilesRouter(): Router {
       isSelf: profile.user_id === user.id,
       isTutor: tutor,
       learningStats: statsShape(stats),
+      courseBadges: courseBadgesShape(completedBadges),
     });
   });
 

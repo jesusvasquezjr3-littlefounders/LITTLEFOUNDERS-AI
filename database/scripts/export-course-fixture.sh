@@ -53,8 +53,8 @@ WITH c AS (
   SELECT * FROM lesson_documents WHERE lesson_id IN (SELECT id FROM l)
 )
 SELECT format(
-  'INSERT INTO courses (id, slug, title, status, subject, description, position, requires) VALUES (%L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
-  id, slug, title, status, subject, description, position, requires
+  'INSERT INTO courses (id, slug, title, status, subject, description, position, requires, badge_asset) VALUES (%L, %L, %L, %L, %L, %L, %L, %L, %L) ON CONFLICT (id) DO NOTHING;',
+  id, slug, title, status, subject, description, position, requires, badge_asset
 ) FROM c
 UNION ALL
 SELECT format(

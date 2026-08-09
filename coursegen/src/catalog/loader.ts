@@ -138,6 +138,14 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
   }
   course.catalog = catalogParsed.data;
 
+  if (course.catalog.course.badge_asset !== `course-badges/${course.catalog.course.slug}.png`) {
+    issues.push({
+      level: 'error',
+      file: catalogPath,
+      message: `course.badge_asset must be "course-badges/${course.catalog.course.slug}.png" so the course owns a uniquely named badge`,
+    });
+  }
+
   // ---- adventures/*.yaml (resolved relative to catalog.yaml's directory) ----
   const adventureSlugsSeen = new Set<string>();
   for (const ref of course.catalog.adventures) {

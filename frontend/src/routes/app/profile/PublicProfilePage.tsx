@@ -7,6 +7,8 @@ import { APP_HOME } from '@/routes/app/navConfig';
 import { Badge, Button, Card, Icon, StatCard, LottieIcon } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
 import { ProfileHero } from './ProfileHero';
+import { CourseBadgeCollection } from './CourseBadgeCollection';
+import type { CourseBadge } from '@/lib/courseBadges';
 
 /*
  * /@username — public profile (session required by routing). Shows exactly
@@ -40,6 +42,7 @@ interface PublicProfile {
   isSelf: boolean;
   isTutor: boolean;
   learningStats: LearningStats;
+  courseBadges?: CourseBadge[];
 }
 
 const BLOCK_CONFIRM_WINDOW_MS = 4000;
@@ -217,6 +220,8 @@ export function PublicProfilePage() {
           <StatCard icon={<LottieIcon name="following" value={data.following} activated={isActivated} className="w-10 h-10 scale-125" />} tone="accent" value={String(data.following)} label={t('profile.stats.following')} />
         </Link>
       </section>
+
+      <CourseBadgeCollection badges={data.courseBadges ?? []} isOwn={data.isSelf} />
     </div>
   );
 }

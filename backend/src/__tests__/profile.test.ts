@@ -24,6 +24,7 @@ interface StubOpts {
   followRange?: string;
   followEdges?: { follower_id?: string; followed_id?: string }[];
   learningStats?: unknown[];
+  completedBadges?: unknown[];
   blockedRows?: unknown[]; // for GET /blocks (both the either-way check and listBlocked)
   hydrateProfiles?: unknown[];
   hydrateAvatars?: unknown[];
@@ -63,6 +64,9 @@ function stub(opts: StubOpts = {}) {
       }
       if (url.includes('/rest/v1/learning_stats')) {
         return Promise.resolve(jsonResponse(200, opts.learningStats ?? [ZERO_STATS]));
+      }
+      if (url.includes('/rest/v1/rpc/get_completed_course_badges')) {
+        return Promise.resolve(jsonResponse(200, opts.completedBadges ?? []));
       }
       if (url.includes('/rest/v1/blocks')) {
         if (method === 'POST') return Promise.resolve(new Response(null, { status: 201 }));
@@ -252,7 +256,17 @@ describe('GET /api/v1/profile/followers, /following, /blocked', () => {
 
 describe('public profiles', () => {
   it('returns whitelisted public fields + follow state + learningStats, never birthDate/email', async () => {
-    stub({ blockedRows: [] });
+    stub({
+      blockedRows: [],
+      completedBadges: [
+        {
+          course_slug: 'financial-education',
+          course_title: { 'en-US': 'Financial Education' },
+          badge_asset: 'course-badges/financial-education.png',
+          completed_at: '2026-08-09T10:00:00Z',
+        },
+      ],
+    });
     const res = await request(createApp())
       .get('/api/v1/profiles/ana')
       .set('Authorization', `Bearer ${mintToken({ sub: '22222222-2222-4222-8222-222222222222' })}`);
@@ -263,6 +277,14 @@ describe('public profiles', () => {
       isSelf: false,
       isTutor: true,
       learningStats: { xpPoints: 0, minutesLearned: 0, lessonsCompleted: 0, streakDays: 0 },
+      courseBadges: [
+        {
+          slug: 'financial-education',
+          title: { 'en-US': 'Financial Education' },
+          badgeAsset: 'course-badges/financial-education.png',
+          completedAt: '2026-08-09T10:00:00Z',
+        },
+      ],
     });
     expect(res.body.data.email).toBeUndefined();
     expect(res.body.data.birthDate).toBeUndefined();

@@ -2,6 +2,12 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-09) — Course badge identity and public completion collection
+
+- Every new course now has a mandatory `course.badge_asset` in its Forge catalog. The path must match `course-badges/<course-slug>.png`, and the developer supplies the corresponding read-only asset under `frontend/public/course-badges/`. Forge validation fails on missing or mismatched metadata; Vault prevents a published course from omitting its badge.
+- Core now carries the badge identity through course summaries, course trees, the featured Learn course and both own and public profile payloads. A public profile shows the course badges earned by that user, while an incomplete course never appears in the collection because completion is derived from every non-archived lesson having a passed server-side progress record.
+- The featured course and course orientation views now compose the badge with Dina instead of presenting a generic character square. This work remains local-only while production course generation is active; no push was performed.
+
 ## Current State (2026-08-09) — Admin governance surfaces expanded locally
 
 - `/admin/audit` now uses exact server-side totals and filtered pagination, so the console no longer confuses a bounded page with the complete append-only history. Its expanded inspector exposes immutable event metadata and a read-only payload, while search, action filtering, range controls, and refresh are designed for human investigation.

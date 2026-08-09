@@ -10,6 +10,13 @@ Forge keeps DeepSeek as the preferred author and Qwen as the independent judge. 
 
 Prism's generated-art identity is strict two-dimensional flat educational vector illustration. Its global and object-tile cache discriminators are versioned for a visual-identity change, so new candidate requests never reuse earlier 3D-looking art; only defect-exclusion-only hardening preserves cache reuse.
 
+Course identity is also content-governed: every new course must ship with a
+developer-provided badge asset whose catalog path matches its course slug.
+Forge rejects incomplete metadata, Vault blocks publication without a badge,
+and Core exposes the same read-only identity on course views and completed
+course collections in public profiles. The contract is defined in
+`COURSE_ENGINE.md` §3.0 and migration `0039`.
+
 ## Sprint: v2 bootstrap (goal — 100% functional scaffold + first vertical slice in < 1 week)
 
 ### Day 1 — Reset & agent environment ✅ DONE

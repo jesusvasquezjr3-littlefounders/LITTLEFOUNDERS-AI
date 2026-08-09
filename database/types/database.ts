@@ -326,6 +326,7 @@ export type Database = {
       }
       courses: {
         Row: {
+          badge_asset: string | null
           created_at: string
           description: Json
           id: string
@@ -337,6 +338,7 @@ export type Database = {
           title: Json
         }
         Insert: {
+          badge_asset?: string | null
           created_at?: string
           description?: Json
           id?: string
@@ -348,6 +350,7 @@ export type Database = {
           title?: Json
         }
         Update: {
+          badge_asset?: string | null
           created_at?: string
           description?: Json
           id?: string
@@ -2258,4 +2261,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-

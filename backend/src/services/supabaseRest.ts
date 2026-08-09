@@ -117,6 +117,13 @@ export interface FullProfileRow {
   created_at: string;
 }
 
+export interface CompletedCourseBadgeRow {
+  course_slug: string;
+  course_title: Record<string, unknown>;
+  badge_asset: string;
+  completed_at: string | null;
+}
+
 const PROFILE_FIELDS = 'user_id,display_name,username,locale,theme,cover,birth_date,created_at';
 
 export function getFullOwnProfile(accessToken: string, userId: string): Promise<FullProfileRow[] | null> {
@@ -171,6 +178,15 @@ export function findProfileByUsername(username: string): Promise<FullProfileRow[
 
 export function getAvatarByUserId(userId: string): Promise<AvatarRow[] | null> {
   return rest<AvatarRow[]>(`/avatars?user_id=eq.${eu(userId)}&select=options`, serviceToken());
+}
+
+/** Course badges are awarded only when every current non-archived lesson passed. */
+export async function getCompletedCourseBadgesByUserId(userId: string): Promise<CompletedCourseBadgeRow[]> {
+  const response = await restRaw('/rpc/get_completed_course_badges', serviceToken(), {
+    method: 'POST',
+    body: JSON.stringify({ p_user_id: UUID.parse(userId).toString() }),
+  });
+  return response.ok && Array.isArray(response.body) ? (response.body as CompletedCourseBadgeRow[]) : [];
 }
 
 /**
@@ -414,9 +430,10 @@ export interface CourseHierarchyRow {
   description: Json;
   subject: string;
   position: number;
+  badge_asset: string | null;
 }
 
-const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position';
+const COURSE_HIERARCHY_FIELDS = 'id,slug,title,description,subject,position,badge_asset';
 
 export function getPublishedCourseRows(accessToken: string): Promise<CourseHierarchyRow[] | null> {
   return rest<CourseHierarchyRow[]>(`/courses?status=eq.published&select=${COURSE_HIERARCHY_FIELDS}&order=position.asc`, accessToken);

@@ -7,6 +7,7 @@ import { Badge, Button, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Revea
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { courseBadgeAsset } from '@/lib/courseBadges';
 
 /*
  * learn/ — the learner's home. The composition follows Brilliant's strongest
@@ -19,6 +20,7 @@ interface Course {
   slug: string;
   title: Record<string, string>;
   lessonCount: number;
+  badgeAsset?: string | null;
   progress: { passed: number; total: number; pct: number };
 }
 
@@ -30,13 +32,6 @@ const COURSE_ICONS: Record<string, string> = {
   'financial-education': 'account_balance',
   entrepreneurship: 'rocket_launch',
   investing: 'trending_up',
-};
-
-const COURSE_BADGES: Record<string, string> = {
-  'first-lemonade-stand': '/course-badges/first-lemonade-stand.png',
-  'financial-education': '/course-badges/financial-education.png',
-  entrepreneurship: '/course-badges/entrepreneurship.png',
-  investing: '/course-badges/investing.png',
 };
 
 const COURSE_TONES: Record<string, 'primary' | 'secondary' | 'accent' | 'warning' | 'success' | 'delight'> = {
@@ -108,6 +103,7 @@ export function LearnPage() {
       ?? state.courses[0])
     : null;
   const featuredIsCompleted = Boolean(featuredCourse && featuredCourse.progress.total > 0 && featuredCourse.progress.passed === featuredCourse.progress.total);
+  const featuredBadgeAsset = featuredCourse ? courseBadgeAsset(featuredCourse.badgeAsset, featuredCourse.slug) : null;
 
   const learningSnapshot = state.status === 'ready'
     ? state.courses.reduce(
@@ -191,10 +187,24 @@ export function LearnPage() {
                 </div>
               </div>
 
-              {/* Right Mascot/Visual Column */}
+              {/* Course badge and mascot composition */}
               <div className="flex shrink-0 items-center justify-center md:col-span-4 lg:col-span-3">
-                <div className="flex h-32 w-32 items-center justify-center rounded-2xl border border-outline/50 bg-primary-soft/30 shadow-glass-sm md:h-44 md:w-44">
-                  <CharacterActor character="dina" emotion="happy" action="idle" size="lg" />
+                <div className="relative flex h-40 w-40 items-center justify-center md:h-48 md:w-48">
+                  <div className="absolute inset-2 rounded-full bg-delight-soft/70 shadow-glass-sm ring-1 ring-outline/50" />
+                  {featuredBadgeAsset ? (
+                    <img
+                      src={featuredBadgeAsset}
+                      alt=""
+                      aria-hidden="true"
+                      className="relative z-10 h-32 w-32 object-contain drop-shadow-md md:h-40 md:w-40"
+                      draggable="false"
+                    />
+                  ) : (
+                    <Icon name="workspace_premium" className="relative z-10 text-[64px] text-delight" aria-hidden />
+                  )}
+                  <div className="absolute -bottom-2 -right-3 z-20 h-20 w-20 rounded-full bg-surface/90 shadow-glass ring-2 ring-base md:h-24 md:w-24">
+                    <CharacterActor character="dina" emotion="happy" action="idle" size="fill" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -313,20 +323,22 @@ export function LearnPage() {
                       <div className={`absolute inset-x-0 top-0 h-1.5 ${TONE_BAR_CLASSES[tone] ?? 'bg-primary'}`} />
 
                       <div className="flex items-start justify-between gap-3 pt-2">
-                        <IconChip tone={tone} size="lg" className={COURSE_BADGES[course.slug] ? 'overflow-hidden p-1.5' : undefined}>
-                          {COURSE_BADGES[course.slug] ? (
+                        {courseBadgeAsset(course.badgeAsset, course.slug) ? (
+                          <IconChip tone={tone} size="lg" className="overflow-hidden p-1.5">
                             <img
-                              src={COURSE_BADGES[course.slug]}
+                              src={courseBadgeAsset(course.badgeAsset, course.slug) ?? undefined}
                               alt=""
                               aria-hidden="true"
                               className="h-full w-full object-contain"
                               draggable="false"
                               loading="lazy"
                             />
-                          ) : (
+                          </IconChip>
+                        ) : (
+                          <IconChip tone={tone} size="lg">
                             <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} className="text-[26px]" />
-                          )}
-                        </IconChip>
+                          </IconChip>
+                        )}
                         <div className="flex flex-col items-end gap-1.5">
                           <Badge>
                             {t('dashboard.learn.lessonCount', { count: course.lessonCount })}

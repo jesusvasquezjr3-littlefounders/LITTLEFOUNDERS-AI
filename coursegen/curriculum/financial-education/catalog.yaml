@@ -2,6 +2,7 @@ schema_version: 1
 
 course:
   slug: financial-education
+  badge_asset: course-badges/financial-education.png
   subject: money
   title:
     en-US: "Financial Education"

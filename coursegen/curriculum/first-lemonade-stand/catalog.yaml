@@ -7,6 +7,7 @@ schema_version: 1
 # content. Only comments like this one and the docs say so.
 course:
   slug: first-lemonade-stand
+  badge_asset: course-badges/first-lemonade-stand.png
   subject: mixed
   title:
     en-US: "My First Lemonade Stand"
