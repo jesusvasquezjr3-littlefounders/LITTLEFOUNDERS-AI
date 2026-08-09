@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Button, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Badge, Button, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
@@ -23,16 +24,6 @@ interface Course {
   badgeAsset?: string | null;
   progress: { passed: number; total: number; pct: number };
 }
-
-const COURSE_ICONS: Record<string, string> = {
-  'money-basics': 'payments',
-  'saving-superpowers': 'savings',
-  'first-business': 'storefront',
-  'first-lemonade-stand': 'local_drink',
-  'financial-education': 'account_balance',
-  entrepreneurship: 'rocket_launch',
-  investing: 'trending_up',
-};
 
 const COURSE_TONES: Record<string, 'primary' | 'secondary' | 'accent' | 'warning' | 'success' | 'delight'> = {
   'money-basics': 'warning',
@@ -191,17 +182,7 @@ export function LearnPage() {
               <div className="flex shrink-0 items-center justify-center md:col-span-4 lg:col-span-3">
                 <div className="relative flex h-40 w-40 items-center justify-center md:h-48 md:w-48">
                   <div className="absolute inset-2 rounded-full bg-delight-soft/70 shadow-glass-sm ring-1 ring-outline/50" />
-                  {featuredBadgeAsset ? (
-                    <img
-                      src={featuredBadgeAsset}
-                      alt=""
-                      aria-hidden="true"
-                      className="relative z-10 h-32 w-32 object-contain drop-shadow-md md:h-40 md:w-40"
-                      draggable="false"
-                    />
-                  ) : (
-                    <Icon name="workspace_premium" className="relative z-10 text-[64px] text-delight" aria-hidden />
-                  )}
+                  <CourseBadgeArtwork asset={featuredBadgeAsset} slug={featuredCourse.slug} size="featured" />
                   <div className="absolute -bottom-2 -right-3 z-20 h-20 w-20 rounded-full bg-surface/90 shadow-glass ring-2 ring-base md:h-24 md:w-24">
                     <CharacterActor character="dina" emotion="happy" action="idle" size="fill" />
                   </div>
@@ -323,22 +304,7 @@ export function LearnPage() {
                       <div className={`absolute inset-x-0 top-0 h-1.5 ${TONE_BAR_CLASSES[tone] ?? 'bg-primary'}`} />
 
                       <div className="flex items-start justify-between gap-3 pt-2">
-                        {courseBadgeAsset(course.badgeAsset, course.slug) ? (
-                          <IconChip tone={tone} size="lg" className="overflow-hidden p-1.5">
-                            <img
-                              src={courseBadgeAsset(course.badgeAsset, course.slug) ?? undefined}
-                              alt=""
-                              aria-hidden="true"
-                              className="h-full w-full object-contain"
-                              draggable="false"
-                              loading="lazy"
-                            />
-                          </IconChip>
-                        ) : (
-                          <IconChip tone={tone} size="lg">
-                            <Icon name={COURSE_ICONS[course.slug] ?? 'menu_book'} className="text-[26px]" />
-                          </IconChip>
-                        )}
+                        <CourseBadgeArtwork asset={course.badgeAsset} slug={course.slug} size="compact" />
                         <div className="flex flex-col items-end gap-1.5">
                           <Badge>
                             {t('dashboard.learn.lessonCount', { count: course.lessonCount })}

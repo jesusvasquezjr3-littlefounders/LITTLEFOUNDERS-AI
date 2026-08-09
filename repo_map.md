@@ -122,6 +122,7 @@ frontend/
     components/
       characters/
         control/
+      course/
       ui/
     i18n/
       en-US/
@@ -10601,6 +10602,26 @@ export const CHARACTER_EMOTIONS = [
   'proud',
 ```
 
+### frontend/src/components/course/CourseBadgeArtwork.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { Icon } from '@/components/ui';
+import { courseBadgeAsset } from '@/lib/courseBadges';
+import { cn } from '@/lib/utils';
+
+type CourseBadgeSize = 'compact' | 'orientation' | 'featured';
+
+const SIZE_CLASSES: Record<CourseBadgeSize, string> = {
+  compact: 'h-14 w-14',
+  orientation: 'h-16 w-16',
+  featured: 'h-40 w-40 md:h-48 md:w-48',
+};
+
+const FALLBACK_ICON_CLASSES: Record<CourseBadgeSize, string> = {
+  compact: 'text-[28px]',
+```
+
 ### frontend/src/components/ui/Badge.tsx
 
 ```
@@ -14153,7 +14174,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { Badge, Button, Card, Icon, IconChip, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { Badge, Button, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import CharacterActor from '@/components/characters/control/CharacterActor';
 import { DinaCharacter } from '@/components/characters/DinaCharacter';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
@@ -14162,7 +14184,6 @@ import { courseBadgeAsset } from '@/lib/courseBadges';
 /*
  * learn/ — the learner's home. The composition follows Brilliant's strongest
  * learning pattern: make the next useful action obvious, then keep discovery
- * calm and secondary. Course progress remains server-derived.
 ```
 
 ### frontend/src/routes/app/SectionComingSoon.tsx
@@ -14274,7 +14295,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { courseBadgeAsset } from '@/lib/courseBadges';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { trackInsight } from '@/lib/insights';
 import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
@@ -14705,21 +14726,21 @@ import { Button, Card, Icon, IconChip } from '@/components/ui';
 ### frontend/src/routes/app/profile/CourseBadgeCollection.tsx
 
 ```
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, IconChip } from '@/components/ui';
-import { courseBadgeAsset, type CourseBadge } from '@/lib/courseBadges';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
+import type { CourseBadge } from '@/lib/courseBadges';
 
-function BadgeArtwork({ asset, slug }: { asset: string; slug: string }) {
-  const [failed, setFailed] = useState(false);
-  const source = courseBadgeAsset(asset, slug);
-
-  if (!source || failed) {
-    return <Icon name="workspace_premium" className="text-[28px]" />;
-  }
+export function CourseBadgeCollection({ badges, isOwn }: { badges: CourseBadge[]; isOwn: boolean }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? 'en-US';
 
   return (
-    <img
+    <section aria-label={t('profile.badges.title')} className="mt-8">
+      <div className="mb-4">
+        <h2 className="lf-headline text-content">{t('profile.badges.title')}</h2>
+        <p className="lf-body mt-1 text-content-muted">{t('profile.badges.subtitle')}</p>
+      </div>
 ```
 
 ### frontend/src/routes/app/profile/FollowersPage.tsx

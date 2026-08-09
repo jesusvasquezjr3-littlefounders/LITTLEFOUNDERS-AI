@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
-import { courseBadgeAsset } from '@/lib/courseBadges';
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
 import { trackInsight } from '@/lib/insights';
 import { Badge, Card, Icon, LoadingOverlay, ProgressBar, Reveal } from '@/components/ui';
 import CharacterActor from '@/components/characters/control/CharacterActor';
@@ -121,8 +121,6 @@ export function CoursePage() {
 
   const courseTitle = localizedText(tree.course.title, locale, tree.course.slug);
   const nextLesson = findLesson(tree, tree.nextLessonId);
-  const badgeAsset = courseBadgeAsset(tree.course.badgeAsset, tree.course.slug);
-
   return (
     <div className="flex flex-col gap-6">
       {/* Sticky Fixed Top Course Hero Header */}
@@ -206,18 +204,8 @@ export function CoursePage() {
         <aside className="order-1 flex flex-col lg:sticky lg:top-24 lg:order-2">
           <Card className="flex flex-col gap-5 border-outline/60 p-5 shadow-glass">
             <div className="flex items-center gap-4">
-              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-outline/50 bg-primary-soft/40">
-                {badgeAsset ? (
-                  <img
-                    src={badgeAsset}
-                    alt=""
-                    loading="lazy"
-                    className="absolute inset-1 h-14 w-14 object-contain opacity-80"
-                    aria-hidden="true"
-                  />
-                ) : (
-                  <Icon name="workspace_premium" className="!text-[32px] text-primary" aria-hidden />
-                )}
+              <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-visible rounded-2xl border border-outline/50 bg-primary-soft/40">
+                <CourseBadgeArtwork asset={tree.course.badgeAsset} slug={tree.course.slug} size="orientation" />
                 <div className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full border border-surface bg-surface/95 shadow-glass-sm">
                   <CharacterActor character="dina" emotion="happy" action="idle" size="fill" />
                 </div>

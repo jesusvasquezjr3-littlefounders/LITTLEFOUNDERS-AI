@@ -122,7 +122,7 @@ motion:                           # CLOSED 5-recipe system
 > **AUTHORITATIVE** for all frontend visual work (root AGENTS.md §1.1 rank 4).
 > The tokens above are CLOSED sets — implemented 1:1 in
 > `frontend/tailwind.config.js` + `frontend/src/index.css`. Never invent values
-> those files don't define. **Last updated:** 2026-08-01.
+> those files don't define. **Last updated:** 2026-08-09.
 
 ## §0 Composition Fidelity — PRIME RULE
 
@@ -274,6 +274,10 @@ for containers. Sharp corners prohibited.
 - **Card** — `rounded-lg p-6` surface card (`hero` → `rounded-xl p-8`;
   `interactive` → `hover:-translate-y-1` lift; `onInverse` → `.lf-glass-deep`).
 - **Badge** — pill, soft fill, bold caption.
+- **CourseBadgeArtwork** — the course identity medallion: semantic metal ring,
+  specular highlight, violet halo and transparent course artwork. It stays
+  decorative and non-interactive, uses a Material Symbols fallback when an
+  asset is unavailable, and must remain legible in both themes.
 - **Icon / IconChip** — Material Symbols; chip = circular soft-tinted tile.
 - **Dropdown** — custom listbox (never native pickers); pill trigger,
   `.lf-glass` + `shadow-pop` panel.

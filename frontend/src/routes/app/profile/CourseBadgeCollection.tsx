@@ -1,28 +1,7 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon, IconChip } from '@/components/ui';
-import { courseBadgeAsset, type CourseBadge } from '@/lib/courseBadges';
-
-function BadgeArtwork({ asset, slug }: { asset: string; slug: string }) {
-  const [failed, setFailed] = useState(false);
-  const source = courseBadgeAsset(asset, slug);
-
-  if (!source || failed) {
-    return <Icon name="workspace_premium" className="text-[28px]" />;
-  }
-
-  return (
-    <img
-      src={source}
-      alt=""
-      aria-hidden="true"
-      className="h-full w-full object-contain"
-      draggable="false"
-      loading="lazy"
-      onError={() => setFailed(true)}
-    />
-  );
-}
+import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
+import type { CourseBadge } from '@/lib/courseBadges';
 
 export function CourseBadgeCollection({ badges, isOwn }: { badges: CourseBadge[]; isOwn: boolean }) {
   const { t, i18n } = useTranslation();
@@ -48,9 +27,7 @@ export function CourseBadgeCollection({ badges, isOwn }: { badges: CourseBadge[]
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {badges.map((badge) => (
             <Card key={badge.slug} className="flex items-center gap-4 p-4 sm:p-5">
-              <IconChip tone="delight" size="lg" className="shrink-0 overflow-hidden p-1.5">
-                <BadgeArtwork asset={badge.badgeAsset} slug={badge.slug} />
-              </IconChip>
+              <CourseBadgeArtwork asset={badge.badgeAsset} slug={badge.slug} size="compact" />
               <div className="min-w-0">
                 <Badge className="bg-success-soft text-success-strong">{t('profile.badges.completed')}</Badge>
                 <h3 className="lf-title mt-2 text-content">
