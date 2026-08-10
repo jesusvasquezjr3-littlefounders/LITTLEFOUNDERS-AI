@@ -78,6 +78,41 @@ async function setSyncError(tableName: string, error: string): Promise<void> {
   }
 }
 
+export interface SyncHealth {
+  last_sync_at: string | null;
+  sync_error: string | null;
+}
+
+/**
+ * Read-only summary of the most recently touched sync target, for /health.
+ * `last_synced_at` is written on both success (upsertSyncState) and failure
+ * (setSyncError), so "most recent" means most recent ACTIVITY, not most
+ * recent success — the point is to show whether sync is currently erroring,
+ * not to hide it behind a stale success timestamp from before it broke.
+ *
+ * Never throws (AGENTS.md §1.14 — /health must not depend on optional
+ * infrastructure): skips the query entirely while duckdb isn't ready, and
+ * swallows any query failure (e.g. the table not existing yet) into the same
+ * "nothing has synced" null/null shape a fresh warehouse would report.
+ */
+export async function getSyncHealth(): Promise<SyncHealth> {
+  if (!isReady()) return { last_sync_at: null, sync_error: null };
+  try {
+    // The duckdb driver returns TIMESTAMP columns as native JS Date objects,
+    // not strings — normalize to ISO here rather than leaning on res.json()'s
+    // implicit Date.toJSON() serialization, so this function's own return
+    // type (and anything that consumes it outside an HTTP response) is honest.
+    const rows = await query<{ last_synced_at: Date; last_error: string | null }>(
+      'SELECT last_synced_at, last_error FROM dataintel_sync_state ORDER BY last_synced_at DESC LIMIT 1',
+    );
+    const latest = rows[0];
+    if (!latest) return { last_sync_at: null, sync_error: null };
+    return { last_sync_at: latest.last_synced_at.toISOString(), sync_error: latest.last_error ?? null };
+  } catch {
+    return { last_sync_at: null, sync_error: null };
+  }
+}
+
 // ── Vault API ──
 
 async function fetchFromVault<T = Record<string, unknown>>(

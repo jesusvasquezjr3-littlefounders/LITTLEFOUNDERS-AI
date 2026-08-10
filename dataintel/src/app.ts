@@ -4,6 +4,7 @@ import { getConfig } from './env.js';
 import { globalRateLimiter } from './middleware/rateLimit.js';
 import { intelRouter } from './routes/queries.js';
 import { isReady } from './db/duckdb.js';
+import { getSyncHealth } from './db/sync.js';
 import { cacheClient } from './middleware/cache.js';
 
 export const SERVICE = 'dataintel';
@@ -15,7 +16,10 @@ export function createApp(): express.Express {
 
   app.use(express.json({ limit: '256kb' }));
 
-  app.get('/health', (_req, res) => {
+  app.get('/health', async (_req, res) => {
+    // getSyncHealth() never throws and never touches duckdb while it's down
+    // (AGENTS.md §1.14 — liveness must not depend on optional infrastructure).
+    const sync = await getSyncHealth();
     res.json({
       data: {
         service: SERVICE,
@@ -25,7 +29,8 @@ export function createApp(): express.Express {
           duckdb: isReady() ? 'up' : 'down',
           redis: cacheClient.isOpen ? 'up' : 'down',
         },
-        last_sync_at: null,
+        last_sync_at: sync.last_sync_at,
+        sync_error: sync.sync_error,
       },
       error: null,
     });
