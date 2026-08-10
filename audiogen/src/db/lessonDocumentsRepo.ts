@@ -136,6 +136,16 @@ export interface PendingLessonDocument {
  *
  * THROWS on a Vault failure. It used to swallow errors into `[]`, so a down
  * Vault printed "0 pending" and exited 0 — indistinguishable from success.
+ *
+ * PAGED — production incident 2026-08-10. PostgREST caps an unranged
+ * response at its server-configured max-rows (observed: 1000, returned as
+ * HTTP 206 with a `Content-Range: 0-999/N` header this function never
+ * checked). A course with more pending documents than that cap silently lost
+ * the remainder: the batch reported "N pending" for whatever N <= the cap
+ * was, narrated exactly that many, and exited 0 — indistinguishable from a
+ * fully-narrated course. `order=` is required for pagination correctness:
+ * Postgres gives no row-order guarantee across separate paged requests
+ * without one, which can silently skip or repeat rows between pages.
  */
 export async function listPendingLessonDocuments(courseSlug?: string): Promise<PendingLessonDocument[]> {
   const select = courseSlug
@@ -144,11 +154,22 @@ export async function listPendingLessonDocuments(courseSlug?: string): Promise<P
   const courseFilter = courseSlug
     ? `&lessons.topics.sagas.adventures.courses.slug=eq.${encodeURIComponent(courseSlug)}`
     : '';
-  const res = await rest<PendingLessonDocument[]>(
-    `/lesson_documents?select=${select}&lessons.status=eq.published&audio->>version=is.null${courseFilter}`,
-  );
-  if (!res.ok) {
-    throw new Error(`listPendingLessonDocuments: Vault query failed (HTTP ${res.status || 'network error'}) — refusing to report "0 pending" for a Vault that did not answer`);
+  const path =
+    `/lesson_documents?select=${select}&lessons.status=eq.published&audio->>version=is.null${courseFilter}` +
+    `&order=lesson_id.asc,locale.asc`;
+
+  const PAGE_SIZE = 1000;
+  const all: PendingLessonDocument[] = [];
+  for (let offset = 0; ; offset += PAGE_SIZE) {
+    const res = await rest<PendingLessonDocument[]>(path, {
+      headers: { Range: `${offset}-${offset + PAGE_SIZE - 1}` },
+    });
+    if (!res.ok) {
+      throw new Error(`listPendingLessonDocuments: Vault query failed (HTTP ${res.status || 'network error'}) — refusing to report "0 pending" for a Vault that did not answer`);
+    }
+    const page = res.body ?? [];
+    all.push(...page);
+    if (page.length < PAGE_SIZE) break;
   }
-  return res.body ?? [];
+  return all;
 }
