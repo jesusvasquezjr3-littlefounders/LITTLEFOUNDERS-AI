@@ -472,6 +472,35 @@ function inFilter(ids: string[]): string {
   return `in.(${ids.map(eu).join(',')})`;
 }
 
+/**
+ * Production incident 2026-08-10: `financial-education` (1,208 lessons) was
+ * the first course to put enough ids into a single `in.(...)` filter to
+ * build a URL past Kong's request-line limit — `getLessonProgressForLessons`
+ * came back HTTP 414, `rest()` maps ANY non-2xx to null the same as a genuine
+ * outage, and `GET /api/v1/learn/courses` failed 502 for every real session,
+ * indistinguishable in the logs from an infrastructure problem (which is what
+ * the last hour was spent chasing before finding this).
+ *
+ * Batches the id list so no single request-line can grow with course size.
+ * Each batch is an independent, fully-qualified query — never more than
+ * ID_BATCH_SIZE rows can come back per request, so this needs no PostgREST
+ * page-size handling (unlike a query with no id filter at all). A null from
+ * any batch propagates as null instead of returning a partial list silently.
+ */
+const ID_BATCH_SIZE = 150;
+async function restBatchedByIds<T>(
+  ids: string[],
+  fetchBatch: (batch: string[]) => Promise<T[] | null>,
+): Promise<T[] | null> {
+  const out: T[] = [];
+  for (let i = 0; i < ids.length; i += ID_BATCH_SIZE) {
+    const page = await fetchBatch(ids.slice(i, i + ID_BATCH_SIZE));
+    if (page === null) return null;
+    out.push(...page);
+  }
+  return out;
+}
+
 export function getAdventuresByCourseIds(accessToken: string, courseIds: string[]): Promise<AdventureHierarchyRow[] | null> {
   if (courseIds.length === 0) return Promise.resolve([]);
   return rest<AdventureHierarchyRow[]>(`/adventures?course_id=${inFilter(courseIds)}&select=${ADVENTURE_FIELDS}`, accessToken);
@@ -519,7 +548,9 @@ const TOPIC_FIELDS = 'id,saga_id,position,slug,title,kind,review_of';
 
 export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Promise<TopicHierarchyRow[] | null> {
   if (sagaIds.length === 0) return Promise.resolve([]);
-  return rest<TopicHierarchyRow[]>(`/topics?saga_id=${inFilter(sagaIds)}&select=${TOPIC_FIELDS}`, accessToken);
+  return restBatchedByIds(sagaIds, (batch) =>
+    rest<TopicHierarchyRow[]>(`/topics?saga_id=${inFilter(batch)}&select=${TOPIC_FIELDS}`, accessToken),
+  );
 }
 
 export async function getTopicById(accessToken: string, topicId: string): Promise<TopicHierarchyRow | null> {
@@ -542,7 +573,9 @@ const LESSON_FIELDS = 'id,topic_id,position,slug,title,difficulty,xp_total,estim
 
 export function getLessonsByTopicIds(accessToken: string, topicIds: string[]): Promise<LessonHierarchyRow[] | null> {
   if (topicIds.length === 0) return Promise.resolve([]);
-  return rest<LessonHierarchyRow[]>(`/lessons?topic_id=${inFilter(topicIds)}&select=${LESSON_FIELDS}`, accessToken);
+  return restBatchedByIds(topicIds, (batch) =>
+    rest<LessonHierarchyRow[]>(`/lessons?topic_id=${inFilter(batch)}&select=${LESSON_FIELDS}`, accessToken),
+  );
 }
 
 /** Single lesson by id — RLS's published-chain policy means a hit here also proves "published w/ published ancestors". */
@@ -561,9 +594,11 @@ export interface LessonProgressRow {
 
 export function getLessonProgressForLessons(accessToken: string, userId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
   if (lessonIds.length === 0) return Promise.resolve([]);
-  return rest<LessonProgressRow[]>(
-    `/lesson_progress?user_id=eq.${eu(userId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
-    accessToken,
+  return restBatchedByIds(lessonIds, (batch) =>
+    rest<LessonProgressRow[]>(
+      `/lesson_progress?user_id=eq.${eu(userId)}&lesson_id=${inFilter(batch)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+      accessToken,
+    ),
   );
 }
 
@@ -843,7 +878,9 @@ export function getKidLearningStats(kidId: string): Promise<KidLearningStatsRow[
 /** A kid's lesson_progress rows, read AFTER the route verified the guardian link (parent tokens can't pass lesson_progress_select_own). */
 export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promise<LessonProgressRow[] | null> {
   if (lessonIds.length === 0) return Promise.resolve([]);
-  return serviceRest<LessonProgressRow[]>(
-    `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(lessonIds)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+  return restBatchedByIds(lessonIds, (batch) =>
+    serviceRest<LessonProgressRow[]>(
+      `/lesson_progress?user_id=eq.${eu(kidId)}&lesson_id=${inFilter(batch)}&select=lesson_id,best_score,passed,attempts,xp_earned`,
+    ),
   );
 }
