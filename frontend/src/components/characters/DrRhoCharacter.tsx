@@ -10,6 +10,7 @@ interface DrRhoCharacterProps {
     currentText?: string;
     bubblePosition?: 'top' | 'right';
     isTalking?: boolean;
+    enableMouseTracking?: boolean;
 }
 
 const COLORS = {
@@ -34,7 +35,8 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
     showBubble = false,
     currentText = "",
     bubblePosition = 'top',
-    isTalking = false
+    isTalking = false,
+    enableMouseTracking = true
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [_clickPulse, setClickPulse] = useState(0);
@@ -62,6 +64,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
 
     // Mouse tracking
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const handleMouseMove = (e: MouseEvent) => {
             const x = (e.clientX / window.innerWidth) - 0.5;
             const y = (e.clientY / window.innerHeight) - 0.5;
@@ -69,10 +72,11 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
         };
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+    }, [enableMouseTracking]);
 
     // Animation loop
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const animate = () => {
             const spring = 0.08;
             currentHead.current.x += (targetHead.current.x - currentHead.current.x) * spring;
@@ -87,7 +91,7 @@ export const DrRhoCharacter: React.FC<DrRhoCharacterProps> = ({
         };
         rafId.current = requestAnimationFrame(animate);
         return () => { if (rafId.current) cancelAnimationFrame(rafId.current); };
-    }, []);
+    }, [enableMouseTracking]);
 
     const moodConfig = {
         neutral: { eyebrowsY: -2, eyebrowsRot: 0, eyesType: "relaxed", mouth: "soft_smile", mustacheY: -1 },

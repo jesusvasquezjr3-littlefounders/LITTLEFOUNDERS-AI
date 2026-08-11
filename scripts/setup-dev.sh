@@ -58,4 +58,5 @@ echo "  [4/4] Publishing QA smoketest fixture..."
 npm run db:publish-course -- first-lemonade-stand
 cd ..
 
-echo -e "\n${GREEN}==> Setup Complete! Run 'npm run dev' to start all services.${NC}"
+echo -e "\n${GREEN}==> Setup Complete! Run 'npm run dev' for the lightweight frontend profile.${NC}"
+echo -e "    Use DEV_PROFILE=core DEV_DB=1 npm run dev for frontend + API, or DEV_PROFILE=all DEV_DB=1 npm run dev for every service."

@@ -9,9 +9,16 @@
   "hero": {
     "titleLead": "Que aprender sobre dinheiro",
     "titleHighlight": "pareça uma aventura",
-    "subtitle": "O LittleFounders transforma as primeiras escolhas sobre dinheiro, poupança e grandes ideias em experiências que as crianças querem explorar.",
+    "stageNote": "Uma visão pública do sinal de aprendizagem, criada para famílias",
+    "subtitle": "Transformamos as primeiras escolhas sobre dinheiro, poupança e grandes ideias em experiências que as crianças querem explorar.",
     "ctaPrimary": "Comece grátis",
     "ctaSecondary": "Conheça as lições",
+    "ctaStarting": "Começando…",
+    "guestError": "Não conseguimos iniciar sua sessão, tente novamente.",
+    "alreadyHaveAccount": "Já tem uma conta?",
+    "loginLink": "Entrar",
+    "preferSignup": "Prefere criar sua conta agora?",
+    "signupLink": "Cadastre-se",
     "note": "Um espaço para aprender, imaginar e compartilhar em família.",
     "imageAlt": "Uma família explora educação financeira com os personagens do LittleFounders",
     "logoAlt": "LittleFounders",
@@ -143,6 +150,78 @@
       "eyebrow": "A próxima descoberta espera",
       "title": "Aprender sobre dinheiro também pode parecer algo seu",
       "body": "Dê o primeiro passo para aventuras que transformam a curiosidade de hoje em ideias para a vida toda."
+    }
+  },
+  "technology": {
+    "parentEyebrow": "Tecnologia em que responsáveis podem confiar",
+    "parentTitle": "Uma visão clara de como a confiança cresce",
+    "parentBody": "Nossa experiência conecta desafios adequados à idade em um caminho guiado. Ela foi criada para ajudar as famílias a entender o progresso sem pedir que as crianças administrem um sistema.",
+    "parentPoints": {
+      "visible": { "icon": "visibility", "title": "Progresso com contexto", "body": "Veja as ideias que sua criança explora e a confiança que ela está construindo." },
+      "adaptive": { "icon": "route", "title": "Próximos passos com propósito", "body": "As aventuras se conectam naturalmente para que cada novo desafio se apoie em uma prática importante." },
+      "private": { "icon": "shield", "title": "Privacidade desde a criação", "body": "O mapa público nunca expõe informações pessoais de crianças ou dados privados de aprendizagem." }
+    },
+    "concepts": {
+      "curiosity": { "title": "A curiosidade inicia a jornada", "body": "A própria pergunta da criança transforma uma situação cotidiana em uma oportunidade de descoberta." },
+      "needs": { "title": "Nomear o que precisamos", "body": "Nomear uma necessidade ajuda a separar o essencial do que pode esperar." },
+      "goal": { "title": "Dar um nome à meta", "body": "Uma meta concreta deixa claro o que queremos alcançar e por que isso importa." },
+      "value": { "title": "Entender o valor", "body": "Comparar utilidade, esforço e satisfação apoia escolhas intencionais." },
+      "question": { "title": "Fazer uma pergunta melhor", "body": "Uma pergunta clara abre espaço para pensar, testar e aprender." },
+      "choice": { "title": "Escolher entre possibilidades", "body": "Ver mais de uma opção ajuda a antecipar consequências sem medo de errar." },
+      "needsVsWants": { "title": "Necessidade ou desejo", "body": "Classificar uma compra torna as prioridades mais fáceis de explicar." },
+      "price": { "title": "Ler um preço", "body": "Reconhecer quanto algo custa conecta os números a uma decisão real." },
+      "compare": { "title": "Comparar antes de escolher", "body": "Colocar duas opções lado a lado revela diferenças fáceis de ignorar." },
+      "budget": { "title": "Dar uma função a cada moeda", "body": "Um orçamento simples transforma um limite em um plano que pode ser revisado." },
+      "saving": { "title": "Guardar para depois", "body": "Economizar mostra como uma pequena decisão pode aproximar uma meta futura." },
+      "plan": { "title": "Transformar uma meta em etapas", "body": "Dividir um objetivo em pequenas ações faz o avanço parecer possível." },
+      "prioritize": { "title": "Decidir o que vem primeiro", "body": "Organizar prioridades ajuda a usar tempo e dinheiro com intenção." },
+      "tradeoff": { "title": "Perceber o que fica de fora", "body": "Toda escolha tem um custo de oportunidade, e nomeá-lo fortalece o critério." },
+      "time": { "title": "Deixar o tempo ajudar", "body": "Esperar também pode ser uma estratégia quando uma meta exige constância." },
+      "create": { "title": "Imaginar algo que pode existir", "body": "Criar começa quando uma ideia responde a uma necessidade ou desejo real." },
+      "resource": { "title": "Reconhecer os recursos", "body": "Tempo, materiais, habilidades e apoio fazem parte de qualquer projeto." },
+      "offer": { "title": "Desenhar uma proposta", "body": "Uma boa proposta explica o que oferece, para quem e por que pode ajudar." },
+      "cost": { "title": "Calcular o custo de criar", "body": "Contar materiais e esforço apoia decisões responsáveis." },
+      "revenue": { "title": "Ver como o dinheiro entra", "body": "Relacionar uma venda a um resultado mostra como uma ideia pode se sustentar." },
+      "share": { "title": "Contar a ideia", "body": "Compartilhar uma ideia convida perguntas, apoio e novas perspectivas." },
+      "iterate": { "title": "Melhorar com outra tentativa", "body": "Uma segunda versão usa o que foi aprendido para decidir com mais clareza." },
+      "reflect": { "title": "Observar o que aconteceu", "body": "Refletir transforma a experiência em uma ferramenta para o próximo desafio." },
+      "confidence": { "title": "Perceber o que já consigo fazer", "body": "Nomear um progresso transforma esforço em confiança visível." },
+      "nextStep": { "title": "Escolher o próximo passo", "body": "Cada conquista abre uma ação possível que mantém a aprendizagem viva." }
+    },
+    "graph": {
+      "question": { "code": "ORIGEM", "label": "Comece com curiosidade", "title": "Uma pergunta abre o caminho", "body": "Uma situação familiar dá a cada aventura um ponto de partida significativo.", "pedagogyTitle": "Curiosidade antes da resposta", "pedagogyBody": "A criança formula sua própria pergunta primeiro. Assim, a aprendizagem se torna pessoal, não uma prova." },
+      "practice": { "code": "AÇÃO", "label": "Aprender fazendo", "title": "A prática torna uma ideia concreta", "body": "Desafios curtos e ativos deixam as crianças experimentar uma escolha e entender por que ela importa.", "pedagogyTitle": "Escolher vira compreensão", "pedagogyBody": "A criança decide, observa o resultado e tenta novamente com mais confiança." },
+      "connection": { "code": "LIGAÇÃO", "label": "Conectar ideias", "title": "Ideias fazem parte de um panorama maior", "body": "Momentos relacionados formam uma jornada coerente, em vez de atividades isoladas.", "pedagogyTitle": "O significado cresce entre ideias", "pedagogyBody": "O conhecimento permanece quando pode se conectar a algo que a criança já conhece ou valoriza." },
+      "progress": { "code": "PRÓXIMO", "label": "Continuar avançando", "title": "Cada conquista aponta o que vem depois", "body": "O progresso continua encorajador, visível e conectado à próxima descoberta.", "pedagogyTitle": "Confiança precisa de um próximo passo", "pedagogyBody": "Uma pequena conquista abre um novo desafio possível, em vez de encerrar a jornada." }
+    },
+    "stage": {
+      "live": "Visão ao vivo",
+      "signal": "Sinal de aprendizagem",
+      "map": "Mapa de conceitos",
+      "private": "Privacidade primeiro",
+      "context": "Contexto",
+      "inspecting": "Explorando uma conexão pública",
+      "path": "Caminho aberto",
+      "connected": "conectado"
+    },
+    "atlas": {
+      "ariaLabel": "Mapa interativo de conceitos e relações de aprendizagem",
+      "openMap": "Abrir mapa de aprendizagem",
+      "eyebrow": "O sinal de aprendizagem",
+      "titleLead": "Cada ideia",
+      "titleAccent": "se conecta.",
+      "body": "Um mapa explorável das relações que ajudam as crianças a passar de uma primeira pergunta para um próximo passo com confiança.",
+      "nodes": "conceitos no mapa público",
+      "paths": "possíveis caminhos de aprendizagem",
+      "reset": "Redefinir conceito selecionado",
+      "close": "Fechar inspetor do conceito",
+      "public": "Visão pública",
+      "prerequisites": "pré-requisitos",
+      "buildsOn": "Se apoia em",
+      "link": "conectado",
+      "hint": "Arraste para explorar. Toque em um nó para inspecionar o caminho."
+      ,"pedagogy": "Perspectiva pedagógica",
+      "connections": "Conceitos conectados"
     }
   },
   "footer": {

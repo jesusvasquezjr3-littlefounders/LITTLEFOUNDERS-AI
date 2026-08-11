@@ -10,6 +10,7 @@ interface ZaraVexCharacterProps {
     currentText?: string;
     bubblePosition?: 'top' | 'right';
     isTalking?: boolean;
+    enableMouseTracking?: boolean;
 }
 
 const COLORS = {
@@ -40,7 +41,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
     showBubble = false,
     currentText = "",
     isTalking = false,
-    bubblePosition = 'top'
+    bubblePosition = 'top',
+    enableMouseTracking = true
 }) => {
     const [isBlinking, setIsBlinking] = useState(false);
     const [_clickPulse, setClickPulse] = useState(0);
@@ -68,6 +70,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
 
     // Mouse tracking
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const handleMouseMove = (e: MouseEvent) => {
             const x = (e.clientX / window.innerWidth) - 0.5;
             const y = (e.clientY / window.innerHeight) - 0.5;
@@ -75,10 +78,11 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
         };
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+    }, [enableMouseTracking]);
 
     // Animation loop
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const animate = () => {
             const spring = 0.08;
             currentHead.current.x += (targetHead.current.x - currentHead.current.x) * spring;
@@ -93,7 +97,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
         };
         rafId.current = requestAnimationFrame(animate);
         return () => { if (rafId.current) cancelAnimationFrame(rafId.current); };
-    }, []);
+    }, [enableMouseTracking]);
 
     const moodConfig = {
         neutral: { eyesType: "normal", mouth: "smile", blush: 0.4 },

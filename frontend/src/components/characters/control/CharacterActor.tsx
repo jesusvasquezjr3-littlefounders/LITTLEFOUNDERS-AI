@@ -26,6 +26,8 @@ export interface CharacterActorProps {
   className?: string
   /** Bump this to replay the same action (e.g. two "correct" in a row). */
   actionKey?: number
+  /** Disable the per-frame mouse-follow rig for static marketing scenes. */
+  enableMouseTracking?: boolean
 }
 
 const SIZE_CLASSES: Record<NonNullable<CharacterActorProps['size']>, string> = {
@@ -51,6 +53,7 @@ export function CharacterActor({
   size = 'md',
   className,
   actionKey = 0,
+  enableMouseTracking = true,
 }: CharacterActorProps) {
   const [activeAction, setActiveAction] = useState<CharacterAction>('idle')
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -81,6 +84,7 @@ export function CharacterActor({
     showBubble: Boolean(bubble),
     currentText: bubble ?? '',
     isTalking: speaking,
+    enableMouseTracking,
     className: 'h-full w-full',
   }
 

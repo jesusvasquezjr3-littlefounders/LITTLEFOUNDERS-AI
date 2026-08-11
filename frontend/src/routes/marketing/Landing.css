@@ -1,0 +1,78 @@
+.lf-lesson-copy__characters {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.2rem;
+  width: min(100%, 18rem);
+  height: 5.25rem;
+  margin-bottom: 0.8rem;
+  pointer-events: none;
+}
+
+.lf-glass.lf-fact-card {
+  background-color: rgb(var(--lf-surface));
+  background-image: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: var(--lf-shadow-glass);
+  color: rgb(var(--lf-content));
+}
+
+.lf-glass.lf-fact-card:hover {
+  box-shadow: var(--lf-shadow-glass);
+}
+
+.lf-lesson-copy__character {
+  position: relative;
+  flex: 0 0 auto;
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+  filter: drop-shadow(0 8px 10px rgb(15 23 42 / 0.14));
+  animation: lf-lesson-character-bob 3.6s ease-in-out infinite;
+}
+
+.lf-lesson-copy__character--dina {
+  animation-delay: -0.9s;
+}
+
+.lf-lesson-copy__character--liruf {
+  margin-bottom: 0.15rem;
+  animation-delay: -1.8s;
+}
+
+.lf-lesson-copy__character--rho {
+  margin-bottom: -0.1rem;
+  animation-delay: -2.7s;
+  width: 6rem !important;
+  height: 6rem !important;
+}
+
+.lf-lesson-copy__character--zara {
+  margin-bottom: 0.15rem;
+  animation-delay: -3.4s;
+  width: 6rem !important;
+  height: 6rem !important;
+}
+
+@keyframes lf-lesson-character-bob {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-0.35rem) rotate(1deg); }
+}
+
+@media (max-width: 767px) {
+  .lf-lesson-copy__characters {
+    height: 4rem;
+    margin-bottom: 0.55rem;
+    transform: scale(0.72);
+    transform-origin: left bottom;
+  }
+
+  .lf-lesson-card .lf-headline {
+    padding-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lf-lesson-copy__character {
+    animation: none !important;
+  }
+}

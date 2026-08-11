@@ -11,6 +11,7 @@ interface LirufCharacterProps {
     mood?: LirufMood;
     bubblePosition?: 'demo' | 'tutorial' | 'standard' | 'hero';
     isTalking?: boolean;
+    enableMouseTracking?: boolean;
 }
 
 /**
@@ -19,7 +20,7 @@ interface LirufCharacterProps {
  * smooth blink, spring-physics mouse tracking, idle breathing, tail wag,
  * squash-and-stretch bounce on click.
  */
-export function LirufCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false }: LirufCharacterProps) {
+export function LirufCharacter({ currentText, showBubble, className, mood = 'happy', bubblePosition = 'standard', isTalking = false, enableMouseTracking = true }: LirufCharacterProps) {
     const uid = useId().replace(/:/g, "");
     const headGroupRef = useRef<SVGGElement>(null);
     const bubbleRef = useRef<HTMLDivElement>(null);
@@ -53,6 +54,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
 
     // Mouse tracking with spring interpolation
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const handleMouseMove = (e: MouseEvent) => {
             const x = (e.clientX / window.innerWidth) - 0.5;
             const y = (e.clientY / window.innerHeight) - 0.5;
@@ -62,10 +64,11 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
 
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
+    }, [enableMouseTracking]);
 
     // Animation loop
     useEffect(() => {
+        if (!enableMouseTracking) return;
         const animate = () => {
             const spring = 0.1;
             currentPupil.current.x += (targetPupil.current.x - currentPupil.current.x) * spring;
@@ -92,7 +95,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
         return () => {
             if (rafId.current) cancelAnimationFrame(rafId.current);
         };
-    }, []);
+    }, [enableMouseTracking]);
 
     const handleClick = useCallback(() => {
         setClickPulse(p => p + 1);

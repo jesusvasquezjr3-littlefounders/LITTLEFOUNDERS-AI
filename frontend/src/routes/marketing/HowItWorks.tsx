@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { TechnologyGraph } from './TechnologyGraph';
 
 const LESSON_STEPS = [
   { key: 'discover', icon: 'explore', tone: 'primary' },
@@ -24,32 +25,58 @@ export function HowItWorks() {
 
   return (
     <div>
-      <section className="relative isolate overflow-hidden bg-inverse py-20 text-on-inverse sm:py-28">
+      <section className="relative isolate overflow-hidden bg-inverse text-on-inverse">
         <div className="pointer-events-none absolute inset-0 bg-primary/20 blur-3xl" aria-hidden="true" />
-        <Reveal className="relative mx-auto max-w-3xl px-5 text-center md:px-8">
-          <Badge className="bg-white/10 text-on-inverse">{t('marketing.howItWorks.eyebrow')}</Badge>
-          <h1 className="lf-display-xl mt-5">{t('marketing.howItWorks.title')}</h1>
-          <p className="lf-body-lg mx-auto mt-6 max-w-2xl text-on-inverse-muted">{t('marketing.howItWorks.intro')}</p>
-        </Reveal>
+        <div className="relative mx-auto w-full max-w-none">
+          <Reveal className="lf-how-hero-copy pointer-events-none absolute z-10 max-w-xl px-5 md:px-0">
+            <Badge className="bg-white/10 text-on-inverse">{t('marketing.howItWorks.eyebrow')}</Badge>
+            <h1 className="lf-display-xl mt-5">{t('marketing.howItWorks.title')}</h1>
+            <p className="lf-body-lg mt-6 text-on-inverse-muted">{t('marketing.howItWorks.intro')}</p>
+          </Reveal>
+          <Reveal delay={80}><TechnologyGraph showTitle={false} /></Reveal>
+        </div>
       </section>
 
       <section className="bg-base py-20 sm:py-28">
+        <div className="mx-auto max-w-container px-5 md:px-8">
+          <Reveal delay={80}>
+            <p className="lf-label text-primary">{t('marketing.technology.parentEyebrow')}</p>
+            <h2 className="lf-display-lg mt-3">{t('marketing.technology.parentTitle')}</h2>
+            <p className="lf-body-lg mt-4 text-content-muted">{t('marketing.technology.parentBody')}</p>
+            <div className="mt-8 space-y-5">
+              {['visible', 'adaptive', 'private'].map((key) => (
+                <div key={key} className="flex items-start gap-4">
+                  <IconChip tone={key === 'private' ? 'success' : 'primary'} size="md">
+                    <Icon name={t(`marketing.technology.parentPoints.${key}.icon`)} fill />
+                  </IconChip>
+                  <div className="pt-1">
+                    <h3 className="lf-title">{t(`marketing.technology.parentPoints.${key}.title`)}</h3>
+                    <p className="lf-body mt-1 text-content-muted">{t(`marketing.technology.parentPoints.${key}.body`)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="bg-band py-20 sm:py-28">
         <div className="mx-auto max-w-container px-5 md:px-8">
           <Reveal className="mx-auto max-w-2xl text-center">
             <p className="lf-label text-primary">{t('marketing.howItWorks.steps.eyebrow')}</p>
             <h2 className="lf-display-lg mt-3">{t('marketing.howItWorks.steps.title')}</h2>
           </Reveal>
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
+          <div className="mt-12 grid gap-8 border-t border-content/10 md:grid-cols-3 md:gap-6">
             {LESSON_STEPS.map(({ key, icon, tone }, index) => (
               <Reveal key={key} delay={index * 80}>
-                <Card interactive className="flex h-full flex-col gap-5 p-7">
-                  <IconChip tone={tone} size="lg">
-                    <Icon name={icon} fill />
-                  </IconChip>
-                  <span className="lf-caption text-content-faint">{t(`marketing.howItWorks.steps.${key}.number`)}</span>
-                  <h3 className="lf-headline -mt-3">{t(`marketing.howItWorks.steps.${key}.title`)}</h3>
+                <div className="relative flex h-full flex-col gap-5 border-b border-content/10 pb-8 pt-6 md:border-b-0 md:border-r md:pr-6 last:border-0">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="lf-display-lg text-primary/35">{t(`marketing.howItWorks.steps.${key}.number`)}</span>
+                    <IconChip tone={tone} size="lg"><Icon name={icon} fill /></IconChip>
+                  </div>
+                  <h3 className="lf-headline">{t(`marketing.howItWorks.steps.${key}.title`)}</h3>
                   <p className="lf-body text-content-muted">{t(`marketing.howItWorks.steps.${key}.body`)}</p>
-                </Card>
+                </div>
               </Reveal>
             ))}
           </div>

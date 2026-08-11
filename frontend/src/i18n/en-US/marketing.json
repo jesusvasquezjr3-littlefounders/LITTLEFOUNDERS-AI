@@ -9,9 +9,16 @@
   "hero": {
     "titleLead": "Let learning about money",
     "titleHighlight": "feel like an adventure",
-    "subtitle": "LittleFounders turns early choices about money, saving, and big ideas into experiences kids want to explore.",
+    "stageNote": "A public view of the learning signal, designed for families",
+    "subtitle": "We turn early choices about money, saving, and big ideas into experiences kids want to explore.",
     "ctaPrimary": "Start free",
     "ctaSecondary": "Explore the lessons",
+    "ctaStarting": "Starting…",
+    "guestError": "We couldn't start your session, please try again.",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "preferSignup": "Prefer to create your account now?",
+    "signupLink": "Sign up",
     "note": "A place to learn, imagine, and share as a family.",
     "imageAlt": "A family explores financial learning with the LittleFounders characters",
     "logoAlt": "LittleFounders",
@@ -143,6 +150,78 @@
       "eyebrow": "The next discovery is waiting",
       "title": "Learning about money can feel like your own",
       "body": "Take the first step toward adventures that turn today's curiosity into ideas for life."
+    }
+  },
+  "technology": {
+    "parentEyebrow": "Technology parents can trust",
+    "parentTitle": "A clear picture of how confidence grows",
+    "parentBody": "Our learning experience connects age-appropriate challenges into a guided path. It is designed to help families understand progress without asking children to manage a system.",
+    "parentPoints": {
+      "visible": { "icon": "visibility", "title": "Progress with context", "body": "See the ideas your child is exploring and the confidence they are building." },
+      "adaptive": { "icon": "route", "title": "Purposeful next steps", "body": "Adventures connect naturally, so each new challenge builds on meaningful practice." },
+      "private": { "icon": "shield", "title": "Built around privacy", "body": "The public learning map never exposes children’s personal information or private learning data." }
+    },
+    "concepts": {
+      "curiosity": { "title": "Curiosity starts the journey", "body": "A child’s own question turns an everyday moment into an opportunity to discover." },
+      "needs": { "title": "Name what we need", "body": "Naming a need helps separate what is essential from what can wait." },
+      "goal": { "title": "Give a goal a name", "body": "A concrete goal makes it clear what we want to achieve and why it matters." },
+      "value": { "title": "Understand value", "body": "Comparing usefulness, effort, and satisfaction supports intentional choices." },
+      "question": { "title": "Ask a better question", "body": "A clear question opens room to think, test, and learn." },
+      "choice": { "title": "Choose between possibilities", "body": "Seeing more than one option helps children anticipate consequences without fearing mistakes." },
+      "needsVsWants": { "title": "Need or want", "body": "Classifying a purchase makes priorities easier to explain in simple words." },
+      "price": { "title": "Read a price", "body": "Recognizing what something costs connects numbers to a real decision." },
+      "compare": { "title": "Compare before choosing", "body": "Putting two options side by side reveals differences that are easy to miss." },
+      "budget": { "title": "Give every coin a job", "body": "A simple budget turns a limit into a plan that can be reviewed." },
+      "saving": { "title": "Save for later", "body": "Saving shows how a small decision can move us toward a future goal." },
+      "plan": { "title": "Turn a goal into steps", "body": "Breaking an objective into small actions makes progress feel possible." },
+      "prioritize": { "title": "Decide what comes first", "body": "Ordering priorities helps us use time and money with intention." },
+      "tradeoff": { "title": "See what we leave out", "body": "Every choice has an opportunity cost, and naming it strengthens judgment." },
+      "time": { "title": "Let time help", "body": "Waiting can be a strategy when a goal needs consistency." },
+      "create": { "title": "Imagine something that could exist", "body": "Creating begins when an idea responds to a real need or desire." },
+      "resource": { "title": "Recognize resources", "body": "Time, materials, skills, and support are part of every project." },
+      "offer": { "title": "Design a proposal", "body": "A strong proposal explains what it offers, who it serves, and why it may help." },
+      "cost": { "title": "Calculate the cost of creating", "body": "Counting materials and effort supports responsible decisions." },
+      "revenue": { "title": "See how money comes in", "body": "Connecting a sale to an outcome shows how an idea can sustain itself." },
+      "share": { "title": "Tell the idea", "body": "Sharing an idea invites questions, support, and new perspectives." },
+      "iterate": { "title": "Improve with another try", "body": "A second version uses what was learned to make a clearer decision." },
+      "reflect": { "title": "Look at what happened", "body": "Reflection turns an experience into a tool for the next challenge." },
+      "confidence": { "title": "Notice what I can already do", "body": "Naming progress turns effort into visible confidence." },
+      "nextStep": { "title": "Choose the next step", "body": "Every win opens an achievable action that keeps learning alive." }
+    },
+    "graph": {
+      "question": { "code": "ORIGIN", "label": "Start with curiosity", "title": "A question opens the path", "body": "A familiar situation gives every adventure a meaningful starting point.", "pedagogyTitle": "Curiosity before correctness", "pedagogyBody": "Children form their own question first. That makes the learning personal instead of feeling like a test." },
+      "practice": { "code": "ACTION", "label": "Learn by doing", "title": "Practice makes an idea tangible", "body": "Short, active challenges let kids try a choice and see why it matters.", "pedagogyTitle": "Choice becomes understanding", "pedagogyBody": "A child makes a decision, sees what happens, and gets another chance to try with more confidence." },
+      "connection": { "code": "LINK", "label": "Connect ideas", "title": "Ideas become part of a bigger picture", "body": "Related moments build a coherent learning journey instead of isolated activities.", "pedagogyTitle": "Meaning grows between ideas", "pedagogyBody": "New knowledge sticks when children can connect it to something they already know or care about." },
+      "progress": { "code": "NEXT", "label": "Keep moving", "title": "Every win points to what comes next", "body": "Progress stays encouraging, visible, and connected to the child’s next discovery.", "pedagogyTitle": "Confidence needs a next move", "pedagogyBody": "A small win becomes useful when it opens a new, achievable challenge rather than ending the journey." }
+    },
+    "stage": {
+      "live": "Live preview",
+      "signal": "Learning signal",
+      "map": "Concept map",
+      "private": "Privacy first",
+      "context": "Context",
+      "inspecting": "Inspecting a public connection",
+      "path": "Open path",
+      "connected": "connected"
+    },
+    "atlas": {
+      "ariaLabel": "Interactive map of learning concepts and relationships",
+      "openMap": "Open learning map",
+      "eyebrow": "The learning signal",
+      "titleLead": "Every idea",
+      "titleAccent": "connects.",
+      "body": "An explorable map of the relationships that help children move from a first question to a confident next step.",
+      "nodes": "concepts in the public map",
+      "paths": "possible learning paths",
+      "reset": "Reset selected concept",
+      "close": "Close concept inspector",
+      "public": "Public view",
+      "prerequisites": "prerequisites",
+      "buildsOn": "Builds on",
+      "link": "linked",
+      "hint": "Drag to explore. Tap a node to inspect its path."
+      ,"pedagogy": "Pedagogical lens",
+      "connections": "Connected concepts"
     }
   },
   "footer": {
