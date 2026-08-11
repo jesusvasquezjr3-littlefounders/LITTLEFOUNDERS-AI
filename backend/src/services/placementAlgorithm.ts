@@ -132,17 +132,23 @@ export function computePlacement(
 
   // Hard-prerequisite cap: the first topic within that prefix whose own hard
   // edge isn't satisfied by everything strictly before it excludes itself
-  // and everything after from the credited set.
+  // and everything after from the credited set. Both maps below are built by
+  // mutating one accumulator instead of rebuilding a fresh array/Set per
+  // topic — flatTopics is the FULL course's topic list (unlike prefixEnd,
+  // which the ≤6-question quiz cap already keeps tiny), so an O(n²)
+  // rebuild-from-scratch pattern here scales with real course size.
   const topicPathsBySagaPath = new Map<string, string[]>();
   for (const t of flatTopics) {
     const sagaPath = sagaPathOf(t.path);
-    topicPathsBySagaPath.set(sagaPath, [...(topicPathsBySagaPath.get(sagaPath) ?? []), t.path]);
+    const existing = topicPathsBySagaPath.get(sagaPath);
+    if (existing) existing.push(t.path);
+    else topicPathsBySagaPath.set(sagaPath, [t.path]);
   }
 
   let cappedEnd = prefixEnd;
+  const priorPaths = new Set<string>();
   for (let i = 0; i < prefixEnd; i++) {
     const topic = flatTopics[i]!;
-    const priorPaths = new Set(flatTopics.slice(0, i).map((t) => t.path));
     const hasUnmetHard = topic.prerequisites.some(
       (p) => p.strength === 'hard' && !isPrerequisiteSatisfied(p.path, priorPaths, topicPathsBySagaPath),
     );
@@ -150,6 +156,7 @@ export function computePlacement(
       cappedEnd = i;
       break;
     }
+    priorPaths.add(topic.path);
   }
 
   const creditedTopics = flatTopics.slice(0, cappedEnd);
