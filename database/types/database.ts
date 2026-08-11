@@ -291,6 +291,85 @@ export type Database = {
           },
         ]
       }
+      course_placements: {
+        Row: {
+          claimed_level: string
+          course_id: string
+          created_at: string
+          education_level: string
+          method: string
+          quiz_answers: Json
+          start_lesson_id: string | null
+          start_topic_id: string | null
+          user_id: string
+        }
+        Insert: {
+          claimed_level: string
+          course_id: string
+          created_at?: string
+          education_level: string
+          method: string
+          quiz_answers?: Json
+          start_lesson_id?: string | null
+          start_topic_id?: string | null
+          user_id: string
+        }
+        Update: {
+          claimed_level?: string
+          course_id?: string
+          created_at?: string
+          education_level?: string
+          method?: string
+          quiz_answers?: Json
+          start_lesson_id?: string | null
+          start_topic_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_placements_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_placements_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "course_placements_start_lesson_id_fkey"
+            columns: ["start_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "course_placements_start_lesson_id_fkey"
+            columns: ["start_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_placements_start_topic_id_fkey"
+            columns: ["start_topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_placements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       course_release_verifications: {
         Row: {
           checks: Json
@@ -551,6 +630,7 @@ export type Database = {
           images_generated: number
           images_inherited: number
           run_id: string
+          skipped_slots: number
           stage_breakdown: Json
           tokens_used: number
           usd_used: number
@@ -566,6 +646,7 @@ export type Database = {
           images_generated?: number
           images_inherited?: number
           run_id: string
+          skipped_slots?: number
           stage_breakdown?: Json
           tokens_used?: number
           usd_used?: number
@@ -581,6 +662,7 @@ export type Database = {
           images_generated?: number
           images_inherited?: number
           run_id?: string
+          skipped_slots?: number
           stage_breakdown?: Json
           tokens_used?: number
           usd_used?: number
@@ -647,6 +729,7 @@ export type Database = {
           images_inherited: number
           register: string
           run_id: string
+          skipped_slots: number
           stage_breakdown: Json
           started_at: string
           tokens_used: number
@@ -666,6 +749,7 @@ export type Database = {
           images_inherited?: number
           register?: string
           run_id: string
+          skipped_slots?: number
           stage_breakdown?: Json
           started_at?: string
           tokens_used?: number
@@ -685,6 +769,7 @@ export type Database = {
           images_inherited?: number
           register?: string
           run_id?: string
+          skipped_slots?: number
           stage_breakdown?: Json
           started_at?: string
           tokens_used?: number
@@ -1277,6 +1362,35 @@ export type Database = {
           },
         ]
       }
+      onboarding_responses: {
+        Row: {
+          account_offer_choice: string
+          completed_at: string
+          discovery_channel: string | null
+          user_id: string
+        }
+        Insert: {
+          account_offer_choice: string
+          completed_at?: string
+          discovery_channel?: string | null
+          user_id: string
+        }
+        Update: {
+          account_offer_choice?: string
+          completed_at?: string
+          discovery_channel?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_responses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       parent_verifications: {
         Row: {
           address: string
@@ -1362,6 +1476,73 @@ export type Database = {
           url?: string
         }
         Relationships: []
+      }
+      placement_credits: {
+        Row: {
+          course_id: string
+          created_at: string
+          lesson_id: string
+          topic_id: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          lesson_id: string
+          topic_id: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          lesson_id?: string
+          topic_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placement_credits_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placement_credits_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["course_id"]
+          },
+          {
+            foreignKeyName: "placement_credits_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "placement_credits_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placement_credits_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placement_credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1584,7 +1765,9 @@ export type Database = {
           key_vocabulary: Json
           kind: string
           learning_objective: Json
+          placement_probe: Json | null
           position: number
+          prerequisites: Json
           prior_knowledge: string
           review_of: Json
           saga_id: string
@@ -1599,7 +1782,9 @@ export type Database = {
           key_vocabulary?: Json
           kind?: string
           learning_objective?: Json
+          placement_probe?: Json | null
           position: number
+          prerequisites?: Json
           prior_knowledge?: string
           review_of?: Json
           saga_id: string
@@ -1614,7 +1799,9 @@ export type Database = {
           key_vocabulary?: Json
           kind?: string
           learning_objective?: Json
+          placement_probe?: Json | null
           position?: number
+          prerequisites?: Json
           prior_knowledge?: string
           review_of?: Json
           saga_id?: string
@@ -2111,6 +2298,15 @@ export type Database = {
           source_topic_title: Json
         }[]
       }
+      get_completed_course_badges: {
+        Args: { p_user_id: string }
+        Returns: {
+          badge_asset: string
+          completed_at: string
+          course_slug: string
+          course_title: Json
+        }[]
+      }
       is_blocked: { Args: { a: string; b: string }; Returns: boolean }
       is_verified_guardian_of: { Args: { kid: string }; Returns: boolean }
       refresh_insights_rollups: {
@@ -2261,3 +2457,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

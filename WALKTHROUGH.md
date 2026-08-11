@@ -2,6 +2,81 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped
+
+Closes COURSE_ENGINE.md §3.2's "future onboarding/placement phase", reserved
+since the 2026-07-13 pedagogy-hardening session. Three-phase build, one
+migration set per phase (`0041`, `0042`, `0043`), landed as three commits on
+`main`.
+
+- **Guest accounts**: `POST /api/v1/auth/guest` is GoTrue's native anonymous
+  sign-in — a real `auth.users` row (`is_anonymous=true`), so the existing
+  `0003` bootstrap trigger, every RLS policy, and the JWT session flow all
+  work with zero new database code. `POST /api/v1/auth/upgrade` attaches a
+  permanent email+password identity to the SAME session in place (GoTrue's
+  `PUT /user`), preserving the same `auth.users.id` — progress, streak and
+  profile carry over with zero migration. "Guest" is deliberately distinct
+  product vocabulary from the pre-existing `lf_aid` marketing visitor id
+  (`frontend/src/lib/visitor.ts`), an unrelated concept.
+- **Onboarding**: a one-time, guest-first wizard (name, optional discovery
+  channel, optional age reusing the existing `profiles.birth_date` column
+  rather than a new one, create-account-now-or-later) that activates day-1
+  streak via `streak.ts`'s existing pure functions, unmodified. Migration
+  `0041` adds `onboarding_responses` (service-role-only, same posture as
+  `learning_stats`).
+- **Placement**: a mandatory, per-course quiz gating a course's first lesson.
+  Migration `0042` persists the competency graph
+  (`coursegen/src/catalog/competencyGraph.ts`, previously in-memory-only) as
+  `topics.prerequisites` + `topics.placement_probe`, mirroring `0016`'s exact
+  precedent (catalog stays the source of truth, paths resolved at query
+  time). `coursegen/src/pipeline/placementProbe.ts` authors one quiz probe
+  per teaching topic's first lesson OFFLINE, at generation time, from
+  catalog content only — never per learner, so §1.9 holds by construction.
+  `backend/src/services/placementAlgorithm.ts` (pure, like `unlockRules.ts`)
+  grades answers server-side and computes the longest contiguous
+  correct-and-probed prefix from the course start, capped at any unmet hard
+  prerequisite. Migration `0043` adds `course_placements` (the result) and
+  `placement_credits` (the skip-ahead ledger — never a fabricated
+  `lesson_progress` row) plus a `CREATE OR REPLACE` on `0039`'s
+  `get_completed_course_badges` so a placement-credited lesson counts toward
+  badge completion exactly like a real pass (confirmed product decision:
+  Duolingo-style credit). `learn.ts` gained a `PLACEMENT_REQUIRED` 403 beside
+  every existing `LESSON_LOCKED` check — the real server-side gate;
+  `PlacementPage.tsx`'s wizard is what clears it.
+- **Live-verified against the real local stack, not just mocks**: after
+  `npm run db:reset` twice (all 43 migrations apply cleanly from a fresh
+  database) and `npm run db:types`, the backend was started against the
+  actual pinned GoTrue `v2.189.0` with `ENABLE_ANONYMOUS_USERS=true` and
+  exercised over real HTTP: guest sign-in produced a genuine `is_anonymous`
+  JWT claim, `/auth/me` correctly reported `isGuest`/`onboardingComplete`,
+  onboarding completion persisted `display_name` and returned
+  `streakDays: 1`, and the upgrade flow preserved the identical
+  `auth.users.id` while flipping `isGuest` to `false`. `\d` against the live
+  database confirmed every new table's RLS policy, foreign key and check
+  constraint landed exactly as migrated, and `get_completed_course_badges`'s
+  signature matches the extended body.
+- **Test coverage**: 298 backend + 604 coursegen + 432 frontend tests green
+  (new: 13 `placementAlgorithm` unit tests covering the beginner shortcut,
+  no-probe fallback, hard/soft prerequisite capping including a
+  whole-saga-path edge, and the review-topic-as-natural-stopping-point case;
+  14 `placementProbe` tests for the author/translate/gate corrective-retry
+  paths; 14 `placement.test.ts` Supertest cases including the
+  `PLACEMENT_REQUIRED` gate on all 3 `learn.ts` endpoints end to end). Full
+  root gate sweep (`repo:map`, `docs:check`, `secrets:check`, `i18n:check`)
+  clean. Verified in-browser at 375px and 1280px, dark mode: the full guest
+  → onboarding → app journey, and the CoursePage → placement redirect
+  through every wizard step including real quiz content.
+- **What's genuinely NOT done yet**: the paid Forge backfill that authors
+  `placement_probe` content for the 3 already-published production
+  catalogs. `production:preflight`'s previously-recorded 4 provider-key
+  failures (`coursegen/DEEPSEEK_API_KEY`, `coursegen/QWEN_API_KEY`,
+  `audiogen/TTS_API_KEY`, `picturegen/IMAGE_API_KEY`) still block it — this
+  is the same open item the 2026-08-03 entry already flagged for Financial
+  Education generation, now also gating placement probes for the topics
+  that already exist in production. Until that backfill runs, every course's
+  `no_probe_content_fallback` method applies (placement still gates the
+  first lesson correctly, just without quiz-driven skip-ahead credit).
+
 ## Current State (2026-08-09) — Course badge identity and public completion collection
 
 - Every new course now has a mandatory `course.badge_asset` in its Forge catalog. The path must match `course-badges/<course-slug>.png`, and the developer supplies the corresponding read-only asset under `frontend/public/course-badges/`. Forge validation fails on missing or mismatched metadata; Vault prevents a published course from omitting its badge.

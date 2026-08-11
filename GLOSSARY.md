@@ -59,6 +59,10 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 | **fact anchor** | An entry in the catalog's `facts.yaml` — the only source of real-world numbers in generated lessons. |
 | **forced_types** | A catalog blueprint override (COURSE_ENGINE §4 addendum) that pins a lesson's exact segment-type skeleton, skipping the plan-stage LLM call. Powers the QA smoke-test catalog's exact per-type coverage. |
 | **voice map** | Echo's per-character × per-locale TTS voice resolution (COURSE_ENGINE §7) — `TTS_VOICE_<CHARACTER>_<LOCALE>` env overrides, falling back to the per-locale default. |
+| **competency graph** | The derived DAG of topic prerequisite/retrieval edges (`coursegen/src/catalog/competencyGraph.ts`), persisted to Vault as `topics.prerequisites` (migration `0042`) — the catalog stays the source of truth, the graph is a query-time-resolved projection, never a second content source. |
+| **placement probe** | One offline-authored multiple-choice question per teaching topic's first lesson (`topics.placement_probe`, migration `0042`), authored once per catalog topic — never per learner — by `coursegen/src/pipeline/placementProbe.ts`. The live placement quiz only ever serves and grades pre-authored probes; no LLM call happens per learner. |
+| **placement** | The mandatory, per-course quiz (`course_placements`, migration `0043`) that walks the competency graph's hard-edge subset backwards from the learner's claimed level to place them at the earliest topic they haven't proven mastery of, instead of lesson 1. `backend/src/services/placementAlgorithm.ts` computes it; `PlacementPage.tsx` is the wizard. |
+| **placement credit** | A lesson the learner was placed past (`placement_credits`, migration `0043`) — counts toward course-completion badges and the progress bar like a real pass (confirmed product decision), but is never a fabricated `lesson_progress` row and stays distinguishable everywhere (`LessonNode.placementCredited`). |
 
 ## Product sections
 
@@ -68,6 +72,7 @@ The AI tutor **feature** (lives across backend + frontend `tutor/`) is codenamed
 
 | Term | Definition |
 |---|---|
+| **guest** | A Duolingo-style zero-friction session — GoTrue's native anonymous sign-in (`auth.users.is_anonymous=true`), surfaced end to end as `isGuest`. A real user row from the first request, so every existing trigger/RLS policy/JWT flow works unchanged. Distinct from, and unrelated to, the pre-signup `lf_aid` marketing visitor id (`frontend/src/lib/visitor.ts`) — never conflate the two. Upgrading (`POST /api/v1/auth/upgrade`) attaches a permanent identity to the SAME `auth.users.id`, never `/signup`, which would mint a second blank identity. |
 | **envelope** | The mandatory API response shape `{ data, error }` (/AGENTS.md §1.6). |
 | **stack of record** | The locked technology table (/AGENTS.md §1.2). Changing it requires human sign-off. |
 | **invariant** | A rule in /AGENTS.md §1.3/§1.9 that no prompt can override. |
