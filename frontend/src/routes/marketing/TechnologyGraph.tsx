@@ -54,11 +54,11 @@ const CONCEPTS: Array<{ conceptKey: ConceptKey; stage: number; row: number; tone
 const STAGE_X = [0.12, 0.31, 0.5, 0.69, 0.88];
 const ROW_Y = [0.18, 0.34, 0.5, 0.66, 0.82];
 const NODE_COUNT = CONCEPTS.length;
-const PATH_COUNT = 40;
 const rand = (seed: number) => {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
   return x - Math.floor(x);
 };
+const clampRow = (row: number) => Math.max(0, Math.min(4, row));
 
 function createAtlasNodes(): AtlasNode[] {
   return CONCEPTS.map((concept, index) => ({
@@ -74,19 +74,75 @@ function createAtlasNodes(): AtlasNode[] {
   }));
 }
 
+/**
+ * A full rectangular grid (every row wired to the next row, every stage
+ * wired same-row to the next stage) reads as a mesh/lattice, not a
+ * knowledge graph — parallel rails, no branching, no crossing paths.
+ * Real concept graphs have varying degree: some ideas fan out to several
+ * later ones, some are dead ends, connections skip rows. Two changes get
+ * there without touching the render code at all — this function only
+ * decides WHICH nodes connect, still deterministic (same `rand` seeding
+ * pattern already used for node jitter) so the graph is stable across
+ * renders and SSR-safe:
+ *  - within a stage, edges are sparse (~65% kept) instead of a solid chain
+ *  - across stages, each node targets a NEARBY row, not the same row, and
+ *    roughly 40% of nodes branch to a second target — producing visible
+ *    converging/diverging/crossing paths instead of straight parallel rails
+ */
 function createAtlasLinks(): AtlasLink[] {
   const links: AtlasLink[] = [];
   for (let stage = 0; stage < 5; stage += 1) {
     for (let row = 0; row < 4; row += 1) {
-      links.push({ from: stage * 5 + row, to: stage * 5 + row + 1, kind: 'local' });
+      if (rand(stage * 17 + row + 300) < 0.65) {
+        links.push({ from: stage * 5 + row, to: stage * 5 + row + 1, kind: 'local' });
+      }
     }
-    if (stage < 4) {
-      for (let row = 0; row < 5; row += 1) {
-        links.push({ from: stage * 5 + row, to: (stage + 1) * 5 + row, kind: 'bridge' });
+  }
+  for (let stage = 0; stage < 4; stage += 1) {
+    for (let row = 0; row < 5; row += 1) {
+      const from = stage * 5 + row;
+      const drift = Math.round((rand(from + 500) - 0.5) * 3); // -1, 0, or 1 row
+      const primaryRow = clampRow(row + drift);
+      links.push({ from, to: (stage + 1) * 5 + primaryRow, kind: 'bridge' });
+      if (rand(from + 700) < 0.4) {
+        const secondaryRow = clampRow(primaryRow + (rand(from + 900) < 0.5 ? 1 : -1));
+        if (secondaryRow !== primaryRow) links.push({ from, to: (stage + 1) * 5 + secondaryRow, kind: 'bridge' });
       }
     }
   }
   return links;
+}
+
+const GLOW_SPRITE_SIZE = 128;
+function withAlpha(rgbColor: string, alpha: number): string {
+  // This codebase's CSS custom properties are space-separated triplets
+  // ("79 70 229", wrapped into "rgb(79 70 229)" by the caller) — the modern
+  // CSS Color 4 slash syntax is the correct way to add alpha to that, not
+  // legacy comma syntax (rgb(79 70 229, 0.5) is invalid CSS and throws).
+  return rgbColor.replace(')', ` / ${alpha})`);
+}
+/**
+ * A soft round glow, pre-rendered ONCE per color into an offscreen canvas.
+ * Every frame then just drawImage()s this instead of asking Canvas2D to
+ * recompute a shadowBlur convolution per shape — shadowBlur is a genuine
+ * per-pixel blur, re-run on every draw call, and doing it for ~25 nodes plus
+ * dozens of links at 60fps is exactly the kind of sustained CPU load that
+ * spins laptop fans. drawImage() of a cached bitmap is a cheap, normally
+ * GPU-composited blit regardless of how many times it's stamped down.
+ */
+function makeGlowSprite(rgbColor: string): HTMLCanvasElement {
+  const sprite = document.createElement('canvas');
+  sprite.width = GLOW_SPRITE_SIZE;
+  sprite.height = GLOW_SPRITE_SIZE;
+  const sctx = sprite.getContext('2d')!;
+  const r = GLOW_SPRITE_SIZE / 2;
+  const gradient = sctx.createRadialGradient(r, r, 0, r, r, r);
+  gradient.addColorStop(0, withAlpha(rgbColor, 0.95));
+  gradient.addColorStop(0.35, withAlpha(rgbColor, 0.45));
+  gradient.addColorStop(1, withAlpha(rgbColor, 0));
+  sctx.fillStyle = gradient;
+  sctx.fillRect(0, 0, GLOW_SPRITE_SIZE, GLOW_SPRITE_SIZE);
+  return sprite;
 }
 
 const toneVar: Record<Tone, string> = {
@@ -114,9 +170,14 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
   const [reducedMotion, setReducedMotion] = useState(false);
   const selectedRef = useRef(selected);
   const redrawRef = useRef<(() => void) | null>(null);
+  const ensureLoopRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     selectedRef.current = selected;
+    // Re-enabling motion (reducedMotion -> false) must resume the idle sway
+    // loop, not just repaint once — a single redraw() alone would leave the
+    // canvas frozen at whatever rotation it last had.
+    ensureLoopRef.current?.();
     redrawRef.current?.();
   }, [reducedMotion, selected]);
 
@@ -133,7 +194,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     const canvas = canvasRef.current;
     if (!canvas) return;
     const parent = canvas.parentElement;
-    if (!parent || parent.getBoundingClientRect().width === 0 || parent.getBoundingClientRect().height === 0) return;
+    if (!parent) return;
     let context: CanvasRenderingContext2D | null = null;
     try { context = canvas.getContext('2d'); } catch { return; }
     if (!context) return;
@@ -150,12 +211,20 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     let startPanY = 0;
     let startRotation = 0;
     let startTilt = 0;
-    let lastPointerDrawAt = -Infinity;
+    let rafId: number | null = null;
     let projected: Array<{ node: AtlasNode; x: number; y: number; zDepth: number; scale: number }> = [];
     // Keep the cinematic glow crisp without letting Retina devices allocate
     // four times the pixels for an interaction redraw.
     const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
     const colors = new Map(Object.values(toneVar).map((variable) => [variable, `rgb(${getComputedStyle(document.documentElement).getPropertyValue(variable)})`]));
+    // Built once per effect run (colors are static for the session), not
+    // per frame — see makeGlowSprite's doc comment.
+    const glowSprites = new Map([...colors.values()].map((rgb) => [rgb, makeGlowSprite(rgb)]));
+    const glowFor = (rgb: string) => glowSprites.get(rgb) ?? (glowSprites.set(rgb, makeGlowSprite(rgb)), glowSprites.get(rgb)!);
+    const drawGlow = (rgb: string, x: number, y: number, radius: number) => {
+      const sprite = glowFor(rgb);
+      context!.drawImage(sprite, x - radius, y - radius, radius * 2, radius * 2);
+    };
     const resize = () => {
       const rect = parent.getBoundingClientRect();
       canvas.width = rect.width * dpr;
@@ -163,12 +232,6 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
       context?.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    const film = parent.querySelector<HTMLVideoElement>('.lf-atlas__film');
-    const syncPlayback = () => {
-      const shouldPlay = isVisible && document.visibilityState === 'visible';
-      if (shouldPlay) void film?.play().catch(() => undefined);
-      else film?.pause();
     };
     const draw = (time: number) => {
       if (!isVisible || document.visibilityState !== 'visible') return;
@@ -200,6 +263,10 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
         context!.beginPath(); context!.moveTo(x, height * 0.1 + panY); context!.lineTo(x, height * 0.9 + panY); context!.stroke();
       }
       context!.setLineDash([]); context!.restore();
+      // Plain strokes for every link (cheap: no shadowBlur, `lighter` additive
+      // blending alone already reads as "glowing" where lines overlap) — the
+      // expensive cached-sprite glow is spent ONLY on the handful of links
+      // touching the selected node, never on all ~50 of them every frame.
       links.forEach((link, linkIndex) => {
         const a = projected[link.from]; const b = projected[link.to];
         if (!a || !b) return;
@@ -209,12 +276,20 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
         context!.globalAlpha = isActive ? 0.82 : link.kind === 'bridge' ? 0.3 : 0.16;
         context!.strokeStyle = edgeColor;
         context!.lineWidth = isActive ? 2.2 : link.kind === 'bridge' ? 1.1 : 0.75;
-        context!.shadowBlur = isActive ? 18 : link.kind === 'bridge' ? 8 : 0;
-        context!.shadowColor = edgeColor;
         context!.globalCompositeOperation = 'lighter';
         context!.beginPath(); context!.moveTo(a.x, a.y); context!.lineTo(b.x, b.y); context!.stroke();
+        context!.restore();
+        if (isActive) {
+          context!.save();
+          context!.globalCompositeOperation = 'lighter';
+          drawGlow(edgeColor, (a.x + b.x) / 2, (a.y + b.y) / 2, 22);
+          context!.restore();
+        }
         const pulse = (time / 2200 + linkIndex * 0.14) % 1;
-        context!.fillStyle = link.kind === 'bridge' ? (colors.get('--lf-success') ?? '#34d399') : edgeColor;
+        const trailColor = link.kind === 'bridge' ? (colors.get('--lf-success') ?? '#34d399') : edgeColor;
+        context!.save();
+        context!.globalCompositeOperation = 'lighter';
+        context!.fillStyle = trailColor;
         for (let trail = 2; trail >= 0; trail -= 1) {
           const trailPulse = (pulse - trail * 0.035 + 1) % 1;
           const px = a.x + (b.x - a.x) * trailPulse;
@@ -222,46 +297,77 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
           context!.globalAlpha = (isActive ? 0.9 : 0.34) / (trail + 1);
           context!.beginPath(); context!.arc(px, py, (isActive ? 3.2 : 1.8) - trail * 0.35, 0, Math.PI * 2); context!.fill();
         }
+        context!.restore();
         if (link.kind === 'bridge' && !reducedMotion) {
           const px = a.x + (b.x - a.x) * pulse;
           const py = a.y + (b.y - a.y) * pulse;
+          context!.save();
           context!.globalAlpha = 0.26;
           context!.strokeStyle = colors.get('--lf-success') ?? '#34d399';
           context!.lineWidth = 1;
           context!.beginPath(); context!.arc(px, py, 6 + Math.sin(time / 240) * 2, 0, Math.PI * 2); context!.stroke();
+          context!.restore();
         }
-        context!.restore();
       });
       sorted.forEach(({ node, x, y, scale, zDepth }) => {
         const active = node.id === selectedRef.current;
         const pulse = active && !reducedMotion ? 1 + Math.sin(time / 300) * 0.12 : 1;
         const nodeColor = colors.get(toneVar[node.tone]) ?? colors.get('--lf-primary') ?? '#818cf8';
+        const coreRadius = node.radius * scale * pulse;
+        context!.save();
+        context!.globalAlpha = active ? 1 : 0.48 + ((zDepth + 1) / 2) * 0.5;
+        context!.globalCompositeOperation = 'lighter';
+        // Cached-sprite glow (cheap blit) replaces a per-node shadowBlur —
+        // the glow radius still scales with the same "active/mid-row/rest"
+        // tiers the old shadowBlur values encoded (28 / 14 / 5).
+        drawGlow(nodeColor, x, y, coreRadius * (active ? 3.4 : node.row === 2 ? 2.6 : 1.9));
+        context!.restore();
         context!.save();
         context!.globalAlpha = active ? 1 : 0.48 + ((zDepth + 1) / 2) * 0.5;
         context!.fillStyle = nodeColor;
-        context!.shadowBlur = active ? 28 : node.row === 2 ? 14 : 5;
-        context!.shadowColor = nodeColor;
-        context!.beginPath(); context!.arc(x, y, node.radius * scale * pulse, 0, Math.PI * 2); context!.fill();
+        context!.beginPath(); context!.arc(x, y, coreRadius, 0, Math.PI * 2); context!.fill();
         if (active) {
           context!.globalAlpha = 0.55;
           context!.strokeStyle = colors.get('--lf-on-inverse') ?? '#fff';
           context!.lineWidth = 1.2;
-          context!.beginPath(); context!.arc(x, y, node.radius * scale * 3.3, 0, Math.PI * 2); context!.stroke();
+          context!.beginPath(); context!.arc(x, y, coreRadius * 3.3, 0, Math.PI * 2); context!.stroke();
         }
         context!.restore();
       });
     };
-    const onPointerDown = (event: PointerEvent) => { dragging = true; dragStartX = event.clientX; dragStartY = event.clientY; startPanX = panX; startPanY = panY; startRotation = rotation; startTilt = tilt; canvas.setPointerCapture(event.pointerId); };
+    // Single render loop drives everything (idle sway, drag feedback, and
+    // what a looping background video used to fake): a plain requestAnimationFrame
+    // ticker, paused whenever nobody could be seeing it (scrolled off-screen
+    // via IntersectionObserver, tab hidden) or when the user asked the OS for
+    // reduced motion — direct drag input still runs it even then, since that's
+    // response to input, not unprompted animation.
+    // Ambient sway is a slow multi-second sine wave — nobody can see the
+    // difference between 60fps and 30fps for that, so idle frames are
+    // throttled to roughly halve sustained CPU cost. Dragging stays
+    // uncapped: that's direct-manipulation feedback, worth the extra frames.
+    let lastFrameTime = 0;
+    const tick = (time: number) => {
+      const minInterval = dragging ? 0 : 1000 / 30;
+      if (time - lastFrameTime >= minInterval) {
+        lastFrameTime = time;
+        draw(time);
+      }
+      rafId = shouldAnimate() ? requestAnimationFrame(tick) : null;
+    };
+    const shouldAnimate = () => isVisible && document.visibilityState === 'visible' && (dragging || !reducedMotion);
+    const ensureLoop = () => {
+      if (rafId === null && shouldAnimate()) rafId = requestAnimationFrame(tick);
+    };
+    ensureLoopRef.current = ensureLoop;
+    const onPointerDown = (event: PointerEvent) => { dragging = true; dragStartX = event.clientX; dragStartY = event.clientY; startPanX = panX; startPanY = panY; startRotation = rotation; startTilt = tilt; canvas.setPointerCapture(event.pointerId); ensureLoop(); };
     const onPointerMove = (event: PointerEvent) => {
       if (!dragging) return;
       const dx = event.clientX - dragStartX; const dy = event.clientY - dragStartY;
       panX = Math.max(-widthLimit(parent, 0.45), Math.min(widthLimit(parent, 0.45), startPanX + dx));
       panY = Math.max(-heightLimit(parent, 0.35), Math.min(heightLimit(parent, 0.35), startPanY + dy));
       rotation = startRotation + dx / 1400; tilt = Math.max(-0.38, Math.min(0.38, startTilt + dy / 1400));
-      if (event.timeStamp - lastPointerDrawAt >= 1000 / 30) {
-        lastPointerDrawAt = event.timeStamp;
-        draw(performance.now());
-      }
+      // No manual draw() here: the rAF loop (already running, started by
+      // onPointerDown) picks up these values on its next frame.
     };
     const onPointerUp = (event: PointerEvent) => {
       const moved = Math.hypot(event.clientX - dragStartX, event.clientY - dragStartY);
@@ -279,24 +385,32 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
     };
     const onPointerCancel = (event: PointerEvent) => { dragging = false; if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId); };
-    const onVisibilityChange = () => { syncPlayback(); };
+    const onVisibilityChange = () => { ensureLoop(); };
     const observer = typeof IntersectionObserver === 'function' ? new IntersectionObserver(([entry]) => {
       isVisible = entry?.isIntersecting ?? true;
-      syncPlayback();
+      ensureLoop();
     }, { threshold: 0.01 }) : null;
     redrawRef.current = () => draw(performance.now());
-    resize(); draw(0); syncPlayback(); observer?.observe(parent); document.addEventListener('visibilitychange', onVisibilityChange); window.addEventListener('resize', resize); canvas.addEventListener('pointerdown', onPointerDown); canvas.addEventListener('pointermove', onPointerMove); canvas.addEventListener('pointerup', onPointerUp); canvas.addEventListener('pointercancel', onPointerCancel);
-    return () => { redrawRef.current = null; observer?.disconnect(); film?.pause(); document.removeEventListener('visibilitychange', onVisibilityChange); window.removeEventListener('resize', resize); canvas.removeEventListener('pointerdown', onPointerDown); canvas.removeEventListener('pointermove', onPointerMove); canvas.removeEventListener('pointerup', onPointerUp); canvas.removeEventListener('pointercancel', onPointerCancel); };
+    // A one-shot getBoundingClientRect() check at effect-setup time is not
+    // reliable: if the parent still measures 0×0 at that exact instant (e.g.
+    // a still-settling layout pass), nothing would ever retry, since this
+    // effect's deps never change again after mount — permanently stranding
+    // the canvas at its default 300×150 intrinsic size. ResizeObserver fires
+    // with the real size as soon as one exists, and again on every future
+    // change, so this self-heals instead of depending on getting lucky once.
+    const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(() => { resize(); draw(performance.now()); }) : null;
+    resizeObserver?.observe(parent);
+    resize(); draw(0); ensureLoop(); observer?.observe(parent); document.addEventListener('visibilitychange', onVisibilityChange); window.addEventListener('resize', resize); canvas.addEventListener('pointerdown', onPointerDown); canvas.addEventListener('pointermove', onPointerMove); canvas.addEventListener('pointerup', onPointerUp); canvas.addEventListener('pointercancel', onPointerCancel);
+    return () => { redrawRef.current = null; ensureLoopRef.current = null; if (rafId !== null) cancelAnimationFrame(rafId); observer?.disconnect(); resizeObserver?.disconnect(); document.removeEventListener('visibilitychange', onVisibilityChange); window.removeEventListener('resize', resize); canvas.removeEventListener('pointerdown', onPointerDown); canvas.removeEventListener('pointermove', onPointerMove); canvas.removeEventListener('pointerup', onPointerUp); canvas.removeEventListener('pointercancel', onPointerCancel); };
   }, [links, nodes, reducedMotion]);
 
   const active = nodes.find((node) => node.id === selected) ?? nodes[0]!;
   const related = selected === null ? [] : links.filter((link) => link.from === selected || link.to === selected).slice(0, 3).map((link) => link.from === selected ? link.to : link.from);
   return (
     <div className={`lf-atlas ${compact ? 'lf-atlas-compact' : ''} ${showTitle ? '' : 'lf-atlas-no-title'}`}>
-      <video className="lf-atlas__film" autoPlay loop muted playsInline preload="metadata" aria-hidden="true"><source src="/marketing/knowledge-graph.mp4" type="video/mp4" /></video>
       <canvas ref={canvasRef} className="lf-atlas__canvas" aria-label={t('marketing.technology.atlas.ariaLabel')} role="img" />
       <div className="lf-atlas__backdrop" aria-hidden="true" />
-      <div className="lf-atlas__title"><span>{t('marketing.technology.atlas.eyebrow')}</span><h2>{t('marketing.technology.atlas.titleLead')}<br /><em>{t('marketing.technology.atlas.titleAccent')}</em></h2><p>{t('marketing.technology.atlas.body')}</p><div className="lf-atlas__stats"><b>{NODE_COUNT}</b><span>{t('marketing.technology.atlas.nodes')}</span><b>{PATH_COUNT}</b><span>{t('marketing.technology.atlas.paths')}</span></div></div>
+      <div className="lf-atlas__title"><span>{t('marketing.technology.atlas.eyebrow')}</span><h2>{t('marketing.technology.atlas.titleLead')}<br /><em>{t('marketing.technology.atlas.titleAccent')}</em></h2><p>{t('marketing.technology.atlas.body')}</p><div className="lf-atlas__stats"><b>{NODE_COUNT}</b><span>{t('marketing.technology.atlas.nodes')}</span><b>{links.length}</b><span>{t('marketing.technology.atlas.paths')}</span></div></div>
       {inspectorOpen && <aside className="lf-atlas__inspector">
         <button type="button" className="lf-atlas__close" onClick={() => setInspectorOpen(false)} aria-label={t('marketing.technology.atlas.close')}>×</button>
         <h3>{t(`marketing.technology.concepts.${active.conceptKey}.title`)}</h3>

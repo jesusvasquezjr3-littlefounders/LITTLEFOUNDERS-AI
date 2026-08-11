@@ -9,8 +9,7 @@
 }
 
 .lf-atlas-compact { min-height: 620px; }
-.lf-atlas__film, .lf-atlas__canvas, .lf-atlas__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lf-atlas__film { z-index: 0; object-fit: cover; opacity: 0.09; mix-blend-mode: screen; pointer-events: none; }
+.lf-atlas__canvas, .lf-atlas__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
 .lf-atlas__canvas { z-index: 1; cursor: grab; touch-action: pan-y; transform: perspective(1400px) rotateX(7deg) rotateY(-5deg) scale(1.04); transform-origin: 58% 50%; }
 .lf-atlas__canvas:active { cursor: grabbing; }
 .lf-atlas__backdrop {

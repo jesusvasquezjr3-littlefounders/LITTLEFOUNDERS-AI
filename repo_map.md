@@ -158,6 +158,7 @@ frontend/
       auth/
         __tests__/
       marketing/
+        __tests__/
       onboarding/
         __tests__/
     theme/
@@ -10516,50 +10517,16 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 ### frontend/revideo/knowledge-graph.tsx
 
 ```
-import { Circle, Line, makeScene2D } from '@revideo/2d';
-import { all, createRef, waitFor } from '@revideo/core';
-
-type Tone = '#818cf8' | '#a78bfa' | '#34d399' | '#f472b6';
-type GraphNode = { x: number; y: number; radius: number; tone: Tone; stage: number; row: number };
-type GraphLink = { from: number; to: number; bridge: boolean };
-
-const STAGE_X = [-500, -250, 0, 250, 500];
-const ROW_Y = [-250, -125, 0, 125, 250];
-const STAGE_TONES: Tone[] = ['#f472b6', '#818cf8', '#34d399', '#a78bfa', '#818cf8'];
-const nodes: GraphNode[] = Array.from({ length: 25 }, (_, index) => {
-  const stage = Math.floor(index / 5);
-  const row = index % 5;
-  return { x: STAGE_X[stage]!, y: ROW_Y[row]!, radius: row === 2 ? 13 : 9, tone: STAGE_TONES[stage]!, stage, row };
-});
 ```
 
 ### frontend/revideo/project.ts
 
 ```
-import { makeProject } from '@revideo/core';
-import knowledgeGraph from './knowledge-graph.tsx?scene';
-
-export default makeProject({ scenes: [knowledgeGraph] });
 ```
 
 ### frontend/revideo/render.ts
 
 ```
-import { renderVideo } from '@revideo/renderer';
-import { resolve } from 'node:path';
-
-const file = await renderVideo({
-  projectFile: './revideo/project.ts',
-  settings: {
-    outFile: 'knowledge-graph.mp4',
-    outDir: './public/marketing',
-    workers: 1,
-    logProgress: true,
-    projectSettings: { fps: 30, range: [0, 5], size: { x: 1280, y: 720 } },
-    viteConfig: {
-      resolve: { alias: { '@': resolve(process.cwd(), 'src') } },
-    },
-  },
 ```
 
 ### frontend/src/App.tsx
@@ -11532,7 +11499,7 @@ export { StatCard } from './StatCard';
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Let learning about money",
+    "titleLead": "Let learning about money ",
     "titleHighlight": "feel like an adventure",
     "stageNote": "A public view of the learning signal, designed for families",
     "subtitle": "We turn early choices about money, saving, and big ideas into experiences kids want to explore.",
@@ -11992,12 +11959,12 @@ import enErrors from './en-US/errors.json';
     "loginCta": "Já tenho conta"
   },
   "hero": {
-    "titleLead": "Que aprender sobre dinheiro",
-    "titleHighlight": "pareça uma aventura",
-    "stageNote": "Uma visão pública do sinal de aprendizagem, criada para famílias",
-    "subtitle": "Transformamos as primeiras escolhas sobre dinheiro, poupança e grandes ideias em experiências que as crianças querem explorar.",
+    "titleLead": "Aprender sobre dinheiro deve parecer",
+    "titleHighlight": "uma aventura",
+    "stageNote": "Uma visão pública do sinal de aprendizagem, projetada para famílias",
+    "subtitle": "Transformamos as primeiras decisões sobre dinheiro, economia e ideias de negócios em experiências que as crianças querem explorar.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Conheça as lições",
+    "ctaSecondary": "Descubra as lições",
 ```
 
 ### frontend/src/i18n/pt-BR/onboarding.json
@@ -15801,24 +15768,34 @@ const VALUES = [
   { key: 'short', icon: 'auto_stories', tone: 'primary' },
 ```
 
+### frontend/src/routes/marketing/LegalDocumentViewer.tsx
+
+```
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
+import { Badge, Card, Button, Icon } from '@/components/ui';
+
+interface LegalDocumentViewerProps {
+  doc: 'terms' | 'privacy';
+}
+
+const TERM_CLAUSES = [
+  'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10',
+  'c11', 'c12', 'c13', 'c14', 'c15', 'c16', 'c17', 'c18', 'c19', 'c20'
+] as const;
+
+```
+
 ### frontend/src/routes/marketing/LegalPage.tsx
 
 ```
-import { useTranslation } from 'react-i18next';
-import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
-import { Badge, Card } from '@/components/ui';
-
-const CONTACT_EMAIL = 'informame@littlefounders.ai';
+import { LegalDocumentViewer } from './LegalDocumentViewer';
 
 export function LegalPage({ doc }: { doc: 'terms' | 'privacy' }) {
-  const { t } = useTranslation();
-
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <h1 className="lf-display-lg">{t(`marketing.legal.${doc}.title`)}</h1>
-      <Card hero className="mt-10 text-center">
-        {doc === 'privacy' ? (
-          <div className="text-left">
+  return <LegalDocumentViewer doc={doc} />;
+}
 ```
 
 ### frontend/src/routes/marketing/MarketingLayout.tsx
@@ -15855,10 +15832,10 @@ const NAV_LINKS = [
 }
 
 .lf-atlas-compact { min-height: 620px; }
-.lf-atlas__film, .lf-atlas__canvas, .lf-atlas__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lf-atlas__film { z-index: 0; object-fit: cover; opacity: 0.09; mix-blend-mode: screen; pointer-events: none; }
+.lf-atlas__canvas, .lf-atlas__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; }
 .lf-atlas__canvas { z-index: 1; cursor: grab; touch-action: pan-y; transform: perspective(1400px) rotateX(7deg) rotateY(-5deg) scale(1.04); transform-origin: 58% 50%; }
 .lf-atlas__canvas:active { cursor: grabbing; }
+.lf-atlas__backdrop {
 ```
 
 ### frontend/src/routes/marketing/TechnologyGraph.tsx
@@ -15879,6 +15856,26 @@ type Tone = 'primary' | 'delight' | 'success' | 'on';
 interface AtlasNode {
   id: number;
   x: number;
+```
+
+### frontend/src/routes/marketing/__tests__/LegalPage.test.tsx
+
+```
+import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { describe, it, expect, vi } from 'vitest';
+import { LegalPage } from '../LegalPage';
+
+// Mock IntersectionObserver
+global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+describe('LegalPage', () => {
+  it('renders Terms & Conditions with all clauses and metadata', () => {
+    render(
 ```
 
 ### frontend/src/routes/onboarding/OnboardingPage.tsx

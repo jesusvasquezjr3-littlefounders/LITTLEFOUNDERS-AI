@@ -14,8 +14,7 @@
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "marketing:render-graph": "tsx revideo/render.ts"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@dicebear/collection": "^9.4.2",
@@ -35,11 +34,6 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@revideo/2d": "^0.11.0",
-    "@revideo/core": "^0.11.0",
-    "@revideo/renderer": "^0.11.0",
-    "@revideo/ui": "^0.11.0",
-    "@revideo/vite-plugin": "^0.11.0",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.1.0",
     "@types/dompurify": "^3.0.5",
