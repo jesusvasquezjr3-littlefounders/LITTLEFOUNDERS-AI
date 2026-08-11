@@ -192,7 +192,7 @@
       "question": { "code": "ORIGEN", "label": "Empieza con curiosidad", "title": "Una pregunta abre el camino", "body": "Una situación cercana da a cada aventura un punto de partida significativo.", "pedagogyTitle": "Curiosidad antes que respuestas", "pedagogyBody": "El niño formula primero su propia pregunta. Así el aprendizaje se siente personal, no como un examen." },
       "practice": { "code": "ACCIÓN", "label": "Aprender haciendo", "title": "La práctica vuelve tangible una idea", "body": "Retos breves y activos permiten probar una elección y entender por qué importa.", "pedagogyTitle": "Elegir se vuelve comprender", "pedagogyBody": "El niño toma una decisión, observa qué sucede y vuelve a intentarlo con más confianza." },
       "connection": { "code": "ENLACE", "label": "Conectar ideas", "title": "Las ideas se vuelven parte de un panorama mayor", "body": "Los momentos relacionados construyen un recorrido coherente, no actividades aisladas.", "pedagogyTitle": "El significado crece entre ideas", "pedagogyBody": "El conocimiento permanece cuando puede conectarse con algo que el niño ya conoce o valora." },
-      "progress": { "code": "SIGUIENTE", "label": "Seguir avanzando", "title": "Cada logro señala lo que sigue", "body": "El progreso se mantiene alentador, visible y conectado con el próximo descubrimiento.", "pedagogyTitle": "La confianza necesita un siguiente paso", "pedagogyBody": "Un logro pequeño abre un reto nuevo y alcanzable, en lugar de terminar el recorrido." }
+      "progress": { "code": "SIGUIENTE", "label": "Seguir advancing", "title": "Cada logro señala lo que sigue", "body": "El progreso se mantiene alentador, visible y conectado con el próximo descubrimiento.", "pedagogyTitle": "La confianza necesita un siguiente paso", "pedagogyBody": "Un logro pequeño abre un reto nuevo y alcanzable, en lugar de terminar el recorrido." }
     },
     "stage": {
       "live": "Vista en vivo",
@@ -219,13 +219,13 @@
       "prerequisites": "prerrequisitos",
       "buildsOn": "Se construye sobre",
       "link": "conectado",
-      "hint": "Arrastra para explorar. Toca un nodo para inspeccionar su ruta."
-      ,"pedagogy": "Perspectiva pedagógica",
+      "hint": "Arrastra para explorar. Toca un nodo para inspeccionar su ruta.",
+      "pedagogy": "Perspectiva pedagógica",
       "connections": "Conceptos conectados"
     }
   },
   "footer": {
-    "tagline": "Aprende, crece y construye tu futuro.",
+    "tagline": "Aprende, cresce y construye tu futuro.",
     "contactLabel": "Contacto",
     "legalTitle": "Legal",
     "terms": "Términos y Condiciones",
@@ -254,19 +254,183 @@
     "label": "Selecciona tu idioma"
   },
   "legal": {
-    "badge": "En construcción",
-    "body": "Este documento está en redacción. Para cualquier duda escríbenos:",
+    "badge": "Documento Oficial",
+    "body": "Para cualquier consulta legal o de privacidad, contáctanos en:",
+    "meta": {
+      "lastUpdated": "Última actualización: 11 de agosto de 2026",
+      "company": "Legal Cyberx S.C.",
+      "brand": "LITTLEFOUNDERS",
+      "address": "Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Ciudad de México",
+      "domain": "https://es.littlefounders.ai/",
+      "email": "informame@littlefounders.ai",
+      "searchPlaceholder": "Buscar en los documentos legales…",
+      "noResults": "No se encontraron cláusulas para tu búsqueda.",
+      "tocTitle": "Índice de contenido",
+      "print": "Imprimir document",
+      "copyLink": "Copiar enlace",
+      "copied": "Enlace copiado",
+      "backToTop": "Volver arriba",
+      "officialNotice": "Documento legal vinculante operado por Legal Cyberx S.C."
+    },
     "terms": {
-      "title": "Términos y Condiciones"
+      "title": "Términos y Condiciones",
+      "subtitle": "Regulan el acceso, registro, navegación y uso de la plataforma LITTLEFOUNDERS.",
+      "preamble": "Legal Cyberx S.C., en adelante LITTLEFOUNDERS, con domicilio en Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Ciudad de México, es responsable de la plataforma LITTLEFOUNDERS accesible en https://es.littlefounders.ai/. Al acceder, registrarse o utilizar la PLATAFORMA, el usuario manifiesta haber leído, entendido y aceptado los presentes Términos y Condiciones. En caso de menores de edad, el uso deberá realizarse bajo autorización, supervisión y responsabilidad de su padre, madre o tutor legal.",
+      "c1": {
+        "title": "1. DEFINICIONES",
+        "p1": "Para efectos de los presentes Términos y Condiciones, los siguientes términos tendrán los significados señalados:",
+        "items": {
+          "child": "Cuenta CHILD: Cuenta de usuario creada para un menor de edad, vinculada obligatoriamente a una Cuenta TUTOR.",
+          "tutor": "Cuenta TUTOR: Cuenta creada por un padre, madre o tutor legal para administrar y supervisar una o más Cuentas CHILD.",
+          "content": "Contenido: Materiales, lecciones, ejercicios, simulaciones, imágenes, audios y dinámicas educativas en la PLATAFORMA.",
+          "ai": "IA o Inteligencia Artificial: Sistemas tecnológicos para personalizar la experiencia educativa y asistir en los Servicios.",
+          "platform": "PLATAFORMA: Ecosistema tecnológico operado bajo la marca LITTLEFOUNDERS (sitio web, apps y herramientas).",
+          "services": "Servicios: Funcionalidades, contenidos y experiencias educativas ofrecidas en la PLATAFORMA.",
+          "user": "Usuario: Cualquier persona que acceda, navegue o interactúe en la PLATAFORMA.",
+          "childUser": "Usuario CHILD: Menor de edad titular de una Cuenta CHILD.",
+          "tutorUser": "Usuario TUTOR: Padre, madre o tutor legal que administra Cuentas CHILD.",
+          "universalUser": "Usuario UNIVERSAL: Usuario que accede con cuenta individual sin administrar cuentas de terceros."
+        }
+      },
+      "c2": {
+        "title": "2. OBJETO Y NATURALEZA DE LA PLATAFORMA",
+        "p1": "La PLATAFORMA es una herramienta tecnológica de carácter estrictamente educativo diseñada para facilitar el aprendizaje de conceptos sobre finanzas personales, hábitos económicos y habilidades prácticas mediante simulaciones interactivas.",
+        "p2": "Ningún contenido, simulación, reto o métrica constituye asesoría financiera, fiscal, legal, contable o profesional.",
+        "p3": "Cualquier referencia a puntos, recompensas, niveles, rachas o balances virtuales tiene carácter exclusivamente educativo y no representa dinero real, activos ni derechos económicos exigibles."
+      },
+      "c3": {
+        "title": "3. TIPOS DE USUARIOS Y CUENTAS",
+        "p1": "La PLATAFORMA contempla tres tipos de cuentas:",
+        "items": {
+          "universal": "Usuario UNIVERSAL: Accede a las funcionalidades generales de aprendizaje con su propia cuenta individual.",
+          "tutor": "Usuario TUTOR: Persona con capacidad legal para actuar por sí y en representación de menores. Responsable de autorizar, supervisar y administrar Cuentas CHILD.",
+          "child": "Usuario CHILD: Menor de edad que únicamente accede mediante una Cuenta CHILD vinculada a un Usuario TUTOR."
+        }
+      },
+      "c4": {
+        "title": "4. REGISTRO Y CREACIÓN DE CUENTAS",
+        "p1": "El registro requiere correo electrónico y contraseña o proveedores de autenticación autorizados (Google OAuth / Discord OAuth).",
+        "p2": "El Usuario garantiza que toda la información proporcionada es veraz, exacta y actualizada. La entrega de información falsa o engañosa podrá dar lugar a la suspensión o cancelación de la cuenta."
+      },
+      "c5": {
+        "title": "5. CUENTAS CHILD Y CONTROL PARENTAL",
+        "p1": "La protección de menores es pilar fundamental de LITTLEFOUNDERS. Toda Cuenta CHILD debe estar obligatoriamente vinculada a una Cuenta TUTOR.",
+        "p2": "El Usuario TUTOR puede visualizar el panel de la Cuenta CHILD con el progreso, métricas de aprendizaje y reportes de actividad."
+      },
+      "c6": {
+        "title": "6. EXPERIENCIAS EDUCATIVAS, SIMULACIONES Y MÉTRICAS",
+        "p1": "La PLATAFORMA ofrece aventuras educativas, lecciones interactivas, simulaciones y mediciones de progreso como lecciones completadas, tiempo de estudio, rachas (streaks), puntos y insignias.",
+        "p2": "LITTLEFOUNDERS se reserva el derecho de modificar o actualizar contenidos y métricas por razones pedagógicas u operativas."
+      },
+      "c7": {
+        "title": "7. NATURALEZA EDUCATIVA Y EXCLUSIÓN DE SERVICIOS FINANCIEROS",
+        "p1": "LITTLEFOUNDERS NO es una institución financiera, entidad bancaria ni fintech regulada. No administra fondos reales, no otorga créditos ni emite instrumentos financieros.",
+        "p2": "LITTLEFOUNDERS NUNCA solicitará transferencias de dinero ni datos bancarios reales a los usuarios. Cualquier comunicación sospechosa debe reportarse a informame@littlefounders.ai."
+      },
+      "c8": {
+        "title": "8. INTELIGENCIA ARTIFICIAL Y PERSONALIZACIÓN DE CONTENIDO",
+        "p1": "La PLATAFORMA utiliza herramientas de Inteligencia Artificial bajo principios estrictos de minimización de datos.",
+        "p2": "No se transmiten nombres completos ni datos de identificación personal de menores a modelos o APIs de IA de terceros.",
+        "p3": "Los contenidos generados por IA son puramente formativos y no sustituyen la supervisión parental ni profesional."
+      },
+      "c9": {
+        "title": "9. VISUALIZACIÓN DE INFORMACIÓN DE OTROS USUARIOS",
+        "p1": "Se permite visualizar datos limitados de otros usuarios (avatar, apodo, racha) únicamente dentro del entorno educativo.",
+        "p2": "La PLATAFORMA NO es una red social y NO incluye servicios de chat, mensajería directa ni videollamadas."
+      },
+      "c10": {
+        "title": "10. ATENCIÓN A USUARIOS, REPORTES E INCIDENCIAS",
+        "p1": "Los usuarios pueden enviar consultas o reportes de fallas a informame@littlefounders.ai o mediante los sistemas internos de la PLATAFORMA.",
+        "p2": "SLA de respuesta prioritaria: Incidencias Críticas (24 horas), Altas (48 horas), Medias (7 días hábiles)."
+      },
+      "c11": {
+        "title": "11. PROPIEDAD INTELECTUAL E INDUSTRIAL",
+        "p1": "Todo el código fuente, diseño gráfico, marcas, narrativas, mundos de aprendizaje, metodologías y contenidos son propiedad exclusiva de Legal Cyberx S.C. y LITTLEFOUNDERS.",
+        "p2": "Queda estrictamente prohibida la copia, reproducción, ingeniería inversa o uso comercial no autorizado."
+      },
+      "c12": {
+        "title": "12. PROTECCIÓN DE DATOS PERSONALES",
+        "p1": "El tratamiento de datos personales se rige de conformidad con el Aviso de Privacidad vigente de LITTLEFOUNDERS, garantizando la seguridad administrativa, técnica y física de la información."
+      },
+      "c13": {
+        "title": "13. SUSPENSIÓN, RESTRICCIÓN Y TERMINACIÓN DE CUENTAS",
+        "p1": "LITTLEFOUNDERS podrá suspender o cancelar cuentas ante incumplimientos, uso indebido, fraude o riesgos para menores.",
+        "p2": "En caso de cancelación de una Cuenta TUTOR, las Cuentas CHILD asociadas quedarán suspendidas y dispondrán de un plazo de 90 días naturales para reactivarse."
+      },
+      "c14": {
+        "title": "14. LIMITACIÓN DE RESPONSABILIDAD",
+        "p1": "El uso de la PLATAFORMA se realiza bajo el propio riesgo del usuario. LITTLEFOUNDERS no será responsable por lucro cesante, daños indirectos, fallas de conectividad externas o decisiones financieras personales tomadas fuera del entorno educativo."
+      },
+      "c15": {
+        "title": "15. MODIFICACIONES A LOS TÉRMINOS Y CONDICIONES",
+        "p1": "LITTLEFOUNDERS podrá modificar los presentes Términos y Condiciones. Las actualizaciones surtirán efectos desde su publicación en la PLATAFORMA."
+      },
+      "c16": {
+        "title": "16. VIGENCIA Y SUPERVIVENCIA DE DISPOSICIONES",
+        "p1": "Las cláusulas sobre propiedad intelectual, limitación de responsabilidad, datos personales y jurisdicción subsistirán tras la terminación de la cuenta."
+      },
+      "c17": {
+        "title": "17. DIVISIBILIDAD",
+        "p1": "Si cualquier cláusula fuera declarada inválida por autoridad competente, las demás disposiciones mantendrán su pleno efecto y validez."
+      },
+      "c18": {
+        "title": "18. NO RENUNCIA",
+        "p1": "La falta de ejercicio o retraso por parte de LITTLEFOUNDERS en ejercer algún derecho no constituirá renuncia al mismo."
+      },
+      "c19": {
+        "title": "19. LEGISLACIÓN APLICABLE Y JURISDICCIÓN",
+        "p1": "Los presentes Términos se rigen por las leyes federales de los Estados Unidos Mexicanos. Para cualquier controversia, las partes se someten a los tribunales competentes de la Ciudad de México."
+      },
+      "c20": {
+        "title": "20. CONTACTO",
+        "p1": "Para cualquier consulta legal o aclaración, escríbenos a informame@littlefounders.ai."
+      }
     },
     "privacy": {
       "title": "Aviso de Privacidad",
+      "subtitle": "Protección de datos personales, control parental y estándares de privacidad infantil.",
+      "preamble": "Legal Cyberx S.C., en adelante LITTLEFOUNDERS, con domicilio en Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Ciudad de México, en estricto cumplimiento con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) y los estándares internacionales COPPA / LGPD, emite el presente Aviso de Privacidad.",
       "cookiesTitle": "Cookies y medición",
       "cookiesBody": "LittleFounders utiliza tecnologías necesarias para mantener el sitio seguro y funcionando. La atribución propia y la medición enfocada en privacidad solo se activan después de que tú las eliges. Google Analytics solo se carga cuando habilitas la medición opcional y se limita a páginas públicas.",
       "controlsTitle": "Tú tienes el control",
       "controlsBody": "Puedes cambiar tu elección en cualquier momento desde Preferencias de cookies en el pie de página. Rechazar las tecnologías opcionales elimina de este navegador el identificador propio de visitante y las cookies de medición conocidas.",
       "contactTitle": "¿Tienes preguntas sobre privacidad?",
-      "contactBody": "Para preguntas sobre este aviso o tus elecciones, escríbenos a:"
+      "contactBody": "Para preguntas sobre este aviso o tus elecciones, escríbenos a:",
+      "s1": {
+        "title": "1. IDENTIDAD Y DOMICILIO DEL RESPONSABLE",
+        "p1": "Legal Cyberx S.C. (LITTLEFOUNDERS) es responsable del tratamiento y resguardo de sus datos personales. Domicilio de contacto: Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Ciudad de México. Correo oficial de privacidad: informame@littlefounders.ai."
+      },
+      "s2": {
+        "title": "2. DATOS PERSONALES RECABADOS Y MINIMIZACIÓN",
+        "p1": "Para Cuentas TUTOR / Adultos: Nombre, correo electrónico, datos de autenticación (OAuth), edad y país de residencia.",
+        "p2": "Para Cuentas CHILD / Menores de edad: Se aplica el principio de minimización estricta. Únicamente se solicita apodo/nombre de perfil y rango de edad. NO recabamos nombres completos, direcciones físicas, teléfonos, fotos ni datos sensibles de menores."
+      },
+      "s3": {
+        "title": "3. FINALIDADES DEL TRATAMIENTO",
+        "p1": "Finalidades Primarias: Crear y administrar la cuenta, personalizar la ruta de lecciones educativas, vincular cuentas de menores con sus tutores legales y permitir el seguimiento del avance escolar.",
+        "p2": "Finalidades Secundarias: Análisis agregado y anónimo del uso de la plataforma para mejorar las metodologías pedagógicas y la seguridad del sistema."
+      },
+      "s4": {
+        "title": "4. INTELIGENCIA ARTIFICIAL Y PROTECCIÓN A MENORES",
+        "p1": "Las herramientas de IA utilizadas en la PLATAFORMA operan únicamente con identificadores anonimizados y rango de edad. Ningún dato de identificación personal de un menor es transmitido a modelos de lenguaje o de voz de terceros."
+      },
+      "s5": {
+        "title": "5. DERECHOS ARCO Y REVOCACIÓN DEL CONSENTIMIENTO",
+        "p1": "Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales (Derechos ARCO), así como a revocar el consentimiento otorgado.",
+        "p2": "Para ejercer estos derechos, envíe una solicitud a informame@littlefounders.ai especificando su nombre, cuenta registrada y el derecho que desea ejercer."
+      },
+      "s6": {
+        "title": "6. COOKIES, MEDICIÓN Y PREFERENCIAS",
+        "p1": "LittleFounders utiliza tecnologías necesarias para mantener el sitio seguro y funcionando. Las tecnologías de atribución y medición opcionales requieren su consentimiento explícito y pueden ser administradas en cualquier momento."
+      },
+      "s7": {
+        "title": "7. TRANSFERENCIAS Y SEGURIDAD DE LA INFORMACIÓN",
+        "p1": "LITTLEFOUNDERS NO vende, renta ni comercializa datos personales con terceros. Las transferencias de información se limitan a proveedores estrictamente necesarios para la infraestructura operativa (hosting, correo transaccional) bajo contratos de confidencialidad."
+      },
+      "s8": {
+        "title": "8. MODIFICACIONES AL AVISO DE PRIVACIDAD",
+        "p1": "Cualquier modificación a este aviso será publicada en https://es.littlefounders.ai/legal/privacy. Le recomendamos consultar este documento periódicamente."
+      }
     }
   }
 }

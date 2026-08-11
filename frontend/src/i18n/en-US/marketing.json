@@ -7,7 +7,7 @@
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Let learning about money",
+    "titleLead": "Let learning about money ",
     "titleHighlight": "feel like an adventure",
     "stageNote": "A public view of the learning signal, designed for families",
     "subtitle": "We turn early choices about money, saving, and big ideas into experiences kids want to explore.",
@@ -219,8 +219,8 @@
       "prerequisites": "prerequisites",
       "buildsOn": "Builds on",
       "link": "linked",
-      "hint": "Drag to explore. Tap a node to inspect its path."
-      ,"pedagogy": "Pedagogical lens",
+      "hint": "Drag to explore. Tap a node to inspect its path.",
+      "pedagogy": "Pedagogical lens",
       "connections": "Connected concepts"
     }
   },
@@ -254,19 +254,183 @@
     "label": "Select your language"
   },
   "legal": {
-    "badge": "Under construction",
-    "body": "This document is being drafted. For questions, write to us:",
+    "badge": "Official Document",
+    "body": "For any legal or privacy questions, write to us at:",
+    "meta": {
+      "lastUpdated": "Last updated: August 11, 2026",
+      "company": "Legal Cyberx S.C.",
+      "brand": "LITTLEFOUNDERS",
+      "address": "Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Mexico City, Mexico",
+      "domain": "https://es.littlefounders.ai/",
+      "email": "informame@littlefounders.ai",
+      "searchPlaceholder": "Search legal documents…",
+      "noResults": "No clauses matched your search.",
+      "tocTitle": "Table of Contents",
+      "print": "Print document",
+      "copyLink": "Copy link",
+      "copied": "Link copied",
+      "backToTop": "Back to top",
+      "officialNotice": "Binding legal document operated by Legal Cyberx S.C."
+    },
     "terms": {
-      "title": "Terms & Conditions"
+      "title": "Terms & Conditions",
+      "subtitle": "Governing access, registration, navigation, and use of the LITTLEFOUNDERS platform.",
+      "preamble": "Legal Cyberx S.C., hereinafter LITTLEFOUNDERS, located at Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Mexico City, is responsible for the LITTLEFOUNDERS platform accessible at https://es.littlefounders.ai/. By accessing, registering, or using the PLATFORM, you confirm that you have read, understood, and accepted these Terms and Conditions. For minors, access must occur under the authorization, supervision, and responsibility of a parent or legal guardian.",
+      "c1": {
+        "title": "1. DEFINITIONS",
+        "p1": "For the purposes of these Terms and Conditions, the following terms shall have the meanings specified below:",
+        "items": {
+          "child": "CHILD Account: User account created for a minor, strictly linked to a TUTOR Account.",
+          "tutor": "TUTOR Account: Account created by a parent or legal guardian to manage and supervise one or more CHILD Accounts.",
+          "content": "Content: Educational materials, lessons, exercises, simulations, images, audio, and dynamics on the PLATFORM.",
+          "ai": "AI or Artificial Intelligence: Technological systems used to personalize the learning experience and assist in Services.",
+          "platform": "PLATFORM: Technological ecosystem operated under the LITTLEFOUNDERS brand (website, apps, and tools).",
+          "services": "Services: Features, contents, and educational experiences provided on the PLATFORM.",
+          "user": "User: Any person accessing, browsing, or interacting with the PLATFORM.",
+          "childUser": "CHILD User: Minor holding a CHILD Account.",
+          "tutorUser": "TUTOR User: Parent or legal guardian managing CHILD Accounts.",
+          "universalUser": "UNIVERSAL User: User accessing with an individual account without managing third-party accounts."
+        }
+      },
+      "c2": {
+        "title": "2. PURPOSE AND NATURE OF THE PLATFORM",
+        "p1": "The PLATFORM is an educational technology tool designed to facilitate learning about personal finance, economic habits, and practical skills through interactive simulations.",
+        "p2": "No content, simulation, challenge, or metric constitutes financial, tax, legal, accounting, or professional advice.",
+        "p3": "Any reference to points, rewards, levels, streaks, or virtual balances is strictly educational and does not represent real money, assets, or enforceable economic rights."
+      },
+      "c3": {
+        "title": "3. USER AND ACCOUNT TYPES",
+        "p1": "The PLATFORM provides three types of accounts:",
+        "items": {
+          "universal": "UNIVERSAL User: Accesses general learning features with their own individual account.",
+          "tutor": "TUTOR User: Individual with full legal capacity acting for themselves and on behalf of minors. Responsible for authorizing, supervising, and managing CHILD Accounts.",
+          "child": "CHILD User: Minor accessing exclusively via a CHILD Account linked to a TUTOR User."
+        }
+      },
+      "c4": {
+        "title": "4. REGISTRATION AND ACCOUNT CREATION",
+        "p1": "Registration requires an email address and password or authorized authentication providers (Google OAuth / Discord OAuth).",
+        "p2": "The User guarantees that all information provided is truthful, accurate, and up to date. Providing false or misleading information may lead to account suspension or termination."
+      },
+      "c5": {
+        "title": "5. CHILD ACCOUNTS AND PARENTAL CONTROL",
+        "p1": "Child protection is a core pillar of LITTLEFOUNDERS. Every CHILD Account must be linked to a TUTOR Account.",
+        "p2": "The TUTOR User can view the CHILD Account dashboard with progress, learning metrics, and activity reports."
+      },
+      "c6": {
+        "title": "6. EDUCATIONAL EXPERIENCES, SIMULATIONS, AND METRICS",
+        "p1": "The PLATFORM offers educational adventures, interactive lessons, simulations, and progress metrics such as completed lessons, study time, streaks, points, and badges.",
+        "p2": "LITTLEFOUNDERS reserves the right to modify or update content and metrics for pedagogical or operational reasons."
+      },
+      "c7": {
+        "title": "7. EDUCATIONAL NATURE AND EXCLUSION OF FINANCIAL SERVICES",
+        "p1": "LITTLEFOUNDERS is NOT a financial institution, bank, or regulated fintech. It does not manage real funds, issue credit, or issue financial instruments.",
+        "p2": "LITTLEFOUNDERS will NEVER request money transfers or real banking credentials. Report any suspicious communication to informame@littlefounders.ai."
+      },
+      "c8": {
+        "title": "8. ARTIFICIAL INTELLIGENCE AND CONTENT PERSONALIZATION",
+        "p1": "The PLATFORM utilizes AI tools under strict data minimization principles.",
+        "p2": "No full names or personally identifying data of minors are transmitted to third-party AI models or APIs.",
+        "p3": "AI-generated contents are strictly educational and do not replace parental or professional supervision."
+      },
+      "c9": {
+        "title": "9. VISIBILITY OF OTHER USERS' INFORMATION",
+        "p1": "Limited visibility of other users' data (avatar, nickname, streak) is allowed strictly within the educational environment.",
+        "p2": "The PLATFORM is NOT a social network and does NOT include chat, direct messaging, or video call features."
+      },
+      "c10": {
+        "title": "10. USER SUPPORT AND INCIDENT REPORTING",
+        "p1": "Users can submit inquiries or bug reports to informame@littlefounders.ai or via internal platform tools.",
+        "p2": "Priority response SLA: Critical incidents (24 hours), High (48 hours), Medium (7 business days)."
+      },
+      "c11": {
+        "title": "11. INTELLECTUAL PROPERTY",
+        "p1": "All source code, visual design, trademarks, narratives, learning worlds, methodologies, and content are exclusive property of Legal Cyberx S.C. and LITTLEFOUNDERS.",
+        "p2": "Copying, reproducing, reverse engineering, or unauthorized commercial use is strictly prohibited."
+      },
+      "c12": {
+        "title": "12. PERSONAL DATA PROTECTION",
+        "p1": "Personal data processing is governed by the active LITTLEFOUNDERS Privacy Notice, ensuring administrative, technical, and physical security."
+      },
+      "c13": {
+        "title": "13. ACCOUNT SUSPENSION AND TERMINATION",
+        "p1": "LITTLEFOUNDERS may suspend or cancel accounts in cases of breach, misuse, fraud, or child safety risks.",
+        "p2": "If a TUTOR Account is canceled, linked CHILD Accounts will be suspended and have a 90-calendar-day window to be reactivated."
+      },
+      "c14": {
+        "title": "14. LIMITATION OF LIABILITY",
+        "p1": "Access and use of the PLATFORM is at the user's sole risk. LITTLEFOUNDERS is not liable for loss of profits, indirect damages, external connectivity failures, or personal financial choices."
+      },
+      "c15": {
+        "title": "15. MODIFICATIONS TO TERMS AND CONDITIONS",
+        "p1": "LITTLEFOUNDERS may update these Terms and Conditions. Changes take effect upon publication on the PLATFORM."
+      },
+      "c16": {
+        "title": "16. TERM AND SURVIVAL OF PROVISIONS",
+        "p1": "Clauses regarding intellectual property, limitation of liability, data protection, and jurisdiction survive account termination."
+      },
+      "c17": {
+        "title": "17. SEVERABILITY",
+        "p1": "If any provision is declared invalid by a competent authority, remaining provisions remain in full force and effect."
+      },
+      "c18": {
+        "title": "18. NON-WAIVER",
+        "p1": "Failure or delay by LITTLEFOUNDERS to exercise any right does not constitute a waiver of that right."
+      },
+      "c19": {
+        "title": "19. GOVERNING LAW AND JURISDICTION",
+        "p1": "These Terms are governed by federal laws of the United Mexican States. Disputes shall be submitted to competent courts of Mexico City."
+      },
+      "c20": {
+        "title": "20. CONTACT",
+        "p1": "For legal inquiries or clarifications, write to informame@littlefounders.ai."
+      }
     },
     "privacy": {
       "title": "Privacy Notice",
+      "subtitle": "Personal data protection, parental controls, and child privacy standards.",
+      "preamble": "Legal Cyberx S.C., hereinafter LITTLEFOUNDERS, located at Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Mexico City, in compliance with the Federal Law on Protection of Personal Data Held by Private Parties (LFPDPPP) and COPPA / LGPD international standards, issues this Privacy Notice.",
       "cookiesTitle": "Cookies and measurement",
       "cookiesBody": "LittleFounders uses necessary technologies to keep the site secure and working. Optional first-party attribution and privacy-focused measurement are enabled only after you choose them. Google Analytics is loaded only when optional measurement is enabled and is limited to public pages.",
       "controlsTitle": "Your controls",
       "controlsBody": "You can change your choice at any time from Cookie preferences in the footer. Rejecting optional technologies removes the first-party visitor identifier and known measurement cookies from this browser.",
       "contactTitle": "Questions about privacy",
-      "contactBody": "For questions about this notice or your choices, contact us at:"
+      "contactBody": "For questions about this notice or your choices, contact us at:",
+      "s1": {
+        "title": "1. DATA CONTROLLER IDENTITY AND ADDRESS",
+        "p1": "Legal Cyberx S.C. (LITTLEFOUNDERS) is the controller of your personal data. Address: Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Mexico City. Official privacy email: informame@littlefounders.ai."
+      },
+      "s2": {
+        "title": "2. PERSONAL DATA COLLECTED AND MINIMIZATION",
+        "p1": "For TUTOR / Adult Accounts: Name, email address, authentication data (OAuth), age, and country of residence.",
+        "p2": "For CHILD Accounts / Minors: Strict data minimization applies. We only request a nickname/profile name and age range. We do NOT collect full names, physical addresses, phone numbers, photos, or sensitive data from minors."
+      },
+      "s3": {
+        "title": "3. PURPOSES OF PROCESSING",
+        "p1": "Primary Purposes: Account creation and management, personalizing the educational path, linking minor accounts with legal guardians, and monitoring learning progress.",
+        "p2": "Secondary Purposes: Aggregated and anonymous analytics to improve pedagogical methods and platform security."
+      },
+      "s4": {
+        "title": "4. ARTIFICIAL INTELLIGENCE AND CHILD PRIVACY",
+        "p1": "AI tools operate exclusively with anonymized identifiers and age bands. No personally identifying data of minors is sent to third-party LLM or TTS models."
+      },
+      "s5": {
+        "title": "5. ARCO RIGHTS AND CONSENT REVOCATION",
+        "p1": "You have the right to Access, Rectify, Cancel, or Oppose processing of your personal data (ARCO Rights), as well as revoke consent.",
+        "p2": "To exercise these rights, send a request to informame@littlefounders.ai specifying your name, registered account, and requested right."
+      },
+      "s6": {
+        "title": "6. COOKIES, MEASUREMENT, AND PREFERENCES",
+        "p1": "LittleFounders uses necessary technologies to keep the site secure and functional. Optional attribution and measurement technologies require explicit consent and can be managed anytime."
+      },
+      "s7": {
+        "title": "7. DATA TRANSFERS AND INFORMATION SECURITY",
+        "p1": "LITTLEFOUNDERS does NOT sell, rent, or commercialize personal data. Transfers are limited to essential operational infrastructure providers under strict confidentiality agreements."
+      },
+      "s8": {
+        "title": "8. MODIFICATOINS TO PRIVACY NOTICE",
+        "p1": "Any updates to this notice will be published at https://es.littlefounders.ai/legal/privacy. We recommend reviewing this document periodically."
+      }
     }
   }
 }

@@ -18,6 +18,23 @@ const S = process.env.SUPABASE_URL!, K = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const q = async (p: string) =>
   (await fetch(`${S}/rest/v1/${p}`, { headers: { apikey: K, Authorization: `Bearer ${K}` } })).json();
 
+/**
+ * `in.(id,id,...)` filters were fine at pilot-course scale but a real course
+ * puts 300+ topic ids or 1000+ lesson ids on one query string — past PostgREST/
+ * Kong's request-line limit, failing as an opaque "URI too long" JSON parse
+ * error (production incident 2026-08-10, verifying financial-education).
+ * Batch the id list and merge instead of growing one unbounded URL.
+ */
+const ID_BATCH_SIZE = 150; // 150 uuids × 37 chars ≈ 5.5KB — comfortably under an 8KB header limit
+async function qChunked<T>(pathForBatch: (ids: string[]) => string, ids: string[]): Promise<T[]> {
+  const out: T[] = [];
+  for (let i = 0; i < ids.length; i += ID_BATCH_SIZE) {
+    const batch = ids.slice(i, i + ID_BATCH_SIZE);
+    out.push(...((await q(pathForBatch(batch))) as T[]));
+  }
+  return out;
+}
+
 async function attestCourseRelease(courseId: string, checks: readonly Check[]): Promise<boolean> {
   try {
     const res = await fetch(`${S}/rest/v1/course_release_verifications?on_conflict=course_id`, {
@@ -87,18 +104,22 @@ interface Check {
     }[])
     : [];
   const lessons = topics.length
-    ? ((await q(
-        `lessons?select=id,slug,status,topics!inner(sagas!inner(adventures!inner(age_tier)))&topic_id=in.(${topics.map((t) => t.id).join(',')})`,
-      )) as { id: string; slug: string; status: string; topics?: { sagas?: { adventures?: { age_tier?: string } } } }[])
+    ? await qChunked<{ id: string; slug: string; status: string; topics?: { sagas?: { adventures?: { age_tier?: string } } } }>(
+        (batch) =>
+          `lessons?select=id,slug,status,topics!inner(sagas!inner(adventures!inner(age_tier)))&topic_id=in.(${batch.join(',')})`,
+        topics.map((t) => t.id),
+      )
     : [];
   // A human must run the acceptance check BEFORE release, while Forge's
   // lessons are still `review`. Published lessons are included too so the
   // command remains a useful post-release regression check.
   const publishedLessons = lessons.filter((l) => l.status === 'review' || l.status === 'published');
   const docs = publishedLessons.length
-    ? ((await q(
-        `lesson_documents?select=locale,document,answer_keys,audio,illustration_style_version,lesson_id&lesson_id=in.(${publishedLessons.map((l) => l.id).join(',')})`,
-      )) as DocRow[])
+    ? await qChunked<DocRow>(
+        (batch) =>
+          `lesson_documents?select=locale,document,answer_keys,audio,illustration_style_version,lesson_id&lesson_id=in.(${batch.join(',')})`,
+        publishedLessons.map((l) => l.id),
+      )
     : [];
   const bySlug = new Map(publishedLessons.map((l) => [l.id, l.slug]));
   const tierByLessonId = new Map(
@@ -215,9 +236,10 @@ interface Check {
   const orphans = lessons.filter((l) => !catalogLessonSlugs.has(l.slug));
   let orphansWithProgress: string[] = [];
   if (orphans.length > 0) {
-    const attempts = (await q(
-      `lesson_segment_attempts?select=lesson_id&lesson_id=in.(${orphans.map((l) => l.id).join(',')})&limit=1000`,
-    )) as { lesson_id: string }[];
+    const attempts = await qChunked<{ lesson_id: string }>(
+      (batch) => `lesson_segment_attempts?select=lesson_id&lesson_id=in.(${batch.join(',')})&limit=1000`,
+      orphans.map((l) => l.id),
+    );
     const touched = new Set(attempts.map((a) => a.lesson_id));
     orphansWithProgress = orphans.filter((l) => touched.has(l.id)).map((l) => l.slug);
   }

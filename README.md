@@ -38,12 +38,24 @@ To set up the entire workspace, install dependencies for all 10 npm packages (ev
 npm run setup
 ```
 
-After setup is complete, start all services simultaneously with a single command:
+After setup is complete, start the lightweight frontend development profile with:
 
 ```bash
 npm run dev
 ```
-*(This streams all backend, frontend, and generation services into one unified terminal. Press `Ctrl+C` to cleanly stop all of them.)*
+*(This starts only Vite, so opening the marketing site does not also launch every
+watcher and the Supabase stack. Press `Ctrl+C` to stop it.)*
+
+To start the API with the frontend, use the core profile. To boot the complete
+local stack, opt in explicitly:
+
+```bash
+DEV_PROFILE=core DEV_DB=1 npm run dev
+DEV_PROFILE=all DEV_DB=1 npm run dev
+```
+
+The full profile starts nine TypeScript watchers plus Supabase and can consume
+several gigabytes of RAM; it is intentionally never the default.
 
 > **Advanced Database Management**: If you need to manage Supabase manually (e.g., generate new TS types, run raw migrations, or export a course), see the detailed commands in [`database/README.md`](database/README.md).
 
