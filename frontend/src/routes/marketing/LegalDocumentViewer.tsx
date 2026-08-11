@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
-import { Badge, Card, Button, Icon } from '@/components/ui';
+import { Badge, Card, Icon } from '@/components/ui';
 
 interface LegalDocumentViewerProps {
   doc: 'terms' | 'privacy';
