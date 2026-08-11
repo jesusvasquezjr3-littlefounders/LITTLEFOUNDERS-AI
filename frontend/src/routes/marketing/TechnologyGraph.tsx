@@ -24,6 +24,9 @@ interface AtlasNode {
 
 interface AtlasLink { from: number; to: number; kind: 'local' | 'bridge'; }
 
+/** A dim, unconnected twinkle — pure atmosphere, no graph meaning, no links. */
+interface AmbientBubble { x: number; y: number; z: number; radius: number; tone: Tone; phase: number; speed: number; }
+
 const CONCEPTS: Array<{ conceptKey: ConceptKey; stage: number; row: number; tone: Tone }> = [
   { conceptKey: 'curiosity', stage: 0, row: 0, tone: 'delight' },
   { conceptKey: 'needs', stage: 0, row: 1, tone: 'delight' },
@@ -60,7 +63,14 @@ const TREE_Y = [0.92, 0.73, 0.54, 0.35, 0.16];
 // Deliberately steep progression (trunk-tight to canopy-wide) so the
 // silhouette reads as an unmistakable cone/tree shape even before any
 // rotation — a gentle progression looked like a loose cluster, not a tree.
-const TREE_SPREAD = [0.012, 0.045, 0.15, 0.29, 0.46];
+// Screen split into quarters, tree centered between the 3rd and 4th (the
+// hero copy occupies roughly the left half, so this sits in the open
+// right side instead of overlapping it or sitting dead-center). Spread is
+// scaled down from the centered version so the canopy's widest point
+// still lands inside that same right-hand region instead of running off
+// the edge of the section.
+const TREE_CENTER_X = 0.74;
+const TREE_SPREAD = [0.008, 0.025, 0.08, 0.15, 0.24];
 const NODE_COUNT = CONCEPTS.length;
 const rand = (seed: number) => {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
@@ -78,7 +88,7 @@ function createAtlasNodes(): AtlasNode[] {
     const jitter = 0.4 + concept.stage * 0.6;
     return {
       id: index,
-      x: 0.5 + lateral * spread + (rand(index + 1) - 0.5) * 0.01 * jitter,
+      x: TREE_CENTER_X + lateral * spread + (rand(index + 1) - 0.5) * 0.01 * jitter,
       // Outer branches sit a little higher than the trunk row at the same
       // stage, like real limbs angling upward off the trunk.
       y: TREE_Y[concept.stage]! - Math.abs(lateral) * 0.045 + (rand(index + 41) - 0.5) * 0.015 * jitter,
@@ -118,6 +128,32 @@ function createAtlasLinks(): AtlasLink[] {
     }
   }
   return links;
+}
+
+const AMBIENT_BUBBLE_COUNT = 46;
+const AMBIENT_TONES: Tone[] = ['primary', 'delight', 'success', 'on'];
+/**
+ * Scattered through the same tree volume as the real nodes, but entirely
+ * decorative: no links, no concept, no click target. Just fills the space
+ * around the branches with a soft, twinkling density. Deterministic (same
+ * seeded `rand` pattern as everything else here), and cheap by
+ * construction — reuses the exact same cached glow sprites the real nodes
+ * already draw with, just at a lower, independently-oscillating alpha.
+ */
+function createAmbientBubbles(): AmbientBubble[] {
+  return Array.from({ length: AMBIENT_BUBBLE_COUNT }, (_, i) => {
+    const stage = rand(i + 3000) * 4;
+    const spread = TREE_SPREAD[Math.min(4, Math.round(stage))]! * 1.6;
+    return {
+      x: TREE_CENTER_X + (rand(i + 3100) - 0.5) * spread * 2,
+      y: TREE_Y[0]! - stage / 4 * (TREE_Y[0]! - TREE_Y[4]!) + (rand(i + 3200) - 0.5) * 0.05,
+      z: (rand(i + 3300) - 0.5) * 0.5,
+      radius: 1.3 + rand(i + 3400) * 2.2,
+      tone: AMBIENT_TONES[Math.floor(rand(i + 3500) * AMBIENT_TONES.length)]!,
+      phase: rand(i + 3600) * Math.PI * 2,
+      speed: 1800 + rand(i + 3700) * 2400,
+    };
+  });
 }
 
 const GLOW_SPRITE_SIZE = 128;
@@ -172,6 +208,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const nodes = useMemo(createAtlasNodes, []);
   const links = useMemo(createAtlasLinks, []);
+  const bubbles = useMemo(createAmbientBubbles, []);
   const [selected, setSelected] = useState<number | null>(null);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -269,34 +306,21 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       projected = nodes.map((node) => ({ node, ...project(node.x, node.y, node.z) }));
       const sorted = [...projected].sort((a, b) => a.zDepth - b.zDepth);
 
-      // An explicit trunk: tapered (wide at the roots, narrow where the
-      // first branches split off), warm wood-toned, drawn as a filled
-      // shape rather than a single-width stroke. Everything else (root
-      // cluster + per-node parent links) already implies a trunk through
-      // tight node spread, but a real tapered anchor is what actually
-      // reads as "tree" at a glance instead of "some points that happen to
-      // cluster near the center."
-      {
-        const baseCenter = project(0.5, TREE_Y[0]! + 0.04, 0);
-        const baseLeft = project(0.5 - 0.025, TREE_Y[0]! + 0.02, 0);
-        const baseRight = project(0.5 + 0.025, TREE_Y[0]! + 0.02, 0);
-        const topLeft = project(0.5 - 0.006, TREE_Y[1]! - 0.05, 0);
-        const topRight = project(0.5 + 0.006, TREE_Y[1]! - 0.05, 0);
-        context!.save();
-        context!.globalAlpha = 0.9;
-        const trunkGradient = context!.createLinearGradient(baseCenter.x, baseCenter.y, topLeft.x, topLeft.y);
-        trunkGradient.addColorStop(0, '#8a6a4a');
-        trunkGradient.addColorStop(1, '#6b4f36');
-        context!.fillStyle = trunkGradient;
-        context!.beginPath();
-        context!.moveTo(baseLeft.x, baseLeft.y);
-        context!.lineTo(topLeft.x, topLeft.y);
-        context!.lineTo(topRight.x, topRight.y);
-        context!.lineTo(baseRight.x, baseRight.y);
-        context!.closePath();
-        context!.fill();
-        context!.restore();
+      // Ambient bubbles: dim, independently-twinkling, unconnected to
+      // anything — pure atmosphere to fill the space between real branches.
+      // Same cached-sprite glow as the real nodes (no shadowBlur), just at
+      // low alpha, so this doesn't add meaningfully to the per-frame cost.
+      context!.save();
+      context!.globalCompositeOperation = 'lighter';
+      for (const bubble of bubbles) {
+        const p = project(bubble.x, bubble.y, bubble.z);
+        const twinkle = 0.5 + Math.sin(time / bubble.speed + bubble.phase) * 0.5;
+        const bubbleColor = colors.get(toneVar[bubble.tone]) ?? colors.get('--lf-primary') ?? '#818cf8';
+        context!.globalAlpha = (0.08 + twinkle * 0.18) * p.scale;
+        drawGlow(bubbleColor, p.x, p.y, bubble.radius * p.scale * 3);
       }
+      context!.restore();
+
       // Plain strokes for every link (cheap: no shadowBlur, `lighter` additive
       // blending alone already reads as "glowing" where lines overlap) — the
       // expensive cached-sprite glow is spent ONLY on the handful of links
@@ -436,7 +460,7 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
     resizeObserver?.observe(parent);
     resize(); draw(0); ensureLoop(); observer?.observe(parent); document.addEventListener('visibilitychange', onVisibilityChange); window.addEventListener('resize', resize); canvas.addEventListener('pointerdown', onPointerDown); canvas.addEventListener('pointermove', onPointerMove); canvas.addEventListener('pointerup', onPointerUp); canvas.addEventListener('pointercancel', onPointerCancel);
     return () => { redrawRef.current = null; ensureLoopRef.current = null; if (rafId !== null) cancelAnimationFrame(rafId); observer?.disconnect(); resizeObserver?.disconnect(); document.removeEventListener('visibilitychange', onVisibilityChange); window.removeEventListener('resize', resize); canvas.removeEventListener('pointerdown', onPointerDown); canvas.removeEventListener('pointermove', onPointerMove); canvas.removeEventListener('pointerup', onPointerUp); canvas.removeEventListener('pointercancel', onPointerCancel); };
-  }, [links, nodes, reducedMotion]);
+  }, [links, nodes, bubbles, reducedMotion]);
 
   const active = nodes.find((node) => node.id === selected) ?? nodes[0]!;
   const related = selected === null ? [] : links.filter((link) => link.from === selected || link.to === selected).slice(0, 3).map((link) => link.from === selected ? link.to : link.from);
