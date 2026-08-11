@@ -54,7 +54,7 @@ Signup → universal user → profile section → DiceBear avatar customization 
 
 ## Immediate next step
 
-**Guest accounts + onboarding + mandatory placement shipped 2026-08-11**
+**Guest accounts + onboarding + mandatory placement shipped to PRODUCTION 2026-08-11**
 (closes COURSE_ENGINE.md §3.2's reserved "future onboarding/placement
 phase"): GoTrue anonymous sign-in (`POST /api/v1/auth/guest`) is the guest
 mechanism — a real `auth.users` row, zero new bootstrap code, and a
@@ -73,13 +73,18 @@ capped at any unmet hard prerequisite. Skipped lessons are credited via a
 dedicated `placement_credits` ledger (migration `0043`, never a fabricated
 `lesson_progress` row) and DO count toward course badges/progress
 (confirmed product decision, Duolingo-style — `get_completed_course_badges`
-extended accordingly). Full detail + live-verification evidence against the
-real local stack: WALKTHROUGH.md's 2026-08-11 entry. Remaining manual step:
-the same provider-key gap already blocking Financial Education generation
+extended accordingly). Shipped end to end in one session: pushed to
+`origin/main`, migrations applied to the production Vault, the GoTrue flag
+flipped on the production `auth` service, and the full guest → onboarding →
+placement journey live-verified against `https://littlefounders.ai`. Full
+detail + both the local and production verification evidence:
+WALKTHROUGH.md's 2026-08-11 entry. Remaining manual step: the same
+provider-key gap already blocking Financial Education generation
 (`production:preflight`'s 4 failures) also blocks the paid Forge backfill
 that would author `placement_probe` content for the 3 already-published
-production catalogs — until then, placement still gates correctly, just
-via `no_probe_content_fallback` (no quiz-driven skip-ahead).
+production catalogs — until then, placement still gates correctly in
+production, just via `no_probe_content_fallback` (no quiz-driven
+skip-ahead) — confirmed live against `financial-education`.
 
 **Pulse (observability) adopted 2026-07-20** (`pulse/AGENTS.md` authoritative;
 owner sign-off for the §1.2/§1.5 change recorded in WALKTHROUGH.md): self-hosted

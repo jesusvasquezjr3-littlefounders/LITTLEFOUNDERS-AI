@@ -2,12 +2,26 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped
+## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped to PRODUCTION
 
 Closes COURSE_ENGINE.md §3.2's "future onboarding/placement phase", reserved
 since the 2026-07-13 pedagogy-hardening session. Three-phase build, one
 migration set per phase (`0041`, `0042`, `0043`), landed as three commits on
-`main`.
+`main`, then **deployed and live-verified against production** in the same
+session: pushed to `origin/main` (CI green across backend/frontend/coursegen/
+database), migrations `0041`–`0043` applied to the production Vault
+(`railway-migrate.sh --confirm-production`, ledger now at 43 receipts, all
+new tables/columns postflight-verified), `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED=true`
+set and force-redeployed on the production `auth` service, and the full
+guest → onboarding → placement → lesson journey exercised live against
+`https://littlefounders.ai` with zero console errors: anonymous sign-in,
+the full onboarding wizard, the mandatory placement gate firing on
+`financial-education`, the non-blocking guardian nudge, and
+`no_probe_content_fallback` correctly landing the learner on the real first
+lesson. See `database/DEPLOYMENT.md`'s guest-accounts and migrations
+sections for the exact commands and the two operational gotchas hit along
+the way (stale SSH key path, `railway service restart` hanging — use
+`railway redeploy` instead).
 
 - **Guest accounts**: `POST /api/v1/auth/guest` is GoTrue's native anonymous
   sign-in — a real `auth.users` row (`is_anonymous=true`), so the existing
