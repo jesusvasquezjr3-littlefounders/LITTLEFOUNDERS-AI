@@ -29,6 +29,8 @@
     "RELEASE_VERIFICATION_REQUIRED": "Ejecuta la verificación del curso en Forge después del último cambio de contenido y vuelve a publicar.",
     "RELEASE_BLOCKED": "La verificación previa al lanzamiento rechazó este curso.",
     "NOT_A_GUEST": "Esta cuenta ya tiene una identidad permanente.",
-    "ONBOARDING_ALREADY_COMPLETE": "El onboarding ya se había completado."
+    "ONBOARDING_ALREADY_COMPLETE": "El onboarding ya se había completado.",
+    "PLACEMENT_REQUIRED": "Completa primero el quiz de ubicación de este curso.",
+    "PLACEMENT_ALREADY_COMPLETE": "El quiz de ubicación ya se había completado para este curso."
   }
 }

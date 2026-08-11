@@ -210,11 +210,23 @@ years at 1/day).**
   which curriculum graphs habitually under-model. Every edge carries a
   one-sentence human-readable `reason` (debuggability + judge grounding).
   `hard` = a true gate for future placement; `soft` = a sequencing nudge.
-- These two fields power the **future onboarding/placement phase**
-  (Duolingo-style): a placement quiz walks the hard-edge DAG backwards from the
-  learner's claimed level, using topic objectives + parent_check territory to
-  probe mastery, and drops the learner at the earliest unmet hard edge. Design
-  reserved here; built in a later phase.
+- These two fields power onboarding/placement (Duolingo-style, **built**):
+  guest accounts start with zero signup friction (GoTrue anonymous sign-in),
+  a one-time onboarding wizard activates day-1 streak, and a mandatory
+  per-course placement quiz (`backend/src/services/placementAlgorithm.ts`)
+  walks the flat topic order administering up to 6 pre-authored probes
+  (`topics.placement_probe`, migration `0042`, authored offline by Forge —
+  `coursegen/src/pipeline/placementProbe.ts` — never per learner, so no
+  minor PII ever reaches a provider), computes the longest contiguous
+  correct-and-probed prefix from the start, caps it at the earliest `hard`
+  prerequisite (migration `0042`'s `topics.prerequisites`) not satisfied by
+  everything credited before it, and drops the learner at the first
+  uncredited topic. Skipped lessons are recorded in `placement_credits`
+  (migration `0043`) — never a fabricated `lesson_progress` row, but they DO
+  count toward course-completion badges and the progress bar (Duolingo-style
+  product decision). `backend/src/routes/learn.ts`'s `PLACEMENT_REQUIRED` 403
+  is the server-side enforcement; `frontend/src/routes/app/learn/PlacementPage.tsx`
+  is the wizard that clears it.
 
 ### §3.3 Audience registers (kids today, adults later)
 

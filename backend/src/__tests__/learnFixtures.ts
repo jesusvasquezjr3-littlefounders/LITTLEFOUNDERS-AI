@@ -152,6 +152,24 @@ export function makeDb(userId: string): FakeDb {
     ],
     lesson_progress: [],
     lesson_segment_attempts: [],
+    // Placement (0043) already completed by default — these fixtures exist to
+    // exercise LESSON unlock behavior, not the placement gate itself (see
+    // placement.test.ts for that). Tests that specifically want an ungated
+    // course can clear this array.
+    course_placements: [
+      {
+        user_id: userId,
+        course_id: COURSE_ID,
+        claimed_level: 'new',
+        education_level: 'elementary',
+        quiz_answers: [],
+        start_topic_id: TOPIC_ID,
+        start_lesson_id: LESSON_1_ID,
+        method: 'claimed_beginner_shortcut',
+        created_at: '2020-01-01T00:00:00.000Z',
+      },
+    ],
+    placement_credits: [],
     learning_stats: [
       { user_id: userId, xp_points: 0, minutes_learned: 0, lessons_completed: 0, streak_days: 0, last_active_date: null, updated_at: '2020-01-01T00:00:00.000Z' },
     ],

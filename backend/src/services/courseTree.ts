@@ -1,4 +1,5 @@
 import { computeAdventureState, computeLessonStates, progressOf, type LessonState } from './unlockRules.js';
+import type { PlacementTopic } from './placementAlgorithm.js';
 
 /*
  * Pure assembly of the COURSE_ENGINE.md §2 hierarchy
@@ -97,6 +98,13 @@ export interface LessonNode {
   estimated_minutes: number;
   state: LessonState;
   bestScore: number;
+  /**
+   * Placed past this lesson by the course's placement quiz (0043) — counts
+   * toward the badge/progress bar like a real pass (product decision,
+   * Duolingo-style), but stays distinguishable everywhere from a lesson
+   * actually played: never fabricated XP, never a lesson_progress row.
+   */
+  placementCredited: boolean;
 }
 
 /**
@@ -155,6 +163,8 @@ export interface CourseTree {
     subject: string;
     badgeAsset: string | null;
     progress: ProgressShape;
+    /** True until this user has a completed course_placements row (0043) — gates the first lesson server-side (learn.ts's PLACEMENT_REQUIRED check). */
+    placementRequired: boolean;
   };
   adventures: AdventureNode[];
   nextLessonId: string | null;
@@ -162,7 +172,18 @@ export interface CourseTree {
 
 const byPosition = <T extends { position: number }>(rows: T[]): T[] => [...rows].sort((a, b) => a.position - b.position);
 
-/** Assemble the full per-user tree for ONE course from its already-fetched descendant rows (any order — sorted here). */
+/**
+ * Assemble the full per-user tree for ONE course from its already-fetched
+ * descendant rows (any order — sorted here).
+ *
+ * `placementCreditedLessonIds` (0043) defaults to empty and `hasCompletedPlacement`
+ * defaults to true — existing callers that don't pass them (tests, and any
+ * future course that never needs placement) get exactly today's behavior:
+ * no credits folded in, never gated. `routes/learn.ts` is the one real
+ * caller that passes both explicitly, fetched fresh from placement_credits/
+ * course_placements each time (never cached — a credit granted mid-session
+ * must show up on the very next tree read).
+ */
 export function assembleCourseTree(
   course: CourseRowLite,
   adventureRows: AdventureRowLite[],
@@ -170,6 +191,8 @@ export function assembleCourseTree(
   topicRows: TopicRowLite[],
   lessonRows: LessonRowLite[],
   progressRows: ProgressRowLite[],
+  placementCreditedLessonIds: ReadonlySet<string> = new Set(),
+  hasCompletedPlacement = true,
 ): CourseTree {
   const sagasByAdventure = new Map<string, SagaRowLite[]>();
   for (const s of sagaRows) sagasByAdventure.set(s.adventure_id, [...(sagasByAdventure.get(s.adventure_id) ?? []), s]);
@@ -182,6 +205,11 @@ export function assembleCourseTree(
 
   const bestScoreByLesson = new Map(progressRows.map((p) => [p.lesson_id, p.best_score]));
   const passedLessonIds = new Set(progressRows.filter((p) => p.passed).map((p) => p.lesson_id));
+  // Credited lessons count as passed for EVERY downstream computation — unlock
+  // math, progress bars, badge-eligible completion (product decision: a
+  // placement quiz result is real evidence of mastery, never re-demanded).
+  // Real vs. credited stays distinguishable via LessonNode.placementCredited.
+  const effectivePassedLessonIds = new Set([...passedLessonIds, ...placementCreditedLessonIds]);
 
   const sortedAdventures = byPosition(adventureRows);
 
@@ -202,7 +230,7 @@ export function assembleCourseTree(
     lessonIdsByAdventure.set(adventure.id, ownLessonIds);
   }
 
-  const { states: lessonStates, currentLessonId } = computeLessonStates(flatLessons, passedLessonIds);
+  const { states: lessonStates, currentLessonId } = computeLessonStates(flatLessons, effectivePassedLessonIds);
 
   const adventures: AdventureNode[] = sortedAdventures.map((adventure, i) => {
     const ownLessonIds = lessonIdsByAdventure.get(adventure.id) ?? [];
@@ -221,6 +249,7 @@ export function assembleCourseTree(
           estimated_minutes: lesson.estimated_minutes,
           state: lessonStates.get(lesson.id) ?? 'locked',
           bestScore: bestScoreByLesson.get(lesson.id) ?? 0,
+          placementCredited: placementCreditedLessonIds.has(lesson.id),
         }));
         const passedCount = lessons.filter((l) => l.state === 'passed').length;
         const state: TopicState =
@@ -245,7 +274,7 @@ export function assembleCourseTree(
         title: saga.title,
         icon: saga.icon,
         position: saga.position,
-        progress: progressOf(sagaLessonIds, passedLessonIds),
+        progress: progressOf(sagaLessonIds, effectivePassedLessonIds),
         topics,
       };
     });
@@ -257,8 +286,8 @@ export function assembleCourseTree(
       description: adventure.description,
       theme: adventure.theme,
       position: adventure.position,
-      state: computeAdventureState(ownLessonIds, previousLessonIds, passedLessonIds),
-      progress: progressOf(ownLessonIds, passedLessonIds),
+      state: computeAdventureState(ownLessonIds, previousLessonIds, effectivePassedLessonIds),
+      progress: progressOf(ownLessonIds, effectivePassedLessonIds),
       sagas,
     };
   });
@@ -303,12 +332,102 @@ export function assembleCourseTree(
       badgeAsset: course.badge_asset ?? null,
       progress: progressOf(
         flatLessons.map((l) => l.id),
-        passedLessonIds,
+        effectivePassedLessonIds,
       ),
+      placementRequired: !hasCompletedPlacement,
     },
     adventures,
     nextLessonId: currentLessonId,
   };
+}
+
+/**
+ * Flattens an already-assembled tree's topics into the global course order
+ * placementAlgorithm.ts needs (0043) — REUSES the tree's own already-correct
+ * nested order (adventures/sagas/topics are all `byPosition`-sorted by
+ * assembleCourseTree already) instead of re-deriving it, so placement and
+ * unlock can never drift onto two different orderings. Call this with a
+ * tree assembled with an EMPTY placementCreditedLessonIds set (no credits
+ * exist yet at the moment a NEW placement is being computed) — a tree
+ * assembled for ordinary display already reflects whatever credits exist.
+ *
+ * Review-kind topics are DELIBERATELY included, not filtered out: they never
+ * carry a placement probe (`hasProbe: false`), so they naturally stop the
+ * quiz method's contiguous-correct-prefix walk. That is the intended
+ * behavior, not a gap to patch around — a learner placed past a saga's
+ * teaching topics lands AT that saga's review checkpoint, the same
+ * spaced-review consolidation any non-placed learner would also hit next,
+ * rather than skipping practice on material a quiz (not full lesson play)
+ * verified.
+ */
+export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
+  const flat: PlacementTopic[] = [];
+  for (const adventure of tree.adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) {
+        flat.push({
+          id: topic.id,
+          path: `${adventure.slug}/${saga.slug}/${topic.slug}`,
+          hasProbe: topic.placementProbe !== null,
+          prerequisites: topic.prerequisites.map((p) => ({ path: p.path, strength: p.strength })),
+          lessonIds: topic.lessons.map((l) => l.id),
+        });
+      }
+    }
+  }
+  return flat;
+}
+
+export interface PlacementProbeForClient {
+  topicId: string;
+  prompt: string;
+  options: string[];
+}
+
+/**
+ * Locale-picked, ANSWER-STRIPPED placement probes for the first `limit`
+ * probed topics in course order (0043) — never exposes correctIndex to the
+ * client, the same sanctity stripAnswers() gives lesson content. Falls back
+ * es-MX (authoring locale) -> any available locale when the caller's own
+ * locale has no bundle, mirroring pickLessonLocale's fallback posture.
+ */
+export function listPlacementProbes(tree: CourseTree, locale: 'en-US' | 'es-MX' | 'pt-BR', limit: number): PlacementProbeForClient[] {
+  const out: PlacementProbeForClient[] = [];
+  for (const adventure of tree.adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) {
+        if (out.length >= limit) return out;
+        const bundle = topic.placementProbe;
+        if (!bundle) continue;
+        const probe = bundle[locale] ?? bundle['es-MX'] ?? Object.values(bundle)[0];
+        if (!probe) continue;
+        out.push({ topicId: topic.id, prompt: probe.prompt, options: probe.options });
+      }
+    }
+  }
+  return out;
+}
+
+export interface PlacementProbeForGrading {
+  topicId: string;
+  correctIndex: number;
+}
+
+/** Every probed topic's correctIndex, server-side only — never sent to the client (grading input for POST /placement/:slug/complete). */
+export function listPlacementProbesForGrading(tree: CourseTree, locale: 'en-US' | 'es-MX' | 'pt-BR'): PlacementProbeForGrading[] {
+  const out: PlacementProbeForGrading[] = [];
+  for (const adventure of tree.adventures) {
+    for (const saga of adventure.sagas) {
+      for (const topic of saga.topics) {
+        const bundle = topic.placementProbe;
+        if (!bundle) continue;
+        const probe = bundle[locale] ?? bundle['es-MX'] ?? Object.values(bundle)[0];
+        if (!probe) continue;
+        out.push({ topicId: topic.id, correctIndex: probe.correctIndex });
+      }
+    }
+  }
+  return out;
 }
 
 export interface CourseSummary {

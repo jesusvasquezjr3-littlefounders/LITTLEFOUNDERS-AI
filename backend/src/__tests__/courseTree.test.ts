@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assembleCourseTree, findLessonNode, summarizeCourseTree } from '../services/courseTree.js';
+import { assembleCourseTree, findLessonNode, flattenTopicsForPlacement, summarizeCourseTree } from '../services/courseTree.js';
 
 const course = { id: 'course-1', slug: 'financial-education', title: { 'en-US': 'FinEd' }, description: {}, subject: 'money' };
 
@@ -156,5 +156,29 @@ describe('territory topic states (0016)', () => {
     const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, []);
     expect(tree.adventures[0]?.sagas[0]?.topics[0]?.kind).toBe('teaching');
     expect(tree.adventures[0]?.sagas[0]?.topics[0]?.state).toBe('not-started');
+  });
+});
+
+describe('placement (0043)', () => {
+  it('assembleCourseTree folds credited lessons into passed state, marks them distinctly, and reports placementRequired', () => {
+    const treeGated = assembleCourseTree(course, adventures, sagas, topics, lessons, [], new Set(), false);
+    expect(treeGated.course.placementRequired).toBe(true);
+
+    const treeCredited = assembleCourseTree(course, adventures, sagas, topics, lessons, [], new Set(['l1']), true);
+    expect(treeCredited.course.placementRequired).toBe(false);
+    const l1 = treeCredited.adventures[0]?.sagas[0]?.topics[0]?.lessons[0];
+    expect(l1).toMatchObject({ id: 'l1', state: 'passed', placementCredited: true, bestScore: 0 });
+    const l2 = treeCredited.adventures[0]?.sagas[0]?.topics[0]?.lessons[1];
+    expect(l2).toMatchObject({ id: 'l2', placementCredited: false });
+    // Credited lessons count toward the visible progress bar (product decision).
+    expect(treeCredited.course.progress.passed).toBe(1);
+  });
+
+  it('flattenTopicsForPlacement walks the tree\'s own already-ordered adventures/sagas/topics', () => {
+    const tree = assembleCourseTree(course, adventures, sagas, topics, lessons, []);
+    const flat = flattenTopicsForPlacement(tree);
+    expect(flat.map((t) => t.path)).toEqual(['adventure-1/saga-1/topic-1', 'adventure-2/saga-2/topic-2']);
+    expect(flat[0]).toMatchObject({ id: 't1', hasProbe: false, prerequisites: [], lessonIds: ['l1', 'l2'] });
+    expect(flat[1]).toMatchObject({ id: 't2', lessonIds: ['l3'] });
   });
 });

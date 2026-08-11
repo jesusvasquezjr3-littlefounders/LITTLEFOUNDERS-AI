@@ -29,6 +29,8 @@
     "RELEASE_VERIFICATION_REQUIRED": "Run Forge's course verification after the latest content change, then publish again.",
     "RELEASE_BLOCKED": "The release preflight refused this course.",
     "NOT_A_GUEST": "This account already has a permanent identity.",
-    "ONBOARDING_ALREADY_COMPLETE": "Onboarding was already completed."
+    "ONBOARDING_ALREADY_COMPLETE": "Onboarding was already completed.",
+    "PLACEMENT_REQUIRED": "Complete this course's placement quiz first.",
+    "PLACEMENT_ALREADY_COMPLETE": "Placement was already completed for this course."
   }
 }

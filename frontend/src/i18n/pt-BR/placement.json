@@ -1,0 +1,46 @@
+{
+  "loading": "Carregando seu teste de nivelamento…",
+  "back": "Voltar",
+  "continue": "Continuar",
+  "skip": "Pular",
+  "submitting": "Encontrando seu nível…",
+  "error": "Algo deu errado, tente novamente.",
+  "progressLabel": "Passo {{current}} de {{total}}",
+  "level": {
+    "title": "O quanto você já sabe sobre isso?",
+    "subtitle": "Seja honesto, não existe resposta errada.",
+    "options": {
+      "new": "Isso é tudo novo para mim",
+      "some": "Sei um pouco",
+      "confident": "Já sei bastante"
+    }
+  },
+  "education": {
+    "title": "Qual é o seu nível escolar atual?",
+    "subtitle": "Isso nos ajuda a escolher o ritmo e os exemplos certos para você.",
+    "options": {
+      "preschool": "Pré-escola",
+      "elementary": "Ensino fundamental",
+      "middle": "Ensino fundamental II",
+      "high": "Ensino médio",
+      "adult": "Adulto"
+    }
+  },
+  "age": {
+    "title": "Quantos anos você tem?",
+    "subtitle": "Opcional, isso nos ajuda a escolher o conteúdo certo para você.",
+    "label": "Data de nascimento",
+    "hint": "Formato: aaaa-mm-dd, por exemplo 2016-05-01",
+    "invalid": "Use o formato aaaa-mm-dd",
+    "nudge": "Se você é uma criança, o ideal é fazer isso com um responsável por perto.",
+    "nudgeLink": "Conheça as contas familiares"
+  },
+  "quiz": {
+    "eyebrow": "Checagem rápida"
+  },
+  "submit": {
+    "title": "Pronto para encontrar seu ponto de partida?",
+    "subtitle": "Vamos te posicionar na lição certa, para você nunca começar do zero.",
+    "cta": "Obter meu nivelamento"
+  }
+}

@@ -8,6 +8,7 @@ import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
+import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
 
@@ -56,6 +57,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/verification', verificationRouter());
   app.use('/api/v1/learn', learnRouter());
   app.use('/api/v1/onboarding', onboardingRouter());
+  app.use('/api/v1/placement', placementRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());

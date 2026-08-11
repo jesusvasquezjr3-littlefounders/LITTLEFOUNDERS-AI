@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
@@ -108,6 +108,13 @@ export function CoursePage() {
   }
 
   const { tree } = state;
+
+  // Client-side convenience only — the real gate is server-side (learn.ts's
+  // PLACEMENT_REQUIRED 403 on every lesson-access endpoint). Replace, not
+  // push, so the back button doesn't bounce the learner into a 403 loop.
+  if (tree.course.placementRequired) {
+    return <Navigate to={`/learn/${courseSlug}/placement`} replace />;
+  }
 
   if (tree.adventures.length === 0) {
     return (

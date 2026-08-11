@@ -22,6 +22,7 @@ import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
 import { TerritoryPage } from '@/routes/app/learn/TerritoryPage';
+import { PlacementPage } from '@/routes/app/learn/PlacementPage';
 import { FamilyPage } from '@/routes/app/family/FamilyPage';
 import { KidTerritoryPage } from '@/routes/app/family/KidTerritoryPage';
 import { LessonRoute } from '@/routes/app/learn/LessonRoute';
@@ -163,6 +164,20 @@ export function App() {
             element={
               <RequireAuth>
                 <UpgradeAccountPage />
+              </RequireAuth>
+            }
+          />
+          {/* Mandatory per-course placement quiz (0043) — its own fullscreen
+              layer like onboarding, but still funnels an unboarded guest to
+              /onboarding first (RequireOnboarded) so the two one-time flows
+              never interleave out of order. */}
+          <Route
+            path="learn/:courseSlug/placement"
+            element={
+              <RequireAuth>
+                <RequireOnboarded>
+                  <PlacementPage />
+                </RequireOnboarded>
               </RequireAuth>
             }
           />

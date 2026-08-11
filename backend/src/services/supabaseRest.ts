@@ -927,3 +927,61 @@ export async function insertOnboardingResponse(row: {
   });
   return res !== null;
 }
+
+// ── Placement (0043) ─────────────────────────────────────────
+
+export interface CoursePlacementRow {
+  user_id: string;
+  course_id: string;
+  claimed_level: string;
+  education_level: string;
+  method: string;
+  created_at: string;
+}
+
+/** Existence check + result — the idempotency marker for POST /placement/:slug/complete, and the source of CourseTree.course.placementRequired. Own-row RLS: the caller's token is enough. */
+export function getCoursePlacement(accessToken: string, userId: string, courseId: string): Promise<CoursePlacementRow[] | null> {
+  return rest<CoursePlacementRow[]>(
+    `/course_placements?user_id=eq.${eu(userId)}&course_id=eq.${eu(courseId)}&select=user_id,course_id,claimed_level,education_level,method,created_at`,
+    accessToken,
+  );
+}
+
+export interface PlacementCreditRow {
+  lesson_id: string;
+}
+
+export function getPlacementCreditsForCourse(accessToken: string, userId: string, courseId: string): Promise<PlacementCreditRow[] | null> {
+  return rest<PlacementCreditRow[]>(`/placement_credits?user_id=eq.${eu(userId)}&course_id=eq.${eu(courseId)}&select=lesson_id`, accessToken);
+}
+
+/** Server-computed, service role — same posture as upsertLessonProgress/patchLearningStats: the client never writes its own placement result. */
+export async function insertCoursePlacement(row: {
+  user_id: string;
+  course_id: string;
+  claimed_level: string;
+  education_level: string;
+  quiz_answers: unknown;
+  start_topic_id: string | null;
+  start_lesson_id: string | null;
+  method: string;
+}): Promise<boolean> {
+  const res = await serviceRest<unknown>('/course_placements', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(row),
+  });
+  return res !== null;
+}
+
+export async function insertPlacementCredits(
+  rows: Array<{ user_id: string; lesson_id: string; topic_id: string; course_id: string }>,
+): Promise<boolean> {
+  if (rows.length === 0) return true;
+  const res = await serviceRest<unknown>('/placement_credits', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(rows),
+  });
+  return res !== null;
+}

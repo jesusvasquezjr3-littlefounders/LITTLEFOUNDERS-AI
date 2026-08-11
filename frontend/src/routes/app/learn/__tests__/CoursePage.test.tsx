@@ -26,6 +26,7 @@ const fixtureTree: CourseTree = {
     description: { 'en-US': '' },
     subject: 'money',
     progress: { passed: 1, total: 3, pct: 33 },
+    placementRequired: false,
   },
   adventures: [
     {
@@ -65,6 +66,7 @@ const fixtureTree: CourseTree = {
                   estimated_minutes: 5,
                   state: 'passed',
                   bestScore: 100,
+                  placementCredited: false,
                 },
                 {
                   id: 'lesson-current',
@@ -76,6 +78,7 @@ const fixtureTree: CourseTree = {
                   estimated_minutes: 6,
                   state: 'current',
                   bestScore: 0,
+                  placementCredited: false,
                 },
               ],
             },
@@ -98,6 +101,7 @@ const fixtureTree: CourseTree = {
                   estimated_minutes: 8,
                   state: 'locked',
                   bestScore: 0,
+                  placementCredited: false,
                 },
               ],
             },

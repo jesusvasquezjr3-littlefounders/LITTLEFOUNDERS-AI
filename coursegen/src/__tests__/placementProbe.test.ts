@@ -5,11 +5,11 @@ import {
   translatePlacementProbe,
   type PlacementProbe,
 } from '../pipeline/placementProbe.js';
-import type { ChatCompleteRequest, ChatCompleteResult } from '../providers/openaiChat.js';
+import type { ChatCompleteResult } from '../providers/openaiChat.js';
 
 function mockComplete(...responses: string[]) {
   let call = 0;
-  return vi.fn(async (_req: ChatCompleteRequest): Promise<ChatCompleteResult> => {
+  return vi.fn(async (): Promise<ChatCompleteResult> => {
     const content = responses[Math.min(call, responses.length - 1)]!;
     call += 1;
     return { content, promptTokens: 10, completionTokens: 10, cachedPromptTokens: 0 };

@@ -24,6 +24,8 @@ export interface LessonNode {
   estimated_minutes: number
   state: LessonState
   bestScore: number
+  /** Placed past this lesson by the course's placement quiz (0043) — counts toward the badge/progress bar, but never a real play-through. */
+  placementCredited: boolean
 }
 
 /** Territory-map state per topic — server-derived (courseTree.ts, 0016), never self-reported. */
@@ -71,6 +73,8 @@ export interface CourseTree {
     subject: string
     badgeAsset?: string | null
     progress: ProgressShape
+    /** True until this user has completed this course's placement quiz (0043) — the client-side redirect is UX only, the real gate is server-side (learn.ts's PLACEMENT_REQUIRED 403). */
+    placementRequired: boolean
   }
   adventures: AdventureNode[]
   nextLessonId: string | null

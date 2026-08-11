@@ -2935,7 +2935,7 @@ describe('CORS', () => {
 
 ```
 import { describe, expect, it } from 'vitest';
-import { assembleCourseTree, findLessonNode, summarizeCourseTree } from '../services/courseTree.js';
+import { assembleCourseTree, findLessonNode, flattenTopicsForPlacement, summarizeCourseTree } from '../services/courseTree.js';
 
 const course = { id: 'course-1', slug: 'financial-education', title: { 'en-US': 'FinEd' }, description: {}, subject: 'money' };
 
@@ -3131,6 +3131,46 @@ beforeEach(() => {
     profiles: [
 ```
 
+### backend/src/__tests__/placement.test.ts
+
+```
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import request from 'supertest';
+import { createApp } from '../app.js';
+import { mintToken } from './helpers.js';
+import { createFakeFetch, type FakeDb } from './fakePostgrest.js';
+
+const USER_ID = '99999999-9999-4999-8999-999999999911';
+const COURSE_ID = 'c0000000-0000-4000-8000-000000000001';
+const ADVENTURE_ID = 'a0000000-0000-4000-8000-000000000001';
+const SAGA_ID = 'a0000000-0000-4000-8000-0000000000a1';
+const T1 = 'a0000000-0000-4000-8000-0000000000b1';
+const T2 = 'a0000000-0000-4000-8000-0000000000b2';
+const T3 = 'a0000000-0000-4000-8000-0000000000b3';
+const L1 = 'a0000000-0000-4000-8000-0000000000c1';
+const L2 = 'a0000000-0000-4000-8000-0000000000c2';
+```
+
+### backend/src/__tests__/placementAlgorithm.test.ts
+
+```
+import { describe, expect, it } from 'vitest';
+import { computePlacement, gradeQuizAnswers, type PlacementTopic } from '../services/placementAlgorithm.js';
+
+describe('gradeQuizAnswers', () => {
+  it('grades correct and incorrect answers against each topic\'s persisted probe', () => {
+    const probes = [
+      { topicId: 't1', correctIndex: 0 },
+      { topicId: 't2', correctIndex: 1 },
+    ];
+    const answers = [
+      { topicId: 't1', selectedIndex: 0 },
+      { topicId: 't2', selectedIndex: 0 },
+    ];
+    expect(gradeQuizAnswers(probes, answers)).toEqual([
+      { topicId: 't1', correct: true },
+```
+
 ### backend/src/__tests__/profile.test.ts
 
 ```
@@ -3244,11 +3284,11 @@ import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
+import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
 import { verificationRouter } from './routes/verification.js';
 
 export const SERVICE = 'backend';
-export const VERSION = '0.1.0';
 ```
 
 ### backend/src/config.ts
@@ -3707,6 +3747,26 @@ import {
  * POST /onboarding/complete — the one-time, guest-first flow: name
 ```
 
+### backend/src/routes/placement.ts
+
+```
+import { Router } from 'express';
+import { z } from 'zod';
+import { fail, ok } from '../lib/http.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
+import { loadCourseTree } from './learn.js';
+import {
+  flattenTopicsForPlacement,
+  listPlacementProbes,
+  listPlacementProbesForGrading,
+} from '../services/courseTree.js';
+import { computePlacement, gradeQuizAnswers, type ClaimedLevel } from '../services/placementAlgorithm.js';
+import {
+  getCoursePlacement,
+  getFullOwnProfile,
+  getPublishedCourseBySlug,
+```
+
 ### backend/src/routes/profile.ts
 
 ```
@@ -3791,6 +3851,7 @@ const PAPAYA = '#ff775c';
 
 ```
 import { computeAdventureState, computeLessonStates, progressOf, type LessonState } from './unlockRules.js';
+import type { PlacementTopic } from './placementAlgorithm.js';
 
 /*
  * Pure assembly of the COURSE_ENGINE.md §2 hierarchy
@@ -3804,7 +3865,6 @@ type Json = Record<string, unknown>;
 
 export interface CourseRowLite {
   id: string;
-  slug: string;
 ```
 
 ### backend/src/services/gotrue.ts
@@ -3885,6 +3945,26 @@ type Json = Record<string, unknown>;
 export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocale: string | null | undefined): LessonDocumentRow | null {
   if (rows.length === 0) return null;
   const byLocale = new Map(rows.map((r) => [r.locale, r]));
+```
+
+### backend/src/services/placementAlgorithm.ts
+
+```
+/*
+ * Pure placement computation — COURSE_ENGINE.md §3.2: "a placement quiz
+ * walks the hard-edge DAG backwards from the learner's claimed level... and
+ * drops the learner at the earliest unmet hard edge." Core is the SINGLE
+ * SOURCE OF TRUTH for this, exactly like unlockRules.ts is for lesson
+ * unlocking — the client never re-derives it, and the live quiz is 100%
+ * deterministic (only the probe CONTENT was ever touched by an LLM, once
+ * per catalog topic at generation time, never per learner: coursegen/src/
+ * pipeline/placementProbe.ts).
+ *
+ * Kept dependency-free and side-effect-free on purpose (no PostgREST/fetch
+ * here) so it is unit-testable with plain fixtures — see
+ * src/__tests__/placementAlgorithm.test.ts.
+ */
+
 ```
 
 ### backend/src/services/pulse.ts
@@ -5367,6 +5447,26 @@ describe('palette exhaustiveness', () => {
     for (const type of Object.keys(PALETTE_EXAMPLES)) {
 ```
 
+### coursegen/src/__tests__/placementProbe.test.ts
+
+```
+import { describe, expect, it, vi } from 'vitest';
+import {
+  gatePlacementProbe,
+  authorPlacementProbe,
+  translatePlacementProbe,
+  type PlacementProbe,
+} from '../pipeline/placementProbe.js';
+import type { ChatCompleteResult } from '../providers/openaiChat.js';
+
+function mockComplete(...responses: string[]) {
+  let call = 0;
+  return vi.fn(async (): Promise<ChatCompleteResult> => {
+    const content = responses[Math.min(call, responses.length - 1)]!;
+    call += 1;
+    return { content, promptTokens: 10, completionTokens: 10, cachedPromptTokens: 0 };
+```
+
 ### coursegen/src/__tests__/plan-repair.test.ts
 
 ```
@@ -6409,6 +6509,26 @@ import { getConfig } from '../env.js';
 import { lessonDocumentSchema, type LessonDocumentParsed } from '../contract/schema.js';
 import type { LessonLocale } from '../contract/core/types.js';
 import { runVocabularyGate, NON_VISIBLE_KEYS, type GateProblem, type GateContext } from './gates.js';
+import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
+
+```
+
+### coursegen/src/pipeline/placementProbe.ts
+
+```
+// placementProbe.ts — authors and deterministically gates ONE per-topic
+// placement-quiz probe (COURSE_ENGINE.md §3.2's "future onboarding/placement
+// phase", now built). A probe is authored ONCE per catalog teaching topic at
+// generation time, from catalog/topic content only — never per learner, so
+// /AGENTS.md §1.9 (no minor PII to any provider) is satisfied by
+// construction. The LIVE placement quiz Core serves at runtime is 100%
+// deterministic: it only ever reads and grades this pre-authored content,
+// mirroring the "deterministic gate before/instead of LLM judgment" posture
+// already used everywhere else in this pipeline (Piaget gate, gate 6, etc.).
+
+import { z } from 'zod';
+import { completeDeepSeek } from '../providers/deepseek.js';
+import type { UsageLedger } from '../providers/usage.js';
 import { withCorrectiveRetry, safeJsonParse, formatZodIssues } from './correctiveRetry.js';
 
 ```
@@ -7823,6 +7943,46 @@ SET badge_asset = CASE slug
 -- like `blocks` — Core (service role) is the only writer.
 
 CREATE TABLE IF NOT EXISTS public.onboarding_responses (
+```
+
+### database/migrations/0042_topic_prerequisites_and_placement_probe.sql
+
+```
+-- 0042_topic_prerequisites_and_placement_probe.sql — persist the competency-
+-- graph projection COURSE_ENGINE.md §3.2 reserved for "the future
+-- onboarding/placement phase". Mirrors 0016_topic_review_edges.sql exactly:
+-- the catalog stays the source of truth, paths are RAW catalog slug paths
+-- resolved at query time (never pre-resolved to ids, so a republish can't
+-- go stale), and this is additive/default-safe.
+
+ALTER TABLE public.topics ADD COLUMN IF NOT EXISTS prerequisites jsonb NOT NULL DEFAULT '[]'::jsonb;
+
+-- placement_probe shape (nullable — Core's placement algorithm treats a null
+-- probe as "not yet authored", never a crash; see COURSE_ENGINE.md §3.2):
+--   {"es-MX": {"prompt": "...", "options": ["...", "..."], "correctIndex": 0},
+--    "en-US": {...}, "pt-BR": {...}}
+-- Same per-locale-bundle idiom as topics.title/learning_objective.
+ALTER TABLE public.topics ADD COLUMN IF NOT EXISTS placement_probe jsonb;
+```
+
+### database/migrations/0043_course_placements.sql
+
+```
+-- 0043_course_placements.sql — the placement quiz result and its skip-ahead
+-- credit ledger (COURSE_ENGINE.md §3.2, guest accounts + onboarding +
+-- placement feature). Mandatory, per-course, gates a course's first lesson
+-- (backend/src/routes/learn.ts's PLACEMENT_REQUIRED check).
+--
+-- course_placements — one row per (user, course): the quiz result. Service-
+-- role-only (Core computes and writes it; no client INSERT/UPDATE), same
+-- posture as generation telemetry (0017) and picture/speech caches (0014/
+-- 0015). quiz_answers is an audit trail, never re-derived from.
+--
+-- placement_credits — one row per (user, lesson) the learner was placed
+-- PAST. Deliberately its OWN table, never a synthetic lesson_progress row:
+-- a placement credit must stay distinguishable from a genuinely played and
+-- passed lesson everywhere (no fabricated XP, no fabricated attempt count).
+-- It DOES count toward course-completion badges (get_completed_course_badges
 ```
 
 ### database/package.json
@@ -11378,6 +11538,26 @@ export { StatCard } from './StatCard';
     "subtitle": "Totally optional, it just helps us know where to find more families like yours.",
 ```
 
+### frontend/src/i18n/en-US/placement.json
+
+```
+{
+  "loading": "Loading your placement quiz…",
+  "back": "Go back",
+  "continue": "Continue",
+  "skip": "Skip",
+  "submitting": "Placing you…",
+  "error": "Something went wrong, please try again.",
+  "progressLabel": "Step {{current}} of {{total}}",
+  "level": {
+    "title": "How much do you already know about this?",
+    "subtitle": "Be honest, there's no wrong answer.",
+    "options": {
+      "new": "This is all new to me",
+      "some": "I know a little",
+      "confident": "I already know quite a bit"
+```
+
 ### frontend/src/i18n/en-US/profile.json
 
 ```
@@ -11576,6 +11756,26 @@ export { StatCard } from './StatCard';
   "discovery": {
     "title": "¿Dónde oíste hablar de LittleFounders?",
     "subtitle": "Es totalmente opcional, solo nos ayuda a saber dónde encontrar más familias como la tuya.",
+```
+
+### frontend/src/i18n/es-MX/placement.json
+
+```
+{
+  "loading": "Cargando tu quiz de ubicación…",
+  "back": "Regresar",
+  "continue": "Continuar",
+  "skip": "Omitir",
+  "submitting": "Ubicándote…",
+  "error": "Algo salió mal, intenta de nuevo.",
+  "progressLabel": "Paso {{current}} de {{total}}",
+  "level": {
+    "title": "¿Qué tanto sabes ya de esto?",
+    "subtitle": "Sé honesto, no hay respuesta incorrecta.",
+    "options": {
+      "new": "Esto es nuevo para mí",
+      "some": "Sé un poco",
+      "confident": "Ya sé bastante"
 ```
 
 ### frontend/src/i18n/es-MX/profile.json
@@ -11796,6 +11996,26 @@ import enErrors from './en-US/errors.json';
   "discovery": {
     "title": "Onde você ouviu falar do LittleFounders?",
     "subtitle": "Totalmente opcional, isso só nos ajuda a saber onde encontrar mais famílias como a sua.",
+```
+
+### frontend/src/i18n/pt-BR/placement.json
+
+```
+{
+  "loading": "Carregando seu teste de nivelamento…",
+  "back": "Voltar",
+  "continue": "Continuar",
+  "skip": "Pular",
+  "submitting": "Encontrando seu nível…",
+  "error": "Algo deu errado, tente novamente.",
+  "progressLabel": "Passo {{current}} de {{total}}",
+  "level": {
+    "title": "O quanto você já sabe sobre isso?",
+    "subtitle": "Seja honesto, não existe resposta errada.",
+    "options": {
+      "new": "Isso é tudo novo para mim",
+      "some": "Sei um pouco",
+      "confident": "Já sei bastante"
 ```
 
 ### frontend/src/i18n/pt-BR/profile.json
@@ -14568,7 +14788,7 @@ interface AdventureBannerProps {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { CourseBadgeArtwork } from '@/components/course/CourseBadgeArtwork';
@@ -14620,6 +14840,26 @@ import type { AudioManifest } from '@/lesson-engine/player/narration';
 import type { ServerCompletion } from '@/lesson-engine/player/completion';
 import { createCoreGrader } from './coreGrader';
 
+```
+
+### frontend/src/routes/app/learn/PlacementPage.tsx
+
+```
+import { useEffect, useState } from 'react';
+import { Link, Navigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/auth/AuthContext';
+import { api } from '@/lib/api';
+import { Button, Card, Field, Icon, LoadingOverlay, OptionGroup, ProgressBar, type OptionGroupOption } from '@/components/ui';
+import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+
+/*
+ * /learn/:courseSlug/placement — mandatory, per-course (COURSE_ENGINE.md
+ * §3.2). Never start a returning learner from zero: claimed level ->
+ * education level -> age (skipped if already known) -> a short quiz,
+ * auto-advancing on every optional/single-tap step to keep this as close to
+ * "fewer clicks" as a mandatory gate can be. All grading and the actual
+ * starting lesson are decided server-side (learn.ts's PLACEMENT_REQUIRED
 ```
 
 ### frontend/src/routes/app/learn/SagaSection.tsx
@@ -14700,6 +14940,26 @@ const mockNavigate = vi.fn();
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 // getToken must be a STABLE reference — the route's fetch effect depends on it
 // (in the real app it's a memoized useCallback from AuthContext). A fresh
+```
+
+### frontend/src/routes/app/learn/__tests__/PlacementPage.test.tsx
+
+```
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import i18n from '@/i18n';
+import { api } from '@/lib/api';
+import { PlacementPage } from '../PlacementPage';
+
+vi.mock('@/lib/api', () => ({ api: vi.fn() }));
+// getToken must be a STABLE reference across renders (in the real app it's a
+// useCallback from AuthContext) — an inline `getToken: async () => ...`
+// literal here would be a NEW function every render, making PlacementPage's
+// legitimate `useEffect([courseSlug, getToken])` loop forever. See
+// frontend/AGENTS.md's "useEffect dependency must have a stable identity" rule.
+vi.mock('@/auth/AuthContext', () => {
+  const getToken = async () => 'token-123';
 ```
 
 ### frontend/src/routes/app/learn/__tests__/coreGrader.test.ts

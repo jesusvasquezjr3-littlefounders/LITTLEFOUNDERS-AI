@@ -1,0 +1,46 @@
+{
+  "loading": "Cargando tu quiz de ubicación…",
+  "back": "Regresar",
+  "continue": "Continuar",
+  "skip": "Omitir",
+  "submitting": "Ubicándote…",
+  "error": "Algo salió mal, intenta de nuevo.",
+  "progressLabel": "Paso {{current}} de {{total}}",
+  "level": {
+    "title": "¿Qué tanto sabes ya de esto?",
+    "subtitle": "Sé honesto, no hay respuesta incorrecta.",
+    "options": {
+      "new": "Esto es nuevo para mí",
+      "some": "Sé un poco",
+      "confident": "Ya sé bastante"
+    }
+  },
+  "education": {
+    "title": "¿Cuál es tu nivel escolar actual?",
+    "subtitle": "Esto nos ayuda a elegir el ritmo y los ejemplos adecuados para ti.",
+    "options": {
+      "preschool": "Preescolar",
+      "elementary": "Primaria",
+      "middle": "Secundaria",
+      "high": "Preparatoria",
+      "adult": "Adulto"
+    }
+  },
+  "age": {
+    "title": "¿Cuántos años tienes?",
+    "subtitle": "Opcional, esto nos ayuda a elegir el contenido adecuado para ti.",
+    "label": "Fecha de nacimiento",
+    "hint": "Formato: aaaa-mm-dd, por ejemplo 2016-05-01",
+    "invalid": "Usa el formato aaaa-mm-dd",
+    "nudge": "Si eres un niño o niña, es mejor hacer esto con un padre, madre o tutor cerca.",
+    "nudgeLink": "Conoce las cuentas familiares"
+  },
+  "quiz": {
+    "eyebrow": "Chequeo rápido"
+  },
+  "submit": {
+    "title": "¿Listo para encontrar tu punto de partida?",
+    "subtitle": "Te ubicaremos en la lección correcta, para que nunca empieces desde cero.",
+    "cta": "Obtener mi ubicación"
+  }
+}

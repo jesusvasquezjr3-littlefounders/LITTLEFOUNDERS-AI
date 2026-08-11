@@ -18,6 +18,7 @@ import {
   countSegmentAttempts,
   getAdventureById,
   getAdventuresByCourseIds,
+  getCoursePlacement,
   getFullOwnProfile,
   getLearningStatsForUpdate,
   getLessonById,
@@ -25,6 +26,7 @@ import {
   getLessonProgressForLessons,
   getLessonProgressRow,
   getLessonsByTopicIds,
+  getPlacementCreditsForCourse,
   getPublishedCourseById,
   getPublishedCourseBySlug,
   getPublishedCourseRows,
@@ -50,7 +52,7 @@ import {
 const NOT_FOUND = 'NOT_FOUND';
 
 /** Fetch the full published hierarchy for one course + this user's progress, and assemble the per-user tree. Returns null on a downstream fetch failure. */
-async function loadCourseTree(accessToken: string, userId: string, course: CourseHierarchyRow): Promise<CourseTree | null> {
+export async function loadCourseTree(accessToken: string, userId: string, course: CourseHierarchyRow): Promise<CourseTree | null> {
   const adventures = await getAdventuresByCourseIds(accessToken, [course.id]);
   if (!adventures) return null;
   const sagas = await getSagasByAdventureIds(
@@ -74,7 +76,16 @@ async function loadCourseTree(accessToken: string, userId: string, course: Cours
     lessons.map((l) => l.id),
   );
   if (!progress) return null;
-  return assembleCourseTree(course, adventures, sagas, topics, lessons, progress);
+  // Placement (0043): fetched fresh on every tree assembly — a credit
+  // granted mid-session (or the placement result itself) must be reflected
+  // on the very next read, never cached.
+  const [placement, credits] = await Promise.all([
+    getCoursePlacement(accessToken, userId, course.id),
+    getPlacementCreditsForCourse(accessToken, userId, course.id),
+  ]);
+  if (placement === null || credits === null) return null;
+  const placementCreditedLessonIds = new Set(credits.map((c) => c.lesson_id));
+  return assembleCourseTree(course, adventures, sagas, topics, lessons, progress, placementCreditedLessonIds, placement.length > 0);
 }
 
 interface LessonContext {
@@ -189,6 +200,7 @@ export function learnRouter(): Router {
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
     const node = findLessonNode(ctx.tree, lessonId);
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
+    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
     const docs = await getLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
@@ -244,6 +256,7 @@ export function learnRouter(): Router {
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
     const node = findLessonNode(ctx.tree, lessonId);
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
+    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
     const docs = await getLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
@@ -360,6 +373,7 @@ export function learnRouter(): Router {
     if (ctx === 'not_found') return fail(res, 404, NOT_FOUND, 'No such lesson');
     const node = findLessonNode(ctx.tree, lessonId);
     if (node?.state === 'locked') return fail(res, 403, 'LESSON_LOCKED', 'This lesson is still locked');
+    if (ctx.tree.course.placementRequired) return fail(res, 403, 'PLACEMENT_REQUIRED', 'Complete this course\'s placement quiz first');
 
     const docs = await getLessonDocumentLocales(lessonId);
     if (!docs) return fail(res, 502, 'INTERNAL', 'Content service unreachable');

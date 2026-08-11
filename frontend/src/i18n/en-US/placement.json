@@ -1,0 +1,46 @@
+{
+  "loading": "Loading your placement quiz…",
+  "back": "Go back",
+  "continue": "Continue",
+  "skip": "Skip",
+  "submitting": "Placing you…",
+  "error": "Something went wrong, please try again.",
+  "progressLabel": "Step {{current}} of {{total}}",
+  "level": {
+    "title": "How much do you already know about this?",
+    "subtitle": "Be honest, there's no wrong answer.",
+    "options": {
+      "new": "This is all new to me",
+      "some": "I know a little",
+      "confident": "I already know quite a bit"
+    }
+  },
+  "education": {
+    "title": "What's your current level of schooling?",
+    "subtitle": "This helps us pick the right pace and examples for you.",
+    "options": {
+      "preschool": "Preschool",
+      "elementary": "Elementary school",
+      "middle": "Middle school",
+      "high": "High school",
+      "adult": "Adult"
+    }
+  },
+  "age": {
+    "title": "How old are you?",
+    "subtitle": "Optional, this helps us pick the right content for you.",
+    "label": "Birth date",
+    "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
+    "invalid": "Use the format yyyy-mm-dd",
+    "nudge": "If you're a kid, it's best to do this with a parent or guardian nearby.",
+    "nudgeLink": "Learn about family accounts"
+  },
+  "quiz": {
+    "eyebrow": "Quick check"
+  },
+  "submit": {
+    "title": "Ready to find your starting point?",
+    "subtitle": "We'll place you at the right lesson, so you never start from zero.",
+    "cta": "Get my placement"
+  }
+}
