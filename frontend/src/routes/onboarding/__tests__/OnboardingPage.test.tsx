@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -7,16 +8,24 @@ import { OnboardingPage } from '../OnboardingPage';
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 
+/*
+ * refreshMe uses REAL useState (not a plain closure variable) so a test can
+ * reproduce the actual race that shipped a real bug: the live AuthContext's
+ * refreshMe() flips onboardingComplete to true via its own setState, and
+ * that update can land — and re-render OnboardingPage — BEFORE complete()'s
+ * own subsequent navigate() call runs (fewer microtask hops through
+ * loadMe's setState than through complete()'s continuation). A mock whose
+ * onboardingComplete never actually changes mid-flight can't catch that; a
+ * plain `let` flipped inside refreshMe wouldn't trigger a re-render either.
+ */
 const refreshMe = vi.fn(async () => {});
-let onboardingComplete = false;
+let initialOnboardingComplete = false;
 vi.mock('@/auth/AuthContext', () => ({
-  useAuth: () => ({
-    getToken: async () => 'token-123',
-    refreshMe,
-    get onboardingComplete() {
-      return onboardingComplete;
-    },
-  }),
+  useAuth: () => {
+    const [onboardingComplete, setOnboardingComplete] = useState(initialOnboardingComplete);
+    refreshMe.mockImplementation(async () => setOnboardingComplete(true));
+    return { getToken: async () => 'token-123', refreshMe, onboardingComplete };
+  },
 }));
 
 const mockedApi = vi.mocked(api);
@@ -24,7 +33,7 @@ const mockedApi = vi.mocked(api);
 beforeEach(async () => {
   mockedApi.mockReset();
   refreshMe.mockClear();
-  onboardingComplete = false;
+  initialOnboardingComplete = false;
   await i18n.changeLanguage('en-US');
 });
 
@@ -111,8 +120,26 @@ describe('OnboardingPage', () => {
   });
 
   it('redirects home immediately if onboarding is already complete', () => {
-    onboardingComplete = true;
+    initialOnboardingComplete = true;
     renderPage();
     expect(screen.getByText('landed on learn')).toBeInTheDocument();
+  });
+
+  it('regression: lands on /upgrade-account even though refreshMe flips onboardingComplete to true first (the guard must not race the explicit navigate)', async () => {
+    mockedApi.mockResolvedValueOnce({ data: { streakDays: 1 }, error: null });
+    renderPage();
+
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ana' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' })); // discovery
+    fireEvent.click(screen.getByRole('button', { name: 'Skip' })); // age
+    fireEvent.click(screen.getByRole('button', { name: 'Create my account' }));
+
+    await waitFor(() => expect(refreshMe).toHaveBeenCalledTimes(1));
+    // The real bug: this used to resolve to "landed on learn" (APP_HOME)
+    // instead, because the top-of-component defensive guard fired on
+    // refreshMe's onboardingComplete=true update before this navigate ran.
+    await waitFor(() => expect(screen.getByText('landed on upgrade')).toBeInTheDocument());
+    expect(screen.queryByText('landed on learn')).not.toBeInTheDocument();
   });
 });

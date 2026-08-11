@@ -9,6 +9,7 @@
   "level": {
     "title": "How much do you already know about this?",
     "subtitle": "Be honest, there's no wrong answer.",
+    "characterBubble": "I'm Zara. No matter where you're starting from, we'll take you further than you imagined.",
     "options": {
       "new": "This is all new to me",
       "some": "I know a little",
@@ -18,6 +19,7 @@
   "education": {
     "title": "What's your current level of schooling?",
     "subtitle": "This helps us pick the right pace and examples for you.",
+    "characterBubble": "Dr. Rho here — this helps me map the right pace for you.",
     "options": {
       "preschool": "Preschool",
       "elementary": "Elementary school",
@@ -33,14 +35,18 @@
     "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
     "invalid": "Use the format yyyy-mm-dd",
     "nudge": "If you're a kid, it's best to do this with a parent or guardian nearby.",
-    "nudgeLink": "Learn about family accounts"
+    "nudgeLink": "Learn about family accounts",
+    "characterBubble": "Dina again — quick check, this helps me fine-tune your path.",
+    "characterBubbleFilled": "Perfect, noted!"
   },
   "quiz": {
-    "eyebrow": "Quick check"
+    "eyebrow": "Quick check",
+    "characterBubble": "Let's see what you already know — pick your best answer."
   },
   "submit": {
     "title": "Ready to find your starting point?",
     "subtitle": "We'll place you at the right lesson, so you never start from zero.",
-    "cta": "Get my placement"
+    "cta": "Get my placement",
+    "characterBubble": "Liruf here! Let's go — your personalized starting point is ready."
   }
 }

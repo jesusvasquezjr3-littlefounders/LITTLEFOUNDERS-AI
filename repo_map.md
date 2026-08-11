@@ -1058,17 +1058,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped
+## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped to PRODUCTION
 
 Closes COURSE_ENGINE.md §3.2's "future onboarding/placement phase", reserved
 since the 2026-07-13 pedagogy-hardening session. Three-phase build, one
 migration set per phase (`0041`, `0042`, `0043`), landed as three commits on
-`main`.
-
-- **Guest accounts**: `POST /api/v1/auth/guest` is GoTrue's native anonymous
-  sign-in — a real `auth.users` row (`is_anonymous=true`), so the existing
-  `0003` bootstrap trigger, every RLS policy, and the JWT session flow all
-  work with zero new database code. `POST /api/v1/auth/upgrade` attaches a
+`main`, then **deployed and live-verified against production** in the same
+session: pushed to `origin/main` (CI green across backend/frontend/coursegen/
+database), migrations `0041`–`0043` applied to the production Vault
+(`railway-migrate.sh --confirm-production`, ledger now at 43 receipts, all
+new tables/columns postflight-verified), `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED=true`
+set and force-redeployed on the production `auth` service, and the full
 ```
 
 ### agent/README.md
@@ -10700,6 +10700,26 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 }
 ```
 
+### frontend/src/auth/RequireGuest.test.tsx
+
+```
+import { beforeEach, describe, expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { RequireGuest } from './RequireGuest';
+
+/*
+ * A guest (anonymous) session must NOT be treated as "already authenticated"
+ * here — otherwise the moment a visitor uses the primary landing CTA
+ * (startGuestSession), /login and /signup become permanently unreachable,
+ * since /upgrade-account can only attach an identity to the CURRENT guest
+ * session, never switch to a different pre-existing account.
+ */
+
+let session: { userId: string } | null | undefined;
+let isGuest: boolean;
+```
+
 ### frontend/src/auth/RequireGuest.tsx
 
 ```
@@ -10708,14 +10728,16 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 
-/** Route guard: authenticated visitors are sent to APP_HOME (dashboard). */
-export function RequireGuest({ children }: { children: ReactNode }) {
-  const { session } = useAuth();
-
-  if (session === undefined) return null; // restoring from storage
-  if (session) return <Navigate to={APP_HOME} replace />;
-  return <>{children}</>;
-}
+/**
+ * Route guard: a visitor with a REAL (non-guest) session is sent to
+ * APP_HOME — they're already logged in, no reason to see /login or /signup.
+ * A guest session does NOT count as "already authenticated" here: guest
+ * accounts are created silently by the primary landing CTA (see
+ * Landing.tsx's startAsGuest), so without this carve-out every guest would
+ * be permanently locked out of ever reaching /login or /signup to sign into
+ * a different, pre-existing account — the only escape hatch would be
+ * /upgrade-account, which can only ATTACH an identity to the current guest
+ * session, never switch to a different one.
 ```
 
 ### frontend/src/auth/RequireOnboarded.tsx
@@ -11531,11 +11553,11 @@ export { StatCard } from './StatCard';
   "name": {
     "title": "What's your name?",
     "subtitle": "So we can make this feel like yours.",
-    "label": "Name"
+    "label": "Name",
+    "characterBubble": "Hey! I'm Liruf. First things first — what should I cheer when you win your first lesson?",
+    "characterBubbleFilled": "{{name}}! What an awesome name — get ready to be famous around here."
   },
   "discovery": {
-    "title": "Where did you hear about LittleFounders?",
-    "subtitle": "Totally optional, it just helps us know where to find more families like yours.",
 ```
 
 ### frontend/src/i18n/en-US/placement.json
@@ -11552,10 +11574,10 @@ export { StatCard } from './StatCard';
   "level": {
     "title": "How much do you already know about this?",
     "subtitle": "Be honest, there's no wrong answer.",
+    "characterBubble": "I'm Zara. No matter where you're starting from, we'll take you further than you imagined.",
     "options": {
       "new": "This is all new to me",
       "some": "I know a little",
-      "confident": "I already know quite a bit"
 ```
 
 ### frontend/src/i18n/en-US/profile.json
@@ -11751,11 +11773,11 @@ export { StatCard } from './StatCard';
   "name": {
     "title": "¿Cómo te llamas?",
     "subtitle": "Así podemos hacer que esto se sienta tuyo.",
-    "label": "Nombre"
+    "label": "Nombre",
+    "characterBubble": "¡Hola! Soy Liruf. Primero lo primero — ¿qué debo gritar cuando ganes tu primera lección?",
+    "characterBubbleFilled": "¡{{name}}! Qué nombre tan increíble — prepárate para ser famoso por aquí."
   },
   "discovery": {
-    "title": "¿Dónde oíste hablar de LittleFounders?",
-    "subtitle": "Es totalmente opcional, solo nos ayuda a saber dónde encontrar más familias como la tuya.",
 ```
 
 ### frontend/src/i18n/es-MX/placement.json
@@ -11772,10 +11794,10 @@ export { StatCard } from './StatCard';
   "level": {
     "title": "¿Qué tanto sabes ya de esto?",
     "subtitle": "Sé honesto, no hay respuesta incorrecta.",
+    "characterBubble": "Soy Zara. No importa desde dónde empieces, te llevaremos más lejos de lo que imaginas.",
     "options": {
       "new": "Esto es nuevo para mí",
       "some": "Sé un poco",
-      "confident": "Ya sé bastante"
 ```
 
 ### frontend/src/i18n/es-MX/profile.json
@@ -11991,11 +12013,11 @@ import enErrors from './en-US/errors.json';
   "name": {
     "title": "Qual é o seu nome?",
     "subtitle": "Assim podemos deixar isso com a sua cara.",
-    "label": "Nome"
+    "label": "Nome",
+    "characterBubble": "Oi! Eu sou o Liruf. Primeiro de tudo — o que eu devo gritar quando você ganhar sua primeira lição?",
+    "characterBubbleFilled": "{{name}}! Que nome incrível — se prepare para ficar famoso por aqui."
   },
   "discovery": {
-    "title": "Onde você ouviu falar do LittleFounders?",
-    "subtitle": "Totalmente opcional, isso só nos ajuda a saber onde encontrar mais famílias como a sua.",
 ```
 
 ### frontend/src/i18n/pt-BR/placement.json
@@ -12012,10 +12034,10 @@ import enErrors from './en-US/errors.json';
   "level": {
     "title": "O quanto você já sabe sobre isso?",
     "subtitle": "Seja honesto, não existe resposta errada.",
+    "characterBubble": "Eu sou a Zara. Não importa de onde você está partindo, vamos te levar mais longe do que você imagina.",
     "options": {
       "new": "Isso é tudo novo para mim",
       "some": "Sei um pouco",
-      "confident": "Já sei bastante"
 ```
 
 ### frontend/src/i18n/pt-BR/profile.json
@@ -14852,14 +14874,14 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, Field, Icon, LoadingOverlay, OptionGroup, ProgressBar, type OptionGroupOption } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import type { CharacterId } from '@/components/characters/control/types';
 
 /*
  * /learn/:courseSlug/placement — mandatory, per-course (COURSE_ENGINE.md
  * §3.2). Never start a returning learner from zero: claimed level ->
  * education level -> age (skipped if already known) -> a short quiz,
  * auto-advancing on every optional/single-tap step to keep this as close to
- * "fewer clicks" as a mandatory gate can be. All grading and the actual
- * starting lesson are decided server-side (learn.ts's PLACEMENT_REQUIRED
 ```
 
 ### frontend/src/routes/app/learn/SagaSection.tsx
@@ -15643,7 +15665,7 @@ function GoogleIcon() {
 
 ```
 import { useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
@@ -15869,19 +15891,20 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { api } from '@/lib/api';
 import { Button, Card, Field, Icon, OptionGroup, ProgressBar, type OptionGroupOption } from '@/components/ui';
+import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import type { CharacterId } from '@/components/characters/control/types';
 
 /*
  * Guest-first onboarding (Duolingo-style): name (required), an optional
  * discovery-channel survey, optional age, then the create-account-now-or-
  * later offer. One /onboarding/complete call submits everything at once —
  * fewer round-trips, and it also activates day-1 streak server-side.
- *
- * Guest-only in practice (a real account never reaches this route — see
 ```
 
 ### frontend/src/routes/onboarding/__tests__/OnboardingPage.test.tsx
 
 ```
+import { useState } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -15891,12 +15914,11 @@ import { OnboardingPage } from '../OnboardingPage';
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }));
 
-const refreshMe = vi.fn(async () => {});
-let onboardingComplete = false;
-vi.mock('@/auth/AuthContext', () => ({
-  useAuth: () => ({
-    getToken: async () => 'token-123',
-    refreshMe,
+/*
+ * refreshMe uses REAL useState (not a plain closure variable) so a test can
+ * reproduce the actual race that shipped a real bug: the live AuthContext's
+ * refreshMe() flips onboardingComplete to true via its own setState, and
+ * that update can land — and re-render OnboardingPage — BEFORE complete()'s
 ```
 
 ### frontend/src/test-setup.ts

@@ -5,6 +5,8 @@ import { useAuth } from '@/auth/AuthContext';
 import { api } from '@/lib/api';
 import { Button, Card, Field, Icon, LoadingOverlay, OptionGroup, ProgressBar, type OptionGroupOption } from '@/components/ui';
 import { ErrorBanner } from '@/routes/auth/ErrorBanner';
+import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import type { CharacterId } from '@/components/characters/control/types';
 
 /*
  * /learn/:courseSlug/placement — mandatory, per-course (COURSE_ENGINE.md
@@ -84,6 +86,27 @@ export function PlacementPage() {
   ];
   const currentStepKind = steps[Math.min(step, steps.length - 1)];
 
+  // One character narrates each step kind, matching each mascot's
+  // established personality (LESSON_ENGINE.md §9), same pairing spirit as
+  // OnboardingPage: Zara opens with confidence ("no matter where you start,
+  // we'll take you further"), Rho maps schooling level and the quiz itself,
+  // Dina handles the personal age question warmly, Liruf closes with hype.
+  const birthDateFilledValid = Boolean(birthDate) && BIRTH_DATE_RE.test(birthDate);
+  const stepCharacter: { character: CharacterId; emotion: 'neutral' | 'happy' | 'excited' | 'thinking' | 'encouraging'; bubble: string } =
+    currentStepKind === 'level'
+      ? { character: 'zara', emotion: 'encouraging', bubble: t('placement.level.characterBubble') }
+      : currentStepKind === 'education'
+        ? { character: 'rho', emotion: 'neutral', bubble: t('placement.education.characterBubble') }
+        : currentStepKind === 'age'
+          ? {
+              character: 'dina',
+              emotion: birthDateFilledValid ? 'happy' : 'encouraging',
+              bubble: birthDateFilledValid ? t('placement.age.characterBubbleFilled') : t('placement.age.characterBubble'),
+            }
+          : currentStepKind === 'quiz'
+            ? { character: 'rho', emotion: 'thinking', bubble: t('placement.quiz.characterBubble') }
+            : { character: 'liruf', emotion: 'excited', bubble: t('placement.submit.characterBubble') };
+
   function goNext() {
     setStep((s) => Math.min(s + 1, steps.length - 1));
   }
@@ -150,6 +173,11 @@ export function PlacementPage() {
             label={t('placement.progressLabel', { current: step + 1, total: steps.length })}
             className="flex-1"
           />
+        </div>
+
+        <div className="mb-4 flex flex-col items-center gap-3 text-center">
+          <CharacterActor character={stepCharacter.character} emotion={stepCharacter.emotion} size="md" />
+          <p className="lf-body rounded-2xl bg-surface-sunken px-4 py-2.5 text-content">{stepCharacter.bubble}</p>
         </div>
 
         <Card className="p-6 sm:p-8">

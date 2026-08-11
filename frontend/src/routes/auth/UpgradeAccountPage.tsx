@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
@@ -87,6 +87,15 @@ export function UpgradeAccountPage() {
         >
           {t('auth.upgrade.later')}
         </button>
+        <p className="lf-body text-center text-content-muted">
+          {t('auth.upgrade.loginPrompt')}{' '}
+          <Link
+            to="/login"
+            className="lf-label rounded-sm text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {t('auth.upgrade.loginLink')}
+          </Link>
+        </p>
       </form>
     </AuthShell>
   );

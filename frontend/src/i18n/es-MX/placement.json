@@ -9,6 +9,7 @@
   "level": {
     "title": "¿Qué tanto sabes ya de esto?",
     "subtitle": "Sé honesto, no hay respuesta incorrecta.",
+    "characterBubble": "Soy Zara. No importa desde dónde empieces, te llevaremos más lejos de lo que imaginas.",
     "options": {
       "new": "Esto es nuevo para mí",
       "some": "Sé un poco",
@@ -18,6 +19,7 @@
   "education": {
     "title": "¿Cuál es tu nivel escolar actual?",
     "subtitle": "Esto nos ayuda a elegir el ritmo y los ejemplos adecuados para ti.",
+    "characterBubble": "Soy la Dra. Rho — esto me ayuda a mapear el ritmo correcto para ti.",
     "options": {
       "preschool": "Preescolar",
       "elementary": "Primaria",
@@ -33,14 +35,18 @@
     "hint": "Formato: aaaa-mm-dd, por ejemplo 2016-05-01",
     "invalid": "Usa el formato aaaa-mm-dd",
     "nudge": "Si eres un niño o niña, es mejor hacer esto con un padre, madre o tutor cerca.",
-    "nudgeLink": "Conoce las cuentas familiares"
+    "nudgeLink": "Conoce las cuentas familiares",
+    "characterBubble": "De nuevo soy Dina — chequeo rápido, esto me ayuda a ajustar tu camino.",
+    "characterBubbleFilled": "¡Perfecto, listo!"
   },
   "quiz": {
-    "eyebrow": "Chequeo rápido"
+    "eyebrow": "Chequeo rápido",
+    "characterBubble": "Veamos qué tanto ya sabes — elige tu mejor respuesta."
   },
   "submit": {
     "title": "¿Listo para encontrar tu punto de partida?",
     "subtitle": "Te ubicaremos en la lección correcta, para que nunca empieces desde cero.",
-    "cta": "Obtener mi ubicación"
+    "cta": "Obtener mi ubicación",
+    "characterBubble": "¡Soy Liruf! Vamos — tu punto de partida personalizado ya está listo."
   }
 }

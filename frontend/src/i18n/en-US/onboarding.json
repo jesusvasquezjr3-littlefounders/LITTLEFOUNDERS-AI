@@ -8,11 +8,14 @@
   "name": {
     "title": "What's your name?",
     "subtitle": "So we can make this feel like yours.",
-    "label": "Name"
+    "label": "Name",
+    "characterBubble": "Hey! I'm Liruf. First things first — what should I cheer when you win your first lesson?",
+    "characterBubbleFilled": "{{name}}! What an awesome name — get ready to be famous around here."
   },
   "discovery": {
     "title": "Where did you hear about LittleFounders?",
     "subtitle": "Totally optional, it just helps us know where to find more families like yours.",
+    "characterBubble": "I'm Dr. Rho. Tell me how you found us — I'm already mapping your journey.",
     "options": {
       "friend": "A friend or family member",
       "social_media": "Social media",
@@ -28,12 +31,15 @@
     "subtitle": "Optional, this helps us pick the right content for you.",
     "label": "Birth date",
     "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
-    "invalid": "Use the format yyyy-mm-dd"
+    "invalid": "Use the format yyyy-mm-dd",
+    "characterBubble": "So nice to meet you, {{name}}! I'm Dina. When's your birthday? That way I know exactly what you need.",
+    "characterBubbleFilled": "Got it — I know exactly how to guide you now. This is going to be amazing!"
   },
   "accountOffer": {
     "title": "Want to save your progress?",
     "subtitle": "Create an account now to keep your streak safe on any device, or start exploring and decide later.",
     "createNow": "Create my account",
-    "later": "Maybe later"
+    "later": "Maybe later",
+    "characterBubble": "I'm Zara. Last step — no matter what you choose, your adventure is ready either way."
   }
 }

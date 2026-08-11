@@ -8,11 +8,14 @@
   "name": {
     "title": "Qual é o seu nome?",
     "subtitle": "Assim podemos deixar isso com a sua cara.",
-    "label": "Nome"
+    "label": "Nome",
+    "characterBubble": "Oi! Eu sou o Liruf. Primeiro de tudo — o que eu devo gritar quando você ganhar sua primeira lição?",
+    "characterBubbleFilled": "{{name}}! Que nome incrível — se prepare para ficar famoso por aqui."
   },
   "discovery": {
     "title": "Onde você ouviu falar do LittleFounders?",
     "subtitle": "Totalmente opcional, isso só nos ajuda a saber onde encontrar mais famílias como a sua.",
+    "characterBubble": "Eu sou a Dra. Rho. Me conte como você nos encontrou — já estou mapeando sua jornada.",
     "options": {
       "friend": "Um amigo ou familiar",
       "social_media": "Redes sociais",
@@ -28,12 +31,15 @@
     "subtitle": "Opcional, isso nos ajuda a escolher o conteúdo certo para você.",
     "label": "Data de nascimento",
     "hint": "Formato: aaaa-mm-dd, por exemplo 2016-05-01",
-    "invalid": "Use o formato aaaa-mm-dd"
+    "invalid": "Use o formato aaaa-mm-dd",
+    "characterBubble": "Que prazer te conhecer, {{name}}! Eu sou a Dina. Quando é seu aniversário? Assim eu sei exatamente o que você precisa.",
+    "characterBubbleFilled": "Prontinho — já sei exatamente como te guiar. Isso vai ser incrível!"
   },
   "accountOffer": {
     "title": "Quer salvar seu progresso?",
     "subtitle": "Crie uma conta agora para manter sua sequência segura em qualquer dispositivo, ou comece a explorar e decida depois.",
     "createNow": "Criar minha conta",
-    "later": "Talvez depois"
+    "later": "Talvez depois",
+    "characterBubble": "Eu sou a Zara. Última etapa — seja qual for sua escolha, sua aventura já está pronta."
   }
 }
