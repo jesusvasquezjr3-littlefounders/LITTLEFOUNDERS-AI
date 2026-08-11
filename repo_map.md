@@ -1058,17 +1058,17 @@ Skills live in `.claude/skills/` (and mirrored, untracked, in `.github/skills/`)
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
-## Current State (2026-08-09) — Course badge identity and public completion collection
+## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped
 
-- Every new course now has a mandatory `course.badge_asset` in its Forge catalog. The path must match `course-badges/<course-slug>.png`, and the developer supplies the corresponding read-only asset under `frontend/public/course-badges/`. Forge validation fails on missing or mismatched metadata; Vault prevents a published course from omitting its badge.
-- Core now carries the badge identity through course summaries, course trees, the featured Learn course and both own and public profile payloads. A public profile shows the course badges earned by that user, while an incomplete course never appears in the collection because completion is derived from every non-archived lesson having a passed server-side progress record.
-- The featured course and course orientation views now compose the badge with Dina instead of presenting a generic character square. This work remains local-only while production course generation is active; no push was performed.
+Closes COURSE_ENGINE.md §3.2's "future onboarding/placement phase", reserved
+since the 2026-07-13 pedagogy-hardening session. Three-phase build, one
+migration set per phase (`0041`, `0042`, `0043`), landed as three commits on
+`main`.
 
-## Current State (2026-08-09) — Admin governance surfaces expanded locally
-
-- `/admin/audit` now uses exact server-side totals and filtered pagination, so the console no longer confuses a bounded page with the complete append-only history. Its expanded inspector exposes immutable event metadata and a read-only payload, while search, action filtering, range controls, and refresh are designed for human investigation.
-- `/admin/roles` now exposes exact assignment and permission totals, role distribution, assignment provenance, last-change metadata, and a full-viewport history view. Superadmins can search the directory before granting access, revoke roles only after confirmation, and cannot accidentally revoke their own `superadmin` role. Permission mutations are constrained to the database's closed permission vocabulary.
-- This establishes the administrative governance philosophy for future surfaces: exact numbers from the source of truth, enough context to make a decision, expansion for detail instead of cramped grids, fixed viewport overlays for detached work, explicit confirmation for high-impact mutations, and an append-only trail for accountability. The changes are local-only while the production generation process is active; no push was performed.
+- **Guest accounts**: `POST /api/v1/auth/guest` is GoTrue's native anonymous
+  sign-in — a real `auth.users` row (`is_anonymous=true`), so the existing
+  `0003` bootstrap trigger, every RLS policy, and the JWT session flow all
+  work with zero new database code. `POST /api/v1/auth/upgrade` attaches a
 ```
 
 ### agent/README.md
