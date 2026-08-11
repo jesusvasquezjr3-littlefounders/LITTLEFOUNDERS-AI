@@ -532,6 +532,18 @@ export async function getSagaById(accessToken: string, sagaId: string): Promise<
   return rows?.[0] ?? null;
 }
 
+export interface PrerequisiteEdge {
+  path: string;
+  strength: 'hard' | 'soft';
+  reason: string;
+}
+
+export interface PlacementProbeContent {
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+}
+
 export interface TopicHierarchyRow {
   id: string;
   saga_id: string;
@@ -542,9 +554,13 @@ export interface TopicHierarchyRow {
   kind: string;
   /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") this review topic cites. */
   review_of: string[];
+  /** Competency-graph projection (0042): non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
+  prerequisites: PrerequisiteEdge[];
+  /** Competency-graph projection (0042): null until Forge authors one for this topic (COURSE_ENGINE.md §3.2). */
+  placement_probe: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', PlacementProbeContent>> | null;
 }
 
-const TOPIC_FIELDS = 'id,saga_id,position,slug,title,kind,review_of';
+const TOPIC_FIELDS = 'id,saga_id,position,slug,title,kind,review_of,prerequisites,placement_probe';
 
 export function getTopicsBySagaIds(accessToken: string, sagaIds: string[]): Promise<TopicHierarchyRow[] | null> {
   if (sagaIds.length === 0) return Promise.resolve([]);

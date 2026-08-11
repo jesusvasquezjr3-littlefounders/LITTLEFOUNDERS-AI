@@ -98,6 +98,10 @@ export interface PublishInput {
     kind: string;
     /** Raw catalog slug paths ("adv/saga" or "adv/saga/topic") — resolved at query time. */
     reviewOf: string[];
+    /** Competency-graph projection (0042) — raw catalog slug paths, same resolve-at-query-time posture as reviewOf. */
+    prerequisites: Array<{ path: string; strength: 'hard' | 'soft'; reason: string }>;
+    /** Competency-graph projection (0042) — null when the topic has no placement probe yet (see COURSE_ENGINE.md §3.2). */
+    placementProbe: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', { prompt: string; options: string[]; correctIndex: number }>> | null;
   };
   lesson: {
     slug: string;
@@ -236,6 +240,10 @@ export async function publishLessonSlot(input: PublishInput): Promise<PublishRes
         // of truth, publish just keeps Vault's copy current.
         kind: input.topic.kind,
         review_of: input.topic.reviewOf,
+        // Competency-graph projection (0042) — same posture: catalog stays
+        // the source of truth, this is a derived, always-refreshed copy.
+        prerequisites: input.topic.prerequisites,
+        placement_probe: input.topic.placementProbe,
       },
     ],
     'saga_id,slug',

@@ -27,6 +27,14 @@ function samplePublishInput(): PublishInput {
       learningObjective: localized,
       keyVocabulary: ['moneda'],
       priorKnowledge: 'x',
+      kind: 'teaching',
+      reviewOf: [],
+      prerequisites: [{ path: 'archipelago-1/saga-0', strength: 'hard', reason: 'needs counting first' }],
+      placementProbe: {
+        'es-MX': { prompt: '¿Qué es el dinero?', options: ['Sirve para intercambiar', 'Es un juguete'], correctIndex: 0 },
+        'en-US': { prompt: 'What is money?', options: ['Used to trade', 'A toy'], correctIndex: 0 },
+        'pt-BR': { prompt: 'O que é dinheiro?', options: ['Serve para trocar', 'É um brinquedo'], correctIndex: 0 },
+      },
     },
     lesson: { slug: 'lesson-1', position: 1, difficulty: 1, estimatedMinutes: 5, cast: ['dina'] },
     documents: {
@@ -107,6 +115,26 @@ describe('publishLessonSlot', () => {
     const documentsCall = fetchMock.mock.calls[5]!;
     const body = JSON.parse((documentsCall[1] as RequestInit).body as string) as [{ illustration_style_version: string }];
     expect(body[0]!.illustration_style_version).toBe(FORGE_ILLUSTRATION_STYLE_VERSION);
+  });
+
+  it('forwards prerequisites and placementProbe into the topics upsert body (0042 competency-graph projection)', async () => {
+    const input = samplePublishInput();
+    await publishLessonSlot(input);
+    const topicsCall = fetchMock.mock.calls[3]!;
+    const body = JSON.parse((topicsCall[1] as RequestInit).body as string) as [
+      { prerequisites: unknown; placement_probe: unknown },
+    ];
+    expect(body[0]!.prerequisites).toEqual(input.topic.prerequisites);
+    expect(body[0]!.placement_probe).toEqual(input.topic.placementProbe);
+  });
+
+  it('writes a null placement_probe for a topic that has none yet (never a crash)', async () => {
+    const input = samplePublishInput();
+    input.topic.placementProbe = null;
+    await publishLessonSlot(input);
+    const topicsCall = fetchMock.mock.calls[3]!;
+    const body = JSON.parse((topicsCall[1] as RequestInit).body as string) as [{ placement_probe: unknown }];
+    expect(body[0]!.placement_probe).toBeNull();
   });
 
   it('throws when the locale bundle is incomplete before any Vault write', async () => {

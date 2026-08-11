@@ -45,6 +45,25 @@ describe('assembleCourseTree', () => {
     expect(tree.nextLessonId).toBe('l2');
   });
 
+  it('passes the 0042 competency-graph projection (prerequisites/placementProbe) through inertly, defaulting when absent', () => {
+    const topicsWithGraph = [
+      {
+        ...topics[0]!,
+        prerequisites: [{ path: 'adventure-1/saga-0', strength: 'hard' as const, reason: 'needs counting first' }],
+        placement_probe: { 'es-MX': { prompt: '¿Qué es el dinero?', options: ['a', 'b'], correctIndex: 0 } },
+      },
+      topics[1]!, // no 0042 columns at all — pre-migration-shaped row
+    ];
+    const tree = assembleCourseTree(course, adventures, sagas, topicsWithGraph, lessons, []);
+    const topicWithGraph = tree.adventures[0]?.sagas[0]?.topics[0];
+    expect(topicWithGraph?.prerequisites).toEqual([{ path: 'adventure-1/saga-0', strength: 'hard', reason: 'needs counting first' }]);
+    expect(topicWithGraph?.placementProbe).toEqual({ 'es-MX': { prompt: '¿Qué es el dinero?', options: ['a', 'b'], correctIndex: 0 } });
+
+    const topicWithoutGraph = tree.adventures[1]?.sagas[0]?.topics[0];
+    expect(topicWithoutGraph?.prerequisites).toEqual([]);
+    expect(topicWithoutGraph?.placementProbe).toBeNull();
+  });
+
   it('unlocks the second adventure once the first is fully passed', () => {
     const progress = [
       { lesson_id: 'l1', best_score: 100, passed: true, attempts: 1, xp_earned: 30 },

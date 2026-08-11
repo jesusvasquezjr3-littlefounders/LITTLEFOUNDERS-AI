@@ -38,6 +38,18 @@ export interface SagaRowLite {
   icon: string;
 }
 
+export interface PrerequisiteEdgeLite {
+  path: string;
+  strength: 'hard' | 'soft';
+  reason: string;
+}
+
+export interface PlacementProbeLite {
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+}
+
 export interface TopicRowLite {
   id: string;
   saga_id: string;
@@ -47,6 +59,9 @@ export interface TopicRowLite {
   /** Spaced-review projection (0016). Defaults tolerate pre-0016 rows. */
   kind?: string;
   review_of?: string[];
+  /** Competency-graph projection (0042). Defaults tolerate pre-0042 rows — placement.ts (Phase 4) is the consumer. */
+  prerequisites?: PrerequisiteEdgeLite[];
+  placement_probe?: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', PlacementProbeLite>> | null;
 }
 
 export interface LessonRowLite {
@@ -102,6 +117,9 @@ export interface TopicNode {
   position: number;
   kind: string;
   reviewOf: string[];
+  /** Competency-graph projection (0042) — Phase 4's placement.ts consumes these; carried through inertly here. */
+  prerequisites: PrerequisiteEdgeLite[];
+  placementProbe: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', PlacementProbeLite>> | null;
   state: TopicState;
   lessons: LessonNode[];
 }
@@ -214,6 +232,8 @@ export function assembleCourseTree(
           position: topic.position,
           kind: topic.kind ?? 'teaching',
           reviewOf: topic.review_of ?? [],
+          prerequisites: topic.prerequisites ?? [],
+          placementProbe: topic.placement_probe ?? null,
           state,
           lessons,
         };

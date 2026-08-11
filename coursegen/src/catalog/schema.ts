@@ -242,6 +242,24 @@ export const prerequisiteSchema = z.object({
 });
 export type Prerequisite = z.infer<typeof prerequisiteSchema>;
 
+// `placement_probe` — a hand-authoring override for the placement-quiz
+// question this topic contributes (COURSE_ENGINE.md §3.2). Optional: when
+// absent, Forge authors one automatically at generation time (same
+// deterministic-gate posture as every other model-authored field here).
+// es-MX only in the catalog — publish.ts localizes to en-US/pt-BR, same as
+// title_es.
+export const placementProbeCatalogSchema = z
+  .object({
+    prompt: z.string().min(1).max(240),
+    options: z.array(z.string().min(1).max(80)).min(2).max(5),
+    correct_index: z.number().int().min(0),
+  })
+  .refine((p) => p.correct_index < p.options.length, {
+    message: 'correct_index must be a valid index into options',
+    path: ['correct_index'],
+  });
+export type PlacementProbeCatalog = z.infer<typeof placementProbeCatalogSchema>;
+
 export const topicBlueprintSchema = z
   .object({
     position: z.number().int().min(1),
@@ -260,6 +278,8 @@ export const topicBlueprintSchema = z
     parent_check: z.string().min(1).max(400).optional(),
     /** Optional (§3.2) — non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
     prerequisites: z.array(prerequisiteSchema).min(1).optional(),
+    /** Optional, teaching topics only (§3.2) — hand-authored placement-quiz probe override; Forge authors one automatically when absent. */
+    placement_probe: placementProbeCatalogSchema.optional(),
     lessons: z.array(lessonBlueprintSchema).min(1),
   })
   .refine((t) => t.kind === 'teaching' || (t.review_of !== undefined && t.review_of.length > 0), {

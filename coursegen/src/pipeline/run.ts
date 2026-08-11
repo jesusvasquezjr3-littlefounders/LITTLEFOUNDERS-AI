@@ -33,6 +33,7 @@ import { RubricLog } from './rubricLog.js';
 import { ingestRunTelemetry } from '../vault/telemetry.js';
 import { LiveTelemetry } from './liveTelemetry.js';
 import { localizeLesson, translateTitle } from './localize.js';
+import { authorPlacementProbe, translatePlacementProbe, type PlacementProbe } from './placementProbe.js';
 import { fetchPrismStyleVersion } from '../providers/picturegen.js';
 import { illustrateSegments } from './images.js';
 import { publishLessonSlot, type PublishInput } from './publish.js';
@@ -248,6 +249,41 @@ async function previousArtDocuments(courseSlug: string, lessonSlug: string): Pro
   } catch {
     return [];
   }
+}
+
+type PlacementProbeBundle = Partial<Record<LessonLocale, { prompt: string; options: string[]; correctIndex: number }>>;
+
+/**
+ * Resolves this slot's placement-quiz probe bundle (COURSE_ENGINE.md §3.2) —
+ * `null` for every slot except a teaching topic's FIRST lesson (the probe is
+ * per-TOPIC, not per-lesson; authoring it once there keeps generation cost
+ * from multiplying by lesson count). Uses the catalog's hand-authored
+ * override when present, otherwise authors one from topic content only (no
+ * learner data ever reaches this — /AGENTS.md §1.9 by construction), then
+ * localizes es-MX -> en-US/pt-BR the same way titles are translated.
+ */
+async function resolvePlacementProbe(slot: Slot, ledger?: UsageLedger): Promise<PlacementProbeBundle | null> {
+  if (slot.lesson.position !== 1 || slot.topic.kind !== 'teaching') return null;
+
+  const override = slot.topic.placement_probe;
+  const esMx: PlacementProbe = override
+    ? { prompt: override.prompt, options: override.options, correctIndex: override.correct_index }
+    : await authorPlacementProbe(
+        {
+          concept: slot.topic.concept,
+          learningObjective: slot.topic.learning_objective,
+          keyVocabulary: slot.topic.key_vocabulary,
+          factRefs: slot.topic.fact_refs,
+        },
+        { ledger },
+      );
+
+  const [enUs, ptBr] = await Promise.all([
+    translatePlacementProbe(esMx, 'en-US', { ledger }),
+    translatePlacementProbe(esMx, 'pt-BR', { ledger }),
+  ]);
+
+  return { 'es-MX': esMx, 'en-US': enUs, 'pt-BR': ptBr };
 }
 
 async function processSlot(
@@ -499,6 +535,7 @@ async function processSlot(
       // in all 3 locales. Content itself was already regenerated end-to-end
       // above (never filtered/dressed-up kid content — the documented
       // anti-pattern this whole module exists to avoid).
+      const placementProbe = await resolvePlacementProbe(slot, ledger);
       const publishInput: PublishInput = {
         course: {
           slug: `${course.catalog.course.slug}${register.slugSuffix}`,
@@ -544,6 +581,8 @@ async function processSlot(
           priorKnowledge: slot.topic.prior_knowledge,
           kind: slot.topic.kind ?? 'teaching',
           reviewOf: slot.topic.review_of ?? [],
+          prerequisites: slot.topic.prerequisites ?? [],
+          placementProbe: placementProbe ?? null,
         },
         lesson: {
           slug: slot.lesson.slug,
