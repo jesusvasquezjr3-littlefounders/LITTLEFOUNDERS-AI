@@ -51,8 +51,16 @@ const CONCEPTS: Array<{ conceptKey: ConceptKey; stage: number; row: number; tone
   { conceptKey: 'confidence', stage: 4, row: 3, tone: 'on' },
   { conceptKey: 'nextStep', stage: 4, row: 4, tone: 'on' },
 ];
-const STAGE_X = [0.12, 0.31, 0.5, 0.69, 0.88];
-const ROW_Y = [0.18, 0.34, 0.5, 0.66, 0.82];
+// A literal tree, root to canopy: stage 0 is the root system at the BOTTOM
+// (large y = low on screen, since y=0 is the top of the normalized 0..1
+// space the projection below maps to screen coordinates), stage 4 is the
+// canopy at the TOP. TREE_SPREAD widens with stage — tight near the trunk,
+// fanning out into branches — instead of the old fixed-column grid.
+const TREE_Y = [0.92, 0.73, 0.54, 0.35, 0.16];
+// Deliberately steep progression (trunk-tight to canopy-wide) so the
+// silhouette reads as an unmistakable cone/tree shape even before any
+// rotation — a gentle progression looked like a loose cluster, not a tree.
+const TREE_SPREAD = [0.012, 0.045, 0.15, 0.29, 0.46];
 const NODE_COUNT = CONCEPTS.length;
 const rand = (seed: number) => {
   const x = Math.sin(seed * 12.9898) * 43758.5453;
@@ -61,53 +69,52 @@ const rand = (seed: number) => {
 const clampRow = (row: number) => Math.max(0, Math.min(4, row));
 
 function createAtlasNodes(): AtlasNode[] {
-  return CONCEPTS.map((concept, index) => ({
-    id: index,
-    x: STAGE_X[concept.stage]! + (rand(index + 1) - 0.5) * 0.018,
-    y: ROW_Y[concept.row]! + (rand(index + 41) - 0.5) * 0.035,
-    z: Math.cos((concept.row / 4) * Math.PI) * 0.26 + (rand(index + 81) - 0.5) * 0.18,
-    radius: concept.row === 2 ? 7.2 : 5 + rand(index + 121) * 2.5,
-    tone: concept.tone,
-    conceptKey: concept.conceptKey,
-    stage: concept.stage,
-    row: concept.row,
-  }));
+  return CONCEPTS.map((concept, index) => {
+    const spread = TREE_SPREAD[concept.stage]!;
+    const lateral = (concept.row - 2) / 2; // -1 (leftmost) .. 0 (trunk) .. 1 (rightmost)
+    // Jitter scales down near the trunk and up in the canopy — the roots
+    // and lower trunk stay a crisp, unmistakable vertical line; only the
+    // upper branches get the organic scatter.
+    const jitter = 0.4 + concept.stage * 0.6;
+    return {
+      id: index,
+      x: 0.5 + lateral * spread + (rand(index + 1) - 0.5) * 0.01 * jitter,
+      // Outer branches sit a little higher than the trunk row at the same
+      // stage, like real limbs angling upward off the trunk.
+      y: TREE_Y[concept.stage]! - Math.abs(lateral) * 0.045 + (rand(index + 41) - 0.5) * 0.015 * jitter,
+      z: Math.sin(lateral * Math.PI) * 0.3 + (rand(index + 81) - 0.5) * 0.12 * jitter,
+      radius: concept.row === 2 ? 7.2 : 5 + rand(index + 121) * 2.5,
+      tone: concept.tone,
+      conceptKey: concept.conceptKey,
+      stage: concept.stage,
+      row: concept.row,
+    };
+  });
 }
 
 /**
- * A full rectangular grid (every row wired to the next row, every stage
- * wired same-row to the next stage) reads as a mesh/lattice, not a
- * knowledge graph — parallel rails, no branching, no crossing paths.
- * Real concept graphs have varying degree: some ideas fan out to several
- * later ones, some are dead ends, connections skip rows. Two changes get
- * there without touching the render code at all — this function only
- * decides WHICH nodes connect, still deterministic (same `rand` seeding
- * pattern already used for node jitter) so the graph is stable across
- * renders and SSR-safe:
- *  - within a stage, edges are sparse (~65% kept) instead of a solid chain
- *  - across stages, each node targets a NEARBY row, not the same row, and
- *    roughly 40% of nodes branch to a second target — producing visible
- *    converging/diverging/crossing paths instead of straight parallel rails
+ * A real tree only ever SPLITS going up — branches don't merge back
+ * together — so every non-root node gets exactly one parent one stage
+ * down, picked at a nearby (not necessarily same) row for natural-looking
+ * limbs rather than dead-straight verticals. That alone guarantees an
+ * actual tree shape (connected, acyclic) instead of the old full-grid mesh
+ * OR the prior "sparse random mesh" pass — a tree, not just a less-dense
+ * mesh. Deterministic (same seeded `rand` pattern as node jitter), so the
+ * shape is stable across renders. Stage 0 (the roots) additionally links
+ * to its immediate neighbors, reading as a spreading root system at the
+ * base rather than five disconnected points.
  */
 function createAtlasLinks(): AtlasLink[] {
   const links: AtlasLink[] = [];
-  for (let stage = 0; stage < 5; stage += 1) {
-    for (let row = 0; row < 4; row += 1) {
-      if (rand(stage * 17 + row + 300) < 0.65) {
-        links.push({ from: stage * 5 + row, to: stage * 5 + row + 1, kind: 'local' });
-      }
-    }
+  for (let row = 0; row < 4; row += 1) {
+    links.push({ from: row, to: row + 1, kind: 'local' });
   }
-  for (let stage = 0; stage < 4; stage += 1) {
+  for (let stage = 1; stage < 5; stage += 1) {
     for (let row = 0; row < 5; row += 1) {
-      const from = stage * 5 + row;
-      const drift = Math.round((rand(from + 500) - 0.5) * 3); // -1, 0, or 1 row
-      const primaryRow = clampRow(row + drift);
-      links.push({ from, to: (stage + 1) * 5 + primaryRow, kind: 'bridge' });
-      if (rand(from + 700) < 0.4) {
-        const secondaryRow = clampRow(primaryRow + (rand(from + 900) < 0.5 ? 1 : -1));
-        if (secondaryRow !== primaryRow) links.push({ from, to: (stage + 1) * 5 + secondaryRow, kind: 'bridge' });
-      }
+      const child = stage * 5 + row;
+      const drift = Math.round((rand(child + 500) - 0.5) * 3); // -1, 0, or 1 row
+      const parentRow = clampRow(row + drift);
+      links.push({ from: (stage - 1) * 5 + parentRow, to: child, kind: 'bridge' });
     }
   }
   return links;
@@ -239,30 +246,57 @@ export function TechnologyGraph({ compact = false, showTitle = !compact }: { com
       const width = rect.width;
       const height = rect.height;
       if (!dragging && !reducedMotion) {
-        rotation = Math.sin(time / 12000) * 0.14;
-        tilt = Math.sin(time / 15000) * 0.06;
+        // A slow, continuous one-directional spin around the tree's own
+        // vertical axis (like a turntable) reads unambiguously as "this is
+        // a 3D object rotating" — a back-and-forth few-degree sway (the
+        // previous approach) is too subtle to notice. One full turn every
+        // ~26s; tilt keeps a gentle independent bob so it doesn't feel
+        // robotic.
+        rotation = (time / 26000) % (Math.PI * 2);
+        tilt = Math.sin(time / 9000) * 0.08;
       }
       context!.clearRect(0, 0, width, height);
-      projected = nodes.map((node) => {
-        const x = (node.x - 0.5) * zoom;
-        const y = (node.y - 0.5) * zoom;
-        const cameraX = x * Math.cos(rotation) - node.z * Math.sin(rotation);
-        const depth = node.z * Math.cos(rotation) + x * Math.sin(rotation);
+      const project = (nx: number, ny: number, nz: number) => {
+        const x = (nx - 0.5) * zoom;
+        const y = (ny - 0.5) * zoom;
+        const cameraX = x * Math.cos(rotation) - nz * Math.sin(rotation);
+        const depth = nz * Math.cos(rotation) + x * Math.sin(rotation);
         const cameraY = y * Math.cos(tilt) - depth * Math.sin(tilt);
         const zDepth = depth * Math.cos(tilt) + y * Math.sin(tilt);
         const scale = 0.62 + ((zDepth + 1) / 2) * 0.82;
-        return { node, zDepth, scale, x: width / 2 + panX + cameraX * width * scale, y: height / 2 + panY + cameraY * height * scale };
-      });
+        return { zDepth, scale, x: width / 2 + panX + cameraX * width * scale, y: height / 2 + panY + cameraY * height * scale };
+      };
+      projected = nodes.map((node) => ({ node, ...project(node.x, node.y, node.z) }));
       const sorted = [...projected].sort((a, b) => a.zDepth - b.zDepth);
-      context!.save();
-      context!.globalAlpha = 0.22;
-      context!.strokeStyle = colors.get('--lf-primary') ?? '#818cf8';
-      context!.setLineDash([2, 10]);
-      for (let stage = 0; stage < STAGE_X.length; stage += 1) {
-        const x = width / 2 + panX + (STAGE_X[stage]! - 0.5) * width * zoom;
-        context!.beginPath(); context!.moveTo(x, height * 0.1 + panY); context!.lineTo(x, height * 0.9 + panY); context!.stroke();
+
+      // An explicit trunk: tapered (wide at the roots, narrow where the
+      // first branches split off), warm wood-toned, drawn as a filled
+      // shape rather than a single-width stroke. Everything else (root
+      // cluster + per-node parent links) already implies a trunk through
+      // tight node spread, but a real tapered anchor is what actually
+      // reads as "tree" at a glance instead of "some points that happen to
+      // cluster near the center."
+      {
+        const baseCenter = project(0.5, TREE_Y[0]! + 0.04, 0);
+        const baseLeft = project(0.5 - 0.025, TREE_Y[0]! + 0.02, 0);
+        const baseRight = project(0.5 + 0.025, TREE_Y[0]! + 0.02, 0);
+        const topLeft = project(0.5 - 0.006, TREE_Y[1]! - 0.05, 0);
+        const topRight = project(0.5 + 0.006, TREE_Y[1]! - 0.05, 0);
+        context!.save();
+        context!.globalAlpha = 0.9;
+        const trunkGradient = context!.createLinearGradient(baseCenter.x, baseCenter.y, topLeft.x, topLeft.y);
+        trunkGradient.addColorStop(0, '#8a6a4a');
+        trunkGradient.addColorStop(1, '#6b4f36');
+        context!.fillStyle = trunkGradient;
+        context!.beginPath();
+        context!.moveTo(baseLeft.x, baseLeft.y);
+        context!.lineTo(topLeft.x, topLeft.y);
+        context!.lineTo(topRight.x, topRight.y);
+        context!.lineTo(baseRight.x, baseRight.y);
+        context!.closePath();
+        context!.fill();
+        context!.restore();
       }
-      context!.setLineDash([]); context!.restore();
       // Plain strokes for every link (cheap: no shadowBlur, `lighter` additive
       // blending alone already reads as "glowing" where lines overlap) — the
       // expensive cached-sprite glow is spent ONLY on the handful of links
