@@ -884,3 +884,30 @@ export function getKidLessonProgress(kidId: string, lessonIds: string[]): Promis
     ),
   );
 }
+
+// ── Onboarding (0041) ────────────────────────────────────────
+
+export interface OnboardingResponseRow {
+  user_id: string;
+  discovery_channel: string | null;
+  account_offer_choice: string;
+  completed_at: string;
+}
+
+/** Existence check — the idempotency marker for POST /onboarding/complete. Service role: Core is the only writer/reader of this system record. */
+export function getOnboardingResponse(userId: string): Promise<OnboardingResponseRow[] | null> {
+  return serviceRest<OnboardingResponseRow[]>(`/onboarding_responses?user_id=eq.${eu(userId)}&select=user_id,discovery_channel,account_offer_choice,completed_at`);
+}
+
+export async function insertOnboardingResponse(row: {
+  user_id: string;
+  discovery_channel: string | null;
+  account_offer_choice: string;
+}): Promise<boolean> {
+  const res = await serviceRest<unknown>('/onboarding_responses', {
+    method: 'POST',
+    headers: { Prefer: 'return=minimal' },
+    body: JSON.stringify(row),
+  });
+  return res !== null;
+}

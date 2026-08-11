@@ -85,6 +85,11 @@
     "birthDate": "Fecha de nacimiento",
     "birthDateHint": "Formato: aaaa-mm-dd",
     "birthDateInvalid": "Usa el formato aaaa-mm-dd",
+    "guestBanner": {
+      "title": "Navegando como invitado",
+      "body": "Agrega un correo y una contraseña para guardar tu racha y tu progreso para siempre.",
+      "cta": "Crear mi cuenta"
+    },
     "blockedTitle": "Cuentas bloqueadas",
     "blockedEmpty": "No has bloqueado a nadie.",
     "unblock": "Desbloquear"

@@ -61,6 +61,69 @@ describe('POST /api/v1/auth/signup', () => {
   });
 });
 
+describe('POST /api/v1/auth/guest', () => {
+  it('creates a guest session by relaying GoTrue anonymous sign-in', async () => {
+    stubFetch((url, init) => {
+      expect(url).toBe('http://supabase.test/auth/v1/signup');
+      expect(JSON.parse(String(init?.body))).toEqual({ data: {} });
+      return jsonResponse(200, {
+        access_token: 'guest-at',
+        refresh_token: 'guest-rt',
+        expires_in: 3600,
+        user: { id: '22222222-2222-4222-8222-222222222222', email: null, is_anonymous: true },
+      });
+    });
+    const res = await request(createApp()).post('/api/v1/auth/guest').send({});
+    expect(res.status).toBe(201);
+    expect(res.body.data.session.accessToken).toBe('guest-at');
+    expect(res.body.data.session.user.email).toBeNull();
+  });
+});
+
+describe('POST /api/v1/auth/upgrade', () => {
+  it('409s NOT_A_GUEST for an already-permanent account, without calling GoTrue', async () => {
+    const token = mintToken({ is_anonymous: false });
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp())
+      .post('/api/v1/auth/upgrade')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ email: 'ana@example.com', password: 'longenough1', refreshToken: 'rt' });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('NOT_A_GUEST');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('attaches a permanent identity in place and returns a refreshed session', async () => {
+    const token = mintToken({ sub: '33333333-3333-4333-8333-333333333333', is_anonymous: true });
+    stubFetch((url) => {
+      if (url === 'http://supabase.test/auth/v1/user') {
+        return jsonResponse(200, { id: '33333333-3333-4333-8333-333333333333', email: 'ana@example.com', is_anonymous: false });
+      }
+      expect(url).toBe('http://supabase.test/auth/v1/token?grant_type=refresh_token');
+      return jsonResponse(200, {
+        access_token: 'upgraded-at',
+        refresh_token: 'upgraded-rt',
+        expires_in: 3600,
+        user: { id: '33333333-3333-4333-8333-333333333333', email: 'ana@example.com', is_anonymous: false },
+      });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/upgrade')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ email: 'ana@example.com', password: 'longenough1', refreshToken: 'old-rt' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.session.accessToken).toBe('upgraded-at');
+  });
+
+  it('401s without a token', async () => {
+    const res = await request(createApp())
+      .post('/api/v1/auth/upgrade')
+      .send({ email: 'ana@example.com', password: 'longenough1', refreshToken: 'rt' });
+    expect(res.status).toBe(401);
+  });
+});
+
 describe('POST /api/v1/auth/login', () => {
   it('returns the session envelope', async () => {
     stubFetch((url) => {
@@ -116,6 +179,19 @@ describe('GET /api/v1/auth/me', () => {
     expect(res.status).toBe(200);
     expect(res.body.data.profile.display_name).toBe('Ana');
     expect(res.body.data.roles).toEqual(['universal', 'parent']);
+  });
+
+  it('reports isGuest:true for a guest (anonymous) session', async () => {
+    const token = mintToken({ sub: '99999999-9999-4999-8999-999999999998', is_anonymous: true });
+    stubFetch((url) => {
+      if (url.includes('/rest/v1/profiles')) {
+        return jsonResponse(200, [{ user_id: '99999999-9999-4999-8999-999999999998', display_name: '', locale: 'es-MX', theme: 'system' }]);
+      }
+      return jsonResponse(200, [{ role: 'universal' }]);
+    });
+    const res = await request(createApp()).get('/api/v1/auth/me').set('Authorization', `Bearer ${token}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.isGuest).toBe(true);
   });
 });
 

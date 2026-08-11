@@ -36,7 +36,7 @@ const LOCALE_FLAGS: Record<Locale, string> = {
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation();
-  const { session, getToken, refreshMe } = useAuth();
+  const { session, getToken, refreshMe, isGuest } = useAuth();
 
   const [loaded, setLoaded] = useState(false);
   const [displayName, setDisplayName] = useState('');
@@ -139,6 +139,23 @@ export function SettingsPage() {
           {t('profile.settings.back')}
         </Link>
       </div>
+
+      {isGuest && (
+        <Card className="mt-6 flex flex-wrap items-center justify-between gap-4 border border-primary/30 bg-primary-soft">
+          <div className="flex items-start gap-3">
+            <IconChip tone="primary" size="md">
+              <Icon name="person_add" />
+            </IconChip>
+            <div>
+              <p className="lf-label text-content">{t('profile.settings.guestBanner.title')}</p>
+              <p className="lf-body mt-1 text-content-muted">{t('profile.settings.guestBanner.body')}</p>
+            </div>
+          </div>
+          <Link to="/upgrade-account">
+            <Button>{t('profile.settings.guestBanner.cta')}</Button>
+          </Link>
+        </Card>
+      )}
 
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="mt-8 grid gap-6 lg:grid-cols-2">
         {errorCode && <div className="lg:col-span-2"><ErrorBanner code={errorCode} /></div>}

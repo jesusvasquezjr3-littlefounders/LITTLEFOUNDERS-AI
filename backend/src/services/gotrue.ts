@@ -10,8 +10,11 @@ import { getConfig } from '../config.js';
 
 export interface GotrueUser {
   id: string;
-  email: string;
+  /** null for a guest (anonymous) user — GoTrue never fabricates an email for one. */
+  email: string | null;
   user_metadata?: Record<string, unknown>;
+  /** GoTrue's guest-session marker — distinct from, and unrelated to, the pre-signup `lf_aid` marketing visitor id. */
+  is_anonymous?: boolean;
 }
 
 export interface GotrueSession {
@@ -86,6 +89,42 @@ export function signUp(input: SignUpInput): Promise<GotrueResult<Partial<GotrueS
         parent_intent: input.parentIntent,
       },
     }),
+  });
+}
+
+/**
+ * Guest session — GoTrue's native anonymous sign-in (`POST /signup` with no
+ * email/password, gated server-side by `GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED`).
+ * Creates a real `auth.users` row (`is_anonymous=true`), so every existing
+ * trigger/RLS policy that only checks `auth.uid() IS NOT NULL` already
+ * covers it — this is "guest" product vocabulary; do not call it "anonymous"
+ * outside this GoTrue-facing layer (that word already means the unrelated
+ * pre-signup `lf_aid` marketing visitor id elsewhere in this codebase).
+ */
+export function signInAnonymously(): Promise<GotrueResult<GotrueSession>> {
+  return gotrue('/signup', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ data: {} }),
+  });
+}
+
+/**
+ * Attaches a permanent email+password identity to the CURRENT guest session
+ * (`PUT /user`, authenticated as the guest). GoTrue keeps the same
+ * `auth.users.id` and flips `is_anonymous` to false in place — every row
+ * already written under that id (profile, learning_stats, progress) carries
+ * over with zero data migration. Never call this for an already-permanent
+ * user; callers must check `isGuest` first (Core does, in the route).
+ */
+export function upgradeAnonymousUser(
+  accessToken: string,
+  attrs: { email: string; password: string },
+): Promise<GotrueResult<GotrueUser>> {
+  return gotrue('/user', {
+    method: 'PUT',
+    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(attrs),
   });
 }
 

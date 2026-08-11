@@ -38,6 +38,12 @@ function loginResponse(userId: string): Response {
   });
 }
 
+/** Frontend only decodes claims, never verifies the signature — a fake sig is fine here. */
+function fakeJwt(payload: Record<string, unknown>): string {
+  const b64url = (s: string) => btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return `${b64url(JSON.stringify({ alg: 'HS256' }))}.${b64url(JSON.stringify(payload))}.sig`;
+}
+
 beforeEach(() => {
   localStorage.clear();
 });
@@ -109,5 +115,60 @@ describe('AuthContext — identity-switch fail-closed gate', () => {
 
     await waitFor(() => expect(result.current.meLoaded).toBe(true));
     expect(result.current.analyticsEnabled).toBe(false);
+  });
+});
+
+describe('AuthContext — guest session and upgrade', () => {
+  it('startGuestSession marks the session isGuest from the JWT is_anonymous claim, and upgradeAccount clears it in place', async () => {
+    const guestToken = fakeJwt({ sub: 'guest-1', is_anonymous: true });
+    const upgradedToken = fakeJwt({ sub: 'guest-1', email: 'ana@example.com', is_anonymous: false });
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes('/auth/guest')) {
+          return Promise.resolve(
+            jsonResponse({
+              data: { session: { accessToken: guestToken, refreshToken: 'guest-rt', expiresIn: 3600, user: { id: 'guest-1', email: null } } },
+              error: null,
+            }),
+          );
+        }
+        if (url.includes('/auth/upgrade')) {
+          return Promise.resolve(
+            jsonResponse({
+              data: {
+                session: {
+                  accessToken: upgradedToken,
+                  refreshToken: 'upgraded-rt',
+                  expiresIn: 3600,
+                  user: { id: 'guest-1', email: 'ana@example.com' },
+                },
+              },
+              error: null,
+            }),
+          );
+        }
+        if (url.includes('/auth/me')) {
+          return Promise.resolve(jsonResponse({ data: { profile: null, roles: ['universal'], avatarOptions: {}, analyticsEnabled: true }, error: null }));
+        }
+        return Promise.resolve(jsonResponse({ data: null, error: null }));
+      }),
+    );
+
+    const { result } = renderHook(() => useAuth(), { wrapper: AuthProvider });
+    await waitFor(() => expect(result.current.meLoaded).toBe(true));
+
+    await act(async () => {
+      await result.current.startGuestSession();
+    });
+    await waitFor(() => expect(result.current.session?.user.id).toBe('guest-1'));
+    expect(result.current.isGuest).toBe(true);
+
+    await act(async () => {
+      await result.current.upgradeAccount({ email: 'ana@example.com', password: 'longenough1' });
+    });
+    await waitFor(() => expect(result.current.isGuest).toBe(false));
   });
 });

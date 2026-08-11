@@ -49,6 +49,7 @@ ensure_env() {
     sed -i.old \
       -e 's|^POOLER_TENANT_ID=.*$|POOLER_TENANT_ID=littlefounders-local|' \
       -e 's|^ENABLE_EMAIL_AUTOCONFIRM=.*$|ENABLE_EMAIL_AUTOCONFIRM=true|' \
+      -e 's|^ENABLE_ANONYMOUS_USERS=.*$|ENABLE_ANONYMOUS_USERS=true|' \
       -e 's|^STUDIO_DEFAULT_ORGANIZATION=.*$|STUDIO_DEFAULT_ORGANIZATION=LittleFounders|' \
       -e 's|^STUDIO_DEFAULT_PROJECT=.*$|STUDIO_DEFAULT_PROJECT=Vault Local|' \
       "$DOCKER_DIR/.env"

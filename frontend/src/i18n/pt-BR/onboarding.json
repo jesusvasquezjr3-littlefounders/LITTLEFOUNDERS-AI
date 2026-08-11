@@ -1,0 +1,39 @@
+{
+  "progressLabel": "Passo {{current}} de {{total}}",
+  "back": "Voltar",
+  "continue": "Continuar",
+  "skip": "Pular",
+  "submitting": "Salvando…",
+  "error": "Algo deu errado, tente novamente.",
+  "name": {
+    "title": "Qual é o seu nome?",
+    "subtitle": "Assim podemos deixar isso com a sua cara.",
+    "label": "Nome"
+  },
+  "discovery": {
+    "title": "Onde você ouviu falar do LittleFounders?",
+    "subtitle": "Totalmente opcional, isso só nos ajuda a saber onde encontrar mais famílias como a sua.",
+    "options": {
+      "friend": "Um amigo ou familiar",
+      "social_media": "Redes sociais",
+      "search": "Uma busca na internet",
+      "app_store": "A loja de aplicativos",
+      "school": "A escola",
+      "ad": "Um anúncio",
+      "other": "Em outro lugar"
+    }
+  },
+  "age": {
+    "title": "Quantos anos você tem?",
+    "subtitle": "Opcional, isso nos ajuda a escolher o conteúdo certo para você.",
+    "label": "Data de nascimento",
+    "hint": "Formato: aaaa-mm-dd, por exemplo 2016-05-01",
+    "invalid": "Use o formato aaaa-mm-dd"
+  },
+  "accountOffer": {
+    "title": "Quer salvar seu progresso?",
+    "subtitle": "Crie uma conta agora para manter sua sequência segura em qualquer dispositivo, ou comece a explorar e decida depois.",
+    "createNow": "Criar minha conta",
+    "later": "Talvez depois"
+  }
+}

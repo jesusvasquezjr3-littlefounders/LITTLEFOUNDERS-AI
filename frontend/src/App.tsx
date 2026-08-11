@@ -4,6 +4,7 @@ import { AuthProvider } from '@/auth/AuthContext';
 import { AnalyticsScripts } from '@/lib/analytics';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
+import { RequireOnboarded } from '@/auth/RequireOnboarded';
 import { RequireRole } from '@/auth/RequireRole';
 import { MarketingLayout } from '@/routes/marketing/MarketingLayout';
 import { Landing } from '@/routes/marketing/Landing';
@@ -15,6 +16,8 @@ import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
 import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
+import { UpgradeAccountPage } from '@/routes/auth/UpgradeAccountPage';
+import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
 import { AppLayout } from '@/routes/app/AppLayout';
 import { LearnPage } from '@/routes/app/LearnPage';
 import { CoursePage } from '@/routes/app/learn/CoursePage';
@@ -142,11 +145,35 @@ export function App() {
             />
           </Route>
 
+          {/* Onboarding — guest-first, one-time. Its own fullscreen layer, no
+              app/marketing chrome; RequireAuth only (a guest already has a
+              session the moment they land here — see Landing's startAsGuest). */}
+          <Route
+            path="onboarding"
+            element={
+              <RequireAuth>
+                <OnboardingPage />
+              </RequireAuth>
+            }
+          />
+          {/* Attach a permanent identity to the current guest session in
+              place — never /signup, which would mint a second blank identity. */}
+          <Route
+            path="upgrade-account"
+            element={
+              <RequireAuth>
+                <UpgradeAccountPage />
+              </RequireAuth>
+            }
+          />
+
           {/* App (dashboard chrome — sections come from routes/app/navConfig) */}
           <Route
             element={
               <RequireAuth>
-                <AppLayout />
+                <RequireOnboarded>
+                  <AppLayout />
+                </RequireOnboarded>
               </RequireAuth>
             }
           >

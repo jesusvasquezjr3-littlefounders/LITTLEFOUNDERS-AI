@@ -10,6 +10,8 @@ export interface AuthedUser {
   email: string;
   /** The raw access token, for RLS-enforced PostgREST calls on the user's behalf. */
   accessToken: string;
+  /** GoTrue `is_anonymous` — a guest session (never the pre-signup `lf_aid` marketing visitor id). */
+  isGuest: boolean;
 }
 
 /** Typed accessor for the user set by requireAuth. */
@@ -25,7 +27,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     fail(res, 401, 'UNAUTHORIZED', 'A valid session is required');
     return;
   }
-  res.locals.user = { id: claims.sub, email: claims.email, accessToken: token } satisfies AuthedUser;
+  res.locals.user = {
+    id: claims.sub,
+    email: claims.email,
+    accessToken: token,
+    isGuest: claims.is_anonymous === true,
+  } satisfies AuthedUser;
   next();
 }
 

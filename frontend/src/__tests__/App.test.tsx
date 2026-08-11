@@ -22,10 +22,13 @@ describe('Marketing site', () => {
   it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/feel like an adventure/);
-    expect(screen.getByText('Curiosity is where it starts')).toBeInTheDocument();
+    // The interactive concept atlas replaced the old static "experience" cards.
+    expect(screen.getByRole('img', { name: 'Interactive map of learning concepts and relationships' })).toBeInTheDocument();
     expect(screen.getByText('A lesson that invites you in')).toBeInTheDocument();
     expect(screen.getByText('Source: S&P Global FinLit Survey')).toBeInTheDocument();
-    expect(screen.getAllByRole('link', { name: 'Start free' }).length).toBeGreaterThan(0);
+    // Guest-first: the primary CTA starts a guest session (a button), not a
+    // plain /signup link — see Landing's startAsGuest.
+    expect(screen.getAllByRole('button', { name: /Start free/ }).length).toBeGreaterThan(0);
   });
 
   it('renders the lesson-focused how-it-works page', () => {
@@ -36,11 +39,13 @@ describe('Marketing site', () => {
     expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
-  it('CTA links point to signup', () => {
+  it('the primary CTA is a guest-start button (never a plain /signup link), and login/signup stay reachable as secondary options', () => {
     renderApp();
-    for (const link of screen.getAllByRole('link', { name: /Start free/ })) {
-      expect(link).toHaveAttribute('href', '/signup');
+    for (const button of screen.getAllByRole('button', { name: /Start free/ })) {
+      expect(button).not.toHaveAttribute('href');
     }
+    expect(screen.getByRole('link', { name: 'Log in' })).toHaveAttribute('href', '/login');
+    expect(screen.getByRole('link', { name: 'Sign up' })).toHaveAttribute('href', '/signup');
   });
 
   it('top nav links to the three marketing pages', () => {

@@ -6,7 +6,7 @@ import { authedUser, requireAuth } from '../middleware/auth.js';
 import { authRateLimiter } from '../middleware/rateLimit.js';
 import * as gotrue from '../services/gotrue.js';
 import { attributeSignup, hasActiveAnalyticsConsent } from '../services/insights.js';
-import { getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
+import { getOnboardingResponse, getOwnAvatar, getOwnProfile, getOwnRoles } from '../services/supabaseRest.js';
 
 /** Social providers Core is willing to broker (GoTrue must also have each enabled). */
 const OAUTH_PROVIDERS = ['google'] as const;
@@ -42,6 +42,15 @@ const LoginBody = z.object({
 
 const RefreshBody = z.object({ refreshToken: z.string().min(1) });
 
+const UpgradeBody = z.object({
+  email: z.email().max(254),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+  /** So Core can mint a fresh session whose is_anonymous claim is already false. */
+  refreshToken: z.string().min(1),
+  /** First-party visitor id — attribution fires HERE, not at /auth/guest, since becoming a real account is the funnel event that matters. */
+  anonId: z.string().uuid().optional(),
+});
+
 function sessionPayload(s: Partial<gotrue.GotrueSession>) {
   return s.access_token
     ? {
@@ -76,6 +85,57 @@ export function authRouter(): Router {
     // Autoconfirm ON → session; OFF (prod) → email confirmation pending.
     const session = sessionPayload(data);
     return ok(res, { session, confirmationRequired: session === null }, 201);
+  });
+
+  // Guest session — Duolingo-style: start using the platform with zero signup
+  // friction. This is a real auth.users row (GoTrue anonymous sign-in), so
+  // every existing bootstrap trigger (profile + universal role +
+  // learning_stats, migration 0003/0006) and every RLS policy already work
+  // unchanged. "Guest" here is product vocabulary for GoTrue's is_anonymous —
+  // unrelated to the pre-signup lf_aid marketing visitor id used elsewhere.
+  router.post('/guest', authRateLimiter, async (_req, res) => {
+    const { data, error } = await gotrue.signInAnonymously();
+    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    return ok(res, { session: sessionPayload(data) }, 201);
+  });
+
+  // Attach a permanent identity to the CURRENT guest session, in place — same
+  // auth.users.id, so every row already written (profile, learning_stats,
+  // lesson_progress) carries over with zero data migration. Never the normal
+  // /signup path, which would mint a second, blank identity instead.
+  router.post('/upgrade', requireAuth, authRateLimiter, async (req, res) => {
+    const user = authedUser(res);
+    if (!user.isGuest) {
+      return fail(res, 409, 'NOT_A_GUEST', 'This account already has a permanent identity');
+    }
+    const parsed = UpgradeBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+
+    const { error: updateError } = await gotrue.upgradeAnonymousUser(user.accessToken, {
+      email: parsed.data.email,
+      password: parsed.data.password,
+    });
+    if (updateError) {
+      const status = updateError.status >= 500 ? 502 : updateError.status;
+      return fail(res, status, updateError.code, updateError.message);
+    }
+
+    // The bearer token already in hand still carries the stale
+    // is_anonymous:true claim until reissued — refresh immediately so the
+    // session this response hands back correctly reports the account as
+    // permanent from this call on, with no extra client round-trip.
+    const { data: refreshed, error: refreshError } = await gotrue.refreshSession(parsed.data.refreshToken);
+    if (refreshError) {
+      return fail(res, 502, 'INTERNAL', 'Account upgraded but the session could not be refreshed — sign in again');
+    }
+
+    if (parsed.data.anonId) {
+      void attributeSignup(parsed.data.anonId, user.id, ['universal']);
+    }
+
+    return ok(res, { session: sessionPayload(refreshed) });
   });
 
   router.post('/login', authRateLimiter, async (req, res) => {
@@ -130,12 +190,18 @@ export function authRouter(): Router {
 
   router.get('/me', requireAuth, async (_req, res) => {
     const user = authedUser(res);
-    const [profiles, roles, avatars] = await Promise.all([
+    const [profiles, roles, avatars, onboarding] = await Promise.all([
       getOwnProfile(user.accessToken, user.id),
       getOwnRoles(user.accessToken, user.id),
       getOwnAvatar(user.accessToken, user.id),
+      getOnboardingResponse(user.id),
     ]);
     if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
+    // Display-only (routes the client to /onboarding, nothing is written from
+    // it) — a transient Vault miss collapses to false rather than 502ing the
+    // whole /me call over a non-critical field (backend/AGENTS.md READ-MODIFY-
+    // WRITE rule applies to writers, not this kind of reader).
+    const onboardingComplete = (onboarding?.length ?? 0) > 0;
     const roleNames = roles.map((r) => r.role);
     // Whether the usage beacon may transmit for this account (/INSIGHTS.md).
     // Kids: only while guardian consent is active — fail-closed, so a Vault
@@ -173,6 +239,8 @@ export function authRouter(): Router {
       avatarOptions: avatars?.[0]?.options ?? {},
       analyticsEnabled,
       newAccount,
+      isGuest: user.isGuest,
+      onboardingComplete,
     });
   });
 

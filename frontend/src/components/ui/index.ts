@@ -2,6 +2,8 @@ export { Button } from './Button';
 export { Icon } from './Icon';
 export { Dropdown } from './Dropdown';
 export type { DropdownOption } from './Dropdown';
+export { OptionGroup } from './OptionGroup';
+export type { OptionGroupOption } from './OptionGroup';
 export { ThemeToggle } from './ThemeToggle';
 export { Reveal } from './Reveal';
 export { Card } from './Card';

@@ -20,7 +20,8 @@ import { getAnonId } from '@/lib/visitor';
 
 export interface SessionUser {
   id: string;
-  email: string;
+  /** undefined for a guest session — GoTrue never issues an email for one. */
+  email?: string;
 }
 
 interface StoredSession {
@@ -28,6 +29,8 @@ interface StoredSession {
   refreshToken: string;
   expiresAt: number; // epoch ms
   user: SessionUser;
+  /** Decoded from the JWT's is_anonymous claim at persist time (see jwtClaims) — a guest session, never the unrelated pre-signup lf_aid marketing visitor id. Confirmed authoritatively by /auth/me once it resolves. */
+  isGuest: boolean;
 }
 
 export interface Profile {
@@ -50,7 +53,7 @@ interface SessionPayload {
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
-  user: { id: string; email: string } | null;
+  user: { id: string; email: string | null } | null;
 }
 
 interface AuthContextValue {
@@ -64,6 +67,14 @@ interface AuthContextValue {
   meLoaded: boolean;
   /** Whether the usage beacon may transmit for this account (/INSIGHTS.md). Kids: only with active guardian consent. */
   analyticsEnabled: boolean;
+  /** True for a guest (GoTrue anonymous) session — never the unrelated pre-signup lf_aid marketing visitor id. */
+  isGuest: boolean;
+  /** Whether this account has completed the onboarding wizard. Guest-only concept — a real account is always effectively "onboarded" via signup, never redirected to /onboarding regardless of this flag. */
+  onboardingComplete: boolean;
+  /** Start using the platform with zero signup friction (Duolingo-style guest). */
+  startGuestSession(): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
+  /** Attach a permanent email+password identity to the CURRENT guest session, in place — never /signup, which would mint a second, blank identity. */
+  upgradeAccount(input: { email: string; password: string }): Promise<{ error: ApiError | null }>;
   login(email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
   signup(
     input: SignupInput,
@@ -97,12 +108,13 @@ function toStored(payload: SessionPayload): StoredSession | null {
     accessToken: payload.accessToken,
     refreshToken: payload.refreshToken,
     expiresAt: Date.now() + payload.expiresIn * 1000,
-    user: payload.user,
+    user: { id: payload.user.id, email: payload.user.email ?? undefined },
+    isGuest: jwtClaims(payload.accessToken).is_anonymous === true,
   };
 }
 
-/** Read {id,email} from a GoTrue access-token JWT (claims only — Core verifies on every API call). */
-function jwtClaims(token: string): { sub?: string; email?: string } {
+/** Read {id,email,is_anonymous} from a GoTrue access-token JWT (claims only — Core verifies on every API call). */
+function jwtClaims(token: string): { sub?: string; email?: string; is_anonymous?: boolean } {
   try {
     const part = token.split('.')[1];
     if (!part) return {};
@@ -110,6 +122,7 @@ function jwtClaims(token: string): { sub?: string; email?: string } {
     return {
       sub: typeof claims.sub === 'string' ? claims.sub : undefined,
       email: typeof claims.email === 'string' ? claims.email : undefined,
+      is_anonymous: claims.is_anonymous === true,
     };
   } catch {
     return {};
@@ -124,6 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [meLoaded, setMeLoaded] = useState(false);
   // Fail-closed default: the beacon stays silent until /me confirms it may run.
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const sessionRef = useRef<StoredSession | null>(null);
 
   const persist = useCallback((next: StoredSession | null) => {
@@ -167,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       avatarOptions: Record<string, unknown>;
       analyticsEnabled?: boolean;
       newAccount?: boolean;
+      onboardingComplete?: boolean;
     }>('/auth/me', { token });
     const resolvedAnalyticsEnabled = data?.analyticsEnabled ?? false;
     if (data) {
@@ -174,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRoles(data.roles);
       setAvatarOptions(data.avatarOptions ?? {});
       setAnalyticsEnabled(resolvedAnalyticsEnabled);
+      setOnboardingComplete(data.onboardingComplete === true);
     }
     setMeLoaded(true);
     // Core's verdict on "was this account created just now" — the OAuth
@@ -195,6 +211,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (stored) void loadMe();
     else setMeLoaded(true);
   }, [loadMe]);
+
+  const startGuestSession = useCallback(async (): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
+    const { data, error } = await api<{ session: SessionPayload | null }>('/auth/guest', { method: 'POST', body: {} });
+    if (error) return { error, analyticsEnabled: false };
+    const next = data.session ? toStored(data.session) : null;
+    if (!next) return { error: { code: 'INTERNAL', message: 'No session returned' }, analyticsEnabled: false };
+    // See login(): fail-closed during the identity switch.
+    setMeLoaded(false);
+    setAnalyticsEnabled(false);
+    persist(next);
+    const { analyticsEnabled } = await loadMe();
+    return { error: null, analyticsEnabled };
+  }, [persist, loadMe]);
+
+  const upgradeAccount = useCallback(
+    async (input: { email: string; password: string }): Promise<{ error: ApiError | null }> => {
+      const current = sessionRef.current;
+      if (!current) return { error: { code: 'UNAUTHORIZED', message: 'No active session' } };
+      const anonId = getAnonId() ?? undefined;
+      const { data, error } = await api<{ session: SessionPayload | null }>('/auth/upgrade', {
+        body: { ...input, refreshToken: current.refreshToken, anonId },
+        token: current.accessToken,
+      });
+      if (error) return { error };
+      const next = data.session ? toStored(data.session) : null;
+      if (!next) return { error: { code: 'INTERNAL', message: 'No session returned' } };
+      // Same identity, upgraded in place — no fail-closed reset needed (unlike
+      // login/signup/startGuestSession, this is not an identity SWITCH), but
+      // meLoaded still needs a fresh /me pass since roles/profile can now
+      // reflect a permanent account.
+      persist(next);
+      await loadMe();
+      return { error: null };
+    },
+    [persist, loadMe],
+  );
 
   const login = useCallback(
     async (email: string, password: string): Promise<{ error: ApiError | null; analyticsEnabled: boolean }> => {
@@ -261,7 +313,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (
       tokens: { accessToken: string; refreshToken: string; expiresIn: number },
     ): Promise<{ error: ApiError | null; newAccount: boolean; analyticsEnabled: boolean }> => {
-      const { sub, email } = jwtClaims(tokens.accessToken);
+      const { sub, email, is_anonymous } = jwtClaims(tokens.accessToken);
       if (!sub) {
         return { error: { code: 'INTERNAL', message: 'Invalid session token' }, newAccount: false, analyticsEnabled: false };
       }
@@ -272,7 +324,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
         expiresAt: Date.now() + tokens.expiresIn * 1000,
-        user: { id: sub, email: email ?? '' },
+        user: { id: sub, email },
+        isGuest: is_anonymous === true,
       });
       const { newAccount, analyticsEnabled } = await loadMe();
       return { error: null, newAccount, analyticsEnabled };
@@ -290,9 +343,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) await api('/auth/logout', { method: 'POST', body: {}, token });
   }, [persist]);
 
+  const isGuest = session?.isGuest === true;
+
   const value = useMemo<AuthContextValue>(
-    () => ({ session, profile, roles, avatarOptions, meLoaded, analyticsEnabled, login, signup, completeOAuth, logout, refreshMe, getToken }),
-    [session, profile, roles, avatarOptions, meLoaded, analyticsEnabled, login, signup, completeOAuth, logout, refreshMe, getToken],
+    () => ({
+      session,
+      profile,
+      roles,
+      avatarOptions,
+      meLoaded,
+      analyticsEnabled,
+      isGuest,
+      onboardingComplete,
+      startGuestSession,
+      upgradeAccount,
+      login,
+      signup,
+      completeOAuth,
+      logout,
+      refreshMe,
+      getToken,
+    }),
+    [
+      session,
+      profile,
+      roles,
+      avatarOptions,
+      meLoaded,
+      analyticsEnabled,
+      isGuest,
+      onboardingComplete,
+      startGuestSession,
+      upgradeAccount,
+      login,
+      signup,
+      completeOAuth,
+      logout,
+      refreshMe,
+      getToken,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

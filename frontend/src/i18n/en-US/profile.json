@@ -85,6 +85,11 @@
     "birthDate": "Date of birth",
     "birthDateHint": "Format: yyyy-mm-dd",
     "birthDateInvalid": "Use the format yyyy-mm-dd",
+    "guestBanner": {
+      "title": "Browsing as a guest",
+      "body": "Add an email and password to save your streak and progress for good.",
+      "cta": "Create my account"
+    },
     "blockedTitle": "Blocked accounts",
     "blockedEmpty": "You haven't blocked anyone.",
     "unblock": "Unblock"

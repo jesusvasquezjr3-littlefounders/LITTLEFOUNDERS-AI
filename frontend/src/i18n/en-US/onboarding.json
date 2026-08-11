@@ -1,0 +1,39 @@
+{
+  "progressLabel": "Step {{current}} of {{total}}",
+  "back": "Go back",
+  "continue": "Continue",
+  "skip": "Skip",
+  "submitting": "Saving…",
+  "error": "Something went wrong, please try again.",
+  "name": {
+    "title": "What's your name?",
+    "subtitle": "So we can make this feel like yours.",
+    "label": "Name"
+  },
+  "discovery": {
+    "title": "Where did you hear about LittleFounders?",
+    "subtitle": "Totally optional, it just helps us know where to find more families like yours.",
+    "options": {
+      "friend": "A friend or family member",
+      "social_media": "Social media",
+      "search": "A web search",
+      "app_store": "The app store",
+      "school": "School",
+      "ad": "An ad",
+      "other": "Somewhere else"
+    }
+  },
+  "age": {
+    "title": "How old are you?",
+    "subtitle": "Optional, this helps us pick the right content for you.",
+    "label": "Birth date",
+    "hint": "Format: yyyy-mm-dd, e.g. 2016-05-01",
+    "invalid": "Use the format yyyy-mm-dd"
+  },
+  "accountOffer": {
+    "title": "Want to save your progress?",
+    "subtitle": "Create an account now to keep your streak safe on any device, or start exploring and decide later.",
+    "createNow": "Create my account",
+    "later": "Maybe later"
+  }
+}

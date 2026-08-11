@@ -12,6 +12,8 @@ export interface AccessTokenClaims {
   aud?: string;
   iss?: string;
   exp: number;
+  /** GoTrue anonymous-user marker — a guest session, never the pre-signup marketing visitor id (`lf_aid`). */
+  is_anonymous?: boolean;
 }
 
 function b64urlDecode(s: string): Buffer {
@@ -52,6 +54,7 @@ export function verifyAccessToken(token: string, secret: string): AccessTokenCla
       aud: claims.aud,
       iss: claims.iss,
       exp: claims.exp,
+      is_anonymous: claims.is_anonymous === true,
     };
   } catch {
     return null;
