@@ -213,6 +213,7 @@ Next, in Jesús's stated order of interest:
   (2026-07-29, SHIPPED)
 - **Move Vault backups to a dedicated Railway volume** once billing allows creating one — today's mechanism (piggybacking on filebase's volume) works and is verified, but a purpose-built backup volume is the better long-term shape
 - Pay down the Vercel + Railway billing holds and renew the `littlefounders.ai` GoDaddy registration (owner action, not agent-doable)
+- **Complete `en-US`/`pt-BR` Terms & Conditions content (2026-08-12 finding).** `es-MX`'s Terms & Conditions in `marketing.json` carries the full, canonical-accurate legal text; `en-US`/`pt-BR` carry a condensed paraphrase, and `LegalDocumentViewer.tsx` hardcodes which clauses render `p2`/`p3` at all. Needs a real translation/legal-review pass to bring `en-US`/`pt-BR` up to `es-MX`'s completeness (never the reverse), plus a small component change to render however many paragraphs a clause actually has. Currently blocks `i18n:check` / `repo gates` on `main` — see WALKTHROUGH.md 2026-08-12 for the full trace and why it was deliberately deferred rather than rushed.
 
 ## Open decisions
 
