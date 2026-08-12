@@ -1,13 +1,3 @@
-.lf-lesson-copy__characters {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.2rem;
-  width: min(100%, 18rem);
-  height: 5.25rem;
-  margin-bottom: 0.8rem;
-  pointer-events: none;
-}
-
 .lf-glass.lf-fact-card {
   background-color: rgb(var(--lf-surface));
   background-image: none;
@@ -21,58 +11,252 @@
   box-shadow: var(--lf-shadow-glass);
 }
 
-.lf-lesson-copy__character {
+/*
+ * ── Hero character scene — Motion Graphics stage ──────────────────────────
+ * A single deliberately-composed cluster (Duolingo-style): large, overlapping,
+ * varied rotation and depth, floating independently. Not a grid, not a "meet
+ * the cast" row — one scene, four characters occupying it with intent.
+ */
+.lf-hero-scene {
+  pointer-events: none;
+}
+
+.lf-hero-scene__stage {
   position: relative;
-  flex: 0 0 auto;
-  width: 4.5rem !important;
-  height: 4.5rem !important;
-  filter: drop-shadow(0 8px 10px rgb(15 23 42 / 0.14));
-  animation: lf-lesson-character-bob 3.6s ease-in-out infinite;
+  height: 28rem;
+  margin-inline: auto;
+  max-width: 31rem;
 }
 
-.lf-lesson-copy__character--dina {
-  animation-delay: -0.9s;
+.lf-hero-scene__blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 9999px;
+  filter: blur(44px);
+  opacity: 0.6;
 }
 
-.lf-lesson-copy__character--liruf {
-  margin-bottom: 0.15rem;
-  animation-delay: -1.8s;
+.lf-hero-scene__blob--a {
+  top: -1rem;
+  left: 4%;
+  width: 18rem;
+  height: 18rem;
+  background: rgb(var(--lf-primary-soft));
 }
 
-.lf-lesson-copy__character--rho {
-  margin-bottom: -0.1rem;
-  animation-delay: -2.7s;
-  width: 6rem !important;
-  height: 6rem !important;
+.lf-hero-scene__blob--b {
+  bottom: -2rem;
+  right: 2%;
+  width: 16rem;
+  height: 16rem;
+  background: rgb(var(--lf-delight-soft));
 }
 
-.lf-lesson-copy__character--zara {
-  margin-bottom: 0.15rem;
-  animation-delay: -3.4s;
-  width: 6rem !important;
-  height: 6rem !important;
+.lf-hero-scene__stage .lf-hero-scene__char {
+  position: absolute;
+  filter: drop-shadow(0 20px 24px rgb(15 23 42 / 0.16));
+  will-change: transform;
 }
 
-@keyframes lf-lesson-character-bob {
-  0%, 100% { transform: translateY(0) rotate(-1deg); }
-  50% { transform: translateY(-0.35rem) rotate(1deg); }
+/* Liruf — back plane, upper-left, peeking behind the cluster */
+.lf-hero-scene__stage .lf-hero-scene__char--liruf {
+  top: -0.5rem;
+  left: 0;
+  width: 15rem;
+  height: 15rem;
+  z-index: 1;
+  animation:
+    lf-hero-fly-in-liruf 0.8s cubic-bezier(0.22, 1, 0.36, 1) both,
+    lf-hero-sway-liruf 5.4s ease-in-out 0.8s infinite;
+}
+
+/* Rho — upper-right, mid depth, overlaps Dina and Zara at the centerline */
+.lf-hero-scene__stage .lf-hero-scene__char--rho {
+  top: -1.5rem;
+  right: 12%;
+  width: 16.5rem;
+  height: 16.5rem;
+  z-index: 2;
+  animation:
+    lf-hero-fly-in-rho 0.85s 0.12s cubic-bezier(0.22, 1, 0.36, 1) both,
+    lf-hero-sway-rho 6.4s ease-in-out 0.97s infinite;
+}
+
+/* Dina — anchors lower-left, large, overlaps Liruf above and Zara to the right */
+.lf-hero-scene__stage .lf-hero-scene__char--dina {
+  bottom: -1rem;
+  left: 16%;
+  width: 21rem;
+  height: 21rem;
+  z-index: 2;
+  animation:
+    lf-hero-fly-in-dina 0.95s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both,
+    lf-hero-sway-dina 5.8s ease-in-out 1.19s infinite;
+}
+
+/* Zara — foreground centerpiece, largest, anchors the whole cluster */
+.lf-hero-scene__stage .lf-hero-scene__char--zara {
+  bottom: -1.5rem;
+  right: -1rem;
+  width: 22.5rem;
+  height: 22.5rem;
+  z-index: 3;
+  animation:
+    lf-hero-fly-in-zara 1s 0.36s cubic-bezier(0.22, 1, 0.36, 1) both,
+    lf-hero-sway-zara 6.8s ease-in-out 1.36s infinite;
+}
+
+/* ── Entrance — each character flies/tumbles in from off-stage, spring-settles ── */
+@keyframes lf-hero-fly-in-liruf {
+  0%   { transform: translate(-70px, -30px) rotate(-70deg) scale(0.5); opacity: 0; }
+  65%  { opacity: 1; }
+  100% { transform: translate(0, 0) rotate(-11deg) scale(1); opacity: 1; }
+}
+@keyframes lf-hero-fly-in-rho {
+  0%   { transform: translate(60px, -60px) rotate(65deg) scale(0.45); opacity: 0; }
+  65%  { opacity: 1; }
+  100% { transform: translate(0, 0) rotate(8deg) scale(1); opacity: 1; }
+}
+@keyframes lf-hero-fly-in-dina {
+  0%   { transform: translate(-90px, 50px) rotate(-55deg) scale(0.5); opacity: 0; }
+  65%  { opacity: 1; }
+  100% { transform: translate(0, 0) rotate(-6deg) scale(1); opacity: 1; }
+}
+@keyframes lf-hero-fly-in-zara {
+  0%   { transform: translate(90px, 60px) rotate(50deg) scale(0.45); opacity: 0; }
+  65%  { opacity: 1; }
+  100% { transform: translate(0, 0) rotate(5deg) scale(1); opacity: 1; }
+}
+
+/* ── Idle sway — continuous drift + rotation on top of the settled tilt.
+   Uses the standalone `translate`/`rotate` properties so it composes with
+   the `transform` entrance above instead of fighting it. ── */
+@keyframes lf-hero-sway-liruf {
+  0%, 100% { translate: 0 0; rotate: -11deg; }
+  50%      { translate: 0 -16px; rotate: -18deg; }
+}
+@keyframes lf-hero-sway-rho {
+  0%, 100% { translate: 0 0; rotate: 8deg; }
+  50%      { translate: 0 -12px; rotate: 14deg; }
+}
+@keyframes lf-hero-sway-dina {
+  0%, 100% { translate: 0 0; rotate: -6deg; }
+  50%      { translate: 0 -14px; rotate: -2deg; }
+}
+@keyframes lf-hero-sway-zara {
+  0%, 100% { translate: 0 0; rotate: 5deg; }
+  50%      { translate: 0 -18px; rotate: 10deg; }
+}
+
+/* ── Limb choreography — rides the lf-rig-* hooks each character exposes
+   (arms/legs/tail), so the cluster reads as tumbling/floating rather than
+   four rigid dolls rotated in place. Runs continuously, staggered per limb. ── */
+.lf-hero-scene__stage .lf-rig-arm-f,
+.lf-hero-scene__stage .lf-rig-arm-b,
+.lf-hero-scene__stage .lf-rig-leg-f,
+.lf-hero-scene__stage .lf-rig-leg-b {
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.lf-hero-scene__stage .lf-hero-scene__char--liruf .lf-rig-arm-f { animation: lf-hero-limb-swing 2.2s ease-in-out infinite; animation-delay: 0.8s; }
+.lf-hero-scene__stage .lf-hero-scene__char--liruf .lf-rig-leg-f { animation: lf-hero-limb-kick 2s ease-in-out infinite; animation-delay: 0.9s; }
+.lf-hero-scene__stage .lf-hero-scene__char--liruf .lf-rig-leg-b { animation: lf-hero-limb-kick-rev 2s ease-in-out infinite; animation-delay: 0.7s; }
+.lf-hero-scene__stage .lf-hero-scene__char--liruf .lf-rig-tail  { animation: lf-hero-limb-swing-wide 1.7s ease-in-out infinite; animation-delay: 0.85s; }
+
+.lf-hero-scene__stage .lf-hero-scene__char--rho .lf-rig-arm-f { animation: lf-hero-limb-swing-rev 2.6s ease-in-out infinite; animation-delay: 0.97s; }
+.lf-hero-scene__stage .lf-hero-scene__char--rho .lf-rig-arm-b { animation: lf-hero-limb-swing 2.6s ease-in-out infinite; animation-delay: 1.1s; }
+.lf-hero-scene__stage .lf-hero-scene__char--rho .lf-rig-leg-f { animation: lf-hero-limb-kick 2.3s ease-in-out infinite; animation-delay: 1.05s; }
+.lf-hero-scene__stage .lf-hero-scene__char--rho .lf-rig-leg-b { animation: lf-hero-limb-kick-rev 2.3s ease-in-out infinite; animation-delay: 0.9s; }
+
+.lf-hero-scene__stage .lf-hero-scene__char--dina .lf-rig-arm-f { animation: lf-hero-limb-swing 2.4s ease-in-out infinite; animation-delay: 1.19s; }
+.lf-hero-scene__stage .lf-hero-scene__char--dina .lf-rig-arm-b { animation: lf-hero-limb-swing-rev 2.4s ease-in-out infinite; animation-delay: 1.3s; }
+.lf-hero-scene__stage .lf-hero-scene__char--dina .lf-rig-leg-f { animation: lf-hero-limb-kick-rev 2.1s ease-in-out infinite; animation-delay: 1.25s; }
+.lf-hero-scene__stage .lf-hero-scene__char--dina .lf-rig-leg-b { animation: lf-hero-limb-kick 2.1s ease-in-out infinite; animation-delay: 1.1s; }
+.lf-hero-scene__stage .lf-hero-scene__char--dina .lf-rig-tail  { animation: lf-hero-limb-swing-wide 1.9s ease-in-out infinite; animation-delay: 1.19s; }
+
+.lf-hero-scene__stage .lf-hero-scene__char--zara .lf-rig-arm-f { animation: lf-hero-limb-swing-rev 2.5s ease-in-out infinite; animation-delay: 1.36s; }
+.lf-hero-scene__stage .lf-hero-scene__char--zara .lf-rig-arm-b { animation: lf-hero-limb-swing 2.5s ease-in-out infinite; animation-delay: 1.5s; }
+.lf-hero-scene__stage .lf-hero-scene__char--zara .lf-rig-leg-f { animation: lf-hero-limb-kick 2.2s ease-in-out infinite; animation-delay: 1.42s; }
+.lf-hero-scene__stage .lf-hero-scene__char--zara .lf-rig-leg-b { animation: lf-hero-limb-kick-rev 2.2s ease-in-out infinite; animation-delay: 1.3s; }
+
+@keyframes lf-hero-limb-swing {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-24deg); }
+}
+@keyframes lf-hero-limb-swing-rev {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(24deg); }
+}
+@keyframes lf-hero-limb-swing-wide {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(16deg); }
+}
+@keyframes lf-hero-limb-kick {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(16deg); }
+}
+@keyframes lf-hero-limb-kick-rev {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(-16deg); }
 }
 
 @media (max-width: 767px) {
-  .lf-lesson-copy__characters {
-    height: 4rem;
-    margin-bottom: 0.55rem;
-    transform: scale(0.72);
-    transform-origin: left bottom;
+  .lf-hero-scene__stage {
+    height: 21rem;
+    max-width: 21rem;
   }
 
-  .lf-lesson-card .lf-headline {
-    padding-right: 0;
+  /* Same overlapping-cluster logic as desktop, scaled to the mobile stage
+     (21rem vs 28rem — 0.75×) so the group interlocks instead of spreading
+     into four separate corners. */
+  .lf-hero-scene__stage .lf-hero-scene__char--liruf {
+    width: 11.25rem;
+    height: 11.25rem;
+    top: -0.4rem;
+    left: 0;
+  }
+
+  .lf-hero-scene__stage .lf-hero-scene__char--rho {
+    width: 12.5rem;
+    height: 12.5rem;
+    top: -1.1rem;
+    right: 12%;
+  }
+
+  .lf-hero-scene__stage .lf-hero-scene__char--dina {
+    width: 15.75rem;
+    height: 15.75rem;
+    bottom: -0.75rem;
+    left: 16%;
+  }
+
+  .lf-hero-scene__stage .lf-hero-scene__char--zara {
+    width: 16.5rem;
+    height: 16.5rem;
+    bottom: -1.1rem;
+    right: -0.75rem;
+  }
+
+  .lf-hero-scene__blob--a,
+  .lf-hero-scene__blob--b {
+    width: 9rem;
+    height: 9rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lf-lesson-copy__character {
+  .lf-hero-scene__stage .lf-hero-scene__char,
+  .lf-hero-scene__stage .lf-rig-arm-f,
+  .lf-hero-scene__stage .lf-rig-arm-b,
+  .lf-hero-scene__stage .lf-rig-leg-f,
+  .lf-hero-scene__stage .lf-rig-leg-b,
+  .lf-hero-scene__stage .lf-rig-tail {
     animation: none !important;
   }
+
+  .lf-hero-scene__stage .lf-hero-scene__char--liruf { transform: rotate(-11deg); opacity: 1; }
+  .lf-hero-scene__stage .lf-hero-scene__char--rho   { transform: rotate(8deg); opacity: 1; }
+  .lf-hero-scene__stage .lf-hero-scene__char--dina  { transform: rotate(-6deg); opacity: 1; }
+  .lf-hero-scene__stage .lf-hero-scene__char--zara  { transform: rotate(5deg); opacity: 1; }
 }

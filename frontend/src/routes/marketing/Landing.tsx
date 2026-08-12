@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
 import { TechnologyGraph } from './TechnologyGraph';
 import './Landing.css';
@@ -109,53 +109,40 @@ export function Landing() {
         </div>
       </section>
 
-      <section className="bg-band py-20 sm:py-28">
-        <div className="mx-auto grid max-w-container items-center gap-12 px-5 md:grid-cols-2 md:px-8">
-          <Reveal>
-            <div className="lf-lesson-copy__characters" aria-hidden="true">
-              <CharacterActor character="dina" emotion="surprised" size="sm" enableMouseTracking={false} className="lf-lesson-copy__character lf-lesson-copy__character--dina" />
-              <CharacterActor character="liruf" emotion="excited" size="sm" enableMouseTracking={false} className="lf-lesson-copy__character lf-lesson-copy__character--liruf" />
-              <CharacterActor character="rho" emotion="surprised" size="sm" enableMouseTracking={false} className="lf-lesson-copy__character lf-lesson-copy__character--rho" />
-              <CharacterActor character="zara" emotion="excited" size="sm" enableMouseTracking={false} className="lf-lesson-copy__character lf-lesson-copy__character--zara" />
-            </div>
-            <p className="lf-label text-primary">{t('marketing.lessonPreview.eyebrow')}</p>
-            <h2 className="lf-display-lg mt-3 max-w-lg">{t('marketing.lessonPreview.title')}</h2>
-            <p className="lf-body-lg mt-4 max-w-lg text-content-muted">{t('marketing.lessonPreview.body')}</p>
-            <Link to="/how-it-works" className="group mt-7 inline-flex min-h-11 items-center gap-2 rounded-sm text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
-              <span className="lf-label">{t('marketing.lessonPreview.link')}</span>
-              <Icon name="arrow_forward" className="transition-transform duration-200 motion-safe:group-hover:translate-x-0.5" />
-            </Link>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <Card hero className="lf-lesson-card relative overflow-hidden p-5 sm:p-7">
-              <div className="flex items-center justify-between gap-4">
-                <Badge className="bg-primary-soft text-primary">{t('marketing.lessonPreview.card.badge')}</Badge>
-                <span className="lf-caption text-content-muted">{t('marketing.lessonPreview.card.progress')}</span>
-              </div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-surface-sunken">
-                <div className="h-full w-2/3 rounded-full bg-primary" />
-              </div>
-              <p className="lf-headline mt-7 max-w-sm pr-16">{t('marketing.lessonPreview.card.prompt')}</p>
-              <div className="mt-6 grid gap-3">
-                {['one', 'two', 'three'].map((option) => (
-                  <div key={option} className="flex min-h-11 items-center gap-3 rounded-md bg-surface px-4 py-3 shadow-glass-sm">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary">
-                      <Icon name={option === 'two' ? 'check' : 'circle'} className="text-base" fill={option === 'two'} />
-                    </span>
-                    <span className="lf-body text-content-muted">{t(`marketing.lessonPreview.card.options.${option}`)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 flex items-center justify-between gap-3 rounded-md bg-success-soft p-4 text-success-strong">
-                <div className="flex items-center gap-2">
-                  <Icon name="auto_awesome" fill />
-                  <span className="lf-label">{t('marketing.lessonPreview.card.feedback')}</span>
-                </div>
-                <span className="lf-caption">{t('marketing.lessonPreview.card.reward')}</span>
-              </div>
-            </Card>
-          </Reveal>
+      <section className="bg-base overflow-hidden py-16 sm:py-24" aria-hidden="true">
+        <div className="lf-hero-scene mx-auto max-w-container px-5 md:px-8">
+          <div className="lf-hero-scene__stage">
+            <CharacterActor
+              character="liruf"
+              emotion="excited"
+              size="fill"
+              enableMouseTracking={false}
+              className="lf-hero-scene__char lf-hero-scene__char--liruf"
+            />
+            <CharacterActor
+              character="rho"
+              emotion="happy"
+              size="fill"
+              enableMouseTracking={false}
+              className="lf-hero-scene__char lf-hero-scene__char--rho"
+            />
+            <CharacterActor
+              character="dina"
+              emotion="happy"
+              size="fill"
+              enableMouseTracking={false}
+              className="lf-hero-scene__char lf-hero-scene__char--dina"
+            />
+            <CharacterActor
+              character="zara"
+              emotion="proud"
+              size="fill"
+              enableMouseTracking={false}
+              className="lf-hero-scene__char lf-hero-scene__char--zara"
+            />
+            <span className="lf-hero-scene__blob lf-hero-scene__blob--a" />
+            <span className="lf-hero-scene__blob lf-hero-scene__blob--b" />
+          </div>
         </div>
       </section>
 

@@ -168,67 +168,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
                 style={{ willChange: "transform" }}
                 onClick={handleClick}
             >
-                <defs>
-                    <linearGradient id={`bodyGradient-${uid}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style={{ stopColor: "#4ADE80", stopOpacity: 1 }} />
-                        <stop offset="100%" style={{ stopColor: "#22C55E", stopOpacity: 1 }} />
-                    </linearGradient>
-                    <linearGradient id={`bellyGradient-${uid}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style={{ stopColor: "#dcfce7", stopOpacity: 1 }} />
-                        <stop offset="100%" style={{ stopColor: "#bbf7d0", stopOpacity: 1 }} />
-                    </linearGradient>
-                    <filter id={`lirufShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
-                        <feOffset in="SourceAlpha" dx="0" dy="15" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="11" result="dropBlur" />
-                        <feFlood floodColor="#0c3d20" floodOpacity="0.22" result="dropColor" />
-                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-
-                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="6" result="hlBlur" />
-                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="hlColor" />
-                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
-
-                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
-                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.40" result="rimColor" />
-                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
-
-                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="6" result="isBlur" />
-                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#14532D" floodOpacity="0.30" result="isColor" />
-                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
-
-                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
-                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#064e3b" floodOpacity="0.22" result="edgeShadowColor" />
-                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
-
-                        <feMerge>
-                            <feMergeNode in="dropShadow" />
-                            <feMergeNode in="SourceGraphic" />
-                            <feMergeNode in="innerShadow" />
-                            <feMergeNode in="edgeShadow" />
-                            <feMergeNode in="highlight" />
-                            <feMergeNode in="rimLight" />
-                        </feMerge>
-                    </filter>
-                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
-                        <feFlood floodColor="#14532D" floodOpacity="0.25" result="color" />
-                        <feComposite in="color" in2="blur" operator="in" result="shadow" />
-                        <feMerge>
-                            <feMergeNode in="shadow" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-                </defs>
-
-                <g filter={`url(#lirufShadow-${uid})`}>
+                <g>
                     {/* TAIL — lf-rig-tail: Character Control hook (appearance untouched) */}
                     <g className="lf-rig-tail">
                     <path className="liruf-tail-anim" d="M120 280 Q 80 280 60 220 Q 50 190 40 180 Q 80 220 110 240 Z" fill="#22C55E" />
@@ -246,7 +186,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
                     </g>
 
                     {/* BODY */}
-                    <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill={`url(#bodyGradient-${uid})`} />
+                    <path d="M130 200 Q 130 150 180 140 L 200 140 Q 250 140 250 200 Q 260 300 220 340 Q 180 360 140 330 Q 110 300 130 200 Z" fill="#22C55E" />
 
                     {/* SPINES (Static) */}
                     <path d="M125 220 L110 210 L128 200 Z" fill="#15803d" />
@@ -254,7 +194,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
                     <path d="M155 160 L145 145 L165 145 Z" fill="#15803d" />
 
                     {/* BELLY */}
-                    <path d="M170 180 Q 240 180 235 320 Q 190 345 155 320 Q 140 250 170 180 Z" fill={`url(#bellyGradient-${uid})`} opacity="0.9" />
+                    <path d="M170 180 Q 240 180 235 320 Q 190 345 155 320 Q 140 250 170 180 Z" fill="#bbf7d0" opacity="0.9" />
 
                     {/* Belly Lines */}
                     <path d="M170 220 Q 200 230 220 220" stroke="#86efac" strokeWidth="4" strokeLinecap="round" fill="none" />
@@ -263,8 +203,8 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
 
                     {/* FRONT LEG (Right) — lf-rig-leg-f: Character Control hook */}
                     <g className="lf-rig-leg-f">
-                    <g transform="translate(140, 310)" filter={`url(#innerDropShadow-${uid})`}>
-                        <ellipse cx="30" cy="10" rx="35" ry="35" fill={`url(#bodyGradient-${uid})`} />
+                    <g transform="translate(140, 310)">
+                        <ellipse cx="30" cy="10" rx="35" ry="35" fill="#22C55E" />
                         <path d="M10 30 Q 10 45 20 45 L 50 45 Q 60 45 60 30" fill="#22C55E" />
                         <circle cx="20" cy="45" r="5" fill="#f0fdf4" />
                         <circle cx="35" cy="45" r="5" fill="#f0fdf4" />
@@ -274,7 +214,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
 
                     {/* ARM — lf-rig-arm-f: Character Control hook */}
                     <g className="lf-rig-arm-f">
-                    <g transform="translate(180, 220) rotate(-20)" filter={`url(#innerDropShadow-${uid})`}>
+                    <g transform="translate(180, 220) rotate(-20)">
                         <path d="M0 0 Q 30 10 40 40 Q 10 40 0 0" fill="#22C55E" />
                         <circle cx="40" cy="40" r="4" fill="#f0fdf4" />
                         <circle cx="32" cy="42" r="4" fill="#f0fdf4" />
@@ -282,7 +222,7 @@ export function LirufCharacter({ currentText, showBubble, className, mood = 'hap
                     </g>
 
                     {/* HEAD GROUP */}
-                    <g id={`head-group-${uid}`} ref={headGroupRef} transform="translate(200, 140)" filter={`url(#innerDropShadow-${uid})`}>
+                    <g id={`head-group-${uid}`} ref={headGroupRef} transform="translate(200, 140)">
                         {/* Neck */}
                         <path d="M-40 20 Q -20 50 10 40 L 10 0 L -40 0 Z" fill="#4ADE80" />
 

@@ -565,36 +565,28 @@
     }
   }
 
-  /* ── Gaming Button — Apple-refined glass. Inner glow + hover sheen. ── */
+  /* ── Gaming Button — Flat, no glow or sheen. ── */
   .lf-gaming-btn {
-    box-shadow: var(--lf-btn-inner-glow), var(--lf-shadow-glass-sm);
+    box-shadow: none;
     position: relative;
-    overflow: hidden;
-    isolation: isolate;
+    overflow: visible;
+    isolation: auto;
     transition:
-      box-shadow var(--lf-dur-base) var(--lf-ease),
+      background-color var(--lf-dur-base) var(--lf-ease),
       transform var(--lf-dur-base) var(--lf-ease);
   }
   .lf-gaming-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--lf-btn-hover-sheen);
-    opacity: 0;
-    transition: opacity var(--lf-dur-base) var(--lf-ease);
-    pointer-events: none;
-    border-radius: inherit;
-    z-index: 0;
+    display: none;
   }
   .lf-gaming-btn:hover {
-    box-shadow: var(--lf-btn-inner-glow-hover), var(--lf-shadow-glass-sm);
+    box-shadow: none;
   }
   .lf-gaming-btn:hover::after {
-    opacity: 1;
+    display: none;
   }
   .lf-gaming-btn > * {
     position: relative;
-    z-index: 1;
+    z-index: auto;
   }
 
   /* ── Auth background — two-layer crossfade (GPU, no filter repaint) ── */

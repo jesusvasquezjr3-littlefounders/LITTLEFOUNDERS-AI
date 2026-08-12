@@ -169,95 +169,9 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 )}
                 xmlns="http://www.w3.org/2000/svg"
             >
-                <defs>
-                    <linearGradient id={`hairShine-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor={COLORS.hair} />
-                        <stop offset="20%" stopColor={COLORS.hairHighlight} />
-                        <stop offset="60%" stopColor={COLORS.hair} />
-                    </linearGradient>
-                    {/* Form-shading gradients (light from top-left) */}
-                    <radialGradient id={`zaraSkin-${uid}`} cx="40%" cy="34%" r="78%">
-                        <stop offset="0%" stopColor="#FCE0CA" />
-                        <stop offset="58%" stopColor="#F5D0B5" />
-                        <stop offset="100%" stopColor="#E2B190" />
-                    </radialGradient>
-                    <linearGradient id={`zaraTop-${uid}`} x1="22%" y1="0%" x2="78%" y2="100%">
-                        <stop offset="0%" stopColor="#A23A4C" />
-                        <stop offset="100%" stopColor="#741F2C" />
-                    </linearGradient>
-                    <filter id={`zaraShadow-${uid}`} x="-30%" y="-30%" width="160%" height="160%">
-                        <feOffset in="SourceAlpha" dx="0" dy="16" result="dropOffset" />
-                        <feGaussianBlur in="dropOffset" stdDeviation="12" result="dropBlur" />
-                        <feFlood floodColor="#3a1218" floodOpacity="0.22" result="dropColor" />
-                        <feComposite in="dropColor" in2="dropBlur" operator="in" result="dropShadow" />
-
-                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="7" result="hlBlur" />
-                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.28" result="hlColor" />
-                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
-
-                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="2" result="rimBlur" />
-                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.32" result="rimColor" />
-                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
-
-                        <feOffset in="SourceAlpha" dx="-8" dy="-10" result="isOffset" />
-                        <feGaussianBlur in="isOffset" stdDeviation="7" result="isBlur" />
-                        <feComposite in="SourceAlpha" in2="isBlur" operator="out" result="isMask" />
-                        <feFlood floodColor="#581C24" floodOpacity="0.26" result="isColor" />
-                        <feComposite in="isColor" in2="isMask" operator="in" result="innerShadow" />
-
-                        <feOffset in="SourceAlpha" dx="-2" dy="-3" result="edgeShadowOffset" />
-                        <feGaussianBlur in="edgeShadowOffset" stdDeviation="3" result="edgeShadowBlur" />
-                        <feComposite in="SourceAlpha" in2="edgeShadowBlur" operator="out" result="edgeShadowMask" />
-                        <feFlood floodColor="#310f13" floodOpacity="0.20" result="edgeShadowColor" />
-                        <feComposite in="edgeShadowColor" in2="edgeShadowMask" operator="in" result="edgeShadow" />
-
-                        <feMerge>
-                            <feMergeNode in="dropShadow" />
-                            <feMergeNode in="SourceGraphic" />
-                            <feMergeNode in="innerShadow" />
-                            <feMergeNode in="edgeShadow" />
-                            <feMergeNode in="highlight" />
-                            <feMergeNode in="rimLight" />
-                        </feMerge>
-                    </filter>
-                    <filter id={`zaraHairHighlights-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="6" dy="8" result="hlOffset" />
-                        <feGaussianBlur in="hlOffset" stdDeviation="5" result="hlBlur" />
-                        <feComposite in="SourceAlpha" in2="hlBlur" operator="out" result="hlMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.10" result="hlColor" />
-                        <feComposite in="hlColor" in2="hlMask" operator="in" result="highlight" />
-
-                        <feOffset in="SourceAlpha" dx="2" dy="2" result="rimOffset" />
-                        <feGaussianBlur in="rimOffset" stdDeviation="1" result="rimBlur" />
-                        <feComposite in="SourceAlpha" in2="rimBlur" operator="out" result="rimMask" />
-                        <feFlood floodColor="#ffffff" floodOpacity="0.15" result="rimColor" />
-                        <feComposite in="rimColor" in2="rimMask" operator="in" result="rimLight" />
-
-                        <feMerge>
-                            <feMergeNode in="SourceGraphic" />
-                            <feMergeNode in="highlight" />
-                            <feMergeNode in="rimLight" />
-                        </feMerge>
-                    </filter>
-                    <filter id={`innerDropShadow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
-                        <feOffset in="SourceAlpha" dx="0" dy="4" result="offset" />
-                        <feGaussianBlur in="offset" stdDeviation="3" result="blur" />
-                        <feFlood floodColor="#581C24" floodOpacity="0.25" result="color" />
-                        <feComposite in="color" in2="blur" operator="in" result="shadow" />
-                        <feMerge>
-                            <feMergeNode in="shadow" />
-                            <feMergeNode in="SourceGraphic" />
-                        </feMerge>
-                    </filter>
-                </defs>
-
-                <g filter={`url(#zaraShadow-${uid})`}>
+                <g>
                 {/* === CABELLO TRASERO === */}
-                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} filter={`url(#zaraHairHighlights-${uid})`} />
+                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} />
 
                 {/* === CUERPO INFERIOR === — lf-rig-leg-*: Character Control hooks */}
                 <g className="lf-rig-leg-b">
@@ -270,21 +184,21 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 </g>
 
                 {/* === CUERPO SUPERIOR === */}
-                <g filter={`url(#innerDropShadow-${uid})`}>
-                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill={`url(#zaraTop-${uid})`} />
+                <g>
+                    <path d="M45 130 Q 40 160 42 195 L 42 200 L 98 200 L 98 195 Q 100 160 95 130 Q 90 120 70 120 Q 50 120 45 130" fill="#8B2E3F" />
 
                     {/* Brazos — lf-rig-arm-*: Character Control hooks */}
                     <g className="lf-rig-arm-b">
-                        <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                        <circle cx="32" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
+                        <path d="M42 135 Q 30 160 30 190 Q 30 200 32 210" fill="none" stroke="#F5D0B5" strokeWidth="9" strokeLinecap="round" />
+                        <circle cx="32" cy="210" r="4.5" fill="#F5D0B5" />
                     </g>
                     <g className="lf-rig-arm-f">
-                        <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="url(#zaraSkin)" strokeWidth="9" strokeLinecap="round" />
-                        <circle cx="108" cy="210" r="4.5" fill={`url(#zaraSkin-${uid})`} />
+                        <path d="M98 135 Q 110 160 110 190 Q 110 200 108 210" fill="none" stroke="#F5D0B5" strokeWidth="9" strokeLinecap="round" />
+                        <circle cx="108" cy="210" r="4.5" fill="#F5D0B5" />
                     </g>
 
                     {/* Cuello */}
-                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2.5" />
+                    <path d="M58 100 L 58 125 Q 70 130 82 125 L 82 100" fill="#F5D0B5" stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Collar */}
                     <path d="M60 118 Q 70 135 80 118" fill="none" stroke={COLORS.necklace} strokeWidth="2" />
@@ -293,11 +207,11 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                 </g>
 
                 {/* === CABEZA === */}
-                <g id={`zara-head-group-${uid}`} style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }} filter={`url(#innerDropShadow-${uid})`}>
-                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2.5" />
+                <g id={`zara-head-group-${uid}`} style={{ transformOrigin: '70px 70px', transition: 'transform 0.1s linear' }}>
+                    <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill="#F5D0B5" stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Cabello Frontal y Mechones agrupados para el filtro de luz */}
-                    <g filter={`url(#zaraHairHighlights-${uid})`}>
+                    <g>
                         {/* Cabello Frontal */}
                         <path d="M35 45 Q 45 15 70 15 Q 95 15 105 45" fill={COLORS.hair} />
 
@@ -305,7 +219,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                         <path d="M40 38 Q 35 50 40 70 Q 50 50 55 40 Z" fill={COLORS.hair} />
 
                         {/* Mechón Derecho */}
-                        <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill={`url(#hairShine-${uid})`} />
+                        <path d="M70 22 Q 95 22 108 55 Q 112 80 95 85 Q 98 60 85 45 Q 80 35 70 22" fill="#2A1B15" />
                     </g>
 
                     {/* Flor SVG (reemplaza emoji) */}
@@ -318,8 +232,8 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     </g>
 
                     {/* Orejas */}
-                    <ellipse cx="38" cy="65" rx="4" ry="6" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2" />
-                    <ellipse cx="102" cy="65" rx="4" ry="6" fill={`url(#zaraSkin-${uid})`} stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="38" cy="65" rx="4" ry="6" fill="#F5D0B5" stroke={COLORS.stroke} strokeWidth="2" />
+                    <ellipse cx="102" cy="65" rx="4" ry="6" fill="#F5D0B5" stroke={COLORS.stroke} strokeWidth="2" />
 
                     {/* Rubor */}
                     <ellipse cx="50" cy="75" rx="6" ry="3" fill={COLORS.blush} opacity={c.blush} />
