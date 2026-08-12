@@ -33,11 +33,6 @@ npm-debug.log*
 .mcp.json
 .opencode/
 
-# ── Legal working docs (root only — MUST stay anchored with
-#    the leading slash: an unanchored `LEGAL/` once ignored
-#    frontend/src/**/legal/ and broke the production build) ──
-/LEGAL/
-
 # ── Supabase upstream clone (pinned via database/SUPABASE_VERSION,
 #    materialized by database/scripts/sync-supabase.sh — never tracked) ──
 database/supabase/

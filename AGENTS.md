@@ -135,6 +135,14 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 - Every key exists in **all three** locales (`en-US`, `es-MX`, `pt-BR`) in the same commit. `en-US` defines the key set; `agent/tools/check-i18n.sh` verifies parity.
 - Dates, numbers, and currency formatting are locale-aware (`Intl.*`), never string-built.
 
+**Legal documents multi-language synchronization (NON-NEGOTIABLE):**
+- Three authoritative legal document files exist in `/LEGAL/`: `TERMINOSyCONDICIONES.md` (es-MX), `TERMSANDCONDITIONS.md` (en-US), `TERMOSDECONDIÇÕES.md` (pt-BR).
+- These are the **single source of truth** for Terms & Conditions and Privacy Notice across all locales.
+- **Any edit to a legal document MUST be mirrored to the other two locales in the same commit.** This is not optional.
+- Translations must be **professional and precise** (not machine-generated without review) — these are legally binding documents.
+- The `frontend/src/i18n/*/marketing.json` legal sections must maintain **exact parity** with their corresponding `/LEGAL/` documents, character-for-character (no summarization, no paraphrasing).
+- Before any commit touching legal content: verify all three locales are identical in structure, all sections present, and all translation pairs aligned.
+
 ### §1.9 Child safety & privacy — non-negotiable
 
 - **No PII of minors is ever sent to third-party AI APIs** (DeepSeek, Qwen, TTS). Maximum allowed context: age band + first name. No surnames, no locations, no photos, no free-text history that could identify a child.
@@ -289,5 +297,6 @@ All of these must pass, in every service you touched:
 | New skill installed | `TEAM_PROTOCOL.md` catalog + `_SOURCE.md` attribution |
 | Any edit to this file | Mirror to `CLAUDE.md` byte-identically |
 | Incident / recovery procedure learned | `RUNBOOK.md` |
+| Change to legal document (any locale) | Mirror to ALL three `/LEGAL/*.md` files + sync `frontend/src/i18n/*/marketing.json` in same commit (§1.8) |
 
 **Golden rule:** every substantial change is documented in the same commit that makes it. Undocumented architecture is a regression.
