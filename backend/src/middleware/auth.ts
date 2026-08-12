@@ -12,6 +12,8 @@ export interface AuthedUser {
   accessToken: string;
   /** GoTrue `is_anonymous` — a guest session (never the pre-signup `lf_aid` marketing visitor id). */
   isGuest: boolean;
+  /** GoTrue's amr history for this session — see AccessTokenClaims.amr (lib/jwt.ts). */
+  amr: { method: string; timestamp: number }[];
 }
 
 /** Typed accessor for the user set by requireAuth. */
@@ -32,6 +34,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     email: claims.email,
     accessToken: token,
     isGuest: claims.is_anonymous === true,
+    amr: claims.amr ?? [],
   } satisfies AuthedUser;
   next();
 }

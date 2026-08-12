@@ -195,16 +195,27 @@ export function authRouter(): Router {
     return ok(res, { sent: true });
   });
 
-  // Completes a recovery link. The bearer token is the SHORT-LIVED recovery
-  // session GoTrue minted when the link was verified (not the user's normal
-  // session) — requireAuth accepts it unchanged since GoTrue issues a real
-  // `role: authenticated` JWT either way.
+  // Completes a recovery link. The bearer token is the session GoTrue minted
+  // when the recovery link was verified — a full, ordinary `role:
+  // authenticated` session (1h, with its own refresh token), NOT a
+  // single-use or short-lived credential, and requireAuth alone can't tell
+  // it apart from any other valid session. GoTrue does mark HOW the session
+  // was established via `amr` (`[{method: "otp", ...}]` for a verified
+  // recovery/magic-link, vs `"password"`/`"oauth"` for an ordinary login) —
+  // required here so a stolen ordinary access token can't be used to
+  // silently set a new password with no re-auth (unlike /change-password,
+  // this route intentionally never asks for the current password, since the
+  // whole point of recovery is not knowing it).
   router.post('/reset-password', requireAuth, authRateLimiter, async (req, res) => {
     const parsed = ResetPasswordBody.safeParse(req.body);
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
-    const { error } = await gotrue.updateUser(authedUser(res).accessToken, { password: parsed.data.password });
+    const user = authedUser(res);
+    if (!user.amr.some((e) => e.method === 'otp')) {
+      return fail(res, 403, 'FORBIDDEN', 'This session was not established via a password-recovery link');
+    }
+    const { error } = await gotrue.updateUser(user.accessToken, { password: parsed.data.password });
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
     return ok(res, { updated: true });
   });

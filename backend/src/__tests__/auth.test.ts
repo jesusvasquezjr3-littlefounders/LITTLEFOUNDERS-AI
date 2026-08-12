@@ -293,8 +293,8 @@ describe('POST /api/v1/auth/reset-password', () => {
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it('applies the new password via the recovery session bearer token', async () => {
-    const token = mintToken({ email: 'ana@example.com' });
+  it('applies the new password via a genuine recovery session bearer token (amr: otp)', async () => {
+    const token = mintToken({ email: 'ana@example.com', amr: [{ method: 'otp', timestamp: 1 }] });
     stubFetch((url, init) => {
       expect(url).toBe('http://supabase.test/auth/v1/user');
       const headers = init?.headers as Record<string, string>;
@@ -308,6 +308,31 @@ describe('POST /api/v1/auth/reset-password', () => {
       .send({ password: 'longenough1' });
     expect(res.status).toBe(200);
     expect(res.body.data.updated).toBe(true);
+  });
+
+  it('403s an ordinary (non-recovery) session token, so a stolen login token cannot silently reset the password', async () => {
+    const token = mintToken({ email: 'ana@example.com', amr: [{ method: 'password', timestamp: 1 }] });
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp())
+      .post('/api/v1/auth/reset-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'longenough1' });
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe('FORBIDDEN');
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('403s a token with no amr history at all', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp())
+      .post('/api/v1/auth/reset-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'longenough1' });
+    expect(res.status).toBe(403);
+    expect(spy).not.toHaveBeenCalled();
   });
 });
 

@@ -14,6 +14,15 @@ export interface AccessTokenClaims {
   exp: number;
   /** GoTrue anonymous-user marker — a guest session, never the pre-signup marketing visitor id (`lf_aid`). */
   is_anonymous?: boolean;
+  /**
+   * GoTrue's authentication-method-reference history for this session —
+   * `[{ method: "password" | "oauth" | "otp" | ..., timestamp }]`. A session
+   * minted by verifying a `/recover` link carries `method: "otp"`; ordinary
+   * password/OAuth logins never do. `POST /reset-password` (routes/auth.ts)
+   * checks this to reject an ordinary stolen access token — without it, any
+   * valid bearer could silently set a new password with no re-auth.
+   */
+  amr?: { method: string; timestamp: number }[];
 }
 
 function b64urlDecode(s: string): Buffer {
@@ -55,6 +64,9 @@ export function verifyAccessToken(token: string, secret: string): AccessTokenCla
       iss: claims.iss,
       exp: claims.exp,
       is_anonymous: claims.is_anonymous === true,
+      amr: Array.isArray(claims.amr)
+        ? claims.amr.filter((e): e is { method: string; timestamp: number } => typeof e?.method === 'string')
+        : undefined,
     };
   } catch {
     return null;

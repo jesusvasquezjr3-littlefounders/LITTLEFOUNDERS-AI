@@ -64,9 +64,39 @@ session closed that gap — verified end-to-end against the real local GoTrue
   click and an email-change confirmation will silently redirect to the
   marketing homepage instead of the intended page — the backend/GoTrue side
   is fully correct either way, only the redirect destination is affected.
-- **Gates:** backend 311/311 (10 new: `recover`/`reset-password`/
-  `change-password`/`change-email`), frontend 440/440, both type-check +
-  lint clean. `backend/README.md` route table updated (§8).
+- **Gates:** backend 313/313 (10 new for `recover`/`reset-password`/
+  `change-password`/`change-email`, +2 more from the security fix below),
+  frontend 440/440, both type-check + lint clean. `backend/README.md` route
+  table updated (§8).
+- **Post-commit security audit caught a real auth-bypass, fixed same session
+  (HIGH, confirmed 8/10 by an independent false-positive-filter pass, then
+  empirically verified against the real local GoTrue both ways).**
+  `POST /reset-password` was gated only by `requireAuth`, which accepts ANY
+  valid `role: authenticated` JWT — nothing distinguished a genuine
+  recovery-link session from an attacker's stolen ordinary login token, and
+  unlike `/change-password` (added in the same commit, which re-verifies
+  `currentPassword`), `/reset-password` applied the new password with zero
+  re-auth. Concretely: anyone holding a victim's normal access token (XSS,
+  a leaked/logged token, a stolen device) could have silently set a new
+  password and permanently locked the real owner out, turning a ~1h token
+  compromise into indefinite account takeover — with no email click-through
+  and no knowledge of the current password required. Root cause: GoTrue
+  *does* mark how a session was established via the JWT's `amr` claim
+  (`[{method: "otp"}]` for a verified recovery/magic-link vs `"password"`/
+  `"oauth"` for an ordinary login) but `backend/src/lib/jwt.ts`'s
+  `verifyAccessToken` discarded that claim entirely, so the distinction
+  never reached the route handler. Fixed by threading `amr` through
+  `AccessTokenClaims` → `AuthedUser` and requiring `amr` to contain
+  `method: "otp"` before `/reset-password` touches GoTrue (403 `FORBIDDEN`
+  otherwise). Verified live against the real local GoTrue in both
+  directions: an ordinary post-login access token → 403; a genuine
+  `/admin/generate_link`-minted recovery token → 200, password changed,
+  login with the new password succeeded. Two regression tests added
+  (rejects `amr: password` and no-`amr` tokens). This is why the "verify
+  before asserting" and "no silent scope-cutting" rules (§1.12) matter in
+  practice — the original commit's own comment on `/change-password`
+  ("PUT /user alone accepts any valid bearer with no re-auth of its own")
+  was the correct reasoning, just not applied to its sibling route.
 
 ## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped to PRODUCTION
 

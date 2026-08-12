@@ -2,7 +2,14 @@ import { createHmac, randomUUID } from 'node:crypto';
 
 /** Mint a GoTrue-shaped HS256 access token with the test secret. */
 export function mintToken(
-  overrides: Partial<{ sub: string; email: string; role: string; exp: number; is_anonymous: boolean }> = {},
+  overrides: Partial<{
+    sub: string;
+    email: string;
+    role: string;
+    exp: number;
+    is_anonymous: boolean;
+    amr: { method: string; timestamp: number }[];
+  }> = {},
 ): string {
   const b64url = (s: string | Buffer) => Buffer.from(s).toString('base64url');
   const header = b64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
@@ -15,6 +22,7 @@ export function mintToken(
       iss: 'supabase',
       exp: overrides.exp ?? Math.floor(Date.now() / 1000) + 3600,
       ...(overrides.is_anonymous !== undefined ? { is_anonymous: overrides.is_anonymous } : {}),
+      ...(overrides.amr !== undefined ? { amr: overrides.amr } : {}),
     }),
   );
   const sig = createHmac('sha256', process.env.SUPABASE_JWT_SECRET as string)
