@@ -54,16 +54,18 @@ session closed that gap — verified end-to-end against the real local GoTrue
   now honors the custom `redirect_to`, and the full browser loop (recovery
   email link → `/reset-password` with fragment tokens → new password → login
   with it) was driven for real, not simulated.
-- **One production step remains, NOT executed by this session** (Railway
-  auth-service env, a shared-infra change outside an agent's authority to
-  self-approve): add `https://littlefounders.ai/reset-password` and
-  `https://littlefounders.ai/profile/settings` to production's
-  `GOTRUE_URI_ALLOW_LIST` (it already contains `/auth/callback`, since Google
-  OAuth is live — confirmed by the same fallback-to-SITE_URL behavior this
-  session diagnosed locally). Until that's set, a production recovery-email
-  click and an email-change confirmation will silently redirect to the
-  marketing homepage instead of the intended page — the backend/GoTrue side
-  is fully correct either way, only the redirect destination is affected.
+- **Correction (checked before deploy): no production Railway step needed.**
+  This entry originally guessed that `/reset-password` and
+  `/profile/settings` would need to be added to production's
+  `GOTRUE_URI_ALLOW_LIST`, reasoning from the empty local-dev list this
+  session found (see the local-stack fix above). Checked directly against
+  production (`railway variables --service auth`) instead of assuming: it's
+  `GOTRUE_URI_ALLOW_LIST=https://littlefounders.ai/**` — a wildcard that
+  already covers every path on the domain, including both new routes. No
+  Railway env change is required; the local-only gap was specific to local
+  dev's default empty list, not a production gap. (§1.12: verify before
+  asserting — the original guess would have sent a false "one step remains"
+  instruction downstream had it not been checked.)
 - **Gates:** backend 313/313 (10 new for `recover`/`reset-password`/
   `change-password`/`change-email`, +2 more from the security fix below),
   frontend 440/440, both type-check + lint clean. `backend/README.md` route
