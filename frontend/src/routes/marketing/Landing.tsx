@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
 import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { GeometricBackground } from '@/components/backgrounds/GeometricBackground';
 import { TechnologyGraph } from './TechnologyGraph';
 import './Landing.css';
 
@@ -109,57 +110,93 @@ export function Landing() {
         </div>
       </section>
 
-      <section className="bg-base overflow-hidden py-16 sm:py-24" aria-hidden="true">
-        <div className="lf-hero-scene mx-auto max-w-container px-5 md:px-8">
-          <div className="lf-hero-scene__stage">
-            <CharacterActor
-              character="liruf"
-              emotion="excited"
-              size="fill"
-              enableMouseTracking={false}
-              className="lf-hero-scene__char lf-hero-scene__char--liruf"
-            />
-            <CharacterActor
-              character="rho"
-              emotion="happy"
-              size="fill"
-              enableMouseTracking={false}
-              className="lf-hero-scene__char lf-hero-scene__char--rho"
-            />
-            <CharacterActor
-              character="dina"
-              emotion="happy"
-              size="fill"
-              enableMouseTracking={false}
-              className="lf-hero-scene__char lf-hero-scene__char--dina"
-            />
-            <CharacterActor
-              character="zara"
-              emotion="proud"
-              size="fill"
-              enableMouseTracking={false}
-              className="lf-hero-scene__char lf-hero-scene__char--zara"
-            />
-            <span className="lf-hero-scene__blob lf-hero-scene__blob--a" />
-            <span className="lf-hero-scene__blob lf-hero-scene__blob--b" />
+      <section className="bg-base overflow-hidden py-16 sm:py-24">
+        <div className="mx-auto max-w-container px-5 md:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* Left column: Character scene */}
+            <div className="lf-hero-scene">
+              <div className="lf-hero-scene__stage">
+                <GeometricBackground className="z-0" />
+                <CharacterActor
+                  character="liruf"
+                  emotion="excited"
+                  size="fill"
+                  enableMouseTracking={false}
+                  className="lf-hero-scene__char lf-hero-scene__char--liruf"
+                />
+                <CharacterActor
+                  character="rho"
+                  emotion="happy"
+                  size="fill"
+                  enableMouseTracking={false}
+                  className="lf-hero-scene__char lf-hero-scene__char--rho"
+                />
+                <CharacterActor
+                  character="dina"
+                  emotion="happy"
+                  size="fill"
+                  enableMouseTracking={false}
+                  className="lf-hero-scene__char lf-hero-scene__char--dina"
+                />
+                <CharacterActor
+                  character="zara"
+                  emotion="proud"
+                  size="fill"
+                  enableMouseTracking={false}
+                  className="lf-hero-scene__char lf-hero-scene__char--zara"
+                />
+                <span className="lf-hero-scene__blob lf-hero-scene__blob--a" />
+                <span className="lf-hero-scene__blob lf-hero-scene__blob--b" />
+              </div>
+            </div>
+
+            {/* Right column: Pitch text */}
+            <Reveal delay={80} className="flex flex-col gap-6">
+              <h2 className="lf-display-lg">{t('marketing.journey.heading')}</h2>
+              <p className="lf-body-lg text-content-muted">{t('marketing.journey.intro')}</p>
+
+              <ul className="space-y-4">
+                <li className="flex gap-4">
+                  <Icon name="check_circle" className="text-primary flex-shrink-0 mt-1" />
+                  <span className="lf-body text-content">{t('marketing.journey.guided')}</span>
+                </li>
+                <li className="flex gap-4">
+                  <Icon name="check_circle" className="text-primary flex-shrink-0 mt-1" />
+                  <span className="lf-body text-content">{t('marketing.journey.free')}</span>
+                </li>
+                <li className="flex gap-4">
+                  <Icon name="check_circle" className="text-primary flex-shrink-0 mt-1" />
+                  <span className="lf-body text-content">{t('marketing.journey.fun')}</span>
+                </li>
+                <li className="flex gap-4">
+                  <Icon name="check_circle" className="text-primary flex-shrink-0 mt-1" />
+                  <span className="lf-body text-content">{t('marketing.journey.safe')}</span>
+                </li>
+              </ul>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section className="bg-band py-20 text-content sm:py-28">
-        <div className="mx-auto grid max-w-container items-center gap-12 px-5 md:grid-cols-2 md:px-8">
-          <Reveal className="order-2 md:order-1">
-            <Card hero className="lf-fact-card">
-              <p className="lf-number lf-display-xl text-delight">{t('marketing.fact.stat')}</p>
-              <p className="lf-headline mt-5 text-content">{t('marketing.fact.title')}</p>
-              <p className="lf-body mt-4 text-content-muted">{t('marketing.fact.body')}</p>
-              <p className="lf-caption mt-5 text-content-faint">{t('marketing.fact.source')}</p>
-            </Card>
-          </Reveal>
-          <Reveal delay={80} className="order-1 md:order-2">
-            <p className="lf-label text-primary">{t('marketing.fact.eyebrow')}</p>
-            <h2 className="lf-display-lg mt-3">{t('marketing.fact.heading')}</h2>
-            <p className="lf-body-lg mt-4 text-content-muted">{t('marketing.fact.intro')}</p>
+        <div className="mx-auto max-w-container px-5 md:px-8">
+          <Reveal className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <h2 className="lf-display-lg">{t('marketing.fact.heading')}</h2>
+              <p className="lf-body-lg mt-6 text-content-muted">{t('marketing.fact.intro')}</p>
+
+              <div className="mt-10 space-y-2">
+                <p className="lf-number lf-display-md text-primary">{t('marketing.fact.stat')}</p>
+                <p className="lf-body text-content">{t('marketing.fact.title')}</p>
+                <p className="lf-caption text-content-faint">{t('marketing.fact.source')}</p>
+              </div>
+            </div>
+
+            <img
+              src="https://images.pexels.com/photos/4260325/pexels-photo-4260325.jpeg?auto=compress&cs=tinysrgb&w=800"
+              alt={t('marketing.fact.imageAlt')}
+              className="hidden lg:block aspect-video w-full rounded-xl object-cover shadow-glass"
+            />
           </Reveal>
         </div>
       </section>
@@ -173,8 +210,7 @@ export function Landing() {
               className="aspect-[4/3] w-full rounded-xl object-cover object-center shadow-glass"
             />
             <div>
-              <p className="lf-label text-primary">{t('marketing.family.eyebrow')}</p>
-              <h2 className="lf-display-lg mt-3 max-w-xl">{t('marketing.family.title')}</h2>
+              <h2 className="lf-display-lg max-w-xl">{t('marketing.family.title')}</h2>
               <p className="lf-body-lg mt-4 max-w-xl text-content-muted">{t('marketing.family.body')}</p>
               <div className="mt-7 grid gap-4 sm:grid-cols-3">
                 {VALUES.map(({ key, icon, tone }) => (
@@ -195,8 +231,7 @@ export function Landing() {
         <div className="mx-auto max-w-container px-5 md:px-8">
           <Card hero className="grid items-center gap-8 overflow-hidden lg:grid-cols-[1.05fr_0.95fr]">
             <div>
-              <p className="lf-label text-primary">{t('marketing.finalCta.eyebrow')}</p>
-              <h2 className="lf-display-lg mt-3">{t('marketing.finalCta.title')}</h2>
+              <h2 className="lf-display-lg">{t('marketing.finalCta.title')}</h2>
               <p className="lf-body-lg mt-4 text-content-muted">{t('marketing.finalCta.body')}</p>
               <PrimaryCta dataCta="final-primary" wrapperClassName="mt-7 inline-block" buttonClassName="mt-7" />
             </div>
