@@ -7,159 +7,101 @@
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Let learning about money ",
-    "titleHighlight": "feel like an adventure",
-    "stageNote": "A public view of the learning signal, designed for families",
-    "subtitle": "We turn early choices about money, saving, and big ideas into experiences kids want to explore.",
+    "titleLead": "Money",
+    "titleHighlight": "made into an adventure",
+    "subtitle": "Financial skills, disguised as play.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "Explore the lessons",
+    "ctaSecondary": "How it works",
     "ctaStarting": "Starting…",
     "guestError": "We couldn't start your session, please try again.",
-    "alreadyHaveAccount": "Already have an account?",
     "loginLink": "Log in",
-    "preferSignup": "Prefer to create your account now?",
     "signupLink": "Sign up",
-    "note": "A place to learn, imagine, and share as a family.",
-    "imageAlt": "A family explores financial learning with the LittleFounders characters",
-    "logoAlt": "LittleFounders",
-    "floatingCard": {
-      "title": "Small choices, big ideas",
-      "body": "Every adventure opens a new possibility."
-    }
-  },
-  "experience": {
-    "eyebrow": "A different way to learn",
-    "title": "Curiosity is where it starts",
-    "body": "Lessons turn everyday questions into moments to try, think, and discover what kids can do.",
-    "learn": {
-      "step": "01",
-      "title": "Explore an idea",
-      "body": "Start with familiar situations that make money make sense."
-    },
-    "build": {
-      "step": "02",
-      "title": "Try your choices",
-      "body": "Solve challenges, compare options, and learn to trust your thinking."
-    },
-    "share": {
-      "step": "03",
-      "title": "Bring it into your world",
-      "body": "Ideas stay alive in the conversations and goals you share at home."
-    }
-  },
-  "lessonPreview": {
-    "eyebrow": "Learning looks different here",
-    "title": "A lesson that invites you in",
-    "body": "This is not about memorizing. It is about finding an answer, getting encouragement, and wanting to continue to the next mission.",
-    "link": "Explore the lesson experience",
-    "card": {
-      "badge": "Saving adventure",
-      "progress": "Lesson 2 of 3",
-      "prompt": "If you want to save for a special goal, which choice helps most?",
-      "options": {
-        "one": "Spend it all today",
-        "two": "Save a portion",
-        "three": "Forget my goal"
-      },
-      "feedback": "A choice that brings you closer to your goal!",
-      "reward": "New idea unlocked"
-    }
+    "logoAlt": "LittleFounders"
   },
   "fact": {
-    "eyebrow": "A skill for life",
-    "heading": "Money conversations can start early",
-    "intro": "Giving kids a welcoming place to practice today can help them feel more ready to choose and create tomorrow.",
+    "heading": "Most adults never learned this",
+    "intro": "Start earlier. Change the outcome.",
     "stat": "1 in 3",
-    "title": "Only 1 in 3 adults worldwide is financially literate",
-    "body": "The S&P Global FinLit Survey shows that many people reach adulthood without basic tools for financial decisions. We believe confidence can begin in childhood.",
-    "source": "Source: S&P Global FinLit Survey"
+    "title": "adults worldwide are financially literate",
+    "source": "Source: S&P Global FinLit Survey",
+    "imageAlt": "A family learns together about money and goals"
+  },
+  "journey": {
+    "heading": "You're never alone",
+    "intro": "What every adventure includes",
+    "guided": "A caring character guide",
+    "free": "Always free",
+    "fun": "Real fun, not homework",
+    "safe": "Built safe for every kid"
   },
   "family": {
-    "eyebrow": "More than a screen",
-    "title": "Ideas that find a place at home, too",
-    "body": "When a child discovers how to save for something they want, the conversation can continue at the table, in a goal, or in their next big idea.",
+    "title": "It comes home too",
+    "body": "One lesson today. A real conversation tonight.",
     "imageAlt": "A child counts coins beside a savings jar",
     "values": {
       "short": "At their pace",
-      "handsOn": "Hands on",
-      "growing": "With confidence"
+      "handsOn": "Hands-on",
+      "growing": "Real confidence"
     }
   },
   "finalCta": {
-    "eyebrow": "Their next idea starts here",
-    "title": "A big adventure can start with one coin",
-    "body": "Create a free account and discover a new way to learn about money, goals, and ideas that grow.",
+    "title": "One coin. One big adventure.",
+    "body": "Free to start. Free to stay.",
     "imageAlt": "A child puts a coin into a piggy bank"
   },
   "howItWorks": {
-    "eyebrow": "How lessons come to life",
-    "title": "Every lesson starts with a question",
-    "intro": "LittleFounders adventures help kids explore ideas about money and entrepreneurship through challenges that feel familiar, clear, and fun.",
-    "cta": "Start your adventure",
+    "title": "Curiosity in. Confidence out.",
+    "intro": "Three steps. Real skills.",
+    "cta": "Start free",
     "steps": {
-      "eyebrow": "From curiosity to confidence",
-      "title": "Three moments of learning by doing",
+      "title": "Three moments. One adventure.",
       "discover": {
         "number": "01",
         "title": "Discover",
-        "body": "Meet a situation, story, or goal that sparks curiosity."
+        "body": "A story that sparks a real question."
       },
       "practice": {
         "number": "02",
-        "title": "Take part",
-        "body": "Touch, organize, compare, and choose as the idea comes alive."
+        "title": "Play",
+        "body": "Tap, compare, choose. Learn by doing."
       },
       "celebrate": {
         "number": "03",
-        "title": "Move forward",
-        "body": "Every small win encourages more learning and another new try."
+        "title": "Level up",
+        "body": "Every win sparks the next one."
       }
     },
     "lesson": {
-      "eyebrow": "Inside a lesson",
-      "title": "A short experience that leaves room to think",
-      "body": "Lessons invite kids to experiment with choices and discover that learning about money can be creative and exciting, too.",
+      "title": "Short lessons, real thinking.",
+      "body": "Every choice teaches something new.",
       "moments": {
         "stories": {
           "title": "Familiar stories",
-          "body": "Ideas that begin with goals, choices, and moments kids recognize."
+          "body": "Stories kids already know."
         },
         "choices": {
           "title": "Challenges to solve",
-          "body": "Small actions that turn a question into a discovery."
+          "body": "Small actions, real discoveries."
         },
         "wins": {
           "title": "Progress you can feel",
-          "body": "Every step makes what kids can already do visible."
+          "body": "Growth they can see and feel."
         }
       },
-      "card": {
-        "badge": "Budget mission",
-        "progress": "Part 2 of 3",
-        "prompt": "Your goal costs 12 coins. Which combination gets you there?",
-        "answers": {
-          "one": "5 + 5",
-          "two": "10 + 2",
-          "three": "4 + 4",
-          "four": "3 + 3"
-        },
-        "feedback": "You found a way to reach your goal!"
-      }
+      "demoAriaLabel": "Animated preview showing how tapping the correct answer earns a celebration and moves progress forward."
     },
     "closing": {
-      "eyebrow": "The next discovery is waiting",
-      "title": "Learning about money can feel like your own",
-      "body": "Take the first step toward adventures that turn today's curiosity into ideas for life."
+      "title": "Make it yours.",
+      "body": "One step. A lifetime of ideas."
     }
   },
   "technology": {
-    "parentEyebrow": "Technology parents can trust",
-    "parentTitle": "A clear picture of how confidence grows",
-    "parentBody": "Our learning experience connects age-appropriate challenges into a guided path. It is designed to help families understand progress without asking children to manage a system.",
+    "parentTitle": "Progress you can actually see",
+    "parentBody": "No system to manage. Just visible growth.",
     "parentPoints": {
-      "visible": { "icon": "visibility", "title": "Progress with context", "body": "See the ideas your child is exploring and the confidence they are building." },
-      "adaptive": { "icon": "route", "title": "Purposeful next steps", "body": "Adventures connect naturally, so each new challenge builds on meaningful practice." },
-      "private": { "icon": "shield", "title": "Built around privacy", "body": "The public learning map never exposes children’s personal information or private learning data." }
+      "visible": { "icon": "visibility", "title": "Progress with context", "body": "What they're learning, and how they're growing." },
+      "adaptive": { "icon": "route", "title": "Purposeful next steps", "body": "Each challenge builds naturally on the last." },
+      "private": { "icon": "shield", "title": "Built around privacy", "body": "Your child's data stays private. Always." }
     },
     "concepts": {
       "curiosity": { "title": "Curiosity starts the journey", "body": "A child’s own question turns an everyday moment into an opportunity to discover." },

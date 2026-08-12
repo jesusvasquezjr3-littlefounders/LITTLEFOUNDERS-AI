@@ -157,6 +157,18 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     40% { transform: scale(1.08); }
                     100% { transform: scale(1); }
                 }
+                .zara-hair-sway { animation: zaraHairSway 3s ease-in-out infinite; }
+                @keyframes zaraHairSway {
+                    0%, 100% { transform: rotate(0deg); }
+                    25% { transform: rotate(-1.5deg); }
+                    75% { transform: rotate(1.5deg); }
+                }
+                .zara-hair-strand { animation: zaraStrandFlow 2.5s ease-in-out infinite; }
+                @keyframes zaraStrandFlow {
+                    0%, 100% { transform: translateX(0) rotate(0deg); }
+                    50% { transform: translateX(2px) rotate(0.5deg); }
+                }
+                @media (prefers-reduced-motion: reduce) { .zara-hair-sway, .zara-hair-strand { animation: none; } }
             `}</style>
 
             <svg
@@ -171,15 +183,17 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
             >
                 <g>
                 {/* === CABELLO TRASERO === */}
-                <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} />
+                <g className="zara-hair-sway" style={{ transformOrigin: '70px 70px' }}>
+                    <path d="M35 50 Q 15 100 20 200 Q 25 240 50 240 L 90 240 Q 115 240 120 200 Q 125 100 105 50 Q 70 30 35 50" fill={COLORS.hair} />
+                </g>
 
                 {/* === CUERPO INFERIOR === — lf-rig-leg-*: Character Control hooks */}
                 <g className="lf-rig-leg-b">
-                    <rect x="45" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
+                    <rect x="45" y="190" width="22" height="130" rx="2" fill={COLORS.pants} />
                     <path d="M45 310 L 45 330 Q 56 335 67 330 L 67 310 Z" fill={COLORS.shoes} />
                 </g>
                 <g className="lf-rig-leg-f">
-                    <rect x="73" y="190" width="22" height="120" rx="2" fill={COLORS.pants} />
+                    <rect x="73" y="190" width="22" height="130" rx="2" fill={COLORS.pants} />
                     <path d="M73 310 L 73 330 Q 84 335 95 330 L 95 310 Z" fill={COLORS.shoes} />
                 </g>
 
@@ -211,7 +225,7 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     <path d="M40 50 Q 38 80 50 95 Q 70 110 90 95 Q 102 80 100 50 Q 100 20 70 20 Q 40 20 40 50" fill="#F5D0B5" stroke={COLORS.stroke} strokeWidth="2.5" />
 
                     {/* Cabello Frontal y Mechones agrupados para el filtro de luz */}
-                    <g>
+                    <g className="zara-hair-strand" style={{ transformOrigin: '70px 40px' }}>
                         {/* Cabello Frontal */}
                         <path d="M35 45 Q 45 15 70 15 Q 95 15 105 45" fill={COLORS.hair} />
 
@@ -326,10 +340,6 @@ export const ZaraVexCharacter: React.FC<ZaraVexCharacterProps> = ({
                     </g>
                 </g>
                 </g>
-
-                {/* Pantalón plano — re-pintado por encima del filtro para que no reciba luz clave/rim */}
-                <rect x="45" y="200" width="22" height="110" rx="2" fill={COLORS.pants} />
-                <rect x="73" y="200" width="22" height="110" rx="2" fill={COLORS.pants} />
             </svg>
         </div>
     );

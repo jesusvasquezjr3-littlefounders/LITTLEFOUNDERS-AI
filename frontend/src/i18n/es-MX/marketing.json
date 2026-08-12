@@ -7,159 +7,101 @@
     "loginCta": "Ya tengo cuenta"
   },
   "hero": {
-    "titleLead": "Que aprender sobre dinero",
-    "titleHighlight": "se sienta como una aventura",
-    "stageNote": "Una vista pública de la señal de aprendizaje, diseñada para familias",
-    "subtitle": "Transformamos las primeras decisiones sobre dinero, ahorro e ideas de negocio en experiencias que los niños quieren explorar.",
+    "titleLead": "El dinero",
+    "titleHighlight": "convertido en aventura",
+    "subtitle": "Educación financiera disfrazada de juego.",
     "ctaPrimary": "Empieza gratis",
-    "ctaSecondary": "Descubre las lecciones",
+    "ctaSecondary": "Cómo funciona",
     "ctaStarting": "Comenzando…",
     "guestError": "No pudimos iniciar tu sesión, intenta de nuevo.",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
     "loginLink": "Inicia sesión",
-    "preferSignup": "¿Prefieres crear tu cuenta ahora?",
     "signupLink": "Regístrate",
-    "note": "Un espacio para aprender, imaginar y compartir en familia.",
-    "imageAlt": "Una familia explora el aprendizaje financiero junto a los personajes de LittleFounders",
-    "logoAlt": "LittleFounders",
-    "floatingCard": {
-      "title": "Pequeñas decisiones, grandes ideas",
-      "body": "Cada aventura abre una nueva posibilidad."
-    }
-  },
-  "experience": {
-    "eyebrow": "Una forma distinta de aprender",
-    "title": "La curiosidad es el punto de partida",
-    "body": "Las lecciones convierten preguntas cotidianas en momentos para probar, pensar y descubrir lo que sí pueden hacer.",
-    "learn": {
-      "step": "01",
-      "title": "Explora una idea",
-      "body": "Comienza con situaciones cercanas que hacen que el dinero tenga sentido."
-    },
-    "build": {
-      "step": "02",
-      "title": "Prueba tus decisiones",
-      "body": "Resuelve retos, compara opciones y aprende a confiar en tu razonamiento."
-    },
-    "share": {
-      "step": "03",
-      "title": "Llévalo a tu mundo",
-      "body": "Las ideas siguen vivas en las conversaciones y metas que comparten en casa."
-    }
-  },
-  "lessonPreview": {
-    "eyebrow": "Aprender se ve diferente",
-    "title": "Una lección que invita a participar",
-    "body": "Aquí no se trata de memorizar. Se trata de descubrir una respuesta, recibir ánimo y querer seguir con la siguiente misión.",
-    "link": "Conoce la experiencia de las lecciones",
-    "card": {
-      "badge": "Aventura de ahorro",
-      "progress": "Lección 2 de 3",
-      "prompt": "Si quieres guardar para una meta especial, ¿qué decisión te ayuda más?",
-      "options": {
-        "one": "Gastarlo todo hoy",
-        "two": "Guardar una parte",
-        "three": "Olvidar mi meta"
-      },
-      "feedback": "¡Una decisión que te acerca a tu meta!",
-      "reward": "Nueva idea desbloqueada"
-    }
+    "logoAlt": "LittleFounders"
   },
   "fact": {
-    "eyebrow": "Una habilidad que acompaña toda la vida",
-    "heading": "Las conversaciones sobre dinero pueden empezar temprano",
-    "intro": "Darles un espacio amable para practicar hoy puede hacer que mañana se sientan más capaces de elegir y crear.",
+    "heading": "La mayoría de adultos nunca aprendió esto",
+    "intro": "Empieza antes. Cambia el resultado.",
     "stat": "1 de cada 3",
-    "title": "Solo 1 de cada 3 adultos en el mundo tiene educación financiera",
-    "body": "La S&P Global FinLit Survey muestra que muchas personas llegan a la adultez sin herramientas básicas para tomar decisiones financieras. Creemos que la confianza puede empezar desde la infancia.",
-    "source": "Fuente: S&P Global FinLit Survey"
+    "title": "adultos en el mundo tiene educación financiera",
+    "source": "Fuente: S&P Global FinLit Survey",
+    "imageAlt": "Una familia aprende junta sobre dinero y metas"
+  },
+  "journey": {
+    "heading": "Nunca estarás solo",
+    "intro": "Lo que incluye cada aventura",
+    "guided": "Un personaje que te acompaña",
+    "free": "Siempre gratis",
+    "fun": "Diversión real, no tarea",
+    "safe": "Seguro para cada niño"
   },
   "family": {
-    "eyebrow": "Más que una pantalla",
-    "title": "Ideas que también encuentran un lugar en casa",
-    "body": "Cuando una niña o un niño descubre cómo ahorrar para algo que desea, la conversación puede continuar alrededor de la mesa, en una meta o en su próxima gran idea.",
+    "title": "También llega a casa",
+    "body": "Una lección hoy. Una conversación real esta noche.",
     "imageAlt": "Un niño cuenta monedas junto a su frasco de ahorro",
     "values": {
       "short": "A su ritmo",
-      "handsOn": "Con las manos",
-      "growing": "Con confianza"
+      "handsOn": "Práctico",
+      "growing": "Confianza real"
     }
   },
   "finalCta": {
-    "eyebrow": "Su próxima idea empieza aquí",
-    "title": "Una gran aventura puede comenzar con una moneda",
-    "body": "Crea una cuenta gratuita y descubre una nueva forma de aprender sobre dinero, metas e ideas que crecen.",
+    "title": "Una moneda. Una gran aventura.",
+    "body": "Gratis para empezar. Gratis para quedarse.",
     "imageAlt": "Una niña coloca una moneda en una alcancía"
   },
   "howItWorks": {
-    "eyebrow": "Así se viven las lecciones",
-    "title": "Cada lección empieza con una pregunta",
-    "intro": "Las aventuras de LittleFounders acompañan a los niños a explorar ideas de dinero y emprendimiento con retos que se sienten cercanos, claros y divertidos.",
-    "cta": "Empieza tu aventura",
+    "title": "Entra la curiosidad. Sale la confianza.",
+    "intro": "Tres pasos. Habilidades reales.",
+    "cta": "Empieza gratis",
     "steps": {
-      "eyebrow": "De la curiosidad a la confianza",
-      "title": "Tres momentos para aprender haciendo",
+      "title": "Tres momentos. Una aventura.",
       "discover": {
         "number": "01",
         "title": "Descubre",
-        "body": "Conoce una situación, una historia o una meta que despierta la curiosidad."
+        "body": "Una historia que despierta una pregunta real."
       },
       "practice": {
         "number": "02",
-        "title": "Participa",
-        "body": "Toca, organiza, compara y elige mientras la idea cobra vida."
+        "title": "Juega",
+        "body": "Toca, compara, elige. Aprende haciendo."
       },
       "celebrate": {
         "number": "03",
-        "title": "Avanza",
-        "body": "Cada pequeño logro anima a seguir aprendiendo y a intentar algo nuevo."
+        "title": "Avanza de nivel",
+        "body": "Cada logro impulsa el siguiente."
       }
     },
     "lesson": {
-      "eyebrow": "Dentro de una lección",
-      "title": "Una experiencia breve que deja espacio para pensar",
-      "body": "Las lecciones invitan a experimentar con decisiones y a descubrir que aprender sobre dinero también puede ser creativo y emocionante.",
+      "title": "Lecciones breves, pensamiento real.",
+      "body": "Cada elección enseña algo nuevo.",
       "moments": {
         "stories": {
           "title": "Historias cercanas",
-          "body": "Ideas que parten de metas, elecciones y momentos que reconocen."
+          "body": "Historias que ya conocen."
         },
         "choices": {
           "title": "Retos para resolver",
-          "body": "Pequeñas acciones que convierten una pregunta en un descubrimiento."
+          "body": "Pequeñas acciones, grandes descubrimientos."
         },
         "wins": {
           "title": "Progreso que se siente",
-          "body": "Cada avance hace visible todo lo que ya pueden lograr."
+          "body": "Crecimiento que ven y sienten."
         }
       },
-      "card": {
-        "badge": "Misión de presupuesto",
-        "progress": "Parte 2 de 3",
-        "prompt": "Tu meta cuesta 12 monedas. ¿Qué combinación te ayuda a llegar?",
-        "answers": {
-          "one": "5 + 5",
-          "two": "10 + 2",
-          "three": "4 + 4",
-          "four": "3 + 3"
-        },
-        "feedback": "¡Encontraste una forma de llegar a tu meta!"
-      }
+      "demoAriaLabel": "Vista previa animada que muestra cómo tocar la respuesta correcta desbloquea una celebración y avanza el progreso."
     },
     "closing": {
-      "eyebrow": "El siguiente descubrimiento espera",
-      "title": "Aprender sobre dinero también puede sentirse propio",
-      "body": "Da el primer paso hacia aventuras que convierten la curiosidad de hoy en ideas para toda la vida."
+      "title": "Hazlo tuyo.",
+      "body": "Un paso. Ideas para toda la vida."
     }
   },
   "technology": {
-    "parentEyebrow": "Tecnología en la que los padres pueden confiar",
-    "parentTitle": "Una imagen clara de cómo crece la confianza",
-    "parentBody": "Nuestra experiencia conecta retos apropiados para cada edad en un camino guiado. Está diseñada para que las familias entiendan el progreso sin pedirles a los niños que administren un sistema.",
+    "parentTitle": "Progreso que sí puedes ver",
+    "parentBody": "Sin sistemas que administrar. Solo crecimiento visible.",
     "parentPoints": {
-      "visible": { "icon": "visibility", "title": "Progreso con contexto", "body": "Conoce las ideas que tu hijo explora y la confianza que está desarrollando." },
-      "adaptive": { "icon": "route", "title": "Siguientes pasos con propósito", "body": "Las aventuras se conectan de forma natural para que cada reto se base en una práctica valiosa." },
-      "private": { "icon": "shield", "title": "Privacidad desde el diseño", "body": "El mapa público nunca expone información personal de los niños ni datos privados de aprendizaje." }
+      "visible": { "icon": "visibility", "title": "Progreso con contexto", "body": "Lo que aprende y cómo va creciendo." },
+      "adaptive": { "icon": "route", "title": "Siguientes pasos con propósito", "body": "Cada reto se construye sobre el anterior." },
+      "private": { "icon": "shield", "title": "Privacidad desde el diseño", "body": "Los datos de tu hijo, siempre privados." }
     },
     "concepts": {
       "curiosity": { "title": "La curiosidad inicia el recorrido", "body": "Una pregunta propia convierte una situación cotidiana en una oportunidad para descubrir." },
@@ -225,7 +167,7 @@
     }
   },
   "footer": {
-    "tagline": "Aprende, cresce y construye tu futuro.",
+    "tagline": "Aprende, crece y construye tu futuro.",
     "contactLabel": "Contacto",
     "legalTitle": "Legal",
     "terms": "Términos y Condiciones",

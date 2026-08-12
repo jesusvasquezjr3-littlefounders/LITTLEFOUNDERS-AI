@@ -21,10 +21,10 @@ beforeEach(async () => {
 describe('Marketing site', () => {
   it('renders the landing page with its marketing narrative and CTA', () => {
     renderApp();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/feel like an adventure/);
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/made into an adventure/);
     // The interactive concept atlas replaced the old static "experience" cards.
     expect(screen.getByRole('img', { name: 'Interactive map of learning concepts and relationships' })).toBeInTheDocument();
-    expect(screen.getByText('A lesson that invites you in')).toBeInTheDocument();
+    expect(screen.getByText("You're never alone")).toBeInTheDocument();
     expect(screen.getByText('Source: S&P Global FinLit Survey')).toBeInTheDocument();
     // Guest-first: the primary CTA starts a guest session (a button), not a
     // plain /signup link — see Landing's startAsGuest.
@@ -33,9 +33,9 @@ describe('Marketing site', () => {
 
   it('renders the lesson-focused how-it-works page', () => {
     renderApp('/how-it-works');
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Every lesson starts with a question/);
-    expect(screen.getByText('Three moments of learning by doing')).toBeInTheDocument();
-    expect(screen.getByText('A short experience that leaves room to think')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/Curiosity in\. Confidence out\./);
+    expect(screen.getByText('Three moments. One adventure.')).toBeInTheDocument();
+    expect(screen.getByText('Short lessons, real thinking.')).toBeInTheDocument();
     expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
@@ -106,6 +106,6 @@ describe('Marketing site', () => {
     fireEvent.click(trigger);
     fireEvent.click(await screen.findByRole('option', { name: /Spanish/ }));
 
-    expect(await screen.findByText(/se sienta como una aventura/)).toBeInTheDocument();
+    expect(await screen.findByText(/convertido en aventura/)).toBeInTheDocument();
   });
 });

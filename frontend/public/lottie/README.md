@@ -228,6 +228,26 @@ It should begin playing immediately when a loading process starts and stop immed
 
 ---
 
+## Marketing / decorative preview use
+
+`streak.lottie`, `gold-coin.lottie`, and `lesson.lottie` MAY additionally be used **purely decoratively**
+on public marketing pages (`frontend/src/routes/marketing/*`) to preview the reward
+experience to visitors who have no account and no real stats yet.
+
+This exception is narrow and non-negotiable in scope:
+
+- Decorative marketing use is **always** rendered as **Activated, default colors**
+  (`value` > 0, `activated: true`) — the animation's normal, most legible appearance.
+  It MUST NEVER be rendered as Black or Black & White on a marketing page, since
+  there is no real zero/inactive state to represent for a visitor.
+- The `value` passed MUST be a fixed illustrative placeholder, never a claim about
+  real user data (marketing pages have no signed-in user to read stats from).
+- This exception does not extend to any other Lottie file in this directory, and
+  does not change any state rule for the product-surface (Lesson Engine, profile,
+  dashboard) usages defined above.
+
+---
+
 # Maintenance Rules
 
 This document is the single source of truth for the intended usage of every Lottie animation inside `frontend/public/lottie/`.

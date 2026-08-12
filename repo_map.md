@@ -6,6 +6,7 @@
 ## Directory tree
 
 ```
+"LEGAL/
 .github/
   workflows/
 agent/
@@ -117,11 +118,11 @@ frontend/
       auth/
       edu/
       ui/
-  revideo/
   src/
     __tests__/
     auth/
     components/
+      backgrounds/
       characters/
         control/
       course/
@@ -10514,21 +10515,6 @@ Photos from [Pexels](https://www.pexels.com), used under the Pexels license (fre
 | `atlas/3985081.jpg` | https://www.pexels.com/photo/family-grocery-shopping-3985081/ |
 ```
 
-### frontend/revideo/knowledge-graph.tsx
-
-```
-```
-
-### frontend/revideo/project.ts
-
-```
-```
-
-### frontend/revideo/render.ts
-
-```
-```
-
 ### frontend/src/App.tsx
 
 ```
@@ -10805,6 +10791,26 @@ const OPEN_PREFERENCES_EVENT = 'lf:open-cookie-preferences';
  * consent. This surface governs guest marketing technologies; a child's
  * behavioural collection is still decided by the verified guardian flow.
  */
+```
+
+### frontend/src/components/backgrounds/GeometricBackground.tsx
+
+```
+import React from 'react';
+
+/**
+ * Clean animated geometric background with flowing curves and scattered circles.
+ * Minimalist composition: massive background layers, organic curves, dispersed circles.
+ */
+export const GeometricBackground: React.FC<{ className?: string }> = ({ className }) => {
+  return (
+    <div className={`absolute inset-0 overflow-visible ${className ?? ''}`} aria-hidden="true">
+      <style>{`
+        .geo-float-1 { animation: geoFloat1 7.2s ease-in-out infinite; }
+        .geo-float-2 { animation: geoFloat2 8.5s ease-in-out infinite; animation-delay: 0.5s; }
+        .geo-float-3 { animation: geoFloat3 6.8s ease-in-out infinite; animation-delay: 1s; }
+        .geo-float-4 { animation: geoFloat4 9s ease-in-out infinite; animation-delay: 1.5s; }
+        .geo-float-5 { animation: geoFloat5 7.5s ease-in-out infinite; animation-delay: 0.8s; }
 ```
 
 ### frontend/src/components/characters/DinaCharacter.tsx
@@ -11499,12 +11505,12 @@ export { StatCard } from './StatCard';
     "loginCta": "I already have an account"
   },
   "hero": {
-    "titleLead": "Let learning about money ",
-    "titleHighlight": "feel like an adventure",
-    "stageNote": "A public view of the learning signal, designed for families",
-    "subtitle": "We turn early choices about money, saving, and big ideas into experiences kids want to explore.",
+    "titleLead": "Money",
+    "titleHighlight": "made into an adventure",
+    "subtitle": "Financial skills, disguised as play.",
     "ctaPrimary": "Start free",
-    "ctaSecondary": "Explore the lessons",
+    "ctaSecondary": "How it works",
+    "ctaStarting": "Starting…",
 ```
 
 ### frontend/src/i18n/en-US/onboarding.json
@@ -11719,12 +11725,12 @@ export { StatCard } from './StatCard';
     "loginCta": "Ya tengo cuenta"
   },
   "hero": {
-    "titleLead": "Que aprender sobre dinero",
-    "titleHighlight": "se sienta como una aventura",
-    "stageNote": "Una vista pública de la señal de aprendizaje, diseñada para familias",
-    "subtitle": "Transformamos las primeras decisiones sobre dinero, ahorro e ideas de negocio en experiencias que los niños quieren explorar.",
+    "titleLead": "El dinero",
+    "titleHighlight": "convertido en aventura",
+    "subtitle": "Educación financiera disfrazada de juego.",
     "ctaPrimary": "Empieza gratis",
-    "ctaSecondary": "Descubre las lecciones",
+    "ctaSecondary": "Cómo funciona",
+    "ctaStarting": "Comenzando…",
 ```
 
 ### frontend/src/i18n/es-MX/onboarding.json
@@ -11959,12 +11965,12 @@ import enErrors from './en-US/errors.json';
     "loginCta": "Já tenho conta"
   },
   "hero": {
-    "titleLead": "Aprender sobre dinheiro deve parecer",
-    "titleHighlight": "uma aventura",
-    "stageNote": "Uma visão pública do sinal de aprendizagem, projetada para famílias",
-    "subtitle": "Transformamos as primeiras decisões sobre dinheiro, economia e ideias de negócios em experiências que as crianças querem explorar.",
+    "titleLead": "O dinheiro",
+    "titleHighlight": "vira uma aventura",
+    "subtitle": "Educação financeira disfarçada de brincadeira.",
     "ctaPrimary": "Comece grátis",
-    "ctaSecondary": "Descubra as lições",
+    "ctaSecondary": "Como funciona",
+    "ctaStarting": "Iniciando…",
 ```
 
 ### frontend/src/i18n/pt-BR/onboarding.json
@@ -15708,6 +15714,26 @@ export function ComingSoon({ page }: { page: 'howItWorks' | 'families' | 'faq' }
         <p className="lf-body mt-4 text-content-muted">{t('marketing.comingSoon.body')}</p>
 ```
 
+### frontend/src/routes/marketing/HowItWorks.css
+
+```
+/*
+ * ── Lesson demo — Motion Graphics stage ────────────────────────────────
+ * A self-playing, wordless loop (Duolingo-style): a 3D-tilted device scene
+ * plays tap → correct → celebrate → progress, using the platform's own
+ * reward assets (gold-coin / streak Lottie, see frontend/public/lottie).
+ * The story beats (select, coin, particles, progress) share one 4.8s
+ * timeline; the frame's idle float/tilt run on independent loops so the
+ * scene reads as alive, not just replaying. A brief opacity dip at the
+ * loop seam (lf-lesson-cycle-fade) masks the progress-bar reset instead
+ * of a visible jump.
+ */
+
+.lf-lesson-demo {
+  animation: lf-lesson-cycle-fade 4.8s ease-in-out infinite;
+}
+```
+
 ### frontend/src/routes/marketing/HowItWorks.tsx
 
 ```
@@ -15715,8 +15741,9 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { Button, Card, Icon, IconChip, LottieIcon, Reveal } from '@/components/ui';
 import { TechnologyGraph } from './TechnologyGraph';
+import './HowItWorks.css';
 
 const LESSON_STEPS = [
   { key: 'discover', icon: 'explore', tone: 'primary' },
@@ -15725,27 +15752,26 @@ const LESSON_STEPS = [
 ] as const;
 
 const LESSON_MOMENTS = [
-  { key: 'stories', icon: 'auto_stories' },
 ```
 
 ### frontend/src/routes/marketing/Landing.css
 
 ```
-.lf-lesson-copy__characters {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.2rem;
-  width: min(100%, 18rem);
-  height: 5.25rem;
-  margin-bottom: 0.8rem;
-  pointer-events: none;
-}
-
 .lf-glass.lf-fact-card {
   background-color: rgb(var(--lf-surface));
   background-image: none;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
+  box-shadow: var(--lf-shadow-glass);
+  color: rgb(var(--lf-content));
+}
+
+.lf-glass.lf-fact-card:hover {
+  box-shadow: var(--lf-shadow-glass);
+}
+
+/*
+ * ── Hero character scene — Motion Graphics stage ──────────────────────────
 ```
 
 ### frontend/src/routes/marketing/Landing.tsx
@@ -15756,8 +15782,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/routes/app/navConfig';
-import { Badge, Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
+import { Button, Card, Icon, IconChip, Reveal } from '@/components/ui';
 import { CharacterActor } from '@/components/characters/control/CharacterActor';
+import { GeometricBackground } from '@/components/backgrounds/GeometricBackground';
 import { TechnologyGraph } from './TechnologyGraph';
 import './Landing.css';
 
@@ -15765,7 +15792,6 @@ import './Landing.css';
    product specification: invitation → learning experience → proof → CTA. */
 
 const VALUES = [
-  { key: 'short', icon: 'auto_stories', tone: 'primary' },
 ```
 
 ### frontend/src/routes/marketing/LegalDocumentViewer.tsx
@@ -15775,7 +15801,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { CookiePreferencesButton } from '@/components/CookieConsentBanner';
-import { Badge, Card, Button, Icon } from '@/components/ui';
+import { Badge, Card, Icon } from '@/components/ui';
 
 interface LegalDocumentViewerProps {
   doc: 'terms' | 'privacy';
