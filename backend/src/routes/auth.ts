@@ -42,6 +42,22 @@ const LoginBody = z.object({
 
 const RefreshBody = z.object({ refreshToken: z.string().min(1) });
 
+const RecoverBody = z.object({ email: z.email().max(254) });
+
+const ResetPasswordBody = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128),
+});
+
+const ChangePasswordBody = z.object({
+  currentPassword: z.string().min(1).max(128),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters').max(128),
+});
+
+const ChangeEmailBody = z.object({
+  newEmail: z.email().max(254),
+  currentPassword: z.string().min(1).max(128),
+});
+
 const UpgradeBody = z.object({
   email: z.email().max(254),
   password: z.string().min(8, 'Password must be at least 8 characters').max(128),
@@ -162,6 +178,73 @@ export function authRouter(): Router {
   router.post('/logout', requireAuth, async (_req, res) => {
     await gotrue.signOut(authedUser(res).accessToken); // best-effort; token is dropped client-side regardless
     return ok(res, { signedOut: true });
+  });
+
+  // Sends the recovery.html email (email-server/AGENTS.md). Always answers
+  // 200 — GoTrue itself never reveals whether the address has an account, so
+  // this route doesn't either. The link lands on /reset-password carrying
+  // `type=recovery` fragment tokens, which the frontend must exchange for a
+  // new password rather than treat as a normal login (see /reset-password).
+  router.post('/recover', authRateLimiter, async (req, res) => {
+    const parsed = RecoverBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+    const { FRONTEND_URL } = getConfig();
+    await gotrue.recover(parsed.data.email, `${FRONTEND_URL}/reset-password`);
+    return ok(res, { sent: true });
+  });
+
+  // Completes a recovery link. The bearer token is the SHORT-LIVED recovery
+  // session GoTrue minted when the link was verified (not the user's normal
+  // session) — requireAuth accepts it unchanged since GoTrue issues a real
+  // `role: authenticated` JWT either way.
+  router.post('/reset-password', requireAuth, authRateLimiter, async (req, res) => {
+    const parsed = ResetPasswordBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+    const { error } = await gotrue.updateUser(authedUser(res).accessToken, { password: parsed.data.password });
+    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    return ok(res, { updated: true });
+  });
+
+  // In-session password change (Settings). Re-verifies currentPassword via a
+  // real GoTrue sign-in — GoTrue's `PUT /user` applies a new password to any
+  // valid bearer token with no re-auth of its own, so this is the only gate.
+  router.post('/change-password', requireAuth, authRateLimiter, async (req, res) => {
+    const parsed = ChangePasswordBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+    const user = authedUser(res);
+    const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
+    if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
+    const { error } = await gotrue.updateUser(user.accessToken, { password: parsed.data.newPassword });
+    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    return ok(res, { updated: true });
+  });
+
+  // In-session email change (Settings). Sends email_change.html to the new
+  // address (and the old one, if GOTRUE_MAILER_SECURE_EMAIL_CHANGE_ENABLED)
+  // — auth.users.email does NOT change until that link is confirmed, so the
+  // response only promises a pending change, never a completed one.
+  router.post('/change-email', requireAuth, authRateLimiter, async (req, res) => {
+    const parsed = ChangeEmailBody.safeParse(req.body);
+    if (!parsed.success) {
+      return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
+    }
+    const user = authedUser(res);
+    const { error: verifyError } = await gotrue.signInWithPassword(user.email, parsed.data.currentPassword);
+    if (verifyError) return fail(res, 401, 'INVALID_CREDENTIALS', 'Current password is incorrect');
+    const { FRONTEND_URL } = getConfig();
+    const { error } = await gotrue.updateUser(
+      user.accessToken,
+      { email: parsed.data.newEmail },
+      `${FRONTEND_URL}/profile/settings`,
+    );
+    if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
+    return ok(res, { pending: true });
   });
 
   // Which social providers are actually enabled server-side (GoTrue). The

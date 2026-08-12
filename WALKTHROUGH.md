@@ -2,6 +2,72 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-12) — Password recovery + in-session email/password change close the auth/email integration
+
+Courier (email-server) has been "DONE + LIVE" since 2026-07-18 for auth mail
+(confirmation, and the templates for recovery/magic-link/invite/email-change
+existed at `frontend/public/email-templates/`), but nothing in the platform
+ever actually TRIGGERED a recovery or email-change email, and `/profile/
+settings` shipped 2026-07-12 with email/password hard-disabled behind
+"arrives with Courier, coming soon." Courier shipped five weeks ago; this
+session closed that gap — verified end-to-end against the real local GoTrue
+(not just mocks).
+
+- **Password recovery, new.** `backend/src/services/gotrue.ts` gained
+  `recover(email, redirectTo)` and `updateUser(accessToken, attrs,
+  redirectTo?)`. Four new Core routes: `POST /api/v1/auth/recover` (always
+  answers `{sent: true}` — GoTrue itself never reveals whether an address has
+  an account, so the proxy doesn't either), `POST /api/v1/auth/reset-password`
+  (bearer = the short-lived `type=recovery` session GoTrue mints when the
+  email link is verified, NOT a normal session), `POST /api/v1/auth/
+  change-password` and `POST /api/v1/auth/change-email` (both re-verify
+  `currentPassword` via a real GoTrue sign-in first, since `PUT /user` alone
+  applies to any valid bearer with no re-auth of its own). Frontend:
+  `ForgotPasswordPage` (`/forgot-password`, guest-only) and
+  `ResetPasswordPage` (`/reset-password`, NOT guest-gated — driven entirely
+  by the link's URL fragment) reuse the same fragment-token-parsing shape as
+  `AuthCallbackPage`, but the recovery token is a one-off bearer for a single
+  API call, never persisted to `localStorage` the way a real session is.
+- **`/profile/settings` "Account" card, unblocked.** Inline change-email and
+  change-password sections replace the disabled field + "coming soon" copy.
+  **A real bug caught by live browser verification, not by the test suite:**
+  the inline sections were first built as nested `<form>` elements inside the
+  page's own `<form>` — invalid HTML that Chrome accepts via `createElement`
+  but silently mishandles on submit (the click fell through to a native
+  browser submit instead of running React's handler, appending an empty `?`
+  to the URL and doing nothing server-side). Backend unit tests mocking
+  GoTrue directly never would have caught this — only driving the actual
+  rendered page did. Fixed by making both sections plain `<div>`s with
+  button `onClick` handlers and an `Enter`-key shim, verified by then
+  actually changing a live local user's password twice in a row through the
+  UI and confirming each new password logs in.
+- **Local dev stack gap fixed, not just worked around.** `ADDITIONAL_REDIRECT_URLS`
+  (→ `GOTRUE_URI_ALLOW_LIST`) was empty in local `.env`, so `redirect_to`
+  silently fell back to `SITE_URL` (`http://localhost:3000`, which nothing
+  runs on) instead of the frontend's actual `:5173` routes — this affected
+  Google OAuth's local testability too, not just this session's new routes.
+  `database/scripts/local-stack.sh`'s `ensure_env()` now seeds
+  `http://localhost:5173/{auth/callback,reset-password,profile/settings}`
+  alongside its existing `ENABLE_ANONYMOUS_USERS`-style overrides, so a fresh
+  clone gets a working redirect list with zero manual steps. Verified against
+  the real local GoTrue: `POST /admin/generate_link` confirmed the allow-list
+  now honors the custom `redirect_to`, and the full browser loop (recovery
+  email link → `/reset-password` with fragment tokens → new password → login
+  with it) was driven for real, not simulated.
+- **One production step remains, NOT executed by this session** (Railway
+  auth-service env, a shared-infra change outside an agent's authority to
+  self-approve): add `https://littlefounders.ai/reset-password` and
+  `https://littlefounders.ai/profile/settings` to production's
+  `GOTRUE_URI_ALLOW_LIST` (it already contains `/auth/callback`, since Google
+  OAuth is live — confirmed by the same fallback-to-SITE_URL behavior this
+  session diagnosed locally). Until that's set, a production recovery-email
+  click and an email-change confirmation will silently redirect to the
+  marketing homepage instead of the intended page — the backend/GoTrue side
+  is fully correct either way, only the redirect destination is affected.
+- **Gates:** backend 311/311 (10 new: `recover`/`reset-password`/
+  `change-password`/`change-email`), frontend 440/440, both type-check +
+  lint clean. `backend/README.md` route table updated (§8).
+
 ## Current State (2026-08-11) — Guest accounts, onboarding and mandatory placement shipped to PRODUCTION
 
 Closes COURSE_ENGINE.md §3.2's "future onboarding/placement phase", reserved

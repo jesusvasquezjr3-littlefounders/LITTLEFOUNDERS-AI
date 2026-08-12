@@ -151,6 +151,44 @@ export function signOut(accessToken: string): Promise<GotrueResult<Record<string
   });
 }
 
+/**
+ * Kicks off the password-recovery email (renders `recovery.html` via
+ * Courier/GoTrue — email-server/AGENTS.md). GoTrue itself always answers 200
+ * regardless of whether the address has an account, so this proxy leaks
+ * nothing beyond what GoTrue already guards against. `redirectTo` must be in
+ * `GOTRUE_URI_ALLOW_LIST`; the `type=recovery` fragment tokens land there,
+ * NOT logged in — the frontend must exchange them for a password set, never
+ * treat them as a normal session (unlike the OAuth/confirmation callback).
+ */
+export function recover(email: string, redirectTo: string): Promise<GotrueResult<Record<string, never>>> {
+  const qs = new URLSearchParams({ redirect_to: redirectTo });
+  return gotrue(`/recover?${qs.toString()}`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ email }),
+  });
+}
+
+/**
+ * Updates the CURRENT session's user attributes (`PUT /user`). Password
+ * changes apply immediately; an email change does not take effect until the
+ * new address confirms via the `email_change.html` template — the user's
+ * `auth.users.email` stays the old value until then, so callers must not
+ * assume the new address is live from this response alone.
+ */
+export function updateUser(
+  accessToken: string,
+  attrs: { email?: string; password?: string },
+  redirectTo?: string,
+): Promise<GotrueResult<GotrueUser>> {
+  const path = redirectTo ? `/user?${new URLSearchParams({ redirect_to: redirectTo }).toString()}` : '/user';
+  return gotrue(path, {
+    method: 'PUT',
+    headers: { ...authHeaders(), Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(attrs),
+  });
+}
+
 export interface GotrueSettings {
   /** Map of external (social) provider → enabled, e.g. { google: true }. */
   external?: Record<string, boolean>;

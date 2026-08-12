@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { createApp } from '../app.js';
+import { authRateLimiter } from '../middleware/rateLimit.js';
 import { jsonResponse, mintToken } from './helpers.js';
 
 const SESSION = {
@@ -11,6 +12,13 @@ const SESSION = {
 };
 
 afterEach(() => vi.unstubAllGlobals());
+
+// This file alone drives more than authRateLimiter's max=10/15min through
+// every auth route sharing one process-lifetime MemoryStore — reset the
+// loopback key after every test so request count never leaks between tests.
+afterEach(() => {
+  for (const key of ['127.0.0.1', '::1', '::ffff:127.0.0.1']) void authRateLimiter.resetKey(key);
+});
 
 function stubFetch(handler: (url: string, init?: RequestInit) => Response | Promise<Response>) {
   vi.stubGlobal('fetch', vi.fn((input: RequestInfo | URL, init?: RequestInit) => Promise.resolve(handler(String(input), init))));
@@ -234,5 +242,165 @@ describe('GET /api/v1/auth/oauth', () => {
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
     expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/v1/auth/recover', () => {
+  it('always answers sent:true — never reveals whether the address exists', async () => {
+    stubFetch((url, init) => {
+      const u = new URL(url);
+      expect(u.pathname).toBe('/auth/v1/recover');
+      expect(u.searchParams.get('redirect_to')).toBe('http://localhost:5173/reset-password');
+      expect(JSON.parse(String(init?.body))).toEqual({ email: 'ana@example.com' });
+      return jsonResponse(200, {});
+    });
+    const res = await request(createApp()).post('/api/v1/auth/recover').send({ email: 'ana@example.com' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.sent).toBe(true);
+  });
+
+  it('still answers sent:true even if GoTrue errors, so nothing about account existence leaks', async () => {
+    stubFetch(() => jsonResponse(400, { msg: 'nope' }));
+    const res = await request(createApp()).post('/api/v1/auth/recover').send({ email: 'ana@example.com' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.sent).toBe(true);
+  });
+
+  it('rejects a malformed email without calling GoTrue', async () => {
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp()).post('/api/v1/auth/recover').send({ email: 'not-an-email' });
+    expect(res.status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/v1/auth/reset-password', () => {
+  it('401s without the recovery session token', async () => {
+    const res = await request(createApp()).post('/api/v1/auth/reset-password').send({ password: 'longenough1' });
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects a short password without calling GoTrue', async () => {
+    const token = mintToken();
+    const spy = vi.fn();
+    stubFetch(spy as never);
+    const res = await request(createApp())
+      .post('/api/v1/auth/reset-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'short' });
+    expect(res.status).toBe(400);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('applies the new password via the recovery session bearer token', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch((url, init) => {
+      expect(url).toBe('http://supabase.test/auth/v1/user');
+      const headers = init?.headers as Record<string, string>;
+      expect(headers.Authorization).toBe(`Bearer ${token}`);
+      expect(JSON.parse(String(init?.body))).toEqual({ password: 'longenough1' });
+      return jsonResponse(200, { id: 'u1', email: 'ana@example.com' });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/reset-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'longenough1' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.updated).toBe(true);
+  });
+});
+
+describe('POST /api/v1/auth/change-password', () => {
+  it('401s without a session', async () => {
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-password')
+      .send({ currentPassword: 'oldpassword1', newPassword: 'newpassword1' });
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects the wrong current password without touching /user', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch((url) => {
+      expect(url).toBe('http://supabase.test/auth/v1/token?grant_type=password');
+      return jsonResponse(400, { error_description: 'Invalid login credentials' });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: 'wrongpass1', newPassword: 'newpassword1' });
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+  });
+
+  it('re-verifies the current password, then applies the new one', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch((url, init) => {
+      if (url.includes('grant_type=password')) {
+        expect(JSON.parse(String(init?.body))).toEqual({ email: 'ana@example.com', password: 'oldpassword1' });
+        return jsonResponse(200, SESSION);
+      }
+      expect(url).toBe('http://supabase.test/auth/v1/user');
+      expect(JSON.parse(String(init?.body))).toEqual({ password: 'newpassword1' });
+      return jsonResponse(200, { id: 'u1', email: 'ana@example.com' });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-password')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: 'oldpassword1', newPassword: 'newpassword1' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.updated).toBe(true);
+  });
+});
+
+describe('POST /api/v1/auth/change-email', () => {
+  it('401s without a session', async () => {
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-email')
+      .send({ newEmail: 'new@example.com', currentPassword: 'currentpass1' });
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects the wrong current password without touching /user', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch(() => jsonResponse(400, { error_description: 'Invalid login credentials' }));
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-email')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ newEmail: 'new@example.com', currentPassword: 'wrongpass1' });
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('INVALID_CREDENTIALS');
+  });
+
+  it('re-verifies, then requests the email change with a settings redirect (pending, not applied)', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch((url, init) => {
+      if (url.includes('grant_type=password')) return jsonResponse(200, SESSION);
+      const u = new URL(url);
+      expect(u.pathname).toBe('/auth/v1/user');
+      expect(u.searchParams.get('redirect_to')).toBe('http://localhost:5173/profile/settings');
+      expect(JSON.parse(String(init?.body))).toEqual({ email: 'new@example.com' });
+      return jsonResponse(200, { id: 'u1', email: 'ana@example.com' });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-email')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ newEmail: 'new@example.com', currentPassword: 'currentpass1' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.pending).toBe(true);
+  });
+
+  it('maps an already-registered new email to EMAIL_IN_USE', async () => {
+    const token = mintToken({ email: 'ana@example.com' });
+    stubFetch((url) => {
+      if (url.includes('grant_type=password')) return jsonResponse(200, SESSION);
+      return jsonResponse(422, { msg: 'Email address already registered' });
+    });
+    const res = await request(createApp())
+      .post('/api/v1/auth/change-email')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ newEmail: 'new@example.com', currentPassword: 'currentpass1' });
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('EMAIL_IN_USE');
   });
 });

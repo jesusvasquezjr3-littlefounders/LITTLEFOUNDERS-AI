@@ -15,6 +15,8 @@ import { AuthLayout } from '@/routes/auth/AuthLayout';
 import { LoginPage } from '@/routes/auth/LoginPage';
 import { SignupPage } from '@/routes/auth/SignupPage';
 import { AuthCallbackPage } from '@/routes/auth/AuthCallbackPage';
+import { ForgotPasswordPage } from '@/routes/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from '@/routes/auth/ResetPasswordPage';
 import { VerifyParentPage } from '@/routes/auth/VerifyParentPage';
 import { UpgradeAccountPage } from '@/routes/auth/UpgradeAccountPage';
 import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
@@ -144,6 +146,19 @@ export function App() {
                 </RequireGuest>
               }
             />
+            <Route
+              path="forgot-password"
+              element={
+                <RequireGuest>
+                  <ForgotPasswordPage />
+                </RequireGuest>
+              }
+            />
+            {/* Not guest-guarded: driven entirely by the recovery link's URL
+                fragment, which is valid regardless of any existing session
+                on this device (e.g. an older link opened while logged in
+                elsewhere). */}
+            <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
 
           {/* Onboarding — guest-first, one-time. Its own fullscreen layer, no

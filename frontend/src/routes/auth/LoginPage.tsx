@@ -76,25 +76,33 @@ export function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <Field
-          label={t('auth.login.password')}
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          trailing={
-            <button
-              type="button"
-              aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
-              aria-pressed={showPassword}
-              onClick={() => setShowPassword((s) => !s)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              <Icon name={showPassword ? 'visibility_off' : 'visibility'} />
-            </button>
-          }
-        />
+        <div className="flex flex-col gap-1.5">
+          <Field
+            label={t('auth.login.password')}
+            type={showPassword ? 'text' : 'password'}
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            trailing={
+              <button
+                type="button"
+                aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword((s) => !s)}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-content-muted transition-colors duration-150 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <Icon name={showPassword ? 'visibility_off' : 'visibility'} />
+              </button>
+            }
+          />
+          <Link
+            to="/forgot-password"
+            className="lf-caption self-end rounded-sm text-content-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {t('auth.login.forgotPassword')}
+          </Link>
+        </div>
         <Button type="submit" disabled={submitting || !email || !password} className="mt-1 w-full">
           {submitting ? t('auth.login.submitting') : t('auth.login.submit')}
         </Button>

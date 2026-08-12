@@ -13,9 +13,11 @@ import { UserListItem, type ListedUser } from './UserListItem';
 /*
  * /profile/settings — personal data. `locale` is the user's language of
  * record (DB field): it drives lesson content AND the UI. Email and
- * password changes stay disabled until Courier (email-server) ships.
- * Birth date is plain profile data for ANY user (distinct from Guardian's
- * verified adult birth_date used only for the Tutor upgrade).
+ * password changes go through Courier's recover/change-email flows
+ * (backend/src/routes/auth.ts) — both re-verify currentPassword before
+ * touching GoTrue. Birth date is plain profile data for ANY user (distinct
+ * from Guardian's verified adult birth_date used only for the Tutor
+ * upgrade).
  */
 
 interface OwnProfileFields {
@@ -49,6 +51,20 @@ export function SettingsPage() {
 
   const [blocked, setBlocked] = useState<ListedUser[] | null>(null);
   const [unblockingId, setUnblockingId] = useState<string | null>(null);
+
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [emailPassword, setEmailPassword] = useState('');
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [emailErrorCode, setEmailErrorCode] = useState<string | null>(null);
+  const [emailPending, setEmailPending] = useState(false);
+
+  const [editingPassword, setEditingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [passwordErrorCode, setPasswordErrorCode] = useState<string | null>(null);
+  const [passwordChanged, setPasswordChanged] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -117,6 +133,47 @@ export function SettingsPage() {
       return;
     }
     setBlocked((list) => list?.filter((u) => u.userId !== user.userId) ?? list);
+  }
+
+  async function onChangeEmail() {
+    setEmailSubmitting(true);
+    setEmailErrorCode(null);
+    const token = await getToken();
+    const { error } = await api('/auth/change-email', {
+      method: 'POST',
+      token,
+      body: { newEmail: newEmail.trim(), currentPassword: emailPassword },
+    });
+    setEmailSubmitting(false);
+    if (error) {
+      setEmailErrorCode(error.code);
+      return;
+    }
+    setEmailPending(true);
+    setEditingEmail(false);
+    setEmailPassword('');
+  }
+
+  async function onChangePassword() {
+    if (newPassword.length < 8) return;
+    setPasswordSubmitting(true);
+    setPasswordErrorCode(null);
+    const token = await getToken();
+    const { error } = await api('/auth/change-password', {
+      method: 'POST',
+      token,
+      body: { currentPassword, newPassword },
+    });
+    setPasswordSubmitting(false);
+    if (error) {
+      setPasswordErrorCode(error.code);
+      return;
+    }
+    setPasswordChanged(true);
+    setEditingPassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setTimeout(() => setPasswordChanged(false), 4000);
   }
 
   return (
@@ -197,11 +254,155 @@ export function SettingsPage() {
 
         <Card className="flex h-full flex-col gap-5">
           <h2 className="lf-title text-content">{t('profile.settings.account')}</h2>
-          <Field label={t('profile.settings.email')} value={session?.user.email ?? ''} disabled readOnly />
-          <div className="flex items-start gap-3 rounded-md bg-surface-sunken px-4 py-3">
-            <Icon name="hourglass_top" className="mt-0.5 shrink-0 text-content-muted" />
-            <p className="lf-caption text-content-muted">{t('profile.settings.emailPasswordPending')}</p>
-          </div>
+
+          {isGuest ? (
+            <Field label={t('profile.settings.email')} value={t('profile.settings.guestBanner.title')} disabled readOnly />
+          ) : (
+            <>
+              {!editingEmail && (
+                <div className="flex items-end justify-between gap-3">
+                  <Field
+                    label={t('profile.settings.email')}
+                    value={session?.user.email ?? ''}
+                    disabled
+                    readOnly
+                    className="flex-1"
+                    hint={emailPending ? t('profile.settings.emailPending', { email: newEmail }) : undefined}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="min-h-11 shrink-0 px-4 py-2"
+                    onClick={() => {
+                      setEditingEmail(true);
+                      setEmailPending(false);
+                      setEmailErrorCode(null);
+                      setNewEmail('');
+                    }}
+                  >
+                    {t('profile.settings.changeEmail')}
+                  </Button>
+                </div>
+              )}
+              {editingEmail && (
+                // A <form> here would nest inside the page's own <form> (invalid HTML —
+                // the browser falls back to a native submit instead of running React's
+                // handler), so this is a plain div with an Enter-to-submit shim instead.
+                <div
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newEmail && emailPassword && !emailSubmitting) void onChangeEmail();
+                  }}
+                  className="flex flex-col gap-4"
+                >
+                  {emailErrorCode && <ErrorBanner code={emailErrorCode} />}
+                  <Field
+                    label={t('profile.settings.newEmail')}
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+                  <Field
+                    label={t('profile.settings.currentPassword')}
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    value={emailPassword}
+                    onChange={(e) => setEmailPassword(e.target.value)}
+                  />
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      onClick={() => void onChangeEmail()}
+                      disabled={emailSubmitting || !newEmail || !emailPassword}
+                      className="gap-2"
+                    >
+                      <Icon name={emailSubmitting ? 'progress_activity' : 'send'} className={emailSubmitting ? 'animate-spin' : undefined} />
+                      {emailSubmitting ? t('profile.settings.changeEmailSubmitting') : t('profile.settings.changeEmailSubmit')}
+                    </Button>
+                    <Button type="button" variant="secondary" onClick={() => setEditingEmail(false)}>
+                      {t('profile.settings.cancel')}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="h-px bg-outline/50" />
+
+              {!editingPassword && (
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="lf-label text-content">{t('profile.settings.password')}</p>
+                    <p className="lf-body mt-1 tracking-widest text-content-muted" aria-hidden="true">
+                      ••••••••
+                    </p>
+                    {passwordChanged && <p className="lf-caption mt-1 text-success-strong">{t('profile.settings.changePasswordSuccess')}</p>}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="min-h-11 shrink-0 px-4 py-2"
+                    onClick={() => {
+                      setEditingPassword(true);
+                      setPasswordErrorCode(null);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                    }}
+                  >
+                    {t('profile.settings.changePassword')}
+                  </Button>
+                </div>
+              )}
+              {editingPassword && (
+                // Same nested-<form> constraint as the email section above.
+                <div
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && currentPassword && newPassword.length >= 8 && !passwordSubmitting) void onChangePassword();
+                  }}
+                  className="flex flex-col gap-4"
+                >
+                  {passwordErrorCode && <ErrorBanner code={passwordErrorCode} />}
+                  <Field
+                    label={t('profile.settings.currentPassword')}
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
+                  <Field
+                    label={t('profile.settings.newPassword')}
+                    type="password"
+                    required
+                    minLength={8}
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    hint={t('profile.settings.newPasswordHint')}
+                    error={newPassword.length > 0 && newPassword.length < 8 ? t('profile.settings.newPasswordTooShort') : undefined}
+                  />
+                  <div className="flex gap-3">
+                    <Button
+                      type="button"
+                      onClick={() => void onChangePassword()}
+                      disabled={passwordSubmitting || !currentPassword || newPassword.length < 8}
+                      className="gap-2"
+                    >
+                      <Icon
+                        name={passwordSubmitting ? 'progress_activity' : 'lock_reset'}
+                        className={passwordSubmitting ? 'animate-spin' : undefined}
+                      />
+                      {passwordSubmitting ? t('profile.settings.changePasswordSubmitting') : t('profile.settings.changePasswordSubmit')}
+                    </Button>
+                    <Button type="button" variant="secondary" onClick={() => setEditingPassword(false)}>
+                      {t('profile.settings.cancel')}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </Card>
 
         <Card className="flex flex-col gap-4 lg:col-span-2">

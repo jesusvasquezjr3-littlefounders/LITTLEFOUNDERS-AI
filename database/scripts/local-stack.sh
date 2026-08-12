@@ -52,6 +52,7 @@ ensure_env() {
       -e 's|^ENABLE_ANONYMOUS_USERS=.*$|ENABLE_ANONYMOUS_USERS=true|' \
       -e 's|^STUDIO_DEFAULT_ORGANIZATION=.*$|STUDIO_DEFAULT_ORGANIZATION=LittleFounders|' \
       -e 's|^STUDIO_DEFAULT_PROJECT=.*$|STUDIO_DEFAULT_PROJECT=Vault Local|' \
+      -e 's|^ADDITIONAL_REDIRECT_URLS=.*$|ADDITIONAL_REDIRECT_URLS=http://localhost:5173/auth/callback,http://localhost:5173/reset-password,http://localhost:5173/profile/settings|' \
       "$DOCKER_DIR/.env"
     rm -f "$DOCKER_DIR/.env.old"
   fi
