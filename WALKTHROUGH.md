@@ -2,6 +2,38 @@
 
 > Informational (authority level: /AGENTS.md §1.1 #7). Updated at the end of every working session via `agent/workflows/doc-sync.md`.
 
+## Current State (2026-08-13) — Acquisition analytics integrity deployed
+
+- **Pulse acquisition integrity correction is live.** Release `02758833`
+  restricts Plausible to consented, identity-resolved guests on public
+  marketing routes. Authenticated product traffic, `/admin/*`, and the OAuth
+  callback therefore cannot create future acquisition pageviews. Umami now
+  excludes `/admin/*`; it remains limited to consented guest marketing and
+  signed-in parent product surfaces. The first-party classifier treats
+  `accounts.google.com` as an internal authentication hand-off rather than
+  Google search.
+- **Verified against production.** Railway Core deployment
+  `7fee7bca-0d7f-481d-889c-00ace2c6d67f` reached `SUCCESS`; Vercel production
+  deployment `dpl_Ee4zZLrKPnZ4aoCYzcYAJjQP4qan` is `Ready` and aliased to
+  `littlefounders.ai`. `GET /health` returns the standard 200 envelope and
+  the served JavaScript exactly matches the release build. A real Chrome
+  check verified: no tracker without consent; consented public marketing
+  mounts Plausible and Umami; `/admin` and `/auth/callback` mount neither and
+  initiate no Plausible or Umami event request.
+- **Reporting contract corrected.** Removed the UI/API/env `IP_BLOCKLIST`
+  contract because Plausible CE has no documented, verified setting by that
+  name. `pulse/README.md` now defines the PII-free three-field UTM convention
+  (`utm_source`, `utm_medium`, `utm_campaign`) and forbids its use on internal
+  navigation. Historical events retain their former scope and are a
+  pre-clean baseline, not a valid comparison cohort for post-release
+  acquisition data.
+- **Release-process exception, explicitly accepted by the owner.** The
+  automatic frontend CI remains blocked by an unrelated legal locale-parity
+  review in `marketing.json`. This release was manually deployed only after
+  the affected frontend/backend/pulse tests, builds, docs and secrets gates,
+  Railway production preflight, and browser checks passed; no legal content
+  was changed.
+
 ## Current State (2026-08-12) — Password recovery + in-session email/password change close the auth/email integration
 
 Courier (email-server) has been "DONE + LIVE" since 2026-07-18 for auth mail

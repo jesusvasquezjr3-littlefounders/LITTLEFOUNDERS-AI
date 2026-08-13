@@ -91,8 +91,10 @@ owner sign-off for the §1.2/§1.5 change recorded in WALKTHROUGH.md): self-host
 Plausible CE v3.2.1 + Umami v3.2.0 + Uptime Kuma 2.4.0 as five pinned Railway
 services, Dependabot-auto-bumped, daily pg_dump backup, data read only through
 Core `/api/v1/admin/*`. Feeds the admin/superadmin console's Analytics & Health
-panel. Umami behavioral capture is §1.9-fenced to marketing + parent/admin
-surfaces (never kid sessions). Remaining manual step: GA4 historical import
+panel. Plausible acquisition capture is restricted to consented public
+marketing routes; Umami behavioral capture is §1.9-fenced to marketing +
+signed-in parent product surfaces (never kid or admin sessions). Remaining
+manual step: GA4 historical import
 (GCP OAuth app — runbook in `pulse/README.md`).
 
 **Lesson Engine v1 shipped 2026-07-12** (`/LESSON_ENGINE.md` authoritative):
