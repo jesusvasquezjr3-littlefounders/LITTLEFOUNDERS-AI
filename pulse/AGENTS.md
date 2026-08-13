@@ -41,19 +41,26 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
    cookieless/no-PII by design, but is intentionally restricted to consented
    public marketing acquisition: it does not observe product, OAuth, or admin
    routes.
-5. **Browser never talks to Pulse for data.** Admin dashboards read analytics
+5. **Internal traffic is excluded at the tracker, never at Plausible.**
+   Plausible CE has no ingestion IP blocklist. The exclusion registry lives in
+   Vault (`analytics_ip_exclusions`, migration 0045) and is enforced in two
+   places we own: the SPA asks Core before mounting ANY tracker
+   (`GET /api/v1/analytics/tracking-decision`), and Core drops first-party
+   event batches from excluded networks. Exclusion is forward-only — it never
+   rewrites history, and no document or UI may imply otherwise.
+6. **Browser never talks to Pulse for data.** Admin dashboards read analytics
    and health exclusively through Core (`/api/v1/admin/*`), which holds the
    Plausible/Umami/Kuma API tokens server-side (§1.5 pattern). The ONLY
    browser-facing Pulse surfaces are the two tracker scripts and Plausible's
    GA OAuth callback.
-6. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
+7. **State needs volumes.** `pulse-db` (PGDATA), `pulse-clickhouse`
    (/var/lib/clickhouse), `pulse-kuma` (/app/data). A Kuma redeploy without
    its volume wipes every monitor. Daily `pg_dump` of pulse-db runs via
    `.github/workflows/pulse-backup.yml` (Vault-backup pattern).
-7. **Private networking is IPv6.** Every listener binds `::` (Plausible
+8. **Private networking is IPv6.** Every listener binds `::` (Plausible
    `LISTEN_IP`, Umami `HOSTNAME`, ClickHouse `listen_host`). A service that
    binds 0.0.0.0 is silently unreachable at `*.railway.internal`.
-8. **Secrets only in Railway variables.** `pulse/.env.example` is the
+9. **Secrets only in Railway variables.** `pulse/.env.example` is the
    placeholder contract; `npm run secrets:check` gates every commit.
 
 ## Upgrade protocol
