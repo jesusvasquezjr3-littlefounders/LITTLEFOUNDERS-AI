@@ -9,6 +9,7 @@ import {
   anomalyQuery,
   cohortRetentionQuery,
   activationFunnelQuery,
+  type AnalyticsWindow,
 } from '../db/queries.js';
 
 export interface MetricsSummary {
@@ -138,6 +139,13 @@ const METRIC_COLUMN: Record<string, string> = {
 export async function getMetricsSummary(days: number): Promise<MetricsSummary | null> {
   try {
     const windowDays = Math.max(days, 7);
+    /*
+     * The summary's sub-queries used to be unbounded while the header said
+     * "last N days": adoption, activation and time-to-value were computed over
+     * all of history and displayed under the selected period. They now share
+     * the selection.
+     */
+    const summaryWindow: AnalyticsWindow = { days: windowDays };
 
     const [
       dailyRaw,
@@ -154,7 +162,7 @@ export async function getMetricsSummary(days: number): Promise<MetricsSummary | 
         return query<DailyUserRow>(sql, ...params);
       })(),
       (async (): Promise<AdoptionRow[]> => {
-        const { sql, params } = featureAdoptionQuery();
+        const { sql, params } = featureAdoptionQuery(summaryWindow);
         return query<AdoptionRow>(sql, ...params);
       })(),
       (async (): Promise<RetentionRow[]> => {
@@ -162,11 +170,11 @@ export async function getMetricsSummary(days: number): Promise<MetricsSummary | 
         return query<RetentionRow>(sql, ...params);
       })(),
       (async (): Promise<FunnelRow[]> => {
-        const { sql, params } = activationFunnelQuery();
+        const { sql, params } = activationFunnelQuery(summaryWindow);
         return query<FunnelRow>(sql, ...params);
       })(),
       (async (): Promise<TTVRow[]> => {
-        const { sql, params } = timeToValueQuery(10000);
+        const { sql, params } = timeToValueQuery(10000, summaryWindow);
         return query<TTVRow>(sql, ...params);
       })(),
       (async (): Promise<AnomalyRow[]> => {
@@ -313,9 +321,10 @@ export async function getComparison(
 
 export async function getEngagement(
   limit: number,
+  window: AnalyticsWindow,
 ): Promise<EngagementEntry[] | null> {
   try {
-    const { sql, params } = engagementQuery(limit);
+    const { sql, params } = engagementQuery(limit, window);
     const rows = await query<EngagementRow>(sql, ...params);
 
     return rows.map((r) => ({
@@ -338,9 +347,10 @@ export async function getEngagement(
 
 export async function getTimeToValue(
   limit: number,
+  window: AnalyticsWindow,
 ): Promise<TimeToValueEntry[] | null> {
   try {
-    const { sql, params } = timeToValueQuery(limit);
+    const { sql, params } = timeToValueQuery(limit, window);
     const rows = await query<TTVRow>(sql, ...params);
 
     return rows.map((r) => ({

@@ -22,7 +22,7 @@ describe('learning intelligence', () => {
     await initDb();
     for (let attempt = 1; attempt <= 3; attempt++) {
       await execute(
-        `INSERT INTO fact_segment_attempts (
+        `INSERT INTO fact_segment_attempts_raw (
           attempt_id, user_id, lesson_id, course_id, topic_id, skill_key,
           segment_id, attempt_number, score, hints_used, time_spent_seconds,
           document_updated_at, created_at

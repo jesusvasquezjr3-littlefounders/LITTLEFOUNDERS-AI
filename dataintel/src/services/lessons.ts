@@ -2,6 +2,7 @@ import { query } from '../db/duckdb.js';
 import {
   lessonDropoffQuery,
   segmentCalibrationQuery,
+  type AnalyticsWindow,
 } from '../db/queries.js';
 
 export interface DropoffEntry {
@@ -54,9 +55,10 @@ interface CalibrationRow {
 
 export async function getLessonDropoff(
   limit: number,
+  window: AnalyticsWindow,
 ): Promise<DropoffEntry[] | null> {
   try {
-    const { sql, params } = lessonDropoffQuery(limit);
+    const { sql, params } = lessonDropoffQuery(limit, window);
     const rows = await query<DropoffRow>(sql, ...params);
 
     return rows.map((r) => ({
@@ -77,9 +79,10 @@ export async function getLessonDropoff(
 export async function getSegmentCalibration(
   minLearners: number,
   limit: number,
+  window: AnalyticsWindow,
 ): Promise<CalibrationEntry[] | null> {
   try {
-    const { sql, params } = segmentCalibrationQuery(minLearners, limit);
+    const { sql, params } = segmentCalibrationQuery(minLearners, limit, window);
     const rows = await query<CalibrationRow>(sql, ...params);
 
     return rows.map((r) => ({

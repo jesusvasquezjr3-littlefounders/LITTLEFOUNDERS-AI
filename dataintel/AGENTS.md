@@ -37,6 +37,24 @@ query results through a key-gated REST API. Internal service —
   its platform healthcheck. Redis and DuckDB connect in the background.
 - Envelope + Zod on every route (/AGENTS.md §1.6). Routes under `/api/v1`
   are internal-key-gated; `/health` is open.
+- **Staff traffic never reaches a metric.** The plain table names
+  (`fact_events`, `fact_segment_attempts`, `dim_sessions`, `dim_users`) are
+  staff-free VIEWS over `*_raw` physical tables. Only `db/sync.ts` (the writer),
+  `db/duckdb.ts` (the rename migration) and `services/staffAudit.ts` (the
+  deliberate disclosure path) may touch a `_raw` table, and
+  `__tests__/staff-exclusion.test.ts` fails the build if anything else does.
+  The filter uses BOTH the authoritative `dim_users_raw.is_staff` flag (Vault
+  0046, an EXISTS over all roles) and the event-time role stamp, because
+  neither alone is sufficient: a superadmin who is also a parent stamps
+  `parent`, and `dim_users.role` is merely the most recently granted role.
+  Measured before this landed: 90.5% of production events and 100% of segment
+  attempts were staff.
+- **Every analytical query is bounded by a window.** `AnalyticsWindow`
+  (`days`, or `days` + `from`/`to`) is threaded from the route to the SQL. Ten
+  queries previously had no time bound at all while the console displayed them
+  under a period label — `engagementQuery` aggregated all history and named its
+  output `sessions_30d`. A half-specified range is an ERROR, never a silent
+  fallback to the trailing window. Covered by `__tests__/time-window.test.ts`.
 - **Child safety (§1.9):** Dataintel serves aggregated analytics. No per-child
   PII is ever exposed through its endpoints. Individual-child drill-downs
   require the caller (Core) to apply its own role-based access controls.

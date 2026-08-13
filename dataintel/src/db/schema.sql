@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS fact_events (
+CREATE TABLE IF NOT EXISTS fact_events_raw (
   event_id BIGINT PRIMARY KEY,
   client_event_id UUID,
   event_version SMALLINT,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS fact_events (
 -- from consent-gated behavioural events: grades are product records written
 -- by Core, not browser telemetry, and are the reliable source for
 -- pedagogical calibration.
-CREATE TABLE IF NOT EXISTS fact_segment_attempts (
+CREATE TABLE IF NOT EXISTS fact_segment_attempts_raw (
   attempt_id UUID PRIMARY KEY,
   user_id UUID NOT NULL,
   lesson_id UUID NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS dim_anon_conversions (
   converted_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS dim_sessions (
+CREATE TABLE IF NOT EXISTS dim_sessions_raw (
   session_id UUID PRIMARY KEY,
   user_id UUID,
   started_at TIMESTAMP,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS dim_sessions (
   duration_sec DOUBLE
 );
 
-CREATE TABLE IF NOT EXISTS dim_users (
+CREATE TABLE IF NOT EXISTS dim_users_raw (
   user_id UUID PRIMARY KEY,
   role VARCHAR,
   created_at TIMESTAMP,
@@ -168,35 +168,85 @@ CREATE TABLE IF NOT EXISTS dataintel_sync_state (
 -- to a pre-existing table above MUST get an ALTER here in the same commit, and
 -- nothing that references a new column may be placed above this block.
 -- Keep semicolons out of these comments — the runner splits statements on them.
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS client_event_id UUID;
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS event_version SMALLINT;
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS occurred_at TIMESTAMP;
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS course_id UUID;
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS experiment_id UUID;
-ALTER TABLE fact_events ADD COLUMN IF NOT EXISTS experiment_variant VARCHAR;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS course_id UUID;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS topic_id UUID;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS skill_key VARCHAR;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS time_spent_seconds INTEGER;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS document_updated_at TIMESTAMP;
-ALTER TABLE fact_segment_attempts ADD COLUMN IF NOT EXISTS diagnostic_code VARCHAR;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS client_event_id UUID;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS event_version SMALLINT;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS occurred_at TIMESTAMP;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS course_id UUID;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS experiment_id UUID;
+ALTER TABLE fact_events_raw ADD COLUMN IF NOT EXISTS experiment_variant VARCHAR;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS course_id UUID;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS topic_id UUID;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS skill_key VARCHAR;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS time_spent_seconds INTEGER;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS document_updated_at TIMESTAMP;
+ALTER TABLE fact_segment_attempts_raw ADD COLUMN IF NOT EXISTS diagnostic_code VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_slug VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_en VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_es VARCHAR;
 ALTER TABLE dim_lessons ADD COLUMN IF NOT EXISTS course_title_pt VARCHAR;
+ALTER TABLE dim_users_raw ADD COLUMN IF NOT EXISTS is_staff BOOLEAN DEFAULT FALSE;
 
-CREATE INDEX IF NOT EXISTS idx_fact_events_user_time  ON fact_events(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_event_time ON fact_events(event_type, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_session    ON fact_events(session_id, ordinal);
-CREATE INDEX IF NOT EXISTS idx_fact_events_created     ON fact_events(created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_role        ON fact_events(role, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_route       ON fact_events(route_class, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_device      ON fact_events(device, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_locale      ON fact_events(locale, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_occurred    ON fact_events(occurred_at);
-CREATE INDEX IF NOT EXISTS idx_fact_events_experiment  ON fact_events(experiment_id, experiment_variant, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_segment_time ON fact_segment_attempts(lesson_id, segment_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_user_time ON fact_segment_attempts(user_id, created_at);
-CREATE INDEX IF NOT EXISTS idx_fact_attempts_skill_time ON fact_segment_attempts(user_id, skill_key, created_at);
+
+-- ═══ STAFF-FREE VIEWS ═════════════════════════════════════════════════════
+--
+-- Every analytical query reads THESE, never the *_raw tables underneath.
+--
+-- Why the tables were renamed rather than each query being edited: measured
+-- against production on 2026-08-13, 90.5% of first-party events and 100% of
+-- lesson_segment_attempts were produced by 2 staff accounts. Ninety-five query
+-- sites referenced the fact tables, and a filter that must be remembered in
+-- ninety-five places is a filter that will be missed in one. Renaming the
+-- physical tables and re-creating the old names as filtered views made every
+-- existing query correct at once, and makes the CLEAN name the path of least
+-- resistance for new ones. `queries-are-staff-free.test.ts` fails the build if
+-- an analytical file reaches for a *_raw table.
+--
+-- The filter is deliberately BELT AND BRACES, because neither signal is
+-- sufficient alone:
+--   * `role` on an event is the event-time stamp, and Core stamps the
+--     highest-priority role in a fixed order, so a superadmin who is also a
+--     parent stamps `parent`.
+--   * `dim_users.role` is the most-recently-granted role, which flips with
+--     grant order.
+-- `dim_users_raw.is_staff` (Vault migration 0046) is the authoritative
+-- EXISTS-over-all-roles answer, and the stamp check additionally catches rows
+-- whose user has since been deleted from the dimension.
+--
+-- Rows with no user_id (anonymous acquisition traffic) are KEPT: they are the
+-- pre-signup funnel and cannot be staff-attributed.
+
+CREATE OR REPLACE VIEW v_staff_users AS
+  SELECT user_id FROM dim_users_raw WHERE is_staff IS TRUE;
+
+CREATE OR REPLACE VIEW fact_events AS
+  SELECT * FROM fact_events_raw e
+  WHERE COALESCE(e.role, '') NOT IN ('admin', 'superadmin')
+    AND (e.user_id IS NULL OR e.user_id NOT IN (SELECT user_id FROM v_staff_users));
+
+CREATE OR REPLACE VIEW fact_segment_attempts AS
+  SELECT * FROM fact_segment_attempts_raw a
+  WHERE a.user_id NOT IN (SELECT user_id FROM v_staff_users);
+
+CREATE OR REPLACE VIEW dim_sessions AS
+  SELECT * FROM dim_sessions_raw s
+  WHERE s.user_id IS NULL OR s.user_id NOT IN (SELECT user_id FROM v_staff_users);
+
+CREATE OR REPLACE VIEW dim_users AS
+  SELECT * FROM dim_users_raw u
+  WHERE u.is_staff IS NOT TRUE;
+
+CREATE INDEX IF NOT EXISTS idx_fact_events_user_time  ON fact_events_raw(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_event_time ON fact_events_raw(event_type, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_session    ON fact_events_raw(session_id, ordinal);
+CREATE INDEX IF NOT EXISTS idx_fact_events_created     ON fact_events_raw(created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_role        ON fact_events_raw(role, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_route       ON fact_events_raw(route_class, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_device      ON fact_events_raw(device, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_locale      ON fact_events_raw(locale, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_occurred    ON fact_events_raw(occurred_at);
+CREATE INDEX IF NOT EXISTS idx_fact_events_experiment  ON fact_events_raw(experiment_id, experiment_variant, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_segment_time ON fact_segment_attempts_raw(lesson_id, segment_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_user_time ON fact_segment_attempts_raw(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_fact_attempts_skill_time ON fact_segment_attempts_raw(user_id, skill_key, created_at);
 CREATE INDEX IF NOT EXISTS idx_skill_states_action ON learner_skill_states(recommended_action, review_due_at);
 CREATE INDEX IF NOT EXISTS idx_anon_conversions_user ON dim_anon_conversions(user_id);

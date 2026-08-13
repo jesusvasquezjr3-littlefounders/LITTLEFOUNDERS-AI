@@ -7,6 +7,9 @@ import { getActivationFunnel } from '../services/funnel.js';
 import { getCohortRetention } from '../services/retention.js';
 import { exportEvents } from '../services/exports.js';
 
+/** Wide enough that these fixtures are never clipped by the window itself. */
+const WINDOW = { days: 3650 };
+
 describe('pedagogical signals', () => {
   const lessonId = randomUUID();
   const learnerA = randomUUID();
@@ -26,37 +29,37 @@ describe('pedagogical signals', () => {
       lessonId,
     );
     await execute(
-      `INSERT INTO fact_segment_attempts
+      `INSERT INTO fact_segment_attempts_raw
        (attempt_id, user_id, lesson_id, segment_id, attempt_number, score, hints_used, created_at)
        VALUES (?, ?, ?, 'practice-1', 1, 40, 1, CURRENT_TIMESTAMP)`,
       randomUUID(), learnerA, lessonId,
     );
     await execute(
-      `INSERT INTO fact_segment_attempts
+      `INSERT INTO fact_segment_attempts_raw
        (attempt_id, user_id, lesson_id, segment_id, attempt_number, score, hints_used, created_at)
        VALUES (?, ?, ?, 'practice-1', 2, 80, 1, CURRENT_TIMESTAMP)`,
       randomUUID(), learnerA, lessonId,
     );
     await execute(
-      `INSERT INTO fact_segment_attempts
+      `INSERT INTO fact_segment_attempts_raw
        (attempt_id, user_id, lesson_id, segment_id, attempt_number, score, hints_used, created_at)
        VALUES (?, ?, ?, 'practice-1', 1, 90, 0, CURRENT_TIMESTAMP)`,
       randomUUID(), learnerB, lessonId,
     );
     await execute(
-      `INSERT INTO fact_events
+      `INSERT INTO fact_events_raw
        (event_id, user_id, session_id, lesson_id, event_type, value, created_at)
        VALUES (?, ?, ?, ?, 'lesson_start', NULL, CURRENT_TIMESTAMP)`,
       Number(`9${Date.now()}`), learnerA, sessionA, lessonId,
     );
     await execute(
-      `INSERT INTO fact_events
+      `INSERT INTO fact_events_raw
        (event_id, user_id, session_id, lesson_id, event_type, value, created_at)
        VALUES (?, ?, ?, ?, 'lesson_abandon', 75, CURRENT_TIMESTAMP)`,
       Number(`8${Date.now()}`), learnerA, sessionA, lessonId,
     );
     await execute(
-      `INSERT INTO fact_events
+      `INSERT INTO fact_events_raw
        (event_id, user_id, session_id, lesson_id, event_type, value, created_at)
        VALUES (?, ?, ?, ?, 'lesson_start', NULL, CURRENT_TIMESTAMP)`,
       Number(`7${Date.now()}`), learnerB, sessionB, lessonId,
@@ -67,24 +70,24 @@ describe('pedagogical signals', () => {
       anonId, adultId,
     );
     await execute(
-      `INSERT INTO fact_events (event_id, anon_id, event_type, created_at)
+      `INSERT INTO fact_events_raw (event_id, anon_id, event_type, created_at)
        VALUES (?, ?, 'page_view', CURRENT_TIMESTAMP)`,
       Number(`6${Date.now()}`), anonId,
     );
     await execute(
-      `INSERT INTO fact_events (event_id, user_id, event_type, created_at)
+      `INSERT INTO fact_events_raw (event_id, user_id, event_type, created_at)
        VALUES (?, ?, 'signup_complete', CURRENT_TIMESTAMP)`,
       Number(`5${Date.now()}`), adultId,
     );
     await execute(
-      `INSERT INTO fact_events (event_id, user_id, session_id, segment_id, event_type, role, created_at)
+      `INSERT INTO fact_events_raw (event_id, user_id, session_id, segment_id, event_type, role, created_at)
        VALUES (?, ?, ?, 'export-private', 'nav_view', 'kid', CURRENT_TIMESTAMP)`,
       exportEventId, learnerA, exportSessionId,
     );
   });
 
   it('uses authoritative attempts for calibration instead of browser event placeholders', async () => {
-    const rows = await getSegmentCalibration(2, 50);
+    const rows = await getSegmentCalibration(2, 50, WINDOW);
     const signal = rows?.find((row) => row.lesson_id === lessonId && row.segment_id === 'practice-1');
 
     expect(signal).toMatchObject({
@@ -99,7 +102,7 @@ describe('pedagogical signals', () => {
   });
 
   it('reports abandonment duration when it exists instead of fabricating zero', async () => {
-    const rows = await getLessonDropoff(50);
+    const rows = await getLessonDropoff(50, WINDOW);
     const signal = rows?.find((row) => row.lesson_id === lessonId);
 
     expect(signal).toMatchObject({
@@ -123,7 +126,7 @@ describe('pedagogical signals', () => {
   });
 
   it('links an approved adult conversion without linking any child browsing', async () => {
-    const funnel = await getActivationFunnel();
+    const funnel = await getActivationFunnel(WINDOW);
 
     expect(funnel?.find((step) => step.step === 'visited')?.users).toBeGreaterThanOrEqual(1);
     expect(funnel?.find((step) => step.step === 'completed_signup')?.users).toBeGreaterThanOrEqual(1);
