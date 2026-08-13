@@ -1,0 +1,10 @@
+/*
+ * GENERATED FILE — do not edit by hand. Run `npm run map:gen:regions`.
+ * 11 admin-1 regions for BM, from Natural Earth 10m (public
+ * domain), projected with the SAME geoNaturalEarth1 / 1000x500
+ * viewBox as worldGeography.ts so they align with the country outline exactly.
+ * Keys are ISO 3166-2, matching Plausible's visit:region dimension.
+ */
+import type { RegionShape } from '../regionTypes';
+
+export const REGIONS: RegionShape[] = [{"code":"BM-DEV","name":"Devonshire","d":"M335.59,149.83L335.68,149.79L335.69,149.83L335.63,149.88L335.58,149.87Z","centroid":[335.64,149.84]},{"code":"BM-HA","name":"City of Hamilton","d":"M335.57,149.87L335.54,149.87L335.57,149.87Z","centroid":[335.56,149.87]},{"code":"BM-HAM","name":"Hamilton","d":"M335.79,149.73L335.76,149.68L335.8,149.68L335.82,149.72ZM335.77,149.75L335.79,149.73L335.81,149.76L335.78,149.77ZM335.69,149.77L335.72,149.77L335.69,149.77Z","centroid":[335.79,149.72]},{"code":"BM-PAG","name":"Paget","d":"M335.53,149.91L335.58,149.87L335.63,149.88L335.55,149.95ZM335.51,149.88L335.5,149.9L335.51,149.88Z","centroid":[335.57,149.9]},{"code":"BM-PEM","name":"Pembroke","d":"M335.54,149.87L335.59,149.83L335.58,149.87L335.57,149.87Z","centroid":[335.57,149.86]},{"code":"BM-SAN","name":"Sandys","d":"M335.31,149.95L335.36,149.94L335.31,149.95Z","centroid":[335.33,149.94]},{"code":"BM-SG","name":"City of Saint George","d":"M335.88,149.62L335.88,149.62L335.88,149.62Z","centroid":[335.88,149.62]},{"code":"BM-SGE","name":"Saint George's","d":"M335.82,149.72L335.81,149.76L335.79,149.73ZM335.76,149.68L335.8,149.68L335.76,149.68ZM335.88,149.62L335.88,149.62L335.88,149.62Z","centroid":[335.81,149.73]},{"code":"BM-SMI","name":"Smith's","d":"M335.72,149.77L335.77,149.75L335.78,149.77L335.69,149.83L335.68,149.79L335.69,149.77Z","centroid":[335.72,149.79]},{"code":"BM-SOU","name":"Southampton","d":"M335.36,149.94L335.43,149.97L335.47,149.98L335.31,149.95Z","centroid":[335.38,149.95]},{"code":"BM-WAR","name":"Warwick","d":"M335.43,149.97L335.53,149.91L335.55,149.95L335.47,149.98ZM335.5,149.9L335.51,149.88L335.5,149.9Z","centroid":[335.49,149.95]}];

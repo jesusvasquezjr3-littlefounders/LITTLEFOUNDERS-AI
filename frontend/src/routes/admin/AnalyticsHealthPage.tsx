@@ -1,32 +1,26 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Badge,
-  Card,
-  Dropdown,
-  Icon,
-  StatCard,
-  Table,
-  type DropdownOption,
-  type TableColumn,
-} from '@/components/ui';
+import { Badge, Card, Icon, StatCard, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminPage, useAdminData } from './adminShared';
 import {
   BREAKDOWN_CARDS,
-  PERIODS,
   filtersToQuery,
+  isCompleteSelection,
+  periodQuery as buildPeriodQuery,
   SECONDARY_BREAKDOWN_CARDS,
   type AnalyticsFilter,
   type BehaviorData,
   type DimensionKey,
   type HealthData,
   type OverviewData,
-  type Period,
+  type PeriodSelection,
 } from './analytics/analyticsShared';
 import { FilterBar } from './analytics/FilterBar';
 import { BreakdownCard } from './analytics/BreakdownCard';
 import { ReportExportCard } from './analytics/ReportExportCard';
+import { ExclusionsCard } from './analytics/ExclusionsCard';
+import { PeriodPicker } from './analytics/PeriodPicker';
 import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
 import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
@@ -43,9 +37,12 @@ function UnavailableCard({ title, body }: { title: string; body: string }) {
 export function AnalyticsHealthPage() {
   const { t, i18n } = useTranslation();
 
-  const [period, setPeriod] = useState<Period>('30d');
+  const [selection, setSelection] = useState<PeriodSelection>({ period: '30d' });
   const [filters, setFilters] = useState<AnalyticsFilter[]>([]);
   const filterQuery = filtersToQuery(filters);
+  // An incomplete custom range must not be sent: it would resolve to some
+  // other window and be labelled as the one the operator was still typing.
+  const periodQuery = buildPeriodQuery(isCompleteSelection(selection) ? selection : { period: '30d' });
 
   const addFilter = useCallback((dimension: DimensionKey, value: string) => {
     setFilters((fs) =>
@@ -56,8 +53,10 @@ export function AnalyticsHealthPage() {
     setFilters((fs) => fs.filter((_, i) => i !== index));
   }, []);
 
-  const { data: overview, reload: reloadOverview } = useAdminData<OverviewData>(`/admin/analytics/overview?period=${period}${filterQuery}`);
-  const { data: behavior, reload: reloadBehavior } = useAdminData<BehaviorData>(`/admin/analytics/behavior?period=${period}`);
+  const { data: overview, reload: reloadOverview } = useAdminData<OverviewData>(
+    `/admin/analytics/overview?${periodQuery}${filterQuery}`,
+  );
+  const { data: behavior, reload: reloadBehavior } = useAdminData<BehaviorData>(`/admin/analytics/behavior?${periodQuery}`);
   const { data: health, reload: reloadHealth } = useAdminData<HealthData>('/admin/health/services');
 
   const handleRefresh = useCallback(() => {
@@ -92,10 +91,25 @@ export function AnalyticsHealthPage() {
     };
   }, [behavior]);
 
-  const periodOptions: DropdownOption<Period>[] = PERIODS.map((p) => ({
-    value: p,
-    label: t(`admin.analytics.periods.${p}`),
-  }));
+  /**
+   * Period-over-period change per KPI. Returns null when there is no
+   * comparison — all-time, or the comparison read failed. A missing
+   * comparison renders as nothing at all; showing 0% would assert a flat
+   * trend that was never measured.
+   */
+  const deltas = useMemo(() => {
+    if (overview.state !== 'ready' || !overview.data.previous) return null;
+    const now = overview.data.aggregate;
+    const before = overview.data.previous;
+    const change = (current: number, prior: number): number | null => (prior === 0 ? null : (current - prior) / prior);
+    return {
+      window: `${before.from} ${t('admin.analytics.rangeTo')} ${before.to}`,
+      visitors: change(now.visitors, before.visitors),
+      pageviews: change(now.pageviews, before.pageviews),
+      bounceRate: change(now.bounce_rate, before.bounce_rate),
+      visitDuration: change(now.visit_duration, before.visit_duration),
+    };
+  }, [overview, t]);
 
   // Health summary metrics
   const healthMetrics = useMemo(() => {
@@ -154,16 +168,11 @@ export function AnalyticsHealthPage() {
       titleKey="admin.analytics.title"
       subtitleKey="admin.analytics.subtitle"
       actions={
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-start gap-2">
           <AdminAction tone="neutral" icon="refresh" onClick={handleRefresh}>
             {t('admin.health.refreshTelemetry')}
           </AdminAction>
-          <Dropdown
-            value={period}
-            options={periodOptions}
-            onChange={setPeriod}
-            ariaLabel={t('admin.analytics.periodLabel') ?? 'Period'}
-          />
+          <PeriodPicker selection={selection} onChange={setSelection} />
         </div>
       }
     >
@@ -196,9 +205,21 @@ export function AnalyticsHealthPage() {
 
       {/* ── Web analytics (Plausible) ─────────────────── */}
       <section aria-labelledby="admin-web-analytics" className="flex flex-col gap-4">
-        <h2 id="admin-web-analytics" className="lf-headline font-bold text-content">
-          {t('admin.analytics.web.title')}
-        </h2>
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="admin-web-analytics" className="lf-headline font-bold text-content">
+            {t('admin.analytics.web.title')}
+          </h2>
+          {/*
+            The window the figures actually cover, resolved by the server.
+            Restating the label the page asked for would hide the difference
+            between "this month" and the eleven days it currently contains.
+          */}
+          {overview.state === 'ready' && (
+            <span className="lf-caption rounded-full border border-outline/50 px-3 py-1 text-content-muted">
+              {overview.data.from} {t('admin.analytics.rangeTo')} {overview.data.to}
+            </span>
+          )}
+        </div>
 
         {overview.state === 'error' ? (
           <UnavailableCard
@@ -208,35 +229,40 @@ export function AnalyticsHealthPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              <StatCard
-                dense
-                className="shadow-glass border border-outline/50"
-                icon={<Icon name="group" />}
-                value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.visitors) : '…'}
+              <KpiCard
+                icon="group"
                 label={t('admin.analytics.web.visitors')}
+                value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.visitors) : '…'}
+                change={deltas?.visitors ?? null}
+                higherIsBetter
               />
-              <StatCard
-                dense
-                className="shadow-glass border border-outline/50"
-                icon={<Icon name="visibility" />}
-                value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.pageviews) : '…'}
+              <KpiCard
+                icon="visibility"
                 label={t('admin.analytics.web.pageviews')}
+                value={overview.state === 'ready' ? nfCompact.format(overview.data.aggregate.pageviews) : '…'}
+                change={deltas?.pageviews ?? null}
+                higherIsBetter
               />
-              <StatCard
-                dense
-                className="shadow-glass border border-outline/50"
-                icon={<Icon name="reply" />}
-                value={overview.state === 'ready' ? pct.format(overview.data.aggregate.bounce_rate / 100) : '…'}
+              <KpiCard
+                icon="reply"
                 label={t('admin.analytics.web.bounceRate')}
+                value={overview.state === 'ready' ? pct.format(overview.data.aggregate.bounce_rate / 100) : '…'}
+                change={deltas?.bounceRate ?? null}
+                higherIsBetter={false}
               />
-              <StatCard
-                dense
-                icon={<Icon name="timer" />}
-                value={overview.state === 'ready' ? secondsFmt(overview.data.aggregate.visit_duration) : '…'}
+              <KpiCard
+                icon="timer"
                 label={t('admin.analytics.web.visitDuration')}
-                className="shadow-glass border border-outline/50"
+                value={overview.state === 'ready' ? secondsFmt(overview.data.aggregate.visit_duration) : '…'}
+                change={deltas?.visitDuration ?? null}
+                higherIsBetter
               />
             </div>
+            {deltas && (
+              <p className="lf-caption -mt-1 text-content-faint">
+                {t('admin.analytics.web.comparedWith', { window: deltas.window })}
+              </p>
+            )}
             {webSignals && (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label={t('admin.analytics.web.signalsAria')}>
                 <SignalCard icon="today" label={t('admin.analytics.web.dailyAverage')} value={nf.format(Math.round(webSignals.dailyVisitors))} />
@@ -255,7 +281,7 @@ export function AnalyticsHealthPage() {
           <h2 id="admin-geography" className="lf-headline font-bold text-content">{t('admin.analytics.geo.sectionTitle')}</h2>
           <p className="lf-caption mt-1 text-content-faint">{t('admin.analytics.geo.sectionSubtitle')}</p>
         </div>
-        <AnalyticsGeoMap period={period} filterQuery={filterQuery} onFilter={addFilter} />
+        <AnalyticsGeoMap periodQuery={periodQuery} filterQuery={filterQuery} onFilter={addFilter} />
       </section>
 
       {/* ── Behavioral (Umami) ── */}
@@ -326,7 +352,7 @@ export function AnalyticsHealthPage() {
               key={c.dimension}
               dimension={c.dimension}
               icon={c.icon}
-              period={period}
+              periodQuery={periodQuery}
               filterQuery={filterQuery}
               onFilter={addFilter}
             />
@@ -339,7 +365,7 @@ export function AnalyticsHealthPage() {
           </summary>
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {SECONDARY_BREAKDOWN_CARDS.map((c) => (
-              <BreakdownCard key={c.dimension} dimension={c.dimension} icon={c.icon} period={period} filterQuery={filterQuery} onFilter={addFilter} />
+              <BreakdownCard key={c.dimension} dimension={c.dimension} icon={c.icon} periodQuery={periodQuery} filterQuery={filterQuery} onFilter={addFilter} />
             ))}
           </div>
         </details>
@@ -350,7 +376,10 @@ export function AnalyticsHealthPage() {
         <h2 id="admin-analytics-tools" className="lf-headline font-bold text-content">
           {t('admin.analytics.toolsTitle')}
         </h2>
-        <ReportExportCard period={period} filterQuery={filterQuery} />
+        <div className="grid gap-4 xl:grid-cols-2 xl:items-start">
+          <ReportExportCard periodQuery={periodQuery} filterQuery={filterQuery} />
+          <ExclusionsCard />
+        </div>
       </section>
 
       {/* ── System health (Uptime Kuma) ───────────────── */}
@@ -382,6 +411,48 @@ export function AnalyticsHealthPage() {
         )}
       </section>
     </AdminPage>
+  );
+}
+
+/**
+ * A KPI with its period-over-period movement. Direction is coloured by
+ * whether the movement is GOOD, not by its sign: a bounce rate falling 20% is
+ * a win and must not read as a loss.
+ */
+function KpiCard({
+  icon,
+  label,
+  value,
+  change,
+  higherIsBetter,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+  change: number | null;
+  higherIsBetter: boolean;
+}) {
+  const { i18n } = useTranslation();
+  const signed = new Intl.NumberFormat(i18n.resolvedLanguage, {
+    style: 'percent',
+    maximumFractionDigits: 1,
+    signDisplay: 'exceptZero',
+  });
+  const good = change !== null && change >= 0 === higherIsBetter;
+  return (
+    <Card className="flex flex-col gap-2 border border-outline/50 p-4 shadow-glass">
+      <div className="flex items-center gap-2">
+        <Icon name={icon} className="!text-[20px] text-primary" />
+        <p className="lf-caption truncate text-content-muted">{label}</p>
+      </div>
+      <p className="lf-number text-2xl text-content">{value}</p>
+      {change !== null && (
+        <p className={cn('lf-caption flex items-center gap-1 font-bold', good ? 'text-success-strong' : 'text-error-strong')}>
+          <Icon name={change >= 0 ? 'trending_up' : 'trending_down'} className="!text-[16px]" />
+          {signed.format(change)}
+        </p>
+      )}
+    </Card>
   );
 }
 

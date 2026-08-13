@@ -1,0 +1,10 @@
+/*
+ * GENERATED FILE — do not edit by hand. Run `npm run map:gen:regions`.
+ * 11 admin-1 regions for WS, from Natural Earth 10m (public
+ * domain), projected with the SAME geoNaturalEarth1 / 1000x500
+ * viewBox as worldGeography.ts so they align with the country outline exactly.
+ * Keys are ISO 3166-2, matching Plausible's visit:region dimension.
+ */
+import type { RegionShape } from '../regionTypes';
+
+export const REGIONS: RegionShape[] = [{"code":"WS-AA","name":"A'ana","d":"M44.7,292.76L45.04,292.69L45.15,293.12L45.11,293.31L44.62,293.03ZM44.55,292.87L44.61,292.8L44.55,292.87Z","centroid":[44.91,292.98]},{"code":"WS-AL","name":"Aiga-i-le-Tai","d":"M44.61,292.8L44.7,292.76L44.62,293.03L44.55,292.87Z","centroid":[44.62,292.88]},{"code":"WS-AT","name":"Atua","d":"M45.86,292.98L45.9,293.06L46.16,293.2L45.73,293.44L45.63,292.9L45.81,292.94Z","centroid":[45.83,293.16]},{"code":"WS-FA","name":"Fa'asaleleaga","d":"M43.93,291.93L44.1,292.68L43.74,292.18Z","centroid":[43.92,292.26]},{"code":"WS-GE","name":"Gaga'emauga","d":"M43.49,291.63L43.93,291.93L43.74,292.18L43.64,292.18L43.53,292.17L43.47,292.17ZM45.16,292.71L45.22,292.73L45.16,292.71ZM45.17,293.3L45.11,293.31L45.15,293.12Z","centroid":[43.69,291.99]},{"code":"WS-GI","name":"Gaga'ifomauga","d":"M42.8,291.81L43.49,291.63L43.47,292.17L43.03,292.16L42.87,292.06Z","centroid":[43.19,291.93]},{"code":"WS-PA","name":"Palauli","d":"M43.71,292.63L43.28,292.69L42.98,292.34L43.03,292.16L43.47,292.17L43.53,292.17ZM44.1,292.68L43.8,292.59L43.64,292.18L43.74,292.18Z","centroid":[43.45,292.41]},{"code":"WS-SA","name":"Satupa'itea","d":"M42.98,292.34L42.69,292.11L42.87,292.06L43.03,292.16ZM43.8,292.59L43.71,292.63L43.53,292.17L43.64,292.18Z","centroid":[43.28,292.28]},{"code":"WS-TU","name":"Tuamasaga","d":"M45.22,292.73L45.63,292.9L45.73,293.44L45.17,293.3L45.15,293.12L45.04,292.69L45.16,292.71Z","centroid":[45.39,293.07]},{"code":"WS-VF","name":"Va'a-o-Fonoti","d":"M45.81,292.94L45.86,292.98L45.81,292.94ZM45.9,293.06L46.16,293.2L45.9,293.06Z","centroid":[46,293.1]},{"code":"WS-VS","name":"Vaisigano","d":"M42.69,292.11L42.8,291.81L42.87,292.06Z","centroid":[42.79,291.99]}];

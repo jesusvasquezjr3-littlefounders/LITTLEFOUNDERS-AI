@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, Icon, Table, type TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useAdminData } from '../adminShared';
-import { countryLabel, type BreakdownData, type BreakdownRow, type DimensionKey, type Period } from './analyticsShared';
+import { countryLabel, type BreakdownData, type BreakdownRow, type DimensionKey, type PeriodQuery } from './analyticsShared';
 
 /*
  * One top-N breakdown (Core /admin/analytics/breakdown → Plausible v2). Lives
@@ -26,19 +26,19 @@ function PanelNote({ icon, text, spin }: { icon: string; text: string; spin?: bo
 export function BreakdownCard({
   dimension,
   icon,
-  period,
+  periodQuery,
   filterQuery,
   onFilter,
 }: {
   dimension: DimensionKey;
   icon: string;
-  period: Period;
+  periodQuery: PeriodQuery;
   filterQuery: string;
   onFilter: (dimension: DimensionKey, value: string) => void;
 }) {
   const { t, i18n } = useTranslation();
   const { data } = useAdminData<BreakdownData>(
-    `/admin/analytics/breakdown?period=${period}&dimension=${dimension}&limit=8${filterQuery}`,
+    `/admin/analytics/breakdown?${periodQuery}&dimension=${dimension}&limit=8${filterQuery}`,
   );
 
   const nf = new Intl.NumberFormat(i18n.resolvedLanguage);

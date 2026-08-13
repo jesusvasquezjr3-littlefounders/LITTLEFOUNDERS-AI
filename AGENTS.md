@@ -141,6 +141,7 @@ Internal services (everything except `backend/` and `frontend/`) are called **se
 - **Any edit to a legal document MUST be mirrored to the other two locales in the same commit.** This is not optional.
 - Translations must be **professional and precise** (not machine-generated without review) — these are legally binding documents.
 - The `frontend/src/i18n/*/marketing.json` legal sections must maintain **exact parity** with their corresponding `/LEGAL/` documents, character-for-character (no summarization, no paraphrasing).
+- The i18n legal sections are GENERATED from the `/LEGAL/` documents by `npm run legal:sync` (`agent/tools/sync-legal-i18n.mjs`), never hand-edited. Each locale is derived from the document already written in that language, so the tool never translates and never invents legal text; it fails if the three documents disagree on chapter count. Edit the document, run the tool, commit both.
 - Before any commit touching legal content: verify all three locales are identical in structure, all sections present, and all translation pairs aligned.
 
 ### §1.9 Child safety & privacy — non-negotiable

@@ -35,17 +35,29 @@ afterEach(() => {
 
 describe('ReportExportCard', () => {
   it('exports the selected report view with the active filter query', async () => {
-    render(<ReportExportCard period="30d" filterQuery="&filters=encoded" />);
+    render(<ReportExportCard periodQuery="period=30d" filterQuery="&filters=encoded" />);
 
     fireEvent.click(screen.getByRole('button', { name: 'admin.analytics.reports.download' }));
     await waitFor(() => expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/v1/admin/analytics/report.pdf?period=30d&audience=full&filters=encoded'),
+      expect.stringContaining('/api/v1/admin/analytics/report.pdf?period=30d&audience=full&rows=10&filters=encoded'),
       { headers: { Authorization: 'Bearer fake-token' } },
     ));
   });
 
+  it('exports a spreadsheet from the same query when the format changes', async () => {
+    render(<ReportExportCard periodQuery="period=custom&from=2026-06-01&to=2026-06-30" filterQuery="" />);
+    fireEvent.click(screen.getByRole('radio', { name: /formats.xlsx/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'admin.analytics.reports.download' }));
+    await waitFor(() =>
+      expect(mockFetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/v1/admin/analytics/report.xlsx?period=custom&from=2026-06-01&to=2026-06-30'),
+        expect.anything(),
+      ),
+    );
+  });
+
   it('lets the admin change the report view before exporting', async () => {
-    render(<ReportExportCard period="12mo" filterQuery="" />);
+    render(<ReportExportCard periodQuery="period=12mo" filterQuery="" />);
     fireEvent.click(screen.getByRole('button', { name: 'admin.analytics.reports.audienceLabel: admin.analytics.reports.audiences.full' }));
     await waitFor(() => expect(screen.getByRole('option', { name: 'admin.analytics.reports.audiences.marketing' })).toBeInTheDocument());
     fireEvent.click(screen.getByRole('option', { name: 'admin.analytics.reports.audiences.marketing' }));

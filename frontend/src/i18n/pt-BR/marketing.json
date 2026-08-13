@@ -99,42 +99,157 @@
     "parentTitle": "Progresso que dá para ver",
     "parentBody": "Sem sistema para gerenciar. Só crescimento visível.",
     "parentPoints": {
-      "visible": { "icon": "visibility", "title": "Progresso com contexto", "body": "O que ela aprende, e como está crescendo." },
-      "adaptive": { "icon": "route", "title": "Próximos passos intencionais", "body": "Cada desafio se constrói sobre o anterior." },
-      "private": { "icon": "shield", "title": "Privacidade desde o design", "body": "Os dados do seu filho, sempre privados." }
+      "visible": {
+        "icon": "visibility",
+        "title": "Progresso com contexto",
+        "body": "O que ela aprende, e como está crescendo."
+      },
+      "adaptive": {
+        "icon": "route",
+        "title": "Próximos passos intencionais",
+        "body": "Cada desafio se constrói sobre o anterior."
+      },
+      "private": {
+        "icon": "shield",
+        "title": "Privacidade desde o design",
+        "body": "Os dados do seu filho, sempre privados."
+      }
     },
     "concepts": {
-      "curiosity": { "title": "A curiosidade inicia a jornada", "body": "Uma pergunta própria transforma uma situação cotidiana em oportunidade de descoberta." },
-      "needs": { "title": "Distinguir o que precisamos", "body": "Nomear uma necessidade ajuda a separar o essencial do que pode esperar." },
-      "goal": { "title": "Dar nome a uma meta", "body": "Uma meta concreta torna visível o que queremos alcançar e por que importa." },
-      "value": { "title": "Entender o valor", "body": "Comparar utilidade, esforço e satisfação ajuda a decidir com intenção." },
-      "question": { "title": "Fazer uma boa pergunta", "body": "Uma pergunta clara abre opções para pensar, testar e aprender." },
-      "choice": { "title": "Escolher entre possibilidades", "body": "Ver várias opções antecipa consequências sem medo de errar." },
-      "needsVsWants": { "title": "Necessidade vs Desejo", "body": "Classificar uma compra ajuda a explicar prioridades com palavras simples." },
-      "price": { "title": "Ler o preço", "body": "Reconhecer o custo de um item conecta números a uma decisão real." },
-      "compare": { "title": "Comparar antes de escolher", "body": "A comparação lado a lado revela diferenças ocultas." },
-      "budget": { "title": "Dar uma função a cada moeda", "body": "Um orçamento simples transforma um limite em um plano revisável." },
-      "saving": { "title": "Guardar para depois", "body": "Guardar mostra como pequenas escolhas nos aproximam de metas futuras." },
-      "plan": { "title": "Transformar uma meta em etapas", "body": "Dividir um objetivo em pequenas ações torna o progresso possível." },
-      "prioritize": { "title": "Decidir o que vem primeiro", "body": "Ordenar prioridades usa tempo e dinheiro de forma intencional." },
-      "tradeoff": { "title": "Entender o que deixamos de fora", "body": "Toda escolha traz um custo de oportunidade; explicá-lo fortalece o critério." },
-      "time": { "title": "Deixar o tempo ajudar", "body": "Esperar é uma estratégia quando uma meta exige constância." },
-      "create": { "title": "Imaginar algo novo", "body": "Criar começa quando uma ideia responde a uma necessidade ou desejo real." },
-      "resource": { "title": "Reconhecer recursos", "body": "Tempo, materiais, habilidades e apoio fazem parte de qualquer projeto." },
-      "offer": { "title": "Criar uma proposta", "body": "Uma boa proposta explica o que oferece, para quem e por que é útil." },
-      "cost": { "title": "Calcular o custo de criação", "body": "Acompanhar materiais e esforço guia decisões responsáveis." },
-      "revenue": { "title": "Entender a entrada de receita", "body": "Relacionar vendas a resultados mostra como uma ideia se sustenta." },
-      "share": { "title": "Compartilhar a ideia", "body": "Compartilhar atrai perguntas, feedback e novas perspectivas." },
-      "iterate": { "title": "Melhorar com mais um teste", "body": "Uma segunda versão usa o aprendizado para uma escolha mais clara." },
-      "reflect": { "title": "Refletir sobre o ocorrido", "body": "A reflexão transforma experiência em ferramentas para o próximo desafio." },
-      "confidence": { "title": "Reconhecer a própria capacidade", "body": "Nomear o avanço transforma esforço em confiança visível." },
-      "nextStep": { "title": "Escolher o próximo passo", "body": "Cada conquista desbloqueia uma ação alcançável que mantém o aprendizado vivo." }
+      "curiosity": {
+        "title": "A curiosidade inicia a jornada",
+        "body": "Uma pergunta própria transforma uma situação cotidiana em oportunidade de descoberta."
+      },
+      "needs": {
+        "title": "Distinguir o que precisamos",
+        "body": "Nomear uma necessidade ajuda a separar o essencial do que pode esperar."
+      },
+      "goal": {
+        "title": "Dar nome a uma meta",
+        "body": "Uma meta concreta torna visível o que queremos alcançar e por que importa."
+      },
+      "value": {
+        "title": "Entender o valor",
+        "body": "Comparar utilidade, esforço e satisfação ajuda a decidir com intenção."
+      },
+      "question": {
+        "title": "Fazer uma boa pergunta",
+        "body": "Uma pergunta clara abre opções para pensar, testar e aprender."
+      },
+      "choice": {
+        "title": "Escolher entre possibilidades",
+        "body": "Ver várias opções antecipa consequências sem medo de errar."
+      },
+      "needsVsWants": {
+        "title": "Necessidade vs Desejo",
+        "body": "Classificar uma compra ajuda a explicar prioridades com palavras simples."
+      },
+      "price": {
+        "title": "Ler o preço",
+        "body": "Reconhecer o custo de um item conecta números a uma decisão real."
+      },
+      "compare": {
+        "title": "Comparar antes de escolher",
+        "body": "A comparação lado a lado revela diferenças ocultas."
+      },
+      "budget": {
+        "title": "Dar uma função a cada moeda",
+        "body": "Um orçamento simples transforma um limite em um plano revisável."
+      },
+      "saving": {
+        "title": "Guardar para depois",
+        "body": "Guardar mostra como pequenas escolhas nos aproximam de metas futuras."
+      },
+      "plan": {
+        "title": "Transformar uma meta em etapas",
+        "body": "Dividir um objetivo em pequenas ações torna o progresso possível."
+      },
+      "prioritize": {
+        "title": "Decidir o que vem primeiro",
+        "body": "Ordenar prioridades usa tempo e dinheiro de forma intencional."
+      },
+      "tradeoff": {
+        "title": "Entender o que deixamos de fora",
+        "body": "Toda escolha traz um custo de oportunidade; explicá-lo fortalece o critério."
+      },
+      "time": {
+        "title": "Deixar o tempo ajudar",
+        "body": "Esperar é uma estratégia quando uma meta exige constância."
+      },
+      "create": {
+        "title": "Imaginar algo novo",
+        "body": "Criar começa quando uma ideia responde a uma necessidade ou desejo real."
+      },
+      "resource": {
+        "title": "Reconhecer recursos",
+        "body": "Tempo, materiais, habilidades e apoio fazem parte de qualquer projeto."
+      },
+      "offer": {
+        "title": "Criar uma proposta",
+        "body": "Uma boa proposta explica o que oferece, para quem e por que é útil."
+      },
+      "cost": {
+        "title": "Calcular o custo de criação",
+        "body": "Acompanhar materiais e esforço guia decisões responsáveis."
+      },
+      "revenue": {
+        "title": "Entender a entrada de receita",
+        "body": "Relacionar vendas a resultados mostra como uma ideia se sustenta."
+      },
+      "share": {
+        "title": "Compartilhar a ideia",
+        "body": "Compartilhar atrai perguntas, feedback e novas perspectivas."
+      },
+      "iterate": {
+        "title": "Melhorar com mais um teste",
+        "body": "Uma segunda versão usa o aprendizado para uma escolha mais clara."
+      },
+      "reflect": {
+        "title": "Refletir sobre o ocorrido",
+        "body": "A reflexão transforma experiência em ferramentas para o próximo desafio."
+      },
+      "confidence": {
+        "title": "Reconhecer a própria capacidade",
+        "body": "Nomear o avanço transforma esforço em confiança visível."
+      },
+      "nextStep": {
+        "title": "Escolher o próximo passo",
+        "body": "Cada conquista desbloqueia uma ação alcançável que mantém o aprendizado vivo."
+      }
     },
     "graph": {
-      "question": { "code": "ORIGEM", "label": "Começa com curiosidade", "title": "Uma pergunta abre o caminho", "body": "Uma situação familiar dá a cada aventura um início significativo.", "pedagogyTitle": "Curiosidade antes das respostas", "pedagogyBody": "A criança faz sua própria pergunta primeiro, tornando o aprendizado pessoal." },
-      "practice": { "code": "AÇÃO", "label": "Aprender fazendo", "title": "A prática torna uma ideia tangível", "body": "Desafios curtos permitem testar escolhas e entender por que importam.", "pedagogyTitle": "Escolher se torna compreender", "pedagogyBody": "A criança toma uma decisão, observa resultados e tenta novamente com confiança." },
-      "connection": { "code": "LINK", "label": "Conectando ideias", "title": "Ideias fazem parte de um panorama maior", "body": "Momentos relacionados constroem uma jornada coerente.", "pedagogyTitle": "Significado cresce entre ideias", "pedagogyBody": "O conhecimento permanece quando se conecta ao que a criança já conhece." },
-      "progress": { "code": "PRÓXIMO", "label": "Continuar avançando", "title": "Cada conquista aponta para frente", "body": "O progresso permanece encorajador, visível e conectado à próxima descoberta.", "pedagogyTitle": "A confiança precisa de um próximo passo", "pedagogyBody": "Uma pequena conquista abre um novo desafio em vez de encerrar a jornada." }
+      "question": {
+        "code": "ORIGEM",
+        "label": "Começa com curiosidade",
+        "title": "Uma pergunta abre o caminho",
+        "body": "Uma situação familiar dá a cada aventura um início significativo.",
+        "pedagogyTitle": "Curiosidade antes das respostas",
+        "pedagogyBody": "A criança faz sua própria pergunta primeiro, tornando o aprendizado pessoal."
+      },
+      "practice": {
+        "code": "AÇÃO",
+        "label": "Aprender fazendo",
+        "title": "A prática torna uma ideia tangível",
+        "body": "Desafios curtos permitem testar escolhas e entender por que importam.",
+        "pedagogyTitle": "Escolher se torna compreender",
+        "pedagogyBody": "A criança toma uma decisão, observa resultados e tenta novamente com confiança."
+      },
+      "connection": {
+        "code": "LINK",
+        "label": "Conectando ideias",
+        "title": "Ideias fazem parte de um panorama maior",
+        "body": "Momentos relacionados constroem uma jornada coerente.",
+        "pedagogyTitle": "Significado cresce entre ideias",
+        "pedagogyBody": "O conhecimento permanece quando se conecta ao que a criança já conhece."
+      },
+      "progress": {
+        "code": "PRÓXIMO",
+        "label": "Continuar avançando",
+        "title": "Cada conquista aponta para frente",
+        "body": "O progresso permanece encorajador, visível e conectado à próxima descoberta.",
+        "pedagogyTitle": "A confiança precisa de um próximo passo",
+        "pedagogyBody": "Uma pequena conquista abre um novo desafio em vez de encerrar a jornada."
+      }
     },
     "stage": {
       "live": "Visão ao vivo",
@@ -220,112 +335,180 @@
       "preamble": "Legal Cyberx S.C., doravante LITTLEFOUNDERS, com sede em Caruso #293, Col. Vallejo, Alcaldía Gustavo A. Madero, C.P. 07870, Cidade do México, é responsável pela plataforma LITTLEFOUNDERS acessível em https://es.littlefounders.ai/. Ao acessar, se cadastrar ou utilizar a PLATAFORMA, você confirma que leu, entendeu e aceitou estes Termos e Condições. Para menores de idade, o uso deve ocorrer sob autorização, supervisão e responsabilidade dos pais ou responsável legal.",
       "c1": {
         "title": "1. DEFINIÇÕES",
-        "p1": "Para fins destes Termos e Condições, os termos a seguir terão os significados especificados abaixo:",
-        "items": {
-          "child": "Conta CHILD: Conta de usuário criada para um menor, obrigatoriamente vinculada a uma Conta TUTOR.",
-          "tutor": "Conta TUTOR: Conta criada por um pai, mãe ou responsável legal para gerenciar e supervisionar uma ou mais Contas CHILD.",
-          "content": "Conteúdo: Materiais educativos, lições, exercícios, simulações, imagens, áudio e dinâmicas na PLATAFORMA.",
-          "ai": "IA ou Inteligência Artificial: Sistemas tecnológicos para personalizar a experiência de aprendizagem e auxiliar nos Serviços.",
-          "platform": "PLATAFORMA: Ecossistema tecnológico operado sob a marca LITTLEFOUNDERS (site, apps e ferramentas).",
-          "services": "Serviços: Funcionalidades, conteúdos e experiências educativas oferecidas na PLATAFORMA.",
-          "user": "Usuário: Qualquer pessoa que acesse, navegue ou interaja na PLATAFORMA.",
-          "childUser": "Usuário CHILD: Menor titular de uma Conta CHILD.",
-          "tutorUser": "Usuário TUTOR: Pai, mãe ou responsável legal que gerencia Contas CHILD.",
-          "universalUser": "Usuário UNIVERSAL: Usuário que acessa com conta individual sem gerenciar contas de terceiros."
-        }
+        "p1": "Para fins destes Termos e Condições, os termos indicados a seguir terão o significado a cada caso atribuído, quer utilizados no singular quer no plural:",
+        "p2": "1.  Conta CHILD: Refere-se à conta de usuário criada para um menor de idade, que está vinculada obrigatoriamente a uma Conta TUTOR, por meio da qual o menor pode acessar determinadas funcionalidades da PLATAFORMA de acordo com sua faixa etária e as permissões nela estabelecidas.\n2.  Conta TUTOR: Refere-se à conta criada por um pai, mãe ou responsável legal de um menor de idade, por meio da qual pode administrar, supervisionar e gerenciar uma ou mais Contas CHILD vinculadas.\n3.  Conteúdo: Significa qualquer material ou recurso disponível dentro da PLATAFORMA, incluindo mas não limitado a: lições, exercícios, simulações, atividades, textos, imagens, gráficos, vídeos, áudio, personagens, narrativas, desafios, dinâmicas gamificadas e materiais educacionais.\n4.  IA ou Inteligência Artificial: Significa qualquer sistema, ferramenta ou funcionalidade tecnológica utilizada pela PLATAFORMA para personalizar experiências de aprendizagem, gerar conteúdo educacional, gerar áudio narrativo ou auxiliar na prestação dos Serviços.\n5.  PLATAFORMA: Refere-se ao ecossistema tecnológico operado sob a marca LITTLEFOUNDERS, incluindo seus sites, aplicativos, conteúdos, funcionalidades, ferramentas educacionais e serviços associados.\n6.  Serviços: Refere-se às funcionalidades, ferramentas, conteúdos e experiências educacionais oferecidas através da PLATAFORMA.\n7.  Usuário: Refere-se a qualquer pessoa que acesse, navegue, utilize ou interaja na PLATAFORMA.\n8.  Usuário CHILD: Refere-se a qualquer menor de idade titular de uma Conta CHILD.\n9.  Usuário TUTOR: Refere-se ao pai, mãe ou responsável legal que cria, administra ou supervisiona uma ou mais Contas CHILD.\n10. Usuário UNIVERSAL: Refere-se a qualquer usuário que acesse a PLATAFORMA por meio de uma conta individual. O usuário UNIVERSAL possui apenas acesso e controle sobre sua própria conta, sem autoridade para administrar, supervisionar ou vincular contas de terceiros, e não utiliza funcionalidades de uma Conta TUTOR."
       },
       "c2": {
         "title": "2. OBJETO E NATUREZA DA PLATAFORMA",
-        "p1": "A PLATAFORMA é uma ferramenta tecnológica estritamente educacional projetada para facilitar o aprendizado sobre finanças pessoais, hábitos econômicos e habilidades práticas por meio de simulações interativas.",
-        "p2": "Nenhum conteúdo, simulação, desafio ou métrica constitui consultoria financeira, fiscal, jurídica, contábil ou profissional.",
-        "p3": "Qualquer referência a pontos, recompensas, níveis, sequências ou saldos virtuais tem caráter exclusivamente educacional e não representa dinheiro real, ativos nem direitos econômicos exigíveis."
+        "p1": "A PLATAFORMA é uma ferramenta tecnológica de natureza educacional e é projetada para facilitar o aprendizado de conceitos relacionados a finanças pessoais, hábitos financeiros e desenvolvimento de habilidades práticas por meio de experiências interativas e simulações relacionadas.",
+        "p2": "Sob esta perspectiva, a PLATAFORMA organiza seu conteúdo através de aventuras educacionais, lições, exercícios interativos, desafios, medições de progresso e sistemas de recompensas projetados para se adaptar a diferentes etapas de desenvolvimento e aprendizagem.",
+        "p3": "É importante que o Usuário considere que os Serviços têm finalidade exclusivamente educacional e formativa. Consequentemente, o Usuário reconhece e expressamente aceita que nenhum conteúdo, simulação, exercício ou funcionalidade da PLATAFORMA constitui consultoria financeira, fiscal, legal, contábil ou profissional.",
+        "p4": "Portanto, qualquer referência a pontos, recompensas, níveis, realizações, saldos virtuais, simulações econômicas ou dinâmicas similares, tendo caráter exclusivamente educacional, não representa dinheiro real, ativos, retornos, investimentos ou direitos econômicos exigíveis."
       },
       "c3": {
         "title": "3. TIPOS DE USUÁRIOS E CONTAS",
-        "p1": "A PLATAFORMA prevê três tipos de contas:",
-        "items": {
-          "universal": "Usuário UNIVERSAL: Acessa as funcionalidades gerais de aprendizagem com sua própria conta individual.",
-          "tutor": "Usuário TUTOR: Pessoa com capacidade legal para atuar por si e em representação de menores. Responsável por autorizar, supervisionar e gerenciar Contas CHILD.",
-          "child": "Usuário CHILD: Menor que acessa exclusivamente por meio de uma Conta CHILD vinculada a um Usuário TUTOR."
-        }
+        "p1": "A PLATAFORMA contempla diferentes tipos de usuários com diferentes níveis de acesso e funcionalidades, que são:",
+        "p2": "1. Usuário UNIVERSAL\nO Usuário UNIVERSAL pode acessar funcionalidades gerais de aprendizagem disponíveis na PLATAFORMA de acordo com sua idade, perfil e configurações aplicáveis. Eles acessam a PLATAFORMA por meio de uma Conta UNIVERSAL.",
+        "p3": "2. Usuário TUTOR\nO Usuário TUTOR deve ser uma pessoa com capacidade legal suficiente para atuar por conta própria e, quando aplicável, em nome de um ou mais menores de idade; eles acessam a PLATAFORMA por meio de uma Conta TUTOR.",
+        "p4": "Assim, o Usuário TUTOR é responsável por:\n1.  Criar e administrar Contas CHILD vinculadas;\n2.  Autorizar o acesso do menor à PLATAFORMA;\n3.  Supervisionar razoavelmente o uso da PLATAFORMA pelo menor;\n4.  Manter as informações fornecidas atualizadas;\n5.  Verificar a conformidade com estes Termos e Condições.",
+        "p5": "3. Usuário CHILD\nMenores de idade só podem acessar a PLATAFORMA através de uma Conta CHILD vinculada a um Usuário TUTOR.",
+        "p6": "As funcionalidades disponíveis para cada Usuário CHILD podem variar dependendo de:\n1.  A idade do menor (que será determinada pela data de nascimento indicada pelo Usuário TUTOR ao criar a conta);\n2.  O conteúdo aplicável ao seu grupo de aprendizagem;\n3.  As configurações estabelecidas pelo Usuário TUTOR;\n4.  As medidas de segurança implementadas pela PLATAFORMA."
       },
       "c4": {
-        "title": "4. CADASTRO E CRIAÇÃO DE CONTAS",
-        "p1": "O cadastro exige e-mail e senha ou provedores de autenticação autorizados (Google OAuth / Discord OAuth).",
-        "p2": "O Usuário garante que todas as informações fornecidas são verdadeiras, exatas e atualizadas. Informações falsas ou enganosas podem levar à suspensão ou cancelamento da conta."
+        "title": "4. REGISTRO E CRIAÇÃO DE CONTAS",
+        "p1": "Para usar as funcionalidades da PLATAFORMA, uma conta de usuário deve ser criada; que é realizada através de diferentes opções:",
+        "p2": "1.a. Email e senha; ou\n1.b. Serviços de autenticação de terceiros autorizados pela PLATAFORMA (Google OAuth ou Discord).",
+        "p3": "Para a criação de uma Conta TUTOR, a PLATAFORMA pode solicitar informações como: nome de usuário, nome do perfil, data de nascimento, gênero, endereço de email, senha e, quando aplicável, informações fornecidas por serviços de autenticação de terceiros autorizados pela PLATAFORMA.",
+        "p4": "De forma similar, LITTLEFOUNDERS pode implementar, agora e no futuro, mecanismos de validação de identidade, verificação parental e procedimentos de verificação aprimorada para confirmar o relacionamento entre o Usuário TUTOR e o menor.",
+        "p5": "O Usuário TUTOR pode criar uma ou mais Contas CHILD, que permanecerão vinculadas à sua Conta TUTOR e sob sua supervisão; desta forma, a criação de uma Conta CHILD não requer que o menor forneça informações de identificação ou contato.",
+        "p6": "Todos os dados pessoais coletados serão tratados de acordo com o Aviso de Privacidade vigente de LITTLEFOUNDERS, conforme estabelecido na cláusula 12. PROTEÇÃO DE DADOS PESSOAIS, estabelecido nestes Termos e Condições.",
+        "p7": "O Usuário declara e garante que todas as informações fornecidas a LITTLEFOUNDERS durante o processo de registro, bem como as informações fornecidas posteriormente como resultado do uso da PLATAFORMA, são verdadeiras, precisas, completas e atuais.",
+        "p8": "Desta forma, o Usuário será responsável por manter tais informações atualizadas em todos os momentos e por corrigir qualquer dado que seja impreciso, incompleto ou desatualizado.",
+        "p9": "Além disso, o Usuário aceita que LITTLEFOUNDERS pode solicitar a atualização ou verificação de certas informações quando razoavelmente considerar necessário para a operação correta da PLATAFORMA, a proteção de Usuários, a prevenção de atividades fraudulentas ou conformidade com obrigações legais.",
+        "p10": "A apresentação de informações falsas, enganosas, imprecisas ou desatualizadas pode resultar na suspensão, restrição ou cancelamento da conta correspondente conforme previsto na Cláusula 13. SUSPENSÃO, RESTRIÇÃO E ENCERRAMENTO DE CONTAS."
       },
       "c5": {
         "title": "5. CONTAS CHILD E CONTROLE PARENTAL",
-        "p1": "A proteção de menores é um pilar fundamental do LITTLEFOUNDERS. Toda Conta CHILD deve estar vinculada a uma Conta TUTOR.",
-        "p2": "O Usuário TUTOR pode visualizar o painel da Conta CHILD com progresso, métricas de aprendizagem e relatórios de atividade."
+        "p1": "Para LITTLEFOUNDERS, a proteção de menores é um dos pilares fundamentais da operação da PLATAFORMA; como resultado disso, cada Conta CHILD deverá estar vinculada a uma Conta TUTOR.",
+        "p2": "Sob esta perspectiva, a PLATAFORMA permite o uso de certas funcionalidades de acordo com a idade do menor, bem como as configurações estabelecidas pelo próprio Usuário TUTOR, que pode visualizar o painel da Conta CHILD com progresso, métricas educacionais e relatórios de atividades gerados pelo menor a fim de facilitar o monitoramento do aprendizado e a supervisão do menor.",
+        "p3": "O Usuário TUTOR reconhece e aceita que será responsável por autorizar, supervisionar e administrar o uso da PLATAFORMA pelo menor."
       },
       "c6": {
-        "title": "6. EXPERIÊNCIAS EDUCATIVAS, SIMULAÇÕES E MÉTRICAS",
-        "p1": "A PLATAFORMA oferece aventuras educativas, lições interativas, simulações e métricas de progresso como lições concluídas, tempo de estudo, sequências (streaks), pontos e conquistas.",
-        "p2": "LITTLEFOUNDERS reserva-se o direito de modificar ou atualizar conteúdos e métricas por razões pedagógicas ou operacionais."
+        "title": "6. EXPERIÊNCIAS EDUCACIONAIS, SIMULAÇÕES E MÉTRICAS DE APRENDIZAGEM",
+        "p1": "A PLATAFORMA disponibiliza aos Usuários várias experiências educacionais projetadas para facilitar o aprendizado progressivo de conceitos relacionados a finanças pessoais, hábitos econômicos e desenvolvimento de habilidades práticas relacionadas a estes.",
+        "p2": "Portanto, o conteúdo é apresentado através de aventuras educacionais; lições interativas; exercícios práticos; simulações financeiras; desafios e dinâmicas com sistemas de pontuação; recursos audiovisuais e narrativos; e qualquer outra ferramenta que a PLATAFORMA possa incorporar no futuro.",
+        "p3": "Assim, e a fim de personalizar a experiência educacional e permitir o monitoramento do progresso de cada Usuário, a PLATAFORMA pode gerar e exibir indicadores relacionados ao desempenho dentro do ambiente educacional, incluindo mas não limitado a:",
+        "p4": "1.  Lições concluídas;\n2.  Tempo de estudo;\n3.  Sequências de aprendizagem;\n4.  Pontos obtidos;\n5.  Realizações alcançadas;\n6.  Participação em aventuras educacionais;\n7.  Saldo virtual; e\n8.  Outras métricas de progresso geradas dentro da PLATAFORMA.",
+        "p5": "LITTLEFOUNDERS se reserva o direito de modificar, atualizar, expandir ou eliminar qualquer uma das experiências educacionais, métricas, simulações ou dinâmicas de gamificação quando necessário por razões pedagógicas, operacionais, tecnológicas, regulatórias ou de segurança."
       },
       "c7": {
-        "title": "7. NATUREZA EDUCATIVA E EXCLUSÃO DE SERVIÇOS FINANCEIROS",
-        "p1": "LITTLEFOUNDERS NÃO é uma instituição financeira, banco ou fintech regulamentada. Não gerencia fundos reais, não concede crédito nem emite instrumentos financeiros.",
-        "p2": "LITTLEFOUNDERS NUNCA solicitará transferências de dinheiro nem dados bancários reais. Reporte qualquer comunicação suspeita para informame@littlefounders.ai."
+        "title": "7. NATUREZA EDUCACIONAL DA PLATAFORMA E EXCLUSÃO DE SERVIÇOS FINANCEIROS",
+        "p1": "A PLATAFORMA é uma ferramenta tecnológica para fins exclusivamente educacionais e de simulação (conforme indicado na cláusula 6 destes Termos e Condições), consequentemente, os Usuários reconhecem e aceitam que de nenhuma forma e por nenhuma razão será entendido que a PLATAFORMA:",
+        "p2": "1.  Constitui uma instituição financeira, entidade bancária, empresa financeira, fintech regulada, transmissor de dinheiro, entidade de crédito ou intermediário financeiro;\n2.  Fornece serviços bancários ou financeiros;\n3.  Gerencia fundos ou ativos financeiros reais;\n4.  Executa pagamentos, transferências ou movimentos financeiros reais;\n5.  Concede créditos, empréstimos ou financiamentos;\n6.  Emite instrumentos financeiros;\n7.  Gera histórico de crédito oficial;\n8.  Relata informações para agências de informação de crédito;\n9.  Realiza avaliações financeiras oficiais;\n10. Fornece consultoria financeira, fiscal, contábil, patrimonial, de investimento ou profissional de qualquer tipo.",
+        "p3": "Como resultado, LITTLEFOUNDERS não garante resultados financeiros, econômicos, comerciais, acadêmicos ou patrimoniais decorrentes do uso da PLATAFORMA, nem assegura que o conhecimento adquirido gerará resultados específicos para os Usuários.",
+        "p4": "Desta forma, o Usuário aceita e reconhece que qualquer decisão financeira real deve ser tomada sob seu próprio julgamento e responsabilidade e, quando aplicável, com o apoio de profissionais especializados independentes da PLATAFORMA.",
+        "p5": "Consequentemente, LITTLEFOUNDERS nunca solicitará aos Usuários, seja através da PLATAFORMA, email, mensagens, chamadas telefônicas, mídias sociais ou qualquer outro meio, a condução de operações bancárias ou financeiras, nem qualquer outra operação envolvendo a disposição ou transferência de recursos econômicos reais.",
+        "p6": "Se algum Usuário receber uma solicitação dessa natureza ou detectar qualquer conduta suspeita, tentativa de fraude, representação de identidade ou comunicação aparentando vir de LITTLEFOUNDERS, deve se abster de responder a tal solicitação e reportá-la imediatamente através dos canais estabelecidos na Cláusula 10. ATENÇÃO AOS USUÁRIOS, RELATÓRIOS E INCIDENTES, destes Termos e Condições.",
+        "p7": "Os Usuários reconhecem e aceitam que os meios de contato expressamente indicados por LITTLEFOUNDERS na PLATAFORMA e nestes Termos e Condições constituem os únicos canais oficiais de comunicação com LITTLEFOUNDERS."
       },
       "c8": {
         "title": "8. INTELIGÊNCIA ARTIFICIAL E PERSONALIZAÇÃO DE CONTEÚDO",
-        "p1": "A PLATAFORMA utiliza ferramentas de Inteligência Artificial sob rígidos princípios de minimização de dados.",
-        "p2": "Nenhum nome completo ou dado de identificação pessoal de menores é transmitido a modelos ou APIs de IA de terceiros.",
-        "p3": "Os conteúdos gerados por IA são puramente educacionais e não substituem a supervisão parental ou profissional."
+        "p1": "Com o propósito de enriquecer a experiência educacional, LITTLEFOUNDERS incorpora ferramentas tecnológicas baseadas em inteligência artificial (IA), automação ou processamento algorítmico.",
+        "p2": "Desta forma, LITTLEFOUNDERS utiliza informações relacionadas ao uso da PLATAFORMA, métricas educacionais, padrões gerais de interação e certos atributos limitados do Usuário, como seu nome de usuário ou apelido e idade, a fim de personalizar a experiência de aprendizagem e melhorar o funcionamento dos Serviços.",
+        "p3": "Além disso, a PLATAFORMA foi projetada sob princípios de minimização de dados, portanto as funcionalidades de inteligência artificial usam apenas as informações estritamente necessárias para adaptar a experiência educacional ao perfil do Usuário; portanto, ferramentas de IA não usam nomes completos ou informações que permitam a identificação direta de Usuários dentro da PLATAFORMA.",
+        "p4": "Os Usuários reconhecem que o uso de tais informações tem o único propósito de gerar experiências educacionais mais personalizadas, apropriadas à faixa etária e ao nível de aprendizagem correspondente, buscando em todos os momentos limitar o processamento de dados pessoais ao mínimo necessário para a prestação de Serviços.",
+        "p5": "Assim, o Usuário aceita e expressamente reconhece que:",
+        "p6": "1.  A IA pode produzir resultados incompletos, imprecisos ou desatualizados;\n2.  Conteúdo gerado automaticamente não constitui consultoria financeira, legal, fiscal, contábil, psicológica ou profissional de qualquer tipo;\n3.  Funcionalidades de IA não substituem supervisão por pais, responsáveis, professores ou profissionais especializados; e\n4.  A IA não gera avaliações financeiras vinculantes."
       },
       "c9": {
-        "title": "9. VISIBILIDADE DE INFORMAÇÕES DE OUTROS USUÁRIOS",
-        "p1": "É permitida a visualização limitada de dados de outros usuários (avatar, apelido, sequência) estritamente no ambiente educacional.",
-        "p2": "A PLATAFORMA NÃO é uma rede social e NÃO inclui chat, mensagens diretas nem chamadas de vídeo."
+        "title": "9. VISUALIZAÇÃO DE INFORMAÇÕES DE OUTROS USUÁRIOS",
+        "p1": "A PLATAFORMA permite que certos Usuários visualizem informações limitadas relacionadas a outros usuários dentro do ambiente educacional, incluindo nome de usuário, avatar, pontuações, progresso e sequências de aprendizagem. Tais funcionalidades não incluem serviços de mensagens, chats, troca de conteúdo, videochamadas ou mecanismos de comunicação direta entre Usuários.",
+        "p2": "Assim, tal funcionalidade não constitui uma rede social nem permite comunicação, interação direta ou troca de informações entre Usuários.",
+        "p3": "Qualquer funcionalidade disponível para uma Conta CHILD exigirá autorização prévia do Usuário TUTOR e permanecerá sujeita à sua supervisão contínua."
       },
       "c10": {
-        "title": "10. ATENDIMENTO AO USUÁRIO E INCIDENTES",
-        "p1": "Os usuários podem enviar dúvidas ou relatórios de falhas para informame@littlefounders.ai ou via ferramentas internas.",
-        "p2": "SLA de resposta prioritária: Incidentes Críticos (24 horas), Altos (48 horas), Médios (7 dias úteis)."
+        "title": "10. ATENÇÃO AOS USUÁRIOS, RELATÓRIOS E INCIDENTES",
+        "p1": "A fim de manter a qualidade, segurança e funcionamento adequado da PLATAFORMA, LITTLEFOUNDERS disponibiliza aos Usuários diferentes canais para a recepção, atenção e acompanhamento de consultas, sugestões, relatórios e incidentes relacionados aos Serviços.",
+        "p2": "1. Canais de Atenção\nOs Usuários podem entrar em contato com LITTLEFOUNDERS através dos seguintes meios:",
+        "p3": "1.a. Email: `informame@littlefounders.ai` ou tal email conforme designado e publicado por LITTLEFOUNDERS no futuro.",
+        "p4": "1.b. Sistema de Relatório dentro da PLATAFORMA.",
+        "p5": "Os Usuários podem apresentar relatórios relacionados a, entre outros:\n1.  Erros técnicos ou mau funcionamento (bugs);\n2.  Sugestões de melhoria;\n3.  Qualquer Conteúdo dentro da PLATAFORMA;\n4.  Qualquer outro assunto relacionado à PLATAFORMA.",
+        "p6": "2. Gerenciamento de Relatórios\nUma vez recebido um relatório de um Usuário, a PLATAFORMA gerará um identificador único ou número de rastreamento a fim de facilitar sua administração interna e, quando aplicável, comunicação com o Usuário.",
+        "p7": "Os relatórios podem ser classificados e gerenciados de acordo com critérios internos de atenção, incluindo aspectos relacionados a:\n1.a. Natureza do incidente;\n1.b. Impacto na segurança da PLATAFORMA;\n1.c. Risco para os Usuários;\n1.d. Proteção de menores de idade;\n1.e. e outros fatores que LITTLEFOUNDERS julgar relevantes.",
+        "p8": "Os relatórios serão endereçados em diferentes estágios de revisão e atenção até sua conclusão ou encerramento.",
+        "p9": "3. Priorização e Escalação\nLITTLEFOUNDERS pode atribuir níveis de prioridade aos relatórios recebidos a fim de endereçar mais eficientemente aqueles que representam maiores riscos para os Usuários ou para a PLATAFORMA, que receberão atenção prioritária e, quando aplicável, podem ser escalados para pessoal especializado ou equipes internas com autoridade para sua investigação e resolução.",
+        "p10": "Além disso, relatórios relacionados a erros técnicos podem ser incorporados em processos internos de análise, correção, desenvolvimento ou melhoria contínua da PLATAFORMA.",
+        "p11": "4. Comunicações Relacionadas a Relatórios\nQuando necessário para a atenção de um relatório, LITTLEFOUNDERS pode contactar o Usuário através das informações de contato fornecidas para solicitar informações adicionais, acompanhar o incidente ou comunicar os resultados da revisão realizada.",
+        "p12": "O Usuário reconhece que a falha em responder ou cooperar pode limitar a capacidade de LITTLEFOUNDERS investigar ou resolver certos incidentes.",
+        "p13": "5. Tempos de Resposta\nLITTLEFOUNDERS envidará esforços razoáveis para endereçar relatórios recebidos dentro de prazos consistentes com sua natureza e nível de prioridade, que serão comunicados quando a prioridade for atribuída ao relatório: Crítico: 24 horas; Alto: 48 horas; e Médio: 7 dias úteis.",
+        "p14": "Qualquer tempo estimado de resposta, revisão ou resolução será exclusivamente informativo e não constituirá uma garantia, obrigação de resultado ou nível de serviço a favor dos Usuários.",
+        "p15": "A complexidade técnica, disponibilidade de informações, volume de solicitações recebidas ou necessidade de investigações adicionais podem afetar os tempos reais de resposta.",
+        "p16": "6. Autoridade para Encerrar\nLITTLEFOUNDERS pode considerar um relatório concluído ou encerrado quando:\n1.  O incidente foi endereçado ou resolvido;\n2.  Determina-se que não há impacto real na PLATAFORMA ou Usuários;\n3.  Não há informações suficientes para continuar a investigação;\n4.  O Usuário falha em responder a solicitações razoáveis de informações; ou\n5.  O assunto reportado está fora do escopo de responsabilidade de LITTLEFOUNDERS.",
+        "p17": "A determinação final quanto à classificação, atenção e encerramento de relatórios é de responsabilidade exclusiva de LITTLEFOUNDERS."
       },
       "c11": {
         "title": "11. PROPRIEDADE INTELECTUAL E INDUSTRIAL",
-        "p1": "Todo o código-fonte, design visual, marcas, narrativas, mundos de aprendizagem, metodologias e conteúdos são propriedade exclusiva de Legal Cyberx S.C. e LITTLEFOUNDERS.",
-        "p2": "É estritamente proibida a cópia, reprodução, engenharia reversa ou uso comercial não autorizado."
+        "p1": "A PLATAFORMA, seu design, estrutura, organização e outros elementos que a compõem constituem a propriedade exclusiva de LITTLEFOUNDERS ou seus respectivos proprietários e são protegidos pela legislação aplicável sobre propriedade intelectual e industrial.",
+        "p2": "A título ilustrativo mas não limitado, o seguinte está protegido:",
+        "p3": "11.a. O software e código-fonte da PLATAFORMA;\n11.b. As interfaces gráficas;\n11.c. Os designs visuais;\n11.d. As aventuras educacionais;\n11.e. Os personagens, narrativas e mundos de aprendizagem;\n11.f. Os materiais audiovisuais;\n11.g. O áudio e narrações;\n11.h. As metodologias educacionais;\n11.i. Os bancos de dados;\n11.j. As criações, marcas, nomes comerciais e signos distintivos; e\n11.k. Qualquer outro conteúdo criativo ou elemento desenvolvido para a PLATAFORMA.",
+        "p4": "O uso da PLATAFORMA não implica a atribuição, licenciamento, transmissão ou reconhecimento de qualquer direito de propriedade intelectual a favor dos Usuários, exceto pelo direito limitado, pessoal, revogável e não exclusivo de usar a PLATAFORMA de acordo com estes Termos e Condições.",
+        "p5": "Portanto, o seguinte é proibido: copiar, reproduzir, modificar ou distribuir conteúdo sem autorização; engenharia reversa; descompilar ou tentar obter código-fonte; criar obras derivadas; usar conteúdo da PLATAFORMA para fins comerciais não autorizados; e remover avisos de propriedade intelectual.",
+        "p6": "Qualquer feedback, sugestão ou comentário fornecido por Usuários em relação à PLATAFORMA pode ser livremente utilizado por LITTLEFOUNDERS para melhorar seus produtos e serviços, sem gerar nenhuma compensação a favor do Usuário."
       },
       "c12": {
         "title": "12. PROTEÇÃO DE DADOS PESSOAIS",
-        "p1": "O tratamento de dados pessoais é regido pelo Aviso de Privacidade ativo do LITTLEFOUNDERS, garantindo segurança administrativa, técnica e física."
+        "p1": "Reconhecendo a importância da privacidade e proteção dos dados pessoais de seus Usuários, LITTLEFOUNDERS realiza o processamento de dados pessoais de acordo com o Aviso de Privacidade vigente, que é parte integrante destes Termos e Condições.",
+        "p2": "Contas CHILD estão vinculadas a uma Conta TUTOR e operan sob o esquema de supervisão do Usuário TUTOR, assim se esforçando para minimizar a coleta de dados pessoais de menores de idade.",
+        "p3": "Portanto, LITTLEFOUNDERS implementa medidas razoáveis de natureza administrativa, técnica e física para proteger as informações do Usuário contra perda, uso indevido, acesso não autorizado, alteração ou divulgação não autorizada."
       },
       "c13": {
-        "title": "13. SUSPENSÃO E CANCELAMENTO DE CONTAS",
-        "p1": "LITTLEFOUNDERS poderá suspender ou cancelar contas em caso de descumprimento, uso indevido, fraude ou riscos a menores.",
-        "p2": "Em caso de cancelamento de uma Conta TUTOR, as Contas CHILD vinculadas serão suspensas e terão um prazo de 90 dias corridos para reativação."
+        "title": "13. SUSPENSÃO, RESTRIÇÃO E ENCERRAMENTO DE CONTAS",
+        "p1": "A fim de proteger a segurança, integridade e funcionamento adequado da PLATAFORMA, bem como os direitos e interesses dos Usuários, particularmente dos Usuários CHILD, LITTLEFOUNDERS pode suspender, restringir, limitar ou cancelar contas e funcionalidades conforme previsto nesta cláusula.",
+        "p2": "1. Situações de Risco\nLITTLEFOUNDERS pode, a seu exclusivo critério e sem necessidade de autorização prévia do Usuário, adoptar medidas preventivas ou corretivas quando razoavelmente considerar que existe:",
+        "p3": "1.a. Não conformidade com estes Termos e Condições;\n1.b. Risco à segurança da PLATAFORMA;\n1.c. Uso indevido dos Serviços;\n1.d. Atividades fraudulentas, enganosas ou ilícitas;\n1.e. Representação de identidade;\n1.f. Relatório, reclamação ou queixa de outros Usuários;\n1.g. Uso não autorizado de contas;\n1.h. Obrigação legal ou exigência de autoridade competente.",
+        "p4": "2. Medidas Preventivas e Corretivas\nNo evento que qualquer uma das situações previstas na subseção imediatamente anterior ocorra, LITTLEFOUNDERS pode implementar uma ou mais das seguintes medidas:",
+        "p5": "1.a. Emitir advertências ou notificações;\n1.b. Solicitar informações adicionais do Usuário em questão;\n1.c. Restringir temporariamente certas funcionalidades;\n1.d. Limitar a visibilidade de perfis ou conteúdo;\n1.e. Suspender temporariamente uma conta;\n1.f. Desvincular contas relacionadas;\n1.g. Quando aplicável, solicitar intervenção do Usuário TUTOR;\n1.h. Cancelar permanentemente uma conta;\n1.i. Adoptar qualquer outra medida razoável visando proteger a PLATAFORMA ou seus Usuários.",
+        "p6": "A aplicação de uma medida não impedirá a adopção de medidas adicionais se as circunstâncias o justificarem.",
+        "p7": "LITTLEFOUNDERS pode agir preventivamente mesmo quando não há certeza absoluta sobre a existência do risco, desde que tal ação seja razoável e proporcional para proteger menores.",
+        "p8": "LITTLEFOUNDERS notificará o Usuário através dos meios de contato registrados na PLATAFORMA em relação à suspensão, restrição ou cancelamento correspondente, quando isto for apropriado e compatível com as circunstâncias que motivaram a medida.",
+        "p9": "No entanto, LITTLEFOUNDERS pode tomar tais ações imediatamente e sem aviso prévio quando razoavelmente necessário para proteger a segurança da PLATAFORMA, seus Usuários, particularmente Usuários CHILD, cumprir com obrigações legais ou regulatórias, prevenir atividades fraudulentas, investigar má conduta ou salvaguardar direitos e interesses legítimos de terceiros ou da própria PLATAFORMA.",
+        "p10": "Se o Usuário acreditar que a medida adoptada por LITTLEFOUNDERS foi cometida em erro, tal incidente pode ser reportado através dos meios indicados na cláusula 10. ATENÇÃO AOS USUÁRIOS, RELATÓRIOS E INCIDENTES, destes Termos e Condições.",
+        "p11": "3. Encerramento Voluntário\nO Usuário pode solicitar o cancelamento de sua conta a qualquer momento através dos mecanismos habilitados pela PLATAFORMA.",
+        "p12": "No caso de uma Conta TUTOR, seu cancelamento ou deactivation resultará na suspensão imediata de Contas CHILD vinculadas, que não serão utilizáveis até que haja uma Conta TUTOR ativa supervisionando-as.",
+        "p13": "Contas CHILD suspensas podem ser reativadas dentro de 90 (noventa) dias seguindo a data de suspensão, através da reativação da Conta TUTOR correspondente, desde que isto seja técnica e operacionalmente possível.",
+        "p14": "Após este período, se não houver uma Conta TUTOR ativa associada, LITTLEFOUNDERS pode proceder à eliminação permanente da Conta CHILD e informações correspondentes, de acordo com o Aviso de Privacidade aplicável.",
+        "p15": "4. Retenção de Informações\nO cancelamento ou encerramento de uma conta não obrigará LITTLEFOUNDERS a eliminar imediatamente todas as informações relacionadas ao Usuário.",
+        "p16": "O Usuário aceita que certas informações podem ser retidas pelos períodos necessários para:",
+        "p17": "1.a. Cumprir obrigações legais;\n1.b. Responder aos requisitos de autoridade competente;\n1.c. Resolver disputas dentro da PLATAFORMA;\n1.d. Fazer valer direitos de LITTLEFOUNDERS;\n1.e. Cumprir políticas internas de retenção de informações;\n1.f. Cumprir com o Aviso de Privacidade aplicável.",
+        "p18": "O processamento de tais informações continuará a estar sujeito às disposições do Aviso de Privacidade vigente.",
+        "p19": "5. Ausência de Responsabilidade\nOs Usuários reconhecem e aceitam que LITTLEFOUNDERS pode exercer os poderes previstos nesta cláusula quando razoavelmente considerar necessário para proteger:",
+        "p20": "1.a. A segurança da Plataforma;\n1.b. Os direitos de terceiros;\n1.c. A integridade da comunidade;\n1.d. Os interesses legítimos de LITTLEFOUNDERS;\n1.e. A segurança e bem-estar de Usuários CHILD.",
+        "p21": "A suspensão, restrição ou cancelamento de contas realizada de acordo com estes Termos e Condições não gerará responsabilidade para LITTLEFOUNDERS."
       },
       "c14": {
         "title": "14. LIMITAÇÃO DE RESPONSABILIDADE",
-        "p1": "O acesso e uso da PLATAFORMA ocorrem por conta e risco do usuário. LITTLEFOUNDERS não se responsabiliza por lucros cessantes, danos indiretos, falhas de conectividade externas ou decisões financeiras pessoais."
+        "p1": "O Usuário reconhece e aceita que o acesso e uso da PLATAFORMA é por seu próprio risco.",
+        "p2": "Embora LITTLEFOUNDERS envidará esforços razoáveis para manter a disponibilidade, funcionalidade, segurança e qualidade dos Serviços; não garante que a PLATAFORMA operará ininterruptamente, livre de erros ou completamente imune a falhas técnicas, vulnerabilidades de segurança ou eventos além de seu controle razoável.",
+        "p3": "O Usuário aceita e reconhece que LITTLEFOUNDERS, seus acionistas, diretores, empregados, colaboradores, fornecedores, licenciadores e afiliados não serão responsáveis por danos diretos, indiretos, incidentais, especiais, consequentes ou punitivos decorrentes de:",
+        "p4": "1.  Acesso, uso ou incapacidade de usar a PLATAFORMA;\n2.  Interrupções temporárias, erros técnicos, falhas de conectividade, manutenção programada ou eventos de força maior;\n3.  Qualquer vírus ou código malicioso que qualquer terceiro transmita para o Serviço ou através dele;\n4.  Perda de informações causada por fatores externos, falhas de terceiros ou conduta atribuível ao Usuário;\n5.  Uso indevido de credenciais de acesso pelo Usuário ou terceiros;\n6.  O uso de informações obtidas através da PLATAFORMA para tomar decisões pessoais, acadêmicas, comerciais ou econômicas;\n7.  A interpretação ou aplicação que os Usuários fazem de conteúdo educacional fornecido pela PLATAFORMA;\n8.  Uso não autorizado da PLATAFORMA por menores;\n9.  Qualquer expectativa de resultados financeiros, econômicos, comerciais, educacionais ou patrimoniais decorrentes do uso da Plataforma.",
+        "p5": "1.f.i. Limitação Relacionada a Menores\nEmbora LITTLEFOUNDERS implemente medidas razoáveis de proteção e segurança digital, o Usuário TUTOR reconhece e aceita que a supervisão primária do menor é responsabilidade de seu pai, mãe ou responsável legal. Portanto, LITTLEFOUNDERS não será responsável por:",
+        "p6": "1.  Decisões tomadas pelo menor fora da PLATAFORMA;\n2.  Conduta engajada pelo menor fora dos Serviços;\n3.  Não conformidade com as obrigações de supervisão que correspondem ao Usuário TUTOR.",
+        "p7": "1.f.ii. Serviços de Terceiros\nA PLATAFORMA pode integrar ou interagir com serviços, ferramentas ou provedores externos, incluindo serviços de autenticação, armazenamento ou infraestrutura tecnológica.",
+        "p8": "Consequentemente, LITTLEFOUNDERS não será responsável por:",
+        "p9": "1.  A disponibilidade de tais serviços;\n2.  Políticas ou práticas de terceiros;\n3.  Interrupções atribuíveis a provedores externos;\n4.  Danos causados por plataformas ou serviços fora do controle de LITTLEFOUNDERS.",
+        "p10": "1.f.iii. Escopo Máximo de Responsabilidade\nEm nenhum caso LITTLEFOUNDERS será responsável por lucros cessantes, perda de oportunidade, perda de informações, dano reputacional, perda de renda ou quaisquer danos indiretos ou consequentes que possam resultar do acesso, uso ou incapacidade de usar a PLATAFORMA ou os Serviços."
       },
       "c15": {
-        "title": "15. MODIFICAÇÕES AOS TERMOS E CONDIÇÕES",
-        "p1": "LITTLEFOUNDERS poderá atualizar estes Termos e Condições. As alterações entram em vigor a partir de sua publicação na PLATAFORMA."
+        "title": "15. Modificações aos Termos e Condições",
+        "p1": "LITTLEFOUNDERS pode modificar, atualizar ou complementar estes Termos e Condições a qualquer momento quando mudanças na operação da PLATAFORMA ocorram, novas funcionalidades sejam incorporadas, melhorias tecnológicas, atualizações de segurança, modificações regulatórias ou qualquer outra circunstância que razoavelmente o justifique.",
+        "p2": "O Usuário aceita e reconhece que quando modificações afetam substancialmente seus direitos ou obrigações, LITTLEFOUNDERS se esforçará para notificá-los através dos meios de contato registrados na PLATAFORMA, publicações dentro dela ou qualquer outro meio de comunicação que razoavelmente considere apropriado.",
+        "p3": "No entanto, modificações relacionadas a novas funcionalidades, melhorias operacionais, medidas de segurança, conformidade regulatória ou requisitos legais podem entrar em vigor imediatamente sem necessidade de aviso prévio.",
+        "p4": "As modificações entrarão em vigor a partir de sua publicação na PLATAFORMA ou na data expressamente indicada para tal fim.",
+        "p5": "Se o Usuário não concordar com as modificações realizadas, deve se abster de continuar usando a PLATAFORMA e pode solicitar o cancelamento de sua conta de acordo com os mecanismos previstos nestes Termos e Condições.",
+        "p6": "O uso continuado da PLATAFORMA após as modificações entrarem em vigor constituirá aceitação das mesmas."
       },
       "c16": {
-        "title": "16. VIGÊNCIA E SOBREVIVÊNCIA DE DISPOSIÇÕES",
-        "p1": "Cláusulas sobre propriedade intelectual, limitação de responsabilidade, proteção de dados e jurisdição permanecem válidas após o cancelamento da conta."
+        "title": "16. Efetividade e Sobrevivência de Disposições",
+        "p1": "O encerramento, suspensão ou cancelamento de uma conta, bem como a conclusão do uso da PLATAFORMA pelo Usuário, não afetará aquelas disposições que por sua natureza devem sobreviver a tal encerramento.",
+        "p2": "Em particular, as cláusulas relacionadas a propriedade intelectual, limitação de responsabilidade, proteção de dados pessoais, resolução de disputas, jurisdição, conservação de informações e qualquer outra que razoavelmente requeira permanecer em vigor para proteger os direitos e interesses de LITTLEFOUNDERS ou terceiros continuarão em vigor."
       },
       "c17": {
-        "title": "17. DIVISIBILIDADE",
-        "p1": "Se qualquer disposição for declarada inválida por autoridade competente, as demais permanecerão em pleno vigor e efeito."
+        "title": "17. Divisibilidade",
+        "p1": "Se qualquer disposição destes Termos e Condições for declarada nula, inválida, ilegal ou inaplicável por uma autoridade competente, tal circunstância não afetará a validade, legalidade ou executabilidade das outras disposições, que continuarão em pleno vigor e efeito."
       },
       "c18": {
-        "title": "18. NÃO RENÚNCIA",
-        "p1": "A ausência ou atraso no exercício de qualquer direito por parte do LITTLEFOUNDERS não constituirá renúncia a esse direito."
+        "title": "18. Sem Renúncia",
+        "p1": "A falha em exercer ou atraso por LITTLEFOUNDERS em exercer qualquer direito, poder ou recurso previsto nestes Termos e Condições não constituirá renúncia do mesmo nem impedirá seu exercício subsequente.",
+        "p2": "Além disso, o exercício parcial de qualquer direito ou poder não impedirá o exercício subsequente de tal direito ou outros direitos que correspondem a LITTLEFOUNDERS."
       },
       "c19": {
-        "title": "19. LEGISLAÇÃO APLICÁVEL E JURISDIÇÃO",
-        "p1": "Estes Termos são regidos pelas leis federais dos Estados Unidos Mexicanos. Qualquer controvérsia será submetida aos tribunais competentes da Cidade do México."
+        "title": "19. Lei Aplicável e Jurisdição",
+        "p1": "Estes Termos e Condições serão regidos por e interpretados de acordo com as leis federais aplicáveis dos Estados Unidos Mexicanos.",
+        "p2": "Para a interpretação, conformidade, execução ou resolução de qualquer disputa relacionada com estes Termos e Condições ou o uso da PLATAFORMA, as partes expressamente se submetem à jurisdição dos tribunais competentes da Cidade do México, México, renunciando a qualquer outra jurisdição que possa corresponder a elas por razão de seus domicílios presentes ou futuros ou por qualquer outra razão."
       },
       "c20": {
-        "title": "20. CONTATO",
-        "p1": "Para dúvidas jurídicas ou esclarecimentos, escreva para informame@littlefounders.ai."
+        "title": "20. Contato",
+        "p1": "Para qualquer consulta, esclarecimento, relatório ou solicitação relacionada com estes Termos e Condições, os Usuários podem se comunicar com LITTLEFOUNDERS através dos meios de contato publicados na PLATAFORMA e, em particular, por email: `informame@littlefounders.ai`; ou tal email conforme designado por LITTLEFOUNDERS e publicado em tempo hábil para tais fins."
       }
     },
     "privacy": {

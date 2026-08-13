@@ -8,6 +8,13 @@ import type { DropdownOption, TableColumn } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AdminAction, AdminDialog, AdminEmpty, AdminPage, Unavailable } from './adminShared';
 import {
+  IntelExportCard,
+  IntelPeriodPicker,
+  StaffExclusionNote,
+  intelWindowQuery,
+  type IntelSelection,
+} from './intel/IntelControls';
+import {
   ResponsiveContainer, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, ComposedChart,
 } from 'recharts';
@@ -350,14 +357,19 @@ const SVG_ACCENT = 'rgb(var(--lf-accent))';
 const SVG_SUCCESS = 'rgb(var(--lf-success))';
 const SVG_WARNING = 'rgb(var(--lf-warning))';
 const SVG_ERROR = 'rgb(var(--lf-error))';
+/*
+ * Chart chrome. These MUST be wrapped in rgb() like the series colours above:
+ * the design tokens hold space-separated CHANNELS (`--lf-outline: 226 232 240`),
+ * not colours, so a bare `var(--lf-outline)` resolves to an invalid value and
+ * SVG silently falls back to black. Every grid line, axis line and tick label
+ * in this console was rendering black in both themes because of it.
+ */
+const SVG_OUTLINE = 'rgb(var(--lf-outline))';
+const SVG_CONTENT = 'rgb(var(--lf-content))';
+const SVG_CONTENT_MUTED = 'rgb(var(--lf-content-muted))';
 const SVG_DELIGHT = 'rgb(var(--lf-delight))';
 
-const PERIOD_OPTIONS: DropdownOption<string>[] = [
-  { value: '7', label: '7 days' },
-  { value: '30', label: '30 days' },
-  { value: '90', label: '90 days' },
-  { value: '365', label: '1 year' },
-];
+
 
 const METRIC_KEYS: DropdownOption<string>[] = [
   { value: 'dau', label: '' },
@@ -459,13 +471,13 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
               <AreaChart data={data.trends}>
                 <defs>
                   <linearGradient id="dauFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--lf-primary)" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="var(--lf-primary)" stopOpacity={0} />
+                    <stop offset="0%" stopColor={SVG_PRIMARY} stopOpacity={0.15} />
+                    <stop offset="100%" stopColor={SVG_PRIMARY} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={50} />
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="value" stroke={SVG_PRIMARY} fill="url(#dauFill)" strokeWidth={2} name={t('admin.intel.trends.dauTitle')} />
               </AreaChart>
@@ -481,9 +493,9 @@ function HomeTab({ data, days, t, nf, pf }: { data: IntelBundle; days: number; t
           <div className="h-[280px] w-full">
             <ResponsiveContainer>
               <BarChart data={data.summary.adoption} layout="vertical" margin={{ left: 80, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="role" type="category" tick={{ fontSize: 11, fill: 'var(--lf-content)' }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="role" type="category" tick={{ fontSize: 11, fill: SVG_CONTENT }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="users" fill={SVG_PRIMARY} radius={[0, 4, 4, 0]} name={t('admin.intel.adoption.current')} />
               </BarChart>
@@ -560,13 +572,13 @@ function TrendsTab({ data, t }: { data: IntelBundle; t: (k: string) => string })
               <AreaChart data={data.trends}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--lf-primary)" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="var(--lf-primary)" stopOpacity={0} />
+                    <stop offset="0%" stopColor={SVG_PRIMARY} stopOpacity={0.15} />
+                    <stop offset="100%" stopColor={SVG_PRIMARY} stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" />
-                <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={50} />
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" dataKey="value" stroke={SVG_PRIMARY} fill="url(#trendFill)" strokeWidth={2.5} name={t('admin.intel.trends.current')} />
                 <Legend />
@@ -593,9 +605,9 @@ function FunnelsTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => stri
           <div className="h-[320px] w-full">
             <ResponsiveContainer>
               <BarChart data={data.funnel} margin={{ top: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" vertical={false} />
-                <XAxis dataKey="step" tick={{ fontSize: 11, fill: 'var(--lf-content)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={50} />
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} vertical={false} />
+                <XAxis dataKey="step" tick={{ fontSize: 11, fill: SVG_CONTENT }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} width={50} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="users" radius={[4, 4, 0, 0]} maxBarSize={80}>
                   {data.funnel.map((_, i) => (
@@ -670,7 +682,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
     });
   }, [weeks, cohortLabels, map]);
 
-  const palette = [SVG_PRIMARY, SVG_ACCENT, SVG_SUCCESS, SVG_WARNING, SVG_DELIGHT, SVG_ERROR, 'var(--lf-muted)', 'var(--lf-faint)'];
+  const palette = [SVG_PRIMARY, SVG_ACCENT, SVG_SUCCESS, SVG_WARNING, SVG_DELIGHT, SVG_ERROR, SVG_CONTENT_MUTED, 'rgb(var(--lf-content-faint))'];
 
   return (
     <div className="flex flex-col gap-6">
@@ -679,9 +691,9 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
           <div className="h-[360px] w-full">
             <ResponsiveContainer>
               <ComposedChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" />
-                <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} unit="%" width={45} />
+                <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} />
+                <XAxis dataKey="week" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} unit="%" width={45} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 {cohortLabels.slice(0, 6).map((cl, i) => (
@@ -723,7 +735,7 @@ function RetentionTab({ data, t, pf }: { data: IntelBundle; t: (k: string) => st
                             {pct === null ? null : (
                               <span
                                 className="lf-caption inline-block rounded px-2 py-0.5 text-content"
-                                style={{ backgroundColor: `color-mix(in srgb, var(--lf-primary) ${Math.round(pct * 100)}%, transparent)` }}
+                                style={{ backgroundColor: `color-mix(in srgb, rgb(var(--lf-primary)) ${Math.round(pct * 100)}%, transparent)` }}
                               >
                                 {pf.format(pct)}
                               </span>
@@ -862,10 +874,10 @@ function LearningTab({ data, t, nf, pf, onInspectLearner }: {
               <ResponsiveContainer>
                 <ComposedChart data={overview.trends} margin={{ left: 4, right: 8 }}>
                   <defs><linearGradient id="learningAttemptFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={SVG_PRIMARY} stopOpacity={0.3} /><stop offset="100%" stopColor={SVG_PRIMARY} stopOpacity={0} /></linearGradient></defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="volume" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={38} />
-                  <YAxis yAxisId="score" orientation="right" domain={[0, 100]} tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} width={38} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="volume" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} width={38} />
+                  <YAxis yAxisId="score" orientation="right" domain={[0, 100]} tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} width={38} />
                   <Tooltip content={<CustomTooltip />} /><Legend />
                   <Area yAxisId="volume" type="monotone" dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} stroke={SVG_PRIMARY} fill="url(#learningAttemptFill)" strokeWidth={2.5} />
                   <Line yAxisId="score" type="monotone" dataKey="avgScore" name={t('admin.intel.learning.colScore')} stroke={SVG_SUCCESS} strokeWidth={2.5} dot={false} />
@@ -954,7 +966,7 @@ function LearnerDetailDialog({ detail, learner, loading, onClose, t, nf, pf }: {
           </div>
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.8fr)]">
             <ChartCard title={t('admin.intel.learning.learnerPulseTitle')} subtitle={t('admin.intel.learning.learnerPulseSubtitle')}>
-              {detail.trends.length > 0 ? <div className="h-[260px] w-full"><ResponsiveContainer><ComposedChart data={detail.trends}><CartesianGrid strokeDasharray="3 3" stroke="var(--lf-outline)" vertical={false} /><XAxis dataKey="date" tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} /><YAxis tick={{ fontSize: 11, fill: 'var(--lf-content-muted)' }} axisLine={false} tickLine={false} /><Tooltip content={<CustomTooltip />} /><Bar dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} fill={SVG_PRIMARY} radius={[4, 4, 0, 0]} /></ComposedChart></ResponsiveContainer></div> : <EmptyChartIcon name="monitoring" />}
+              {detail.trends.length > 0 ? <div className="h-[260px] w-full"><ResponsiveContainer><ComposedChart data={detail.trends}><CartesianGrid strokeDasharray="3 3" stroke={SVG_OUTLINE} vertical={false} /><XAxis dataKey="date" tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} /><YAxis tick={{ fontSize: 11, fill: SVG_CONTENT_MUTED }} axisLine={false} tickLine={false} /><Tooltip content={<CustomTooltip />} /><Bar dataKey="attempts" name={t('admin.intel.learning.attemptsLabel')} fill={SVG_PRIMARY} radius={[4, 4, 0, 0]} /></ComposedChart></ResponsiveContainer></div> : <EmptyChartIcon name="monitoring" />}
             </ChartCard>
             <Card className="flex flex-col gap-3 p-5">
               <div><p className="lf-label text-content">{t('admin.intel.learning.recommendation')}</p><p className="lf-caption mt-1 text-content-muted">{t('admin.intel.learning.recommendationHint')}</p></div>
@@ -1185,7 +1197,17 @@ export function AdminIntelPage() {
   const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<Tab>(() => searchParams.get('focus') === 'learning' ? 'learning' : 'home');
   const [state, setState] = useState<LoadState>({ status: 'loading' });
-  const [days, setDays] = useState(30);
+  const [selection, setSelection] = useState<IntelSelection>({ days: 30 });
+  const days = selection.days;
+  /*
+   * One serialized window for every request on the page. Thirteen of the
+   * seventeen requests used to ignore the period control entirely, so the
+   * console showed lifetime figures under a "last 7 days" label.
+   */
+  const windowQuery = intelWindowQuery(selection);
+  // Cohort retention is expressed in weeks, so the same selection is converted
+  // rather than left pinned at a hard-coded 12.
+  const cohortWeeks = Math.max(1, Math.min(52, Math.round(days / 7)));
   const [selectedLearnerId, setSelectedLearnerId] = useState<string | null>(null);
   const [learnerDetail, setLearnerDetail] = useState<IntelLearnerDetail | null>(null);
   const [learnerDetailLoading, setLearnerDetailLoading] = useState(false);
@@ -1205,22 +1227,22 @@ export function AdminIntelPage() {
       funnelR, cohortsR, dropoffR, calibrationR,
       engagementR, churnR, sessionsR, experimentsR, alertsR, consentR, qualityR, skillHealthR, learningOverviewR, usersR,
     ] = await Promise.allSettled([
-      get<IntelSummary>(`/admin/intel/metrics/summary?days=${days}`),
-      get<IntelTrendPoint[]>(`/admin/intel/metrics/trends?metric=dau&granularity=day&days=${days}`),
-      get<IntelAnomaly[]>('/admin/intel/anomalies/active'),
-      get<IntelFunnelStep[]>('/admin/intel/funnels/activation'),
-      get<IntelCohortEntry[]>('/admin/intel/retention/cohorts?weeks=12'),
-      get<IntelDropoffEntry[]>('/admin/intel/lessons/dropoff?limit=25'),
-      get<IntelCalibrationEntry[]>('/admin/intel/lessons/calibration?minLearners=2&limit=50'),
-      get<IntelEngagementEntry[]>('/admin/intel/engagement/leaderboard?limit=50'),
-      get<IntelChurnEntry[]>('/admin/intel/churn/risk?limit=100'),
-      get<IntelSessionEntry[]>(`/admin/intel/sessions/depth?days=${days}&limit=200`),
+      get<IntelSummary>(`/admin/intel/metrics/summary?${windowQuery}`),
+      get<IntelTrendPoint[]>(`/admin/intel/metrics/trends?metric=dau&granularity=day&${windowQuery}`),
+      get<IntelAnomaly[]>(`/admin/intel/anomalies/active?${windowQuery}`),
+      get<IntelFunnelStep[]>(`/admin/intel/funnels/activation?${windowQuery}`),
+      get<IntelCohortEntry[]>(`/admin/intel/retention/cohorts?weeks=${cohortWeeks}`),
+      get<IntelDropoffEntry[]>(`/admin/intel/lessons/dropoff?limit=25&${windowQuery}`),
+      get<IntelCalibrationEntry[]>(`/admin/intel/lessons/calibration?minLearners=2&limit=50&${windowQuery}`),
+      get<IntelEngagementEntry[]>(`/admin/intel/engagement/leaderboard?limit=50&${windowQuery}`),
+      get<IntelChurnEntry[]>(`/admin/intel/churn/risk?limit=100&${windowQuery}`),
+      get<IntelSessionEntry[]>(`/admin/intel/sessions/depth?limit=200&${windowQuery}`),
       get<IntelExperiment[]>('/admin/intel/experiments'),
       get<IntelAlert[]>('/admin/intel/alerts'),
       get<{ consent: { kidsTotal: number; kidsConsented: number } }>('/admin/insights/families?limit=1'),
-      get<IntelQualityReport>('/admin/intel/quality'),
-      get<{ skills: IntelSkillHealth[] }>('/admin/intel/learning/content-health?limit=50'),
-      get<IntelLearningOverview>(`/admin/intel/learning/overview?days=${days}&limit=100`),
+      get<IntelQualityReport>(`/admin/intel/quality?${windowQuery}`),
+      get<{ skills: IntelSkillHealth[] }>(`/admin/intel/learning/content-health?limit=50&${windowQuery}`),
+      get<IntelLearningOverview>(`/admin/intel/learning/overview?limit=100&${windowQuery}`),
       get<{ users: IntelAdminUser[] }>('/admin/users'),
     ]);
 
@@ -1276,11 +1298,15 @@ export function AdminIntelPage() {
 
   return (
     <AdminPage titleKey="admin.intel.title" subtitleKey="admin.intel.subtitle">
-      <div className="flex flex-wrap items-end gap-3 rounded-lg border border-outline/70 bg-surface p-4">
-        <label className="flex flex-col gap-1">
-          <span className="lf-caption text-content-muted">{t('admin.intel.filters.period')}</span>
-          <Dropdown value={String(days)} options={PERIOD_OPTIONS} onChange={(v) => setDays(Number(v))} ariaLabel={t('admin.intel.filters.period')} />
-        </label>
+      <div className="flex flex-col gap-3 rounded-lg border border-outline/70 bg-surface p-4">
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1">
+            <span className="lf-caption text-content-muted">{t('admin.intel.filters.period')}</span>
+            <IntelPeriodPicker selection={selection} onChange={setSelection} />
+          </label>
+          <IntelExportCard selection={selection} />
+        </div>
+        <StaffExclusionNote windowQuery={windowQuery} />
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto bg-surface-sunken p-1 rounded-xl border border-outline/30">

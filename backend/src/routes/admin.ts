@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
 import { getConfig } from '../config.js';
@@ -26,6 +26,13 @@ import {
 } from '../services/insights.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
+  renderAnalyticsReportCsv,
+  renderAnalyticsReportXlsx,
+  renderTablesCsv,
+  renderTablesXlsx,
+  type ExportSheet,
+} from '../services/analyticsExport.js';
+import {
   getKumaHealth,
   getPlausibleBreakdown,
   getPlausibleOverview,
@@ -33,12 +40,25 @@ import {
   getPulseConfig,
   getUmamiStats,
   kumaConfigured,
+  parseRange,
   PLAUSIBLE_DIMENSION_KEYS,
+  PLAUSIBLE_PERIODS,
   plausibleConfigured,
   REPORT_AUDIENCES,
+  resolveRange,
   umamiConfigured,
 } from '../services/pulse.js';
-import type { PlausibleFilter } from '../services/pulse.js';
+import type { AnalyticsRange, PlausibleFilter, PlausibleReportData } from '../services/pulse.js';
+import {
+  createExclusion,
+  isIpExcluded,
+  listActiveExclusions,
+  listExclusionSuggestions,
+  normalizeIp,
+  parseNetwork,
+  recordStaffSighting,
+  revokeExclusion,
+} from '../services/analyticsExclusions.js';
 import { insertAuditLog } from '../services/supabaseRest.js';
 import {
   getAdminOverview,
@@ -82,21 +102,46 @@ import {
  * requireRole here is the app-layer gate (§1.3 "DB AND app layer").
  */
 
-const PERIODS = ['day', '7d', '30d', 'month', '6mo', '12mo'] as const;
-const PeriodSchema = z.object({
-  period: z.enum(PERIODS).default('30d'),
-});
+/*
+ * Period selection. `period` is a Plausible preset or the literal `custom`,
+ * in which case `from`/`to` carry an inclusive day range. parseRange() does
+ * the real validation (well-formed days, from <= to, not in the future, not
+ * absurdly long) so every analytics route agrees on what a window is.
+ */
+const PERIOD_VALUES = [...PLAUSIBLE_PERIODS, 'custom'] as const;
+const RANGE_SHAPE = {
+  period: z.enum(PERIOD_VALUES).default('30d'),
+  from: z.string().optional(),
+  to: z.string().optional(),
+};
+const PERIOD_MESSAGE = 'period must be day|7d|30d|month|6mo|12mo|year|all, or custom with from/to as YYYY-MM-DD';
+
+const PeriodSchema = z.object({ ...RANGE_SHAPE });
 
 const BreakdownQuerySchema = z.object({
-  period: z.enum(PERIODS).default('30d'),
+  ...RANGE_SHAPE,
   dimension: z.enum(PLAUSIBLE_DIMENSION_KEYS),
-  limit: z.coerce.number().int().min(1).max(50).default(8),
+  limit: z.coerce.number().int().min(1).max(200).default(8),
 });
 
 const ReportQuerySchema = z.object({
-  period: z.enum(PERIODS).default('30d'),
+  ...RANGE_SHAPE,
   audience: z.enum(REPORT_AUDIENCES).default('full'),
 });
+
+/*
+ * Rows per breakdown in an export. A PDF page holds about ten before it stops
+ * being readable; a spreadsheet is where an analyst goes precisely to get more
+ * than that, so the caller chooses instead of the format deciding for them.
+ */
+const ExportRowsSchema = z.object({
+  rows: z.coerce.number().int().min(1).max(200).default(10),
+});
+
+/** Query → range, or null when the selection is not a window we can honour. */
+function rangeFromQuery(q: { period: string; from?: string; to?: string }): AnalyticsRange | null {
+  return parseRange(q.period, q.from, q.to);
+}
 
 // Plausible v2 filter clause: [operator, dimension, clauses] — validated here,
 // passed through to Plausible verbatim (analytics-contract shape).
@@ -252,6 +297,37 @@ const AuditQuerySchema = z.object({
   to: z.string().date().optional(),
 });
 
+/*
+ * Internal-traffic exclusions. `network` is free-form on purpose (an operator
+ * types an address or a CIDR), so it is parsed by parseNetwork() — which
+ * masks host bits, rejects anything unparseable and refuses a prefix broad
+ * enough to silence the whole platform — before it reaches the database.
+ */
+const ExclusionCreateSchema = z.object({
+  network: z.string().trim().min(1).max(60),
+  label: z.string().trim().min(1).max(80),
+  reason: z.string().trim().max(280).optional(),
+});
+
+const ExclusionSelfSchema = z.object({
+  label: z.string().trim().min(1).max(80).optional(),
+  reason: z.string().trim().max(280).optional(),
+});
+
+const ExclusionQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(90).default(30),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+});
+
+const ExclusionParamSchema = z.object({ id: z.string().uuid() });
+
+/** Intel export window. Mirrors dataintel's contract so one selection drives both. */
+const IntelExportQuerySchema = z.object({
+  days: z.coerce.number().int().min(1).max(3650).default(30),
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
 const RoleCandidateQuerySchema = z.object({
   q: z.string().trim().min(2).max(100),
   limit: z.coerce.number().int().min(1).max(20).default(10),
@@ -267,11 +343,25 @@ export function adminRouter(): Router {
 
   router.use(requireAuth, requireRole(['admin', 'superadmin']));
 
+  /*
+   * Automatic detection for the exclusion panel: remember which addresses the
+   * team actually works from, so excluding office/home traffic is one click
+   * rather than "go find out what your IP is". Runs AFTER the role gate, so
+   * only admin/superadmin addresses are ever recorded (§1.9 — no visitor,
+   * parent or kid address is written here). Fire-and-forget and deduped
+   * in-process: the console must not pay for it.
+   */
+  router.use((req, res, next) => {
+    recordStaffSighting(authedUser(res).id, req.ip);
+    next();
+  });
+
   /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries, optionally filtered. */
   router.get('/analytics/overview', async (req, res) => {
     const parsed = PeriodSchema.safeParse(req.query);
-    if (!parsed.success) {
-      fail(res, 400, 'VALIDATION_ERROR', 'period must be one of day|7d|30d|month|6mo|12mo');
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', PERIOD_MESSAGE);
       return;
     }
     const filters = parseFilters(req.query.filters);
@@ -283,19 +373,28 @@ export function adminRouter(): Router {
       fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
       return;
     }
-    const overview = await getPlausibleOverview(parsed.data.period, filters.filters);
+    const overview = await getPlausibleOverview(range, filters.filters);
     if (!overview) {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
       return;
     }
-    ok(res, { period: parsed.data.period, ...overview });
+    // The resolved bounds travel with the payload so the UI can state the
+    // window it is showing instead of restating the label it asked for.
+    const resolved = resolveRange(range);
+    ok(res, {
+      period: parsed.data.period,
+      from: new Date(resolved.startMs).toISOString().slice(0, 10),
+      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      ...overview,
+    });
   });
 
   /** Top-N breakdown by one dimension (Plausible), ordered by visitors desc. */
   router.get('/analytics/breakdown', async (req, res) => {
     const parsed = BreakdownQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, dimension one of the console dimension keys, limit 1-50');
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', `${PERIOD_MESSAGE}; dimension one of the console dimension keys; limit 1-200`);
       return;
     }
     const filters = parseFilters(req.query.filters);
@@ -307,7 +406,7 @@ export function adminRouter(): Router {
       fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
       return;
     }
-    const rows = await getPlausibleBreakdown(parsed.data.period, parsed.data.dimension, parsed.data.limit, filters.filters);
+    const rows = await getPlausibleBreakdown(range, parsed.data.dimension, parsed.data.limit, filters.filters);
     if (!rows) {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
       return;
@@ -315,81 +414,251 @@ export function adminRouter(): Router {
     ok(res, { period: parsed.data.period, dimension: parsed.data.dimension, rows });
   });
 
-  /** Audience report bundle: aggregate + timeseries + the audience's top-10 breakdowns. */
-  router.get('/analytics/report', async (req, res) => {
+  /*
+   * Report exports share one front half: validate the window, gate on
+   * Plausible being configured, and load the bundle. Keeping it in one place
+   * is what guarantees the PDF, the CSV and the spreadsheet describe exactly
+   * the same query — three formats disagreeing about the same period would
+   * defeat the point of exporting at all.
+   */
+  async function loadReport(req: Request, res: Response): Promise<PlausibleReportData | null> {
     const parsed = ReportQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, audience marketing|sales|frontend|full');
-      return;
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', `${PERIOD_MESSAGE}; audience marketing|sales|frontend|full`);
+      return null;
     }
     const filters = parseFilters(req.query.filters);
     if (!filters.ok) {
       fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
-      return;
+      return null;
     }
     if (!plausibleConfigured(getPulseConfig())) {
       fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
-      return;
+      return null;
     }
-    const report = await getPlausibleReportData(parsed.data.period, parsed.data.audience, filters.filters);
+    const rows = ExportRowsSchema.safeParse(req.query);
+    const report = await getPlausibleReportData(
+      range,
+      parsed.data.audience,
+      filters.filters,
+      rows.success ? rows.data.rows : 10,
+    );
     if (!report) {
       fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
-      return;
+      return null;
     }
-    ok(res, report);
+    return report;
+  }
+
+  /** Filename that says what is inside it: audience, real dates, generation day. */
+  function exportFilename(report: PlausibleReportData, extension: string): string {
+    return `littlefounders-analytics-${report.audience}-${report.from}_to_${report.to}.${extension}`;
+  }
+
+  /** Audience report bundle: aggregate + timeseries + the audience's breakdowns. */
+  router.get('/analytics/report', async (req, res) => {
+    const report = await loadReport(req, res);
+    if (report) ok(res, report);
   });
 
-  /**
+  /*
    * DOCUMENTED EXCEPTION to the §1.6 envelope (like Depot's public file
-   * route): the SUCCESS path streams raw PDF bytes — a download, not an API
-   * payload. Every error path still answers the normal {data,error} envelope.
+   * route): the SUCCESS path of the three export routes streams raw file
+   * bytes — a download, not an API payload. Every error path still answers
+   * the normal {data,error} envelope.
    */
   router.get('/analytics/report.pdf', async (req, res) => {
-    const parsed = ReportQuerySchema.safeParse(req.query);
-    if (!parsed.success) {
-      fail(res, 400, 'VALIDATION_ERROR', 'period day|7d|30d|month|6mo|12mo, audience marketing|sales|frontend|full');
-      return;
-    }
-    const filters = parseFilters(req.query.filters);
-    if (!filters.ok) {
-      fail(res, 400, 'VALIDATION_ERROR', 'filters must be a JSON array of [operator, dimension, clauses] tuples');
-      return;
-    }
-    if (!plausibleConfigured(getPulseConfig())) {
-      fail(res, 503, PULSE_UNCONFIGURED, 'Plausible is not configured on this deployment');
-      return;
-    }
-    const report = await getPlausibleReportData(parsed.data.period, parsed.data.audience, filters.filters);
-    if (!report) {
-      fail(res, 502, UPSTREAM_FAILED, 'Plausible did not answer');
-      return;
-    }
+    const report = await loadReport(req, res);
+    if (!report) return;
     const pdf = await renderAnalyticsReportPdf(report);
-    const day = report.generatedAt.slice(0, 10); // YYYY-MM-DD
     res
       .status(200)
       .setHeader('Content-Type', 'application/pdf')
-      .setHeader('Content-Disposition', `attachment; filename="littlefounders-analytics-${report.audience}-${report.period}-${day}.pdf"`)
+      .setHeader('Content-Disposition', `attachment; filename="${exportFilename(report, 'pdf')}"`)
       .send(pdf);
+  });
+
+  router.get('/analytics/report.csv', async (req, res) => {
+    const report = await loadReport(req, res);
+    if (!report) return;
+    res
+      .status(200)
+      .setHeader('Content-Type', 'text/csv; charset=utf-8')
+      .setHeader('Content-Disposition', `attachment; filename="${exportFilename(report, 'csv')}"`)
+      .send(renderAnalyticsReportCsv(report));
+  });
+
+  router.get('/analytics/report.xlsx', async (req, res) => {
+    const report = await loadReport(req, res);
+    if (!report) return;
+    const workbook = await renderAnalyticsReportXlsx(report);
+    res
+      .status(200)
+      .setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      .setHeader('Content-Disposition', `attachment; filename="${exportFilename(report, 'xlsx')}"`)
+      .send(workbook);
+  });
+
+  /*
+   * ── Internal-traffic exclusions (Vault 0045) ─────────────────────────────
+   *
+   * Reads answer 502 rather than an empty list when Vault is unreachable: a
+   * panel that renders "no exclusions" during an outage would tell an operator
+   * their staff traffic is being counted when it is not (or the reverse), and
+   * this surface exists precisely to be trusted (§1.14).
+   */
+  router.get('/analytics/exclusions', async (req, res) => {
+    const parsed = ExclusionQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'days 1-90, limit 1-200');
+      return;
+    }
+    const selfIp = normalizeIp(req.ip);
+    const [active, suggestions, selfExcluded] = await Promise.all([
+      listActiveExclusions(),
+      listExclusionSuggestions(parsed.data.days, parsed.data.limit),
+      isIpExcluded(req.ip),
+    ]);
+    if (!active || !suggestions || selfExcluded === null) {
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not read the analytics exclusion registry');
+      return;
+    }
+    ok(res, {
+      self: { ip: selfIp, excluded: selfExcluded },
+      active,
+      suggestions: suggestions.sightings,
+      coveredAddresses: suggestions.excludedAddresses,
+      windowDays: parsed.data.days,
+    });
+  });
+
+  /** Exclude a network from analytics ingestion. Forward-only — never rewrites history. */
+  router.post('/analytics/exclusions', async (req, res) => {
+    const parsed = ExclusionCreateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'network required, label 1-80 chars, reason up to 280 chars');
+      return;
+    }
+    const network = parseNetwork(parsed.data.network);
+    if (network === 'PREFIX_TOO_BROAD') {
+      fail(res, 400, 'VALIDATION_ERROR', 'prefix too broad — use /16 or narrower for IPv4, /32 or narrower for IPv6');
+      return;
+    }
+    if (network === 'INVALID') {
+      fail(res, 400, 'VALIDATION_ERROR', 'network must be an IPv4/IPv6 address or CIDR range');
+      return;
+    }
+    const actor = authedUser(res);
+    const created = await createExclusion({
+      network: network.network,
+      label: parsed.data.label,
+      reason: parsed.data.reason ?? null,
+      createdBy: actor.id,
+    });
+    if (!created.ok) {
+      if (created.reason === 'DUPLICATE') {
+        fail(res, 409, 'CONFLICT', 'That address is already covered by an active exclusion');
+        return;
+      }
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not store the exclusion');
+      return;
+    }
+    await insertAuditLog(actor.id, 'analytics_exclusion.create', created.row.id, {
+      network: created.row.network,
+      label: created.row.label,
+    });
+    ok(res, created.row, 201);
+  });
+
+  /**
+   * One-click "stop counting me": excludes the caller's current address. This
+   * is the button an operator actually reaches for — it needs no knowledge of
+   * what their address is, which is the whole reason the old panel went unused.
+   */
+  router.post('/analytics/exclusions/self', async (req, res) => {
+    const parsed = ExclusionSelfSchema.safeParse(req.body ?? {});
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'label up to 80 chars, reason up to 280 chars');
+      return;
+    }
+    const ip = normalizeIp(req.ip);
+    if (!ip) {
+      fail(res, 400, 'VALIDATION_ERROR', 'Could not determine your address from this request');
+      return;
+    }
+    const network = parseNetwork(ip);
+    if (typeof network === 'string') {
+      fail(res, 400, 'VALIDATION_ERROR', 'Could not determine your address from this request');
+      return;
+    }
+    const actor = authedUser(res);
+    const created = await createExclusion({
+      network: network.network,
+      label: parsed.data.label ?? 'Staff device',
+      reason: parsed.data.reason ?? null,
+      createdBy: actor.id,
+    });
+    if (!created.ok) {
+      if (created.reason === 'DUPLICATE') {
+        fail(res, 409, 'CONFLICT', 'Your address is already covered by an active exclusion');
+        return;
+      }
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not store the exclusion');
+      return;
+    }
+    await insertAuditLog(actor.id, 'analytics_exclusion.create_self', created.row.id, {
+      network: created.row.network,
+      label: created.row.label,
+    });
+    ok(res, created.row, 201);
+  });
+
+  /** Revoke an exclusion (soft — the row stays for the audit trail). */
+  router.delete('/analytics/exclusions/:id', async (req, res) => {
+    const parsed = ExclusionParamSchema.safeParse(req.params);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
+      return;
+    }
+    const actor = authedUser(res);
+    const revoked = await revokeExclusion(parsed.data.id, actor.id);
+    if (revoked === null) {
+      fail(res, 502, DATA_UNAVAILABLE, 'Could not revoke the exclusion');
+      return;
+    }
+    if (revoked === false) {
+      fail(res, 404, 'NOT_FOUND', 'No active exclusion with that id');
+      return;
+    }
+    await insertAuditLog(actor.id, 'analytics_exclusion.revoke', revoked.id, { network: revoked.network });
+    ok(res, revoked);
   });
 
   /** Behavioral stats (Umami): adult-surfaces product analytics. */
   router.get('/analytics/behavior', async (req, res) => {
     const parsed = PeriodSchema.safeParse(req.query);
-    if (!parsed.success) {
-      fail(res, 400, 'VALIDATION_ERROR', 'period must be one of day|7d|30d|month|6mo|12mo');
+    const range = parsed.success ? rangeFromQuery(parsed.data) : null;
+    if (!parsed.success || !range) {
+      fail(res, 400, 'VALIDATION_ERROR', PERIOD_MESSAGE);
       return;
     }
     if (!umamiConfigured(getPulseConfig())) {
       fail(res, 503, PULSE_UNCONFIGURED, 'Umami is not configured on this deployment');
       return;
     }
-    const stats = await getUmamiStats(parsed.data.period);
+    const stats = await getUmamiStats(range);
     if (!stats) {
       fail(res, 502, UPSTREAM_FAILED, 'Umami did not answer');
       return;
     }
-    ok(res, { period: parsed.data.period, ...stats });
+    const resolved = resolveRange(range);
+    ok(res, {
+      period: parsed.data.period,
+      from: new Date(resolved.startMs).toISOString().slice(0, 10),
+      to: new Date(resolved.endMs).toISOString().slice(0, 10),
+      ...stats,
+    });
   });
 
   /** System health (Uptime Kuma): per-service status, latency, 24h uptime. */
@@ -889,6 +1158,118 @@ export function adminRouter(): Router {
     const [families, consent] = await Promise.all([readFamilyEngagement(q.data.limit), readConsentCoverage()]);
     if (families === null || consent === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Family views unreachable');
     ok(res, { families, consent });
+  });
+
+
+  /*
+   * ── Intelligence console export ─────────────────────────────────────────
+   *
+   * Rendered HERE rather than in dataintel because the /intel proxy reads
+   * upstream responses as TEXT — fine for JSON, silently corrupting for a
+   * spreadsheet's bytes. Core fetches the same JSON the console renders and
+   * writes the file itself.
+   *
+   * The window travels with every upstream call, so the file cannot describe a
+   * different period than the screen did, and the provenance sheet states the
+   * window, the generation time and the standing staff-exclusion caveat.
+   *
+   * Same documented envelope exception as the analytics exports: success is raw
+   * bytes, every error path is the normal envelope.
+   */
+  router.get('/intel-export.:format', async (req, res) => {
+    const format = req.params.format === 'xlsx' ? 'xlsx' : req.params.format === 'csv' ? 'csv' : null;
+    if (!format) {
+      fail(res, 400, 'VALIDATION_ERROR', 'format must be csv or xlsx');
+      return;
+    }
+    const parsed = IntelExportQuerySchema.safeParse(req.query);
+    if (!parsed.success) {
+      fail(res, 400, 'VALIDATION_ERROR', 'days 1-3650, optional from/to as YYYY-MM-DD');
+      return;
+    }
+    const { days, from, to } = parsed.data;
+    if ((from && !to) || (to && !from)) {
+      fail(res, 400, 'VALIDATION_ERROR', 'from and to must be supplied together');
+      return;
+    }
+    const windowQuery = from && to ? `days=${days}&from=${from}&to=${to}` : `days=${days}`;
+
+    const pull = async <T>(path: string): Promise<T | null> => {
+      try {
+        const upstream = await fetch(`${DATAINTEL_URL}/api/v1/intel${path}`, {
+          headers: { 'x-internal-api-key': DATAINTEL_INTERNAL_KEY },
+          signal: AbortSignal.timeout(DATAINTEL_TIMEOUT_MS),
+        });
+        if (!upstream.ok) return null;
+        const body = (await upstream.json()) as { data?: T };
+        return body.data ?? null;
+      } catch {
+        return null;
+      }
+    };
+
+    const [engagement, dropoff, calibration, funnel, exclusion] = await Promise.all([
+      pull<Record<string, unknown>[]>(`/engagement/leaderboard?limit=200&${windowQuery}`),
+      pull<Record<string, unknown>[]>(`/lessons/dropoff?limit=200&${windowQuery}`),
+      pull<Record<string, unknown>[]>(`/lessons/calibration?minLearners=1&limit=200&${windowQuery}`),
+      pull<Record<string, unknown>[]>(`/funnels/activation?${windowQuery}`),
+      pull<Record<string, unknown>>(`/quality/staff-exclusion?${windowQuery}`),
+    ]);
+
+    // Every section failing means dataintel is down, not that the window was
+    // empty. An export of nothing, labelled as a period, would be read as fact.
+    if (!engagement && !dropoff && !calibration && !funnel) {
+      fail(res, 502, DATA_UNAVAILABLE, 'Intel service did not answer');
+      return;
+    }
+
+    const table = (name: string, rows: Record<string, unknown>[] | null): ExportSheet | null => {
+      if (!rows || rows.length === 0) return null;
+      const columns = Object.keys(rows[0] as object);
+      return {
+        name,
+        columns,
+        rows: rows.map((row) => columns.map((c) => (row[c] === null || row[c] === undefined ? null : (row[c] as string | number)))),
+      };
+    };
+
+    const sheets = [
+      table('Activation funnel', funnel),
+      table('Engagement', engagement),
+      table('Lesson dropoff', dropoff),
+      table('Segment calibration', calibration),
+    ].filter((sheet): sheet is ExportSheet => sheet !== null);
+
+    const excludedShare = typeof exclusion?.excludedShare === 'number' ? exclusion.excludedShare : null;
+    const meta = {
+      title: 'LittleFounders intelligence',
+      window: from && to ? `${from} to ${to}` : `last ${days} days`,
+      generatedAt: new Date().toISOString(),
+      notes: [
+        'Staff activity is excluded from every figure in this file. Admin and superadmin accounts are filtered out of the warehouse before any metric is computed.',
+        excludedShare !== null
+          ? `In this window ${(excludedShare * 100).toFixed(1)}% of raw events were staff activity and are not counted here.`
+          : 'The staff-exclusion share could not be read for this window.',
+        'Figures cover the window above only. A section missing from this file had no rows in that window.',
+      ],
+    };
+
+    const stamp = (from && to ? `${from}_to_${to}` : `last-${days}d`);
+    const filename = `littlefounders-intel-${stamp}.${format}`;
+
+    if (format === 'csv') {
+      res
+        .status(200)
+        .setHeader('Content-Type', 'text/csv; charset=utf-8')
+        .setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+        .send(renderTablesCsv(meta, sheets));
+      return;
+    }
+    res
+      .status(200)
+      .setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      .setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+      .send(await renderTablesXlsx(meta, sheets));
   });
 
   // ── Data Intelligence (dataintel/) proxy ────────────────────────────────────
