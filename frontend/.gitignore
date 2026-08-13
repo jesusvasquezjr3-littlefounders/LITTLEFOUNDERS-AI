@@ -1,3 +1,6 @@
 public/dev-lessons/
 .vercel
 .env*
+
+# Author-time map generation cache (see scripts/generate-region-maps.mjs)
+.cache/
