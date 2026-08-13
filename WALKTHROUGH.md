@@ -34,6 +34,102 @@
   Railway production preflight, and browser checks passed; no legal content
   was changed.
 
+## Current State (2026-08-13) — Financial Education confirmed LIVE in production; Emprendimiento/Inversiones pivoted to tier4 (12-18) and fully re-authored
+
+- **Financial Education generation status, verified directly against
+  production (not from stale docs):** a prior WALKTHROUGH snapshot (through
+  2026-08-02) still described this course as dry-run-only ($0 spent). Direct
+  read-only query against the production Vault (`railway ssh --service db
+  psql`, sentinel-verified) this session found it is actually **live and
+  generated**: `courses.status='published'`, 1,208 `lessons` all
+  `published`, 3,624 `lesson_documents` (= ×3 locales exactly, 100% carrying
+  non-empty `audio`), 9,179 `picture_assets` rows. Real Forge spend for the
+  run: **$1,586.42** (508.5M tokens, 41.8% cache hit, 397 images billed of
+  618 generated) — the `~$225-320` estimate recorded in ROADMAP.md back in
+  2026-07-13 undershot reality by roughly 5x; real $/lesson (~$1.31) is now
+  the basis for any future course cost projection. **Open, unexplained gap**:
+  the catalog defines 1,312 blueprints but production only has 1,208 — not
+  yet root-caused, flagged for a future session, not fabricated an
+  explanation for.
+- **Emprendimiento (`entrepreneurship`) and Inversiones (`investing`) pivoted
+  from tier1-3 (6-12) to a single new `tier4` (12-18) and fully
+  re-authored — owner-directed, "RADICAL" by their own word.** Neither course
+  had ever been generated (0 rows in production for either slug, confirmed
+  by the same production query), so no learner content was at stake — the
+  prior tier1-3 catalogs (1,408 + 1,472 blueprints) were deleted outright,
+  not archived, per explicit owner decision. Motivation: Financial
+  Education's language, while "good," read too young for a 12-18 audience;
+  the owner wanted a matured register with real analogies, plus roughly half
+  the lesson count (450-550 target vs. >1,400) with each lesson assumed
+  denser/longer.
+  - **Mechanism decision (owner, via `AskUserQuestion`):** a new `tier4` age
+    tier inside the existing kid-register Piaget-gate machinery — same
+    pattern used to add tier3 for the original Inversiones — NOT the
+    separate `register: adult` mechanism (COURSE_ENGINE.md §3.3), which was
+    built for verified adults with real-life-anchor framing (nómina, renta),
+    not a supervised teen account.
+  - **Scope decision:** full replacement, not an added rung on top of
+    tier1-3 — both courses are now 12-18 only. Flagged, not resolved: a
+    learner finishing Financial Education (~6-10) now has no course to start
+    until 12 (the 10-12 band the old Inversiones tier3 used to cover is
+    unserved) — product-sequencing call for the owner, tracked in
+    ROADMAP.md, not decided unilaterally.
+  - **Investing's hard vocabulary ceiling decision:** carried forward
+    UNCHANGED from tier3 into tier4 — apalancamiento/derivados/opciones
+    financieras/venta en corto/margen de crédito/trading intradía/forex/
+    criptomonedas stay banned across the full 12-18 band, explicitly not
+    relaxed for the 16-18 end (owner decision, §1.9 posture, not a
+    Piaget/age gate).
+  - **Shape delivered:** 8 adventures/course, each 4 teaching sagas × (6
+    teaching topics + `review_spaced` + `review_interleaved`, 2
+    lessons/topic = 16) + 1 review saga at position 5 (2 `review_quest`
+    topics × 2 lessons = 4) = 68 lessons × 8 = **544 lessons/course**, both
+    courses. `contentPlaybook.ts` gained `tierReasoningGuidance('tier4')` —
+    the register/analogy brief (subscriptions auto-renewing, gig-app fee
+    cuts, loot-box odds as risk/EV, follower growth as compounding) injected
+    into every write/judge prompt at this tier — plus `readability.ts` tier4
+    bands (extrapolated from the tier1-3 progression, flagged as
+    uncalibrated until a real batch generates) and migration
+    `0044_tier4_age_check.sql` widening `adventures.age_tier`.
+  - **Authoring execution — real gotchas, worth remembering:** delegated to
+    parallel background agents (same pattern as the original tier1-3
+    catalogs' "sibling agent" authorship). First attempt: one agent ran in
+    an isolated git worktree and correctly REFUSED to fabricate the missing
+    `tier4` scaffolding it couldn't see there (uncommitted local changes
+    don't propagate into a fresh worktree) — relaunched without isolation,
+    which fixed it. Both agents then hit the account's **monthly spend
+    limit** mid-run (not a code bug) — one had already written real content
+    to disk before dying (partial progress survives an API-budget kill, this
+    session confirmed), the other had gone down a rabbit hole building a
+    Python content-generator script and spawning per-adventure sub-agents
+    and had written nothing yet. Relaunched after the limit reset with an
+    explicit instruction to write YAML directly, file by file, no scripts,
+    no sub-agent fan-out — both courses completed cleanly on that retry.
+    **Content-quality defect caught post-hoc, not by any gate:** ~220
+    instances of missing Spanish accents in prose fields (también, ahí,
+    difícil, garantía, términos, código...) concentrated in the
+    later-authored files — fixed with a targeted script that explicitly
+    excludes `slug:`/`review_of` path lines (which must stay unaccented
+    ASCII kebab-case) from the replacement. No gate in the pipeline checks
+    Spanish accent correctness — worth a future gate if this recurs.
+  - **Verification, all free (no paid API calls):** `catalog:check` and
+    `graph:check` both 0 errors for each course individually and for all 4
+    courses scanned together (2,462 total blueprints across the whole
+    track); `generate -- --course <slug> --dry-run --require-images` clean
+    at $0 for both. **Not yet generated** — this is authored content only,
+    a paid Forge run needs separate owner authorization. Estimated cost at
+    Financial Education's real $/lesson (~$1.31, Forge-only — does NOT
+    include Echo/TTS, still no confirmed DashScope tariff in our docs)
+    applied to the real 544/course count: **~$714 (entrepreneurship) +
+    ~$714 (investing) ≈ $1,429 combined** (a same-session correction: the
+    figure first reported here — ~$1,850/~$1,933/$3,784 — mistakenly
+    carried the pre-pivot 1,408/1,472 lesson counts forward instead of the
+    544 actually authored; caught when the owner asked why the cost hadn't
+    dropped with the lesson-count cut. Also likely a floor rather than an
+    exact number: FE's $/lesson was measured on its 4-lessons/topic shape,
+    while tier4 intentionally packs more into each of its 2 lessons/topic,
+    which plausibly raises true per-lesson cost even as the total drops).
+
 ## Current State (2026-08-12) — Password recovery + in-session email/password change close the auth/email integration
 
 Courier (email-server) has been "DONE + LIVE" since 2026-07-18 for auth mail
@@ -557,9 +653,9 @@ the way (stale SSH key path, `railway service restart` hanging — use
 
 ## Current State (2026-07-22) — Analytics deepened + GA4 dual-tracking + sidebar scroll + Pulse cost trim
 
-**Verified analytics is live end-to-end (Task: "analytics working 100%").** Confirmed in prod, not assumed: the Plausible tracker fires (`/api/event` → 202) and Umami fires (`/api/send` → 200); the earlier no-auto-pageview scare was a measurement artifact — the automated tab loads `hidden`, and Plausible *correctly* defers the initial pageview until visible (the per-site `pa-<id>.js` self-inits with `autoCapturePageviews` via `plausible.o`). The Plausible dashboard shows real same-day traffic. Core holds every Pulse key (`PLAUSIBLE_URL/API_KEY/SITE_ID`, `UMAMI_URL/USERNAME/PASSWORD/WEBSITE_ID`, `KUMA_URL/STATUS_SLUG`), so the admin panel reads real data. Frontend `analytics.tsx` Plausible logic left as-is (it was already correct).
+**Verified analytics transport was live end-to-end (Task: "analytics working 100%").** Confirmed in prod, not assumed: the Plausible tracker fires (`/api/event` → 202) and Umami fires (`/api/send` → 200); the earlier no-auto-pageview scare was a measurement artifact — the automated tab loads `hidden`, and Plausible *correctly* defers the initial pageview until visible (the per-site `pa-<id>.js` self-inits with `autoCapturePageviews` via `plausible.o`). Core holds every Pulse key (`PLAUSIBLE_URL/API_KEY/SITE_ID`, `UMAMI_URL/USERNAME/PASSWORD/WEBSITE_ID`, `KUMA_URL/STATUS_SLUG`). **Scope correction, 2026-08-13:** the earlier tracker policy was too broad; public-acquisition capture is now restricted before collection as recorded in the latest Current State.
 
-**Admin analytics deepened (the "muchos campos no aprovechados" ask).** Core gained Plausible Stats API v2 **breakdowns** (top pages/sources/channels/countries/devices/browsers/os/entry+exit/UTM campaigns), an audience-shaped `/analytics/report` aggregator, a **branded, watermarked PDF export** (`/analytics/report.pdf`, pdfkit — papaya/navy, per team: Marketing/Sales/Frontend/Full; raw-PDF is a documented envelope exception like Depot's file route), **display filters** on overview+breakdown, and a read-only `/analytics/exclusions` mirror. Frontend `AnalyticsHealthPage` rebuilt into a dense, filter-aware surface (KPIs+trend, 10 breakdown cards with row-click-to-filter, PDF export card, **superadmin-only Excluded-IPs** manager that generates the `railway variables --set IP_BLOCKLIST=…` command, health). ~60 i18n keys ×3 locales. IP exclusion is honestly ingestion-level (Plausible stores no IP, so a dashboard filter can't do it): the card computes the value; enforcement is Plausible's `IP_BLOCKLIST` env (documented in `pulse/.env.example` + mirrored to Core `PLAUSIBLE_IP_BLOCKLIST` for display).
+**Admin analytics deepened (the "muchos campos no aprovechados" ask).** Core gained Plausible Stats API v2 **breakdowns** (top pages/sources/channels/countries/devices/browsers/os/entry+exit/UTM campaigns), an audience-shaped `/analytics/report` aggregator, a **branded, watermarked PDF export** (`/analytics/report.pdf`, pdfkit — papaya/navy, per team: Marketing/Sales/Frontend/Full; raw-PDF is a documented envelope exception like Depot's file route), and **display filters** on overview+breakdown. Frontend `AnalyticsHealthPage` was rebuilt into a dense, filter-aware surface (KPIs+trend, 10 breakdown cards with row-click-to-filter, PDF export card, health). **Retraction, 2026-08-13:** the former `/analytics/exclusions` and its Excluded-IPs card were removed because the claimed Plausible CE `IP_BLOCKLIST` enforcement was not documented or verified. Tracker scope is now the actual enforced exclusion boundary.
 
 **GA4 dual-tracking re-added — PUBLIC PAGES ONLY (§1.9).** Google Analytics (`G-0XH7S80QG2`, property littlefounders.ai / stream 13256321210) runs alongside Plausible but scoped to the NARROWEST surface: marketing/public paths only, never app or kid sessions. Unlike cookieless Plausible/Umami, GA4 uses cookies, so `analytics.tsx` fires `page_view` manually (`send_page_view:false`) and re-asserts a hard `ga-disable-<id>` kill-switch on every route change — GA4 can't observe an app/kid path even if its script stays resident across an SPA nav. `VITE_GA4_MEASUREMENT_ID` (public, Production-only) set in Vercel. **Cookie-consent follow-up (Consent Mode banner for EU/UK) is the correct next step — not yet built.**
 

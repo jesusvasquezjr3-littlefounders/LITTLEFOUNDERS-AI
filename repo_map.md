@@ -4135,164 +4135,164 @@ npm test
 ## Routes
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/01-la-isla-de-las-ideas.yaml
+### coursegen/curriculum/entrepreneurship/adventures/01-radar-de-oportunidades.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 1
-  slug: la-isla-de-las-ideas
-  theme: archipelago
-  age_tier: tier1
+  slug: radar-de-oportunidades
+  theme: city
+  age_tier: tier4
   title:
-    en-US: The Island of Ideas
-    es-MX: La Isla de las Ideas
-    pt-BR: A Ilha das Ideias
+    en-US: "Opportunity Radar"
+    es-MX: "Radar de Oportunidades"
+    pt-BR: "Radar de Oportunidades"
   description:
-    en-US: Sail to a new island where everyday problems hide in plain sight, and every problem noticed is the seed of a helpful idea.
-    es-MX: Navega a una isla nueva donde los problemas cotidianos se esconden a la vista de todos, y cada problema notado es la semilla de una idea que ayuda.
-    pt-BR: Navegue até uma nova ilha onde os problemas do dia a dia se escondem à vista de todos, e cada problema percebido é a semente de uma ideia que ajuda.
-  narrative_arc: "Después de aprender a cuidar el dinero en el archipiélago del trueque, Dina, Liruf, Rho y Zara llegan a una isla nueva llena de pequeños problemas que nadie ha resuelto: un puente que rechina, una fuente sin sombra, un carrito que se atora en la arena. Zara descubre que cada problema notado puede convertirse en una idea que ayude a alguien, Rho investiga preguntando a los isleños antes de suponer nada, y Liruf aprende que las mejores ideas nacen de combinar chispas sencillas. Juntos preparan su entrada para la Gran Feria de Inventos de la isla, la primera parada de su viaje como pequeños emprendedores."
+    en-US: "In Distrito Beta, four young scouts learn to spot problems worth solving before jumping to solutions - the first skill every founder needs."
+    es-MX: "En el Distrito Beta, cuatro jóvenes scouts aprenden a detectar problemas que de verdad valen la pena resolver, antes de saltar a las soluciones - la primera habilidad de todo founder."
+    pt-BR: "No Distrito Beta, quatro jovens exploradores aprendem a identificar problemas que realmente valem a pena resolver, antes de pular para solucoes - a primeira habilidade de todo founder."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/02-el-bosque-de-los-makers.yaml
+### coursegen/curriculum/entrepreneurship/adventures/02-prototipo-de-garage.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 2
-  slug: el-bosque-de-los-makers
-  theme: forest
-  age_tier: tier1
+  slug: prototipo-de-garage
+  theme: valley
+  age_tier: tier4
   title:
-    en-US: The Forest of Makers
-    es-MX: El Bosque de los Makers
-    pt-BR: A Floresta dos Makers
+    en-US: "Garage Prototype"
+    es-MX: "Prototipo de Garage"
+    pt-BR: "Prototipo de Garagem"
   description:
-    en-US: Walk into a workshop hidden in the forest, where every idea from the island finally becomes a real, hand-made product.
-    es-MX: Entra a un taller escondido en el bosque, donde cada idea de la isla por fin se convierte en un producto real, hecho a mano.
-    pt-BR: Entre em uma oficina escondida na floresta, onde cada ideia da ilha finalmente se transforma em um produto real, feito à mão.
-  narrative_arc: Con la idea elegida en la Isla de las Ideas bajo el brazo, Dina, Liruf, Rho y Zara llegan a un bosque frondoso donde un taller escondido entre los árboles espera a los pequeños makers. Liruf se lanza de lleno a construir con las manos, aprendiendo a seguir pasos en orden y a no apurarse; Rho investiga de dónde vienen los materiales, cuáles cuidar y cuáles reusar; Zara pone su sello personal en cada producto, cuidando los detalles hasta que quedan firmes y bien hechos; y Dina aprende a mostrar sus productos, escuchar opiniones sin miedo y construir una segunda versión mejor que la primera. Al final del bosque, cada quien tiene un producto propio, terminado y mejorado, listo para conocer a las personas que podrían usarlo.
+    en-US: "In the Valley of Garages, the crew builds a real MVP under real limits - money, time and tools - and learns that shipped beats perfect."
+    es-MX: "En el Valle de los Garages, el equipo construye un MVP real bajo limites reales - dinero, tiempo y herramientas - y aprende que lanzar vale más que ser perfecto."
+    pt-BR: "No Vale das Garagens, a equipe constroi um MVP real sob limites reais - dinheiro, tempo e ferramentas - e aprende que lancar vale mais que ser perfeito."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/03-la-ciudad-del-cliente.yaml
+### coursegen/curriculum/entrepreneurship/adventures/03-mesa-del-cliente.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 3
-  slug: la-ciudad-del-cliente
-  theme: city
-  age_tier: tier2
+  slug: mesa-del-cliente
+  theme: archipelago
+  age_tier: tier4
   title:
-    en-US: The City of the Customer
-    es-MX: La Ciudad del Cliente
-    pt-BR: A Cidade do Cliente
+    en-US: "The Customer Table"
+    es-MX: "Mesa del Cliente"
+    pt-BR: "Mesa do Cliente"
   description:
-    en-US: Bring your products to a bustling city and learn who really wants them, what they need, and how to earn their trust.
-    es-MX: Lleva tus productos a una ciudad bulliciosa y aprende quién los quiere de verdad, qué necesita y cómo ganarte su confianza.
-    pt-BR: Leve seus produtos a uma cidade movimentada e aprenda quem realmente os quer, o que precisa e como conquistar sua confiança.
-  narrative_arc: Con sus productos terminados bajo el brazo, Dina, Liruf, Rho y Zara llegan a una ciudad bulliciosa llena de plazas, puestos y gente ocupada. Zara brilla como estratega, dibujando el retrato de cada cliente ideal antes de ofrecer nada; Rho, siempre detective, escucha con calma las quejas y necesidades escondidas de los isleños; Liruf aprende, a veces a los tropiezos, que una promesa solo vale si de verdad se cumple; y Dina reúne a toda la tripulación para hacer sus primeras encuestas, contando respuestas y usando lo aprendido para mejorar cada idea. Al final de la ciudad, cada quien conoce bien a su cliente, sabe escucharlo, ha ganado su confianza y ha aprendido a preguntarle directamente lo que piensa.
+    en-US: "Across the Archipelago of Voices, the crew learns to interview real people, find real patterns, and change their product with real signal - not guesses."
+    es-MX: "A través del Archipielago de las Voces, el equipo aprende a entrevistar gente real, encontrar patrones reales y cambiar su producto con señal real, no con suposiciónes."
+    pt-BR: "Atraves do Arquipelago das Vozes, a equipe aprende a entrevistar pessoas reais, encontrar padroes reais e mudar seu produto com sinal real, nao com suposicoes."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/04-el-valle-del-precio-justo.yaml
+### coursegen/curriculum/entrepreneurship/adventures/04-precio-que-si-convence.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 4
-  slug: el-valle-del-precio-justo
+  slug: precio-que-si-convence
   theme: valley
-  age_tier: tier2
+  age_tier: tier4
   title:
-    en-US: The Valley of the Fair Price
-    es-MX: El Valle del Precio Justo
-    pt-BR: O Vale do Preço Justo
+    en-US: "A Price That Actually Sells"
+    es-MX: "Precio que sí Convence"
+    pt-BR: "Preço que Convence de Verdade"
   description:
-    en-US: Descend into a market valley and learn to turn cost into a fair price — one that covers your work and still respects your customer.
-    es-MX: "Baja a un valle de mercado y aprende a convertir el costo en un precio justo: uno que cubra tu trabajo y aún así respete a tu cliente."
-    pt-BR: "Desça a um vale de mercado e aprenda a transformar o custo em um preço justo: um que cubra seu trabalho e ainda assim respeite seu cliente."
-  narrative_arc: Con clientes reales ya conocidos en la ciudad, Dina, Liruf, Rho y Zara bajan a un valle lleno de puestos de mercado, donde cada comerciante debe decidir cuánto cobrar. Rho se convierte en el detective de costos de la tripulación, revisando cada material y cada minuto de trabajo para que ningún costo se escape; Zara calcula, resta y ajusta hasta encontrar el precio que de verdad es justo, ni abusivo ni regalado; Liruf aprende, con algún tropiezo, que vender por menos del costo o dejar que algo se dañe también cuenta como perder dinero; y Dina reúne a todos para revisar qué salió mal, ajustar y seguir adelante sin desanimarse. Al final del valle, cada quien sabe calcular su costo, su ganancia y un precio justo, listos para el Reino de las Ventas que los espera más adelante.
+    en-US: "In the Fair Price District, the crew turns real customer evidence into a real price - one that covers every cost, reflects what people actually value, and still leaves a margin worth the effort."
+    es-MX: "En el Distrito del Precio Justo, el equipo convierte la evidencia real de clientes en un precio real - uno que cubre cada costo, refleja lo que la gente de verdad valora, y todavia deja un margen que vale la pena."
+    pt-BR: "No Distrito do Preço Justo, a equipe transforma evidencia real de clientes em um preço real - um que cobre cada custo, reflete o que as pessoas realmente valorizam, e ainda deixa uma margem que vale a pena."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/05-el-reino-de-las-ventas.yaml
+### coursegen/curriculum/entrepreneurship/adventures/05-red-de-ventas.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 5
-  slug: el-reino-de-las-ventas
-  theme: kingdom
-  age_tier: tier2
+  slug: red-de-ventas
+  theme: forest
+  age_tier: tier4
   title:
-    en-US: The Kingdom of Selling
-    es-MX: El Reino de las Ventas
-    pt-BR: O Reino das Vendas
+    en-US: "Sales Network"
+    es-MX: "Red de Ventas"
+    pt-BR: "Rede de Vendas"
   description:
-    en-US: In a kingdom of traveling merchants, Dina and Liruf open their first lemonade stall in the Grand
-      Plaza and learn to sell with honesty, pitch their idea, and treat every customer with care.
-    es-MX: En un reino de mercaderes, Dina y Liruf abren su primer puesto de limonada en la Gran Plaza y
-      aprenden a vender con honestidad, a contar su idea en un minuto y a cuidar a cada cliente.
+    en-US: "In the Connection Forest, where every trail links one founder to the next, the crew learns to open real conversations, build a funnel that actually converts, negotiate without losing the customer, and persuade without ever crossing into manipulation."
+    es-MX: "En el Bosque de las Conexiones, donde cada sendero conecta a un founder con el siguiente, el equipo aprende a abrir conversaciones reales, construir un embudo que de verdad convierte, negociar sin perder al cliente, y persuadir sin cruzar jamas hacia la manipulación."
+    pt-BR: "Na Floresta das Conexões, onde cada trilha liga um founder ao próximo, a equipe aprende a abrir conversas reais, construir um funil que realmente converte, negociar sem perder o cliente, e persuadir sem jamais cruzar para a manipulação."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/06-el-taller-del-equipo.yaml
+### coursegen/curriculum/entrepreneurship/adventures/06-equipo-que-escala.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 6
-  slug: el-taller-del-equipo
-  theme: valley
-  age_tier: tier2
+  slug: equipo-que-escala
+  theme: kingdom
+  age_tier: tier4
   title:
-    en-US: The Workshop of the Team
-    es-MX: El Taller del Equipo
-    pt-BR: A Oficina da Equipe
+    en-US: "A Team That Scales"
+    es-MX: "Equipo que Escala"
+    pt-BR: "Equipe que Escala"
   description:
-    en-US: In a valley workshop, Dina and Liruf join a team of young founders and learn to work together,
-      discover each other's talents, split tasks and earnings fairly, and resolve disagreements.
-    es-MX: En un taller del valle, Dina y Liruf se unen a un equipo de jóvenes founders y aprenden a trabajar
-      juntos, descubrir sus talentos, repartir tareas y ganancias con justicia, y resolver desacuerdos.
+    en-US: "In the Expanding Realm, the crew learns that a founder who does everything alone has a ceiling - and that delegating, building a real culture and handling conflict well is what lets a small venture grow into something bigger than one person."
+    es-MX: "En el Reino en Expansión, el equipo aprende que un founder que hace todo solo tiene un techo - y que delegar, construir una cultura real y manejar bien el conflicto es lo que permite que un negocio chico crezca en algo más grande que una sola persona."
+    pt-BR: "No Reino em Expansão, a equipe aprende que um founder que faz tudo sozinho tem um teto - e que delegar, construir uma cultura real e lidar bem com o conflito e o que permite que um negocio pequeno cresca em algo maior que uma única pessoa."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/07-el-faro-del-buen-negocio.yaml
+### coursegen/curriculum/entrepreneurship/adventures/07-radar-de-riesgos.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 7
-  slug: el-faro-del-buen-negocio
-  theme: archipelago
-  age_tier: tier2
+  slug: radar-de-riesgos
+  theme: city
+  age_tier: tier4
   title:
-    en-US: The Lighthouse of Good Business
-    es-MX: El Faro del Buen Negocio
-    pt-BR: O Farol do Bom Negócio
+    en-US: "Risk Radar"
+    es-MX: "Radar de Riesgos"
+    pt-BR: "Radar de Riscos"
   description:
-    en-US: Across an archipelago of small businesses, Dina and Liruf learn what makes a business good all
-      the way through -- ethics, fair competition, kept promises, and caring for resources.
-    es-MX: En un archipiélago de pequeños negocios, Dina y Liruf aprenden qué hace bueno a un negocio de
-      principio a fin -- ética, competencia justa, promesas cumplidas y cuidado de los recursos.
+    en-US: "In the Red Flags District, the crew learns to spot a bad deal before signing it, protect a reputation that takes years to build and seconds to damage, read a contract for real, and hold a personal line on business ethics - never evading real laws, always asking a trusted adult when a deal is bigger than they are."
+    es-MX: "En el Distrito de las Señales Rojas, el equipo aprende a detectar un mal trato antes de firmarlo, proteger una reputación que tarda años en construirse y segundos en dañarse, leer un contrato de verdad, y sostener una linea personal de ética de negocio - nunca evadiendo leyes reales, siempre pidiendo ayuda a un adulto de confianza cuando un trato les queda grande."
+    pt-BR: "No Distrito das Bandeiras Vermelhas, a equipe aprende a identificar um mau negocio antes de assina-lo, proteger uma reputação que leva anos para construir e segundos para danificar, ler um contrato de verdade, e manter uma linha pessoal de etica de negocio - nunca evadindo leis reais, sempre pedindo ajuda a um adulto de confianca quando um negocio fica grande demais."
 ```
 
-### coursegen/curriculum/entrepreneurship/adventures/08-el-cosmos-del-founder.yaml
+### coursegen/curriculum/entrepreneurship/adventures/08-legado-del-founder.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 8
-  slug: el-cosmos-del-founder
+  slug: legado-del-founder
   theme: cosmos
-  age_tier: tier2
+  age_tier: tier4
   title:
-    en-US: The Founder's Cosmos
-    es-MX: El Cosmos del Founder
-    pt-BR: O Cosmos do Founder
+    en-US: "The Founder's Legacy"
+    es-MX: "Legado del Founder"
+    pt-BR: "Legado do Founder"
   description:
-    en-US: The capstone journey where Dina and Liruf gather everything learned across every world into
-      one complete mini-business plan, iterate it, present it, and graduate as founders.
-    es-MX: El viaje final donde Dina y Liruf reúnen todo lo aprendido en cada mundo en un plan completo
-      de mini-empresa, lo iteran, lo presentan y se gradúan como founders.
+    en-US: "At the Legacy Observatory, high above every district the crew has crossed, they assemble everything learned into one complete business model, craft a pitch that actually lands, and build a long-term vision worth defending before the full council of founders."
+    es-MX: "En el Observatorio del Legado, muy por encima de cada distrito que el equipo ha cruzado, reunen todo lo aprendido en un modelo de negocio completo, construyen un pitch que de verdad aterriza, y trazan una visión de largo plazo que vale la pena defender ante el consejo completo de founders."
+    pt-BR: "No Observatorio do Legado, bem acima de cada distrito que a equipe atravessou, reunem tudo o que aprenderam em um modelo de negocio completo, constroem um pitch que realmente aterrissa, e tracam uma visão de longo prazo que vale a pena defender diante do conselho completo de founders."
 ```
 
 ### coursegen/curriculum/entrepreneurship/catalog.yaml
@@ -4309,9 +4309,9 @@ course:
     es-MX: "Emprendimiento"
     pt-BR: "Empreendedorismo"
   description:
-    en-US: "A story adventure that runs after Financial Education, where kids turn ideas into real little businesses — spotting problems, making things with care, understanding customers and pricing fairly."
-    es-MX: "Una aventura que continúa después de Educación Financiera, donde los niños convierten ideas en pequeños negocios reales: detectan problemas, hacen cosas con cuidado, entienden a sus clientes y ponen precios justos."
-    pt-BR: "Uma aventura que continua depois de Educação Financeira, onde as crianças transformam ideias em pequenos negócios reais: identificam problemas, fazem coisas com cuidado, entendem seus clientes e definem preços justos."
+    en-US: "A story arc for teens (12-18) who already know how money works — now they learn to spot real problems, build something people actually want, price and sell it fairly, and lead a team, with the trade-offs a real founder faces."
+    es-MX: "Un arco narrativo para adolescentes (12-18) que ya saben cómo funciona el dinero — ahora aprenden a detectar problemas reales, construir algo que la gente de verdad quiere, ponerle precio y venderlo con justicia, y liderar un equipo, con los dilemas reales de un founder."
+    pt-BR: "Um arco narrativo para adolescentes (12-18) que já sabem como o dinheiro funciona — agora aprendem a identificar problemas reais, construir algo que as pessoas realmente querem, precificar e vender com justiça, e liderar uma equipe, com os dilemas reais de um founder."
   authoring_locale: es-MX
 ```
 
@@ -4345,14 +4345,14 @@ schema_version: 1
 # the forbidden-vocabulary lists are checked against every generated string
 # (titles, concepts, objectives, prompts) for the matching age tier + locale.
 #
-# This course runs AFTER financial-education (COURSE_ENGINE.md §3.1b —
-# `course.requires: [financial-education]`), so kids arrive already knowing
-# what money is, how to earn/save/spend it. The age-tier vocabulary GATE
-# itself is project-wide and shared verbatim with financial-education's
-# taxonomy.yaml (same Piaget ceiling per tier, same three locales) — it is
-# NOT reinvented per course. tier1 here covers adventures 1-2 (foundational,
-# concrete idea/making skills); tier2 covers adventures 3-8 (money-adjacent
-# business mechanics: customers, pricing, profit).
+# PIVOT (WALKTHROUGH 2026-08-12): this course dropped tier1-3 (6-12) entirely
+# and now targets a single tier4 (12-18) audience — matured language, real
+# analogies (contentPlaybook.ts tierReasoningGuidance('tier4')), fewer/longer
+# lessons. It still runs AFTER financial-education (COURSE_ENGINE.md §3.1b —
+# `course.requires: [financial-education]`), so learners arrive already
+# knowing what money is, how to earn/save/spend it.
+#
+# At tier4 the Piaget vocabulary ceiling is effectively OFF: a 12-18-year-old
 ```
 
 ### coursegen/curriculum/financial-education/adventures/01-archipielago-del-trueque.yaml
@@ -4655,164 +4655,164 @@ age_tiers:
       pt-BR: [porcentagem, juros compostos, hipoteca, ações, bolsa de valores, dividendo, criptomoeda]
 ```
 
-### coursegen/curriculum/investing/adventures/01-el-jardin-del-tiempo.yaml
+### coursegen/curriculum/investing/adventures/01-valor-del-tiempo.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 1
-  slug: el-jardin-del-tiempo
-  theme: forest
-  age_tier: tier2
+  slug: valor-del-tiempo
+  theme: cosmos
+  age_tier: tier4
   title:
-    en-US: The Garden of Time
-    es-MX: El Jardín del Tiempo
-    pt-BR: O Jardim do Tempo
+    en-US: "The Value of Time"
+    es-MX: "El Valor del Tiempo"
+    pt-BR: "O Valor do Tempo"
   description:
-    en-US: Dina and Liruf enter an ancient forest where Dr. Rho, its patient old gardener, teaches them
-      that time itself -- not just effort -- is what makes what's saved grow big.
-    es-MX: Dina y Liruf entran a un bosque antiguo donde Dr. Rho, su paciente jardinero, les enseña que
-      el tiempo -y no solo el esfuerzo- es lo que hace crecer grande lo que se guarda.
+    en-US: "In the Clock Station, four cadets learn why WHEN you decide matters as much as WHAT you decide - money and options today are worth more than a promise for later."
+    es-MX: "En la Estación Reloj, cuatro cadetes aprenden por qué el MOMENTO en que decides importa tanto como la decisión misma - el dinero y las opciones de hoy valen más que una promesa para después."
+    pt-BR: "Na Estação Relógio, quatro cadetes aprendem por que o MOMENTO em que voce decide importa tanto quanto a decisao em si - o dinheiro e as opcoes de hoje valem mais que uma promessa para depois."
 ```
 
-### coursegen/curriculum/investing/adventures/02-la-aldea-del-interes.yaml
+### coursegen/curriculum/investing/adventures/02-interes-que-se-acumula.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 2
-  slug: la-aldea-del-interes
-  theme: valley
-  age_tier: tier2
+  slug: interes-que-se-acumula
+  theme: city
+  age_tier: tier4
   title:
-    en-US: The Village of Interest
-    es-MX: La Aldea del Interés
-    pt-BR: A Aldeia do Juro
+    en-US: "Interest That Adds Up"
+    es-MX: "El Interés que se Acumula"
+    pt-BR: "O Juro que se Acumula"
   description:
-    en-US: Dina and Liruf reach a valley village where the local savings house gives a small prize for
-      coins left saved for a while.
-    es-MX: Dina y Liruf llegan a una aldea del valle donde la casa de ahorros da un pequeño premio por
-      las monedas que se dejan guardadas un tiempo.
+    en-US: "In the Growth District, the team learns why money left alone can grow on its own - and why a forgotten subscription or an app's cut can grow against you the exact same way."
+    es-MX: "En el Distrito de Crecimiento, el equipo aprende por qué el dinero que dejas quieto puede crecer solo - y por qué una suscripción olvidada o la comisión de una app puede crecer EN TU CONTRA de la misma forma."
+    pt-BR: "No Distrito de Crescimento, a equipe aprende por que o dinheiro que voce deixa parado pode crescer sozinho - e por que uma assinatura esquecida ou a comissao de um aplicativo pode crescer CONTRA voce da mesma forma."
 ```
 
-### coursegen/curriculum/investing/adventures/03-el-archipielago-de-los-riesgos.yaml
+### coursegen/curriculum/investing/adventures/03-mapa-del-riesgo.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 3
-  slug: el-archipielago-de-los-riesgos
+  slug: mapa-del-riesgo
   theme: archipelago
-  age_tier: tier2
+  age_tier: tier4
   title:
-    en-US: The Archipelago of Risks
-    es-MX: El Archipiélago de los Riesgos
-    pt-BR: O Arquipélago dos Riscos
+    en-US: "The Risk Map"
+    es-MX: "El Mapa del Riesgo"
+    pt-BR: "O Mapa do Risco"
   description:
-    en-US: Dina and Liruf sail with Zara Vex among islands where different paths offer different possible
-      rewards -- and different risks.
-    es-MX: Dina y Liruf navegan con Zara Vex entre islas donde distintos caminos ofrecen distintos premios
-      posibles -y distintos riesgos.
+    en-US: "Sailing the Archipelago of Decisions, four navigators learn that more reward almost always comes with more risk - and that a promise of safe, huge and fast all at once is never real."
+    es-MX: "Navegando el Archipiélago de Decisiones, cuatro navegantes aprenden que más premio casi siempre viene con más riesgo - y que una promesa de seguro, grande y rápido a la vez nunca es real."
+    pt-BR: "Navegando o Arquipelago de Decisoes, quatro navegadores aprendem que mais premio quase sempre vem com mais risco - e que uma promessa de seguro, grande e rápido ao mesmo tempo nunca e real."
 ```
 
-### coursegen/curriculum/investing/adventures/04-la-ciudad-de-las-metas.yaml
+### coursegen/curriculum/investing/adventures/04-metas-con-numeros.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 4
-  slug: la-ciudad-de-las-metas
-  theme: city
-  age_tier: tier3
+  slug: metas-con-numeros
+  theme: valley
+  age_tier: tier4
   title:
-    en-US: The City of Goals
-    es-MX: La Ciudad de las Metas
-    pt-BR: A Cidade das Metas
+    en-US: "Goals With Numbers"
+    es-MX: "Metas con Números"
+    pt-BR: "Metas com Numeros"
   description:
-    en-US: Dina and Liruf reach a bustling city where Dina, now a goals mentor, helps them plan real long-term
-      goals and discover why prices rise with time.
-    es-MX: Dina y Liruf llegan a una ciudad bulliciosa donde Dina, ahora mentora de metas, los ayuda a
-      planear metas reales de largo plazo y a descubrir por qué los precios suben con el tiempo.
+    en-US: "In the Valley of Goals, the team turns a vague want into a real numeric goal - amount, deadline, weekly plan - and learns that prices don't hold still while you save."
+    es-MX: "En el Valle de las Metas, el equipo convierte un deseo vago en una meta numérica real - monto, fecha, plan semanal - y aprende que los precios no se quedan quietos mientras ahorras."
+    pt-BR: "No Vale das Metas, a equipe transforma um desejo vago em uma meta numerica real - valor, prazo, plano semanal - e aprende que os precos nao ficam parados enquanto voce economiza."
 ```
 
-### coursegen/curriculum/investing/adventures/05-el-reino-de-las-canastas.yaml
+### coursegen/curriculum/investing/adventures/05-canastas-y-fondos.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 5
-  slug: el-reino-de-las-canastas
+  slug: canastas-y-fondos
   theme: kingdom
-  age_tier: tier3
+  age_tier: tier4
   title:
-    en-US: The Kingdom of Baskets
-    es-MX: El Reino de las Canastas
-    pt-BR: O Reino das Cestas
+    en-US: "Baskets and Funds"
+    es-MX: "Canastas y Fondos"
+    pt-BR: "Cestas e Fundos"
   description:
-    en-US: In a kingdom ruled by baskets, Dina and Liruf learn that a stock is a real piece of a real company, that spreading money across different things beats guessing a single winner, and that a fund or an index is a basket shared by many.
-    es-MX: En un reino gobernado por canastas, Dina y Liruf aprenden que una acción es un pedacito real de una empresa real, que repartir el dinero entre cosas distintas gana a adivinar un solo ganador, y que un fondo o un índice es una canasta compartida entre muchos.
-    pt-BR: Em um reino governado por cestas, Dina e Liruf aprendem que uma ação é um pedacinho real de uma empresa real, que espalhar o dinheiro entre coisas diferentes vence adivinhar um único vencedor, e que um fundo ou um índice é uma cesta compartilhada por muitos.
-  narrative_arc: 'Dina y Liruf llegan a un reino donde todo se organiza en canastas: el mercado, el tesoro real, hasta las grandes decisiones. Dr. Rho, guardián real de las canastas, les enseña que una acción es un pedacito de una empresa de verdad -- como la limonadería que conocieron en Emprendimiento -- y que nadie debe apostar todo su tesoro a una sola cosa. Zara Vex reta a los niños con escenarios donde una sola canasta se rompe, para que descubran por su cuenta por qué repartir entre varias canastas, fondos e índices protege mejor que adivinar un único ganador.'
+    en-US: "In the League of Guilds, the team learns that a basket holding small pieces of many things beats betting everything on one - and that a real index quietly follows the whole group instead of guessing a winner."
+    es-MX: "En la Liga de los Gremios, el equipo aprende que una canasta con pedacitos de muchas cosas le gana a apostar todo a una sola - y que un índice de verdad sigue a todo el grupo en vez de adivinar un ganador."
+    pt-BR: "Na Liga das Guildas, a equipe aprende que uma cesta com pedacos de muitas coisas vence apostar tudo em uma so - e que um indice de verdade segue todo o grupo em vez de adivinhar um vencedor."
 ```
 
-### coursegen/curriculum/investing/adventures/06-el-bosque-del-interes-compuesto.yaml
+### coursegen/curriculum/investing/adventures/06-efecto-bola-de-nieve.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 6
-  slug: el-bosque-del-interes-compuesto
+  slug: efecto-bola-de-nieve
   theme: forest
-  age_tier: tier3
+  age_tier: tier4
   title:
-    en-US: The Forest of Compound Interest
-    es-MX: El Bosque del Interés Compuesto
-    pt-BR: A Floresta dos Juros Compostos
+    en-US: "The Snowball Effect"
+    es-MX: "El Efecto Bola de Nieve"
+    pt-BR: "O Efeito Bola de Neve"
   description:
-    en-US: In a forest where snowballs grow and trees give seeds that grow more trees, Dina and Liruf discover that time is the real superpower behind compound interest, and that starting early beats saving more later.
-    es-MX: En un bosque donde las bolas de nieve crecen y los árboles dan semillas que dan más árboles, Dina y Liruf descubren que el tiempo es el verdadero superpoder detrás del interés compuesto, y que empezar antes gana a ahorrar más tarde.
-    pt-BR: Em uma floresta onde bolas de neve crescem e árvores dão sementes que geram mais árvores, Dina e Liruf descobrem que o tempo é o verdadeiro superpoder por trás dos juros compostos, e que começar cedo vence economizar mais tarde.
-  narrative_arc: Dina y Liruf entran a un bosque nevado donde Dr. Rho cuida bolas de nieve mágicas y árboles que dan semillas. Ahí descubren que el dinero guardado puede crecer solo, como una bola de nieve que junta más nieve en cada vuelta, o como un árbol que da semillas que se convierten en más árboles. Zara Vex reta a los niños a comparar sembradores que empezaron en momentos distintos, para que descubran por su cuenta que el tiempo, no la cantidad, es el verdadero superpoder de guardar dinero con constancia.
+    en-US: "In the Growing Forest, the team studies how a following that snowballs shares the exact same shape as money left to compound for decades - and why starting a few years earlier changes everything."
+    es-MX: "En el Bosque que Crece, el equipo estudia cómo una cuenta de seguidores que se vuelve viral tiene exactamente la misma forma que un dinero que se deja crecer por décadas - y por qué empezar unos años antes lo cambia todo."
+    pt-BR: "No Bosque que Cresce, a equipe estuda como uma conta de seguidores que viraliza tem exatamente a mesma forma de um dinheiro deixado para crescer por decadas - e por que comecar alguns anos antes muda tudo."
 ```
 
-### coursegen/curriculum/investing/adventures/07-el-faro-de-los-fraudes.yaml
+### coursegen/curriculum/investing/adventures/07-radar-de-fraudes.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 7
-  slug: el-faro-de-los-fraudes
-  theme: archipelago
-  age_tier: tier3
+  slug: radar-de-fraudes
+  theme: cosmos
+  age_tier: tier4
   title:
-    en-US: The Lighthouse of Frauds
-    es-MX: El Faro de los Fraudes
-    pt-BR: O Farol das Fraudes
+    en-US: "Fraud Radar"
+    es-MX: "Radar de Fraudes"
+    pt-BR: "Radar de Fraudes"
   description:
-    en-US: 'Back in the archipelago, Zara Vex now teaches Dina and Liruf to recognize investment fraud: fast-money promises, pyramids, urgency, and who to ask before deciding.'
-    es-MX: 'De vuelta en el archipiélago, Zara Vex ahora enseña a Dina y Liruf a reconocer el fraude de inversión: promesas de dinero rápido, pirámides, urgencia, y a quién preguntar antes de decidir.'
-    pt-BR: 'De volta ao arquipélago, Zara Vex agora ensina Dina e Liruf a reconhecer fraudes de investimento: promessas de dinheiro rápido, pirâmides, urgência, e a quem perguntar antes de decidir.'
-  narrative_arc: Zara Vex, quien antes ponía a prueba a Dina y Liruf con anuncios y trampas en este mismo archipiélago, ahora los recibe como su mejor detectora de fraudes de inversión. Dr. Rho vigila desde el faro mientras Zara Vex les muestra promesas de dinero rápido, pirámides disfrazadas de oportunidad y mensajes que meten prisa para que nadie piense con calma. Juntos aprenden que la mejor defensa no es adivinar solos, sino detenerse, buscar las señales de alerta, y preguntar siempre a la familia antes de decidir.
+    en-US: "At the Listening Post, four signal-watchers learn to tell a real opportunity from a fake distress call designed to lure you in - guaranteed profit, pressure to decide now, needing to recruit others, and money nobody can explain."
+    es-MX: "En el Puesto de Escucha, cuatro vigías de señales aprenden a distinguir una oportunidad real de una señal falsa diseñada para atraerte - ganancia garantizada, presión para decidir ya, necesitar reclutar a otros, y dinero que nadie puede explicar de dónde sale."
+    pt-BR: "No Posto de Escuta, quatro vigias de sinais aprendem a distinguir uma oportunidade real de um sinal falso projetado para atrair - lucro garantido, pressao para decidir agora, precisar recrutar outros, e dinheiro que ninguem consegue explicar de onde vem."
 ```
 
-### coursegen/curriculum/investing/adventures/08-el-cosmos-del-inversionista.yaml
+### coursegen/curriculum/investing/adventures/08-simulador-del-futuro.yaml
 
 ```
 schema_version: 1
+
 adventure:
   position: 8
-  slug: el-cosmos-del-inversionista
-  theme: cosmos
-  age_tier: tier3
+  slug: simulador-del-futuro
+  theme: city
+  age_tier: tier4
   title:
-    en-US: The Investor's Cosmos
-    es-MX: El Cosmos del Inversionista
-    pt-BR: O Cosmos do Investidor
+    en-US: "The Future Simulator"
+    es-MX: "El Simulador del Futuro"
+    pt-BR: "O Simulador do Futuro"
   description:
-    en-US: 'The final voyage: Dina and Liruf build their own simulated long-term plan, learn to stay calm when the basket dips, and graduate by teaching their family everything they learned.'
-    es-MX: 'El viaje final: Dina y Liruf arman su propio plan simulado de largo plazo, aprenden a mantener la calma cuando la canasta baja, y se gradúan enseñando a su familia todo lo aprendido.'
-    pt-BR: 'A viagem final: Dina e Liruf montam seu próprio plano simulado de longo prazo, aprendem a manter a calma quando a cesta cai, e se formam ensinando à família tudo o que aprenderam.'
-  narrative_arc: Dina y Liruf llegan al cosmos, el mundo final de su viaje de inversión, donde Dr. Rho los recibe como su mentor de toda la travesía para ayudarles a armar su propio plan de largo plazo, con una meta clara, un plan de cinco pasos, y la calma para no entrar en pánico cuando algo baja. Zara Vex regresa para poner a prueba ese plan con sorpresas simuladas, mientras las canastas del reino, el bosque del interés compuesto y el faro de los fraudes brillan como recuerdos de todo el camino recorrido. El viaje termina con la mayor alegría de todas -- enseñarle a la familia lo aprendido -- y una gran graduación bajo las estrellas.
+    en-US: "The capstone: a portfolio simulator - SIMULATED decisions only, never real transactions - where the whole course comes together and gets tested under a rough patch and a fraud attempt."
+    es-MX: "El cierre del curso: un simulador de cartera - decisiones SIMULADAS, nunca transacciones reales - donde todo el curso se junta y se pone a prueba frente a una mala temporada y un intento de fraude."
+    pt-BR: "O fechamento do curso: um simulador de carteira - decisoes SIMULADAS, nunca transacoes reais - onde todo o curso se junta e e testado diante de uma ma temporada e uma tentativa de fraude."
 ```
 
 ### coursegen/curriculum/investing/catalog.yaml
@@ -4829,9 +4829,9 @@ course:
     es-MX: "Inversiones"
     pt-BR: "Investimentos"
   description:
-    en-US: "A story adventure for kids who already know how money works and how to build something of their own — now they learn how time, patience and smart risk can grow what they save, and how to spot the traps that pretend to be opportunities."
-    es-MX: "Una aventura para niños que ya saben cómo funciona el dinero y cómo construir algo propio — ahora aprenden cómo el tiempo, la paciencia y el riesgo inteligente pueden hacer crecer lo que ahorran, y cómo reconocer las trampas que se disfrazan de oportunidades."
-    pt-BR: "Uma aventura para crianças que já sabem como o dinheiro funciona e como construir algo próprio — agora aprendem como o tempo, a paciência e o risco inteligente podem fazer crescer o que economizam, e como reconhecer as armadilhas que se disfarçam de oportunidades."
+    en-US: "A story arc for teens (12-18) who already know how to earn, save and build something of their own — now they learn how time, risk and diversification grow what they save, how to spot the traps that pretend to be opportunities, and how to think in simulated decisions before real ones ever matter."
+    es-MX: "Un arco narrativo para adolescentes (12-18) que ya saben ganar, ahorrar y construir algo propio — ahora aprenden cómo el tiempo, el riesgo y la diversificación hacen crecer lo que ahorran, cómo reconocer las trampas que se disfrazan de oportunidades, y a pensar en decisiones simuladas antes de que las reales importen de verdad."
+    pt-BR: "Um arco narrativo para adolescentes (12-18) que já sabem ganhar, economizar e construir algo próprio — agora aprendem como o tempo, o risco e a diversificação fazem crescer o que economizam, como reconhecer as armadilhas que se disfarçam de oportunidades, e a pensar em decisões simuladas antes que as reais realmente importem."
   authoring_locale: es-MX
 ```
 
@@ -4865,14 +4865,14 @@ schema_version: 1
 # forbidden-vocabulary lists are checked against every generated string
 # (titles, concepts, objectives, prompts) for the matching age tier + locale.
 #
-# This is the course that introduces **tier3** (COURSE_ENGINE.md §3.1b,
-# 10-12, concrete-operational -> formal transition). tier2 is copied
-# byte-for-byte from financial-education/taxonomy.yaml (adventures 1-3 of
-# this course stay tier2 — jardin-del-tiempo, aldea-del-interes,
-# archipielago-de-los-riesgos); tier3 is new (adventure 4 onward —
-# ciudad-de-las-metas and the sibling-authored 5-8).
+# PIVOT (WALKTHROUGH 2026-08-12): this course dropped tier2/tier3 (8-12)
+# entirely and now targets a single tier4 (12-18) audience — matured
+# language, real analogies (contentPlaybook.ts tierReasoningGuidance
+# ('tier4')), fewer/longer lessons. The tier3 hard vocabulary ceiling carries
+# forward UNCHANGED into tier4 by explicit owner decision: this is a §1.9
+# product-safety posture (simulations only, never transactional), not a
+# Piaget/age gate — it does not relax for the 16-18 end of the band.
 
-themes: [archipelago, forest, city, valley, kingdom, cosmos]
 ```
 
 ### coursegen/eslint.config.js
@@ -7985,6 +7985,26 @@ ALTER TABLE public.topics ADD COLUMN IF NOT EXISTS placement_probe jsonb;
 -- a placement credit must stay distinguishable from a genuinely played and
 -- passed lesson everywhere (no fabricated XP, no fabricated attempt count).
 -- It DOES count toward course-completion badges (get_completed_course_badges
+```
+
+### database/migrations/0044_tier4_age_check.sql
+
+```
+-- 0044_tier4_age_check.sql — widen the age-tier taxonomy to tier4
+-- (COURSE_ENGINE.md §3.1b addendum, WALKTHROUGH 2026-08-12): Emprendimiento
+-- and Inversiones pivot from tier1-3 (6-12) to a single tier4 (12-18)
+-- audience with matured language/analogies and fewer, longer lessons.
+-- Delta over 0008/0007 (never edit an applied migration). Idempotent.
+
+-- ─────────────────────────────────────────────────────────────
+-- adventures.age_tier: widen tier1|tier2|tier3 → tier1|tier2|tier3|tier4.
+-- Same DO-block pattern 0008 used to add tier3.
+-- ─────────────────────────────────────────────────────────────
+ALTER TABLE public.adventures DROP CONSTRAINT IF EXISTS adventures_age_tier_check;
+DO $$
+BEGIN
+    ALTER TABLE public.adventures
+        ADD CONSTRAINT adventures_age_tier_check
 ```
 
 ### database/package.json

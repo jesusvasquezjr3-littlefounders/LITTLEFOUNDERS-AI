@@ -5,88 +5,46 @@ schema_version: 1
 # forbidden-vocabulary lists are checked against every generated string
 # (titles, concepts, objectives, prompts) for the matching age tier + locale.
 #
-# This is the course that introduces **tier3** (COURSE_ENGINE.md §3.1b,
-# 10-12, concrete-operational -> formal transition). tier2 is copied
-# byte-for-byte from financial-education/taxonomy.yaml (adventures 1-3 of
-# this course stay tier2 — jardin-del-tiempo, aldea-del-interes,
-# archipielago-de-los-riesgos); tier3 is new (adventure 4 onward —
-# ciudad-de-las-metas and the sibling-authored 5-8).
+# PIVOT (WALKTHROUGH 2026-08-12): this course dropped tier2/tier3 (8-12)
+# entirely and now targets a single tier4 (12-18) audience — matured
+# language, real analogies (contentPlaybook.ts tierReasoningGuidance
+# ('tier4')), fewer/longer lessons. The tier3 hard vocabulary ceiling carries
+# forward UNCHANGED into tier4 by explicit owner decision: this is a §1.9
+# product-safety posture (simulations only, never transactional), not a
+# Piaget/age gate — it does not relax for the 16-18 end of the band.
 
 themes: [archipelago, forest, city, valley, kingdom, cosmos]
 
 age_tiers:
-  # ---- tier2: copied verbatim from financial-education/taxonomy.yaml ----
-  tier2:
-    ages: "8-10"
-    forbidden_vocabulary:
-      es-MX:
-        - interés compuesto
-        - hipoteca
-        - acciones
-        - bolsa de valores
-        - dividendo
-        - criptomoneda
-        - apalancamiento
-        - derivados
-        - amortización
-        - tasa de interés anual
-      en-US:
-        - compound interest
-        - mortgage
-        - stocks
-        - stock market
-        - dividend
-        - cryptocurrency
-        - leverage
-        - derivatives
-        - amortization
-        - annual percentage rate
-      pt-BR:
-        - juros compostos
-        - hipoteca
-        - ações
-        - bolsa de valores
-        - dividendo
-        - criptomoeda
-        - alavancagem
-        - derivativos
-        - amortização
-        - taxa de juros anual
-
-  # ---- tier3: NEW (COURSE_ENGINE.md §3.1b) ----
-  # Concrete-operational -> formal transition (10-12). This is the tier where
-  # inversión, interés (simple y compuesto, siempre concreto y visual),
-  # acciones ("un pedacito de una empresa"), fondo/canasta, índice, riesgo,
-  # diversificar and inflación BECOME teachable — always through concrete,
-  # visual, simulation-only framing (never transactional, COURSE_ENGINE.md
-  # §3.1b / AGENTS.md §1.9). The words below stay banned even at tier3: they
-  # name techniques with no safe simulation for a 10-12-year-old (borrowed-
-  # money exposure, derivatives, short selling, margin, day trading, forex,
-  # crypto-as-investment) — a hard ceiling above tier3, not a Piaget gate.
+  # tier4 (12-18): inversión, interés (simple y compuesto), acciones ("un
+  # pedacito de una empresa"), fondo/canasta, índice, riesgo, diversificar,
+  # inflación are all fully teachable with real vocabulary — no Piaget
+  # ceiling on ordinary investing terms at this age. The words below stay
+  # banned regardless of age within the tier: they name techniques with no
+  # safe simulation for a minor (borrowed-money exposure, derivatives, short
+  # selling, margin, day trading, forex, crypto-as-investment) — a hard
+  # ceiling, carried forward unchanged from this course's original tier3.
   #
-  # JUDGMENT CALL (documented per AGENTS.md §1.12.6): the initial word list
-  # discussed for this tier included "esquema ponzi/pirámide como
-  # oportunidad" — dropped from forbidden_vocabulary because a lexical list
-  # can only ban WORDS, not a framing ("presented as an opportunity"). The
-  # actual fraud-safety requirement — pirámides/esquemas Ponzi must be
-  # NAMEABLE as a danger (adventure 7, "El Faro de los Fraudes", sibling-
-  # authored) but never presented as investable — is enforced by content
-  # review (COURSE_ENGINE.md §4 review stage, kid_safety dimension), not by
-  # banning the word "pirámide"/"Ponzi" outright, which fraud-literacy
-  # lessons must be free to use.
+  # JUDGMENT CALL (documented per AGENTS.md §1.12.6, carried forward from the
+  # tier1-3 catalog): "esquema ponzi/pirámide como oportunidad" is
+  # deliberately NOT in forbidden_vocabulary — a lexical list can only ban
+  # WORDS, not a framing ("presented as an opportunity"). The actual
+  # fraud-safety requirement — pirámides/esquemas Ponzi must be NAMEABLE as a
+  # danger (the fraud-literacy adventure) but never presented as investable —
+  # is enforced by content review (COURSE_ENGINE.md §4 review stage,
+  # kid_safety dimension), not by banning the word "pirámide"/"Ponzi"
+  # outright, which fraud-literacy lessons must be free to use.
   #
-  # A second judgment call: four entries below use a slightly more specific
-  # compound phrase than the short form named in the design brief
-  # ("opciones financieras" not bare "opciones"; "margen de crédito" not
-  # bare "margen") — the bare forms are ordinary words this course's own
-  # exercise UI text needs constantly ("elige una opción" in every choice-
-  # family segment; "margen" in measurement/layout narration), so banning
-  # them outright would make every generated lesson a false-positive
-  # vocabulary-gate failure. financial-education/taxonomy.yaml already
-  # established this exact precedent for tier2 ("tasa de interés anual", not
-  # bare "tasa").
-  tier3:
-    ages: "10-12"
+  # A second judgment call, also carried forward: four entries below use a
+  # slightly more specific compound phrase than the short form named in the
+  # original design brief ("opciones financieras" not bare "opciones";
+  # "margen de crédito" not bare "margen") — the bare forms are ordinary
+  # words this course's own exercise UI text needs constantly ("elige una
+  # opción" in every choice-family segment; "margen" in measurement/layout
+  # narration), so banning them outright would make every generated lesson a
+  # false-positive vocabulary-gate failure.
+  tier4:
+    ages: "12-18"
     forbidden_vocabulary:
       es-MX:
         - apalancamiento
@@ -118,42 +76,24 @@ age_tiers:
 
 families: [story, choice, input, arrange, money, analyze, storyplay, maker]
 
-# Which of the 8 families a plan/write prompt may draw exercise TYPES from,
-# per age tier. Both tiers used in THIS course get the full 8-family
-# palette: tier2 already does in financial-education (copied verbatim
-# below); tier3 (concrete-operational -> formal) has no reason to restrict
-# any family — it is the widest tier this course ever teaches at.
+# tier4 gets the full 8-family palette — same set tier2/tier3 already used,
+# there is nothing left to unlock at an older tier.
 family_allowlist_by_tier:
-  tier2: [story, choice, input, arrange, money, analyze, storyplay, maker]
-  tier3: [story, choice, input, arrange, money, analyze, storyplay, maker]
+  tier4: [story, choice, input, arrange, money, analyze, storyplay, maker]
 
 type_exceptions:
-  # No tier1 in this course, so no tier1_* entries (financial-education owns
-  # those). "Mirroring FE (tier2)" per the design brief means structurally
-  # following FE's extra_allowed/banned_types pattern, scoped to this
-  # course's own tiers — FE itself carries no tier2_* entries (tier2's
-  # family allowlist is already fully open, so it needs no family-level
-  # exceptions there either).
-  #
   # JUDGMENT CALL: `interest_peek` (LESSON_ENGINE.md §5.5, `money` family) is
-  # NOT actually gated out of tier2 anywhere — `money` is already in
-  # tier2's family_allowlist above, and financial-education/taxonomy.yaml
-  # has no `tier2_banned_types` entry that would exclude it (only
-  # `tier1_banned_types` reserves it "for when interest concepts unlock
-  # (tier2)"). Adding it here is therefore belt-and-suspenders documentation,
-  # not a functional unlock: this course's tier2 (aldea-del-interes,
-  # adventure 2) leans on interest_peek's predict-then-watch-it-grow flow as
-  # a core mechanic for teaching simple interest concretely, so it is named
-  # explicitly here to make that intent self-evident to anyone reading this
-  # file, rather than relying on the absence of a ban.
-  tier2_extra_allowed:
-    - interest_peek # simple-interest predict->reveal is this course's tier2 core mechanic (aldea-del-interes)
+  # not actually gated out of tier4 anywhere — `money` is already in tier4's
+  # family_allowlist above. Named here explicitly (belt-and-suspenders
+  # documentation, not a functional unlock) because this course leans on
+  # interest_peek's predict-then-watch-it-grow flow as a core mechanic for
+  # teaching simple/compound interest concretely.
+  tier4_extra_allowed:
+    - interest_peek # simple/compound-interest predict->reveal is a core tier4 mechanic
 
-  # tier3 bans no TYPES at all (COURSE_ENGINE.md §3.1b: "none forbidden" at
-  # the type level once acciones/fondo/riesgo/diversificar/inflación unlock
-  # conceptually) — the only ceiling at tier3 is the lexical
+  # tier4 bans no TYPES at all — the only ceiling is the lexical
   # forbidden_vocabulary above (leverage/derivatives/options/short-
   # selling/margin/day-trading/forex/crypto) and the simulations-only,
   # never-transactional posture (COURSE_ENGINE.md §3.1b / AGENTS.md §1.9),
   # which is a pipeline/product invariant, not a catalog vocabulary gate.
-  tier3_banned_types: []
+  tier4_banned_types: []

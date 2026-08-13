@@ -91,9 +91,15 @@ export function readabilityScore(text: string, locale: ReadabilityLocale): numbe
  * validator's 96 false positives taught us: calibrate against reality, not
  * intuition — a gate that fails approved content is a bug).
  */
-const EN_MAX_GRADE: Record<string, number> = { tier1: 9, tier2: 11, tier3: 13 };
-const ES_MIN_EASE: Record<string, number> = { tier1: 66, tier2: 60, tier3: 54 };
-const PT_MIN_EASE: Record<string, number> = { tier1: 58, tier2: 52, tier3: 46 };
+// tier4 (12-18, WALKTHROUGH 2026-08-12 pivot for entrepreneurship/investing)
+// has NO live corpus yet — its band is an EXTRAPOLATION of the tier1-3
+// progression (+2 EN grade / -6 ES-MX ease / -6 PT-BR ease per step), not a
+// calibrated measurement. Treat as a starting ceiling and recalibrate against
+// the first real generated batch the same way tier1-3 were — do not tighten
+// or loosen it from intuition alone.
+const EN_MAX_GRADE: Record<string, number> = { tier1: 9, tier2: 11, tier3: 13, tier4: 15 };
+const ES_MIN_EASE: Record<string, number> = { tier1: 66, tier2: 60, tier3: 54, tier4: 48 };
+const PT_MIN_EASE: Record<string, number> = { tier1: 58, tier2: 52, tier3: 46, tier4: 40 };
 
 /** Learner-facing prose of a document — the text a kid actually reads. */
 export function learnerText(document: LessonDocumentParsed): string {

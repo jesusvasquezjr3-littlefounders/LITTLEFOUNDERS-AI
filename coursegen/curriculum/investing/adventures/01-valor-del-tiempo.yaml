@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 1
+  slug: valor-del-tiempo
+  theme: cosmos
+  age_tier: tier4
+  title:
+    en-US: "The Value of Time"
+    es-MX: "El Valor del Tiempo"
+    pt-BR: "O Valor do Tempo"
+  description:
+    en-US: "In the Clock Station, four cadets learn why WHEN you decide matters as much as WHAT you decide - money and options today are worth more than a promise for later."
+    es-MX: "En la Estación Reloj, cuatro cadetes aprenden por qué el MOMENTO en que decides importa tanto como la decisión misma - el dinero y las opciones de hoy valen más que una promesa para después."
+    pt-BR: "Na Estação Relógio, quatro cadetes aprendem por que o MOMENTO em que voce decide importa tanto quanto a decisao em si - o dinheiro e as opcoes de hoje valem mais que uma promessa para depois."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan a la Estación Reloj como cadetes de tiempo: su misión es entender por qué el momento en que decides importa tanto como la decisión misma. A lo largo de la estación descubren que el dinero de hoy vale más que la promesa de mañana, que esperar sin actuar tiene un costo invisible, y que cada elección cierra la puerta a otra - hasta que arman su propia regla personal para decidir con el reloj en mente y la defienden frente al consejo de la estación."
+
+sagas:
+  - position: 1
+    slug: peso-hoy-o-peso-manana
+    icon: schedule
+    title:
+      en-US: "Peso Today or Peso Tomorrow?"
+      es-MX: "¿Peso Hoy o Peso Mañana?"
+      pt-BR: "Peso Hoje ou Peso Amanha?"
+    description:
+      en-US: "Money and options in hand today beat the same amount promised later - learn why, concretely."
+      es-MX: "El dinero y las opciones en mano hoy le ganan a la misma cantidad prometida después - aprende por qué, de forma concreta."
+      pt-BR: "O dinheiro e as opcoes em maos hoje vencem a mesma quantidade prometida depois - aprenda por que, de forma concreta."
+    topics:
+        - position: 1
+          slug: dinero-en-mano
+          title_es: "Dinero en mano"
+          concept: "Recibir algo de valor ahora te da control inmediato; recibir la promesa de lo mismo después no."
+          learning_objective: "El aprendiz reconoce que tener algo ahora da un control que una promesa futura no da, aunque el monto sea igual."
+          key_vocabulary: [control inmediato, promesa futura, valor ahora]
+          prior_knowledge: "Ninguno - es el punto de partida del curso."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si preferiría $100 hoy o $100 en dos meses, y que te explique por qué."
+          lessons:
+            - position: 1
+              slug: sobre-que-elegir
+              micro_objective: "Reconoce que recibir algo de valor ahora te da control inmediato que la promesa de lo mismo después no te da."
+              narrative_beat: "Rho le ofrece a Liruf: '$100 hoy, o $100 en dos meses'. Liruf duda un segundo y elige el sobre que ya tiene en la mano."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-mi-eleccion
+              micro_objective: "Explica, en un caso simple, por qué $100 hoy no es lo mismo que la promesa de $100 en dos meses."
+              narrative_beat: "Dina le pide a Liruf que explique su elección: '¿por qué elegiste el sobre de hoy si es la misma cantidad?'"
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: que-puedo-hacer-con-el-ahora
+          title_es: "Qué puedo hacer con el ahora"
+          concept: "Tener dinero hoy abre opciones (gastarlo, guardarlo, invertirlo) que no existen si aún no lo tienes."
+          learning_objective: "El aprendiz identifica al menos dos opciones reales que abre tener algo hoy y que una promesa futura no abre todavía."
+          key_vocabulary: [opciones, guardar, hacer crecer]
+          prior_knowledge: "Reconoce que el dinero en mano da control inmediato (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué podría hacer HOY con dinero que ya tiene, que no podría hacer con dinero que le prometieron para después."
+          lessons:
+            - position: 1
+              slug: lista-de-opciones
+              micro_objective: "Identifica al menos dos cosas que puedes hacer con dinero que ya tienes hoy y que no puedes hacer con dinero prometido para después."
+              narrative_beat: "Zara hace una lista rápida: con el dinero de hoy puede guardarlo, gastarlo o dejarlo crecer - con la promesa de mañana, nada de eso todavía."
+              difficulty: 2
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: cual-me-da-mas-opciones
+              micro_objective: "Compara dos escenarios y decide cuál te da más opciones reales: recibir algo ahora o recibir más tarde la promesa de lo mismo."
+              narrative_beat: "Rho compara dos rutas del mismo reto: una le da puntos hoy, la otra promete el doble en un mes - pero solo una le sirve YA para algo urgente."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: una-promesa-no-es-lo-mismo
+          title_es: "Una promesa no es lo mismo"
+          concept: "Una promesa de pago futuro carga incertidumbre (puede no cumplirse, puede tardar) - vale menos que el mismo monto ya en tu bolsillo."
+          learning_objective: "El aprendiz reconoce la incertidumbre de una promesa futura como razón concreta de que valga menos que el dinero en mano."
+          key_vocabulary: [incertidumbre, cumplir, retraso]
+          prior_knowledge: "Identifica las opciones que da tener algo hoy (tema anterior)."
+          fact_refs: [mxn.reference_prices.audifonos_inalambricos]
+          parent_check: "Preguntale a {{name}} si alguna vez le prometieron algo 'la próxima semana' y tardó mucho más - cómo cambió eso lo que sentía por la promesa."
+          lessons:
+            - position: 1
+              slug: la-promesa-que-se-retrasa
+              micro_objective: "Reconoce que una promesa de pago futuro carga incertidumbre (puede no cumplirse o tardar más) que el dinero en mano no tiene."
+              narrative_beat: "Liruf le prometió a Zara unos audífonos inalámbricos 'la próxima semana', pero ya van tres semanas - la promesa perdió valor con cada retraso."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: ordeno-promesas-por-confianza
+              micro_objective: "Ordena tres promesas de pago según qué tan confiables son, usando pistas del caso (quién promete, con qué historial)."
+              narrative_beat: "Rho revisa tres promesas distintas en su libreta y las ordena de la más segura a la más incierta, según quién las hizo y qué tan seguido cumple."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: comparo-oferta-hoy-y-oferta-futura
+          title_es: "Comparo: oferta hoy y oferta futura"
+          concept: "Comparar una oferta menor disponible hoy contra una oferta mayor disponible después requiere ver si la diferencia compensa la espera."
+          learning_objective: "El aprendiz compara una oferta presente contra una oferta futura mayor y decide si la diferencia justifica esperar."
+          key_vocabulary: [comparar ofertas, diferencia, justificar la espera]
+          prior_knowledge: "Reconoce la incertidumbre de una promesa futura (tema anterior)."
+          fact_refs: [math.weekly_income_options_tier4]
+          parent_check: "Preguntale a {{name}} cómo decidiría entre ganar menos dinero hoy o más dinero el próximo mes por el mismo trabajo."
+          lessons:
+            - position: 1
+              slug: que-datos-me-faltan
+              micro_objective: "Compara una oferta menor disponible hoy contra una oferta mayor disponible después, e identifica qué datos le faltan para decidir bien."
+              narrative_beat: "A Zara le ofrecen $200 hoy por ayudar en un puesto, o $250 el mes que entra por el mismo trabajo - antes de elegir, quiere saber si esa segunda oferta es segura."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: decido-con-los-datos-completos
+              micro_objective: "Decide entre una oferta hoy y una oferta futura mayor, justificando la decisión con al menos un motivo concreto."
+              narrative_beat: "Con los datos completos en mano, Zara decide: la oferta futura es segura y suficientemente mayor, así que esta vez sí vale la pena esperar."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: mientras-mas-lejos-menos-vale
+          title_es: "Mientras más lejos, menos vale"
+          concept: "Entre dos promesas del mismo monto, la que tarda más en llegar vale menos hoy."
+          learning_objective: "El aprendiz compara dos promesas del mismo monto y reconoce que la más lejana en el tiempo vale menos hoy."
+          key_vocabulary: [distancia en el tiempo, mismo monto, vale menos hoy]
+          prior_knowledge: "Compara una oferta hoy contra una oferta futura (tema anterior)."
+          fact_refs: [mxn.reference_prices.boleto_concierto]
+          parent_check: "Preguntale a {{name}} si dos regalos iguales valen lo mismo si uno llega en dos semanas y el otro en seis meses."
+          lessons:
+            - position: 1
+              slug: dos-boletos-mismo-precio
+              micro_objective: "Compara dos promesas del mismo monto que llegan en momentos distintos y reconoce que la más lejana vale menos hoy."
+              narrative_beat: "Dina compara dos boletos de concierto prometidos: uno llega en dos semanas, el otro en seis meses - aunque cuestan lo mismo, no valen igual hoy."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: ordeno-por-cercania
+              micro_objective: "Ordena tres promesas del mismo monto por qué tan lejos están en el tiempo, de la que más vale hoy a la que menos."
+              narrative_beat: "Rho acomoda tres tarjetas idénticas en valor pero con fechas distintas - la de la próxima semana pesa más en su decisión que la del próximo año."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+        - position: 6
+          slug: mi-primera-regla-de-tiempo
+          title_es: "Mi primera regla de tiempo"
+          concept: "Sintetiza una regla personal: peso en mano vale más que peso prometido, a menos que la espera venga con una razón clara para valer más."
+          learning_objective: "El aprendiz redacta y aplica una regla personal simple para comparar dinero en mano contra una promesa futura."
+          key_vocabulary: [regla personal, razón clara, síntesis]
+          prior_knowledge: "Ordena promesas por qué tan lejos están en el tiempo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una sola frase, su propia regla para decidir entre dinero hoy y una promesa futura."
+          lessons:
+            - position: 1
+              slug: armamos-la-regla-juntos
+              micro_objective: "Redacta, con apoyo, una regla personal simple que compare dinero en mano contra una promesa futura."
+              narrative_beat: "El equipo arma en la pizarra su primera regla: 'peso en mano vale más que peso prometido, a menos que la espera tenga una razón clara para ganar'."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: aplico-mi-regla-solo
+              micro_objective: "Aplica, sin ayuda, su propia regla del tiempo a un caso nuevo para decidir entre dinero hoy y una promesa futura."
+              narrative_beat: "Liruf usa la regla del equipo por su cuenta, sin que nadie le ayude, para decidir entre el sobre de hoy y la promesa de un vecino."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-peso-hoy-o-peso-manana
+          kind: review_spaced
+          title_es: "Repaso: ¿Peso Hoy o Peso Mañana?"
+          concept: "Antes de seguir explorando la estación, el equipo repasa por qué el dinero en mano vale más que una promesa lejana."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los filtros de esta saga para comparar dinero hoy contra una promesa futura."
+          key_vocabulary: [dinero en mano, promesa futura, distancia en el tiempo]
+          prior_knowledge: "Completo los 6 temas de ¿Peso Hoy o Peso Mañana?"
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/peso-hoy-o-peso-manana/dinero-en-mano
+            - valor-del-tiempo/peso-hoy-o-peso-manana/que-puedo-hacer-con-el-ahora
+            - valor-del-tiempo/peso-hoy-o-peso-manana/una-promesa-no-es-lo-mismo
+            - valor-del-tiempo/peso-hoy-o-peso-manana/comparo-oferta-hoy-y-oferta-futura
+            - valor-del-tiempo/peso-hoy-o-peso-manana/mientras-mas-lejos-menos-vale
+            - valor-del-tiempo/peso-hoy-o-peso-manana/mi-primera-regla-de-tiempo
+          lessons:
+            - position: 1
+              slug: repaso-dinero-en-mano-vale-mas
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué recibir algo ahora vale más que la promesa de lo mismo después."
+              narrative_beat: "El equipo revisa su libreta de la Estación Reloj y vuelve a clasificar sus primeras decisiones con ojos más entrenados."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-comparo-promesa-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara una promesa nueva contra dinero disponible hoy y decide."
+              narrative_beat: "Zara recibe una promesa nueva de un compañero y, sin ayuda de nadie, decide en segundos si vale más que tenerlo ya."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-promesas-y-opciones
+          kind: review_interleaved
+          title_es: "Cruce: Promesas y Opciones del Ahora"
+          concept: "Mezclamos las opciones que da el ahora con la distancia de una promesa futura para juzgar un caso de una sola vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar una decisión completa."
+          key_vocabulary: [opciones del ahora, distancia de una promesa]
+          prior_knowledge: "Completo el repaso de ¿Peso Hoy o Peso Mañana? (tema anterior)."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/peso-hoy-o-peso-manana/dinero-en-mano
+            - valor-del-tiempo/peso-hoy-o-peso-manana/que-puedo-hacer-con-el-ahora
+            - valor-del-tiempo/peso-hoy-o-peso-manana/mientras-mas-lejos-menos-vale
+          lessons:
+            - position: 1
+              slug: junto-opciones-y-distancia
+              micro_objective: "Combina la idea de 'opciones que da el ahora' con 'cuánto vale una promesa lejana' para evaluar un caso nuevo."
+              narrative_beat: "Rho junta dos filtros a la vez: qué tanto puede hacer con algo ahora Y qué tan lejos está la promesa alternativa."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: evaluo-un-caso-completo
+              micro_objective: "Evalúa, sin ayuda, un caso nuevo combinando el valor del ahora con la distancia de una promesa futura."
+              narrative_beat: "Zara decide en segundos si vale la pena esperar un boleto prometido, cruzando qué tanto necesita el dinero hoy con qué tan lejos está la fecha."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: el-costo-de-esperar
+    icon: hourglass_top
+    title:
+      en-US: "The Cost of Waiting"
+      es-MX: "El Costo de Esperar"
+      pt-BR: "O Custo de Esperar"
+    description:
+      en-US: "Waiting is never free - even doing nothing has a hidden cost, and FOMO is not a reason to skip thinking."
+      es-MX: "Esperar nunca es gratis - incluso no hacer nada tiene un costo invisible, y el FOMO no es razón para saltarse pensar."
+      pt-BR: "Esperar nunca e gratis - mesmo nao fazer nada tem um custo invisivel, e o FOMO nao e motivo para pular o pensar."
+    topics:
+        - position: 1
+          slug: esperar-no-es-gratis
+          title_es: "Esperar no es gratis"
+          concept: "No decidir también es una decisión, y esperar sin actuar tiene un costo aunque en el momento no se vea."
+          learning_objective: "El aprendiz distingue esperar-con-razón de simplemente no decidir, nombrando el costo invisible de la inacción."
+          key_vocabulary: [espera, costo invisible, inacción]
+          prior_knowledge: "Completo ¿Peso Hoy o Peso Mañana? (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si alguna vez perdió algo bueno por no decidirse a tiempo entre dos opciones."
+          lessons:
+            - position: 1
+              slug: no-elegir-tambien-es-elegir
+              micro_objective: "Identifica, en un caso simple, que no decidir también cuenta como una decisión con consecuencias."
+              narrative_beat: "Liruf no elige entre dos boletos disponibles hoy - para cuando se decide, los dos ya se agotaron."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: el-costo-de-no-decidir
+              micro_objective: "Reconoce el costo invisible de esperar sin actuar en un caso donde una oportunidad se pierde por no decidir a tiempo."
+              narrative_beat: "Dina señala: 'no elegir ninguno también fue tu elección, y te costó los dos boletos'."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: el-boton-de-comprar-ya
+          title_es: "El botón de 'comprar ya'"
+          concept: "Un lanzamiento limitado empuja a decidir rápido por miedo a perdérselo (FOMO); pausar a pensar casi siempre vale más que ceder al impulso."
+          learning_objective: "El aprendiz reconoce la señal de FOMO en una oferta limitada y compara decidir bajo presión contra decidir con una pausa."
+          key_vocabulary: [FOMO, impulso, pausa]
+          prior_knowledge: "Distingue esperar-con-razón de no decidir (tema anterior)."
+          fact_refs: [mxn.reference_prices.tenis_de_moda]
+          parent_check: "Preguntale a {{name}} si alguna vez compró algo rápido por miedo a que se acabara, y si después se arrepintió."
+          lessons:
+            - position: 1
+              slug: reconozco-la-senal-de-fomo
+              micro_objective: "Reconoce la señal de FOMO ('solo quedan 3', 'oferta termina en 1 hora') como una táctica que empuja a decidir sin pensar."
+              narrative_beat: "La pantalla de Zara parpadea: 'solo quedan 2 pares - ¡compra ya!' - reconoce la táctica antes de tocar el botón."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: la-pausa-de-un-minuto
+              micro_objective: "Compara una decisión tomada bajo presión de tiempo contra la misma decisión tomada con una pausa de un minuto, y elige cuál conviene."
+              narrative_beat: "Rho se da un minuto antes de decidir sobre el lanzamiento limitado de tenis de moda - en ese minuto nota que no los necesita tanto como creía."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: cuanto-me-cuesta-no-decidir
+          title_es: "Cuánto me cuesta no decidir"
+          concept: "No decidir a tiempo puede significar perder la mejor opción disponible, no solo quedarte igual."
+          learning_objective: "El aprendiz calcula, en un caso simple, qué se pierde concretamente por tardar en decidir."
+          key_vocabulary: [oportunidad perdida, mejor opción disponible]
+          prior_knowledge: "Reconoce la señal de FOMO y la pausa útil (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué perdió, exactamente, la última vez que tardó en decidirse por algo."
+          lessons:
+            - position: 1
+              slug: el-cupo-que-se-fue
+              micro_objective: "Calcula, en un caso simple, qué perdió un personaje por tardar en decidir (la mejor opción ya no está disponible)."
+              narrative_beat: "Para cuando Liruf se decide por el mejor lugar del taller de robótica, ya se lo ganó otro compañero que decidió primero."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-dos-tiempos-de-reaccion
+              micro_objective: "Compara dos personajes que enfrentan la misma oportunidad y decide cuál pierde más por tardar en decidir."
+              narrative_beat: "Zara compara: ella decidió en un día, su amigo tardó una semana - ambos querían el mismo cupo del club."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: la-fila-para-el-mismo-lugar
+          title_es: "La fila para el mismo lugar"
+          concept: "Dos personas que actúan en momentos distintos ante la misma oportunidad no terminan en el mismo lugar - quien actúa antes casi siempre tiene más opciones."
+          learning_objective: "El aprendiz predice quién se queda con más opciones al comparar el orden en que varios personajes actuaron."
+          key_vocabulary: [actuar antes, opciones restantes]
+          prior_knowledge: "Calcula el costo de tardar en decidir (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si conoce un caso donde quien se apuntó primero a algo terminó con mejores opciones que quien se apuntó después."
+          lessons:
+            - position: 1
+              slug: quien-actuo-primero
+              micro_objective: "Ordena a 4 personajes según el orden en que actuaron frente a la misma oportunidad y predice quién se quedó con más opciones."
+              narrative_beat: "Rho ordena en su libreta a cuatro compañeros según cuándo se apuntaron al viaje - los primeros eligieron habitación, los últimos, lo que quedó."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: actuo-sin-toda-la-informacion
+              micro_objective: "Decide, en un caso nuevo, si vale la pena actuar antes aunque falte información completa, comparando el riesgo de esperar contra el de decidir ya."
+              narrative_beat: "Dina decide apuntarse al taller aunque todavía no sabe el horario exacto, porque sabe que los cupos se acaban rápido."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: pausar-vs-procrastinar
+          title_es: "Pausar vs. procrastinar"
+          concept: "Pausar para pensar es distinto de procrastinar sin fecha - la pausa útil tiene un límite de tiempo claro."
+          learning_objective: "El aprendiz distingue una pausa útil (con fecha límite) de procrastinar (sin fecha) en casos concretos."
+          key_vocabulary: [pausa útil, procrastinar, límite de tiempo]
+          prior_knowledge: "Predice quién se queda con más opciones al actuar antes (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si la próxima vez que diga 'ya después lo pienso' puede convertirlo en 'lo decido antes de tal día'."
+          lessons:
+            - position: 1
+              slug: pausa-con-fecha-o-sin-fecha
+              micro_objective: "Distingue, en 4 casos, cuáles muestran una pausa útil (con fecha límite) y cuáles muestran procrastinación (sin fecha)."
+              narrative_beat: "Zara se da hasta el viernes para decidir - eso es una pausa útil. Liruf dice 'ya después lo pienso' sin poner fecha - eso ya es procrastinar."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: le-pongo-fecha-a-mi-pausa
+              micro_objective: "Convierte una postergación sin fecha ('ya luego lo pienso') en una pausa útil con un límite de tiempo concreto."
+              narrative_beat: "Rho le pone fecha a su indecisión: 'lo decido antes del domingo', y de pronto la pausa deja de sentirse infinita."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: decido-con-fecha-limite
+          title_es: "Decido con fecha límite"
+          concept: "Ponerle una fecha límite a una decisión evita que 'esperar un poco más' se vuelva esperar para siempre."
+          learning_objective: "El aprendiz elige y aplica una fecha límite razonable para una decisión pendiente propia."
+          key_vocabulary: [fecha límite, decisión a tiempo]
+          prior_knowledge: "Distingue pausa útil de procrastinación (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que le ponga una fecha límite concreta a una decisión que tenga pendiente esta semana."
+          lessons:
+            - position: 1
+              slug: ni-tan-pronto-ni-tan-tarde
+              micro_objective: "Elige una fecha límite razonable para una decisión pendiente, ni tan pronto que no deje pensar, ni tan lejos que pierda la oportunidad."
+              narrative_beat: "Dina ayuda a Liruf a elegir: no hoy mismo (necesita pensar), pero tampoco en un mes (para entonces ya no habrá cupo)."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: anuncio-mi-fecha-limite
+              micro_objective: "Aplica, sin ayuda, una fecha límite propia a una decisión real que tiene pendiente, y explica por qué eligió esa fecha."
+              narrative_beat: "Zara anuncia su propia fecha límite frente al equipo y explica exactamente por qué no eligió ni antes ni después."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-el-costo-de-esperar
+          kind: review_spaced
+          title_es: "Repaso: El Costo de Esperar"
+          concept: "El equipo repasa por qué no decidir tiene un costo, y cómo ponerle fecha límite a una decisión pendiente."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las herramientas de esta saga para decidir a tiempo."
+          key_vocabulary: [costo invisible, FOMO, fecha límite]
+          prior_knowledge: "Completo los 6 temas de El Costo de Esperar."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/el-costo-de-esperar/esperar-no-es-gratis
+            - valor-del-tiempo/el-costo-de-esperar/el-boton-de-comprar-ya
+            - valor-del-tiempo/el-costo-de-esperar/cuanto-me-cuesta-no-decidir
+            - valor-del-tiempo/el-costo-de-esperar/la-fila-para-el-mismo-lugar
+            - valor-del-tiempo/el-costo-de-esperar/pausar-vs-procrastinar
+            - valor-del-tiempo/el-costo-de-esperar/decido-con-fecha-limite
+          lessons:
+            - position: 1
+              slug: repaso-pausa-util-o-indecision
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre una pausa útil y simplemente no decidir."
+              narrative_beat: "El equipo repasa sus notas de la Estación Reloj y separa, sin ayuda, sus pausas útiles de sus indecisiones disfrazadas."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-pongo-fecha-limite
+              micro_objective: "Aplica sin ayuda todo lo repasado: le pone una fecha límite a una decisión pendiente nueva."
+              narrative_beat: "Rho toma una decisión pendiente fresca y, sin que nadie se lo pida, le pone fecha límite antes de que se le olvide."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-fomo-y-costo-invisible
+          kind: review_interleaved
+          title_es: "Cruce: FOMO y Costo Invisible"
+          concept: "Mezclamos la señal de FOMO con el costo invisible de no decidir para evaluar una oferta de una sola vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar una oferta limitada."
+          key_vocabulary: [FOMO, costo invisible, fecha límite]
+          prior_knowledge: "Completo el repaso de El Costo de Esperar (tema anterior)."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/el-costo-de-esperar/esperar-no-es-gratis
+            - valor-del-tiempo/el-costo-de-esperar/el-boton-de-comprar-ya
+            - valor-del-tiempo/el-costo-de-esperar/cuanto-me-cuesta-no-decidir
+          lessons:
+            - position: 1
+              slug: junto-fomo-y-costo-invisible
+              micro_objective: "Combina la señal de FOMO con el costo invisible de no decidir para evaluar una oferta limitada nueva."
+              narrative_beat: "Zara reconoce el FOMO de una oferta relámpago Y calcula qué perdería si tarda demasiado en decidir - las dos cosas a la vez."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-cruzando-las-tres-ideas
+              micro_objective: "Evalúa, sin ayuda, un caso nuevo combinando pausa útil, costo de no decidir y fecha límite en una sola decisión."
+              narrative_beat: "Rho decide en su libreta, cruzando las tres ideas de la saga, si vale la pena esperar una oferta o actuar ya."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: lo-que-dejas-ir
+    icon: call_split
+    title:
+      en-US: "What You Let Go"
+      es-MX: "Lo Que Dejas Ir"
+      pt-BR: "O Que Voce Deixa Ir"
+    description:
+      en-US: "Every choice leaves another one behind - that's opportunity cost, invisible but as real as any receipt."
+      es-MX: "Cada elección deja otra atrás - eso es costo de oportunidad, invisible pero tan real como cualquier recibo."
+      pt-BR: "Cada escolha deixa outra para tras - isso e custo de oportunidade, invisivel mas tao real quanto qualquer recibo."
+    topics:
+        - position: 1
+          slug: elegir-es-dejar-algo
+          title_es: "Elegir es dejar algo"
+          concept: "Cada vez que eliges una opción, automáticamente dejas ir las demás - eso que dejas ir tiene un nombre: costo de oportunidad."
+          learning_objective: "El aprendiz identifica qué opción quedó descartada cuando un personaje elige entre dos, y la nombra como costo de oportunidad."
+          key_vocabulary: [elegir, costo de oportunidad, dejar ir]
+          prior_knowledge: "Completo El Costo de Esperar (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué se perdió la última vez que eligió una actividad sobre otra que pasaba al mismo tiempo."
+          lessons:
+            - position: 1
+              slug: que-se-quedo-fuera
+              micro_objective: "Identifica, en un caso simple, qué opción quedó descartada cuando un personaje eligió una entre dos."
+              narrative_beat: "Liruf elige ir al cine con Zara - eso significa que se queda sin ir a la práctica de banda que tenía a la misma hora."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: nombro-el-costo-de-oportunidad
+              micro_objective: "Nombra el costo de oportunidad de una elección simple: qué exactamente se dejó de ganar."
+              narrative_beat: "Dina le pregunta a Liruf: '¿qué te perdiste por elegir el cine?' - la práctica de banda es el costo de oportunidad."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: el-precio-invisible
+          title_es: "El precio invisible"
+          concept: "El costo de oportunidad no aparece en ningún recibo, pero es tan real como el dinero que sí gastaste."
+          learning_objective: "El aprendiz reconoce que el costo de oportunidad es real aunque no aparezca en ningún número visible."
+          key_vocabulary: [precio invisible, recibo, real]
+          prior_knowledge: "Nombra el costo de oportunidad de una elección simple (tema anterior)."
+          fact_refs: [mxn.reference_prices.videojuego_nuevo]
+          parent_check: "Preguntale a {{name}} qué cosa 'sin recibo' perdió la última vez que gastó tiempo o dinero en algo."
+          lessons:
+            - position: 1
+              slug: no-esta-en-el-recibo
+              micro_objective: "Reconoce que un costo de oportunidad no aparece en ningún recibo ni número visible, aunque sí es real."
+              narrative_beat: "Rho busca en el recibo de su videojuego nuevo el costo de las horas que no pasó estudiando - no está escrito en ningún lado, pero existió."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: cual-costo-mas-de-verdad
+              micro_objective: "Compara dos decisiones y estima, sin número exacto, cuál tiene el costo de oportunidad más alto."
+              narrative_beat: "Zara compara dos tardes: una gastada en el videojuego nuevo, otra en el ensayo del equipo - ¿cuál costó más de verdad, aunque ninguna tenga recibo?"
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: comparo-lo-que-gano-y-lo-que-pierdo
+          title_es: "Comparo lo que gano y lo que pierdo"
+          concept: "Para decidir bien, compara no solo lo que ganas con una opción, sino lo que dejas de ganar con la otra."
+          learning_objective: "El aprendiz lista lo ganado y lo dejado de ganar en un caso con dos opciones, y decide comparando ambas columnas."
+          key_vocabulary: [ganancia, pérdida, comparar]
+          prior_knowledge: "Reconoce que el costo de oportunidad es real aunque invisible (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que haga dos columnas -lo que gana y lo que deja de ganar- para una decisión que tenga pendiente."
+          lessons:
+            - position: 1
+              slug: dos-columnas-una-decision
+              micro_objective: "Lista lo que se gana Y lo que se deja de ganar en un caso con dos opciones concretas."
+              narrative_beat: "Dina hace dos columnas: lo que gana Liruf si va al taller de robótica, y lo que deja de ganar al no ir al de teatro."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: decido-comparando-las-columnas
+              micro_objective: "Decide entre dos opciones comparando explícitamente lo ganado y lo dejado de ganar en cada una."
+              narrative_beat: "Con las dos columnas completas, Liruf decide: el taller de robótica gana, pero ahora sabe exactamente qué dejó ir."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: dos-caminos-mismo-momento
+          title_es: "Dos caminos, mismo momento"
+          concept: "Cuando dos oportunidades buenas aparecen al mismo tiempo, elegir una tiene el costo real de la otra."
+          learning_objective: "El aprendiz decide entre dos oportunidades igual de buenas usando un criterio propio más allá de la preferencia inmediata."
+          key_vocabulary: [oportunidades simultáneas, costo real, criterio]
+          prior_knowledge: "Compara lo ganado y lo dejado de ganar entre dos opciones (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué haría si dos cosas buenas cayeran el mismo día - y con qué criterio elegiría."
+          lessons:
+            - position: 1
+              slug: ambas-son-buenas
+              micro_objective: "Reconoce, en un caso, que dos oportunidades igual de buenas no se pueden tomar ambas al mismo tiempo."
+              narrative_beat: "A Zara le ofrecen el mismo sábado un torneo de ajedrez Y un ensayo importante - ambos son buenos, pero solo puede ir a uno."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-con-un-criterio-fuerte
+              micro_objective: "Decide entre dos oportunidades igual de buenas usando un criterio propio (no solo cuál 'suena mejor')."
+              narrative_beat: "Zara elige el ensayo porque su ausencia afectaría a todo el equipo - un criterio más fuerte que 'me divierto más en el torneo'."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-costo-de-oportunidad-del-tiempo
+          title_es: "El costo de oportunidad del tiempo"
+          concept: "El tiempo mismo tiene costo de oportunidad: las horas que usas en algo son horas que no puedes usar en otra cosa."
+          learning_objective: "El aprendiz identifica cómo se reparten las horas disponibles de un personaje y qué actividad quedó fuera por falta de tiempo."
+          key_vocabulary: [tiempo, horas, costo del tiempo]
+          prior_knowledge: "Decide entre dos oportunidades simultáneas con un criterio propio (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} en qué se le van la mayoría de sus horas de la semana, y qué le gustaría hacer que no le alcanza el tiempo para hacer."
+          lessons:
+            - position: 1
+              slug: en-que-se-fueron-las-horas
+              micro_objective: "Identifica cuántas horas tiene disponibles un personaje y en qué las repartió, viendo qué actividad quedó fuera."
+              narrative_beat: "Rho revisa su semana: entre tarea, ensayo y descanso, ya no le quedan horas para el club de ajedrez que también quería."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: vale-la-pena-la-hora-extra
+              micro_objective: "Decide si vale la pena usar tiempo extra en una actividad, comparando contra qué otra cosa dejaría de hacer con esas horas."
+              narrative_beat: "Dina se pregunta si vale la pena quedarse una hora extra ensayando, sabiendo que esa hora saldría de su tiempo de sueño."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: decido-viendo-las-dos-caras
+          title_es: "Decido viendo las dos caras"
+          concept: "Antes de decidir, nombra en voz alta qué ganas Y qué dejas ir - eso es decidir con las dos caras visibles."
+          learning_objective: "El aprendiz aplica un formato de dos caras (gano/dejo ir) a una decisión propia real y la presenta."
+          key_vocabulary: [dos caras, decisión visible]
+          prior_knowledge: "Identifica el costo de oportunidad del tiempo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que use el formato 'elijo ___, gano ___, dejo ir ___' para una decisión real que tenga pendiente."
+          lessons:
+            - position: 1
+              slug: armamos-el-formato-juntos
+              micro_objective: "Redacta, con apoyo, una decisión propia nombrando explícitamente qué gana y qué deja ir."
+              narrative_beat: "El equipo arma en la pizarra el formato: 'elijo ___, gano ___, dejo ir ___' y lo llenan juntos con un caso real."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-mi-decision-completa
+              micro_objective: "Aplica, sin ayuda, el formato de las dos caras a una decisión propia real y la presenta al equipo."
+              narrative_beat: "Zara presenta su propia decisión usando el formato completo, sin que nadie le ayude a llenarlo esta vez."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-lo-que-dejas-ir
+          kind: review_spaced
+          title_es: "Repaso: Lo Que Dejas Ir"
+          concept: "El equipo repasa cómo nombrar el costo de oportunidad de una elección antes de comprometerse con ella."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo nombrar y comparar el costo de oportunidad de una decisión."
+          key_vocabulary: [costo de oportunidad, dos columnas, formato de decisión]
+          prior_knowledge: "Completo los 6 temas de Lo Que Dejas Ir."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/lo-que-dejas-ir/elegir-es-dejar-algo
+            - valor-del-tiempo/lo-que-dejas-ir/el-precio-invisible
+            - valor-del-tiempo/lo-que-dejas-ir/comparo-lo-que-gano-y-lo-que-pierdo
+            - valor-del-tiempo/lo-que-dejas-ir/dos-caminos-mismo-momento
+            - valor-del-tiempo/lo-que-dejas-ir/el-costo-de-oportunidad-del-tiempo
+            - valor-del-tiempo/lo-que-dejas-ir/decido-viendo-las-dos-caras
+          lessons:
+            - position: 1
+              slug: repaso-nombro-el-costo
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo nombrar el costo de oportunidad de una elección."
+              narrative_beat: "El equipo repasa sus decisiones de la Estación Reloj y nombra, sin ayuda, lo que cada una dejó ir."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-comparo-antes-de-elegir
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara ganancia y pérdida de una decisión nueva antes de elegir."
+              narrative_beat: "Rho toma una decisión pendiente y, sin ayuda, compara qué gana y qué deja ir antes de decidir."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-precio-invisible-y-tiempo
+          kind: review_interleaved
+          title_es: "Cruce: Precio Invisible y Tiempo"
+          concept: "Mezclamos el precio invisible de una elección con el costo de no decidir a tiempo de la saga anterior."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de la saga anterior con el costo de oportunidad de esta saga."
+          key_vocabulary: [precio invisible, costo de oportunidad del tiempo, no decidir a tiempo]
+          prior_knowledge: "Completo el repaso de Lo Que Dejas Ir (tema anterior) y El Costo de Esperar (saga anterior)."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/lo-que-dejas-ir/el-precio-invisible
+            - valor-del-tiempo/lo-que-dejas-ir/el-costo-de-oportunidad-del-tiempo
+            - valor-del-tiempo/el-costo-de-esperar/cuanto-me-cuesta-no-decidir
+          lessons:
+            - position: 1
+              slug: junto-precio-invisible-y-tiempo-perdido
+              micro_objective: "Combina el precio invisible de una elección con el costo de oportunidad del tiempo para evaluar un caso nuevo."
+              narrative_beat: "Zara junta dos ideas: el precio invisible de una decisión Y las horas que le costó - las pesa juntas por primera vez."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reviso-una-tardanza-pasada
+              micro_objective: "Evalúa, sin ayuda, un caso combinando qué se perdió por no decidir a tiempo con lo que se dejó ir al elegir."
+              narrative_beat: "Rho revisa una decisión pasada del equipo cruzando dos ideas de sagas distintas: la tardanza en decidir Y lo que se dejó ir."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: decido-con-el-reloj-en-mente
+    icon: alarm
+    title:
+      en-US: "Deciding With the Clock in Mind"
+      es-MX: "Decido con el Reloj en Mente"
+      pt-BR: "Decido com o Relogio em Mente"
+    description:
+      en-US: "Put it all together: a checklist that fuses time value and opportunity cost into one real decision."
+      es-MX: "Junta todo: un checklist que fusiona el valor del tiempo y el costo de oportunidad en una sola decisión real."
+      pt-BR: "Junte tudo: uma checklist que funde o valor do tempo e o custo de oportunidade em uma única decisao real."
+    topics:
+        - position: 1
+          slug: junto-tiempo-y-costo-de-oportunidad
+          title_es: "Junto tiempo y costo de oportunidad"
+          concept: "Una buena decisión junta dos preguntas: ¿vale más ahora que después? y ¿qué dejo ir si elijo esto?"
+          learning_objective: "El aprendiz aplica las dos preguntas clave (valor en el tiempo, costo de oportunidad) a una decisión simple."
+          key_vocabulary: [dos preguntas, decisión completa]
+          prior_knowledge: "Completo Lo Que Dejas Ir (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} las dos preguntas del reloj para su próxima decisión: ¿vale más ahora? ¿qué dejaría ir?"
+          lessons:
+            - position: 1
+              slug: las-preguntas-que-faltaron
+              micro_objective: "Identifica las dos preguntas clave (vale más ahora, qué dejo ir) que faltan en una decisión tomada a la ligera."
+              narrative_beat: "Liruf decide algo en dos segundos - Dina le pregunta: '¿lo comparaste con esperar? ¿ya viste qué dejaste ir?'"
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: respondo-las-dos-preguntas
+              micro_objective: "Aplica las dos preguntas clave a una decisión simple, respondiéndolas una por una."
+              narrative_beat: "Rho responde las dos preguntas para su propia decisión: primero si vale más ahora, después qué deja ir."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-caso-real
+          title_es: "Mi caso real"
+          concept: "Aplica el reloj mental a una decisión propia real, no solo a un caso ajeno."
+          learning_objective: "El aprendiz describe una decisión real propia con el vocabulario de la aventura y le aplica el checklist de dos preguntas."
+          key_vocabulary: [caso real, decisión propia]
+          prior_knowledge: "Aplica las dos preguntas clave a una decisión simple (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te cuente una decisión real que tenga pendiente esta semana, usando lo aprendido en la estación."
+          lessons:
+            - position: 1
+              slug: escribo-mi-decision-pendiente
+              micro_objective: "Describe una decisión real y pendiente propia usando los términos de la saga (ahora vs después, qué se deja ir)."
+              narrative_beat: "Zara escribe en su libreta una decisión real que tiene pendiente esta semana, usando el vocabulario que aprendió en la estación."
+              difficulty: 2
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: aplico-las-preguntas-a-mi-caso
+              micro_objective: "Aplica el checklist de dos preguntas a su propia decisión real y anota una primera respuesta."
+              narrative_beat: "Con su decisión real ya escrita, Zara responde las dos preguntas del reloj por primera vez para un caso que sí le importa."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: cuando-si-vale-la-pena-esperar
+          title_es: "Cuándo sí vale la pena esperar"
+          concept: "A veces esperar sí vale la pena - cuando lo que ganas por esperar es mayor que lo que pierdes por no tenerlo ya."
+          learning_objective: "El aprendiz reconoce y compara casos donde la ganancia de esperar es mayor que el costo de no tener algo ya."
+          key_vocabulary: [esperar vale la pena, ganancia mayor]
+          prior_knowledge: "Aplica el checklist a su propia decisión real (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si alguna vez esperar de verdad le convino más que actuar de inmediato - y por qué."
+          lessons:
+            - position: 1
+              slug: el-descuento-que-si-conviene
+              micro_objective: "Reconoce, en un caso, cuándo la ganancia de esperar es claramente mayor que el costo de no tener algo ya."
+              narrative_beat: "Dina compara: esperar dos semanas le da un descuento grande en unos audífonos - vale más que tenerlos hoy al precio completo."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: cual-espera-si-conviene
+              micro_objective: "Decide, entre dos casos, cuál sí justifica esperar según el tamaño real de la ganancia futura."
+              narrative_beat: "Rho compara dos esperas: una gana poco por esperar, la otra gana mucho - solo una realmente vale la pena."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: cuando-no-vale-la-pena-esperar
+          title_es: "Cuándo no vale la pena esperar"
+          concept: "Distingue cuándo esperar es la mejor jugada de cuándo esperar solo pospone la decisión sin ganar nada."
+          learning_objective: "El aprendiz identifica casos donde esperar no aporta ninguna ganancia real y solo pospone la decisión."
+          key_vocabulary: [posponer sin ganar, esperar sin razón]
+          prior_knowledge: "Reconoce cuándo esperar sí vale la pena (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si alguna vez 'esperó pensarlo mejor' sin que la oferta cambiara ni mejorara nada."
+          lessons:
+            - position: 1
+              slug: espera-que-no-gana-nada
+              micro_objective: "Identifica, en un caso, cuándo esperar no trae ninguna ganancia real y solo pospone la decisión."
+              narrative_beat: "Liruf sigue 'esperando pensarlo mejor' pero la oferta no cambia ni mejora - solo está posponiendo sin ganar nada."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: separo-espera-real-de-indecision
+              micro_objective: "Decide, entre 3 casos, cuáles muestran una espera que sí vale la pena y cuáles una espera sin razón."
+              narrative_beat: "Zara revisa tres esperas del equipo y separa las que tienen una razón clara de las que solo son indecisión disfrazada."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+        - position: 5
+          slug: armo-mi-checklist-del-tiempo
+          title_es: "Armo mi checklist del tiempo"
+          concept: "Arma un checklist corto de 3 preguntas para decidir con el tiempo en mente, sin tener que pensarlo desde cero cada vez."
+          learning_objective: "El aprendiz construye y aplica un checklist de 3 preguntas para decisiones con componente de tiempo."
+          key_vocabulary: [checklist, tres preguntas]
+          prior_knowledge: "Distingue espera que vale la pena de espera sin razón (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} el checklist de tres preguntas y pídele que lo use en su próxima decisión con dinero."
+          lessons:
+            - position: 1
+              slug: armamos-el-checklist-final
+              micro_objective: "Con apoyo, arma un checklist de 3 preguntas (vale más ahora, qué dejo ir, esperar gana algo real) para decisiones futuras."
+              narrative_beat: "El equipo escribe juntos su checklist final en la pared de la estación: tres preguntas que ya no van a olvidar."
+              difficulty: 4
+              suggested_families: [arrange, storyplay]
+            - position: 2
+              slug: pruebo-el-checklist
+              micro_objective: "Aplica el checklist de 3 preguntas a un caso nuevo, respondiendo cada punto en orden."
+              narrative_beat: "Rho prueba el checklist recién armado con un caso fresco, respondiendo las tres preguntas una por una."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: presento-mi-decision
+          title_es: "Presento mi decisión"
+          concept: "Presenta una decisión propia explicando, con las tres preguntas del checklist, por qué decidiste lo que decidiste."
+          learning_objective: "El aprendiz organiza y presenta una decisión propia usando el checklist completo de la saga, resistiendo una pregunta del equipo."
+          key_vocabulary: [presentar, explicar, checklist completo]
+          prior_knowledge: "Arma y aplica el checklist de tres preguntas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente una decisión suya explicando las tres preguntas del checklist, una por una."
+          lessons:
+            - position: 1
+              slug: ordeno-mis-argumentos
+              micro_objective: "Organiza, sin ayuda, los tres argumentos del checklist para presentar una decisión propia al equipo."
+              narrative_beat: "Zara ordena sus tres respuestas antes de presentar su decisión final frente a Dina, Liruf y Rho."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: defiendo-mi-decision-final
+              micro_objective: "Completa, sin ayuda, la presentación de su decisión final usando el checklist completo y resistiendo una pregunta del equipo."
+              narrative_beat: "Zara presenta su decisión ante el equipo y, cuando Rho le pregunta '¿y si hubieras esperado?', responde con el checklist completo."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-decido-con-el-reloj
+          kind: review_spaced
+          title_es: "Repaso: Decido con el Reloj en Mente"
+          concept: "El equipo repasa el checklist completo de tres preguntas antes de la misión final de la estación."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el checklist de tres preguntas de esta saga."
+          key_vocabulary: [checklist, tres preguntas, decisión completa]
+          prior_knowledge: "Completo los 6 temas de Decido con el Reloj en Mente."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/junto-tiempo-y-costo-de-oportunidad
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/mi-caso-real
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/cuando-si-vale-la-pena-esperar
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/cuando-no-vale-la-pena-esperar
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/armo-mi-checklist-del-tiempo
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/presento-mi-decision
+          lessons:
+            - position: 1
+              slug: repaso-las-dos-preguntas-clave
+              micro_objective: "Recuerda y aplica, sin ayuda, las dos preguntas clave para decidir con el tiempo en mente."
+              narrative_beat: "El equipo repasa su checklist de la estación y lo aplica, sin ayuda, a una decisión nueva del día."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-uso-el-checklist-completo
+              micro_objective: "Aplica sin ayuda todo lo repasado: usa el checklist completo para decidir un caso final de la saga."
+              narrative_beat: "Liruf usa el checklist completo por su cuenta, sin que nadie se lo recuerde, para una decisión que tiene pendiente hoy mismo."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-todo-el-reloj-mental
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Reloj Mental"
+          concept: "Mezclamos la distancia de una promesa, el costo de oportunidad y la fecha límite en una sola decisión final."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión."
+          key_vocabulary: [distancia en el tiempo, fecha límite, costo de oportunidad]
+          prior_knowledge: "Completo el repaso de Decido con el Reloj en Mente (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/peso-hoy-o-peso-manana/mientras-mas-lejos-menos-vale
+            - valor-del-tiempo/el-costo-de-esperar/decido-con-fecha-limite
+            - valor-del-tiempo/lo-que-dejas-ir/decido-viendo-las-dos-caras
+          lessons:
+            - position: 1
+              slug: junto-distancia-y-costo-de-oportunidad
+              micro_objective: "Combina la distancia de una promesa futura con el costo de oportunidad de una elección para evaluar un caso nuevo."
+              narrative_beat: "Zara junta dos filtros de sagas distintas: qué tan lejos está una promesa Y qué deja ir si la elige - una decisión, dos lentes."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-el-caso-final
+              micro_objective: "Evalúa, sin ayuda, un caso final combinando fecha límite, costo de oportunidad y valor del tiempo en una sola decisión."
+              narrative_beat: "Rho resuelve un caso final de la estación cruzando las tres sagas completas: tiempo, espera y costo de oportunidad."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-mision-de-la-estacion-reloj
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Clock Station Mission"
+      es-MX: "La Misión de la Estación Reloj"
+      pt-BR: "A Missao da Estacao Relogio"
+    description:
+      en-US: "A final test puts the whole time-value toolkit to work."
+      es-MX: "Una prueba final pone a trabajar todo el kit de herramientas del valor del tiempo."
+      pt-BR: "Um teste final coloca para trabalhar todo o kit de ferramentas do valor do tempo."
+    topics:
+        - position: 1
+          slug: el-reto-del-tiempo
+          kind: review_quest
+          title_es: "El Reto del Tiempo"
+          concept: "La Estación Reloj lanza su prueba final: el cadete debe decidir con el reloj en mente frente a decisiones nuevas, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el valor del ahora y el costo de esperar para resolver un reto abierto."
+          key_vocabulary: [valor del ahora, costo de esperar, reto abierto]
+          prior_knowledge: "Completo ¿Peso Hoy o Peso Mañana? y El Costo de Esperar."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/peso-hoy-o-peso-manana
+            - valor-del-tiempo/el-costo-de-esperar
+          lessons:
+            - position: 1
+              slug: recibo-la-prueba-final
+              micro_objective: "Recuerda, sin ayuda, por qué el dinero o las opciones de hoy valen más que una promesa lejana."
+              narrative_beat: "Una alarma suena en la Estación Reloj: 'Prueba final - demuestra que entiendes el valor del tiempo'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: decido-mi-primera-prueba
+              micro_objective: "Elige, sin ayuda, la mejor opción entre una oferta hoy y una promesa futura, aplicando lo aprendido en las dos primeras sagas."
+              narrative_beat: "Rho enfrenta su primera prueba real: una oferta hoy contra una promesa mejor pero incierta - decide solo, sin pistas del equipo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-decision-defendida
+          kind: review_quest
+          title_es: "Mi Decisión, Defendida"
+          concept: "Frente al consejo de la estación, el equipo defiende una decisión completa nombrando qué dejó ir y por qué el momento fue el correcto."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una decisión completa combinando costo de oportunidad y checklist del tiempo."
+          key_vocabulary: [defender, consejo, decisión completa]
+          prior_knowledge: "Completo El Reto del Tiempo (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/lo-que-dejas-ir
+            - valor-del-tiempo/decido-con-el-reloj-en-mente
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa
+              micro_objective: "Organiza, sin ayuda, los argumentos de costo de oportunidad y checklist del tiempo para defender una decisión."
+              narrative_beat: "Dina ensaya su defensa: primero qué dejó ir, después por qué el momento era el correcto."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo
+              micro_objective: "Completa, sin ayuda, la defensa final de su decisión ante el consejo de la estación, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante el consejo de la Estación Reloj; cuando le preguntan '¿y si hubieras esperado?', responde sin titubear."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

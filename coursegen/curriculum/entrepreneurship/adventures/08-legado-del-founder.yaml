@@ -1,0 +1,885 @@
+schema_version: 1
+
+adventure:
+  position: 8
+  slug: legado-del-founder
+  theme: cosmos
+  age_tier: tier4
+  title:
+    en-US: "The Founder's Legacy"
+    es-MX: "Legado del Founder"
+    pt-BR: "Legado do Founder"
+  description:
+    en-US: "At the Legacy Observatory, high above every district the crew has crossed, they assemble everything learned into one complete business model, craft a pitch that actually lands, and build a long-term vision worth defending before the full council of founders."
+    es-MX: "En el Observatorio del Legado, muy por encima de cada distrito que el equipo ha cruzado, reunen todo lo aprendido en un modelo de negocio completo, construyen un pitch que de verdad aterriza, y trazan una visión de largo plazo que vale la pena defender ante el consejo completo de founders."
+    pt-BR: "No Observatorio do Legado, bem acima de cada distrito que a equipe atravessou, reunem tudo o que aprenderam em um modelo de negocio completo, constroem um pitch que realmente aterrissa, e tracam uma visão de longo prazo que vale a pena defender diante do conselho completo de founders."
+  narrative_arc: "Con un caso completo defendido ante el Tribunal de Confianza, Dina, Liruf, Rho y Zara suben al Observatorio del Legado, el punto más alto desde donde se ve todo el camino recorrido: el Distrito Beta donde aprendieron a detectar problemas reales, el Valle de los Garages donde construyeron su primer MVP, el Archipielago de las Voces donde escucharon a sus clientes de verdad, el Distrito del Precio Justo donde aprendieron a cobrar lo correcto, el Bosque de las Conexiones donde vendieron sin manipular, el Reino en Expansión donde aprendieron a liderar un equipo, y el Distrito de las Señales Rojas donde aprendieron a protegerse de un mal trato. Ahora deben reunir todo eso en un solo modelo de negocio completo, convertirlo en un pitch que cualquiera entienda en minutos, y trazar una visión de largo plazo que no dependa solo de ellos. El viaje termina donde empieza el siguiente: presentando su legado completo ante el Consejo del Observatorio, el conjunto de todos los founders que cruzaron el mismo camino antes que ellos."
+
+sagas:
+  - position: 1
+    slug: mi-modelo-de-negocio-completo
+    icon: hub
+    title:
+      en-US: "My Complete Business Model"
+      es-MX: "Mi Modelo de Negocio Completo"
+      pt-BR: "Meu Modelo de Negocio Completo"
+    description:
+      en-US: "Every piece learned across the journey - problem, customer, product, price, channel, team - fits into a single map."
+      es-MX: "Cada pieza aprendida a lo largo del viaje - problema, cliente, producto, precio, canal, equipo - cabe en un solo mapa."
+      pt-BR: "Cada peca aprendida ao longo da jornada - problema, cliente, produto, preço, canal, equipe - cabe em um único mapa."
+    topics:
+        - position: 1
+          slug: que-piezas-tiene-un-modelo-de-negocio
+          title_es: "Que piezas tiene un modelo de negocio"
+          concept: "Un modelo de negocio completo tiene piezas concretas que encajan entre si: el problema, el cliente, el producto, el precio, como llega al cliente, y quien lo hace posible - falta una pieza y el modelo cojea."
+          learning_objective: "El aprendiz nombra las 6 piezas básicas de un modelo de negocio completo (problema, cliente, producto, precio, canal, equipo)."
+          key_vocabulary: [modelo de negocio, piezas que encajan, mapa completo]
+          prior_knowledge: "Completo Radar de Riesgos (aventura anterior): ya tiene un caso completo defendido ante el Tribunal de Confianza."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si puede nombrar, de memoria, las 6 piezas de un modelo de negocio completo sin ver ninguna nota."
+          lessons:
+            - position: 1
+              slug: cuento-las-piezas-de-un-negocio-ajeno
+              micro_objective: "Cuenta, en el negocio de gorras bordadas de un compañero, cuantas de las 6 piezas básicas ya estan definidas y cuales faltan."
+              narrative_beat: "Rho revisa el negocio de gorras de Zara: tiene problema, cliente, producto y precio claros, pero todavia no tiene definido el canal de venta ni los roles del equipo."
+              difficulty: 1
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: nombro-las-seis-piezas-de-memoria
+              micro_objective: "Nombra, sin ayuda, las 6 piezas básicas de un modelo de negocio completo sin apoyarse en ninguna lista."
+              narrative_beat: "Liruf recita de memoria: problema, cliente, producto, precio, canal y equipo - las seis piezas que aprendio a lo largo de todo el viaje."
+              difficulty: 2
+              suggested_families: [input, storyplay]
+        - position: 2
+          slug: mi-problema-y-mi-cliente-en-una-frase
+          title_es: "Mi problema y mi cliente en una frase"
+          concept: "Resumir en una sola frase el problema real que resuelves y quien exactamente lo vive obliga a que las dos piezas mas importantes del modelo queden claras desde el principio."
+          learning_objective: "El aprendiz redacta una frase que combina el problema real identificado y el cliente especifico que lo vive, recuperando lo aprendido en Radar de Oportunidades y Mesa del Cliente."
+          key_vocabulary: [problema real, cliente especifico, una sola frase]
+          prior_knowledge: "Nombra las 6 piezas de un modelo de negocio (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una sola frase, cual es el problema real de su negocio y quien exactamente lo vive."
+          lessons:
+            - position: 1
+              slug: reviso-mi-problema-y-mi-cliente-de-antes
+              micro_objective: "Recupera, sin ayuda, el problema real y el cliente especifico que definio en aventuras anteriores del viaje."
+              narrative_beat: "Dina repasa sus notas del Distrito Beta y del Archipielago de las Voces: el problema es que las fundas se rompen en las esquinas, y el cliente es quien ya rompio una este año."
+              difficulty: 2
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: escribo-mi-frase-de-problema-y-cliente
+              micro_objective: "Redacta, sin ayuda, una sola frase que combina su problema real y su cliente especifico."
+              narrative_beat: "Zara escribe: 'resuelvo que las fundas se rompan en la esquina, para estudiantes que ya rompieron una este año' - problema y cliente en una sola frase."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+        - position: 3
+          slug: mi-producto-y-su-precio-en-una-frase
+          title_es: "Mi producto y su precio en una frase"
+          concept: "Resumir el producto (la version mínima que funciona) junto con su precio final defendido conecta lo construido en el Valle de los Garages con lo calculado en el Distrito del Precio Justo."
+          learning_objective: "El aprendiz redacta una frase que combina su producto (MVP) y su precio final, recuperando lo aprendido en Prototipo de Garage y Precio que sí Convence."
+          key_vocabulary: [producto mínimo, precio final, una sola frase]
+          prior_knowledge: "Redacta su frase de problema y cliente (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una sola frase, que es exactamente su producto y cuanto cuesta."
+          lessons:
+            - position: 1
+              slug: reviso-mi-mvp-y-mi-precio-final
+              micro_objective: "Recupera, sin ayuda, el MVP construido y el precio final defendido en aventuras anteriores del viaje."
+              narrative_beat: "Rho repasa sus notas del Valle de los Garages y del Distrito del Precio Justo: su MVP es una funda con refuerzo de esquina, y su precio final defendido es $95."
+              difficulty: 3
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: escribo-mi-frase-de-producto-y-precio
+              micro_objective: "Redacta, sin ayuda, una sola frase que combina su producto mínimo viable y su precio final."
+              narrative_beat: "Liruf escribe: 'vendo una funda con refuerzo reforzado en la esquina por $95, un precio que cubre mi costo y mi margen mínimo'."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+        - position: 4
+          slug: como-llega-mi-producto-al-cliente
+          title_es: "Como llega mi producto al cliente"
+          concept: "El canal es el camino concreto por el que tu producto llega al cliente: una conversación directa, un puesto, una publicación - describirlo con claridad conecta con lo aprendido en el Bosque de las Conexiones."
+          learning_objective: "El aprendiz describe el canal especifico por el que su producto llega al cliente, recuperando lo aprendido en Red de Ventas."
+          key_vocabulary: [canal, camino concreto, llega al cliente]
+          prior_knowledge: "Redacta su frase de producto y precio (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} por que camino especifico llega su producto hasta el cliente final."
+          lessons:
+            - position: 1
+              slug: reviso-mi-embudo-de-ventas
+              micro_objective: "Recupera, sin ayuda, el embudo de ventas y la conversación de venta definidos en la aventura Red de Ventas."
+              narrative_beat: "Dina repasa sus notas del Bosque de las Conexiones: su canal principal es un mensaje directo despues de que alguien pregunta el precio en sus publicaciones."
+              difficulty: 3
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: describo-mi-canal-en-una-frase
+              micro_objective: "Redacta, sin ayuda, una frase que describe el canal especifico por el que su producto llega al cliente."
+              narrative_beat: "Zara escribe: 'mi producto llega por mensaje directo despues de que alguien lo ve en mis publicaciones y pregunta el precio' - su canal en una frase."
+              difficulty: 4
+              suggested_families: [storyplay, input]
+        - position: 5
+          slug: quien-hace-que-en-mi-equipo
+          title_es: "Quien hace que en mi equipo"
+          concept: "Un modelo de negocio sin roles claros de equipo se cae en cuanto el founder no puede hacer todo solo - definir quien hace que conecta con lo aprendido en el Reino en Expansión."
+          learning_objective: "El aprendiz describe los roles claros de su equipo, recuperando lo aprendido en Equipo que Escala."
+          key_vocabulary: [roles claros, quien hace que, equipo]
+          prior_knowledge: "Describe su canal de venta (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga quien hace que en su equipo, con roles claros y sin duplicados."
+          lessons:
+            - position: 1
+              slug: reviso-los-roles-de-mi-equipo
+              micro_objective: "Recupera, sin ayuda, los roles claros definidos en la aventura Equipo que Escala."
+              narrative_beat: "Rho repasa sus notas del Reino en Expansión: el confirma pedidos, su compañera maneja redes, y otra revisa la calidad final antes de entregar."
+              difficulty: 3
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: describo-los-roles-en-una-frase
+              micro_objective: "Redacta, sin ayuda, una frase que describe los roles claros de su equipo sin duplicados."
+              narrative_beat: "Liruf escribe: 'yo confirmo pedidos y cierro ventas, mi compañera maneja redes, y otra revisa la calidad antes de entregar' - roles claros en una frase."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+        - position: 6
+          slug: uno-todas-las-piezas-en-un-solo-mapa
+          title_es: "Uno todas las piezas en un solo mapa"
+          concept: "Juntar las 6 frases (problema, cliente, producto, precio, canal, equipo) en un solo mapa visual es lo que convierte piezas sueltas en un modelo de negocio completo y presentable."
+          learning_objective: "El aprendiz ensambla las 6 piezas de su modelo de negocio en un solo mapa completo y coherente."
+          key_vocabulary: [mapa completo, piezas sueltas, modelo coherente]
+          prior_knowledge: "Describe los roles de su equipo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te muestre su mapa completo de modelo de negocio, con las 6 piezas juntas."
+          lessons:
+            - position: 1
+              slug: ordeno-mis-seis-frases-en-un-mapa
+              micro_objective: "Ordena, sin ayuda, sus 6 frases (problema, cliente, producto, precio, canal, equipo) en un mapa visual de una sola página."
+              narrative_beat: "Dina ordena sus 6 tarjetas en un mapa: problema y cliente arriba, producto y precio al centro, canal y equipo abajo - todo en una sola página."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-modelo-completo
+              micro_objective: "Completa, sin ayuda, la presentación de su modelo de negocio completo ensamblando las 6 piezas en un mapa coherente."
+              narrative_beat: "Zara presenta su mapa completo por primera vez: de un vistazo, cualquiera puede ver el problema, el cliente, el producto, el precio, el canal y el equipo detras de su negocio."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-mi-modelo-de-negocio-completo
+          kind: review_spaced
+          title_es: "Repaso: Mi Modelo de Negocio Completo"
+          concept: "El equipo repasa las 6 piezas de un modelo de negocio y como ensamblarlas en un solo mapa coherente."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el ensamblaje completo de un modelo de negocio."
+          key_vocabulary: [6 piezas, mapa coherente, ensamblar]
+          prior_knowledge: "Completo los 6 temas de Mi Modelo de Negocio Completo."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/mi-modelo-de-negocio-completo/que-piezas-tiene-un-modelo-de-negocio
+            - legado-del-founder/mi-modelo-de-negocio-completo/mi-problema-y-mi-cliente-en-una-frase
+            - legado-del-founder/mi-modelo-de-negocio-completo/mi-producto-y-su-precio-en-una-frase
+            - legado-del-founder/mi-modelo-de-negocio-completo/como-llega-mi-producto-al-cliente
+            - legado-del-founder/mi-modelo-de-negocio-completo/quien-hace-que-en-mi-equipo
+            - legado-del-founder/mi-modelo-de-negocio-completo/uno-todas-las-piezas-en-un-solo-mapa
+          lessons:
+            - position: 1
+              slug: repaso-redacto-una-frase-de-producto-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la redacción de una frase de producto y precio para un negocio que todavia no había visto."
+              narrative_beat: "El equipo redacta, sin ayuda, la frase de producto y precio de un negocio nuevo de paseo de mascotas que crece en el observatorio."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+            - position: 2
+              slug: repaso-ensamblo-un-mapa-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: ensambla las 6 piezas de un modelo de negocio nuevo en un solo mapa."
+              narrative_beat: "Rho ensambla, sin ayuda de nadie, el mapa completo de un negocio nuevo que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+        - position: 8
+          slug: cruce-todo-el-viaje-emprendedor
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Viaje Emprendedor"
+          concept: "Mezclamos hallazgos de cada distrito recorrido - oportunidad, prototipo, cliente, precio, ventas, equipo y riesgo - en un solo modelo de negocio que los integra todos."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, hallazgos clave de las siete aventuras anteriores del curso completo en su modelo de negocio ensamblado."
+          key_vocabulary: [siete aventuras, integrar hallazgos, viaje completo]
+          prior_knowledge: "Completo el repaso de Mi Modelo de Negocio Completo (tema anterior) y las siete aventuras previas del curso."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/problemas-de-verdad/molestia-vs-problema-real
+            - prototipo-de-garage/que-es-un-mvp/el-producto-mas-pequeno-que-funciona
+            - mesa-del-cliente/itero-con-senal-real/mi-decision-final-con-clientes-reales
+            - precio-que-si-convence/el-punto-de-equilibrio/decido-mi-precio-final
+            - red-de-ventas/persuasion-etica/mi-codigo-de-venta-etica
+            - equipo-que-escala/lidero-mientras-escala/mi-plan-de-liderazgo-para-el-siguiente-mes
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/mi-codigo-de-riesgos-y-etica-del-negocio
+          lessons:
+            - position: 1
+              slug: identifico-el-hallazgo-de-cada-distrito
+              micro_objective: "Identifica, sin ayuda, un hallazgo clave de cada uno de los distritos recorridos que forma parte de su modelo de negocio final."
+              narrative_beat: "Dina recorre el mapa del observatorio y señala, distrito por distrito, el hallazgo clave que se quedo en su modelo: un problema real, un MVP simple, un cliente validado, un precio con margen, ventas eticas, un equipo con roles claros, y un código de riesgos."
+              difficulty: 4
+              suggested_families: [analyze, arrange]
+            - position: 2
+              slug: mi-modelo-final-integra-los-siete-distritos
+              micro_objective: "Confirma, sin ayuda, que su mapa de modelo de negocio final refleja de verdad los siete hallazgos clave del viaje completo, sin dejar ninguno fuera."
+              narrative_beat: "Zara revisa su mapa final y confirma que cada uno de los siete distritos dejo su huella: el problema, el MVP, el cliente, el precio, las ventas eticas, el equipo y el código de riesgos, todos presentes."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: el-pitch-que-si-se-entiende
+    icon: campaign
+    title:
+      en-US: "The Pitch That Actually Lands"
+      es-MX: "El Pitch que sí se Entiende"
+      pt-BR: "O Pitch que Realmente se Entende"
+    description:
+      en-US: "A model no one can explain in two minutes is a model no one will fund or join - the pitch is where clarity gets tested."
+      es-MX: "Un modelo que nadie puede explicar en dos minutos es un modelo que nadie va a financiar ni a unirse - el pitch es donde la claridad se pone a prueba."
+      pt-BR: "Um modelo que ninguem consegue explicar em dois minutos e um modelo que ninguem vai financiar nem se juntar - o pitch e onde a clareza e posta a prova."
+    topics:
+        - position: 1
+          slug: que-es-un-pitch-y-para-que-sirve
+          title_es: "Que es un pitch y para que sirve"
+          concept: "Un pitch es una presentación corta y clara de tu modelo de negocio, pensada para que alguien que nunca lo había escuchado lo entienda y quiera saber más en pocos minutos."
+          learning_objective: "El aprendiz explica para que sirve un pitch y a quien esta dirigido, distinguiendolo de una explicación larga y detallada."
+          key_vocabulary: [pitch, presentación corta, entender rápido]
+          prior_knowledge: "Completo Mi Modelo de Negocio Completo (saga anterior): ya tiene un modelo ensamblado en un mapa."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} para que sirve un pitch y en cuanto tiempo cree que debería poder explicar su negocio completo."
+          lessons:
+            - position: 1
+              slug: esto-es-un-pitch-o-una-explicacion-larga
+              micro_objective: "Distingue, entre dos presentaciones del mismo negocio, cual funciona como pitch corto y claro y cual es una explicación larga y difícil de seguir."
+              narrative_beat: "Liruf explica su negocio durante 10 minutos con todos los detalles; Rho lo resume en 90 segundos y aun asi cualquiera entiende de que trata."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: explico-para-que-sirve-mi-pitch
+              micro_objective: "Explica, sin ayuda, para que sirve especificamente el pitch de su propio negocio y a quien va dirigido."
+              narrative_beat: "Zara explica: 'mi pitch sirve para que alguien que nunca escucho de mi funda entienda en un minuto por que le serviria y quiera saber más'."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: cuento-mi-problema-en-diez-segundos
+          title_es: "Cuento mi problema en diez segundos"
+          concept: "Los primeros diez segundos de un pitch deciden si la otra persona sigue escuchando; describir el problema real de forma concreta y rápida es lo que atrapa la atención."
+          learning_objective: "El aprendiz redacta una apertura de pitch de diez segundos que describe el problema real de forma concreta."
+          key_vocabulary: [primeros diez segundos, atrapar la atención, problema concreto]
+          prior_knowledge: "Explica para que sirve un pitch (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga su apertura de pitch en diez segundos, cronometrando el tiempo."
+          lessons:
+            - position: 1
+              slug: esta-apertura-atrapa-o-aburre
+              micro_objective: "Compara dos aperturas de pitch de diez segundos y elige la que describe el problema de forma concreta y atrapa la atención."
+              narrative_beat: "Dina abre con 'quiero hablarles de mi negocio de fundas' y pierde a la audiencia; Rho abre con 'a cuantos se les ha roto la funda justo en la esquina este año?' y todos levantan la mano."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-apertura-de-diez-segundos
+              micro_objective: "Redacta, sin ayuda, una apertura de pitch de diez segundos que describe su problema real de forma concreta."
+              narrative_beat: "Liruf escribe su apertura: '¿cuantas veces se te ha roto la funda justo en la esquina? a mi tres veces este año, y ahí empezo todo esto'."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+        - position: 3
+          slug: muestro-no-solo-cuento
+          title_es: "Muestro, no solo cuento"
+          concept: "Describir tu producto con palabras convence menos que mostrarlo de verdad - una foto, una muestra fisica, un video corto - lo que se ve se cree más rápido que lo que se describe."
+          learning_objective: "El aprendiz elige, entre describir con palabras y mostrar evidencia concreta, la opción que hace más convincente una parte de su pitch."
+          key_vocabulary: [mostrar evidencia, más convincente, se ve se cree]
+          prior_knowledge: "Redacta su apertura de diez segundos (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que evidencia concreta (foto, muestra, video) piensa mostrar durante su pitch, en vez de solo describir con palabras."
+          lessons:
+            - position: 1
+              slug: describo-con-palabras-o-muestro-la-evidencia
+              micro_objective: "Elige, entre dos versiónes del mismo pitch, la que muestra evidencia concreta del producto en vez de solo describirlo con palabras."
+              narrative_beat: "Zara describe su refuerzo de esquina con palabras durante un minuto; Rho simplemente muestra la funda y la deja caer para que todos vean que no se rompe."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-que-evidencia-voy-a-mostrar
+              micro_objective: "Elige, sin ayuda, la evidencia concreta más convincente que puede mostrar durante su pitch en vez de solo describir su producto."
+              narrative_beat: "Dina elige mostrar la reseña real de una clienta en pantalla, en vez de solo contar que a la gente le gusto su producto."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 4
+          slug: uso-un-numero-que-si-importa
+          title_es: "Uso un número que sí importa"
+          concept: "Llenar un pitch con muchos números confunde; elegir UN número que de verdad importa (el margen, la tasa de conversión, cuantas ventas ya hizo) se recuerda mucho mejor."
+          learning_objective: "El aprendiz elige un solo número clave de su negocio para incluir en su pitch, en vez de saturar con muchos datos."
+          key_vocabulary: [un solo número, se recuerda mejor, saturar con datos]
+          prior_knowledge: "Elige que evidencia mostrar (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual es el UN número más importante que debería incluir en su pitch, y por que ese y no otro."
+          lessons:
+            - position: 1
+              slug: cual-numero-es-el-mas-importante
+              micro_objective: "Elige, entre 4 números posibles de un negocio, el más importante para incluir en un pitch de un minuto."
+              narrative_beat: "Liruf elige mencionar solo que ya vendio 40 fundas en un mes, el número que mejor demuestra que su negocio funciona, en vez de listar todos sus costos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-mi-numero-clave
+              micro_objective: "Elige, sin ayuda, el número clave más importante de su propio negocio para incluir en su pitch."
+              narrative_beat: "Zara elige mencionar su tasa de conversión del 40%, el número que mejor demuestra que su embudo de ventas funciona de verdad."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: cierro-mi-pitch-con-una-peticion-clara
+          title_es: "Cierro mi pitch con una petición clara"
+          concept: "Terminar un pitch sin decir que quieres de la audiencia (un cliente, un socio, una opinión) deja a la gente sin saber que hacer despues de escucharte - cerrar con una petición clara es lo que activa una respuesta."
+          learning_objective: "El aprendiz redacta un cierre de pitch con una petición clara y especifica dirigida a la audiencia."
+          key_vocabulary: [petición clara, activa una respuesta, dirigida a la audiencia]
+          prior_knowledge: "Elige su número clave (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga con que petición clara piensa cerrar su pitch."
+          lessons:
+            - position: 1
+              slug: este-cierre-pide-algo-o-se-queda-en-el-aire
+              micro_objective: "Compara dos cierres de pitch y elige el que hace una petición clara y especifica, en vez de terminar sin pedir nada."
+              narrative_beat: "Rho termina su pitch diciendo 'eso es todo, gracias' sin más; Dina termina con 'si conoces a alguien que rompa fundas seguido, mandamelo esta semana'."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-mi-peticion-de-cierre
+              micro_objective: "Redacta, sin ayuda, una petición clara y especifica para cerrar su propio pitch."
+              narrative_beat: "Zara cierra su pitch: 'si te interesa una funda con refuerzo de esquina, escribeme esta semana y te doy el primer diseño con descuento de lanzamiento'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: ensayo-mi-pitch-completo
+          title_es: "Ensayo mi pitch completo"
+          concept: "Ensayar el pitch completo en voz alta, cronometrado, revela partes que se sienten largas o confusas que nunca se notan solo leyendolo en silencio."
+          learning_objective: "El aprendiz ensaya su pitch completo cronometrado y detecta al menos una parte que necesita ajustarse antes de presentarlo de verdad."
+          key_vocabulary: [ensayo cronometrado, en voz alta, detectar ajustes]
+          prior_knowledge: "Redacta su petición de cierre (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que ensaye su pitch completo en voz alta contigo, cronometrado, antes de presentarlo de verdad."
+          lessons:
+            - position: 1
+              slug: donde-se-siente-largo-mi-pitch
+              micro_objective: "Detecta, en un ensayo cronometrado, cual parte de un pitch se siente demasiado larga o confusa al escucharla en voz alta."
+              narrative_beat: "Liruf ensaya su pitch con Zara cronometrando, y descubre que la parte de la evidencia se alarga más de lo que pensaba - hay que recortarla."
+              difficulty: 4
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: ajusto-mi-pitch-despues-del-ensayo
+              micro_objective: "Ajusta, sin ayuda, la parte de su pitch detectada como larga o confusa durante el ensayo cronometrado."
+              narrative_beat: "Rho recorta la parte de la evidencia a solo mostrar la funda cayendo, sin explicarla de más, despues de notar en el ensayo que se alargaba."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-el-pitch-que-si-se-entiende
+          kind: review_spaced
+          title_es: "Repaso: El Pitch que sí se Entiende"
+          concept: "El equipo repasa como abrir con el problema, mostrar evidencia, usar un número clave y cerrar con una petición clara."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la construcción completa de un pitch."
+          key_vocabulary: [apertura, evidencia, cierre con petición]
+          prior_knowledge: "Completo los 6 temas de El Pitch que sí se Entiende."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/el-pitch-que-si-se-entiende/que-es-un-pitch-y-para-que-sirve
+            - legado-del-founder/el-pitch-que-si-se-entiende/cuento-mi-problema-en-diez-segundos
+            - legado-del-founder/el-pitch-que-si-se-entiende/muestro-no-solo-cuento
+            - legado-del-founder/el-pitch-que-si-se-entiende/uso-un-numero-que-si-importa
+            - legado-del-founder/el-pitch-que-si-se-entiende/cierro-mi-pitch-con-una-peticion-clara
+            - legado-del-founder/el-pitch-que-si-se-entiende/ensayo-mi-pitch-completo
+          lessons:
+            - position: 1
+              slug: repaso-escribo-una-apertura-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la redacción de una apertura de diez segundos para un negocio que todavia no había visto."
+              narrative_beat: "El equipo redacta, sin ayuda, la apertura de diez segundos de un pitch nuevo para un negocio de paseo de mascotas."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+            - position: 2
+              slug: repaso-cierro-con-una-peticion-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: cierra un pitch nuevo con una petición clara y especifica."
+              narrative_beat: "Rho cierra, sin ayuda de nadie, un pitch nuevo con una petición clara para un negocio que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-modelo-de-negocio-y-pitch
+          kind: review_interleaved
+          title_es: "Cruce: Modelo de Negocio y Pitch"
+          concept: "Mezclamos el mapa de modelo de negocio de la saga anterior con la construcción de pitch de esta saga: cada pieza del mapa se convierte en una parte del pitch."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, las piezas de su modelo de negocio ensamblado con la estructura completa de un pitch."
+          key_vocabulary: [piezas del modelo, estructura del pitch, combinar]
+          prior_knowledge: "Completo el repaso de El Pitch que sí se Entiende (tema anterior) y Mi Modelo de Negocio Completo (saga anterior)."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/el-pitch-que-si-se-entiende/cierro-mi-pitch-con-una-peticion-clara
+            - legado-del-founder/mi-modelo-de-negocio-completo/uno-todas-las-piezas-en-un-solo-mapa
+          lessons:
+            - position: 1
+              slug: cada-pieza-de-mi-mapa-es-parte-de-mi-pitch
+              micro_objective: "Conecta, sin ayuda, cada una de las 6 piezas de su mapa de modelo de negocio con la parte correspondiente de su pitch."
+              narrative_beat: "Zara conecta su mapa con su pitch: el problema y el cliente van en la apertura, el producto y precio en la evidencia, el canal y equipo en el cierre con petición."
+              difficulty: 4
+              suggested_families: [analyze, arrange]
+            - position: 2
+              slug: mi-pitch-final-refleja-mi-modelo-completo
+              micro_objective: "Confirma, sin ayuda, que su pitch final refleja las 6 piezas de su modelo de negocio sin dejar ninguna fuera."
+              narrative_beat: "Rho revisa su pitch ensayado y confirma que menciona su problema, cliente, producto, precio, canal y equipo, aunque sea en pocas palabras cada uno."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: vision-de-largo-plazo
+    icon: visibility
+    title:
+      en-US: "Long-Term Vision"
+      es-MX: "Visión de Largo Plazo"
+      pt-BR: "Visão de Longo Prazo"
+    description:
+      en-US: "A business that only exists for today has no legacy - real vision plans for a year from now, for when something goes wrong, and for what matters beyond the money."
+      es-MX: "Un negocio que solo existe para hoy no tiene legado - una visión real planea para dentro de un año, para cuando algo salga mal, y para lo que importa más alla del dinero."
+      pt-BR: "Um negocio que so existe para hoje nao tem legado - uma visão real planeja para daqui a um ano, para quando algo der errado, e para o que importa alem do dinheiro."
+    topics:
+        - position: 1
+          slug: donde-quiero-estar-en-un-ano
+          title_es: "Donde quiero estar en un año"
+          concept: "Fijar una meta concreta a un año (\"vender 500 unidades\", \"tener un equipo de 6 personas\") da dirección; sin una meta concreta, cada mes se decide solo, sin rumbo compartido."
+          learning_objective: "El aprendiz fija una meta concreta y medible para su negocio a un año, en vez de una aspiración vaga."
+          key_vocabulary: [meta concreta, medible, dirección compartida]
+          prior_knowledge: "Completo El Pitch que sí se Entiende (saga anterior): ya sabe presentar su negocio con claridad."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} donde le gustaria que estuviera su negocio dentro de un año, con una meta concreta, no solo 'que le vaya bien'."
+          lessons:
+            - position: 1
+              slug: esta-meta-es-concreta-o-vaga
+              micro_objective: "Distingue, entre dos metas a un año, cual es concreta y medible y cual es vaga y no se puede confirmar si se cumplio."
+              narrative_beat: "Liruf dice que quiere 'que su negocio crezca mucho'; Zara dice que quiere 'vender 500 gorras y tener un equipo de 4 personas para el próximo año' - solo la segunda es medible."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: fijo-mi-meta-concreta-a-un-ano
+              micro_objective: "Fija, sin ayuda, una meta concreta y medible para su propio negocio a un año."
+              narrative_beat: "Dina fija su meta: 'vender 600 fundas en un año y tener un equipo de 3 personas ademas de mi'."
+              difficulty: 2
+              suggested_families: [input, storyplay]
+        - position: 2
+          slug: que-tengo-que-dejar-de-hacer-para-crecer
+          title_es: "Que tengo que dejar de hacer para crecer"
+          concept: "Crecer no es solo agregar cosas nuevas; a veces significa dejar de hacer algo que ya no aporta lo suficiente (un producto que vende poco, una tarea que consume mucho tiempo) para tener espacio para lo que si importa."
+          learning_objective: "El aprendiz identifica algo que su negocio debe dejar de hacer para liberar espacio y crecer hacia su meta a un año."
+          key_vocabulary: [dejar de hacer, liberar espacio, crecer con foco]
+          prior_knowledge: "Fija su meta concreta a un año (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que cree que debería dejar de hacer en su negocio para tener espacio y crecer hacia su meta."
+          lessons:
+            - position: 1
+              slug: que-le-esta-quitando-espacio-a-lo-importante
+              micro_objective: "Identifica, en una lista de actividades de un negocio, cual le esta quitando tiempo a lo que de verdad importa para crecer."
+              narrative_beat: "Rho nota que sigue haciendo llaveros que casi no vende, y ese tiempo se lo podría dedicar a las fundas, que si tienen demanda real."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-que-dejo-de-hacer
+              micro_objective: "Decide, sin ayuda, algo especifico que su negocio va a dejar de hacer para liberar espacio y crecer."
+              narrative_beat: "Zara decide dejar de aceptar pedidos personalizados de última hora, aunque a veces le pidan uno urgente, para poder enfocarse en cumplir su meta anual."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 3
+          slug: mi-plan-si-algo-sale-mal
+          title_es: "Mi plan si algo sale mal"
+          concept: "Un plan de contingencia no es pesimismo - es reconocer con anticipación que podría salir mal (perder un proveedor, un mes de pocas ventas) y ya tener pensado que hacer si pasa."
+          learning_objective: "El aprendiz redacta un plan de contingencia con una acción especifica para un riesgo probable identificado en su negocio."
+          key_vocabulary: [plan de contingencia, riesgo probable, acción especifica]
+          prior_knowledge: "Decide algo que dejar de hacer (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que haria si el riesgo más probable de su negocio de verdad pasara este mes."
+          lessons:
+            - position: 1
+              slug: cual-es-el-riesgo-mas-probable
+              micro_objective: "Identifica, entre 3 riesgos posibles, el más probable para un negocio dado, apoyandose en lo aprendido en Radar de Riesgos."
+              narrative_beat: "Liruf identifica que el riesgo más probable de su negocio es quedarse sin el material principal justo en temporada alta, más probable que perder a todo su equipo de golpe."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-mi-plan-de-contingencia
+              micro_objective: "Redacta, sin ayuda, una acción especifica de contingencia para el riesgo más probable identificado en su negocio."
+              narrative_beat: "Dina redacta: 'si me quedo sin vinil en temporada alta, tengo un segundo proveedor de respaldo ya identificado con quien puedo pedir en 2 dias'."
+              difficulty: 4
+              suggested_families: [storyplay, input]
+        - position: 4
+          slug: como-mido-si-voy-bien
+          title_es: "Como mido si voy bien"
+          concept: "Medir si un negocio va bien solo por el dinero deja fuera señales importantes: la satisfacción de los clientes, si el equipo sigue motivado, si la reputación se mantiene solida."
+          learning_objective: "El aprendiz define al menos 3 metricas de exito para su negocio que van más alla del dinero (clientes, equipo, reputación)."
+          key_vocabulary: [metricas de exito, más alla del dinero, satisfacción y reputación]
+          prior_knowledge: "Redacta su plan de contingencia (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} con que 3 señales, ademas del dinero, sabe si su negocio va bien."
+          lessons:
+            - position: 1
+              slug: solo-el-dinero-o-tambien-otras-senales
+              micro_objective: "Reconoce, en un caso, que un negocio con buenas ventas pero clientes insatisfechos o un equipo agotado no esta yendo tan bien como parece por el dinero."
+              narrative_beat: "Rho vende mucho este mes, pero su equipo esta agotado y dos clientas dejaron reseñas tibias - el dinero se ve bien, pero otras señales dicen otra cosa."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: defino-mis-metricas-completas-de-exito
+              micro_objective: "Define, sin ayuda, al menos 3 metricas de exito para su negocio que incluyen dinero, satisfacción de clientes y bienestar del equipo."
+              narrative_beat: "Zara define sus tres metricas: ventas mensuales, reseñas de al menos 4 estrellas, y que su equipo no trabaje más de las horas acordadas."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 5
+          slug: que-legado-quiero-dejar
+          title_es: "Que legado quiero dejar"
+          concept: "Un legado es lo que queda despues de las ventas del mes: la confianza que construiste, las personas a las que ayudaste a crecer, el estándar de honestidad que dejaste establecido - eso pesa más que cualquier cifra de un solo mes."
+          learning_objective: "El aprendiz redacta una frase que describe el legado que quiere dejar con su negocio, más alla de las cifras de un solo mes."
+          key_vocabulary: [legado, más alla de un mes, lo que queda]
+          prior_knowledge: "Define sus metricas completas de exito (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que legado le gustaria que su negocio dejara, ademas de haber vendido cosas."
+          lessons:
+            - position: 1
+              slug: esto-es-una-cifra-de-un-mes-o-un-legado
+              micro_objective: "Distingue, entre dos frases, cual describe una cifra de un solo mes y cual describe un legado que perdura más alla de las ventas."
+              narrative_beat: "Liruf dice 'vendi 40 fundas este mes' - una cifra; Dina dice 'ensene a mi equipo a tratar a cada cliente con honestidad, y eso va a seguir aunque yo ya no este' - un legado."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-frase-de-legado
+              micro_objective: "Redacta, sin ayuda, una frase que describe el legado que quiere dejar con su negocio, más alla de las cifras de un mes."
+              narrative_beat: "Zara escribe: 'quiero dejar un negocio donde cada persona que trabajo conmigo aprendio a vender sin manipular a nadie'."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: mi-vision-completa-a-un-ano
+          title_es: "Mi visión completa a un año"
+          concept: "Una visión completa integra la meta concreta, lo que se deja de hacer para crecer, el plan si algo sale mal, las metricas de exito y el legado que se quiere dejar."
+          learning_objective: "El aprendiz redacta una visión completa a un año integrando meta concreta, plan de contingencia, metricas de exito y legado."
+          key_vocabulary: [visión completa, integrar todo, a un año]
+          prior_knowledge: "Redacta su frase de legado (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea su visión completa a un año, con los 4 elementos integrados."
+          lessons:
+            - position: 1
+              slug: reviso-los-cuatro-elementos-de-mi-vision
+              micro_objective: "Reune, sin ayuda, los 4 elementos de su visión: meta concreta, plan de contingencia, metricas de exito y legado."
+              narrative_beat: "Rho ordena en tarjetas su visión completa: vender 500 fundas, tener un proveedor de respaldo, medir ventas y satisfacción de clientes, y dejar un equipo que sabe vender con honestidad."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: escribo-mi-vision-completa
+              micro_objective: "Redacta, sin ayuda, su visión completa a un año integrando los 4 elementos revisados."
+              narrative_beat: "Dina escribe su visión final: en un año, su negocio vendera 600 fundas con un equipo de 3 personas, tendra un proveedor de respaldo listo, medira ventas y reseñas cada mes, y dejara un equipo que sabe negociar sin perder al cliente."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-vision-de-largo-plazo
+          kind: review_spaced
+          title_es: "Repaso: Visión de Largo Plazo"
+          concept: "El equipo repasa como fijar una meta concreta, decidir que dejar de hacer, planear contingencias y definir un legado."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la construcción de una visión de largo plazo completa."
+          key_vocabulary: [meta concreta, contingencia, legado]
+          prior_knowledge: "Completo los 6 temas de Visión de Largo Plazo."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/vision-de-largo-plazo/donde-quiero-estar-en-un-ano
+            - legado-del-founder/vision-de-largo-plazo/que-tengo-que-dejar-de-hacer-para-crecer
+            - legado-del-founder/vision-de-largo-plazo/mi-plan-si-algo-sale-mal
+            - legado-del-founder/vision-de-largo-plazo/como-mido-si-voy-bien
+            - legado-del-founder/vision-de-largo-plazo/que-legado-quiero-dejar
+            - legado-del-founder/vision-de-largo-plazo/mi-vision-completa-a-un-ano
+          lessons:
+            - position: 1
+              slug: repaso-fijo-una-meta-concreta-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la definición de una meta concreta y medible para un negocio que todavia no había visto."
+              narrative_beat: "El equipo fija, sin ayuda, una meta concreta a un año para un negocio nuevo de paseo de mascotas."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: repaso-escribo-una-vision-completa-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta una visión completa a un año para un caso nuevo integrando los 4 elementos."
+              narrative_beat: "Rho redacta, sin ayuda de nadie, la visión completa a un año de un negocio nuevo que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-pitch-y-vision-de-largo-plazo
+          kind: review_interleaved
+          title_es: "Cruce: Pitch y Visión de Largo Plazo"
+          concept: "Mezclamos el cierre con petición clara de la saga anterior con la visión de largo plazo de esta saga: un buen pitch también puede cerrar mostrando hacia donde va el negocio."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el cierre de un pitch con un fragmento de su visión de largo plazo para reforzar la petición."
+          key_vocabulary: [cierre de pitch, visión de largo plazo, reforzar la petición]
+          prior_knowledge: "Completo el repaso de Visión de Largo Plazo (tema anterior) y El Pitch que sí se Entiende (saga anterior)."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/vision-de-largo-plazo/mi-vision-completa-a-un-ano
+            - legado-del-founder/el-pitch-que-si-se-entiende/cierro-mi-pitch-con-una-peticion-clara
+          lessons:
+            - position: 1
+              slug: mi-vision-refuerza-mi-peticion-de-cierre
+              micro_objective: "Conecta, sin ayuda, un elemento de su visión de largo plazo con la petición de cierre de su pitch para hacerla más convincente."
+              narrative_beat: "Zara conecta su meta de 600 fundas en un año con su petición de cierre: 'unete ahora y se parte de los primeros 600 que confiaron en esto'."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: agrego-un-toque-de-vision-a-mi-pitch-final
+              micro_objective: "Redacta, sin ayuda, una version final de su cierre de pitch que incluye un fragmento de su visión de largo plazo."
+              narrative_beat: "Rho ajusta su cierre: 'unete a esta primera etapa - en un año quiero que este negocio le enseñe a vender con honestidad a todo un equipo, y tu podrias ser parte de eso'."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 4
+    slug: repaso-del-viaje-completo
+    icon: auto_stories
+    title:
+      en-US: "Reviewing the Whole Journey"
+      es-MX: "Repaso del Viaje Completo"
+      pt-BR: "Revisão da Jornada Completa"
+    description:
+      en-US: "Before presenting the legacy, the crew climbs back through every district crossed - naming, out loud, the one lesson each one left behind."
+      es-MX: "Antes de presentar el legado, el equipo vuelve a recorrer cada distrito cruzado - nombrando, en voz alta, la lección que cada uno dejo."
+      pt-BR: "Antes de apresentar o legado, a equipe volta a percorrer cada distrito cruzado - nomeando, em voz alta, a lição que cada um deixou."
+    topics:
+        - position: 1
+          slug: lo-que-aprendi-en-el-radar-de-oportunidades
+          title_es: "Lo que aprendi en el Radar de Oportunidades"
+          concept: "En el Distrito Beta, el equipo aprendio que una molestia no es lo mismo que un problema real, y que nombrar exactamente quien lo sufre es el primer paso de cualquier negocio."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, la distinción entre molestia y problema real aprendida en Radar de Oportunidades."
+          key_vocabulary: [molestia vs problema real, primer distrito, quien lo sufre]
+          prior_knowledge: "Completo Visión de Largo Plazo (saga anterior): ya tiene una visión completa a un año."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del primer distrito de su viaje, el Radar de Oportunidades."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-distrito-beta
+              micro_objective: "Recuerda, sin ayuda, la lección central del Distrito Beta: distinguir una molestia pasajera de un problema real que se repite."
+              narrative_beat: "Dina recuerda su primera libreta de scout de oportunidades: 'la fila del café tardo 20 minutos hoy' - y como aprendio a preguntar si eso se repetia siempre."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-esa-leccion-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, la distinción entre molestia y problema real a un caso de negocio completamente nuevo."
+              narrative_beat: "Zara revisa la idea de un negocio nuevo de renta de disfraces y confirma que el problema se repite cada temporada de fiestas, no solo una vez - es un problema real."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: lo-que-aprendi-en-el-prototipo-de-garage
+          title_es: "Lo que aprendi en el Prototipo de Garage"
+          concept: "En el Valle de los Garages, el equipo aprendio que un MVP no es una version barata de un sueño, sino la version más pequeña que ya demuestra que el sueño funciona."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, la definición de MVP aprendida en Prototipo de Garage."
+          key_vocabulary: [MVP, segundo distrito, la version mas pequeña que funciona]
+          prior_knowledge: "Recuerda la lección del Radar de Oportunidades (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del Valle de los Garages."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-valle-de-los-garages
+              micro_objective: "Recuerda, sin ayuda, la lección central del Valle de los Garages: un MVP demuestra que la solución funciona, sin adornos."
+              narrative_beat: "Liruf recuerda su primera app con 12 funciónes, y como Rho le pregunto cual de esas 12 resolvia de verdad el problema encontrado en el distrito."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-esa-leccion-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, la definición de MVP a un caso de negocio completamente nuevo, identificando lo esencial."
+              narrative_beat: "Rho revisa la idea del negocio de renta de disfraces y elige que el MVP es solo 5 disfraces populares, no los 30 que alguien queria empezar comprando."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: lo-que-aprendi-en-la-mesa-del-cliente
+          title_es: "Lo que aprendi en la Mesa del Cliente"
+          concept: "En el Archipielago de las Voces, el equipo aprendio que un solo comentario no es un patron, y que la evidencia real de varios clientes distintos vale más que cualquier corazonada."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, la diferencia entre un comentario aislado y un patron confirmado aprendida en Mesa del Cliente."
+          key_vocabulary: [comentario aislado, patron confirmado, tercer distrito]
+          prior_knowledge: "Recuerda la lección del Prototipo de Garage (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del Archipielago de las Voces."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-archipielago-de-las-voces
+              micro_objective: "Recuerda, sin ayuda, la lección central del Archipielago de las Voces: un comentario aislado no es un patron confirmado."
+              narrative_beat: "Zara recuerda cuando Liruf quiso cambiar todo su producto por el comentario de un solo amigo, y como Dina le recordo que uno no es un patron."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-esa-leccion-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, la distinción entre comentario aislado y patron confirmado a un caso de negocio completamente nuevo."
+              narrative_beat: "Dina revisa el negocio de renta de disfraces: dos personas ya mencionaron la misma queja sobre las tallas - eso empieza a ser un patron, no un comentario aislado."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: lo-que-aprendi-del-precio-que-si-convence
+          title_es: "Lo que aprendi del Precio que sí Convence"
+          concept: "En el Distrito del Precio Justo, el equipo aprendio a contar cada costo real, elegir entre costo y valor, proteger su margen y calcular su punto de equilibrio."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, el cálculo de costo total y margen aprendido en Precio que sí Convence."
+          key_vocabulary: [costo total, margen, cuarto distrito]
+          prior_knowledge: "Recuerda la lección de la Mesa del Cliente (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del Distrito del Precio Justo."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-distrito-del-precio-justo
+              micro_objective: "Recuerda, sin ayuda, la lección central del Distrito del Precio Justo: un precio integra costo, valor, margen y punto de equilibrio."
+              narrative_beat: "Rho recuerda cuando calculo por primera vez su costo total real, incluyendo la comisión de la plataforma que casi se le olvidaba contar."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-esa-leccion-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, el cálculo de costo total y margen a un caso de negocio completamente nuevo."
+              narrative_beat: "Liruf calcula, para el negocio de renta de disfraces, el costo total de limpieza y mantenimiento por disfraz, algo que casi nadie cuenta al principio."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 5
+          slug: lo-que-aprendi-en-la-red-de-ventas
+          title_es: "Lo que aprendi en la Red de Ventas"
+          concept: "En el Bosque de las Conexiones, el equipo aprendio a vender ayudando a decidir, a medir su embudo de ventas, a negociar sin perder al cliente y a persuadir sin manipular."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, un principio de persuasión ética aprendido en Red de Ventas."
+          key_vocabulary: [persuasión ética, embudo de ventas, quinto distrito]
+          prior_knowledge: "Recuerda la lección del Precio que sí Convence (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del Bosque de las Conexiones."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-bosque-de-las-conexiones
+              micro_objective: "Recuerda, sin ayuda, la lección central del Bosque de las Conexiones: persuadir con la verdad, nunca manipular."
+              narrative_beat: "Zara recuerda cuando aprendio la diferencia entre una urgencia real y una urgencia falsa inventada solo para presionar una venta."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-esa-leccion-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, un principio de persuasión ética a un caso de venta completamente nuevo."
+              narrative_beat: "Dina revisa el anuncio del negocio de renta de disfraces y quita una urgencia falsa que alguien había puesto sin que fuera cierta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: lo-que-aprendi-del-equipo-que-escala-y-del-radar-de-riesgos
+          title_es: "Lo que aprendi del Equipo que Escala y del Radar de Riesgos"
+          concept: "En el Reino en Expansión, el equipo aprendio a delegar y construir cultura; en el Distrito de las Señales Rojas, aprendio a detectar tratos riesgosos y sostener un código ético - dos distritos, una misma leccion: un negocio que crece necesita reglas claras y una linea ética firme."
+          learning_objective: "El aprendiz recupera y aplica, en un caso nuevo, un principio de liderazgo y un principio de ética de negocio de las últimas dos aventuras."
+          key_vocabulary: [liderazgo, ética de negocio, sexto y septimo distrito]
+          prior_knowledge: "Recuerda la lección de la Red de Ventas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual fue la lección más importante que se llevo del Reino en Expansión y del Distrito de las Señales Rojas."
+          lessons:
+            - position: 1
+              slug: recuerdo-el-reino-y-el-distrito-de-senales-rojas
+              micro_objective: "Recuerda, sin ayuda, una lección central de liderazgo del Reino en Expansión y una de ética del Distrito de las Señales Rojas."
+              narrative_beat: "Rho recuerda cuando aprendio a delegar una decisión completa, no solo una tarea, y también cuando aprendio a reconocer un trato con demasiadas señales de alerta."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-ambas-lecciones-a-un-caso-nuevo
+              micro_objective: "Aplica, sin ayuda, un principio de liderazgo y uno de ética de negocio juntos a un caso de negocio completamente nuevo."
+              narrative_beat: "Liruf revisa el negocio de renta de disfraces: delega la limpieza de disfraces a alguien de confianza, y rechaza un trato de proveedor que pedia el pago total por adelantado."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-repaso-del-viaje-completo
+          kind: review_spaced
+          title_es: "Repaso: Repaso del Viaje Completo"
+          concept: "El equipo repasa, una vez más, las lecciones centrales de cada uno de los siete distritos cruzados a lo largo del curso."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las lecciones centrales de todo el viaje repasadas en esta saga."
+          key_vocabulary: [siete distritos, lecciones centrales, viaje completo]
+          prior_knowledge: "Completo los 6 temas de Repaso del Viaje Completo."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-en-el-radar-de-oportunidades
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-en-el-prototipo-de-garage
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-en-la-mesa-del-cliente
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-del-precio-que-si-convence
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-en-la-red-de-ventas
+            - legado-del-founder/repaso-del-viaje-completo/lo-que-aprendi-del-equipo-que-escala-y-del-radar-de-riesgos
+          lessons:
+            - position: 1
+              slug: repaso-recuerdo-una-leccion-al-azar
+              micro_objective: "Recuerda y aplica, sin ayuda, una lección central de un distrito elegido al azar entre los siete recorridos."
+              narrative_beat: "El equipo elige al azar una tarjeta con el nombre de un distrito y recuerda, sin ayuda, la lección central que dejo ese lugar."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+            - position: 2
+              slug: repaso-aplico-varias-lecciones-a-la-vez
+              micro_objective: "Aplica sin ayuda todo lo repasado: combina lecciones de al menos 3 distritos distintos en el análisis de un caso de negocio nuevo."
+              narrative_beat: "Rho analiza, sin ayuda de nadie, un negocio nuevo aplicando a la vez lecciones del Distrito Beta, el Archipielago de las Voces y el Bosque de las Conexiones."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-todo-el-viaje-emprendedor
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Viaje Emprendedor"
+          concept: "Mezclamos hallazgos de cada distrito recorrido - oportunidad, prototipo, cliente, precio, ventas, equipo y riesgo - en un solo modelo de negocio que los integra todos."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, hallazgos clave de las siete aventuras anteriores del curso completo con el modelo de negocio y la visión ya construidos en esta aventura."
+          key_vocabulary: [siete aventuras, integrar hallazgos, viaje completo]
+          prior_knowledge: "Completo el repaso de Repaso del Viaje Completo (tema anterior) y las siete aventuras previas del curso."
+          fact_refs:
+            - business.math.formula_ganancia
+          review_of:
+            - radar-de-oportunidades/problemas-de-verdad/molestia-vs-problema-real
+            - prototipo-de-garage/que-es-un-mvp/el-producto-mas-pequeno-que-funciona
+            - mesa-del-cliente/itero-con-senal-real/mi-decision-final-con-clientes-reales
+            - precio-que-si-convence/el-punto-de-equilibrio/decido-mi-precio-final
+            - red-de-ventas/persuasion-etica/mi-codigo-de-venta-etica
+            - equipo-que-escala/lidero-mientras-escala/mi-plan-de-liderazgo-para-el-siguiente-mes
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/mi-codigo-de-riesgos-y-etica-del-negocio
+            - legado-del-founder/mi-modelo-de-negocio-completo/uno-todas-las-piezas-en-un-solo-mapa
+          lessons:
+            - position: 1
+              slug: reviso-mi-modelo-contra-los-siete-distritos
+              micro_objective: "Revisa, sin ayuda, que su mapa de modelo de negocio ya construido refleja de verdad una lección concreta de cada uno de los siete distritos recorridos."
+              narrative_beat: "Zara revisa su mapa final linea por linea y confirma que cada pieza tiene una raiz clara en uno de los siete distritos que cruzo durante el curso."
+              difficulty: 4
+              suggested_families: [analyze, arrange]
+            - position: 2
+              slug: mi-legado-integra-el-viaje-completo
+              micro_objective: "Confirma, sin ayuda, que su visión de legado integra hallazgos concretos de al menos 4 de los siete distritos recorridos, no solo los últimos."
+              narrative_beat: "Dina confirma que su visión de legado menciona el problema real del Distrito Beta, la evidencia de clientes del Archipielago, el margen protegido del Distrito del Precio Justo, y el código ético del Distrito de las Señales Rojas."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 5
+    slug: el-consejo-del-observatorio
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Observatory Council"
+      es-MX: "El Consejo del Observatorio"
+      pt-BR: "O Conselho do Observatorio"
+    description:
+      en-US: "A council spanning every district of the journey puts the complete legacy - model, pitch and vision - to its final test."
+      es-MX: "Un consejo que reune a todos los distritos del viaje pone a prueba el legado completo - modelo, pitch y visión - en su prueba final."
+      pt-BR: "Um conselho que reune todos os distritos da jornada coloca o legado completo - modelo, pitch e visão - em sua prova final."
+    topics:
+        - position: 1
+          slug: el-reto-del-legado-completo
+          kind: review_quest
+          title_es: "El Reto del Legado Completo"
+          concept: "El Consejo del Observatorio reta a cada equipo a presentar su modelo de negocio completo y su pitch ensayado, sin dejar ninguna pieza fuera."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el modelo de negocio ensamblado con la construcción de pitch para responder al reto del legado completo."
+          key_vocabulary: [legado completo, modelo y pitch, sin piezas faltantes]
+          prior_knowledge: "Completo Mi Modelo de Negocio Completo y El Pitch que sí se Entiende."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/mi-modelo-de-negocio-completo
+            - legado-del-founder/el-pitch-que-si-se-entiende
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-del-legado-completo
+              micro_objective: "Recuerda, sin ayuda, las 6 piezas de su modelo de negocio y la estructura completa de su pitch antes de enfrentar el reto final."
+              narrative_beat: "El Consejo del Observatorio anuncia: 'presenten su modelo completo y su pitch ensayado - ninguna pieza puede faltar'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: presento-mi-modelo-y-mi-pitch-juntos
+              micro_objective: "Aplica, sin ayuda, su modelo de negocio ensamblado y su pitch ensayado juntos ante el reto del Consejo del Observatorio."
+              narrative_beat: "Zara presenta su modelo completo en el mapa y despues su pitch de un minuto, mostrando la funda real y cerrando con su petición clara."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 2
+          slug: mi-legado-defendido-ante-el-observatorio
+          kind: review_quest
+          title_es: "Mi Legado Defendido ante el Observatorio"
+          concept: "Con la visión de largo plazo y el repaso del viaje completo integrados, el equipo cierra el curso presentando ante el Consejo del Observatorio un legado defendido con evidencia de los siete distritos recorridos."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una visión de largo plazo integrando hallazgos de todo el viaje del curso."
+          key_vocabulary: [consejo del observatorio, legado defendido, evidencia del viaje completo]
+          prior_knowledge: "Completo El Reto del Legado Completo (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - legado-del-founder/vision-de-largo-plazo
+            - legado-del-founder/repaso-del-viaje-completo
+          lessons:
+            - position: 1
+              slug: preparo-mi-legado-para-el-consejo
+              micro_objective: "Organiza, sin ayuda, su visión completa a un año y al menos 3 lecciones clave del viaje completo para presentarlas ante el Consejo del Observatorio."
+              narrative_beat: "Rho ordena su legado completo: su meta a un año, su plan de contingencia, y tres lecciones clave que recorrio desde el Distrito Beta hasta el Distrito de las Señales Rojas."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-legado-ante-el-consejo-del-observatorio
+              micro_objective: "Completa, sin ayuda, la presentación final de su legado ante el Consejo del Observatorio, citando evidencia concreta de al menos 3 distritos distintos del viaje."
+              narrative_beat: "Dina presenta ante el Consejo del Observatorio su legado completo: un modelo de negocio con las 6 piezas, un pitch que cualquiera entiende en un minuto, y una visión a un año construida sobre las lecciones de los siete distritos que cruzo con su equipo."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

@@ -175,20 +175,49 @@ years at 1/day).**
 
 ### §3.1b The course sequence (execution order)
 
-| # | Course (slug) | Tiers | Shape | Lessons | Requires |
+| # | Course (slug) | Tier | Shape | Lessons | Requires |
 |---|---|---|---|---|---|
-| 1 | Educación Financiera (`financial-education`) | tier1×5 + tier2×3 | 5×152 + 3×184 | 1,312 | — |
-| 2 | Emprendimiento (`entrepreneurship`) | tier1×2 + tier2×6 | 2×152 + 6×184 | 1,408 | financial-education |
-| 3 | Inversiones (`investing`) | tier2×3 + tier3×5 | 8×184 | 1,472 | financial-education, entrepreneurship |
+| 1 | Educación Financiera (`financial-education`) | tier1×5 + tier2×3 | 5×152 + 3×184 | 1,312 (1,208 published — see note below) | — |
+| 2 | Emprendimiento (`entrepreneurship`) | tier4×8 | 8×68 | 544 | financial-education |
+| 3 | Inversiones (`investing`) | tier4×8 | 8×68 | 544 | financial-education, entrepreneurship |
 
-- **tier3 (10–12, concrete-operational→formal transition):** created FOR
-  Inversiones — inversión, interés (simple y compuesto, siempre concreto y
-  visual), acciones ("un pedacito de una empresa"), fondo/canasta, índice,
-  riesgo, diversificar and inflación BECOME teachable; still forbidden:
-  apalancamiento, derivados, opciones, ventas en corto, margen, trading
+- **PIVOT (2026-08-12/13, WALKTHROUGH decision log):** Emprendimiento e
+  Inversiones were fully re-authored from tier1-3 (6-12) to a single new
+  **tier4 (12-18)**, replacing their entire prior catalogs (never generated —
+  0 rows in production for either course, so no learner content was lost).
+  Owner rationale: Financial Education's language, while judged "good," read
+  too young; tier4 asks for a matured register and real teen-anchored
+  analogies (a subscription auto-renewing for compounding, a gig-app's payout
+  cut for fees/margin, loot-box odds for risk/expected value, follower growth
+  for compound growth) instead of Financial Education's storybook framing.
+  Both courses also shrank from >1,400 lessons to a **450-550 target (544
+  delivered)** — half the lessons-per-topic (2, not 4) on the assumption each
+  lesson runs longer/denser (there is no literal duration field in the
+  blueprint; density comes from richer `micro_objective`/`narrative_beat`,
+  and Forge's write stage estimates `estimated_minutes` itself from the
+  resulting document). Shape per adventure: 4 teaching sagas × (6 teaching
+  topics + `review_spaced` + `review_interleaved`, 2 lessons/topic = 16) + 1
+  review saga at position 5 (2 `review_quest` topics × 2 lessons = 4) = 68
+  lessons × 8 adventures = 544/course. Both catalogs are `catalog:check`/
+  `graph:check` clean (0 errors) and pass a `--require-images --dry-run` at
+  $0 — authored, not yet generated (no paid Forge run executed).
+- **tier4 (12-18, formal-operational, maturing toward adult reasoning):** the
+  Piaget vocabulary ceiling is effectively OFF — full financial/business
+  vocabulary is fair game (deuda, crédito, presupuesto, margen de negocio,
+  ROI). The ONE exception, unchanged from this course's original tier3 and
+  explicitly NOT relaxed for the 16-18 end of the band (owner decision): the
+  investing-only hard ceiling on high-risk trading jargon — apalancamiento,
+  derivados, opciones financieras, venta en corto, margen de crédito, trading
   intradía, forex, criptomonedas-como-inversión. Simulations only — nothing
-  transactional, ever (§1.9/COPPA posture); one full adventure is dedicated to
-  investment-fraud literacy.
+  transactional, ever (§1.9/COPPA posture); one full adventure in each course
+  is dedicated to safety (business-deal red flags for Emprendimiento,
+  investment-fraud literacy for Inversiones). See `contentPlaybook.ts`
+  `tierReasoningGuidance('tier4')` for the full register/analogy brief
+  injected into every write/judge prompt at this tier.
+- **Known gap, not resolved by this pivot (flagged in ROADMAP.md):** a
+  learner finishing Financial Education (~6-10) now has no course to start
+  until 12 — Emprendimiento/Inversiones no longer cover the 10-12 band
+  Inversiones' old tier3 used to serve. Product-sequencing decision pending.
 - **`course.requires`** (catalog.yaml, optional `[course-slugs]`): the
   course-level prerequisite edge for future placement/unlock. Topic-level
   `prerequisites` paths stay within-course.

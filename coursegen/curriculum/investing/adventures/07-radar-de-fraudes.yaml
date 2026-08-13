@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 7
+  slug: radar-de-fraudes
+  theme: cosmos
+  age_tier: tier4
+  title:
+    en-US: "Fraud Radar"
+    es-MX: "Radar de Fraudes"
+    pt-BR: "Radar de Fraudes"
+  description:
+    en-US: "At the Listening Post, four signal-watchers learn to tell a real opportunity from a fake distress call designed to lure you in - guaranteed profit, pressure to decide now, needing to recruit others, and money nobody can explain."
+    es-MX: "En el Puesto de Escucha, cuatro vigías de señales aprenden a distinguir una oportunidad real de una señal falsa diseñada para atraerte - ganancia garantizada, presión para decidir ya, necesitar reclutar a otros, y dinero que nadie puede explicar de dónde sale."
+    pt-BR: "No Posto de Escuta, quatro vigias de sinais aprendem a distinguir uma oportunidade real de um sinal falso projetado para atrair - lucro garantido, pressao para decidir agora, precisar recrutar outros, e dinheiro que ninguem consegue explicar de onde vem."
+  narrative_arc: "Dina, Liruf, Rho y Zara operan el Puesto de Escucha, una estación que filtra señales reales de señales falsas diseñadas para atraer naves a una trampa. Aprenden, una por una, las cuatro señales de alerta de un fraude de inversión: la promesa de ganancia garantizada, la presión para decidir de inmediato, la necesidad de reclutar a más gente para ganar, y el dinero que nadie puede explicar de dónde sale. Estudian a fondo los esquemas piramidales y Ponzi para entender por qué SIEMPRE colapsan y NUNCA son una oportunidad real, sin importar cómo se presenten. Terminan armando su radar personal completo con las cuatro señales y aprendiendo el paso más importante de todos: no participar, y contárselo a un adulto de confianza."
+
+sagas:
+  - position: 1
+    slug: la-primera-senal-ganancia-garantizada
+    icon: gpp_maybe
+    title:
+      en-US: "The First Signal: Guaranteed Profit"
+      es-MX: "La Primera Señal: Ganancia Garantizada"
+      pt-BR: "O Primeiro Sinal: Lucro Garantido"
+    description:
+      en-US: "No real investment can promise a fixed, guaranteed return no matter what - everything that really grows carries some risk."
+      es-MX: "Ninguna inversión real puede prometer una ganancia fija y garantizada sin importar lo que pase - todo lo que crece de verdad tiene algo de riesgo."
+      pt-BR: "Nenhum investimento real pode prometer um retorno fixo e garantido, aconteca o que acontecer - tudo que realmente cresce carrega algum risco."
+    topics:
+        - position: 1
+          slug: nada-es-garantizado-de-verdad
+          title_es: "Nada es garantizado de verdad"
+          concept: "Ninguna inversión real puede prometer una ganancia fija y garantizada sin importar lo que pase - todo lo que crece de verdad tiene algo de riesgo."
+          learning_objective: "El aprendiz reconoce que ninguna inversión real puede garantizar una ganancia fija sin ningún riesgo."
+          key_vocabulary: [garantizado, ganancia fija, riesgo]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si cree que existe alguna inversión que garantice ganar dinero siempre, sin ningún riesgo."
+          lessons:
+            - position: 1
+              slug: la-senal-que-no-cuadra
+              micro_objective: "Reconoce que ninguna inversión real puede prometer una ganancia fija y garantizada sin importar lo que pase."
+              narrative_beat: "Rho revisa una señal en el Puesto de Escucha: promete 'ganancia garantizada, pase lo que pase' - algo no cuadra, ninguna inversión real puede prometer eso."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-por-que-nada-es-garantizado
+              micro_objective: "Explica, con sus palabras, por qué ninguna inversión real puede garantizar una ganancia fija sin ningún riesgo."
+              narrative_beat: "Liruf explica con sus palabras por qué toda inversión real tiene algo de riesgo, y por qué 'garantizado' debería sonar extraño."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: reconozco-la-frase-de-alerta
+          title_es: "Reconozco la frase de alerta"
+          concept: "Frases como 'ganancia garantizada' o 'sin ningún riesgo' son la primera señal de alerta de un posible fraude."
+          learning_objective: "El aprendiz reconoce e identifica frases de garantía total como la primera señal de alerta, distinguiéndolas de mensajes honestos."
+          key_vocabulary: [frase de alerta, señal 1]
+          prior_knowledge: "Reconoce que ninguna inversión real garantiza una ganancia fija (tema anterior)."
+          fact_refs: [fraud.red_flags_list]
+          parent_check: "Pidele a {{name}} que busque, en un anuncio o mensaje, si aparece alguna frase de 'ganancia garantizada' o 'sin riesgo'."
+          lessons:
+            - position: 1
+              slug: subrayo-las-frases-sospechosas
+              micro_objective: "Reconoce frases como 'ganancia garantizada' o 'sin ningún riesgo' como la primera señal de alerta de un posible fraude."
+              narrative_beat: "Zara subraya en un mensaje sospechoso las frases 'ganancia garantizada' y 'no puedes perder' - las marca como la primera señal de alerta."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: encuentro-la-senal-entre-tres-mensajes
+              micro_objective: "Identifica la señal 1 en 3 mensajes distintos, distinguiéndola de mensajes que sí admiten riesgo."
+              narrative_beat: "Rho revisa tres mensajes del puesto de escucha y encuentra la señal 1 escondida en uno de ellos, mientras los otros dos sí admiten riesgo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: conecto-con-lo-que-ya-se
+          title_es: "Conecto con lo que ya sé"
+          concept: "La señal de ganancia garantizada conecta con lo aprendido en 'no hay almuerzo gratis': lo que parece perfecto casi nunca lo es."
+          learning_objective: "El aprendiz conecta la señal de ganancia garantizada con la regla del almuerzo gratis aprendida en una aventura anterior."
+          key_vocabulary: [conectar ideas, almuerzo gratis]
+          prior_knowledge: "Identifica la señal 1 en varios mensajes (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si recuerda la regla del 'almuerzo gratis' del Mapa del Riesgo, y cómo se conecta con esta nueva señal."
+          lessons:
+            - position: 1
+              slug: dina-conecta-las-dos-ideas
+              micro_objective: "Conecta la señal de ganancia garantizada con lo aprendido en 'no hay almuerzo gratis': lo que parece perfecto casi nunca lo es."
+              narrative_beat: "Dina conecta las dos ideas: la promesa de 'ganancia garantizada' es exactamente el tipo de promesa perfecta que ya aprendieron a desconfiar."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: aplico-mi-vieja-regla
+              micro_objective: "Aplica la regla del almuerzo gratis (aventura anterior) a una nueva señal sospechosa del puesto de escucha."
+              narrative_beat: "Zara aplica su vieja regla del almuerzo gratis a una señal nueva, y confirma que la alarma vuelve a sonar."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 4
+          slug: comparo-una-promesa-real-y-una-falsa
+          title_es: "Comparo una promesa real y una falsa"
+          concept: "Comparar el lenguaje de una oferta honesta (que admite riesgo) contra una que promete garantía total revela cuál es más confiable."
+          learning_objective: "El aprendiz compara dos anuncios y decide cuál es más confiable según si admite o no algún riesgo."
+          key_vocabulary: [lenguaje honesto, admitir riesgo]
+          prior_knowledge: "Conecta la señal con la regla del almuerzo gratis (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cuál anuncio confiaría más: uno que dice 'puede subir o bajar' o uno que dice 'garantizado siempre sube'."
+          lessons:
+            - position: 1
+              slug: dos-anuncios-distinto-lenguaje
+              micro_objective: "Compara el lenguaje de una oferta de inversión real y honesta (que admite riesgo) contra una que promete garantía total."
+              narrative_beat: "Rho compara dos anuncios: uno dice 'esto puede subir o bajar', el otro dice 'garantizado siempre sube' - solo uno suena honesto."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-cual-es-mas-confiable
+              micro_objective: "Decide, entre dos anuncios, cuál es más confiable según si admite o no algún riesgo."
+              narrative_beat: "Zara decide cuál de los dos anuncios confiaría más, y explica que el que admite riesgo suena más honesto."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: practico-detectar-la-senal-1
+          title_es: "Practico detectar la señal 1"
+          concept: "Practica detectando la señal de ganancia garantizada en varios mensajes o anuncios de ejemplo."
+          learning_objective: "El aprendiz practica detectando la señal 1 en varios mensajes y explica exactamente qué frase la activó."
+          key_vocabulary: [practicar, detectar]
+          prior_knowledge: "Decide cuál de dos anuncios es más confiable (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} varios anuncios o mensajes y practiquen juntos detectar la señal de ganancia garantizada."
+          lessons:
+            - position: 1
+              slug: revisamos-cinco-mensajes
+              micro_objective: "Practica detectando la señal 1 (ganancia garantizada) en varios mensajes o anuncios de ejemplo."
+              narrative_beat: "El equipo revisa cinco mensajes nuevos del puesto de escucha, marcando cuáles tienen la señal de ganancia garantizada."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: senalo-la-frase-exacta
+              micro_objective: "Explica, para un mensaje específico, exactamente qué frase activó la señal de alerta 1."
+              narrative_beat: "Rho señala la frase exacta que activó la alerta en un mensaje: 'no hay forma de perder' - esa es la señal."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: mi-primera-alerta-en-el-radar
+          title_es: "Mi primera alerta en el radar"
+          concept: "Registra la señal de ganancia garantizada en su propio radar personal de fraude."
+          learning_objective: "El aprendiz registra la primera señal en su radar personal y la aplica, sin ayuda, a un mensaje nuevo."
+          key_vocabulary: [radar personal, registrar]
+          prior_knowledge: "Explica exactamente qué frase activó la alerta (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a empezar su propio radar personal de fraude con la primera señal: ganancia garantizada."
+          lessons:
+            - position: 1
+              slug: armamos-la-primera-casilla
+              micro_objective: "Con apoyo, registra la señal de ganancia garantizada en su propio radar personal de fraude."
+              narrative_beat: "El equipo arma la primera casilla de su radar personal: 'ganancia garantizada = alerta'."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: aplico-la-senal-a-un-mensaje-nuevo
+              micro_objective: "Aplica, sin ayuda, la señal de ganancia garantizada a un mensaje nuevo y decide si activa la alerta."
+              narrative_beat: "Liruf revisa solo, sin ayuda, un mensaje nuevo y decide si la señal de ganancia garantizada está presente."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-la-primera-senal-ganancia-garantizada
+          kind: review_spaced
+          title_es: "Repaso: La Primera Señal, Ganancia Garantizada"
+          concept: "El equipo repasa por qué la garantía total es sospechosa antes de estudiar la señal de presión."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué ninguna inversión real puede garantizar una ganancia fija."
+          key_vocabulary: [ganancia garantizada, señal 1]
+          prior_knowledge: "Completo los 6 temas de La Primera Señal: Ganancia Garantizada."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/nada-es-garantizado-de-verdad
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/reconozco-la-frase-de-alerta
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/conecto-con-lo-que-ya-se
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/comparo-una-promesa-real-y-una-falsa
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/practico-detectar-la-senal-1
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/mi-primera-alerta-en-el-radar
+          lessons:
+            - position: 1
+              slug: repaso-por-que-nada-es-garantizado
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué ninguna inversión real puede garantizar una ganancia fija."
+              narrative_beat: "El equipo repasa sus notas del puesto de escucha y explica, sin ayuda, por qué la garantía total es sospechosa."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-detecto-la-senal-en-mensaje-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: detecta la señal de ganancia garantizada en un mensaje nuevo."
+              narrative_beat: "Zara detecta, sin ayuda de nadie, la señal de ganancia garantizada en un mensaje nuevo del puesto de escucha."
+              difficulty: 4
+              suggested_families: [analyze, input]
+        - position: 8
+          slug: cruce-garantia-y-almuerzo-gratis
+          kind: review_interleaved
+          title_es: "Cruce: Garantía y Almuerzo Gratis"
+          concept: "Mezclamos la señal de ganancia garantizada con la regla del almuerzo gratis de una aventura anterior."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la señal de garantía con la regla del almuerzo gratis para evaluar un mensaje nuevo."
+          key_vocabulary: [ganancia garantizada, almuerzo gratis]
+          prior_knowledge: "Completo el repaso de La Primera Señal: Ganancia Garantizada (tema anterior) y El Mapa del Riesgo (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/reconozco-la-frase-de-alerta
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/comparo-una-promesa-real-y-una-falsa
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/la-promesa-perfecta-no-existe
+          lessons:
+            - position: 1
+              slug: junto-garantia-y-almuerzo-gratis
+              micro_objective: "Combina la señal de ganancia garantizada con la regla del almuerzo gratis para evaluar un mensaje nuevo."
+              narrative_beat: "Rho junta dos ideas de aventuras distintas: la señal de ganancia garantizada Y la regla del almuerzo gratis, para un mensaje nuevo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-cruzando-ambas-reglas
+              micro_objective: "Evalúa, sin ayuda, un mensaje nuevo combinando ambas ideas para decidir si hay alerta de fraude."
+              narrative_beat: "Zara evalúa un mensaje final cruzando las dos ideas, y confirma su alerta con más confianza que nunca."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: la-presion-de-decidir-ya
+    icon: timer
+    title:
+      en-US: "The Pressure to Decide Now"
+      es-MX: "La Presión de Decidir Ya"
+      pt-BR: "A Pressao para Decidir Agora"
+    description:
+      en-US: "Pressuring for an instant decision, with no time to think or research, is a common fraud tactic - not a coincidence."
+      es-MX: "Presionar para decidir de inmediato, sin dar tiempo de pensar o investigar, es una táctica común de fraude, no una coincidencia."
+      pt-BR: "Pressionar por uma decisao instantanea, sem tempo para pensar ou pesquisar, e uma tatica comum de fraude - nao e coincidencia."
+    topics:
+        - position: 1
+          slug: la-prisa-es-una-tactica
+          title_es: "La prisa es una táctica"
+          concept: "Presionar para decidir de inmediato, sin dar tiempo de pensar o investigar, es una táctica común de fraude, no una coincidencia."
+          learning_objective: "El aprendiz reconoce la presión para decidir de inmediato como una táctica común de fraude."
+          key_vocabulary: [presión, decidir de inmediato, táctica]
+          prior_knowledge: "Completo La Primera Señal: Ganancia Garantizada (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si alguna vez sintió presión para decidir algo de inmediato, sin tiempo para pensarlo."
+          lessons:
+            - position: 1
+              slug: diez-minutos-o-pierdes-tu-lugar
+              micro_objective: "Reconoce que presionar para decidir de inmediato, sin dar tiempo de pensar o investigar, es una táctica común de fraude."
+              narrative_beat: "Un mensaje en el puesto de escucha dice: 'decide en los próximos 10 minutos o pierdes tu lugar para siempre' - Rho reconoce la táctica de prisa."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-por-que-la-prisa-esconde-algo
+              micro_objective: "Explica, con sus palabras, por qué alguien que presiona una decisión urgente probablemente no quiere que investigues."
+              narrative_beat: "Liruf explica con sus palabras por qué la prisa casi siempre esconde algo que no quiere que investigues a fondo."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: conecto-con-el-fomo
+          title_es: "Conecto con el FOMO"
+          concept: "La señal de presión conecta con lo aprendido sobre FOMO: alguien que empuja una decisión urgente se beneficia de que tú no pienses."
+          learning_objective: "El aprendiz conecta la señal de presión con la lección de FOMO y aplica la lección de 'pausa útil' a una señal nueva."
+          key_vocabulary: [FOMO, pausa útil]
+          prior_knowledge: "Reconoce la presión como táctica de fraude (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si recuerda el FOMO de la aventura del Valor del Tiempo, y cómo se conecta con esta señal de presión."
+          lessons:
+            - position: 1
+              slug: zara-conecta-fomo-y-presion
+              micro_objective: "Conecta la señal de presión con lo aprendido sobre FOMO: alguien que empuja una decisión urgente se beneficia de que tú no pienses."
+              narrative_beat: "Zara conecta esta señal con el FOMO que ya conoce: la urgencia artificial es la misma táctica, ahora en un contexto de fraude."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: aplico-mi-pausa-util
+              micro_objective: "Aplica la lección de 'pausa útil' (aventura de valor del tiempo) a una señal de presión nueva del puesto de escucha."
+              narrative_beat: "Rho aplica su vieja lección de pausa útil a una nueva señal de presión, y decide tomarse su minuto antes de reaccionar."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: una-oportunidad-real-espera
+          title_es: "Una oportunidad real espera"
+          concept: "Una oportunidad de inversión real y honesta puede esperar a que investigues, hagas preguntas, y consultes a alguien de confianza."
+          learning_objective: "El aprendiz reconoce que una oportunidad real puede esperar, y compara una oferta que permite investigar contra una que exige decidir ya."
+          key_vocabulary: [esperar, investigar, consultar]
+          prior_knowledge: "Aplica la pausa útil a una señal de presión (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si una oferta que de verdad vale la pena debería poder esperar a que la investigue con calma."
+          lessons:
+            - position: 1
+              slug: dina-aclara-la-regla
+              micro_objective: "Reconoce que una oportunidad de inversión real y honesta puede esperar a que investigues y consultes a alguien de confianza."
+              narrative_beat: "Dina aclara: 'una oportunidad real no desaparece porque te tomes un día para investigarla y preguntarle a alguien de confianza'."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-espera-y-exigencia
+              micro_objective: "Compara una oferta que permite investigar contra una que exige decidir de inmediato, y decide cuál es más confiable."
+              narrative_beat: "Zara compara dos ofertas: una le da una semana para decidir, la otra exige una respuesta en minutos - confía más en la primera."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: identifico-frases-de-presion
+          title_es: "Identifico frases de presión"
+          concept: "Frases como 'esto no va a durar', 'solo hoy', o 'si no decides ahora pierdes tu lugar' son señales de presión."
+          learning_objective: "El aprendiz identifica frases de presión en mensajes y ordena varios casos según cuántas frases de presión contienen."
+          key_vocabulary: [frases de presión, ordenar por sospecha]
+          prior_knowledge: "Compara una oferta que espera contra una que exige decidir ya (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que busque frases de presión ('solo hoy', 'no va a durar') en un anuncio o mensaje reciente."
+          lessons:
+            - position: 1
+              slug: subrayo-las-tres-frases
+              micro_objective: "Identifica frases como 'esto no va a durar', 'solo hoy', o 'si no decides ahora pierdes tu lugar' como señales de presión."
+              narrative_beat: "Rho subraya en un mensaje las frases de presión: 'solo hoy', 'no va a durar', 'pierdes tu lugar' - las tres juntas, una alerta clara."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: ordeno-tres-mensajes-por-presion
+              micro_objective: "Cuenta cuántas frases de presión aparecen en 3 mensajes distintos y ordena los mensajes de más a menos sospechoso."
+              narrative_beat: "Zara cuenta las frases de presión en tres mensajes y los ordena del más sospechoso al menos sospechoso."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+        - position: 5
+          slug: practico-resistir-la-presion
+          title_es: "Practico resistir la presión"
+          concept: "Una respuesta simple para resistir la presión es: 'necesito tiempo para pensarlo e investigarlo'."
+          learning_objective: "El aprendiz practica y aplica una respuesta simple para resistir la presión de decidir de inmediato."
+          key_vocabulary: [resistir, respuesta simple]
+          prior_knowledge: "Ordena mensajes según sus frases de presión (tema anterior)."
+          fact_refs: []
+          parent_check: "Practica junto a {{name}} decir en voz alta: 'necesito tiempo para pensarlo e investigarlo' - una frase que siempre funciona."
+          lessons:
+            - position: 1
+              slug: practicamos-la-frase-en-equipo
+              micro_objective: "Practica una respuesta simple para resistir la presión: 'necesito tiempo para pensarlo e investigarlo'."
+              narrative_beat: "El equipo practica en voz alta la respuesta: 'necesito tiempo para pensarlo e investigarlo' - una frase simple que siempre funciona."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: uso-la-frase-en-un-caso-simulado
+              micro_objective: "Aplica la respuesta practicada a un caso simulado donde alguien presiona una decisión urgente."
+              narrative_beat: "Liruf usa la respuesta practicada frente a un vendedor simulado que presiona una decisión urgente - y se siente seguro al decirla."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: agrego-la-segunda-alerta-a-mi-radar
+          title_es: "Agrego la segunda alerta a mi radar"
+          concept: "Agrega la señal de presión a su radar personal de fraude, junto a la primera."
+          learning_objective: "El aprendiz agrega la señal de presión a su radar personal y aplica ambas señales a un mensaje nuevo."
+          key_vocabulary: [segunda señal, radar personal]
+          prior_knowledge: "Aplica la respuesta practicada a un caso simulado (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a agregar la segunda casilla a su radar personal: presión para decidir ya."
+          lessons:
+            - position: 1
+              slug: agregamos-la-segunda-casilla
+              micro_objective: "Con apoyo, agrega la señal de presión a su radar personal de fraude, junto a la primera."
+              narrative_beat: "El equipo agrega la segunda casilla a su radar personal: 'presión para decidir ya = alerta'."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: aplico-dos-senales-juntas
+              micro_objective: "Aplica, sin ayuda, las dos señales de su radar (garantía y presión) a un mensaje nuevo del puesto de escucha."
+              narrative_beat: "Zara aplica sola, sin ayuda, sus dos primeras señales del radar a un mensaje nuevo, y encuentra ambas presentes."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+        - position: 7
+          slug: repaso-la-presion-de-decidir-ya
+          kind: review_spaced
+          title_es: "Repaso: La Presión de Decidir Ya"
+          concept: "El equipo repasa por qué la urgencia artificial es sospechosa antes de estudiar los esquemas piramidales."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué la presión para decidir de inmediato es una señal de alerta."
+          key_vocabulary: [presión, urgencia artificial]
+          prior_knowledge: "Completo los 6 temas de La Presión de Decidir Ya."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-presion-de-decidir-ya/la-prisa-es-una-tactica
+            - radar-de-fraudes/la-presion-de-decidir-ya/conecto-con-el-fomo
+            - radar-de-fraudes/la-presion-de-decidir-ya/una-oportunidad-real-espera
+            - radar-de-fraudes/la-presion-de-decidir-ya/identifico-frases-de-presion
+            - radar-de-fraudes/la-presion-de-decidir-ya/practico-resistir-la-presion
+            - radar-de-fraudes/la-presion-de-decidir-ya/agrego-la-segunda-alerta-a-mi-radar
+          lessons:
+            - position: 1
+              slug: repaso-por-que-la-presion-es-sospechosa
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué la presión para decidir de inmediato es una señal de alerta."
+              narrative_beat: "El equipo repasa sus notas sobre presión y explica, sin ayuda, por qué la urgencia artificial es sospechosa."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-identifico-frases-nuevas
+              micro_objective: "Aplica sin ayuda todo lo repasado: identifica frases de presión en un mensaje nuevo."
+              narrative_beat: "Rho identifica, sin ayuda de nadie, las frases de presión escondidas en un mensaje nuevo del puesto de escucha."
+              difficulty: 4
+              suggested_families: [analyze, input]
+        - position: 8
+          slug: cruce-presion-y-garantia
+          kind: review_interleaved
+          title_es: "Cruce: Presión y Garantía"
+          concept: "Mezclamos la señal de presión con la señal de ganancia garantizada para evaluar un mensaje con dos alertas a la vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, las dos primeras señales del radar de fraude en una sola evaluación."
+          key_vocabulary: [presión, ganancia garantizada]
+          prior_knowledge: "Completo el repaso de La Presión de Decidir Ya (tema anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-presion-de-decidir-ya/la-prisa-es-una-tactica
+            - radar-de-fraudes/la-presion-de-decidir-ya/identifico-frases-de-presion
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/reconozco-la-frase-de-alerta
+          lessons:
+            - position: 1
+              slug: junto-presion-y-garantia
+              micro_objective: "Combina la señal de presión con la señal de ganancia garantizada para evaluar un mensaje nuevo con dos alertas a la vez."
+              narrative_beat: "Rho junta dos señales de su radar: presión Y garantía, para un mensaje nuevo que activa ambas alertas."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-dos-senales-cruzadas
+              micro_objective: "Evalúa, sin ayuda, un mensaje nuevo combinando las dos primeras señales del radar de fraude."
+              narrative_beat: "Zara evalúa un mensaje final cruzando presión y garantía, y confirma que dos señales juntas son una alerta mucho más fuerte."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: reclutar-para-ganar-piramides-y-esquemas-ponzi
+    icon: report
+    title:
+      en-US: "Recruit to Earn: Pyramids and Ponzi Schemes"
+      es-MX: "Reclutar para Ganar: Pirámides y Esquemas Ponzi"
+      pt-BR: "Recrutar para Ganhar: Piramides e Esquemas Ponzi"
+    description:
+      en-US: "If the only way to earn is recruiting more people, there is no real business behind it - and it always collapses."
+      es-MX: "Si la única forma de ganar es reclutando a más gente, no hay ningún negocio real detrás - y siempre colapsa."
+      pt-BR: "Se a única forma de ganhar e recrutando mais gente, nao ha nenhum negocio real por tras - e sempre entra em colapso."
+    topics:
+        - position: 1
+          slug: de-donde-sale-el-dinero-de-verdad
+          title_es: "De dónde sale el dinero de verdad"
+          concept: "En una inversión real, el dinero viene de que algo produce valor de verdad - si nadie puede explicar de dónde sale, es una señal de alerta grave."
+          learning_objective: "El aprendiz reconoce que el dinero de una inversión real viene de un negocio que produce valor, e identifica cuándo nadie puede explicar su origen."
+          key_vocabulary: [producir valor, origen del dinero]
+          prior_knowledge: "Completo La Presión de Decidir Ya (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si sabría explicar de dónde sale el dinero en un negocio real, como una tienda o un servicio."
+          lessons:
+            - position: 1
+              slug: dina-explica-el-negocio-real
+              micro_objective: "Reconoce que en una inversión real, el dinero viene de que algo produce valor de verdad (un negocio que vende algo)."
+              narrative_beat: "Dina explica: 'en un negocio real, el dinero viene de vender algo que la gente de verdad quiere comprar' - eso es de donde sale el dinero."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: nadie-puede-explicarlo
+              micro_objective: "Identifica, en un caso, si el dinero de una inversión viene de un negocio real o de una fuente que nadie explica."
+              narrative_beat: "Rho revisa un caso: nadie puede explicarle de dónde sale el dinero prometido - ninguna venta, ningún producto, nada real detrás."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: que-es-un-esquema-piramidal
+          title_es: "Qué es un esquema piramidal"
+          concept: "Un esquema piramidal es una estructura donde el dinero de los nuevos participantes paga a los participantes anteriores, no viene de un negocio real."
+          learning_objective: "El aprendiz reconoce la estructura de un esquema piramidal y describe cómo se mueve el dinero dentro de él."
+          key_vocabulary: [esquema piramidal, participantes nuevos]
+          prior_knowledge: "Reconoce de dónde sale el dinero en un negocio real (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si sabe cómo funciona un esquema piramidal: de dónde sale el dinero que reciben los primeros participantes."
+          lessons:
+            - position: 1
+              slug: zara-aprende-la-estructura
+              micro_objective: "Reconoce un esquema piramidal: una estructura donde el dinero de los nuevos participantes paga a los participantes anteriores, no viene de un negocio real."
+              narrative_beat: "Zara aprende cómo funciona un esquema piramidal: el dinero de quien entra después paga a quien entró antes - no hay ningún negocio real detrás."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: dibujo-el-diagrama-de-la-piramide
+              micro_objective: "Dibuja o describe, con un diagrama simple, cómo se mueve el dinero dentro de un esquema piramidal."
+              narrative_beat: "Rho dibuja el diagrama: el dinero de los nuevos sube hacia los de arriba - nunca sale de vender nada real."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 3
+          slug: necesito-reclutar-para-ganar-es-la-senal
+          title_es: "Necesito reclutar para ganar, es la señal"
+          concept: "Si la única forma de ganar dinero es reclutando a más gente, es la señal más grave de todas."
+          learning_objective: "El aprendiz reconoce e identifica, entre varios casos, cuál depende únicamente de reclutar gente nueva para ganar dinero."
+          key_vocabulary: [reclutar, señal más grave]
+          prior_knowledge: "Describe cómo se mueve el dinero en una pirámide (tema anterior)."
+          fact_refs: [fraud.red_flags_list]
+          parent_check: "Preguntale a {{name}} si alguna vez le ofrecieron 'ganar dinero invitando a otros' a algo, sin ningún producto de por medio."
+          lessons:
+            - position: 1
+              slug: liruf-ve-la-oferta-de-reclutar
+              micro_objective: "Reconoce que si la única forma de ganar dinero es reclutando a más gente, es la señal más grave de todas."
+              narrative_beat: "Liruf ve una oferta: 'gana dinero invitando a tus amigos a invertir' - sin ningún producto de por medio, esa es la señal más grave."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: encuentro-el-caso-que-solo-recluta
+              micro_objective: "Identifica, en 3 casos, cuál depende únicamente de reclutar gente nueva para que alguien gane dinero."
+              narrative_beat: "Zara revisa tres casos y encuentra el único que depende solo de reclutar gente nueva, sin ningún producto real."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: por-que-siempre-colapsa
+          title_es: "Por qué siempre colapsa"
+          concept: "Con un ejemplo numérico simple, un esquema piramidal matemáticamente no puede sostenerse para siempre - se queda sin gente nueva que reclutar."
+          learning_objective: "El aprendiz calcula, con un ejemplo numérico simple, por qué un esquema piramidal se queda sin gente nueva rápidamente."
+          key_vocabulary: [colapsar, matemáticamente imposible]
+          prior_knowledge: "Identifica un caso que depende solo de reclutar (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule, con números sencillos, cuántas personas se necesitarían si cada una recluta a 5 más, ronda tras ronda."
+          lessons:
+            - position: 1
+              slug: calculo-las-rondas-de-reclutamiento
+              micro_objective: "Entiende, con un ejemplo numérico simple, por qué un esquema piramidal matemáticamente no puede sostenerse para siempre."
+              narrative_beat: "Rho calcula: si cada persona necesita reclutar a 5 más, después de pocas rondas se necesitarían más personas que las que existen en el mundo."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: predigo-cuando-se-queda-sin-gente
+              micro_objective: "Predice, con el mismo ejemplo numérico, en qué momento un esquema piramidal se queda sin gente nueva que reclutar."
+              narrative_beat: "Con el cálculo hecho, Zara predice que un esquema así se queda sin gente nueva muy rápido, y entonces colapsa por completo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: distingo-un-negocio-real-de-un-esquema
+          title_es: "Distingo un negocio real de un esquema"
+          concept: "Comparar un negocio real que vende algo de valor contra un esquema que solo paga con dinero de reclutas nuevos revela la diferencia."
+          learning_objective: "El aprendiz compara un negocio real contra un esquema piramidal y decide, en un caso ambiguo, si hay un producto real detrás."
+          key_vocabulary: [negocio real, producto real]
+          prior_knowledge: "Predice cuándo un esquema se queda sin gente nueva (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué preguntaría para saber si un negocio vende algo real o solo depende de reclutar gente."
+          lessons:
+            - position: 1
+              slug: comparo-negocio-real-y-esquema
+              micro_objective: "Compara un negocio real que vende algo de valor contra un esquema que solo paga con dinero de reclutas nuevos."
+              narrative_beat: "Dina compara dos casos: un negocio que vende un producto real (aunque también busque clientes nuevos) contra un esquema que solo paga con dinero de reclutas."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: investigo-un-caso-ambiguo
+              micro_objective: "Decide, para un caso ambiguo, si hay un producto o servicio real detrás del dinero, o si todo depende de reclutar."
+              narrative_beat: "Rho investiga un caso ambiguo y descubre que, detrás de la fachada, no hay ningún producto real - todo depende de reclutar."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: nunca-es-una-oportunidad
+          title_es: "Nunca es una oportunidad"
+          concept: "Un esquema piramidal o Ponzi NUNCA es una oportunidad de inversión real, sin importar cómo se presente ni quién lo recomiende."
+          learning_objective: "El aprendiz reafirma, sin ambigüedad, que un esquema piramidal nunca es una oportunidad real, y explica por qué a alguien tentado por uno."
+          key_vocabulary: [nunca una oportunidad, sin excepción]
+          prior_knowledge: "Decide si hay un producto real detrás de un caso ambiguo (tema anterior)."
+          fact_refs: []
+          parent_check: "Asegúrate de que {{name}} pueda decir, sin dudar, que un esquema piramidal nunca es una oportunidad real - ni aunque lo recomiende alguien de confianza."
+          lessons:
+            - position: 1
+              slug: escribimos-la-regla-sin-excepcion
+              micro_objective: "Reafirma, sin ambigüedad, que un esquema piramidal o Ponzi nunca es una oportunidad de inversión real, sin importar cómo se presente."
+              narrative_beat: "El equipo escribe en el radar del puesto de escucha, en letras grandes: 'un esquema piramidal NUNCA es una oportunidad real - sin excepción'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: explico-por-que-se-debe-rechazar
+              micro_objective: "Explica, sin ayuda, a alguien que está tentado por un esquema piramidal, por qué debe rechazarlo sin importar quién lo recomiende."
+              narrative_beat: "Liruf explica solo, sin ayuda, a un cadete tentado por un esquema piramidal, por qué debe rechazarlo aunque se lo recomiende alguien de confianza."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-reclutar-para-ganar-piramides-y-esquemas-ponzi
+          kind: review_spaced
+          title_es: "Repaso: Reclutar para Ganar, Pirámides y Esquemas Ponzi"
+          concept: "El equipo repasa por qué un esquema piramidal nunca tiene un negocio real detrás antes de armar el radar completo."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué un esquema piramidal no tiene un negocio real detrás."
+          key_vocabulary: [esquema piramidal, sin negocio real]
+          prior_knowledge: "Completo los 6 temas de Reclutar para Ganar: Pirámides y Esquemas Ponzi."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/de-donde-sale-el-dinero-de-verdad
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/que-es-un-esquema-piramidal
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/necesito-reclutar-para-ganar-es-la-senal
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/por-que-siempre-colapsa
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/distingo-un-negocio-real-de-un-esquema
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/nunca-es-una-oportunidad
+          lessons:
+            - position: 1
+              slug: repaso-diagrama-de-la-piramide
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué un esquema piramidal no tiene un negocio real detrás."
+              narrative_beat: "El equipo repasa el diagrama del esquema piramidal y explica, sin ayuda, por qué nunca hay un negocio real detrás."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-identifico-piramide-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: identifica un esquema piramidal en un caso nuevo y explica por qué debe rechazarse."
+              narrative_beat: "Zara identifica, sin ayuda de nadie, un esquema piramidal en un caso nuevo y explica por qué debe rechazarse siempre."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-piramide-y-todas-las-senales
+          kind: review_interleaved
+          title_es: "Cruce: Pirámide y Todas las Señales"
+          concept: "Mezclamos la señal de reclutar gente con la señal de presión para reconocer un esquema piramidal completo."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, reclutamiento, presión y ausencia de negocio real para confirmar una alerta grave."
+          key_vocabulary: [reclutar, presión, negocio real]
+          prior_knowledge: "Completo el repaso de Reclutar para Ganar (tema anterior) y La Presión de Decidir Ya (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/necesito-reclutar-para-ganar-es-la-senal
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/distingo-un-negocio-real-de-un-esquema
+            - radar-de-fraudes/la-presion-de-decidir-ya/la-prisa-es-una-tactica
+          lessons:
+            - position: 1
+              slug: junto-reclutar-y-presion
+              micro_objective: "Combina la señal de reclutar gente con la señal de presión para reconocer un esquema piramidal completo."
+              narrative_beat: "Rho junta dos señales: 'necesita que reclutes gente' Y 'presiona a decidir ya' - juntas, confirman un esquema piramidal."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: confirmo-la-alerta-grave
+              micro_objective: "Evalúa, sin ayuda, un caso nuevo combinando reclutamiento, presión y ausencia de un negocio real para confirmar una alerta grave."
+              narrative_beat: "Zara evalúa un caso final cruzando tres señales a la vez, y confirma sin duda que se trata de un esquema que debe rechazarse y reportarse."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: mi-radar-completo
+    icon: radar
+    title:
+      en-US: "My Complete Radar"
+      es-MX: "Mi Radar Completo"
+      pt-BR: "Meu Radar Completo"
+    description:
+      en-US: "All four warning signals together, plus the most important step of all - don't participate, and tell a trusted adult."
+      es-MX: "Las cuatro señales de alerta juntas, más el paso más importante de todos - no participar, y contárselo a un adulto de confianza."
+      pt-BR: "Os quatro sinais de alerta juntos, mais o passo mais importante de todos - nao participar, e contar para um adulto de confianca."
+    topics:
+        - position: 1
+          slug: las-cuatro-senales-juntas
+          title_es: "Las cuatro señales juntas"
+          concept: "Repasa las cuatro señales de alerta juntas: ganancia garantizada, presión para decidir ya, necesita reclutar gente, nadie explica de dónde sale el dinero."
+          learning_objective: "El aprendiz nombra, sin ayuda, las cuatro señales de alerta del radar de fraude."
+          key_vocabulary: [las cuatro señales, radar completo]
+          prior_knowledge: "Completo Reclutar para Ganar: Pirámides y Esquemas Ponzi (saga anterior)."
+          fact_refs: [fraud.red_flags_list]
+          parent_check: "Pidele a {{name}} que nombre, de memoria, las cuatro señales de alerta de un fraude de inversión."
+          lessons:
+            - position: 1
+              slug: dina-reune-las-cuatro-senales
+              micro_objective: "Repasa las cuatro señales de alerta juntas: ganancia garantizada, presión para decidir ya, necesita reclutar gente, nadie explica de dónde sale el dinero."
+              narrative_beat: "Dina reúne al equipo frente al radar completo: las cuatro señales, una por una, todas juntas en la misma pantalla."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: nombro-las-cuatro-de-memoria
+              micro_objective: "Nombra, sin ayuda, las cuatro señales de alerta del radar de fraude en cualquier orden."
+              narrative_beat: "Liruf nombra las cuatro señales de memoria, sin ayuda, frente al radar completo del puesto de escucha."
+              difficulty: 2
+              suggested_families: [choice, arrange]
+        - position: 2
+          slug: cuantas-senales-hay-en-este-caso
+          title_es: "Cuántas señales hay en este caso"
+          concept: "Cuenta cuántas de las cuatro señales aparecen en un caso descrito - entre más señales, más grave la alerta."
+          learning_objective: "El aprendiz cuenta las señales presentes en un caso y compara la gravedad entre dos casos según su número de señales."
+          key_vocabulary: [contar señales, gravedad]
+          prior_knowledge: "Nombra las cuatro señales de memoria (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que cuente cuántas de las cuatro señales aparecen en un anuncio o mensaje real."
+          lessons:
+            - position: 1
+              slug: cuento-dos-senales
+              micro_objective: "Cuenta cuántas de las cuatro señales aparecen en un caso descrito."
+              narrative_beat: "Zara revisa un caso nuevo y cuenta: dos de las cuatro señales están presentes - ya es una alerta sería."
+              difficulty: 2
+              suggested_families: [analyze, input]
+            - position: 2
+              slug: comparo-gravedad-de-dos-casos
+              micro_objective: "Compara dos casos según cuántas señales tiene cada uno y decide cuál es más grave."
+              narrative_beat: "Rho compara dos casos: uno tiene una señal, el otro tiene las cuatro - decide cuál es mucho más grave."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: que-hago-si-detecto-una-senal
+          title_es: "Qué hago si detecto una señal"
+          concept: "El primer paso correcto al detectar una señal: no participar, y contarle a un adulto de confianza."
+          learning_objective: "El aprendiz aprende y ordena los pasos correctos a seguir al detectar una señal de alerta."
+          key_vocabulary: [no participar, adulto de confianza]
+          prior_knowledge: "Compara la gravedad de dos casos según sus señales (tema anterior)."
+          fact_refs: []
+          parent_check: "Repasa con {{name}} el primer paso correcto al detectar una señal de fraude: no participar y contárselo a un adulto de confianza."
+          lessons:
+            - position: 1
+              slug: dina-ensena-el-primer-paso
+              micro_objective: "Aprende el primer paso correcto al detectar una señal: no participar, y contarle a un adulto de confianza."
+              narrative_beat: "Dina enseña el primer paso: 'si detectas una señal, no participes, y cuéntaselo a un adulto de confianza de inmediato'."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: ordeno-los-pasos-correctos
+              micro_objective: "Ordena los pasos correctos a seguir al detectar una señal de alerta, del primero al último."
+              narrative_beat: "El equipo ordena los pasos correctos en su libreta: primero no participar, después contarle a un adulto de confianza."
+              difficulty: 3
+              suggested_families: [arrange, choice]
+        - position: 4
+          slug: le-cuento-a-un-adulto-de-confianza
+          title_es: "Le cuento a un adulto de confianza"
+          concept: "Practica cómo contarle a un padre, madre o adulto de confianza sobre una oferta sospechosa, sin pena ni miedo."
+          learning_objective: "El aprendiz practica cómo comunicar una alerta a un adulto de confianza de forma clara y directa."
+          key_vocabulary: [comunicar, claro y directo]
+          prior_knowledge: "Ordena los pasos correctos a seguir (tema anterior)."
+          fact_refs: []
+          parent_check: "Practica junto a {{name}} cómo te contaría sobre una oferta sospechosa, nombrando la señal exacta que encontró."
+          lessons:
+            - position: 1
+              slug: liruf-practica-contarle-a-su-papa
+              micro_objective: "Practica cómo contarle a un padre, madre o adulto de confianza sobre una oferta sospechosa, sin pena ni miedo."
+              narrative_beat: "Liruf practica en voz alta cómo le contaría a su papá sobre una oferta sospechosa que vio, sin pena ni miedo de que se enoje."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: elijo-la-forma-mas-clara
+              micro_objective: "Elige, entre varias formas de contarlo, la más clara y directa para explicarle una alerta a un adulto de confianza."
+              narrative_beat: "Zara elige la forma más clara de explicarle a un adulto: nombrar la señal exacta que encontró, no solo decir 'algo raro vi'."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: practico-con-casos-reales-del-radar
+          title_es: "Practico con casos reales del radar"
+          concept: "Aplica el radar completo de cuatro señales a varios casos nuevos y decide, en cada uno, si hay alerta."
+          learning_objective: "El aprendiz aplica el radar completo de cuatro señales a dos casos nuevos y compara los resultados."
+          key_vocabulary: [aplicar el radar completo]
+          prior_knowledge: "Elige la forma más clara de comunicar una alerta (tema anterior)."
+          fact_refs: []
+          parent_check: "Practica junto a {{name}} aplicar las cuatro señales del radar a un anuncio o mensaje real."
+          lessons:
+            - position: 1
+              slug: aplico-el-radar-a-un-caso-nuevo
+              micro_objective: "Aplica el radar completo de cuatro señales a un caso nuevo y decide si hay alerta."
+              narrative_beat: "Rho aplica el radar completo a un caso nuevo del puesto de escucha, revisando las cuatro señales una por una."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: comparo-dos-casos-nuevos
+              micro_objective: "Aplica el radar completo a un segundo caso nuevo, distinto del primero, y compara los resultados."
+              narrative_beat: "Zara aplica el mismo radar a un segundo caso, y compara: este tiene menos señales que el anterior, pero igual merece cautela."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: mi-radar-personal-completo
+          title_es: "Mi radar personal completo"
+          concept: "Arma su propio radar personal completo con las cuatro señales, listo para usar en la vida real."
+          learning_objective: "El aprendiz arma, sin ayuda, su radar personal completo y lo aplica con confianza a un caso final."
+          key_vocabulary: [radar completo, vida real]
+          prior_knowledge: "Compara dos casos nuevos con el radar completo (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a terminar su radar personal completo con las cuatro señales de alerta."
+          lessons:
+            - position: 1
+              slug: terminamos-el-radar-personal
+              micro_objective: "Con apoyo, arma su propio radar personal completo con las cuatro señales, listo para usar en la vida real."
+              narrative_beat: "El equipo termina de armar su radar personal completo: las cuatro señales, listas para usarse fuera del puesto de escucha."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: aplico-mi-radar-con-confianza
+              micro_objective: "Aplica, sin ayuda, su radar personal completo a un caso final nuevo y decide con confianza si debe alertar."
+              narrative_beat: "Rho aplica su radar personal completo, sin ayuda, a un caso final y decide con toda confianza que debe alertar y contarle a un adulto."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+        - position: 7
+          slug: repaso-mi-radar-completo
+          kind: review_spaced
+          title_es: "Repaso: Mi Radar Completo"
+          concept: "El equipo repasa las cuatro señales completas antes de la alerta final del puesto de escucha."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las cuatro señales de alerta del radar de fraude."
+          key_vocabulary: [las cuatro señales, radar de fraude]
+          prior_knowledge: "Completo los 6 temas de Mi Radar Completo."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/mi-radar-completo/las-cuatro-senales-juntas
+            - radar-de-fraudes/mi-radar-completo/cuantas-senales-hay-en-este-caso
+            - radar-de-fraudes/mi-radar-completo/que-hago-si-detecto-una-senal
+            - radar-de-fraudes/mi-radar-completo/le-cuento-a-un-adulto-de-confianza
+            - radar-de-fraudes/mi-radar-completo/practico-con-casos-reales-del-radar
+            - radar-de-fraudes/mi-radar-completo/mi-radar-personal-completo
+          lessons:
+            - position: 1
+              slug: repaso-las-cuatro-senales-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, las cuatro señales de alerta del radar de fraude."
+              narrative_beat: "El equipo repasa las cuatro señales del radar y las nombra, sin ayuda, frente a un caso nuevo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-cuento-senales-y-decido
+              micro_objective: "Aplica sin ayuda todo lo repasado: cuenta las señales presentes en un caso nuevo y decide el siguiente paso."
+              narrative_beat: "Zara cuenta, sin ayuda de nadie, las señales de un caso nuevo y decide el siguiente paso correcto."
+              difficulty: 4
+              suggested_families: [analyze, input]
+        - position: 8
+          slug: cruce-todo-el-puesto-de-escucha
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Puesto de Escucha"
+          concept: "Mezclamos las cuatro señales completas del radar de fraude en un solo caso final del puesto de escucha."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión de alerta."
+          key_vocabulary: [las cuatro señales, alerta y reporte]
+          prior_knowledge: "Completo el repaso de Mi Radar Completo (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada/reconozco-la-frase-de-alerta
+            - radar-de-fraudes/la-presion-de-decidir-ya/identifico-frases-de-presion
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi/nunca-es-una-oportunidad
+          lessons:
+            - position: 1
+              slug: junto-garantia-y-presion-otra-vez
+              micro_objective: "Combina la señal de garantía con la señal de presión para reconocer un caso con dos alertas a la vez."
+              narrative_beat: "Rho junta dos señales del radar: garantía Y presión, para un caso nuevo que activa ambas al mismo tiempo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-el-caso-final-del-puesto
+              micro_objective: "Evalúa, sin ayuda, un caso final combinando las cuatro señales completas del radar de fraude."
+              narrative_beat: "Zara resuelve el caso final del puesto de escucha, revisando las cuatro señales completas antes de decidir alertar y reportar."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-alerta-final-del-puesto-de-escucha
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Listening Post's Final Alert"
+      es-MX: "La Alerta Final del Puesto de Escucha"
+      pt-BR: "O Alerta Final do Posto de Escuta"
+    description:
+      en-US: "A final alert puts the whole fraud-detection toolkit - all four signals and the right response - to work."
+      es-MX: "Una alerta final pone a trabajar todo el kit de herramientas de detección de fraude: las cuatro señales y la respuesta correcta."
+      pt-BR: "Um alerta final coloca para trabalhar todo o kit de ferramentas de deteccao de fraude: os quatro sinais e a resposta correta."
+    topics:
+        - position: 1
+          slug: el-reto-de-las-senales
+          kind: review_quest
+          title_es: "El Reto de las Señales"
+          concept: "El Puesto de Escucha lanza su prueba final: reconocer las señales de garantía y presión en una señal nueva, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, las señales de ganancia garantizada y presión para resolver un reto abierto."
+          key_vocabulary: [ganancia garantizada, presión, reto abierto]
+          prior_knowledge: "Completo La Primera Señal: Ganancia Garantizada y La Presión de Decidir Ya."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/la-primera-senal-ganancia-garantizada
+            - radar-de-fraudes/la-presion-de-decidir-ya
+          lessons:
+            - position: 1
+              slug: suena-la-alarma-final
+              micro_objective: "Recuerda, sin ayuda, las dos primeras señales de alerta: ganancia garantizada y presión para decidir ya."
+              narrative_beat: "Una alarma suena en el Puesto de Escucha: 'Prueba final - demuestra que tu radar de fraude funciona de verdad'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: detecto-dos-senales-sin-ayuda
+              micro_objective: "Detecta, sin ayuda, las señales de garantía y presión en una señal nueva del espacio profundo."
+              narrative_beat: "Zara enfrenta su primera prueba real: detectar sola, sin ayuda, las señales de garantía y presión en una transmisión nueva."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-radar-defendido
+          kind: review_quest
+          title_es: "Mi Radar, Defendido"
+          concept: "Frente al consejo del puesto de escucha, el equipo defiende su radar completo explicando por qué un esquema piramidal nunca es una oportunidad y qué hacer al detectarlo."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un radar completo combinando esquemas piramidales y los pasos correctos a seguir."
+          key_vocabulary: [defender, consejo, radar completo]
+          prior_knowledge: "Completo El Reto de las Señales (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - radar-de-fraudes/reclutar-para-ganar-piramides-y-esquemas-ponzi
+            - radar-de-fraudes/mi-radar-completo
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-del-radar
+              micro_objective: "Organiza, sin ayuda, los argumentos sobre esquemas piramidales y el radar completo para defender una alerta detectada."
+              narrative_beat: "Dina ensaya su defensa: primero por qué un esquema piramidal nunca es una oportunidad, después los pasos correctos a seguir."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-del-puesto
+              micro_objective: "Completa, sin ayuda, la defensa final de su radar ante el consejo del puesto de escucha, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante el consejo del Puesto de Escucha; cuando le preguntan '¿y si un amigo de confianza te lo recomienda?', responde que ninguna recomendación cambia la respuesta."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

@@ -134,6 +134,44 @@ full FE generation run: ~$225–320 USD all-in (text+TTS×3+images), ~5–6 GB i
 Depot, ~1.5–3 dedicated days; calibrate with a one-slot, cost-capped visual
 pilot first.
 
+**Financial Education is LIVE in production (generated, not just published):**
+confirmed by direct production query — `courses.status='published'`, 1,208
+lessons all `published`, 3,624 `lesson_documents` (= ×3 locales exactly, all
+narrated), 9,179 Prism illustrations. Real Forge spend for this run: **$1,586.42**
+(508.5M tokens, 41.8% cache hit, 397 images billed of 618 generated) — the
+`$225-320` estimate two paragraphs up was superseded by reality by roughly
+5x; use the real $/lesson (~$1.31) for any future course cost projection, not
+the original estimate. Open, unexplained gap: the catalog defines 1,312
+blueprints but only 1,208 are in production (104 short) — not yet root-caused.
+
+**Emprendimiento e Inversiones PIVOTED to tier4 (12-18), fully re-authored
+(2026-08-12/13):** neither course had ever been generated (0 rows in
+production for either slug), so the owner used that window to redesign both
+for a matured audience instead of generating the original tier1-3 (6-12)
+catalogs. New shape: a single `tier4` age tier (COURSE_ENGINE.md §3.1b),
+**544 lessons each** (down from 1,408/1,472 — half the lessons-per-topic,
+each assumed denser/longer), full vocabulary opened except investing's
+unchanged high-risk-trading hard ceiling, and `contentPlaybook.ts` gained a
+`tierReasoningGuidance('tier4')` register brief centered on teen-anchored
+analogies (subscriptions, gig-app fees, loot-box odds, follower growth)
+instead of Financial Education's storybook framing that prompted this pivot.
+Both new catalogs are `catalog:check`/`graph:check` clean (0 errors) and
+`--require-images --dry-run` clean at $0 — **authored, not yet generated**.
+Estimated cost at Financial Education's real $/lesson (~$1.31, Forge-only —
+does NOT include Echo/TTS, which has no confirmed DashScope price in our
+docs, same open item as before this pivot) applied to the CURRENT 544/course
+count: **~$714 (entrepreneurship) + ~$714 (investing) ≈ $1,429 combined**
+(corrected 2026-08-13 — an earlier pass of this estimate mistakenly kept the
+pre-pivot 1,408/1,472 lesson counts instead of the 544 actually authored;
+this is also likely a floor, not an exact figure — FE's $/lesson was
+measured on 4-lessons/topic content, while tier4 intentionally packs more
+into each of its 2 lessons/topic, which plausibly raises the true
+per-lesson cost even as the total drops from the lesson-count cut). Before a
+paid run is authorized.
+**Product-sequencing gap opened by this pivot, not yet decided:** a learner
+finishing Financial Education (~6-10) now has no course until 12 — the
+10-12 band Inversiones' old tier3 used to cover is currently unserved.
+
 **Pipeline QA-ready, not yet executed (2026-07-13):** Forge gained
 `forced_types` (COURSE_ENGINE §4 addendum — pins a lesson's exact segment
 skeleton, skipping the plan-stage LLM call) and Echo gained the real

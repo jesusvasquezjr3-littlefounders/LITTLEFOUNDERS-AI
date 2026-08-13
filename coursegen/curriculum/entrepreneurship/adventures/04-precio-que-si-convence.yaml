@@ -1,0 +1,873 @@
+schema_version: 1
+
+adventure:
+  position: 4
+  slug: precio-que-si-convence
+  theme: valley
+  age_tier: tier4
+  title:
+    en-US: "A Price That Actually Sells"
+    es-MX: "Precio que sí Convence"
+    pt-BR: "Preço que Convence de Verdade"
+  description:
+    en-US: "In the Fair Price District, the crew turns real customer evidence into a real price - one that covers every cost, reflects what people actually value, and still leaves a margin worth the effort."
+    es-MX: "En el Distrito del Precio Justo, el equipo convierte la evidencia real de clientes en un precio real - uno que cubre cada costo, refleja lo que la gente de verdad valora, y todavia deja un margen que vale la pena."
+    pt-BR: "No Distrito do Preço Justo, a equipe transforma evidencia real de clientes em um preço real - um que cobre cada custo, reflete o que as pessoas realmente valorizam, e ainda deixa uma margem que vale a pena."
+  narrative_arc: "Con la decisión validada por clientes reales en la mano, Dina, Liruf, Rho y Zara llegan al Distrito del Precio Justo, un valle comercial donde decenas de jovenes founders compiten por poner el precio correcto - ni tan bajo que los deje sin ganancia, ni tan alto que nadie compre. Ahí aprenden a contar cada costo (hasta los que se esconden), a distinguir cobrar por lo que algo cuesta hacer de cobrar por lo que de verdad vale para el cliente, a proteger su margen de comisiones y descuentos que se lo comen, y a calcular exactamente cuantas ventas necesitan para no perder dinero. Al final, cada equipo debe defender su precio final ante el Consejo de Comerciantes del valle, con matemáticas reales, no con una cifra sacada del aire."
+
+sagas:
+  - position: 1
+    slug: cuanto-cuesta-de-verdad
+    icon: calculate
+    title:
+      en-US: "What It Actually Costs"
+      es-MX: "Cuanto Cuesta de Verdad"
+      pt-BR: "Quanto Custa de Verdade"
+    description:
+      en-US: "Before you can price anything, you need to count every real cost - even the ones that hide."
+      es-MX: "Antes de poder ponerle precio a algo, hay que contar cada costo real - hasta los que se esconden."
+      pt-BR: "Antes de precificar qualquer coisa, e preciso contar cada custo real - ate os que se escondem."
+    topics:
+        - position: 1
+          slug: costos-fijos-y-variables
+          title_es: "Costos fijos y variables"
+          concept: "Un costo fijo no cambia aunque vendas más o menos (la suscripción mensual de un programa de diseño); un costo variable crece con cada unidad que produces (el vinil de cada funda)."
+          learning_objective: "El aprendiz distingue un costo fijo de un costo variable en un negocio real, explicando por que uno cambia con las ventas y el otro no."
+          key_vocabulary: [costo fijo, costo variable, cambia con las ventas]
+          prior_knowledge: "Completo Mesa del Cliente (aventura anterior): ya tiene una decisión de producto validada por clientes reales."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual de sus gastos del negocio seguiria pagando aunque no vendiera nada este mes, y cual solo paga si produce algo nuevo."
+          lessons:
+            - position: 1
+              slug: paga-igual-o-paga-mas
+              micro_objective: "Distingue, entre dos gastos de un negocio de fundas personalizadas, cual se paga igual todos los meses y cual sube si produce más."
+              narrative_beat: "Rho paga $150 al mes por su programa de diseño sin importar cuantas fundas venda; cada funda nueva le cuesta $45 extra en vinil y sellador."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: clasifico-mis-gastos
+              micro_objective: "Clasifica, sin ayuda, 5 gastos de un negocio entre costo fijo y costo variable."
+              narrative_beat: "Zara ordena sus gastos en dos columnas: la renta del rincon del taller va en fija, el hilo y las cuentas van en variable."
+              difficulty: 2
+              suggested_families: [arrange, analyze]
+        - position: 2
+          slug: cuento-todos-mis-costos
+          title_es: "Cuento todos mis costos"
+          concept: "Es fácil contar el material principal y olvidar el empaque, el transporte o la comisión de la app; un costo que no cuentas sigue existiendo, solo que te lo comes tu."
+          learning_objective: "El aprendiz identifica costos que faltan en una lista incompleta antes de calcular el costo total de un producto."
+          key_vocabulary: [costo olvidado, lista completa, empaque]
+          prior_knowledge: "Distingue costo fijo de costo variable (tema anterior)."
+          fact_refs: [mxn.reference_costs.funda_personalizada_materiales]
+          parent_check: "Revisa junto a {{name}} la lista de costos de su producto y pregunta si de verdad incluyo TODO, hasta el empaque y el envio."
+          lessons:
+            - position: 1
+              slug: que-le-falto-a-esta-lista
+              micro_objective: "Detecta, en una lista de 4 costos de una funda personalizada, cual costo real quedo fuera de la cuenta."
+              narrative_beat: "Liruf suma vinil, plantilla y sellador, y se le olvida la bolsita de regalo que le pone a cada funda antes de entregarla."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: sumo-el-costo-completo
+              micro_objective: "Suma, sin ayuda, el costo total de una funda personalizada incluyendo los 4 elementos: materiales, empaque, herramienta compartida y transporte."
+              narrative_beat: "Dina suma $45 de materiales más $8 de empaque más $5 de transporte para llegar al verdadero costo de cada funda que vende."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 3
+          slug: el-costo-por-unidad
+          title_es: "El costo por unidad"
+          concept: "Dividir el costo total de un lote entre el número de unidades te dice cuanto cuesta CADA una - y ese número baja cuando produces más de una vez."
+          learning_objective: "El aprendiz calcula el costo por unidad dividiendo el costo total de un lote entre las unidades producidas."
+          key_vocabulary: [costo por unidad, lote, dividir entre unidades]
+          prior_knowledge: "Suma el costo completo de un producto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuanto le cuesta CADA unidad de su producto, no solo el lote completo."
+          lessons:
+            - position: 1
+              slug: divido-el-lote-entre-las-unidades
+              micro_objective: "Calcula, sin ayuda, el costo por unidad de un lote de 10 gorras bordadas cuyo costo total es $600."
+              narrative_beat: "Zara borda 10 gorras por $600 en total de materiales e hilo; divide entre 10 y descubre que cada gorra le cuesta $60."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: un-lote-mas-grande-cuesta-menos-por-unidad
+              micro_objective: "Compara el costo por unidad de un lote pequeño contra uno más grande y reconoce cual baja el costo de cada pieza."
+              narrative_beat: "Rho descubre que hacer 20 fundas de una vez, en vez de 5, reparte el costo de la herramienta compartida entre más unidades y cada una sale más barata."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: tiempo-tambien-cuesta
+          title_es: "Tiempo también cuesta"
+          concept: "Tu propio tiempo tiene un valor, aunque no pagues una factura por el; compararlo contra lo que ganarias haciendo otra cosa te dice si de verdad conviene."
+          learning_objective: "El aprendiz reconoce el costo de oportunidad de su propio tiempo comparando las horas invertidas contra una tarifa alternativa conocida."
+          key_vocabulary: [costo de oportunidad, tiempo propio, tarifa alternativa]
+          prior_knowledge: "Calcula el costo por unidad (tema anterior)."
+          fact_refs: [mxn.reference_prices.clase_tutoria_hora]
+          parent_check: "Pregunta a {{name}} cuantas horas reales le toma hacer su producto, y si ese tiempo valdria más ganado de otra forma."
+          lessons:
+            - position: 1
+              slug: mis-horas-tambien-valen-algo
+              micro_objective: "Reconoce, en un caso, que las 2 horas que Rho invierte en cada funda tienen un valor comparable a lo que ganaria dando tutoria en ese mismo tiempo."
+              narrative_beat: "Rho tarda 2 horas en decorar cada funda; sabe que dar tutoria le paga $150 por hora, asi que esas 2 horas valen al menos $300 de su tiempo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: me-conviene-o-no-me-conviene
+              micro_objective: "Decide, comparando el tiempo invertido contra una tarifa alternativa, si un producto vale la pena hacer o conviene mejor usar ese tiempo en otra cosa."
+              narrative_beat: "Zara calcula que sus gorras le dejan $40 de ganancia por hora invertida, menos que las $150 por hora que le pagan por tutoria - decide hacer gorras solo los fines de semana."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: costos-escondidos
+          title_es: "Costos escondidos"
+          concept: "Una comisión de plataforma, un empaque extra o un envio gratis que tu absorbes son costos reales aunque nadie te mande una factura por ellos."
+          learning_objective: "El aprendiz identifica un costo escondido (como la comisión de una plataforma de venta) que reduce el ingreso real recibido por producto."
+          key_vocabulary: [costo escondido, comisión de plataforma, ingreso real]
+          prior_knowledge: "Reconoce el costo de oportunidad de su tiempo (tema anterior)."
+          fact_refs: [business.illustrative.comision_app_reparto_pct]
+          parent_check: "Pregunta a {{name}} si vende por alguna app o plataforma, y cuanto de cada venta se queda la plataforma antes de que el dinero le llegue."
+          lessons:
+            - position: 1
+              slug: la-plataforma-se-queda-con-una-parte
+              micro_objective: "Reconoce, en un caso, que una app de venta se queda con una parte de cada pago antes de depositarle el resto al vendedor."
+              narrative_beat: "Liruf vende sus playeras estampadas por una app que cobra una comisión ilustrativa del 25% de cada venta - de $200 cobrados, solo le llegan $150."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: recalculo-mi-costo-con-la-comision
+              micro_objective: "Recalcula, sin ayuda, el costo real por unidad de un producto sumando la comisión de la plataforma al costo de materiales."
+              narrative_beat: "Dina suma los $60 de materiales de su gorra más la comisión que la plataforma le descuenta, y descubre que su costo real es más alto de lo que pensaba."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 6
+          slug: mi-costo-total-por-producto
+          title_es: "Mi costo total por producto"
+          concept: "El costo total real de un producto suma materiales, tiempo valorado, empaque y comisiones - juntar todo en un solo número es lo que necesitas antes de poner un precio."
+          learning_objective: "El aprendiz calcula el costo total real de un producto integrando materiales, empaque, comisión de plataforma y una porción del costo fijo."
+          key_vocabulary: [costo total real, integrar todos los costos, un solo número]
+          prior_knowledge: "Identifica un costo escondido (tema anterior)."
+          fact_refs: [mxn.reference_costs.tenis_personalizados_materiales]
+          parent_check: "Pidele a {{name}} que te muestre el costo total real de una unidad de su producto, sumando todo lo que aprendio esta semana."
+          lessons:
+            - position: 1
+              slug: junto-todos-los-pedazos
+              micro_objective: "Reune, sin ayuda, los 4 elementos del costo total de un par de tenis personalizados: materiales, empaque, parte del costo fijo y comisión."
+              narrative_beat: "Zara ordena en tarjetas: $200 de pintura y sellador, $30 de empaque, $20 de parte del costo fijo del taller y $50 de comisión de la app."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: comparo-el-costo-real-de-dos-productos
+              micro_objective: "Compara el costo total real de dos productos distintos y elige, sin ayuda, cual conviene producir primero por su costo más bajo."
+              narrative_beat: "Rho compara el costo total real de sus fundas ($58) contra el de sus llaveros bordados ($35) y decide enfocarse primero en los llaveros."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-cuanto-cuesta-de-verdad
+          kind: review_spaced
+          title_es: "Repaso: Cuanto Cuesta de Verdad"
+          concept: "El equipo repasa como distinguir costos fijos de variables, contar costos completos y calcular el costo total real por unidad."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cálculo del costo total real de un producto."
+          key_vocabulary: [costo fijo, costo variable, costo total real]
+          prior_knowledge: "Completo los 6 temas de Cuanto Cuesta de Verdad."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/costos-fijos-y-variables
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/cuento-todos-mis-costos
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/el-costo-por-unidad
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/tiempo-tambien-cuesta
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/costos-escondidos
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/mi-costo-total-por-producto
+          lessons:
+            - position: 1
+              slug: repaso-clasifico-un-gasto-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre costo fijo y variable en un negocio que todavia no había visto."
+              narrative_beat: "El equipo clasifica, sin ayuda, los gastos de un nuevo negocio de edición de fotos que un compañero les presenta."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: repaso-calculo-el-costo-total-real
+              micro_objective: "Aplica sin ayuda todo lo repasado: calcula el costo total real de un producto nuevo integrando todos los elementos aprendidos."
+              narrative_beat: "Liruf calcula, sin ayuda de nadie, el costo total real de un servicio de edición de reels que nunca había analizado antes."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 8
+          slug: cruce-evidencia-de-clientes-y-costos-reales
+          kind: review_interleaved
+          title_es: "Cruce: Evidencia de Clientes y Costos Reales"
+          concept: "Mezclamos la decisión validada por clientes de la aventura anterior con el costo total real que acabamos de calcular."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un hallazgo de cliente sobre precio con el costo total real de producir el producto ajustado."
+          key_vocabulary: [decisión validada, costo total real, combinar evidencia]
+          prior_knowledge: "Completo el repaso de Cuanto Cuesta de Verdad (tema anterior) y Mesa del Cliente (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/mi-costo-total-por-producto
+            - mesa-del-cliente/itero-con-senal-real/mi-decision-final-con-clientes-reales
+          lessons:
+            - position: 1
+              slug: mi-cambio-validado-tiene-un-costo-nuevo
+              micro_objective: "Recalcula el costo total real de un producto después del cambio que los clientes confirmaron que funciono."
+              narrative_beat: "Zara recalcula el costo de su gorra despues de agregar el cierre reforzado que sus clientas pidieron - el costo subio $8 por unidad."
+              difficulty: 4
+              suggested_families: [analyze, input]
+            - position: 2
+              slug: mi-costo-ya-refleja-lo-que-el-cliente-confirmo
+              micro_objective: "Confirma, sin ayuda, que el costo total real calculado ya incluye el cambio que la evidencia de clientes respaldo, no la versión vieja del producto."
+              narrative_beat: "Rho revisa su costo final y confirma que ya incluye el material extra del cierre reforzado, no el costo de la versión que sus clientes rechazaron."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: costo-mas-margen-o-precio-por-valor
+    icon: price_change
+    title:
+      en-US: "Cost-Plus or Value-Based"
+      es-MX: "Costo-Mas-Margen o Precio por Valor"
+      pt-BR: "Custo-Mais-Margem ou Preço por Valor"
+    description:
+      en-US: "Two ways to set a price: what it costs you to make it, or what it is worth to the person buying it."
+      es-MX: "Dos formas de poner un precio: lo que te cuesta hacerlo, o lo que vale para quien lo compra."
+      pt-BR: "Duas formas de definir um preço: o que custa fazer, ou o que vale para quem compra."
+    topics:
+        - position: 1
+          slug: que-es-costo-mas-margen
+          title_es: "Que es costo-más-margen"
+          concept: "Poner precio por costo-más-margen significa tomar tu costo total y sumarle un porcentaje o cantidad fija de ganancia - simple, pero ignora que tan valioso es el producto para el cliente."
+          learning_objective: "El aprendiz calcula un precio usando el método costo-más-margen a partir de un costo total dado y un margen deseado."
+          key_vocabulary: [costo-más-margen, margen deseado, precio calculado]
+          prior_knowledge: "Completo Cuanto Cuesta de Verdad (saga anterior): ya sabe calcular el costo total real de un producto."
+          fact_refs: [business.math.formula_ganancia]
+          parent_check: "Pregunta a {{name}} cuanto le cuesta hacer su producto, y cuanto le gustaria ganarle encima de ese costo."
+          lessons:
+            - position: 1
+              slug: le-sumo-una-ganancia-a-mi-costo
+              micro_objective: "Calcula, sin ayuda, un precio costo-más-margen sumando $30 de ganancia deseada a un costo total de $58."
+              narrative_beat: "Rho suma $30 de ganancia a los $58 que le cuesta cada funda y llega a un precio de $88, sin preguntarse todavia si alguien lo pagaria."
+              difficulty: 1
+              suggested_families: [input, choice]
+            - position: 2
+              slug: mismo-metodo-otro-producto
+              micro_objective: "Aplica el método costo-más-margen a un segundo producto con un costo y margen deseado distintos."
+              narrative_beat: "Zara aplica el mismo método a sus gorras: costo de $60 más $25 de margen deseado le dan un precio de $85."
+              difficulty: 2
+              suggested_families: [input, analyze]
+        - position: 2
+          slug: que-es-precio-por-valor
+          title_es: "Que es precio por valor"
+          concept: "Poner precio por valor significa preguntarte cuanto vale ese producto PARA el cliente - no cuanto te costo a ti hacerlo - y ese valor puede ser mayor o menor que tu costo más margen."
+          learning_objective: "El aprendiz distingue un precio basado en valor de un precio basado en costo, identificando de donde viene cada número."
+          key_vocabulary: [precio por valor, cuanto vale para el cliente, valor percibido]
+          prior_knowledge: "Calcula un precio costo-más-margen (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que problema le resuelve su producto al cliente, y si eso vale más o menos que lo que le costo hacerlo."
+          lessons:
+            - position: 1
+              slug: de-donde-sale-este-numero
+              micro_objective: "Distingue, entre dos precios propuestos para el mismo producto, cual viene del costo del vendedor y cual viene de lo que el cliente esta dispuesto a pagar."
+              narrative_beat: "Liruf propone $88 porque asi le sale la cuenta de su costo; Dina propone $120 porque sus clientes le dijeron que resolver ese problema vale eso para ellos."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: el-valor-no-siempre-es-mayor-al-costo
+              micro_objective: "Reconoce un caso donde el precio por valor resulta MENOR al precio costo-más-margen, no siempre mayor."
+              narrative_beat: "Zara descubre que sus clientes solo valoran su servicio de tutoria en $120 por hora, menos de lo que le saldria cobrar por costo-más-margen."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: cuanto-pagarian-de-verdad
+          title_es: "Cuanto pagarian de verdad"
+          concept: "Preguntar directamente cuanto pagarian por algo, comparándolo con precios que ya conocen (una suscripción, un boleto), ayuda a descubrir el valor real que le dan."
+          learning_objective: "El aprendiz estima la disposición a pagar de un cliente comparando el producto contra un precio de referencia que el cliente ya conoce."
+          key_vocabulary: [disposición a pagar, precio de referencia, comparar contra algo conocido]
+          prior_knowledge: "Distingue precio por valor de precio por costo (tema anterior)."
+          fact_refs: [mxn.reference_prices.suscripcion_streaming_mensual]
+          parent_check: "Pregunta a {{name}} con que gasto conocido (una suscripción, un boleto) podría comparar el precio de su producto para saber si suena caro o barato."
+          lessons:
+            - position: 1
+              slug: comparo-contra-algo-que-ya-conocen
+              micro_objective: "Compara el precio mensual de un servicio de tutoria contra una suscripción de streaming que el cliente ya paga, para estimar si le suena razonable."
+              narrative_beat: "Rho le dice a un cliente: 'mi paquete de 4 tutorias al mes cuesta como dos suscripciónes de streaming' - y el cliente entiende de inmediato si le parece mucho o poco."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: pregunto-directo-cuanto-pagaria
+              micro_objective: "Formula, sin ayuda, una pregunta directa para descubrir cuanto pagaria un cliente por un producto, comparado con algo que ya conoce."
+              narrative_beat: "Zara pregunta: 'si esto te cuesta como tu boleto del concierto del sabado, te parece razonable o mucho?' y anota la respuesta exacta."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: comparo-costo-plus-y-valor
+          title_es: "Comparo costo-más-margen y valor"
+          concept: "Poner los dos precios lado a lado - el que sale de tu costo y el que sale de lo que el cliente valora - te dice si tienes espacio para negociar o si algo no cuadra."
+          learning_objective: "El aprendiz compara el precio costo-más-margen contra el precio por valor del mismo producto y decide que hacer según cual sea mayor."
+          key_vocabulary: [comparar dos precios, espacio para negociar, algo no cuadra]
+          prior_knowledge: "Estima la disposición a pagar de un cliente (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a poner lado a lado el precio que le sale por costo y el que sus clientes de verdad pagarian, y a decidir que significa la diferencia."
+          lessons:
+            - position: 1
+              slug: el-valor-es-mayor-que-mi-costo-mas-margen
+              micro_objective: "Reconoce, cuando el precio por valor es mayor al costo-más-margen, que hay espacio para subir el precio sin perder clientes."
+              narrative_beat: "Rho descubre que sus clientes pagarian hasta $130 por su funda, más de los $88 que le salia por costo-más-margen - decide subir el precio."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: el-valor-es-menor-que-mi-costo-mas-margen
+              micro_objective: "Reconoce, cuando el precio por valor es menor al costo-más-margen, que el producto necesita bajar su costo o cambiar de segmento."
+              narrative_beat: "Zara descubre que sus clientes solo pagarian $70 por su gorra, menos de los $85 que le salia por costo-más-margen - sabe que algo tiene que cambiar."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-precio-ancla
+          title_es: "El precio ancla"
+          concept: "Mostrar un precio de referencia (\"antes $150, ahora $110\") cambia como la gente percibe si un precio es barato o caro, aunque el producto no haya cambiado."
+          learning_objective: "El aprendiz reconoce el efecto de un precio ancla sobre la percepción de valor de un cliente."
+          key_vocabulary: [precio ancla, percepción de valor, antes y ahora]
+          prior_knowledge: "Compara el precio costo-más-margen contra el precio por valor (tema anterior)."
+          fact_refs: [mxn.reference_prices.videojuego_digital]
+          parent_check: "Pregunta a {{name}} si alguna vez un precio le parecio barato solo porque lo comparo contra un precio más alto mostrado al lado."
+          lessons:
+            - position: 1
+              slug: el-mismo-precio-se-siente-distinto
+              micro_objective: "Reconoce, en dos anuncios del mismo producto al mismo precio, cual usa un precio ancla que lo hace sentir más barato."
+              narrative_beat: "Liruf anuncia su servicio de edición a $180 sin más; Dina anuncia el mismo servicio como 'antes $250, ahora $180' y se siente como una mejor oferta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-un-ancla-honesta
+              micro_objective: "Elige, entre 3 opciones de precio ancla, la única que es honesta porque el precio anterior de verdad existio."
+              narrative_beat: "Zara descarta poner 'antes $300' porque nunca cobro eso - elige mostrar en su lugar el precio del videojuego digital que sus clientes ya conocen como comparación honesta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: elijo-mi-metodo-de-precio
+          title_es: "Elijo mi método de precio"
+          concept: "No hay un método siempre correcto; elegir entre costo-más-margen, precio por valor o una combinación de ambos depende de cuanto sabes de tu cliente y de tu costo."
+          learning_objective: "El aprendiz elige y justifica un método de precio (costo-más-margen, precio por valor, o combinado) para su propio producto."
+          key_vocabulary: [elegir método, justificar, combinación]
+          prior_knowledge: "Reconoce el efecto del precio ancla (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique que método de precio eligio para su producto y por que ese y no otro."
+          lessons:
+            - position: 1
+              slug: reviso-que-tanto-se-de-mi-cliente
+              micro_objective: "Decide, sin ayuda, si tiene suficiente evidencia de disposición a pagar para usar precio por valor, o si necesita apoyarse más en su costo."
+              narrative_beat: "Rho revisa sus entrevistas: tiene 6 respuestas claras sobre cuanto pagarian, asi que decide confiar más en el precio por valor que en su costo-más-margen."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: elijo-y-justifico-mi-metodo
+              micro_objective: "Elige, sin ayuda, un método de precio final para su producto y redacta una razón concreta que lo justifique."
+              narrative_beat: "Zara elige un precio combinado: no baja de su costo-más-margen, pero se acerca al precio por valor que sus clientas confirmaron."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-costo-mas-margen-o-precio-por-valor
+          kind: review_spaced
+          title_es: "Repaso: Costo-Más-Margen o Precio por Valor"
+          concept: "El equipo repasa como calcular un precio costo-más-margen, estimar la disposición a pagar y elegir un método de precio justificado."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la comparación entre precio por costo y precio por valor."
+          key_vocabulary: [costo-más-margen, precio por valor, método elegido]
+          prior_knowledge: "Completo los 6 temas de Costo-Más-Margen o Precio por Valor."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/que-es-costo-mas-margen
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/que-es-precio-por-valor
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/cuanto-pagarian-de-verdad
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/comparo-costo-plus-y-valor
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/el-precio-ancla
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/elijo-mi-metodo-de-precio
+          lessons:
+            - position: 1
+              slug: repaso-calculo-costo-mas-margen-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, el cálculo de un precio costo-más-margen para un producto que todavia no había visto."
+              narrative_beat: "El equipo calcula, sin ayuda, el precio costo-más-margen de un servicio de paseo de mascotas que un compañero les presenta."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: repaso-elijo-un-metodo-justificado
+              micro_objective: "Aplica sin ayuda todo lo repasado: elige y justifica un método de precio para un producto nuevo con evidencia distinta."
+              narrative_beat: "Liruf elige, sin ayuda de nadie, el método de precio más adecuado para el servicio de paseo de mascotas y explica por que."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-costos-reales-y-metodo-de-precio
+          kind: review_interleaved
+          title_es: "Cruce: Costos Reales y Método de Precio"
+          concept: "Mezclamos el costo total real calculado en la saga anterior con el método de precio elegido en esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el costo total real de un producto con el método de precio que decidio usar."
+          key_vocabulary: [costo total real, método de precio, combinar]
+          prior_knowledge: "Completo el repaso de Costo-Más-Margen o Precio por Valor (tema anterior) y Cuanto Cuesta de Verdad (saga anterior)."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/elijo-mi-metodo-de-precio
+            - precio-que-si-convence/cuanto-cuesta-de-verdad/mi-costo-total-por-producto
+          lessons:
+            - position: 1
+              slug: mi-metodo-elegido-nunca-baja-de-mi-costo
+              micro_objective: "Verifica, sin ayuda, que el precio elegido con su método (aunque sea por valor) nunca queda por debajo de su costo total real."
+              narrative_beat: "Rho revisa que su precio por valor de $130 este comodamente arriba de su costo total real de $58, no peligrosamente cerca."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: ajusto-mi-precio-final-con-ambos-datos
+              micro_objective: "Ajusta, sin ayuda, un precio final que respeta el costo total real como piso y el valor del cliente como referencia."
+              narrative_beat: "Zara fija su precio final en $95: por encima de su costo total real de $60, y cerca de lo que sus clientas confirmaron que pagarian."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: el-margen-que-si-alcanza
+    icon: percent
+    title:
+      en-US: "The Margin That Actually Holds Up"
+      es-MX: "El Margen que sí Alcanza"
+      pt-BR: "A Margem que Realmente Sobra"
+    description:
+      en-US: "A price that leaves no margin is not a business - protect what is actually yours to keep."
+      es-MX: "Un precio que no deja margen no es un negocio - protege lo que de verdad te queda."
+      pt-BR: "Um preço que nao deixa margem nao e um negocio - proteja o que realmente sobra para voce."
+    topics:
+        - position: 1
+          slug: que-es-el-margen
+          title_es: "Que es el margen"
+          concept: "El margen es la parte del precio que de verdad te queda despues de pagar el costo; se puede medir en pesos (ganancia) o en porcentaje del precio (margen)."
+          learning_objective: "El aprendiz calcula el margen de un producto restando el costo del precio y expresándolo como la ganancia en pesos."
+          key_vocabulary: [margen, ganancia en pesos, lo que de verdad te queda]
+          prior_knowledge: "Completo Costo-Más-Margen o Precio por Valor (saga anterior): ya eligio un método de precio."
+          fact_refs: [business.math.ejemplo_ganancia_15_10]
+          parent_check: "Pregunta a {{name}} cuanto le queda de verdad, en pesos, despues de restar el costo al precio de su producto."
+          lessons:
+            - position: 1
+              slug: precio-menos-costo-es-ganancia
+              micro_objective: "Calcula, sin ayuda, la ganancia en pesos de un producto con precio $15 y costo $10, y confirma que le quedan $5."
+              narrative_beat: "Dina resta $10 de costo a su precio de $15 y confirma que le quedan $5 de ganancia por cada unidad vendida."
+              difficulty: 1
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: calculo-mi-propia-ganancia
+              micro_objective: "Calcula, sin ayuda, la ganancia en pesos de su propio producto con precio $95 y costo total real $60."
+              narrative_beat: "Zara resta $60 de costo a su precio de $95 y confirma que le quedan $35 de ganancia por cada gorra vendida."
+              difficulty: 2
+              suggested_families: [input, analyze]
+        - position: 2
+          slug: margen-en-pesos-y-en-porcentaje
+          title_es: "Margen en pesos y en porcentaje"
+          concept: "$35 de ganancia suena bien, pero el porcentaje ($35 de $95 es 37%) te deja comparar productos de precios muy distintos en igualdad de condiciones."
+          learning_objective: "El aprendiz convierte una ganancia en pesos a margen porcentual dividiendo la ganancia entre el precio de venta."
+          key_vocabulary: [margen porcentual, comparar en igualdad, dividir entre el precio]
+          prior_knowledge: "Calcula la ganancia en pesos de un producto (tema anterior)."
+          fact_refs: [business.math.ejemplo_ganancia_20_12]
+          parent_check: "Pidele a {{name}} que calcule el margen de su producto en porcentaje, no solo en pesos."
+          lessons:
+            - position: 1
+              slug: convierto-pesos-a-porcentaje
+              micro_objective: "Convierte, sin ayuda, una ganancia de $8 sobre un precio de $20 a su equivalente en porcentaje (40%)."
+              narrative_beat: "Rho calcula que su ganancia de $8 sobre un precio de $20 es un margen del 40%, y anota ese porcentaje junto al número en pesos."
+              difficulty: 2
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: dos-productos-mismo-porcentaje
+              micro_objective: "Reconoce que dos productos con ganancias muy distintas en pesos pueden tener el mismo margen porcentual."
+              narrative_beat: "Liruf compara su funda ($35 de ganancia sobre $95) con su llavero ($7 de ganancia sobre $19) y descubre que ambos tienen casi el mismo margen porcentual."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: un-descuento-que-se-come-el-margen
+          title_es: "Un descuento que se come el margen"
+          concept: "Un descuento del 20% no le resta 20% a tu ganancia - le puede restar mucho más, porque el descuento sale directo del margen, no del precio completo."
+          learning_objective: "El aprendiz calcula cuanto margen real pierde despues de aplicar un descuento o comisión sobre el precio de venta."
+          key_vocabulary: [descuento, se come el margen, resta directo de la ganancia]
+          prior_knowledge: "Convierte una ganancia en pesos a margen porcentual (tema anterior)."
+          fact_refs: [business.illustrative.comision_app_reparto_pct]
+          parent_check: "Pregunta a {{name}} cuanto le queda de ganancia real despues de aplicar un descuento o comisión, no solo cuanto bajo el precio."
+          lessons:
+            - position: 1
+              slug: el-descuento-sale-de-mi-ganancia
+              micro_objective: "Calcula, sin ayuda, cuanto le queda de ganancia real a un precio de $95 con costo $60 despues de un descuento del 15%."
+              narrative_beat: "Zara ofrece un descuento del 15% en su gorra de $95: el precio baja a $81 pero su costo sigue siendo $60, asi que su ganancia cae de $35 a solo $21."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: la-comision-tambien-se-come-el-margen
+              micro_objective: "Calcula el margen real que le queda a un vendedor despues de que la comisión de una plataforma se resta de su precio de venta."
+              narrative_beat: "Rho vende su funda a $130 por una app que cobra una comisión ilustrativa del 25%: le llegan $97.50, y su margen real baja considerablemente frente a vender directo."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 4
+          slug: comparo-margenes-de-dos-productos
+          title_es: "Comparo márgenes de dos productos"
+          concept: "Cuando tienes tiempo limitado, conviene enfocarte primero en el producto con mejor margen, no solo en el que más se vende."
+          learning_objective: "El aprendiz compara el margen porcentual de dos productos distintos y decide en cual conviene enfocar más esfuerzo."
+          key_vocabulary: [comparar márgenes, enfocar esfuerzo, mejor margen]
+          prior_knowledge: "Calcula cuanto margen se pierde con un descuento (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a comparar el margen de dos de sus productos y decidir en cual conviene poner más esfuerzo esta semana."
+          lessons:
+            - position: 1
+              slug: cual-producto-me-deja-mas-margen
+              micro_objective: "Compara el margen porcentual de dos productos con precios y costos distintos y elige el que deja mejor margen."
+              narrative_beat: "Liruf compara sus playeras estampadas (margen 30%) contra sus llaveros bordados (margen 55%) y decide impulsar más los llaveros esta semana."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: el-que-mas-se-vende-no-siempre-deja-mas
+              micro_objective: "Reconoce un caso donde el producto que más se vende NO es el que deja más ganancia total, por su margen bajo."
+              narrative_beat: "Dina vende muchas más playeras que llaveros, pero al calcular la ganancia total del mes, los llaveros le dejaron casi lo mismo con menos esfuerzo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: cuando-un-precio-bajo-no-conviene
+          title_es: "Cuando un precio bajo no conviene"
+          concept: "Bajar el precio para vender más suena tentador, pero si el margen queda demasiado delgado, vender más solo significa trabajar más por casi nada."
+          learning_objective: "El aprendiz reconoce cuando bajar un precio para competir reduce el margen a un punto donde el esfuerzo ya no vale la pena."
+          key_vocabulary: [margen delgado, competir por precio, trabajar por casi nada]
+          prior_knowledge: "Compara márgenes de dos productos (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez penso en bajar su precio para vender más, y cuanto margen real le quedaria si lo hace."
+          lessons:
+            - position: 1
+              slug: bajo-el-precio-pero-que-me-queda
+              micro_objective: "Calcula el margen que le quedaria a un producto si baja su precio para igualar a un competidor, y decide si todavia vale la pena."
+              narrative_beat: "Zara considera bajar su gorra de $95 a $70 para igualar a un competidor, pero al calcular descubre que su margen caeria de 37% a apenas 14%."
+              difficulty: 4
+              suggested_families: [input, choice]
+            - position: 2
+              slug: elijo-competir-por-precio-o-por-otra-cosa
+              micro_objective: "Elige, entre competir bajando el precio o mejorar otra parte del producto, la opción que protege mejor el margen."
+              narrative_beat: "Rho decide no bajar su precio: en vez de eso, agrega un grabado extra gratis que le cuesta poco pero se siente valioso, y mantiene su margen intacto."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: mi-margen-objetivo
+          title_es: "Mi margen objetivo"
+          concept: "Fijar un margen mínimo objetivo, antes de negociar o dar descuentos, evita que una buena intención (ayudar a un amigo, cerrar una venta) termine costandote dinero de verdad."
+          learning_objective: "El aprendiz fija un margen mínimo objetivo para su producto y lo usa como regla antes de aceptar un precio menor."
+          key_vocabulary: [margen mínimo, regla antes de negociar, proteger el margen]
+          prior_knowledge: "Reconoce cuando un precio bajo no conviene (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga su margen mínimo objetivo, el número que no esta dispuesto a cruzar ni siquiera por un amigo."
+          lessons:
+            - position: 1
+              slug: fijo-mi-margen-minimo
+              micro_objective: "Fija, sin ayuda, un margen mínimo objetivo (por ejemplo 30%) para su producto antes de recibir ninguna solicitud de descuento."
+              narrative_beat: "Liruf decide de antemano que nunca aceptara un margen menor al 25% en sus playeras, pase lo que pase en la negociación."
+              difficulty: 4
+              suggested_families: [input, choice]
+            - position: 2
+              slug: aplico-mi-regla-cuando-me-piden-descuento
+              micro_objective: "Aplica, sin ayuda, su margen mínimo objetivo para decidir si aceptar o rechazar una solicitud de descuento de un cliente."
+              narrative_beat: "Dina rechaza amablemente el descuento que le pide un compañero, porque aceptarlo le dejaria un margen de solo 12%, muy por debajo de su regla del 30%."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-el-margen-que-si-alcanza
+          kind: review_spaced
+          title_es: "Repaso: El Margen que sí Alcanza"
+          concept: "El equipo repasa como calcular el margen en pesos y porcentaje, proteger el margen de descuentos y fijar un margen mínimo objetivo."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cálculo y la protección del margen."
+          key_vocabulary: [margen, descuento, margen mínimo]
+          prior_knowledge: "Completo los 6 temas de El Margen que sí Alcanza."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/el-margen-que-si-alcanza/que-es-el-margen
+            - precio-que-si-convence/el-margen-que-si-alcanza/margen-en-pesos-y-en-porcentaje
+            - precio-que-si-convence/el-margen-que-si-alcanza/un-descuento-que-se-come-el-margen
+            - precio-que-si-convence/el-margen-que-si-alcanza/comparo-margenes-de-dos-productos
+            - precio-que-si-convence/el-margen-que-si-alcanza/cuando-un-precio-bajo-no-conviene
+            - precio-que-si-convence/el-margen-que-si-alcanza/mi-margen-objetivo
+          lessons:
+            - position: 1
+              slug: repaso-calculo-el-margen-porcentual
+              micro_objective: "Recuerda y aplica, sin ayuda, la conversión de una ganancia en pesos a margen porcentual en un caso nuevo."
+              narrative_beat: "El equipo calcula, sin ayuda, el margen porcentual de un servicio de paseo de mascotas que todavia no habian analizado."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: repaso-aplico-mi-margen-minimo
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide, en un caso nuevo, si aceptar un descuento respetando un margen mínimo objetivo."
+              narrative_beat: "Rho decide, sin ayuda de nadie, si aceptar el descuento que le pide un nuevo cliente sin romper su margen mínimo del 30%."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-metodo-de-precio-y-margen-protegido
+          kind: review_interleaved
+          title_es: "Cruce: Método de Precio y Margen Protegido"
+          concept: "Mezclamos el método de precio elegido en la saga anterior con la protección de margen aprendida en esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el precio elegido con su método con la verificación de que respeta su margen mínimo objetivo."
+          key_vocabulary: [método de precio, margen mínimo, verificar]
+          prior_knowledge: "Completo el repaso de El Margen que sí Alcanza (tema anterior) y Costo-Más-Margen o Precio por Valor (saga anterior)."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/el-margen-que-si-alcanza/mi-margen-objetivo
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor/elijo-mi-metodo-de-precio
+          lessons:
+            - position: 1
+              slug: mi-precio-elegido-cumple-mi-margen-minimo
+              micro_objective: "Verifica, sin ayuda, que el precio elegido con su método de precio cumple su margen mínimo objetivo fijado."
+              narrative_beat: "Zara revisa que su precio de $95, elegido combinando costo y valor, todavia le deja un margen del 37%, arriba de su mínimo del 30%."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: ajusto-si-mi-precio-no-alcanza-el-margen
+              micro_objective: "Ajusta, sin ayuda, un precio elegido que no alcanzaba el margen mínimo objetivo, sin salirse del rango de valor confirmado por clientes."
+              narrative_beat: "Rho ajusta su precio de $88 a $102, todavia dentro de lo que sus clientes confirmaron que pagarian, para si alcanzar su margen mínimo del 30%."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 4
+    slug: el-punto-de-equilibrio
+    icon: balance
+    title:
+      en-US: "The Break-Even Point"
+      es-MX: "El Punto de Equilibrio"
+      pt-BR: "O Ponto de Equilibrio"
+    description:
+      en-US: "The exact number of sales where you stop losing money and start actually earning."
+      es-MX: "El número exacto de ventas donde dejas de perder dinero y empiezas a ganar de verdad."
+      pt-BR: "O número exato de vendas onde voce para de perder dinheiro e comeca a ganhar de verdade."
+    topics:
+        - position: 1
+          slug: que-es-el-punto-de-equilibrio
+          title_es: "Que es el punto de equilibrio"
+          concept: "El punto de equilibrio es el número de ventas donde el dinero que entra por fin cubre todos los costos fijos - antes de eso, cada venta solo reduce la perdida, no genera ganancia."
+          learning_objective: "El aprendiz explica que representa el punto de equilibrio de un negocio en términos de cubrir sus costos fijos."
+          key_vocabulary: [punto de equilibrio, cubrir los costos fijos, antes y despues del equilibrio]
+          prior_knowledge: "Completo El Margen que sí Alcanza (saga anterior): ya sabe proteger su margen por unidad."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si ya sabe cuantas ventas necesita para cubrir los gastos fijos de su negocio antes de empezar a ganar de verdad."
+          lessons:
+            - position: 1
+              slug: antes-y-despues-del-equilibrio
+              micro_objective: "Reconoce, en una escena, la diferencia entre vender antes de llegar al punto de equilibrio (todavia en perdida) y despues (ya en ganancia)."
+              narrative_beat: "Dina explica: 'las primeras 8 gorras solo pagan la renta del taller; a partir de la 9, cada gorra ya es ganancia de verdad'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-el-momento-del-equilibrio
+              micro_objective: "Identifica, en una lista de ventas acumuladas, en cual venta especifica el negocio cruza su punto de equilibrio."
+              narrative_beat: "Zara marca en su tabla exactamente en que venta el total acumulado por fin supera sus costos fijos del mes."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+        - position: 2
+          slug: cuantas-unidades-para-no-perder
+          title_es: "Cuantas unidades para no perder"
+          concept: "El punto de equilibrio en unidades se calcula dividiendo los costos fijos entre la ganancia que deja cada unidad (precio menos costo variable)."
+          learning_objective: "El aprendiz calcula el número de unidades necesarias para llegar al punto de equilibrio dividiendo costos fijos entre ganancia por unidad."
+          key_vocabulary: [unidades de equilibrio, costos fijos entre ganancia, calcular cuantas]
+          prior_knowledge: "Explica que representa el punto de equilibrio (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuantas unidades necesita vender este mes solo para cubrir sus costos fijos."
+          lessons:
+            - position: 1
+              slug: divido-costos-fijos-entre-ganancia-por-unidad
+              micro_objective: "Calcula, sin ayuda, las unidades de equilibrio dividiendo $600 de costos fijos entre $30 de ganancia por unidad, llegando a 20 unidades."
+              narrative_beat: "Rho divide sus $600 de costos fijos del mes entre los $30 que le deja cada funda y descubre que necesita vender 20 para no perder dinero."
+              difficulty: 2
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: calculo-mi-propio-punto-de-equilibrio
+              micro_objective: "Calcula, sin ayuda, las unidades de equilibrio de su propio producto usando sus costos fijos y su ganancia por unidad reales."
+              narrative_beat: "Liruf divide sus $300 de costos fijos entre los $20 que le deja cada playera y confirma que necesita vender 15 para cubrir gastos."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 3
+          slug: si-subo-el-precio-el-equilibrio-baja
+          title_es: "Si subo el precio, el equilibrio baja"
+          concept: "Subir el precio aumenta la ganancia por unidad, y eso reduce cuantas unidades necesitas vender para llegar al equilibrio - pero también puede reducir cuanta gente esta dispuesta a comprar."
+          learning_objective: "El aprendiz reconoce que subir el precio reduce el número de unidades de equilibrio necesarias, comparando dos escenarios de precio."
+          key_vocabulary: [subir el precio, el equilibrio baja, dos escenarios]
+          prior_knowledge: "Calcula las unidades de equilibrio de su propio producto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que pasaria con las unidades que necesita vender si subiera un poco su precio."
+          lessons:
+            - position: 1
+              slug: comparo-dos-escenarios-de-precio
+              micro_objective: "Compara el punto de equilibrio en unidades de un mismo producto a dos precios distintos y confirma que el precio más alto necesita menos unidades."
+              narrative_beat: "Zara compara: a $95 necesita vender 17 gorras para el equilibrio; a $110 solo necesita vender 12 - el precio más alto le exige menos ventas."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: pero-menos-gente-podria-comprar
+              micro_objective: "Reconoce el trade-off: un precio más alto baja las unidades de equilibrio pero también puede reducir cuanta gente esta dispuesta a comprar."
+              narrative_beat: "Rho sabe que subir su precio baja las unidades que necesita vender, pero también recuerda que sus entrevistas mostraron que menos gente pagaria ese precio más alto."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: costos-fijos-altos-cambian-todo
+          title_es: "Costos fijos altos cambian todo"
+          concept: "Comprar una herramienta cara sube tus costos fijos y, con ellos, cuantas unidades necesitas vender antes de recuperar esa inversión."
+          learning_objective: "El aprendiz calcula como un aumento en los costos fijos (una compra de equipo) eleva el número de unidades necesarias para el equilibrio."
+          key_vocabulary: [costos fijos altos, recuperar la inversión, sube el equilibrio]
+          prior_knowledge: "Reconoce el trade-off entre precio alto y menos ventas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si esta considerando comprar alguna herramienta cara, y cuantas ventas más necesitaria para recuperarla."
+          lessons:
+            - position: 1
+              slug: compro-una-herramienta-y-sube-mi-equilibrio
+              micro_objective: "Recalcula, sin ayuda, cuantas unidades de equilibrio necesita despues de sumar el costo fijo de una herramienta nueva a sus costos fijos mensuales."
+              narrative_beat: "Dina compra una prensa de calor de $900 para sus gorras; sus costos fijos suben y ahora necesita vender 30 gorras al mes, no solo 20, para cubrir todo."
+              difficulty: 4
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: vale-la-pena-comprar-la-herramienta
+              micro_objective: "Decide, comparando el nuevo punto de equilibrio contra sus ventas reales esperadas, si comprar una herramienta cara vale la pena este mes."
+              narrative_beat: "Liruf decide esperar un mes más antes de comprar su maquina de estampado, porque vender 30 playeras seguidas todavia no es realista para su negocio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: mi-grafica-de-equilibrio
+          title_es: "Mi gráfica de equilibrio"
+          concept: "Una gráfica sencilla, con costos fijos como una linea horizontal y los ingresos creciendo con cada venta, muestra de un vistazo en que venta exacta se cruzan las dos lineas."
+          learning_objective: "El aprendiz lee una gráfica simple de punto de equilibrio e identifica el número de unidades donde la linea de ingresos cruza la linea de costos."
+          key_vocabulary: [gráfica de equilibrio, linea de ingresos, linea de costos]
+          prior_knowledge: "Calcula el nuevo equilibrio despues de un costo fijo alto (tema anterior)."
+          fact_refs: []
+          parent_check: "Mira junto a {{name}} una gráfica simple de sus ingresos y costos, y pidele que señale en donde se cruzan las dos lineas."
+          lessons:
+            - position: 1
+              slug: donde-se-cruzan-las-lineas
+              micro_objective: "Identifica, en una gráfica simple, el punto exacto donde la linea de ingresos cruza la linea de costos fijos totales."
+              narrative_beat: "Zara señala en su gráfica el punto donde la linea de sus ingresos por fin supera la linea recta de sus costos fijos: justo en la venta número 20."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: leo-mi-propia-grafica
+              micro_objective: "Lee, sin ayuda, su propia gráfica de equilibrio y confirma en que unidad exacta su negocio deja de estar en perdida."
+              narrative_beat: "Rho revisa su propia gráfica y confirma que a partir de la funda número 12 del mes, cada venta ya es ganancia real."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: decido-mi-precio-final
+          title_es: "Decido mi precio final"
+          concept: "El precio final integra todo lo aprendido: cubre el costo total real, respeta un margen mínimo, refleja el valor confirmado por clientes y llega a un punto de equilibrio alcanzable."
+          learning_objective: "El aprendiz decide un precio final integrando costo total real, margen mínimo, valor confirmado por clientes y un punto de equilibrio realista."
+          key_vocabulary: [precio final, integrar todo, punto de equilibrio realista]
+          prior_knowledge: "Lee su propia gráfica de equilibrio (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique su precio final y como ese número cubre su costo, su margen y llega a un punto de equilibrio que de verdad puede alcanzar."
+          lessons:
+            - position: 1
+              slug: reviso-los-cuatro-elementos-de-mi-precio
+              micro_objective: "Reune, sin ayuda, los 4 elementos de su decisión de precio: costo total real, margen mínimo, valor confirmado y unidades de equilibrio."
+              narrative_beat: "Dina ordena en tarjetas su decisión completa: costo de $60, margen mínimo de 30%, valor confirmado de $95 y equilibrio en 20 unidades."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: fijo-mi-precio-final
+              micro_objective: "Completa, sin ayuda, la fijación de un precio final que cumple los 4 elementos revisados."
+              narrative_beat: "Zara fija su precio final en $95: cubre su costo, respeta su margen mínimo, coincide con el valor confirmado y llega a un equilibrio de 18 ventas al mes, algo realista."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-el-punto-de-equilibrio
+          kind: review_spaced
+          title_es: "Repaso: El Punto de Equilibrio"
+          concept: "El equipo repasa como calcular unidades de equilibrio, el efecto de subir el precio o los costos fijos, y como decidir un precio final integrado."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cálculo del punto de equilibrio y la decisión de precio final."
+          key_vocabulary: [punto de equilibrio, costos fijos, precio final]
+          prior_knowledge: "Completo los 6 temas de El Punto de Equilibrio."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/el-punto-de-equilibrio/que-es-el-punto-de-equilibrio
+            - precio-que-si-convence/el-punto-de-equilibrio/cuantas-unidades-para-no-perder
+            - precio-que-si-convence/el-punto-de-equilibrio/si-subo-el-precio-el-equilibrio-baja
+            - precio-que-si-convence/el-punto-de-equilibrio/costos-fijos-altos-cambian-todo
+            - precio-que-si-convence/el-punto-de-equilibrio/mi-grafica-de-equilibrio
+            - precio-que-si-convence/el-punto-de-equilibrio/decido-mi-precio-final
+          lessons:
+            - position: 1
+              slug: repaso-calculo-unidades-de-equilibrio-nuevas
+              micro_objective: "Recuerda y aplica, sin ayuda, el cálculo de unidades de equilibrio para un negocio nuevo con costos fijos y ganancia por unidad distintos."
+              narrative_beat: "El equipo calcula, sin ayuda, el punto de equilibrio de un servicio de paseo de mascotas que un compañero les presenta."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: repaso-decido-un-precio-final-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide un precio final para un caso nuevo integrando costo, margen, valor y equilibrio."
+              narrative_beat: "Rho decide, sin ayuda de nadie, el precio final de un servicio de paseo de mascotas integrando los 4 elementos aprendidos."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-margen-protegido-y-equilibrio-alcanzable
+          kind: review_interleaved
+          title_es: "Cruce: Margen Protegido y Equilibrio Alcanzable"
+          concept: "Mezclamos el margen mínimo protegido de la saga anterior con el cálculo de unidades de equilibrio de esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un margen mínimo objetivo con el cálculo de unidades de equilibrio para confirmar que su precio final es realista."
+          key_vocabulary: [margen mínimo, equilibrio realista, confirmar]
+          prior_knowledge: "Completo el repaso de El Punto de Equilibrio (tema anterior) y El Margen que sí Alcanza (saga anterior)."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/el-punto-de-equilibrio/decido-mi-precio-final
+            - precio-que-si-convence/el-margen-que-si-alcanza/mi-margen-objetivo
+          lessons:
+            - position: 1
+              slug: mi-punto-de-equilibrio-respeta-mi-margen-minimo
+              micro_objective: "Verifica, sin ayuda, que el precio usado para calcular su punto de equilibrio todavia respeta su margen mínimo objetivo, no un precio rebajado."
+              narrative_beat: "Zara confirma que su cálculo de 18 unidades de equilibrio usa su precio real de $95, no un precio con descuento que rompería su margen mínimo del 30%."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: mis-ventas-esperadas-superan-mi-equilibrio
+              micro_objective: "Compara sus ventas esperadas reales contra su punto de equilibrio calculado y confirma si su negocio, con el margen protegido, es realista este mes."
+              narrative_beat: "Rho compara sus 25 ventas esperadas este mes contra su punto de equilibrio de 12 fundas y confirma que su negocio, con margen protegido, va a dejar ganancia real."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 5
+    slug: la-feria-del-precio-justo
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Fair Price Fair"
+      es-MX: "La Feria del Precio Justo"
+      pt-BR: "A Feira do Preço Justo"
+    description:
+      en-US: "The whole valley gathers to put every pricing skill to a real test in front of the merchants council."
+      es-MX: "Todo el valle se reune para poner a prueba cada habilidad de precio frente al Consejo de Comerciantes."
+      pt-BR: "Todo o vale se reune para colocar a prova cada habilidade de preço diante do Conselho de Comerciantes."
+    topics:
+        - position: 1
+          slug: el-reto-de-los-tres-precios
+          kind: review_quest
+          title_es: "El Reto de los Tres Precios"
+          concept: "El Consejo de Comerciantes reta a cada equipo a poner precio a tres productos distintos usando costo, valor y comparación, sin equivocarse en ninguno."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el cálculo de costo total real con la elección de un método de precio para responder al reto de tres productos distintos."
+          key_vocabulary: [reto de tres precios, tres productos, sin equivocarse]
+          prior_knowledge: "Completo Cuanto Cuesta de Verdad y Costo-Más-Margen o Precio por Valor."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/cuanto-cuesta-de-verdad
+            - precio-que-si-convence/costo-mas-margen-o-precio-por-valor
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-de-los-tres-precios
+              micro_objective: "Recuerda, sin ayuda, como calcular el costo total real y elegir un método de precio antes de enfrentar el reto de tres productos."
+              narrative_beat: "El Consejo de Comerciantes anuncia: 'pongan precio justo a tres productos distintos - uno por costo, uno por valor, y uno combinando ambos'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: pongo-precio-a-los-tres-productos
+              micro_objective: "Aplica, sin ayuda, el cálculo de costo total y el método de precio elegido a tres productos distintos presentados en el reto."
+              narrative_beat: "Zara resuelve el reto de las tres islas comerciales: calcula el costo real de cada producto y elige, para cada uno, el método de precio que mejor le queda."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-precio-final-ante-el-consejo
+          kind: review_quest
+          title_es: "Mi Precio Final ante el Consejo"
+          concept: "Con margen protegido y punto de equilibrio calculado, el equipo presenta ante el Consejo de Comerciantes su precio final, defendido con matemáticas reales."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un precio final integrando margen protegido y punto de equilibrio realista."
+          key_vocabulary: [consejo de comerciantes, precio defendido, matemáticas reales]
+          prior_knowledge: "Completo El Reto de los Tres Precios (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - precio-que-si-convence/el-margen-que-si-alcanza
+            - precio-que-si-convence/el-punto-de-equilibrio
+          lessons:
+            - position: 1
+              slug: preparo-mi-caso-para-el-consejo
+              micro_objective: "Organiza, sin ayuda, el margen protegido y el punto de equilibrio calculado para presentarlos ante el Consejo de Comerciantes."
+              narrative_beat: "Rho ordena su caso completo: costo real, margen mínimo respetado, precio por valor confirmado y punto de equilibrio alcanzable en 12 ventas."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-precio-ante-el-consejo
+              micro_objective: "Completa, sin ayuda, la presentación final de su precio ante el Consejo de Comerciantes, defendiendolo con las cuatro piezas de evidencia reunidas."
+              narrative_beat: "Dina presenta ante el Consejo de Comerciantes del valle: su precio de $95 cubre el costo, protege su margen del 30%, refleja el valor confirmado y llega al equilibrio en solo 18 ventas."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

@@ -9,25 +9,28 @@ course:
     es-MX: "Inversiones"
     pt-BR: "Investimentos"
   description:
-    en-US: "A story adventure for kids who already know how money works and how to build something of their own — now they learn how time, patience and smart risk can grow what they save, and how to spot the traps that pretend to be opportunities."
-    es-MX: "Una aventura para niños que ya saben cómo funciona el dinero y cómo construir algo propio — ahora aprenden cómo el tiempo, la paciencia y el riesgo inteligente pueden hacer crecer lo que ahorran, y cómo reconocer las trampas que se disfrazan de oportunidades."
-    pt-BR: "Uma aventura para crianças que já sabem como o dinheiro funciona e como construir algo próprio — agora aprendem como o tempo, a paciência e o risco inteligente podem fazer crescer o que economizam, e como reconhecer as armadilhas que se disfarçam de oportunidades."
+    en-US: "A story arc for teens (12-18) who already know how to earn, save and build something of their own — now they learn how time, risk and diversification grow what they save, how to spot the traps that pretend to be opportunities, and how to think in simulated decisions before real ones ever matter."
+    es-MX: "Un arco narrativo para adolescentes (12-18) que ya saben ganar, ahorrar y construir algo propio — ahora aprenden cómo el tiempo, el riesgo y la diversificación hacen crecer lo que ahorran, cómo reconocer las trampas que se disfrazan de oportunidades, y a pensar en decisiones simuladas antes de que las reales importen de verdad."
+    pt-BR: "Um arco narrativo para adolescentes (12-18) que já sabem ganhar, economizar e construir algo próprio — agora aprendem como o tempo, o risco e a diversificação fazem crescer o que economizam, como reconhecer as armadilhas que se disfarçam de oportunidades, e a pensar em decisões simuladas antes que as reais realmente importem."
   authoring_locale: es-MX
   # COURSE_ENGINE.md §3.1b — course-level prerequisite edge for future
   # placement/unlock. Cross-course resolution (do these courses exist? any
   # cycles?) happens once every course directory has loaded; a single-course
   # `loadCourseCatalog` call never resolves this list itself.
+  #
+  # PIVOT (WALKTHROUGH 2026-08-12): this course jumped from tier2-3 (8-12) to
+  # a single tier4 (12-18) audience, same as entrepreneurship (its own
+  # prerequisite here). The investment-vocabulary hard ceiling (see
+  # taxonomy.yaml) is UNCHANGED by this pivot — owner decision, does not
+  # relax for the 16-18 end of the band.
   requires: [financial-education, entrepreneurship]
 
 adventures:
-  - file: adventures/01-el-jardin-del-tiempo.yaml
-  - file: adventures/02-la-aldea-del-interes.yaml
-  - file: adventures/03-el-archipielago-de-los-riesgos.yaml
-  - file: adventures/04-la-ciudad-de-las-metas.yaml
-  # 05-08 authored by a sibling agent (COURSE_ENGINE.md §3.1b arc table) —
-  # listed here so the catalog is a complete coverage oracle even before
-  # they land. DO NOT author these from this task (out of scope).
-  - file: adventures/05-el-reino-de-las-canastas.yaml
-  - file: adventures/06-el-bosque-del-interes-compuesto.yaml
-  - file: adventures/07-el-faro-de-los-fraudes.yaml
-  - file: adventures/08-el-cosmos-del-inversionista.yaml
+  - file: adventures/01-valor-del-tiempo.yaml
+  - file: adventures/02-interes-que-se-acumula.yaml
+  - file: adventures/03-mapa-del-riesgo.yaml
+  - file: adventures/04-metas-con-numeros.yaml
+  - file: adventures/05-canastas-y-fondos.yaml
+  - file: adventures/06-efecto-bola-de-nieve.yaml
+  - file: adventures/07-radar-de-fraudes.yaml
+  - file: adventures/08-simulador-del-futuro.yaml

@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 3
+  slug: mesa-del-cliente
+  theme: archipelago
+  age_tier: tier4
+  title:
+    en-US: "The Customer Table"
+    es-MX: "Mesa del Cliente"
+    pt-BR: "Mesa do Cliente"
+  description:
+    en-US: "Across the Archipelago of Voices, the crew learns to interview real people, find real patterns, and change their product with real signal - not guesses."
+    es-MX: "A través del Archipielago de las Voces, el equipo aprende a entrevistar gente real, encontrar patrones reales y cambiar su producto con señal real, no con suposiciónes."
+    pt-BR: "Atraves do Arquipelago das Vozes, a equipe aprende a entrevistar pessoas reais, encontrar padroes reais e mudar seu produto com sinal real, nao com suposicoes."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan al Archipielago de las Voces, donde cada isla representa a un grupo distinto de clientes posibles. Ahí aprenden que construir el MVP fue solo el principio: ahora deben sentarse a la mesa del cliente, escuchar de verdad, y resistir la tentación de cambiarlo todo por un solo comentario o de no cambiar nada por miedo a equivocarse. Al final, cada equipo debe presentar ante la Gran Asamblea una decisión de producto respaldada por evidencia real, no por corazonadas."
+
+sagas:
+  - position: 1
+    slug: preparo-mi-entrevista
+    icon: assignment
+    title:
+      en-US: "Preparing My Interview"
+      es-MX: "Preparo mi Entrevista"
+      pt-BR: "Preparo minha Entrevista"
+    description:
+      en-US: "A good interview starts long before the first question - with a clear goal and an honest script."
+      es-MX: "Una buena entrevista empieza mucho antes de la primera pregunta: con un objetivo claro y un guion honesto."
+      pt-BR: "Uma boa entrevista comeca muito antes da primeira pergunta: com um objetivo claro e um roteiro honesto."
+    topics:
+        - position: 1
+          slug: objetivo-de-la-entrevista
+          title_es: "Objetivo de la entrevista"
+          concept: "Antes de hablar con nadie, hay que saber exactamente que quieres aprender de esa conversación."
+          learning_objective: "El aprendiz redacta un objetivo claro (que quiero aprender) antes de diseñar las preguntas de una entrevista."
+          key_vocabulary: [objetivo de entrevista, que quiero aprender, antes de preguntar]
+          prior_knowledge: "Completo Prototipo de Garage (aventura anterior): ya tiene un MVP construido."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que es exactamente lo que quiere aprender antes de su próxima entrevista, no solo si le va a ir bien."
+          lessons:
+            - position: 1
+              slug: quiero-vender-o-quiero-aprender
+              micro_objective: "Distingue, entre dos objetivos de entrevista, cual busca aprender de verdad y cual solo busca confirmar que le compren."
+              narrative_beat: "Liruf quiere entrevistar solo para que le digan que si a su idea; Rho le explica que el objetivo es aprender, no vender."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-que-quiero-aprender
+              micro_objective: "Redacta, sin ayuda, el objetivo de aprendizaje de una entrevista sobre su propio MVP."
+              narrative_beat: "Zara escribe en su libreta: \"quiero aprender si de verdad usarian mi estuche todos los días, no solo una vez\"."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: preguntas-que-no-dirigen
+          title_es: "Preguntas que no dirigen"
+          concept: "Una pregunta bien hecha no sugiere la respuesta que quieres escuchar; deja que la persona conteste con sus propias palabras."
+          learning_objective: "El aprendiz reescribe una pregunta que dirige la respuesta en una versión abierta y neutral."
+          key_vocabulary: [pregunta neutral, dirigir la respuesta, palabras propias]
+          prior_knowledge: "Redacta un objetivo de entrevista (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} una de sus preguntas de entrevista y decidan juntos si empuja la respuesta o de verdad la deja abierta."
+          lessons:
+            - position: 1
+              slug: esta-pregunta-empuja-la-respuesta
+              micro_objective: "Detecta, entre 4 preguntas, cuales empujan una respuesta positiva sin querer."
+              narrative_beat: "Rho revisa su lista de preguntas y tacha 'no te encanta mi idea?' porque ya empuja la respuesta que quiere escuchar."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: reescribo-mi-pregunta
+              micro_objective: "Reescribe, sin ayuda, una pregunta dirigida en una versión abierta y neutral."
+              narrative_beat: "Dina cambia 'no crees que esto es util?' por 'cuentame de la última vez que tuviste este problema'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: a-quien-entrevisto-primero
+          title_es: "A quien entrevisto primero"
+          concept: "No toda persona disponible es la persona correcta para entrevistar; hay que elegir a quien de verdad vive el problema."
+          learning_objective: "El aprendiz elige, entre varios candidatos posibles, a los más relevantes para entrevistar primero según el problema investigado."
+          key_vocabulary: [candidato de entrevista, segmento relevante, primero]
+          prior_knowledge: "Reescribe preguntas dirigidas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} a quien, entre toda la gente que conoce, le conviene entrevistar primero porque de verdad vive el problema."
+          lessons:
+            - position: 1
+              slug: quien-vive-el-problema-de-verdad
+              micro_objective: "Elige, entre 4 personas posibles, las 2 que de verdad viven el problema que investiga."
+              narrative_beat: "Zara descarta a su primo, que nunca ha comprado un estuche personalizado, y elige a compañeros que si compran seguido."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: ordeno-mi-lista-de-entrevistados
+              micro_objective: "Ordena una lista de 5 candidatos del más relevante al menos relevante para entrevistar primero."
+              narrative_beat: "Liruf ordena su lista: primero los que ya compraron algo parecido, al final los que nunca lo han considerado."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: cuantas-personas-necesito
+          title_es: "Cuantas personas necesito"
+          concept: "Una sola conversación no basta para confiar en un patron; varias conversaciones distintas confirman si de verdad se repite."
+          learning_objective: "El aprendiz estima cuantas entrevistas distintas necesita antes de confiar en un hallazgo como patron."
+          key_vocabulary: [número de entrevistas, confiar en un patron, repetición]
+          prior_knowledge: "Elige a quien entrevistar primero (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} a cuantas personas distintas planea entrevistar antes de confiar en lo que escucho de una sola."
+          lessons:
+            - position: 1
+              slug: una-persona-no-basta
+              micro_objective: "Reconoce, en un caso, por que la opinion de una sola persona no es suficiente para decidir algo grande."
+              narrative_beat: "Rho esta a punto de cambiar todo su plan por el comentario de un solo amigo; Dina le recuerda que uno no es un patron."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: cuantas-entrevistas-planeo
+              micro_objective: "Elige, entre 3 planes, el número razonable de entrevistas distintas antes de confiar en un hallazgo."
+              narrative_beat: "Zara planea entrevistar al menos a 6 personas distintas de su segmento antes de sacar cualquier conclusión."
+              difficulty: 4
+              suggested_families: [choice, input]
+        - position: 5
+          slug: donde-y-como-la-hago
+          title_es: "Donde y como la hago"
+          concept: "El lugar y el formato de una entrevista (en persona, por chat, por llamada) cambian que tan comoda se siente la otra persona para hablar con honestidad."
+          learning_objective: "El aprendiz elige el formato y lugar más adecuado para una entrevista según quien es la persona entrevistada."
+          key_vocabulary: [formato de entrevista, lugar adecuado, comodidad]
+          prior_knowledge: "Estima cuantas entrevistas necesita (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} donde y de que forma planea hacer su próxima entrevista, y si ese lugar ayuda a que la otra persona sea honesta."
+          lessons:
+            - position: 1
+              slug: en-persona-o-por-chat
+              micro_objective: "Elige, entre dos formatos, el más adecuado según la disponibilidad y comodidad de la persona a entrevistar."
+              narrative_beat: "Liruf elige entrevistar por chat a un compañero que vive lejos, y en persona a los que ve todos los días en la escuela."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-un-lugar-sin-presion
+              micro_objective: "Elige, entre 3 lugares posibles, el que pondria menos presión social a la persona entrevistada para contestar con honestidad."
+              narrative_beat: "Rho decide no entrevistar frente a los amigos del entrevistado, para que no conteste solo por quedar bien frente a ellos."
+              difficulty: 4
+              suggested_families: [choice, story]
+        - position: 6
+          slug: ensayo-mi-entrevista
+          title_es: "Ensayo mi entrevista"
+          concept: "Practicar la entrevista con alguien de confianza antes de la real detecta preguntas confusas o demasiado largas."
+          learning_objective: "El aprendiz ensaya un guion de entrevista y detecta al menos una pregunta que necesita ajustarse antes de usarla de verdad."
+          key_vocabulary: [ensayo, guion de entrevista, ajustar antes]
+          prior_knowledge: "Elige formato y lugar (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que ensaye su guion de entrevista contigo antes de usarlo con alguien que no conoce."
+          lessons:
+            - position: 1
+              slug: mi-pregunta-es-confusa
+              micro_objective: "Detecta, en un ensayo, cual pregunta de un guion resulto confusa para la persona que la escucho."
+              narrative_beat: "Zara ensaya su guion con su hermano, y el se queda callado en la tercera pregunta porque no entendio que le preguntaba."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: ajusto-mi-guion-antes-de-salir
+              micro_objective: "Ajusta, sin ayuda, una pregunta confusa detectada en el ensayo antes de usar el guion con un desconocido."
+              narrative_beat: "Dina reescribe su tercera pregunta después del ensayo, esta vez más corta y más clara."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-preparo-mi-entrevista
+          kind: review_spaced
+          title_es: "Repaso: Preparo mi Entrevista"
+          concept: "El equipo repasa como definir un objetivo, escribir preguntas neutrales y elegir a quien entrevistar primero."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los pasos de preparación de esta saga."
+          key_vocabulary: [objetivo, pregunta neutral, candidato]
+          prior_knowledge: "Completo los 6 temas de Preparo mi Entrevista."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/preparo-mi-entrevista/objetivo-de-la-entrevista
+            - mesa-del-cliente/preparo-mi-entrevista/preguntas-que-no-dirigen
+            - mesa-del-cliente/preparo-mi-entrevista/a-quien-entrevisto-primero
+            - mesa-del-cliente/preparo-mi-entrevista/cuantas-personas-necesito
+            - mesa-del-cliente/preparo-mi-entrevista/donde-y-como-la-hago
+            - mesa-del-cliente/preparo-mi-entrevista/ensayo-mi-entrevista
+          lessons:
+            - position: 1
+              slug: repaso-escribo-mi-objetivo
+              micro_objective: "Recuerda y aplica, sin ayuda, como redactar el objetivo de una entrevista nueva."
+              narrative_beat: "El equipo escribe, sin ayuda, el objetivo de una entrevista nueva sobre una idea que todavia no habian explorado."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+            - position: 2
+              slug: repaso-reescribo-una-pregunta
+              micro_objective: "Aplica sin ayuda todo lo repasado: reescribe una pregunta dirigida en una versión neutral."
+              narrative_beat: "Rho reescribe, sin ayuda de nadie, una pregunta dirigida que encontro en el guion de un compañero."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-entrevista-y-mvp
+          kind: review_interleaved
+          title_es: "Cruce: Entrevista y MVP"
+          concept: "Mezclamos el objetivo de la entrevista con el MVP construido en la aventura anterior para preguntar exactamente lo que hace falta."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la definición de su MVP con el objetivo de una entrevista que lo ponga a prueba."
+          key_vocabulary: [MVP, objetivo de entrevista, poner a prueba]
+          prior_knowledge: "Completo el repaso de Preparo mi Entrevista (tema anterior) y Prototipo de Garage (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/preparo-mi-entrevista/objetivo-de-la-entrevista
+            - mesa-del-cliente/preparo-mi-entrevista/a-quien-entrevisto-primero
+            - prototipo-de-garage/que-es-un-mvp/mi-mvp-en-una-frase
+          lessons:
+            - position: 1
+              slug: mi-mvp-necesita-que-pregunta
+              micro_objective: "Conecta la definición de su MVP con la pregunta clave que una entrevista debería responder sobre el."
+              narrative_beat: "Zara revisa la frase de su MVP y se da cuenta de que la pregunta clave es si la gente lo usaria todos los días, no solo una vez."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: elijo-a-quien-le-pregunto-sobre-mi-mvp
+              micro_objective: "Elige, sin ayuda, a la persona más relevante para preguntarle directamente sobre su MVP ya construido."
+              narrative_beat: "Rho elige entrevistar primero a quien ya probo su prototipo en el Demo Day del valle, porque ya tiene experiencia real con el."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: la-entrevista-real
+    icon: record_voice_over
+    title:
+      en-US: "The Real Interview"
+      es-MX: "La Entrevista Real"
+      pt-BR: "A Entrevista Real"
+    description:
+      en-US: "Break the ice, talk less than they do, and learn to spot a polite lie."
+      es-MX: "Rompe el hielo, habla menos que la otra persona, y aprende a detectar una mentira cortes."
+      pt-BR: "Quebre o gelo, fale menos que a outra pessoa, e aprenda a detectar uma mentira educada."
+    topics:
+        - position: 1
+          slug: rompo-el-hielo
+          title_es: "Rompo el hielo"
+          concept: "Unos minutos de conversación informal antes de entrar en materia hacen que la persona entrevistada baje la guardia y hable con más honestidad."
+          learning_objective: "El aprendiz abre una entrevista con una conversación breve e informal antes de la primera pregunta clave."
+          key_vocabulary: [romper el hielo, bajar la guardia, conversación informal]
+          prior_knowledge: "Completo Preparo mi Entrevista (saga anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como piensa abrir su próxima entrevista antes de lanzar la primera pregunta importante."
+          lessons:
+            - position: 1
+              slug: empiezo-con-una-pregunta-dificil-o-facil
+              micro_objective: "Elige, entre dos formas de abrir una entrevista, la que genera más confianza antes de preguntar algo difícil."
+              narrative_beat: "Liruf quiere empezar preguntando directo cuanto gastaría; Zara le sugiere primero preguntar como le fue en su semana."
+              difficulty: 1
+              suggested_families: [choice, story]
+            - position: 2
+              slug: mi-primera-frase-informal
+              micro_objective: "Redacta, sin ayuda, una frase informal para abrir una entrevista antes de la primera pregunta clave."
+              narrative_beat: "Rho abre su entrevista comentando algo sobre el clima del día, antes de sacar su libreta de preguntas."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: dejo-que-hable-mas-que-yo
+          title_es: "Dejo que hable más que yo"
+          concept: "En una buena entrevista, la persona entrevistada habla mucho más que quien pregunta; si hablas tu más de la mitad del tiempo, algo esta mal."
+          learning_objective: "El aprendiz reconoce cuando esta hablando demasiado durante una entrevista y cede el espacio a la otra persona."
+          key_vocabulary: [escuchar más, ceder espacio, proporción de habla]
+          prior_knowledge: "Abre una entrevista con conversación informal (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, en su última entrevista, hablo más el o la persona que entrevisto."
+          lessons:
+            - position: 1
+              slug: quien-hablo-mas
+              micro_objective: "Reconoce, en una transcripción corta, si quien entrevisto hablo más que la persona entrevistada."
+              narrative_beat: "Dina revisa su transcripción y nota, avergonzada, que hablo casi la mitad del tiempo explicando su propia idea."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: me-quedo-callado-y-espero
+              micro_objective: "Elige la reacción correcta cuando hay un silencio incomodo después de una pregunta abierta."
+              narrative_beat: "Zara hace una pregunta abierta y, aunque el silencio se siente largo, espera sin llenarlo con sus propias palabras."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 3
+          slug: profundizo-con-por-que
+          title_es: "Profundizo con por que"
+          concept: "Cuando una respuesta se queda en la superficie, preguntar \"por que\" una vez más suele revelar la razón de verdad detras de la respuesta."
+          learning_objective: "El aprendiz formula una pregunta de seguimiento que profundiza una respuesta superficial ya recibida."
+          key_vocabulary: [profundizar, pregunta de seguimiento, razón real]
+          prior_knowledge: "Cede el espacio a la otra persona (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a preguntar un 'por que' más cuando una respuesta se sienta corta o poco clara."
+          lessons:
+            - position: 1
+              slug: esta-respuesta-se-quedo-corta
+              micro_objective: "Reconoce, en un caso, cuando una respuesta recibida se queda en la superficie y necesita profundizarse."
+              narrative_beat: "Alguien le dice a Rho 'no me gusto mucho' sobre su prototipo, y Rho anota que esa respuesta todavia no explica por que."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: pregunto-un-por-que-mas
+              micro_objective: "Formula, sin ayuda, una pregunta de seguimiento que profundiza una respuesta superficial dada en un caso."
+              narrative_beat: "Liruf pregunta 'y por que no te gusto?' después de una respuesta corta, y así descubre el verdadero motivo."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: anoto-frases-textuales
+          title_es: "Anoto frases textuales"
+          concept: "Anotar las palabras exactas de la persona entrevistada, en vez de resumirlas con tus propias palabras, conserva detalles que después resultan clave."
+          learning_objective: "El aprendiz registra una cita textual de una respuesta en vez de parafrasearla con sus propias palabras."
+          key_vocabulary: [cita textual, parafrasear, palabras exactas]
+          prior_knowledge: "Formula preguntas de seguimiento (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea, entre comillas, una frase exacta que anoto de su última entrevista, no un resumen."
+          lessons:
+            - position: 1
+              slug: resumo-o-anoto-textual
+              micro_objective: "Compara una nota resumida y una nota textual de la misma respuesta y elige cual conserva más detalle util."
+              narrative_beat: "Zara compara su nota 'le parecio caro' contra la frase textual 'esta bien, pero no pagaría más de $80' - la segunda dice más."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: anoto-la-frase-exacta
+              micro_objective: "Registra, sin ayuda, la frase textual exacta de una respuesta dada en un caso, entre comillas."
+              narrative_beat: "Dina anota entre comillas la frase exacta que le dijo su entrevistado, sin cambiar ni una palabra."
+              difficulty: 4
+              suggested_families: [input, choice]
+        - position: 5
+          slug: detecto-cuando-me-esta-dando-el-avion
+          title_es: "Detecto cuando me esta dando el avion"
+          concept: "A veces la gente contesta lo que cree que quieres escuchar, por quedar bien, en vez de decir la verdad; hay que aprender a notar esa señal."
+          learning_objective: "El aprendiz reconoce señales de una respuesta cortes pero poco honesta y busca confirmarla con una pregunta de seguimiento."
+          key_vocabulary: [respuesta cortes, quedar bien, confirmar con seguimiento]
+          prior_knowledge: "Registra citas textuales (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna respuesta que recibio sono demasiado amable, y como podría confirmar si era honesta."
+          lessons:
+            - position: 1
+              slug: me-dijo-que-si-pero
+              micro_objective: "Reconoce, en una escena, una señal de que alguien esta contestando por quedar bien en vez de decir la verdad."
+              narrative_beat: "Alguien le dice a Liruf 'seguro te lo compraría' sin mirarlo a los ojos ni preguntar el precio - Rho nota la señal."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: confirmo-con-una-pregunta-directa
+              micro_objective: "Formula una pregunta de seguimiento que pone a prueba una respuesta cortes pero dudosa."
+              narrative_beat: "Zara responde a un 'seguro me interesa' con 'genial, cuanto pagarias hoy mismo por el?' para confirmar si es en serio."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: cierro-la-entrevista-bien
+          title_es: "Cierro la entrevista bien"
+          concept: "Agradecer con sinceridad y dejar la puerta abierta para volver a hablar con esa persona es tan importante como la entrevista misma."
+          learning_objective: "El aprendiz cierra una entrevista agradeciendo con sinceridad y dejando abierta la posibilidad de un contacto futuro."
+          key_vocabulary: [cerrar bien, agradecer, puerta abierta]
+          prior_knowledge: "Detecta respuestas poco honestas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como cerro su última entrevista, y si dejo la puerta abierta para volver a hablar con esa persona."
+          lessons:
+            - position: 1
+              slug: me-voy-rapido-o-cierro-bien
+              micro_objective: "Elige, entre dos formas de terminar una entrevista, la que deja una mejor impresión y abre la puerta a volver a hablar."
+              narrative_beat: "Rho se despide con prisa apenas obtiene su última respuesta; Dina le muestra como cerrar agradeciendo con calma."
+              difficulty: 4
+              suggested_families: [choice, story]
+            - position: 2
+              slug: agradezco-y-dejo-la-puerta-abierta
+              micro_objective: "Redacta, sin ayuda, un cierre de entrevista que agradece y deja abierta la posibilidad de contactar de nuevo."
+              narrative_beat: "Zara cierra su entrevista diciendo: 'gracias por tu tiempo, te aviso cuando tenga la versión final para que la pruebes'."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-la-entrevista-real
+          kind: review_spaced
+          title_es: "Repaso: La Entrevista Real"
+          concept: "El equipo repasa como escuchar más que hablar, profundizar con preguntas de seguimiento y detectar respuestas poco honestas."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las técnicas de conducción de entrevista de esta saga."
+          key_vocabulary: [escuchar, profundizar, honestidad]
+          prior_knowledge: "Completo los 6 temas de La Entrevista Real."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/la-entrevista-real/rompo-el-hielo
+            - mesa-del-cliente/la-entrevista-real/dejo-que-hable-mas-que-yo
+            - mesa-del-cliente/la-entrevista-real/profundizo-con-por-que
+            - mesa-del-cliente/la-entrevista-real/anoto-frases-textuales
+            - mesa-del-cliente/la-entrevista-real/detecto-cuando-me-esta-dando-el-avion
+            - mesa-del-cliente/la-entrevista-real/cierro-la-entrevista-bien
+          lessons:
+            - position: 1
+              slug: repaso-cedo-el-espacio
+              micro_objective: "Recuerda y aplica, sin ayuda, como ceder el espacio de habla a la persona entrevistada."
+              narrative_beat: "El equipo practica, sin ayuda, una entrevista corta donde cada quien vigila hablar menos de la mitad del tiempo."
+              difficulty: 3
+              suggested_families: [choice, story]
+            - position: 2
+              slug: repaso-detecto-una-respuesta-cortes
+              micro_objective: "Aplica sin ayuda todo lo repasado: detecta una respuesta cortes pero poco honesta en un caso nuevo."
+              narrative_beat: "Liruf revisa una transcripción nueva y detecta, sin ayuda, una respuesta que suena demasiado amable para ser cierta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-preparacion-y-entrevista-real
+          kind: review_interleaved
+          title_es: "Cruce: Preparación y Entrevista Real"
+          concept: "Mezclamos el guion preparado en la saga anterior con las técnicas de escucha y profundización de esta saga en una entrevista completa."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un guion ya preparado con técnicas de escucha activa en una sola entrevista."
+          key_vocabulary: [guion, escucha activa, profundizar]
+          prior_knowledge: "Completo el repaso de La Entrevista Real (tema anterior) y Preparo mi Entrevista (saga anterior)."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/la-entrevista-real/dejo-que-hable-mas-que-yo
+            - mesa-del-cliente/la-entrevista-real/detecto-cuando-me-esta-dando-el-avion
+            - mesa-del-cliente/preparo-mi-entrevista/preguntas-que-no-dirigen
+          lessons:
+            - position: 1
+              slug: sigo-mi-guion-pero-profundizo
+              micro_objective: "Aplica el guion preparado y agrega una pregunta de seguimiento cuando una respuesta se queda corta."
+              narrative_beat: "Rho sigue su guion preparado, pero cuando una respuesta se siente corta, agrega su propio \"por que\" adicional."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reviso-si-mi-guion-genero-buenas-respuestas
+              micro_objective: "Revisa, sin ayuda, si las preguntas neutrales de su guion generaron respuestas honestas o cortes."
+              narrative_beat: "Zara revisa las respuestas que obtuvo con su guion preparado y confirma que ninguna sono demasiado amable para ser cierta."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: encuentro-el-patron-en-las-respuestas
+    icon: query_stats
+    title:
+      en-US: "Finding the Pattern in the Answers"
+      es-MX: "Encuentro el Patron en las Respuestas"
+      pt-BR: "Encontro o Padrao nas Respostas"
+    description:
+      en-US: "One comment is noise. The same comment from several strangers, lined up side by side, is a signal."
+      es-MX: "Un comentario es ruido. El mismo comentario de varios desconocidos, puesto lado a lado, es una señal."
+      pt-BR: "Um comentario e ruido. O mesmo comentario de varios estranhos, lado a lado, e um sinal."
+    topics:
+        - position: 1
+          slug: comparo-varias-entrevistas
+          title_es: "Comparo varias entrevistas"
+          concept: "Poner varias entrevistas lado a lado, en vez de revisarlas una por una y olvidar las anteriores, es lo que revela un patron."
+          learning_objective: "El aprendiz organiza notas de varias entrevistas distintas en un solo lugar para poder compararlas."
+          key_vocabulary: [comparar entrevistas, organizar notas, lado a lado]
+          prior_knowledge: "Completo La Entrevista Real (saga anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a poner sus notas de varias entrevistas juntas, una junto a otra, para ver si algo se repite."
+          lessons:
+            - position: 1
+              slug: junto-todas-mis-notas
+              micro_objective: "Organiza notas de 4 entrevistas distintas en una sola tabla para poder compararlas de un vistazo."
+              narrative_beat: "Rho junta sus cuatro libretas de entrevista en una sola hoja grande, una columna por cada persona entrevistada."
+              difficulty: 1
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: veo-algo-que-no-vi-antes
+              micro_objective: "Reconoce, al comparar varias entrevistas juntas, un detalle que no era visible al revisarlas por separado."
+              narrative_beat: "Zara nota, solo al ver las cuatro entrevistas juntas, que todas mencionan el mismo horario como el más difícil."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: separo-hechos-de-opiniones
+          title_es: "Separo hechos de opiniones"
+          concept: "Un hecho es algo que paso de verdad (\"pague $80 la última vez\"); una opinion es un gusto o sensación (\"me parecio caro\"). Ambos importan, pero no pesan igual."
+          learning_objective: "El aprendiz clasifica frases de entrevista entre hechos verificables y opiniones personales."
+          key_vocabulary: [hecho, opinion, pesar distinto]
+          prior_knowledge: "Organiza notas de varias entrevistas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que separe, de sus notas de entrevista, lo que de verdad paso de lo que fue solo una opinion o gusto."
+          lessons:
+            - position: 1
+              slug: esto-paso-o-esto-le-parecio
+              micro_objective: "Clasifica 4 frases de entrevista entre hechos verificables y opiniones personales."
+              narrative_beat: "Liruf separa 'compre 3 fundas este año' (hecho) de 'creo que son un poco caras' (opinion) en columnas distintas."
+              difficulty: 2
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: doy-mas-peso-al-hecho
+              micro_objective: "Elige, entre un hecho y una opinion contradictorios, cual pesa más al tomar una decisión."
+              narrative_beat: "Dina confia más en que alguien ya compro 3 veces (hecho) que en que diga que \"tal vez no le interese\" (opinion pasajera)."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: la-queja-mas-repetida
+          title_es: "La queja más repetida"
+          concept: "Entre todas las notas juntas, la queja que aparece más veces en boca de personas distintas es la señal más fuerte de por donde empezar."
+          learning_objective: "El aprendiz identifica, comparando varias entrevistas, cual queja aparece con más frecuencia entre personas distintas."
+          key_vocabulary: [queja más repetida, señal más fuerte, por donde empezar]
+          prior_knowledge: "Separa hechos de opiniones (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual queja aparecio más veces en sus entrevistas, y si esa es la que debería atacar primero."
+          lessons:
+            - position: 1
+              slug: cuento-cuantas-veces-aparece
+              micro_objective: "Cuenta, entre 6 notas de entrevista, cuantas veces aparece la misma queja en personas distintas."
+              narrative_beat: "Rho marca con una palomita cada vez que encuentra la misma queja sobre el cierre del estuche en una entrevista distinta."
+              difficulty: 3
+              suggested_families: [analyze, input]
+            - position: 2
+              slug: empiezo-por-la-queja-mas-fuerte
+              micro_objective: "Elige, entre 3 quejas encontradas, la que conviene atacar primero por ser la más repetida."
+              narrative_beat: "Zara decide arreglar primero el cierre del estuche, porque fue la queja que aparecio en 5 de 6 entrevistas."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: una-sola-persona-no-hace-patron
+          title_es: "Una sola persona no hace patron"
+          concept: "Un comentario aislado, aunque venga de alguien que te importa, no es suficiente para cambiar todo tu plan sin más evidencia."
+          learning_objective: "El aprendiz reconoce cuando un comentario proviene de una sola persona y evita tratarlo como un patron confirmado."
+          key_vocabulary: [comentario aislado, evidencia insuficiente, no generalizar]
+          prior_knowledge: "Identifica la queja más repetida (tema anterior)."
+          fact_refs: []
+          parent_check: "Cuando {{name}} quiera cambiar algo por un solo comentario, pregunta si ya lo escucho de más de una persona distinta."
+          lessons:
+            - position: 1
+              slug: un-comentario-o-un-patron
+              micro_objective: "Distingue, entre dos casos, cual describe un comentario aislado y cual describe un patron confirmado por varias personas."
+              narrative_beat: "Liruf quiere cambiar todo su producto porque a un solo amigo no le gusto el color - Dina le recuerda que eso no es un patron."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: busco-mas-evidencia-antes-de-cambiar
+              micro_objective: "Decide, ante un comentario aislado, buscar más evidencia antes de tomar una decisión grande."
+              narrative_beat: "Zara anota el comentario aislado pero decide preguntarle a 3 personas más antes de cambiar cualquier cosa."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: contradicciones-entre-entrevistados
+          title_es: "Contradicciónes entre entrevistados"
+          concept: "Cuando dos personas dicen cosas opuestas, hay que investigar por que piensan distinto en vez de ignorar a una de las dos."
+          learning_objective: "El aprendiz investiga la razón detras de dos respuestas contradictorias en vez de descartar una de las dos sin más."
+          key_vocabulary: [contradicción, investigar la razón, no descartar]
+          prior_knowledge: "Reconoce que un comentario aislado no es patron (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si encontro dos respuestas que se contradicen, y que razón podría explicar esa diferencia."
+          lessons:
+            - position: 1
+              slug: dos-respuestas-opuestas
+              micro_objective: "Reconoce, en un caso, dos respuestas contradictorias entre dos personas entrevistadas."
+              narrative_beat: "Rho encuentra que un entrevistado dice que el precio esta bien y otro dice que es carisimo, para el mismo producto."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: busco-por-que-piensan-distinto
+              micro_objective: "Propone una razón posible (por ejemplo, diferencia de presupuesto) que explique por que dos personas contradicen."
+              narrative_beat: "Zara descubre que quien dijo \"carisimo\" gasta mucho menos en general - la contradicción tenia una razón real detras."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: mi-resumen-de-hallazgos
+          title_es: "Mi resumen de hallazgos"
+          concept: "Un buen resumen de entrevistas cabe en media página: la queja más repetida, un hecho clave y una decisión sugerida."
+          learning_objective: "El aprendiz redacta un resumen breve de hallazgos de entrevista con la queja principal, un hecho clave y una sugerencia."
+          key_vocabulary: [resumen de hallazgos, hecho clave, sugerencia]
+          prior_knowledge: "Investiga contradicciónes entre entrevistados (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea su resumen de hallazgos en menos de un minuto: la queja principal, un hecho y una sugerencia."
+          lessons:
+            - position: 1
+              slug: reviso-3-resumenes
+              micro_objective: "Revisa 3 resumenes de hallazgos y elige el que incluye queja principal, hecho clave y sugerencia en pocas líneas."
+              narrative_beat: "Dina compara tres resumenes del equipo y elige el más util: corto, claro y con una sugerencia concreta al final."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-resumen
+              micro_objective: "Redacta, sin ayuda, un resumen breve de sus propios hallazgos de entrevista."
+              narrative_beat: "Liruf escribe su resumen final en media página y lo pega junto a su prototipo para que todo el equipo lo vea."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-encuentro-el-patron
+          kind: review_spaced
+          title_es: "Repaso: Encuentro el Patron"
+          concept: "El equipo repasa como comparar entrevistas, separar hechos de opiniones y encontrar la queja más repetida."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las herramientas de análisis de esta saga."
+          key_vocabulary: [comparar, hecho, opinion, patron]
+          prior_knowledge: "Completo los 6 temas de Encuentro el Patron en las Respuestas."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/comparo-varias-entrevistas
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/separo-hechos-de-opiniones
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/la-queja-mas-repetida
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/una-sola-persona-no-hace-patron
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/contradicciones-entre-entrevistados
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/mi-resumen-de-hallazgos
+          lessons:
+            - position: 1
+              slug: repaso-separo-hecho-de-opinion
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre un hecho y una opinion en un caso nuevo."
+              narrative_beat: "El equipo revisa notas nuevas y clasifica, sin ayuda, cuales frases son hechos y cuales son opiniones."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: repaso-escribo-un-resumen-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta el resumen de hallazgos de un caso nuevo."
+              narrative_beat: "Rho redacta, sin ayuda de nadie, el resumen de hallazgos de una ronda de entrevistas que el equipo no había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+        - position: 8
+          slug: cruce-anotar-bien-y-encontrar-el-patron
+          kind: review_interleaved
+          title_es: "Cruce: Anotar Bien y Encontrar el Patron"
+          concept: "Mezclamos la técnica de anotar frases textuales de la saga anterior con la busqueda de patrones de esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, notas textuales bien tomadas con la busqueda de un patron entre varias entrevistas."
+          key_vocabulary: [cita textual, patron, hecho]
+          prior_knowledge: "Completo el repaso de Encuentro el Patron (tema anterior) y La Entrevista Real (saga anterior)."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/la-queja-mas-repetida
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/separo-hechos-de-opiniones
+            - mesa-del-cliente/la-entrevista-real/anoto-frases-textuales
+          lessons:
+            - position: 1
+              slug: mis-citas-textuales-revelan-el-patron
+              micro_objective: "Revisa varias citas textuales guardadas y encuentra la que mejor representa el patron más repetido."
+              narrative_beat: "Zara revisa sus citas textuales guardadas y encuentra que tres personas usaron casi las mismas palabras para quejarse."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: confirmo-el-patron-con-un-hecho
+              micro_objective: "Confirma un patron detectado citando al menos un hecho verificable (no solo opiniones) entre las notas."
+              narrative_beat: "Rho confirma su patron encontrado citando que 4 de 6 personas efectivamente devolvieron el producto por la misma razón."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 4
+    slug: itero-con-senal-real
+    icon: autorenew
+    title:
+      en-US: "Iterating on Real Signal"
+      es-MX: "Itero con Señal Real"
+      pt-BR: "Itero com Sinal Real"
+    description:
+      en-US: "Turn what customers actually said into a real change - then go back and confirm it landed."
+      es-MX: "Convierte lo que los clientes de verdad dijeron en un cambio real - y regresa a confirmar que si funciono."
+      pt-BR: "Transforme o que os clientes realmente disseram em uma mudanca real - e volte para confirmar que funcionou."
+    topics:
+        - position: 1
+          slug: que-aprendi-que-no-sabia
+          title_es: "Que aprendi que no sabia"
+          concept: "El primer paso de iterar es nombrar, con honestidad, algo que las entrevistas revelaron que no sabias antes de empezar."
+          learning_objective: "El aprendiz nombra un aprendizaje concreto de las entrevistas que contradice o amplia lo que sabia antes."
+          key_vocabulary: [aprendizaje nuevo, contradice lo que sabia, honestidad]
+          prior_knowledge: "Completo Encuentro el Patron en las Respuestas (saga anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} algo que haya aprendido de sus entrevistas que de verdad no sabia antes de empezar."
+          lessons:
+            - position: 1
+              slug: esto-no-me-lo-esperaba
+              micro_objective: "Reconoce, en un resumen de hallazgos, un dato que contradice la suposición original del equipo."
+              narrative_beat: "Zara pensaba que el precio era el problema, pero las entrevistas revelan que el problema real era el color, no el precio."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: escribo-lo-que-aprendi
+              micro_objective: "Redacta, sin ayuda, una frase que nombra algo que aprendio de sus entrevistas que no sabia antes."
+              narrative_beat: "Rho escribe en su cuaderno: \"aprendi que la gente no quiere pagar más, quiere pagar más rápido\"."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: que-tengo-que-cambiar
+          title_es: "Que tengo que cambiar"
+          concept: "Un aprendizaje solo sirve si se convierte en un cambio concreto al producto, no se queda solo como una idea interesante."
+          learning_objective: "El aprendiz traduce un aprendizaje de entrevista en un cambio específico y accionable a su MVP."
+          key_vocabulary: [cambio concreto, accionable, traducir aprendizaje]
+          prior_knowledge: "Nombra un aprendizaje concreto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} en que cambio específico y concreto piensa convertir lo que aprendio de sus entrevistas."
+          lessons:
+            - position: 1
+              slug: de-la-idea-al-cambio-concreto
+              micro_objective: "Convierte un aprendizaje general en un cambio específico y accionable al producto."
+              narrative_beat: "Liruf convierte 'la gente quiere pagar más rápido' en 'agregar pago con código QR en el puesto'."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-el-cambio-mas-urgente
+              micro_objective: "Elige, entre 3 cambios posibles, el más urgente según la fuerza del hallazgo que lo respalda."
+              narrative_beat: "Dina elige primero el cambio respaldado por 5 entrevistas, en vez del respaldado por solo una opinion aislada."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: que-no-voy-a-cambiar-y-por-que
+          title_es: "Que NO voy a cambiar y por que"
+          concept: "No todo comentario merece un cambio; decidir que se queda igual, y explicar por que, evita perder el rumbo del MVP original."
+          learning_objective: "El aprendiz decide, con una razón explicita, que parte de su producto NO va a cambiar a pesar de un comentario recibido."
+          key_vocabulary: [decidir no cambiar, razón explicita, mantener el rumbo]
+          prior_knowledge: "Traduce un aprendizaje en un cambio concreto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que comentario recibido decidio NO aplicar, y por que decidio mantener esa parte igual."
+          lessons:
+            - position: 1
+              slug: este-comentario-no-lo-voy-a-aplicar
+              micro_objective: "Elige, entre 3 comentarios recibidos, el que decide NO aplicar y explica por que con una razón clara."
+              narrative_beat: "Zara decide no cambiar el material de su estuche a pesar de un comentario, porque solo una persona lo menciono."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: explico-mi-decision-de-no-cambiar
+              micro_objective: "Redacta, sin ayuda, la razón por la que decidio no aplicar un comentario recibido."
+              narrative_beat: "Rho explica frente al equipo por que decidio no cambiar el color: la mayoria de las entrevistas no lo mencionaron como problema."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: pruebo-mi-cambio-con-las-mismas-personas
+          title_es: "Pruebo mi cambio con las mismas personas"
+          concept: "Volver a mostrar el producto ajustado a las mismas personas que senalaron el problema cierra el ciclo y confirma si el cambio de verdad funciono."
+          learning_objective: "El aprendiz vuelve a mostrar un cambio aplicado a la misma persona que senalo el problema original y registra su reacción."
+          key_vocabulary: [cerrar el ciclo, volver a mostrar, confirmar el cambio]
+          prior_knowledge: "Decide que no va a cambiar y por que (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a volver a mostrar su producto ajustado a la misma persona que senalo el problema, para confirmar si de verdad se resolvio."
+          lessons:
+            - position: 1
+              slug: regreso-con-la-misma-persona
+              micro_objective: "Reconoce, en un caso, por que volver con la misma persona confirma mejor un cambio que preguntarle a alguien nuevo."
+              narrative_beat: "Dina vuelve a mostrarle el estuche ajustado a la misma companera que se quejo del cierre, no a alguien distinto."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: registro-la-reaccion-al-cambio
+              micro_objective: "Registra, sin ayuda, la reacción de una persona al ver el cambio aplicado a partir de su propia queja."
+              narrative_beat: "Liruf anota que su companera sonrio al probar el nuevo cierre: \"ahora si, esto ya no se atora\"."
+              difficulty: 4
+              suggested_families: [input, choice]
+        - position: 5
+          slug: cuando-parar-de-entrevistar
+          title_es: "Cuando parar de entrevistar"
+          concept: "Cuando entrevistas nuevas dejan de revelar algo distinto a lo ya escuchado, es momento de parar de entrevistar y pasar a decidir."
+          learning_objective: "El aprendiz reconoce cuando las entrevistas ya no aportan información nueva y decide detenerse."
+          key_vocabulary: [punto de saturación, información nueva, detenerse]
+          prior_knowledge: "Prueba un cambio con las mismas personas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si sus últimas entrevistas todavia le ensenan algo nuevo, o si ya es momento de pasar a decidir."
+          lessons:
+            - position: 1
+              slug: ya-no-escucho-nada-nuevo
+              micro_objective: "Reconoce, en un caso, cuando las últimas entrevistas ya no revelan nada distinto a las anteriores."
+              narrative_beat: "Rho nota que sus últimas tres entrevistas repiten exactamente lo mismo que ya había escuchado antes."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: decido-parar-y-pasar-a-decidir
+              micro_objective: "Decide, sin ayuda, detener las entrevistas y pasar a tomar una decisión con la evidencia ya reunida."
+              narrative_beat: "Zara decide parar de entrevistar después de 8 conversaciones, porque la información ya dejo de cambiar."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: mi-decision-final-con-clientes-reales
+          title_es: "Mi decisión final con clientes reales"
+          concept: "La decisión final integra el aprendizaje, el cambio aplicado, lo que se decidio no tocar y la confirmación de las mismas personas."
+          learning_objective: "El aprendiz presenta una decisión final sobre su MVP integrando aprendizaje, cambio aplicado y confirmación de clientes reales."
+          key_vocabulary: [decisión final, integrar evidencia, clientes reales]
+          prior_knowledge: "Reconoce el punto de saturación (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te cuente su decisión final sobre su producto, citando al menos una frase real de un cliente entrevistado."
+          lessons:
+            - position: 1
+              slug: ordeno-mi-evidencia-completa
+              micro_objective: "Organiza, sin ayuda, los 4 elementos de su evidencia (aprendizaje, cambio, lo que no cambio, confirmación) para presentarlos en orden."
+              narrative_beat: "Dina ordena en tarjetas su evidencia completa: lo que aprendio, lo que cambio, lo que decidio no tocar y la confirmación final."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-decision-final
+              micro_objective: "Completa, sin ayuda, la presentación de su decisión final sobre el MVP citando evidencia real de clientes."
+              narrative_beat: "Liruf presenta su decisión final ante el equipo, citando la frase textual de la companera que confirmo que el cambio funciono."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-itero-con-senal-real
+          kind: review_spaced
+          title_es: "Repaso: Itero con Señal Real"
+          concept: "El equipo repasa como convertir un aprendizaje en un cambio, decidir que no cambiar, y confirmar el cambio con las mismas personas."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el ciclo completo de iteración de esta saga."
+          key_vocabulary: [aprendizaje, cambio, confirmación]
+          prior_knowledge: "Completo los 6 temas de Itero con Señal Real."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/itero-con-senal-real/que-aprendi-que-no-sabia
+            - mesa-del-cliente/itero-con-senal-real/que-tengo-que-cambiar
+            - mesa-del-cliente/itero-con-senal-real/que-no-voy-a-cambiar-y-por-que
+            - mesa-del-cliente/itero-con-senal-real/pruebo-mi-cambio-con-las-mismas-personas
+            - mesa-del-cliente/itero-con-senal-real/cuando-parar-de-entrevistar
+            - mesa-del-cliente/itero-con-senal-real/mi-decision-final-con-clientes-reales
+          lessons:
+            - position: 1
+              slug: repaso-traduzco-un-aprendizaje
+              micro_objective: "Recuerda y aplica, sin ayuda, como convertir un aprendizaje nuevo en un cambio concreto."
+              narrative_beat: "El equipo convierte, sin ayuda, un aprendizaje nuevo de entrevistas en un cambio específico y accionable."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-decido-cuando-parar
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide, en un caso nuevo, cuando parar de entrevistar y pasar a decidir."
+              narrative_beat: "Rho decide, sin ayuda de nadie, que un nuevo conjunto de entrevistas ya llego a su punto de saturación."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-del-patron-a-la-decision-final
+          kind: review_interleaved
+          title_es: "Cruce: Del Patron a la Decisión Final"
+          concept: "Mezclamos la busqueda de patrones de la saga anterior con el ciclo de iteración de esta saga en una sola decisión final."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un patron detectado con la decisión final integrada de esta saga."
+          key_vocabulary: [patron, decisión final, evidencia]
+          prior_knowledge: "Completo el repaso de Itero con Señal Real (tema anterior) y Encuentro el Patron en las Respuestas (saga anterior)."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/itero-con-senal-real/que-tengo-que-cambiar
+            - mesa-del-cliente/itero-con-senal-real/mi-decision-final-con-clientes-reales
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas/la-queja-mas-repetida
+          lessons:
+            - position: 1
+              slug: mi-decision-final-cita-el-patron-encontrado
+              micro_objective: "Revisa su decisión final y confirma que cita el patron detectado en la saga anterior, no una opinion aislada."
+              narrative_beat: "Zara revisa su decisión final y confirma que se basa en la queja más repetida, no en el comentario de una sola persona."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reviso-si-el-cambio-resolvio-el-patron-completo
+              micro_objective: "Revisa, sin ayuda, si el cambio aplicado resuelve el patron completo detectado, no solo un caso aislado."
+              narrative_beat: "Rho revisa si su cambio al cierre resuelve el patron completo de las 5 personas que se quejaron, no solo la primera."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 5
+    slug: la-gran-asamblea-de-las-voces
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Grand Assembly of Voices"
+      es-MX: "La Gran Asamblea de las Voces"
+      pt-BR: "A Grande Assembleia das Vozes"
+    description:
+      en-US: "An archipelago-wide assembly puts every customer-discovery skill on trial."
+      es-MX: "Una asamblea de todo el archipielago pone a prueba cada habilidad de descubrimiento de clientes."
+      pt-BR: "Uma assembleia de todo o arquipelago coloca a prova cada habilidade de descoberta de clientes."
+    topics:
+        - position: 1
+          slug: el-reto-de-las-tres-islas
+          kind: review_quest
+          title_es: "El Reto de las Tres Islas"
+          concept: "El consejo del archipielago reta a cada equipo a entrevistar a gente de tres islas distintas y comparar lo que encuentran."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la preparación de entrevistas con las técnicas de conducción para responder a un reto de tres segmentos distintos."
+          key_vocabulary: [reto de tres islas, tres segmentos, comparar hallazgos]
+          prior_knowledge: "Completo Preparo mi Entrevista y La Entrevista Real."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/preparo-mi-entrevista
+            - mesa-del-cliente/la-entrevista-real
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-de-las-tres-islas
+              micro_objective: "Recuerda, sin ayuda, como preparar un objetivo y un guion antes de visitar una isla nueva."
+              narrative_beat: "El consejo del archipielago anuncia: 'visiten tres islas distintas y traigan de vuelta lo que de verdad piensan sus habitantes'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-las-tecnicas-en-cada-isla
+              micro_objective: "Aplica, sin ayuda, las técnicas de escucha activa en tres entrevistas distintas de islas diferentes."
+              narrative_beat: "Zara visita las tres islas y en cada una recuerda escuchar más de lo que habla, aunque las costumbres cambien."
+              difficulty: 3
+              suggested_families: [choice, story]
+        - position: 2
+          slug: mi-producto-validado-por-clientes
+          kind: review_quest
+          title_es: "Mi Producto Validado por Clientes"
+          concept: "Con hallazgos de las tres islas en mano, el equipo presenta ante la Gran Asamblea su decisión final, respaldada por clientes reales."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una decisión de producto integrando patrones encontrados y evidencia de clientes reales."
+          key_vocabulary: [asamblea, decisión respaldada, evidencia de clientes]
+          prior_knowledge: "Completo El Reto de las Tres Islas (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - mesa-del-cliente/encuentro-el-patron-en-las-respuestas
+            - mesa-del-cliente/itero-con-senal-real
+          lessons:
+            - position: 1
+              slug: preparo-mi-caso-para-la-asamblea
+              micro_objective: "Organiza, sin ayuda, el patron encontrado y la decisión final tomada para presentarlos ante la asamblea."
+              narrative_beat: "Rho ordena su caso completo: el patron más repetido, el cambio aplicado y la confirmación de una cliente real."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-ante-la-gran-asamblea
+              micro_objective: "Completa, sin ayuda, la presentación final ante la asamblea, citando al menos una frase textual de un cliente real."
+              narrative_beat: "Dina presenta ante la Gran Asamblea de las Voces citando la frase exacta de la cliente que confirmo que su cambio funciono."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

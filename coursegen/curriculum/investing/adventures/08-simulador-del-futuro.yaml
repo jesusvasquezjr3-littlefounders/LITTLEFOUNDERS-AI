@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 8
+  slug: simulador-del-futuro
+  theme: city
+  age_tier: tier4
+  title:
+    en-US: "The Future Simulator"
+    es-MX: "El Simulador del Futuro"
+    pt-BR: "O Simulador do Futuro"
+  description:
+    en-US: "The capstone: a portfolio simulator - SIMULATED decisions only, never real transactions - where the whole course comes together and gets tested under a rough patch and a fraud attempt."
+    es-MX: "El cierre del curso: un simulador de cartera - decisiones SIMULADAS, nunca transacciones reales - donde todo el curso se junta y se pone a prueba frente a una mala temporada y un intento de fraude."
+    pt-BR: "O fechamento do curso: um simulador de carteira - decisoes SIMULADAS, nunca transacoes reais - onde todo o curso se junta e e testado diante de uma ma temporada e uma tentativa de fraude."
+  narrative_arc: "Dina, Liruf, Rho y Zara regresan al Distrito de Crecimiento para usar el Simulador del Futuro: una consola que deja practicar decisiones de dinero con resultados que se sienten reales, sin arriesgar nada real. Repasan ahí el valor del tiempo y el interés que se acumula, arman y ajustan carteras simuladas diversificadas, y enfrentan una mala temporada simulada donde deben resistir el pánico de vender de golpe Y reconocer una oferta sospechosa con las señales del radar de fraude. Terminan combinando cada aventura del curso en un plan simulado completo, con un reporte final que presentan y defienden frente al consejo de todas las aventuras - recordando siempre que todo fue un simulador para aprender a decidir, no una instrucción para invertir dinero real todavía."
+
+sagas:
+  - position: 1
+    slug: bienvenida-al-simulador
+    icon: computer
+    title:
+      en-US: "Welcome to the Simulator"
+      es-MX: "Bienvenida al Simulador"
+      pt-BR: "Bem-vindo ao Simulador"
+    description:
+      en-US: "Practice decisions that feel real, without risking anything real - and cheaply relearn the value of time and compounding."
+      es-MX: "Practica decisiones que se sienten reales, sin arriesgar nada real - y repasa barato el valor del tiempo y el interés que se acumula."
+      pt-BR: "Pratique decisoes que parecem reais, sem arriscar nada real - e revise barato o valor do tempo e o juro que se acumula."
+    topics:
+        - position: 1
+          slug: que-es-un-simulador
+          title_es: "Qué es un simulador"
+          concept: "Un simulador deja practicar decisiones con resultados que se sienten reales, sin arriesgar dinero real - así se practica antes de que la decisión real importe."
+          learning_objective: "El aprendiz reconoce que un simulador permite practicar decisiones con resultados realistas sin arriesgar dinero real."
+          key_vocabulary: [simulador, resultados realistas, sin arriesgar]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura final."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué cree que practicar decisiones en un simulador es más seguro que practicar con dinero real."
+          lessons:
+            - position: 1
+              slug: dina-presenta-el-simulador
+              micro_objective: "Reconoce que un simulador deja practicar decisiones con resultados que se sienten reales, sin arriesgar dinero real."
+              narrative_beat: "Dina le muestra a Liruf el Simulador del Distrito: 'aquí puedes practicar decisiones de dinero sin arriesgar ni un peso real'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-simular-vs-decidir-real
+              micro_objective: "Explica, con sus palabras, la diferencia entre practicar en un simulador y decidir con dinero real."
+              narrative_beat: "Liruf explica con sus palabras por qué practicar en el simulador es distinto -y más seguro- que decidir con dinero real."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: por-que-simular-antes-de-decidir-de-verdad
+          title_es: "Por qué simular antes de decidir de verdad"
+          concept: "Simular antes de decidir de verdad deja cometer errores baratos (sin costo real) en vez de errores caros."
+          learning_objective: "El aprendiz reconoce y compara el costo de un error dentro del simulador contra el mismo error con dinero real."
+          key_vocabulary: [error barato, error caro]
+          prior_knowledge: "Distingue simular de decidir con dinero real (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué ventaja tiene equivocarse dentro de un simulador en vez de equivocarse con dinero real."
+          lessons:
+            - position: 1
+              slug: rho-comete-un-error-barato
+              micro_objective: "Reconoce que simular antes de decidir de verdad deja cometer errores baratos en vez de errores caros."
+              narrative_beat: "Rho comete un error en el simulador - no le costó nada real, solo aprendió la lección sin pagar el precio de verdad."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-el-costo-del-mismo-error
+              micro_objective: "Compara el costo de un error dentro del simulador contra el costo del mismo error con dinero real."
+              narrative_beat: "Zara compara: el mismo error en el simulador no costó nada; con dinero real, hubiera costado mucho."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: repaso-el-valor-del-tiempo-en-el-simulador
+          title_es: "Repaso el valor del tiempo en el simulador"
+          concept: "Aplica, dentro del simulador, la lección de que el dinero de hoy vale más que una promesa lejana."
+          learning_objective: "El aprendiz aplica, dentro de una decisión simulada, la regla del valor del tiempo aprendida en la primera aventura del curso."
+          key_vocabulary: [valor del tiempo, decisión simulada]
+          prior_knowledge: "Compara el costo de un error simulado contra uno real (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que recuerde su regla del valor del tiempo de la Estación Reloj, y que la aplique a una oferta simulada."
+          lessons:
+            - position: 1
+              slug: rho-aplica-su-vieja-regla
+              micro_objective: "Aplica, dentro del simulador, la lección de que el dinero de hoy vale más que una promesa lejana."
+              narrative_beat: "Dentro del simulador, Rho recibe una oferta: dinero simulado hoy o el doble en un año - aplica su vieja regla del valor del tiempo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: decido-con-mi-regla-del-tiempo
+              micro_objective: "Decide, dentro del simulador, entre una oferta simulada hoy y una promesa simulada futura, aplicando lo aprendido en la primera aventura."
+              narrative_beat: "Zara decide dentro del simulador, aplicando la misma regla que aprendió en la Estación Reloj al inicio del curso."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: repaso-el-interes-que-se-acumula-en-el-simulador
+          title_es: "Repaso el interés que se acumula en el simulador"
+          concept: "Aplica, dentro del simulador, la diferencia entre interés simple y compuesto para una decisión simulada."
+          learning_objective: "El aprendiz aplica y calcula, dentro de una decisión simulada, la diferencia entre interés simple y compuesto."
+          key_vocabulary: [interés simple, interés compuesto, decisión simulada]
+          prior_knowledge: "Aplica la regla del valor del tiempo dentro del simulador (tema anterior)."
+          fact_refs: [money.example_growth_rate_pct]
+          parent_check: "Pidele a {{name}} que calcule, dentro de un caso simulado, cuánto crecería un monto con interés compuesto en varios años."
+          lessons:
+            - position: 1
+              slug: liruf-compara-cuentas-simuladas
+              micro_objective: "Aplica, dentro del simulador, la diferencia entre interés simple y compuesto para una decisión simulada."
+              narrative_beat: "Dentro del simulador, Liruf compara dos cuentas simuladas: una de interés simple, otra de interés compuesto - aplica lo que ya sabe."
+              difficulty: 3
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: calculo-crecimiento-simulado
+              micro_objective: "Calcula, dentro del simulador, el resultado de dejar crecer un monto simulado con interés compuesto durante varios años."
+              narrative_beat: "Zara calcula, dentro del simulador, cuánto crecería un monto simulado si lo deja creciendo varios años sin tocarlo."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 5
+          slug: configuro-mi-primer-perfil-simulado
+          title_es: "Configuro mi primer perfil simulado"
+          concept: "Configura un primer perfil simulado con una meta, un plazo y una tolerancia al riesgo."
+          learning_objective: "El aprendiz configura y revisa un perfil simulado propio con meta, plazo y tolerancia al riesgo."
+          key_vocabulary: [perfil simulado, configurar]
+          prior_knowledge: "Calcula un crecimiento simulado con interés compuesto (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a configurar un perfil simulado imaginario: una meta, un plazo y una tolerancia al riesgo."
+          lessons:
+            - position: 1
+              slug: configuro-meta-plazo-y-riesgo
+              micro_objective: "Configura un primer perfil simulado con una meta, un plazo y una tolerancia al riesgo."
+              narrative_beat: "Rho configura su primer perfil en el simulador: una meta simulada, un plazo de varios años, y su tolerancia al riesgo."
+              difficulty: 4
+              suggested_families: [input, choice]
+            - position: 2
+              slug: reviso-mi-perfil-antes-de-empezar
+              micro_objective: "Revisa y ajusta su perfil simulado inicial antes de correr su primera simulación."
+              narrative_beat: "Zara revisa su perfil simulado y ajusta un poco su tolerancia al riesgo antes de empezar a simular."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: hago-mi-primera-simulacion
+          title_es: "Hago mi primera simulación"
+          concept: "Corre su primera simulación simple de varios años y observa el resultado."
+          learning_objective: "El aprendiz corre, sin ayuda, una simulación completa de varios años y registra el resultado final."
+          key_vocabulary: [correr una simulación, resultado]
+          prior_knowledge: "Configura y revisa su perfil simulado (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a correr su primera simulación completa de varios años y a registrar el resultado."
+          lessons:
+            - position: 1
+              slug: corremos-la-primera-simulacion-en-equipo
+              micro_objective: "Con apoyo, corre su primera simulación simple de varios años y observa el resultado."
+              narrative_beat: "El equipo corre junto su primera simulación de varios años en el simulador, y observa cómo termina el resultado."
+              difficulty: 4
+              suggested_families: [storyplay, money]
+            - position: 2
+              slug: corro-mi-propia-simulacion-completa
+              micro_objective: "Aplica, sin ayuda, todo lo configurado para correr su propia simulación completa y registrar el resultado."
+              narrative_beat: "Rho corre solo, sin ayuda, su propia simulación completa de principio a fin, y registra el resultado final."
+              difficulty: 5
+              suggested_families: [money, input]
+        - position: 7
+          slug: repaso-bienvenida-al-simulador
+          kind: review_spaced
+          title_es: "Repaso: Bienvenida al Simulador"
+          concept: "El equipo repasa por qué el simulador es un lugar seguro para practicar antes de armar carteras simuladas más complejas."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué simular antes de decidir de verdad deja cometer errores baratos."
+          key_vocabulary: [simulador, error barato]
+          prior_knowledge: "Completo los 6 temas de Bienvenida al Simulador."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/bienvenida-al-simulador/que-es-un-simulador
+            - simulador-del-futuro/bienvenida-al-simulador/por-que-simular-antes-de-decidir-de-verdad
+            - simulador-del-futuro/bienvenida-al-simulador/repaso-el-valor-del-tiempo-en-el-simulador
+            - simulador-del-futuro/bienvenida-al-simulador/repaso-el-interes-que-se-acumula-en-el-simulador
+            - simulador-del-futuro/bienvenida-al-simulador/configuro-mi-primer-perfil-simulado
+            - simulador-del-futuro/bienvenida-al-simulador/hago-mi-primera-simulacion
+          lessons:
+            - position: 1
+              slug: repaso-por-que-simular-primero
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué simular antes de decidir de verdad deja cometer errores baratos."
+              narrative_beat: "El equipo repasa sus primeras simulaciones y explica, sin ayuda, por qué el simulador es un lugar seguro para equivocarse."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-configuro-simulacion-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: configura y corre una simulación nueva desde cero."
+              narrative_beat: "Zara configura y corre, sin ayuda de nadie, una simulación nueva completa desde cero."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 8
+          slug: cruce-tiempo-e-interes-en-el-simulador
+          kind: review_interleaved
+          title_es: "Cruce: Tiempo e Interés en el Simulador"
+          concept: "Mezclamos la regla del valor del tiempo con el cálculo de interés compuesto dentro de una simulación."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, valor del tiempo e interés compuesto en una sola decisión simulada."
+          key_vocabulary: [valor del tiempo, interés compuesto]
+          prior_knowledge: "Completo el repaso de Bienvenida al Simulador (tema anterior)."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/bienvenida-al-simulador/repaso-el-valor-del-tiempo-en-el-simulador
+            - simulador-del-futuro/bienvenida-al-simulador/repaso-el-interes-que-se-acumula-en-el-simulador
+            - simulador-del-futuro/bienvenida-al-simulador/hago-mi-primera-simulacion
+          lessons:
+            - position: 1
+              slug: junto-tiempo-e-interes-simulados
+              micro_objective: "Combina la regla del valor del tiempo con el cálculo de interés compuesto dentro de una simulación nueva."
+              narrative_beat: "Rho junta dos ideas del curso dentro del simulador: el valor del tiempo Y el interés compuesto, para una simulación nueva."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: evaluo-una-simulacion-completa
+              micro_objective: "Evalúa, sin ayuda, una simulación nueva combinando valor del tiempo e interés compuesto en una sola decisión simulada."
+              narrative_beat: "Zara resuelve una simulación final cruzando las dos ideas, y confirma el resultado con su propio cálculo."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: decisiones-de-cartera-simuladas
+    icon: dashboard
+    title:
+      en-US: "Simulated Portfolio Decisions"
+      es-MX: "Decisiones de Cartera Simuladas"
+      pt-BR: "Decisoes de Carteira Simuladas"
+    description:
+      en-US: "Build, run and rebalance a simulated portfolio, combining risk tolerance with the goal's time horizon."
+      es-MX: "Arma, corre y reequilibra una cartera simulada, combinando tolerancia al riesgo con el plazo de la meta."
+      pt-BR: "Monte, rode e reequilibre uma carteira simulada, combinando tolerancia ao risco com o prazo da meta."
+    topics:
+        - position: 1
+          slug: armo-mi-cartera-simulada
+          title_es: "Armo mi cartera simulada"
+          concept: "Arma una cartera simulada combinando varias piezas distintas, aplicando diversificación."
+          learning_objective: "El aprendiz arma una cartera simulada con varias piezas distintas y explica por qué aplicó diversificación."
+          key_vocabulary: [cartera simulada, diversificación]
+          prior_knowledge: "Completo Bienvenida al Simulador (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué su cartera simulada debería tener varias piezas distintas en vez de una sola."
+          lessons:
+            - position: 1
+              slug: dina-recuerda-la-diversificacion
+              micro_objective: "Arma una cartera simulada combinando varias piezas distintas, aplicando diversificación."
+              narrative_beat: "Dina le recuerda a Liruf: 'en el simulador también aplica lo que aprendiste de canastas - varias piezas distintas, no una sola'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-mi-cartera-variada
+              micro_objective: "Explica, con sus palabras, por qué su cartera simulada tiene varias piezas distintas en vez de una sola."
+              narrative_beat: "Liruf explica con sus palabras por qué armó su cartera simulada con varias piezas distintas."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: simulo-varios-anos-de-decisiones
+          title_es: "Simulo varios años de decisiones"
+          concept: "Simula varios años de decisiones seguidas dentro del mismo perfil, viendo cómo evoluciona la cartera simulada."
+          learning_objective: "El aprendiz simula varios años seguidos de decisiones y compara el resultado del primer año contra el último."
+          key_vocabulary: [años seguidos, evolucionar]
+          prior_knowledge: "Arma una cartera simulada diversificada (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que simule, con números sencillos, cómo cambiaría una cartera a lo largo de varios años seguidos."
+          lessons:
+            - position: 1
+              slug: simulo-cinco-anos-seguidos
+              micro_objective: "Simula varios años de decisiones seguidas dentro del mismo perfil, viendo cómo evoluciona la cartera simulada."
+              narrative_beat: "Rho simula cinco años seguidos de decisiones dentro de su perfil, observando cómo cambia su cartera simulada año con año."
+              difficulty: 2
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: comparo-primer-y-ultimo-ano
+              micro_objective: "Registra los resultados de cada año simulado y compara el primer año contra el último."
+              narrative_beat: "Zara registra el resultado de cada año simulado y compara: el primer año casi no se nota, el último año es mucho más grande."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 3
+          slug: ajusto-mi-cartera-a-mitad-de-camino
+          title_es: "Ajusto mi cartera a mitad de camino"
+          concept: "Ajusta (reequilibra) su cartera simulada a mitad de camino, aplicando lo aprendido sobre reequilibrio."
+          learning_objective: "El aprendiz reequilibra una cartera simulada a mitad de camino y explica por qué mantiene el perfil original."
+          key_vocabulary: [reequilibrar, perfil original]
+          prior_knowledge: "Compara el primer año contra el último de una simulación (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué reequilibrar una cartera a mitad de camino la mantiene alineada con lo que planeó al inicio."
+          lessons:
+            - position: 1
+              slug: rho-reequilibra-su-cartera
+              micro_objective: "Ajusta (reequilibra) su cartera simulada a mitad de camino, aplicando lo aprendido sobre reequilibrio."
+              narrative_beat: "A la mitad de su simulación, Rho reequilibra su cartera simulada, aplicando la misma técnica que aprendió con las canastas."
+              difficulty: 3
+              suggested_families: [choice, money]
+            - position: 2
+              slug: explico-por-que-reequilibrar
+              micro_objective: "Explica por qué reequilibrar a mitad de camino mantiene la cartera simulada alineada con el perfil original."
+              narrative_beat: "Zara explica por qué reequilibrar su cartera simulada la mantiene alineada con el perfil que eligió al principio."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: comparo-dos-perfiles-simulados
+          title_es: "Comparo dos perfiles simulados"
+          concept: "Compara dos perfiles simulados distintos (uno conservador, uno arriesgado) después del mismo número de años."
+          learning_objective: "El aprendiz compara dos perfiles simulados tras el mismo número de años y decide cuál hubiera convenido más para un caso dado."
+          key_vocabulary: [conservador, arriesgado, comparar perfiles]
+          prior_knowledge: "Explica por qué reequilibrar mantiene el perfil original (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que compare, con números sencillos, un perfil conservador contra uno arriesgado después de varios años."
+          lessons:
+            - position: 1
+              slug: comparamos-conservador-y-arriesgado
+              micro_objective: "Compara dos perfiles simulados distintos (uno conservador, uno arriesgado) después del mismo número de años."
+              narrative_beat: "El equipo compara dos perfiles simulados después de cinco años: uno conservador, otro arriesgado - los resultados no son iguales."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-cual-perfil-me-convenia
+              micro_objective: "Decide cuál de los dos perfiles simulados le hubiera convenido más para una meta y plazo específicos."
+              narrative_beat: "Con los resultados claros, Liruf decide cuál de los dos perfiles simulados le hubiera convenido más para su propia meta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: combino-riesgo-y-plazo-en-la-cartera
+          title_es: "Combino riesgo y plazo en la cartera"
+          concept: "Combina tolerancia al riesgo y plazo de la meta para ajustar la cartera simulada a un perfil coherente."
+          learning_objective: "El aprendiz combina y justifica una cartera simulada propia que refleje su tolerancia al riesgo y el plazo de su meta."
+          key_vocabulary: [perfil coherente, justificar]
+          prior_knowledge: "Decide cuál perfil simulado le convenía más (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que explique cómo combinó su tolerancia al riesgo con el plazo de su meta en su propia cartera simulada."
+          lessons:
+            - position: 1
+              slug: ajusto-mi-cartera-a-mi-perfil
+              micro_objective: "Combina tolerancia al riesgo y plazo de la meta para ajustar la cartera simulada a un perfil coherente."
+              narrative_beat: "Zara ajusta su cartera simulada combinando su propia tolerancia al riesgo con el plazo real de su meta."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: justifico-mi-combinacion
+              micro_objective: "Justifica, con al menos un motivo concreto, por qué su cartera simulada combina riesgo y plazo de esa forma específica."
+              narrative_beat: "Zara explica al equipo por qué combinó riesgo y plazo de esa forma específica para su cartera simulada."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+        - position: 6
+          slug: reviso-mi-cartera-a-mitad-del-curso
+          title_es: "Reviso mi cartera a mitad del curso"
+          concept: "Revisa su cartera simulada completa contra un checklist (diversificación, plazo, riesgo) y corrige lo que falte."
+          learning_objective: "El aprendiz revisa y corrige, sin ayuda, su cartera simulada usando un checklist de tres elementos."
+          key_vocabulary: [checklist, corregir]
+          prior_knowledge: "Justifica cómo combinó riesgo y plazo (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} su cartera simulada contra el checklist: ¿está diversificada? ¿combina bien plazo y riesgo?"
+          lessons:
+            - position: 1
+              slug: revisamos-carteras-contra-el-checklist
+              micro_objective: "Revisa su cartera simulada completa contra un checklist (diversificación, plazo, riesgo) y detecta lo que falte."
+              narrative_beat: "El equipo revisa juntos sus carteras simuladas contra un checklist: ¿está diversificada? ¿combina bien plazo y riesgo?"
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: corrijo-mi-cartera-sola
+              micro_objective: "Corrige, sin ayuda, su propia cartera simulada usando el checklist completo."
+              narrative_beat: "Rho revisa su cartera simulada solo, sin ayuda, y la corrige usando el checklist completo de la saga."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-decisiones-de-cartera-simuladas
+          kind: review_spaced
+          title_es: "Repaso: Decisiones de Cartera Simuladas"
+          concept: "El equipo repasa cómo armar y reequilibrar una cartera simulada antes de enfrentar una mala temporada."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo armar y reequilibrar una cartera simulada."
+          key_vocabulary: [cartera simulada, reequilibrar]
+          prior_knowledge: "Completo los 6 temas de Decisiones de Cartera Simuladas."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/armo-mi-cartera-simulada
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/simulo-varios-anos-de-decisiones
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/ajusto-mi-cartera-a-mitad-de-camino
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/comparo-dos-perfiles-simulados
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/combino-riesgo-y-plazo-en-la-cartera
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/reviso-mi-cartera-a-mitad-del-curso
+          lessons:
+            - position: 1
+              slug: repaso-armo-y-reequilibro
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo armar y reequilibrar una cartera simulada."
+              narrative_beat: "El equipo repasa sus carteras simuladas y las reequilibra, sin ayuda, una vez más."
+              difficulty: 3
+              suggested_families: [choice, money]
+            - position: 2
+              slug: repaso-comparo-perfiles-nuevos
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara dos perfiles simulados nuevos y elige el que más conviene."
+              narrative_beat: "Zara compara, sin ayuda de nadie, dos perfiles simulados nuevos y elige el que más le conviene."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-cartera-y-canasta-diversificada
+          kind: review_interleaved
+          title_es: "Cruce: Cartera y Canasta Diversificada"
+          concept: "Mezclamos armar una cartera simulada con la idea de piezas realmente variadas, conectando con la aventura de canastas."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de esta saga con la diversificación real aprendida en una aventura anterior."
+          key_vocabulary: [cartera simulada, diversificación real]
+          prior_knowledge: "Completo el repaso de Decisiones de Cartera Simuladas (tema anterior) y Canastas y Fondos (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/armo-mi-cartera-simulada
+            - simulador-del-futuro/decisiones-de-cartera-simuladas/combino-riesgo-y-plazo-en-la-cartera
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/que-tan-parecidas-son-las-piezas
+          lessons:
+            - position: 1
+              slug: junto-cartera-y-piezas-variadas
+              micro_objective: "Combina la idea de armar una cartera simulada con la de piezas realmente variadas, conectando con la aventura de canastas."
+              narrative_beat: "Rho junta dos aventuras: armar su cartera simulada Y asegurarse de que sus piezas sean realmente variadas entre sí."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-cartera-con-diversificacion-real
+              micro_objective: "Evalúa, sin ayuda, una cartera simulada nueva combinando riesgo, plazo y diversificación real."
+              narrative_beat: "Zara evalúa una cartera simulada nueva cruzando riesgo, plazo y diversificación real, las tres ideas juntas."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: cuando-el-simulador-se-pone-dificil
+    icon: thunderstorm
+    title:
+      en-US: "When the Simulator Gets Hard"
+      es-MX: "Cuando el Simulador se Pone Difícil"
+      pt-BR: "Quando o Simulador Fica Difícil"
+    description:
+      en-US: "A simulated rough patch tests whether panic or a fraud attempt can shake a plan built to last."
+      es-MX: "Una mala temporada simulada pone a prueba si el pánico o un intento de fraude pueden sacudir un plan hecho para durar."
+      pt-BR: "Uma ma temporada simulada testa se o panico ou uma tentativa de fraude podem abalar um plano feito para durar."
+    topics:
+        - position: 1
+          slug: el-simulador-tiene-una-mala-temporada
+          title_es: "El simulador tiene una mala temporada"
+          concept: "El simulador introduce una mala temporada simulada (una baja general) para practicar cómo reaccionar."
+          learning_objective: "El aprendiz reconoce y describe una mala temporada simulada, incluyendo cómo se siente ver bajar una cartera simulada."
+          key_vocabulary: [mala temporada, baja general]
+          prior_knowledge: "Completo Decisiones de Cartera Simuladas (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cómo cree que se sentiría ver bajar el valor de una cartera, aunque sea solo una simulación."
+          lessons:
+            - position: 1
+              slug: anuncian-la-mala-temporada
+              micro_objective: "Reconoce que el simulador introduce una mala temporada simulada (una baja general) para practicar cómo reaccionar."
+              narrative_beat: "De pronto, el simulador anuncia: 'mala temporada simulada' - todas las carteras simuladas bajan un poco, incluida la de Liruf."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: describo-como-se-siente
+              micro_objective: "Describe, con sus palabras, cómo se siente ver una cartera simulada bajar de valor durante una mala temporada."
+              narrative_beat: "Liruf describe cómo se siente ver su cartera simulada bajar - un poco de nervios, aunque sea solo una simulación."
+              difficulty: 2
+              suggested_families: [choice, storyplay]
+        - position: 2
+          slug: vender-en-panico-o-esperar
+          title_es: "Vender en pánico o esperar"
+          concept: "Comparar, dentro del simulador, el resultado de vender en pánico durante una baja contra esperar a que se recupere."
+          learning_objective: "El aprendiz compara vender en pánico contra esperar durante una baja simulada, y explica por qué el pánico convierte una baja temporal en permanente."
+          key_vocabulary: [vender en pánico, esperar, recuperarse]
+          prior_knowledge: "Describe cómo se siente una mala temporada simulada (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué cree que pasa si alguien vende todo en pánico justo cuando una cartera está más baja."
+          lessons:
+            - position: 1
+              slug: liruf-vende-zara-espera
+              micro_objective: "Compara, dentro del simulador, el resultado de vender en pánico durante una baja contra esperar a que se recupere."
+              narrative_beat: "Dentro del simulador, Liruf vende todo en pánico durante la baja; Zara espera - cuando la temporada mejora, solo Zara se recupera."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: explico-la-perdida-permanente
+              micro_objective: "Explica por qué vender en pánico durante una baja simulada convierte una baja temporal en una pérdida permanente."
+              narrative_beat: "Rho explica: al vender en pánico, Liruf convirtió una baja temporal en una pérdida que ya no se pudo recuperar."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: una-oferta-sospechosa-aparece-en-el-simulador
+          title_es: "Una oferta sospechosa aparece en el simulador"
+          concept: "El simulador presenta una oferta sospechosa (con señales del radar de fraude) en medio de la mala temporada."
+          learning_objective: "El aprendiz reconoce e identifica las señales del radar de fraude en una oferta sospechosa dentro del simulador."
+          key_vocabulary: [oferta sospechosa, señales del radar]
+          prior_knowledge: "Compara vender en pánico contra esperar (tema anterior)."
+          fact_refs: [fraud.red_flags_list]
+          parent_check: "Preguntale a {{name}} qué señales del radar de fraude reconocería si viera una oferta 'garantizada' en medio de una mala temporada."
+          lessons:
+            - position: 1
+              slug: aparece-el-mensaje-sospechoso
+              micro_objective: "Reconoce, dentro del simulador, una oferta sospechosa que aparece en medio de la mala temporada."
+              narrative_beat: "En medio de la mala temporada simulada, aparece un mensaje: 'ganancia garantizada, decide ya' - las viejas señales de alerta, ahora dentro del simulador."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-las-senales-presentes
+              micro_objective: "Identifica cuáles de las cuatro señales del radar de fraude aparecen en la oferta sospechosa del simulador."
+              narrative_beat: "Zara identifica, dentro del simulador, cuáles señales del radar de fraude están presentes en esta oferta sospechosa."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: aplico-mi-radar-dentro-del-simulador
+          title_es: "Aplico mi radar dentro del simulador"
+          concept: "Aplica el radar completo de fraude a la oferta sospechosa del simulador y decide correctamente rechazarla."
+          learning_objective: "El aprendiz aplica el radar de fraude para rechazar una oferta sospechosa simulada y explica su decisión citando señales."
+          key_vocabulary: [aplicar el radar, rechazar]
+          prior_knowledge: "Identifica las señales presentes en la oferta sospechosa (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que explique, citando al menos dos señales, por qué rechazaría una oferta sospechosa como la del simulador."
+          lessons:
+            - position: 1
+              slug: rho-rechaza-la-oferta
+              micro_objective: "Aplica el radar completo de fraude a la oferta sospechosa del simulador y decide correctamente rechazarla."
+              narrative_beat: "Rho aplica su radar completo a la oferta sospechosa del simulador, y decide con confianza: hay que rechazarla."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: explico-mi-rechazo-citando-senales
+              micro_objective: "Explica la decisión de rechazar la oferta sospechosa del simulador, citando al menos dos señales del radar."
+              narrative_beat: "Zara explica al equipo por qué rechazó la oferta sospechosa del simulador, citando dos señales exactas de su radar."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+        - position: 5
+          slug: mantengo-mi-plan-a-pesar-del-ruido
+          title_es: "Mantengo mi plan a pesar del ruido"
+          concept: "Mantener el plan original (sin pánico, sin caer en fraudes) durante una mala temporada simulada da mejor resultado al final."
+          learning_objective: "El aprendiz compara el resultado final de mantener el plan, vender en pánico, y caer en fraude, y reconoce cuál gana."
+          key_vocabulary: [mantener el plan, ruido]
+          prior_knowledge: "Explica su rechazo citando señales del radar (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué estrategia cree que da mejor resultado al final: mantener el plan, vender en pánico, o caer en una oferta sospechosa."
+          lessons:
+            - position: 1
+              slug: quien-mantuvo-el-plan-termina-mejor
+              micro_objective: "Reconoce que mantener el plan original (sin pánico, sin caer en fraudes) durante una mala temporada simulada da mejor resultado al final."
+              narrative_beat: "Al final de la mala temporada simulada, quienes mantuvieron su plan original terminan mejor que quienes vendieron en pánico o cayeron en la oferta sospechosa."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: comparo-las-tres-estrategias
+              micro_objective: "Compara el resultado final de tres estrategias simuladas: mantener el plan, vender en pánico, y caer en la oferta sospechosa."
+              narrative_beat: "Zara compara las tres estrategias simuladas: mantener el plan gana por mucho a vender en pánico o caer en la oferta sospechosa."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: reviso-como-reaccione
+          title_es: "Reviso cómo reaccioné"
+          concept: "Revisa, sin ayuda, cómo reaccionó durante la mala temporada simulada y qué haría distinto la próxima vez."
+          learning_objective: "El aprendiz reflexiona, sin ayuda, sobre su propia reacción durante la mala temporada simulada y escribe una lección aprendida."
+          key_vocabulary: [reflexionar, lección aprendida]
+          prior_knowledge: "Compara las tres estrategias de la mala temporada (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que reflexione sobre cómo reaccionó durante la mala temporada simulada, y qué haría distinto la próxima vez."
+          lessons:
+            - position: 1
+              slug: revisamos-nuestras-reacciones-en-equipo
+              micro_objective: "Con apoyo, revisa cómo reaccionó durante la mala temporada simulada y qué haría distinto la próxima vez."
+              narrative_beat: "El equipo revisa junto cómo reaccionó cada quien durante la mala temporada simulada, y qué harían distinto la próxima vez."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: escribo-mi-propia-leccion
+              micro_objective: "Reflexiona, sin ayuda, sobre su propia reacción durante la mala temporada simulada y escribe una lección aprendida."
+              narrative_beat: "Rho reflexiona solo, sin ayuda, sobre cómo reaccionó durante la mala temporada, y escribe su propia lección aprendida."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-cuando-el-simulador-se-pone-dificil
+          kind: review_spaced
+          title_es: "Repaso: Cuando el Simulador se Pone Difícil"
+          concept: "El equipo repasa por qué el pánico y el fraude son los dos peligros de una mala temporada, antes del reporte final."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué vender en pánico convierte una baja temporal en permanente."
+          key_vocabulary: [pánico, pérdida permanente]
+          prior_knowledge: "Completo los 6 temas de Cuando el Simulador se Pone Difícil."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/el-simulador-tiene-una-mala-temporada
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/vender-en-panico-o-esperar
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/una-oferta-sospechosa-aparece-en-el-simulador
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/aplico-mi-radar-dentro-del-simulador
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/mantengo-mi-plan-a-pesar-del-ruido
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/reviso-como-reaccione
+          lessons:
+            - position: 1
+              slug: repaso-panico-o-espera
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué vender en pánico convierte una baja temporal en una pérdida permanente."
+              narrative_beat: "El equipo repasa la mala temporada simulada y explica, sin ayuda, por qué el pánico convierte una baja temporal en permanente."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-rechazo-oferta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: reconoce y rechaza una oferta sospechosa nueva dentro de una simulación difícil."
+              narrative_beat: "Zara reconoce y rechaza, sin ayuda de nadie, una oferta sospechosa nueva dentro de una simulación difícil."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-panico-fraude-y-plan
+          kind: review_interleaved
+          title_es: "Cruce: Pánico, Fraude y Plan"
+          concept: "Mezclamos el riesgo de vender en pánico con el de caer en una oferta sospechosa para evaluar una mala temporada completa."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, resistir el pánico, rechazar el fraude y mantener el plan en una sola decisión."
+          key_vocabulary: [pánico, fraude, mantener el plan]
+          prior_knowledge: "Completo el repaso de Cuando el Simulador se Pone Difícil (tema anterior)."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/vender-en-panico-o-esperar
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/aplico-mi-radar-dentro-del-simulador
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil/mantengo-mi-plan-a-pesar-del-ruido
+          lessons:
+            - position: 1
+              slug: junto-panico-y-fraude
+              micro_objective: "Combina el riesgo de vender en pánico con el de caer en una oferta sospechosa para evaluar una mala temporada simulada completa."
+              narrative_beat: "Rho junta dos riesgos de la mala temporada: vender en pánico Y caer en una oferta sospechosa - los dos peligros del mismo momento difícil."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-la-mala-temporada-completa
+              micro_objective: "Evalúa, sin ayuda, una mala temporada simulada completa aplicando pánico, fraude y mantener el plan en una sola decisión."
+              narrative_beat: "Zara resuelve una mala temporada simulada final cruzando las tres ideas: resistir el pánico, rechazar el fraude, y mantener el plan."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: mi-reporte-final-del-simulador
+    icon: summarize
+    title:
+      en-US: "My Final Simulator Report"
+      es-MX: "Mi Reporte Final del Simulador"
+      pt-BR: "Meu Relatorio Final do Simulador"
+    description:
+      en-US: "Combine every adventure of the course into one complete simulated plan, and remember it's practice - not permission to invest real money yet."
+      es-MX: "Combina cada aventura del curso en un solo plan simulado completo, y recuerda que es práctica - no un permiso para invertir dinero real todavía."
+      pt-BR: "Combine cada aventura do curso em um único plano simulado completo, e lembre-se de que e pratica - nao uma permissao para investir dinheiro real ainda."
+    topics:
+        - position: 1
+          slug: combino-todas-las-aventuras
+          title_es: "Combino todas las aventuras"
+          concept: "Combina, en una sola lista, una idea clave de cada aventura del curso."
+          learning_objective: "El aprendiz combina en una lista una idea clave por aventura y explica cómo se conectan dos ideas de aventuras distintas."
+          key_vocabulary: [idea clave, conectar aventuras]
+          prior_knowledge: "Completo Cuando el Simulador se Pone Difícil (saga anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que nombre una idea clave de cada aventura del curso, de memoria."
+          lessons:
+            - position: 1
+              slug: hacemos-la-lista-completa
+              micro_objective: "Combina, en una sola lista, una idea clave de cada aventura del curso."
+              narrative_beat: "Dina reúne al equipo para hacer una lista: una idea clave de cada aventura del curso, desde la Estación Reloj hasta el Puesto de Escucha."
+              difficulty: 1
+              suggested_families: [story, arrange]
+            - position: 2
+              slug: conecto-dos-ideas-distintas
+              micro_objective: "Explica, con sus palabras, cómo se conecta al menos una idea de dos aventuras distintas del curso."
+              narrative_beat: "Liruf explica cómo se conecta la idea del valor del tiempo con la idea de las canastas diversificadas."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: armo-mi-plan-simulado-completo
+          title_es: "Armo mi plan simulado completo"
+          concept: "Arma un plan simulado completo de varios años combinando meta, colchón, canasta diversificada, plazo largo y protección contra fraude."
+          learning_objective: "El aprendiz arma un plan simulado completo con los cinco elementos del curso y lo revisa contra un checklist final."
+          key_vocabulary: [plan completo, cinco elementos]
+          prior_knowledge: "Conecta ideas de dos aventuras distintas (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a armar un plan simulado completo con meta, colchón, canasta, plazo y protección contra fraude."
+          lessons:
+            - position: 1
+              slug: armo-el-plan-con-todo-lo-aprendido
+              micro_objective: "Arma un plan simulado completo de varios años combinando meta, colchón, canasta diversificada, plazo largo y protección contra fraude."
+              narrative_beat: "Rho arma su plan simulado completo: una meta con colchón, una canasta diversificada, un plazo largo, y su radar de fraude siempre activo."
+              difficulty: 2
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: reviso-los-cinco-elementos
+              micro_objective: "Revisa su plan simulado completo contra un checklist final de cinco elementos."
+              narrative_beat: "Zara revisa su plan simulado contra el checklist final: meta, colchón, canasta, plazo y radar de fraude - los cinco presentes."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: simulo-mi-plan-completo-a-largo-plazo
+          title_es: "Simulo mi plan completo a largo plazo"
+          concept: "Corre la simulación completa de su plan a largo plazo y registra el resultado final."
+          learning_objective: "El aprendiz corre la simulación completa de su plan y compara el resultado final contra su meta original."
+          key_vocabulary: [simulación completa, resultado final]
+          prior_knowledge: "Revisa su plan contra los cinco elementos del checklist (tema anterior)."
+          fact_refs: [math.savings_goal_ceiling_tier4]
+          parent_check: "Ayuda a {{name}} a comparar el resultado final de una simulación completa contra la meta original que se propuso."
+          lessons:
+            - position: 1
+              slug: corremos-la-simulacion-completa
+              micro_objective: "Corre la simulación completa de su plan a largo plazo y registra el resultado final."
+              narrative_beat: "El equipo corre la simulación completa de sus planes a largo plazo, y anota el resultado final de cada quien."
+              difficulty: 3
+              suggested_families: [money, input]
+            - position: 2
+              slug: comparo-resultado-y-meta-original
+              micro_objective: "Compara el resultado final de su simulación completa contra su meta original y confirma si la alcanzó."
+              narrative_beat: "Zara compara el resultado final de su simulación contra su meta original, y confirma que su plan sí la hubiera alcanzado."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: escribo-mi-reporte-final
+          title_es: "Escribo mi reporte final"
+          concept: "Escribe un reporte final breve explicando su plan simulado y las decisiones clave que tomó."
+          learning_objective: "El aprendiz escribe, sin ayuda, un reporte final propio explicando su plan simulado y sus decisiones clave."
+          key_vocabulary: [reporte final, decisiones clave]
+          prior_knowledge: "Compara el resultado final contra su meta original (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea o cuente su reporte final: qué plan armó y por qué tomó cada decisión clave."
+          lessons:
+            - position: 1
+              slug: empezamos-el-reporte-en-equipo
+              micro_objective: "Con apoyo, escribe un reporte final breve explicando su plan simulado y las decisiones clave que tomó."
+              narrative_beat: "El equipo empieza a escribir juntos su reporte final: qué plan armaron y por qué tomaron cada decisión clave."
+              difficulty: 3
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: completo-mi-reporte-solo
+              micro_objective: "Completa, sin ayuda, su propio reporte final explicando cada decisión clave de su plan simulado."
+              narrative_beat: "Rho completa su propio reporte final solo, sin ayuda, explicando cada decisión clave que tomó en su plan simulado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: recuerdo-que-es-solo-un-simulador
+          title_es: "Recuerdo que es solo un simulador"
+          concept: "Reafirma que todo lo practicado es una simulación para aprender a decidir, no una instrucción para invertir dinero real todavía."
+          learning_objective: "El aprendiz reafirma, sin ambigüedad, que el curso fue una simulación para aprender a decidir, no una autorización para invertir dinero real ya."
+          key_vocabulary: [simulación para aprender, no una autorización]
+          prior_knowledge: "Completa su reporte final propio (tema anterior)."
+          fact_refs: []
+          parent_check: "Asegúrate de que {{name}} entienda que todo el curso fue una simulación para aprender a decidir, no un permiso para invertir dinero real todavía."
+          lessons:
+            - position: 1
+              slug: dina-cierra-con-claridad
+              micro_objective: "Reafirma que todo lo practicado es una simulación para aprender a decidir, no una instrucción para invertir dinero real todavía."
+              narrative_beat: "Dina cierra con una frase clara: 'todo esto fue un simulador para aprender a decidir - decidir con dinero real de verdad es una decisión de adultos, con más pasos'."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-la-diferencia-final
+              micro_objective: "Explica, con sus palabras, por qué lo aprendido en el simulador es una base para decidir bien en el futuro, no una autorización para invertir ya."
+              narrative_beat: "Liruf explica con sus palabras por qué lo que aprendió es una base para el futuro, no un permiso para invertir dinero real ahora mismo."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: presento-mi-reporte-final
+          title_es: "Presento mi reporte final"
+          concept: "Presenta su reporte final completo ante el equipo, explicando cada decisión clave de su plan simulado."
+          learning_objective: "El aprendiz organiza y presenta, sin ayuda, su reporte final completo, resistiendo una pregunta sobre su plan simulado."
+          key_vocabulary: [presentar, reporte completo]
+          prior_knowledge: "Explica la diferencia entre simular y decidir con dinero real (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente su reporte final completo: plan, decisiones clave, y resultado simulado."
+          lessons:
+            - position: 1
+              slug: ordeno-mi-reporte-antes-de-presentar
+              micro_objective: "Organiza, sin ayuda, los elementos de su reporte final completo para presentarlo ante el equipo."
+              narrative_beat: "Zara ordena los elementos de su reporte final antes de presentarlo: su plan, sus decisiones clave, y su resultado simulado."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: presento-mi-reporte-completo
+              micro_objective: "Presenta, sin ayuda, su reporte final completo ante el equipo, resistiendo una pregunta difícil sobre su plan simulado."
+              narrative_beat: "Zara presenta su reporte final completo; cuando le preguntan '¿y si hubiera una mala temporada real?', responde con su plan de mantenerse firme."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-mi-reporte-final-del-simulador
+          kind: review_spaced
+          title_es: "Repaso: Mi Reporte Final del Simulador"
+          concept: "El equipo repasa los cinco elementos de un plan simulado completo antes de la graduación del simulador."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los cinco elementos de un plan simulado completo."
+          key_vocabulary: [cinco elementos, plan simulado]
+          prior_knowledge: "Completo los 6 temas de Mi Reporte Final del Simulador."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/mi-reporte-final-del-simulador/combino-todas-las-aventuras
+            - simulador-del-futuro/mi-reporte-final-del-simulador/armo-mi-plan-simulado-completo
+            - simulador-del-futuro/mi-reporte-final-del-simulador/simulo-mi-plan-completo-a-largo-plazo
+            - simulador-del-futuro/mi-reporte-final-del-simulador/escribo-mi-reporte-final
+            - simulador-del-futuro/mi-reporte-final-del-simulador/recuerdo-que-es-solo-un-simulador
+            - simulador-del-futuro/mi-reporte-final-del-simulador/presento-mi-reporte-final
+          lessons:
+            - position: 1
+              slug: repaso-los-cinco-elementos-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, los cinco elementos de un plan simulado completo."
+              narrative_beat: "El equipo repasa el checklist final de cinco elementos y confirma, sin ayuda, que sus planes los tienen todos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-armo-plan-nuevo-completo
+              micro_objective: "Aplica sin ayuda todo lo repasado: arma un plan simulado nuevo con los cinco elementos completos."
+              narrative_beat: "Rho arma, sin ayuda de nadie, un plan simulado nuevo con los cinco elementos completos del checklist."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+        - position: 8
+          slug: cruce-final-de-todo-el-curso
+          kind: review_interleaved
+          title_es: "Cruce: Final de Todo el Curso"
+          concept: "Mezclamos el checklist del valor del tiempo, el de una canasta bien armada, y el radar de fraude en un solo plan simulado final."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de múltiples aventuras anteriores del curso en un solo plan simulado final."
+          key_vocabulary: [valor del tiempo, canasta bien armada, radar de fraude]
+          prior_knowledge: "Completo el repaso de Mi Reporte Final del Simulador (tema anterior) y las aventuras previas del curso."
+          fact_refs: []
+          review_of:
+            - valor-del-tiempo/decido-con-el-reloj-en-mente/armo-mi-checklist-del-tiempo
+            - canastas-y-fondos/armo-mi-propia-canasta/combino-todo-lo-del-curso
+            - radar-de-fraudes/mi-radar-completo/mi-radar-personal-completo
+          lessons:
+            - position: 1
+              slug: junto-checklist-del-tiempo-y-de-canasta
+              micro_objective: "Combina el checklist del valor del tiempo con el checklist de una canasta bien armada para evaluar un plan simulado nuevo."
+              narrative_beat: "Rho junta dos checklists de aventuras distintas: el del valor del tiempo Y el de una canasta bien armada, para un plan simulado nuevo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: sintetizo-todo-el-curso
+              micro_objective: "Evalúa, sin ayuda, un plan simulado final combinando tiempo, canasta diversificada y radar de fraude - la síntesis completa del curso."
+              narrative_beat: "Zara resuelve el caso final del simulador cruzando tiempo, canasta diversificada y radar de fraude - todo el curso en una sola decisión."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-graduacion-del-simulador
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Simulator's Graduation"
+      es-MX: "La Graduación del Simulador"
+      pt-BR: "A Formatura do Simulador"
+    description:
+      en-US: "A graduation challenge puts the whole course's simulated toolkit to work, one final time."
+      es-MX: "Un reto de graduación pone a trabajar todo el kit de herramientas simuladas del curso, una última vez."
+      pt-BR: "Um desafio de formatura coloca para trabalhar todo o kit de ferramentas simuladas do curso, uma última vez."
+    topics:
+        - position: 1
+          slug: el-reto-final-del-simulador
+          kind: review_quest
+          title_es: "El Reto Final del Simulador"
+          concept: "El simulador lanza su prueba de graduación: armar y correr una cartera simulada completa, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, las bases del simulador y las decisiones de cartera simulada para resolver un reto abierto."
+          key_vocabulary: [cartera simulada, reto de graduación]
+          prior_knowledge: "Completo Bienvenida al Simulador y Decisiones de Cartera Simuladas."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/bienvenida-al-simulador
+            - simulador-del-futuro/decisiones-de-cartera-simuladas
+          lessons:
+            - position: 1
+              slug: se-enciende-la-pantalla-de-graduacion
+              micro_objective: "Recuerda, sin ayuda, por qué simular antes de decidir de verdad deja cometer errores baratos."
+              narrative_beat: "Una pantalla se enciende en el simulador: 'Prueba de graduación - demuestra que sabes decidir con el simulador completo'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: armo-y-corro-cartera-sin-ayuda
+              micro_objective: "Arma y corre, sin ayuda, una cartera simulada nueva combinando diversificación y plazo."
+              narrative_beat: "Zara enfrenta su primera prueba real: armar y correr sola, sin ayuda, una cartera simulada nueva de principio a fin."
+              difficulty: 3
+              suggested_families: [money, input]
+        - position: 2
+          slug: mi-plan-simulado-defendido
+          kind: review_quest
+          title_es: "Mi Plan Simulado, Defendido"
+          concept: "Frente al consejo completo de todas las aventuras, el equipo defiende su reporte final explicando cómo resistió el ruido de una mala temporada y armó su plan completo."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un reporte final combinando resistencia a la mala temporada y su plan simulado completo."
+          key_vocabulary: [defender, consejo completo, reporte final]
+          prior_knowledge: "Completo El Reto Final del Simulador (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - simulador-del-futuro/cuando-el-simulador-se-pone-dificil
+            - simulador-del-futuro/mi-reporte-final-del-simulador
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-final-del-curso
+              micro_objective: "Organiza, sin ayuda, los argumentos de resistir el pánico y el fraude, y su plan simulado completo, para defender su reporte final."
+              narrative_beat: "Dina ensaya su defensa final: primero cómo resistió el pánico y el fraude, después su plan simulado completo."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-completo
+              micro_objective: "Completa, sin ayuda, la defensa final de su reporte ante el consejo completo, resistiendo una pregunta difícil sobre todo el curso."
+              narrative_beat: "Dina presenta su reporte final ante el consejo completo de todas las aventuras; cuando le preguntan 'de todo el curso, ¿qué fue lo más importante?', responde con seguridad."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

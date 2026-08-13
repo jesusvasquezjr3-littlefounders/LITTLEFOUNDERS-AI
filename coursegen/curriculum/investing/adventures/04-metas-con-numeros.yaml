@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 4
+  slug: metas-con-numeros
+  theme: valley
+  age_tier: tier4
+  title:
+    en-US: "Goals With Numbers"
+    es-MX: "Metas con Números"
+    pt-BR: "Metas com Numeros"
+  description:
+    en-US: "In the Valley of Goals, the team turns a vague want into a real numeric goal - amount, deadline, weekly plan - and learns that prices don't hold still while you save."
+    es-MX: "En el Valle de las Metas, el equipo convierte un deseo vago en una meta numérica real - monto, fecha, plan semanal - y aprende que los precios no se quedan quietos mientras ahorras."
+    pt-BR: "No Vale das Metas, a equipe transforma um desejo vago em uma meta numerica real - valor, prazo, plano semanal - e aprende que os precos nao ficam parados enquanto voce economiza."
+  narrative_arc: "Dina, Liruf, Rho y Zara acampan en el Valle de las Metas, donde aprenden a convertir un 'quiero algo' en una meta real con monto exacto y fecha. Descubren que los precios pueden subir mientras ahorran, y que un colchón extra protege una meta de esa subida. Después dividen su meta en un plan semana a semana con números reales, y cuando un plan no alcanza, aprenden las tres formas de ajustarlo: ahorrar más, esperar más, o elegir algo más barato. Terminan armando y defendiendo un plan financiero completo frente al consejo del valle."
+
+sagas:
+  - position: 1
+    slug: de-quiero-algo-a-una-meta-real
+    icon: flag
+    title:
+      en-US: "From 'I Want Something' to a Real Goal"
+      es-MX: "De Quiero Algo a Una Meta Real"
+      pt-BR: "De Quero Algo a Uma Meta Real"
+    description:
+      en-US: "'I want new headphones' is not a goal yet - a real goal needs an exact amount and a date."
+      es-MX: "'Quiero unos audífonos nuevos' todavía no es una meta - una meta real necesita un monto exacto y una fecha."
+      pt-BR: "'Quero um fone novo' ainda nao e uma meta - uma meta real precisa de um valor exato e uma data."
+    topics:
+        - position: 1
+          slug: quiero-algo-no-es-una-meta
+          title_es: "Quiero algo no es una meta"
+          concept: "Un deseo como 'quiero unos audífonos nuevos' no es una meta todavía - una meta real necesita un monto exacto y una fecha."
+          learning_objective: "El aprendiz distingue un deseo vago de una meta real, identificando qué le falta (monto, fecha, o ambos)."
+          key_vocabulary: [deseo vago, meta real, monto, fecha]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué es lo que más quiere ahorrar ahora mismo, y si ya sabe el monto exacto y la fecha."
+          lessons:
+            - position: 1
+              slug: liruf-no-sabe-cuanto-ni-cuando
+              micro_objective: "Reconoce que un deseo vago ('quiero unos audífonos nuevos') no es una meta todavía porque le falta monto y fecha."
+              narrative_beat: "Liruf dice: 'quiero unos audífonos nuevos'. Dina le pregunta: '¿cuánto cuestan? ¿para cuándo los quieres?' - Liruf no sabe ninguna de las dos."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: deseo-o-meta
+              micro_objective: "Distingue, entre 4 frases, cuáles son deseos vagos y cuáles ya tienen forma de meta."
+              narrative_beat: "Zara revisa cuatro frases en la pizarra del valle y marca cuáles todavía son solo deseos."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: le-pongo-un-numero-exacto
+          title_es: "Le pongo un número exacto"
+          concept: "Convierte un deseo vago en un monto exacto de dinero usando el precio real del objeto."
+          learning_objective: "El aprendiz convierte un deseo en un monto exacto usando el precio real de un objeto concreto."
+          key_vocabulary: [monto exacto, precio real]
+          prior_knowledge: "Distingue un deseo vago de una meta real (tema anterior)."
+          fact_refs: [mxn.reference_prices.audifonos_inalambricos]
+          parent_check: "Ayuda a {{name}} a buscar el precio real del objeto que quiere para su meta."
+          lessons:
+            - position: 1
+              slug: busco-el-precio-real
+              micro_objective: "Convierte un deseo vago en un monto exacto de dinero usando el precio real del objeto."
+              narrative_beat: "Liruf busca el precio real de los audífonos inalámbricos que quiere: 900 pesos - ahora su deseo tiene un número."
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: elijo-entre-dos-versiones
+              micro_objective: "Compara dos versiones del mismo objeto con precios distintos y elige el monto exacto para su meta."
+              narrative_beat: "Zara compara dos versiones de tenis de moda con precios distintos y decide cuál monto exacto usar para su meta."
+              difficulty: 3
+              suggested_families: [choice, money]
+        - position: 3
+          slug: le-pongo-una-fecha
+          title_es: "Le pongo una fecha"
+          concept: "Una meta sin fecha se puede posponer para siempre - ponerle una fecha la vuelve real."
+          learning_objective: "El aprendiz reconoce la necesidad de una fecha en una meta y elige una fecha razonable para un caso dado."
+          key_vocabulary: [fecha, posponer, razonable]
+          prior_knowledge: "Convierte un deseo en un monto exacto (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} para cuándo quiere lograr su meta - una fecha concreta, no 'algún día'."
+          lessons:
+            - position: 1
+              slug: rho-nunca-lo-penso
+              micro_objective: "Reconoce que una meta sin fecha se puede posponer para siempre, y le pone una fecha concreta a un deseo con monto."
+              narrative_beat: "Rho tiene el monto de su meta claro, pero sin fecha - Dina le pregunta: '¿para cuándo?' y Rho se da cuenta de que nunca lo había pensado."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-una-fecha-razonable
+              micro_objective: "Elige una fecha razonable para una meta dada, ni tan pronto que sea imposible, ni tan lejos que pierda sentido."
+              narrative_beat: "Zara elige una fecha para su meta: ni la próxima semana (imposible) ni en cinco años (sin sentido para ese objeto)."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: comparo-metas-completas-e-incompletas
+          title_es: "Comparo metas completas e incompletas"
+          concept: "Comparar varias metas descritas permite detectar cuáles les falta monto, fecha, o ambas."
+          learning_objective: "El aprendiz detecta, entre varias metas, cuáles están incompletas y completa la parte que falta."
+          key_vocabulary: [meta incompleta, completar]
+          prior_knowledge: "Elige una fecha razonable para una meta (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} tres metas que se le ocurran y detecten juntos cuáles están incompletas."
+          lessons:
+            - position: 1
+              slug: reviso-cuatro-metas
+              micro_objective: "Compara varias metas descritas y detecta cuáles les falta monto, fecha, o ambas."
+              narrative_beat: "El equipo revisa cuatro metas escritas por distintos cadetes del valle y detecta a cuáles les falta una parte."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: completo-la-parte-que-falta
+              micro_objective: "Completa una meta incompleta agregando la parte que le falta (monto o fecha)."
+              narrative_beat: "Liruf completa su propia meta agregando la fecha que había olvidado poner."
+              difficulty: 4
+              suggested_families: [choice, input]
+        - position: 5
+          slug: mi-meta-en-una-frase
+          title_es: "Mi meta en una frase"
+          concept: "Redacta una meta propia en una sola frase con objeto, monto y fecha."
+          learning_objective: "El aprendiz redacta una meta propia completa en una sola frase, usando un formato de tres partes."
+          key_vocabulary: [formato de meta, una sola frase]
+          prior_knowledge: "Completa una meta incompleta (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga su meta completa en una sola frase: quiero ___, cuesta ___, para el ___."
+          lessons:
+            - position: 1
+              slug: armamos-el-formato-de-meta
+              micro_objective: "Con apoyo, redacta una meta propia en una sola frase con objeto, monto y fecha."
+              narrative_beat: "El equipo arma el formato en la pizarra: 'quiero ___, cuesta ___, para el ___' y lo llenan juntos con un ejemplo real."
+              difficulty: 4
+              suggested_families: [storyplay, input]
+            - position: 2
+              slug: escribo-mi-meta-solo
+              micro_objective: "Aplica, sin ayuda, el formato de una sola frase a su propia meta real."
+              narrative_beat: "Rho escribe solo, sin ayuda, su propia meta completa en una sola frase usando el formato del equipo."
+              difficulty: 4
+              suggested_families: [input, storyplay]
+        - position: 6
+          slug: reviso-mi-primera-meta
+          title_es: "Reviso mi primera meta"
+          concept: "Revisa la meta propia contra un checklist de tres partes (objeto, monto, fecha) y corrige lo que falte."
+          learning_objective: "El aprendiz revisa y corrige, sin ayuda, una meta propia usando un checklist de tres partes."
+          key_vocabulary: [checklist, corregir]
+          prior_knowledge: "Redacta una meta propia en una sola frase (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} su meta contra el checklist de tres partes: ¿tiene objeto, monto y fecha?"
+          lessons:
+            - position: 1
+              slug: reviso-contra-el-checklist
+              micro_objective: "Revisa una meta propia contra un checklist de tres partes (objeto, monto, fecha) y detecta si falta alguna."
+              narrative_beat: "Zara revisa su propia meta contra el checklist de tres partes y confirma que no le falta ninguna."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: corrijo-mi-meta-solo
+              micro_objective: "Corrige, sin ayuda, una meta propia que le falta una parte, usando el checklist completo."
+              narrative_beat: "Liruf revisa su meta solo, sin ayuda, encuentra que le faltaba el monto exacto, y la corrige por su cuenta."
+              difficulty: 5
+              suggested_families: [input, choice]
+        - position: 7
+          slug: repaso-de-quiero-algo-a-una-meta-real
+          kind: review_spaced
+          title_es: "Repaso: De Quiero Algo a Una Meta Real"
+          concept: "El equipo repasa las tres partes de una meta real antes de descubrir que los precios no se quedan quietos."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las tres partes que necesita una meta real."
+          key_vocabulary: [objeto, monto, fecha]
+          prior_knowledge: "Completo los 6 temas de De Quiero Algo a Una Meta Real."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/quiero-algo-no-es-una-meta
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/le-pongo-un-numero-exacto
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/le-pongo-una-fecha
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/comparo-metas-completas-e-incompletas
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/mi-meta-en-una-frase
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/reviso-mi-primera-meta
+          lessons:
+            - position: 1
+              slug: repaso-las-tres-partes
+              micro_objective: "Recuerda y aplica, sin ayuda, las tres partes que necesita una meta real (objeto, monto, fecha)."
+              narrative_beat: "El equipo repasa sus metas del valle y confirma, sin ayuda, que las tres partes estén completas."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-redacto-meta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta una meta nueva completa en una sola frase."
+              narrative_beat: "Zara redacta, sin ayuda de nadie, una meta nueva completa con objeto, monto y fecha."
+              difficulty: 4
+              suggested_families: [input, storyplay]
+        - position: 8
+          slug: cruce-monto-y-fecha
+          kind: review_interleaved
+          title_es: "Cruce: Monto y Fecha"
+          concept: "Mezclamos la elección de un monto exacto con la elección de una fecha razonable para armar una meta completa."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, monto y fecha para armar y evaluar una meta completa nueva."
+          key_vocabulary: [monto exacto, fecha razonable]
+          prior_knowledge: "Completo el repaso de De Quiero Algo a Una Meta Real (tema anterior)."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/le-pongo-un-numero-exacto
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/le-pongo-una-fecha
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/comparo-metas-completas-e-incompletas
+          lessons:
+            - position: 1
+              slug: junto-monto-y-fecha
+              micro_objective: "Combina la elección de un monto exacto con la elección de una fecha razonable para armar una meta completa nueva."
+              narrative_beat: "Rho junta dos pasos a la vez: elige el monto exacto Y la fecha razonable, para una meta nueva del valle."
+              difficulty: 4
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: reviso-una-meta-nueva
+              micro_objective: "Evalúa, sin ayuda, si una meta nueva está completa combinando monto, fecha y la frase final."
+              narrative_beat: "Zara revisa una meta nueva de un compañero cruzando las tres partes del checklist a la vez."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: cuando-las-cosas-suben-de-precio
+    icon: trending_up
+    title:
+      en-US: "When Things Get More Expensive"
+      es-MX: "Cuando las Cosas Suben de Precio"
+      pt-BR: "Quando as Coisas Ficam Mais Caras"
+    description:
+      en-US: "Prices don't hold still - learn why a fixed savings goal needs a cushion against a rising price."
+      es-MX: "Los precios no se quedan quietos - aprende por qué una meta de ahorro fija necesita un colchón contra un precio que sube."
+      pt-BR: "Os precos nao ficam parados - aprenda por que uma meta de poupanca fixa precisa de uma reserva contra um preco que sobe."
+    topics:
+        - position: 1
+          slug: los-precios-no-se-quedan-quietos
+          title_es: "Los precios no se quedan quietos"
+          concept: "El precio de las cosas puede subir con el tiempo, aunque tú sigas ahorrando el mismo plan."
+          learning_objective: "El aprendiz reconoce, con un ejemplo concreto, que los precios pueden subir con el tiempo."
+          key_vocabulary: [precio, subir con el tiempo]
+          prior_knowledge: "Completo De Quiero Algo a Una Meta Real (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si ha notado que algo que quiere comprar cuesta más ahora que hace unos meses."
+          lessons:
+            - position: 1
+              slug: el-precio-que-cambio
+              micro_objective: "Reconoce que el precio de las cosas puede subir con el tiempo, aunque tú sigas ahorrando el mismo plan."
+              narrative_beat: "Rho mira el precio de los audífonos que quiere: hace unos meses costaban menos - los precios no se quedaron quietos."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: encuentro-un-ejemplo-propio
+              micro_objective: "Identifica, en un caso, un ejemplo concreto de algo que subió de precio con el tiempo."
+              narrative_beat: "Liruf compara el precio de su videojuego favorito hoy contra el precio que recuerda de hace un año."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-meta-que-se-mueve
+          title_es: "Mi meta que se mueve"
+          concept: "Si el precio de tu meta sube mientras ahorras, el monto que planeaste ya no alcanza - tu meta 'se movió'."
+          learning_objective: "El aprendiz reconoce y calcula cuánto le falta a un plan de ahorro cuando el precio de la meta sube."
+          key_vocabulary: [meta que se mueve, le falta]
+          prior_knowledge: "Reconoce que los precios pueden subir con el tiempo (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría con su meta si el precio del objeto sube justo antes de que termine de ahorrar."
+          lessons:
+            - position: 1
+              slug: zara-ahorro-justo-y-el-precio-subio
+              micro_objective: "Reconoce que si el precio de una meta sube mientras ahorras, el monto planeado ya no alcanza."
+              narrative_beat: "Zara termina de ahorrar el monto exacto que había planeado, pero el objeto ya subió de precio - le falta un poco."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: calculo-cuanto-le-falta
+              micro_objective: "Calcula cuánto le falta a un plan de ahorro cuando el precio de la meta sube después de haber empezado a ahorrar."
+              narrative_beat: "Rho calcula exactamente cuánto le falta a su plan, ahora que el precio de su meta subió un poco."
+              difficulty: 3
+              suggested_families: [money, input]
+        - position: 3
+          slug: calculo-cuanto-subio
+          title_es: "Calculo cuánto subió"
+          concept: "Un ejemplo verificable de subida de precio (100 a 110) muestra cuánto subió en pesos y en porcentaje."
+          learning_objective: "El aprendiz calcula, con un ejemplo didáctico, cuánto subió un precio en pesos y en porcentaje, y aplica el mismo cálculo a otro monto."
+          key_vocabulary: [subida de precio, porcentaje]
+          prior_knowledge: "Calcula cuánto le falta a un plan cuando el precio sube (tema anterior)."
+          fact_refs: [money.inflation_example_100_to_110]
+          parent_check: "Pidele a {{name}} que calcule cuánto subió, en pesos, algo que costaba 100 y ahora cuesta 110."
+          lessons:
+            - position: 1
+              slug: de-100-a-110
+              micro_objective: "Calcula, con el ejemplo 100 a 110, cuánto subió el precio de algo en un año, en pesos y en porcentaje."
+              narrative_beat: "Dina calcula: algo que costaba 100 pesos ahora cuesta 110 - subió 10 pesos, un 10% más que antes."
+              difficulty: 3
+              suggested_families: [money, input]
+            - position: 2
+              slug: aplico-el-mismo-calculo-a-mi-meta
+              micro_objective: "Aplica el mismo cálculo de subida de precio a un monto distinto de meta."
+              narrative_beat: "Zara aplica el mismo cálculo del 10% a su propia meta, para ver cuánto podría subir en un año."
+              difficulty: 3
+              suggested_families: [money, analyze]
+        - position: 4
+          slug: ahorro-un-poco-de-mas-por-si-acaso
+          title_es: "Ahorro un poco de más por si acaso"
+          concept: "Agregar un colchón extra al monto planeado protege la meta de una subida de precio esperada."
+          learning_objective: "El aprendiz calcula un colchón simple (porcentaje extra) sobre el precio actual de una meta."
+          key_vocabulary: [colchón, extra, proteger la meta]
+          prior_knowledge: "Calcula cuánto subió un precio en pesos y porcentaje (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si le conviene ahorrar un poco más de lo que cuesta hoy su meta, 'por si acaso' sube el precio."
+          lessons:
+            - position: 1
+              slug: ahorro-por-si-acaso
+              micro_objective: "Reconoce que agregar un colchón extra al monto planeado protege la meta de una subida de precio esperada."
+              narrative_beat: "Rho decide ahorrar un poco más de lo que cuesta hoy su meta, 'por si acaso' el precio sube antes de que junte todo."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: calculo-mi-colchon
+              micro_objective: "Calcula el monto de un colchón simple (un porcentaje extra) sobre el precio actual de una meta."
+              narrative_beat: "Zara calcula un colchón del 10% extra sobre el precio actual de su meta, para protegerse de una posible subida."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 5
+          slug: comparo-meta-sin-colchon-y-con-colchon
+          title_es: "Comparo meta sin colchón y con colchón"
+          concept: "Comparar el resultado de una meta sin colchón contra una con colchón muestra por qué el colchón protege."
+          learning_objective: "El aprendiz compara el resultado de una meta con y sin colchón cuando el precio sube, y decide cuándo vale la pena agregarlo."
+          key_vocabulary: [con colchón, sin colchón]
+          prior_knowledge: "Calcula un colchón simple sobre el precio actual (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué le pasaría a una meta sin colchón si el precio del objeto sube justo antes de terminar de ahorrar."
+          lessons:
+            - position: 1
+              slug: liruf-sin-colchon-zara-con-colchon
+              micro_objective: "Compara el resultado de una meta sin colchón contra una con colchón cuando el precio sube."
+              narrative_beat: "Liruf ahorró exacto y le faltó cuando el precio subió; Zara ahorró con colchón y le alcanzó sin problema."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-si-vale-la-pena-el-colchon
+              micro_objective: "Decide, en un caso nuevo, si vale la pena agregar un colchón dado qué tan probable es que el precio suba."
+              narrative_beat: "Rho decide si vale la pena el colchón extra para una meta que probablemente no cambie mucho de precio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: ajusto-mi-meta-por-inflacion
+          title_es: "Ajusto mi meta por inflación"
+          concept: "Aplica un colchón simple a la meta propia para protegerla de una subida de precio."
+          learning_objective: "El aprendiz aplica, sin ayuda, un colchón a su propia meta y recalcula el nuevo monto final."
+          key_vocabulary: [ajustar, monto final]
+          prior_knowledge: "Decide cuándo vale la pena agregar un colchón (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a recalcular el monto final de su meta después de agregarle un colchón del 10%."
+          lessons:
+            - position: 1
+              slug: ajustamos-nuestras-metas-en-equipo
+              micro_objective: "Con apoyo, aplica un colchón simple a su propia meta para protegerla de una subida de precio."
+              narrative_beat: "El equipo ajusta juntos sus metas agregando un colchón simple del 10% al monto planeado."
+              difficulty: 4
+              suggested_families: [storyplay, money]
+            - position: 2
+              slug: recalculo-mi-monto-final
+              micro_objective: "Aplica, sin ayuda, el colchón a su propia meta y recalcula el nuevo monto final."
+              narrative_beat: "Zara recalcula sola, sin ayuda, el nuevo monto final de su meta después de agregar su propio colchón."
+              difficulty: 5
+              suggested_families: [money, input]
+        - position: 7
+          slug: repaso-cuando-las-cosas-suben-de-precio
+          kind: review_spaced
+          title_es: "Repaso: Cuando las Cosas Suben de Precio"
+          concept: "El equipo repasa por qué un colchón protege una meta antes de dividirla en un plan semana a semana."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué una meta sin colchón puede quedarse corta."
+          key_vocabulary: [colchón, subida de precio]
+          prior_knowledge: "Completo los 6 temas de Cuando las Cosas Suben de Precio."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/los-precios-no-se-quedan-quietos
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/mi-meta-que-se-mueve
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/calculo-cuanto-subio
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/ahorro-un-poco-de-mas-por-si-acaso
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/comparo-meta-sin-colchon-y-con-colchon
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/ajusto-mi-meta-por-inflacion
+          lessons:
+            - position: 1
+              slug: repaso-por-que-el-colchon-protege
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué una meta sin colchón puede quedarse corta si el precio sube."
+              narrative_beat: "El equipo repasa sus metas del valle y revisa, sin ayuda, cuáles tienen colchón y cuáles no."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-calculo-colchon-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: calcula un colchón nuevo para una meta que aún no lo tiene."
+              narrative_beat: "Rho calcula, sin ayuda de nadie, el colchón que le falta a una meta nueva del equipo."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 8
+          slug: cruce-precio-que-sube-y-meta-completa
+          kind: review_interleaved
+          title_es: "Cruce: Precio que Sube y Meta Completa"
+          concept: "Mezclamos el cálculo de cuánto sube un precio con la elección de un monto exacto para proteger una meta."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, monto exacto y colchón por inflación para armar una meta protegida."
+          key_vocabulary: [monto exacto, colchón por inflación]
+          prior_knowledge: "Completo el repaso de Cuando las Cosas Suben de Precio (tema anterior) y De Quiero Algo a Una Meta Real (saga anterior)."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/calculo-cuanto-subio
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/comparo-meta-sin-colchon-y-con-colchon
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/le-pongo-un-numero-exacto
+          lessons:
+            - position: 1
+              slug: junto-precio-que-sube-y-monto-exacto
+              micro_objective: "Combina el cálculo de cuánto sube un precio con la elección de un monto exacto para armar una meta protegida."
+              narrative_beat: "Zara junta dos ideas: cuánto puede subir el precio Y qué monto exacto eligió al inicio, para proteger su meta."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: armo-una-meta-protegida
+              micro_objective: "Evalúa, sin ayuda, una meta nueva combinando monto exacto, colchón por inflación y fecha en un solo plan."
+              narrative_beat: "Rho arma un plan completo cruzando las dos sagas: el monto exacto de su meta Y el colchón que necesita por si sube el precio."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: el-plan-semana-a-semana
+    icon: calendar_month
+    title:
+      en-US: "The Week-by-Week Plan"
+      es-MX: "El Plan Semana a Semana"
+      pt-BR: "O Plano Semana a Semana"
+    description:
+      en-US: "A goal amount divided by the weeks available tells you exactly how much to save each week."
+      es-MX: "El monto de una meta dividido entre las semanas disponibles te dice exactamente cuánto ahorrar cada semana."
+      pt-BR: "O valor de uma meta dividido pelas semanas disponiveis diz exatamente quanto economizar por semana."
+    topics:
+        - position: 1
+          slug: semanas-por-monto-semanal
+          title_es: "Semanas por monto semanal"
+          concept: "Un monto meta se puede dividir entre las semanas disponibles para saber cuánto ahorrar cada semana."
+          learning_objective: "El aprendiz reconoce que dividir el monto de una meta entre las semanas disponibles da el ahorro semanal necesario."
+          key_vocabulary: [dividir, semanas disponibles, ahorro semanal]
+          prior_knowledge: "Completo Cuando las Cosas Suben de Precio (saga anterior)."
+          fact_refs: [math.weekly_income_options_tier4]
+          parent_check: "Ayuda a {{name}} a contar cuántas semanas exactas tiene entre hoy y la fecha de su meta."
+          lessons:
+            - position: 1
+              slug: divido-mi-meta-entre-semanas
+              micro_objective: "Reconoce que un monto meta se puede dividir entre las semanas disponibles para saber cuánto ahorrar cada semana."
+              narrative_beat: "Dina le muestra a Liruf: si divide su meta entre las semanas que tiene, sabe exactamente cuánto ahorrar cada semana."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: cuento-mis-semanas-disponibles
+              micro_objective: "Identifica cuántas semanas tiene disponibles un personaje para cumplir su meta, dado el plazo elegido."
+              narrative_beat: "Zara cuenta cuántas semanas exactas tiene entre hoy y la fecha de su meta."
+              difficulty: 2
+              suggested_families: [choice, input]
+        - position: 2
+          slug: calculo-mi-ahorro-semanal
+          title_es: "Calculo mi ahorro semanal"
+          concept: "El monto semanal necesario se calcula dividiendo el monto total de la meta entre el número de semanas."
+          learning_objective: "El aprendiz calcula el monto semanal necesario y confirma que, multiplicado por las semanas, alcanza el total de la meta."
+          key_vocabulary: [monto semanal, confirmar el total]
+          prior_knowledge: "Reconoce que dividir el monto entre semanas da el ahorro semanal (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuánto tendría que ahorrar cada semana para llegar a su meta en el plazo que eligió."
+          lessons:
+            - position: 1
+              slug: divido-el-monto-entre-las-semanas
+              micro_objective: "Calcula el monto semanal necesario dividiendo el monto total de la meta entre el número de semanas."
+              narrative_beat: "Rho divide el monto de su meta entre las semanas disponibles y obtiene el monto exacto que debe ahorrar cada semana."
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: confirmo-que-el-plan-alcanza
+              micro_objective: "Confirma que un plan semanal, multiplicado por las semanas totales, alcanza exactamente el monto de la meta."
+              narrative_beat: "Zara multiplica su ahorro semanal por el número de semanas y confirma que el total coincide con su meta."
+              difficulty: 3
+              suggested_families: [money, analyze]
+        - position: 3
+          slug: que-pasa-si-ahorro-menos
+          title_es: "Qué pasa si ahorro menos"
+          concept: "Si ahorras menos que el plan una semana, calcula cuánto más necesitas ahorrar las semanas siguientes para no atrasarte."
+          learning_objective: "El aprendiz calcula cuánto más ahorrar en semanas siguientes tras una semana de ahorro menor al plan, o decide extender la fecha."
+          key_vocabulary: [atraso, recuperar, extender]
+          prior_knowledge: "Calcula el monto semanal necesario (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué haría si una semana no logra ahorrar lo que había planeado: ¿ahorrar más después o mover la fecha?"
+          lessons:
+            - position: 1
+              slug: liruf-ahorro-menos-esta-semana
+              micro_objective: "Calcula cuánto más se necesita ahorrar en las semanas siguientes si una semana se ahorró menos de lo planeado."
+              narrative_beat: "Liruf ahorró menos esta semana por un gasto inesperado - calcula cuánto más necesita ahorrar las próximas semanas para no atrasarse."
+              difficulty: 3
+              suggested_families: [story, input]
+            - position: 2
+              slug: recupero-o-extiendo
+              micro_objective: "Decide, en un caso, si conviene recuperar el atraso en las próximas semanas o extender la fecha final."
+              narrative_beat: "Rho decide si le conviene ahorrar más las próximas semanas o simplemente mover un poco su fecha final."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: comparo-dos-planes-semanales
+          title_es: "Comparo dos planes semanales"
+          concept: "Comparar dos planes con distinto monto semanal muestra en cuántas semanas termina cada uno."
+          learning_objective: "El aprendiz compara dos planes semanales con distinto monto y decide cuál conviene dado el ingreso disponible real."
+          key_vocabulary: [comparar planes, ingreso disponible]
+          prior_knowledge: "Decide entre recuperar un atraso o extender la fecha (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que compare dos planes de ahorro con distinto monto semanal y te diga cuál puede sostener de verdad."
+          lessons:
+            - position: 1
+              slug: un-plan-rapido-y-uno-lento
+              micro_objective: "Compara dos planes con distinto monto semanal y calcula en cuántas semanas termina cada uno."
+              narrative_beat: "Zara compara dos planes para la misma meta: uno ahorra más por semana y termina antes, el otro ahorra menos y tarda más."
+              difficulty: 3
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: decido-segun-mi-ingreso-real
+              micro_objective: "Decide cuál de dos planes semanales conviene más dado el ingreso disponible real de un personaje."
+              narrative_beat: "Con su ingreso semanal real en mente, Rho decide cuál de los dos planes puede sostener de verdad sin apretarse."
+              difficulty: 4
+              suggested_families: [choice, money]
+        - position: 5
+          slug: elijo-mi-ritmo
+          title_es: "Elijo mi ritmo"
+          concept: "Dado un plazo y una meta, elige el monto semanal que mejor combina rapidez y realismo."
+          learning_objective: "El aprendiz elige y justifica un ritmo de ahorro semanal propio, combinando rapidez y realismo."
+          key_vocabulary: [ritmo, rapidez, realismo]
+          prior_knowledge: "Decide cuál plan semanal conviene según el ingreso real (tema anterior)."
+          fact_refs: [math.weekly_income_options_tier4]
+          parent_check: "Pidele a {{name}} que elija su propio ritmo de ahorro semanal entre varias opciones y que explique por qué."
+          lessons:
+            - position: 1
+              slug: elijo-entre-cinco-ritmos
+              micro_objective: "Elige, entre varios montos semanales posibles, el que mejor combina rapidez y realismo para su propio caso."
+              narrative_beat: "Con opciones de 100, 150, 200, 250 o 300 pesos semanales, Zara elige el ritmo que puede sostener de verdad."
+              difficulty: 4
+              suggested_families: [choice, money]
+            - position: 2
+              slug: justifico-mi-ritmo
+              micro_objective: "Justifica, con al menos un motivo concreto, por qué eligió ese ritmo semanal y no uno más rápido o más lento."
+              narrative_beat: "Zara explica al equipo por qué eligió un ritmo intermedio: rápido, pero sin apretarse tanto que no pueda sostenerlo."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+        - position: 6
+          slug: armo-mi-plan-completo
+          title_es: "Armo mi plan completo"
+          concept: "Arma un plan semana a semana completo (monto, semanas, fecha final) para una meta propia."
+          learning_objective: "El aprendiz arma, sin ayuda, un plan semana a semana completo aplicando todos los pasos de la saga."
+          key_vocabulary: [plan completo, fecha final]
+          prior_knowledge: "Justifica su ritmo de ahorro semanal (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a armar su plan semana a semana completo: monto semanal, número de semanas y fecha final."
+          lessons:
+            - position: 1
+              slug: armamos-el-plan-de-liruf
+              micro_objective: "Con apoyo, arma un plan semana a semana completo (monto, semanas, fecha final) para una meta propia."
+              narrative_beat: "El equipo arma en la pizarra el plan completo de Liruf: monto semanal, número de semanas y fecha final exacta."
+              difficulty: 4
+              suggested_families: [storyplay, money]
+            - position: 2
+              slug: armo-mi-plan-solo
+              micro_objective: "Aplica, sin ayuda, todos los pasos para armar su propio plan semana a semana completo."
+              narrative_beat: "Rho arma solo, sin ayuda, su propio plan completo de principio a fin, usando todo lo aprendido en la saga."
+              difficulty: 5
+              suggested_families: [money, input]
+        - position: 7
+          slug: repaso-el-plan-semana-a-semana
+          kind: review_spaced
+          title_es: "Repaso: El Plan Semana a Semana"
+          concept: "El equipo repasa cómo dividir una meta en un plan semanal antes de aprender a ajustarlo si no alcanza."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo dividir el monto de una meta entre las semanas disponibles."
+          key_vocabulary: [plan semanal, dividir el monto]
+          prior_knowledge: "Completo los 6 temas de El Plan Semana a Semana."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/el-plan-semana-a-semana/semanas-por-monto-semanal
+            - metas-con-numeros/el-plan-semana-a-semana/calculo-mi-ahorro-semanal
+            - metas-con-numeros/el-plan-semana-a-semana/que-pasa-si-ahorro-menos
+            - metas-con-numeros/el-plan-semana-a-semana/comparo-dos-planes-semanales
+            - metas-con-numeros/el-plan-semana-a-semana/elijo-mi-ritmo
+            - metas-con-numeros/el-plan-semana-a-semana/armo-mi-plan-completo
+          lessons:
+            - position: 1
+              slug: repaso-divido-una-meta-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo dividir el monto de una meta entre las semanas disponibles."
+              narrative_beat: "El equipo repasa sus planes semanales del valle y los recalcula, sin ayuda."
+              difficulty: 3
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: repaso-armo-plan-semanal-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: arma un plan semanal completo para una meta nueva."
+              narrative_beat: "Zara arma, sin ayuda de nadie, un plan semanal completo para una meta nueva que se acaba de proponer."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 8
+          slug: cruce-ritmo-y-atraso
+          kind: review_interleaved
+          title_es: "Cruce: Ritmo y Atraso"
+          concept: "Mezclamos la elección de un ritmo semanal con el cálculo de qué hacer si una semana se ahorra menos de lo planeado."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ritmo semanal y ajuste ante un atraso en una sola decisión."
+          key_vocabulary: [ritmo semanal, atraso]
+          prior_knowledge: "Completo el repaso de El Plan Semana a Semana (tema anterior)."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/el-plan-semana-a-semana/que-pasa-si-ahorro-menos
+            - metas-con-numeros/el-plan-semana-a-semana/elijo-mi-ritmo
+            - metas-con-numeros/el-plan-semana-a-semana/comparo-dos-planes-semanales
+          lessons:
+            - position: 1
+              slug: junto-ritmo-y-atraso
+              micro_objective: "Combina la elección de un ritmo semanal con el cálculo de qué hacer si una semana se ahorra menos de lo planeado."
+              narrative_beat: "Rho junta dos ideas: qué ritmo eligió Y qué hacer si una semana no logra ahorrar lo planeado."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: ajusto-un-plan-tras-un-atraso
+              micro_objective: "Evalúa, sin ayuda, un plan semanal completo ajustándolo después de un atraso real en una semana."
+              narrative_beat: "Zara ajusta, sin ayuda, un plan semanal completo después de que una semana no salió como esperaba."
+              difficulty: 5
+              suggested_families: [money, choice]
+  - position: 4
+    slug: ajusto-mi-meta
+    icon: tune
+    title:
+      en-US: "I Adjust My Goal"
+      es-MX: "Ajusto Mi Meta"
+      pt-BR: "Ajusto Minha Meta"
+    description:
+      en-US: "When a plan doesn't add up, there are exactly three ways to fix it - learn to compare and choose."
+      es-MX: "Cuando un plan no alcanza, hay exactamente tres formas de arreglarlo - aprende a compararlas y elegir."
+      pt-BR: "Quando um plano nao fecha, existem exatamente tres formas de resolve-lo - aprenda a compara-las e escolher."
+    topics:
+        - position: 1
+          slug: tres-formas-de-ajustar
+          title_es: "Tres formas de ajustar"
+          concept: "Si un plan no alcanza, hay tres formas de ajustarlo: ahorrar más por semana, extender la fecha, o bajar el monto de la meta."
+          learning_objective: "El aprendiz reconoce las tres formas de ajustar un plan que no alcanza e identifica cuál se usó en un caso dado."
+          key_vocabulary: [ajustar, tres formas]
+          prior_knowledge: "Completo El Plan Semana a Semana (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cuáles son las tres formas de ajustar un plan de ahorro que no alcanza."
+          lessons:
+            - position: 1
+              slug: tres-caminos-para-liruf
+              micro_objective: "Reconoce que si un plan no alcanza, hay tres formas de ajustarlo: ahorrar más por semana, extender la fecha, o bajar el monto de la meta."
+              narrative_beat: "Dina le muestra a Liruf su plan que no alcanza y le ofrece tres caminos: ahorrar más, esperar más, o elegir algo más barato."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-que-ajuste-uso
+              micro_objective: "Identifica, en un caso, cuál de las tres formas de ajuste se usó para resolver un plan que no alcanzaba."
+              narrative_beat: "Zara revisa el plan ajustado de un compañero y identifica cuál de las tres formas usó para resolverlo."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: ahorro-mas-por-semana
+          title_es: "Ahorro más por semana"
+          concept: "Calcula cuánto más se necesitaría ahorrar por semana para cumplir la meta en el mismo plazo."
+          learning_objective: "El aprendiz calcula el nuevo monto semanal necesario para no mover la fecha y decide si es realista."
+          key_vocabulary: [nuevo monto semanal, realista]
+          prior_knowledge: "Reconoce las tres formas de ajustar un plan (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuánto más tendría que ahorrar por semana para no mover la fecha de su meta."
+          lessons:
+            - position: 1
+              slug: calculo-el-nuevo-monto
+              micro_objective: "Calcula cuánto más se necesitaría ahorrar por semana para cumplir la meta en el mismo plazo."
+              narrative_beat: "Rho calcula cuánto más tendría que ahorrar cada semana si quiere cumplir su meta sin mover la fecha."
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: decido-si-es-realista
+              micro_objective: "Decide si el nuevo monto semanal calculado es realista dado el ingreso disponible del personaje."
+              narrative_beat: "Con el nuevo monto semanal calculado, Zara decide si de verdad puede sostenerlo sin apretarse demasiado."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: extiendo-la-fecha
+          title_es: "Extiendo la fecha"
+          concept: "Calcula cuántas semanas más se necesitarían para cumplir la meta sin cambiar el monto semanal."
+          learning_objective: "El aprendiz calcula cuántas semanas adicionales se necesitan sin cambiar el ahorro semanal, y compara contra ahorrar más."
+          key_vocabulary: [semanas adicionales, extender]
+          prior_knowledge: "Calcula y evalúa un nuevo monto semanal (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuántas semanas más necesitaría si mantiene el mismo ahorro semanal."
+          lessons:
+            - position: 1
+              slug: calculo-semanas-extra
+              micro_objective: "Calcula cuántas semanas más se necesitarían para cumplir la meta sin cambiar el monto semanal."
+              narrative_beat: "Liruf calcula cuántas semanas más necesita si mantiene su mismo ahorro semanal sin apretarse más."
+              difficulty: 3
+              suggested_families: [input, money]
+            - position: 2
+              slug: comparo-extender-o-ahorrar-mas
+              micro_objective: "Compara extender la fecha contra ahorrar más por semana y decide cuál conviene más para un caso dado."
+              narrative_beat: "Rho compara las dos opciones: extender un poco la fecha o ahorrar un poco más cada semana - decide cuál le conviene más."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: bajo-el-monto-de-la-meta
+          title_es: "Bajo el monto de la meta"
+          concept: "Reconoce cuándo elegir una versión más barata de la meta es la opción más realista."
+          learning_objective: "El aprendiz reconoce cuándo bajar el monto de una meta es la opción más realista y compara este ajuste contra las otras dos formas."
+          key_vocabulary: [versión más barata, más realista]
+          prior_knowledge: "Compara extender la fecha contra ahorrar más (tema anterior)."
+          fact_refs: [mxn.reference_prices.tenis_de_moda]
+          parent_check: "Preguntale a {{name}} si alguna vez eligió una versión más barata de algo para lograr su meta antes."
+          lessons:
+            - position: 1
+              slug: unos-tenis-mas-economicos
+              micro_objective: "Reconoce cuándo elegir una versión más barata de la meta es la opción más realista."
+              narrative_beat: "Zara considera unos tenis de moda más económicos en vez de los que quería primero, para que su meta sea más realista."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-el-plan-mas-barato
+              micro_objective: "Compara el plan resultante de bajar el monto de la meta contra las otras dos formas de ajuste."
+              narrative_beat: "Con el monto más bajo, Zara compara su nuevo plan contra lo que hubiera necesitado ahorrando más o esperando más."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: comparo-las-tres-opciones
+          title_es: "Comparo las tres opciones"
+          concept: "Comparar las tres formas de ajustar un plan permite elegir la que mejor conviene a un caso dado."
+          learning_objective: "El aprendiz compara las tres formas de ajuste lado a lado y elige y justifica la mejor para un caso específico."
+          key_vocabulary: [comparar tres opciones, justificar]
+          prior_knowledge: "Compara bajar el monto contra las otras dos formas de ajuste (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que compare las tres formas de ajuste para su propia meta y elija la que más le conviene."
+          lessons:
+            - position: 1
+              slug: pongo-las-tres-lado-a-lado
+              micro_objective: "Compara las tres formas de ajustar un plan (ahorrar más, esperar más, bajar el monto) para un caso dado."
+              narrative_beat: "Rho pone las tres opciones lado a lado para su propio plan: cuál ahorra más rápido, cuál es más fácil, cuál es más barata."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: elijo-la-mejor-opcion
+              micro_objective: "Elige, entre las tres formas de ajuste, la que mejor conviene a un caso específico y justifica por qué."
+              narrative_beat: "Con las tres opciones claras, Rho elige la que mejor combina rapidez y realismo para su propio caso."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: presento-mi-plan-final
+          title_es: "Presento mi plan final"
+          concept: "Presenta un plan final completo (meta, colchón, plan semanal, ajuste si hace falta) ante el equipo."
+          learning_objective: "El aprendiz organiza y presenta, sin ayuda, un plan final completo con sus cuatro elementos, resistiendo una pregunta."
+          key_vocabulary: [plan final, cuatro elementos]
+          prior_knowledge: "Elige y justifica la mejor forma de ajuste (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente su plan financiero completo: meta, colchón, plan semanal y ajuste si hizo falta."
+          lessons:
+            - position: 1
+              slug: ordeno-los-cuatro-elementos
+              micro_objective: "Organiza, sin ayuda, los cuatro elementos de un plan final completo (meta, colchón, plan semanal, ajuste) para presentarlo."
+              narrative_beat: "Zara ordena los cuatro elementos de su plan antes de presentarlo al equipo: meta, colchón, plan semanal y el ajuste que hizo."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: defiendo-mi-plan-completo
+              micro_objective: "Completa, sin ayuda, la presentación de su plan final completo ante el equipo, resistiendo una pregunta."
+              narrative_beat: "Zara presenta su plan completo ante el equipo; cuando le preguntan '¿y si el precio sube más de lo esperado?', responde con su colchón ya calculado."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-ajusto-mi-meta
+          kind: review_spaced
+          title_es: "Repaso: Ajusto Mi Meta"
+          concept: "El equipo repasa las tres formas de ajustar un plan antes de la expedición final del valle."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las tres formas de ajustar un plan que no alcanza."
+          key_vocabulary: [tres formas de ajuste]
+          prior_knowledge: "Completo los 6 temas de Ajusto Mi Meta."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/ajusto-mi-meta/tres-formas-de-ajustar
+            - metas-con-numeros/ajusto-mi-meta/ahorro-mas-por-semana
+            - metas-con-numeros/ajusto-mi-meta/extiendo-la-fecha
+            - metas-con-numeros/ajusto-mi-meta/bajo-el-monto-de-la-meta
+            - metas-con-numeros/ajusto-mi-meta/comparo-las-tres-opciones
+            - metas-con-numeros/ajusto-mi-meta/presento-mi-plan-final
+          lessons:
+            - position: 1
+              slug: repaso-tres-formas-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, las tres formas de ajustar un plan que no alcanza."
+              narrative_beat: "El equipo repasa sus planes ajustados y nombra, sin ayuda, cuál de las tres formas usó cada quien."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-ajusto-un-plan-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: ajusta un plan nuevo eligiendo la mejor de las tres formas."
+              narrative_beat: "Liruf ajusta, sin ayuda de nadie, un plan nuevo eligiendo la forma que mejor le conviene."
+              difficulty: 4
+              suggested_families: [choice, money]
+        - position: 8
+          slug: cruce-todo-el-valle-de-las-metas
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Valle de las Metas"
+          concept: "Mezclamos meta completa, colchón por inflación y plan semanal en un solo caso final del valle."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en un solo plan final."
+          key_vocabulary: [meta completa, colchón, plan semanal]
+          prior_knowledge: "Completo el repaso de Ajusto Mi Meta (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real/mi-meta-en-una-frase
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio/ahorro-un-poco-de-mas-por-si-acaso
+            - metas-con-numeros/el-plan-semana-a-semana/armo-mi-plan-completo
+          lessons:
+            - position: 1
+              slug: junto-meta-colchon-y-plan
+              micro_objective: "Combina una meta completa con un colchón por inflación y un plan semanal en un solo caso final."
+              narrative_beat: "Zara junta tres ideas del valle: su meta completa, su colchón por si sube el precio, y su plan semana a semana."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: resuelvo-el-caso-final-del-valle
+              micro_objective: "Evalúa, sin ayuda, un plan final completo combinando meta, colchón, plan semanal y ajuste si hace falta."
+              narrative_beat: "Rho resuelve el caso final del valle cruzando las cuatro sagas completas en un solo plan de principio a fin."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 5
+    slug: la-expedicion-final-del-valle
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Valley's Final Expedition"
+      es-MX: "La Expedición Final del Valle"
+      pt-BR: "A Expedicao Final do Vale"
+    description:
+      en-US: "A final expedition puts the whole goal-planning toolkit - amount, cushion, weekly plan and adjustment - to work."
+      es-MX: "Una expedición final pone a trabajar todo el kit de herramientas de las metas: monto, colchón, plan semanal y ajuste."
+      pt-BR: "Uma expedicao final coloca para trabalhar todo o kit de ferramentas das metas: valor, reserva, plano semanal e ajuste."
+    topics:
+        - position: 1
+          slug: el-reto-de-la-meta-completa
+          kind: review_quest
+          title_es: "El Reto de la Meta Completa"
+          concept: "El Valle de las Metas lanza su prueba final: armar una meta completa y protegida de subidas de precio, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, las tres partes de una meta real con el colchón por inflación para resolver un reto abierto."
+          key_vocabulary: [meta real, colchón, reto abierto]
+          prior_knowledge: "Completo De Quiero Algo a Una Meta Real y Cuando las Cosas Suben de Precio."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/de-quiero-algo-a-una-meta-real
+            - metas-con-numeros/cuando-las-cosas-suben-de-precio
+          lessons:
+            - position: 1
+              slug: se-planta-la-bandera-del-valle
+              micro_objective: "Recuerda, sin ayuda, las tres partes que necesita una meta real y por qué agregar un colchón la protege."
+              narrative_beat: "Una bandera se planta en el campamento del valle: 'Expedición final - demuestra que sabes armar una meta real'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: armo-una-meta-completa-sin-ayuda
+              micro_objective: "Arma, sin ayuda, una meta nueva completa con monto, fecha y colchón por inflación."
+              narrative_beat: "Zara enfrenta su primera prueba real: armar sola, sin ayuda, una meta nueva completa de principio a fin."
+              difficulty: 3
+              suggested_families: [input, money]
+        - position: 2
+          slug: mi-plan-defendido
+          kind: review_quest
+          title_es: "Mi Plan, Defendido"
+          concept: "Frente al consejo del valle, el equipo defiende su plan semanal completo y el ajuste que aplicó si el plan no alcanzaba."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un plan semanal completo combinando ajuste cuando el plan no alcanzaba."
+          key_vocabulary: [defender, consejo del valle, plan semanal]
+          prior_knowledge: "Completo El Reto de la Meta Completa (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - metas-con-numeros/el-plan-semana-a-semana
+            - metas-con-numeros/ajusto-mi-meta
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-de-plan-semanal
+              micro_objective: "Organiza, sin ayuda, los argumentos del plan semanal y el ajuste elegido para defender un plan financiero completo."
+              narrative_beat: "Dina ensaya su defensa: primero su plan semana a semana, después el ajuste que aplicó cuando no alcanzaba."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-del-valle
+              micro_objective: "Completa, sin ayuda, la defensa final de su plan ante el consejo del valle, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante el consejo del Valle de las Metas; cuando le preguntan '¿y si el precio sube más de lo que calculaste?', responde con su colchón y su plan de ajuste."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

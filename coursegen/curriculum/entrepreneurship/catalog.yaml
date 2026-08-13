@@ -9,27 +9,28 @@ course:
     es-MX: "Emprendimiento"
     pt-BR: "Empreendedorismo"
   description:
-    en-US: "A story adventure that runs after Financial Education, where kids turn ideas into real little businesses — spotting problems, making things with care, understanding customers and pricing fairly."
-    es-MX: "Una aventura que continúa después de Educación Financiera, donde los niños convierten ideas en pequeños negocios reales: detectan problemas, hacen cosas con cuidado, entienden a sus clientes y ponen precios justos."
-    pt-BR: "Uma aventura que continua depois de Educação Financeira, onde as crianças transformam ideias em pequenos negócios reais: identificam problemas, fazem coisas com cuidado, entendem seus clientes e definem preços justos."
+    en-US: "A story arc for teens (12-18) who already know how money works — now they learn to spot real problems, build something people actually want, price and sell it fairly, and lead a team, with the trade-offs a real founder faces."
+    es-MX: "Un arco narrativo para adolescentes (12-18) que ya saben cómo funciona el dinero — ahora aprenden a detectar problemas reales, construir algo que la gente de verdad quiere, ponerle precio y venderlo con justicia, y liderar un equipo, con los dilemas reales de un founder."
+    pt-BR: "Um arco narrativo para adolescentes (12-18) que já sabem como o dinheiro funciona — agora aprendem a identificar problemas reais, construir algo que as pessoas realmente querem, precificar e vender com justiça, e liderar uma equipe, com os dilemas reais de um founder."
   authoring_locale: es-MX
   # Course-level prerequisite edge (COURSE_ENGINE.md §3.1b) — Emprendimiento
   # assumes the money mechanics (coins/bills, saving, fair trade, pricing
   # basics) already taught in financial-education. Topic-level
   # `prerequisites` stay within-course; this is the course-to-course edge.
+  #
+  # PIVOT (WALKTHROUGH 2026-08-12): this course jumped from tier1-3 (6-12) to
+  # a single tier4 (12-18) audience. Flagged, not resolved, by this pivot:
+  # a learner who finishes financial-education (~6-10) has no course to
+  # start until 12 — a product-sequencing gap for the owner to decide on,
+  # tracked in ROADMAP.md.
   requires: [financial-education]
 
 adventures:
-  - file: adventures/01-la-isla-de-las-ideas.yaml
-  - file: adventures/02-el-bosque-de-los-makers.yaml
-  - file: adventures/03-la-ciudad-del-cliente.yaml
-  - file: adventures/04-el-valle-del-precio-justo.yaml
-  # 05-08 authored by a sibling agent in parallel (COURSE_ENGINE.md §3.1b) —
-  # listed here so the catalog is a complete coverage oracle even before
-  # they land. `catalog:check` will report "file not found" for these until
-  # the sibling publishes them — an expected transient state, not a defect
-  # in adventures 01-04.
-  - file: adventures/05-el-reino-de-las-ventas.yaml
-  - file: adventures/06-el-taller-del-equipo.yaml
-  - file: adventures/07-el-faro-del-buen-negocio.yaml
-  - file: adventures/08-el-cosmos-del-founder.yaml
+  - file: adventures/01-radar-de-oportunidades.yaml
+  - file: adventures/02-prototipo-de-garage.yaml
+  - file: adventures/03-mesa-del-cliente.yaml
+  - file: adventures/04-precio-que-si-convence.yaml
+  - file: adventures/05-red-de-ventas.yaml
+  - file: adventures/06-equipo-que-escala.yaml
+  - file: adventures/07-radar-de-riesgos.yaml
+  - file: adventures/08-legado-del-founder.yaml

@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 3
+  slug: mapa-del-riesgo
+  theme: archipelago
+  age_tier: tier4
+  title:
+    en-US: "The Risk Map"
+    es-MX: "El Mapa del Riesgo"
+    pt-BR: "O Mapa do Risco"
+  description:
+    en-US: "Sailing the Archipelago of Decisions, four navigators learn that more reward almost always comes with more risk - and that a promise of safe, huge and fast all at once is never real."
+    es-MX: "Navegando el Archipiélago de Decisiones, cuatro navegantes aprenden que más premio casi siempre viene con más riesgo - y que una promesa de seguro, grande y rápido a la vez nunca es real."
+    pt-BR: "Navegando o Arquipelago de Decisoes, quatro navegadores aprendem que mais premio quase sempre vem com mais risco - e que uma promessa de seguro, grande e rápido ao mesmo tempo nunca e real."
+  narrative_arc: "Dina, Liruf, Rho y Zara navegan el Archipiélago de Decisiones, un grupo de islas donde cada ruta esconde un nivel distinto de riesgo. Descubren que más premio posible casi siempre viene junto con más riesgo de perder, usan las cajas de recompensa de un videojuego para entender el valor esperado antes de zarpar, aprenden a desconfiar de cualquier oferta que prometa todo perfecto a la vez, y terminan combinando su propio plazo y tolerancia al riesgo para elegir y defender una ruta final frente al consejo de capitanes."
+
+sagas:
+  - position: 1
+    slug: el-espectro-de-riesgo
+    icon: sailing
+    title:
+      en-US: "The Risk Spectrum"
+      es-MX: "El Espectro de Riesgo"
+      pt-BR: "O Espectro de Risco"
+    description:
+      en-US: "From nearly-guaranteed to wildly uncertain - learn to read where a route sits on the risk spectrum."
+      es-MX: "De casi garantizado a muy incierto - aprende a leer dónde se ubica una ruta en el espectro de riesgo."
+      pt-BR: "De quase garantido a muito incerto - aprenda a ler onde uma rota se situa no espectro de risco."
+    topics:
+        - position: 1
+          slug: que-es-el-riesgo
+          title_es: "Qué es el riesgo"
+          concept: "Riesgo es la posibilidad de que algo no salga como esperabas, incluyendo perder parte o todo lo que arriesgaste."
+          learning_objective: "El aprendiz reconoce el riesgo como la posibilidad de un resultado distinto al esperado, incluyendo una pérdida."
+          key_vocabulary: [riesgo, resultado esperado, pérdida]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué significa 'riesgo' para él o ella, con sus propias palabras."
+          lessons:
+            - position: 1
+              slug: antes-de-zarpar
+              micro_objective: "Reconoce que el riesgo es la posibilidad de que algo no salga como esperabas, incluyendo perder parte de lo que arriesgaste."
+              narrative_beat: "Rho le explica a Liruf antes de zarpar: 'riesgo' significa que la ruta podría no salir como esperamos - a veces se pierde algo."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: seguro-o-arriesgado
+              micro_objective: "Explica, con sus palabras, la diferencia entre un resultado seguro y uno arriesgado en un caso simple."
+              narrative_beat: "Liruf compara dos rutas del muelle: una siempre llega, la otra a veces no - ahora entiende cuál es la arriesgada."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: rutas-seguras-y-rutas-riesgosas
+          title_es: "Rutas seguras y rutas riesgosas"
+          concept: "Unas rutas casi siempre llegan bien pero con premio modesto; otras rutas prometen más premio pero también más posibilidad de perder."
+          learning_objective: "El aprendiz identifica y compara el premio típico y el riesgo típico de dos rutas descritas."
+          key_vocabulary: [premio típico, riesgo típico, trade-off]
+          prior_knowledge: "Reconoce qué es el riesgo (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si conoce un ejemplo de 'ganar poco casi siempre' contra 'ganar mucho a veces'."
+          lessons:
+            - position: 1
+              slug: dos-capitanes-dos-rutas
+              micro_objective: "Identifica, entre dos rutas descritas, cuál es la más segura y cuál la más riesgosa según sus resultados típicos."
+              narrative_beat: "Zara escucha a dos capitanes del archipiélago describir sus rutas: una casi siempre llega con poco premio, la otra a veces no llega, pero paga mucho más."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-premio-y-riesgo-tipico
+              micro_objective: "Compara el premio típico y el riesgo típico de dos rutas y explica el trade-off entre ambas."
+              narrative_beat: "Dina compara las dos rutas en su libreta: nombra qué gana cada una en promedio y qué tan seguido falla."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: ordeno-rutas-por-riesgo
+          title_es: "Ordeno rutas por riesgo"
+          concept: "Ordenar varias rutas de menor a mayor riesgo requiere pistas concretas del caso, no solo una impresión."
+          learning_objective: "El aprendiz ordena 4 rutas por nivel de riesgo usando pistas concretas y justifica el orden elegido."
+          key_vocabulary: [ordenar, pistas concretas, justificar]
+          prior_knowledge: "Compara el premio y el riesgo típico de dos rutas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que ordene 3 decisiones de su semana de la más segura a la más arriesgada."
+          lessons:
+            - position: 1
+              slug: ordeno-cuatro-rutas
+              micro_objective: "Ordena 4 rutas de menor a mayor riesgo usando pistas concretas del caso (qué tan seguido fallan, qué tanto se pierde si fallan)."
+              narrative_beat: "Rho ordena cuatro rutas del muelle de la más segura a la más riesgosa, usando los reportes de los capitanes."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: justifico-mi-orden
+              micro_objective: "Justifica, para una ruta específica, por qué la clasificó como más o menos riesgosa que otra."
+              narrative_beat: "Zara defiende su orden: la ruta del Faro Norte es más riesgosa que la del Puerto Sur porque falla el doble de seguido."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: mas-premio-casi-siempre-mas-riesgo
+          title_es: "Más premio, casi siempre más riesgo"
+          concept: "En general, más premio posible viene junto con más riesgo de perder - esa es la relación riesgo-recompensa."
+          learning_objective: "El aprendiz reconoce y aplica el patrón riesgo-recompensa para predecir el riesgo aproximado de una ruta nueva."
+          key_vocabulary: [relación riesgo-recompensa, patrón, predecir]
+          prior_knowledge: "Ordena rutas por nivel de riesgo (tema anterior)."
+          fact_refs: [risk.reward_tradeoff_pairs]
+          parent_check: "Preguntale a {{name}} si una oferta que promete mucho premio probablemente también trae más riesgo - y por qué."
+          lessons:
+            - position: 1
+              slug: el-patron-en-el-mapa
+              micro_objective: "Reconoce, en varios casos, que más premio posible casi siempre viene junto con más riesgo de perder."
+              narrative_beat: "Liruf nota un patrón: las rutas con más premio en el mapa del archipiélago son casi siempre las que también fallan más seguido."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: predigo-el-riesgo-de-una-ruta-nueva
+              micro_objective: "Predice el nivel de riesgo aproximado de una ruta nueva, dado solo su premio prometido, usando el patrón riesgo-recompensa."
+              narrative_beat: "Con el patrón claro, Rho predice que una nueva ruta con premio enorme probablemente también arriesga mucho, antes de ver los detalles."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-riesgo-no-es-malo-en-si-mismo
+          title_es: "El riesgo no es malo en sí mismo"
+          concept: "El riesgo no es 'malo' per se; el problema es tomar más riesgo del que puedes permitirte perder."
+          learning_objective: "El aprendiz distingue tomar riesgo prudente de tomar riesgo imprudente, según cuánto tiene la persona para perder."
+          key_vocabulary: [prudente, imprudente, permitirse perder]
+          prior_knowledge: "Reconoce y aplica el patrón riesgo-recompensa (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si arriesgar dinero siempre es 'malo', o si depende de cuánto se puede permitir perder."
+          lessons:
+            - position: 1
+              slug: el-riesgo-no-es-el-enemigo
+              micro_objective: "Reconoce que el riesgo no es 'malo' en sí mismo; el problema es tomar más riesgo del que puedes permitirte perder."
+              narrative_beat: "Dina aclara: 'el riesgo no es el enemigo - tomar más riesgo del que puedes perder, sí lo es'."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: mismo-riesgo-distinta-imprudencia
+              micro_objective: "Distingue, en dos casos con el mismo nivel de riesgo, cuál es imprudente según cuánto tiene esa persona para perder."
+              narrative_beat: "Zara compara dos capitanes que toman la misma ruta riesgosa: uno arriesga una moneda de sobra, el otro arriesga todo lo que tiene - no es la misma decisión."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: cuanto-puedo-permitirme-perder
+          title_es: "Cuánto puedo permitirme perder"
+          concept: "Antes de tomar una ruta riesgosa, calcula cuánto realmente puedes permitirte perder sin que te haga daño real."
+          learning_objective: "El aprendiz calcula, para un caso propio, cuánto puede permitirse perder antes de tomar una decisión riesgosa."
+          key_vocabulary: [límite de pérdida, daño real]
+          prior_knowledge: "Distingue riesgo prudente de imprudente (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule cuánto podría permitirse perder, sin que le haga daño real, en una decisión de riesgo pequeña."
+          lessons:
+            - position: 1
+              slug: armamos-la-regla-del-limite
+              micro_objective: "Con apoyo, calcula cuánto puede permitirse perder sin que le haga daño real, antes de tomar una ruta riesgosa."
+              narrative_beat: "El equipo arma una regla: antes de zarpar, calculan cuánto podrían perder sin que arruine sus planes de la semana."
+              difficulty: 4
+              suggested_families: [storyplay, money]
+            - position: 2
+              slug: calculo-mi-propio-limite
+              micro_objective: "Aplica, sin ayuda, el cálculo de cuánto puede permitirse perder a una decisión de riesgo propia."
+              narrative_beat: "Rho calcula solo, sin ayuda, cuánto de su propio ahorro podría arriesgar en una ruta nueva sin que le duela de verdad."
+              difficulty: 5
+              suggested_families: [money, choice]
+        - position: 7
+          slug: repaso-el-espectro-de-riesgo
+          kind: review_spaced
+          title_es: "Repaso: El Espectro de Riesgo"
+          concept: "El equipo repasa cómo ordenar rutas por riesgo y calcular un límite personal de pérdida antes de zarpar hacia la siguiente saga."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo ordenar rutas por riesgo y calcular cuánto puede perder."
+          key_vocabulary: [espectro de riesgo, límite de pérdida]
+          prior_knowledge: "Completo los 6 temas de El Espectro de Riesgo."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/el-espectro-de-riesgo/que-es-el-riesgo
+            - mapa-del-riesgo/el-espectro-de-riesgo/rutas-seguras-y-rutas-riesgosas
+            - mapa-del-riesgo/el-espectro-de-riesgo/ordeno-rutas-por-riesgo
+            - mapa-del-riesgo/el-espectro-de-riesgo/mas-premio-casi-siempre-mas-riesgo
+            - mapa-del-riesgo/el-espectro-de-riesgo/el-riesgo-no-es-malo-en-si-mismo
+            - mapa-del-riesgo/el-espectro-de-riesgo/cuanto-puedo-permitirme-perder
+          lessons:
+            - position: 1
+              slug: repaso-ordeno-rutas-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo ordenar rutas de menor a mayor riesgo."
+              narrative_beat: "El equipo repasa el mapa del muelle y vuelve a ordenar las rutas de riesgo, sin ayuda."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: repaso-calculo-mi-limite
+              micro_objective: "Aplica sin ayuda todo lo repasado: calcula cuánto puede permitirse perder en una ruta nueva del archipiélago."
+              narrative_beat: "Zara calcula, sin ayuda de nadie, cuánto puede arriesgar en una ruta nueva que acaba de aparecer en el mapa."
+              difficulty: 4
+              suggested_families: [money, choice]
+        - position: 8
+          slug: cruce-riesgo-y-limite-personal
+          kind: review_interleaved
+          title_es: "Cruce: Riesgo y Límite Personal"
+          concept: "Mezclamos el patrón riesgo-recompensa con el límite personal de pérdida para evaluar una ruta de una sola vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar una ruta nueva."
+          key_vocabulary: [riesgo-recompensa, límite personal]
+          prior_knowledge: "Completo el repaso de El Espectro de Riesgo (tema anterior)."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/el-espectro-de-riesgo/mas-premio-casi-siempre-mas-riesgo
+            - mapa-del-riesgo/el-espectro-de-riesgo/el-riesgo-no-es-malo-en-si-mismo
+            - mapa-del-riesgo/el-espectro-de-riesgo/cuanto-puedo-permitirme-perder
+          lessons:
+            - position: 1
+              slug: junto-patron-y-limite
+              micro_objective: "Combina el patrón riesgo-recompensa con el límite personal de cuánto se puede perder para evaluar una ruta nueva."
+              narrative_beat: "Rho junta dos ideas: qué tanto premio-riesgo promete la ruta Y cuánto puede permitirse perder - antes de decidir."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-una-ruta-completa
+              micro_objective: "Evalúa, sin ayuda, una ruta nueva combinando su nivel de riesgo con el límite personal de pérdida aceptable."
+              narrative_beat: "Zara decide en segundos si una ruta nueva le conviene, cruzando su riesgo típico con lo que puede permitirse perder."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: cajas-de-recompensa
+    icon: casino
+    title:
+      en-US: "Reward Boxes"
+      es-MX: "Cajas de Recompensa"
+      pt-BR: "Caixas de Recompensa"
+    description:
+      en-US: "A familiar video-game mechanic hides a real lesson: judge a bet by how often it pays, not just by how much."
+      es-MX: "Una mecánica de videojuego conocida esconde una lección real: juzga una apuesta por qué tan seguido paga, no solo por cuánto paga."
+      pt-BR: "Uma mecanica de videogame conhecida esconde uma licao real: julgue uma aposta por quao frequentemente ela paga, nao apenas por quanto paga."
+    topics:
+        - position: 1
+          slug: la-caja-rara-y-la-caja-comun
+          title_es: "La caja rara y la caja común"
+          concept: "Una caja de recompensa rara paga mucho pero muy pocas veces; una caja común paga poco pero casi siempre."
+          learning_objective: "El aprendiz distingue el patrón de una caja de recompensa rara (paga mucho, poco frecuente) de una común (paga poco, muy frecuente)."
+          key_vocabulary: [caja rara, caja común, frecuencia]
+          prior_knowledge: "Completo El Espectro de Riesgo (saga anterior)."
+          fact_refs: [risk.loot_box_odds_metaphor]
+          parent_check: "Preguntale a {{name}} si conoce la diferencia entre una recompensa rara de un videojuego y una recompensa común."
+          lessons:
+            - position: 1
+              slug: dos-cajas-en-el-puesto
+              micro_objective: "Reconoce que una caja de recompensa rara paga mucho pero muy pocas veces, y una caja común paga poco pero casi siempre."
+              narrative_beat: "En un puesto del archipiélago, Liruf ve dos cajas de recompensa de un videojuego: la rara promete un premio enorme, la común uno chiquito pero casi seguro."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-la-diferencia-de-las-cajas
+              micro_objective: "Compara las dos cajas y explica, con sus palabras, la diferencia entre 'paga mucho pero casi nunca' y 'paga poco pero casi siempre'."
+              narrative_beat: "Liruf explica la diferencia a Zara usando sus propias palabras, comparando las dos cajas del puesto."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: cuentas-las-veces-que-paga
+          title_es: "Cuentas las veces que paga"
+          concept: "Para juzgar si una caja 'vale la pena', hay que fijarse en qué tan seguido paga, no solo en cuánto paga cuando sí paga."
+          learning_objective: "El aprendiz registra la frecuencia de pago de dos cajas en varios intentos y reconoce que el premio grande solo cuenta parte de la historia."
+          key_vocabulary: [registro, frecuencia de pago]
+          prior_knowledge: "Distingue el patrón de una caja rara de una común (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique por qué fijarse solo en 'cuánto paga' una recompensa, sin ver qué tan seguido paga, es una vista incompleta."
+          lessons:
+            - position: 1
+              slug: registro-diez-intentos
+              micro_objective: "Cuenta, en un registro de 10 intentos, cuántas veces pagó cada tipo de caja."
+              narrative_beat: "Rho lleva un registro de 10 aperturas de cada caja: la común pagó 8 veces, la rara solo pagó 1 - pero esa vez pagó mucho más."
+              difficulty: 2
+              suggested_families: [arrange, input]
+            - position: 2
+              slug: la-mitad-de-la-historia
+              micro_objective: "Reconoce que juzgar una caja solo por 'cuánto paga cuando sí paga' es incompleto sin ver qué tan seguido paga."
+              narrative_beat: "Zara señala: fijarse solo en el premio grande de la caja rara, sin ver que casi nunca paga, es ver solo la mitad de la historia."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: el-valor-esperado-en-palabras-simples
+          title_es: "El valor esperado, en palabras simples"
+          concept: "Multiplicar qué tan seguido pasa por cuánto paga da una idea de qué tanto 'vale' una apuesta en promedio."
+          learning_objective: "El aprendiz calcula el valor promedio aproximado de una apuesta combinando frecuencia y premio."
+          key_vocabulary: [valor promedio, en promedio]
+          prior_knowledge: "Registra la frecuencia de pago de dos cajas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule, con números sencillos, cuánto 'vale' en promedio una caja que paga poco pero casi siempre."
+          lessons:
+            - position: 1
+              slug: multiplico-frecuencia-por-premio
+              micro_objective: "Multiplica qué tan seguido paga una caja por cuánto paga, para estimar qué tanto 'vale' en promedio."
+              narrative_beat: "Dina hace la cuenta simple: la caja común paga poco pero casi siempre, así que en promedio, por intento, deja más de lo que parece."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: comparo-el-valor-promedio
+              micro_objective: "Compara el valor promedio estimado de dos cajas y decide cuál conviene más a largo plazo."
+              narrative_beat: "Con las cuentas hechas, Rho decide cuál caja conviene más si se abre muchas veces, no solo una vez con suerte."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: comparo-dos-cajas
+          title_es: "Comparo dos cajas"
+          concept: "Comparar dos cajas de recompensa con frecuencia y premio permite ordenar cuál conviene más en promedio."
+          learning_objective: "El aprendiz compara y ordena cajas de recompensa usando frecuencia y premio, y decide dado un número fijo de intentos."
+          key_vocabulary: [comparar cajas, número de intentos]
+          prior_knowledge: "Calcula el valor promedio de una caja (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué elegiría con solo 5 intentos disponibles: la caja rara o la común, y por qué."
+          lessons:
+            - position: 1
+              slug: ordeno-cajas-por-valor
+              micro_objective: "Compara dos cajas de recompensa usando frecuencia y premio, y ordena cuál 'vale' más en promedio."
+              narrative_beat: "Zara compara dos cajas nuevas del puesto: frecuencia y premio de cada una, para decidir cuál abrir con su moneda extra."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-con-intentos-limitados
+              micro_objective: "Decide, entre tres cajas, cuál elegir dado un número fijo de intentos disponibles."
+              narrative_beat: "Con solo 5 monedas disponibles, Liruf decide entre tres cajas cuál le conviene más abrir, usando lo que aprendió del valor promedio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: ganar-una-vez-no-prueba-nada
+          title_es: "Ganar una vez no prueba nada"
+          concept: "Ganar una vez con una apuesta riesgosa no prueba que la apuesta sea buena - hay que ver el patrón repetido."
+          learning_objective: "El aprendiz distingue una decisión basada en un patrón repetido de una basada en un solo resultado con suerte."
+          key_vocabulary: [patrón repetido, resultado único, suerte]
+          prior_knowledge: "Decide entre cajas con intentos limitados (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si ganar una vez en algo riesgoso significa que siempre va a funcionar - y por qué no."
+          lessons:
+            - position: 1
+              slug: liruf-gana-la-primera-vez
+              micro_objective: "Reconoce que ganar una vez con una apuesta riesgosa no prueba que la apuesta sea buena en promedio."
+              narrative_beat: "Liruf gana el premio grande de la caja rara en su primer intento y quiere seguir abriendo - Rho le recuerda que una vez no es un patrón."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: patron-o-suerte
+              micro_objective: "Distingue, entre dos personajes, cuál está decidiendo con base en un patrón repetido y cuál con base en un solo resultado suerte."
+              narrative_beat: "Zara compara: ella decide con el registro de 20 intentos, Liruf decide solo con su única victoria - no es la misma evidencia."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: aplico-el-valor-esperado-a-una-decision-real
+          title_es: "Aplico el valor esperado a una decisión real"
+          concept: "Aplica la misma lógica de las cajas de recompensa a una decisión de riesgo real, no solo a un videojuego."
+          learning_objective: "El aprendiz traduce la lógica de frecuencia y premio de las cajas a una decisión de riesgo real, fuera del videojuego."
+          key_vocabulary: [decisión real, traducir la lógica]
+          prior_knowledge: "Distingue patrón repetido de un resultado de suerte (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que use la lógica de las cajas de recompensa para evaluar una decisión de riesgo real que tenga pendiente."
+          lessons:
+            - position: 1
+              slug: traduzco-la-logica-de-las-cajas
+              micro_objective: "Con apoyo, aplica la lógica de frecuencia y premio de las cajas de recompensa a una decisión de riesgo real del archipiélago."
+              narrative_beat: "El equipo traduce lo aprendido de las cajas a una ruta real: qué tan seguido llega bien Y qué tanto paga cuando llega."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: aplico-la-logica-solo
+              micro_objective: "Aplica, sin ayuda, la misma lógica a una decisión de riesgo propia, más allá del videojuego."
+              narrative_beat: "Rho aplica solo, sin ayuda, la lógica de las cajas de recompensa a una decisión real que tiene que tomar esta semana."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+        - position: 7
+          slug: repaso-cajas-de-recompensa
+          kind: review_spaced
+          title_es: "Repaso: Cajas de Recompensa"
+          concept: "El equipo repasa cómo comparar cajas de recompensa por frecuencia y premio antes de zarpar hacia la siguiente saga."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo comparar dos cajas de recompensa usando frecuencia y premio."
+          key_vocabulary: [frecuencia, premio, valor promedio]
+          prior_knowledge: "Completo los 6 temas de Cajas de Recompensa."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/cajas-de-recompensa/la-caja-rara-y-la-caja-comun
+            - mapa-del-riesgo/cajas-de-recompensa/cuentas-las-veces-que-paga
+            - mapa-del-riesgo/cajas-de-recompensa/el-valor-esperado-en-palabras-simples
+            - mapa-del-riesgo/cajas-de-recompensa/comparo-dos-cajas
+            - mapa-del-riesgo/cajas-de-recompensa/ganar-una-vez-no-prueba-nada
+            - mapa-del-riesgo/cajas-de-recompensa/aplico-el-valor-esperado-a-una-decision-real
+          lessons:
+            - position: 1
+              slug: repaso-comparo-cajas-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo comparar dos cajas de recompensa usando frecuencia y premio."
+              narrative_beat: "El equipo repasa sus registros de cajas y vuelve a compararlas, sin ayuda."
+              difficulty: 3
+              suggested_families: [analyze, input]
+            - position: 2
+              slug: repaso-elijo-entre-tres-cajas
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide cuál de tres cajas nuevas conviene más en promedio."
+              narrative_beat: "Zara decide, sin ayuda de nadie, cuál de tres cajas nuevas del puesto conviene más abrir."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-cajas-y-riesgo-personal
+          kind: review_interleaved
+          title_es: "Cruce: Cajas y Riesgo Personal"
+          concept: "Mezclamos el valor promedio de una caja de recompensa con el límite personal de pérdida de la saga anterior."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, valor promedio y límite personal de pérdida en una sola decisión."
+          key_vocabulary: [valor promedio, límite de pérdida]
+          prior_knowledge: "Completo el repaso de Cajas de Recompensa (tema anterior) y El Espectro de Riesgo (saga anterior)."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/cajas-de-recompensa/el-valor-esperado-en-palabras-simples
+            - mapa-del-riesgo/cajas-de-recompensa/ganar-una-vez-no-prueba-nada
+            - mapa-del-riesgo/el-espectro-de-riesgo/cuanto-puedo-permitirme-perder
+          lessons:
+            - position: 1
+              slug: junto-valor-promedio-y-limite
+              micro_objective: "Combina el valor promedio de una caja de recompensa con el límite personal de cuánto se puede perder."
+              narrative_beat: "Rho junta dos ideas de sagas distintas: cuánto 'vale' en promedio una apuesta Y cuánto puede permitirse perder si falla."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-cruzando-dos-sagas
+              micro_objective: "Evalúa, sin ayuda, una decisión de riesgo combinando valor promedio, patrón repetido y límite personal de pérdida."
+              narrative_beat: "Zara resuelve un caso final cruzando las dos sagas: qué tanto vale en promedio Y cuánto puede perder sin que le duela."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: no-hay-almuerzo-gratis
+    icon: report_problem
+    title:
+      en-US: "There's No Free Lunch"
+      es-MX: "No Hay Almuerzo Gratis"
+      pt-BR: "Nao Existe Almoco Gratis"
+    description:
+      en-US: "Safe, huge and fast all at once is never real - learn to spot the promise that's too perfect to be true."
+      es-MX: "Seguro, enorme y rápido a la vez nunca es real - aprende a detectar la promesa demasiado perfecta para ser cierta."
+      pt-BR: "Seguro, enorme e rápido ao mesmo tempo nunca e real - aprenda a detectar a promessa perfeita demais para ser verdade."
+    topics:
+        - position: 1
+          slug: la-promesa-perfecta-no-existe
+          title_es: "La promesa perfecta no existe"
+          concept: "Una opción que promete premio grande, seguro y rápido a la vez no existe de verdad - alguna de las tres siempre cede."
+          learning_objective: "El aprendiz reconoce que una promesa que combina seguridad total, premio grande y rapidez no existe de verdad."
+          key_vocabulary: [promesa perfecta, combinación imposible]
+          prior_knowledge: "Completo Cajas de Recompensa (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si alguna vez escuchó una oferta que sonaba 'demasiado buena para ser verdad'."
+          lessons:
+            - position: 1
+              slug: la-oferta-del-muelle
+              micro_objective: "Reconoce que una opción que promete premio grande, seguro y rápido a la vez no existe de verdad."
+              narrative_beat: "Un vendedor en el muelle le ofrece a Liruf: 'ruta segura, premio grande, y llegas en un día' - Rho levanta una ceja: las tres cosas juntas no cuadran."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: por-que-desconfiar
+              micro_objective: "Explica, con sus palabras, por qué una promesa 'perfecta' (segura + grande + rápida) debería generar sospecha."
+              narrative_beat: "Liruf repite la idea con sus palabras: si algo promete todo a la vez, seguramente algo no cuadra."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: detecto-la-promesa-perfecta
+          title_es: "Detecto la promesa perfecta"
+          concept: "Detecta, en un caso, cuándo una oferta suena 'demasiado perfecta' combinando las tres cosas a la vez."
+          learning_objective: "El aprendiz detecta, entre varias ofertas, cuál combina seguridad, tamaño de premio y rapidez a la vez, y nombra la parte más sospechosa."
+          key_vocabulary: [detectar, parte sospechosa]
+          prior_knowledge: "Reconoce que la promesa perfecta no existe (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que revise un anuncio o mensaje reciente y detecte si promete las tres cosas juntas."
+          lessons:
+            - position: 1
+              slug: reviso-tres-carteles
+              micro_objective: "Detecta, en 3 ofertas descritas, cuál combina las tres cosas (seguro, grande, rápido) a la vez."
+              narrative_beat: "Zara revisa tres carteles del muelle y encuentra el único que promete las tres cosas juntas - ese es el sospechoso."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: la-parte-mas-sospechosa
+              micro_objective: "Explica qué parte de una promesa 'perfecta' es la más probable de ser falsa (casi siempre la parte 'sin riesgo')."
+              narrative_beat: "Rho señala que la parte más sospechosa casi siempre es 'sin ningún riesgo' - eso es lo que casi nunca existe de verdad."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 3
+          slug: seguro-y-grande-no-van-juntos
+          title_es: "Seguro y grande no van juntos"
+          concept: "Entre más seguro es algo, menor tiende a ser su premio posible - y viceversa."
+          learning_objective: "El aprendiz reconoce, viendo un mapa completo de opciones, que la combinación 'más segura y con el mayor premio' no aparece."
+          key_vocabulary: [combinación imposible, mapa completo]
+          prior_knowledge: "Detecta cuándo una oferta suena demasiado perfecta (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si conoce alguna opción que sea a la vez la más segura Y la que más paga - y por qué probablemente no existe."
+          lessons:
+            - position: 1
+              slug: reviso-el-mapa-completo
+              micro_objective: "Reconoce que, entre más seguro es algo, menor tiende a ser su premio posible, y viceversa."
+              narrative_beat: "Dina compara el mapa completo del archipiélago: las rutas más seguras casi nunca son las que más pagan."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: busco-la-combinacion-imposible
+              micro_objective: "Identifica, en un caso, la única combinación imposible: segura Y con el premio más grande del mapa."
+              narrative_beat: "Liruf busca en el mapa una ruta segura con el premio más grande - y confirma que esa combinación simplemente no aparece."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: quien-se-queda-con-el-riesgo
+          title_es: "Quién se queda con el riesgo"
+          concept: "Cuando alguien te ofrece 'gana tú, sin riesgo para ti', pregúntate quién sí se está quedando con el riesgo."
+          learning_objective: "El aprendiz identifica, en un caso, quién realmente carga el riesgo cuando alguien promete que otra persona nunca pierde."
+          key_vocabulary: [quién carga el riesgo, letras pequeñas]
+          prior_knowledge: "Reconoce que seguro y grande no van juntos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué preguntaría si alguien le dijera 'tú ganas siempre, yo asumo cualquier pérdida'."
+          lessons:
+            - position: 1
+              slug: tu-ganas-yo-pierdo
+              micro_objective: "Reconoce que cuando alguien ofrece 'gana tú, sin riesgo para ti', hay que preguntarse quién sí se está quedando con el riesgo."
+              narrative_beat: "Un capitán le ofrece a Zara: 'tú ganas siempre, yo asumo cualquier pérdida' - Rho pregunta: '¿y por qué haría eso alguien?'"
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: encuentro-las-letras-pequenas
+              micro_objective: "Identifica, en un caso, quién realmente carga el riesgo cuando alguien promete que tú nunca pierdes."
+              narrative_beat: "Zara investiga más y descubre que el capitán sí se protege a sí mismo con letras pequeñas - el riesgo nunca desapareció, solo se escondió."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: comparo-una-oferta-realista-y-una-perfecta
+          title_es: "Comparo una oferta realista y una perfecta"
+          concept: "Compara una oferta con riesgo real y honesto contra una que promete 'todo perfecto' y decide cuál es más creíble."
+          learning_objective: "El aprendiz compara una oferta que admite su riesgo contra una que promete perfección, y justifica cuál es más confiable."
+          key_vocabulary: [honesto, creíble, justificar]
+          prior_knowledge: "Identifica quién carga el riesgo real (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si confiaría más en una oferta que admite su riesgo o en una que jura que nunca falla."
+          lessons:
+            - position: 1
+              slug: comparo-honestidad-y-perfeccion
+              micro_objective: "Compara una oferta con riesgo real y honesto contra una que promete 'todo perfecto', y decide cuál es más creíble."
+              narrative_beat: "Rho compara dos rutas: una admite abiertamente su riesgo, la otra promete que nunca falla - confía más en la primera."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: justifico-mi-confianza
+              micro_objective: "Justifica, con al menos un motivo concreto, por qué una oferta honesta sobre su riesgo es más confiable que una que promete perfección."
+              narrative_beat: "Zara explica al equipo por qué prefiere una ruta que admite sus fallas sobre una que jura que nunca falla."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: mi-regla-del-almuerzo-gratis
+          title_es: "Mi regla del almuerzo gratis"
+          concept: "Sintetiza una regla personal para reconocer y desconfiar de un 'almuerzo gratis' financiero."
+          learning_objective: "El aprendiz redacta y aplica una regla personal para detectar y desconfiar de una promesa 'perfecta'."
+          key_vocabulary: [regla personal, desconfiar]
+          prior_knowledge: "Justifica su confianza en una oferta honesta sobre una perfecta (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una frase, su propia regla para reconocer un 'almuerzo gratis' financiero."
+          lessons:
+            - position: 1
+              slug: escribimos-la-regla-en-el-mapa
+              micro_objective: "Con apoyo, redacta una regla personal para reconocer y desconfiar de una promesa 'perfecta' (sin riesgo, gran premio, rápido)."
+              narrative_beat: "El equipo escribe su regla en el mapa del archipiélago: 'si suena perfecto en las tres cosas a la vez, desconfía'."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: aplico-mi-regla-en-el-muelle
+              micro_objective: "Aplica, sin ayuda, su propia regla del almuerzo gratis a una oferta nueva del muelle."
+              narrative_beat: "Liruf usa la regla del equipo por su cuenta para detectar una oferta sospechosa nueva en el muelle."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-no-hay-almuerzo-gratis
+          kind: review_spaced
+          title_es: "Repaso: No Hay Almuerzo Gratis"
+          concept: "El equipo repasa cómo detectar una promesa perfecta y quién carga el riesgo real antes de zarpar hacia la última saga."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo detectar una promesa perfecta y quién carga el riesgo."
+          key_vocabulary: [promesa perfecta, quién carga el riesgo]
+          prior_knowledge: "Completo los 6 temas de No Hay Almuerzo Gratis."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/la-promesa-perfecta-no-existe
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/detecto-la-promesa-perfecta
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/seguro-y-grande-no-van-juntos
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/quien-se-queda-con-el-riesgo
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/comparo-una-oferta-realista-y-una-perfecta
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/mi-regla-del-almuerzo-gratis
+          lessons:
+            - position: 1
+              slug: repaso-detecto-promesas-perfectas
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué una promesa 'perfecta' (segura, grande y rápida) debe generar sospecha."
+              narrative_beat: "El equipo repasa los carteles sospechosos del muelle y los detecta, sin ayuda."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-encuentro-quien-carga-el-riesgo
+              micro_objective: "Aplica sin ayuda todo lo repasado: detecta quién se queda con el riesgo en una oferta nueva."
+              narrative_beat: "Zara detecta, sin ayuda de nadie, quién realmente carga el riesgo en una oferta nueva del muelle."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 8
+          slug: cruce-promesa-perfecta-y-riesgo-real
+          kind: review_interleaved
+          title_es: "Cruce: Promesa Perfecta y Riesgo Real"
+          concept: "Mezclamos la detección de una promesa perfecta con la pregunta de quién carga el riesgo real."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, tres señales de esta saga para evaluar una oferta nueva."
+          key_vocabulary: [promesa perfecta, trade-off, quién carga el riesgo]
+          prior_knowledge: "Completo el repaso de No Hay Almuerzo Gratis (tema anterior)."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/la-promesa-perfecta-no-existe
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/seguro-y-grande-no-van-juntos
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/quien-se-queda-con-el-riesgo
+          lessons:
+            - position: 1
+              slug: junto-los-dos-filtros
+              micro_objective: "Combina la detección de una promesa 'perfecta' con la pregunta de quién carga el riesgo real para evaluar una oferta."
+              narrative_beat: "Rho junta dos filtros: ¿suena demasiado perfecto? Y ¿quién realmente carga el riesgo? - los aplica juntos a una oferta nueva."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-el-caso-del-muelle
+              micro_objective: "Evalúa, sin ayuda, una oferta nueva combinando las tres ideas de la saga: promesa perfecta, trade-off seguro/grande y quién carga el riesgo."
+              narrative_beat: "Zara resuelve un caso final del muelle cruzando las tres ideas de la saga en una sola decisión."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: mi-tolerancia-al-riesgo
+    icon: tune
+    title:
+      en-US: "My Risk Tolerance"
+      es-MX: "Mi Tolerancia al Riesgo"
+      pt-BR: "Minha Tolerancia ao Risco"
+    description:
+      en-US: "Time horizon, personal tolerance and spreading routes around - combine them into one final course."
+      es-MX: "Plazo, tolerancia personal y repartir entre varias rutas - combínalos en una ruta final."
+      pt-BR: "Prazo, tolerancia pessoal e distribuir entre varias rotas - combine-os em uma rota final."
+    topics:
+        - position: 1
+          slug: que-es-la-tolerancia-al-riesgo
+          title_es: "Qué es la tolerancia al riesgo"
+          concept: "La tolerancia al riesgo es cuánto riesgo estás dispuesto y puedes permitirte asumir, y varía de persona a persona."
+          learning_objective: "El aprendiz reconoce que la tolerancia al riesgo varía de persona a persona y ninguna elección es 'la correcta' en automático."
+          key_vocabulary: [tolerancia al riesgo, varía de persona a persona]
+          prior_knowledge: "Completo No Hay Almuerzo Gratis (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si él o ella se considera más de rutas seguras o más de rutas arriesgadas, y por qué."
+          lessons:
+            - position: 1
+              slug: dos-capitanes-distinta-tolerancia
+              micro_objective: "Reconoce que la tolerancia al riesgo es cuánto riesgo estás dispuesto y puedes permitirte asumir, y varía de persona a persona."
+              narrative_beat: "Dina compara a dos capitanes: uno elige siempre la ruta segura, el otro casi siempre la arriesgada - ambos tienen razones válidas."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-por-que-elegimos-distinto
+              micro_objective: "Explica, con sus palabras, por qué dos personas pueden tomar decisiones de riesgo distintas frente al mismo mapa."
+              narrative_beat: "Liruf explica por qué él y Zara elegirían rutas distintas frente al mismo mapa, sin que ninguno esté 'equivocado'."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: el-plazo-cambia-el-riesgo-que-conviene
+          title_es: "El plazo cambia el riesgo que conviene"
+          concept: "Entre más lejos está tu meta en el tiempo, más margen tienes para asumir rutas con más riesgo."
+          learning_objective: "El aprendiz reconoce que el plazo de una meta cambia el nivel de riesgo que conviene asumir."
+          key_vocabulary: [plazo, margen para el riesgo]
+          prior_knowledge: "Reconoce que la tolerancia al riesgo varía de persona a persona (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si tomaría el mismo riesgo para una meta de la próxima semana que para una del próximo año."
+          lessons:
+            - position: 1
+              slug: meta-cercana-o-lejana
+              micro_objective: "Reconoce que entre más lejos está una meta en el tiempo, más margen hay para asumir rutas con más riesgo."
+              narrative_beat: "Rho compara: para una meta de este fin de semana, elige la ruta segura; para una meta de dentro de un año, se anima a una más riesgosa."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-segun-el-plazo
+              micro_objective: "Decide, para dos metas con plazos distintos, cuál nivel de riesgo conviene más en cada caso."
+              narrative_beat: "Zara decide: para su meta de la próxima semana, ruta segura; para su meta del próximo año, se permite algo de riesgo."
+              difficulty: 3
+              suggested_families: [choice, storyplay]
+        - position: 3
+          slug: combino-plazo-y-tolerancia
+          title_es: "Combino plazo y tolerancia"
+          concept: "Combina el plazo de una meta con la tolerancia personal al riesgo para elegir una ruta adecuada."
+          learning_objective: "El aprendiz combina plazo y tolerancia personal para elegir, entre varias rutas, la que mejor combina ambos factores."
+          key_vocabulary: [combinar factores, ruta adecuada]
+          prior_knowledge: "Reconoce que el plazo cambia el riesgo que conviene (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a combinar su plazo y su tolerancia para elegir el nivel de riesgo de una meta propia."
+          lessons:
+            - position: 1
+              slug: combino-los-dos-datos-de-liruf
+              micro_objective: "Combina el plazo de una meta con la tolerancia personal al riesgo para elegir una ruta adecuada."
+              narrative_beat: "Dina combina dos datos de Liruf: su plazo (un año) y su tolerancia (baja) para sugerirle una ruta intermedia."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: elijo-la-ruta-que-mejor-combina
+              micro_objective: "Elige, para un caso con plazo y tolerancia dados, la ruta que mejor combina ambos factores."
+              narrative_beat: "Con plazo y tolerancia claros, Rho elige entre tres rutas la que mejor combina ambos factores para su propio caso."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: diversifico-mis-rutas
+          title_es: "Diversifico mis rutas"
+          concept: "Repartir entre varias rutas en vez de apostar todo a una sola reduce el golpe si una sale mal."
+          learning_objective: "El aprendiz compara el resultado de apostar todo a una ruta contra repartir entre varias, cuando una de ellas falla."
+          key_vocabulary: [repartir, reducir el golpe]
+          prior_knowledge: "Combina plazo y tolerancia para elegir una ruta (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría si reparte su ahorro entre tres lugares distintos en vez de guardarlo todo en uno solo."
+          lessons:
+            - position: 1
+              slug: tres-barcos-en-vez-de-uno
+              micro_objective: "Reconoce que repartir entre varias rutas en vez de apostar todo a una reduce el golpe si una sale mal."
+              narrative_beat: "Zara reparte su carga entre tres barcos en vez de uno solo - si uno tiene mal viaje, los otros dos siguen llegando."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-todo-en-una-o-repartido
+              micro_objective: "Compara el resultado de apostar todo a una ruta contra repartir entre varias, en un caso donde una de las rutas falla."
+              narrative_beat: "Cuando una de las tres rutas de Zara falla, ella sigue teniendo dos cargas a salvo - Liruf, que apostó todo a una sola ruta, lo perdió todo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: reviso-mi-propio-perfil
+          title_es: "Reviso mi propio perfil"
+          concept: "Aplica un cuestionario simple para estimar el propio perfil de riesgo (conservador, balanceado, arriesgado)."
+          learning_objective: "El aprendiz estima su propio perfil de riesgo con un cuestionario simple y lo compara contra el de un compañero."
+          key_vocabulary: [perfil de riesgo, conservador, balanceado, arriesgado]
+          prior_knowledge: "Compara apostar todo contra repartir entre varias rutas (tema anterior)."
+          fact_refs: []
+          parent_check: "Haz junto a {{name}} un cuestionario corto para estimar su propio perfil de riesgo."
+          lessons:
+            - position: 1
+              slug: respondemos-el-cuestionario
+              micro_objective: "Con apoyo, aplica un cuestionario simple para estimar su propio perfil de riesgo (conservador, balanceado o arriesgado)."
+              narrative_beat: "El equipo responde juntos un cuestionario corto del archipiélago para descubrir su propio perfil de riesgo."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+            - position: 2
+              slug: comparo-mi-perfil-con-un-companero
+              micro_objective: "Compara su propio perfil de riesgo estimado contra el de un compañero y explica al menos una diferencia."
+              narrative_beat: "Liruf compara su perfil 'arriesgado' contra el perfil 'conservador' de Rho, y explica por qué ninguno es mejor que el otro."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: elijo-mi-ruta-final
+          title_es: "Elijo mi ruta final"
+          concept: "Elige una ruta final del archipiélago combinando plazo, tolerancia y diversificación."
+          learning_objective: "El aprendiz elige, sin ayuda, una ruta final combinando plazo, tolerancia personal y diversificación entre varias rutas."
+          key_vocabulary: [ruta final, combinar los tres criterios]
+          prior_knowledge: "Estima su propio perfil de riesgo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que elija una decisión propia combinando plazo, tolerancia y 'no todo en un solo lugar'."
+          lessons:
+            - position: 1
+              slug: armamos-la-ruta-final-en-equipo
+              micro_objective: "Con apoyo, elige una ruta final del archipiélago combinando plazo, tolerancia personal y diversificación."
+              narrative_beat: "El equipo arma su ruta final del archipiélago, combinando todo lo aprendido: plazo, tolerancia y reparto entre varias rutas."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: elijo-mi-ruta-solo
+              micro_objective: "Aplica, sin ayuda, los tres criterios (plazo, tolerancia, diversificación) para elegir su propia ruta final."
+              narrative_beat: "Rho elige su ruta final solo, sin ayuda, combinando los tres criterios de la saga por su cuenta."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-mi-tolerancia-al-riesgo
+          kind: review_spaced
+          title_es: "Repaso: Mi Tolerancia al Riesgo"
+          concept: "El equipo repasa cómo combinar plazo, tolerancia y diversificación antes de la travesía final del archipiélago."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, cómo el plazo cambia el riesgo que conviene y cómo combinarlo con la tolerancia."
+          key_vocabulary: [plazo, tolerancia, diversificación]
+          prior_knowledge: "Completo los 6 temas de Mi Tolerancia al Riesgo."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/que-es-la-tolerancia-al-riesgo
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/el-plazo-cambia-el-riesgo-que-conviene
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/combino-plazo-y-tolerancia
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/diversifico-mis-rutas
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/reviso-mi-propio-perfil
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/elijo-mi-ruta-final
+          lessons:
+            - position: 1
+              slug: repaso-el-plazo-cambia-todo
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo el plazo de una meta cambia el nivel de riesgo que conviene."
+              narrative_beat: "El equipo repasa sus metas y plazos, y elige de nuevo, sin ayuda, el riesgo que conviene a cada una."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-elijo-ruta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: elige una ruta nueva combinando plazo, tolerancia y diversificación."
+              narrative_beat: "Zara elige, sin ayuda de nadie, una ruta nueva combinando los tres criterios de la saga."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-todo-el-archipielago
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Archipiélago"
+          concept: "Mezclamos riesgo-recompensa, valor esperado y quién carga el riesgo real en una sola decisión final del archipiélago."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión."
+          key_vocabulary: [riesgo-recompensa, valor esperado, quién carga el riesgo]
+          prior_knowledge: "Completo el repaso de Mi Tolerancia al Riesgo (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/el-espectro-de-riesgo/mas-premio-casi-siempre-mas-riesgo
+            - mapa-del-riesgo/cajas-de-recompensa/el-valor-esperado-en-palabras-simples
+            - mapa-del-riesgo/no-hay-almuerzo-gratis/quien-se-queda-con-el-riesgo
+          lessons:
+            - position: 1
+              slug: junto-riesgo-recompensa-y-valor-esperado
+              micro_objective: "Combina el patrón riesgo-recompensa con el valor promedio esperado para evaluar una ruta nueva del archipiélago."
+              narrative_beat: "Zara junta dos ideas de sagas distintas: el patrón riesgo-recompensa Y el valor promedio esperado, para una ruta nueva."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-la-decision-final-de-ruta
+              micro_objective: "Evalúa, sin ayuda, una decisión final combinando riesgo-recompensa, valor esperado y quién carga el riesgo real."
+              narrative_beat: "Rho resuelve el caso final del archipiélago cruzando las tres sagas completas en una sola decisión de ruta."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-travesia-final-del-archipielago
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Archipelago's Final Voyage"
+      es-MX: "La Travesía Final del Archipiélago"
+      pt-BR: "A Travessia Final do Arquipelago"
+    description:
+      en-US: "A final voyage puts the whole risk toolkit - spectrum, expected value, red flags and tolerance - to work."
+      es-MX: "Una travesía final pone a trabajar todo el kit de herramientas del riesgo: espectro, valor esperado, señales de alerta y tolerancia."
+      pt-BR: "Uma travessia final coloca para trabalhar todo o kit de ferramentas do risco: espectro, valor esperado, sinais de alerta e tolerancia."
+    topics:
+        - position: 1
+          slug: el-reto-de-las-rutas
+          kind: review_quest
+          title_es: "El Reto de las Rutas"
+          concept: "El archipiélago lanza su prueba final: elegir y justificar una ruta usando el espectro de riesgo y el valor esperado, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el espectro de riesgo y el valor esperado para resolver un reto abierto."
+          key_vocabulary: [espectro de riesgo, valor esperado, reto abierto]
+          prior_knowledge: "Completo El Espectro de Riesgo y Cajas de Recompensa."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/el-espectro-de-riesgo
+            - mapa-del-riesgo/cajas-de-recompensa
+          lessons:
+            - position: 1
+              slug: se-iza-la-bandera-final
+              micro_objective: "Recuerda, sin ayuda, cómo ordenar rutas de menor a mayor riesgo y estimar su valor promedio."
+              narrative_beat: "Una bandera se iza en el muelle principal: 'Travesía final - demuestra que entiendes el mapa del riesgo'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-entre-rutas-nuevas
+              micro_objective: "Elige, sin ayuda, la mejor ruta entre varias opciones nuevas, aplicando el espectro de riesgo y el valor esperado."
+              narrative_beat: "Rho enfrenta su primera prueba real: elegir solo, sin ayuda, entre varias rutas nuevas del archipiélago."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-ruta-defendida
+          kind: review_quest
+          title_es: "Mi Ruta, Defendida"
+          concept: "Frente al consejo de capitanes, el equipo defiende su ruta final explicando por qué no cayeron en una promesa perfecta y cómo combinaron plazo y tolerancia."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una ruta combinando 'no hay almuerzo gratis' y tolerancia al riesgo."
+          key_vocabulary: [defender, consejo de capitanes, ruta final]
+          prior_knowledge: "Completo El Reto de las Rutas (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - mapa-del-riesgo/no-hay-almuerzo-gratis
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-de-ruta
+              micro_objective: "Organiza, sin ayuda, los argumentos de 'no hay almuerzo gratis' y tolerancia al riesgo para defender una ruta elegida."
+              narrative_beat: "Dina ensaya su defensa: primero por qué desconfió de la ruta 'perfecta', después por qué eligió la suya según su tolerancia."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-de-capitanes
+              micro_objective: "Completa, sin ayuda, la defensa final de su ruta ante el consejo de capitanes, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante el consejo de capitanes del archipiélago; cuando le preguntan '¿y si te hubiera tentado el premio grande?', responde con su regla del almuerzo gratis."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 2
+  slug: prototipo-de-garage
+  theme: valley
+  age_tier: tier4
+  title:
+    en-US: "Garage Prototype"
+    es-MX: "Prototipo de Garage"
+    pt-BR: "Prototipo de Garagem"
+  description:
+    en-US: "In the Valley of Garages, the crew builds a real MVP under real limits - money, time and tools - and learns that shipped beats perfect."
+    es-MX: "En el Valle de los Garages, el equipo construye un MVP real bajo limites reales - dinero, tiempo y herramientas - y aprende que lanzar vale más que ser perfecto."
+    pt-BR: "No Vale das Garagens, a equipe constroi um MVP real sob limites reais - dinheiro, tempo e ferramentas - e aprende que lancar vale mais que ser perfeito."
+  narrative_arc: "Dina, Liruf, Rho y Zara dejan atras el Distrito Beta con una oportunidad validada bajo el brazo y llegan al Valle de los Garages, donde decenas de talleres compiten por construir la mejor primera versión de una idea. Ahí aprenden que un MVP no es una versión barata de un sueno, sino la versión más pequeña que ya demuestra que el sueno funciona - y que el dinero, el tiempo y las herramientas disponibles no son excusas, son el terreno real donde se construye. El valle entero se prepara para un Demo Day donde cada equipo debe mostrar, con números reales, lo que construyo."
+
+sagas:
+  - position: 1
+    slug: que-es-un-mvp
+    icon: build
+    title:
+      en-US: "What Is an MVP"
+      es-MX: "Que es un MVP"
+      pt-BR: "O que e um MVP"
+    description:
+      en-US: "The smallest version of your idea that already proves it works."
+      es-MX: "La versión más chica de tu idea que ya demuestra que funciona."
+      pt-BR: "A versao mais simples da sua ideia que ja prova que funciona."
+    topics:
+        - position: 1
+          slug: el-producto-mas-pequeno-que-funciona
+          title_es: "El producto más pequeño que funciona"
+          concept: "Un MVP (producto mínimo viable) es la versión más chica de tu idea que ya resuelve el problema real, sin adornos."
+          learning_objective: "El aprendiz distingue un MVP de una versión completa e identifica el nucleo funcional de una idea dada."
+          key_vocabulary: [MVP, producto mínimo viable, nucleo funcional]
+          prior_knowledge: "Completo Radar de Oportunidades (aventura anterior): ya tiene una oportunidad validada."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cual sería la versión más chica y más simple de su idea que ya podría probar esta semana."
+          lessons:
+            - position: 1
+              slug: la-app-con-un-solo-boton
+              micro_objective: "Reconoce, entre 3 versiónes de una idea, cual es el MVP y cual ya tiene demasiados extras."
+              narrative_beat: "Liruf diseña una app con 12 funciónes; Rho le pregunta cual de esas 12 resuelve de verdad el problema que encontraron en el distrito."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: quito-todo-lo-que-no-es-esencial
+              micro_objective: "Elimina, de una lista de 6 caracteristicas, las que no son necesarias para el primer MVP."
+              narrative_beat: "Zara tacha 4 de 6 ideas para su servicio de tutorias: solo deja las que hacen que el servicio funcione desde el primer día."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: que-es-lo-esencial
+          title_es: "Que es lo esencial"
+          concept: "Lo esencial es la parte de tu producto sin la cual el problema no se resuelve; todo lo demas es un extra que puede esperar."
+          learning_objective: "El aprendiz distingue caracteristicas esenciales de caracteristicas deseables en un producto dado."
+          key_vocabulary: [esencial, deseable, nucleo del problema]
+          prior_knowledge: "Distingue un MVP de una versión completa (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que parte de su idea es la única realmente necesaria, sin la cual el producto ya no serviria de nada."
+          lessons:
+            - position: 1
+              slug: sin-esto-no-funciona
+              micro_objective: "Identifica, entre 4 caracteristicas de un producto, cual es la única sin la que el producto deja de resolver el problema."
+              narrative_beat: "Rho revisa su idea de estuches personalizados: sin protección real, ni el diseño más bonito sirve de algo."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: esencial-o-solo-bonito
+              micro_objective: "Clasifica 5 caracteristicas entre esenciales (resuelven el problema) y deseables (solo mejoran la experiencia)."
+              narrative_beat: "Dina separa en dos columnas las funciónes de su idea: las que resuelven el problema y las que solo se ven bien."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 3
+          slug: no-es-perfecto-es-util
+          title_es: "No es perfecto, es util"
+          concept: "Un MVP no busca impresionar por su acabado; busca demostrar, de la forma más simple posible, que la solución funciona."
+          learning_objective: "El aprendiz elige la versión más util (aunque menos pulida) de un producto sobre la versión más bonita pero más lenta de construir."
+          key_vocabulary: [util, pulido, demostrar que funciona]
+          prior_knowledge: "Distingue caracteristicas esenciales de deseables (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si esta priorizando que su prototipo se vea perfecto o que de verdad funcione y se pueda probar pronto."
+          lessons:
+            - position: 1
+              slug: bonito-pero-tardado-o-feo-pero-rapido
+              micro_objective: "Compara dos versiónes de un mismo producto y elige la que se puede probar más rápido, aunque se vea menos pulida."
+              narrative_beat: "Liruf quiere pintar a mano cada estuche (2 horas cada uno); Zara propone estampas simples que se hacen en 10 minutos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: demuestro-que-funciona-no-que-es-bonito
+              micro_objective: "Elige, entre dos prototipos, el que mejor demuestra que la idea resuelve el problema, sin importar su acabado."
+              narrative_beat: "Rho presenta una caja de carton con el mecanismo real adentro, en vez de esperar semanas por una caja perfecta."
+              difficulty: 3
+              suggested_families: [choice, story]
+        - position: 4
+          slug: que-le-quito-primero
+          title_es: "Que le quito primero"
+          concept: "Cuando una idea tiene demasiadas partes, hay que decidir en que orden recortar sin perder lo que la hace funcionar."
+          learning_objective: "El aprendiz ordena las partes de un producto de la más fácil de recortar a la más difícil de recortar sin romper el MVP."
+          key_vocabulary: [recortar, orden de prioridad, romper el MVP]
+          prior_knowledge: "Elige la versión más util sobre la más bonita (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que ordene las partes de su idea de la más fácil de dejar para después a la más necesaria desde el primer día."
+          lessons:
+            - position: 1
+              slug: ordeno-que-recorto-primero
+              micro_objective: "Ordena 4 partes de un producto de la más prescindible a la más indispensable."
+              narrative_beat: "Zara ordena las partes de su servicio de lavado de tenis: el empaque de regalo es lo primero que puede esperar."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: si-recorto-esto-se-rompe-el-mvp
+              micro_objective: "Identifica cual de 3 recortes propuestos rompe el MVP porque elimina algo esencial, no un extra."
+              narrative_beat: "Liruf propone quitar el paso de revisar que el pedido este completo; Rho le explica que eso rompe la promesa básica del servicio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: version-1-no-es-version-final
+          title_es: "Versión 1 no es versión final"
+          concept: "La primera versión de cualquier producto real es apenas el punto de partida; se espera que cambie después de probarla con gente de verdad."
+          learning_objective: "El aprendiz adopta la mentalidad de versión 1 (V1): construir para aprender, no para terminar de una vez."
+          key_vocabulary: [versión 1, iterar, punto de partida]
+          prior_knowledge: "Ordena que recortar primero (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si esta bien que su primera versión tenga fallas, siempre y cuando aprenda algo real al probarla."
+          lessons:
+            - position: 1
+              slug: la-primera-version-de-algo-conocido
+              micro_objective: "Reconoce, en un caso, que la primera versión de un producto conocido era mucho más simple que la versión actual."
+              narrative_beat: "Rho descubre que la primera versión de una app famosa solo tenia una función, nada más."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: mi-v1-va-a-cambiar-y-esta-bien
+              micro_objective: "Elige la actitud correcta frente a la idea de que su V1 tendra fallas y cambiara después."
+              narrative_beat: "Dina le recuerda a Liruf que su V1 no tiene que ser perfecta: 'va a cambiar, y eso es justo el plan'."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: mi-mvp-en-una-frase
+          title_es: "Mi MVP en una frase"
+          concept: "Un MVP bien definido cabe en una frase: que hace, para quien, y que NO incluye todavia."
+          learning_objective: "El aprendiz redacta la definición de su propio MVP en una sola frase con alcance claro."
+          key_vocabulary: [definición de MVP, alcance, todavia no incluye]
+          prior_knowledge: "Adopta la mentalidad de V1 (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una sola frase, que hace su MVP y que no va a incluir todavia."
+          lessons:
+            - position: 1
+              slug: reviso-3-definiciones-de-mvp
+              micro_objective: "Revisa 3 definiciónes de MVP y elige la que tiene alcance más claro (que hace y que no incluye)."
+              narrative_beat: "Zara compara tres frases de MVP escritas por el equipo y elige la única que dice claramente que NO va a incluir todavia."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-mvp
+              micro_objective: "Redacta, sin ayuda, la definición de su propio MVP en una sola frase con alcance claro."
+              narrative_beat: "Rho escribe en su cuaderno de taller la frase final de su MVP y la clava en la pared del garage."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-que-es-un-mvp
+          kind: review_spaced
+          title_es: "Repaso: Que es un MVP"
+          concept: "El equipo repasa como reconocer lo esencial de una idea y definir un MVP claro antes de construir."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los criterios de esta saga para definir un MVP."
+          key_vocabulary: [MVP, esencial, recortar]
+          prior_knowledge: "Completo los 6 temas de Que es un MVP."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/que-es-un-mvp/el-producto-mas-pequeno-que-funciona
+            - prototipo-de-garage/que-es-un-mvp/que-es-lo-esencial
+            - prototipo-de-garage/que-es-un-mvp/no-es-perfecto-es-util
+            - prototipo-de-garage/que-es-un-mvp/que-le-quito-primero
+            - prototipo-de-garage/que-es-un-mvp/version-1-no-es-version-final
+            - prototipo-de-garage/que-es-un-mvp/mi-mvp-en-una-frase
+          lessons:
+            - position: 1
+              slug: repaso-esencial-o-extra
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre una caracteristica esencial y un extra."
+              narrative_beat: "El equipo revisa su lista de ideas y marca, sin ayuda, cuales partes son el nucleo y cuales pueden esperar."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-mi-mvp-en-una-frase
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta la definición de un MVP nuevo en una sola frase."
+              narrative_beat: "Liruf escribe, sin ayuda de nadie, la definición de su segundo MVP en menos de un minuto."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-mvp-y-oportunidad
+          kind: review_interleaved
+          title_es: "Cruce: MVP y la Oportunidad Original"
+          concept: "Mezclamos la definición de MVP de esta saga con la oportunidad validada en el Distrito Beta."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la oportunidad ya validada con la definición de un MVP que la resuelva."
+          key_vocabulary: [MVP, oportunidad, nucleo funcional]
+          prior_knowledge: "Completo el repaso de Que es un MVP (tema anterior) y Radar de Oportunidades (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/que-es-un-mvp/el-producto-mas-pequeno-que-funciona
+            - prototipo-de-garage/que-es-un-mvp/mi-mvp-en-una-frase
+            - radar-de-oportunidades/problemas-de-verdad/el-problema-en-una-frase
+          lessons:
+            - position: 1
+              slug: mi-oportunidad-necesita-que-mvp
+              micro_objective: "Conecta la oportunidad validada en el distrito con el MVP mínimo que de verdad la resolveria."
+              narrative_beat: "Zara revisa el pitch de su oportunidad del Distrito Beta y diseña, por primera vez, el MVP más pequeño que la probaria."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reviso-si-mi-mvp-resuelve-el-problema-original
+              micro_objective: "Revisa, sin ayuda, si el MVP disenado de verdad resuelve el problema identificado en la aventura anterior."
+              narrative_beat: "Rho compara su MVP contra el enunciado del problema original y confirma que no se le olvido lo esencial."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: restricciones-reales
+    icon: account_balance_wallet
+    title:
+      en-US: "Real Constraints"
+      es-MX: "Restricciónes Reales"
+      pt-BR: "Restricoes Reais"
+    description:
+      en-US: "Money, time and tools are limited - a real founder builds inside those limits, not around them."
+      es-MX: "El dinero, el tiempo y las herramientas son limitados - un founder de verdad construye dentro de esos limites, no alrededor de ellos."
+      pt-BR: "Dinheiro, tempo e ferramentas sao limitados - um founder de verdade constroi dentro desses limites, nao ao redor deles."
+    topics:
+        - position: 1
+          slug: cuanto-tengo-para-gastar
+          title_es: "Cuanto tengo para gastar"
+          concept: "Todo prototipo tiene un techo de gasto real; conocerlo desde el inicio evita construir algo que nunca podras pagar."
+          learning_objective: "El aprendiz calcula un presupuesto máximo disponible para construir un primer prototipo."
+          key_vocabulary: [presupuesto, techo de gasto, prototipo]
+          prior_knowledge: "Completo Que es un MVP (saga anterior)."
+          fact_refs: [mxn.reference_costs.tenis_personalizados_materiales]
+          parent_check: "Ayuda a {{name}} a calcular, sumando lo que tiene ahorrado y lo que podría conseguir, cuanto dinero real tiene para su primer prototipo."
+          lessons:
+            - position: 1
+              slug: cuanto-tengo-ahorrado
+              micro_objective: "Suma el dinero disponible de 3 fuentes (ahorro, un encargo pagado, material reciclado con valor) para definir un presupuesto."
+              narrative_beat: "Zara cuenta lo que tiene ahorrado, más lo que le pagaron por un encargo, más el material que ya tiene en casa."
+              difficulty: 1
+              suggested_families: [input, money]
+            - position: 2
+              slug: mi-techo-de-gasto
+              micro_objective: "Compara el costo estimado de dos versiónes de un prototipo contra el presupuesto disponible y elige la que si alcanza."
+              narrative_beat: "Liruf quiere comprar $200 en materiales para tenis personalizados, pero solo tiene $120 esta semana; ajusta su plan."
+              difficulty: 2
+              suggested_families: [money, choice]
+        - position: 2
+          slug: cuanto-tiempo-tengo
+          title_es: "Cuanto tiempo tengo"
+          concept: "El tiempo también es un recurso limitado: construir un prototipo antes de un plazo real obliga a recortar de forma distinta que construirlo sin prisa."
+          learning_objective: "El aprendiz estima cuanto tiempo real tiene disponible y ajusta el alcance de un prototipo a ese plazo."
+          key_vocabulary: [plazo, tiempo disponible, ajustar alcance]
+          prior_knowledge: "Calcula un presupuesto de dinero (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cuantas horas reales tiene disponibles esta semana para trabajar en su prototipo, sin exagerar."
+          lessons:
+            - position: 1
+              slug: cuantas-horas-tengo-esta-semana
+              micro_objective: "Calcula, sumando bloques de tiempo libre en un horario, cuantas horas reales tiene disponibles esta semana para construir."
+              narrative_beat: "Rho revisa su horario de la semana y suma solo los bloques libres después de la escuela y las tareas."
+              difficulty: 2
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: el-plazo-cambia-el-plan
+              micro_objective: "Elige, entre dos planes de construcción, el que si cabe dentro de un plazo de una semana."
+              narrative_beat: "Dina tenia un plan de tres semanas para su prototipo, pero el demo day es en 7 días: recorta el plan para que quepa."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: que-herramientas-tengo-a-la-mano
+          title_es: "Que herramientas tengo a la mano"
+          concept: "Antes de pedir o comprar algo nuevo, hay que revisar que herramientas, materiales o habilidades ya estan disponibles."
+          learning_objective: "El aprendiz hace un inventario de recursos ya disponibles antes de planear compras nuevas para el prototipo."
+          key_vocabulary: [inventario, recursos disponibles, habilidad propia]
+          prior_knowledge: "Ajusta el alcance a un plazo real (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} que materiales, herramientas o habilidades ya tiene en casa antes de pedirte comprar algo nuevo."
+          lessons:
+            - position: 1
+              slug: reviso-lo-que-ya-tengo
+              micro_objective: "Hace un inventario de 5 recursos (materiales, herramientas, habilidades) que ya tiene disponibles antes de pedir algo nuevo."
+              narrative_beat: "Zara revisa su cuarto y encuentra pintura, pegamento y una impresora vieja que ya podría usar para su prototipo."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: quien-en-mi-equipo-sabe-hacer-esto
+              micro_objective: "Identifica, entre los integrantes del equipo, quien tiene la habilidad específica que el prototipo necesita."
+              narrative_beat: "Liruf no sabe coser, pero recuerda que Rho si sabe, y le pide ayuda antes de comprar un servicio externo."
+              difficulty: 3
+              suggested_families: [choice, story]
+        - position: 4
+          slug: cuando-una-restriccion-es-una-excusa
+          title_es: "Cuando una restricción es una excusa"
+          concept: "Algunas restricciónes son reales (no tengo el dinero); otras son excusas para no empezar (no tengo el material perfecto)."
+          learning_objective: "El aprendiz distingue una restricción real de una excusa disfrazada de restricción."
+          key_vocabulary: [restricción real, excusa, empezar]
+          prior_knowledge: "Hace inventario de recursos disponibles (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si lo que dice que le falta es una restricción real o una razón para no empezar todavia."
+          lessons:
+            - position: 1
+              slug: de-verdad-no-puedo-o-no-quiero-empezar
+              micro_objective: "Distingue, en 4 frases, cuales describen una restricción real y cuales son excusas para posponer."
+              narrative_beat: "Rho dice 'no puedo empezar sin el material perfecto' - Dina le pregunta si de verdad no puede, o si tiene miedo de empezar."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: empiezo-con-lo-que-hay
+              micro_objective: "Elige la versión del prototipo que se puede empezar hoy mismo con los recursos ya disponibles."
+              narrative_beat: "Zara decide empezar su prototipo con carton y marcador, en vez de esperar el material ideal que tardaria dos semanas."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: recorto-sin-perder-lo-esencial
+          title_es: "Recorto sin perder lo esencial"
+          concept: "Ajustar un plan a un presupuesto o plazo menor no significa romper el MVP: significa recortar lo prescindible, no el nucleo."
+          learning_objective: "El aprendiz ajusta un plan de construcción a una restricción nueva sin eliminar la parte esencial del MVP."
+          key_vocabulary: [ajustar plan, restricción nueva, nucleo intacto]
+          prior_knowledge: "Distingue restricción real de excusa (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa con {{name}} si, al recortar su plan por falta de tiempo o dinero, sigue conservando lo que hace funcionar su idea."
+          lessons:
+            - position: 1
+              slug: el-presupuesto-bajo-a-la-mitad
+              micro_objective: "Ajusta un plan de prototipo cuyo presupuesto bajo a la mitad, sin eliminar la parte esencial identificada antes."
+              narrative_beat: "A Liruf le avisan que solo tiene $60 para su prototipo de estuches, la mitad de lo planeado; ajusta sin perder la función básica."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: verifico-que-el-nucleo-sigue-intacto
+              micro_objective: "Revisa, sin ayuda, si un plan recortado todavia conserva la parte esencial de su MVP original."
+              narrative_beat: "Rho revisa su plan recortado contra la definición de su MVP y confirma que lo esencial sigue de pie."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: presupuesto-de-garage
+          title_es: "Presupuesto de garage"
+          concept: "Un presupuesto simple de garage suma todos los costos del prototipo y los compara contra el dinero disponible antes de comprar nada."
+          learning_objective: "El aprendiz arma un presupuesto completo de materiales para un prototipo y lo compara contra su techo de gasto."
+          key_vocabulary: [presupuesto de garage, costo total, comparar contra el techo]
+          prior_knowledge: "Ajusta un plan sin perder lo esencial (tema anterior)."
+          fact_refs: [mxn.reference_costs.funda_personalizada_materiales]
+          parent_check: "Ayuda a {{name}} a sumar el costo de todos los materiales de su prototipo y comparar el total contra lo que tiene disponible."
+          lessons:
+            - position: 1
+              slug: sumo-todos-los-materiales
+              micro_objective: "Suma el costo de 4 materiales distintos para calcular el costo total de un prototipo."
+              narrative_beat: "Zara suma vinil, plantilla, sellador y empaque para calcular cuanto le costaria producir una funda personalizada."
+              difficulty: 4
+              suggested_families: [input, money]
+            - position: 2
+              slug: me-alcanza-para-el-prototipo
+              micro_objective: "Compara el costo total calculado contra el presupuesto disponible y decide si alcanza o hay que recortar."
+              narrative_beat: "Dina compara el costo total de su prototipo contra su presupuesto y descubre que le sobran justo unos pesos."
+              difficulty: 5
+              suggested_families: [money, choice]
+        - position: 7
+          slug: repaso-restricciones-reales
+          kind: review_spaced
+          title_es: "Repaso: Restricciónes Reales"
+          concept: "El equipo repasa como calcular presupuesto, tiempo y recursos disponibles antes de construir."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, como reconocer y trabajar dentro de restricciónes reales."
+          key_vocabulary: [presupuesto, plazo, restricción real]
+          prior_knowledge: "Completo los 6 temas de Restricciónes Reales."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/restricciones-reales/cuanto-tengo-para-gastar
+            - prototipo-de-garage/restricciones-reales/cuanto-tiempo-tengo
+            - prototipo-de-garage/restricciones-reales/que-herramientas-tengo-a-la-mano
+            - prototipo-de-garage/restricciones-reales/cuando-una-restriccion-es-una-excusa
+            - prototipo-de-garage/restricciones-reales/recorto-sin-perder-lo-esencial
+            - prototipo-de-garage/restricciones-reales/presupuesto-de-garage
+          lessons:
+            - position: 1
+              slug: repaso-calculo-mi-presupuesto
+              micro_objective: "Recuerda y aplica, sin ayuda, como calcular un presupuesto simple para un prototipo nuevo."
+              narrative_beat: "El equipo revisa sus notas de garage y calcula, sin ayuda, el presupuesto de una idea que todavia no habian costeado."
+              difficulty: 3
+              suggested_families: [money, input]
+            - position: 2
+              slug: repaso-restriccion-o-excusa
+              micro_objective: "Aplica sin ayuda todo lo repasado: distingue una restricción real de una excusa en un caso nuevo."
+              narrative_beat: "Liruf revisa una nueva idea del equipo y decide, sin ayuda, si la falta de tiempo alegada es real o una excusa."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-restricciones-y-mvp
+          kind: review_interleaved
+          title_es: "Cruce: Restricciónes y MVP"
+          concept: "Mezclamos la definición de MVP de la saga anterior con las restricciónes reales de esta saga para ajustar un plan completo."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la definición de su MVP con un presupuesto y plazo reales."
+          key_vocabulary: [MVP, presupuesto, plazo]
+          prior_knowledge: "Completo el repaso de Restricciónes Reales (tema anterior) y Que es un MVP (saga anterior)."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/restricciones-reales/cuanto-tengo-para-gastar
+            - prototipo-de-garage/restricciones-reales/cuando-una-restriccion-es-una-excusa
+            - prototipo-de-garage/que-es-un-mvp/mi-mvp-en-una-frase
+          lessons:
+            - position: 1
+              slug: mi-mvp-cabe-en-mi-presupuesto
+              micro_objective: "Revisa si la definición de su MVP sigue siendo realista dado el presupuesto real calculado."
+              narrative_beat: "Zara compara la frase de su MVP contra su presupuesto real y ajusta una palabra clave que ya no le alcanza."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: recorto-mi-mvp-por-tiempo
+              micro_objective: "Ajusta la definición de su MVP para que quepa dentro del plazo real disponible, sin perder lo esencial."
+              narrative_beat: "Rho recorta la versión de su MVP para que quepa en el tiempo que le queda antes del demo day, sin perder su nucleo."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: construyo-y-pruebo
+    icon: construction
+    title:
+      en-US: "Build and Test"
+      es-MX: "Construyo y Pruebo"
+      pt-BR: "Construo e Testo"
+    description:
+      en-US: "Sketch it, build the simplest version, break it on purpose, and fix only what broke."
+      es-MX: "Bocetalo, construye la versión más simple, rompelo a proposito, y arregla solo lo que fallo."
+      pt-BR: "Esboce, construa a versao mais simples, quebre de proposito, e conserte so o que falhou."
+    topics:
+        - position: 1
+          slug: el-primer-boceto
+          title_es: "El primer boceto"
+          concept: "Antes de construir, un boceto simple (dibujo, diagrama o lista de pasos) ahorra tiempo al mostrar el plan antes de gastar materiales."
+          learning_objective: "El aprendiz produce un boceto simple de un prototipo que muestra sus partes esenciales antes de construirlo."
+          key_vocabulary: [boceto, plan visual, antes de construir]
+          prior_knowledge: "Completo Restricciónes Reales (saga anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te muestre, aunque sea en una servilleta, el boceto de lo que va a construir antes de empezar."
+          lessons:
+            - position: 1
+              slug: dibujo-antes-de-cortar
+              micro_objective: "Reconoce, en un caso, por que dibujar el plan antes de cortar materiales ahorra tiempo y dinero."
+              narrative_beat: "Rho estuvo a punto de cortar tela sin medir; Dina lo detiene y le pide que primero dibuje el patron completo."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: mi-boceto-marca-lo-esencial
+              micro_objective: "Marca, en un boceto de 4 partes, cual es la parte esencial que no puede faltar en la versión final."
+              narrative_beat: "Zara dibuja su boceto y encierra en un circulo la única parte que, si falla, rompe todo el prototipo."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: construyo-la-version-mas-simple
+          title_es: "Construyo la versión más simple"
+          concept: "Construir la versión más simple posible, con lo que ya se tiene, revela problemas reales más rápido que planear para siempre."
+          learning_objective: "El aprendiz construye (o describe el proceso de construir) la versión más simple posible de un prototipo definido."
+          key_vocabulary: [construir, versión simple, con lo que hay]
+          prior_knowledge: "Produce un boceto simple (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a construir hoy mismo la versión más simple posible de su idea, aunque no sea perfecta."
+          lessons:
+            - position: 1
+              slug: empiezo-a-construir-hoy
+              micro_objective: "Elige, entre esperar el material perfecto o construir hoy con lo disponible, la opción que revela más rápido si la idea funciona."
+              narrative_beat: "Liruf decide construir su primer estuche con la tela que ya tiene, en vez de esperar el envio del material ideal."
+              difficulty: 2
+              suggested_families: [choice, storyplay]
+            - position: 2
+              slug: sigo-mi-boceto-al-construir
+              micro_objective: "Compara la construcción real contra el boceto original y detecta un paso que se salto."
+              narrative_beat: "Rho revisa su boceto mientras arma su prototipo y nota que se salto el paso de sellar los bordes."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: lo-pruebo-antes-de-mostrarlo
+          title_es: "Lo pruebo antes de mostrarlo"
+          concept: "Probar tu propio prototipo antes de ensenarlo a alguien más evita mostrar fallas obvias que pudiste haber detectado solo."
+          learning_objective: "El aprendiz diseña una prueba simple para verificar que su propio prototipo funciona antes de mostrarlo a otros."
+          key_vocabulary: [probar, autoevaluar, antes de mostrar]
+          prior_knowledge: "Construye la versión más simple (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como piensa probar el mismo su prototipo antes de mostrarselo a un amigo o cliente."
+          lessons:
+            - position: 1
+              slug: lo-uso-yo-primero
+              micro_objective: "Reconoce, en un caso, por que probar el prototipo uno mismo antes de mostrarlo evita una falla publica."
+              narrative_beat: "Zara usa su propio estuche una semana entera antes de vendérselo a alguien, y encuentra que se despega en una esquina."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: diseno-una-prueba-simple
+              micro_objective: "Diseña una prueba de 3 pasos para verificar si un prototipo cumple su función básica."
+              narrative_beat: "Dina diseña una prueba simple: llenar el estuche, cerrarlo, y dejarlo caer una vez desde la mesa."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: que-se-rompio-primero
+          title_es: "Que se rompio primero"
+          concept: "Cuando algo falla al probarlo, identificar exactamente que parte fallo primero es más util que descartar todo el prototipo."
+          learning_objective: "El aprendiz identifica, en un caso de falla, cual fue la parte específica que fallo primero."
+          key_vocabulary: [falla, parte específica, diagnostico]
+          prior_knowledge: "Diseña una prueba simple (tema anterior)."
+          fact_refs: []
+          parent_check: "Cuando algo del prototipo de {{name}} falle, ayudalo a identificar exactamente que parte fallo, no a descartar todo."
+          lessons:
+            - position: 1
+              slug: encuentro-la-parte-que-fallo
+              micro_objective: "Identifica, en una escena de prueba fallida, cual parte específica del prototipo fallo primero."
+              narrative_beat: "Rho prueba su prototipo y nota que no fallo todo: solo el cierre se atoro después del tercer uso."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: no-descarto-todo-por-una-falla
+              micro_objective: "Decide, entre descartar el prototipo completo o arreglar solo la parte que fallo, la opción más eficiente."
+              narrative_beat: "Liruf queria tirar todo su prototipo a la basura; Zara le muestra que solo necesita reforzar una costura."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: ajusto-y-repito
+          title_es: "Ajusto y repito"
+          concept: "El ciclo de construir, probar y ajustar se repite varias veces; cada vuelta deja el prototipo un poco mejor que la anterior."
+          learning_objective: "El aprendiz aplica un ajuste específico a un prototipo basado en una falla detectada y planea una nueva prueba."
+          key_vocabulary: [ciclo, ajustar, nueva prueba]
+          prior_knowledge: "Identifica la parte que fallo primero (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que ajuste específico hizo después de su última prueba, y como piensa comprobar que funciono."
+          lessons:
+            - position: 1
+              slug: ajusto-solo-lo-que-fallo
+              micro_objective: "Propone un ajuste específico para la parte que fallo, sin rediseñar todo el prototipo."
+              narrative_beat: "Rho refuerza solo la costura que se rompio, sin cambiar el resto del diseño que ya funcionaba bien."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: pruebo-otra-vez-el-mismo-punto
+              micro_objective: "Planea una segunda prueba enfocada especificamente en la parte que se ajusto."
+              narrative_beat: "Zara vuelve a dejar caer el estuche ajustado, esta vez enfocandose solo en revisar si la costura reforzada resiste."
+              difficulty: 4
+              suggested_families: [analyze, money]
+        - position: 6
+          slug: cuando-dejar-de-ajustar
+          title_es: "Cuando dejar de ajustar"
+          concept: "En algun punto el prototipo ya cumple su función básica; seguir ajustando sin fin retrasa mostrarlo a gente real."
+          learning_objective: "El aprendiz decide cuando un prototipo ya es suficientemente bueno para mostrarse, sin caer en perfeccionismo infinito."
+          key_vocabulary: [suficientemente bueno, perfeccionismo, mostrar ya]
+          prior_knowledge: "Aplica un ciclo de ajustar y probar (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a definir 2 o 3 señales claras de que su prototipo ya esta listo para mostrarse, en vez de seguir ajustando sin fin."
+          lessons:
+            - position: 1
+              slug: sigo-ajustando-o-ya-muestro
+              micro_objective: "Decide, entre dos escenas, si un prototipo ya cumple su función básica o todavia le falta lo esencial."
+              narrative_beat: "Dina revisa el prototipo de Liruf: cumple su función básica, pero el sigue queriendo cambiar el color por decima vez."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: marco-mi-linea-de-listo
+              micro_objective: "Define, sin ayuda, los 2 o 3 criterios mínimos que marcan cuando su propio prototipo esta listo para mostrarse."
+              narrative_beat: "Rho escribe en su cuaderno los tres criterios que marcan que su prototipo ya esta listo, y deja de tocarlo más."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+        - position: 7
+          slug: repaso-construyo-y-pruebo
+          kind: review_spaced
+          title_es: "Repaso: Construyo y Pruebo"
+          concept: "El equipo repasa el ciclo completo de bocetar, construir, probar y ajustar un prototipo."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el ciclo de construcción y prueba de esta saga."
+          key_vocabulary: [boceto, probar, ajustar]
+          prior_knowledge: "Completo los 6 temas de Construyo y Pruebo."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/construyo-y-pruebo/el-primer-boceto
+            - prototipo-de-garage/construyo-y-pruebo/construyo-la-version-mas-simple
+            - prototipo-de-garage/construyo-y-pruebo/lo-pruebo-antes-de-mostrarlo
+            - prototipo-de-garage/construyo-y-pruebo/que-se-rompio-primero
+            - prototipo-de-garage/construyo-y-pruebo/ajusto-y-repito
+            - prototipo-de-garage/construyo-y-pruebo/cuando-dejar-de-ajustar
+          lessons:
+            - position: 1
+              slug: repaso-diseno-una-prueba
+              micro_objective: "Recuerda y aplica, sin ayuda, como diseñar una prueba simple para un prototipo nuevo."
+              narrative_beat: "El equipo diseña, sin ayuda, una prueba simple para una idea que todavia no habian probado."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: repaso-decido-si-esta-listo
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide si un prototipo nuevo ya esta listo para mostrarse."
+              narrative_beat: "Zara revisa un prototipo nuevo del equipo y decide, sin ayuda, si ya cumple los criterios mínimos de listo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-construir-dentro-de-restricciones
+          kind: review_interleaved
+          title_es: "Cruce: Construir Dentro de Restricciónes"
+          concept: "Mezclamos el ciclo de construir y probar de esta saga con las restricciónes reales de tiempo y dinero de la saga anterior."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el ciclo de prueba y ajuste con un presupuesto y plazo reales."
+          key_vocabulary: [ciclo, presupuesto, plazo]
+          prior_knowledge: "Completo el repaso de Construyo y Pruebo (tema anterior) y Restricciónes Reales (saga anterior)."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/construyo-y-pruebo/que-se-rompio-primero
+            - prototipo-de-garage/construyo-y-pruebo/cuando-dejar-de-ajustar
+            - prototipo-de-garage/restricciones-reales/cuanto-tiempo-tengo
+          lessons:
+            - position: 1
+              slug: ajusto-sin-pasarme-del-presupuesto
+              micro_objective: "Propone un ajuste a un prototipo fallido que no exceda el presupuesto original ya calculado."
+              narrative_beat: "Liruf quiere reforzar su estuche con un material caro; Rho le muestra una opción más barata que cabe en el presupuesto."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: pruebo-dentro-del-tiempo-que-me-queda
+              micro_objective: "Planea una nueva prueba que quepa dentro del tiempo restante antes del plazo original."
+              narrative_beat: "Dina revisa cuanto tiempo le queda antes del demo day y planea su última prueba para que quepa justo a tiempo."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 4
+    slug: de-prototipo-a-primer-lanzamiento
+    icon: rocket_launch
+    title:
+      en-US: "From Prototype to First Launch"
+      es-MX: "De Prototipo a Primer Lanzamiento"
+      pt-BR: "Do Prototipo ao Primeiro Lancamento"
+    description:
+      en-US: "Show it to someone you trust, listen without defending it, and decide with real numbers."
+      es-MX: "Muestralo a alguien de confianza, escucha sin defenderte, y decide con números reales."
+      pt-BR: "Mostre a alguem de confianca, escute sem se defender, e decida com números reais."
+    topics:
+        - position: 1
+          slug: muestro-mi-prototipo-a-alguien-de-confianza
+          title_es: "Muestro mi prototipo a alguien de confianza"
+          concept: "Antes de mostrar el prototipo a un desconocido, mostrarlo a alguien de confianza revela errores obvios en un ambiente seguro."
+          learning_objective: "El aprendiz elige a la persona de confianza adecuada para una primera muestra de su prototipo."
+          key_vocabulary: [persona de confianza, primera muestra, ambiente seguro]
+          prior_knowledge: "Completo Construyo y Pruebo (saga anterior)."
+          fact_refs: []
+          parent_check: "Ofrecete como la primera persona de confianza a quien {{name}} le muestre su prototipo antes que a nadie más."
+          lessons:
+            - position: 1
+              slug: a-quien-le-muestro-primero
+              micro_objective: "Elige, entre 3 personas posibles, cual sería la mejor primera persona de confianza para mostrar un prototipo."
+              narrative_beat: "Zara decide mostrarle su prototipo primero a su hermana mayor, que siempre le dice la verdad aunque duela un poco."
+              difficulty: 1
+              suggested_families: [choice, story]
+            - position: 2
+              slug: preparo-mi-primera-muestra
+              micro_objective: "Organiza, sin ayuda, los 3 puntos clave que va a explicar al mostrar su prototipo por primera vez."
+              narrative_beat: "Rho ensaya frente al espejo como va a presentar su prototipo antes de mostrarselo a su mejor amigo."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: escucho-sin-defenderme
+          title_es: "Escucho sin defenderme"
+          concept: "Cuando alguien senala una falla en tu prototipo, defenderlo de inmediato cierra la puerta a mejorarlo; primero hay que escuchar completo."
+          learning_objective: "El aprendiz recibe una crítica sobre su prototipo sin interrumpir ni justificarse antes de haber escuchado completo."
+          key_vocabulary: [recibir crítica, escuchar completo, sin defenderse]
+          prior_knowledge: "Elige a quien mostrarle su prototipo primero (tema anterior)."
+          fact_refs: []
+          parent_check: "Cuando le des retroalimentación a {{name}} sobre su prototipo, observa si te escucha completo antes de defenderse."
+          lessons:
+            - position: 1
+              slug: me-dan-una-critica-dura
+              micro_objective: "Reconoce, en una escena, la diferencia entre escuchar completo una crítica y interrumpir para defenderse."
+              narrative_beat: "Le dicen a Liruf que su estuche se ve tosco; el respira y deja que terminen de explicar antes de responder."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: anoto-antes-de-responder
+              micro_objective: "Anota los puntos de una crítica recibida antes de decidir cuales aplicar y cuales no."
+              narrative_beat: "Dina anota en su libreta los tres puntos que le senalaron, sin discutir ninguno todavia."
+              difficulty: 3
+              suggested_families: [input, choice]
+        - position: 3
+          slug: que-cambio-despues-de-mostrarlo
+          title_es: "Que cambio después de mostrarlo"
+          concept: "No toda crítica se aplica igual; hay que decidir cuales comentarios de verdad mejoran el MVP y cuales solo son gustos personales."
+          learning_objective: "El aprendiz decide, entre varios comentarios recibidos, cuales aplicar al prototipo y cuales descartar con razón."
+          key_vocabulary: [aplicar comentario, gusto personal, decidir con razón]
+          prior_knowledge: "Recibe crítica sin defenderse (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cual de los comentarios que recibio decidio aplicar, y cual decidio dejar pasar, y por que."
+          lessons:
+            - position: 1
+              slug: este-comentario-mejora-el-mvp-o-no
+              micro_objective: "Clasifica 4 comentarios recibidos entre los que mejoran la función del MVP y los que son solo preferencia personal."
+              narrative_beat: "Rho separa los comentarios que recibio: uno sobre el color (gusto) y otro sobre que el cierre se atora (función real)."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: ajusto-mi-prototipo-con-el-comentario
+              micro_objective: "Aplica, sin ayuda, un ajuste concreto a su prototipo basado en un comentario valido recibido."
+              narrative_beat: "Zara refuerza el cierre de su estuche después de que dos personas distintas le senalaran el mismo problema."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: calculo-el-costo-real-de-mi-mvp
+          title_es: "Calculo el costo real de mi MVP"
+          concept: "Después de construir, hay que sumar el costo real (no el estimado) de materiales y tiempo invertido para saber si el precio planeado todavia tiene sentido."
+          learning_objective: "El aprendiz calcula el costo real final de su prototipo y lo compara contra el costo estimado inicial."
+          key_vocabulary: [costo real, costo estimado, comparar]
+          prior_knowledge: "Decide que comentarios aplicar (tema anterior)."
+          fact_refs: [mxn.reference_prices.funda_personalizada]
+          parent_check: "Ayuda a {{name}} a sumar los recibos reales de su prototipo y comparar ese total contra lo que había estimado antes."
+          lessons:
+            - position: 1
+              slug: el-costo-real-fue-distinto
+              micro_objective: "Compara el costo estimado inicial contra el costo real final de un prototipo y detecta la diferencia."
+              narrative_beat: "Liruf estimo $80 en materiales pero al sumar los recibos reales, gasto $95 - una diferencia que debe explicar."
+              difficulty: 3
+              suggested_families: [input, money]
+            - position: 2
+              slug: ajusto-mi-precio-con-el-costo-real
+              micro_objective: "Decide si el precio de venta planeado sigue siendo justo después de conocer el costo real del prototipo."
+              narrative_beat: "Zara revisa su precio de venta planeado contra el costo real final y decide si necesita ajustarlo un poco."
+              difficulty: 4
+              suggested_families: [money, analyze]
+        - position: 5
+          slug: decido-si-sigo-o-pivoteo
+          title_es: "Decido si sigo o pivoteo"
+          concept: "A veces la retroalimentación muestra que el problema sigue siendo real pero la solución necesita un giro (pivote), no solo un ajuste."
+          learning_objective: "El aprendiz decide, con base en evidencia reunida, si continuar con el plan actual o pivotear hacia un ajuste mayor."
+          key_vocabulary: [pivotear, evidencia, decisión mayor]
+          prior_knowledge: "Calcula el costo real de su MVP (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}}, con la evidencia que ya reunio, si su plan original sigue funcionando o si necesita un giro mayor."
+          lessons:
+            - position: 1
+              slug: ajuste-pequeno-o-giro-grande
+              micro_objective: "Distingue, en dos casos, cual necesita solo un ajuste pequeño y cual necesita un giro mayor de la idea."
+              narrative_beat: "Rho nota que su idea original de tutorias presenciales no funciona porque nadie tiene tiempo libre igual; considera un giro a tutorias grabadas."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: decido-con-la-evidencia-reunida
+              micro_objective: "Toma una decisión (seguir o pivotear) citando al menos un dato reunido durante las pruebas."
+              narrative_beat: "Dina decide seguir con su plan original porque la evidencia reunida en las pruebas sigue siendo favorable."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: mi-prototipo-listo-para-el-garage-abierto
+          title_es: "Mi prototipo, listo para el garage abierto"
+          concept: "Con retroalimentación aplicada, costo real calculado y una decisión tomada, el prototipo esta listo para mostrarse en un evento abierto."
+          learning_objective: "El aprendiz prepara la presentación final de su prototipo integrando ajuste, costo real y decisión de continuar."
+          key_vocabulary: [presentación final, garage abierto, integrar avances]
+          prior_knowledge: "Decide si sigue o pivotea (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te cuente, de principio a fin, como cambio su prototipo desde el primer boceto hasta hoy."
+          lessons:
+            - position: 1
+              slug: reviso-mi-historia-completa
+              micro_objective: "Organiza, sin ayuda, los 3 momentos clave de su proceso (boceto, ajuste, decisión final) para contarlos en orden."
+              narrative_beat: "Zara ordena en tarjetas los tres momentos de su proceso: el boceto inicial, el ajuste tras la crítica, y su decisión final."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-prototipo-terminado
+              micro_objective: "Completa, sin ayuda, la presentación final de su prototipo lista para el garage abierto."
+              narrative_beat: "Liruf coloca su prototipo terminado sobre la mesa del garage abierto, listo para que cualquiera lo pruebe."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-de-prototipo-a-lanzamiento
+          kind: review_spaced
+          title_es: "Repaso: De Prototipo a Primer Lanzamiento"
+          concept: "El equipo repasa como mostrar un prototipo, recibir crítica, calcular costo real y decidir si seguir o pivotear."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las herramientas de esta saga para llegar a un primer lanzamiento."
+          key_vocabulary: [crítica, costo real, pivotear]
+          prior_knowledge: "Completo los 6 temas de De Prototipo a Primer Lanzamiento."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/muestro-mi-prototipo-a-alguien-de-confianza
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/escucho-sin-defenderme
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/que-cambio-despues-de-mostrarlo
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/calculo-el-costo-real-de-mi-mvp
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/decido-si-sigo-o-pivoteo
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/mi-prototipo-listo-para-el-garage-abierto
+          lessons:
+            - position: 1
+              slug: repaso-recibo-una-critica
+              micro_objective: "Recuerda y aplica, sin ayuda, como recibir una crítica sin defenderse antes de tiempo."
+              narrative_beat: "El equipo practica, sin ayuda, recibir una crítica dura sobre un prototipo nuevo del garage."
+              difficulty: 3
+              suggested_families: [choice, story]
+            - position: 2
+              slug: repaso-calculo-costo-de-otro-prototipo
+              micro_objective: "Aplica sin ayuda todo lo repasado: calcula el costo real de un prototipo nuevo y ajusta su precio."
+              narrative_beat: "Rho calcula, sin ayuda, el costo real de un segundo prototipo y decide si el precio planeado sigue teniendo sentido."
+              difficulty: 4
+              suggested_families: [money, input]
+        - position: 8
+          slug: cruce-del-boceto-al-lanzamiento
+          kind: review_interleaved
+          title_es: "Cruce: Del Boceto al Lanzamiento"
+          concept: "Mezclamos el ciclo de construir y probar con la retroalimentación y el costo real de esta saga en un solo recorrido completo."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el ciclo de construcción con la retroalimentación y el costo real del lanzamiento."
+          key_vocabulary: [ciclo, crítica, costo real]
+          prior_knowledge: "Completo el repaso de De Prototipo a Primer Lanzamiento (tema anterior) y Construyo y Pruebo (saga anterior)."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/que-cambio-despues-de-mostrarlo
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento/calculo-el-costo-real-de-mi-mvp
+            - prototipo-de-garage/construyo-y-pruebo/ajusto-y-repito
+          lessons:
+            - position: 1
+              slug: ajusto-mi-boceto-con-la-critica-recibida
+              micro_objective: "Compara el boceto original contra el prototipo final y conecta cada cambio con una crítica recibida específica."
+              narrative_beat: "Zara pone lado a lado su boceto original y su prototipo final, y senala que cambio cada crítica que recibio."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: mi-costo-real-confirma-que-el-mvp-funciona
+              micro_objective: "Revisa si el costo real calculado sigue siendo compatible con el MVP definido al inicio de la aventura."
+              narrative_beat: "Dina confirma que, incluso con el costo real un poco más alto, su MVP original sigue siendo viable de vender."
+              difficulty: 5
+              suggested_families: [money, analyze]
+  - position: 5
+    slug: el-gran-demo-day-del-valle
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Valley Demo Day"
+      es-MX: "El Gran Demo Day del Valle"
+      pt-BR: "O Grande Demo Day do Vale"
+    description:
+      en-US: "A valley-wide demo day puts every build-and-test skill on a real stage."
+      es-MX: "Un demo day de todo el valle pone cada habilidad de construir y probar sobre un escenario real."
+      pt-BR: "Um demo day de todo o vale coloca cada habilidade de construir e testar em um palco real."
+    topics:
+        - position: 1
+          slug: el-reto-del-taller
+          kind: review_quest
+          title_es: "El Reto del Taller"
+          concept: "El taller central del valle abre sus puertas para un reto de 48 horas: construir un MVP real dentro de un presupuesto y plazo fijos."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la definición de MVP con las restricciónes reales para responder a un reto de tiempo limitado."
+          key_vocabulary: [reto de 48 horas, taller central, presupuesto fijo]
+          prior_knowledge: "Completo Que es un MVP y Restricciónes Reales."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/que-es-un-mvp
+            - prototipo-de-garage/restricciones-reales
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-del-taller
+              micro_objective: "Recuerda, sin ayuda, la definición de su MVP para adaptarla a un reto con presupuesto y plazo fijos."
+              narrative_beat: "Un letrero se enciende en el taller central del valle: 'Reto de 48 horas - presupuesto máximo $150, plazo 2 días'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: ajusto-mi-mvp-al-reto
+              micro_objective: "Ajusta, sin ayuda, la definición de su MVP para que quepa dentro del presupuesto y plazo del reto."
+              narrative_beat: "Rho recorta su idea original para que quepa justo dentro de los $150 y las 48 horas del reto del taller."
+              difficulty: 3
+              suggested_families: [money, analyze]
+        - position: 2
+          slug: demo-day-mi-prototipo-en-vivo
+          kind: review_quest
+          title_es: "Demo Day: Mi Prototipo en Vivo"
+          concept: "En el Demo Day del valle, el equipo presenta su prototipo terminado, explica su ciclo de prueba y ajuste, y responde preguntas del público en vivo."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un prototipo completo integrando construcción, prueba y retroalimentación."
+          key_vocabulary: [demo day, presentar en vivo, responder preguntas]
+          prior_knowledge: "Completo El Reto del Taller (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - prototipo-de-garage/construyo-y-pruebo
+            - prototipo-de-garage/de-prototipo-a-primer-lanzamiento
+          lessons:
+            - position: 1
+              slug: preparo-mi-demo
+              micro_objective: "Organiza, sin ayuda, los momentos clave de su proceso (boceto, prueba, ajuste, costo real) para el Demo Day."
+              narrative_beat: "Zara ordena su historia completa en tarjetas: boceto, primera prueba fallida, ajuste, y costo real final."
+              difficulty: 3
+              suggested_families: [arrange, storyplay]
+            - position: 2
+              slug: presento-en-el-demo-day
+              micro_objective: "Completa, sin ayuda, la presentación en vivo de su prototipo ante el público del valle, resistiendo al menos una pregunta difícil."
+              narrative_beat: "Dina presenta su prototipo en el escenario del Demo Day; cuando le preguntan por el costo real, responde con el número exacto."
+              difficulty: 4
+              suggested_families: [storyplay, money]

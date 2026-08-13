@@ -1,0 +1,873 @@
+schema_version: 1
+
+adventure:
+  position: 5
+  slug: red-de-ventas
+  theme: forest
+  age_tier: tier4
+  title:
+    en-US: "Sales Network"
+    es-MX: "Red de Ventas"
+    pt-BR: "Rede de Vendas"
+  description:
+    en-US: "In the Connection Forest, where every trail links one founder to the next, the crew learns to open real conversations, build a funnel that actually converts, negotiate without losing the customer, and persuade without ever crossing into manipulation."
+    es-MX: "En el Bosque de las Conexiones, donde cada sendero conecta a un founder con el siguiente, el equipo aprende a abrir conversaciones reales, construir un embudo que de verdad convierte, negociar sin perder al cliente, y persuadir sin cruzar jamas hacia la manipulación."
+    pt-BR: "Na Floresta das Conexões, onde cada trilha liga um founder ao próximo, a equipe aprende a abrir conversas reais, construir um funil que realmente converte, negociar sem perder o cliente, e persuadir sem jamais cruzar para a manipulação."
+  narrative_arc: "Con un precio defendido ante el Consejo de Comerciantes, Dina, Liruf, Rho y Zara entran al Bosque de las Conexiones, donde miles de senderos conectan a cada founder con clientes, aliados y competidores. Ahí descubren que vender bien no es convencer a la fuerza, sino abrir una conversación honesta, entender el embudo completo desde que alguien los conoce hasta que compra, negociar protegiendo la relación y no solo el trato, y persuadir usando la verdad como única herramienta. El bosque entero se prepara para el Gran Mercado, donde cada equipo debe demostrar que puede cerrar una venta difícil sin traicionar su propio código ético."
+
+sagas:
+  - position: 1
+    slug: abro-la-conversacion-de-venta
+    icon: forum
+    title:
+      en-US: "Opening the Sales Conversation"
+      es-MX: "Abro la Conversación de Venta"
+      pt-BR: "Abro a Conversa de Venda"
+    description:
+      en-US: "Selling well starts by understanding the other person's problem before saying a single word about your product."
+      es-MX: "Vender bien empieza por entender el problema de la otra persona antes de decir una sola palabra de tu producto."
+      pt-BR: "Vender bem comeca por entender o problema da outra pessoa antes de dizer uma única palavra sobre seu produto."
+    topics:
+        - position: 1
+          slug: vendo-o-ayudo-a-decidir
+          title_es: "Vendo o ayudo a decidir"
+          concept: "Vender de verdad es ayudar a alguien a decidir si tu producto resuelve su problema - no empujarlo a comprar algo que no necesita."
+          learning_objective: "El aprendiz distingue una conversación de venta que ayuda a decidir de una que empuja una compra innecesaria."
+          key_vocabulary: [ayudar a decidir, empujar la compra, necesidad real]
+          prior_knowledge: "Completo Precio que sí Convence (aventura anterior): ya tiene un precio final defendido."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, en su última venta, sintio que ayudo a decidir a la otra persona o que la empujo a comprar algo que no necesitaba."
+          lessons:
+            - position: 1
+              slug: esto-ayuda-o-esto-empuja
+              micro_objective: "Distingue, entre dos frases de venta, cual ayuda al cliente a decidir con información real y cual solo lo empuja a comprar ya."
+              narrative_beat: "Liruf le dice a un cliente 'compralo ya, es tu última oportunidad' sin que sea cierto; Rho le explica que eso empuja, no ayuda."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: reescribo-un-mensaje-que-empuja
+              micro_objective: "Reescribe, sin ayuda, un mensaje de venta que empuja en una versión que de verdad ayuda al cliente a decidir."
+              narrative_beat: "Zara cambia 'últimas piezas, compra ahora' por 'cuentame que buscas y te digo si esto te sirve' en su mensaje de venta."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: identifico-mi-cliente-ideal
+          title_es: "Identifico mi cliente ideal"
+          concept: "No todo mundo es tu cliente; describir con precisión quien de verdad se beneficia de tu producto evita perder tiempo con quien nunca va a comprar."
+          learning_objective: "El aprendiz describe un perfil de cliente ideal con características específicas, en vez de una descripción vaga de 'cualquiera'."
+          key_vocabulary: [cliente ideal, perfil específico, perder tiempo]
+          prior_knowledge: "Distingue ayudar a decidir de empujar una compra (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que describa a su cliente ideal con al menos 3 características específicas, no solo 'la gente'."
+          lessons:
+            - position: 1
+              slug: cualquiera-o-alguien-especifico
+              micro_objective: "Elige, entre un perfil vago y uno específico, cual describe mejor a un cliente ideal para vender fundas personalizadas."
+              narrative_beat: "Rho descarta 'cualquiera con celular' y elige 'estudiantes que ya rompieron una funda este año y publican fotos de su celular seguido'."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: describo-mi-cliente-ideal
+              micro_objective: "Redacta, sin ayuda, un perfil de cliente ideal con al menos 3 características específicas para su propio producto."
+              narrative_beat: "Dina escribe: 'mi cliente ideal tiene entre 14 y 17 años, ya gasta en personalizar sus cosas, y sigue cuentas de diseño en redes'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: el-primer-mensaje-que-si-contestan
+          title_es: "El primer mensaje que sí contestan"
+          concept: "Un primer mensaje que habla solo de ti mismo se ignora; uno que nombra algo especifico de la otra persona genera respuesta."
+          learning_objective: "El aprendiz redacta un primer mensaje de contacto que nombra algo específico del cliente potencial, en vez de hablar solo de su producto."
+          key_vocabulary: [primer mensaje, algo especifico, genera respuesta]
+          prior_knowledge: "Describe un perfil de cliente ideal (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} el primer mensaje que enviaria a un cliente potencial y pregunta si nombra algo especifico de esa persona."
+          lessons:
+            - position: 1
+              slug: este-mensaje-lo-ignoran-o-lo-contestan
+              micro_objective: "Compara dos primeros mensajes de contacto y elige el que tiene más probabilidad de recibir respuesta por ser especifico."
+              narrative_beat: "Liruf envia 'hola, compra mis gorras' a un desconocido; Zara envia 'vi que traes gorra todos los dias, hago diseños personalizados si te late uno' a alguien que si usa gorra seguido."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-primer-mensaje
+              micro_objective: "Redacta, sin ayuda, un primer mensaje de contacto que nombra algo específico de un cliente potencial dado en un caso."
+              narrative_beat: "Rho escribe su primer mensaje mencionando que vio a esa persona reparar su funda con cinta - una señal clara de que necesita una nueva."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: dejo-que-el-cliente-hable-de-su-problema-primero
+          title_es: "Dejo que el cliente hable de su problema primero"
+          concept: "Antes de describir tu producto, preguntar y escuchar el problema real de la otra persona te dice exactamente que parte de tu producto mencionar primero."
+          learning_objective: "El aprendiz formula una pregunta que invita al cliente a describir su problema antes de presentar el producto."
+          key_vocabulary: [pregunta primero, problema del cliente, antes de presentar]
+          prior_knowledge: "Redacta un primer mensaje que sí contestan (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a preguntar por el problema del cliente antes de describir su producto en la próxima venta."
+          lessons:
+            - position: 1
+              slug: hablo-de-mi-producto-o-pregunto-primero
+              micro_objective: "Elige, entre dos formas de responder a un cliente interesado, la que pregunta primero por su problema en vez de listar caracteristicas."
+              narrative_beat: "Dina, en vez de listar los 5 colores de su funda, pregunta '¿que es lo que más te molesta de tu funda actual?' antes de ofrecer nada."
+              difficulty: 3
+              suggested_families: [choice, story]
+            - position: 2
+              slug: formulo-mi-pregunta-de-descubrimiento
+              micro_objective: "Formula, sin ayuda, una pregunta que invita a un cliente potencial a describir su problema antes de presentarle el producto."
+              narrative_beat: "Zara pregunta '¿que buscas resolver con esto?' antes de mencionar una sola caracteristica de su servicio de tutoria."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: conecto-mi-producto-con-su-problema
+          title_es: "Conecto mi producto con su problema"
+          concept: "Una vez que conoces el problema real del cliente, mencionar solo la parte de tu producto que lo resuelve es más convincente que listar todo lo que ofreces."
+          learning_objective: "El aprendiz conecta una característica específica de su producto con el problema exacto que un cliente describio."
+          key_vocabulary: [conectar caracteristica y problema, especifico no general, más convincente]
+          prior_knowledge: "Formula una pregunta de descubrimiento (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que parte especifica de su producto conecta mejor con el problema que su último cliente le describio."
+          lessons:
+            - position: 1
+              slug: que-parte-de-mi-producto-le-sirve-a-el
+              micro_objective: "Elige, entre 4 caracteristicas de un producto, la única que conecta directamente con el problema que un cliente describio."
+              narrative_beat: "Un cliente le dice a Rho que su funda actual se raja en las esquinas; Rho elige mencionar el refuerzo de esquina, no los 5 colores disponibles."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: presento-la-conexion-especifica
+              micro_objective: "Redacta, sin ayuda, una frase que conecta una caracteristica de su producto con el problema especifico de un cliente dado."
+              narrative_beat: "Liruf le dice a su cliente: 'esta funda tiene refuerzo justo en las esquinas, que es donde me dijiste que siempre se te rompe'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: cierro-con-una-pregunta-no-con-presion
+          title_es: "Cierro con una pregunta, no con presión"
+          concept: "Cerrar una venta con una pregunta abierta (\"¿te gustaria empezar con este?\") deja al cliente decidir; cerrar con presión (\"tienes que decidir ya\") genera desconfianza."
+          learning_objective: "El aprendiz cierra una conversación de venta con una pregunta que invita a decidir, sin usar presión."
+          key_vocabulary: [cierre con pregunta, sin presión, invita a decidir]
+          prior_knowledge: "Conecta una caracteristica de su producto con el problema del cliente (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te muestre como piensa cerrar su próxima venta, y confirma que sea con una pregunta, no con presión."
+          lessons:
+            - position: 1
+              slug: este-cierre-presiona-o-invita
+              micro_objective: "Elige, entre dos cierres de venta, cual invita a decidir con calma y cual presiona con miedo a perder la oportunidad."
+              narrative_beat: "Zara compara 'si no decides hoy se acaba la oferta' contra 'te gustaria que empecemos con el diseño esta semana?' y elige la segunda."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: cierro-mi-propia-conversacion
+              micro_objective: "Redacta, sin ayuda, un cierre de venta con una pregunta abierta para un caso de venta dado."
+              narrative_beat: "Dina cierra su conversación preguntando: '¿te gustaria que empezara con tu diseño esta semana o prefieres pensarlo unos dias?'"
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-abro-la-conversacion-de-venta
+          kind: review_spaced
+          title_es: "Repaso: Abro la Conversación de Venta"
+          concept: "El equipo repasa como describir un cliente ideal, preguntar por su problema primero, y cerrar con una pregunta en vez de presión."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los pasos de una conversación de venta honesta."
+          key_vocabulary: [cliente ideal, pregunta primero, cierre sin presión]
+          prior_knowledge: "Completo los 6 temas de Abro la Conversación de Venta."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/abro-la-conversacion-de-venta/vendo-o-ayudo-a-decidir
+            - red-de-ventas/abro-la-conversacion-de-venta/identifico-mi-cliente-ideal
+            - red-de-ventas/abro-la-conversacion-de-venta/el-primer-mensaje-que-si-contestan
+            - red-de-ventas/abro-la-conversacion-de-venta/dejo-que-el-cliente-hable-de-su-problema-primero
+            - red-de-ventas/abro-la-conversacion-de-venta/conecto-mi-producto-con-su-problema
+            - red-de-ventas/abro-la-conversacion-de-venta/cierro-con-una-pregunta-no-con-presion
+          lessons:
+            - position: 1
+              slug: repaso-formulo-una-pregunta-de-descubrimiento-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, como formular una pregunta de descubrimiento para un cliente que todavia no había visto."
+              narrative_beat: "El equipo formula, sin ayuda, una pregunta de descubrimiento para un cliente potencial de un servicio de edición de reels."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: repaso-cierro-sin-presion
+              micro_objective: "Aplica sin ayuda todo lo repasado: cierra una conversación de venta nueva con una pregunta, sin usar presión."
+              narrative_beat: "Rho cierra, sin ayuda de nadie, una venta nueva preguntando con calma si el cliente quiere empezar esta semana."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-precio-defendido-y-conversacion-de-venta
+          kind: review_interleaved
+          title_es: "Cruce: Precio Defendido y Conversación de Venta"
+          concept: "Mezclamos el precio final defendido en la aventura anterior con la conversación de venta honesta de esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un precio final defendido con una conversación de venta que conecta el producto con el problema del cliente."
+          key_vocabulary: [precio defendido, conversación honesta, combinar]
+          prior_knowledge: "Completo el repaso de Abro la Conversación de Venta (tema anterior) y La Feria del Precio Justo (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/abro-la-conversacion-de-venta/conecto-mi-producto-con-su-problema
+            - precio-que-si-convence/la-feria-del-precio-justo/mi-precio-final-ante-el-consejo
+          lessons:
+            - position: 1
+              slug: menciono-mi-precio-solo-despues-de-conectar
+              micro_objective: "Decide, sin ayuda, el momento correcto para mencionar su precio final: despues de conectar el producto con el problema, no antes."
+              narrative_beat: "Zara espera a conectar el refuerzo de esquina con el problema de su cliente antes de mencionar el precio de $95 que ya defendio ante el consejo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: explico-mi-precio-con-el-valor-ya-conectado
+              micro_objective: "Redacta, sin ayuda, una frase que presenta el precio final defendido justo despues de conectar el producto con el problema del cliente."
+              narrative_beat: "Rho le dice a su cliente: 'por eso esta funda con refuerzo de esquina cuesta $95, cubre justo lo que se te rompe a ti'."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+  - position: 2
+    slug: el-embudo-de-ventas
+    icon: filter_alt
+    title:
+      en-US: "The Sales Funnel"
+      es-MX: "El Embudo de Ventas"
+      pt-BR: "O Funil de Vendas"
+    description:
+      en-US: "From the first person who hears about you to the one who actually buys - most people fall out along the way. Learn exactly where."
+      es-MX: "Desde la primera persona que escucha de ti hasta la que de verdad compra - la mayoria se cae en el camino. Aprende exactamente donde."
+      pt-BR: "Desde a primeira pessoa que ouve falar de voce ate quem realmente compra - a maioria cai pelo caminho. Aprenda exatamente onde."
+    topics:
+        - position: 1
+          slug: que-es-un-embudo-de-ventas
+          title_es: "Que es un embudo de ventas"
+          concept: "Un embudo de ventas tiene varias etapas (conocen tu producto, lo consideran, deciden, compran) y en cada etapa se queda menos gente que en la anterior - como un embudo real."
+          learning_objective: "El aprendiz nombra las 4 etapas de un embudo de ventas básico y explica por que cada etapa tiene menos personas que la anterior."
+          key_vocabulary: [embudo de ventas, etapas, menos gente en cada etapa]
+          prior_knowledge: "Completo Abro la Conversación de Venta (saga anterior): ya sabe abrir y cerrar una conversación de venta."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cuantas personas conocen su producto, cuantas lo consideran, y cuantas de verdad compraron - los tres números casi nunca son iguales."
+          lessons:
+            - position: 1
+              slug: por-que-se-queda-menos-gente-en-cada-etapa
+              micro_objective: "Reconoce, en un caso, por que el número de personas se reduce en cada etapa del embudo de ventas."
+              narrative_beat: "Dina explica: 'de 100 personas que vieron mi publicación, 30 preguntaron precio, y solo 8 compraron - cada etapa se queda con menos'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: ordeno-las-cuatro-etapas
+              micro_objective: "Ordena, sin ayuda, las 4 etapas de un embudo de ventas de la más amplia a la más angosta."
+              narrative_beat: "Zara ordena tarjetas: conocen, consideran, deciden, compran - de la etapa con más gente a la etapa con menos."
+              difficulty: 2
+              suggested_families: [arrange, analyze]
+        - position: 2
+          slug: cuantos-conocen-mi-producto
+          title_es: "Cuantos conocen mi producto"
+          concept: "La primera etapa del embudo mide cuanta gente siquiera sabe que tu producto existe - sin eso, ninguna otra etapa puede empezar."
+          learning_objective: "El aprendiz mide o estima el alcance (cuanta gente conoce el producto) como la primera etapa medible de un embudo de ventas."
+          key_vocabulary: [alcance, primera etapa, saber que existe]
+          prior_knowledge: "Nombra las 4 etapas de un embudo de ventas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cuanta gente calcula que ya sabe que su producto existe, aunque no lo haya comprado."
+          lessons:
+            - position: 1
+              slug: cuenta-el-alcance-de-esta-semana
+              micro_objective: "Suma, sin ayuda, cuantas personas distintas conocieron un producto esta semana a partir de 3 fuentes distintas (redes, boca a boca, puesto)."
+              narrative_beat: "Liruf suma 40 vistas en redes, 15 personas que le contaron sus amigos y 10 que pasaron por su puesto: 65 personas conocieron su producto esta semana."
+              difficulty: 2
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: mi-alcance-subio-o-bajo
+              micro_objective: "Compara el alcance de dos semanas distintas y reconoce si subio o bajo, y una posible razón."
+              narrative_beat: "Rho compara su alcance de 65 personas esta semana contra 40 la semana pasada, y nota que subio justo cuando público una foto nueva de su producto."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: cuantos-de-verdad-lo-consideran
+          title_es: "Cuantos de verdad lo consideran"
+          concept: "Considerar un producto es más que verlo una vez: es cuando alguien pregunta el precio, pide más información o lo guarda para pensarlo."
+          learning_objective: "El aprendiz identifica señales concretas de que un cliente potencial ya esta considerando el producto, más alla de solo haberlo visto."
+          key_vocabulary: [consideración, señal concreta, más que ver una vez]
+          prior_knowledge: "Mide el alcance de su producto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cuantas personas, de las que conocieron su producto esta semana, dieron una señal real de estar considerandolo."
+          lessons:
+            - position: 1
+              slug: esto-es-consideracion-o-solo-vio-la-foto
+              micro_objective: "Distingue, entre 4 reacciones de clientes potenciales, cuales cuentan como consideración real y cuales son solo haber visto el producto."
+              narrative_beat: "Zara cuenta como consideración a quien pregunto el precio y a quien pidio una foto extra, pero no a quien solo le dio 'me gusta' sin decir nada más."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: cuento-mis-consideraciones-reales
+              micro_objective: "Cuenta, sin ayuda, cuantas personas de un grupo de 20 dieron una señal real de consideración esta semana."
+              narrative_beat: "Dina revisa sus 20 mensajes de esta semana y cuenta 7 que preguntaron precio o pidieron más detalles - esas son consideraciones reales."
+              difficulty: 3
+              suggested_families: [analyze, input]
+        - position: 4
+          slug: la-tasa-de-conversion
+          title_es: "La tasa de conversión"
+          concept: "La tasa de conversión es cuantas de las personas que consideran tu producto terminan comprandolo, expresada como porcentaje - te dice que tan bien cierras."
+          learning_objective: "El aprendiz calcula la tasa de conversión dividiendo el número de compradores entre el número de personas que consideraron el producto."
+          key_vocabulary: [tasa de conversión, compradores entre consideraciones, que tan bien cierras]
+          prior_knowledge: "Identifica señales reales de consideración (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule su tasa de conversión: de la gente que de verdad considero su producto, cuantos compraron."
+          lessons:
+            - position: 1
+              slug: calculo-mi-tasa-de-conversion
+              micro_objective: "Calcula, sin ayuda, la tasa de conversión de 3 compras sobre 12 consideraciones reales, llegando a 25%."
+              narrative_beat: "Rho divide sus 3 ventas de la semana entre las 12 personas que de verdad consideraron su producto y llega a una tasa de conversión del 25%."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: comparo-mi-tasa-con-la-semana-pasada
+              micro_objective: "Compara la tasa de conversión de dos semanas distintas y reconoce cual semana convirtio mejor, no solo cual vendio más en total."
+              narrative_beat: "Liruf vendio más piezas la semana pasada, pero su tasa de conversión de esta semana es más alta - convirtio mejor con menos gente."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: donde-se-me-escapan-los-clientes
+          title_es: "Donde se me escapan los clientes"
+          concept: "Comparar el número de personas en cada etapa del embudo revela en cual etapa especifica se pierde más gente - ahí es donde hay que enfocar el esfuerzo."
+          learning_objective: "El aprendiz identifica, comparando las etapas de un embudo, en cual etapa especifica se pierde el mayor porcentaje de clientes potenciales."
+          key_vocabulary: [se escapan los clientes, etapa con más fuga, enfocar el esfuerzo]
+          prior_knowledge: "Calcula y compara su tasa de conversión (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a revisar en cual etapa de su embudo se le escapa más gente: al conocerlo, al considerarlo, o al decidir comprar."
+          lessons:
+            - position: 1
+              slug: en-que-etapa-se-pierden-mas
+              micro_objective: "Identifica, en un embudo de 4 etapas con números dados, en cual etapa especifica se pierde el mayor porcentaje de personas."
+              narrative_beat: "Zara revisa su embudo: de 65 que la conocen, 20 consideran (pierde 69%); de esos 20, 5 compran (pierde 75%) - la etapa de decisión es donde más se le escapan."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: nombro-la-etapa-que-mas-fuga
+              micro_objective: "Nombra, sin ayuda, la etapa exacta de su propio embudo donde se le escapa más gente, con el porcentaje de fuga."
+              narrative_beat: "Rho nombra su etapa de mayor fuga: pasar de 'consideran' a 'deciden comprar', donde pierde 8 de cada 10 personas interesadas."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 6
+          slug: mejoro-el-paso-que-mas-fuga
+          title_es: "Mejoro el paso que más fuga"
+          concept: "Una vez identificada la etapa con más fuga, un solo cambio especifico en ese paso (no en todo el embudo) suele mejorar más la conversión total."
+          learning_objective: "El aprendiz propone un cambio específico dirigido a la etapa del embudo con mayor fuga, en vez de cambiar todo el proceso."
+          key_vocabulary: [cambio especifico, la etapa con más fuga, mejorar la conversión]
+          prior_knowledge: "Nombra la etapa con más fuga (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que cambio especifico piensa hacer justo en la etapa donde más se le escapan los clientes."
+          lessons:
+            - position: 1
+              slug: que-cambio-le-hago-solo-a-esa-etapa
+              micro_objective: "Elige, entre 3 cambios propuestos, el que ataca directamente la etapa de mayor fuga identificada, no otra etapa del embudo."
+              narrative_beat: "Dina descarta mejorar sus fotos (etapa de conocer) porque su fuga esta en decidir comprar - en su lugar, agrega una pregunta de cierre más clara."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: aplico-el-cambio-y-vuelvo-a-medir
+              micro_objective: "Aplica un cambio especifico a la etapa de mayor fuga y vuelve a calcular la tasa de conversión para confirmar si mejoro."
+              narrative_beat: "Zara agrega su pregunta de cierre más clara y, la semana siguiente, su tasa de conversión sube de 25% a 40% - el cambio si funciono."
+              difficulty: 5
+              suggested_families: [analyze, input]
+        - position: 7
+          slug: repaso-el-embudo-de-ventas
+          kind: review_spaced
+          title_es: "Repaso: El Embudo de Ventas"
+          concept: "El equipo repasa como medir cada etapa del embudo, calcular la tasa de conversión y mejorar el paso con más fuga."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el análisis completo de un embudo de ventas."
+          key_vocabulary: [etapas del embudo, tasa de conversión, etapa con más fuga]
+          prior_knowledge: "Completo los 6 temas de El Embudo de Ventas."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/el-embudo-de-ventas/que-es-un-embudo-de-ventas
+            - red-de-ventas/el-embudo-de-ventas/cuantos-conocen-mi-producto
+            - red-de-ventas/el-embudo-de-ventas/cuantos-de-verdad-lo-consideran
+            - red-de-ventas/el-embudo-de-ventas/la-tasa-de-conversion
+            - red-de-ventas/el-embudo-de-ventas/donde-se-me-escapan-los-clientes
+            - red-de-ventas/el-embudo-de-ventas/mejoro-el-paso-que-mas-fuga
+          lessons:
+            - position: 1
+              slug: repaso-calculo-una-tasa-de-conversion-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, el cálculo de la tasa de conversión para un embudo que todavia no había visto."
+              narrative_beat: "El equipo calcula, sin ayuda, la tasa de conversión de un embudo de ventas de un servicio de paseo de mascotas."
+              difficulty: 3
+              suggested_families: [input, analyze]
+            - position: 2
+              slug: repaso-identifico-la-etapa-de-mayor-fuga-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: identifica, en un embudo nuevo, la etapa con mayor fuga de clientes."
+              narrative_beat: "Rho identifica, sin ayuda de nadie, la etapa de mayor fuga en el embudo de un compañero que nunca había analizado."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-conversacion-de-venta-y-embudo
+          kind: review_interleaved
+          title_es: "Cruce: Conversación de Venta y Embudo"
+          concept: "Mezclamos las técnicas de conversación de venta de la saga anterior con el análisis de embudo de esta saga para mejorar una etapa especifica."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, una técnica de conversación de venta con la etapa del embudo que más necesita mejorar."
+          key_vocabulary: [técnica de conversación, etapa del embudo, combinar]
+          prior_knowledge: "Completo el repaso de El Embudo de Ventas (tema anterior) y Abro la Conversación de Venta (saga anterior)."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/el-embudo-de-ventas/mejoro-el-paso-que-mas-fuga
+            - red-de-ventas/abro-la-conversacion-de-venta/cierro-con-una-pregunta-no-con-presion
+          lessons:
+            - position: 1
+              slug: mi-etapa-de-mayor-fuga-es-el-cierre
+              micro_objective: "Reconoce, en un caso, que la etapa de mayor fuga de un embudo coincide con un cierre de venta mal hecho, no con falta de alcance."
+              narrative_beat: "Liruf descubre que su etapa de mayor fuga es el cierre, justo donde antes presionaba en vez de preguntar con calma."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: aplico-el-cierre-sin-presion-a-mi-etapa-debil
+              micro_objective: "Aplica, sin ayuda, la técnica de cierre con pregunta abierta justo en la etapa del embudo identificada como la más debil."
+              narrative_beat: "Dina cambia su cierre de 'decide ya' a 'te gustaria empezar esta semana?' justo en la etapa donde más clientes se le escapaban, y su conversión mejora."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 3
+    slug: negocio-sin-perder-al-cliente
+    icon: handshake
+    title:
+      en-US: "Negotiating Without Losing the Customer"
+      es-MX: "Negocio sin Perder al Cliente"
+      pt-BR: "Negocio sem Perder o Cliente"
+    description:
+      en-US: "A good negotiation protects the relationship as much as the deal - know your limit, trade what costs you little, and know when to walk away."
+      es-MX: "Una buena negociación protege la relación tanto como el trato - conoce tu limite, cede lo que a ti te cuesta poco, y sabe cuando alejarte."
+      pt-BR: "Uma boa negociação protege a relação tanto quanto o negocio - conheça seu limite, ceda o que custa pouco para voce, e saiba quando se afastar."
+    topics:
+        - position: 1
+          slug: que-quiere-de-verdad-la-otra-persona
+          title_es: "Que quiere de verdad la otra persona"
+          concept: "Lo que alguien PIDE en una negociación (\"quiero que me lo dejes más barato\") a veces esconde lo que de verdad le importa (\"quiero sentir que no me estan viendo la cara\") - entender el interes real abre más opciones."
+          learning_objective: "El aprendiz distingue la posición que un cliente pide de su interes real detras de esa posición en una negociación."
+          key_vocabulary: [posición, interes real, detras de lo que pide]
+          prior_knowledge: "Completo El Embudo de Ventas (saga anterior): ya sabe donde se le escapan los clientes."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que crees que de verdad le importa a un cliente que le pidio un descuento - el precio, o algo más detras de esa peticion."
+          lessons:
+            - position: 1
+              slug: lo-que-pide-o-lo-que-le-importa
+              micro_objective: "Distingue, en un caso, entre lo que un cliente pide directamente y el interes real que probablemente esconde esa peticion."
+              narrative_beat: "Un cliente le pide a Rho un 20% de descuento; al preguntar por que, Rho descubre que en realidad le preocupa no saber si el producto de verdad dura, no el precio en si."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: pregunto-que-hay-detras-del-pedido
+              micro_objective: "Formula, sin ayuda, una pregunta que busca descubrir el interes real detras de una petición de negociación."
+              narrative_beat: "Zara pregunta '¿que te preocupa exactamente del precio?' cuando un cliente le pide un descuento, en vez de aceptar o rechazar de inmediato."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: mi-limite-antes-de-empezar
+          title_es: "Mi limite antes de empezar"
+          concept: "Fijar por escrito el precio o condición más baja que aceptarias, ANTES de sentarte a negociar, evita que la presión del momento te haga aceptar algo que despues lamentes."
+          learning_objective: "El aprendiz fija, antes de una negociación, un limite mínimo por escrito que no esta dispuesto a cruzar."
+          key_vocabulary: [limite antes de empezar, por escrito, presión del momento]
+          prior_knowledge: "Distingue posición de interes real (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, antes de su próxima negociación, cual es el limite mínimo que no esta dispuesto a cruzar."
+          lessons:
+            - position: 1
+              slug: fijo-mi-limite-antes-de-sentarme-a-negociar
+              micro_objective: "Fija, sin ayuda, un limite mínimo por escrito (por ejemplo, no bajar de $80) antes de iniciar una negociación."
+              narrative_beat: "Rho escribe en su libreta: 'no bajo de $80 en esta funda, pase lo que pase' antes de contestar el mensaje de su cliente."
+              difficulty: 2
+              suggested_families: [input, choice]
+            - position: 2
+              slug: la-presion-del-momento-no-me-hace-cruzar-mi-limite
+              micro_objective: "Reconoce, en un caso, cuando la presión de una negociación en vivo casi hace que alguien cruce el limite que había fijado antes."
+              narrative_beat: "Liruf esta a punto de aceptar $65 solo por la presión de no perder la venta, hasta que recuerda el limite de $80 que se había fijado antes."
+              difficulty: 3
+              suggested_families: [story, choice]
+        - position: 3
+          slug: cedo-algo-que-a-mi-me-cuesta-poco
+          title_es: "Cedo algo que a mi me cuesta poco"
+          concept: "Ceder algo que a ti te cuesta poco pero que la otra persona valora mucho (un empaque extra, un tiempo de entrega mejor) es mejor que ceder precio, que te cuesta directo de tu margen."
+          learning_objective: "El aprendiz identifica una concesión que le cuesta poco a el pero que el cliente valora, como alternativa a ceder precio."
+          key_vocabulary: [concesión de bajo costo, cuesta poco vale mucho, alternativa al precio]
+          prior_knowledge: "Fija un limite antes de negociar (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a pensar en algo que le cueste poco ceder a el pero que su cliente valore bastante, en vez de bajar el precio."
+          lessons:
+            - position: 1
+              slug: que-le-puedo-ceder-sin-tocar-mi-precio
+              micro_objective: "Elige, entre 4 posibles concesiones, la que le cuesta menos a el pero que el cliente valoraria más, sin tocar el precio."
+              narrative_beat: "Dina le ofrece a su cliente entrega en 2 dias en vez de 5, algo que a ella le cuesta poco reorganizar, en vez de bajar su precio de $95."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: propongo-mi-concesion-de-bajo-costo
+              micro_objective: "Redacta, sin ayuda, una propuesta de negociación que ofrece una concesión de bajo costo en vez de un descuento en precio."
+              narrative_beat: "Zara le dice a su cliente: 'no puedo bajar el precio, pero te agrego un grabado extra sin costo - eso a mi me cuesta poco y a ti te sirve más'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: cuando-decir-que-no
+          title_es: "Cuando decir que no"
+          concept: "Cuando lo que pide el cliente esta por debajo de tu limite mínimo, decir que no con respeto protege tu negocio más que aceptar un trato que te deja perdiendo."
+          learning_objective: "El aprendiz reconoce cuando una petición cruza su limite mínimo fijado y decide, con respeto, decir que no."
+          key_vocabulary: [decir que no, respeto, proteger el negocio]
+          prior_knowledge: "Identifica una concesión de bajo costo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez tuvo que decir que no en una negociación, y como lo dijo sin perder la relación con el cliente."
+          lessons:
+            - position: 1
+              slug: esto-cruza-mi-limite-o-todavia-no
+              micro_objective: "Compara una petición de negociación contra un limite mínimo fijado y decide si esa petición lo cruza o todavia esta dentro de lo aceptable."
+              narrative_beat: "Rho compara el $60 que le ofrecen contra su limite de $80 y confirma que esa oferta cruza su limite, hay que decir que no."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: digo-que-no-con-respeto
+              micro_objective: "Redacta, sin ayuda, una respuesta que dice que no a una petición que cruza su limite, manteniendo el respeto y la puerta abierta."
+              narrative_beat: "Liruf responde: 'no puedo bajar hasta ahí sin perder dinero, pero me encantaria trabajar contigo si el presupuesto cambia despues'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: gano-gano-o-gano-pierde
+          title_es: "Gano-gano o gano-pierde"
+          concept: "Un trato gano-gano deja a ambas partes mejor de lo que estaban; un trato gano-pierde deja a una parte resentida, y esa persona rara vez vuelve a comprar."
+          learning_objective: "El aprendiz reconoce si un trato propuesto es gano-gano o gano-pierde, evaluando si ambas partes quedan mejor."
+          key_vocabulary: [gano-gano, gano-pierde, ambas partes mejor]
+          prior_knowledge: "Decide cuando decir que no (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si el último trato que cerro dejo a las dos partes contentas, o si alguien salio sintiendose perdedor."
+          lessons:
+            - position: 1
+              slug: este-trato-deja-a-los-dos-mejor
+              micro_objective: "Reconoce, en dos escenarios de negociación, cual trato es gano-gano y cual deja a una de las partes claramente perdiendo."
+              narrative_beat: "Dina reconoce que el trato de entrega más rápida a cambio del mismo precio deja a ambos contentos; el trato de bajar el precio a la mitad solo la deja perdiendo a ella."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: propongo-un-trato-gano-gano
+              micro_objective: "Propone, sin ayuda, un trato de negociación donde ambas partes terminan mejor de lo que estaban antes."
+              narrative_beat: "Zara propone: si el cliente compra 3 gorras en vez de 1, ella le da un pequeño descuento por volumen - el cliente ahorra y ella vende más de una vez."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: cierro-el-trato-por-escrito
+          title_es: "Cierro el trato por escrito"
+          concept: "Confirmar por escrito (un mensaje, una nota) el precio, la fecha de entrega y lo acordado, antes de empezar a trabajar, evita malentendidos que arruinan una buena negociación."
+          learning_objective: "El aprendiz redacta una confirmación por escrito de un trato cerrado, incluyendo precio, fecha y condiciones acordadas."
+          key_vocabulary: [confirmar por escrito, evitar malentendidos, condiciones acordadas]
+          prior_knowledge: "Reconoce un trato gano-gano (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te muestre como confirma por escrito el precio y la fecha de entrega antes de empezar a trabajar en un pedido."
+          lessons:
+            - position: 1
+              slug: lo-acordamos-de-palabra-o-lo-confirmo-por-escrito
+              micro_objective: "Reconoce, en un caso, por que confirmar un trato por escrito evita un malentendido que un acuerdo solo de palabra no evita."
+              narrative_beat: "Rho y su cliente recuerdan precios distintos porque solo hablaron de palabra; Dina siempre manda un mensaje resumen despues de cada trato para evitar eso."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: redacto-mi-confirmacion-por-escrito
+              micro_objective: "Redacta, sin ayuda, un mensaje de confirmación por escrito con precio, fecha de entrega y condiciones acordadas para un trato dado."
+              narrative_beat: "Zara escribe: 'confirmando: 1 gorra bordada, $95, entrega el sabado, incluye el grabado extra sin costo que hablamos' antes de empezar a trabajar."
+              difficulty: 5
+              suggested_families: [storyplay, input]
+        - position: 7
+          slug: repaso-negocio-sin-perder-al-cliente
+          kind: review_spaced
+          title_es: "Repaso: Negocio sin Perder al Cliente"
+          concept: "El equipo repasa como fijar un limite, ceder algo de bajo costo, reconocer un trato gano-gano y confirmar por escrito."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los pasos de una negociación que protege la relación."
+          key_vocabulary: [limite mínimo, concesión, gano-gano]
+          prior_knowledge: "Completo los 6 temas de Negocio sin Perder al Cliente."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/negocio-sin-perder-al-cliente/que-quiere-de-verdad-la-otra-persona
+            - red-de-ventas/negocio-sin-perder-al-cliente/mi-limite-antes-de-empezar
+            - red-de-ventas/negocio-sin-perder-al-cliente/cedo-algo-que-a-mi-me-cuesta-poco
+            - red-de-ventas/negocio-sin-perder-al-cliente/cuando-decir-que-no
+            - red-de-ventas/negocio-sin-perder-al-cliente/gano-gano-o-gano-pierde
+            - red-de-ventas/negocio-sin-perder-al-cliente/cierro-el-trato-por-escrito
+          lessons:
+            - position: 1
+              slug: repaso-identifico-una-concesion-de-bajo-costo-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, como identificar una concesión de bajo costo en una negociación que todavia no había visto."
+              narrative_beat: "El equipo identifica, sin ayuda, una concesión de bajo costo para un caso de negociación de un servicio de edición de fotos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-redacto-una-confirmacion-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta la confirmación por escrito de un trato nuevo con todas sus condiciones."
+              narrative_beat: "Rho redacta, sin ayuda de nadie, la confirmación por escrito de un trato nuevo que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, input]
+        - position: 8
+          slug: cruce-embudo-y-negociacion
+          kind: review_interleaved
+          title_es: "Cruce: Embudo y Negociación"
+          concept: "Mezclamos el análisis de embudo de la saga anterior con las técnicas de negociación de esta saga: la negociación ocurre justo en la etapa de decisión."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la etapa de decisión de un embudo con una técnica de negociación que evita perder al cliente en esa etapa."
+          key_vocabulary: [etapa de decisión, técnica de negociación, evitar la fuga]
+          prior_knowledge: "Completo el repaso de Negocio sin Perder al Cliente (tema anterior) y El Embudo de Ventas (saga anterior)."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/negocio-sin-perder-al-cliente/cedo-algo-que-a-mi-me-cuesta-poco
+            - red-de-ventas/el-embudo-de-ventas/donde-se-me-escapan-los-clientes
+          lessons:
+            - position: 1
+              slug: mi-fuga-en-decision-es-un-problema-de-negociacion
+              micro_objective: "Reconoce, en un caso, que la etapa de mayor fuga de un embudo (decisión) coincide con negociaciones donde el vendedor no cedio nada de bajo costo."
+              narrative_beat: "Liruf descubre que pierde clientes justo en la etapa de decisión porque nunca les ofrece ninguna concesión de bajo costo, solo un precio fijo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: aplico-una-concesion-en-la-etapa-de-decision
+              micro_objective: "Aplica, sin ayuda, una concesión de bajo costo justo en la etapa de decisión identificada como la de mayor fuga en su embudo."
+              narrative_beat: "Dina agrega una entrega más rápida sin costo justo en la etapa de decisión de su embudo, y su tasa de conversión en esa etapa mejora."
+              difficulty: 5
+              suggested_families: [analyze, storyplay]
+  - position: 4
+    slug: persuasion-etica
+    icon: verified
+    title:
+      en-US: "Ethical Persuasion"
+      es-MX: "Persuasión Etica"
+      pt-BR: "Persuasão Etica"
+    description:
+      en-US: "Real urgency, real reviews, real promises - persuasion that respects the other person never needs to lie."
+      es-MX: "Urgencia real, reseñas reales, promesas reales - la persuasión que respeta a la otra persona nunca necesita mentir."
+      pt-BR: "Urgencia real, avaliações reais, promessas reais - a persuasão que respeita a outra pessoa nunca precisa mentir."
+    topics:
+        - position: 1
+          slug: la-diferencia-entre-persuadir-y-manipular
+          title_es: "La diferencia entre persuadir y manipular"
+          concept: "Persuadir es mostrar razones reales para que alguien decida por si mismo; manipular es usar mentiras, miedo o presión para que decida sin toda la información."
+          learning_objective: "El aprendiz distingue una técnica de persuasión honesta de una técnica manipuladora, identificando si respeta la decisión informada del cliente."
+          key_vocabulary: [persuadir, manipular, decisión informada]
+          prior_knowledge: "Completo Negocio sin Perder al Cliente (saga anterior): ya sabe negociar protegiendo la relación."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que diferencia hay, para el o ella, entre convencer a alguien con razones reales y manipularlo para que decida sin pensar."
+          lessons:
+            - position: 1
+              slug: esto-persuade-o-esto-manipula
+              micro_objective: "Distingue, entre dos técnicas de venta, cual persuade con información real y cual manipula ocultando información."
+              narrative_beat: "Liruf le muestra a un cliente exactamente cuanto dura su producto en pruebas reales; alguien más inventa una reseña falsa para sonar más confiable - solo el primero persuade."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: explico-por-que-esto-es-manipulacion
+              micro_objective: "Explica, sin ayuda, por que una técnica de venta dada cuenta como manipulación y no como persuasión honesta."
+              narrative_beat: "Zara explica que decirle a un cliente 'todos ya lo compraron' cuando no es cierto es manipulación, porque decide con información falsa."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: la-urgencia-real-y-la-urgencia-falsa
+          title_es: "La urgencia real y la urgencia falsa"
+          concept: "Una urgencia real existe de verdad (\"solo quedan 3 lugares para el evento del sabado\"); una urgencia falsa se inventa (\"solo quedan 2\" cuando hay 50) solo para presionar a comprar rápido."
+          learning_objective: "El aprendiz distingue una urgencia real de una urgencia falsa inventada solo para presionar una compra rápida."
+          key_vocabulary: [urgencia real, urgencia falsa, presionar la compra]
+          prior_knowledge: "Distingue persuadir de manipular (tema anterior)."
+          fact_refs: [mxn.reference_prices.boleto_concierto_local]
+          parent_check: "Pregunta a {{name}} si alguna vez uso o vio una urgencia falsa (un 'solo quedan 2' inventado) para vender más rápido, y por que eso no esta bien."
+          lessons:
+            - position: 1
+              slug: esta-urgencia-es-real-o-inventada
+              micro_objective: "Distingue, entre dos anuncios, cual describe una urgencia real (cupo limitado de verdad para un evento) y cual inventa una urgencia falsa."
+              narrative_beat: "Rho anuncia solo 3 lugares para su taller porque el salon de verdad solo tiene 3 sillas disponibles; otro vendedor pone 'quedan 2' en su tienda aunque tiene 50 en inventario."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: uso-solo-urgencia-que-puedo-comprobar
+              micro_objective: "Decide, sin ayuda, si un mensaje de urgencia que esta por publicar es comprobable y real antes de usarlo."
+              narrative_beat: "Dina revisa que de verdad le quedan 4 boletos para su evento, como los de un concierto local, antes de anunciar 'quedan pocos lugares'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: prometo-solo-lo-que-puedo-cumplir
+          title_es: "Prometo solo lo que puedo cumplir"
+          concept: "Una promesa exagerada (\"dura para siempre\") gana una venta pero pierde la confianza del cliente en cuanto la promesa falla; una promesa exacta protege la relación a largo plazo."
+          learning_objective: "El aprendiz reformula una promesa exagerada de venta en una promesa exacta y verificable."
+          key_vocabulary: [promesa exagerada, promesa exacta, confianza a largo plazo]
+          prior_knowledge: "Distingue urgencia real de urgencia falsa (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} las promesas que hace sobre su producto y confirma que todas sean cosas que de verdad puede cumplir."
+          lessons:
+            - position: 1
+              slug: esta-promesa-la-puedo-cumplir-de-verdad
+              micro_objective: "Reconoce, entre 3 promesas de venta, cual es exagerada y no se puede garantizar, y cual es exacta y verificable."
+              narrative_beat: "Liruf quiere prometer que su funda 'nunca se rompe'; Zara le sugiere prometer solo lo que si puede garantizar: 'resistio 6 meses de prueba sin romperse'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: reformulo-mi-promesa-exagerada
+              micro_objective: "Reformula, sin ayuda, una promesa de venta exagerada en una versión exacta y verificable."
+              narrative_beat: "Rho cambia 'la mejor tutoria que vas a tener' por 'te explico paso a paso hasta que el tema te quede claro, o repetimos la sesión sin costo'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: uso-una-resena-real-no-inventada
+          title_es: "Uso una reseña real, no inventada"
+          concept: "Una reseña real de un cliente verdadero convence porque es cierta; una reseña inventada, aunque suene mejor, es una mentira que destruye la confianza si se descubre."
+          learning_objective: "El aprendiz elige usar solo reseñas o testimonios verificablemente reales, rechazando inventar uno aunque suene más convincente."
+          key_vocabulary: [reseña real, testimonio verificable, destruye la confianza]
+          prior_knowledge: "Reformula una promesa exagerada (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} de donde salen las reseñas o comentarios que usa para vender - confirma que sean de clientes reales, no inventadas."
+          lessons:
+            - position: 1
+              slug: esta-resena-es-real-o-inventada
+              micro_objective: "Reconoce, entre 3 reseñas mostradas, cual proviene de un cliente real identificable y cual parece inventada sin nombre ni contexto."
+              narrative_beat: "Dina solo publica la reseña de su compañera de clase, que si compro y dejo su nombre; descarta escribir una reseña falsa que suene más entusiasta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: pido-permiso-antes-de-publicar-una-resena
+              micro_objective: "Redacta, sin ayuda, un mensaje que pide permiso a un cliente real antes de publicar su comentario como reseña."
+              narrative_beat: "Zara le escribe a su clienta: '¿me das permiso de compartir lo que me dijiste sobre la gorra, con tu nombre, para que otros lo vean?'"
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: respeto-un-no
+          title_es: "Respeto un no"
+          concept: "Cuando un cliente potencial dice que no, insistir repetidamente no cambia su decisión, solo daña la relación; respetar el no y dejar la puerta abierta para el futuro es lo que de verdad funciona a largo plazo."
+          learning_objective: "El aprendiz responde a un 'no' de un cliente con respeto, sin insistir repetidamente, dejando la puerta abierta para el futuro."
+          key_vocabulary: [respetar un no, no insistir, puerta abierta]
+          prior_knowledge: "Elige usar solo reseñas reales (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como reacciona cuando un cliente le dice que no, y si insiste o respeta la decisión."
+          lessons:
+            - position: 1
+              slug: insisto-o-respeto-el-no
+              micro_objective: "Elige, entre dos reacciones a un 'no' de un cliente, la que respeta la decisión sin insistir repetidamente."
+              narrative_beat: "Rho le manda tres mensajes seguidos a un cliente que ya dijo que no; Liruf, en cambio, contesta 'entiendo, aqui estare si cambias de opinion' y no vuelve a insistir."
+              difficulty: 4
+              suggested_families: [choice, story]
+            - position: 2
+              slug: redacto-una-respuesta-respetuosa-a-un-no
+              micro_objective: "Redacta, sin ayuda, una respuesta que respeta el 'no' de un cliente y deja la puerta abierta sin presionar."
+              narrative_beat: "Dina responde: 'sin problema, gracias por avisarme - si en algun momento te interesa, aqui estoy' despues de que un cliente dice que no."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: mi-codigo-de-venta-etica
+          title_es: "Mi código de venta ética"
+          concept: "Escribir de antemano un puñado de reglas propias (nunca inventar una reseña, nunca fingir urgencia, siempre prometer solo lo que se cumple) evita improvisar decisiones eticas bajo presión."
+          learning_objective: "El aprendiz redacta un código personal de venta ética con al menos 3 reglas concretas que se compromete a seguir."
+          key_vocabulary: [código de venta ética, reglas propias, decidir de antemano]
+          prior_knowledge: "Responde a un no con respeto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea las reglas de su código de venta ética, y pregunta cual le costo más trabajo decidir seguir."
+          lessons:
+            - position: 1
+              slug: reviso-tres-reglas-de-venta-etica
+              micro_objective: "Revisa 3 reglas de venta ética propuestas y elige, sin ayuda, las que de verdad protegerian a un cliente de una decisión de venta."
+              narrative_beat: "Zara revisa reglas propuestas por el equipo y elige quedarse con 'nunca inventar una reseña', 'nunca fingir urgencia' y 'siempre prometer solo lo que cumplo'."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-propio-codigo
+              micro_objective: "Redacta, sin ayuda, su propio código de venta ética con al menos 3 reglas concretas."
+              narrative_beat: "Rho escribe su código en su libreta: nunca presionar despues de un no, nunca prometer lo que no puede cumplir, y usar solo reseñas reales con permiso."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-persuasion-etica
+          kind: review_spaced
+          title_es: "Repaso: Persuasión Etica"
+          concept: "El equipo repasa como distinguir persuasión de manipulación, usar solo urgencia y reseñas reales, y respetar un no."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los principios de persuasión ética de esta saga."
+          key_vocabulary: [persuasión, manipulación, urgencia real]
+          prior_knowledge: "Completo los 6 temas de Persuasión Etica."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/persuasion-etica/la-diferencia-entre-persuadir-y-manipular
+            - red-de-ventas/persuasion-etica/la-urgencia-real-y-la-urgencia-falsa
+            - red-de-ventas/persuasion-etica/prometo-solo-lo-que-puedo-cumplir
+            - red-de-ventas/persuasion-etica/uso-una-resena-real-no-inventada
+            - red-de-ventas/persuasion-etica/respeto-un-no
+            - red-de-ventas/persuasion-etica/mi-codigo-de-venta-etica
+          lessons:
+            - position: 1
+              slug: repaso-distingo-persuasion-de-manipulacion-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre persuasión y manipulación en un caso de venta que todavia no había visto."
+              narrative_beat: "El equipo distingue, sin ayuda, una técnica de persuasión honesta de una manipuladora en un caso de un servicio de edición de fotos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-respondo-a-un-no-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: responde con respeto a un 'no' en un caso nuevo, dejando la puerta abierta."
+              narrative_beat: "Liruf responde, sin ayuda de nadie, con respeto al 'no' de un cliente nuevo que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-negociacion-y-persuasion-etica
+          kind: review_interleaved
+          title_es: "Cruce: Negociación y Persuasión Etica"
+          concept: "Mezclamos las técnicas de negociación de la saga anterior con los principios de persuasión ética de esta saga en un solo trato."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, una concesión de negociación de bajo costo con una promesa exacta y verificable."
+          key_vocabulary: [concesión, promesa exacta, combinar]
+          prior_knowledge: "Completo el repaso de Persuasión Etica (tema anterior) y Negocio sin Perder al Cliente (saga anterior)."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/persuasion-etica/prometo-solo-lo-que-puedo-cumplir
+            - red-de-ventas/negocio-sin-perder-al-cliente/cedo-algo-que-a-mi-me-cuesta-poco
+          lessons:
+            - position: 1
+              slug: mi-concesion-viene-con-una-promesa-exacta
+              micro_objective: "Revisa, sin ayuda, que una concesión ofrecida en una negociación venga acompañada de una promesa exacta, no exagerada."
+              narrative_beat: "Dina ofrece entrega en 2 dias como concesión, y confirma que puede cumplirlo de verdad antes de prometerlo, no solo para cerrar la venta."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: cierro-un-trato-etico-completo
+              micro_objective: "Completa, sin ayuda, el cierre de un trato que combina una concesión de bajo costo con una promesa exacta y verificable."
+              narrative_beat: "Zara cierra su trato ofreciendo un grabado extra (le cuesta poco) y promete solo lo que puede cumplir: 'listo en 3 dias, garantizado'."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 5
+    slug: el-gran-mercado-del-bosque
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Great Forest Market"
+      es-MX: "El Gran Mercado del Bosque"
+      pt-BR: "O Grande Mercado da Floresta"
+    description:
+      en-US: "The whole forest gathers for a market day that puts every sales skill to the test with real, difficult customers."
+      es-MX: "Todo el bosque se reune para un dia de mercado que pone a prueba cada habilidad de venta con clientes reales y difíciles."
+      pt-BR: "Toda a floresta se reune para um dia de mercado que coloca a prova cada habilidade de venda com clientes reais e dificeis."
+    topics:
+        - position: 1
+          slug: el-reto-de-los-clientes-dificiles
+          kind: review_quest
+          title_es: "El Reto de los Clientes Dificiles"
+          concept: "El mercado del bosque reta a cada equipo a atender tres clientes difíciles distintos usando la conversación de venta y el análisis de embudo aprendidos."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la apertura de conversación de venta con el análisis de embudo para responder al reto de tres clientes difíciles."
+          key_vocabulary: [clientes difíciles, tres casos distintos, combinar lo aprendido]
+          prior_knowledge: "Completo Abro la Conversación de Venta y El Embudo de Ventas."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/abro-la-conversacion-de-venta
+            - red-de-ventas/el-embudo-de-ventas
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-de-los-clientes-dificiles
+              micro_objective: "Recuerda, sin ayuda, como abrir una conversación de venta y analizar un embudo antes de enfrentar el reto de tres clientes difíciles."
+              narrative_beat: "El mercado del bosque anuncia: 'atiendan a tres clientes distintos, cada uno con una objeción diferente, y no pierdan a ninguno'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: atiendo-a-los-tres-clientes-dificiles
+              micro_objective: "Aplica, sin ayuda, la conversación de venta y el análisis de embudo a tres clientes difíciles distintos presentados en el reto."
+              narrative_beat: "Zara atiende a los tres clientes del mercado: uno duda del precio, otro no confia en la calidad, y otro no tiene prisa - a cada uno le conecta el producto con su duda especifica."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-red-de-ventas-etica-completa
+          kind: review_quest
+          title_es: "Mi Red de Ventas Etica Completa"
+          concept: "Con la negociación y la persuasión ética dominadas, el equipo cierra el Gran Mercado demostrando que puede vender sin manipular y negociar sin perder al cliente."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un cierre de venta que integra negociación gano-gano y persuasión ética completa."
+          key_vocabulary: [gran mercado, negociación gano-gano, persuasión ética]
+          prior_knowledge: "Completo El Reto de los Clientes Dificiles (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - red-de-ventas/negocio-sin-perder-al-cliente
+            - red-de-ventas/persuasion-etica
+          lessons:
+            - position: 1
+              slug: preparo-mi-caso-para-el-gran-mercado
+              micro_objective: "Organiza, sin ayuda, una concesión de bajo costo y su código de venta ética para presentarlos en el cierre del Gran Mercado."
+              narrative_beat: "Rho ordena su caso completo: su limite mínimo, la concesión que puede ofrecer sin tocar precio, y las reglas de su código de venta ética."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: cierro-mi-venta-en-el-gran-mercado
+              micro_objective: "Completa, sin ayuda, el cierre de una venta difícil en el Gran Mercado combinando una concesión gano-gano con una promesa exacta y verificable."
+              narrative_beat: "Dina cierra su venta en el Gran Mercado del Bosque: ofrece entrega más rápida como concesión, promete solo lo que puede cumplir, y el cliente se va contento con un trato justo para ambos."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

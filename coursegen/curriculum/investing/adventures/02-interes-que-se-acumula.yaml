@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 2
+  slug: interes-que-se-acumula
+  theme: city
+  age_tier: tier4
+  title:
+    en-US: "Interest That Adds Up"
+    es-MX: "El Interés que se Acumula"
+    pt-BR: "O Juro que se Acumula"
+  description:
+    en-US: "In the Growth District, the team learns why money left alone can grow on its own - and why a forgotten subscription or an app's cut can grow against you the exact same way."
+    es-MX: "En el Distrito de Crecimiento, el equipo aprende por qué el dinero que dejas quieto puede crecer solo - y por qué una suscripción olvidada o la comisión de una app puede crecer EN TU CONTRA de la misma forma."
+    pt-BR: "No Distrito de Crescimento, a equipe aprende por que o dinheiro que voce deixa parado pode crescer sozinho - e por que uma assinatura esquecida ou a comissao de um aplicativo pode crescer CONTRA voce da mesma forma."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan al Distrito de Crecimiento, donde bancos, fondos y apps compiten por su atención. Ahí descubren que guardar dinero puede ganar un pequeño premio (interés), que dejar ese premio adentro hace que el siguiente premio sea todavía mayor (interés compuesto), y que la misma lógica de crecimiento trabaja EN SU CONTRA en una suscripción olvidada o la comisión de una app de encargos. Terminan comparando interés simple contra compuesto a fondo y defendiendo, con números propios, un plan de qué dejar crecer y qué cancelar a tiempo."
+
+sagas:
+  - position: 1
+    slug: el-premio-por-guardar
+    icon: savings
+    title:
+      en-US: "The Reward for Saving"
+      es-MX: "El Premio por Guardar"
+      pt-BR: "O Premio por Guardar"
+    description:
+      en-US: "Banks and funds pay a small reward for letting your money sit - learn to calculate it."
+      es-MX: "Bancos y fondos pagan un pequeño premio por dejar tu dinero guardado - aprende a calcularlo."
+      pt-BR: "Bancos e fundos pagam um pequeno premio por deixar seu dinheiro guardado - aprenda a calcula-lo."
+    topics:
+        - position: 1
+          slug: que-es-un-premio-por-guardar
+          title_es: "Qué es un premio por guardar"
+          concept: "Un banco o fondo te puede dar un pequeño premio (interés) por dejar tu dinero guardado en vez de gastarlo."
+          learning_objective: "El aprendiz reconoce que guardar dinero en un banco o fondo puede generar un premio, y explica por qué existe ese premio."
+          key_vocabulary: [premio, interés, guardar, fondo]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si sabía que un banco o fondo puede pagarte un pequeño premio por dejar tu dinero guardado."
+          lessons:
+            - position: 1
+              slug: el-letrero-del-distrito
+              micro_objective: "Reconoce que un banco o fondo puede dar un pequeño premio por dejar el dinero guardado en vez de gastarlo de inmediato."
+              narrative_beat: "Dina le muestra a Liruf un letrero en el Distrito de Crecimiento: 'guarda tu dinero aquí y te damos un premio cada año'. Liruf nunca lo había visto así."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: por-que-existe-el-premio
+              micro_objective: "Explica, con sus palabras, por qué un fondo te paga un premio por guardar tu dinero en vez de gastarlo."
+              narrative_beat: "Rho le explica a Liruf: el fondo usa tu dinero mientras lo guardas, y por eso te comparte una parte como premio."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: calculo-mi-primer-premio
+          title_es: "Calculo mi primer premio"
+          concept: "El premio de un año se calcula con un porcentaje simple sobre el monto guardado."
+          learning_objective: "El aprendiz calcula el premio de un año sobre un monto guardado, usando un porcentaje didáctico fijo."
+          key_vocabulary: [porcentaje, monto guardado, premio anual]
+          prior_knowledge: "Reconoce qué es un premio por guardar (tema anterior)."
+          fact_refs: [money.simple_interest_100_year1, money.example_growth_rate_pct]
+          parent_check: "Pidele a {{name}} que calcule cuánto premio ganaría guardando 100 pesos con un 10% de premio anual."
+          lessons:
+            - position: 1
+              slug: calculo-el-premio-de-100
+              micro_objective: "Calcula el premio de un año sobre 100 pesos guardados con un 10% de premio anual."
+              narrative_beat: "Zara guarda 100 pesos en el fondo del distrito: al cabo de un año, el letrero le dice que su premio fue de 10 pesos."
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: sumo-premio-y-guardado
+              micro_objective: "Calcula el total (guardado más premio) después de un año, sobre un monto guardado con 10% de premio."
+              narrative_beat: "Zara suma su premio de 10 pesos a los 100 que guardó, y confirma que ahora tiene 110 pesos en total."
+              difficulty: 3
+              suggested_families: [money, input]
+        - position: 3
+          slug: mas-guardado-mas-premio
+          title_es: "Más guardado, más premio"
+          concept: "Entre más guardes, mayor es el premio en pesos, aunque el porcentaje sea el mismo."
+          learning_objective: "El aprendiz compara el premio de dos montos distintos guardados al mismo porcentaje y reconoce que el monto mayor da más premio."
+          key_vocabulary: [monto mayor, mismo porcentaje, comparar premios]
+          prior_knowledge: "Calcula el premio de un año sobre un monto guardado (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si guardar el doble de dinero al mismo porcentaje da el doble de premio - y por qué."
+          lessons:
+            - position: 1
+              slug: comparo-100-y-200
+              micro_objective: "Compara el premio en pesos de dos montos distintos guardados al mismo porcentaje, y reconoce que el monto mayor da más premio."
+              narrative_beat: "Rho compara: quien guardó 100 recibe 10 de premio; quien guardó 200, recibe 20 - el mismo 10%, pero premios distintos."
+              difficulty: 3
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: ordeno-tres-montos-por-premio
+              micro_objective: "Ordena tres montos guardados al mismo porcentaje según el tamaño del premio que reciben."
+              narrative_beat: "Dina ordena tres cuentas del distrito de menor a mayor premio, todas con el mismo porcentaje pero montos distintos."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: el-premio-no-llega-si-lo-sacas-antes
+          title_es: "El premio no llega si lo sacas antes"
+          concept: "Sacar el dinero antes de que termine el periodo significa perder el premio de ese periodo."
+          learning_objective: "El aprendiz reconoce que retirar el dinero antes de tiempo cancela el premio de ese periodo, y decide cuándo conviene esperar."
+          key_vocabulary: [retirar antes de tiempo, periodo, perder el premio]
+          prior_knowledge: "Compara el premio de dos montos distintos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría si sacara su dinero guardado a la mitad del año en vez de esperar el año completo."
+          lessons:
+            - position: 1
+              slug: saco-el-dinero-a-la-mitad
+              micro_objective: "Reconoce que sacar el dinero antes de que termine el periodo significa perder el premio de ese periodo."
+              narrative_beat: "Liruf saca su dinero a la mitad del año, apurado - y descubre que el premio todavía no estaba listo para él."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: decido-si-espero-o-saco
+              micro_objective: "Decide, en un caso, si conviene sacar el dinero antes de tiempo o esperar a que se complete el periodo del premio."
+              narrative_beat: "Zara compara: necesita el dinero pronto, pero esperar dos semanas más le daría el premio completo - decide qué le conviene más."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: comparo-dos-cuentas
+          title_es: "Comparo dos cuentas"
+          concept: "Comparar dos ofertas de guardado con distinto porcentaje de premio sobre el mismo monto muestra cuál conviene más."
+          learning_objective: "El aprendiz calcula y compara el premio de dos cuentas con distinto porcentaje sobre el mismo monto, y elige la que conviene."
+          key_vocabulary: [comparar cuentas, distinto porcentaje, conviene más]
+          prior_knowledge: "Decide si sacar el dinero antes de tiempo vale la pena (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que compare dos ofertas de guardado con distinto porcentaje y te diga cuál conviene más."
+          lessons:
+            - position: 1
+              slug: dos-puestos-distinto-porcentaje
+              micro_objective: "Compara dos ofertas de guardado con distinto porcentaje de premio sobre el mismo monto, y calcula cuál da más."
+              narrative_beat: "Rho compara dos puestos del distrito: uno ofrece 10% de premio anual, el otro solo 5% - sobre el mismo monto, calcula la diferencia."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: elijo-la-mejor-cuenta
+              micro_objective: "Elige, entre dos cuentas con distinto porcentaje, la que más conviene para un monto y plazo dados."
+              narrative_beat: "Con los cálculos hechos, Zara elige la cuenta del 10% para guardar su dinero del verano."
+              difficulty: 4
+              suggested_families: [choice, money]
+        - position: 6
+          slug: mi-primer-plan-de-guardado
+          title_es: "Mi primer plan de guardado"
+          concept: "Arma un plan simple: cuánto guardar y qué premio esperar en un año."
+          learning_objective: "El aprendiz arma y aplica un plan propio de cuánto guardar y calcula el premio esperado en un año."
+          key_vocabulary: [plan de guardado, premio esperado]
+          prior_knowledge: "Compara dos cuentas con distinto porcentaje (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a armar un plan simple: cuánto guardaría al mes y qué premio esperaría en un año."
+          lessons:
+            - position: 1
+              slug: armamos-el-plan-en-equipo
+              micro_objective: "Con apoyo, arma un plan simple de cuánto guardar y qué premio esperar en un año."
+              narrative_beat: "El equipo arma en la pizarra un plan: cuánto va a guardar cada quien y cuánto premio esperan recibir en un año."
+              difficulty: 4
+              suggested_families: [storyplay, money]
+            - position: 2
+              slug: calculo-mi-propio-premio-esperado
+              micro_objective: "Aplica, sin ayuda, su propio plan de guardado calculando el premio esperado para un monto y porcentaje propios."
+              narrative_beat: "Liruf calcula solo, sin ayuda, cuánto premio recibiría si guarda su mesada del mes completo todo el año."
+              difficulty: 5
+              suggested_families: [money, input]
+        - position: 7
+          slug: repaso-el-premio-por-guardar
+          kind: review_spaced
+          title_es: "Repaso: El Premio por Guardar"
+          concept: "El equipo repasa cómo calcular y comparar el premio que da guardar dinero antes de ver qué pasa si lo dejan crecer más tiempo."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cálculo del premio de un año sobre un monto guardado."
+          key_vocabulary: [premio, porcentaje, comparar cuentas]
+          prior_knowledge: "Completo los 6 temas de El Premio por Guardar."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/el-premio-por-guardar/que-es-un-premio-por-guardar
+            - interes-que-se-acumula/el-premio-por-guardar/calculo-mi-primer-premio
+            - interes-que-se-acumula/el-premio-por-guardar/mas-guardado-mas-premio
+            - interes-que-se-acumula/el-premio-por-guardar/el-premio-no-llega-si-lo-sacas-antes
+            - interes-que-se-acumula/el-premio-por-guardar/comparo-dos-cuentas
+            - interes-que-se-acumula/el-premio-por-guardar/mi-primer-plan-de-guardado
+          lessons:
+            - position: 1
+              slug: repaso-calculo-premios
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo calcular el premio de un año sobre un monto guardado."
+              narrative_beat: "El equipo repasa sus cálculos del Distrito de Crecimiento y vuelve a sacar premios sin ayuda."
+              difficulty: 3
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: repaso-elijo-la-mejor-cuenta
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara dos cuentas nuevas y elige la que más conviene."
+              narrative_beat: "Zara compara dos cuentas nuevas del distrito, sin ayuda de nadie, y elige la que le da más premio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-monto-y-porcentaje
+          kind: review_interleaved
+          title_es: "Cruce: Monto y Porcentaje"
+          concept: "Mezclamos el efecto del monto guardado con el efecto del porcentaje para calcular un premio completo de una sola vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, monto y porcentaje para calcular y comparar el premio de varios casos."
+          key_vocabulary: [monto, porcentaje, premio total]
+          prior_knowledge: "Completo el repaso de El Premio por Guardar (tema anterior)."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/el-premio-por-guardar/mas-guardado-mas-premio
+            - interes-que-se-acumula/el-premio-por-guardar/comparo-dos-cuentas
+            - interes-que-se-acumula/el-premio-por-guardar/calculo-mi-primer-premio
+          lessons:
+            - position: 1
+              slug: junto-monto-y-porcentaje
+              micro_objective: "Combina el efecto del monto guardado con el efecto del porcentaje para calcular el premio de un caso nuevo."
+              narrative_beat: "Rho junta dos ideas a la vez: cuánto guardó Y qué porcentaje le ofrecen, para calcular su premio completo."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: elijo-la-mejor-combinacion
+              micro_objective: "Evalúa, sin ayuda, cuál de tres combinaciones de monto y porcentaje da el mejor premio total."
+              narrative_beat: "Zara compara tres combinaciones distintas de monto y porcentaje y elige, sin ayuda, la que da el mejor premio."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: cuando-el-premio-se-queda-adentro
+    icon: repeat
+    title:
+      en-US: "When the Reward Stays In"
+      es-MX: "Cuando el Premio se Queda Adentro"
+      pt-BR: "Quando o Premio Fica Dentro"
+    description:
+      en-US: "Leave the reward inside instead of taking it out, and next year's reward gets calculated on a bigger number - that's compound interest."
+      es-MX: "Deja el premio adentro en vez de sacarlo, y el premio del año siguiente se calcula sobre un número más grande - eso es interés compuesto."
+      pt-BR: "Deixe o premio dentro em vez de tira-lo, e o premio do ano seguinte e calculado sobre um número maior - isso e juro composto."
+    topics:
+        - position: 1
+          slug: dejo-el-premio-adentro
+          title_es: "Dejo el premio adentro"
+          concept: "Si en vez de sacar el premio lo dejas adentro, el siguiente premio se calcula sobre un monto más grande - eso es interés compuesto."
+          learning_objective: "El aprendiz reconoce que dejar el premio adentro cambia la base sobre la que se calcula el siguiente premio."
+          key_vocabulary: [interés compuesto, dejar adentro, nueva base]
+          prior_knowledge: "Completo El Premio por Guardar (saga anterior)."
+          fact_refs: [money.compound_growth_100_3years]
+          parent_check: "Preguntale a {{name}} qué pasa con el premio del año siguiente si no saca el premio de este año."
+          lessons:
+            - position: 1
+              slug: no-saco-mi-premio
+              micro_objective: "Reconoce que dejar el premio adentro, en vez de sacarlo, hace que el siguiente premio se calcule sobre un monto más grande."
+              narrative_beat: "Dina le explica a Liruf: 'si no sacas tu premio de 10 pesos, el año que viene el 10% se calcula sobre 110, no sobre 100'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-el-cambio-de-base
+              micro_objective: "Explica, con sus palabras, por qué dejar el premio adentro cambia el cálculo del siguiente año."
+              narrative_beat: "Liruf repite la idea con sus propias palabras: 'entre más dejo adentro, más grande es la base del siguiente premio'."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: calculo-el-segundo-ano
+          title_es: "Calculo el segundo año"
+          concept: "El premio del segundo año se calcula sobre el nuevo total, no sobre el monto original."
+          learning_objective: "El aprendiz calcula el premio del segundo año sobre el nuevo total y compara que es mayor que el del año 1."
+          key_vocabulary: [segundo año, nuevo total, premio mayor]
+          prior_knowledge: "Reconoce que dejar el premio adentro cambia la base del cálculo (tema anterior)."
+          fact_refs: [money.compound_growth_100_3years]
+          parent_check: "Pidele a {{name}} que calcule el premio del segundo año sobre 110 pesos con un 10% de premio."
+          lessons:
+            - position: 1
+              slug: premio-sobre-110
+              micro_objective: "Calcula el premio del segundo año sobre el nuevo total (110), y compara que es mayor que el premio del año 1."
+              narrative_beat: "Zara calcula: sobre 110 pesos, el premio del segundo año es 11 - un peso más que el premio del primer año."
+              difficulty: 2
+              suggested_families: [money, input]
+            - position: 2
+              slug: confirmo-el-total-de-dos-anos
+              micro_objective: "Confirma el total después de dos años dejando todo el premio adentro (100 -> 110 -> 121)."
+              narrative_beat: "Rho suma el premio del segundo año a los 110 que ya tenía, y confirma que ahora el total es 121."
+              difficulty: 3
+              suggested_families: [money, analyze]
+        - position: 3
+          slug: tres-anos-dejando-todo-adentro
+          title_es: "Tres años dejando todo adentro"
+          concept: "Sigue la cadena completa a tres años (100->110->121->133.1) y ve cómo el premio total crece cada año un poco más."
+          learning_objective: "El aprendiz sigue una cadena de tres años de interés compuesto y compara el tamaño del premio del año 1 contra el del año 3."
+          key_vocabulary: [cadena de años, premio creciente]
+          prior_knowledge: "Calcula el premio del segundo año sobre el nuevo total (tema anterior)."
+          fact_refs: [money.compound_growth_100_3years]
+          parent_check: "Repasa con {{name}} la cadena completa: 100, 110, 121, 133.1 - y pregúntale en qué año el premio fue más grande en pesos."
+          lessons:
+            - position: 1
+              slug: sigo-la-cadena-completa
+              micro_objective: "Sigue la cadena completa a tres años (100->110->121->133.1) y calcula el premio de cada año."
+              narrative_beat: "El equipo sigue la cadena completa en la pizarra: 100, luego 110, luego 121, y finalmente 133.1 al tercer año."
+              difficulty: 3
+              suggested_families: [arrange, money]
+            - position: 2
+              slug: comparo-el-premio-del-ano-1-y-el-3
+              micro_objective: "Compara el tamaño del premio del año 1 contra el del año 3 y reconoce que el premio en pesos creció aunque el porcentaje fue el mismo."
+              narrative_beat: "Dina señala: el premio del año 1 fue 10 pesos, el del año 3 fue 12.1 - el mismo 10%, pero un premio más grande cada vez."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: que-pasa-si-lo-saco-a-mitad-de-camino
+          title_es: "Qué pasa si lo saco a mitad de camino"
+          concept: "Comparar dejar el premio adentro todo el tiempo contra sacarlo a la mitad muestra que el compuesto pierde su ventaja si se interrumpe."
+          learning_objective: "El aprendiz compara el resultado final de dejar el interés compuesto correr contra interrumpirlo, y decide cuándo vale la pena interrumpir."
+          key_vocabulary: [interrumpir, ventaja del compuesto]
+          prior_knowledge: "Sigue la cadena completa de tres años (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría si sacara su premio cada año en vez de dejarlo adentro todo el tiempo."
+          lessons:
+            - position: 1
+              slug: liruf-saca-cada-ano-zara-no
+              micro_objective: "Compara el total final de dejar el premio adentro todo el tiempo contra sacarlo cada año, sobre el mismo monto inicial."
+              narrative_beat: "Liruf saca su premio cada año y se lo gasta; Zara lo deja todo adentro - al tercer año, Zara tiene más aunque guardaron lo mismo."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: decido-si-interrumpo
+              micro_objective: "Decide, en un caso, si interrumpir el interés compuesto a la mitad del camino vale la pena o no según lo que se necesita el dinero."
+              narrative_beat: "Rho decide si sacar su dinero antes de tiempo realmente vale la pena, sabiendo que pierde el efecto de dejarlo crecer."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-compuesto-necesita-tiempo
+          title_es: "El compuesto necesita tiempo"
+          concept: "El efecto del interés compuesto es pequeño al principio y se nota más mientras más años pasan sin tocarlo."
+          learning_objective: "El aprendiz compara el efecto del interés compuesto a corto y largo plazo, y reconoce que el tiempo es un ingrediente clave."
+          key_vocabulary: [corto plazo, largo plazo, efecto acumulado]
+          prior_knowledge: "Compara dejar el premio adentro contra interrumpirlo (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué el interés compuesto se nota poco en el primer año pero mucho más después de varios años."
+          lessons:
+            - position: 1
+              slug: chiquito-al-principio
+              micro_objective: "Reconoce que el efecto del interés compuesto es pequeño al principio y se nota más mientras más años pasan sin tocarlo."
+              narrative_beat: "Zara compara el premio del año 1 (chiquito) contra el del año 10 (mucho más grande) - el tiempo es el ingrediente que faltaba."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: comparo-2-anos-contra-6-anos
+              micro_objective: "Compara dos planes con el mismo monto pero distinto número de años sin tocar el dinero, y decide cuál da más al final."
+              narrative_beat: "Rho compara dejar su premio adentro 2 años contra dejarlo adentro 6 años - mismo monto inicial, resultado muy distinto."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: explico-la-diferencia-a-un-amigo
+          title_es: "Explico la diferencia a un amigo"
+          concept: "Explica con tus palabras, usando el ejemplo de 100->133.1, por qué dejar el premio adentro rinde más que sacarlo cada año."
+          learning_objective: "El aprendiz explica, con un ejemplo propio, la diferencia entre interés simple y dejar el premio adentro."
+          key_vocabulary: [explicar, ejemplo propio]
+          prior_knowledge: "Compara el efecto del interés compuesto a corto y largo plazo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique, con sus propias palabras, por qué dejar el premio adentro rinde más que sacarlo cada año."
+          lessons:
+            - position: 1
+              slug: preparamos-la-explicacion
+              micro_objective: "Con apoyo, explica usando el ejemplo 100->133.1 por qué dejar el premio adentro rinde más que sacarlo cada año."
+              narrative_beat: "El equipo prepara una explicación corta para un amigo nuevo del distrito, usando el ejemplo de 100 a 133.1 en tres años."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: explico-con-mi-propio-ejemplo
+              micro_objective: "Explica, sin ayuda, la diferencia entre interés simple y dejar el premio adentro, usando un ejemplo propio."
+              narrative_beat: "Liruf explica solo, sin ayuda, la diferencia a un cadete nuevo de la estación, usando un ejemplo que él mismo inventa."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-cuando-el-premio-se-queda-adentro
+          kind: review_spaced
+          title_es: "Repaso: Cuando el Premio se Queda Adentro"
+          concept: "El equipo repasa la cadena completa de interés compuesto antes de ver dónde crece la misma lógica en su contra."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cálculo de un segundo año de premio dejando todo adentro."
+          key_vocabulary: [interés compuesto, cadena de años]
+          prior_knowledge: "Completo los 6 temas de Cuando el Premio se Queda Adentro."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/dejo-el-premio-adentro
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/calculo-el-segundo-ano
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/tres-anos-dejando-todo-adentro
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/que-pasa-si-lo-saco-a-mitad-de-camino
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/el-compuesto-necesita-tiempo
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/explico-la-diferencia-a-un-amigo
+          lessons:
+            - position: 1
+              slug: repaso-calculo-segundo-ano
+              micro_objective: "Recuerda y aplica, sin ayuda, cómo calcular un segundo año de premio dejando todo adentro."
+              narrative_beat: "El equipo repasa la cadena de tres años y la repite, sin ayuda, con un monto nuevo."
+              difficulty: 3
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: repaso-comparo-dejar-o-sacar
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara dejar el premio adentro contra sacarlo, para un caso nuevo."
+              narrative_beat: "Zara compara, sin ayuda de nadie, dos caminos nuevos: dejar el premio adentro o sacarlo cada año."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-premio-y-tiempo-sin-tocar
+          kind: review_interleaved
+          title_es: "Cruce: Premio y Tiempo Sin Tocar"
+          concept: "Mezclamos el cálculo del premio compuesto con la idea de que el tiempo hace crecer el efecto."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el cálculo compuesto con el efecto del tiempo transcurrido."
+          key_vocabulary: [premio compuesto, tiempo transcurrido]
+          prior_knowledge: "Completo el repaso de Cuando el Premio se Queda Adentro (tema anterior) y El Premio por Guardar (saga anterior)."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/tres-anos-dejando-todo-adentro
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/el-compuesto-necesita-tiempo
+            - interes-que-se-acumula/el-premio-por-guardar/calculo-mi-primer-premio
+          lessons:
+            - position: 1
+              slug: junto-cadena-y-tiempo
+              micro_objective: "Combina el cálculo del premio compuesto con la idea de que el tiempo hace crecer el efecto, en un caso nuevo."
+              narrative_beat: "Rho junta dos ideas de la saga: cuánto crece el premio Y cuánto tiempo lleva sin tocarse, para un caso fresco."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: cruzo-simple-y-compuesto
+              micro_objective: "Evalúa, sin ayuda, un caso combinando el cálculo del primer premio simple con la cadena completa del interés compuesto."
+              narrative_beat: "Zara resuelve un caso cruzando el cálculo simple del primer año con la cadena compuesta de varios años."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 3
+    slug: la-suscripcion-que-nunca-duerme
+    icon: autorenew
+    title:
+      en-US: "The Subscription That Never Sleeps"
+      es-MX: "La Suscripción que Nunca Duerme"
+      pt-BR: "A Assinatura que Nunca Dorme"
+    description:
+      en-US: "The same growth logic that helps you when it's a reward can hurt you when it's a forgotten subscription or an app's fee."
+      es-MX: "La misma lógica de crecimiento que te ayuda cuando es un premio, puede perjudicarte cuando es una suscripción olvidada o la comisión de una app."
+      pt-BR: "A mesma lógica de crescimento que ajuda quando e um premio pode prejudicar quando e uma assinatura esquecida ou a taxa de um aplicativo."
+    topics:
+        - position: 1
+          slug: se-renueva-aunque-no-la-uses
+          title_es: "Se renueva aunque no la uses"
+          concept: "Una suscripción digital se cobra otra vez cada mes automáticamente, la uses o no, a menos que la canceles a tiempo."
+          learning_objective: "El aprendiz reconoce que una suscripción se renueva y cobra automáticamente hasta que alguien la cancela."
+          key_vocabulary: [suscripción, renovación automática, cancelar]
+          prior_knowledge: "Completo Cuando el Premio se Queda Adentro (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si sabe cuáles suscripciones digitales tiene activas y si de verdad las sigue usando."
+          lessons:
+            - position: 1
+              slug: la-suscripcion-olvidada
+              micro_objective: "Reconoce que una suscripción digital se cobra otra vez cada mes automáticamente, la uses o no."
+              narrative_beat: "Liruf descubre en su teléfono una suscripción que sigue cobrando cada mes, aunque no ha abierto la app en semanas."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: cuando-debio-cancelarse
+              micro_objective: "Identifica, en un caso, el momento exacto en que una suscripción debió cancelarse para no seguir cobrando."
+              narrative_beat: "Dina revisa con Liruf: la fecha de renovación ya pasó dos veces desde que dejó de usarla."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: cuanto-suma-un-ano-de-olvido
+          title_es: "Cuánto suma un año de olvido"
+          concept: "Calcula cuánto suma en un año una suscripción pequeña que se sigue cobrando sin que nadie la use."
+          learning_objective: "El aprendiz calcula el costo anual de una suscripción mensual olvidada y lo compara contra una meta de ahorro."
+          key_vocabulary: [costo anual, suscripción mensual]
+          prior_knowledge: "Identifica cuándo una suscripción debió cancelarse (tema anterior)."
+          fact_refs: [math.weekly_income_options_tier4]
+          parent_check: "Pidele a {{name}} que calcule cuánto sumaría en un año una suscripción de 50 pesos al mes que ya no usa."
+          lessons:
+            - position: 1
+              slug: calculo-el-costo-de-un-ano
+              micro_objective: "Calcula cuánto suma en un año una suscripción pequeña que se sigue cobrando mensualmente sin que nadie la use."
+              narrative_beat: "Zara calcula: si la suscripción cobra 50 pesos cada mes durante 12 meses, ¿cuánto se fue sin que nadie lo notara?"
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: comparo-contra-una-meta
+              micro_objective: "Compara el costo anual de una suscripción olvidada contra algo que ese mismo dinero podría haber logrado (una meta de ahorro)."
+              narrative_beat: "Rho compara: lo que se fue en la suscripción olvidada casi alcanzaba para unos audífonos que Zara quería."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: el-costo-que-crece-si-no-actuas
+          title_es: "El costo que crece si no actúas"
+          concept: "Igual que un premio guardado crece a tu favor, una suscripción olvidada 'crece' en tu contra mientras no actúes."
+          learning_objective: "El aprendiz compara el crecimiento a favor de un premio guardado contra el crecimiento en contra de una suscripción olvidada."
+          key_vocabulary: [crecer en contra, actuar a tiempo]
+          prior_knowledge: "Calcula el costo anual de una suscripción olvidada (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué gráfica se parece más a una suscripción olvidada: una que sube a favor o una que sube en contra."
+          lessons:
+            - position: 1
+              slug: dos-graficas-opuestas
+              micro_objective: "Reconoce que, igual que un premio guardado crece a tu favor, una suscripción olvidada 'crece' en tu contra mientras no actúes."
+              narrative_beat: "Rho compara dos gráficas del distrito: una sube a favor de Zara (su premio), la otra sube en contra de Liruf (su suscripción olvidada)."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: el-dia-que-deja-de-crecer
+              micro_objective: "Identifica el único momento en que el costo de una suscripción olvidada deja de crecer: cuando se cancela."
+              narrative_beat: "Liruf finalmente cancela la suscripción - a partir de ese día, el costo deja de sumar más."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: la-comision-de-la-app-de-encargos
+          title_es: "La comisión de la app de encargos"
+          concept: "Una app de trabajos por encargo cobra una comisión de cada pago que recibes - reconoce cuánto llega realmente a tu bolsillo."
+          learning_objective: "El aprendiz calcula el neto que recibe después de una comisión de app, y compara dos apps con distinta comisión."
+          key_vocabulary: [comisión, neto, trabajo por encargo]
+          prior_knowledge: "Identifica cuándo el costo de una suscripción deja de crecer (tema anterior)."
+          fact_refs: [money.gig_app_payout_example]
+          parent_check: "Preguntale a {{name}} si sabe cuánta comisión se queda una app antes de pagarle a quien hace el trabajo."
+          lessons:
+            - position: 1
+              slug: de-100-me-llegan-90
+              micro_objective: "Calcula cuánto llega realmente a tu bolsillo después de que una app de trabajos por encargo cobra su comisión sobre un pago de 100 pesos."
+              narrative_beat: "Liruf gana 100 pesos ayudando con encargos, pero la app se queda con 10 antes de pagarle - a él le llegan 90."
+              difficulty: 3
+              suggested_families: [money, input]
+            - position: 2
+              slug: comparo-dos-apps
+              micro_objective: "Compara dos apps de encargos con distinta comisión sobre el mismo pago y decide cuál conviene más."
+              narrative_beat: "Zara compara dos apps: una cobra más comisión que la otra por el mismo trabajo - calcula cuál le deja más dinero."
+              difficulty: 4
+              suggested_families: [analyze, money]
+        - position: 5
+          slug: comparo-lo-que-crece-a-mi-favor-y-en-mi-contra
+          title_es: "Comparo lo que crece a mi favor y en mi contra"
+          concept: "Compara, usando el mismo tipo de cálculo, un monto que crece a tu favor (premio guardado) contra uno que crece en tu contra (suscripción olvidada)."
+          learning_objective: "El aprendiz compara con el mismo tipo de cálculo un crecimiento a favor y uno en contra, y decide qué atender primero."
+          key_vocabulary: [a favor, en contra, prioridad]
+          prior_knowledge: "Calcula el neto de una comisión de app (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué haría primero: dejar crecer un ahorro o cancelar un gasto automático que ya no usa."
+          lessons:
+            - position: 1
+              slug: pongo-los-dos-calculos-lado-a-lado
+              micro_objective: "Compara, usando el mismo tipo de cálculo, un monto que crece a tu favor (premio guardado) contra uno que crece en tu contra (suscripción olvidada)."
+              narrative_beat: "Dina pone lado a lado dos cálculos: el premio que Zara ganó guardando, y el costo que Liruf perdió olvidando cancelar."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-que-resuelvo-primero
+              micro_objective: "Decide, en un caso mixto, qué acción tomar primero: dejar crecer un premio a favor o detener un costo que crece en contra."
+              narrative_beat: "Rho decide: antes de seguir guardando para su premio, primero cancela la suscripción que le está costando en silencio."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: reviso-mis-propias-suscripciones
+          title_es: "Reviso mis propias suscripciones"
+          concept: "Aplica lo aprendido a un caso propio: revisar qué sigue cobrando automáticamente y decidir si vale la pena mantenerlo."
+          learning_objective: "El aprendiz aplica un criterio de revisión a un caso propio de cargos automáticos y decide cuáles mantener o cancelar."
+          key_vocabulary: [cargo automático, revisión, criterio]
+          prior_knowledge: "Compara lo que crece a favor contra lo que crece en contra (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a revisar qué cargos automáticos tiene activos (los suyos o de la familia) y cuáles todavía se usan de verdad."
+          lessons:
+            - position: 1
+              slug: armamos-la-tabla-de-suscripciones
+              micro_objective: "Con apoyo, revisa un caso de suscripciones activas y decide, con un criterio claro, cuáles vale la pena mantener."
+              narrative_beat: "El equipo arma una tabla en la pizarra: qué suscripciones vale la pena mantener y cuáles ya no se usan."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: reviso-mis-cargos-solo
+              micro_objective: "Aplica, sin ayuda, el mismo criterio a un caso propio: decide qué cargos automáticos mantener y cuáles cancelar."
+              narrative_beat: "Zara revisa sola, sin ayuda, sus propios cargos automáticos y decide cuáles cancelar antes de la próxima renovación."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-la-suscripcion-que-nunca-duerme
+          kind: review_spaced
+          title_es: "Repaso: La Suscripción que Nunca Duerme"
+          concept: "El equipo repasa por qué una suscripción olvidada sigue cobrando, y cómo calcular su costo total antes de decidir cancelarla."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el costo de una suscripción olvidada y de la comisión de una app."
+          key_vocabulary: [suscripción olvidada, comisión, revisión]
+          prior_knowledge: "Completo los 6 temas de La Suscripción que Nunca Duerme."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/se-renueva-aunque-no-la-uses
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/cuanto-suma-un-ano-de-olvido
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/el-costo-que-crece-si-no-actuas
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/la-comision-de-la-app-de-encargos
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/comparo-lo-que-crece-a-mi-favor-y-en-mi-contra
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/reviso-mis-propias-suscripciones
+          lessons:
+            - position: 1
+              slug: repaso-por-que-sigue-cobrando
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué una suscripción olvidada sigue cobrando aunque no se use."
+              narrative_beat: "El equipo repasa sus notas sobre suscripciones y comisiones y las aplica, sin ayuda, a un caso nuevo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-calculo-un-ano-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: calcula cuánto costaría un año de una suscripción nueva sin cancelar."
+              narrative_beat: "Rho calcula, sin ayuda de nadie, cuánto sumaría en un año una suscripción que acaba de descubrir."
+              difficulty: 4
+              suggested_families: [money, analyze]
+        - position: 8
+          slug: cruce-comision-y-costo-olvidado
+          kind: review_interleaved
+          title_es: "Cruce: Comisión y Costo Olvidado"
+          concept: "Mezclamos el cálculo de una comisión de app con el costo de una suscripción olvidada para priorizar qué resolver primero."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, comisión de app y costo de suscripción olvidada en una sola decisión."
+          key_vocabulary: [comisión, costo olvidado, prioridad]
+          prior_knowledge: "Completo el repaso de La Suscripción que Nunca Duerme (tema anterior)."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/cuanto-suma-un-ano-de-olvido
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/la-comision-de-la-app-de-encargos
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/comparo-lo-que-crece-a-mi-favor-y-en-mi-contra
+          lessons:
+            - position: 1
+              slug: junto-comision-y-suscripcion
+              micro_objective: "Combina el cálculo de una comisión de app con el costo de una suscripción olvidada para decidir qué revisar primero."
+              narrative_beat: "Zara junta dos ideas: cuánto se lleva la app de comisión Y cuánto cuesta la suscripción olvidada, para priorizar qué resolver primero."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: resuelvo-el-caso-de-dinero-completo
+              micro_objective: "Evalúa, sin ayuda, un caso combinando comisión de app, suscripción olvidada y premio guardado en una sola decisión de dinero."
+              narrative_beat: "Rho resuelve un caso completo cruzando comisión, suscripción y premio - las tres ideas de la saga a la vez."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: interes-simple-vs-interes-compuesto
+    icon: trending_up
+    title:
+      en-US: "Simple vs. Compound Interest"
+      es-MX: "Interés Simple vs. Interés Compuesto"
+      pt-BR: "Juro Simples vs. Juro Composto"
+    description:
+      en-US: "Same amount, same percentage - so why does compound interest end up ahead? Compare them head to head."
+      es-MX: "Mismo monto, mismo porcentaje - ¿por qué el interés compuesto termina ganando? Compáralos cara a cara."
+      pt-BR: "Mesmo valor, mesma porcentagem - por que o juro composto termina ganhando? Compare-os lado a lado."
+    topics:
+        - position: 1
+          slug: dos-formas-de-crecer
+          title_es: "Dos formas de crecer"
+          concept: "Interés simple siempre da el mismo premio cada año; interés compuesto da un premio que crece porque se calcula sobre un monto cada vez mayor."
+          learning_objective: "El aprendiz distingue interés simple (premio fijo cada año) de interés compuesto (premio que crece cada año)."
+          key_vocabulary: [interés simple, interés compuesto, premio fijo]
+          prior_knowledge: "Completo La Suscripción que Nunca Duerme (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cuál es la diferencia entre un premio que se queda igual cada año y uno que crece cada año."
+          lessons:
+            - position: 1
+              slug: una-linea-recta-y-una-curva
+              micro_objective: "Distingue que el interés simple da el mismo premio cada año, mientras que el compuesto da un premio que crece."
+              narrative_beat: "Rho dibuja dos líneas en la pizarra: una recta (interés simple) y una que se curva hacia arriba (interés compuesto)."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-las-dos-lineas
+              micro_objective: "Explica, con sus palabras, la diferencia entre un premio que se queda igual cada año y uno que crece cada año."
+              narrative_beat: "Liruf explica la diferencia con sus propias palabras, señalando las dos líneas que dibujó Rho."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mismo-monto-mismo-porcentaje-quien-gana
+          title_es: "Mismo monto, mismo porcentaje: ¿quién gana?"
+          concept: "Con el mismo monto inicial y porcentaje, el interés compuesto termina dando más que el simple después de varios años."
+          learning_objective: "El aprendiz calcula y compara el total de interés simple contra compuesto con el mismo monto y porcentaje, y explica por qué gana el compuesto."
+          key_vocabulary: [mismo monto, mismo porcentaje, ventaja del compuesto]
+          prior_knowledge: "Distingue interés simple de interés compuesto (tema anterior)."
+          fact_refs: [money.simple_interest_100_year1, money.compound_growth_100_3years]
+          parent_check: "Pidele a {{name}} que te explique por qué, con el mismo porcentaje, el interés compuesto termina dando más que el simple."
+          lessons:
+            - position: 1
+              slug: calculo-los-dos-caminos
+              micro_objective: "Compara, con el mismo monto inicial y porcentaje, el total de interés simple contra interés compuesto después de tres años."
+              narrative_beat: "Zara calcula los dos caminos para 100 pesos al 10%: uno llega a 130, el otro a 133.1 - una pequeña ventaja para el compuesto."
+              difficulty: 2
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: explico-por-que-gana-el-compuesto
+              micro_objective: "Explica por qué, con el mismo monto y porcentaje, el interés compuesto termina dando más que el simple después de varios años."
+              narrative_beat: "Rho explica: el compuesto gana porque cada año calcula sobre un monto más grande, no porque el porcentaje cambie."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: el-patron-que-se-acelera
+          title_es: "El patrón que se acelera"
+          concept: "Un crecimiento compuesto se acelera con el tiempo aunque el 'paso' de crecimiento sea el mismo."
+          learning_objective: "El aprendiz reconoce y predice un patrón de crecimiento que se acelera, usando un ejemplo de duplicación."
+          key_vocabulary: [patrón, acelerar, duplicar]
+          prior_knowledge: "Explica por qué gana el interés compuesto (tema anterior)."
+          fact_refs: [money.growth_doubling_example]
+          parent_check: "Pidele a {{name}} que prediga el siguiente número después de 10, 20, 40, 80 - y que explique por qué el salto crece."
+          lessons:
+            - position: 1
+              slug: veo-el-patron-de-duplicacion
+              micro_objective: "Reconoce, usando un patrón de duplicación (10->20->40->80), que un crecimiento compuesto se acelera con el tiempo."
+              narrative_beat: "Dina muestra el patrón 10, 20, 40, 80: cada paso duplica el anterior, pero el salto en pesos es cada vez más grande."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: predigo-el-siguiente-paso
+              micro_objective: "Predice el siguiente paso de un patrón de crecimiento que se acelera, dado los pasos anteriores."
+              narrative_beat: "Liruf predice el siguiente número después de 10, 20, 40, 80 - y entiende por qué el salto sigue creciendo."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 4
+          slug: entre-mas-anos-mas-se-nota-la-diferencia
+          title_es: "Entre más años, más se nota la diferencia"
+          concept: "Entre más años pasan, más grande es la diferencia entre interés simple e interés compuesto sobre el mismo monto."
+          learning_objective: "El aprendiz compara la diferencia entre interés simple y compuesto a corto plazo contra a largo plazo, y decide cuál conviene para una meta lejana."
+          key_vocabulary: [diferencia creciente, plazo largo]
+          prior_knowledge: "Predice el siguiente paso de un patrón que se acelera (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si la diferencia entre interés simple y compuesto es mayor a 3 años o a 10 años - y por qué."
+          lessons:
+            - position: 1
+              slug: comparo-3-anos-contra-10-anos
+              micro_objective: "Compara la diferencia entre interés simple y compuesto a los 3 años contra la diferencia a muchos más años, y reconoce que crece."
+              narrative_beat: "Rho compara la pequeña diferencia a los 3 años con una diferencia mucho más grande que el distrito muestra para 10 años."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: decido-para-una-meta-lejana
+              micro_objective: "Decide, para una meta de largo plazo, cuál de las dos formas de crecimiento conviene más y por qué."
+              narrative_beat: "Zara decide que para su meta de varios años, el interés compuesto es claramente la mejor opción."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: elijo-la-mejor-opcion-para-mi-meta
+          title_es: "Elijo la mejor opción para mi meta"
+          concept: "Dado un plazo y una meta, decide cuál de las dos formas de crecimiento te conviene más."
+          learning_objective: "El aprendiz elige y justifica una forma de crecimiento (simple o compuesto) para una meta de ahorro con plazo definido."
+          key_vocabulary: [meta de ahorro, plazo, justificar]
+          prior_knowledge: "Decide cuál forma de crecimiento conviene para una meta lejana (tema anterior)."
+          fact_refs: [math.savings_goal_ceiling_tier4]
+          parent_check: "Pidele a {{name}} que elija, para su propia meta de ahorro, si le convendría más interés simple o compuesto, y por qué."
+          lessons:
+            - position: 1
+              slug: decido-para-mi-meta-de-viaje
+              micro_objective: "Dado un plazo y una meta de ahorro, decide cuál de las dos formas de crecimiento conviene más."
+              narrative_beat: "Con una meta de 3000 pesos para un viaje, Zara decide entre dos ofertas de guardado según el plazo que tiene."
+              difficulty: 4
+              suggested_families: [choice, money]
+            - position: 2
+              slug: justifico-mi-eleccion
+              micro_objective: "Justifica, con al menos un motivo concreto, por qué eligió una forma de crecimiento sobre la otra para su meta."
+              narrative_beat: "Zara explica su elección al equipo, usando el plazo y el monto de su propia meta como argumento."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+        - position: 6
+          slug: armo-mi-argumento-final
+          title_es: "Armo mi argumento final"
+          concept: "Arma un argumento completo explicando por qué el interés compuesto, dado tiempo suficiente, gana al simple."
+          learning_objective: "El aprendiz construye y presenta un argumento completo comparando interés simple y compuesto con ejemplos propios."
+          key_vocabulary: [argumento completo, presentar]
+          prior_knowledge: "Justifica su elección de forma de crecimiento para una meta (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente, en un minuto, su argumento sobre por qué el interés compuesto gana con suficiente tiempo."
+          lessons:
+            - position: 1
+              slug: armamos-el-argumento-en-equipo
+              micro_objective: "Con apoyo, arma un argumento completo explicando por qué el interés compuesto, dado tiempo suficiente, gana al simple."
+              narrative_beat: "El equipo arma en la pizarra su argumento final, usando los ejemplos de la saga completa."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-mi-argumento-solo
+              micro_objective: "Presenta, sin ayuda, su argumento completo sobre interés simple vs. compuesto ante el equipo."
+              narrative_beat: "Rho presenta su argumento final solo, sin ayuda, usando sus propios ejemplos del Distrito de Crecimiento."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-interes-simple-vs-interes-compuesto
+          kind: review_spaced
+          title_es: "Repaso: Interés Simple vs. Interés Compuesto"
+          concept: "El equipo repasa la diferencia entre las dos formas de crecer antes de la prueba final del distrito."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la diferencia entre interés simple y compuesto."
+          key_vocabulary: [interés simple, interés compuesto, elegir la mejor opción]
+          prior_knowledge: "Completo los 6 temas de Interés Simple vs. Interés Compuesto."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/dos-formas-de-crecer
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/mismo-monto-mismo-porcentaje-quien-gana
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/el-patron-que-se-acelera
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/entre-mas-anos-mas-se-nota-la-diferencia
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/elijo-la-mejor-opcion-para-mi-meta
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto/armo-mi-argumento-final
+          lessons:
+            - position: 1
+              slug: repaso-simple-vs-compuesto
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre interés simple y compuesto."
+              narrative_beat: "El equipo repasa las dos líneas de la pizarra y las explica, sin ayuda, con un ejemplo nuevo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-elijo-para-meta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: elige la mejor forma de crecimiento para una meta nueva."
+              narrative_beat: "Liruf elige, sin ayuda de nadie, la mejor forma de crecimiento para una meta nueva que se acaba de proponer."
+              difficulty: 4
+              suggested_families: [choice, money]
+        - position: 8
+          slug: cruce-todo-el-crecimiento-del-distrito
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Crecimiento del Distrito"
+          concept: "Mezclamos premio simple, cadena compuesta y costo evitado de suscripciones en un solo caso final del distrito."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión de dinero."
+          key_vocabulary: [premio simple, cadena compuesta, costo evitado]
+          prior_knowledge: "Completo el repaso de Interés Simple vs. Interés Compuesto (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/el-premio-por-guardar/calculo-mi-primer-premio
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro/tres-anos-dejando-todo-adentro
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme/comparo-lo-que-crece-a-mi-favor-y-en-mi-contra
+          lessons:
+            - position: 1
+              slug: junto-premio-simple-y-patron-acelerado
+              micro_objective: "Combina el cálculo de un premio simple con el patrón de crecimiento acelerado del interés compuesto en un caso nuevo."
+              narrative_beat: "Zara junta el cálculo simple del año 1 con el patrón acelerado de varios años, para un caso que mezcla las dos sagas."
+              difficulty: 4
+              suggested_families: [money, analyze]
+            - position: 2
+              slug: resuelvo-el-caso-final-del-distrito
+              micro_objective: "Evalúa, sin ayuda, un caso final combinando premio guardado, costo evitado y crecimiento compuesto en una sola decisión."
+              narrative_beat: "Rho resuelve el caso final del distrito cruzando las cuatro sagas: premio, interés compuesto, suscripciones y comparación."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 5
+    slug: la-prueba-del-distrito-de-crecimiento
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Growth District Test"
+      es-MX: "La Prueba del Distrito de Crecimiento"
+      pt-BR: "O Teste do Distrito de Crescimento"
+    description:
+      en-US: "A final test puts the whole growth toolkit - rewards, subscriptions and comparisons - to work."
+      es-MX: "Una prueba final pone a trabajar todo el kit de herramientas del crecimiento: premios, suscripciones y comparaciones."
+      pt-BR: "Um teste final coloca para trabalhar todo o kit de ferramentas do crescimento: premios, assinaturas e comparacoes."
+    topics:
+        - position: 1
+          slug: el-reto-del-premio-que-crece
+          kind: review_quest
+          title_es: "El Reto del Premio que Crece"
+          concept: "El Distrito de Crecimiento lanza su prueba final: calcular y defender cómo crece un premio guardado, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el cálculo de un premio simple con la cadena de interés compuesto para resolver un reto abierto."
+          key_vocabulary: [premio, interés compuesto, reto abierto]
+          prior_knowledge: "Completo El Premio por Guardar y Cuando el Premio se Queda Adentro."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/el-premio-por-guardar
+            - interes-que-se-acumula/cuando-el-premio-se-queda-adentro
+          lessons:
+            - position: 1
+              slug: recibo-la-prueba-final
+              micro_objective: "Recuerda, sin ayuda, cómo se calcula el premio de un monto guardado a un porcentaje dado."
+              narrative_beat: "Una pantalla se enciende en el Distrito de Crecimiento: 'Prueba final - demuestra que entiendes cómo crece tu dinero'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: calculo-tres-anos-sin-ayuda
+              micro_objective: "Calcula, sin ayuda, el total después de varios años dejando el premio adentro para un monto nuevo."
+              narrative_beat: "Zara enfrenta su primera prueba real: calcular sola, sin ayuda, cuánto crecería un monto nuevo en tres años."
+              difficulty: 3
+              suggested_families: [money, input]
+        - position: 2
+          slug: mi-argumento-defendido
+          kind: review_quest
+          title_es: "Mi Argumento, Defendido"
+          concept: "Frente al consejo del distrito, el equipo defiende su argumento final sobre qué crece a su favor y qué crece en su contra."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un plan combinando suscripciones, comisiones y crecimiento compuesto."
+          key_vocabulary: [defender, consejo, plan financiero]
+          prior_knowledge: "Completo El Reto del Premio que Crece (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - interes-que-se-acumula/la-suscripcion-que-nunca-duerme
+            - interes-que-se-acumula/interes-simple-vs-interes-compuesto
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-de-plan
+              micro_objective: "Organiza, sin ayuda, los argumentos de suscripciones, comisiones y crecimiento compuesto para defender un plan financiero simple."
+              narrative_beat: "Rho ensaya su defensa: primero lo que cancela, después cómo deja crecer su premio a favor."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-del-distrito
+              micro_objective: "Completa, sin ayuda, la defensa final de su plan ante el consejo del distrito, resistiendo una pregunta difícil."
+              narrative_beat: "Rho presenta ante el consejo del Distrito de Crecimiento; cuando le preguntan '¿y si hubieras dejado la suscripción activa?', responde con números."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

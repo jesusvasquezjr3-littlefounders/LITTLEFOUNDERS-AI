@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 1
+  slug: radar-de-oportunidades
+  theme: city
+  age_tier: tier4
+  title:
+    en-US: "Opportunity Radar"
+    es-MX: "Radar de Oportunidades"
+    pt-BR: "Radar de Oportunidades"
+  description:
+    en-US: "In Distrito Beta, four young scouts learn to spot problems worth solving before jumping to solutions - the first skill every founder needs."
+    es-MX: "En el Distrito Beta, cuatro jóvenes scouts aprenden a detectar problemas que de verdad valen la pena resolver, antes de saltar a las soluciones - la primera habilidad de todo founder."
+    pt-BR: "No Distrito Beta, quatro jovens exploradores aprendem a identificar problemas que realmente valem a pena resolver, antes de pular para solucoes - a primeira habilidade de todo founder."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan al Distrito Beta como aprendices de scouts de oportunidades: su trabajo es caminar la ciudad, escuchar quejas reales, detectar patrones y separar una simple molestia de un problema que alguien pagaría por resolver. A lo largo del distrito descubren que la mejor oportunidad no es la idea más brillante, sino el problema mejor entendido - y terminan defendiendo, con datos y no solo con entusiasmo, la oportunidad que decidieron perseguir."
+
+sagas:
+  - position: 1
+    slug: problemas-de-verdad
+    icon: search
+    title:
+      en-US: "Real Problems"
+      es-MX: "Problemas de Verdad"
+      pt-BR: "Problemas de Verdade"
+    description:
+      en-US: "Not every annoyance is a problem worth solving - learn to tell the difference."
+      es-MX: "No toda molestia es un problema que valga la pena resolver - aprende a distinguirlos."
+      pt-BR: "Nem todo incomodo e um problema que vale a pena resolver - aprenda a diferencia-los."
+    topics:
+        - position: 1
+          slug: molestia-vs-problema-real
+          title_es: "Molestia vs. problema real"
+          concept: "Una molestia es algo que incomoda una sola vez; un problema real se repite, cuesta tiempo o dinero, y alguien estaría dispuesto a resolverlo."
+          learning_objective: "El aprendiz distingue una molestia pasajera de un problema real usando tres señales: repetición, costo y disposición a resolverlo."
+          key_vocabulary: [molestia, problema real, repetición, costo, señal]
+          prior_knowledge: "Ninguno - es el punto de partida del curso."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cual fue la última 'molestia' que vivio esta semana y si de verdad se repite seguido o fue cosa de un solo día."
+          lessons:
+            - position: 1
+              slug: la-fila-del-cafe
+              micro_objective: "Identifica, en un caso concreto, si una queja describe una molestia de un solo día o un problema que se repite cada semana."
+              narrative_beat: "Rho anota en su libreta: 'la fila del café tardo 20 minutos hoy'. Antes de anotarlo como oportunidad, pregunta si eso pasa todos los días o solo hoy."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: tres-senales-de-un-problema-real
+              micro_objective: "Aplica las tres señales (se repite, cuesta algo, alguien pagaría por resolverlo) para calificar un caso como problema real o no."
+              narrative_beat: "Zara revisa una lista de 4 quejas del barrio y descarta dos porque solo pasaron una vez y a nadie más le importaron."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: quien-lo-sufre
+          title_es: "Quien lo sufre"
+          concept: "Un problema sin una persona concreta detras no es una oportunidad; hay que nombrar exactamente quien lo vive."
+          learning_objective: "El aprendiz identifica al grupo o persona específica afectada por un problema, en vez de hablar de la gente en general."
+          key_vocabulary: [afectado, grupo específico, usuario, generalizar]
+          prior_knowledge: "Distingue una molestia de un problema real (tema anterior)."
+          fact_refs: []
+          parent_check: "Cuando {{name}} diga que 'a la gente le pasa X', preguntale exactamente a QUIEN conoce que le pasa - un nombre, no una generalidad."
+          lessons:
+            - position: 1
+              slug: quien-exactamente
+              micro_objective: "Convierte una frase vaga ('a los estudiantes les cuesta') en una descripción específica de quien exactamente sufre el problema."
+              narrative_beat: "Liruf dice 'a todos les cuesta madrugar'. Dina lo detiene: 'a todos, o a los que viven a 40 minutos de la escuela?'"
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: mapa-de-afectados
+              micro_objective: "Ordena 4 grupos distintos según que tan directamente sufren un mismo problema descrito en el caso."
+              narrative_beat: "Rho dibuja un mapa: en el centro, quien más sufre el problema del transporte tarde; en la orilla, quien casi no lo nota."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 3
+          slug: que-tan-seguido-pasa
+          title_es: "Que tan seguido pasa"
+          concept: "La frecuencia importa: un problema diario vale más la pena resolver que uno que ocurre una vez al año."
+          learning_objective: "El aprendiz compara dos problemas por su frecuencia y prioriza el que ocurre con más regularidad."
+          key_vocabulary: [frecuencia, diario, ocasional, prioridad]
+          prior_knowledge: "Sabe identificar quien sufre un problema (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que compare dos problemas que haya mencionado esta semana: cual pasa más seguido?"
+          lessons:
+            - position: 1
+              slug: diario-o-una-vez-al-ano
+              micro_objective: "Clasifica 4 problemas descritos según ocurran a diario, cada semana o casi nunca."
+              narrative_beat: "Zara ordena tarjetas: 'se me olvida la mochila' (diario) junto a 'se rompio mi patineta' (rara vez)."
+              difficulty: 3
+              suggested_families: [arrange, choice]
+            - position: 2
+              slug: elijo-el-mas-frecuente
+              micro_objective: "Elige, entre dos problemas con el mismo grupo afectado, cual conviene atacar primero por su frecuencia."
+              narrative_beat: "Rho compara dos quejas del mismo salon y elige investigar primero la que se repite cada clase, no la que paso una sola vez."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: ya-lo-resuelven-de-otra-forma
+          title_es: "Ya lo resuelven de otra forma"
+          concept: "Casi todo problema ya tiene una solución improvisada (un parche); conocerla te dice contra que compites de verdad."
+          learning_objective: "El aprendiz identifica el 'parche' actual que la gente usa para un problema, antes de proponer algo nuevo."
+          key_vocabulary: [parche, solución actual, competencia indirecta, workaround]
+          prior_knowledge: "Sabe comparar problemas por frecuencia (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que hace la gente HOY para resolver el problema que le interesa, antes de inventar algo nuevo."
+          lessons:
+            - position: 1
+              slug: el-parche-que-ya-usan
+              micro_objective: "Reconoce, en un caso, cual es la solución improvisada que la gente ya usa para un problema, aunque sea incomoda."
+              narrative_beat: "Liruf nota que sus compañeros ya resuelven el problema de cargar el cargador compartiendolo por turnos en un chat."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: contra-que-compito
+              micro_objective: "Compara una idea nueva contra el parche actual y decide si de verdad ofrece una mejora clara."
+              narrative_beat: "Zara se pregunta si su idea de app de prestamos entre compañeros es mejor que el chat grupal que ya usan, o solo distinta."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 5
+          slug: pagaria-por-resolverlo
+          title_es: "Pagaría por resolverlo"
+          concept: "No basta con que un problema moleste: hay que preguntar si alguien pagaría tiempo, esfuerzo o dinero por una solución mejor."
+          learning_objective: "El aprendiz evalua la señal de disposición a pagar (dinero, tiempo o esfuerzo) como filtro de una oportunidad real."
+          key_vocabulary: [disposición a pagar, esfuerzo, valor percibido]
+          prior_knowledge: "Conoce el parche actual de un problema (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si el problema que le interesa es algo por lo que un amigo pagaría, o solo algo de lo que se queja."
+          lessons:
+            - position: 1
+              slug: pagar-con-dinero-o-con-tiempo
+              micro_objective: "Distingue tres formas en que alguien 'paga' por resolver un problema: dinero, tiempo o esfuerzo."
+              narrative_beat: "Rho entrevista a un vecino: no pagaría con dinero por lavar su bici, pero si cambiaría 20 minutos de su sabado."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: la-senal-mas-fuerte
+              micro_objective: "Elige, entre dos reacciones de personas distintas, cual muestra una disposición a pagar más fuerte."
+              narrative_beat: "Zara compara dos respuestas: una persona dice 'estaría bien' y otra dice 'te doy $50 ahora mismo por eso' - sabe cual pesa más."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: el-problema-en-una-frase
+          title_es: "El problema en una frase"
+          concept: "Un problema bien entendido cabe en una sola frase clara: quien lo sufre, que le pasa y por que le importa."
+          learning_objective: "El aprendiz redacta un problema real en una sola frase que nombra al afectado, la situación y la consecuencia."
+          key_vocabulary: [enunciado del problema, claridad, consecuencia]
+          prior_knowledge: "Reconoce señales de disposición a pagar (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga, en una sola frase, cual es el problema que más le interesa resolver - sin rodeos."
+          lessons:
+            - position: 1
+              slug: sobra-o-falta-informacion
+              micro_objective: "Revisa 3 enunciados de problema y detecta cual le falta o le sobra información para ser claro."
+              narrative_beat: "Dina lee tres enunciados en la pizarra del distrito; uno menciona quien, que y por que, los otros dos se quedan cortos."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-problema
+              micro_objective: "Redacta, sin ayuda, un enunciado de problema de una sola frase con afectado, situación y consecuencia."
+              narrative_beat: "Liruf escribe en su libreta la frase final de su primer problema investigado y la lee en voz alta al equipo."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-radar-de-problemas
+          kind: review_spaced
+          title_es: "Repaso: Radar de Problemas Reales"
+          concept: "Antes de seguir explorando el distrito, el equipo repasa como distinguir un problema real de una simple molestia."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los filtros de esta saga para evaluar problemas."
+          key_vocabulary: [molestia, problema real, frecuencia, disposición a pagar]
+          prior_knowledge: "Completo los 6 temas de Problemas de Verdad."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/problemas-de-verdad/molestia-vs-problema-real
+            - radar-de-oportunidades/problemas-de-verdad/quien-lo-sufre
+            - radar-de-oportunidades/problemas-de-verdad/que-tan-seguido-pasa
+            - radar-de-oportunidades/problemas-de-verdad/ya-lo-resuelven-de-otra-forma
+            - radar-de-oportunidades/problemas-de-verdad/pagaria-por-resolverlo
+            - radar-de-oportunidades/problemas-de-verdad/el-problema-en-una-frase
+          lessons:
+            - position: 1
+              slug: repaso-molestia-o-problema
+              micro_objective: "Recuerda y aplica, sin ayuda, las señales para distinguir una molestia de un problema real."
+              narrative_beat: "El equipo revisa su libreta de campo y vuelve a clasificar sus primeras notas del distrito con ojos más entrenados."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-armo-mi-enunciado
+              micro_objective: "Aplica sin ayuda todo lo repasado: arma el enunciado de un problema nuevo en una sola frase."
+              narrative_beat: "Zara toma una queja fresca del distrito y, sin ayuda de nadie, arma el enunciado completo en menos de un minuto."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-problemas-y-frecuencia
+          kind: review_interleaved
+          title_es: "Cruce: Problemas y Frecuencia"
+          concept: "Mezclamos varias señales de esta saga -repetición, frecuencia y disposición a pagar- para juzgar un problema de una sola vez."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar un problema completo."
+          key_vocabulary: [molestia, frecuencia, disposición a pagar]
+          prior_knowledge: "Completo el repaso de Problemas de Verdad (tema anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/problemas-de-verdad/molestia-vs-problema-real
+            - radar-de-oportunidades/problemas-de-verdad/que-tan-seguido-pasa
+            - radar-de-oportunidades/problemas-de-verdad/pagaria-por-resolverlo
+          lessons:
+            - position: 1
+              slug: junto-frecuencia-y-molestia
+              micro_objective: "Combina la señal de frecuencia con la de molestia-vs-problema para evaluar un caso nuevo."
+              narrative_beat: "Rho junta dos filtros a la vez: revisa si el problema se repite Y si de verdad incomoda a alguien más alla de un mal día."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: evaluo-un-caso-completo
+              micro_objective: "Evalua, sin ayuda, un caso nuevo combinando frecuencia y disposición a pagar en una sola decisión."
+              narrative_beat: "Zara decide en segundos si vale la pena seguir investigando un problema, cruzando que tan seguido pasa con si alguien pagaría por resolverlo."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: detectando-patrones
+    icon: insights
+    title:
+      en-US: "Spotting Patterns"
+      es-MX: "Detectando Patrones"
+      pt-BR: "Detectando Padroes"
+    description:
+      en-US: "One complaint is an anecdote. The same complaint from strangers is a pattern - and a lead."
+      es-MX: "Una queja es una anecdota. La misma queja de desconocidos es un patron - y una pista."
+      pt-BR: "Uma reclamacao e uma anedota. A mesma reclamacao de estranhos e um padrao - e uma pista."
+    topics:
+        - position: 1
+          slug: quejas-que-se-repiten
+          title_es: "Quejas que se repiten"
+          concept: "Cuando la misma queja aparece en boca de personas distintas que no se conocen entre si, ahí hay un patron, no una casualidad."
+          learning_objective: "El aprendiz reconoce un patron cuando la misma queja aparece en fuentes independientes."
+          key_vocabulary: [patron, queja repetida, fuente independiente]
+          prior_knowledge: "Completo Problemas de Verdad (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si ha escuchado la MISMA queja de dos personas que no se conocen entre si - eso ya es un patron."
+          lessons:
+            - position: 1
+              slug: dos-quejas-la-misma-cosa
+              micro_objective: "Reconoce cuando dos quejas de personas distintas describen en realidad el mismo problema."
+              narrative_beat: "Rho compara la queja de un vendedor de la esquina con la de un cliente en otra calle: son casi la misma frase, sin haberse conocido."
+              difficulty: 1
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: cuento-las-repeticiones
+              micro_objective: "Cuenta cuantas veces se repite una queja entre 6 comentarios distintos de un caso."
+              narrative_beat: "Zara marca con una palomita cada vez que encuentra la misma queja escondida en comentarios de redes del distrito."
+              difficulty: 2
+              suggested_families: [analyze, input]
+        - position: 2
+          slug: lo-que-todos-dan-por-hecho
+          title_es: "Lo que todos dan por hecho"
+          concept: "Una oportunidad se esconde en lo que todos aceptan como normal sin cuestionarlo - 'siempre ha sido así' es una pista, no una regla."
+          learning_objective: "El aprendiz identifica una suposición que un grupo da por hecha y la cuestiona como posible oportunidad."
+          key_vocabulary: [suposición, dar por hecho, cuestionar, normalizado]
+          prior_knowledge: "Reconoce patrones en quejas repetidas (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que cosa 'siempre se ha hecho así' en su escuela o barrio que nadie ha cuestionado."
+          lessons:
+            - position: 1
+              slug: siempre-ha-sido-asi
+              micro_objective: "Detecta, en una escena, la frase 'siempre ha sido así' como señal de una suposición sin cuestionar."
+              narrative_beat: "Liruf pregunta por que las inscripciónes del club siempre son solo en papel, y un adulto responde 'porque siempre ha sido así'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: cuestiono-la-suposicion
+              micro_objective: "Convierte una suposición aceptada en una pregunta que abre una posible oportunidad."
+              narrative_beat: "Dina transforma 'siempre ha sido así' en 'y si no tuviera que serlo?' frente a tres suposiciónes distintas del distrito."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: cuando-algo-cambia
+          title_es: "Cuando algo cambia"
+          concept: "Un cambio de tecnologia, costumbre o regla abre huecos nuevos que antes no existian - hay que estar atento a lo que cambio recientemente."
+          learning_objective: "El aprendiz relaciona un cambio reciente (tecnologico o de costumbre) con una nueva oportunidad que ese cambio abre."
+          key_vocabulary: [cambio, tendencia, hueco nuevo]
+          prior_knowledge: "Sabe cuestionar suposiciónes (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que cambio este año en su escuela o su grupo de amigos que antes no existia."
+          lessons:
+            - position: 1
+              slug: algo-nuevo-en-el-distrito
+              micro_objective: "Identifica en la escena que cambio reciente género una necesidad nueva que antes no existia."
+              narrative_beat: "Rho nota que desde que llego la nueva ciclovia, los vecinos ya no saben donde estacionar sus bicis con seguridad."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: conecto-el-cambio-con-el-hueco
+              micro_objective: "Conecta un cambio reciente con el hueco específico que ese cambio dejo sin resolver."
+              narrative_beat: "Zara arma en su libreta la línea: 'llego la ciclovia, aumentaron las bicis, falta estacionamiento seguro'."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: comparo-mercados-parecidos
+          title_es: "Comparo mercados parecidos"
+          concept: "Si algo funciono para resolver un problema parecido en otro lugar, puede darte una pista de que probar aquí."
+          learning_objective: "El aprendiz compara un caso conocido de otro contexto con el problema local para inspirar una idea."
+          key_vocabulary: [comparar, contexto parecido, inspiración, adaptar]
+          prior_knowledge: "Relaciona cambios recientes con huecos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si conoce alguna solución de otra escuela o ciudad que podría adaptarse a un problema de la suya."
+          lessons:
+            - position: 1
+              slug: en-otra-colonia-ya-lo-resolvieron
+              micro_objective: "Reconoce en un caso una solución que funciono en un contexto parecido y podría adaptarse al propio."
+              narrative_beat: "Liruf recuerda que en la colonia vecina un grupo de estudiantes organizo prestamo de calculadoras - algo parecido podría servir aquí."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: adapto-no-copio
+              micro_objective: "Ajusta una idea inspirada en otro contexto para que encaje en las condiciones específicas del caso local."
+              narrative_beat: "Dina ajusta la idea del prestamo de calculadoras a su propio salon, donde el problema real es compartir cargadores, no calculadoras."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-hueco-en-el-mercado
+          title_es: "El hueco entre lo que hay y lo que falta"
+          concept: "Comparar lo que ya existe contra lo que la gente todavia necesita revela el hueco exacto que una oportunidad debe llenar."
+          learning_objective: "El aprendiz traza el hueco entre las opciones actuales y la necesidad no cubierta de un grupo."
+          key_vocabulary: [hueco de mercado, opciones actuales, necesidad no cubierta]
+          prior_knowledge: "Compara mercados parecidos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que hay disponible hoy para resolver el problema que le interesa, y que le sigue faltando a esas opciones."
+          lessons:
+            - position: 1
+              slug: lo-que-ya-existe
+              micro_objective: "Lista, a partir de un caso, las opciones que ya existen para resolver un problema dado."
+              narrative_beat: "Rho hace una lista de todo lo que ya existe para conseguir apuntes de clase: fotocopias, grupos de chat, prestamos directos."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: lo-que-todavia-falta
+              micro_objective: "Identifica, comparando contra lo que ya existe, que necesidad específica sigue sin cubrirse."
+              narrative_beat: "Zara nota que ninguna opción de apuntes resuelve el problema real: encontrar justo el tema que falto, no todo el cuaderno."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: valido-con-datos-no-con-la-panza
+          title_es: "Valido con datos, no con la panza"
+          concept: "Una corazonada es un buen punto de partida, pero antes de invertir tiempo hay que buscar una señal real que la respalde."
+          learning_objective: "El aprendiz distingue una corazonada de una señal validada y busca al menos un dato antes de decidir."
+          key_vocabulary: [corazonada, validar, señal real, dato]
+          prior_knowledge: "Traza el hueco de mercado (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} como comprobaria, sin gastar dinero, si su idea de verdad le interesa a alguien más."
+          lessons:
+            - position: 1
+              slug: corazonada-o-dato
+              micro_objective: "Distingue entre una afirmación basada en corazonada y una basada en un dato real observado."
+              narrative_beat: "Liruf dice 'a todos les va a encantar' - Dina le pregunta: 'a cuantos ya se lo preguntaste de verdad?'"
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: busco-una-senal-antes-de-seguir
+              micro_objective: "Elige, entre 3 formas de validar una idea, la más rápida y barata para conseguir una señal real."
+              narrative_beat: "Zara elige preguntar a 10 compañeros en el recreo antes de gastar su domingo diseñando un logo que nadie pidio."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+        - position: 7
+          slug: repaso-detectando-patrones
+          kind: review_spaced
+          title_es: "Repaso: Detectando Patrones"
+          concept: "El equipo repasa como encontrar patrones, cuestionar lo normalizado y validar una idea antes de enamorarse de ella."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las herramientas de detección de patrones de esta saga."
+          key_vocabulary: [patron, suposición, hueco, validar]
+          prior_knowledge: "Completo los 6 temas de Detectando Patrones."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/detectando-patrones/quejas-que-se-repiten
+            - radar-de-oportunidades/detectando-patrones/lo-que-todos-dan-por-hecho
+            - radar-de-oportunidades/detectando-patrones/cuando-algo-cambia
+            - radar-de-oportunidades/detectando-patrones/comparo-mercados-parecidos
+            - radar-de-oportunidades/detectando-patrones/el-hueco-en-el-mercado
+            - radar-de-oportunidades/detectando-patrones/valido-con-datos-no-con-la-panza
+          lessons:
+            - position: 1
+              slug: repaso-encuentro-el-patron
+              micro_objective: "Recuerda y aplica, sin ayuda, como reconocer un patron entre quejas repetidas."
+              narrative_beat: "El equipo revisa sus notas de campo del distrito y marca, sin ayuda, cuales quejas realmente forman un patron."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: repaso-valido-mi-idea
+              micro_objective: "Aplica sin ayuda todo lo repasado: propone una forma rápida de validar una idea con una señal real."
+              narrative_beat: "Rho propone, sin que nadie se lo pida, como validaria su próxima corazonada antes de invertir tiempo en ella."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-patrones-y-problemas-reales
+          kind: review_interleaved
+          title_es: "Cruce: Patrones y Problemas Reales"
+          concept: "Mezclamos el filtro de disposición a pagar de la saga anterior con la detección de patrones de esta saga."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de la saga de problemas reales con ideas de detección de patrones."
+          key_vocabulary: [patron, disposición a pagar, validar]
+          prior_knowledge: "Completo el repaso de Detectando Patrones (tema anterior) y Problemas de Verdad (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/detectando-patrones/lo-que-todos-dan-por-hecho
+            - radar-de-oportunidades/detectando-patrones/valido-con-datos-no-con-la-panza
+            - radar-de-oportunidades/problemas-de-verdad/pagaria-por-resolverlo
+          lessons:
+            - position: 1
+              slug: patron-mas-disposicion-a-pagar
+              micro_objective: "Combina un patron detectado con la señal de disposición a pagar para decidir si vale la pena seguir."
+              narrative_beat: "Zara encuentra un patron fuerte de quejas, pero al preguntar si pagarían por resolverlo, la respuesta es tibia - y ajusta su plan."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reviso-mi-primer-hallazgo
+              micro_objective: "Revisa, sin ayuda, un hallazgo del inicio de la aventura usando el filtro de patrones aprendido después."
+              narrative_beat: "Rho vuelve a su primera nota del distrito y descubre que en realidad no era un patron, solo una queja aislada."
+              difficulty: 5
+              suggested_families: [choice, story]
+  - position: 3
+    slug: de-la-idea-a-la-oportunidad
+    icon: lightbulb
+    title:
+      en-US: "From Idea to Opportunity"
+      es-MX: "De la Idea a la Oportunidad"
+      pt-BR: "Da Ideia a Oportunidade"
+    description:
+      en-US: "An idea is free. An opportunity has already survived the filters - size, competition, edge, and risk."
+      es-MX: "Una idea es gratis. Una oportunidad ya sobrevivio los filtros: tamano, competencia, ventaja y riesgo."
+      pt-BR: "Uma ideia e gratis. Uma oportunidade ja sobreviveu aos filtros: tamanho, concorrencia, vantagem e risco."
+    topics:
+        - position: 1
+          slug: una-idea-no-es-una-oportunidad
+          title_es: "Una idea no es una oportunidad"
+          concept: "Una idea es algo que se te ocurre; una oportunidad es una idea que ya paso por los filtros de problema real, frecuencia y disposición a pagar."
+          learning_objective: "El aprendiz distingue una idea cruda de una oportunidad validada aplicando los filtros ya aprendidos."
+          key_vocabulary: [idea, oportunidad validada, filtro]
+          prior_knowledge: "Completo Detectando Patrones (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si su idea favorita ya paso por los filtros de problema real, o todavia es solo una idea."
+          lessons:
+            - position: 1
+              slug: se-me-ocurrio-o-lo-comprobe
+              micro_objective: "Distingue, en 4 frases, cuales describen una idea sin comprobar y cuales una oportunidad ya validada."
+              narrative_beat: "Liruf presume 'se me ocurrio una app genial' - Rho pregunta si ya comprobo que alguien la necesita de verdad."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: paso-mi-idea-por-los-filtros
+              micro_objective: "Aplica los tres filtros previos (problema real, frecuencia, disposición a pagar) a una idea propia."
+              narrative_beat: "Zara toma su propia idea y la somete, una por una, a las preguntas que el distrito le enseñó a hacer."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+        - position: 2
+          slug: tamano-del-mercado
+          title_es: "Tamano del mercado"
+          concept: "No toda oportunidad es igual de grande: hay que estimar, aunque sea a grosso modo, a cuantas personas afecta un problema."
+          learning_objective: "El aprendiz estima, con un calculo simple, si un problema afecta a un grupo pequeño o a uno grande."
+          key_vocabulary: [tamano de mercado, estimar, grupo pequeño, grupo grande]
+          prior_knowledge: "Distingue idea de oportunidad validada (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} a cuantas personas -aproximadamente- creeria que afecta el problema que quiere resolver."
+          lessons:
+            - position: 1
+              slug: pocos-o-muchos
+              micro_objective: "Estima si un problema afecta solo a un grupo cercano o a un grupo mucho más amplio, usando pistas del caso."
+              narrative_beat: "Rho compara dos problemas: uno afecta solo a su salon de 30, el otro a toda la escuela de 800 - no son del mismo tamano."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: calculo-un-numero-aproximado
+              micro_objective: "Calcula un estimado simple (multiplicación de un solo paso) de a cuantas personas podría afectar un problema."
+              narrative_beat: "Zara multiplica: si 1 de cada 5 estudiantes de su grado sufre el problema, y el grado tiene 150, calcula el estimado."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 3
+          slug: quien-mas-lo-intenta
+          title_es: "Quien más lo intenta"
+          concept: "Rara vez eres el primero: buscar quien más esta intentando resolver el mismo problema te dice si el mercado ya esta muy peleado."
+          learning_objective: "El aprendiz identifica competidores directos e indirectos de una oportunidad dada."
+          key_vocabulary: [competencia directa, competencia indirecta, ya lo intentan]
+          prior_knowledge: "Estima el tamano de un mercado (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} quien más, que el conozca, ya esta intentando resolver el mismo problema que le interesa."
+          lessons:
+            - position: 1
+              slug: quien-ya-esta-en-esto
+              micro_objective: "Reconoce, en un caso, quien más ya intenta resolver el mismo problema, directa o indirectamente."
+              narrative_beat: "Liruf descubre que otros dos compañeros ya venden estuches personalizados en la escuela - no es el único jugando ese juego."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: directa-o-indirecta
+              micro_objective: "Clasifica 4 competidores de un caso entre competencia directa (mismo problema, misma solución) e indirecta (misma necesidad, otra forma)."
+              narrative_beat: "Dina separa en dos columnas: los que venden lo mismo que ella, y los que resuelven la misma necesidad de otra forma."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: mi-ventaja-por-que-yo
+          title_es: "Mi ventaja: por que yo"
+          concept: "Si otros ya lo intentan, hay que nombrar tu ventaja concreta: algo que sabes, tienes o puedes hacer que a otros les cuesta más."
+          learning_objective: "El aprendiz articula una ventaja concreta y específica frente a la competencia identificada."
+          key_vocabulary: [ventaja, por que yo, recurso propio]
+          prior_knowledge: "Identifica competidores (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que sabe hacer, tiene o conoce que le da una ventaja real frente a otros que intentan lo mismo."
+          lessons:
+            - position: 1
+              slug: que-tengo-que-otros-no
+              micro_objective: "Identifica, en un caso, una ventaja concreta (recurso, conocimiento o relación) que un personaje tiene frente a su competencia."
+              narrative_beat: "Zara se da cuenta de que conoce personalmente a los profesores del taller de costura - una ventaja que sus competidores no tienen."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: elijo-mi-mejor-ventaja
+              micro_objective: "Elige, entre 3 posibles ventajas propias, la más difícil de copiar por la competencia."
+              narrative_beat: "Rho compara tres ventajas posibles y elige la que le tomaría más tiempo a alguien más conseguir: su red de contactos del taller."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: riesgos-de-la-oportunidad
+          title_es: "Riesgos de la oportunidad"
+          concept: "Toda oportunidad esconde riesgos: que nadie pague lo suficiente, que sea muy cara de armar, o que la competencia reaccione rápido."
+          learning_objective: "El aprendiz nombra al menos un riesgo concreto de una oportunidad antes de comprometerse con ella."
+          key_vocabulary: [riesgo, comprometerse, reacción de la competencia]
+          prior_knowledge: "Articula su ventaja (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} que es lo peor que podría pasar si sigue adelante con su oportunidad - y si estaría dispuesto a asumirlo."
+          lessons:
+            - position: 1
+              slug: que-podria-salir-mal
+              micro_objective: "Identifica, en un caso, el riesgo más probable de que una oportunidad no funcione."
+              narrative_beat: "Liruf esta seguro de su idea, pero Dina le pregunta: 'y si nadie más quiere pagar lo que tu crees que vale?'"
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: peso-el-riesgo-contra-la-ventaja
+              micro_objective: "Compara el riesgo principal de una oportunidad contra la ventaja propia y decide si el riesgo es manejable."
+              narrative_beat: "Zara pone en una balanza mental su ventaja (conoce al taller) contra su riesgo (pocos clientes) y decide seguir adelante."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: elijo-mi-oportunidad
+          title_es: "Elijo mi oportunidad"
+          concept: "Con problema, tamano, competencia, ventaja y riesgo sobre la mesa, toca decidir cual oportunidad perseguir - y cuales dejar ir por ahora."
+          learning_objective: "El aprendiz decide, comparando varios criterios a la vez, cual de varias oportunidades perseguir."
+          key_vocabulary: [decisión, criterios, dejar ir]
+          prior_knowledge: "Nombra riesgos de una oportunidad (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique, con sus propios criterios, por que eligio la oportunidad que eligio y no otra."
+          lessons:
+            - position: 1
+              slug: comparo-dos-oportunidades
+              micro_objective: "Compara dos oportunidades usando al menos dos criterios (tamano y ventaja) para ver cual pesa más."
+              narrative_beat: "Rho pone lado a lado dos ideas del equipo: una con mercado grande pero sin ventaja clara, otra pequeña pero con ventaja fuerte."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: elijo-y-explico-por-que
+              micro_objective: "Elige, sin ayuda, una oportunidad entre varias y explica su decisión citando al menos dos criterios."
+              narrative_beat: "Zara elige su oportunidad final frente a todo el equipo y explica, punto por punto, por que peso más que las otras."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-de-la-idea-a-la-oportunidad
+          kind: review_spaced
+          title_es: "Repaso: De la Idea a la Oportunidad"
+          concept: "El equipo repasa como convertir una idea cruda en una oportunidad validada con ventaja y riesgo entendidos."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, los criterios de esta saga para decidir entre oportunidades."
+          key_vocabulary: [idea, oportunidad, ventaja, riesgo]
+          prior_knowledge: "Completo los 6 temas de De la Idea a la Oportunidad."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/una-idea-no-es-una-oportunidad
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/tamano-del-mercado
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/quien-mas-lo-intenta
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/mi-ventaja-por-que-yo
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/riesgos-de-la-oportunidad
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/elijo-mi-oportunidad
+          lessons:
+            - position: 1
+              slug: repaso-idea-u-oportunidad
+              micro_objective: "Recuerda, sin ayuda, la diferencia entre una idea cruda y una oportunidad ya validada."
+              narrative_beat: "El equipo revisa su lista de ideas iniciales y marca, sin ayuda, cuales ya se convirtieron en oportunidades de verdad."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-decido-con-criterios
+              micro_objective: "Aplica sin ayuda lo repasado: decide entre dos oportunidades nuevas usando los criterios de esta saga."
+              narrative_beat: "Liruf compara dos oportunidades nuevas del distrito y decide, sin ayuda de nadie, cual vale más la pena perseguir."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-ventaja-riesgo-y-hueco
+          kind: review_interleaved
+          title_es: "Cruce: Ventaja, Riesgo y Hueco de Mercado"
+          concept: "Mezclamos el hueco de mercado de la saga anterior con la ventaja y el riesgo de esta saga para armar un caso completo."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, hueco de mercado, ventaja propia y riesgo en una sola decisión."
+          key_vocabulary: [hueco, ventaja, riesgo]
+          prior_knowledge: "Completo el repaso de De la Idea a la Oportunidad (tema anterior) y Detectando Patrones (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/mi-ventaja-por-que-yo
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/riesgos-de-la-oportunidad
+            - radar-de-oportunidades/detectando-patrones/el-hueco-en-el-mercado
+          lessons:
+            - position: 1
+              slug: hueco-mas-ventaja
+              micro_objective: "Combina un hueco de mercado detectado con la ventaja propia para argumentar por que esa oportunidad le conviene."
+              narrative_beat: "Zara conecta el hueco que encontro semanas atras con la ventaja que tiene hoy: por fin ve por que esa oportunidad es SUYA."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: hueco-mas-riesgo-decido
+              micro_objective: "Combina un hueco de mercado con su riesgo principal para decidir, sin ayuda, si vale la pena perseguirlo."
+              narrative_beat: "Rho revisa un hueco prometedor pero nota un riesgo serio de competencia - decide esperar antes de lanzarse."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 4
+    slug: el-radar-en-accion
+    icon: explore
+    title:
+      en-US: "The Radar in Action"
+      es-MX: "El Radar en Acción"
+      pt-BR: "O Radar em Acao"
+    description:
+      en-US: "Real scouting means walking the district, asking real people, and writing down what you actually see."
+      es-MX: "Salir a explorar de verdad significa caminar el distrito, preguntar a gente real y anotar lo que de verdad se ve."
+      pt-BR: "Explorar de verdade significa caminhar pelo distrito, perguntar a pessoas reais e anotar o que realmente se ve."
+    topics:
+        - position: 1
+          slug: escaneo-del-distrito
+          title_es: "Escaneo del distrito"
+          concept: "Aplicar el radar completo significa salir a observar de verdad, no solo imaginar problemas desde el escritorio."
+          learning_objective: "El aprendiz aplica el conjunto de filtros de la aventura a una observación de campo real."
+          key_vocabulary: [observación de campo, escaneo, filtro completo]
+          prior_knowledge: "Completo De la Idea a la Oportunidad (saga anterior)."
+          fact_refs: []
+          parent_check: "Invita a {{name}} a salir contigo 15 minutos a observar su colonia y anotar un problema real que vea, no que imagine."
+          lessons:
+            - position: 1
+              slug: salgo-a-observar
+              micro_objective: "Registra, a partir de una escena de campo, al menos un problema observado directamente (no imaginado)."
+              narrative_beat: "El equipo sale del salon de planeación y camina tres cuadras del distrito anotando solo lo que ven de verdad, no lo que suponen."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: aplico-todos-los-filtros
+              micro_objective: "Aplica en orden los filtros de frecuencia, disposición a pagar y competencia a una observación recien hecha."
+              narrative_beat: "Dina toma la primera nota de campo del día y la pasa, una por una, por todas las preguntas que el distrito le enseñó."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+        - position: 2
+          slug: mi-primera-conversacion
+          title_es: "Mi primera conversación"
+          concept: "Antes de la entrevista formal, una conversación corta e informal ya revela mucho."
+          learning_objective: "El aprendiz hace una pregunta abierta a una persona real para obtener información sobre un problema, sin sesgar la respuesta."
+          key_vocabulary: [conversación informal, pregunta abierta, sesgo]
+          prior_knowledge: "Aplica todos los filtros a una observación (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a hacerle UNA pregunta abierta a alguien fuera de la familia sobre el problema que investiga, sin adelantarle la respuesta."
+          lessons:
+            - position: 1
+              slug: pregunta-abierta-o-cerrada
+              micro_objective: "Distingue entre una pregunta que sesga la respuesta ('no crees que esto es un problema?') y una abierta ('que es lo que más te cuesta de...?')."
+              narrative_beat: "Liruf esta a punto de preguntar 'no crees que mi idea es genial?' - Rho lo detiene: eso ya empuja la respuesta."
+              difficulty: 2
+              suggested_families: [choice, story]
+            - position: 2
+              slug: mi-primera-pregunta-de-verdad
+              micro_objective: "Formula, sin ayuda, una pregunta abierta para investigar un problema con una persona del caso."
+              narrative_beat: "Zara se acerca a un vendedor del distrito y le hace su primera pregunta abierta de verdad, libreta en mano."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: anoto-lo-que-veo-no-lo-que-quiero-ver
+          title_es: "Anoto lo que veo, no lo que quiero ver"
+          concept: "Es fácil anotar solo lo que confirma tu idea; hay que anotar también lo que la contradice."
+          learning_objective: "El aprendiz reconoce el sesgo de confirmación y registra evidencia que contradice su propia hipotesis."
+          key_vocabulary: [sesgo de confirmación, evidencia, contradice]
+          prior_knowledge: "Hace una pregunta abierta (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si, al investigar, ha anotado también las respuestas que NO le gustaron o que contradicen su idea."
+          lessons:
+            - position: 1
+              slug: solo-anoto-lo-que-me-gusta
+              micro_objective: "Detecta en un caso cuando alguien esta ignorando evidencia que contradice su idea favorita."
+              narrative_beat: "Rho nota que Liruf solo apunta las respuestas que le dan la razón y tacha, sin querer, las que no le convienen."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: registro-tambien-lo-que-contradice
+              micro_objective: "Registra, entre 4 respuestas de un caso, tanto las que apoyan como las que contradicen una hipotesis."
+              narrative_beat: "Zara obliga a su equipo a escribir en dos columnas: lo que confirma la idea y lo que la pone en duda, sin borrar nada."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: priorizo-mis-tres-mejores-hallazgos
+          title_es: "Priorizo mis tres mejores hallazgos"
+          concept: "De todo lo observado, no todo pesa igual: hay que elegir los 3 hallazgos más fuertes para seguir investigando."
+          learning_objective: "El aprendiz prioriza 3 hallazgos de campo entre varios, usando los criterios ya aprendidos."
+          key_vocabulary: [priorizar, hallazgo, criterio]
+          prior_knowledge: "Registra evidencia que contradice su hipotesis (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que elija sus 3 mejores hallazgos de la semana y te explique por que esos y no otros."
+          lessons:
+            - position: 1
+              slug: cuales-hallazgos-pesan-mas
+              micro_objective: "Ordena 5 hallazgos de campo de mayor a menor fuerza, usando frecuencia y disposición a pagar como criterio."
+              narrative_beat: "Dina ordena sobre la mesa cinco notas de campo y las acomoda de la más prometedora a la más débil."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: elijo-mis-tres-finalistas
+              micro_objective: "Selecciona, sin ayuda, los 3 hallazgos más fuertes de una lista más larga y descarta el resto."
+              narrative_beat: "Rho tacha dos hallazgos débiles de su lista y se queda con los tres que de verdad merecen más tiempo del equipo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: pitch-de-una-linea
+          title_es: "Pitch de una línea"
+          concept: "Si no puedes explicar tu oportunidad en una sola línea clara, todavia no la entiendes lo suficiente."
+          learning_objective: "El aprendiz condensa una oportunidad validada en una sola línea que comunique problema, afectado y por que importa."
+          key_vocabulary: [pitch, una línea, comunicar]
+          prior_knowledge: "Prioriza 3 hallazgos (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique su oportunidad en una sola frase, sin pausas ni 'y también...'."
+          lessons:
+            - position: 1
+              slug: muy-largo-o-justo
+              micro_objective: "Revisa 3 versiónes de un pitch y elige la que comunica la oportunidad en una sola línea clara, sin relleno."
+              narrative_beat: "Liruf presenta un pitch de 5 minutos; Zara le muestra como decirlo en una sola frase sin perder lo esencial."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: escribo-mi-pitch-de-una-linea
+              micro_objective: "Redacta, sin ayuda, el pitch de una sola línea de su propia oportunidad."
+              narrative_beat: "Rho escribe su pitch final en una tarjeta y lo repite en voz alta hasta que le sale en una sola respiración."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: checklist-final-del-radar
+          title_es: "Checklist final del radar"
+          concept: "Antes de comprometerse con una oportunidad, un checklist final asegura que ningun filtro importante quedo fuera."
+          learning_objective: "El aprendiz aplica un checklist completo de la aventura a una oportunidad final, sin saltarse ningun filtro."
+          key_vocabulary: [checklist, filtro completo, comprometerse]
+          prior_knowledge: "Condensa su oportunidad en una línea (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} su checklist final: ya respondio las 5 preguntas del radar, o le falta alguna?"
+          lessons:
+            - position: 1
+              slug: reviso-cada-casilla
+              micro_objective: "Revisa un caso contra un checklist de 5 puntos y detecta cual punto quedo sin responder."
+              narrative_beat: "Zara revisa la oportunidad de un compañero contra el checklist del distrito y encuentra una casilla vacia: nadie pregunto por la competencia."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: completo-mi-checklist
+              micro_objective: "Completa, sin ayuda, las 5 casillas del checklist final para su propia oportunidad."
+              narrative_beat: "Dina marca la última casilla de su checklist: su oportunidad del distrito esta lista para defenderse frente al equipo."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+        - position: 7
+          slug: repaso-el-radar-en-accion
+          kind: review_spaced
+          title_es: "Repaso: El Radar en Acción"
+          concept: "El equipo repasa como observar sin sesgo, priorizar hallazgos y comunicar una oportunidad en una sola línea."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, las herramientas de campo de esta saga."
+          key_vocabulary: [observación, sesgo, pitch]
+          prior_knowledge: "Completo los 6 temas de El Radar en Acción."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/el-radar-en-accion/escaneo-del-distrito
+            - radar-de-oportunidades/el-radar-en-accion/mi-primera-conversacion
+            - radar-de-oportunidades/el-radar-en-accion/anoto-lo-que-veo-no-lo-que-quiero-ver
+            - radar-de-oportunidades/el-radar-en-accion/priorizo-mis-tres-mejores-hallazgos
+            - radar-de-oportunidades/el-radar-en-accion/pitch-de-una-linea
+            - radar-de-oportunidades/el-radar-en-accion/checklist-final-del-radar
+          lessons:
+            - position: 1
+              slug: repaso-observo-sin-sesgo
+              micro_objective: "Recuerda y aplica, sin ayuda, como observar de campo sin sesgo de confirmación."
+              narrative_beat: "El equipo repite su primer recorrido del distrito, esta vez anotando también lo que antes hubieran ignorado."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-mi-pitch-final
+              micro_objective: "Aplica sin ayuda todo lo repasado: mejora su pitch de una línea con lo aprendido en esta saga."
+              narrative_beat: "Liruf reescribe su pitch de una línea, esta vez más filoso que la primera vez que lo intento."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-evidencia-sin-sesgo-y-decision
+          kind: review_interleaved
+          title_es: "Cruce: Evidencia Sin Sesgo y Decisión Final"
+          concept: "Mezclamos la evidencia sin sesgo de esta saga con la habilidad de decidir entre oportunidades de la saga anterior."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, evidencia de campo completa con un criterio de decisión final."
+          key_vocabulary: [evidencia, sesgo, decisión]
+          prior_knowledge: "Completo el repaso de El Radar en Acción (tema anterior) y De la Idea a la Oportunidad (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/el-radar-en-accion/anoto-lo-que-veo-no-lo-que-quiero-ver
+            - radar-de-oportunidades/el-radar-en-accion/pitch-de-una-linea
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad/elijo-mi-oportunidad
+          lessons:
+            - position: 1
+              slug: decido-con-evidencia-completa
+              micro_objective: "Toma una decisión de oportunidad usando evidencia que incluye tanto lo que confirma como lo que contradice la idea."
+              narrative_beat: "Zara revisa su decisión final incluyendo también las respuestas que no le gustaron, y confirma que su oportunidad resiste."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: defiendo-mi-pitch-con-datos
+              micro_objective: "Defiende, sin ayuda, un pitch de una línea citando al menos un dato de campo que lo respalda."
+              narrative_beat: "Rho presenta su pitch final y, cuando le preguntan 'como lo sabes?', responde citando su propia libreta de campo."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 5
+    slug: la-gran-convocatoria-del-distrito-beta
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Distrito Beta Challenge"
+      es-MX: "La Gran Convocatoria del Distrito Beta"
+      pt-BR: "A Grande Convocatoria do Distrito Beta"
+    description:
+      en-US: "A city-wide challenge puts the whole opportunity radar to the test."
+      es-MX: "Una convocatoria de todo el distrito pone a prueba el radar de oportunidades completo."
+      pt-BR: "Uma convocatoria de toda a cidade coloca a prova o radar de oportunidades completo."
+    topics:
+        - position: 1
+          slug: el-reto-del-distrito-beta
+          kind: review_quest
+          title_es: "El Reto del Distrito Beta"
+          concept: "El ayuntamiento del distrito lanza una convocatoria abierta: el equipo que presente el mejor problema investigado gana un espacio en el laboratorio de founders."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la detección de problemas reales con la identificación de patrones para responder a un reto abierto."
+          key_vocabulary: [convocatoria, laboratorio de founders, reto abierto]
+          prior_knowledge: "Completo Problemas de Verdad y Detectando Patrones."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/problemas-de-verdad
+            - radar-de-oportunidades/detectando-patrones
+          lessons:
+            - position: 1
+              slug: recibo-la-convocatoria
+              micro_objective: "Recuerda, sin ayuda, un problema real ya investigado que podría presentarse a la convocatoria del distrito."
+              narrative_beat: "Un cartel enorme aparece en la plaza central del Distrito Beta: 'Convocatoria abierta - el mejor problema investigado gana un lugar en el laboratorio'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-mi-mejor-patron
+              micro_objective: "Elige, sin ayuda, el patron mejor documentado del equipo para presentarlo a la convocatoria."
+              narrative_beat: "Zara revisa la libreta completa del equipo y elige el patron con más quejas repetidas para llevarlo a la convocatoria."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-oportunidad-defendida
+          kind: review_quest
+          title_es: "Mi Oportunidad, Defendida"
+          concept: "Frente al jurado del laboratorio de founders, el equipo defiende su oportunidad con ventaja, riesgo y pitch de una línea."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una oportunidad completa combinando ventaja, riesgo y pitch."
+          key_vocabulary: [defender, jurado, oportunidad completa]
+          prior_knowledge: "Completo El Reto del Distrito Beta (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - radar-de-oportunidades/de-la-idea-a-la-oportunidad
+            - radar-de-oportunidades/el-radar-en-accion
+          lessons:
+            - position: 1
+              slug: preparo-mi-defensa
+              micro_objective: "Organiza, sin ayuda, los tres argumentos clave (ventaja, riesgo asumido, pitch) para defender su oportunidad."
+              narrative_beat: "Rho ensaya frente al espejo su defensa: primero la ventaja, luego el riesgo que esta dispuesto a asumir, al final el pitch."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-jurado
+              micro_objective: "Completa, sin ayuda, la presentación final de su oportunidad ante un jurado, resistiendo al menos una pregunta difícil."
+              narrative_beat: "Dina presenta ante el jurado del laboratorio; cuando le preguntan por su mayor riesgo, responde sin titubear."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

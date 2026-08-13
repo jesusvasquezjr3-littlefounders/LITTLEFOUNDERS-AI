@@ -1,0 +1,873 @@
+schema_version: 1
+
+adventure:
+  position: 6
+  slug: equipo-que-escala
+  theme: kingdom
+  age_tier: tier4
+  title:
+    en-US: "A Team That Scales"
+    es-MX: "Equipo que Escala"
+    pt-BR: "Equipe que Escala"
+  description:
+    en-US: "In the Expanding Realm, the crew learns that a founder who does everything alone has a ceiling - and that delegating, building a real culture and handling conflict well is what lets a small venture grow into something bigger than one person."
+    es-MX: "En el Reino en Expansión, el equipo aprende que un founder que hace todo solo tiene un techo - y que delegar, construir una cultura real y manejar bien el conflicto es lo que permite que un negocio chico crezca en algo más grande que una sola persona."
+    pt-BR: "No Reino em Expansão, a equipe aprende que um founder que faz tudo sozinho tem um teto - e que delegar, construir uma cultura real e lidar bem com o conflito e o que permite que um negocio pequeno cresca em algo maior que uma única pessoa."
+  narrative_arc: "Con una red de ventas etica funcionando, Dina, Liruf, Rho y Zara descubren que su pequeño negocio crecio más rápido de lo que uno solo puede sostener y llegan al Reino en Expansión, un territorio donde negocios jovenes se organizan en equipos que crecen sin perder el rumbo. Ahí aprenden a soltar tareas sin soltar el control de calidad, a construir una cultura que se siente en cada decisión y no solo en un cartel, a resolver conflictos atacando el problema y no a la persona, y a liderar mientras el equipo crece sin que las reglas informales del principio se vuelvan un caos. Al final, cada equipo debe presentar ante el Consejo de Lideres del reino un plan de liderazgo real, puesto a prueba por una crisis de equipo simulada."
+
+sagas:
+  - position: 1
+    slug: ya-no-puedo-solo
+    icon: group_add
+    title:
+      en-US: "I Can't Do It Alone Anymore"
+      es-MX: "Ya No Puedo Solo"
+      pt-BR: "Ja Nao Consigo Sozinho"
+    description:
+      en-US: "The moment a venture outgrows one person's hands is the moment delegating stops being optional."
+      es-MX: "El momento en que un negocio le queda grande a una sola persona es el momento en que delegar deja de ser opcional."
+      pt-BR: "O momento em que um negocio fica grande demais para uma pessoa e o momento em que delegar deixa de ser opcional."
+    topics:
+        - position: 1
+          slug: hago-todo-yo-o-ya-es-momento-de-delegar
+          title_es: "Hago todo yo, o ya es momento de delegar"
+          concept: "Cuando las tareas superan las horas que tienes disponibles, seguir haciendo todo tu mismo ya no es dedicación, es un cuello de botella que frena el crecimiento del negocio."
+          learning_objective: "El aprendiz reconoce, a partir de una lista de tareas y horas disponibles, cuando un negocio ya necesita delegar en vez de seguir con una sola persona haciendo todo."
+          key_vocabulary: [cuello de botella, horas disponibles, momento de delegar]
+          prior_knowledge: "Completo Red de Ventas (aventura anterior): ya tiene un embudo y una red de clientes funcionando."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si sus tareas del negocio ya le toman más horas de las que tiene disponibles en la semana."
+          lessons:
+            - position: 1
+              slug: mis-tareas-ya-no-caben-en-mi-semana
+              micro_objective: "Reconoce, comparando las horas que requieren sus tareas contra las horas disponibles en la semana, si un negocio ya necesita delegar."
+              narrative_beat: "Rho suma que sus pedidos de esta semana requieren 22 horas de trabajo, pero solo tiene 14 horas libres entre la escuela y otras cosas - algo tiene que cambiar."
+              difficulty: 1
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reconozco-el-cuello-de-botella
+              micro_objective: "Identifica, en un caso, cual tarea especifica esta actuando como cuello de botella porque solo una persona sabe hacerla."
+              narrative_beat: "Zara nota que todos los pedidos se atoran esperando a que ella sola revise la calidad final - ese paso es el cuello de botella de todo el negocio."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: que-tarea-si-puedo-soltar
+          title_es: "Que tarea sí puedo soltar"
+          concept: "No toda tarea se puede delegar igual: unas requieren tu criterio único (la decisión final de precio), otras solo requieren instrucciones claras (empacar un pedido) y esas son las primeras que se sueltan."
+          learning_objective: "El aprendiz clasifica tareas de un negocio entre las que requieren su criterio único y las que se pueden delegar con instrucciones claras."
+          key_vocabulary: [criterio único, instrucciones claras, primeras en soltar]
+          prior_knowledge: "Reconoce cuando un negocio necesita delegar (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a hacer una lista de sus tareas y marcar cuales podría soltar primero porque no requieren su criterio único."
+          lessons:
+            - position: 1
+              slug: esta-tarea-requiere-mi-criterio-o-no
+              micro_objective: "Clasifica 5 tareas de un negocio entre las que requieren el criterio único del founder y las que se pueden delegar con instrucciones claras."
+              narrative_beat: "Liruf separa 'decidir el precio final' (requiere su criterio) de 'empacar los pedidos ya armados' (se puede delegar con instrucciones)."
+              difficulty: 2
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: elijo-mi-primera-tarea-para-soltar
+              micro_objective: "Elige, entre 3 tareas delegables, la más adecuada para soltar primero por ser la más sencilla de explicar."
+              narrative_beat: "Dina elige soltar primero el empaque de pedidos, la tarea más fácil de explicar con instrucciones claras, antes que la atención a clientes difíciles."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: a-quien-le-delego-esta-tarea
+          title_es: "A quien le delego esta tarea"
+          concept: "Delegar una tarea a quien de verdad tiene la habilidad o el interes para hacerla bien funciona mejor que delegarla solo a quien tiene tiempo libre."
+          learning_objective: "El aprendiz elige a la persona más adecuada para una tarea delegada según su habilidad o interes, no solo su disponibilidad."
+          key_vocabulary: [habilidad para la tarea, interes, no solo disponibilidad]
+          prior_knowledge: "Clasifica tareas delegables (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} en quien piensa para delegar una tarea, y si eligio por habilidad o solo porque esa persona tenia tiempo libre."
+          lessons:
+            - position: 1
+              slug: elijo-por-habilidad-o-por-tiempo-libre
+              micro_objective: "Elige, entre dos personas disponibles para una tarea, la que tiene la habilidad adecuada en vez de solo tiempo libre."
+              narrative_beat: "Zara delega el diseño de las etiquetas a su compañera que ya sabe usar el programa de diseño, no a quien solo tenia la tarde libre."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: emparejo-tareas-con-personas
+              micro_objective: "Empareja, sin ayuda, 4 tareas distintas con la persona del equipo más adecuada para cada una según su habilidad."
+              narrative_beat: "Rho empareja el manejo de redes sociales con quien ya publica seguido y bien, y el empaque cuidadoso con quien tiene más paciencia para el detalle."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: explico-la-tarea-de-forma-clara
+          title_es: "Explico la tarea de forma clara"
+          concept: "Una instrucción vaga (\"encargate del empaque\") genera resultados distintos a los que esperabas; una instrucción clara describe el resultado exacto que buscas."
+          learning_objective: "El aprendiz redacta instrucciones claras para una tarea delegada, describiendo el resultado exacto esperado."
+          key_vocabulary: [instrucción clara, resultado exacto, evitar la ambiguedad]
+          prior_knowledge: "Elige a la persona adecuada para una tarea (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea la instrucción que le dio a alguien para una tarea, y pregunta si describe el resultado exacto que espera."
+          lessons:
+            - position: 1
+              slug: esta-instruccion-es-clara-o-vaga
+              micro_objective: "Compara dos instrucciones para la misma tarea y elige la que describe con claridad el resultado exacto esperado."
+              narrative_beat: "Liruf le dice a su compañero 'encargate del empaque' sin más; Dina en cambio dice 'cada pedido lleva bolsa sellada, etiqueta con el nombre visible, y va en la caja antes de las 6pm'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-una-instruccion-clara
+              micro_objective: "Redacta, sin ayuda, una instrucción clara para una tarea delegada que describe el resultado exacto esperado."
+              narrative_beat: "Zara redacta: 'revisa que cada gorra tenga el bordado centrado antes de empacarla; si no esta centrado, aparta y avisame' para su compañera nueva."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: doy-espacio-para-que-lo-haga-a-su-manera
+          title_es: "Doy espacio para que lo haga a su manera"
+          concept: "Una vez que la instrucción es clara sobre el resultado esperado, dejar que la persona decida el CÓMO a su manera suele generar mejores ideas que exigirle copiar exactamente tu propio metodo."
+          learning_objective: "El aprendiz reconoce cuando esta imponiendo su propio método en vez de dejar que la persona delegada decida el cómo, siempre que el resultado se cumpla."
+          key_vocabulary: [dejar espacio, decidir el cómo, exigir el resultado no el método]
+          prior_knowledge: "Redacta una instrucción clara (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, al delegar una tarea, exige que se haga exactamente a su manera o si deja espacio para que la otra persona decida el cómo."
+          lessons:
+            - position: 1
+              slug: exijo-mi-metodo-o-dejo-espacio
+              micro_objective: "Reconoce, en un caso, cuando alguien exige su propio método exacto en vez de dejar espacio para que la persona delegada decida el cómo."
+              narrative_beat: "Rho al principio le pide a su compañero que organice el empaque exactamente como el, pero luego se da cuenta de que el resultado importa más que el método exacto."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: acepto-una-forma-distinta-que-si-funciona
+              micro_objective: "Decide, sin ayuda, aceptar una forma distinta de hacer una tarea propuesta por otra persona, siempre que el resultado esperado se cumpla."
+              narrative_beat: "Dina acepta que su compañera organice el empaque en orden alfabetico en vez de por tamaño, porque el resultado final - pedidos completos a tiempo - es el mismo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: reviso-sin-microgestionar
+          title_es: "Reviso sin microgestionar"
+          concept: "Revisar el resultado de una tarea delegada en momentos acordados (no cada 10 minutos) construye confianza; revisar todo el tiempo sin avisar comunica que no confias en la persona."
+          learning_objective: "El aprendiz establece un momento de revisión acordado para una tarea delegada, en vez de revisar constantemente sin avisar."
+          key_vocabulary: [revisión acordada, microgestionar, construir confianza]
+          prior_knowledge: "Deja espacio para que la persona decida el cómo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} cada cuanto revisa el trabajo que delego, y si ese momento de revisión quedo acordado de antemano con la otra persona."
+          lessons:
+            - position: 1
+              slug: reviso-cada-rato-o-en-un-momento-acordado
+              micro_objective: "Elige, entre dos formas de revisar una tarea delegada, la que construye confianza en vez de sentirse como vigilancia constante."
+              narrative_beat: "Liruf le pregunta a su compañero cada 15 minutos como va; Zara acuerda revisar juntos el avance solo al final del dia, y su compañero trabaja con más calma."
+              difficulty: 4
+              suggested_families: [choice, story]
+            - position: 2
+              slug: propongo-un-momento-de-revision
+              micro_objective: "Propone, sin ayuda, un momento de revisión acordado para una tarea delegada dada en un caso."
+              narrative_beat: "Rho propone: 'revisamos juntos el avance del pedido a las 5pm, antes de eso confio en que vas bien' en vez de preguntar cada rato."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-ya-no-puedo-solo
+          kind: review_spaced
+          title_es: "Repaso: Ya No Puedo Solo"
+          concept: "El equipo repasa como identificar tareas delegables, elegir a la persona correcta, dar instrucciones claras y revisar sin microgestionar."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el proceso completo de delegar una tarea."
+          key_vocabulary: [delegar, instrucciones claras, revisión acordada]
+          prior_knowledge: "Completo los 6 temas de Ya No Puedo Solo."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/ya-no-puedo-solo/hago-todo-yo-o-ya-es-momento-de-delegar
+            - equipo-que-escala/ya-no-puedo-solo/que-tarea-si-puedo-soltar
+            - equipo-que-escala/ya-no-puedo-solo/a-quien-le-delego-esta-tarea
+            - equipo-que-escala/ya-no-puedo-solo/explico-la-tarea-de-forma-clara
+            - equipo-que-escala/ya-no-puedo-solo/doy-espacio-para-que-lo-haga-a-su-manera
+            - equipo-que-escala/ya-no-puedo-solo/reviso-sin-microgestionar
+          lessons:
+            - position: 1
+              slug: repaso-redacto-una-instruccion-clara-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, como redactar una instrucción clara para una tarea delegada que todavia no había visto."
+              narrative_beat: "El equipo redacta, sin ayuda, la instrucción clara de una tarea nueva para un servicio de paseo de mascotas en crecimiento."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: repaso-emparejo-tarea-y-persona-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: empareja una tarea nueva con la persona más adecuada según su habilidad."
+              narrative_beat: "Rho empareja, sin ayuda de nadie, una tarea nueva de atención a clientes con la persona del equipo con más paciencia."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-embudo-de-ventas-y-delegacion
+          kind: review_interleaved
+          title_es: "Cruce: Embudo de Ventas y Delegación"
+          concept: "Mezclamos el análisis de embudo de la aventura anterior con la delegación de esta saga: delegar la etapa correcta libera tiempo justo donde más se necesita."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la etapa de un embudo de ventas con la decisión de delegar esa etapa a la persona adecuada."
+          key_vocabulary: [etapa del embudo, delegar, liberar tiempo]
+          prior_knowledge: "Completo el repaso de Ya No Puedo Solo (tema anterior) y El Embudo de Ventas (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/ya-no-puedo-solo/a-quien-le-delego-esta-tarea
+            - red-de-ventas/el-embudo-de-ventas/mejoro-el-paso-que-mas-fuga
+          lessons:
+            - position: 1
+              slug: que-etapa-del-embudo-puedo-delegar
+              micro_objective: "Identifica, sin ayuda, cual etapa de su embudo de ventas (conocer, considerar, decidir) puede delegar sin perder el criterio único en la decisión final."
+              narrative_beat: "Zara decide delegar la etapa de 'dar a conocer' el producto en redes a su compañera creativa, pero conserva ella misma el cierre final de cada venta."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: delego-la-etapa-y-libero-tiempo-para-crecer
+              micro_objective: "Confirma, sin ayuda, que delegar la etapa correcta del embudo le libera tiempo real para atender la etapa que sí requiere su criterio."
+              narrative_beat: "Rho delega el manejo de mensajes iniciales a un compañero y usa el tiempo liberado para mejorar sus cierres de venta, la parte que solo el puede hacer bien."
+              difficulty: 5
+              suggested_families: [analyze, choice]
+  - position: 2
+    slug: cultura-que-se-siente
+    icon: groups
+    title:
+      en-US: "A Culture You Can Feel"
+      es-MX: "Cultura que se Siente"
+      pt-BR: "Cultura que se Sente"
+    description:
+      en-US: "Team culture is not a poster on the wall - it is what actually happens when no one important is watching."
+      es-MX: "La cultura de equipo no es un cartel en la pared - es lo que de verdad pasa cuando nadie importante esta mirando."
+      pt-BR: "A cultura de equipe nao e um cartaz na parede - e o que realmente acontece quando ninguem importante esta olhando."
+    topics:
+        - position: 1
+          slug: que-es-la-cultura-de-equipo
+          title_es: "Que es la cultura de equipo"
+          concept: "La cultura de equipo son los hábitos y expectativas que todos siguen sin que nadie las tenga que repetir cada vez - como se trata un error, como se avisa un retraso, como se celebra un logro."
+          learning_objective: "El aprendiz explica que es la cultura de equipo a partir de un ejemplo de hábitos compartidos, no de un valor escrito en un cartel."
+          key_vocabulary: [cultura de equipo, hábitos compartidos, sin que nadie lo repita]
+          prior_knowledge: "Completo Ya No Puedo Solo (saga anterior): ya sabe delegar tareas con claridad."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que hace su equipo, sin que nadie lo tenga que recordar, cuando alguien se retrasa o comete un error."
+          lessons:
+            - position: 1
+              slug: esto-es-cultura-o-solo-una-regla-escrita
+              micro_objective: "Distingue, entre un cartel con valores y un hábito real observado, cual describe mejor la cultura de un equipo."
+              narrative_beat: "El equipo de Rho tiene un cartel que dice 'somos honestos', pero lo que de verdad muestra su cultura es que todos avisan de inmediato cuando algo sale mal, sin que se los pidan."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: describo-un-habito-de-mi-equipo
+              micro_objective: "Describe, sin ayuda, un hábito real y observable que muestra la cultura de su propio equipo."
+              narrative_beat: "Zara describe: 'en nuestro equipo, cuando alguien termina su tarea temprano, pregunta quien más necesita ayuda antes de parar' - eso es cultura, no una regla escrita."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: mis-valores-no-son-solo-palabras
+          title_es: "Mis valores no son solo palabras"
+          concept: "Un valor solo cuenta como cultura cuando cambia una decisión real; si el valor dice 'calidad primero' pero el equipo entrega tarde por priorizar la rapidez, el valor real es otro."
+          learning_objective: "El aprendiz verifica si un valor declarado por un equipo se refleja en una decisión real tomada, o si es solo una palabra sin efecto."
+          key_vocabulary: [valor declarado, decisión real, sin efecto]
+          prior_knowledge: "Explica que es la cultura de equipo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} un valor que su equipo dice tener, y pidele un ejemplo real de una decisión donde ese valor de verdad se aplico."
+          lessons:
+            - position: 1
+              slug: este-valor-se-aplico-o-se-quedo-en-palabras
+              micro_objective: "Reconoce, en un caso, si una decisión tomada por un equipo refleja de verdad el valor que dicen tener o lo contradice."
+              narrative_beat: "El equipo de Liruf dice valorar la calidad, pero entrega un pedido con el bordado torcido para no atrasarse - el valor real, esa vez, fue la rapidez, no la calidad."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-la-decision-que-si-refleja-el-valor
+              micro_objective: "Elige, entre dos decisiones posibles, la que de verdad refleja el valor declarado de calidad primero de un equipo."
+              narrative_beat: "Dina elige retrasar un dia la entrega para rehacer el bordado torcido, en vez de entregarlo a tiempo pero incompleto - esa decisión si refleja el valor."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: como-celebramos-un-logro
+          title_es: "Como celebramos un logro"
+          concept: "Reconocer un logro especifico de una persona (no solo un 'buen trabajo' general) refuerza justo el comportamiento que quieres que se repita en el equipo."
+          learning_objective: "El aprendiz redacta un reconocimiento especifico que nombra el comportamiento exacto que quiere reforzar en el equipo."
+          key_vocabulary: [reconocimiento especifico, reforzar el comportamiento, no solo buen trabajo]
+          prior_knowledge: "Verifica si un valor se refleja en una decisión real (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como celebro el último logro de un compañero de equipo, y si nombro algo especifico o solo dijo 'bien hecho'."
+          lessons:
+            - position: 1
+              slug: este-reconocimiento-es-especifico-o-generico
+              micro_objective: "Compara dos formas de reconocer un logro y elige la que nombra un comportamiento especifico en vez de una frase generica."
+              narrative_beat: "Rho le dice a su compañera 'buen trabajo' sin más; Zara en cambio le dice 'me encanto que revisaras cada bordado antes de empacar, eso evito 3 devoluciones'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-un-reconocimiento-especifico
+              micro_objective: "Redacta, sin ayuda, un reconocimiento especifico para un logro dado en un caso, nombrando el comportamiento exacto."
+              narrative_beat: "Liruf le escribe a su compañero: 'gracias por avisarme temprano que ibas a tardar, asi pude reorganizar el pedido a tiempo'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: como-hablamos-cuando-algo-sale-mal
+          title_es: "Como hablamos cuando algo sale mal"
+          concept: "Un equipo donde admitir un error se castiga con burla o enojo aprende a esconder los errores; un equipo donde admitir un error se recibe con calma aprende a corregirlos rápido."
+          learning_objective: "El aprendiz reconoce si la reacción de un equipo ante un error anima a admitirlo pronto o a esconderlo por miedo."
+          key_vocabulary: [admitir un error, esconder el error, reacción del equipo]
+          prior_knowledge: "Redacta un reconocimiento especifico (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que pasa en su equipo cuando alguien admite un error - se sienten libres de decirlo, o prefieren esconderlo?"
+          lessons:
+            - position: 1
+              slug: esconde-el-error-o-lo-admite-rapido
+              micro_objective: "Reconoce, en dos escenas, cual reacción del equipo anima a admitir un error pronto y cual empuja a esconderlo."
+              narrative_beat: "En el equipo de Dina, cuando alguien rompe un lote de material, lo dice de inmediato porque sabe que nadie se va a burlar; en otro equipo, esconden el error hasta que ya es tarde."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: respondo-con-calma-a-un-error-admitido
+              micro_objective: "Redacta, sin ayuda, una respuesta con calma ante un compañero que admite un error, que lo anime a seguir siendo honesto."
+              narrative_beat: "Zara responde: 'gracias por decirmelo rápido, veamos juntos como lo arreglamos' cuando su compañero admite que se equivoco en un pedido."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: el-ejemplo-del-lider-pesa-mas-que-sus-palabras
+          title_es: "El ejemplo del lider pesa más que sus palabras"
+          concept: "Si el lider llega tarde pero exige puntualidad, el equipo copia lo que el lider HACE, no lo que dice; el ejemplo del lider define la cultura real más que cualquier discurso."
+          learning_objective: "El aprendiz identifica una contradicción entre lo que un lider dice y lo que hace, y reconoce cual de los dos define la cultura real del equipo."
+          key_vocabulary: [ejemplo del lider, contradicción, lo que hace pesa más]
+          prior_knowledge: "Reconoce la reacción del equipo ante un error (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez, como lider de una tarea, dijo una cosa pero hizo otra sin darse cuenta."
+          lessons:
+            - position: 1
+              slug: dice-una-cosa-pero-hace-otra
+              micro_objective: "Identifica, en un caso, una contradicción entre lo que un lider de equipo dice valorar y lo que de verdad hace."
+              narrative_beat: "Rho le pide a su equipo que siempre revise la calidad antes de entregar, pero el mismo entrega un pedido sin revisar por las prisas - su equipo nota la contradicción."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: corrijo-mi-propio-ejemplo
+              micro_objective: "Decide, sin ayuda, corregir su propio comportamiento como lider para que coincida con lo que exige a su equipo."
+              narrative_beat: "Rho, avergonzado, revisa el siguiente pedido con el mismo cuidado que exige a los demas, y su equipo empieza a tomarse la regla más en serio."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 6
+          slug: escribo-las-reglas-no-escritas
+          title_es: "Escribo las reglas no escritas"
+          concept: "Poner por escrito las reglas informales que ya sigue el equipo (como se avisa un retraso, como se pide ayuda) evita que un integrante nuevo tenga que adivinarlas."
+          learning_objective: "El aprendiz redacta, a partir de hábitos observados, una lista de al menos 3 reglas no escritas del equipo para dejarlas explicitas."
+          key_vocabulary: [reglas no escritas, dejarlas explicitas, evitar que se adivinen]
+          prior_knowledge: "Identifica una contradicción entre lo que el lider dice y hace (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que escriba, junto contigo, 3 reglas que su equipo ya sigue sin que nadie las haya escrito antes."
+          lessons:
+            - position: 1
+              slug: identifico-tres-habitos-para-escribir
+              micro_objective: "Identifica, sin ayuda, 3 hábitos reales del equipo que valdria la pena escribir como reglas explicitas."
+              narrative_beat: "Zara identifica que su equipo siempre avisa por mensaje si va a tardar, siempre revisa la calidad dos veces, y nunca promete algo sin confirmar antes con el resto."
+              difficulty: 4
+              suggested_families: [analyze, input]
+            - position: 2
+              slug: escribo-mi-lista-de-reglas-no-escritas
+              micro_objective: "Redacta, sin ayuda, una lista de al menos 3 reglas no escritas de su equipo para dejarlas explicitas por primera vez."
+              narrative_beat: "Liruf escribe la primera lista oficial de reglas de su equipo, para que la próxima persona que se una no tenga que adivinarlas por prueba y error."
+              difficulty: 5
+              suggested_families: [storyplay, input]
+        - position: 7
+          slug: repaso-cultura-que-se-siente
+          kind: review_spaced
+          title_es: "Repaso: Cultura que se Siente"
+          concept: "El equipo repasa como reconocer la cultura real, verificar si un valor se aplica, celebrar logros especificos y responder con calma a un error."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el análisis de cultura de equipo de esta saga."
+          key_vocabulary: [cultura real, valor aplicado, respuesta con calma]
+          prior_knowledge: "Completo los 6 temas de Cultura que se Siente."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/cultura-que-se-siente/que-es-la-cultura-de-equipo
+            - equipo-que-escala/cultura-que-se-siente/mis-valores-no-son-solo-palabras
+            - equipo-que-escala/cultura-que-se-siente/como-celebramos-un-logro
+            - equipo-que-escala/cultura-que-se-siente/como-hablamos-cuando-algo-sale-mal
+            - equipo-que-escala/cultura-que-se-siente/el-ejemplo-del-lider-pesa-mas-que-sus-palabras
+            - equipo-que-escala/cultura-que-se-siente/escribo-las-reglas-no-escritas
+          lessons:
+            - position: 1
+              slug: repaso-verifico-un-valor-aplicado-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, la verificación de si un valor declarado se refleja en una decisión real, en un caso nuevo."
+              narrative_beat: "El equipo verifica, sin ayuda, si un valor declarado por un equipo nuevo de paseo de mascotas se refleja en sus decisiones reales."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-redacto-una-regla-no-escrita-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: redacta una regla no escrita nueva a partir de un hábito observado en un caso distinto."
+              narrative_beat: "Rho redacta, sin ayuda de nadie, una regla no escrita nueva a partir de un hábito que observo en un equipo que nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, input]
+        - position: 8
+          slug: cruce-delegacion-y-cultura
+          kind: review_interleaved
+          title_es: "Cruce: Delegación y Cultura"
+          concept: "Mezclamos la delegación de tareas de la saga anterior con la cultura de esta saga: como delegas dice tanto de tu cultura como lo que dices en voz alta."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, una delegación de tarea con una reacción cultural que refuerza confianza en vez de miedo al error."
+          key_vocabulary: [delegar, reacción cultural, refuerza confianza]
+          prior_knowledge: "Completo el repaso de Cultura que se Siente (tema anterior) y Ya No Puedo Solo (saga anterior)."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/cultura-que-se-siente/como-hablamos-cuando-algo-sale-mal
+            - equipo-que-escala/ya-no-puedo-solo/reviso-sin-microgestionar
+          lessons:
+            - position: 1
+              slug: mi-forma-de-revisar-tambien-es-cultura
+              micro_objective: "Reconoce, en un caso, que la forma de revisar una tarea delegada (con calma o con sospecha) también construye la cultura del equipo."
+              narrative_beat: "Zara nota que revisar el trabajo de su compañera con calma, en el momento acordado, también le enseña a su equipo que los errores se corrigen sin drama."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: reacciono-con-calma-a-un-error-en-una-tarea-delegada
+              micro_objective: "Redacta, sin ayuda, una reacción con calma ante un error encontrado durante la revisión de una tarea delegada, reforzando la cultura de admitir errores pronto."
+              narrative_beat: "Rho encuentra un bordado torcido en la revisión acordada y responde: 'gracias por dejarmelo ver a tiempo, lo arreglamos juntos antes de entregar'."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+  - position: 3
+    slug: cuando-hay-conflicto
+    icon: balance
+    title:
+      en-US: "When There Is Conflict"
+      es-MX: "Cuando Hay Conflicto"
+      pt-BR: "Quando Ha Conflito"
+    description:
+      en-US: "A disagreement handled well makes a team stronger. Ignored or mishandled, it quietly breaks it."
+      es-MX: "Un desacuerdo bien manejado fortalece a un equipo. Ignorado o mal manejado, lo rompe en silencio."
+      pt-BR: "Um desacordo bem gerido fortalece uma equipe. Ignorado ou mal gerido, a quebra em silencio."
+    topics:
+        - position: 1
+          slug: un-desacuerdo-no-es-un-conflicto-todavia
+          title_es: "Un desacuerdo no es un conflicto todavia"
+          concept: "Dos personas con opiniones distintas sobre una decisión es un desacuerdo normal; se vuelve conflicto cuando alguien deja de escuchar o empieza a atacar en vez de discutir la idea."
+          learning_objective: "El aprendiz distingue un desacuerdo saludable de un conflicto, identificando el momento exacto en que uno se convierte en el otro."
+          key_vocabulary: [desacuerdo, conflicto, dejar de escuchar]
+          prior_knowledge: "Completo Cultura que se Siente (saga anterior): ya sabe reconocer la cultura real de un equipo."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si el último desacuerdo de su equipo se quedo como una discusión de ideas, o si se convirtio en un conflicto entre personas."
+          lessons:
+            - position: 1
+              slug: esto-sigue-siendo-desacuerdo-o-ya-es-conflicto
+              micro_objective: "Reconoce, en dos escenas, cual sigue siendo un desacuerdo de ideas y cual ya se convirtio en un conflicto entre personas."
+              narrative_beat: "Liruf y Zara discuten sobre que diseño de gorra vender primero, escuchando cada argumento - sigue siendo desacuerdo, hasta que alguien dice 'tu nunca escuchas' y ahí se vuelve conflicto."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-el-momento-exacto-del-cambio
+              micro_objective: "Identifica, en una transcripción corta, la frase exacta donde un desacuerdo de ideas se convierte en un ataque a la persona."
+              narrative_beat: "Dina marca la frase exacta donde el desacuerdo cambio: no fue el argumento sobre el diseño, fue cuando alguien dijo 'siempre haces esto mal'."
+              difficulty: 2
+              suggested_families: [analyze, choice]
+        - position: 2
+          slug: escucho-las-dos-versiones-antes-de-decidir
+          title_es: "Escucho las dos versiones antes de decidir"
+          concept: "Decidir un conflicto habiendo escuchado solo a una persona genera resentimiento, aunque la decisión final sea correcta; escuchar ambas versiones primero, aunque tome más tiempo, es lo que la otra persona necesita sentir."
+          learning_objective: "El aprendiz reune las dos versiones de un conflicto antes de tomar una decisión, en vez de decidir con solo una version escuchada."
+          key_vocabulary: [dos versiónes, antes de decidir, resentimiento]
+          prior_knowledge: "Distingue un desacuerdo de un conflicto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, la última vez que resolvio un conflicto en su equipo, escucho a ambas personas antes de decidir."
+          lessons:
+            - position: 1
+              slug: decido-con-una-version-o-con-las-dos
+              micro_objective: "Reconoce, en un caso, por que decidir un conflicto habiendo escuchado solo a una persona genera resentimiento en la otra."
+              narrative_beat: "Rho decide un conflicto de horarios escuchando solo a Liruf; Zara despues descubre que la version de la otra persona cambiaba todo, y el resentimiento ya estaba hecho."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: pregunto-por-la-otra-version
+              micro_objective: "Formula, sin ayuda, una pregunta que busca la version de la segunda persona antes de decidir un conflicto."
+              narrative_beat: "Dina pregunta: 'ya escuche tu parte, ahora cuentame tu como lo viviste' antes de decidir quien tenia razón en el desacuerdo del horario."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: ataco-el-problema-no-a-la-persona
+          title_es: "Ataco el problema, no a la persona"
+          concept: "Hablar del problema (\"el pedido salio tarde\") en vez de la persona (\"tu siempre eres lento\") deja espacio para resolverlo juntos, sin que nadie se ponga a la defensiva."
+          learning_objective: "El aprendiz reformula una crítica dirigida a la persona en una crítica dirigida al problema especifico."
+          key_vocabulary: [atacar el problema, atacar la persona, a la defensiva]
+          prior_knowledge: "Reune las dos versiónes antes de decidir (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} como habla de un problema con un compañero, y si sus palabras atacan el problema o a la persona."
+          lessons:
+            - position: 1
+              slug: esto-ataca-el-problema-o-a-la-persona
+              micro_objective: "Distingue, entre dos formas de señalar el mismo error, cual ataca el problema y cual ataca a la persona."
+              narrative_beat: "Liruf le dice a su compañero 'siempre entregas tarde, eres un desastre'; Zara en cambio dice 'el pedido salio 2 dias tarde, hablemos de que paso'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: reformulo-mi-critica-hacia-el-problema
+              micro_objective: "Reformula, sin ayuda, una crítica dirigida a la persona en una crítica dirigida al problema especifico."
+              narrative_beat: "Rho cambia 'nunca revisas bien tu trabajo' por 'encontre 3 bordados torcidos en este lote, revisemos juntos que paso' antes de hablar con su compañero."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: encuentro-el-interes-detras-del-conflicto
+          title_es: "Encuentro el interes detras del conflicto"
+          concept: "Detras de un conflicto por horarios a veces no esta el horario en si, sino el miedo a no poder cumplir o a sentirse ignorado - encontrar ese interes real ayuda a resolver el conflicto de raiz."
+          learning_objective: "El aprendiz identifica el interes real detras de un conflicto de equipo, más alla de la posición superficial que cada parte defiende."
+          key_vocabulary: [interes real, posición superficial, resolver de raiz]
+          prior_knowledge: "Reformula una crítica hacia el problema (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que cree que de verdad le preocupa a la otra persona en un conflicto reciente, más alla de lo que dijo en voz alta."
+          lessons:
+            - position: 1
+              slug: que-hay-detras-de-esta-posicion
+              micro_objective: "Identifica, en un caso, el interes real detras de la posición que una persona defiende en un conflicto de equipo."
+              narrative_beat: "Zara descubre que su compañero no se queja del horario en si, sino de sentir que nadie le pregunta antes de decidir - ese es el interes real detras del conflicto."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: propongo-una-solucion-que-atiende-el-interes-real
+              micro_objective: "Propone, sin ayuda, una solución de conflicto que atiende el interes real identificado, no solo la posición superficial."
+              narrative_beat: "Dina propone incluir a su compañero en la decisión de horarios desde el principio, en vez de solo cambiar el horario en si - eso atiende su interes real de sentirse incluido."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: decido-y-lo-comunico-a-tiempo
+          title_es: "Decido y lo comunico a tiempo"
+          concept: "Un lider que escucha a ambas partes pero nunca decide deja el conflicto sin resolver; decidir con la evidencia reunida, y comunicarlo pronto a ambas personas, es lo que de verdad cierra el conflicto."
+          learning_objective: "El aprendiz toma una decisión de conflicto con la evidencia reunida y la comunica a tiempo a ambas partes involucradas."
+          key_vocabulary: [decidir a tiempo, comunicar a ambas partes, cerrar el conflicto]
+          prior_knowledge: "Identifica el interes real detras de un conflicto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, despues de escuchar ambas versiónes de un conflicto, de verdad tomo una decisión y la comunico a tiempo."
+          lessons:
+            - position: 1
+              slug: decido-o-sigo-esperando
+              micro_objective: "Reconoce, en un caso, cuando un lider ya tiene suficiente evidencia para decidir un conflicto y esta postergando la decisión sin razón."
+              narrative_beat: "Rho ya escucho ambas versiónes del conflicto de horarios hace tres dias, pero sigue sin decidir - el equipo empieza a sentirse frustrado por la espera."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comunico-mi-decision-a-ambas-partes
+              micro_objective: "Redacta, sin ayuda, un mensaje que comunica una decisión de conflicto a ambas partes de forma clara y a tiempo."
+              narrative_beat: "Zara escribe a los dos: 'decidi que alternemos el horario cada semana, y a partir de ahora los decidimos juntos antes de fijarlos' - clara y para ambos a la vez."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: reparo-la-relacion-despues-del-conflicto
+          title_es: "Reparo la relación después del conflicto"
+          concept: "Resolver el problema práctico de un conflicto no siempre repara la relación entre las personas; un gesto pequeño y sincero despues (reconocer lo que paso, agradecer la paciencia) es lo que la repara de verdad."
+          learning_objective: "El aprendiz propone un gesto especifico para reparar la relación entre dos personas despues de que un conflicto ya se resolvio en lo práctico."
+          key_vocabulary: [reparar la relación, gesto sincero, despues de resolver lo práctico]
+          prior_knowledge: "Decide y comunica a tiempo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si, despues de resolver un conflicto en lo práctico, hizo algo para reparar la relación con la otra persona."
+          lessons:
+            - position: 1
+              slug: el-problema-se-resolvio-pero-la-relacion-no
+              micro_objective: "Reconoce, en un caso, que un conflicto se resolvio en lo práctico pero la relación entre las personas sigue tensa, y necesita un paso más."
+              narrative_beat: "El horario ya quedo resuelto, pero Liruf y su compañero siguen hablandose seco - el problema práctico se arreglo, la relación todavia no."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: propongo-un-gesto-para-reparar
+              micro_objective: "Propone, sin ayuda, un gesto especifico y sincero para reparar la relación entre dos personas despues de un conflicto ya resuelto en lo práctico."
+              narrative_beat: "Dina sugiere que ambos se sienten a comer algo juntos despues del turno, sin hablar del conflicto, solo para volver a sentirse en el mismo equipo."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-cuando-hay-conflicto
+          kind: review_spaced
+          title_es: "Repaso: Cuando Hay Conflicto"
+          concept: "El equipo repasa como distinguir desacuerdo de conflicto, escuchar ambas versiónes, atacar el problema y reparar la relación despues."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el proceso completo de manejo de conflicto de esta saga."
+          key_vocabulary: [desacuerdo, conflicto, reparar la relación]
+          prior_knowledge: "Completo los 6 temas de Cuando Hay Conflicto."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/cuando-hay-conflicto/un-desacuerdo-no-es-un-conflicto-todavia
+            - equipo-que-escala/cuando-hay-conflicto/escucho-las-dos-versiones-antes-de-decidir
+            - equipo-que-escala/cuando-hay-conflicto/ataco-el-problema-no-a-la-persona
+            - equipo-que-escala/cuando-hay-conflicto/encuentro-el-interes-detras-del-conflicto
+            - equipo-que-escala/cuando-hay-conflicto/decido-y-lo-comunico-a-tiempo
+            - equipo-que-escala/cuando-hay-conflicto/reparo-la-relacion-despues-del-conflicto
+          lessons:
+            - position: 1
+              slug: repaso-reformulo-una-critica-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la reformulación de una crítica hacia el problema en un caso que todavia no había visto."
+              narrative_beat: "El equipo reformula, sin ayuda, una crítica hacia el problema en un conflicto nuevo de un equipo de edición de fotos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-propongo-un-gesto-de-reparacion-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: propone un gesto de reparación para un conflicto nuevo ya resuelto en lo práctico."
+              narrative_beat: "Rho propone, sin ayuda de nadie, un gesto de reparación para un conflicto nuevo entre dos compañeros de un equipo que nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-cultura-y-manejo-de-conflicto
+          kind: review_interleaved
+          title_es: "Cruce: Cultura y Manejo de Conflicto"
+          concept: "Mezclamos la cultura de admitir errores con calma de la saga anterior con el manejo de conflicto de esta saga: una buena cultura hace que los conflictos se resuelvan más rápido."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, una cultura que anima a admitir errores con un manejo de conflicto que ataca el problema, no a la persona."
+          key_vocabulary: [cultura, manejo de conflicto, se resuelven más rápido]
+          prior_knowledge: "Completo el repaso de Cuando Hay Conflicto (tema anterior) y Cultura que se Siente (saga anterior)."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/cuando-hay-conflicto/ataco-el-problema-no-a-la-persona
+            - equipo-que-escala/cultura-que-se-siente/como-hablamos-cuando-algo-sale-mal
+          lessons:
+            - position: 1
+              slug: mi-cultura-de-admitir-errores-facilita-el-conflicto
+              micro_objective: "Reconoce, en un caso, que una cultura donde admitir errores se recibe con calma hace más fácil atacar el problema y no a la persona durante un conflicto."
+              narrative_beat: "Zara nota que en su equipo, donde ya es normal admitir errores sin miedo, el conflicto por el bordado torcido se resolvio rápido porque nadie se puso a la defensiva."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-un-conflicto-usando-la-cultura-que-construi
+              micro_objective: "Aplica, sin ayuda, un manejo de conflicto que ataca el problema apoyandose en una cultura de equipo que ya anima a hablar con calma de los errores."
+              narrative_beat: "Rho resuelve un conflicto de horarios hablando del problema, no de la persona, y su equipo responde con calma porque esa ya es su cultura de siempre."
+              difficulty: 5
+              suggested_families: [analyze, storyplay]
+  - position: 4
+    slug: lidero-mientras-escala
+    icon: trending_up
+    title:
+      en-US: "Leading While It Scales"
+      es-MX: "Lidero Mientras Escala"
+      pt-BR: "Lidero Enquanto Escala"
+    description:
+      en-US: "As a team grows, the informal rules that worked for four people stop being enough - leading now means building structure without losing the spirit."
+      es-MX: "Cuando un equipo crece, las reglas informales que funcionaban para cuatro personas dejan de alcanzar - liderar ahora significa construir estructura sin perder el espiritu."
+      pt-BR: "Quando uma equipe cresce, as regras informais que funcionavam para quatro pessoas deixam de ser suficientes - liderar agora significa construir estrutura sem perder o espirito."
+    topics:
+        - position: 1
+          slug: cuando-el-equipo-crece-las-reglas-cambian
+          title_es: "Cuando el equipo crece, las reglas cambian"
+          concept: "Lo que funcionaba de palabra entre 4 amigos (decidir todo en un chat grupal) deja de funcionar cuando el equipo crece a 10 o 12 personas y ya nadie ve todos los mensajes."
+          learning_objective: "El aprendiz reconoce cuando una regla informal que funcionaba con un equipo pequeño deja de ser suficiente al crecer el equipo."
+          key_vocabulary: [regla informal, deja de alcanzar, equipo más grande]
+          prior_knowledge: "Completo Cuando Hay Conflicto (saga anterior): ya sabe resolver conflictos protegiendo la relación."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna regla informal de su equipo (como decidir todo en un chat) ya empezo a fallar ahora que son más personas."
+          lessons:
+            - position: 1
+              slug: esto-funcionaba-con-4-pero-no-con-12
+              micro_objective: "Reconoce, en un caso, por que una regla informal que funcionaba con 4 personas deja de funcionar con un equipo de 12."
+              narrative_beat: "Antes, Dina decidia todo en un chat de 4 personas y todos lo veian; ahora con 12 integrantes, la mitad se pierde mensajes importantes en el chat."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-que-regla-ya-no-alcanza
+              micro_objective: "Identifica, entre 3 reglas informales de un equipo, cual ya no alcanza para el tamaño actual del equipo."
+              narrative_beat: "Zara identifica que 'avisar en el chat grupal' ya no alcanza para coordinar entregas con 12 personas - necesitan algo más organizado."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: defino-roles-claros
+          title_es: "Defino roles claros"
+          concept: "Cuando dos personas creen que son responsables de la misma tarea, o nadie cree serlo, algo se cae; definir con claridad quien es responsable de que evita ese hueco."
+          learning_objective: "El aprendiz asigna un rol claro y único a cada integrante de un equipo para eliminar responsabilidades duplicadas o sin dueño."
+          key_vocabulary: [rol claro, responsabilidad duplicada, sin dueño]
+          prior_knowledge: "Reconoce cuando una regla informal ya no alcanza (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te diga el rol claro de cada persona de su equipo, y si alguna tarea se quedo sin nadie responsable."
+          lessons:
+            - position: 1
+              slug: quien-es-responsable-de-esto
+              micro_objective: "Identifica, en un caso, una tarea que dos personas creen que le toca a la otra, dejandola sin hacer."
+              narrative_beat: "Rho descubre que nadie confirmo los pedidos de esta semana porque el creia que le tocaba a su compañero, y su compañero creia que le tocaba a Rho."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: asigno-un-rol-claro-a-cada-persona
+              micro_objective: "Asigna, sin ayuda, un rol claro y único a 4 integrantes de un equipo, eliminando responsabilidades duplicadas."
+              narrative_beat: "Liruf asigna: el confirma pedidos, Zara maneja redes, Dina revisa calidad, Rho atiende clientes difíciles - cada quien con un rol claro."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 3
+          slug: recibo-a-alguien-nuevo-bien
+          title_es: "Recibo a alguien nuevo bien"
+          concept: "Una persona nueva que llega sin saber las reglas no escritas, los roles ni la cultura tarda semanas en integrarse sola; un buen recibimiento (explicar todo eso desde el primer dia) la integra en dias."
+          learning_objective: "El aprendiz prepara un recibimiento que explica a una persona nueva las reglas, roles y cultura del equipo desde el primer dia."
+          key_vocabulary: [recibimiento, primer dia, integración rápida]
+          prior_knowledge: "Asigna un rol claro a cada persona (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que le explicaria a alguien nuevo el primer dia, para que no tenga que adivinar como funciona el equipo."
+          lessons:
+            - position: 1
+              slug: la-dejo-adivinar-o-le-explico-todo
+              micro_objective: "Compara dos formas de recibir a alguien nuevo en el equipo y elige la que explica reglas, roles y cultura desde el primer dia."
+              narrative_beat: "En un equipo, a la persona nueva la dejan adivinar todo sola; en el de Zara, el primer dia le explican las reglas no escritas, su rol y como celebran los logros."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: preparo-el-primer-dia-de-alguien-nuevo
+              micro_objective: "Prepara, sin ayuda, una lista de 3 cosas que le explicaria a alguien nuevo el primer dia para integrarlo rápido."
+              narrative_beat: "Dina prepara: le explicara las reglas de avisar retrasos, su rol especifico, y como el equipo celebra un logro - todo en la primera conversación."
+              difficulty: 3
+              suggested_families: [storyplay, arrange]
+        - position: 4
+          slug: reconozco-cuando-alguien-no-encaja
+          title_es: "Reconozco cuando alguien no encaja"
+          concept: "A veces alguien no cumple lo esperado no por flojera, sino porque el rol no encaja con su habilidad o interes; reconocerlo con respeto y buscar un ajuste es más justo que ignorarlo o criticar en silencio."
+          learning_objective: "El aprendiz reconoce, con respeto, cuando el rol de una persona no encaja con su habilidad o interes, y propone un ajuste en vez de ignorar el problema."
+          key_vocabulary: [no encaja, con respeto, proponer un ajuste]
+          prior_knowledge: "Prepara el recibimiento de alguien nuevo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si algun rol de su equipo no encaja con la habilidad de esa persona, y como podría ajustarse con respeto."
+          lessons:
+            - position: 1
+              slug: no-encaja-el-rol-o-no-le-importa
+              micro_objective: "Distingue, en un caso, entre alguien que no encaja en un rol por habilidad y alguien que de verdad no esta poniendo esfuerzo."
+              narrative_beat: "Rho nota que su compañero se esfuerza pero le cuesta el diseño grafico; no es flojera, es que ese rol no encaja con su habilidad - quiza encaje mejor en atención a clientes."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: propongo-un-ajuste-de-rol-con-respeto
+              micro_objective: "Redacta, sin ayuda, una propuesta respetuosa de cambio de rol para alguien cuyo rol actual no encaja con su habilidad."
+              narrative_beat: "Zara le dice a su compañero: 'creo que tu fuerte es hablar con la gente, no el diseño - que tal si cambiamos tu rol a atención a clientes?'"
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: delego-una-decision-completa-no-solo-una-tarea
+          title_es: "Delego una decisión completa, no solo una tarea"
+          concept: "Delegar de verdad significa a veces soltar también la decisión, no solo la ejecución - dejar que alguien decida el diseño de la próxima colección, no solo que la empaque."
+          learning_objective: "El aprendiz distingue delegar solo la ejecución de una tarea de delegar también la decisión completa asociada a ella."
+          key_vocabulary: [delegar la decisión, no solo la ejecución, soltar de verdad]
+          prior_knowledge: "Propone un ajuste de rol con respeto (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez delego no solo una tarea, sino también la decisión completa sobre como hacerla, a alguien de su equipo."
+          lessons:
+            - position: 1
+              slug: solo-la-ejecucion-o-tambien-la-decision
+              micro_objective: "Distingue, entre dos formas de delegar, cual solo delega la ejecución de una tarea y cual delega también la decisión completa."
+              narrative_beat: "Liruf le pide a su compañera que empaque los pedidos como el diga; Dina le pide a la suya que decida ella misma el mejor orden de empaque - la segunda delega de verdad."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: delego-una-decision-completa
+              micro_objective: "Delega, sin ayuda, una decisión completa (no solo una tarea) a un integrante de su equipo, especificando el limite de esa decisión."
+              narrative_beat: "Zara delega a su compañera la decisión completa sobre que 3 diseños nuevos lanzar este mes, con el único limite de no pasar su presupuesto acordado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: mi-plan-de-liderazgo-para-el-siguiente-mes
+          title_es: "Mi plan de liderazgo para el siguiente mes"
+          concept: "Un plan de liderazgo integra que tareas delegar, que cultura reforzar, como manejar el próximo conflicto probable y como recibir a la siguiente persona nueva."
+          learning_objective: "El aprendiz redacta un plan de liderazgo para el siguiente mes integrando delegación, cultura, manejo de conflicto y crecimiento del equipo."
+          key_vocabulary: [plan de liderazgo, integrar todo, siguiente mes]
+          prior_knowledge: "Delega una decisión completa (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea su plan de liderazgo para el siguiente mes: que va a delegar, que cultura va a reforzar, y como recibiria a alguien nuevo."
+          lessons:
+            - position: 1
+              slug: reviso-los-cuatro-elementos-de-mi-plan
+              micro_objective: "Reune, sin ayuda, los 4 elementos de su plan de liderazgo: una tarea a delegar, un habito de cultura a reforzar, un conflicto probable y un plan de recibimiento."
+              narrative_beat: "Rho ordena en tarjetas su plan: delegar el manejo de redes, reforzar la cultura de admitir errores rápido, anticipar un posible conflicto de horarios, y preparar el recibimiento del siguiente integrante."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: escribo-mi-plan-de-liderazgo-completo
+              micro_objective: "Redacta, sin ayuda, su plan de liderazgo completo para el siguiente mes integrando los 4 elementos revisados."
+              narrative_beat: "Dina escribe su plan completo: delegar la etapa de redes a su compañera, seguir celebrando logros especificos, resolver rápido cualquier tensión por horarios, y recibir bien a la persona que se une la próxima semana."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-lidero-mientras-escala
+          kind: review_spaced
+          title_es: "Repaso: Lidero Mientras Escala"
+          concept: "El equipo repasa como definir roles claros, recibir bien a alguien nuevo, reconocer cuando un rol no encaja y delegar decisiones completas."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el liderazgo de un equipo que crece."
+          key_vocabulary: [roles claros, recibimiento, delegar decisiones]
+          prior_knowledge: "Completo los 6 temas de Lidero Mientras Escala."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/lidero-mientras-escala/cuando-el-equipo-crece-las-reglas-cambian
+            - equipo-que-escala/lidero-mientras-escala/defino-roles-claros
+            - equipo-que-escala/lidero-mientras-escala/recibo-a-alguien-nuevo-bien
+            - equipo-que-escala/lidero-mientras-escala/reconozco-cuando-alguien-no-encaja
+            - equipo-que-escala/lidero-mientras-escala/delego-una-decision-completa-no-solo-una-tarea
+            - equipo-que-escala/lidero-mientras-escala/mi-plan-de-liderazgo-para-el-siguiente-mes
+          lessons:
+            - position: 1
+              slug: repaso-asigno-roles-claros-nuevos
+              micro_objective: "Recuerda y aplica, sin ayuda, la asignación de roles claros para un equipo nuevo que todavia no había visto."
+              narrative_beat: "El equipo asigna, sin ayuda, roles claros para un equipo nuevo de edición de fotos que esta creciendo."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: repaso-delego-una-decision-completa-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: delega una decisión completa, no solo una tarea, en un caso nuevo."
+              narrative_beat: "Rho delega, sin ayuda de nadie, una decisión completa nueva a un integrante de un equipo que nunca había analizado."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 8
+          slug: cruce-manejo-de-conflicto-y-liderazgo-que-escala
+          kind: review_interleaved
+          title_es: "Cruce: Manejo de Conflicto y Liderazgo que Escala"
+          concept: "Mezclamos el manejo de conflicto de la saga anterior con el liderazgo de un equipo que crece: más personas significa más probabilidad de conflicto, y un buen lider ya esta preparado."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un manejo de conflicto que ataca el problema con un plan de liderazgo que anticipa conflictos probables al crecer el equipo."
+          key_vocabulary: [manejo de conflicto, plan de liderazgo, anticipar]
+          prior_knowledge: "Completo el repaso de Lidero Mientras Escala (tema anterior) y Cuando Hay Conflicto (saga anterior)."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/lidero-mientras-escala/mi-plan-de-liderazgo-para-el-siguiente-mes
+            - equipo-que-escala/cuando-hay-conflicto/encuentro-el-interes-detras-del-conflicto
+          lessons:
+            - position: 1
+              slug: anticipo-el-conflicto-mas-probable-de-mi-equipo-que-crece
+              micro_objective: "Identifica, sin ayuda, el conflicto más probable de un equipo que esta creciendo, apoyandose en la técnica de encontrar el interes real detras."
+              narrative_beat: "Zara anticipa que el conflicto más probable al crecer su equipo sera sobre quien decide los diseños nuevos, y ya piensa en el interes real detras: sentirse tomado en cuenta."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: incluyo-el-manejo-de-ese-conflicto-en-mi-plan
+              micro_objective: "Completa, sin ayuda, su plan de liderazgo incluyendo como manejaria el conflicto probable identificado, atacando el problema y no a la persona."
+              narrative_beat: "Rho agrega a su plan de liderazgo: si surge tensión por las decisiones de diseño, escuchara ambas versiónes y buscara incluir a todos antes de decidir."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 5
+    slug: el-consejo-de-lideres-del-reino
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Realm's Council of Leaders"
+      es-MX: "El Consejo de Lideres del Reino"
+      pt-BR: "O Conselho de Lideres do Reino"
+    description:
+      en-US: "A realm-wide council puts every leadership skill through a simulated team crisis."
+      es-MX: "Un consejo de todo el reino pone a prueba cada habilidad de liderazgo con una crisis de equipo simulada."
+      pt-BR: "Um conselho de todo o reino coloca a prova cada habilidade de lideranca com uma crise de equipe simulada."
+    topics:
+        - position: 1
+          slug: el-reto-de-la-crisis-de-equipo
+          kind: review_quest
+          title_es: "El Reto de la Crisis de Equipo"
+          concept: "El Consejo de Lideres reta a cada equipo a resolver una crisis simulada donde una tarea mal delegada choca contra una cultura que todavia no esta bien establecida."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la delegación clara con el reconocimiento de la cultura real para responder a una crisis de equipo simulada."
+          key_vocabulary: [crisis de equipo, delegación y cultura, resolver juntos]
+          prior_knowledge: "Completo Ya No Puedo Solo y Cultura que se Siente."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/ya-no-puedo-solo
+            - equipo-que-escala/cultura-que-se-siente
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-de-la-crisis-de-equipo
+              micro_objective: "Recuerda, sin ayuda, como delegar con claridad y reconocer la cultura real de un equipo antes de enfrentar la crisis simulada."
+              narrative_beat: "El Consejo de Lideres anuncia: 'un pedido grande salio mal por una instrucción confusa y nadie lo admitio a tiempo - resuelvan la crisis completa'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: resuelvo-la-crisis-de-delegacion-y-cultura
+              micro_objective: "Aplica, sin ayuda, una instrucción clara de delegación y una respuesta de cultura que anima a admitir errores para resolver la crisis simulada."
+              narrative_beat: "Zara resuelve la crisis: reescribe la instrucción confusa con claridad, y responde con calma al compañero que admite tarde el error, reforzando que admitirlo siempre es mejor que esconderlo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-plan-de-liderazgo-ante-el-consejo
+          kind: review_quest
+          title_es: "Mi Plan de Liderazgo ante el Consejo"
+          concept: "Con el manejo de conflicto y el plan de crecimiento dominados, el equipo presenta ante el Consejo de Lideres del reino un plan de liderazgo completo, puesto a prueba por la crisis simulada."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un plan de liderazgo integrando manejo de conflicto y crecimiento sano del equipo."
+          key_vocabulary: [consejo de lideres, plan de liderazgo, crecimiento sano]
+          prior_knowledge: "Completo El Reto de la Crisis de Equipo (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - equipo-que-escala/cuando-hay-conflicto
+            - equipo-que-escala/lidero-mientras-escala
+          lessons:
+            - position: 1
+              slug: preparo-mi-caso-para-el-consejo-de-lideres
+              micro_objective: "Organiza, sin ayuda, el manejo de conflicto aplicado en la crisis y su plan de liderazgo completo para presentarlos ante el Consejo."
+              narrative_beat: "Rho ordena su caso completo: como ataco el problema y no a la persona en la crisis, y su plan de liderazgo con roles claros y un recibimiento preparado."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-plan-ante-el-consejo-de-lideres
+              micro_objective: "Completa, sin ayuda, la presentación final de su plan de liderazgo ante el Consejo, citando como resolvio la crisis de equipo simulada."
+              narrative_beat: "Dina presenta ante el Consejo de Lideres del reino: su plan delega con claridad, refuerza una cultura de admitir errores rápido, y ya demostro que puede resolver un conflicto real sin romper al equipo."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

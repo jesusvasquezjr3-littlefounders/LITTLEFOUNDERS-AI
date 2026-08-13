@@ -261,3 +261,99 @@ facts:
     label_es: "Rol narrativo de cada personaje. Aquí: Rho es el sabio del tiempo, Dina la mentora de metas, Zara la estratega de riesgo, Liruf el impaciente."
     verified: true
     notes: "Rho brilla como el sabio del tiempo (aventuras 1-2), Dina como mentora de metas (aventura 4), Zara como estratega de riesgo (aventura 3), Liruf como el impaciente que aprende paciencia a lo largo de todo el curso."
+
+  # ---- tier4 additions (WALKTHROUGH 2026-08-12 pivot) — teen-anchored
+  # reference numbers/metaphors for the 8 investing/adventures. Same NEVER-
+  # INVENTED rule as above: every growth/interest number below reuses the
+  # existing didactic 10% (money.example_growth_rate_pct) so all arithmetic
+  # stays cross-checkable against the original verified entries; nothing here
+  # is modeled on a real bank, fund, index, or app's actual rate. ----
+
+  money.gig_app_payout_example:
+    value: [100, 10, 90]
+    unit: MXN
+    label_es: "Ejemplo verificable de comisión de una app de trabajos por encargo: de 100 pesos ganados, la app cobra 10 (10%) y a ti llegan 90"
+    verified: true
+    notes: "principal=100, comisión=10, neto=90. Aritmética re-verificable: 100 - (100*0.10) = 90. Reutiliza el mismo 10% didáctico de money.example_growth_rate_pct para que ambos ejemplos sean consistentes entre sí. Usado en El Interés que se Acumula (aventura 2, La Comisión de la App) para enseñar 'porcentaje de un total' en la dirección contraria al interés (una app te resta, un fondo te suma)."
+
+  money.inflation_example_100_to_110:
+    value: [100, 110]
+    unit: MXN
+    label_es: "Ejemplo verificable de subida de precio: algo que costaba 100 ahora cuesta 110, un año después"
+    verified: true
+    notes: "100 + (100*0.10) = 110 — mismo 10% didáctico reutilizado, esta vez para ilustrar que una meta de ahorro fija pierde poder de compra si el precio del objetivo sube mientras ahorras. Usado en Metas con Números (aventura 4, Cuando las Cosas Suben de Precio)."
+
+  math.savings_goal_ceiling_tier4:
+    value: 3000
+    unit: MXN
+    label_es: "Meta de ahorro máxima usada en savings_goal/goal-planning durante Metas con Números (aventura 4, tier4) — una meta grande y real para un adolescente (ej. una laptop o un viaje con amigos)"
+    verified: true
+    notes: "Tope pedagógico, no un hecho externo. Mucho mayor que math.savings_goal_ceiling_tier3 (500) — adolescentes manejan montos de meta más grandes que niños de 10-12 años."
+
+  math.weekly_income_options_tier4:
+    value: [100, 150, 200, 250, 300]
+    unit: MXN
+    label_es: "Montos semanales de ahorro/ingreso (mesada, trabajo por encargo o primer sueldo parcial) usados en ejercicios de esta aventura tier4"
+    verified: true
+    notes: "Mayor que math.savings_weekly_options_tier3 ([20,30,40,50,75]) — refleja mesadas e ingresos de trabajos ocasionales típicos de un adolescente, no de un niño de primaria."
+
+  mxn.reference_prices.audifonos_inalambricos:
+    value: 900
+    range: [600, 1400]
+    unit: MXN
+    label_es: "Audífonos inalámbricos (precio de referencia aproximado, objeto de meta relevante para un adolescente)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.tenis_de_moda:
+    value: 1800
+    range: [1200, 3000]
+    unit: MXN
+    label_es: "Tenis de moda (precio de referencia aproximado, objeto de meta relevante para un adolescente)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.boleto_concierto:
+    value: 950
+    range: [600, 2000]
+    unit: MXN
+    label_es: "Boleto de concierto (precio de referencia aproximado, objeto de meta relevante para un adolescente)"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.videojuego_nuevo:
+    value: 1200
+    range: [900, 1500]
+    unit: MXN
+    label_es: "Videojuego nuevo (precio de referencia aproximado, objeto de meta relevante para un adolescente)"
+    verified: false
+    enforce: false
+
+  # ---- Qualitative metaphors (no numeric market data, ever) ----
+  risk.loot_box_odds_metaphor:
+    value: "una caja de recompensa rara paga mucho pero muy pocas veces; una caja común paga poco pero casi siempre"
+    unit: n/a
+    label_es: "Metáfora de riesgo/valor esperado anclada a mecánicas de videojuego conocidas por un adolescente, sin nombrar ningún juego real ni usar probabilidades reales"
+    verified: false
+    enforce: false
+    notes: "Metáfora puramente cualitativa para introducir la intuición de 'valor esperado' (premio × qué tan seguido pasa) antes de cualquier cifra real de mercado. Base de El Mapa del Riesgo (aventura 3, Cajas de Recompensa)."
+
+  risk.follower_growth_metaphor:
+    value: "cada seguidor nuevo puede contarle a otros y traer más seguidores, como una bola de nieve que crece rodando cuesta abajo"
+    unit: n/a
+    label_es: "Metáfora de crecimiento compuesto anclada al crecimiento de una audiencia/seguidores, para introducir la idea de crecimiento que se acelera con el tiempo"
+    verified: false
+    enforce: false
+    notes: "Base de El Efecto Bola de Nieve (aventura 6) — traduce 'crecimiento compuesto' a algo que un adolescente ya vive en redes sociales, antes de aplicar la misma idea a un ahorro que crece."
+
+  fraud.red_flags_list:
+    value:
+      - "promete una ganancia garantizada y fija, sin importar lo que pase"
+      - "presiona a decidir de inmediato, sin darte tiempo de pensar o investigar"
+      - "necesita que reclutes a más gente para que tú puedas ganar"
+      - "nadie puede explicarte con claridad de dónde sale realmente el dinero"
+    unit: n/a
+    label_es: "Las cuatro señales de alerta de fraude de inversión enseñadas en Radar de Fraudes (aventura 7) — lista cerrada y reutilizable en toda la aventura"
+    verified: false
+    enforce: false
+    notes: "JUDGMENT CALL (AGENTS.md §1.12.6): estas señales se enseñan para RECONOCER y EVITAR un fraude, nunca como una receta ni presentadas como una oportunidad — ver la nota de 'esquema ponzi/pirámide' en taxonomy.yaml. Cualitativas por diseño: ninguna cifra de esta lista es una probabilidad ni un rendimiento real."

@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 6
+  slug: efecto-bola-de-nieve
+  theme: forest
+  age_tier: tier4
+  title:
+    en-US: "The Snowball Effect"
+    es-MX: "El Efecto Bola de Nieve"
+    pt-BR: "O Efeito Bola de Neve"
+  description:
+    en-US: "In the Growing Forest, the team studies how a following that snowballs shares the exact same shape as money left to compound for decades - and why starting a few years earlier changes everything."
+    es-MX: "En el Bosque que Crece, el equipo estudia cómo una cuenta de seguidores que se vuelve viral tiene exactamente la misma forma que un dinero que se deja crecer por décadas - y por qué empezar unos años antes lo cambia todo."
+    pt-BR: "No Bosque que Cresce, a equipe estuda como uma conta de seguidores que viraliza tem exatamente a mesma forma de um dinheiro deixado para crescer por decadas - e por que comecar alguns anos antes muda tudo."
+  narrative_arc: "Dina, Liruf, Rho y Zara suben al Bosque que Crece, donde observan primero cómo una cuenta de seguidores crece lento al inicio y luego se acelera - el mismo patrón que un ahorro que deja crecer su premio adentro. Formalizan la idea con una bola de nieve real que rueda cuesta abajo, simulan muchas vueltas (años) para ver el tamaño acelerarse, y descubren que unos pocos años de diferencia al empezar generan un resultado final enorme. Terminan combinando canasta diversificada, plazo largo y protección contra interrupciones en un plan de bola de nieve personal, que defienden frente al consejo del bosque."
+
+sagas:
+  - position: 1
+    slug: como-crecen-los-seguidores
+    icon: trending_up
+    title:
+      en-US: "How Followers Grow"
+      es-MX: "Cómo Crecen los Seguidores"
+      pt-BR: "Como os Seguidores Crescem"
+    description:
+      en-US: "A following that snowballs and money left to compound share the exact same accelerating shape."
+      es-MX: "Una cuenta de seguidores que se vuelve viral y un dinero que se deja crecer comparten exactamente la misma forma acelerada."
+      pt-BR: "Uma conta de seguidores que viraliza e um dinheiro deixado para crescer compartilham exatamente a mesma forma acelerada."
+    topics:
+        - position: 1
+          slug: un-seguidor-trae-a-otro
+          title_es: "Un seguidor trae a otro"
+          concept: "Cada seguidor nuevo puede contarle a otros y traer más seguidores, como una bola de nieve que crece rodando cuesta abajo."
+          learning_objective: "El aprendiz reconoce, con la metáfora de la bola de nieve, que cada seguidor nuevo puede traer más seguidores."
+          key_vocabulary: [seguidor, traer más seguidores, bola de nieve]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: [risk.follower_growth_metaphor]
+          parent_check: "Preguntale a {{name}} si sabe cómo una cuenta con pocos seguidores puede terminar con muchos más con el tiempo."
+          lessons:
+            - position: 1
+              slug: zara-explica-la-bola-de-nieve
+              micro_objective: "Reconoce, con la metáfora de la bola de nieve, que cada seguidor nuevo puede contarle a otros y traer más seguidores."
+              narrative_beat: "Zara le explica a Liruf: 'cada seguidor nuevo le puede contar a sus amigos, y esos amigos a los suyos - como una bola de nieve que crece rodando'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-como-trae-mas-seguidores
+              micro_objective: "Explica, con sus palabras, por qué un seguidor nuevo puede traer más seguidores de los que parece a simple vista."
+              narrative_beat: "Liruf explica con sus palabras cómo un solo seguidor nuevo puede terminar trayendo varios más."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: crece-lento-al-principio
+          title_es: "Crece lento al principio"
+          concept: "Una cuenta nueva crece lento al principio, porque hay pocos seguidores para contarle a otros."
+          learning_objective: "El aprendiz reconoce que el crecimiento inicial es lento y lo compara contra el de una cuenta ya grande."
+          key_vocabulary: [crecimiento inicial, lento]
+          prior_knowledge: "Reconoce que un seguidor nuevo puede traer más (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué cree que una cuenta nueva crece más lento que una cuenta que ya es grande."
+          lessons:
+            - position: 1
+              slug: la-cuenta-nueva-de-rho
+              micro_objective: "Reconoce que una cuenta nueva crece lento al principio, porque hay pocos seguidores para contarle a otros."
+              narrative_beat: "Rho ve que su cuenta nueva del bosque casi no crece la primera semana - apenas tiene seguidores que puedan contarle a alguien más."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-cuenta-nueva-y-grande
+              micro_objective: "Compara el crecimiento de la primera semana contra el de una cuenta que ya tiene muchos seguidores."
+              narrative_beat: "Zara compara: su cuenta nueva ganó 2 seguidores esta semana; una cuenta grande del bosque ganó cientos en el mismo tiempo."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: crece-rapido-despues
+          title_es: "Crece rápido después"
+          concept: "Entre más seguidores tiene una cuenta, más rápido puede seguir creciendo, porque hay más gente contando a más gente."
+          learning_objective: "El aprendiz reconoce que el ritmo de crecimiento aumenta con el tamaño de la cuenta y ordena momentos del crecimiento por velocidad."
+          key_vocabulary: [ritmo de crecimiento, aumentar]
+          prior_knowledge: "Compara el crecimiento de una cuenta nueva contra una grande (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que ordene tres momentos de una cuenta (inicio, medio, después) según qué tan rápido creció en cada uno."
+          lessons:
+            - position: 1
+              slug: la-cuenta-de-rho-por-fin-acelera
+              micro_objective: "Reconoce que entre más seguidores tiene una cuenta, más rápido puede seguir creciendo."
+              narrative_beat: "Después de varias semanas, la cuenta de Rho por fin tiene suficientes seguidores como para que el crecimiento se sienta más rápido."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: ordeno-tres-momentos-del-crecimiento
+              micro_objective: "Ordena tres momentos del crecimiento de una cuenta (inicio, medio, después) según qué tan rápido creció en cada uno."
+              narrative_beat: "Zara ordena tres capturas de la cuenta de Rho: al inicio, a la mitad, y después - y ve cómo el ritmo cambia."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 4
+          slug: comparo-crecimiento-parejo-y-acelerado
+          title_es: "Comparo crecimiento parejo y acelerado"
+          concept: "Comparar un crecimiento parejo (mismo número cada semana) contra uno acelerado (cada vez más) muestra que, a la larga, no terminan igual."
+          learning_objective: "El aprendiz compara crecimiento parejo contra acelerado y predice cuál tendrá más seguidores tras muchas semanas."
+          key_vocabulary: [crecimiento parejo, crecimiento acelerado]
+          prior_knowledge: "Ordena momentos del crecimiento por velocidad (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cuál cree que gana a la larga: una cuenta que crece siempre igual, o una que crece cada vez más rápido."
+          lessons:
+            - position: 1
+              slug: dos-cuentas-distinto-patron
+              micro_objective: "Compara un crecimiento parejo (mismo número cada semana) contra uno acelerado (cada vez más), usando el ejemplo de seguidores."
+              narrative_beat: "Dina compara dos cuentas: una gana siempre 10 seguidores por semana, la otra gana cada vez más - a la larga, no terminan igual."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: predigo-quien-gana-a-la-larga
+              micro_objective: "Predice cuál de las dos cuentas (pareja o acelerada) tendrá más seguidores después de muchas semanas más."
+              narrative_beat: "Con el patrón claro, Liruf predice que la cuenta acelerada le va a ganar por mucho a la pareja, aunque al principio parecía casi lo mismo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: lo-mismo-le-pasa-al-dinero
+          title_es: "Lo mismo le pasa al dinero"
+          concept: "El mismo patrón de 'crece lento, luego rápido' le pasa a un ahorro que deja crecer su premio adentro."
+          learning_objective: "El aprendiz reconoce y compara que el patrón de crecimiento de seguidores es el mismo que el de un ahorro con interés compuesto."
+          key_vocabulary: [mismo patrón, ahorro con premio adentro]
+          prior_knowledge: "Predice cuál cuenta gana a la larga (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si cree que un ahorro que deja crecer su premio adentro sigue el mismo patrón que una cuenta de seguidores."
+          lessons:
+            - position: 1
+              slug: rho-conecta-las-dos-ideas
+              micro_objective: "Reconoce que el mismo patrón de 'crece lento, luego rápido' le pasa a un ahorro que deja crecer su premio adentro."
+              narrative_beat: "Rho conecta las dos ideas: su cuenta de seguidores Y su ahorro con premio adentro crecen exactamente con el mismo patrón."
+              difficulty: 4
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-las-dos-graficas
+              micro_objective: "Compara el patrón de crecimiento de una cuenta de seguidores contra el patrón de crecimiento de un ahorro con interés compuesto."
+              narrative_beat: "Zara pone lado a lado las dos gráficas: seguidores y ahorro - la forma es la misma, lenta al inicio, acelerada después."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: dibujo-la-curva-que-se-acelera
+          title_es: "Dibujo la curva que se acelera"
+          concept: "Dibuja o describe la forma de una curva que empieza lenta y se acelera, aplicándola tanto a seguidores como a dinero."
+          learning_objective: "El aprendiz describe la forma de una curva de crecimiento acelerado y la aplica a un ejemplo propio nuevo."
+          key_vocabulary: [curva acelerada, forma]
+          prior_knowledge: "Compara el patrón de crecimiento de seguidores y de ahorro (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que describa, con sus palabras, cómo se ve una curva que empieza plana y termina subiendo muy rápido."
+          lessons:
+            - position: 1
+              slug: dibujamos-la-curva-en-equipo
+              micro_objective: "Con apoyo, describe la forma de una curva que empieza lenta y se acelera, aplicándola a seguidores y a dinero."
+              narrative_beat: "El equipo dibuja juntos la curva del bosque: empieza casi plana, y después sube cada vez más rápido - la misma forma para todo lo que crece."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: aplico-la-curva-a-mi-ejemplo
+              micro_objective: "Aplica, sin ayuda, la idea de la curva acelerada a un ejemplo propio nuevo, ya sea de seguidores o de dinero."
+              narrative_beat: "Liruf aplica la curva acelerada solo, sin ayuda, a un ejemplo nuevo que él mismo inventa."
+              difficulty: 5
+              suggested_families: [analyze, storyplay]
+        - position: 7
+          slug: repaso-como-crecen-los-seguidores
+          kind: review_spaced
+          title_es: "Repaso: Cómo Crecen los Seguidores"
+          concept: "El equipo repasa el patrón de crecimiento lento-luego-rápido antes de formalizarlo con una bola de nieve real."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué una cuenta crece lento al principio y más rápido después."
+          key_vocabulary: [crecimiento lento, crecimiento acelerado]
+          prior_knowledge: "Completo los 6 temas de Cómo Crecen los Seguidores."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/un-seguidor-trae-a-otro
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/crece-lento-al-principio
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/crece-rapido-despues
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/comparo-crecimiento-parejo-y-acelerado
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/lo-mismo-le-pasa-al-dinero
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/dibujo-la-curva-que-se-acelera
+          lessons:
+            - position: 1
+              slug: repaso-lento-luego-rapido
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué una cuenta crece lento al principio y más rápido después."
+              narrative_beat: "El equipo repasa las cuentas del bosque y explica, sin ayuda, por qué el ritmo de crecimiento cambia con el tiempo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-comparo-parejo-y-acelerado
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara un crecimiento parejo contra uno acelerado en un caso nuevo."
+              narrative_beat: "Zara compara, sin ayuda de nadie, un crecimiento parejo contra uno acelerado en un caso nuevo del bosque."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-seguidores-y-dinero
+          kind: review_interleaved
+          title_es: "Cruce: Seguidores y Dinero"
+          concept: "Mezclamos el patrón de crecimiento acelerado de seguidores con el mismo patrón aplicado a un ahorro."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar un caso mixto."
+          key_vocabulary: [crecimiento acelerado, ahorro]
+          prior_knowledge: "Completo el repaso de Cómo Crecen los Seguidores (tema anterior)."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/crece-rapido-despues
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/lo-mismo-le-pasa-al-dinero
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/comparo-crecimiento-parejo-y-acelerado
+          lessons:
+            - position: 1
+              slug: junto-patron-de-seguidores-y-ahorro
+              micro_objective: "Combina el patrón de crecimiento acelerado de seguidores con el mismo patrón aplicado a un ahorro."
+              narrative_beat: "Rho junta dos ideas: cómo se acelera una cuenta de seguidores Y cómo se acelera un ahorro con premio adentro - la misma curva."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-un-caso-mixto
+              micro_objective: "Evalúa, sin ayuda, un caso nuevo aplicando el patrón de crecimiento acelerado tanto a seguidores como a dinero a la vez."
+              narrative_beat: "Zara resuelve un caso final del bosque cruzando seguidores y dinero, usando la misma curva para ambos."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: la-bola-de-nieve-de-verdad
+    icon: ac_unit
+    title:
+      en-US: "The Real Snowball"
+      es-MX: "La Bola de Nieve de Verdad"
+      pt-BR: "A Bola de Neve de Verdade"
+    description:
+      en-US: "Reinvesting is leaving the new snow stuck to the ball instead of scraping it off each turn."
+      es-MX: "Reinvertir es dejar pegada la nieve nueva a la bola en vez de quitarla en cada vuelta."
+      pt-BR: "Reinvestir e deixar a neve nova grudada na bola em vez de retira-la a cada volta."
+    topics:
+        - position: 1
+          slug: la-bola-que-rueda-cuesta-abajo
+          title_es: "La bola que rueda cuesta abajo"
+          concept: "Una bola de nieve pequeña que rueda cuesta abajo recoge más nieve en cada vuelta, y por eso crece cada vez más rápido."
+          learning_objective: "El aprendiz reconoce, con el ejemplo físico de la bola de nieve, por qué recoge más nieve en cada vuelta mientras más grande se pone."
+          key_vocabulary: [rodar, recoger nieve, vuelta]
+          prior_knowledge: "Completo Cómo Crecen los Seguidores (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué cree que una bola de nieve más grande recoge más nieve en cada vuelta que una chiquita."
+          lessons:
+            - position: 1
+              slug: dina-muestra-la-bola-rodando
+              micro_objective: "Reconoce que una bola de nieve pequeña que rueda cuesta abajo recoge más nieve en cada vuelta, y por eso crece cada vez más rápido."
+              narrative_beat: "Dina le muestra a Liruf una bola de nieve pequeña rodando cuesta abajo: cada vuelta recoge más nieve que la anterior."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-por-que-recoge-mas
+              micro_objective: "Explica, con sus palabras, por qué la bola de nieve recoge más nieve en cada vuelta mientras más grande se pone."
+              narrative_beat: "Liruf explica con sus palabras por qué una bola más grande recoge más nieve que una chiquita en la misma vuelta."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: reinvertir-es-dejar-pegada-la-nieve-nueva
+          title_es: "Reinvertir es dejar pegada la nieve nueva"
+          concept: "Reinvertir el premio (no sacarlo) es como dejar pegada la nieve nueva a la bola, en vez de quitarla en cada vuelta."
+          learning_objective: "El aprendiz reconoce la analogía entre reinvertir un premio y dejar pegada la nieve nueva, y compara el tamaño final con y sin reinversión."
+          key_vocabulary: [reinvertir, dejar pegada]
+          prior_knowledge: "Reconoce por qué la bola recoge más nieve en cada vuelta (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué le pasaría a una bola de nieve si le quitaran la nieve nueva en cada vuelta."
+          lessons:
+            - position: 1
+              slug: quitar-nieve-es-como-sacar-el-premio
+              micro_objective: "Reconoce que reinvertir el premio (no sacarlo) es como dejar pegada la nieve nueva a la bola, en vez de quitarla en cada vuelta."
+              narrative_beat: "Rho compara: si quitas la nieve nueva en cada vuelta, la bola nunca crece - eso es lo mismo que sacar tu premio cada año."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-nieve-pegada-y-nieve-quitada
+              micro_objective: "Compara el tamaño final de una bola que deja pegada toda la nieve nueva contra una a la que le quitan nieve en cada vuelta."
+              narrative_beat: "Zara compara dos bolas después de diez vueltas: una que dejó pegada toda la nieve nueva, y otra a la que le quitaron un poco cada vez."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 3
+          slug: simulo-diez-vueltas
+          title_es: "Simulo diez vueltas"
+          concept: "Simula diez 'vueltas' (años) de una bola de nieve financiera y observa cómo el tamaño crece cada vez más entre vuelta y vuelta."
+          learning_objective: "El aprendiz simula diez vueltas de crecimiento y compara el salto entre las primeras vueltas contra las últimas."
+          key_vocabulary: [simular, diez vueltas]
+          prior_knowledge: "Compara el tamaño final con y sin reinversión (tema anterior)."
+          fact_refs: [money.compound_growth_100_3years, money.example_growth_rate_pct]
+          parent_check: "Pidele a {{name}} que simule, con números sencillos, cómo crecería un monto en diez vueltas dejando todo el premio adentro."
+          lessons:
+            - position: 1
+              slug: simulamos-diez-vueltas-en-equipo
+              micro_objective: "Simula diez 'vueltas' (años) de una bola de nieve financiera y registra cómo crece el tamaño en cada vuelta."
+              narrative_beat: "El equipo simula diez vueltas de su bola de nieve financiera, anotando el tamaño exacto después de cada una."
+              difficulty: 3
+              suggested_families: [arrange, money]
+            - position: 2
+              slug: comparo-primeras-y-ultimas-vueltas
+              micro_objective: "Observa y describe cómo el tamaño crece cada vez más entre vuelta y vuelta, comparando las primeras vueltas contra las últimas."
+              narrative_beat: "Rho compara las primeras tres vueltas contra las últimas tres: el salto entre vueltas es mucho más grande al final."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: que-pasa-si-quito-nieve-a-mitad-de-camino
+          title_es: "Qué pasa si quito nieve a mitad de camino"
+          concept: "Comparar dejar la bola rodar completa contra quitarle nieve (sacar el premio) a la mitad del camino muestra el costo de interrumpir."
+          learning_objective: "El aprendiz compara el resultado de dejar rodar la bola completa contra interrumpirla a la mitad, y decide cuándo vale la pena interrumpir."
+          key_vocabulary: [interrumpir, mitad del camino]
+          prior_knowledge: "Simula diez vueltas de crecimiento (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría si sacara su premio a la mitad de un plan de ahorro largo, en vez de dejarlo completo."
+          lessons:
+            - position: 1
+              slug: liruf-saca-a-la-mitad-zara-no
+              micro_objective: "Compara dejar la bola rodar completa contra quitarle nieve (sacar el premio) a la mitad del camino."
+              narrative_beat: "Liruf saca su premio a la mitad de las diez vueltas; Zara deja rodar su bola completa - al final, no terminan ni cerca del mismo tamaño."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: decido-si-vale-la-pena-interrumpir
+              micro_objective: "Decide, en un caso, si vale la pena quitarle nieve a la bola a la mitad del camino, considerando lo que se pierde después."
+              narrative_beat: "Rho decide si de verdad le conviene sacar su premio a la mitad, sabiendo cuánto tamaño perdería en las vueltas que faltan."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-tamano-en-la-vuelta-20
+          title_es: "El tamaño en la vuelta 20"
+          concept: "Extiende la simulación a un plazo mucho más largo (décadas) y compara el tamaño de la bola en la vuelta 3 contra la vuelta 20."
+          learning_objective: "El aprendiz compara el tamaño de una bola de nieve a un plazo corto contra uno mucho más largo y predice un tamaño futuro."
+          key_vocabulary: [plazo largo, predecir]
+          prior_knowledge: "Decide si vale la pena interrumpir a la mitad del camino (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si cree que la diferencia entre 3 años y 20 años de crecimiento es pequeña o enorme - y por qué."
+          lessons:
+            - position: 1
+              slug: extiendo-hasta-la-vuelta-20
+              micro_objective: "Extiende la simulación a un plazo mucho más largo y compara el tamaño de la bola en la vuelta 3 contra la vuelta 20."
+              narrative_beat: "Zara extiende su simulación hasta la vuelta 20: el tamaño en la vuelta 3 casi no se nota comparado con lo que hay en la vuelta 20."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: predigo-una-vuelta-futura
+              micro_objective: "Predice, con el patrón observado, aproximadamente cuánto más grande será la bola en una vuelta futura lejana."
+              narrative_beat: "Con el patrón claro, Rho predice aproximadamente qué tan grande sería su bola de nieve muchas vueltas después."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: explico-por-que-se-acelera
+          title_es: "Explico por qué se acelera"
+          concept: "Explica, con tus palabras y el ejemplo de la bola de nieve, por qué el crecimiento compuesto se acelera con años, no con vueltas cortas."
+          learning_objective: "El aprendiz explica, con un ejemplo propio, por qué el tiempo largo es el ingrediente clave del crecimiento acelerado."
+          key_vocabulary: [ingrediente clave, tiempo largo]
+          prior_knowledge: "Predice un tamaño futuro con el patrón observado (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique, con sus propias palabras, por qué el tiempo largo hace que el crecimiento se acelere tanto."
+          lessons:
+            - position: 1
+              slug: preparamos-la-explicacion-final
+              micro_objective: "Con apoyo, explica usando el ejemplo de la bola de nieve por qué el crecimiento compuesto se acelera con años, no con vueltas cortas."
+              narrative_beat: "El equipo prepara una explicación corta para un cadete nuevo del bosque, usando la bola de nieve como ejemplo central."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: explico-con-mi-propio-ejemplo
+              micro_objective: "Explica, sin ayuda, por qué el tiempo largo (años) es el ingrediente clave del crecimiento acelerado, usando un ejemplo propio."
+              narrative_beat: "Liruf explica solo, sin ayuda, por qué años de tiempo hacen toda la diferencia, usando un ejemplo que él mismo inventa."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-la-bola-de-nieve-de-verdad
+          kind: review_spaced
+          title_es: "Repaso: La Bola de Nieve de Verdad"
+          concept: "El equipo repasa por qué reinvertir hace crecer la bola de nieve antes de ver por qué empezar antes cambia todo."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué reinvertir el premio hace crecer la bola de nieve más que sacarlo."
+          key_vocabulary: [reinvertir, plazo largo]
+          prior_knowledge: "Completo los 6 temas de La Bola de Nieve de Verdad."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/la-bola-que-rueda-cuesta-abajo
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/reinvertir-es-dejar-pegada-la-nieve-nueva
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/simulo-diez-vueltas
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/que-pasa-si-quito-nieve-a-mitad-de-camino
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/el-tamano-en-la-vuelta-20
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/explico-por-que-se-acelera
+          lessons:
+            - position: 1
+              slug: repaso-reinvertir-gana
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué reinvertir el premio hace crecer la bola de nieve más que sacarlo."
+              narrative_beat: "El equipo repasa sus simulaciones de bola de nieve y confirma, sin ayuda, por qué reinvertir gana."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-simulo-plazo-largo-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: simula una bola de nieve nueva a un plazo largo."
+              narrative_beat: "Zara simula, sin ayuda de nadie, una bola de nieve nueva a lo largo de muchas vueltas."
+              difficulty: 4
+              suggested_families: [money, analyze]
+        - position: 8
+          slug: cruce-reinvertir-y-plazo-largo
+          kind: review_interleaved
+          title_es: "Cruce: Reinvertir y Plazo Largo"
+          concept: "Mezclamos la idea de reinvertir con la de un plazo largo para evaluar el tamaño final de una bola de nieve nueva."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, reinvertir, plazo largo e interrupción en una sola evaluación."
+          key_vocabulary: [reinvertir, plazo largo, interrupción]
+          prior_knowledge: "Completo el repaso de La Bola de Nieve de Verdad (tema anterior)."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/reinvertir-es-dejar-pegada-la-nieve-nueva
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/el-tamano-en-la-vuelta-20
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/que-pasa-si-quito-nieve-a-mitad-de-camino
+          lessons:
+            - position: 1
+              slug: junto-reinvertir-y-plazo-largo
+              micro_objective: "Combina la idea de reinvertir con la de un plazo largo para evaluar el tamaño final de una bola de nieve nueva."
+              narrative_beat: "Rho junta dos ideas: reinvertir toda la nieve nueva Y dejarla rodar un plazo largo, para calcular un tamaño final nuevo."
+              difficulty: 4
+              suggested_families: [analyze, money]
+            - position: 2
+              slug: resuelvo-cruzando-tres-ideas
+              micro_objective: "Evalúa, sin ayuda, un caso combinando reinvertir, plazo largo y el efecto de interrumpir a la mitad del camino."
+              narrative_beat: "Zara resuelve un caso final combinando las tres ideas de la saga: reinvertir, plazo largo, e interrupción a la mitad."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: empezar-antes-cambia-todo
+    icon: schedule
+    title:
+      en-US: "Starting Earlier Changes Everything"
+      es-MX: "Empezar Antes Cambia Todo"
+      pt-BR: "Comecar Antes Muda Tudo"
+    description:
+      en-US: "Same weekly amount, different start date - and the two savers don't end up anywhere close to the same place."
+      es-MX: "Mismo monto semanal, distinta fecha de inicio - y las dos personas no terminan ni cerca del mismo resultado."
+      pt-BR: "Mesmo valor semanal, data de inicio diferente - e as duas pessoas nao terminam nem perto do mesmo resultado."
+    topics:
+        - position: 1
+          slug: dos-personas-mismo-ahorro-distinto-inicio
+          title_es: "Dos personas, mismo ahorro, distinto inicio"
+          concept: "Dos personas que ahorran el mismo monto cada semana, pero empiezan en momentos distintos, no terminan con el mismo resultado."
+          learning_objective: "El aprendiz reconoce que la fecha de inicio afecta el resultado final aunque el ahorro semanal sea idéntico, y predice el resultado."
+          key_vocabulary: [fecha de inicio, mismo monto]
+          prior_knowledge: "Completo La Bola de Nieve de Verdad (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué cree que pasa si dos personas ahorran lo mismo cada semana pero una empieza años antes que la otra."
+          lessons:
+            - position: 1
+              slug: dina-presenta-a-dos-cadetes
+              micro_objective: "Reconoce que dos personas que ahorran el mismo monto cada semana, pero empiezan en momentos distintos, no terminan con el mismo resultado."
+              narrative_beat: "Dina presenta a dos cadetes: ambos ahorran el mismo monto cada semana, pero uno empezó hace tres años y el otro apenas este mes."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: predigo-quien-termina-con-mas
+              micro_objective: "Predice cuál de los dos cadetes tendrá más al final, antes de ver el resultado."
+              narrative_beat: "Antes de ver el resultado, Liruf predice cuál de los dos cadetes va a terminar con más, y por qué."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: quien-empezo-antes-tiene-mas-vueltas
+          title_es: "Quién empezó antes tiene más vueltas"
+          concept: "Quien empieza antes le da más 'vueltas' a su bola de nieve, aunque ahorre exactamente lo mismo por semana que alguien que empezó después."
+          learning_objective: "El aprendiz reconoce que empezar antes da más vueltas de crecimiento, y cuenta la diferencia de vueltas entre dos casos."
+          key_vocabulary: [vueltas de ventaja]
+          prior_knowledge: "Predice quién termina con más entre dos cadetes (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a contar cuántos años de ventaja le llevaría a alguien que empieza hoy sobre alguien que empieza en tres años."
+          lessons:
+            - position: 1
+              slug: rho-compara-las-vueltas
+              micro_objective: "Reconoce que quien empieza antes le da más 'vueltas' a su bola de nieve, aunque ahorre lo mismo por semana que quien empezó después."
+              narrative_beat: "Rho compara: el cadete que empezó hace tres años ya le dio muchas más vueltas a su bola de nieve que el que empezó este mes."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: cuento-los-anos-de-ventaja
+              micro_objective: "Cuenta cuántas vueltas (años) de ventaja tiene un cadete sobre otro, dado cuándo empezó cada uno."
+              narrative_beat: "Zara cuenta exactamente cuántos años de ventaja le lleva un cadete al otro, según sus fechas de inicio."
+              difficulty: 3
+              suggested_families: [input, analyze]
+        - position: 3
+          slug: calculo-la-diferencia-de-vueltas
+          title_es: "Calculo la diferencia de vueltas"
+          concept: "Calcula cuántas vueltas (años) de ventaja tiene quien empezó antes sobre quien empezó después."
+          learning_objective: "El aprendiz calcula la diferencia de vueltas entre dos fechas de inicio y estima el efecto en el resultado final."
+          key_vocabulary: [calcular la diferencia, estimar]
+          prior_knowledge: "Cuenta los años de ventaja entre dos casos (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule la diferencia exacta de años entre dos fechas de inicio de ahorro."
+          lessons:
+            - position: 1
+              slug: restamos-las-fechas-de-inicio
+              micro_objective: "Calcula cuántas vueltas (años) de ventaja tiene quien empezó antes sobre quien empezó después."
+              narrative_beat: "El equipo calcula la diferencia exacta de vueltas entre los dos cadetes, restando sus fechas de inicio."
+              difficulty: 3
+              suggested_families: [input, money]
+            - position: 2
+              slug: estimo-el-efecto-de-la-ventaja
+              micro_objective: "Estima, con el patrón de crecimiento acelerado, aproximadamente cuánto más grande es el resultado de quien tiene más vueltas de ventaja."
+              narrative_beat: "Con la diferencia de vueltas clara, Rho estima aproximadamente cuánto más grande es el resultado del cadete que empezó primero."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: unos-anos-de-diferencia-un-resultado-enorme
+          title_es: "Unos años de diferencia, un resultado enorme"
+          concept: "Unos pocos años de diferencia en el inicio pueden generar una diferencia enorme en el resultado final, gracias al crecimiento acelerado."
+          learning_objective: "El aprendiz reconoce que pocos años de diferencia generan una brecha final enorme, y compara casos con distinta diferencia de años."
+          key_vocabulary: [diferencia enorme, brecha final]
+          prior_knowledge: "Estima el efecto de la ventaja en el resultado (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si cree que 3 años de diferencia al empezar pueden generar una diferencia enorme al final - y por qué."
+          lessons:
+            - position: 1
+              slug: zara-se-sorprende
+              micro_objective: "Reconoce que unos pocos años de diferencia en el inicio pueden generar una diferencia enorme en el resultado final."
+              narrative_beat: "Zara se sorprende: solo tres años de diferencia en el inicio generaron una diferencia enorme en el tamaño final de las dos bolas de nieve."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-un-ano-y-cinco-anos
+              micro_objective: "Compara dos casos con distinta diferencia de años de inicio y decide cuál generará la brecha final más grande."
+              narrative_beat: "Rho compara dos pares de cadetes: uno con un año de diferencia, otro con cinco - decide cuál par tendrá la brecha final más grande."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: nunca-es-demasiado-pronto
+          title_es: "Nunca es demasiado pronto"
+          concept: "Empezar antes, aunque sea con un monto pequeño, vale más que esperar a tener 'más para empezar en serio'."
+          learning_objective: "El aprendiz compara empezar ya con un monto pequeño contra esperar y empezar después con un monto mayor, usando las vueltas de ventaja."
+          key_vocabulary: [empezar ya, esperar]
+          prior_knowledge: "Compara casos con distinta diferencia de años (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si le conviene más empezar ya con poco, o esperar a tener más dinero para 'empezar en serio' después."
+          lessons:
+            - position: 1
+              slug: liruf-quiere-esperar
+              micro_objective: "Aplica la lección a una decisión propia: empezar antes, aunque sea con un monto pequeño, vale más que esperar a tener 'más para empezar en serio'."
+              narrative_beat: "Liruf dice: 'voy a esperar a tener más dinero para empezar en serio' - Dina le muestra por qué esperar le cuesta más de lo que cree."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-empezar-ya-o-esperar
+              micro_objective: "Compara empezar ya con un monto pequeño contra esperar y empezar después con un monto mayor, usando el patrón de vueltas de ventaja."
+              narrative_beat: "Zara compara: empezar ya con poco le gana, después de muchos años, a esperar y empezar con más pero más tarde."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: mi-argumento-de-empezar-ya
+          title_es: "Mi argumento de empezar ya"
+          concept: "Arma un argumento propio explicando por qué empezar ahora, aunque sea poco, le conviene más que esperar."
+          learning_objective: "El aprendiz arma y presenta, sin ayuda, un argumento propio sobre por qué empezar ahora conviene más que esperar."
+          key_vocabulary: [argumento propio, convencer]
+          prior_knowledge: "Compara empezar ya contra esperar (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente, en una frase, su argumento de por qué empezar ya conviene más que esperar."
+          lessons:
+            - position: 1
+              slug: armamos-el-argumento-final
+              micro_objective: "Con apoyo, arma un argumento propio explicando por qué empezar ahora, aunque sea poco, le conviene más que esperar."
+              narrative_beat: "El equipo arma en la pizarra su argumento final: 'empezar ahora, aunque sea poco, vale más que esperar a tener más'."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-mi-argumento-de-empezar-ya
+              micro_objective: "Presenta, sin ayuda, su propio argumento de por qué empezar ya, usando el ejemplo de los dos cadetes."
+              narrative_beat: "Rho presenta su argumento final solo, sin ayuda, usando el ejemplo de los dos cadetes para convencer al equipo."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-empezar-antes-cambia-todo
+          kind: review_spaced
+          title_es: "Repaso: Empezar Antes Cambia Todo"
+          concept: "El equipo repasa por qué las vueltas de ventaja importan tanto antes de armar su bola de nieve personal."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué empezar antes genera más vueltas de ventaja."
+          key_vocabulary: [vueltas de ventaja, empezar antes]
+          prior_knowledge: "Completo los 6 temas de Empezar Antes Cambia Todo."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/dos-personas-mismo-ahorro-distinto-inicio
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/quien-empezo-antes-tiene-mas-vueltas
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/calculo-la-diferencia-de-vueltas
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/unos-anos-de-diferencia-un-resultado-enorme
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/nunca-es-demasiado-pronto
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/mi-argumento-de-empezar-ya
+          lessons:
+            - position: 1
+              slug: repaso-vueltas-de-ventaja-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué empezar antes genera más vueltas de ventaja."
+              narrative_beat: "El equipo repasa el caso de los dos cadetes y explica, sin ayuda, por qué las vueltas de ventaja importan tanto."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-comparo-caso-nuevo-de-inicio
+              micro_objective: "Aplica sin ayuda todo lo repasado: compara un caso nuevo de dos personas con distinta fecha de inicio."
+              narrative_beat: "Zara compara, sin ayuda de nadie, un caso nuevo de dos personas que empezaron a ahorrar en fechas distintas."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-vueltas-de-ventaja-y-bola-de-nieve
+          kind: review_interleaved
+          title_es: "Cruce: Vueltas de Ventaja y Bola de Nieve"
+          concept: "Mezclamos las vueltas de ventaja de empezar antes con el tamaño que alcanza una bola de nieve en una vuelta lejana."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, fecha de inicio, vueltas de ventaja y tamaño final en una sola evaluación."
+          key_vocabulary: [vueltas de ventaja, tamaño final]
+          prior_knowledge: "Completo el repaso de Empezar Antes Cambia Todo (tema anterior) y La Bola de Nieve de Verdad (saga anterior)."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/quien-empezo-antes-tiene-mas-vueltas
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/unos-anos-de-diferencia-un-resultado-enorme
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/el-tamano-en-la-vuelta-20
+          lessons:
+            - position: 1
+              slug: junto-vueltas-de-ventaja-y-tamano-lejano
+              micro_objective: "Combina las vueltas de ventaja de empezar antes con el tamaño que alcanza una bola de nieve en una vuelta lejana."
+              narrative_beat: "Rho junta dos ideas de sagas distintas: vueltas de ventaja por empezar antes Y el tamaño que alcanza una bola de nieve muchas vueltas después."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-cruzando-inicio-y-tamano
+              micro_objective: "Evalúa, sin ayuda, un caso combinando fecha de inicio, vueltas de ventaja y tamaño final de la bola de nieve."
+              narrative_beat: "Zara resuelve un caso final cruzando las dos sagas: cuándo empezó cada quien Y qué tan grande terminó su bola de nieve."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: mi-bola-de-nieve-personal
+    icon: park
+    title:
+      en-US: "My Personal Snowball"
+      es-MX: "Mi Bola de Nieve Personal"
+      pt-BR: "Minha Bola de Neve Pessoal"
+    description:
+      en-US: "Combine a diversified basket, a long horizon and protection from interruptions into one personal plan."
+      es-MX: "Combina una canasta diversificada, un plazo largo y protección contra interrupciones en un solo plan personal."
+      pt-BR: "Combine uma cesta diversificada, um prazo longo e protecao contra interrupcoes em um único plano pessoal."
+    topics:
+        - position: 1
+          slug: combino-canasta-y-bola-de-nieve
+          title_es: "Combino canasta y bola de nieve"
+          concept: "Una canasta diversificada y una bola de nieve que crece sin tocarse son dos ideas que se combinan bien."
+          learning_objective: "El aprendiz reconoce y explica por qué diversificar y dejar crecer sin tocar son ideas complementarias."
+          key_vocabulary: [combinar ideas, complementarias]
+          prior_knowledge: "Completo Empezar Antes Cambia Todo (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} por qué le conviene tener una canasta diversificada Y dejarla crecer sin tocarla por mucho tiempo."
+          lessons:
+            - position: 1
+              slug: dina-conecta-dos-aventuras
+              micro_objective: "Reconoce que una canasta diversificada y una bola de nieve que crece sin tocarse son dos ideas que se combinan bien."
+              narrative_beat: "Dina conecta dos aventuras del curso: la canasta diversificada de los gremios Y la bola de nieve que crece sin tocarse del bosque."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-por-que-se-complementan
+              micro_objective: "Explica, con sus palabras, por qué diversificar Y dejar crecer sin tocar son dos ideas que se complementan."
+              narrative_beat: "Liruf explica con sus palabras por qué le conviene tener una canasta diversificada Y dejarla rodar sin tocarla."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: elijo-mi-plazo-largo
+          title_es: "Elijo mi plazo largo"
+          concept: "Elige un plazo largo (años, no semanas) para pensar su propia bola de nieve personal."
+          learning_objective: "El aprendiz elige y justifica un plazo largo propio para pensar su bola de nieve personal."
+          key_vocabulary: [plazo largo, justificar]
+          prior_knowledge: "Explica por qué diversificar y no tocar se complementan (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que elija un plazo de varios años (no semanas) para pensar su propia bola de nieve."
+          lessons:
+            - position: 1
+              slug: zara-elige-varios-anos
+              micro_objective: "Elige un plazo largo (años, no semanas) para pensar su propia bola de nieve personal."
+              narrative_beat: "Zara elige un plazo de varios años, no semanas, para pensar su propia bola de nieve - un plazo de verdad largo."
+              difficulty: 2
+              suggested_families: [choice, input]
+            - position: 2
+              slug: justifico-mi-plazo-elegido
+              micro_objective: "Justifica, con un motivo concreto, por qué eligió ese plazo largo y no uno más corto."
+              narrative_beat: "Zara explica por qué eligió un plazo de varios años en vez de uno corto: quiere darle tiempo real a su bola de nieve para acelerar."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+        - position: 3
+          slug: calculo-mi-bola-de-nieve-a-largo-plazo
+          title_es: "Calculo mi bola de nieve a largo plazo"
+          concept: "Calcula, con la misma aritmética de la saga anterior, cómo crecería un monto propio a lo largo de un plazo largo."
+          learning_objective: "El aprendiz calcula el crecimiento de un monto propio a plazo largo y lo compara contra el mismo monto a plazo corto."
+          key_vocabulary: [calcular, plazo corto vs. largo]
+          prior_knowledge: "Justifica su plazo largo elegido (tema anterior)."
+          fact_refs: [money.example_growth_rate_pct]
+          parent_check: "Ayuda a {{name}} a calcular, con números sencillos, cómo crecería su propio ahorro a lo largo de varios años."
+          lessons:
+            - position: 1
+              slug: calculo-mi-propio-crecimiento
+              micro_objective: "Calcula, con la misma aritmética de la saga anterior, cómo crecería un monto propio a lo largo de un plazo largo."
+              narrative_beat: "Rho calcula, usando la misma aritmética de vueltas de la saga anterior, cómo crecería su propio monto a lo largo de su plazo elegido."
+              difficulty: 3
+              suggested_families: [money, input]
+            - position: 2
+              slug: comparo-mi-plazo-largo-y-corto
+              micro_objective: "Compara el resultado de su propio cálculo a plazo largo contra el mismo monto a un plazo corto."
+              narrative_beat: "Zara compara su propio resultado a plazo largo contra lo que hubiera obtenido en un plazo mucho más corto."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: protejo-mi-bola-de-nieve-de-interrupciones
+          title_es: "Protejo mi bola de nieve de interrupciones"
+          concept: "Identifica qué interrupciones (sacar el dinero antes de tiempo) podrían frenar su propia bola de nieve, y cómo evitarlas."
+          learning_objective: "El aprendiz identifica posibles interrupciones a su plan y propone una forma concreta de evitar al menos una."
+          key_vocabulary: [interrupción, proteger]
+          prior_knowledge: "Compara su plazo largo contra uno corto (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué cosas podrían tentarlo a sacar su dinero antes de tiempo, y cómo podría resistir esa tentación."
+          lessons:
+            - position: 1
+              slug: liruf-lista-las-tentaciones
+              micro_objective: "Identifica qué interrupciones (sacar el dinero antes de tiempo) podrían frenar su propia bola de nieve."
+              narrative_beat: "Liruf hace una lista de las cosas que podrían tentarlo a sacar su dinero antes de tiempo, frenando su propia bola de nieve."
+              difficulty: 3
+              suggested_families: [story, arrange]
+            - position: 2
+              slug: propongo-como-evitarla
+              micro_objective: "Propone, para al menos una interrupción posible, una forma concreta de evitarla y proteger su bola de nieve."
+              narrative_beat: "Rho propone una forma concreta de resistir la tentación de sacar su dinero antes de tiempo, protegiendo su propia bola de nieve."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: combino-todo-el-curso-en-un-plan
+          title_es: "Combino todo el curso en un plan"
+          concept: "Combina tiempo, riesgo, metas, diversificación e interés compuesto en un solo plan de bola de nieve personal."
+          learning_objective: "El aprendiz combina y explica, con sus palabras, cómo tiempo, riesgo, meta y diversificación trabajan juntos en un plan personal."
+          key_vocabulary: [combinar el curso, plan personal]
+          prior_knowledge: "Propone cómo evitar una interrupción (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te explique cómo su plan combina tiempo, riesgo, una meta y diversificación."
+          lessons:
+            - position: 1
+              slug: zara-arma-el-plan-completo
+              micro_objective: "Combina tiempo, riesgo, metas, diversificación e interés compuesto en un solo plan de bola de nieve personal."
+              narrative_beat: "Zara arma un plan que combina todo el curso: valor del tiempo, riesgo tolerable, una meta clara, una canasta diversificada, y años sin tocarla."
+              difficulty: 4
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: explico-como-trabajan-juntas-las-piezas
+              micro_objective: "Explica, con sus palabras, cómo cada pieza de su plan (tiempo, riesgo, meta, diversificación) contribuye al resultado final."
+              narrative_beat: "Zara explica al equipo cómo cada pieza de su plan trabaja junto con las demás para hacer crecer su bola de nieve."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: presento-mi-bola-de-nieve-final
+          title_es: "Presento mi bola de nieve final"
+          concept: "Presenta su plan de bola de nieve personal completo ante el equipo, explicando cada pieza que lo compone."
+          learning_objective: "El aprendiz organiza y presenta, sin ayuda, un plan de bola de nieve personal completo explicando cada pieza."
+          key_vocabulary: [plan completo, presentar]
+          prior_knowledge: "Explica cómo las piezas de su plan trabajan juntas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente su plan de bola de nieve completo: meta, canasta, plazo y cómo lo va a proteger."
+          lessons:
+            - position: 1
+              slug: organizamos-el-plan-final-de-rho
+              micro_objective: "Con apoyo, organiza los elementos de su plan de bola de nieve personal completo para presentarlo."
+              narrative_beat: "El equipo organiza junto los elementos del plan final de Rho: su meta, su canasta, su plazo, y cómo va a protegerlo."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: presento-mi-plan-completo-solo
+              micro_objective: "Presenta, sin ayuda, su plan de bola de nieve personal completo ante el equipo, explicando cada pieza que lo compone."
+              narrative_beat: "Rho presenta su plan de bola de nieve completo solo, sin ayuda, explicando cada pieza que lo compone frente a todo el equipo."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-mi-bola-de-nieve-personal
+          kind: review_spaced
+          title_es: "Repaso: Mi Bola de Nieve Personal"
+          concept: "El equipo repasa cómo combinar canasta diversificada y plazo largo antes de la cumbre final del bosque."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué combinar canasta diversificada y plazo largo fortalece un plan."
+          key_vocabulary: [canasta diversificada, plazo largo]
+          prior_knowledge: "Completo los 6 temas de Mi Bola de Nieve Personal."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/combino-canasta-y-bola-de-nieve
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/elijo-mi-plazo-largo
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/calculo-mi-bola-de-nieve-a-largo-plazo
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/protejo-mi-bola-de-nieve-de-interrupciones
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/combino-todo-el-curso-en-un-plan
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal/presento-mi-bola-de-nieve-final
+          lessons:
+            - position: 1
+              slug: repaso-combino-canasta-y-plazo
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué combinar canasta diversificada y plazo largo fortalece un plan personal."
+              narrative_beat: "El equipo repasa sus planes personales y confirma, sin ayuda, que combinan canasta diversificada y plazo largo."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-identifico-interrupcion-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: identifica una interrupción posible y propone cómo evitarla para un plan nuevo."
+              narrative_beat: "Zara identifica, sin ayuda de nadie, una interrupción posible para un plan nuevo y propone cómo evitarla."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 8
+          slug: cruce-todo-el-bosque
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Bosque"
+          concept: "Mezclamos crecimiento acelerado, reinversión y empezar antes en un solo caso final del bosque."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión."
+          key_vocabulary: [crecimiento acelerado, reinversión, empezar antes]
+          prior_knowledge: "Completo el repaso de Mi Bola de Nieve Personal (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/como-crecen-los-seguidores/lo-mismo-le-pasa-al-dinero
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad/el-tamano-en-la-vuelta-20
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo/unos-anos-de-diferencia-un-resultado-enorme
+          lessons:
+            - position: 1
+              slug: junto-crecimiento-acelerado-y-empezar-antes
+              micro_objective: "Combina el patrón de crecimiento acelerado con el efecto de empezar antes para evaluar un caso nuevo."
+              narrative_beat: "Zara junta dos ideas de sagas distintas: el patrón que se acelera con el tiempo Y la ventaja de empezar antes, para un caso nuevo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-el-caso-final-del-bosque
+              micro_objective: "Evalúa, sin ayuda, un caso final combinando crecimiento acelerado, reinversión y empezar antes en una sola decisión."
+              narrative_beat: "Rho resuelve el caso final del bosque cruzando las cuatro sagas completas en una sola decisión de bola de nieve."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-cumbre-del-bosque
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Forest's Summit"
+      es-MX: "La Cumbre del Bosque"
+      pt-BR: "O Cume do Bosque"
+    description:
+      en-US: "A final summit puts the whole snowball toolkit - acceleration, reinvestment and starting early - to work."
+      es-MX: "Una cumbre final pone a trabajar todo el kit de herramientas de la bola de nieve: aceleración, reinversión y empezar antes."
+      pt-BR: "Um cume final coloca para trabalhar todo o kit de ferramentas da bola de neve: aceleracao, reinvestimento e comecar cedo."
+    topics:
+        - position: 1
+          slug: el-reto-de-la-aceleracion
+          kind: review_quest
+          title_es: "El Reto de la Aceleración"
+          concept: "El Bosque lanza su prueba final: explicar y simular el crecimiento acelerado de una bola de nieve, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el patrón de crecimiento acelerado y la simulación de una bola de nieve para resolver un reto abierto."
+          key_vocabulary: [crecimiento acelerado, simulación, reto abierto]
+          prior_knowledge: "Completo Cómo Crecen los Seguidores y La Bola de Nieve de Verdad."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/como-crecen-los-seguidores
+            - efecto-bola-de-nieve/la-bola-de-nieve-de-verdad
+          lessons:
+            - position: 1
+              slug: suena-la-campana-de-la-cumbre
+              micro_objective: "Recuerda, sin ayuda, por qué un crecimiento se acelera con el tiempo, tanto en seguidores como en dinero."
+              narrative_beat: "Una campana de madera suena en la cumbre del bosque: 'Prueba final - demuestra que entiendes cómo se acelera el crecimiento'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: simulo-una-bola-nueva-sin-ayuda
+              micro_objective: "Simula, sin ayuda, varias vueltas de una bola de nieve financiera nueva y describe el patrón que observa."
+              narrative_beat: "Rho enfrenta su primera prueba real: simular solo, sin ayuda, varias vueltas de una bola de nieve financiera nueva."
+              difficulty: 3
+              suggested_families: [money, analyze]
+        - position: 2
+          slug: mi-bola-de-nieve-defendida
+          kind: review_quest
+          title_es: "Mi Bola de Nieve, Defendida"
+          concept: "Frente al consejo del bosque, el equipo defiende su plan de bola de nieve personal explicando por qué empezar ahora es la mejor decisión."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un plan de bola de nieve combinando empezar antes y su plan personal completo."
+          key_vocabulary: [defender, consejo del bosque, plan personal]
+          prior_knowledge: "Completo El Reto de la Aceleración (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - efecto-bola-de-nieve/empezar-antes-cambia-todo
+            - efecto-bola-de-nieve/mi-bola-de-nieve-personal
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-de-bola-de-nieve
+              micro_objective: "Organiza, sin ayuda, los argumentos de empezar antes y su plan personal completo para defender una decisión de largo plazo."
+              narrative_beat: "Dina ensaya su defensa: primero por qué empezar ahora le conviene, después su plan de bola de nieve completo."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-el-consejo-del-bosque
+              micro_objective: "Completa, sin ayuda, la defensa final de su plan ante el consejo del bosque, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante el consejo del bosque; cuando le preguntan '¿y si hubieras esperado un año más?', responde con el argumento de las vueltas de ventaja."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

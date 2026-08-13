@@ -1,0 +1,873 @@
+schema_version: 1
+
+adventure:
+  position: 7
+  slug: radar-de-riesgos
+  theme: city
+  age_tier: tier4
+  title:
+    en-US: "Risk Radar"
+    es-MX: "Radar de Riesgos"
+    pt-BR: "Radar de Riscos"
+  description:
+    en-US: "In the Red Flags District, the crew learns to spot a bad deal before signing it, protect a reputation that takes years to build and seconds to damage, read a contract for real, and hold a personal line on business ethics - never evading real laws, always asking a trusted adult when a deal is bigger than they are."
+    es-MX: "En el Distrito de las Señales Rojas, el equipo aprende a detectar un mal trato antes de firmarlo, proteger una reputación que tarda años en construirse y segundos en dañarse, leer un contrato de verdad, y sostener una linea personal de ética de negocio - nunca evadiendo leyes reales, siempre pidiendo ayuda a un adulto de confianza cuando un trato les queda grande."
+    pt-BR: "No Distrito das Bandeiras Vermelhas, a equipe aprende a identificar um mau negocio antes de assina-lo, proteger uma reputação que leva anos para construir e segundos para danificar, ler um contrato de verdade, e manter uma linha pessoal de etica de negocio - nunca evadindo leis reais, sempre pedindo ajuda a um adulto de confianca quando um negocio fica grande demais."
+  narrative_arc: "Con un equipo que ya sabe liderar mientras crece, Dina, Liruf, Rho y Zara entran al Distrito de las Señales Rojas, donde cada calle esconde tratos, contratos y reputaciones en juego. Ahí aprenden a reconocer las señales que anuncian un mal trato antes de aceptarlo, a entender que su reputación es el activo más difícil de reconstruir si se daña, a leer un acuerdo de verdad antes de firmarlo y a saber cuando un trato ya es demasiado grande para decidirlo solos, sin un adulto de confianza. También construyen, dia a dia, un código propio de ética de negocio: tratar igual a todos, no exagerar lo que venden, proteger la información que les confian y negarse con calma cuando alguien les pide hacer algo que no esta bien. Al final, cada equipo enfrenta al Tribunal de Confianza del distrito con un caso completo: tratos sospechosos detectados a tiempo y un código ético que de verdad sostienen."
+
+sagas:
+  - position: 1
+    slug: senales-de-alerta-en-un-trato
+    icon: flag
+    title:
+      en-US: "Warning Signs in a Deal"
+      es-MX: "Señales de Alerta en un Trato"
+      pt-BR: "Sinais de Alerta em um Negocio"
+    description:
+      en-US: "A bad deal rarely announces itself - it hides behind signs you can learn to read before it is too late."
+      es-MX: "Un mal trato rara vez se anuncia solo - se esconde detras de señales que puedes aprender a leer antes de que sea tarde."
+      pt-BR: "Um mau negocio raramente se anuncia sozinho - se esconde atras de sinais que voce pode aprender a ler antes que seja tarde."
+    topics:
+        - position: 1
+          slug: si-suena-demasiado-bueno-para-ser-verdad
+          title_es: "Si suena demasiado bueno para ser verdad"
+          concept: "Una oferta que promete mucho más de lo normal (el doble de ganancia, sin ningun esfuerzo, garantizado) casi siempre esconde un riesgo que no se menciona - la desconfianza sana empieza ahí."
+          learning_objective: "El aprendiz reconoce, en una oferta de negocio, una promesa exagerada que no coincide con lo normal del mercado y que merece desconfianza."
+          key_vocabulary: [promesa exagerada, desconfianza sana, no coincide con lo normal]
+          prior_knowledge: "Completo Equipo que Escala (aventura anterior): ya sabe liderar un equipo que crece."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez vio una oferta de negocio que sonaba demasiado buena para ser verdad, y como se dio cuenta."
+          lessons:
+            - position: 1
+              slug: esta-oferta-suena-normal-o-exagerada
+              micro_objective: "Compara dos ofertas de negocio y reconoce cual promete resultados razonables y cual promete algo exagerado, sin esfuerzo ni riesgo."
+              narrative_beat: "Alguien le ofrece a Liruf triplicar su dinero en una semana 'sin hacer nada'; Rho le recuerda que ningun negocio real garantiza eso sin ningun riesgo."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: explico-por-que-desconfio-de-esta-oferta
+              micro_objective: "Explica, sin ayuda, por que una oferta de negocio dada merece desconfianza por prometer resultados fuera de lo normal."
+              narrative_beat: "Zara explica: 'ningun negocio de verdad promete ganancia garantizada sin ningun riesgo - eso ya es la primera señal de alerta'."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: quien-no-quiere-poner-nada-por-escrito
+          title_es: "Quien no quiere poner nada por escrito"
+          concept: "Alguien que evita poner los términos de un trato por escrito, o cambia de tema cuando se lo pides, esta dejando espacio para negar despues lo que prometio de palabra."
+          learning_objective: "El aprendiz reconoce, en una interacción, cuando la otra parte evita poner un trato por escrito como una señal de alerta."
+          key_vocabulary: [evitar el escrito, negar despues, señal de alerta]
+          prior_knowledge: "Reconoce una promesa exagerada (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que haria si alguien con quien va a hacer un trato se niega a poner las condiciones por escrito."
+          lessons:
+            - position: 1
+              slug: cambia-de-tema-cuando-pido-por-escrito
+              micro_objective: "Reconoce, en un caso, cuando alguien evita repetidamente poner un acuerdo por escrito, cambiando de tema cada vez que se le pide."
+              narrative_beat: "Rho le pide tres veces a un posible socio que confirme los términos por mensaje, y las tres veces la persona responde 'no te preocupes, confia en mi' sin escribir nada."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: insisto-en-tenerlo-por-escrito
+              micro_objective: "Redacta, sin ayuda, una respuesta firme pero respetuosa que insiste en confirmar un trato por escrito antes de continuar."
+              narrative_beat: "Dina responde: 'confio en ti, y justo por eso prefiero que lo confirmemos por escrito, asi los dos recordamos lo mismo despues'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: me-piden-pagar-antes-de-ver-nada
+          title_es: "Me piden pagar antes de ver nada"
+          concept: "Que te pidan pagar el total por adelantado, sin ninguna prueba de que la otra parte va a cumplir, es un riesgo distinto a un anticipo razonable acordado por ambas partes."
+          learning_objective: "El aprendiz distingue un anticipo razonable acordado de una petición de pago total por adelantado sin ninguna garantía."
+          key_vocabulary: [anticipo razonable, pago total adelantado, sin garantía]
+          prior_knowledge: "Reconoce cuando alguien evita poner un trato por escrito (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez le pidieron pagar todo por adelantado sin ninguna prueba de que iban a cumplir."
+          lessons:
+            - position: 1
+              slug: esto-es-un-anticipo-razonable-o-una-senal-de-alerta
+              micro_objective: "Distingue, entre dos peticiones de pago, cual es un anticipo razonable acordado y cual es una señal de alerta por pedir el 100% sin garantía."
+              narrative_beat: "Un cliente le pide a Liruf un anticipo del 30% para empezar su pedido, algo normal; alguien más le pide a Zara el 100% por adelantado por un servicio que nunca ha visto antes."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: propongo-un-anticipo-razonable-en-vez-del-total
+              micro_objective: "Propone, sin ayuda, un acuerdo de anticipo razonable como alternativa a una petición de pago total adelantado."
+              narrative_beat: "Rho responde: 'no puedo pagar el 100% sin ver nada, pero si puedo dar un anticipo del 30% para empezar, y el resto contra entrega'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: cambia-los-terminos-a-mitad-del-trato
+          title_es: "Cambia los términos a mitad del trato"
+          concept: "Cuando alguien cambia el precio, la fecha o las condiciones ya acordadas a mitad del proceso, sin una razón real, es una señal de que ese trato no se puede sostener con confianza."
+          learning_objective: "El aprendiz reconoce, en un caso, cuando alguien cambia los términos de un trato ya acordado sin una razón valida."
+          key_vocabulary: [cambio de términos, sin razón valida, no se sostiene]
+          prior_knowledge: "Distingue un anticipo razonable de una petición sin garantía (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez alguien cambio los términos de un trato despues de que ya lo habian acordado, y como reacciono."
+          lessons:
+            - position: 1
+              slug: cambio-el-trato-con-razon-o-sin-ella
+              micro_objective: "Distingue, entre dos casos, un cambio de términos con una razón real explicada y un cambio sin ninguna razón valida."
+              narrative_beat: "Un proveedor le explica a Dina que el precio subio porque el material subio de costo, con pruebas; otro cliente simplemente le dice 'ya no te pago lo acordado' sin ninguna razón."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: respondo-a-un-cambio-de-terminos-sin-razon
+              micro_objective: "Redacta, sin ayuda, una respuesta firme ante un cambio de términos sin razón valida, recordando lo acordado por escrito."
+              narrative_beat: "Zara responde: 'lo que acordamos por escrito fue $95, no puedo aceptar el cambio sin una razón clara' cuando un cliente intenta bajar el precio a mitad del trabajo."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: presiona-para-que-decida-ya-mismo
+          title_es: "Presiona para que decida ya mismo"
+          concept: "Alguien que no te deja tiempo para pensar, revisar o preguntar antes de decidir un trato importante esta usando la prisa para que no notes una señal de alerta."
+          learning_objective: "El aprendiz reconoce cuando la presión para decidir de inmediato, sin tiempo de revisar, es en si misma una señal de alerta."
+          key_vocabulary: [presión para decidir, sin tiempo de revisar, señal de alerta]
+          prior_knowledge: "Reconoce un cambio de términos sin razón valida (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez sintio presión para decidir un trato de inmediato, sin tiempo de pensarlo, y por que eso debería hacerle dudar."
+          lessons:
+            - position: 1
+              slug: me-dan-tiempo-o-me-presionan-a-decidir-ya
+              micro_objective: "Reconoce, en un caso, cuando alguien presiona a decidir de inmediato un trato importante, sin dar tiempo real para pensarlo."
+              narrative_beat: "Alguien le dice a Rho 'firmalo ahora mismo o se cancela la oferta' sobre un trato que apenas esta conociendo - esa prisa es en si misma una señal de alerta."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: pido-tiempo-antes-de-decidir
+              micro_objective: "Redacta, sin ayuda, una respuesta que pide tiempo razonable antes de decidir un trato bajo presión."
+              narrative_beat: "Liruf responde: 'necesito al menos un dia para revisarlo con calma antes de decidir, si el trato es real puede esperar eso'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: mi-lista-personal-de-senales-de-alerta
+          title_es: "Mi lista personal de señales de alerta"
+          concept: "Reunir por escrito las señales de alerta ya identificadas (promesa exagerada, evita lo escrito, pide todo adelantado, cambia términos, presiona a decidir ya) te da una lista rápida de revisar antes de cualquier trato nuevo."
+          learning_objective: "El aprendiz redacta una lista personal de al menos 4 señales de alerta para revisar antes de aceptar cualquier trato nuevo."
+          key_vocabulary: [lista personal, revisar antes de aceptar, señales reunidas]
+          prior_knowledge: "Reconoce la presión para decidir de inmediato (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea su lista personal de señales de alerta antes de aceptar cualquier trato nuevo."
+          lessons:
+            - position: 1
+              slug: reviso-las-cinco-senales-aprendidas
+              micro_objective: "Reune, sin ayuda, las 5 señales de alerta aprendidas en esta saga en una sola lista ordenada."
+              narrative_beat: "Zara ordena en tarjetas las cinco señales que aprendio: promesa exagerada, evita lo escrito, pide todo adelantado, cambia términos sin razón, y presiona a decidir ya."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: escribo-mi-lista-personal-completa
+              micro_objective: "Redacta, sin ayuda, su propia lista personal de señales de alerta para revisar antes de cualquier trato nuevo."
+              narrative_beat: "Dina guarda su lista de cinco señales en su libreta, para revisarla cada vez que alguien le proponga un trato nuevo antes de decidir."
+              difficulty: 5
+              suggested_families: [storyplay, input]
+        - position: 7
+          slug: repaso-senales-de-alerta-en-un-trato
+          kind: review_spaced
+          title_es: "Repaso: Señales de Alerta en un Trato"
+          concept: "El equipo repasa como reconocer una promesa exagerada, la falta de un acuerdo escrito, un pago adelantado riesgoso y la presión para decidir ya."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la detección de señales de alerta en un trato nuevo."
+          key_vocabulary: [señal de alerta, trato riesgoso, detectar a tiempo]
+          prior_knowledge: "Completo los 6 temas de Señales de Alerta en un Trato."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/si-suena-demasiado-bueno-para-ser-verdad
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/quien-no-quiere-poner-nada-por-escrito
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/me-piden-pagar-antes-de-ver-nada
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/cambia-los-terminos-a-mitad-del-trato
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/presiona-para-que-decida-ya-mismo
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/mi-lista-personal-de-senales-de-alerta
+          lessons:
+            - position: 1
+              slug: repaso-detecto-una-promesa-exagerada-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la detección de una promesa exagerada en un trato que todavia no había visto."
+              narrative_beat: "El equipo detecta, sin ayuda, una promesa exagerada en una oferta nueva de un supuesto negocio de reventa de boletos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-aplico-mi-lista-completa-a-un-caso-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: revisa un trato nuevo completo contra su lista personal de señales de alerta."
+              narrative_beat: "Rho revisa, sin ayuda de nadie, un trato nuevo contra su lista completa de cinco señales antes de decidir si aceptarlo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-persuasion-etica-y-senales-de-alerta
+          kind: review_interleaved
+          title_es: "Cruce: Persuasión Etica y Señales de Alerta"
+          concept: "Mezclamos la persuasión ética aprendida en Red de Ventas con las señales de alerta de esta saga: reconocer la manipulación desde el otro lado del trato."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, el reconocimiento de manipulación con la detección de señales de alerta al recibir una oferta, no solo al hacerla."
+          key_vocabulary: [manipulación, señal de alerta, desde el otro lado]
+          prior_knowledge: "Completo el repaso de Señales de Alerta en un Trato (tema anterior) y Persuasión Etica (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/presiona-para-que-decida-ya-mismo
+            - red-de-ventas/persuasion-etica/la-urgencia-real-y-la-urgencia-falsa
+          lessons:
+            - position: 1
+              slug: esta-urgencia-que-me-venden-es-real-o-falsa
+              micro_objective: "Aplica, sin ayuda, la técnica de distinguir urgencia real de urgencia falsa para evaluar una oferta que le estan presionando a aceptar."
+              narrative_beat: "Zara reconoce que la 'oferta que se acaba en 10 minutos' que le ofrecen es la misma urgencia falsa que aprendio a identificar cuando vendia - ahora la reconoce recibiendola."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: rechazo-la-presion-usando-lo-que-ya-se
+              micro_objective: "Redacta, sin ayuda, una respuesta que rechaza una presión de decisión inmediata, nombrando la técnica de manipulación reconocida."
+              narrative_beat: "Rho responde: 'una oferta real no necesita que decida en 10 minutos - me voy a tomar el tiempo que de verdad necesito' ante una presión que reconoce como manipuladora."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 2
+    slug: mi-reputacion-es-un-activo
+    icon: shield
+    title:
+      en-US: "My Reputation Is An Asset"
+      es-MX: "Mi Reputación es un Activo"
+      pt-BR: "Minha Reputação e um Ativo"
+    description:
+      en-US: "Reputation takes years to build and seconds to damage - protect it like the real asset it is."
+      es-MX: "La reputación tarda años en construirse y segundos en dañarse - protegela como el activo real que es."
+      pt-BR: "A reputação leva anos para se construir e segundos para se danificar - proteja-a como o ativo real que e."
+    topics:
+        - position: 1
+          slug: que-es-la-reputacion-de-verdad
+          title_es: "Que es la reputación de verdad"
+          concept: "La reputación es la confianza acumulada que la gente tiene en ti a partir de tratos anteriores - no es lo que dices de ti mismo, es lo que otros dicen de ti cuando no estas presente."
+          learning_objective: "El aprendiz explica que la reputación se construye con confianza acumulada de tratos anteriores, no con lo que uno mismo dice de si."
+          key_vocabulary: [reputación, confianza acumulada, lo que dicen cuando no estas]
+          prior_knowledge: "Completo Señales de Alerta en un Trato (saga anterior): ya sabe detectar un mal trato."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que cree que dirian de el o ella las últimas 3 personas con las que hizo un trato, si no estuviera presente para escucharlo."
+          lessons:
+            - position: 1
+              slug: mi-reputacion-la-hago-yo-o-la-hacen-los-demas
+              micro_objective: "Reconoce, en un caso, que la reputación de un negocio la construyen las experiencias reales de los clientes, no lo que el negocio dice de si mismo."
+              narrative_beat: "Liruf dice en su anuncio 'el mejor servicio de la ciudad', pero su reputación real la esta construyendo cada cliente que cuenta como le fue de verdad."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: describo-mi-reputacion-actual
+              micro_objective: "Describe, sin ayuda, la reputación actual de su propio negocio a partir de lo que sus últimos clientes han dicho de verdad."
+              narrative_beat: "Zara describe su reputación actual citando lo que 3 clientas distintas le dijeron sobre su puntualidad y la calidad de su bordado."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: una-mala-resena-cuesta-mas-que-una-venta-perdida
+          title_es: "Una mala reseña cuesta más que una venta perdida"
+          concept: "Una venta perdida afecta a un solo cliente; una mala reseña puede alejar a docenas de clientes que nunca conociste - el costo real de una mala experiencia es mucho más grande que esa sola venta."
+          learning_objective: "El aprendiz compara el costo de una venta perdida contra el costo potencial de una mala reseña pública y reconoce cual es mayor a largo plazo."
+          key_vocabulary: [venta perdida, mala reseña, costo a largo plazo]
+          prior_knowledge: "Explica que es la reputación de verdad (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez penso que era peor perder una sola venta que recibir una mala reseña publica, y por que."
+          lessons:
+            - position: 1
+              slug: que-cuesta-mas-una-venta-o-una-mala-resena
+              micro_objective: "Compara dos escenarios y reconoce cual tiene un costo mayor para el negocio: perder una venta o recibir una mala reseña que otros ven."
+              narrative_beat: "Rho pierde una venta por no tener el color exacto que un cliente pedia; en otro caso, entrega un pedido de mala calidad y recibe una reseña que 40 personas más leen antes de comprar."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: decido-priorizar-la-experiencia-sobre-la-venta-rapida
+              micro_objective: "Decide, sin ayuda, priorizar una buena experiencia de cliente aunque signifique perder una venta rápida, para proteger la reputación a largo plazo."
+              narrative_beat: "Dina decide no vender un producto con un defecto visible, aunque pierda esa venta, porque sabe que una mala reseña le costaria mucho más despues."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: como-respondo-a-una-critica-publica
+          title_es: "Como respondo a una crítica publica"
+          concept: "Responder a una crítica publica con calma, reconociendo lo que paso y ofreciendo arreglarlo, protege la reputación mucho mejor que responder a la defensiva o ignorarla."
+          learning_objective: "El aprendiz redacta una respuesta calmada y constructiva a una crítica publica, reconociendo el problema en vez de defenderse o ignorarlo."
+          key_vocabulary: [respuesta calmada, reconocer el problema, defensiva]
+          prior_knowledge: "Compara el costo de una venta perdida contra una mala reseña (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} como respondio, o como responderia, a una crítica publica sobre su producto o servicio."
+          lessons:
+            - position: 1
+              slug: esta-respuesta-ayuda-o-empeora-la-situacion
+              micro_objective: "Compara dos respuestas a una misma crítica publica y elige la que reconoce el problema con calma en vez de ponerse a la defensiva."
+              narrative_beat: "Liruf responde a una crítica publica diciendo 'tu nunca sabes usarlo bien'; Zara en cambio responde 'lamento que no cumplio lo que esperabas, cuentame que paso para arreglarlo'."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-mi-respuesta-a-una-critica-publica
+              micro_objective: "Redacta, sin ayuda, una respuesta calmada y constructiva a una crítica publica dada en un caso."
+              narrative_beat: "Rho responde publicamente: 'gracias por decirmelo, el bordado no debio salir torcido - te contacto por privado para arreglarlo sin costo'."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 4
+          slug: cuido-mi-reputacion-en-lo-que-publico
+          title_es: "Cuido mi reputación en lo que público"
+          concept: "Lo que publicas en redes, aunque sea sobre tu vida personal, también lo ve la gente que podría ser tu cliente - cuidar esa imagen es parte de cuidar la reputación del negocio."
+          learning_objective: "El aprendiz reconoce como una publicación personal puede afectar la reputación de su negocio, aunque no hable directamente de el."
+          key_vocabulary: [imagen personal y del negocio, lo que ven los clientes, afecta la reputación]
+          prior_knowledge: "Redacta una respuesta a una crítica publica (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si lo que publica en redes, aunque sea personal, podría afectar como lo ven sus clientes."
+          lessons:
+            - position: 1
+              slug: esta-publicacion-afecta-mi-reputacion-de-negocio-o-no
+              micro_objective: "Reconoce, entre dos publicaciones personales, cual podría afectar negativamente la reputación de un negocio y cual no tiene relación."
+              narrative_beat: "Dina se da cuenta de que quejarse publicamente y con insultos de un cliente difícil, aunque sea 'personal', lo ven las mismas personas que le compran."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: decido-que-si-publicar-y-que-no
+              micro_objective: "Decide, sin ayuda, si una publicación planeada conviene o no conviene publicarla, pensando en como afecta la reputación de su negocio."
+              narrative_beat: "Zara decide no publicar su enojo con un cliente difícil, y en cambio resuelve el problema en privado antes de decir nada en público."
+              difficulty: 4
+              suggested_families: [choice, storyplay]
+        - position: 5
+          slug: la-reputacion-de-con-quien-me-junto
+          title_es: "La reputación de con quien me junto"
+          concept: "Si te asocias o colaboras con alguien de mala reputación, parte de esa reputación se te pega, aunque tu trabajo individual sea impecable."
+          learning_objective: "El aprendiz reconoce que la reputación de un socio o colaborador puede afectar la reputación propia, incluso sin culpa directa."
+          key_vocabulary: [reputación por asociación, se te pega, sin culpa directa]
+          prior_knowledge: "Decide que publicar pensando en su reputación (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez penso en la reputación de alguien antes de asociarse con esa persona para un proyecto."
+          lessons:
+            - position: 1
+              slug: esta-asociacion-me-conviene-o-me-arriesga
+              micro_objective: "Reconoce, en un caso, cuando asociarse con alguien de mala reputación podría dañar la reputación propia, aunque el trabajo sea bueno."
+              narrative_beat: "A Rho le ofrecen asociarse con alguien que varios clientes ya describieron como poco confiable - aunque el producto sea bueno, esa reputación podría pegarsele."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: decido-si-me-asocio-o-no
+              micro_objective: "Decide, sin ayuda, si asociarse o no con alguien considerando el efecto que su reputación tendría sobre la propia."
+              narrative_beat: "Liruf decide no asociarse con esa persona, aunque perderia una oportunidad, porque no quiere que su reputación de años se vea afectada por la de alguien más."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: reconstruyo-la-confianza-despues-de-un-error
+          title_es: "Reconstruyo la confianza después de un error"
+          concept: "Un error real no destruye la reputación para siempre; admitirlo con honestidad, arreglarlo de verdad y demostrar con el tiempo que no se repite es lo que reconstruye la confianza."
+          learning_objective: "El aprendiz propone un plan concreto de 3 pasos para reconstruir la confianza de un cliente despues de un error real cometido."
+          key_vocabulary: [reconstruir confianza, admitir con honestidad, con el tiempo]
+          prior_knowledge: "Decide si asociarse pensando en reputación (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que haria, paso a paso, para reconstruir la confianza de un cliente despues de un error real de su negocio."
+          lessons:
+            - position: 1
+              slug: que-pasos-reconstruyen-la-confianza
+              micro_objective: "Ordena, sin ayuda, 3 pasos (admitir, arreglar, demostrar con el tiempo) para reconstruir la confianza despues de un error real."
+              narrative_beat: "Dina ordena en tarjetas los pasos que seguira: primero admitir el error con honestidad, luego arreglarlo sin costo, y despues demostrar con las siguientes entregas que no se repite."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: aplico-mi-plan-de-reconstruccion
+              micro_objective: "Redacta, sin ayuda, un plan de 3 pasos para reconstruir la confianza de un cliente especifico despues de un error dado en un caso."
+              narrative_beat: "Zara aplica su plan con una clienta molesta: admite que el bordado salio mal, lo rehace sin costo, y en el siguiente pedido le agrega un detalle extra para demostrar que aprendio."
+              difficulty: 5
+              suggested_families: [storyplay, arrange]
+        - position: 7
+          slug: repaso-mi-reputacion-es-un-activo
+          kind: review_spaced
+          title_es: "Repaso: Mi Reputación es un Activo"
+          concept: "El equipo repasa como se construye la reputación, responder a críticas publicas, cuidar la imagen propia y reconstruir la confianza despues de un error."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, el cuidado de la reputación de esta saga."
+          key_vocabulary: [reputación, respuesta a crítica, reconstruir confianza]
+          prior_knowledge: "Completo los 6 temas de Mi Reputación es un Activo."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/mi-reputacion-es-un-activo/que-es-la-reputacion-de-verdad
+            - radar-de-riesgos/mi-reputacion-es-un-activo/una-mala-resena-cuesta-mas-que-una-venta-perdida
+            - radar-de-riesgos/mi-reputacion-es-un-activo/como-respondo-a-una-critica-publica
+            - radar-de-riesgos/mi-reputacion-es-un-activo/cuido-mi-reputacion-en-lo-que-publico
+            - radar-de-riesgos/mi-reputacion-es-un-activo/la-reputacion-de-con-quien-me-junto
+            - radar-de-riesgos/mi-reputacion-es-un-activo/reconstruyo-la-confianza-despues-de-un-error
+          lessons:
+            - position: 1
+              slug: repaso-redacto-una-respuesta-a-critica-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la redacción de una respuesta calmada a una crítica publica que todavia no había visto."
+              narrative_beat: "El equipo redacta, sin ayuda, una respuesta calmada a una crítica publica nueva sobre un servicio de edición de fotos."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: repaso-propongo-un-plan-de-reconstruccion-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: propone un plan de 3 pasos para reconstruir confianza en un caso de error nuevo."
+              narrative_beat: "Rho propone, sin ayuda de nadie, un plan de 3 pasos para reconstruir la confianza de un cliente en un caso que nunca había analizado."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+        - position: 8
+          slug: cruce-senales-de-alerta-y-reputacion
+          kind: review_interleaved
+          title_es: "Cruce: Señales de Alerta y Reputación"
+          concept: "Mezclamos las señales de alerta de la saga anterior con el cuidado de la reputación de esta saga: aceptar un trato con señales de alerta también pone en riesgo tu propia reputación."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la detección de una señal de alerta con la decisión de proteger su reputación rechazando ese trato."
+          key_vocabulary: [señal de alerta, proteger la reputación, rechazar el trato]
+          prior_knowledge: "Completo el repaso de Mi Reputación es un Activo (tema anterior) y Señales de Alerta en un Trato (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/mi-reputacion-es-un-activo/la-reputacion-de-con-quien-me-junto
+            - radar-de-riesgos/senales-de-alerta-en-un-trato/mi-lista-personal-de-senales-de-alerta
+          lessons:
+            - position: 1
+              slug: este-trato-con-senales-de-alerta-tambien-arriesga-mi-reputacion
+              micro_objective: "Reconoce, en un caso, que aceptar un trato con varias señales de alerta de su lista personal también pone en riesgo su reputación si el trato sale mal."
+              narrative_beat: "Dina revisa un trato que cumple 3 de las 5 señales de su lista y se da cuenta de que, si algo sale mal, su propia reputación quedaria asociada a ese mal trato."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: rechazo-el-trato-para-proteger-mi-reputacion
+              micro_objective: "Redacta, sin ayuda, una respuesta que rechaza un trato con señales de alerta, explicando que protege su reputación al hacerlo."
+              narrative_beat: "Zara responde: 'prefiero no continuar con este trato - no puedo poner en riesgo la confianza que mis clientes ya me tienen'."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 3
+    slug: lo-que-si-y-lo-que-no-en-un-contrato
+    icon: description
+    title:
+      en-US: "What Belongs and What Doesn't In An Agreement"
+      es-MX: "Lo que Sí y lo que No en un Contrato"
+      pt-BR: "O que Sim e o que Nao em um Contrato"
+    description:
+      en-US: "A written agreement protects both sides - learn to read one for real, and know when a deal is big enough to need a trusted adult."
+      es-MX: "Un acuerdo por escrito protege a ambas partes - aprende a leerlo de verdad, y sabe cuando un trato ya necesita a un adulto de confianza."
+      pt-BR: "Um acordo por escrito protege ambas as partes - aprenda a le-lo de verdade, e saiba quando um negocio ja precisa de um adulto de confianca."
+    topics:
+        - position: 1
+          slug: que-es-un-contrato-de-verdad
+          title_es: "Que es un contrato de verdad"
+          concept: "Un contrato no es un papel para 'amarrar' a la otra persona - es un acuerdo que ambas partes aceptan porque protege a ambas por igual, no solo a quien lo escribio."
+          learning_objective: "El aprendiz explica que un contrato protege a ambas partes involucradas, no solo a quien lo redacto."
+          key_vocabulary: [contrato, protege a ambas partes, no solo a uno]
+          prior_knowledge: "Completo Mi Reputación es un Activo (saga anterior): ya sabe proteger su reputación."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} para que cree que sirve un contrato, y si entiende que protege a las dos partes, no solo a una."
+          lessons:
+            - position: 1
+              slug: este-contrato-protege-a-los-dos-o-solo-a-uno
+              micro_objective: "Reconoce, entre dos versiónes de un acuerdo, cual protege a ambas partes por igual y cual solo favorece a quien lo escribio."
+              narrative_beat: "Rho revisa un acuerdo que solo obliga al cliente pero no dice nada de lo que el se compromete a entregar - eso no protege a ambos por igual."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: explico-para-que-sirve-un-contrato
+              micro_objective: "Explica, sin ayuda, para que sirve un contrato y por que protege a ambas partes de un trato."
+              narrative_beat: "Liruf explica: 'un contrato no es para que yo gane y tu pierdas, es para que los dos sepamos exactamente que esperar del otro'."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: que-tiene-que-decir-un-buen-acuerdo
+          title_es: "Que tiene que decir un buen acuerdo"
+          concept: "Un buen acuerdo describe con claridad que se entrega, cuando, por cuanto, y que pasa si alguna de las partes no cumple - sin esos cuatro elementos, el acuerdo deja demasiado a la interpretación."
+          learning_objective: "El aprendiz identifica los 4 elementos esenciales que debe incluir un acuerdo básico (que, cuando, cuanto, y que pasa si no se cumple)."
+          key_vocabulary: [elementos esenciales, que cuando cuanto, que pasa si no se cumple]
+          prior_knowledge: "Explica para que sirve un contrato (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que revise si el último acuerdo que hizo incluia los 4 elementos esenciales: que, cuando, cuanto y que pasa si algo falla."
+          lessons:
+            - position: 1
+              slug: que-le-falta-a-este-acuerdo
+              micro_objective: "Identifica, en un acuerdo incompleto, cual de los 4 elementos esenciales (que, cuando, cuanto, que pasa si falla) falta."
+              narrative_beat: "Dina revisa un acuerdo que dice el producto y el precio, pero no dice que pasa si el pedido se entrega tarde - falta ese cuarto elemento."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: redacto-un-acuerdo-con-los-cuatro-elementos
+              micro_objective: "Redacta, sin ayuda, un acuerdo básico que incluye los 4 elementos esenciales para un caso dado."
+              narrative_beat: "Zara redacta: 'entrego 1 gorra bordada (que), el sabado (cuando), por $95 (cuanto), y si se retrasa más de 2 dias devuelvo el 20% del anticipo (que pasa si falla)'."
+              difficulty: 3
+              suggested_families: [storyplay, input]
+        - position: 3
+          slug: leo-todo-antes-de-firmar
+          title_es: "Leo todo antes de firmar"
+          concept: "Aceptar un acuerdo sin leerlo completo, confiando en que 'seguro dice lo normal', es como firmar a ciegas - leerlo entero, aunque tome tiempo, es lo que evita sorpresas despues."
+          learning_objective: "El aprendiz identifica una condición inesperada dentro de un acuerdo que solo se descubre leyendolo completo, no por encima."
+          key_vocabulary: [leer completo, condición inesperada, firmar a ciegas]
+          prior_knowledge: "Identifica los 4 elementos esenciales de un acuerdo (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si lee todo un acuerdo antes de aceptarlo, o si a veces confia en que 'seguro dice lo normal'."
+          lessons:
+            - position: 1
+              slug: esta-condicion-la-hubiera-visto-leyendo-completo
+              micro_objective: "Detecta, en un acuerdo de ejemplo, una condición inesperada que solo se nota leyendo el texto completo, no solo el titulo."
+              narrative_beat: "Rho casi acepta un acuerdo sin notar, hasta leerlo completo, que incluia una condición de exclusividad que no había discutido con el cliente."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: marco-lo-que-necesito-revisar-antes-de-firmar
+              micro_objective: "Marca, sin ayuda, las partes de un acuerdo que necesita revisar con más cuidado antes de firmarlo."
+              narrative_beat: "Liruf marca con color la sección sobre 'que pasa si cancelo' porque es la parte que menos entiende del acuerdo antes de firmarlo."
+              difficulty: 4
+              suggested_families: [input, analyze]
+        - position: 4
+          slug: pregunto-lo-que-no-entiendo
+          title_es: "Pregunto lo que no entiendo"
+          concept: "Fingir que entiendes una parte de un acuerdo, por pena de preguntar, es más riesgoso que hacer la pregunta - quien redacto un buen acuerdo no debería incomodarse por explicarlo."
+          learning_objective: "El aprendiz formula una pregunta especifica sobre una parte de un acuerdo que no entiende, en vez de fingir que la comprende."
+          key_vocabulary: [preguntar sin pena, fingir que entiendes, más riesgoso]
+          prior_knowledge: "Identifica que revisar antes de firmar (tema anterior)."
+          fact_refs: []
+          parent_check: "Anima a {{name}} a preguntar, sin pena, cualquier parte de un acuerdo que no entienda antes de aceptarlo."
+          lessons:
+            - position: 1
+              slug: finjo-que-entiendo-o-pregunto
+              micro_objective: "Elige, entre fingir que entiende una clausula confusa y preguntar directamente, la opción que de verdad protege al aprendiz."
+              narrative_beat: "Dina no entiende una clausula sobre 'derechos de uso de imagen' en un acuerdo y, en vez de fingir que si, pregunta directamente que significa."
+              difficulty: 4
+              suggested_families: [choice, story]
+            - position: 2
+              slug: formulo-mi-pregunta-sobre-la-clausula-confusa
+              micro_objective: "Formula, sin ayuda, una pregunta especifica sobre una clausula de un acuerdo que no entiende."
+              narrative_beat: "Zara pregunta: '¿que significa exactamente que ustedes puedan usar mis fotos en su publicidad? ¿por cuanto tiempo?' antes de firmar."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 5
+          slug: cuando-pido-ayuda-de-un-adulto-de-confianza
+          title_es: "Cuando pido ayuda de un adulto de confianza"
+          concept: "Un trato pequeño entre compañeros es una cosa; un acuerdo grande, con dinero importante o compromisos de largo plazo, es momento de pedirle a un adulto de confianza (padre, madre, tutor) que lo revise antes de firmar nada."
+          learning_objective: "El aprendiz reconoce cuando un acuerdo es lo suficientemente grande o complejo para requerir la revisión de un adulto de confianza antes de aceptarlo."
+          key_vocabulary: [adulto de confianza, acuerdo grande, revisar antes de firmar]
+          prior_knowledge: "Formula preguntas sobre clausulas confusas (tema anterior)."
+          fact_refs: []
+          parent_check: "Habla con {{name}} sobre a partir de que tamaño de trato le gustaria que lo revisaran juntos antes de aceptar cualquier cosa."
+          lessons:
+            - position: 1
+              slug: este-trato-lo-decido-solo-o-pido-ayuda
+              micro_objective: "Reconoce, entre dos tratos de tamaño distinto, cual puede decidir solo y cual conviene revisar primero con un adulto de confianza."
+              narrative_beat: "Rho decide solo sobre un pedido de $95 entre compañeros de escuela; para un acuerdo de varios meses con un negocio local, decide primero mostrarselo a su papa."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: le-pido-a-un-adulto-que-revise-el-acuerdo
+              micro_objective: "Redacta, sin ayuda, una petición clara a un adulto de confianza para que revise un acuerdo antes de firmarlo."
+              narrative_beat: "Liruf le dice a su mama: '¿me ayudas a revisar este acuerdo antes de firmarlo? es un compromiso más grande de lo normal y quiero estar seguro'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: negocio-solo-lo-que-puedo-cumplir-por-escrito
+          title_es: "Negocio solo lo que puedo cumplir por escrito"
+          concept: "Firmar un acuerdo prometiendo algo que en el fondo dudas poder cumplir (una fecha imposible, una cantidad que no puedes producir) crea un problema garantizado - solo hay que comprometerse por escrito a lo que de verdad se puede sostener."
+          learning_objective: "El aprendiz revisa un acuerdo antes de firmarlo y ajusta cualquier compromiso que en realidad no pueda cumplir."
+          key_vocabulary: [comprometerse por escrito, solo lo que se puede cumplir, ajustar antes de firmar]
+          prior_knowledge: "Reconoce cuando pedir ayuda de un adulto de confianza (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} un acuerdo que este por firmar y confirma que cada compromiso escrito es algo que de verdad puede cumplir."
+          lessons:
+            - position: 1
+              slug: puedo-cumplir-esto-de-verdad
+              micro_objective: "Revisa, en un acuerdo dado, un compromiso especifico (una cantidad o fecha) que en realidad no podría cumplir, y lo identifica antes de firmar."
+              narrative_beat: "Dina esta a punto de firmar un acuerdo para entregar 30 gorras en 3 dias, pero al revisar su capacidad real, sabe que solo puede hacer 15 en ese tiempo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: ajusto-el-compromiso-antes-de-firmar
+              micro_objective: "Redacta, sin ayuda, una propuesta de ajuste a un compromiso de acuerdo que en realidad no podia cumplir, antes de firmarlo."
+              narrative_beat: "Zara propone: 'puedo entregar 15 gorras en 3 dias y las otras 15 en 3 dias más, para no comprometerme a algo que no voy a cumplir'."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-lo-que-si-y-lo-que-no-en-un-contrato
+          kind: review_spaced
+          title_es: "Repaso: Lo que Sí y lo que No en un Contrato"
+          concept: "El equipo repasa los elementos esenciales de un acuerdo, leerlo completo, preguntar dudas y reconocer cuando pedir ayuda de un adulto de confianza."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la lectura y evaluación completa de un acuerdo."
+          key_vocabulary: [elementos esenciales, leer completo, adulto de confianza]
+          prior_knowledge: "Completo los 6 temas de Lo que Sí y lo que No en un Contrato."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/que-es-un-contrato-de-verdad
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/que-tiene-que-decir-un-buen-acuerdo
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/leo-todo-antes-de-firmar
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/pregunto-lo-que-no-entiendo
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/cuando-pido-ayuda-de-un-adulto-de-confianza
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/negocio-solo-lo-que-puedo-cumplir-por-escrito
+          lessons:
+            - position: 1
+              slug: repaso-identifico-elementos-esenciales-nuevos
+              micro_objective: "Recuerda y aplica, sin ayuda, la identificación de los 4 elementos esenciales en un acuerdo que todavia no había visto."
+              narrative_beat: "El equipo identifica, sin ayuda, los 4 elementos esenciales en un acuerdo nuevo de un servicio de paseo de mascotas."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-reconozco-cuando-pedir-ayuda-de-un-adulto-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: reconoce, en un caso nuevo, cuando un acuerdo requiere la revisión de un adulto de confianza."
+              narrative_beat: "Rho reconoce, sin ayuda de nadie, que un acuerdo nuevo de varios meses es lo suficientemente grande para pedir la revisión de un adulto de confianza."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-reputacion-y-contrato-bien-hecho
+          kind: review_interleaved
+          title_es: "Cruce: Reputación y Contrato Bien Hecho"
+          concept: "Mezclamos el cuidado de la reputación de la saga anterior con la lectura cuidadosa de acuerdos de esta saga: un mal acuerdo firmado sin revisar puede dañar la reputación tanto como un mal trato."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la revisión cuidadosa de un acuerdo con la protección de su reputación a largo plazo."
+          key_vocabulary: [revisión cuidadosa, protección de reputación, largo plazo]
+          prior_knowledge: "Completo el repaso de Lo que Sí y lo que No en un Contrato (tema anterior) y Mi Reputación es un Activo (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/negocio-solo-lo-que-puedo-cumplir-por-escrito
+            - radar-de-riesgos/mi-reputacion-es-un-activo/reconstruyo-la-confianza-despues-de-un-error
+          lessons:
+            - position: 1
+              slug: firmar-de-mas-daria-mi-reputacion-despues
+              micro_objective: "Reconoce, en un caso, que comprometerse por escrito a algo que no puede cumplir llevaria despues a un error que dañaria su reputación."
+              narrative_beat: "Rho se da cuenta de que, si firma el compromiso de 30 gorras en 3 dias sin poder cumplirlo, terminaria necesitando reconstruir la confianza de un cliente molesto despues."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: ajusto-el-acuerdo-para-proteger-mi-reputacion-futura
+              micro_objective: "Ajusta, sin ayuda, un compromiso de acuerdo pensando tanto en lo que puede cumplir como en proteger su reputación futura si algo saliera mal."
+              narrative_beat: "Zara ajusta su acuerdo a un compromiso realista, sabiendo que cumplirlo bien construye la misma confianza que le costaria mucho reconstruir si fallara."
+              difficulty: 5
+              suggested_families: [storyplay, analyze]
+  - position: 4
+    slug: etica-en-el-dia-a-dia-del-negocio
+    icon: balance
+    title:
+      en-US: "Ethics In The Everyday Of Business"
+      es-MX: "Ética en el Día a Día del Negocio"
+      pt-BR: "Etica no Dia a Dia do Negocio"
+    description:
+      en-US: "Fair treatment, honest claims and protecting private information are not extra rules - they are the everyday practice of a business worth trusting."
+      es-MX: "Trato justo, promesas honestas y proteger la información privada no son reglas extra - son la práctica diaria de un negocio que vale la pena confiar."
+      pt-BR: "Tratamento justo, promessas honestas e proteger informações privadas nao sao regras extras - sao a pratica diaria de um negocio que vale a pena confiar."
+    topics:
+        - position: 1
+          slug: trato-igual-a-todos-mis-clientes
+          title_es: "Trato igual a todos mis clientes"
+          concept: "Ofrecer un mejor precio o servicio a un amigo, y uno peor a un desconocido con la misma petición, no es lealtad - es un favoritismo que, si se descubre, daña la confianza de todos."
+          learning_objective: "El aprendiz reconoce un caso de trato desigual entre clientes por favoritismo y propone un trato consistente para situaciones equivalentes."
+          key_vocabulary: [trato igual, favoritismo, situaciones equivalentes]
+          prior_knowledge: "Completo Lo que Sí y lo que No en un Contrato (saga anterior): ya sabe leer y negociar un acuerdo con cuidado."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si trata igual a un amigo y a un desconocido cuando piden lo mismo a su negocio."
+          lessons:
+            - position: 1
+              slug: esto-es-favoritismo-o-trato-justo
+              micro_objective: "Reconoce, en un caso, cuando un negocio esta dando un trato desigual por favoritismo entre dos clientes con la misma petición."
+              narrative_beat: "Liruf le da un descuento grande a su mejor amigo mientras cobra el precio completo a un desconocido por el mismo pedido - ese es favoritismo, no una regla clara."
+              difficulty: 1
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: propongo-una-regla-de-trato-consistente
+              micro_objective: "Propone, sin ayuda, una regla de trato consistente (por ejemplo, un descuento solo por volumen, no por amistad) para aplicar igual a todos los clientes."
+              narrative_beat: "Zara decide que su descuento solo aplica cuando alguien compra 3 o más piezas, sea amigo o desconocido - una regla igual para todos."
+              difficulty: 2
+              suggested_families: [storyplay, choice]
+        - position: 2
+          slug: no-exagero-lo-que-mi-producto-hace
+          title_es: "No exagero lo que mi producto hace"
+          concept: "Prometer algo que tu producto no hace de verdad (que dura para siempre, que resuelve todo) puede ganar una venta hoy, pero cuando el cliente lo descubre, pierde algo mucho más grande: la confianza y la reputación."
+          learning_objective: "El aprendiz identifica una afirmación exagerada sobre un producto y la reformula en una descripción precisa y verificable."
+          key_vocabulary: [afirmación exagerada, descripción precisa, verificable]
+          prior_knowledge: "Propone una regla de trato consistente (tema anterior)."
+          fact_refs: []
+          parent_check: "Revisa junto a {{name}} lo que dice sobre su producto y confirma que cada afirmación sea algo que de verdad puede demostrar."
+          lessons:
+            - position: 1
+              slug: esta-afirmacion-la-puedo-demostrar
+              micro_objective: "Reconoce, entre 3 afirmaciones sobre un producto, cual es exagerada y no se puede demostrar, y cual es precisa y verificable."
+              narrative_beat: "Rho revisa su anuncio: 'resistente al agua' lo puede demostrar con una prueba real; 'indestructible' no lo puede demostrar de ninguna forma."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: reformulo-mi-afirmacion-exagerada
+              micro_objective: "Reformula, sin ayuda, una afirmación exagerada sobre un producto en una descripción precisa y verificable."
+              narrative_beat: "Dina cambia 'nunca se va a romper' por 'probada durante 3 meses de uso diario sin romperse' en la descripción de su producto."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+        - position: 3
+          slug: protejo-la-informacion-que-me-comparten
+          title_es: "Protejo la información que me comparten"
+          concept: "Los datos que un cliente comparte para hacer un pedido (su dirección, su número, su nombre) son suyos, no tuyos para usar en otra cosa o compartir sin permiso."
+          learning_objective: "El aprendiz reconoce un uso indebido de información personal de un cliente y propone la práctica correcta de manejo de esa información."
+          key_vocabulary: [información personal, uso indebido, sin permiso]
+          prior_knowledge: "Reformula una afirmación exagerada (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que hace con la información personal (número, dirección) que sus clientes le comparten para un pedido."
+          lessons:
+            - position: 1
+              slug: esto-es-un-uso-correcto-o-indebido-de-la-informacion
+              micro_objective: "Reconoce, entre dos casos, cual es un uso correcto de la información de un cliente y cual es un uso indebido sin permiso."
+              narrative_beat: "Liruf usa el número de un cliente solo para confirmar su pedido; alguien más comparte los números de sus clientes con otro vendedor sin pedir permiso."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: guardo-la-informacion-solo-para-lo-necesario
+              micro_objective: "Decide, sin ayuda, que información de un cliente es necesaria guardar para un pedido y cual no tiene por que pedir ni guardar."
+              narrative_beat: "Zara guarda solo el nombre y la dirección de entrega que necesita para el pedido, y no pide ni guarda información que no tiene relación con la venta."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 4
+          slug: reconozco-un-conflicto-de-interes
+          title_es: "Reconozco un conflicto de interes"
+          concept: "Un conflicto de interes pasa cuando una decisión de negocio se ve influida por un beneficio personal (favorecer a un amigo en una compra grupal) en vez de por lo que es mejor para todos."
+          learning_objective: "El aprendiz identifica un conflicto de interes en una decisión de negocio, donde el beneficio personal choca con lo que es mejor para el equipo o los clientes."
+          key_vocabulary: [conflicto de interes, beneficio personal, lo mejor para todos]
+          prior_knowledge: "Reconoce un uso correcto o indebido de información (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} si alguna vez tuvo que decidir algo donde su interes personal chocaba con lo mejor para el equipo o los clientes."
+          lessons:
+            - position: 1
+              slug: esta-decision-tiene-un-conflicto-de-interes
+              micro_objective: "Reconoce, en un caso, cuando una decisión de negocio esta influida por un beneficio personal en vez de por lo mejor para todos."
+              narrative_beat: "Rho, encargado de elegir proveedor, esta a punto de elegir a su primo aunque cobra más caro que otra opción mejor - eso es un conflicto de interes."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: decido-a-pesar-del-conflicto-de-interes
+              micro_objective: "Decide, sin ayuda, tomar la decisión que es mejor para el negocio a pesar de un conflicto de interes identificado."
+              narrative_beat: "Dina elige al proveedor con mejor precio y calidad, aunque no sea su amiga, porque reconoce que su cercania no debería decidir por el equipo."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: que-hago-si-alguien-me-pide-algo-que-no-esta-bien
+          title_es: "Que hago si alguien me pide algo que no esta bien"
+          concept: "Cuando un cliente, socio o incluso un amigo pide algo que no esta bien (mentir sobre un producto, saltarse un acuerdo, compartir información privada), decir que no con calma protege tanto tu ética como tu negocio."
+          learning_objective: "El aprendiz responde con calma y firmeza a una petición que le pide actuar de forma no ética, rechazandola sin agresividad."
+          key_vocabulary: [petición no ética, rechazar con calma, protege tu ética]
+          prior_knowledge: "Decide a pesar de un conflicto de interes (tema anterior)."
+          fact_refs: []
+          parent_check: "Pregunta a {{name}} que haria si un cliente o un amigo le pidiera hacer algo que sabe que no esta bien para el negocio."
+          lessons:
+            - position: 1
+              slug: esta-peticion-esta-bien-o-no-esta-bien
+              micro_objective: "Reconoce, en un caso, cuando una petición de un cliente le pide hacer algo que no esta bien, como mentir sobre el producto."
+              narrative_beat: "Un cliente le pide a Liruf que le diga a otra persona que el producto 'nunca falla', aunque los dos saben que no es cierto - esa petición no esta bien."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: respondo-con-calma-y-firmeza
+              micro_objective: "Redacta, sin ayuda, una respuesta con calma y firmeza que rechaza una petición no ética sin agresividad."
+              narrative_beat: "Zara responde: 'no puedo decir eso porque no es cierto, pero si puedo contarle exactamente que tan bien funciona de verdad'."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: mi-codigo-de-riesgos-y-etica-del-negocio
+          title_es: "Mi código de riesgos y ética del negocio"
+          concept: "Un código personal que reune señales de alerta, cuidado de reputación, lectura cuidadosa de acuerdos y practicas éticas diarias te da una guia lista para cualquier situación nueva."
+          learning_objective: "El aprendiz redacta un código personal de riesgos y ética de negocio integrando al menos 4 principios de las sagas anteriores."
+          key_vocabulary: [código personal, integrar principios, guia lista]
+          prior_knowledge: "Responde con calma y firmeza a una petición no ética (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te lea su código personal de riesgos y ética del negocio completo."
+          lessons:
+            - position: 1
+              slug: reviso-los-cuatro-principios-de-mi-codigo
+              micro_objective: "Reune, sin ayuda, los 4 principios de su código: detectar señales de alerta, cuidar su reputación, leer acuerdos con cuidado, y tratar a todos por igual."
+              narrative_beat: "Rho ordena en tarjetas su código: revisar señales de alerta antes de cualquier trato, cuidar su reputación en lo que publica, leer todo antes de firmar, y tratar igual a todos sus clientes."
+              difficulty: 4
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: escribo-mi-codigo-completo
+              micro_objective: "Redacta, sin ayuda, su código personal de riesgos y ética de negocio completo con los 4 principios integrados."
+              narrative_beat: "Zara escribe su código final en su libreta, para revisarlo cada vez que un trato, un acuerdo o una petición le genere dudas sobre que hacer."
+              difficulty: 5
+              suggested_families: [storyplay, input]
+        - position: 7
+          slug: repaso-etica-en-el-dia-a-dia-del-negocio
+          kind: review_spaced
+          title_es: "Repaso: Ética en el Día a Día del Negocio"
+          concept: "El equipo repasa el trato igual a todos los clientes, no exagerar lo que el producto hace, proteger información y reconocer conflictos de interes."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la ética diaria de negocio de esta saga."
+          key_vocabulary: [trato igual, información protegida, conflicto de interes]
+          prior_knowledge: "Completo los 6 temas de Ética en el Día a Día del Negocio."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/trato-igual-a-todos-mis-clientes
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/no-exagero-lo-que-mi-producto-hace
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/protejo-la-informacion-que-me-comparten
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/reconozco-un-conflicto-de-interes
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/que-hago-si-alguien-me-pide-algo-que-no-esta-bien
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/mi-codigo-de-riesgos-y-etica-del-negocio
+          lessons:
+            - position: 1
+              slug: repaso-reformulo-una-afirmacion-exagerada-nueva
+              micro_objective: "Recuerda y aplica, sin ayuda, la reformulación de una afirmación exagerada de producto en un caso que todavia no había visto."
+              narrative_beat: "El equipo reformula, sin ayuda, una afirmación exagerada de un servicio nuevo de edición de fotos en una versión precisa y verificable."
+              difficulty: 3
+              suggested_families: [storyplay, choice]
+            - position: 2
+              slug: repaso-respondo-a-una-peticion-no-etica-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: responde con calma a una petición no ética nueva, rechazandola con firmeza."
+              narrative_beat: "Rho responde, sin ayuda de nadie, con calma y firmeza a una petición no ética nueva que el equipo nunca había analizado."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 8
+          slug: cruce-contrato-bien-hecho-y-etica-diaria
+          kind: review_interleaved
+          title_es: "Cruce: Contrato Bien Hecho y Ética Diaria"
+          concept: "Mezclamos la lectura cuidadosa de acuerdos de la saga anterior con la ética diaria de esta saga: un buen acuerdo escrito también refleja el trato igual y las promesas honestas."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, un acuerdo bien redactado con los principios de trato igual y promesas honestas de la ética diaria."
+          key_vocabulary: [acuerdo bien redactado, trato igual, promesas honestas]
+          prior_knowledge: "Completo el repaso de Ética en el Día a Día del Negocio (tema anterior) y Lo que Sí y lo que No en un Contrato (saga anterior)."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio/no-exagero-lo-que-mi-producto-hace
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato/que-tiene-que-decir-un-buen-acuerdo
+          lessons:
+            - position: 1
+              slug: mi-acuerdo-escrito-no-exagera-nada
+              micro_objective: "Revisa, sin ayuda, que un acuerdo escrito no incluya ninguna afirmación exagerada sobre lo que el producto o servicio hace."
+              narrative_beat: "Dina revisa su acuerdo y confirma que describe exactamente lo que su servicio de tutoria si puede garantizar, sin ninguna promesa exagerada."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: redacto-un-acuerdo-etico-y-completo
+              micro_objective: "Redacta, sin ayuda, un acuerdo que incluye los 4 elementos esenciales y refleja un trato igual y promesas honestas."
+              narrative_beat: "Zara redacta un acuerdo final que aplica el mismo precio y condiciones a cualquier cliente, sin favoritismo, y sin ninguna promesa que no pueda cumplir."
+              difficulty: 5
+              suggested_families: [storyplay, input]
+  - position: 5
+    slug: el-tribunal-de-confianza-del-distrito
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The District's Trust Tribunal"
+      es-MX: "El Tribunal de Confianza del Distrito"
+      pt-BR: "O Tribunal de Confianca do Distrito"
+    description:
+      en-US: "A district-wide tribunal puts every risk and ethics skill to the test with suspicious deals and a defended personal code."
+      es-MX: "Un tribunal de todo el distrito pone a prueba cada habilidad de riesgo y ética con tratos sospechosos y un código personal defendido."
+      pt-BR: "Um tribunal de todo o distrito coloca a prova cada habilidade de risco e etica com negocios suspeitos e um código pessoal defendido."
+    topics:
+        - position: 1
+          slug: el-reto-de-los-tratos-sospechosos
+          kind: review_quest
+          title_es: "El Reto de los Tratos Sospechosos"
+          concept: "El Tribunal de Confianza reta a cada equipo a revisar tres tratos sospechosos distintos, detectando señales de alerta y protegiendo su reputación en cada uno."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, la detección de señales de alerta con el cuidado de la reputación para responder al reto de tres tratos sospechosos."
+          key_vocabulary: [tratos sospechosos, tres casos distintos, proteger la reputación]
+          prior_knowledge: "Completo Señales de Alerta en un Trato y Mi Reputación es un Activo."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/senales-de-alerta-en-un-trato
+            - radar-de-riesgos/mi-reputacion-es-un-activo
+          lessons:
+            - position: 1
+              slug: recibo-el-reto-de-los-tratos-sospechosos
+              micro_objective: "Recuerda, sin ayuda, como detectar señales de alerta y cuidar su reputación antes de enfrentar el reto de tres tratos sospechosos."
+              narrative_beat: "El Tribunal de Confianza anuncia: 'revisen tres tratos distintos que llegan al distrito esta semana, y decidan cuales aceptar sin arriesgar su reputación'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: reviso-los-tres-tratos-sospechosos
+              micro_objective: "Aplica, sin ayuda, la detección de señales de alerta y el cuidado de reputación a tres tratos sospechosos distintos presentados en el reto."
+              narrative_beat: "Rho revisa los tres tratos del tribunal: rechaza el que pide pago total adelantado, acepta el que tiene un acuerdo claro por escrito, y pide más tiempo para revisar el tercero."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: mi-caso-completo-de-negocio-etico-y-seguro
+          kind: review_quest
+          title_es: "Mi Caso Completo de Negocio Ético y Seguro"
+          concept: "Con la lectura de acuerdos y la ética diaria dominadas, el equipo presenta ante el Tribunal de Confianza un caso completo: un acuerdo bien hecho y un código ético defendido con ejemplos reales."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, un caso integrando la lectura cuidadosa de un acuerdo con su código personal de ética de negocio."
+          key_vocabulary: [tribunal de confianza, acuerdo defendido, código ético]
+          prior_knowledge: "Completo El Reto de los Tratos Sospechosos (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - radar-de-riesgos/lo-que-si-y-lo-que-no-en-un-contrato
+            - radar-de-riesgos/etica-en-el-dia-a-dia-del-negocio
+          lessons:
+            - position: 1
+              slug: preparo-mi-caso-para-el-tribunal-de-confianza
+              micro_objective: "Organiza, sin ayuda, un acuerdo bien redactado y su código de riesgos y ética para presentarlos ante el Tribunal de Confianza."
+              narrative_beat: "Dina ordena su caso completo: un acuerdo con los 4 elementos esenciales, y su código con señales de alerta, cuidado de reputación y trato igual a todos."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+            - position: 2
+              slug: presento-mi-caso-ante-el-tribunal-de-confianza
+              micro_objective: "Completa, sin ayuda, la presentación final de su caso ante el Tribunal de Confianza, citando su código ético y un acuerdo bien redactado."
+              narrative_beat: "Zara presenta ante el Tribunal de Confianza del distrito: su acuerdo protege a ambas partes por igual, y su código ético ya la ayudo a rechazar dos tratos con señales de alerta esta semana."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

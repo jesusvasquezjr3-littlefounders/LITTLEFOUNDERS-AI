@@ -1,0 +1,877 @@
+schema_version: 1
+
+adventure:
+  position: 5
+  slug: canastas-y-fondos
+  theme: kingdom
+  age_tier: tier4
+  title:
+    en-US: "Baskets and Funds"
+    es-MX: "Canastas y Fondos"
+    pt-BR: "Cestas e Fundos"
+  description:
+    en-US: "In the League of Guilds, the team learns that a basket holding small pieces of many things beats betting everything on one - and that a real index quietly follows the whole group instead of guessing a winner."
+    es-MX: "En la Liga de los Gremios, el equipo aprende que una canasta con pedacitos de muchas cosas le gana a apostar todo a una sola - y que un índice de verdad sigue a todo el grupo en vez de adivinar un ganador."
+    pt-BR: "Na Liga das Guildas, a equipe aprende que uma cesta com pedacos de muitas coisas vence apostar tudo em uma so - e que um indice de verdade segue todo o grupo em vez de adivinhar um vencedor."
+  narrative_arc: "Dina, Liruf, Rho y Zara llegan a la Liga de los Gremios, una federación de casas comerciales donde aprenden que comprar un pedacito de muchas cosas (una canasta) reparte mejor el riesgo que comprar una sola cosa completa. Descubren la metáfora de no poner todas las monedas en una sola canoa, aprenden que diversificar de verdad significa elegir piezas que no fallan todas juntas, conocen los índices que siguen automáticamente a un grupo entero en vez de intentar adivinar un ganador, y terminan armando, simulando y defendiendo su propia canasta final frente a la asamblea de gremios."
+
+sagas:
+  - position: 1
+    slug: un-pedacito-de-muchas-cosas
+    icon: category
+    title:
+      en-US: "A Little Piece of Many Things"
+      es-MX: "Un Pedacito de Muchas Cosas"
+      pt-BR: "Um Pedacinho de Muitas Coisas"
+    description:
+      en-US: "Instead of buying one whole thing, own a small piece of many things at once - that's a basket."
+      es-MX: "En vez de comprar una cosa completa, ten un pedacito de muchas cosas a la vez - eso es una canasta."
+      pt-BR: "Em vez de comprar uma coisa inteira, tenha um pedacinho de muitas coisas ao mesmo tempo - isso e uma cesta."
+    topics:
+        - position: 1
+          slug: que-es-una-canasta-de-inversion
+          title_es: "Qué es una canasta de inversión"
+          concept: "Una canasta (fondo) agrupa pedacitos de muchas cosas distintas en un solo lugar, en vez de comprar una sola cosa completa."
+          learning_objective: "El aprendiz reconoce que una canasta agrupa pedacitos de muchas cosas distintas, y la distingue de comprar una sola cosa completa."
+          key_vocabulary: [canasta, fondo, pedacitos]
+          prior_knowledge: "Ninguno - es el punto de partida de esta aventura."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué cree que significa 'una canasta de inversión' comparado con comprar una sola cosa."
+          lessons:
+            - position: 1
+              slug: la-canasta-del-mercado
+              micro_objective: "Reconoce que una canasta (fondo) agrupa pedacitos de muchas cosas distintas en un solo lugar."
+              narrative_beat: "Dina le muestra a Liruf una canasta en el mercado del gremio: no tiene una sola cosa adentro, tiene pedacitos de diez cosas distintas."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-cosa-completa-y-canasta
+              micro_objective: "Explica, con sus palabras, la diferencia entre comprar una cosa completa y comprar una canasta con pedacitos de varias."
+              narrative_beat: "Liruf compara comprar una cosa completa contra comprar la canasta - ahora entiende que la canasta reparte entre varias a la vez."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: un-pedacito-no-es-lo-mismo-que-todo
+          title_es: "Un pedacito no es lo mismo que todo"
+          concept: "Comprar un pedacito de algo (una acción) es distinto a comprar la cosa completa - cuesta menos y puedes tener pedacitos de varias cosas a la vez."
+          learning_objective: "El aprendiz reconoce que un pedacito cuesta menos que la cosa completa y calcula cuántos pedacitos caben en el mismo presupuesto."
+          key_vocabulary: [pedacito, acción, presupuesto]
+          prior_knowledge: "Distingue una cosa completa de una canasta de pedacitos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si preferiría comprar una cosa completa o pedacitos de varias cosas distintas con el mismo dinero."
+          lessons:
+            - position: 1
+              slug: zara-compra-un-pedacito
+              micro_objective: "Reconoce que comprar un pedacito de algo (una acción) cuesta menos que comprar la cosa completa."
+              narrative_beat: "Zara descubre que puede comprar un pedacito de un gremio grande, sin tener que pagar el gremio entero."
+              difficulty: 2
+              suggested_families: [story, money]
+            - position: 2
+              slug: cuantos-pedacitos-con-el-mismo-dinero
+              micro_objective: "Calcula cuántos pedacitos distintos se pueden comprar con el mismo dinero que costaría una sola cosa completa."
+              narrative_beat: "Rho calcula: con lo que cuesta una cosa completa, puede comprar pedacitos de cinco cosas distintas en su lugar."
+              difficulty: 3
+              suggested_families: [money, input]
+        - position: 3
+          slug: cuantos-pedacitos-caben-en-una-canasta
+          title_es: "Cuántos pedacitos caben en una canasta"
+          concept: "Una canasta puede contener pedacitos de decenas o cientos de cosas distintas a la vez."
+          learning_objective: "El aprendiz reconoce que una canasta puede contener muchos pedacitos distintos y compara una canasta chica contra una grande."
+          key_vocabulary: [canasta chica, canasta grande]
+          prior_knowledge: "Calcula cuántos pedacitos caben en un presupuesto (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si cree que una canasta puede tener pedacitos de más de 50 cosas distintas a la vez."
+          lessons:
+            - position: 1
+              slug: la-canasta-de-cien-pedacitos
+              micro_objective: "Reconoce que una canasta puede contener pedacitos de decenas o cientos de cosas distintas a la vez."
+              narrative_beat: "Dina abre una canasta grande del gremio: adentro hay pedacitos de cien gremios distintos, no solo diez."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-canasta-chica-y-grande
+              micro_objective: "Compara una canasta chica (pocos pedacitos) contra una canasta grande (muchos pedacitos) y describe la diferencia."
+              narrative_beat: "Zara compara dos canastas: una con 5 pedacitos, otra con 50 - describe cómo se ve cada una por dentro."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: comparo-comprar-uno-o-comprar-una-canasta
+          title_es: "Comparo comprar uno o comprar una canasta"
+          concept: "Comparar el resultado de comprar una sola cosa completa contra comprar pedacitos de varias muestra la ventaja de la canasta cuando una sale mal."
+          learning_objective: "El aprendiz compara el resultado de comprar una cosa completa contra una canasta de pedacitos, cuando una de las piezas sale mal."
+          key_vocabulary: [sale mal, comparar resultados]
+          prior_knowledge: "Compara una canasta chica contra una grande (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué le conviene más: comprar una sola cosa completa, o pedacitos de varias cosas distintas."
+          lessons:
+            - position: 1
+              slug: liruf-una-cosa-zara-una-canasta
+              micro_objective: "Compara el resultado de comprar una sola cosa completa contra comprar pedacitos de varias, cuando una de ellas sale mal."
+              narrative_beat: "Liruf compró un gremio entero que tuvo un mal año; Zara compró pedacitos de diez gremios y solo uno tuvo un mal año."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: decido-que-camino-tomar
+              micro_objective: "Decide, en un caso nuevo, si conviene más comprar una sola cosa completa o una canasta de pedacitos."
+              narrative_beat: "Con el ejemplo de Liruf y Zara claro, Rho decide qué camino tomar para su propio dinero."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: quien-arma-la-canasta
+          title_es: "Quién arma la canasta"
+          concept: "Alguien (un gremio o fondo) arma y administra la canasta por ti, agrupando los pedacitos."
+          learning_objective: "El aprendiz reconoce que un fondo administra la canasta por el ahorrador, y distingue eso de buscar cada pedacito uno por uno."
+          key_vocabulary: [administrar, agrupar]
+          prior_knowledge: "Decide entre comprar una cosa completa o una canasta (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si sabía que un fondo puede armar y administrar una canasta completa por ti."
+          lessons:
+            - position: 1
+              slug: el-gremio-arma-la-canasta
+              micro_objective: "Reconoce que alguien (un gremio o fondo) arma y administra la canasta por ti, agrupando los pedacitos."
+              narrative_beat: "Dina explica: un gremio especializado arma la canasta completa por ti, así no tienes que buscar cada pedacito uno por uno."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: buscar-yo-mismo-o-recibirla-armada
+              micro_objective: "Distingue, en un caso, la diferencia entre buscar cada pedacito uno por uno y dejar que un gremio arme la canasta completa."
+              narrative_beat: "Zara compara el trabajo de armar su propia canasta pedacito por pedacito contra dejar que un gremio ya se la entregue armada."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: mi-primera-canasta-simple
+          title_es: "Mi primera canasta simple"
+          concept: "Arma una canasta simple propia eligiendo varios pedacitos distintos en vez de uno solo."
+          learning_objective: "El aprendiz arma, sin ayuda, una canasta propia con al menos 4 pedacitos distintos."
+          key_vocabulary: [canasta simple, pedacitos distintos]
+          prior_knowledge: "Distingue armar la canasta uno mismo de recibirla ya armada (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a imaginar su primera canasta simple: al menos 4 cosas distintas, no una sola."
+          lessons:
+            - position: 1
+              slug: armamos-la-primera-canasta-en-equipo
+              micro_objective: "Con apoyo, arma una canasta simple propia eligiendo varios pedacitos distintos en vez de uno solo."
+              narrative_beat: "El equipo arma junto su primera canasta simple, eligiendo pedacitos de varios gremios distintos del mercado."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: armo-mi-canasta-solo
+              micro_objective: "Aplica, sin ayuda, lo aprendido para armar su propia canasta con al menos 4 pedacitos distintos."
+              narrative_beat: "Rho arma solo, sin ayuda, su propia canasta con pedacitos de cuatro gremios distintos del mercado."
+              difficulty: 5
+              suggested_families: [arrange, money]
+        - position: 7
+          slug: repaso-un-pedacito-de-muchas-cosas
+          kind: review_spaced
+          title_es: "Repaso: Un Pedacito de Muchas Cosas"
+          concept: "El equipo repasa la diferencia entre comprar una cosa completa y una canasta de pedacitos antes de aprender a no repetir el mismo tipo de pieza."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la diferencia entre comprar una cosa completa y comprar pedacitos en una canasta."
+          key_vocabulary: [cosa completa, canasta de pedacitos]
+          prior_knowledge: "Completo los 6 temas de Un Pedacito de Muchas Cosas."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/que-es-una-canasta-de-inversion
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/un-pedacito-no-es-lo-mismo-que-todo
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/cuantos-pedacitos-caben-en-una-canasta
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/comparo-comprar-uno-o-comprar-una-canasta
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/quien-arma-la-canasta
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/mi-primera-canasta-simple
+          lessons:
+            - position: 1
+              slug: repaso-cosa-completa-o-canasta
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre comprar una cosa completa y comprar pedacitos en una canasta."
+              narrative_beat: "El equipo repasa el mercado del gremio y vuelve a distinguir, sin ayuda, cosas completas de canastas de pedacitos."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-armo-canasta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: arma una canasta nueva con varios pedacitos distintos."
+              narrative_beat: "Zara arma, sin ayuda de nadie, una canasta nueva combinando varios pedacitos distintos del mercado."
+              difficulty: 4
+              suggested_families: [arrange, money]
+        - position: 8
+          slug: cruce-pedacitos-y-canasta-completa
+          kind: review_interleaved
+          title_es: "Cruce: Pedacitos y Canasta Completa"
+          concept: "Mezclamos la idea de comprar pedacitos con la de dejar que un gremio arme la canasta para evaluar una opción nueva."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, al menos dos señales de esta saga para evaluar una decisión de canasta."
+          key_vocabulary: [pedacitos, canasta armada]
+          prior_knowledge: "Completo el repaso de Un Pedacito de Muchas Cosas (tema anterior)."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/un-pedacito-no-es-lo-mismo-que-todo
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/comparo-comprar-uno-o-comprar-una-canasta
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/quien-arma-la-canasta
+          lessons:
+            - position: 1
+              slug: junto-pedacitos-y-canasta-armada
+              micro_objective: "Combina la idea de comprar pedacitos con la de dejar que un gremio arme la canasta para evaluar una opción nueva."
+              narrative_beat: "Rho junta dos ideas: comprar pedacitos en vez de una cosa completa Y dejar que un gremio arme la canasta, para un caso nuevo."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-una-decision-de-canasta
+              micro_objective: "Evalúa, sin ayuda, una decisión nueva combinando el costo de un pedacito con el resultado de repartir entre varios."
+              narrative_beat: "Zara decide en segundos si le conviene una canasta nueva, cruzando el costo de los pedacitos con el resultado de repartir entre varios."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 2
+    slug: no-todo-en-una-sola-canasta
+    icon: shield
+    title:
+      en-US: "Not Everything in One Basket"
+      es-MX: "No Todo en Una Sola Canasta"
+      pt-BR: "Nao Tudo em Uma So Cesta"
+    description:
+      en-US: "Don't put all your coins in one canoe - and make sure your pieces don't all sink for the same reason."
+      es-MX: "No pongas todas tus monedas en una sola canoa - y asegúrate de que tus piezas no se hundan todas por la misma razón."
+      pt-BR: "Nao coloque todas as suas moedas em uma so canoa - e garanta que suas pecas nao afundem todas pelo mesmo motivo."
+    topics:
+        - position: 1
+          slug: la-metafora-de-las-canoas
+          title_es: "La metáfora de las canoas"
+          concept: "No pongas todas tus monedas en una sola canoa - si esa canoa se voltea, pierdes todo; repartidas en varias, una que se voltee no te hunde."
+          learning_objective: "El aprendiz reconoce, con la metáfora de las canoas, que repartir entre varias reduce el golpe si una falla."
+          key_vocabulary: [canoa, repartir, hundir]
+          prior_knowledge: "Completo Un Pedacito de Muchas Cosas (saga anterior)."
+          fact_refs: [risk.diversification_metaphor]
+          parent_check: "Preguntale a {{name}} qué pasaría si todas sus monedas estuvieran en una sola canoa que se voltea."
+          lessons:
+            - position: 1
+              slug: rho-explica-las-canoas
+              micro_objective: "Reconoce, con la metáfora de las canoas, que repartir entre varias reduce el golpe si una se voltea."
+              narrative_beat: "Rho le explica a Liruf: 'no pongas todas tus monedas en una sola canoa - si esa canoa se voltea, pierdes todo'."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: explico-la-canoa-que-se-voltea
+              micro_objective: "Explica, con sus palabras, qué pasaría si todas las monedas de un personaje estuvieran en una sola canoa que se voltea."
+              narrative_beat: "Liruf explica con sus palabras qué le pasaría a todas sus monedas si estuvieran en una sola canoa que se voltea."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: diversificar-en-una-palabra
+          title_es: "Diversificar, en una palabra"
+          concept: "Repartir entre varias cosas distintas para que ninguna sola pueda hundirte se llama diversificar."
+          learning_objective: "El aprendiz nombra 'diversificar' como el acto de repartir entre varias cosas distintas, e identifica cuándo un caso lo muestra."
+          key_vocabulary: [diversificar]
+          prior_knowledge: "Reconoce la metáfora de las canoas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que use la palabra 'diversificar' en una frase sobre su propio dinero o sus propias cosas."
+          lessons:
+            - position: 1
+              slug: le-ponemos-nombre
+              micro_objective: "Reconoce que repartir entre varias cosas distintas para que ninguna sola pueda hundirte se llama diversificar."
+              narrative_beat: "Dina le da nombre a lo que ya hicieron: 'repartir entre varias cosas distintas para que ninguna sola te hunda se llama diversificar'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: identifico-diversificacion
+              micro_objective: "Identifica, en 4 casos, cuáles muestran diversificación y cuáles muestran todo concentrado en un solo lugar."
+              narrative_beat: "Zara revisa cuatro canastas del mercado y marca cuáles están diversificadas y cuáles no."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+        - position: 3
+          slug: que-tan-parecidas-son-las-piezas
+          title_es: "Qué tan parecidas son las piezas"
+          concept: "Diversificar de verdad significa elegir piezas que no fallan todas por la misma razón al mismo tiempo, no solo muchas piezas parecidas."
+          learning_objective: "El aprendiz reconoce que muchas piezas parecidas no diversifican de verdad, y compara dos canastas por qué tan variadas son sus piezas."
+          key_vocabulary: [piezas parecidas, fallar juntas]
+          prior_knowledge: "Nombra 'diversificar' e identifica ejemplos (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si diez piezas del mismo tipo cuentan como una canasta bien diversificada."
+          lessons:
+            - position: 1
+              slug: diez-pedacitos-del-mismo-tipo
+              micro_objective: "Reconoce que diversificar de verdad significa elegir piezas que no fallan todas por la misma razón al mismo tiempo."
+              narrative_beat: "Rho nota que su canasta tiene diez pedacitos, pero todos son del mismo tipo de gremio - si algo golpea a ese tipo, los diez caen juntos."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-dos-canastas-de-diez
+              micro_objective: "Compara dos canastas con el mismo número de piezas y decide cuál está mejor diversificada según qué tan parecidas son sus piezas."
+              narrative_beat: "Zara compara dos canastas de diez piezas cada una: una con piezas muy parecidas, otra con piezas de tipos distintos."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: comparo-una-canasta-parecida-y-una-variada
+          title_es: "Comparo una canasta parecida y una variada"
+          concept: "Comparar una canasta con piezas muy parecidas contra una con piezas variadas muestra el efecto cuando algo golpea a un tipo de pieza."
+          learning_objective: "El aprendiz compara el resultado de una canasta parecida contra una variada cuando un evento golpea a un tipo de pieza, y evalúa una canasta nueva."
+          key_vocabulary: [golpear un tipo, canasta variada]
+          prior_knowledge: "Compara dos canastas por qué tan variadas son (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué le pasaría a una canasta si todas sus piezas fueran del mismo tipo y ese tipo tuviera un mal momento."
+          lessons:
+            - position: 1
+              slug: el-golpe-que-cae-parejo-o-no
+              micro_objective: "Compara el resultado de una canasta con piezas muy parecidas contra una con piezas variadas, cuando algo golpea a un tipo de pieza."
+              narrative_beat: "Cuando un problema golpea a un tipo de gremio, la canasta de Rho (toda parecida) cae completa; la de Zara (variada) casi no se mueve."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: decido-si-esta-lo-bastante-variada
+              micro_objective: "Decide, para una canasta nueva, si sus piezas están lo suficientemente variadas entre sí."
+              narrative_beat: "Rho revisa una canasta nueva y decide si sus piezas son lo bastante distintas entre sí para llamarla diversificada de verdad."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: diversificar-no-elimina-todo-el-riesgo
+          title_es: "Diversificar no elimina todo el riesgo"
+          concept: "Diversificar reduce el golpe de una sola pieza que falla, pero no elimina el riesgo por completo."
+          learning_objective: "El aprendiz reconoce que diversificar reduce pero no elimina el riesgo, y que incluso una canasta bien diversificada puede tener una mala temporada."
+          key_vocabulary: [reducir el golpe, mala temporada completa]
+          prior_knowledge: "Decide si una canasta está lo bastante variada (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si diversificar significa que nunca se va a perder nada - y por qué no."
+          lessons:
+            - position: 1
+              slug: diversificar-no-es-magia
+              micro_objective: "Reconoce que diversificar reduce el golpe de una pieza que falla, pero no elimina el riesgo por completo."
+              narrative_beat: "Dina aclara: 'diversificar no significa que nunca vas a perder nada - significa que una sola mala pieza no te hunde entera'."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: la-mala-temporada-completa
+              micro_objective: "Reconoce, en un caso, que incluso una canasta bien diversificada puede tener una mala temporada completa."
+              narrative_beat: "Zara ve que, en una mala temporada para todo el archipiélago, incluso su canasta bien diversificada bajó un poco - diversificar ayuda, pero no es magia."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 6
+          slug: reviso-que-tan-diversificada-esta-mi-canasta
+          title_es: "Reviso qué tan diversificada está mi canasta"
+          concept: "Revisa una canasta propia y evalúa qué tan variadas son realmente sus piezas."
+          learning_objective: "El aprendiz revisa y mejora, sin ayuda, la diversificación real de una canasta propia."
+          key_vocabulary: [revisar, mejorar la diversificación]
+          prior_knowledge: "Reconoce que diversificar no elimina todo el riesgo (tema anterior)."
+          fact_refs: []
+          parent_check: "Ayuda a {{name}} a revisar si las piezas de una canasta imaginaria son realmente variadas entre sí."
+          lessons:
+            - position: 1
+              slug: revisamos-la-canasta-de-liruf
+              micro_objective: "Con apoyo, revisa una canasta propia y evalúa qué tan variadas son realmente sus piezas."
+              narrative_beat: "El equipo revisa juntos la canasta de Liruf y descubren que, aunque tiene diez piezas, muchas son del mismo tipo."
+              difficulty: 4
+              suggested_families: [analyze, arrange]
+            - position: 2
+              slug: mejoro-mi-propia-canasta
+              micro_objective: "Aplica, sin ayuda, el mismo criterio para evaluar y mejorar la diversificación de su propia canasta."
+              narrative_beat: "Liruf revisa su canasta solo, sin ayuda, y cambia dos piezas parecidas por piezas de un tipo distinto."
+              difficulty: 5
+              suggested_families: [arrange, choice]
+        - position: 7
+          slug: repaso-no-todo-en-una-sola-canasta
+          kind: review_spaced
+          title_es: "Repaso: No Todo en Una Sola Canasta"
+          concept: "El equipo repasa por qué piezas variadas protegen mejor que piezas parecidas antes de conocer los índices."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué repartir entre piezas variadas protege mejor que repartir entre piezas parecidas."
+          key_vocabulary: [diversificar, piezas variadas]
+          prior_knowledge: "Completo los 6 temas de No Todo en Una Sola Canasta."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/la-metafora-de-las-canoas
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/diversificar-en-una-palabra
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/que-tan-parecidas-son-las-piezas
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/comparo-una-canasta-parecida-y-una-variada
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/diversificar-no-elimina-todo-el-riesgo
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/reviso-que-tan-diversificada-esta-mi-canasta
+          lessons:
+            - position: 1
+              slug: repaso-piezas-variadas-o-parecidas
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué repartir entre piezas variadas protege mejor que repartir entre piezas parecidas."
+              narrative_beat: "El equipo repasa sus canastas y revisa, sin ayuda, cuáles están realmente diversificadas."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-evaluo-diversificacion-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: evalúa la diversificación de una canasta nueva."
+              narrative_beat: "Zara evalúa, sin ayuda de nadie, qué tan diversificada está una canasta nueva del mercado."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 8
+          slug: cruce-diversificacion-y-limite-de-riesgo
+          kind: review_interleaved
+          title_es: "Cruce: Diversificación y Límite de Riesgo"
+          concept: "Mezclamos la metáfora de las canoas con la idea de piezas variadas, conectando con lo aprendido sobre diversificar rutas de riesgo."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de esta saga con lo aprendido sobre diversificar rutas de riesgo en una aventura anterior."
+          key_vocabulary: [canoas, piezas variadas, diversificar rutas]
+          prior_knowledge: "Completo el repaso de No Todo en Una Sola Canasta (tema anterior) y El Mapa del Riesgo (aventura anterior)."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/la-metafora-de-las-canoas
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/que-tan-parecidas-son-las-piezas
+            - mapa-del-riesgo/mi-tolerancia-al-riesgo/diversifico-mis-rutas
+          lessons:
+            - position: 1
+              slug: junto-canoas-y-piezas-variadas
+              micro_objective: "Combina la metáfora de las canoas con la idea de piezas variadas para evaluar una canasta nueva."
+              narrative_beat: "Rho junta dos ideas: no todo en una sola canoa Y piezas que no se parecen demasiado, para evaluar una canasta nueva."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: conecto-rutas-y-canastas
+              micro_objective: "Evalúa, sin ayuda, una canasta nueva conectando lo aprendido sobre diversificar rutas de riesgo con diversificar una canasta de inversión."
+              narrative_beat: "Zara conecta lo que aprendió sobre repartir rutas de riesgo con lo que aprendió sobre repartir piezas en una canasta - es la misma idea."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 3
+    slug: el-indice-un-poco-de-todo
+    icon: donut_large
+    title:
+      en-US: "The Index: A Little Bit of Everything"
+      es-MX: "El Índice: Un Poco de Todo"
+      pt-BR: "O Indice: Um Pouco de Tudo"
+    description:
+      en-US: "Instead of guessing one winner, a fund can automatically follow a little of every piece in a whole group."
+      es-MX: "En vez de adivinar un ganador, un fondo puede seguir automáticamente un poco de cada pieza de un grupo entero."
+      pt-BR: "Em vez de adivinhar um vencedor, um fundo pode seguir automaticamente um pouco de cada peca de um grupo inteiro."
+    topics:
+        - position: 1
+          slug: que-es-un-indice
+          title_es: "Qué es un índice"
+          concept: "Un índice sigue automáticamente un poco de todas las piezas de un grupo grande, en vez de que alguien elija piezas una por una."
+          learning_objective: "El aprendiz reconoce que un índice sigue automáticamente un grupo entero, distinguiéndolo de una canasta armada a mano."
+          key_vocabulary: [índice, automático, grupo entero]
+          prior_knowledge: "Completo No Todo en Una Sola Canasta (saga anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué cree que significa que un fondo 'siga automáticamente' a todo un grupo, en vez de que alguien elija a mano."
+          lessons:
+            - position: 1
+              slug: la-canasta-que-se-arma-sola
+              micro_objective: "Reconoce que un índice sigue automáticamente un poco de todas las piezas de un grupo grande."
+              narrative_beat: "Dina le muestra a Liruf una canasta especial: sigue automáticamente un poco de cada gremio del reino entero, sin que nadie elija a mano."
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: canasta-a-mano-o-indice-automatico
+              micro_objective: "Explica, con sus palabras, la diferencia entre una canasta armada a mano y un índice que sigue todo el grupo automáticamente."
+              narrative_beat: "Liruf explica la diferencia con sus palabras: una canasta la arma alguien eligiendo, un índice sigue a todos automáticamente."
+              difficulty: 2
+              suggested_families: [choice, analyze]
+        - position: 2
+          slug: seguir-el-grupo-completo
+          title_es: "Seguir el grupo completo"
+          concept: "Un fondo indexado sigue el resultado promedio de todo el grupo, en vez de intentar adivinar cuál pieza individual va a ganar."
+          learning_objective: "El aprendiz reconoce que un índice sigue el promedio de un grupo, y calcula un promedio simple dado el resultado de cada pieza."
+          key_vocabulary: [resultado promedio, adivinar]
+          prior_knowledge: "Distingue una canasta a mano de un índice automático (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que calcule el resultado promedio de tres o cuatro números sencillos."
+          lessons:
+            - position: 1
+              slug: seguir-el-promedio-no-adivinar
+              micro_objective: "Reconoce que un fondo indexado sigue el resultado promedio de todo el grupo, en vez de intentar adivinar una sola pieza ganadora."
+              narrative_beat: "Zara compara: en vez de adivinar cuál gremio va a ganar, el índice simplemente sigue el promedio de todos juntos."
+              difficulty: 2
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: calculo-el-promedio-del-grupo
+              micro_objective: "Calcula el resultado promedio aproximado de un grupo de piezas, dado el resultado de cada una."
+              narrative_beat: "Rho calcula el promedio de cinco gremios distintos para entender qué resultado sigue un índice de ese grupo."
+              difficulty: 3
+              suggested_families: [input, money]
+        - position: 3
+          slug: comparo-elegir-una-ganadora-y-seguir-el-grupo
+          title_es: "Comparo elegir una ganadora y seguir el grupo"
+          concept: "Comparar, en varias rondas simuladas, elegir una sola pieza ganadora contra seguir el promedio de todo el grupo revela el patrón real."
+          learning_objective: "El aprendiz compara, en rondas simuladas, elegir una pieza ganadora contra seguir el promedio del grupo, y reconoce el patrón repetido."
+          key_vocabulary: [ronda simulada, patrón repetido]
+          prior_knowledge: "Calcula el promedio de un grupo de piezas (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si prefiere intentar adivinar una sola ganadora, o seguir el promedio de todo un grupo - y por qué."
+          lessons:
+            - position: 1
+              slug: primera-ronda-liruf-y-zara
+              micro_objective: "Compara, en una ronda simulada, el resultado de elegir una sola pieza ganadora contra seguir el promedio de todo el grupo."
+              narrative_beat: "En la primera ronda del mercado, Liruf eligió un solo gremio y ganó grande; Zara siguió el índice y ganó un poco menos - pero sin arriesgar tanto."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-cinco-rondas
+              micro_objective: "Compara el mismo experimento en varias rondas simuladas y reconoce el patrón, no solo un resultado aislado."
+              narrative_beat: "Después de cinco rondas, Rho compara los resultados completos: elegir una ganadora es más volátil que seguir el índice."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: nadie-puede-adivinar-siempre
+          title_es: "Nadie puede adivinar siempre"
+          concept: "Adivinar la pieza ganadora una vez no prueba que se pueda adivinar siempre - el patrón repetido importa más que un acierto."
+          learning_objective: "El aprendiz reconoce que un acierto no prueba un patrón confiable, y revisa un historial completo para decidir si lo es."
+          key_vocabulary: [acierto único, historial completo]
+          prior_knowledge: "Compara elegir una ganadora contra seguir el grupo en varias rondas (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} si acertar una vez adivinando un ganador significa que siempre se puede acertar."
+          lessons:
+            - position: 1
+              slug: liruf-gano-una-vez
+              micro_objective: "Reconoce que adivinar la pieza ganadora una vez no prueba que se pueda adivinar siempre."
+              narrative_beat: "Liruf ganó eligiendo un gremio la primera ronda, pero perdió las siguientes tres - una vez no es un patrón."
+              difficulty: 3
+              suggested_families: [story, choice]
+            - position: 2
+              slug: reviso-el-historial-completo
+              micro_objective: "Compara el historial completo de varios intentos de 'elegir la ganadora' y decide si el patrón es confiable."
+              narrative_beat: "Zara revisa el historial completo de Liruf: de cinco intentos, acertó solo uno - decide que ese patrón no es confiable."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 5
+          slug: el-costo-de-armar-tu-propia-canasta
+          title_es: "El costo de armar tu propia canasta"
+          concept: "Armar y vigilar tu propia canasta pieza por pieza toma tiempo y esfuerzo que seguir un índice no requiere."
+          learning_objective: "El aprendiz reconoce el costo de tiempo y esfuerzo de armar una canasta propia y lo compara contra seguir un índice ya armado."
+          key_vocabulary: [tiempo, esfuerzo, vigilar]
+          prior_knowledge: "Revisa un historial completo para decidir si un patrón es confiable (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} cuánto tiempo cree que le tomaría vigilar y ajustar su propia canasta cada semana."
+          lessons:
+            - position: 1
+              slug: rho-vigila-cada-semana
+              micro_objective: "Reconoce que armar y vigilar tu propia canasta pieza por pieza toma tiempo y esfuerzo que seguir un índice no requiere."
+              narrative_beat: "Rho se da cuenta de que arma y revisa su propia canasta cada semana - Zara solo revisa su índice una vez al mes."
+              difficulty: 4
+              suggested_families: [story, choice]
+            - position: 2
+              slug: comparo-el-tiempo-invertido
+              micro_objective: "Compara el tiempo y esfuerzo invertido en armar una canasta propia contra seguir un índice ya armado."
+              narrative_beat: "Zara compara cuánto tiempo le toma a cada quien mantener su canasta: armar la propia toma mucho más esfuerzo semana a semana."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+        - position: 6
+          slug: cuando-conviene-cada-camino
+          title_es: "Cuándo conviene cada camino"
+          concept: "Compara cuándo conviene más seguir un índice ya armado contra armar y vigilar tu propia canasta pieza por pieza."
+          learning_objective: "El aprendiz compara y decide, sin ayuda, cuándo conviene más seguir un índice o armar una canasta propia, justificando su elección."
+          key_vocabulary: [comparar caminos, justificar la elección]
+          prior_knowledge: "Compara el tiempo invertido en cada camino (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que decida, para su propio caso, si le convendría más seguir un índice o armar su propia canasta."
+          lessons:
+            - position: 1
+              slug: comparamos-los-dos-caminos-en-equipo
+              micro_objective: "Con apoyo, compara cuándo conviene más seguir un índice ya armado contra armar y vigilar tu propia canasta."
+              narrative_beat: "El equipo compara juntos los dos caminos: cuándo conviene seguir un índice y cuándo vale la pena armar la canasta propia."
+              difficulty: 4
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: decido-mi-camino
+              micro_objective: "Decide, sin ayuda, cuál camino conviene más para su propio caso, y justifica su elección."
+              narrative_beat: "Rho decide solo, sin ayuda, cuál camino le conviene más a él, y explica su elección con al menos un motivo concreto."
+              difficulty: 5
+              suggested_families: [choice, storyplay]
+        - position: 7
+          slug: repaso-el-indice-un-poco-de-todo
+          kind: review_spaced
+          title_es: "Repaso: El Índice, Un Poco de Todo"
+          concept: "El equipo repasa por qué seguir el promedio del grupo es más estable antes de armar su propia canasta final."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, la diferencia entre elegir una pieza ganadora y seguir el promedio de un índice."
+          key_vocabulary: [índice, promedio del grupo]
+          prior_knowledge: "Completo los 6 temas de El Índice: Un Poco de Todo."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/el-indice-un-poco-de-todo/que-es-un-indice
+            - canastas-y-fondos/el-indice-un-poco-de-todo/seguir-el-grupo-completo
+            - canastas-y-fondos/el-indice-un-poco-de-todo/comparo-elegir-una-ganadora-y-seguir-el-grupo
+            - canastas-y-fondos/el-indice-un-poco-de-todo/nadie-puede-adivinar-siempre
+            - canastas-y-fondos/el-indice-un-poco-de-todo/el-costo-de-armar-tu-propia-canasta
+            - canastas-y-fondos/el-indice-un-poco-de-todo/cuando-conviene-cada-camino
+          lessons:
+            - position: 1
+              slug: repaso-ganadora-o-promedio
+              micro_objective: "Recuerda y aplica, sin ayuda, la diferencia entre elegir una sola pieza ganadora y seguir el promedio de un índice."
+              narrative_beat: "El equipo repasa sus resultados de rondas simuladas y explica, sin ayuda, por qué el índice es más estable."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-decido-camino-nuevo
+              micro_objective: "Aplica sin ayuda todo lo repasado: decide entre armar una canasta propia o seguir un índice para un caso nuevo."
+              narrative_beat: "Zara decide, sin ayuda de nadie, entre armar su propia canasta o seguir un índice para un caso nuevo del mercado."
+              difficulty: 4
+              suggested_families: [choice, analyze]
+        - position: 8
+          slug: cruce-indice-y-diversificacion
+          kind: review_interleaved
+          title_es: "Cruce: Índice y Diversificación"
+          concept: "Mezclamos la idea de seguir el grupo completo con la idea de diversificar para evaluar un índice como opción."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, seguir el grupo completo con diversificar piezas variadas en una sola evaluación."
+          key_vocabulary: [seguir el grupo, diversificar]
+          prior_knowledge: "Completo el repaso de El Índice: Un Poco de Todo (tema anterior) y No Todo en Una Sola Canasta (saga anterior)."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/el-indice-un-poco-de-todo/seguir-el-grupo-completo
+            - canastas-y-fondos/el-indice-un-poco-de-todo/nadie-puede-adivinar-siempre
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/diversificar-en-una-palabra
+          lessons:
+            - position: 1
+              slug: junto-grupo-completo-y-diversificar
+              micro_objective: "Combina la idea de seguir el grupo completo con la idea de diversificar para evaluar un índice como opción."
+              narrative_beat: "Rho junta dos ideas de sagas distintas: seguir el grupo completo Y diversificar entre piezas variadas - un índice hace las dos cosas a la vez."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: evaluo-si-el-indice-diversifica-bien
+              micro_objective: "Evalúa, sin ayuda, si un índice cumple bien el objetivo de diversificar, comparándolo con una canasta armada a mano."
+              narrative_beat: "Zara evalúa si un índice realmente diversifica tan bien como una canasta armada a mano con cuidado."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 4
+    slug: armo-mi-propia-canasta
+    icon: construction
+    title:
+      en-US: "I Build My Own Basket"
+      es-MX: "Armo Mi Propia Canasta"
+      pt-BR: "Monto Minha Propria Cesta"
+    description:
+      en-US: "Define your mix, simulate several rounds, and confirm that one bad piece doesn't sink a well-spread basket."
+      es-MX: "Define tu mezcla, simula varias rondas, y confirma que una pieza mala no hunde una canasta bien repartida."
+      pt-BR: "Defina sua mistura, simule varias rodadas, e confirme que uma peca ruim nao afunda uma cesta bem distribuida."
+    topics:
+        - position: 1
+          slug: defino-mi-mezcla
+          title_es: "Defino mi mezcla"
+          concept: "Define qué proporción de tu canasta va en piezas más seguras y cuál en piezas más arriesgadas, según tu tolerancia."
+          learning_objective: "El aprendiz define una proporción propia entre piezas seguras y arriesgadas para una canasta."
+          key_vocabulary: [mezcla, proporción]
+          prior_knowledge: "Completo El Índice: Un Poco de Todo (saga anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que elija una proporción simple (mitad y mitad, por ejemplo) entre piezas seguras y arriesgadas."
+          lessons:
+            - position: 1
+              slug: dina-pregunta-la-proporcion
+              micro_objective: "Reconoce que se puede definir qué proporción de una canasta va en piezas más seguras y cuál en piezas más arriesgadas."
+              narrative_beat: "Dina le pregunta a Liruf: '¿qué parte de tu canasta quieres en piezas seguras, y qué parte en piezas más arriesgadas?'"
+              difficulty: 1
+              suggested_families: [story, choice]
+            - position: 2
+              slug: elijo-mitad-y-mitad
+              micro_objective: "Elige una proporción simple (por ejemplo, mitad y mitad) entre piezas seguras y arriesgadas para una canasta propia."
+              narrative_beat: "Liruf elige su primera mezcla: mitad en piezas seguras, mitad en piezas más arriesgadas."
+              difficulty: 2
+              suggested_families: [choice, input]
+        - position: 2
+          slug: simulo-varias-rondas
+          title_es: "Simulo varias rondas"
+          concept: "Simula varias rondas donde algunas piezas ganan y otras pierden, y observa cómo se comporta la canasta completa en conjunto."
+          learning_objective: "El aprendiz simula rondas con piezas mixtas y calcula el resultado combinado de la canasta completa."
+          key_vocabulary: [simular, resultado combinado]
+          prior_knowledge: "Define una proporción propia entre piezas seguras y arriesgadas (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que imagine una ronda donde algunas piezas de su canasta ganan y otras pierden, y que calcule el resultado total."
+          lessons:
+            - position: 1
+              slug: calculo-una-ronda-mixta
+              micro_objective: "Simula una ronda donde algunas piezas de una canasta ganan y otras pierden, y calcula el resultado combinado."
+              narrative_beat: "Zara simula una ronda: tres piezas de su canasta ganan, dos pierden - calcula el resultado combinado de toda la canasta."
+              difficulty: 2
+              suggested_families: [input, money]
+            - position: 2
+              slug: simulo-cinco-rondas-seguidas
+              micro_objective: "Simula varias rondas seguidas y observa cómo se comporta la canasta completa en conjunto, no pieza por pieza."
+              narrative_beat: "Rho simula cinco rondas seguidas y observa que, aunque piezas individuales suben y bajan, la canasta completa se mueve menos fuerte."
+              difficulty: 3
+              suggested_families: [analyze, money]
+        - position: 3
+          slug: una-pieza-mala-no-hunde-la-canasta
+          title_es: "Una pieza mala no hunde la canasta"
+          concept: "Confirma, con una simulación, que una sola pieza mala no hunde una canasta bien repartida."
+          learning_objective: "El aprendiz confirma con una simulación que una pieza mala no hunde una canasta diversificada, y compara contra tenerlo todo en esa pieza."
+          key_vocabulary: [confirmar, golpe pequeño]
+          prior_knowledge: "Simula varias rondas y observa el comportamiento combinado (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué pasaría si una sola pieza de una canasta grande pierde casi todo su valor."
+          lessons:
+            - position: 1
+              slug: una-pieza-pierde-casi-todo
+              micro_objective: "Confirma, con una simulación, que una sola pieza mala no hunde una canasta bien repartida."
+              narrative_beat: "En la simulación de Zara, una pieza pierde casi todo su valor - pero el resto de la canasta la sostiene, y el golpe total es pequeño."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: comparo-con-tenerlo-todo-en-una-pieza
+              micro_objective: "Compara el golpe de una pieza mala en una canasta diversificada contra el mismo golpe si esa pieza fuera toda la inversión."
+              narrative_beat: "Rho compara: si esa misma pieza mala hubiera sido toda su inversión, el golpe habría sido total, no pequeño."
+              difficulty: 3
+              suggested_families: [analyze, choice]
+        - position: 4
+          slug: reviso-y-reequilibro
+          title_es: "Reviso y reequilibro"
+          concept: "Después de que algunas piezas crecen más que otras, revisa la mezcla y ajústala de vuelta a la proporción que querías."
+          learning_objective: "El aprendiz reconoce que la mezcla original cambia con el tiempo y ajusta una canasta de vuelta a su proporción deseada."
+          key_vocabulary: [reequilibrar, proporción original]
+          prior_knowledge: "Compara el golpe de una pieza mala en canasta diversificada vs. concentrada (tema anterior)."
+          fact_refs: []
+          parent_check: "Preguntale a {{name}} qué haría si, después de un tiempo, una parte de su canasta creció mucho más que las demás."
+          lessons:
+            - position: 1
+              slug: la-mezcla-ya-no-es-mitad-y-mitad
+              micro_objective: "Reconoce que, después de que algunas piezas crecen más que otras, la mezcla original de la canasta cambia."
+              narrative_beat: "Después de varias rondas, la mezcla de Zara ya no es mitad y mitad - las piezas arriesgadas crecieron más y ahora pesan más de lo que quería."
+              difficulty: 3
+              suggested_families: [story, analyze]
+            - position: 2
+              slug: reequilibro-mi-canasta
+              micro_objective: "Ajusta una canasta de vuelta a la proporción original, moviendo un poco de las piezas que crecieron de más."
+              narrative_beat: "Zara reequilibra su canasta: mueve un poco de las piezas que crecieron de más, de vuelta hacia su mezcla original."
+              difficulty: 4
+              suggested_families: [input, choice]
+        - position: 5
+          slug: combino-todo-lo-del-curso
+          title_es: "Combino todo lo del curso"
+          concept: "Combina diversificación con lo aprendido de riesgo, tiempo e interés compuesto para armar una canasta pensada a largo plazo."
+          learning_objective: "El aprendiz combina diversificación, tiempo e interés compuesto en una sola explicación sobre una canasta a largo plazo."
+          key_vocabulary: [combinar ideas, largo plazo]
+          prior_knowledge: "Reequilibra una canasta de vuelta a su proporción original (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que explique cómo diversificar, dejar crecer con tiempo y no tocar el dinero trabajan juntos."
+          lessons:
+            - position: 1
+              slug: rho-combina-tres-ideas
+              micro_objective: "Combina diversificación con tiempo e interés compuesto para pensar una canasta a largo plazo."
+              narrative_beat: "Rho combina tres ideas del curso: diversificar su canasta, dejarla crecer con el tiempo, y no tocarla para que el interés compuesto trabaje."
+              difficulty: 4
+              suggested_families: [analyze, storyplay]
+            - position: 2
+              slug: explico-como-trabajan-juntas
+              micro_objective: "Explica, con sus palabras, cómo diversificación, tiempo e interés compuesto trabajan juntos en una canasta bien pensada."
+              narrative_beat: "Zara explica al equipo cómo las tres ideas del curso se combinan en una sola canasta bien pensada a largo plazo."
+              difficulty: 4
+              suggested_families: [storyplay, choice]
+        - position: 6
+          slug: presento-mi-canasta-final
+          title_es: "Presento mi canasta final"
+          concept: "Presenta una canasta final completa explicando su mezcla, su nivel de diversificación y por qué la eligió."
+          learning_objective: "El aprendiz organiza y presenta, sin ayuda, una canasta final completa explicando su mezcla y su diversificación."
+          key_vocabulary: [canasta final, presentar]
+          prior_knowledge: "Explica cómo diversificación, tiempo e interés compuesto trabajan juntos (tema anterior)."
+          fact_refs: []
+          parent_check: "Pidele a {{name}} que te presente su canasta final: su mezcla, qué tan diversificada está, y por qué la armó así."
+          lessons:
+            - position: 1
+              slug: organizamos-la-canasta-final-en-equipo
+              micro_objective: "Con apoyo, organiza los elementos de una canasta final completa (mezcla, diversificación, plazo) para presentarla."
+              narrative_beat: "El equipo organiza junto los elementos de su canasta final: su mezcla, qué tan diversificada está, y a qué plazo la piensan."
+              difficulty: 4
+              suggested_families: [storyplay, arrange]
+            - position: 2
+              slug: presento-mi-canasta-sola
+              micro_objective: "Presenta, sin ayuda, su canasta final completa ante el equipo, explicando su mezcla y su nivel de diversificación."
+              narrative_beat: "Zara presenta su canasta final sola, sin ayuda, explicando su mezcla y por qué la considera bien diversificada."
+              difficulty: 5
+              suggested_families: [storyplay, choice]
+        - position: 7
+          slug: repaso-armo-mi-propia-canasta
+          kind: review_spaced
+          title_es: "Repaso: Armo Mi Propia Canasta"
+          concept: "El equipo repasa cómo una pieza mala no hunde una canasta bien repartida antes de la asamblea final de los gremios."
+          learning_objective: "El aprendiz recuerda y aplica, sin nueva enseñanza, por qué una pieza mala no hunde una canasta bien repartida."
+          key_vocabulary: [pieza mala, canasta repartida]
+          prior_knowledge: "Completo los 6 temas de Armo Mi Propia Canasta."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/armo-mi-propia-canasta/defino-mi-mezcla
+            - canastas-y-fondos/armo-mi-propia-canasta/simulo-varias-rondas
+            - canastas-y-fondos/armo-mi-propia-canasta/una-pieza-mala-no-hunde-la-canasta
+            - canastas-y-fondos/armo-mi-propia-canasta/reviso-y-reequilibro
+            - canastas-y-fondos/armo-mi-propia-canasta/combino-todo-lo-del-curso
+            - canastas-y-fondos/armo-mi-propia-canasta/presento-mi-canasta-final
+          lessons:
+            - position: 1
+              slug: repaso-una-pieza-mala-de-nuevo
+              micro_objective: "Recuerda y aplica, sin ayuda, por qué una pieza mala no hunde una canasta bien repartida."
+              narrative_beat: "El equipo repasa sus simulaciones y confirma, sin ayuda, que una canasta diversificada resiste un golpe individual."
+              difficulty: 3
+              suggested_families: [choice, analyze]
+            - position: 2
+              slug: repaso-reequilibro-canasta-nueva
+              micro_objective: "Aplica sin ayuda todo lo repasado: reequilibra una canasta nueva después de una simulación."
+              narrative_beat: "Rho reequilibra, sin ayuda de nadie, una canasta nueva después de simular varias rondas."
+              difficulty: 4
+              suggested_families: [input, choice]
+        - position: 8
+          slug: cruce-todo-el-mercado-de-canastas
+          kind: review_interleaved
+          title_es: "Cruce: Todo el Mercado de Canastas"
+          concept: "Mezclamos comprar en pedacitos, diversificar de verdad, y elegir entre índice o canasta propia en una sola decisión final."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, ideas de las cuatro sagas de la aventura en una sola decisión de canasta."
+          key_vocabulary: [pedacitos, diversificar, índice o canasta propia]
+          prior_knowledge: "Completo el repaso de Armo Mi Propia Canasta (tema anterior) y las tres sagas previas."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas/comparo-comprar-uno-o-comprar-una-canasta
+            - canastas-y-fondos/no-todo-en-una-sola-canasta/que-tan-parecidas-son-las-piezas
+            - canastas-y-fondos/el-indice-un-poco-de-todo/cuando-conviene-cada-camino
+          lessons:
+            - position: 1
+              slug: junto-comprar-en-canasta-y-variedad
+              micro_objective: "Combina la comparación de comprar una sola cosa con la idea de piezas variadas para evaluar una canasta nueva."
+              narrative_beat: "Zara junta dos ideas de sagas distintas: comprar pedacitos en vez de una cosa completa Y que esos pedacitos sean variados entre sí."
+              difficulty: 4
+              suggested_families: [analyze, choice]
+            - position: 2
+              slug: resuelvo-la-decision-final-de-canasta
+              micro_objective: "Evalúa, sin ayuda, una decisión final combinando comprar en canasta, diversificar de verdad, y elegir entre índice o canasta propia."
+              narrative_beat: "Rho resuelve el caso final del mercado cruzando las cuatro sagas completas en una sola decisión de canasta."
+              difficulty: 5
+              suggested_families: [choice, analyze]
+  - position: 5
+    slug: la-asamblea-final-de-los-gremios
+    kind: review
+    icon: emoji_events
+    title:
+      en-US: "The Guilds' Final Assembly"
+      es-MX: "La Asamblea Final de los Gremios"
+      pt-BR: "A Assembleia Final das Guildas"
+    description:
+      en-US: "A final assembly puts the whole basket toolkit - pieces, real diversification, index and mix - to work."
+      es-MX: "Una asamblea final pone a trabajar todo el kit de herramientas de las canastas: pedacitos, diversificación real, índice y mezcla."
+      pt-BR: "Uma assembleia final coloca para trabalhar todo o kit de ferramentas das cestas: pedacos, diversificacao real, indice e mistura."
+    topics:
+        - position: 1
+          slug: el-reto-de-la-canasta
+          kind: review_quest
+          title_es: "El Reto de la Canasta"
+          concept: "La Asamblea de los Gremios lanza su prueba final: armar una canasta diversificada de verdad, sin nueva enseñanza."
+          learning_objective: "El aprendiz combina, sin nueva enseñanza, comprar en pedacitos y diversificar de verdad para resolver un reto abierto."
+          key_vocabulary: [pedacitos, diversificar de verdad, reto abierto]
+          prior_knowledge: "Completo Un Pedacito de Muchas Cosas y No Todo en Una Sola Canasta."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/un-pedacito-de-muchas-cosas
+            - canastas-y-fondos/no-todo-en-una-sola-canasta
+          lessons:
+            - position: 1
+              slug: suena-la-campana-de-la-asamblea
+              micro_objective: "Recuerda, sin ayuda, por qué una canasta de pedacitos variados protege mejor que una sola cosa completa."
+              narrative_beat: "Una campana suena en la Asamblea de los Gremios: 'Prueba final - demuestra que sabes armar una canasta de verdad'."
+              difficulty: 2
+              suggested_families: [story, choice]
+            - position: 2
+              slug: armo-canasta-variada-sin-ayuda
+              micro_objective: "Arma, sin ayuda, una canasta nueva con piezas variadas, evitando piezas demasiado parecidas entre sí."
+              narrative_beat: "Zara enfrenta su primera prueba real: armar sola, sin ayuda, una canasta nueva con piezas de verdad variadas."
+              difficulty: 3
+              suggested_families: [arrange, analyze]
+        - position: 2
+          slug: mi-canasta-defendida
+          kind: review_quest
+          title_es: "Mi Canasta, Defendida"
+          concept: "Frente a la asamblea de gremios, el equipo defiende su canasta final explicando su mezcla y por qué eligió índice o canasta propia."
+          learning_objective: "El aprendiz presenta y defiende, sin nueva enseñanza, una canasta final combinando índice vs. canasta propia y su mezcla."
+          key_vocabulary: [defender, asamblea, canasta final]
+          prior_knowledge: "Completo El Reto de la Canasta (tema anterior) y las cuatro sagas de la aventura."
+          fact_refs: []
+          review_of:
+            - canastas-y-fondos/el-indice-un-poco-de-todo
+            - canastas-y-fondos/armo-mi-propia-canasta
+          lessons:
+            - position: 1
+              slug: ensayo-mi-defensa-de-canasta
+              micro_objective: "Organiza, sin ayuda, los argumentos de índice vs. canasta propia y su mezcla final para defender una canasta elegida."
+              narrative_beat: "Dina ensaya su defensa: primero por qué eligió índice o canasta propia, después cómo definió su mezcla final."
+              difficulty: 3
+              suggested_families: [storyplay, analyze]
+            - position: 2
+              slug: presento-ante-la-asamblea-de-gremios
+              micro_objective: "Completa, sin ayuda, la defensa final de su canasta ante la asamblea, resistiendo una pregunta difícil."
+              narrative_beat: "Dina presenta ante la Asamblea de los Gremios; cuando le preguntan '¿y si una pieza entera se hunde?', responde explicando cómo su diversificación la protege."
+              difficulty: 4
+              suggested_families: [storyplay, choice]

@@ -229,6 +229,95 @@ facts:
     verified: true
     notes: "Tope pedagógico — permite sumar 3-4 materiales sin exceder la comprensión numérica tier2."
 
+  # ---- Teen-scale reference costs & prices (MXN) — added for the tier4
+  # pivot (WALKTHROUGH 2026-08-12). APPROXIMATE, for exercise flavor only,
+  # same convention as the kid-business reference prices above: only
+  # order-of-magnitude and MXN-plausibility matter. NEVER-INVENTED still
+  # applies — no regulated commission rates, no real minimum wage, no real
+  # gig-platform fee schedule; the illustrative commission below is flagged
+  # explicitly as illustrative and platform/city-dependent, never a pinned
+  # regulatory number. ----
+  mxn.reference_costs.funda_personalizada_materiales:
+    value: 45
+    range: [35, 60]
+    unit: MXN
+    label_es: "Costo aproximado de materiales para personalizar una funda de celular"
+    verified: false
+    enforce: false
+    notes: "Vinil, plantilla y sellador para una funda; precio ilustrativo de insumo, no de venta."
+
+  mxn.reference_prices.funda_personalizada:
+    value: 110
+    range: [90, 140]
+    unit: MXN
+    label_es: "Precio de venta de referencia de una funda de celular personalizada"
+    verified: false
+    enforce: false
+
+  mxn.reference_costs.tenis_personalizados_materiales:
+    value: 200
+    range: [180, 220]
+    unit: MXN
+    label_es: "Costo aproximado de pintura y sellador para personalizar un par de tenis"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.tenis_personalizados:
+    value: 520
+    range: [450, 600]
+    unit: MXN
+    label_es: "Precio de venta de referencia de un par de tenis personalizados"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.clase_tutoria_hora:
+    value: 150
+    range: [120, 180]
+    unit: MXN
+    label_es: "Precio de referencia de una hora de tutoria entre estudiantes"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.diseno_logo_digital:
+    value: 320
+    range: [250, 400]
+    unit: MXN
+    label_es: "Precio de referencia de un diseno de logo digital freelance sencillo"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.boleto_concierto_local:
+    value: 450
+    range: [300, 600]
+    unit: MXN
+    label_es: "Precio de referencia de un boleto para un concierto o evento local"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.videojuego_digital:
+    value: 800
+    range: [700, 900]
+    unit: MXN
+    label_es: "Precio de referencia de un videojuego digital de lanzamiento reciente"
+    verified: false
+    enforce: false
+
+  mxn.reference_prices.suscripcion_streaming_mensual:
+    value: 139
+    range: [99, 179]
+    unit: MXN
+    label_es: "Precio de referencia de una suscripcion mensual de streaming"
+    verified: false
+    enforce: false
+
+  business.illustrative.comision_app_reparto_pct:
+    value: 25
+    unit: "%"
+    label_es: "Comision ilustrativa que una app de reparto o de servicios cobra por transaccion"
+    verified: false
+    enforce: false
+    notes: "NEVER-INVENTED: no es una tasa regulada ni la comision real de ninguna plataforma. Varia por plataforma, ciudad y fecha; usar solo como ejemplo de que 'el intermediario se queda con una parte', nunca como dato citable."
+
   # ---- Character canon anchors (copied verbatim — used by narrative_beat
   # authoring, not money math; identical across every course in the catalog) ----
   characters.canon_ids:
