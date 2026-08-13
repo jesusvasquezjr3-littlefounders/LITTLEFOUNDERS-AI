@@ -230,6 +230,15 @@ describe('GET /api/v1/admin/analytics/overview (filters extension)', () => {
   });
 });
 
+describe('retired analytics exclusions route', () => {
+  it('does not expose a non-enforced IP blocklist as an analytics control', async () => {
+    stubFetch();
+    const res = await request(createApp()).get('/api/v1/admin/analytics/exclusions').set('Authorization', authed());
+    expect(res.status).toBe(404);
+    expect(res.body.error.code).toBe('NOT_FOUND');
+  });
+});
+
 const MARKETING_DIMS = ['source', 'channel', 'utm_campaign', 'utm_source', 'country', 'referrer'];
 const FULL_DIMS = [...MARKETING_DIMS, 'entry_page', 'device', 'page', 'exit_page', 'browser', 'os'];
 
@@ -322,23 +331,5 @@ describe('GET /api/v1/admin/analytics/report.pdf', () => {
     const res = await request(createApp()).get('/api/v1/admin/analytics/report.pdf').set('Authorization', authed());
     expect(res.status).toBe(502);
     expect(res.body.error.code).toBe('UPSTREAM_FAILED');
-  });
-});
-
-describe('GET /api/v1/admin/analytics/exclusions', () => {
-  it('parses PLAUSIBLE_IP_BLOCKLIST (comma/whitespace separated)', async () => {
-    stubPulseEnv();
-    vi.stubEnv('PLAUSIBLE_IP_BLOCKLIST', '203.0.113.7, 198.51.100.9\n192.0.2.1');
-    stubFetch();
-    const res = await request(createApp()).get('/api/v1/admin/analytics/exclusions').set('Authorization', authed());
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ ips: ['203.0.113.7', '198.51.100.9', '192.0.2.1'] });
-  });
-
-  it('returns an empty list when the blocklist env is unset', async () => {
-    stubFetch();
-    const res = await request(createApp()).get('/api/v1/admin/analytics/exclusions').set('Authorization', authed());
-    expect(res.status).toBe(200);
-    expect(res.body.data).toEqual({ ips: [] });
   });
 });

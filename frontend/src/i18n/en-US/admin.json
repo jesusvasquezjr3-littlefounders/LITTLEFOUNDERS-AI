@@ -385,7 +385,7 @@
     },
     "behavior": {
       "title": "Behavioral (adult surfaces)",
-      "scopeNote": "Umami runs only on marketing and parent/admin surfaces, never on kid sessions.",
+      "scopeNote": "Umami runs only on marketing and signed-in parent product surfaces, never on kid or admin sessions.",
       "pageviews": "Pageviews",
       "visitors": "Visitors",
       "visits": "Visits",
@@ -478,21 +478,6 @@
         "frontend": "Frontend",
         "full": "Full report"
       }
-    },
-    "exclusions": {
-      "title": "Excluded IPs",
-      "caption": "Traffic from these IPs is dropped at Plausible ingestion, so staff visits don't pollute the numbers.",
-      "empty": "No IPs are excluded yet.",
-      "valueLabel": "IP or CIDR",
-      "valuePlaceholder": "e.g. 203.0.113.7 or 10.0.0.0/8",
-      "add": "Add",
-      "invalid": "That doesn't look like a valid IP or CIDR block.",
-      "remove": "Remove {{ip}}",
-      "commandLabel": "Apply with",
-      "copy": "Copy",
-      "copied": "Copied",
-      "pending": "Edited list not applied yet, run the command and redeploy pulse-plausible.",
-      "note": "Read-only mirror: enforcement lives in the IP_BLOCKLIST env var on pulse-plausible (applied on redeploy), this screen never writes it."
     }
   },
   "emails": {

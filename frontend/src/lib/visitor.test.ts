@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getCookieConsent, setCookieConsent } from './visitor';
+import { classifyReferrer, getCookieConsent, setCookieConsent } from './visitor';
 
 function clearCookies(): void {
   for (const name of ['lf_cc', 'lf_aid', '_ga', '_gid', '_gat', '_ga_TEST', 'lf_other']) {
@@ -36,5 +36,11 @@ describe('visitor cookie consent', () => {
     expect(document.cookie).not.toMatch(/(?:^|; )_gid=/);
     expect(document.cookie).not.toMatch(/(?:^|; )_gat=/);
     expect(document.cookie).toMatch(/(?:^|; )lf_other=keep-me/);
+  });
+
+  it('treats a Google OAuth return as internal rather than search acquisition', () => {
+    Object.defineProperty(document, 'referrer', { configurable: true, value: 'https://accounts.google.com/o/oauth2/auth' });
+
+    expect(classifyReferrer()).toBe('internal');
   });
 });

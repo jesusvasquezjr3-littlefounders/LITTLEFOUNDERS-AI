@@ -26,7 +26,6 @@ import {
 } from '../services/insights.js';
 import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
 import {
-  getExcludedIps,
   getKumaHealth,
   getPlausibleBreakdown,
   getPlausibleOverview,
@@ -372,15 +371,6 @@ export function adminRouter(): Router {
       .setHeader('Content-Type', 'application/pdf')
       .setHeader('Content-Disposition', `attachment; filename="littlefounders-analytics-${report.audience}-${report.period}-${day}.pdf"`)
       .send(pdf);
-  });
-
-  /**
-   * Read-only mirror of the IPs excluded from analytics ingestion. Enforcement
-   * lives in pulse-plausible's IP_BLOCKLIST env — there is deliberately NO
-   * write endpoint here (changing it is an infra step in Railway variables).
-   */
-  router.get('/analytics/exclusions', (_req, res) => {
-    ok(res, { ips: getExcludedIps() });
   });
 
   /** Behavioral stats (Umami): adult-surfaces product analytics. */

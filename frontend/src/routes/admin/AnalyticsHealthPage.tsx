@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/auth/AuthContext';
 import {
   Badge,
   Card,
@@ -28,7 +27,6 @@ import {
 import { FilterBar } from './analytics/FilterBar';
 import { BreakdownCard } from './analytics/BreakdownCard';
 import { ReportExportCard } from './analytics/ReportExportCard';
-import { ExclusionsCard } from './analytics/ExclusionsCard';
 import { AnalyticsGeoMap } from './analytics/AnalyticsGeoMap';
 import { AnalyticsTrendChart } from './analytics/AnalyticsTrendChart';
 
@@ -44,8 +42,6 @@ function UnavailableCard({ title, body }: { title: string; body: string }) {
 
 export function AnalyticsHealthPage() {
   const { t, i18n } = useTranslation();
-  const { roles } = useAuth();
-  const isSuperadmin = roles.includes('superadmin');
 
   const [period, setPeriod] = useState<Period>('30d');
   const [filters, setFilters] = useState<AnalyticsFilter[]>([]);
@@ -354,10 +350,7 @@ export function AnalyticsHealthPage() {
         <h2 id="admin-analytics-tools" className="lf-headline font-bold text-content">
           {t('admin.analytics.toolsTitle')}
         </h2>
-        <div className={cn('grid gap-4', isSuperadmin && 'lg:grid-cols-2')}>
-          <ReportExportCard period={period} filterQuery={filterQuery} />
-          {isSuperadmin && <ExclusionsCard />}
-        </div>
+        <ReportExportCard period={period} filterQuery={filterQuery} />
       </section>
 
       {/* ── System health (Uptime Kuma) ───────────────── */}

@@ -18,9 +18,6 @@ const PulseEnv = z.object({
   PLAUSIBLE_URL: z.url().optional(),
   PLAUSIBLE_API_KEY: z.string().min(10).optional(),
   PLAUSIBLE_SITE_ID: z.string().min(1).optional(),
-  // Mirror of pulse-plausible's IP_BLOCKLIST (comma/whitespace separated).
-  // Read-only reflection for the console — enforcement lives in Plausible's env.
-  PLAUSIBLE_IP_BLOCKLIST: z.string().optional(),
   UMAMI_URL: z.url().optional(),
   UMAMI_USERNAME: z.string().min(1).optional(),
   UMAMI_PASSWORD: z.string().min(1).optional(),
@@ -271,19 +268,6 @@ export async function getPlausibleReportData(
     timeseries: overview.timeseries,
     breakdowns,
   };
-}
-
-/**
- * IPs excluded from analytics ingestion — a read-only mirror of the
- * IP_BLOCKLIST env enforced on pulse-plausible. Editing happens in Railway
- * variables (infra step), never through Core.
- */
-export function getExcludedIps(): string[] {
-  const raw = getPulseConfig().PLAUSIBLE_IP_BLOCKLIST ?? '';
-  return raw
-    .split(/[\s,]+/)
-    .map((ip) => ip.trim())
-    .filter(Boolean);
 }
 
 // ── Umami (behavioral analytics) ───────────────────────────────────────────

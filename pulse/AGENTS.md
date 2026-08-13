@@ -35,10 +35,12 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
    the one Plausible CE's own compose.yml ships for that release. Never bump
    it independently.
 4. **§1.9 boundary (child safety):** Umami's replay/heatmap recorder is NEVER
-   loaded on kid-role sessions. Behavioral capture is restricted to marketing
-   + parent/admin surfaces; enforcement lives in the frontend gate (see
-   frontend/AGENTS.md). Plausible is cookieless/no-PII by design and may see
-   kid *traffic* in aggregate — it stores no identifiable data.
+   loaded on kid-role or `/admin/*` sessions. Behavioral capture is restricted
+   to marketing + signed-in parent product surfaces; enforcement lives in the
+   frontend gate (see `frontend/src/lib/analytics.tsx`). Plausible is
+   cookieless/no-PII by design, but is intentionally restricted to consented
+   public marketing acquisition: it does not observe product, OAuth, or admin
+   routes.
 5. **Browser never talks to Pulse for data.** Admin dashboards read analytics
    and health exclusively through Core (`/api/v1/admin/*`), which holds the
    Plausible/Umami/Kuma API tokens server-side (§1.5 pattern). The ONLY

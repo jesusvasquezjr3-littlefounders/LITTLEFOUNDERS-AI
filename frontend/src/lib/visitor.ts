@@ -114,6 +114,10 @@ export function classifyReferrer(): ReferrerClass {
     return 'direct';
   }
   if (host.endsWith('littlefounders.ai')) return 'internal';
+  // Google returns social-login users through this host. It is an
+  // authentication hand-off, never a discovery source; treating it as Google
+  // search would inflate acquisition and incorrectly attribute signups.
+  if (host === 'accounts.google.com') return 'internal';
   if (/google\.|bing\.|duckduckgo\.|yahoo\.|ecosia\./.test(host)) return 'search';
   if (/facebook\.|instagram\.|twitter\.|x\.com|tiktok\.|youtube\.|linkedin\.|reddit\.|whatsapp\./.test(host)) return 'social';
   return 'referral';

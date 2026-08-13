@@ -8,9 +8,11 @@ import { hasCookieConsent } from '@/lib/visitor';
  *
  * Plausible: cookieless, no PII, no persistent identifiers, raw IP/UA never
  * stored (verified against its data policy before adoption — WALKTHROUGH.md
- * 2026-07-20). It mounts on adult product surfaces without a consent cookie;
- * public marketing surfaces wait for explicit optional consent. It never
- * mounts on kid sessions. Uses Plausible's new-format per-site
+ * 2026-07-20). It measures PUBLIC ACQUISITION ONLY: an identified user,
+ * authentication callback, product route, or /admin route must never create
+ * a Plausible pageview. This prevents OAuth redirects (accounts.google.com)
+ * and staff work from masquerading as organic/user traffic. Public marketing
+ * measurement waits for explicit optional consent. Uses Plausible's new-format per-site
  * script (`/js/pa-<id>.js` + `plausible.init()`, v3.2.x): the site domain is
  * baked into the hashed file (no data-domain), and autoCapturePageviews is on
  * by default so SPA route changes track via its History hook — no manual
@@ -23,7 +25,8 @@ import { hasCookieConsent } from '@/lib/visitor';
  * NON-NEGOTIABLE (§1.9 + pulse/AGENTS.md #4): it must NEVER observe a
  * kid-role session. Policy (WALKTHROUGH.md decision log 2026-07-20):
  *   - guests → marketing pages only (never the auth trust surfaces),
- *   - signed-in parent/admin/superadmin → everywhere in the app,
+ *   - signed-in parent → parent product surfaces only,
+ *   - /admin/* → never (operator work is not customer behavior),
  *   - kid role present, or any other role → never; eject if already mounted
  *     (script removal stops all future capture in the session).
  *
@@ -64,9 +67,27 @@ declare global {
 
 const MARKETING_PREFIXES = ['/', '/how-it-works', '/families', '/faq', '/legal'];
 
-function isMarketingPath(pathname: string): boolean {
+export function isMarketingPath(pathname: string): boolean {
   if (pathname === '/') return true;
   return MARKETING_PREFIXES.slice(1).some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
+/**
+ * Only anonymous, consented marketing landings are web-acquisition traffic.
+ * `meLoaded` is load-bearing: until identity restoration finishes, an existing
+ * staff session must not leak one pageview from a public route.
+ */
+export function shouldTrackPublicAcquisition(
+  pathname: string,
+  session: object | null | undefined,
+  meLoaded: boolean,
+  consented: boolean,
+): boolean {
+  return meLoaded && session === null && consented && isMarketingPath(pathname);
+}
+
+function isAdminPath(pathname: string): boolean {
+  return pathname === '/admin' || pathname.startsWith('/admin/');
 }
 
 /** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. */
@@ -128,18 +149,12 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
   const { session, roles, meLoaded } = useAuth();
   const { pathname } = useLocation();
 
-  // Public guest measurement is optional and starts only after the visitor's
-  // cookie decision. Signed-in adult product measurement follows its existing
-  // product consent boundary; kid sessions are never mounted here.
+  // Public acquisition only. Product behavior lives in first-party Insights
+  // (and, for consented adult parent surfaces, Umami), not in this traffic KPI.
   useEffect(() => {
-    const guestMarketing = session === null && isMarketingPath(pathname);
-    if (guestMarketing && !hasCookieConsent()) {
-      ejectScript('lf-plausible');
-      return;
-    }
-    const adultProduct = session != null && meLoaded && roles.some((r) => ['parent', 'admin', 'superadmin'].includes(r));
-    if (guestMarketing || adultProduct) mountPlausible();
-  }, [session, meLoaded, pathname, roles, consentVersion]);
+    if (shouldTrackPublicAcquisition(pathname, session, meLoaded, hasCookieConsent())) mountPlausible();
+    else ejectScript('lf-plausible');
+  }, [session, meLoaded, pathname, consentVersion]);
 
   // Umami — adult surfaces only; kid sessions eject unconditionally.
   useEffect(() => {
@@ -147,15 +162,16 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
 
     const isGuest = session === null;
     const isKid = roles.includes('kid');
-    const isAdultSurfaceUser = roles.some((r) => ['parent', 'admin', 'superadmin'].includes(r));
+    const isParent = roles.includes('parent');
 
     const shouldMount =
       !isKid &&
-      ((isGuest && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isAdultSurfaceUser));
+      !isAdminPath(pathname) &&
+      ((isGuest && meLoaded && isMarketingPath(pathname) && hasCookieConsent()) || (session != null && meLoaded && isParent));
 
     if (shouldMount) {
       mountScript('lf-umami', UMAMI_SRC, { 'website-id': UMAMI_WEBSITE_ID });
-    } else if (isKid || (session != null && meLoaded && !isAdultSurfaceUser)) {
+    } else {
       ejectScript('lf-umami');
     }
   }, [session, roles, meLoaded, pathname]);

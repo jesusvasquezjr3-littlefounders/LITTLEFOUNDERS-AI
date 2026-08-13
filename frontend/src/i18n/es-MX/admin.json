@@ -385,7 +385,7 @@
     },
     "behavior": {
       "title": "Comportamiento (superficies adultas)",
-      "scopeNote": "Umami corre solo en marketing y superficies de tutores/admin, nunca en sesiones de niños.",
+      "scopeNote": "Umami corre solo en marketing y en superficies de producto para tutores con sesión, nunca en sesiones de niños o de administración.",
       "pageviews": "Páginas vistas",
       "visitors": "Visitantes",
       "visits": "Visitas",
@@ -478,21 +478,6 @@
         "frontend": "Frontend",
         "full": "Reporte completo"
       }
-    },
-    "exclusions": {
-      "title": "IPs excluidas",
-      "caption": "El tráfico de estas IPs se descarta al ingresar a Plausible, para que las visitas del staff no ensucien los números.",
-      "empty": "Aún no hay IPs excluidas.",
-      "valueLabel": "IP o CIDR",
-      "valuePlaceholder": "p. ej. 203.0.113.7 o 10.0.0.0/8",
-      "add": "Agregar",
-      "invalid": "Eso no parece una IP o un bloque CIDR válido.",
-      "remove": "Quitar {{ip}}",
-      "commandLabel": "Aplícalo con",
-      "copy": "Copiar",
-      "copied": "Copiado",
-      "pending": "La lista editada aún no está aplicada, ejecuta el comando y redespliega pulse-plausible.",
-      "note": "Espejo de solo lectura: la aplicación vive en la variable de entorno IP_BLOCKLIST de pulse-plausible (se aplica al redesplegar), esta pantalla nunca la escribe."
     }
   },
   "emails": {

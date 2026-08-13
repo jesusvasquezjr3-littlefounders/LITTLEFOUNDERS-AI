@@ -33,10 +33,8 @@ Browser ──▶ Core /api/v1/admin/analytics/*  ──▶ Plausible Stats API 
 
 The browser never calls Pulse for data (§1.5). API tokens live only in Core's
 Railway variables. Core caches responses (Plausible's default limit: 600 req/h).
-Core also serves per-dimension breakdowns, audience report bundles + a branded
-PDF export (`/api/v1/admin/analytics/{breakdown,report,report.pdf}`), and a
-read-only mirror of the analytics IP blocklist (`/analytics/exclusions` ←
-Core's `PLAUSIBLE_IP_BLOCKLIST`; enforced by `IP_BLOCKLIST` on pulse-plausible).
+Core also serves per-dimension breakdowns, audience report bundles, and a
+branded PDF export (`/api/v1/admin/analytics/{breakdown,report,report.pdf}`).
 
 ## Environment
 
@@ -47,9 +45,37 @@ in Railway. Secrets generated with `openssl rand -base64 48`.
 
 | Engine | Where it runs | Kids? |
 |---|---|---|
-| Plausible | Every surface | ✅ safe — cookieless, no PII, no persistent IDs, raw IP/UA never stored |
-| Umami (events) | Marketing + parent/admin surfaces | ❌ not mounted on kid sessions |
-| Umami (replay/heatmaps) | Marketing + parent/admin surfaces only | ❌ **NEVER** — non-negotiable |
+| Plausible | Consented public marketing only | ✅ safe — cookieless, no PII, no persistent IDs, raw IP/UA never stored |
+| Umami (events) | Marketing + signed-in parent product surfaces | ❌ not mounted on kid or admin sessions |
+| Umami (replay/heatmaps) | Marketing + signed-in parent product surfaces only | ❌ **NEVER** — non-negotiable |
+
+Plausible CE v3.2.1 has no documented `IP_BLOCKLIST` environment setting.
+Do not claim that an IP list filters ingestion. Instead, tracker mounting is
+the enforceable boundary: public acquisition excludes authenticated, OAuth,
+product, and `/admin/*` routes before a pageview can be sent.
+
+## Campaign attribution contract
+
+Use all three supported tags on every external post, email, partner link, and
+paid placement:
+
+```
+https://littlefounders.ai/?utm_source=instagram&utm_medium=social&utm_campaign=back_to_school_2026
+```
+
+- `utm_source`: the publisher or platform, lower-case (`instagram`,
+  `newsletter`, `whatsapp`, `partner_name`).
+- `utm_medium`: delivery type, lower-case (`social`, `email`, `paid_social`,
+  `referral`).
+- `utm_campaign`: a durable initiative name, lower-case
+  (`back_to_school_2026`, `parent_webinar_august`).
+
+Values must be stable, use only letters, numbers, dots, underscores, or
+hyphens, and must never contain a person, email, phone number, or other PII.
+Do not add UTMs to internal navigation or product CTAs: that turns behavior
+after arrival into a fictitious acquisition campaign. The first-party
+conversion layer retains exactly these three labels on consenting adult
+acquisition; Plausible reports the same tags for public pageviews.
 
 ## GA4 import (the one remaining manual step)
 
