@@ -555,7 +555,11 @@
       "nameLabel": "Name",
       "namePlaceholder": "Office wifi",
       "add": "Add",
-      "forwardOnly": "Exclusions apply from the moment you add them. Data already recorded stays exactly as it is."
+      "forwardOnly": "Exclusions apply from the moment you add them. Data already recorded stays exactly as it is.",
+      "deviceTitle": "This browser",
+      "deviceHint": "Stops tracking on this device only — survives a changing IP and affects nobody else.",
+      "deviceExclude": "Exclude this browser",
+      "deviceResume": "Resume tracking"
     },
     "coverage": {
       "none": "No internal traffic is excluded yet, so staff visits are still counted in these figures. Add this device under Internal traffic below. Exclusions apply from the moment they are added and cannot change data already recorded.",

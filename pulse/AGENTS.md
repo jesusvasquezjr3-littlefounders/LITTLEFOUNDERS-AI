@@ -41,7 +41,13 @@ Five Railway services in `littlefounders-b2c`, defined under `pulse/railway/`:
    cookieless/no-PII by design, but is intentionally restricted to consented
    public marketing acquisition: it does not observe product, OAuth, or admin
    routes.
-5. **Internal traffic is excluded at the tracker, never at Plausible.**
+5. **Internal traffic is excluded at the tracker, never at Plausible.** Two
+   mechanisms, and they are not interchangeable: the IP registry (below) for a
+   STABLE egress such as an office, and the per-device opt-out
+   (`lf_analytics_device_optout`) for anything behind a rotating or shared
+   address. Never exclude a VPN or datacenter exit by IP — it removes every
+   other visitor behind that exit and does not even cover the staff member,
+   whose address changes (RUNBOOK, 2026-08-14).
    Plausible CE has no ingestion IP blocklist. The exclusion registry lives in
    Vault (`analytics_ip_exclusions`, migration 0045) and is enforced in two
    places we own: the SPA asks Core before mounting ANY tracker

@@ -555,7 +555,11 @@
       "nameLabel": "Nome",
       "namePlaceholder": "Wi-Fi do escritório",
       "add": "Adicionar",
-      "forwardOnly": "As exclusões valem a partir do momento em que você as adiciona. Os dados já registrados permanecem como estão."
+      "forwardOnly": "As exclusões valem a partir do momento em que você as adiciona. Os dados já registrados permanecem como estão.",
+      "deviceTitle": "Este navegador",
+      "deviceHint": "Para a medição apenas neste dispositivo — sobrevive à troca de IP e não afeta mais ninguém.",
+      "deviceExclude": "Excluir este navegador",
+      "deviceResume": "Retomar medição"
     },
     "coverage": {
       "none": "Ainda não há tráfego interno excluído, então as visitas da equipe continuam contando nestes números. Adicione este dispositivo em Tráfego interno, abaixo. As exclusões valem a partir do momento em que são adicionadas e não alteram dados já registrados.",

@@ -412,9 +412,16 @@ member is never recorded regardless of address; the leak is only staff browsing
 the public site signed OUT. Note also that setting `plausible_ignore` /
 `umami.disabled` by hand does NOT work on our site — `applyVendorOptOuts()`
 clears both keys whenever Core answers "allowed", by design, so that revoking
-an exclusion genuinely re-enables measurement. A durable fix for VPN-using
-staff would need a device-level opt-out that is not derived from IP; that is
-proposed, not built.
+an exclusion genuinely re-enables measurement. **Built 2026-08-14:** a device-level opt-out (`lf_analytics_device_optout`,
+Admin → Analytics → Internal traffic → "Exclude this browser"). It is stored
+separately from the IP-derived flag ON PURPOSE — that one is cleared on every
+"allowed" answer so revoking an exclusion genuinely re-enables measurement,
+which is precisely why a hand-set vendor flag does not survive on this site.
+The device flag is set and cleared only by an explicit human action, is
+checked before the session cache and before any request, and silences
+conversion goals as well as pageviews. It costs nothing, cannot affect anyone
+else's data, and survives a rotating address — which is what an IP exclusion
+behind a VPN cannot do. Use this rather than excluding a VPN exit.
 
 **Prevention.** The exclusion panel is the right tool for a stable egress and
 the wrong tool for a rotating one. Treat every suggestion as a claim to verify,

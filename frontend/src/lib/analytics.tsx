@@ -116,6 +116,40 @@ function isAdminPath(pathname: string): boolean {
 type TrackingDecision = 'pending' | 'allowed' | 'excluded';
 
 const EXCLUSION_FLAG = 'lf_analytics_excluded';
+/*
+ * A DEVICE-level opt-out, deliberately separate from EXCLUSION_FLAG.
+ *
+ * EXCLUSION_FLAG mirrors the server's IP verdict and is cleared whenever Core
+ * answers "allowed" — that is what makes revoking an exclusion in the console
+ * genuinely re-enable measurement rather than being a one-way door. It also
+ * makes it useless for the case that actually bit us: staff browsing through a
+ * consumer VPN, whose exit IP rotates and whose exclusion would silently
+ * remove every other visitor behind that same exit (RUNBOOK, 2026-08-14).
+ *
+ * This flag is set only by an explicit human action and cleared only by
+ * another one. No server answer touches it. It costs nothing, cannot affect
+ * anybody else's data, and survives a changing address — which is exactly
+ * what an IP-based exclusion cannot do.
+ */
+const DEVICE_OPT_OUT_FLAG = 'lf_analytics_device_optout';
+
+/** True when this browser has been opted out by hand. */
+export function isDeviceOptedOut(): boolean {
+  return readFlag('local', DEVICE_OPT_OUT_FLAG) === '1';
+}
+
+/**
+ * Turn the device-level opt-out on or off. Applies the vendor opt-outs
+ * immediately so the current page stops (or resumes) reporting without a
+ * reload.
+ */
+export function setDeviceOptOut(enabled: boolean): void {
+  writeFlag('local', DEVICE_OPT_OUT_FLAG, enabled ? '1' : null);
+  // The session cache holds the previous verdict; drop it or the next mount
+  // would answer from a decision this action just invalidated.
+  writeFlag('session', SESSION_FLAG, null);
+  applyVendorOptOuts(enabled);
+}
 const SESSION_FLAG = 'lf_analytics_decision';
 
 function readFlag(store: 'local' | 'session', key: string): string | null {
@@ -165,10 +199,21 @@ function isAutomatedBrowser(): boolean {
 
 export function useTrackingDecision(): TrackingDecision {
   const [decision, setDecision] = useState<TrackingDecision>(() =>
-    isAutomatedBrowser() || readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'pending',
+    isAutomatedBrowser() || isDeviceOptedOut() || readFlag('local', EXCLUSION_FLAG) === '1' ? 'excluded' : 'pending',
   );
 
   useEffect(() => {
+    /*
+     * The device opt-out outranks the server, like automation does. It is
+     * checked BEFORE the session cache and before the fetch, so an "allowed"
+     * answer can never overwrite a human's explicit choice — the failure mode
+     * that makes a hand-set vendor flag useless on this site.
+     */
+    if (isDeviceOptedOut()) {
+      setDecision('excluded');
+      applyVendorOptOuts(true);
+      return;
+    }
     // Automation never graduates to 'allowed', whatever the server answers.
     if (isAutomatedBrowser()) {
       setDecision('excluded');
@@ -367,7 +412,7 @@ export function trackMarketingGoal(
   goal: MarketingGoal,
   context: { pathname: string; session: object | null | undefined; meLoaded: boolean },
 ): void {
-  if (isAutomatedBrowser()) return;
+  if (isAutomatedBrowser() || isDeviceOptedOut()) return;
   if (readFlag('local', EXCLUSION_FLAG) === '1') return;
   if (!shouldTrackPublicAcquisition(context.pathname, context.session, context.meLoaded, hasCookieConsent())) return;
 

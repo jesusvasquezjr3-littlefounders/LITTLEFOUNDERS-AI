@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge, Card, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { isDeviceOptedOut, setDeviceOptOut } from '@/lib/analytics';
 import { AdminAction, useAdminData, useAdminMutation } from '../adminShared';
 import type { ExclusionsData } from './analyticsShared';
 
@@ -34,6 +35,7 @@ export function ExclusionsCard() {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [manual, setManual] = useState({ network: '', label: '' });
+  const [deviceOptedOut, setDeviceOptedOut] = useState(() => isDeviceOptedOut());
 
   const run = useCallback(
     async (key: string, path: string, body?: unknown, method: 'POST' | 'DELETE' = 'POST') => {
@@ -105,6 +107,37 @@ export function ExclusionsCard() {
                 {t('admin.analytics.exclusions.excludeSelf')}
               </AdminAction>
             )}
+          </div>
+
+          {/*
+            * Device-level opt-out. Separate from the IP registry on purpose:
+            * an IP exclusion is the wrong tool behind a consumer VPN, where
+            * the exit address rotates (so it stops covering you) and is shared
+            * (so it silently removes other people's real visits). This flag
+            * lives only in this browser, affects nobody else, and no server
+            * answer clears it.
+            */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline/40 bg-surface-sunken/40 p-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <Icon
+                name={deviceOptedOut ? 'phonelink_off' : 'devices'}
+                className={cn('!text-[22px]', deviceOptedOut ? 'text-success-strong' : 'text-content-muted')}
+              />
+              <div className="min-w-0">
+                <p className="lf-caption text-content-muted">{t('admin.analytics.exclusions.deviceTitle')}</p>
+                <p className="lf-caption text-content-faint">{t('admin.analytics.exclusions.deviceHint')}</p>
+              </div>
+            </div>
+            <AdminAction
+              tone={deviceOptedOut ? 'neutral' : 'primary'}
+              icon={deviceOptedOut ? 'visibility' : 'phonelink_off'}
+              onClick={() => {
+                setDeviceOptOut(!deviceOptedOut);
+                setDeviceOptedOut(!deviceOptedOut);
+              }}
+            >
+              {t(deviceOptedOut ? 'admin.analytics.exclusions.deviceResume' : 'admin.analytics.exclusions.deviceExclude')}
+            </AdminAction>
           </div>
 
           {/* Automatic detection: addresses staff have actually worked from. */}

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
-import { isMarketingPath, shouldTrackPublicAcquisition, trackMarketingGoal, useTrackingDecision } from './analytics';
+import { isDeviceOptedOut, isMarketingPath, setDeviceOptOut, shouldTrackPublicAcquisition, trackMarketingGoal, useTrackingDecision } from './analytics';
 
 describe('public acquisition tracker boundary', () => {
   it('accepts only consented, identity-resolved guest marketing routes', () => {
@@ -372,5 +372,69 @@ describe('trackMarketingGoal', () => {
     Object.defineProperty(navigator, 'webdriver', { value: true, configurable: true });
     trackMarketingGoal('cta_signup_start', MARKETING);
     expect(plausible).not.toHaveBeenCalled();
+  });
+});
+
+describe('device-level opt-out', () => {
+  /*
+   * The control that exists because IP exclusion is the wrong tool behind a
+   * consumer VPN: the exit address rotates (so it stops covering the person)
+   * and is shared (so it silently deletes other people's real visits).
+   */
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    Object.defineProperty(navigator, 'webdriver', { value: false, configurable: true });
+  });
+
+  it('is not cleared by an "allowed" answer from the server', async () => {
+    /*
+     * THE point of the flag. applyVendorOptOuts() deliberately clears the
+     * IP-derived flag on every "allowed" answer so revoking an exclusion
+     * re-enables measurement — which is exactly why a hand-set vendor flag
+     * does not survive here, and why this one is stored separately.
+     */
+    setDeviceOptOut(true);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve({ ok: true, json: () => Promise.resolve({ data: { excluded: false, degraded: false }, error: null }) }),
+      ),
+    );
+    const { result } = renderHook(() => useTrackingDecision());
+    await waitFor(() => expect(result.current).toBe('excluded'));
+    expect(isDeviceOptedOut()).toBe(true);
+    vi.unstubAllGlobals();
+  });
+
+  it('decides before any request is made', () => {
+    // No network call at all: the answer cannot change the outcome, so asking
+    // would only risk a pageview racing ahead of the reply.
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    setDeviceOptOut(true);
+    const { result } = renderHook(() => useTrackingDecision());
+    expect(result.current).toBe('excluded');
+    expect(fetchSpy).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
+  it('silences conversion goals too', () => {
+    setDeviceOptOut(true);
+    const plausible = vi.fn();
+    (window as unknown as { plausible: unknown }).plausible = plausible;
+    document.cookie = 'lf_cc=granted; path=/';
+    trackMarketingGoal('guest_start', { pathname: '/', session: null, meLoaded: true });
+    expect(plausible).not.toHaveBeenCalled();
+  });
+
+  it('is reversible — resuming genuinely re-enables measurement', () => {
+    setDeviceOptOut(true);
+    expect(isDeviceOptedOut()).toBe(true);
+    setDeviceOptOut(false);
+    expect(isDeviceOptedOut()).toBe(false);
+    // The vendor opt-outs must lift with it, or "resume" would be a lie.
+    expect(window.localStorage.getItem('plausible_ignore')).toBeNull();
+    expect(window.localStorage.getItem('umami.disabled')).toBeNull();
   });
 });
