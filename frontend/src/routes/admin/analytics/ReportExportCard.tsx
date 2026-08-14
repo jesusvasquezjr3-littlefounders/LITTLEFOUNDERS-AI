@@ -45,7 +45,7 @@ function filenameFrom(disposition: string | null, audience: Audience, extension:
 }
 
 export function ReportExportCard({ periodQuery, filterQuery }: { periodQuery: PeriodQuery; filterQuery: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getToken } = useAuth();
   const [audience, setAudience] = useState<Audience>('full');
   const [format, setFormat] = useState<Format>('pdf');
@@ -61,7 +61,18 @@ export function ReportExportCard({ periodQuery, filterQuery }: { periodQuery: Pe
     try {
       const token = await getToken();
       const res = await fetch(
-        `${API_BASE_URL}/api/v1/admin/analytics/report.${chosen.extension}?${periodQuery}&audience=${audience}&rows=${rows}${filterQuery}`,
+        /*
+         * The PDF is written in the console's current language. It is the one
+         * artefact that leaves the building, so it must not arrive in English
+         * because the server happened to default there — a Spanish-speaking
+         * operator exporting for Spanish-speaking stakeholders was previously
+         * given "Last 30 days" and en-US number formatting with no way to
+         * change it. CSV/XLSX ignore the parameter; their headers are data
+         * column names, not prose.
+         */
+        `${API_BASE_URL}/api/v1/admin/analytics/report.${chosen.extension}` +
+          `?${periodQuery}&audience=${audience}&rows=${rows}${filterQuery}` +
+          `&locale=${encodeURIComponent(i18n.resolvedLanguage ?? 'en-US')}`,
         { headers: token ? { Authorization: `Bearer ${token}` } : undefined },
       );
       if (!res.ok) {

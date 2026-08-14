@@ -24,7 +24,7 @@ import {
   RECORDABLE_EVENTS,
   ROUTE_CLASSES,
 } from '../services/insights.js';
-import { renderAnalyticsReportPdf } from '../services/analyticsReport.js';
+import { renderAnalyticsReportPdf, REPORT_LOCALES, type ReportLocale } from '../services/analyticsReport.js';
 import {
   renderAnalyticsReportCsv,
   renderAnalyticsReportXlsx,
@@ -483,7 +483,18 @@ export function adminRouter(): Router {
   router.get('/analytics/report.pdf', async (req, res) => {
     const report = await loadReport(req, res);
     if (!report) return;
-    const pdf = await renderAnalyticsReportPdf(report);
+    /*
+     * The document language is chosen by the operator exporting it, not by the
+     * server's default: the report is sent to stakeholders who may not share
+     * the exporter's UI language. An unknown value falls back to en-US rather
+     * than 400 — a download is a poor place to surface a validation error, and
+     * an English report is a usable one.
+     */
+    const requested = String(req.query.locale ?? '');
+    const locale = (REPORT_LOCALES as readonly string[]).includes(requested)
+      ? (requested as ReportLocale)
+      : 'en-US';
+    const pdf = await renderAnalyticsReportPdf(report, locale);
     res
       .status(200)
       .setHeader('Content-Type', 'application/pdf')
